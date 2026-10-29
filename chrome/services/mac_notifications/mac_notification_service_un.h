@@ -87,22 +87,41 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
     mojom::NotificationMetadataPtr meta;
     // Non-nil while `addNotificationRequest:` or
     // `replaceContentForRequestWithIdentifier:` (including any attachment-free
-    // retry) is in flight for this notification. Used both to prevent a
-    // concurrent `SynchronizeNotifications()` from treating an in-flight
-    // notification as closed, and to ignore stale completion callbacks if the
-    // same notification ID is re-displayed while an earlier delivery is still
-    // in flight.
+    // retry) is in flight for this notification. Used to include in-flight
+    // notifications in `GetDisplayedNotifications()`, to prevent a concurrent
+    // `SynchronizeNotifications()` from treating an in-flight notification as
+    // closed, and to ignore stale completion callbacks if the same
+    // notification ID is re-displayed while an earlier delivery is still in
+    // flight.
     UNMutableNotificationContent* __strong pending_content;
     // Set when a `renotify = false` replacement is waiting for
     // `SynchronizeNotifications` to finish before `DoDisplayNotification` runs,
-    // so `DoSynchronizeNotifications` removes a missing previous entry without
-    // emitting a `kClose` action.
+    // so `GetDisplayedNotifications()` still reports the notification as
+    // displayed and `DoSynchronizeNotifications` removes a missing previous
+    // entry without emitting a `kClose` action.
     bool is_being_replaced = false;
   };
 
   void DoDisplayNotification(mojom::NotificationPtr notification);
   void DeliverNotificationContent(PendingDelivery delivery);
   void OnNotificationDelivered(PendingDelivery delivery, NSError* error);
+  // Queries `UNUserNotificationCenter` for notifications currently delivered in
+  // the OS notification center, without merging in-flight deliveries. Used by
+  // `SynchronizeNotifications()` to detect when delivered notifications have
+  // been dismissed. `origin` may be `nullptr` to match any origin and is not
+  // retained beyond the call.
+  void GetDeliveredNotifications(mojom::ProfileIdentifierPtr profile,
+                                 const GURL* origin,
+                                 GetDisplayedNotificationsCallback callback);
+  // Appends notifications from `delivered_notifications_` that are still in
+  // flight (`pending_content != nil` or `is_being_replaced`) and match
+  // `profile` and `origin`, deduplicating against `notifications`. `profile`
+  // and `origin` may be `nullptr` to match any profile or origin respectively;
+  // neither pointer is retained beyond the call.
+  void AddInFlightNotifications(
+      const mojom::ProfileIdentifier* profile,
+      const GURL* origin,
+      std::vector<mojom::NotificationIdentifierPtr>& notifications) const;
 
   void ReportRequestPermissionResult(mojom::RequestPermissionResult result);
   void DoRequestPermission();

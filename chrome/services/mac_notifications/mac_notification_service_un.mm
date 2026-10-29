@@ -9,6 +9,7 @@
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 #import <UserNotifications/UserNotifications.h>
 
+#include <algorithm>
 #include <optional>
 #include <utility>
 #include <vector>
@@ -28,6 +29,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/optional_util.h"
 #include "chrome/common/notifications/notification_constants.h"
 #include "chrome/common/notifications/notification_operation.h"
 #import "chrome/services/mac_notifications/mac_notification_service_utils.h"
@@ -421,6 +423,29 @@ void MacNotificationServiceUN::GetDisplayedNotifications(
     const std::optional<GURL>& origin,
     GetDisplayedNotificationsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  mojom::ProfileIdentifierPtr profile_filter = profile.Clone();
+  GetDeliveredNotifications(
+      std::move(profile), base::OptionalToPtr(origin),
+      base::BindOnce(
+          [](base::WeakPtr<MacNotificationServiceUN> service,
+             mojom::ProfileIdentifierPtr profile,
+             const std::optional<GURL>& origin,
+             std::vector<mojom::NotificationIdentifierPtr> notifications) {
+            if (service) {
+              service->AddInFlightNotifications(
+                  profile.get(), base::OptionalToPtr(origin), notifications);
+            }
+            return notifications;
+          },
+          weak_factory_.GetWeakPtr(), std::move(profile_filter), origin)
+          .Then(std::move(callback)));
+}
+
+void MacNotificationServiceUN::GetDeliveredNotifications(
+    mojom::ProfileIdentifierPtr profile,
+    const GURL* origin,
+    GetDisplayedNotificationsCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // To avoid the cached permission status from going too stale, poll the
   // current status when getting displayed notifications.
@@ -433,7 +458,7 @@ void MacNotificationServiceUN::GetDisplayedNotifications(
   // Note: |profile| might be null if we want all notifications.
   NSString* profile_id = profile ? base::SysUTF8ToNSString(profile->id) : nil;
   bool incognito = profile && profile->incognito;
-  __block std::optional<GURL> block_origin = origin;
+  __block std::optional<GURL> block_origin = base::OptionalFromPtr(origin);
 
   // We need to call |callback| on the same sequence as this method is called.
   scoped_refptr<base::SequencedTaskRunner> task_runner =
@@ -470,6 +495,29 @@ void MacNotificationServiceUN::GetDisplayedNotifications(
     task_runner->PostTask(FROM_HERE, base::BindOnce(std::move(block_callback),
                                                     std::move(notifications)));
   }];
+}
+
+void MacNotificationServiceUN::AddInFlightNotifications(
+    const mojom::ProfileIdentifier* profile,
+    const GURL* origin,
+    std::vector<mojom::NotificationIdentifierPtr>& notifications) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const auto& [notification_id, notification] : delivered_notifications_) {
+    if (!notification.pending_content && !notification.is_being_replaced) {
+      continue;
+    }
+    if (profile && *notification.meta->id->profile != *profile) {
+      continue;
+    }
+    if (origin &&
+        !url::IsSameOriginWith(notification.meta->origin_url, *origin)) {
+      continue;
+    }
+    if (std::ranges::contains(notifications, notification.meta->id)) {
+      continue;
+    }
+    notifications.push_back(notification.meta->id.Clone());
+  }
 }
 
 void MacNotificationServiceUN::CloseNotification(
@@ -747,8 +795,12 @@ void MacNotificationServiceUN::SynchronizeNotifications(
     return;
   }
   is_synchronizing_notifications_ = true;
-  GetDisplayedNotifications(
-      /*profile=*/nullptr, /*origin=*/std::nullopt,
+  // Query raw OS-delivered notifications rather than
+  // `GetDisplayedNotifications()` so `DoSynchronizeNotifications()` can detect
+  // when a previously delivered notification (including one with
+  // `is_being_replaced` set) was dismissed from macOS Notification Center.
+  GetDeliveredNotifications(
+      /*profile=*/nullptr, /*origin=*/nullptr,
       base::BindOnce(&MacNotificationServiceUN::DoSynchronizeNotifications,
                      weak_factory_.GetWeakPtr()));
 }

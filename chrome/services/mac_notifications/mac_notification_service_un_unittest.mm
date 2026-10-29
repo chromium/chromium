@@ -244,7 +244,8 @@ class MacNotificationServiceUNTest : public testing::Test {
   void DisplayNotificationSync(const std::string& notification_id,
                                const std::string& profile_id,
                                bool incognito,
-                               bool success = true) {
+                               bool success = true,
+                               const GURL& origin_url = GURL()) {
     base::RunLoop run_loop;
 
     OCMExpect(
@@ -261,8 +262,8 @@ class MacNotificationServiceUNTest : public testing::Test {
         .andDo(invokeClosure(run_loop.QuitClosure()));
 
     // Create and display a new notification.
-    auto notification =
-        CreateMojoNotification(notification_id, profile_id, incognito);
+    auto notification = CreateMojoNotification(
+        notification_id, profile_id, incognito, /*renotify=*/true, origin_url);
     service_remote_->DisplayNotification(std::move(notification));
 
     run_loop.Run();
@@ -273,11 +274,12 @@ class MacNotificationServiceUNTest : public testing::Test {
       const std::string& notification_id,
       const std::string& profile_id,
       bool incognito,
-      bool renotify = true) {
+      bool renotify = true,
+      const GURL& origin_url = GURL()) {
     auto notification_identifier = mojom::NotificationIdentifier::New(
         notification_id, mojom::ProfileIdentifier::New(profile_id, incognito));
     auto meta = mojom::NotificationMetadata::New(
-        std::move(notification_identifier), /*type=*/0, /*origin_url=*/GURL(),
+        std::move(notification_identifier), /*type=*/0, origin_url,
         /*user_data_dir=*/"");
     std::vector<mac_notifications::mojom::NotificationActionButtonPtr> buttons;
 
@@ -1261,6 +1263,333 @@ TEST_F(
   close_loop.Run();
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
   testing::Mock::VerifyAndClearExpectations(&mock_handler_);
+}
+
+TEST_F(
+    MacNotificationServiceUNTest,
+    GetDisplayedNotifications_IncludesInFlightAndBeingReplacedNotifications) {
+  // 1. Display a notification whose `addNotificationRequest:` completes
+  // immediately (`pending_content == nil && !is_being_replaced`), and another
+  // notification that we will replace with `renotify = false`.
+  DisplayNotificationSync("completedId", "profileId", /*incognito=*/false);
+  DisplayNotificationSync("beingReplacedId", "profileId", /*incognito=*/false,
+                          /*success=*/true, GURL("https://example.com"));
+  task_environment_.RunUntilIdle();
+
+  // Start replacing `beingReplacedId` with `renotify = false`, holding the
+  // pre-replacement `SynchronizeNotifications` callback so `is_being_replaced`
+  // remains true while `pending_content` is still nil.
+  __block void (^saved_sync_handler)(NSArray<UNNotification*>* _Nonnull) = nil;
+  {
+    base::RunLoop sync_started_loop;
+    OCMExpect([mock_notification_center_
+                  getDeliveredNotificationsWithCompletionHandler:
+                      [OCMArg checkWithBlock:^BOOL(void (^completion_handler)(
+                          NSArray<UNNotification*>* _Nonnull)) {
+                        saved_sync_handler = [completion_handler copy];
+                        return YES;
+                      }]])
+        .andDo(invokeClosure(sync_started_loop.QuitClosure()));
+    service_remote_->DisplayNotification(CreateMojoNotification(
+        "beingReplacedId", "profileId",
+        /*incognito=*/false, /*renotify=*/false, GURL("https://example.com")));
+    sync_started_loop.Run();
+    EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+    ASSERT_TRUE(saved_sync_handler);
+  }
+
+  // 2. Start two new notifications, holding their `addNotificationRequest:`
+  // completion handlers so both remain in flight (`pending_content != nil`).
+  __block void (^saved_add_handler1)(NSError* _Nullable) = nil;
+  {
+    base::RunLoop display_started_loop;
+    OCMExpect([mock_notification_center_
+                  addNotificationRequest:[OCMArg any]
+                   withCompletionHandler:[OCMArg checkWithBlock:^BOOL(
+                                                     void (^completion_handler)(
+                                                         NSError* _Nullable)) {
+                     saved_add_handler1 = [completion_handler copy];
+                     return YES;
+                   }]])
+        .andDo(invokeClosure(display_started_loop.QuitClosure()));
+    service_remote_->DisplayNotification(
+        CreateMojoNotification("inFlightId1", "profileId", /*incognito=*/false,
+                               /*renotify=*/true, GURL("https://example.com")));
+    display_started_loop.Run();
+    EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+    ASSERT_TRUE(saved_add_handler1);
+  }
+
+  __block void (^saved_add_handler2)(NSError* _Nullable) = nil;
+  {
+    base::RunLoop display_started_loop;
+    OCMExpect([mock_notification_center_
+                  addNotificationRequest:[OCMArg any]
+                   withCompletionHandler:[OCMArg checkWithBlock:^BOOL(
+                                                     void (^completion_handler)(
+                                                         NSError* _Nullable)) {
+                     saved_add_handler2 = [completion_handler copy];
+                     return YES;
+                   }]])
+        .andDo(invokeClosure(display_started_loop.QuitClosure()));
+    service_remote_->DisplayNotification(
+        CreateMojoNotification("inFlightId2", "profileId", /*incognito=*/true,
+                               /*renotify=*/true, GURL("https://gmail.com")));
+    display_started_loop.Run();
+    EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+    ASSERT_TRUE(saved_add_handler2);
+  }
+
+  auto to_mac_ids =
+      [](const std::vector<mojom::NotificationIdentifierPtr>& notifications) {
+        std::vector<std::string> ids;
+        for (const auto& notification : notifications) {
+          ids.push_back(DeriveMacNotificationId(notification));
+        }
+        return ids;
+      };
+
+  // Query all displayed notifications when `UNUserNotificationCenter` returns
+  // an empty array: `beingReplacedId`, `inFlightId1`, and `inFlightId2` must
+  // be included, while `completedId` (no longer in flight and absent from OS)
+  // is not.
+  {
+    OCMExpect([mock_notification_center_
+        getDeliveredNotificationsWithCompletionHandler:
+            ([OCMArg invokeBlockWithArgs:@[], nil])]);
+    std::vector<mojom::NotificationIdentifierPtr> all_displayed =
+        GetDisplayedNotificationsSync(/*profile=*/nullptr);
+    EXPECT_THAT(to_mac_ids(all_displayed),
+                testing::UnorderedElementsAre("r|profileId|beingReplacedId",
+                                              "r|profileId|inFlightId1",
+                                              "i|profileId|inFlightId2"));
+    EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+  }
+
+  // Filter by non-incognito `profileId`: only `beingReplacedId` and
+  // `inFlightId1` match.
+  {
+    OCMExpect([mock_notification_center_
+        getDeliveredNotificationsWithCompletionHandler:
+            ([OCMArg invokeBlockWithArgs:@[], nil])]);
+    std::vector<mojom::NotificationIdentifierPtr> profile_displayed =
+        GetDisplayedNotificationsSync(
+            mojom::ProfileIdentifier::New("profileId", /*incognito=*/false));
+    EXPECT_THAT(to_mac_ids(profile_displayed),
+                testing::UnorderedElementsAre("r|profileId|beingReplacedId",
+                                              "r|profileId|inFlightId1"));
+    EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+  }
+
+  // Filter by non-incognito `profileId` and matching origin: both
+  // `beingReplacedId` and `inFlightId1` match.
+  {
+    OCMExpect([mock_notification_center_
+        getDeliveredNotificationsWithCompletionHandler:
+            ([OCMArg invokeBlockWithArgs:@[], nil])]);
+    std::vector<mojom::NotificationIdentifierPtr> profile_and_origin_displayed =
+        GetDisplayedNotificationsSync(
+            mojom::ProfileIdentifier::New("profileId", /*incognito=*/false),
+            GURL("https://example.com"));
+    EXPECT_THAT(to_mac_ids(profile_and_origin_displayed),
+                testing::UnorderedElementsAre("r|profileId|beingReplacedId",
+                                              "r|profileId|inFlightId1"));
+    EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+  }
+
+  // Filter by an unrelated profile ID: none match.
+  {
+    OCMExpect([mock_notification_center_
+        getDeliveredNotificationsWithCompletionHandler:
+            ([OCMArg invokeBlockWithArgs:@[], nil])]);
+    std::vector<mojom::NotificationIdentifierPtr> other_profile_displayed =
+        GetDisplayedNotificationsSync(
+            mojom::ProfileIdentifier::New("otherProfile", /*incognito=*/false));
+    EXPECT_TRUE(other_profile_displayed.empty());
+    EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+  }
+
+  // Filter by incognito `profileId` and a non-matching origin: none match.
+  {
+    OCMExpect([mock_notification_center_
+        getDeliveredNotificationsWithCompletionHandler:
+            ([OCMArg invokeBlockWithArgs:@[], nil])]);
+    std::vector<mojom::NotificationIdentifierPtr> wrong_origin_displayed =
+        GetDisplayedNotificationsSync(
+            mojom::ProfileIdentifier::New("profileId", /*incognito=*/true),
+            GURL("https://example.com"));
+    EXPECT_TRUE(wrong_origin_displayed.empty());
+    EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+  }
+
+  // Filter by incognito `profileId` and matching origin: `inFlightId2` matches.
+  {
+    OCMExpect([mock_notification_center_
+        getDeliveredNotificationsWithCompletionHandler:
+            ([OCMArg invokeBlockWithArgs:@[], nil])]);
+    std::vector<mojom::NotificationIdentifierPtr> matching_origin_displayed =
+        GetDisplayedNotificationsSync(
+            mojom::ProfileIdentifier::New("profileId", /*incognito=*/true),
+            GURL("https://gmail.com"));
+    EXPECT_THAT(to_mac_ids(matching_origin_displayed),
+                testing::UnorderedElementsAre("i|profileId|inFlightId2"));
+    EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+  }
+
+  // If `UNUserNotificationCenter` already returns `inFlightId1` while its
+  // completion callback is still pending on `sequence_checker_`, it must be
+  // deduplicated rather than returned twice.
+  {
+    FakeUNNotification* os_delivered = CreateNotification(
+        "inFlightId1", "profileId", /*incognito=*/false, /*display=*/false,
+        /*category_id=*/"", GURL("https://example.com"));
+    OCMExpect([mock_notification_center_
+        getDeliveredNotificationsWithCompletionHandler:
+            ([OCMArg invokeBlockWithArgs:@[ os_delivered ], nil])]);
+    std::vector<mojom::NotificationIdentifierPtr> deduplicated_displayed =
+        GetDisplayedNotificationsSync(
+            mojom::ProfileIdentifier::New("profileId", /*incognito=*/false));
+    EXPECT_THAT(to_mac_ids(deduplicated_displayed),
+                testing::UnorderedElementsAre("r|profileId|beingReplacedId",
+                                              "r|profileId|inFlightId1"));
+    EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+  }
+
+  // Complete all pending handlers cleanly.
+  saved_add_handler1(nil);
+  saved_add_handler1 = nil;
+  saved_add_handler2(nil);
+  saved_add_handler2 = nil;
+  base::RunLoop replace_loop;
+  OCMExpect(
+      [mock_notification_center_
+          addNotificationRequest:[OCMArg any]
+           withCompletionHandler:([OCMArg
+                                     invokeBlockWithArgs:[NSNull null], nil])])
+      .andDo(invokeClosure(replace_loop.QuitClosure()));
+  saved_sync_handler(@[]);
+  saved_sync_handler = nil;
+  replace_loop.Run();
+  task_environment_.RunUntilIdle();
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+}
+
+TEST_F(MacNotificationServiceUNTest,
+       OkayToTerminateService_FalseWhileDeliveryInFlight) {
+  __block void (^saved_add_handler)(NSError* _Nullable) = nil;
+  base::RunLoop display_started_loop;
+  OCMExpect(
+      [mock_notification_center_
+          addNotificationRequest:[OCMArg any]
+           withCompletionHandler:[OCMArg checkWithBlock:^BOOL(void (
+                                     ^completion_handler)(NSError* _Nullable)) {
+             saved_add_handler = [completion_handler copy];
+             return YES;
+           }]])
+      .andDo(invokeClosure(display_started_loop.QuitClosure()));
+
+  service_remote_->DisplayNotification(CreateMojoNotification(
+      "notificationId", "profileId", /*incognito=*/false));
+  display_started_loop.Run();
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+  ASSERT_TRUE(saved_add_handler);
+
+  // While `addNotificationRequest:` is in flight (`pending_content != nil`),
+  // `OkayToTerminateService` queries `GetDisplayedNotifications`, which merges
+  // the in-flight entry and causes `OkayToTerminateService` to return false.
+  OCMExpect(
+      [mock_notification_center_ getDeliveredNotificationsWithCompletionHandler:
+                                     ([OCMArg invokeBlockWithArgs:@[], nil])]);
+  base::test::TestFuture<bool> can_terminate_in_flight;
+  service_remote_->OkayToTerminateService(
+      can_terminate_in_flight.GetCallback());
+  EXPECT_FALSE(can_terminate_in_flight.Get());
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+
+  // Complete the delivery and simulate the notification subsequently being
+  // dismissed from the OS notification center.
+  saved_add_handler(nil);
+  saved_add_handler = nil;
+  task_environment_.RunUntilIdle();
+
+  OCMExpect(
+      [mock_notification_center_ getDeliveredNotificationsWithCompletionHandler:
+                                     ([OCMArg invokeBlockWithArgs:@[], nil])]);
+  base::test::TestFuture<bool> can_terminate_after_completion;
+  service_remote_->OkayToTerminateService(
+      can_terminate_after_completion.GetCallback());
+  EXPECT_TRUE(can_terminate_after_completion.Get());
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+}
+
+TEST_F(MacNotificationServiceUNTest,
+       OkayToTerminateService_FalseWhenDisplayArrivesDuringCheck) {
+  __block void (^saved_get_delivered_handler)(
+      NSArray<UNNotification*>* _Nonnull) = nil;
+  base::RunLoop get_delivered_started_loop;
+  OCMExpect([mock_notification_center_
+                getDeliveredNotificationsWithCompletionHandler:
+                    [OCMArg checkWithBlock:^BOOL(void (^completion_handler)(
+                        NSArray<UNNotification*>* _Nonnull)) {
+                      saved_get_delivered_handler = [completion_handler copy];
+                      return YES;
+                    }]])
+      .andDo(invokeClosure(get_delivered_started_loop.QuitClosure()));
+
+  base::test::TestFuture<bool> can_terminate_future;
+  service_remote_->OkayToTerminateService(can_terminate_future.GetCallback());
+  get_delivered_started_loop.Run();
+  ASSERT_TRUE(saved_get_delivered_handler);
+
+  // Dispatch a notification while `OkayToTerminateService`'s
+  // `GetDisplayedNotifications` query is in flight.
+  __block void (^saved_add_handler)(NSError* _Nullable) = nil;
+  base::RunLoop display_started_loop;
+  OCMExpect(
+      [mock_notification_center_
+          addNotificationRequest:[OCMArg any]
+           withCompletionHandler:[OCMArg checkWithBlock:^BOOL(void (
+                                     ^completion_handler)(NSError* _Nullable)) {
+             saved_add_handler = [completion_handler copy];
+             return YES;
+           }]])
+      .andDo(invokeClosure(display_started_loop.QuitClosure()));
+  service_remote_->DisplayNotification(CreateMojoNotification(
+      "notificationId", "profileId", /*incognito=*/false));
+  display_started_loop.Run();
+  ASSERT_TRUE(saved_add_handler);
+
+  // Even though `UNUserNotificationCenter` returns an empty array for the
+  // earlier query, `OkayToTerminateService` must return false because a
+  // delivery is now in flight.
+  saved_get_delivered_handler(@[]);
+  saved_get_delivered_handler = nil;
+  EXPECT_FALSE(can_terminate_future.Get());
+
+  saved_add_handler(nil);
+  saved_add_handler = nil;
+  task_environment_.RunUntilIdle();
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+
+  // If `service_` is destroyed while `OkayToTerminateService`'s
+  // `GetDisplayedNotifications` query is in flight, the reply callback falls
+  // back to `notifications.empty()` without dereferencing the invalidated weak
+  // pointer.
+  OCMExpect([mock_notification_center_
+      getDeliveredNotificationsWithCompletionHandler:
+          [OCMArg checkWithBlock:^BOOL(void (^completion_handler)(
+              NSArray<UNNotification*>* _Nonnull)) {
+            saved_get_delivered_handler = [completion_handler copy];
+            return YES;
+          }]]);
+  base::test::TestFuture<bool> can_terminate_after_destroy;
+  service_->OkayToTerminateService(can_terminate_after_destroy.GetCallback());
+  ASSERT_TRUE(saved_get_delivered_handler);
+  ResetService();
+  saved_get_delivered_handler(@[]);
+  saved_get_delivered_handler = nil;
+  EXPECT_TRUE(can_terminate_after_destroy.Get());
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
 }
 
 TEST_F(MacNotificationServiceUNTest, CloseProfileNotifications) {
