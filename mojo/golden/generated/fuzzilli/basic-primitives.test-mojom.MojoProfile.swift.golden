@@ -72,12 +72,14 @@ extension ObjectGroup {
                 .plain(.jsMojoDataPipeProducerHandle),
                 .plain(.jsMojoDataPipeConsumerHandle),
                 .plain(.jsMojoSharedBufferHandle),
+                .plain(.jsMojoPlatformHandle),
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_MethodWithHandles_ResponseParams),
             "methodWithNullableHandles": [
                 .either(.jsMojoHandle, .undefined),
                 .either(.jsMojoDataPipeProducerHandle, .undefined),
                 .either(.jsMojoDataPipeConsumerHandle, .undefined),
                 .either(.jsMojoSharedBufferHandle, .undefined),
+                .either(.jsMojoPlatformHandle, .undefined),
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_MethodWithNullableHandles_ResponseParams),
         ]
     )
@@ -135,6 +137,7 @@ extension ILType {
             "dataPipeProducerRes",
             "dataPipeConsumerRes",
             "sharedBufferRes",
+            "platformRes",
         ])
     fileprivate static let jsGoldenPrimary_MethodWithNullableHandles_ResponseParams: ILType = .object(
         ofGroup: "golden.Primary_MethodWithNullableHandles_ResponseParams",
@@ -143,6 +146,7 @@ extension ILType {
             "dataPipeProducerRes",
             "dataPipeConsumerRes",
             "sharedBufferRes",
+            "platformRes",
         ])
 }
 
@@ -193,6 +197,7 @@ extension ObjectGroup {
             "dataPipeProducerRes": .jsMojoDataPipeProducerHandle,
             "dataPipeConsumerRes": .jsMojoDataPipeConsumerHandle,
             "sharedBufferRes": .jsMojoSharedBufferHandle,
+            "platformRes": .jsMojoPlatformHandle,
         ],
         methods: [:]
     )
@@ -204,6 +209,7 @@ extension ObjectGroup {
             "dataPipeProducerRes": .jsMojoDataPipeProducerHandle,
             "dataPipeConsumerRes": .jsMojoDataPipeConsumerHandle,
             "sharedBufferRes": .jsMojoSharedBufferHandle,
+            "platformRes": .jsMojoPlatformHandle,
         ],
         methods: [:]
     )

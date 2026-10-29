@@ -60,19 +60,23 @@ interface Primary {
       handle handle_param,
       handle<data_pipe_producer> data_pipe_producer_param,
       handle<data_pipe_consumer> data_pipe_consumer_param,
-      handle<shared_buffer> shared_buffer_param) => (
+      handle<shared_buffer> shared_buffer_param,
+      handle<platform> platform_param) => (
       handle handle_res,
       handle<data_pipe_producer> data_pipe_producer_res,
       handle<data_pipe_consumer> data_pipe_consumer_res,
-      handle<shared_buffer> shared_buffer_res);
+      handle<shared_buffer> shared_buffer_res,
+      handle<platform> platform_res);
 
   MethodWithNullableHandles(
       handle? handle_param,
       handle<data_pipe_producer>? data_pipe_producer_param,
       handle<data_pipe_consumer>? data_pipe_consumer_param,
-      handle<shared_buffer>? shared_buffer_param) => (
+      handle<shared_buffer>? shared_buffer_param,
+      handle<platform>? platform_param) => (
       handle? handle_res,
       handle<data_pipe_producer>? data_pipe_producer_res,
       handle<data_pipe_consumer>? data_pipe_consumer_res,
-      handle<shared_buffer>? shared_buffer_res);
+      handle<shared_buffer>? shared_buffer_res,
+      handle<platform>? platform_res);
 };

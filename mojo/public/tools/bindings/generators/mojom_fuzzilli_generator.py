@@ -45,16 +45,18 @@ PRIMITIVES_MAPPING = {
   mojom.NULLABLE_STRING: ("string", "String"),
 }
 # Map raw Mojo handle kinds to their Fuzzilli UniqueName
-# TODO(crbug.com/553473421): Add support for MSGPIPE and PLATFORMHANDLE
+# TODO(crbug.com/553473421): Add support for MSGPIPE
 HANDLES_MAPPING = {
   mojom.HANDLE: "MojoHandle",
   mojom.DPPIPE: "MojoDataPipeProducerHandle",
   mojom.DCPIPE: "MojoDataPipeConsumerHandle",
   mojom.SHAREDBUFFER: "MojoSharedBufferHandle",
+  mojom.PLATFORMHANDLE: "MojoPlatformHandle",
   mojom.NULLABLE_HANDLE: "MojoHandle",
   mojom.NULLABLE_DPPIPE: "MojoDataPipeProducerHandle",
   mojom.NULLABLE_DCPIPE: "MojoDataPipeConsumerHandle",
   mojom.NULLABLE_SHAREDBUFFER: "MojoSharedBufferHandle",
+  mojom.NULLABLE_PLATFORMHANDLE: "MojoPlatformHandle",
 }
 # List of types skipped during profile generation. These types should be
 # hand-defined in testing/libfuzzer/research/fuzzilli_mojom_fuzzing/common/. The
