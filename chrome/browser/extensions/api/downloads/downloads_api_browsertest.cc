@@ -1467,6 +1467,42 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   }
 }
 
+// Test downloads.getFileIcon() end to end with the real icon extractor, i.e.
+// through IconManager and IconLoader, which the other FileIcon tests bypass by
+// injecting MockIconExtractorImpl. Regression test for crbug.com/578074719,
+// where IconLoader crashed on Android.
+IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
+                       DownloadExtensionTest_FileIcon_RealExtractor) {
+  DownloadItem* download_item = CreateFirstSlowTestDownload();
+  ASSERT_TRUE(download_item);
+  ScopedCancellingItem item(download_item);
+  ASSERT_FALSE(download_item->GetTargetFilePath().empty());
+
+  const std::string args =
+      base::StringPrintf("[%d, {\"size\": 32}]", download_item->GetId());
+#if BUILDFLAG(IS_ANDROID)
+  // Android does not provide file type icons, so the call fails cleanly.
+  EXPECT_EQ(RunFunctionAndReturnError(
+                base::MakeRefCounted<DownloadsGetFileIconFunction>(), args),
+            errors::kIconNotFound);
+#else
+  // Whether the OS or toolkit provides an icon depends on the test
+  // environment (e.g. GTK under Xvfb does not), so accept either outcome as
+  // long as the call completes.
+  auto function = base::MakeRefCounted<DownloadsGetFileIconFunction>();
+  if (RunFunction(function, args)) {
+    const base::ListValue* results = function->GetResultListForTest();
+    ASSERT_TRUE(results);
+    ASSERT_EQ(1u, results->size());
+    ASSERT_TRUE((*results)[0].is_string());
+    EXPECT_TRUE(
+        base::StartsWith((*results)[0].GetString(), "data:image/png;base64,"));
+  } else {
+    EXPECT_EQ(function->GetError(), errors::kIconNotFound);
+  }
+#endif
+}
+
 // Test passing the empty query to search().
 IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
                        DownloadExtensionTest_SearchEmptyQuery) {
