@@ -23,6 +23,7 @@
 #import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/segmentation_platform/public/result.h"
+#import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
@@ -34,6 +35,7 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/public/provider/chrome/browser/switcher_info/switcher_info_api.h"
 
 namespace {
@@ -41,9 +43,28 @@ namespace {
 constexpr std::string_view kSegmentationPlatformSignalName =
     "SegmentationPlatform";
 constexpr std::string_view kSwitcherInfoSignalName = "SwitcherInfo";
-constexpr std::string_view kAndroidSwitcherStatus = "AndroidSwitcher";
-constexpr std::string_view kNotAndroidSwitcherStatus = "NotAndroidSwitcher";
-constexpr std::string_view kUnknownSignalStatus = "Unknown";
+
+// Classification status recorded for Default Browser signal histograms.
+enum class SignalStatus {
+  kAndroidSwitcher,
+  kNotAndroidSwitcher,
+  kUnknown,
+  kServiceError,
+};
+
+// Returns the histogram suffix string corresponding to `status`.
+std::string_view SignalStatusToString(SignalStatus status) {
+  switch (status) {
+    case SignalStatus::kAndroidSwitcher:
+      return "AndroidSwitcher";
+    case SignalStatus::kNotAndroidSwitcher:
+      return "NotAndroidSwitcher";
+    case SignalStatus::kUnknown:
+      return "Unknown";
+    case SignalStatus::kServiceError:
+      return "ServiceError";
+  }
+}
 
 // Captures a base Default Browser histogram name and its boolean sample at log
 // creation time.
@@ -81,44 +102,77 @@ bool IsAndroidSwitcher(
              segmentation_platform::DeviceSwitcherModel::kIosPhoneChromeLabel);
 }
 
-// Returns the device switcher signal status across loaded profiles.
-std::string_view GetDeviceSwitcherSignalStatus() {
-  if (experimental_flags::GetSegmentForForcedDeviceSwitcherExperience() ==
-      segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel) {
-    return kAndroidSwitcherStatus;
-  }
+// Returns true if `profile` has a signed-in primary account with active sync.
+bool IsPrimaryAccountSyncing(ProfileIOS* profile) {
+  AuthenticationService* authentication_service =
+      AuthenticationServiceFactory::GetForProfile(profile);
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
+  return authentication_service &&
+         authentication_service->HasPrimaryIdentity() && sync_service &&
+         sync_service->GetTransportState() ==
+             syncer::SyncService::TransportState::ACTIVE;
+}
 
-  ApplicationContext* application_context = GetApplicationContext();
-  if (!application_context || !application_context->GetProfileManager()) {
-    return kUnknownSignalStatus;
-  }
-
+// Resolves the aggregated segmentation platform signal status across profiles
+// with a syncing primary account.
+SignalStatus ResolveSegmentationSignalStatus(
+    const std::vector<
+        std::optional<segmentation_platform::ClassificationResult>>& results) {
   bool has_not_android_switcher = false;
-  for (ProfileIOS* profile :
-       application_context->GetProfileManager()->GetLoadedProfiles()) {
-    segmentation_platform::DeviceSwitcherResultDispatcher* profile_dispatcher =
-        segmentation_platform::SegmentationPlatformServiceFactory::
-            GetDispatcherForProfile(profile);
-    if (!profile_dispatcher) {
+  for (const std::optional<segmentation_platform::ClassificationResult>&
+           result : results) {
+    if (!result.has_value() || !IsDeviceSwitcherClassificationReady(*result)) {
       continue;
     }
-    segmentation_platform::ClassificationResult result =
-        profile_dispatcher->GetCachedClassificationResult();
-    if (!IsDeviceSwitcherClassificationReady(result)) {
-      continue;
-    }
-    if (IsAndroidSwitcher(result)) {
-      return kAndroidSwitcherStatus;
+    if (IsAndroidSwitcher(*result)) {
+      return SignalStatus::kAndroidSwitcher;
     }
     has_not_android_switcher = true;
   }
+  // `results` is only populated for profiles with a syncing primary account;
+  // reaching here without any valid classification means every queried profile
+  // failed to return a ready result.
+  return has_not_android_switcher ? SignalStatus::kNotAndroidSwitcher
+                                  : SignalStatus::kServiceError;
+}
 
-  return has_not_android_switcher ? kNotAndroidSwitcherStatus
-                                  : kUnknownSignalStatus;
+// Returns the device switcher signal status across loaded profiles.
+SignalStatus GetDeviceSwitcherSignalStatus() {
+  if (experimental_flags::GetSegmentForForcedDeviceSwitcherExperience() ==
+      segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel) {
+    return SignalStatus::kAndroidSwitcher;
+  }
+
+  std::vector<std::optional<segmentation_platform::ClassificationResult>>
+      results;
+  ApplicationContext* application_context = GetApplicationContext();
+  if (application_context && application_context->GetProfileManager()) {
+    for (ProfileIOS* profile :
+         application_context->GetProfileManager()->GetLoadedProfiles()) {
+      if (!IsPrimaryAccountSyncing(profile)) {
+        continue;
+      }
+      segmentation_platform::DeviceSwitcherResultDispatcher*
+          profile_dispatcher =
+              segmentation_platform::SegmentationPlatformServiceFactory::
+                  GetDispatcherForProfile(profile);
+      if (!profile_dispatcher) {
+        results.push_back(std::nullopt);
+        continue;
+      }
+      results.push_back(profile_dispatcher->GetCachedClassificationResult());
+    }
+  }
+
+  if (results.empty()) {
+    return SignalStatus::kUnknown;
+  }
+  return ResolveSegmentationSignalStatus(results);
 }
 
 // Resolves the aggregated switcher info signal status across profiles.
-std::string_view ResolveSwitcherInfoSignalStatus(
+SignalStatus ResolveSwitcherInfoSignalStatus(
     const std::vector<std::optional<ios::provider::SwitcherInfoResult>>&
         results) {
   bool has_not_android_switcher = false;
@@ -129,7 +183,7 @@ std::string_view ResolveSwitcherInfoSignalStatus(
     }
     switch (result->switcher_status) {
       case ios::provider::SwitcherStatus::kSwitcher:
-        return kAndroidSwitcherStatus;
+        return SignalStatus::kAndroidSwitcher;
       case ios::provider::SwitcherStatus::kNotSwitcher:
         has_not_android_switcher = true;
         break;
@@ -137,19 +191,20 @@ std::string_view ResolveSwitcherInfoSignalStatus(
         break;
     }
   }
-  return has_not_android_switcher ? kNotAndroidSwitcherStatus
-                                  : kUnknownSignalStatus;
+  return has_not_android_switcher ? SignalStatus::kNotAndroidSwitcher
+                                  : SignalStatus::kServiceError;
 }
 
 // Records `{sample.histogram_name}.{signal_name}.{signal_status}` for each
 // sample in `samples`.
 void RecordSignalHistograms(
     std::string_view signal_name,
-    std::string_view signal_status,
+    SignalStatus signal_status,
     base::span<const DefaultBrowserHistogramSample> samples) {
+  std::string_view status_string = SignalStatusToString(signal_status);
   for (const DefaultBrowserHistogramSample& sample : samples) {
     base::UmaHistogramBoolean(base::StrCat({sample.histogram_name, ".",
-                                            signal_name, ".", signal_status}),
+                                            signal_name, ".", status_string}),
                               sample.is_default_browser);
   }
 }
@@ -188,7 +243,7 @@ void RecordSwitcherInfoSignalHistograms(
   }
 
   if (identities.empty()) {
-    RecordSignalHistograms(kSwitcherInfoSignalName, kUnknownSignalStatus,
+    RecordSignalHistograms(kSwitcherInfoSignalName, SignalStatus::kUnknown,
                            samples);
     return;
   }

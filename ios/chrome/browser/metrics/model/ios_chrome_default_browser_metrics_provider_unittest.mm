@@ -20,6 +20,7 @@
 #import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
@@ -102,10 +103,12 @@ class IOSChromeDefaultBrowserMetricsProviderTest : public PlatformTest {
   }
 
   ProfileIOS* AddSignedInProfile(
-      const std::vector<id<SystemIdentity>>& identities = {
-          [FakeSystemIdentity fakeIdentity1]}) {
+      const std::vector<id<SystemIdentity>>& identities =
+          {[FakeSystemIdentity fakeIdentity1]},
+      std::vector<std::string> device_switcher_labels = {}) {
     CHECK(!identities.empty());
-    ProfileIOS* profile = AddProfileWithDeviceSwitcherLabels({});
+    ProfileIOS* profile =
+        AddProfileWithDeviceSwitcherLabels(std::move(device_switcher_labels));
     FakeSystemIdentityManager* system_identity_manager =
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
@@ -151,11 +154,12 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest, OnDidCreateMetricsLog) {
   }
 }
 
-// Tests that when the user is classified as an Android switcher, the
-// .SegmentationPlatform.AndroidSwitcher variants are recorded.
+// Tests that when the syncing primary account is classified as an Android
+// switcher, the `.SegmentationPlatform.AndroidSwitcher` variants are recorded.
 TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
        RecordsAndroidSwitcherVariant) {
-  AddProfileWithDeviceSwitcherLabels(
+  AddSignedInProfile(
+      {[FakeSystemIdentity fakeIdentity1]},
       {segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel});
 
   IOSChromeDefaultBrowserMetricsProvider provider(
@@ -170,6 +174,8 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
         0);
     histogram_tester_.ExpectTotalCount(
         base::StrCat({histogram, ".SegmentationPlatform.Unknown"}), 0);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SegmentationPlatform.ServiceError"}), 0);
   }
 
   LogOpenHTTPURLFromExternalURL();
@@ -184,11 +190,13 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
   }
 }
 
-// Tests that when the user has both Android phone and iOS phone Chrome labels,
-// the .SegmentationPlatform.NotAndroidSwitcher variants are recorded.
+// Tests that when the syncing primary account has both Android phone and iOS
+// phone Chrome labels, the `.SegmentationPlatform.NotAndroidSwitcher` variants
+// are recorded.
 TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
        RecordsNotAndroidSwitcherVariant) {
-  AddProfileWithDeviceSwitcherLabels(
+  AddSignedInProfile(
+      {[FakeSystemIdentity fakeIdentity1]},
       {segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel,
        segmentation_platform::DeviceSwitcherModel::kIosPhoneChromeLabel});
 
@@ -203,6 +211,8 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
         base::StrCat({histogram, ".SegmentationPlatform.AndroidSwitcher"}), 0);
     histogram_tester_.ExpectTotalCount(
         base::StrCat({histogram, ".SegmentationPlatform.Unknown"}), 0);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SegmentationPlatform.ServiceError"}), 0);
   }
 
   LogOpenHTTPURLFromExternalURL();
@@ -217,18 +227,22 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
   }
 }
 
-// Tests that when the classification result is not ready, the
-// .SegmentationPlatform.Unknown variants are recorded.
+// Tests that when a syncing primary account exists and the classification
+// result is not ready, the `.SegmentationPlatform.ServiceError` variants are
+// recorded.
 TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
-       RecordsUnknownVariantWhenNotReady) {
-  AddProfileWithDeviceSwitcherLabels({});
+       RecordsServiceErrorVariantWhenNotReady) {
+  AddSignedInProfile();
 
   IOSChromeDefaultBrowserMetricsProvider provider(
       metrics::MetricsLogUploader::MetricServiceType::UMA);
   provider.OnDidCreateMetricsLog();
   for (const char* histogram : kDefaultBrowserHistograms) {
     histogram_tester_.ExpectBucketCount(
-        base::StrCat({histogram, ".SegmentationPlatform.Unknown"}), false, 1);
+        base::StrCat({histogram, ".SegmentationPlatform.ServiceError"}), false,
+        1);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SegmentationPlatform.Unknown"}), 0);
     histogram_tester_.ExpectTotalCount(
         base::StrCat({histogram, ".SegmentationPlatform.AndroidSwitcher"}), 0);
     histogram_tester_.ExpectTotalCount(
@@ -237,18 +251,20 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
   }
 }
 
-// Tests that when the device switcher classification times out waiting for
-// sync device info (resulting in kNotSyncedLabel), the
-// .SegmentationPlatform.Unknown variants are recorded.
+// Tests that when a syncing primary account exists and the device switcher
+// classification times out waiting for sync device info (resulting in
+// `kNotSyncedLabel`), the `.SegmentationPlatform.ServiceError` variants are
+// recorded.
 TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
-       RecordsUnknownVariantOnTimeout) {
+       RecordsServiceErrorVariantOnTimeout) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
       /*disabled_features=*/{
           segmentation_platform::features::kSegmentationPlatformDeviceSwitcher,
           segmentation_platform::features::kSegmentationPlatformUmaFromSqlDb});
-  AddProfileWithDeviceSwitcherLabels(
+  AddSignedInProfile(
+      {[FakeSystemIdentity fakeIdentity1]},
       {segmentation_platform::DeviceSwitcherModel::kNotSyncedLabel});
   task_environment_.FastForwardBy(base::Seconds(60));
 
@@ -257,7 +273,64 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
   provider.OnDidCreateMetricsLog();
   for (const char* histogram : kDefaultBrowserHistograms) {
     histogram_tester_.ExpectBucketCount(
+        base::StrCat({histogram, ".SegmentationPlatform.ServiceError"}), false,
+        1);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SegmentationPlatform.Unknown"}), 0);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SegmentationPlatform.AndroidSwitcher"}), 0);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SegmentationPlatform.NotAndroidSwitcher"}),
+        0);
+  }
+}
+
+// Tests that when an on-device identity exists in the loaded profile but the
+// user is not signed in to Chrome, the `.SegmentationPlatform.Unknown` variants
+// are recorded.
+TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
+       RecordsUnknownVariantWhenNotSignedIn) {
+  FakeSystemIdentityManager::FromSystemIdentityManager(
+      GetApplicationContext()->GetSystemIdentityManager())
+      ->AddIdentity([FakeSystemIdentity fakeIdentity1]);
+  AddProfileWithDeviceSwitcherLabels(
+      {segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel});
+
+  IOSChromeDefaultBrowserMetricsProvider provider(
+      metrics::MetricsLogUploader::MetricServiceType::UMA);
+  provider.OnDidCreateMetricsLog();
+  for (const char* histogram : kDefaultBrowserHistograms) {
+    histogram_tester_.ExpectBucketCount(
         base::StrCat({histogram, ".SegmentationPlatform.Unknown"}), false, 1);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SegmentationPlatform.ServiceError"}), 0);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SegmentationPlatform.AndroidSwitcher"}), 0);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SegmentationPlatform.NotAndroidSwitcher"}),
+        0);
+  }
+}
+
+// Tests that when a primary account is signed in but not syncing, the
+// `.SegmentationPlatform.Unknown` variants are recorded.
+TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
+       RecordsUnknownVariantWhenPrimaryAccountNotSyncing) {
+  ProfileIOS* profile = AddSignedInProfile(
+      {[FakeSystemIdentity fakeIdentity1]},
+      {segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel});
+  static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetForProfile(profile))
+      ->SetPersistentAuthError();
+
+  IOSChromeDefaultBrowserMetricsProvider provider(
+      metrics::MetricsLogUploader::MetricServiceType::UMA);
+  provider.OnDidCreateMetricsLog();
+  for (const char* histogram : kDefaultBrowserHistograms) {
+    histogram_tester_.ExpectBucketCount(
+        base::StrCat({histogram, ".SegmentationPlatform.Unknown"}), false, 1);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SegmentationPlatform.ServiceError"}), 0);
     histogram_tester_.ExpectTotalCount(
         base::StrCat({histogram, ".SegmentationPlatform.AndroidSwitcher"}), 0);
     histogram_tester_.ExpectTotalCount(
@@ -289,6 +362,8 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
         base::StrCat({histogram, ".SwitcherInfo.NotAndroidSwitcher"}), 0);
     histogram_tester_.ExpectTotalCount(
         base::StrCat({histogram, ".SwitcherInfo.Unknown"}), 0);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SwitcherInfo.ServiceError"}), 0);
   }
 
   LogOpenHTTPURLFromExternalURL();
@@ -326,6 +401,8 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
         base::StrCat({histogram, ".SwitcherInfo.AndroidSwitcher"}), 0);
     histogram_tester_.ExpectTotalCount(
         base::StrCat({histogram, ".SwitcherInfo.Unknown"}), 0);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SwitcherInfo.ServiceError"}), 0);
   }
 
   LogOpenHTTPURLFromExternalURL();
@@ -340,10 +417,10 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
   }
 }
 
-// Tests that when the signed-in user's switcher info returns kUnknown, the
-// .SwitcherInfo.Unknown variants are recorded.
+// Tests that when the signed-in user's switcher info returns `kUnknown`, the
+// `.SwitcherInfo.ServiceError` variants are recorded.
 TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
-       RecordsSwitcherInfoUnknownVariantWhenUnknownStatus) {
+       RecordsSwitcherInfoServiceErrorVariantWhenUnknownStatus) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       kQuerySwitcherInfoSignalForDefaultBrowserMetrics);
@@ -358,7 +435,9 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
   task_environment_.FastForwardBy(base::Seconds(1));
   for (const char* histogram : kDefaultBrowserHistograms) {
     histogram_tester_.ExpectBucketCount(
-        base::StrCat({histogram, ".SwitcherInfo.Unknown"}), false, 1);
+        base::StrCat({histogram, ".SwitcherInfo.ServiceError"}), false, 1);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SwitcherInfo.Unknown"}), 0);
     histogram_tester_.ExpectTotalCount(
         base::StrCat({histogram, ".SwitcherInfo.AndroidSwitcher"}), 0);
     histogram_tester_.ExpectTotalCount(
@@ -366,10 +445,10 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
   }
 }
 
-// Tests that when fetching switcher info fails (std::nullopt), the
-// .SwitcherInfo.Unknown variants are recorded.
+// Tests that when fetching switcher info fails (`std::nullopt`), the
+// `.SwitcherInfo.ServiceError` variants are recorded.
 TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
-       RecordsSwitcherInfoUnknownVariantWhenFailed) {
+       RecordsSwitcherInfoServiceErrorVariantWhenFailed) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       kQuerySwitcherInfoSignalForDefaultBrowserMetrics);
@@ -382,7 +461,9 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
   task_environment_.FastForwardBy(base::Seconds(1));
   for (const char* histogram : kDefaultBrowserHistograms) {
     histogram_tester_.ExpectBucketCount(
-        base::StrCat({histogram, ".SwitcherInfo.Unknown"}), false, 1);
+        base::StrCat({histogram, ".SwitcherInfo.ServiceError"}), false, 1);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SwitcherInfo.Unknown"}), 0);
     histogram_tester_.ExpectTotalCount(
         base::StrCat({histogram, ".SwitcherInfo.AndroidSwitcher"}), 0);
     histogram_tester_.ExpectTotalCount(
@@ -391,7 +472,7 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
 }
 
 // Tests that when no signed-in profile exists (even if device identities are
-// present), the .SwitcherInfo.Unknown variants are recorded.
+// present), the `.SwitcherInfo.Unknown` variants are recorded.
 TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
        RecordsSwitcherInfoUnknownVariantWhenNotSignedIn) {
   base::test::ScopedFeatureList feature_list;
@@ -412,6 +493,8 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
   for (const char* histogram : kDefaultBrowserHistograms) {
     histogram_tester_.ExpectBucketCount(
         base::StrCat({histogram, ".SwitcherInfo.Unknown"}), false, 1);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SwitcherInfo.ServiceError"}), 0);
     histogram_tester_.ExpectTotalCount(
         base::StrCat({histogram, ".SwitcherInfo.AndroidSwitcher"}), 0);
     histogram_tester_.ExpectTotalCount(
@@ -454,6 +537,8 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
         base::StrCat({histogram, ".SwitcherInfo.NotAndroidSwitcher"}), 0);
     histogram_tester_.ExpectTotalCount(
         base::StrCat({histogram, ".SwitcherInfo.Unknown"}), 0);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SwitcherInfo.ServiceError"}), 0);
   }
 
   LogOpenHTTPURLFromExternalURL();
@@ -503,6 +588,8 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
         base::StrCat({histogram, ".SwitcherInfo.AndroidSwitcher"}), 0);
     histogram_tester_.ExpectTotalCount(
         base::StrCat({histogram, ".SwitcherInfo.Unknown"}), 0);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SwitcherInfo.ServiceError"}), 0);
   }
 }
 
@@ -529,5 +616,7 @@ TEST_F(IOSChromeDefaultBrowserMetricsProviderTest,
         base::StrCat({histogram, ".SwitcherInfo.NotAndroidSwitcher"}), 0);
     histogram_tester_.ExpectTotalCount(
         base::StrCat({histogram, ".SwitcherInfo.Unknown"}), 0);
+    histogram_tester_.ExpectTotalCount(
+        base::StrCat({histogram, ".SwitcherInfo.ServiceError"}), 0);
   }
 }

@@ -4428,8 +4428,12 @@ chromium-metrics-reviews@google.com.
         summary="classified as an Android phone switcher"/>
     <variant name="NotAndroidSwitcher"
         summary="classified as not an Android phone switcher"/>
+    <variant name="ServiceError"
+        summary="signal service failed or returned an unknown classification"/>
     <variant name="Unknown"
-        summary="signal classification was not ready or unavailable"/>
+        summary="no applicable user account (no syncing primary account for
+                 SegmentationPlatform, or no on-device account for
+                 SwitcherInfo)"/>
   </token>
 </histogram>
 
