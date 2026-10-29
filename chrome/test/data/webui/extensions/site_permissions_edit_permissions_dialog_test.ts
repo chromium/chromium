@@ -525,4 +525,53 @@ suite('SitePermissionsEditPermissionsDialog', function() {
                 .querySelector<HTMLSelectElement>(
                     `option[value=${HostAccess.ON_ALL_SITES}]`)!.disabled);
       });
+
+  test(
+      'ignores matching extensions that are not in extensions list',
+      async function() {
+        // Return a matching extension that is not in `element.extensions`.
+        delegate.matchingExtensionsInfo = [
+          {
+            id: 'test_1',
+            siteAccess: HostAccess.ON_SPECIFIC_SITES,
+            canRequestAllSites: true,
+          },
+          {
+            id: 'non_existent_extension',
+            siteAccess: HostAccess.ON_SPECIFIC_SITES,
+            canRequestAllSites: true,
+          },
+        ];
+
+        element.extensions = [
+          createExtensionInfo({
+            id: 'test_1',
+            name: 'test_1',
+            iconUrl: 'icon_url',
+          }),
+        ];
+
+        await microtasksFinished();
+
+        const extensionSpecifiedRadioButton =
+            element.shadowRoot.querySelector<HTMLElement>(
+                `cr-radio-button[name=${SiteSet.EXTENSION_SPECIFIED}]`);
+        assertTrue(!!extensionSpecifiedRadioButton);
+        const siteSetRadioGroup =
+            element.shadowRoot.querySelector('cr-radio-group');
+        assertTrue(!!siteSetRadioGroup);
+        extensionSpecifiedRadioButton.click();
+        await eventToPromise('selected-changed', siteSetRadioGroup);
+
+        const site = await delegate.whenCalled('getMatchingExtensionsForSite');
+        assertEquals('http://example.com/', site);
+        await microtasksFinished();
+
+        // Only the valid extension should be displayed; non-existent extension
+        // should be safely ignored without throwing an error.
+        const siteAccessSelectMenus =
+            element.shadowRoot.querySelectorAll<HTMLSelectElement>(
+                '.extension-host-access');
+        assertEquals(1, siteAccessSelectMenus.length);
+      });
 });
