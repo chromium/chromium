@@ -61,7 +61,7 @@ ASH_EXPORT std::string QueryDictToXmpString(const base::DictValue& query_dict);
 // or cannot be safely decoded. `json` must not be wrapped in XMP metadata XML
 // tags.
 ASH_EXPORT void DecodeJsonMetadata(
-    const std::string& json,
+    std::string_view json,
     base::OnceCallback<
         void(personalization_app::mojom::RecentSeaPenImageInfoPtr)> callback);
 
@@ -69,7 +69,7 @@ ASH_EXPORT void DecodeJsonMetadata(
 // it. Calls `callback` with nullopt if metadata is invalid or cannot be safely
 // decoded. `json` must not be wrapped in XMP metadata XML tags.
 ASH_EXPORT void DecodeJsonMetadataGetTemplateId(
-    const std::string& json,
+    std::string_view json,
     base::OnceCallback<void(std::optional<int>)> callback);
 
 // Extract the id from a sea pen file name. SeaPen images must be saved to disk

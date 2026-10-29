@@ -5,6 +5,7 @@
 #include "ash/wallpaper/wallpaper_file_manager.h"
 
 #include <string>
+#include <string_view>
 
 #include "ash/public/cpp/image_util.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
@@ -24,14 +25,14 @@ namespace ash {
 namespace {
 
 // Returns the file name of the online wallpaper based on the `resolution`.
-std::string GetOnlineWallpaperFileName(const std::string& file_name,
+std::string GetOnlineWallpaperFileName(std::string_view file_name,
                                        const WallpaperResolution resolution) {
   if (resolution == WallpaperResolution::kSmall) {
     return base::FilePath(file_name)
         .InsertBeforeExtension(wallpaper_constants::kSmallWallpaperSuffix)
         .value();
   }
-  return file_name;
+  return std::string(file_name);
 }
 
 // Returns the file path of the wallpaper corresponding to wallpaper location
@@ -123,7 +124,7 @@ base::FilePath GetCustomWallpaperDir(const base::FilePath& wallpaper_dir,
 // Returns the original path if it is saved successfully.
 base::FilePath SaveWallpaperToPath(const WallpaperType type,
                                    const base::FilePath& wallpaper_dir,
-                                   const std::string& file_name,
+                                   std::string_view file_name,
                                    const WallpaperLayout layout,
                                    const gfx::ImageSkia image,
                                    const int resized_width = 0,

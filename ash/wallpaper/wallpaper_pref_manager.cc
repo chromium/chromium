@@ -49,7 +49,7 @@ namespace {
 // Populates |info| with the data from |pref_name| sourced from |pref_service|.
 bool GetWallpaperInfo(const AccountId& account_id,
                       const PrefService* const pref_service,
-                      const std::string& pref_name,
+                      std::string_view pref_name,
                       WallpaperInfo* info) {
   if (!pref_service) {
     return false;
@@ -74,7 +74,7 @@ bool GetWallpaperInfo(const AccountId& account_id,
 bool SetWallpaperInfo(const AccountId& account_id,
                       const WallpaperInfo& info,
                       PrefService* const pref_service,
-                      const std::string& pref_name) {
+                      std::string_view pref_name) {
   if (!pref_service) {
     return false;
   }
@@ -91,7 +91,7 @@ bool SetWallpaperInfo(const AccountId& account_id,
 // Deletes the entry in |pref_name| for |account_id| from |pref_service|.
 void RemoveWallpaperInfo(const AccountId& account_id,
                          PrefService* const pref_service,
-                         const std::string& pref_name) {
+                         std::string_view pref_name) {
   if (!pref_service)
     return;
   ScopedDictPrefUpdate prefs_wallpapers_info_update(pref_service, pref_name);
@@ -412,7 +412,7 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
 
  private:
   // Caches a single `color` in the dictionary for `pref_name`.
-  void CacheSingleColor(const std::string& pref_name,
+  void CacheSingleColor(std::string_view pref_name,
                         std::string_view location,
                         SkColor color) {
     // Blank keys are not allowed and will not be stored.
@@ -425,7 +425,7 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
   }
 
   // Returns the cached color for `location` in `pref_name` if it can be found.
-  std::optional<SkColor> GetSingleCachedColor(const std::string& pref_name,
+  std::optional<SkColor> GetSingleCachedColor(std::string_view pref_name,
                                               std::string_view location) const {
     // We don't support blank keys.
     if (location.empty()) {
@@ -442,7 +442,7 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
 
   // Deletes the cached color for the current wallpaper of `account_id` in
   // `pref_name`.
-  void RemoveCachedColor(const std::string& pref_name,
+  void RemoveCachedColor(std::string_view pref_name,
                          const AccountId& account_id) {
     WallpaperInfo old_info;
     if (!GetLocalWallpaperInfo(account_id, &old_info)) {
