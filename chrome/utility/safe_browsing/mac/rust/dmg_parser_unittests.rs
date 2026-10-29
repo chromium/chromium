@@ -17,11 +17,13 @@ use bytemuck::Zeroable;
 use dmg_decompress::decompress_bz2;
 use dmg_decompress_test_support::compress_bz2;
 use dmg_parser::hfs::{
-    FndrFileInfo, HfsBTreeEntry, HfsBTreeIterator, HfsCatalogRecord, HfsError, HfsForkReadStream,
-    HfsIterator, HfsPlusBsdInfo, HfsPlusCatalogFile, HfsPlusCatalogFolder, HfsPlusExtentDescriptor,
-    HfsPlusForkData, HfsPlusVolumeHeader, HARD_LINK_FILE_TYPE, HFSX_SIG_WORD, HFS_PLUS_CREATOR,
-    HFS_PLUS_SIG_WORD, MAX_EXTENT_BUFFER_SIZE, S_IFLNK, UF_COMPRESSED, VOLUME_HEADER_OFFSET,
-    VOLUME_HEADER_SIZE,
+    BtHeaderRec, BtNodeDescriptor, FinderFileInfo, HfsBTreeEntry, HfsBTreeIterator,
+    HfsCatalogRecord, HfsError, HfsForkReadStream, HfsIterator, HfsPlusBsdInfo, HfsPlusCatalogFile,
+    HfsPlusCatalogFolder, HfsPlusExtentDescriptor, HfsPlusForkData, HfsPlusVolumeHeader,
+    BT_HEADER_NODE, BT_LEAF_NODE, HARD_LINK_FILE_TYPE, HFSX_SIG_WORD, HFS_PLUS_CREATOR,
+    HFS_PLUS_FILE_RECORD, HFS_PLUS_FILE_THREAD_RECORD, HFS_PLUS_FOLDER_RECORD,
+    HFS_PLUS_FOLDER_THREAD_RECORD, HFS_PLUS_SIG_WORD, MAX_EXTENT_BUFFER_SIZE, S_IFLNK,
+    UF_COMPRESSED, VOLUME_HEADER_OFFSET, VOLUME_HEADER_SIZE,
 };
 use dmg_parser::mach_o::{
     MachOError, MachOImage, FAT_ARCH_SIZE, FAT_CIGAM, FAT_HEADER_SIZE, FAT_MAGIC,
@@ -172,51 +174,40 @@ fn test_valid_volume_header_parsed_and_reaches_catalog_init() {
     );
 
     // Both HFS+ ('H+') and HFSX ('HX') signatures pass volume header validation
-    // and reach HfsBTreeIterator::new (currently stubbed as Unimplemented).
+    // and reach HfsBTreeIterator::try_new, which fails with IoError because the
+    // catalog file's first extent (block 10) lies beyond the end of the image.
     let hfs_plus_stream = SharedStream::new(Cursor::new(image));
-    expect_eq!(HfsIterator::open(hfs_plus_stream).err(), Some(HfsError::Unimplemented));
+    expect_eq!(HfsIterator::open(hfs_plus_stream).err(), Some(HfsError::IoError));
 
     let hfsx_stream = SharedStream::new(Cursor::new(make_volume_image(HFSX_SIG_WORD, 8192)));
-    expect_eq!(HfsIterator::open(hfsx_stream).err(), Some(HfsError::Unimplemented));
+    expect_eq!(HfsIterator::open(hfsx_stream).err(), Some(HfsError::IoError));
 }
 
 #[gtest(RustHfsIteratorTest, NextSkipsThreadsAndUnexportedItems)]
 fn test_next_skips_threads_and_unexported_items() {
-    let entries = vec![
-        HfsBTreeEntry { path: utf16(""), unexported: false, record: HfsCatalogRecord::Thread },
-        HfsBTreeEntry {
-            path: utf16(".HFS+ Private Directory Data\r"),
-            unexported: true,
-            record: HfsCatalogRecord::Folder(HfsPlusCatalogFolder::default()),
-        },
-        HfsBTreeEntry {
-            path: utf16(".HFS+ Private Directory Data\r/secret"),
-            unexported: true,
-            record: HfsCatalogRecord::File(HfsPlusCatalogFile::default()),
-        },
-        HfsBTreeEntry {
-            path: utf16("Applications"),
-            unexported: false,
-            record: HfsCatalogRecord::Folder(HfsPlusCatalogFolder::default()),
-        },
-        HfsBTreeEntry {
-            path: utf16("Applications"),
-            unexported: false,
-            record: HfsCatalogRecord::Thread,
-        },
-        HfsBTreeEntry {
-            path: utf16("Applications/App.app"),
-            unexported: false,
-            record: HfsCatalogRecord::File(HfsPlusCatalogFile::default()),
-        },
-    ];
-
-    let stream = SharedStream::new(Cursor::new(Vec::<u8>::new()));
-    let mut iter = HfsIterator::new_for_testing(
-        stream,
+    let catalog = build_single_leaf_catalog(
         4096,
-        HfsBTreeIterator::from_entries_for_testing(entries),
+        &[
+            encode_thread_record(1, "", HFS_PLUS_FOLDER_THREAD_RECORD),
+            encode_folder_record(1, ".HFS+ Private Directory Data\r", 10, 0o040700),
+            encode_file_record(FileRecord {
+                parent_id: 10,
+                name: "secret",
+                file_mode: 0o100644,
+                ..Default::default()
+            }),
+            encode_folder_record(1, "Applications", 2, 0o040755),
+            encode_thread_record(2, "", HFS_PLUS_FOLDER_THREAD_RECORD),
+            encode_file_record(FileRecord {
+                parent_id: 2,
+                name: "App.app",
+                file_mode: 0o100644,
+                ..Default::default()
+            }),
+        ],
     );
+
+    let mut iter = open_hfs_image(&catalog);
 
     expect_true!(iter.next_item());
     expect_true!(iter.is_directory());
@@ -231,86 +222,86 @@ fn test_next_skips_threads_and_unexported_items() {
     expect_false!(iter.next_item());
 }
 
+#[gtest(RustHfsIteratorTest, NextStopsAtCorruptRecord)]
+fn test_next_stops_at_corrupt_record() {
+    let catalog = build_single_leaf_catalog(
+        4096,
+        &[
+            encode_folder_record(1, "Applications", 2, 0o040755),
+            // Unknown record type.
+            encode_thread_record(2, "corrupt", 99),
+            encode_file_record(FileRecord {
+                parent_id: 2,
+                name: "App.app",
+                file_mode: 0o100644,
+                ..Default::default()
+            }),
+        ],
+    );
+    let mut iter = open_hfs_image(&catalog);
+
+    expect_true!(iter.next_item());
+    expect_eq!(iter.path(), utf16("Applications").as_slice());
+
+    // The corrupt record ends iteration; the file after it is not reached.
+    expect_false!(iter.next_item());
+    expect_false!(iter.is_file());
+    expect_eq!(iter.path(), utf16("").as_slice());
+}
+
 #[gtest(RustHfsIteratorTest, ItemMetadataAndReadStream)]
 fn test_item_metadata_and_read_stream() {
-    let entries = vec![
-        // 1. Regular directory.
-        HfsBTreeEntry {
-            path: utf16("dir"),
-            unexported: false,
-            record: HfsCatalogRecord::Folder(HfsPlusCatalogFolder {
-                bsd_info: HfsPlusBsdInfo { owner_flags: 0, file_mode: 0o040755 },
-            }),
-        },
-        // 2. Symbolic link directory record.
-        HfsBTreeEntry {
-            path: utf16("dir_symlink"),
-            unexported: false,
-            record: HfsCatalogRecord::Folder(HfsPlusCatalogFolder {
-                bsd_info: HfsPlusBsdInfo { owner_flags: 0, file_mode: S_IFLNK | 0o755 },
-            }),
-        },
-        // 3. Regular file.
-        HfsBTreeEntry {
-            path: utf16("dir/regular.txt"),
-            unexported: false,
-            record: HfsCatalogRecord::File(HfsPlusCatalogFile {
-                bsd_info: HfsPlusBsdInfo { owner_flags: 0, file_mode: 0o100644 },
-                user_info: FndrFileInfo { fd_type: 0, fd_creator: 0 },
-                data_fork: HfsPlusForkData::default(),
-            }),
-        },
-        // 4. Symbolic link file record.
-        HfsBTreeEntry {
-            path: utf16("dir/file_symlink"),
-            unexported: false,
-            record: HfsCatalogRecord::File(HfsPlusCatalogFile {
-                bsd_info: HfsPlusBsdInfo { owner_flags: 0, file_mode: S_IFLNK | 0o777 },
-                user_info: FndrFileInfo::default(),
-                data_fork: HfsPlusForkData::default(),
-            }),
-        },
-        // 5. Hard link file record.
-        HfsBTreeEntry {
-            path: utf16("dir/hardlink"),
-            unexported: false,
-            record: HfsCatalogRecord::File(HfsPlusCatalogFile {
-                bsd_info: HfsPlusBsdInfo { owner_flags: 0, file_mode: 0o100644 },
-                user_info: FndrFileInfo {
-                    fd_type: HARD_LINK_FILE_TYPE,
-                    fd_creator: HFS_PLUS_CREATOR,
-                },
-                data_fork: HfsPlusForkData::default(),
-            }),
-        },
-        // 6. File with matching fd_type but non-matching fd_creator (not a hard link).
-        HfsBTreeEntry {
-            path: utf16("dir/not_hardlink"),
-            unexported: false,
-            record: HfsCatalogRecord::File(HfsPlusCatalogFile {
-                bsd_info: HfsPlusBsdInfo { owner_flags: 0, file_mode: 0o100644 },
-                user_info: FndrFileInfo { fd_type: HARD_LINK_FILE_TYPE, fd_creator: 0x1234_5678 },
-                data_fork: HfsPlusForkData::default(),
-            }),
-        },
-        // 7. decmpfs-compressed file record.
-        HfsBTreeEntry {
-            path: utf16("dir/compressed"),
-            unexported: false,
-            record: HfsCatalogRecord::File(HfsPlusCatalogFile {
-                bsd_info: HfsPlusBsdInfo { owner_flags: UF_COMPRESSED, file_mode: 0o100644 },
-                user_info: FndrFileInfo::default(),
-                data_fork: HfsPlusForkData::default(),
-            }),
-        },
-    ];
-
-    let stream = SharedStream::new(Cursor::new(Vec::<u8>::new()));
-    let mut iter = HfsIterator::new_for_testing(
-        stream,
+    let catalog = build_single_leaf_catalog(
         4096,
-        HfsBTreeIterator::from_entries_for_testing(entries),
+        &[
+            // 1. Regular directory.
+            encode_folder_record(1, "dir", 2, 0o040755),
+            // 2. Symbolic link directory record.
+            encode_folder_record(1, "dir_symlink", 3, S_IFLNK | 0o755),
+            // 3. Regular file.
+            encode_file_record(FileRecord {
+                parent_id: 2,
+                name: "regular.txt",
+                file_mode: 0o100644,
+                ..Default::default()
+            }),
+            // 4. Symbolic link file record.
+            encode_file_record(FileRecord {
+                parent_id: 2,
+                name: "file_symlink",
+                file_mode: S_IFLNK | 0o777,
+                ..Default::default()
+            }),
+            // 5. Hard link file record.
+            encode_file_record(FileRecord {
+                parent_id: 2,
+                name: "hardlink",
+                file_mode: 0o100644,
+                fd_type: HARD_LINK_FILE_TYPE,
+                fd_creator: HFS_PLUS_CREATOR,
+                ..Default::default()
+            }),
+            // 6. File with matching fd_type but non-matching fd_creator (not a hard link).
+            encode_file_record(FileRecord {
+                parent_id: 2,
+                name: "not_hardlink",
+                file_mode: 0o100644,
+                fd_type: HARD_LINK_FILE_TYPE,
+                fd_creator: 0x1234_5678,
+                ..Default::default()
+            }),
+            // 7. decmpfs-compressed file record.
+            encode_file_record(FileRecord {
+                parent_id: 2,
+                name: "compressed",
+                owner_flags: UF_COMPRESSED,
+                file_mode: 0o100644,
+                ..Default::default()
+            }),
+        ],
     );
+
+    let mut iter = open_hfs_image(&catalog);
 
     struct Expected {
         path: &'static str,
@@ -400,6 +391,585 @@ fn test_item_metadata_and_read_stream() {
     }
 
     expect_false!(iter.next_item());
+}
+
+const TEST_NODE_SIZE: u16 = 512;
+const TEST_MAX_KEY_LEN: u16 = 516;
+
+fn write_node_descriptor(node: &mut [u8], f_link: u32, kind: i8, num_records: u16) {
+    let desc = BtNodeDescriptor {
+        f_link: f_link.to_be(),
+        kind,
+        num_records: num_records.to_be(),
+        ..Default::default()
+    };
+    node[..BtNodeDescriptor::SIZE].copy_from_slice(bytemuck::bytes_of(&desc));
+}
+
+fn write_header_node(
+    node: &mut [u8],
+    leaf_records: u32,
+    first_leaf_node: u32,
+    node_size: u16,
+    max_key_length: u16,
+    total_nodes: u32,
+) {
+    write_node_descriptor(node, 0, BT_HEADER_NODE, 3);
+    let header = BtHeaderRec {
+        leaf_records: leaf_records.to_be(),
+        first_leaf_node: first_leaf_node.to_be(),
+        node_size: node_size.to_be(),
+        max_key_length: max_key_length.to_be(),
+        total_nodes: total_nodes.to_be(),
+        ..Default::default()
+    };
+    node[BtNodeDescriptor::SIZE..BtNodeDescriptor::SIZE + BtHeaderRec::SIZE]
+        .copy_from_slice(bytemuck::bytes_of(&header));
+}
+
+fn encode_catalog_key(parent_id: u32, name: &str) -> Vec<u8> {
+    let chars: Vec<u16> = name.encode_utf16().collect();
+    let key_length = (4 + 2 + chars.len() * 2) as u16;
+    let mut out = Vec::with_capacity(2 + usize::from(key_length));
+    out.extend_from_slice(&key_length.to_be_bytes());
+    out.extend_from_slice(&parent_id.to_be_bytes());
+    out.extend_from_slice(&(chars.len() as u16).to_be_bytes());
+    for ch in chars {
+        out.extend_from_slice(&ch.to_be_bytes());
+    }
+    out
+}
+
+fn encode_folder_record(parent_id: u32, name: &str, folder_id: u32, file_mode: u16) -> Vec<u8> {
+    let mut rec = encode_catalog_key(parent_id, name);
+    let folder = HfsPlusCatalogFolder {
+        record_type: HFS_PLUS_FOLDER_RECORD.to_be(),
+        folder_id: folder_id.to_be(),
+        bsd_info: HfsPlusBsdInfo { file_mode: file_mode.to_be(), ..Default::default() },
+        ..Default::default()
+    };
+    rec.extend_from_slice(bytemuck::bytes_of(&folder));
+    rec
+}
+
+#[derive(Clone, Copy, Default)]
+struct FileRecord<'a> {
+    parent_id: u32,
+    name: &'a str,
+    owner_flags: u8,
+    file_mode: u16,
+    fd_type: u32,
+    fd_creator: u32,
+    logical_size: u64,
+    first_extent: HfsPlusExtentDescriptor,
+}
+
+fn encode_file_record(record: FileRecord<'_>) -> Vec<u8> {
+    let mut rec = encode_catalog_key(record.parent_id, record.name);
+    let mut extents = [HfsPlusExtentDescriptor::default(); 8];
+    extents[0] = HfsPlusExtentDescriptor {
+        start_block: record.first_extent.start_block.to_be(),
+        block_count: record.first_extent.block_count.to_be(),
+    };
+    let file = HfsPlusCatalogFile {
+        record_type: HFS_PLUS_FILE_RECORD.to_be(),
+        bsd_info: HfsPlusBsdInfo {
+            owner_flags: record.owner_flags,
+            file_mode: record.file_mode.to_be(),
+            ..Default::default()
+        },
+        user_info: FinderFileInfo {
+            fd_type: record.fd_type.to_be(),
+            fd_creator: record.fd_creator.to_be(),
+            ..Default::default()
+        },
+        data_fork: HfsPlusForkData {
+            logical_size: record.logical_size.to_be(),
+            extents,
+            ..Default::default()
+        },
+        ..Default::default()
+    };
+    rec.extend_from_slice(bytemuck::bytes_of(&file));
+    rec
+}
+
+fn encode_thread_record(parent_id: u32, name: &str, record_type: i16) -> Vec<u8> {
+    let mut rec = encode_catalog_key(parent_id, name);
+    rec.extend_from_slice(&record_type.to_be_bytes());
+    rec.extend_from_slice(&[0u8; 6]);
+    rec
+}
+
+fn build_leaf_node(node_size: usize, f_link: u32, records: &[Vec<u8>]) -> Vec<u8> {
+    let mut node = vec![0u8; node_size];
+    write_node_descriptor(&mut node, f_link, BT_LEAF_NODE, records.len() as u16);
+    let mut cursor = BtNodeDescriptor::SIZE;
+    let mut offsets = Vec::with_capacity(records.len() + 1);
+    for rec in records {
+        offsets.push(cursor as u16);
+        node[cursor..cursor + rec.len()].copy_from_slice(rec);
+        cursor += rec.len();
+    }
+    offsets.push(cursor as u16);
+    for (i, offset) in offsets.iter().enumerate() {
+        let pos = node_size - (i + 1) * 2;
+        node[pos..pos + 2].copy_from_slice(&offset.to_be_bytes());
+    }
+    node
+}
+
+fn make_fork_stream(bytes: Vec<u8>) -> HfsForkReadStream {
+    let len = bytes.len();
+    let fork = if len == 0 {
+        HfsPlusForkData::default()
+    } else {
+        let mut extents = [HfsPlusExtentDescriptor::default(); 8];
+        extents[0] = HfsPlusExtentDescriptor { start_block: 0, block_count: len as u32 };
+        HfsPlusForkData {
+            logical_size: len as u64,
+            clump_size: 0,
+            total_blocks: len as u32,
+            extents,
+        }
+    };
+    HfsForkReadStream::new(SharedStream::new(Cursor::new(bytes)), 1, fork)
+}
+
+/// Builds the bytes of a catalog B-Tree with a header node followed by a
+/// single leaf node holding `records`.
+fn build_single_leaf_catalog(node_size: usize, records: &[Vec<u8>]) -> Vec<u8> {
+    let mut catalog = vec![0u8; node_size];
+    write_header_node(&mut catalog, records.len() as u32, 1, node_size as u16, TEST_MAX_KEY_LEN, 2);
+    catalog.extend_from_slice(&build_leaf_node(node_size, 0, records));
+    catalog
+}
+
+fn build_single_leaf_btree(node_size: usize, records: &[Vec<u8>]) -> HfsBTreeIterator {
+    HfsBTreeIterator::try_new(make_fork_stream(build_single_leaf_catalog(node_size, records)))
+        .unwrap()
+}
+
+/// Builds an HFS+ volume image whose catalog file contains `catalog`, and
+/// opens it with [`HfsIterator::open`].
+fn open_hfs_image(catalog: &[u8]) -> HfsIterator {
+    const BLOCK_SIZE: u32 = 512;
+    let block_size = BLOCK_SIZE as usize;
+    let mut image = vec![0u8; VOLUME_HEADER_OFFSET as usize + VOLUME_HEADER_SIZE];
+    // The catalog file starts at the first block boundary after the volume
+    // header and is stored in a single extent.
+    let start_block = image.len().div_ceil(block_size);
+    let block_count = catalog.len().div_ceil(block_size);
+
+    let header = &mut image[VOLUME_HEADER_OFFSET as usize..];
+    header[0..2].copy_from_slice(&HFS_PLUS_SIG_WORD.to_be_bytes());
+    header[40..44].copy_from_slice(&BLOCK_SIZE.to_be_bytes());
+    // catalogFile is at offset 272..352 within HFSPlusVolumeHeader.
+    let fork = &mut header[272..352];
+    fork[0..8].copy_from_slice(&(catalog.len() as u64).to_be_bytes());
+    fork[12..16].copy_from_slice(&(block_count as u32).to_be_bytes());
+    fork[16..20].copy_from_slice(&(start_block as u32).to_be_bytes());
+    fork[20..24].copy_from_slice(&(block_count as u32).to_be_bytes());
+
+    image.resize(start_block * block_size, 0);
+    image.extend_from_slice(catalog);
+    image.resize((start_block + block_count) * block_size, 0);
+    HfsIterator::open(SharedStream::new(Cursor::new(image))).expect("valid HFS+ image")
+}
+
+#[gtest(RustHfsBTreeIteratorTest, HeaderValidation)]
+fn test_btree_header_validation() {
+    // 1. Empty stream -> IoError.
+    expect_eq!(
+        HfsBTreeIterator::try_new(make_fork_stream(Vec::new())).err(),
+        Some(HfsError::IoError)
+    );
+
+    // 2. Stream shorter than BTNodeDescriptor + BTHeaderRec -> IoError.
+    let mut short = vec![0u8; BtNodeDescriptor::SIZE + BtHeaderRec::SIZE - 1];
+    write_node_descriptor(&mut short, 0, BT_HEADER_NODE, 3);
+    expect_eq!(HfsBTreeIterator::try_new(make_fork_stream(short)).err(), Some(HfsError::IoError));
+
+    // 3. Initial node kind is not BT_HEADER_NODE -> InvalidBTree.
+    let mut bad_kind = vec![0u8; usize::from(TEST_NODE_SIZE)];
+    write_node_descriptor(&mut bad_kind, 0, BT_LEAF_NODE, 1);
+    expect_eq!(
+        HfsBTreeIterator::try_new(make_fork_stream(bad_kind)).err(),
+        Some(HfsError::InvalidBTree)
+    );
+
+    // 4. Header nodeSize smaller than BTNodeDescriptor -> InvalidBTree.
+    let mut small_node_size = vec![0u8; usize::from(TEST_NODE_SIZE)];
+    write_header_node(
+        &mut small_node_size,
+        0,
+        0,
+        (BtNodeDescriptor::SIZE - 1) as u16,
+        TEST_MAX_KEY_LEN,
+        1,
+    );
+    expect_eq!(
+        HfsBTreeIterator::try_new(make_fork_stream(small_node_size)).err(),
+        Some(HfsError::InvalidBTree)
+    );
+
+    // 5. Valid header with 0 leaf records succeeds and iter.next() is None.
+    let mut valid_empty = vec![0u8; usize::from(TEST_NODE_SIZE)];
+    write_header_node(&mut valid_empty, 0, 1, TEST_NODE_SIZE, TEST_MAX_KEY_LEN, 1);
+    let mut iter = HfsBTreeIterator::try_new(make_fork_stream(valid_empty)).unwrap();
+    expect_eq!(iter.next(), None);
+}
+
+#[gtest(RustHfsBTreeIteratorTest, IteratesFoldersFilesAndThreadsAcrossLeaves)]
+fn test_btree_iterates_folders_files_and_threads_across_leaves() {
+    let node_size = usize::from(TEST_NODE_SIZE);
+    let mut header = vec![0u8; node_size];
+    write_header_node(&mut header, 5, 1, TEST_NODE_SIZE, TEST_MAX_KEY_LEN, 3);
+
+    // Leaf 1 (node 1) has 2 records and f_link = 2:
+    // - Root folder "DmgRoot" (parent 1, folder_id 2)
+    // - Folder thread record
+    let leaf1 = build_leaf_node(
+        node_size,
+        2,
+        &[
+            encode_folder_record(1, "DmgRoot", 2, 0o040755),
+            encode_thread_record(2, "", HFS_PLUS_FOLDER_THREAD_RECORD),
+        ],
+    );
+
+    // Leaf 2 (node 2) has 3 records and f_link = 0:
+    // - Subfolder "Sub" (parent 2, folder_id 16)
+    // - File "hello.bin" (parent 16)
+    // - File thread record
+    let leaf2 = build_leaf_node(
+        node_size,
+        0,
+        &[
+            encode_folder_record(2, "Sub", 16, 0o040700),
+            encode_file_record(FileRecord {
+                parent_id: 16,
+                name: "hello.bin",
+                owner_flags: UF_COMPRESSED,
+                file_mode: 0o100644,
+                fd_type: HARD_LINK_FILE_TYPE,
+                fd_creator: HFS_PLUS_CREATOR,
+                logical_size: 1234,
+                first_extent: HfsPlusExtentDescriptor { start_block: 7, block_count: 3 },
+            }),
+            encode_thread_record(17, "", HFS_PLUS_FILE_THREAD_RECORD),
+        ],
+    );
+
+    let mut catalog_bytes = header;
+    catalog_bytes.extend_from_slice(&leaf1);
+    catalog_bytes.extend_from_slice(&leaf2);
+
+    let mut iter = HfsBTreeIterator::try_new(make_fork_stream(catalog_bytes)).unwrap();
+
+    // Record 1: Root folder.
+    expect_eq!(
+        iter.next(),
+        Some(HfsBTreeEntry {
+            path: utf16("DmgRoot"),
+            unexported: false,
+            record: HfsCatalogRecord::Folder(HfsPlusCatalogFolder {
+                record_type: HFS_PLUS_FOLDER_RECORD,
+                folder_id: 2,
+                bsd_info: HfsPlusBsdInfo { file_mode: 0o040755, ..Default::default() },
+                ..Default::default()
+            }),
+        })
+    );
+
+    // Record 2: Folder thread record.
+    expect_eq!(iter.next().map(|e| e.record), Some(HfsCatalogRecord::Thread));
+
+    // Record 3 (on Leaf 2 via f_link): Subfolder "DmgRoot/Sub".
+    expect_eq!(
+        iter.next(),
+        Some(HfsBTreeEntry {
+            path: utf16("DmgRoot/Sub"),
+            unexported: false,
+            record: HfsCatalogRecord::Folder(HfsPlusCatalogFolder {
+                record_type: HFS_PLUS_FOLDER_RECORD,
+                folder_id: 16,
+                bsd_info: HfsPlusBsdInfo { file_mode: 0o040700, ..Default::default() },
+                ..Default::default()
+            }),
+        })
+    );
+
+    // Record 4 (on Leaf 2): File "DmgRoot/Sub/hello.bin".
+    let mut expected_extents = [HfsPlusExtentDescriptor::default(); 8];
+    expected_extents[0] = HfsPlusExtentDescriptor { start_block: 7, block_count: 3 };
+    expect_eq!(
+        iter.next(),
+        Some(HfsBTreeEntry {
+            path: utf16("DmgRoot/Sub/hello.bin"),
+            unexported: false,
+            record: HfsCatalogRecord::File(HfsPlusCatalogFile {
+                record_type: HFS_PLUS_FILE_RECORD,
+                bsd_info: HfsPlusBsdInfo {
+                    owner_flags: UF_COMPRESSED,
+                    file_mode: 0o100644,
+                    ..Default::default()
+                },
+                user_info: FinderFileInfo {
+                    fd_type: HARD_LINK_FILE_TYPE,
+                    fd_creator: HFS_PLUS_CREATOR,
+                    ..Default::default()
+                },
+                data_fork: HfsPlusForkData {
+                    logical_size: 1234,
+                    clump_size: 0,
+                    total_blocks: 0,
+                    extents: expected_extents,
+                },
+                ..Default::default()
+            }),
+        })
+    );
+
+    // Record 5 (on Leaf 2): File thread record.
+    expect_eq!(iter.next().map(|e| e.record), Some(HfsCatalogRecord::Thread));
+
+    expect_eq!(iter.next(), None);
+}
+
+#[gtest(RustHfsBTreeIteratorTest, UnexportedPrivateFoldersAndDescendantsMarkedUnexported)]
+fn test_btree_unexported_private_folders_and_descendants() {
+    let node_size = 2048usize;
+    let mut header = vec![0u8; node_size];
+    write_header_node(&mut header, 6, 1, node_size as u16, TEST_MAX_KEY_LEN, 2);
+
+    let leaf = build_leaf_node(
+        node_size,
+        0,
+        &[
+            // 1. Root folder (exported, CNID 2).
+            encode_folder_record(1, "Vol", 2, 0o040755),
+            // 2. "\0\0\0\0HFS+ Private Data" folder (unexported, CNID 20).
+            encode_folder_record(2, "\0\0\0\0HFS+ Private Data", 20, 0o040700),
+            // 3. Nested subfolder inside CNID 20 (transitively unexported, CNID 21).
+            encode_folder_record(20, "nested", 21, 0o040700),
+            // 4. File inside nested unexported subfolder CNID 21 (unexported).
+            encode_file_record(FileRecord {
+                parent_id: 21,
+                name: "iNode123",
+                file_mode: 0o100644,
+                ..Default::default()
+            }),
+            // 5. ".HFS+ Private Directory Data\r" folder (unexported, CNID 30).
+            encode_folder_record(2, ".HFS+ Private Directory Data\r", 30, 0o040700),
+            // 6. Exported file directly under Root CNID 2.
+            encode_file_record(FileRecord {
+                parent_id: 2,
+                name: "visible.txt",
+                file_mode: 0o100644,
+                logical_size: 10,
+                ..Default::default()
+            }),
+        ],
+    );
+
+    let mut catalog_bytes = header;
+    catalog_bytes.extend_from_slice(&leaf);
+
+    let mut iter = HfsBTreeIterator::try_new(make_fork_stream(catalog_bytes)).unwrap();
+
+    let expected = [
+        ("Vol", false),
+        ("Vol/\0\0\0\0HFS+ Private Data", true),
+        ("Vol/\0\0\0\0HFS+ Private Data/nested", true),
+        ("Vol/\0\0\0\0HFS+ Private Data/nested/iNode123", true),
+        ("Vol/.HFS+ Private Directory Data\r", true),
+        ("Vol/visible.txt", false),
+    ];
+    for (expected_path, expected_unexported) in expected {
+        let entry = iter.next();
+        expect_eq!(
+            entry.as_ref().map(|e| e.path.as_slice()),
+            Some(utf16(expected_path).as_slice()),
+            "for path {expected_path:?}"
+        );
+        expect_eq!(
+            entry.as_ref().map(|e| e.unexported),
+            Some(expected_unexported),
+            "for path {expected_path:?}"
+        );
+    }
+    expect_eq!(iter.next(), None);
+}
+
+#[gtest(RustHfsBTreeIteratorTest, FileWithUnseenParentRegistersEmptyParentPath)]
+fn test_btree_file_with_unseen_parent_registers_empty_parent_path() {
+    // CNID 50 has no folder record. Matching the C++ implementation, a file
+    // under it registers an empty path for CNID 50, so later folders under
+    // CNID 50 get a leading separator.
+    let mut iter = build_single_leaf_btree(
+        1024,
+        &[
+            encode_file_record(FileRecord { parent_id: 50, name: "a", ..Default::default() }),
+            encode_folder_record(50, "b", 51, 0o040755),
+            encode_file_record(FileRecord { parent_id: 51, name: "c", ..Default::default() }),
+        ],
+    );
+
+    expect_eq!(iter.next().map(|e| e.path), Some(utf16("/a")));
+    expect_eq!(iter.next().map(|e| e.path), Some(utf16("/b")));
+    expect_eq!(iter.next().map(|e| e.path), Some(utf16("/b/c")));
+    expect_eq!(iter.next(), None);
+}
+
+#[gtest(RustHfsBTreeIteratorTest, LeafRecordsLocatedByOffsetTableAndKeyLength)]
+fn test_btree_leaf_records_located_by_offset_table_and_key_length() {
+    let node_size = 4096usize;
+    let mut catalog = vec![0u8; 2 * node_size];
+    write_header_node(&mut catalog[..node_size], 2, 1, node_size as u16, TEST_MAX_KEY_LEN, 2);
+
+    let leaf = &mut catalog[node_size..2 * node_size];
+    write_node_descriptor(leaf, 0, BT_LEAF_NODE, 2);
+
+    // Record 0 at offset 14: keyLength = 32 (larger than 8 bytes used by
+    // parentID + 1-char nodeName 'V'), leaving padding before folder data.
+    let rec0_offset = BtNodeDescriptor::SIZE;
+    let rec0_key_len = 32usize;
+    leaf[rec0_offset..rec0_offset + 2].copy_from_slice(&(rec0_key_len as u16).to_be_bytes());
+    leaf[rec0_offset + 2..rec0_offset + 6].copy_from_slice(&1u32.to_be_bytes()); // parentID = 1
+    leaf[rec0_offset + 6..rec0_offset + 8].copy_from_slice(&1u16.to_be_bytes()); // name len = 1
+    leaf[rec0_offset + 8..rec0_offset + 10].copy_from_slice(&(b'V' as u16).to_be_bytes());
+    let rec0_data = rec0_offset + 2 + rec0_key_len;
+    leaf[rec0_data..rec0_data + 2].copy_from_slice(&HFS_PLUS_FOLDER_RECORD.to_be_bytes());
+    leaf[rec0_data + 8..rec0_data + 12].copy_from_slice(&2u32.to_be_bytes()); // folderID = 2
+    let rec0_end = rec0_data + HfsPlusCatalogFolder::SIZE;
+
+    // Record 1 placed at non-contiguous offset 600 (> rec0_end).
+    let rec1_offset = 600usize;
+    assert!(rec1_offset > rec0_end);
+    let rec1_key_len = 8usize;
+    leaf[rec1_offset..rec1_offset + 2].copy_from_slice(&(rec1_key_len as u16).to_be_bytes());
+    leaf[rec1_offset + 2..rec1_offset + 6].copy_from_slice(&2u32.to_be_bytes()); // parentID = 2
+    leaf[rec1_offset + 6..rec1_offset + 8].copy_from_slice(&1u16.to_be_bytes()); // name len = 1
+    leaf[rec1_offset + 8..rec1_offset + 10].copy_from_slice(&(b'f' as u16).to_be_bytes());
+    let rec1_data = rec1_offset + 2 + rec1_key_len;
+    leaf[rec1_data..rec1_data + 2].copy_from_slice(&HFS_PLUS_FILE_RECORD.to_be_bytes());
+    let rec1_end = rec1_data + HfsPlusCatalogFile::SIZE;
+
+    // Offset table at the end of leaf in reverse order.
+    leaf[node_size - 2..node_size].copy_from_slice(&(rec0_offset as u16).to_be_bytes());
+    leaf[node_size - 4..node_size - 2].copy_from_slice(&(rec1_offset as u16).to_be_bytes());
+    leaf[node_size - 6..node_size - 4].copy_from_slice(&(rec1_end as u16).to_be_bytes());
+
+    let mut iter = HfsBTreeIterator::try_new(make_fork_stream(catalog)).unwrap();
+    expect_eq!(iter.next().map(|e| e.path), Some(utf16("V")));
+    expect_eq!(iter.next().map(|e| e.path), Some(utf16("V/f")));
+    expect_eq!(iter.next(), None);
+}
+
+#[gtest(RustHfsBTreeIteratorTest, CorruptLeafOrRecordRejected)]
+fn test_btree_corrupt_leaf_or_record_rejected() {
+    let node_size = usize::from(TEST_NODE_SIZE);
+
+    // 1. first_leaf_node >= total_nodes -> iter.next() is None.
+    let mut out_of_range_leaf = vec![0u8; node_size];
+    write_header_node(&mut out_of_range_leaf, 1, 5, TEST_NODE_SIZE, TEST_MAX_KEY_LEN, 2);
+    let mut iter = HfsBTreeIterator::try_new(make_fork_stream(out_of_range_leaf)).unwrap();
+    expect_eq!(iter.next(), None);
+
+    // 2. Leaf node kind != BT_LEAF_NODE -> iter.next() is None.
+    let mut non_leaf = vec![0u8; 2 * node_size];
+    write_header_node(&mut non_leaf[..node_size], 1, 1, TEST_NODE_SIZE, TEST_MAX_KEY_LEN, 2);
+    write_node_descriptor(&mut non_leaf[node_size..], 0, BT_HEADER_NODE, 1);
+    let mut iter = HfsBTreeIterator::try_new(make_fork_stream(non_leaf)).unwrap();
+    expect_eq!(iter.next(), None);
+
+    // 3. Offset[0] < BtNodeDescriptor::SIZE (14) -> iter.next() is None.
+    let mut bad_offset = vec![0u8; 2 * node_size];
+    write_header_node(&mut bad_offset[..node_size], 1, 1, TEST_NODE_SIZE, TEST_MAX_KEY_LEN, 2);
+    let leaf = &mut bad_offset[node_size..];
+    write_node_descriptor(leaf, 0, BT_LEAF_NODE, 1);
+    leaf[node_size - 2..node_size].copy_from_slice(&10u16.to_be_bytes());
+    leaf[node_size - 4..node_size - 2].copy_from_slice(&100u16.to_be_bytes());
+    let mut iter = HfsBTreeIterator::try_new(make_fork_stream(bad_offset)).unwrap();
+    expect_eq!(iter.next(), None);
+
+    // 4. Non-monotonic offset table (offset[1] < offset[0]) -> iter.next() is
+    //    None.
+    let mut non_monotonic = vec![0u8; 2 * node_size];
+    write_header_node(&mut non_monotonic[..node_size], 1, 1, TEST_NODE_SIZE, TEST_MAX_KEY_LEN, 2);
+    let leaf = &mut non_monotonic[node_size..];
+    write_node_descriptor(leaf, 0, BT_LEAF_NODE, 1);
+    leaf[node_size - 2..node_size].copy_from_slice(&100u16.to_be_bytes());
+    leaf[node_size - 4..node_size - 2].copy_from_slice(&50u16.to_be_bytes());
+    let mut iter = HfsBTreeIterator::try_new(make_fork_stream(non_monotonic)).unwrap();
+    expect_eq!(iter.next(), None);
+
+    // 5. keyLength > maxKeyLength -> iter.next() is None.
+    let mut header = vec![0u8; node_size];
+    write_header_node(&mut header, 1, 1, TEST_NODE_SIZE, 4, 2); // max_key_length = 4
+    let leaf = build_leaf_node(node_size, 0, &[encode_folder_record(1, "Vol", 2, 0)]);
+    let mut catalog = header;
+    catalog.extend_from_slice(&leaf);
+    let mut iter = HfsBTreeIterator::try_new(make_fork_stream(catalog)).unwrap();
+    expect_eq!(iter.next(), None);
+
+    // 6. Node name length extends past keyLength -> iter.next() is None.
+    let mut header = vec![0u8; node_size];
+    write_header_node(&mut header, 1, 1, TEST_NODE_SIZE, TEST_MAX_KEY_LEN, 2);
+    let mut bad_rec = encode_folder_record(1, "Vol", 2, 0);
+    // Overwrite key_string_length (at bytes 6..8 of record) with 100.
+    bad_rec[6..8].copy_from_slice(&100u16.to_be_bytes());
+    let leaf = build_leaf_node(node_size, 0, &[bad_rec]);
+    let mut catalog = header;
+    catalog.extend_from_slice(&leaf);
+    let mut iter = HfsBTreeIterator::try_new(make_fork_stream(catalog)).unwrap();
+    expect_eq!(iter.next(), None);
+
+    // 7. Truncated folder or file record data -> iter.next() is None.
+    let mut header = vec![0u8; node_size];
+    write_header_node(&mut header, 1, 1, TEST_NODE_SIZE, TEST_MAX_KEY_LEN, 2);
+    let mut truncated_folder = encode_folder_record(1, "Vol", 2, 0);
+    truncated_folder.pop();
+    let leaf = build_leaf_node(node_size, 0, &[truncated_folder]);
+    let mut catalog = header;
+    catalog.extend_from_slice(&leaf);
+    let mut iter = HfsBTreeIterator::try_new(make_fork_stream(catalog)).unwrap();
+    expect_eq!(iter.next(), None);
+
+    // 8. Unknown record_type -> iter.next() is None.
+    let mut header = vec![0u8; node_size];
+    write_header_node(&mut header, 1, 1, TEST_NODE_SIZE, TEST_MAX_KEY_LEN, 2);
+    let leaf = build_leaf_node(node_size, 0, &[encode_thread_record(1, "Vol", 99)]);
+    let mut catalog = header;
+    catalog.extend_from_slice(&leaf);
+    let mut iter = HfsBTreeIterator::try_new(make_fork_stream(catalog)).unwrap();
+    expect_eq!(iter.next(), None);
+
+    // 9. keyLength <= maxKeyLength but extends past the end of the record ->
+    //    iter.next() is None.
+    let mut header = vec![0u8; node_size];
+    write_header_node(&mut header, 1, 1, TEST_NODE_SIZE, TEST_MAX_KEY_LEN, 2);
+    let mut long_key = encode_folder_record(1, "Vol", 2, 0);
+    let past_record_end = long_key.len() as u16;
+    expect_true!(past_record_end <= TEST_MAX_KEY_LEN);
+    long_key[0..2].copy_from_slice(&past_record_end.to_be_bytes());
+    let leaf = build_leaf_node(node_size, 0, &[long_key]);
+    let mut catalog = header;
+    catalog.extend_from_slice(&leaf);
+    let mut iter = HfsBTreeIterator::try_new(make_fork_stream(catalog)).unwrap();
+    expect_eq!(iter.next(), None);
+
+    // 10. Forward link of a fully read leaf points past total_nodes -> the
+    //     first leaf's record is returned, then iter.next() is None.
+    let mut header = vec![0u8; node_size];
+    write_header_node(&mut header, 2, 1, TEST_NODE_SIZE, TEST_MAX_KEY_LEN, 2);
+    let leaf = build_leaf_node(node_size, 5, &[encode_folder_record(1, "Vol", 2, 0)]);
+    let mut catalog = header;
+    catalog.extend_from_slice(&leaf);
+    let mut iter = HfsBTreeIterator::try_new(make_fork_stream(catalog)).unwrap();
+    expect_eq!(iter.next().map(|e| e.path), Some(utf16("Vol")));
+    expect_eq!(iter.next(), None);
 }
 
 #[gtest(RustSharedStreamTest, InterleavedPositionalReads)]

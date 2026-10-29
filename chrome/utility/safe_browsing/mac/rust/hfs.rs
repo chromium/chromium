@@ -6,8 +6,11 @@
 //!
 //! Rust port of `chrome/utility/safe_browsing/mac/hfs.{h,cc}`.
 
-use std::collections::VecDeque;
+use std::collections::{HashMap, HashSet};
 use std::io::{self, Read, Seek, SeekFrom};
+
+use bytemuck::{Pod, Zeroable};
+use static_assertions::const_assert_eq;
 
 use crate::{ReadSeek, SharedStream};
 
@@ -45,21 +48,48 @@ const S_IFMT: u16 = 0o170000;
 /// POSIX symbolic link file type (`S_IFLNK` in `<sys/stat.h>`).
 pub const S_IFLNK: u16 = 0o120000;
 
+/// UTF-16 path separator (`'/'`).
+const FILE_PATH_SEPARATOR: u16 = b'/' as u16;
+
+/// B-Tree leaf node kind (`kBTLeafNode` in `<hfs/hfs_format.h>`).
+pub const BT_LEAF_NODE: i8 = -1;
+
+/// B-Tree header node kind (`kBTHeaderNode` in `<hfs/hfs_format.h>`).
+pub const BT_HEADER_NODE: i8 = 1;
+
+/// HFS+ catalog folder record type (`kHFSPlusFolderRecord` in
+/// `<hfs/hfs_format.h>`).
+pub const HFS_PLUS_FOLDER_RECORD: i16 = 1;
+
+/// HFS+ catalog file record type (`kHFSPlusFileRecord` in
+/// `<hfs/hfs_format.h>`).
+pub const HFS_PLUS_FILE_RECORD: i16 = 2;
+
+/// HFS+ catalog folder thread record type (`kHFSPlusFolderThreadRecord` in
+/// `<hfs/hfs_format.h>`).
+pub const HFS_PLUS_FOLDER_THREAD_RECORD: i16 = 3;
+
+/// HFS+ catalog file thread record type (`kHFSPlusFileThreadRecord` in
+/// `<hfs/hfs_format.h>`).
+pub const HFS_PLUS_FILE_THREAD_RECORD: i16 = 4;
+
 /// Errors that can occur when opening or iterating an HFS+/HFSX volume.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum HfsError {
     IoError,
     InvalidVolumeHeader,
-    Unimplemented,
+    InvalidBTree,
 }
 
 /// On-disk HFS+ extent descriptor (`HFSPlusExtentDescriptor` in
 /// `<hfs/hfs_format.h>`).
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+#[repr(C)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Pod, Zeroable)]
 pub struct HfsPlusExtentDescriptor {
     pub start_block: u32,
     pub block_count: u32,
 }
+const_assert_eq!(size_of::<HfsPlusExtentDescriptor>(), HfsPlusExtentDescriptor::SIZE);
 
 impl HfsPlusExtentDescriptor {
     pub const SIZE: usize = 8;
@@ -67,9 +97,14 @@ impl HfsPlusExtentDescriptor {
     /// Parses an extent descriptor from its 8-byte big-endian on-disk
     /// representation.
     pub fn from_big_endian_bytes(bytes: &[u8; Self::SIZE]) -> Self {
+        bytemuck::pod_read_unaligned::<Self>(bytes).convert_from_big_endian()
+    }
+
+    /// Converts all fields from big-endian to host byte order.
+    fn convert_from_big_endian(self) -> Self {
         Self {
-            start_block: u32::from_be_bytes(bytes[0..4].try_into().expect("4-byte slice")),
-            block_count: u32::from_be_bytes(bytes[4..8].try_into().expect("4-byte slice")),
+            start_block: u32::from_be(self.start_block),
+            block_count: u32::from_be(self.block_count),
         }
     }
 
@@ -79,34 +114,32 @@ impl HfsPlusExtentDescriptor {
 }
 
 /// On-disk HFS+ fork descriptor (`HFSPlusForkData` in `<hfs/hfs_format.h>`).
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+#[repr(C)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Pod, Zeroable)]
 pub struct HfsPlusForkData {
     pub logical_size: u64,
     pub clump_size: u32,
     pub total_blocks: u32,
     pub extents: [HfsPlusExtentDescriptor; 8],
 }
+const_assert_eq!(size_of::<HfsPlusForkData>(), HfsPlusForkData::SIZE);
 
 impl HfsPlusForkData {
     pub const SIZE: usize = 80;
-    const EXTENTS_OFFSET: usize = 16;
 
     /// Parses a fork descriptor from its 80-byte big-endian on-disk
     /// representation.
     pub fn from_big_endian_bytes(bytes: &[u8; Self::SIZE]) -> Self {
+        bytemuck::pod_read_unaligned::<Self>(bytes).convert_from_big_endian()
+    }
+
+    /// Converts all fields from big-endian to host byte order.
+    fn convert_from_big_endian(self) -> Self {
         Self {
-            logical_size: u64::from_be_bytes(bytes[0..8].try_into().unwrap()),
-            clump_size: u32::from_be_bytes(bytes[8..12].try_into().unwrap()),
-            total_blocks: u32::from_be_bytes(bytes[12..16].try_into().unwrap()),
-            extents: std::array::from_fn(|i| {
-                let start = Self::EXTENTS_OFFSET + i * HfsPlusExtentDescriptor::SIZE;
-                let end = start + HfsPlusExtentDescriptor::SIZE;
-                HfsPlusExtentDescriptor::from_big_endian_bytes(
-                    // We start this loop with 64 bytes remaining in `bytes`, and take 8-byte
-                    // chunks. 64 % 8 = 0, so this `unwrap` is safe.
-                    bytes[start..end].try_into().unwrap(),
-                )
-            }),
+            logical_size: u64::from_be(self.logical_size),
+            clump_size: u32::from_be(self.clump_size),
+            total_blocks: u32::from_be(self.total_blocks),
+            extents: self.extents.map(HfsPlusExtentDescriptor::convert_from_big_endian),
         }
     }
 }
@@ -348,32 +381,261 @@ impl HfsPlusVolumeHeader {
     }
 }
 
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+/// BSD file ownership and permissions (`HFSPlusBSDInfo` in
+/// `<hfs/hfs_format.h>`).
+#[repr(C, packed)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Pod, Zeroable)]
 pub struct HfsPlusBsdInfo {
+    pub owner_id: u32,
+    pub group_id: u32,
+    pub admin_flags: u8,
     pub owner_flags: u8,
     pub file_mode: u16,
+    /// Union of `iNodeNum`, `linkCount` and `rawDevice`.
+    pub special: u32,
+}
+const_assert_eq!(size_of::<HfsPlusBsdInfo>(), HfsPlusBsdInfo::SIZE);
+
+impl HfsPlusBsdInfo {
+    pub const SIZE: usize = 16;
+
+    /// Converts all fields from big-endian to host byte order.
+    fn convert_from_big_endian(self) -> Self {
+        Self {
+            owner_id: u32::from_be(self.owner_id),
+            group_id: u32::from_be(self.group_id),
+            admin_flags: self.admin_flags,
+            owner_flags: self.owner_flags,
+            file_mode: u16::from_be(self.file_mode),
+            special: u32::from_be(self.special),
+        }
+    }
 }
 
 /// Finder file type and creator metadata (`FndrFileInfo` in
 /// `<hfs/hfs_format.h>`).
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
-pub struct FndrFileInfo {
+#[repr(C, packed)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Pod, Zeroable)]
+pub struct FinderFileInfo {
     pub fd_type: u32,
     pub fd_creator: u32,
+    pub fd_flags: u16,
+    /// `Point` (`v`, `h`) of the file's icon in its window.
+    pub fd_location: [i16; 2],
+    pub opaque: u16,
+}
+const_assert_eq!(size_of::<FinderFileInfo>(), FinderFileInfo::SIZE);
+
+impl FinderFileInfo {
+    pub const SIZE: usize = 16;
+
+    /// Converts all fields from big-endian to host byte order.
+    fn convert_from_big_endian(self) -> Self {
+        Self {
+            fd_type: u32::from_be(self.fd_type),
+            fd_creator: u32::from_be(self.fd_creator),
+            fd_flags: u16::from_be(self.fd_flags),
+            fd_location: self.fd_location.map(i16::from_be),
+            opaque: u16::from_be(self.opaque),
+        }
+    }
 }
 
 /// Catalog folder record (`HFSPlusCatalogFolder` in `<hfs/hfs_format.h>`).
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+#[repr(C, packed)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Pod, Zeroable)]
 pub struct HfsPlusCatalogFolder {
+    pub record_type: i16,
+    pub flags: u16,
+    pub valence: u32,
+    pub folder_id: u32,
+    pub create_date: u32,
+    pub content_mod_date: u32,
+    pub attribute_mod_date: u32,
+    pub access_date: u32,
+    pub backup_date: u32,
     pub bsd_info: HfsPlusBsdInfo,
+    /// Opaque `FndrDirInfo`.
+    pub user_info: [u8; 16],
+    /// Opaque `FndrOpaqueInfo`.
+    pub finder_info: [u8; 16],
+    pub text_encoding: u32,
+    pub folder_count: u32,
+}
+const_assert_eq!(size_of::<HfsPlusCatalogFolder>(), HfsPlusCatalogFolder::SIZE);
+
+impl HfsPlusCatalogFolder {
+    pub const SIZE: usize = 88;
+
+    /// Parses a catalog folder record from its big-endian on-disk
+    /// representation.
+    pub fn from_big_endian_bytes(bytes: &[u8; Self::SIZE]) -> Self {
+        bytemuck::pod_read_unaligned::<Self>(bytes).convert_from_big_endian()
+    }
+
+    /// Converts all fields from big-endian to host byte order.
+    fn convert_from_big_endian(self) -> Self {
+        Self {
+            record_type: i16::from_be(self.record_type),
+            flags: u16::from_be(self.flags),
+            valence: u32::from_be(self.valence),
+            folder_id: u32::from_be(self.folder_id),
+            create_date: u32::from_be(self.create_date),
+            content_mod_date: u32::from_be(self.content_mod_date),
+            attribute_mod_date: u32::from_be(self.attribute_mod_date),
+            access_date: u32::from_be(self.access_date),
+            backup_date: u32::from_be(self.backup_date),
+            bsd_info: self.bsd_info.convert_from_big_endian(),
+            user_info: self.user_info,
+            finder_info: self.finder_info,
+            text_encoding: u32::from_be(self.text_encoding),
+            folder_count: u32::from_be(self.folder_count),
+        }
+    }
 }
 
 /// Catalog file record (`HFSPlusCatalogFile` in `<hfs/hfs_format.h>`).
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+#[repr(C, packed)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Pod, Zeroable)]
 pub struct HfsPlusCatalogFile {
+    pub record_type: i16,
+    pub flags: u16,
+    pub reserved1: u32,
+    pub file_id: u32,
+    pub create_date: u32,
+    pub content_mod_date: u32,
+    pub attribute_mod_date: u32,
+    pub access_date: u32,
+    pub backup_date: u32,
     pub bsd_info: HfsPlusBsdInfo,
-    pub user_info: FndrFileInfo,
+    pub user_info: FinderFileInfo,
+    /// Opaque `FndrOpaqueInfo`.
+    pub finder_info: [u8; 16],
+    pub text_encoding: u32,
+    pub reserved2: u32,
     pub data_fork: HfsPlusForkData,
+    pub resource_fork: HfsPlusForkData,
+}
+const_assert_eq!(size_of::<HfsPlusCatalogFile>(), HfsPlusCatalogFile::SIZE);
+
+impl HfsPlusCatalogFile {
+    pub const SIZE: usize = 248;
+
+    /// Parses a catalog file record from its big-endian on-disk
+    /// representation.
+    pub fn from_big_endian_bytes(bytes: &[u8; Self::SIZE]) -> Self {
+        bytemuck::pod_read_unaligned::<Self>(bytes).convert_from_big_endian()
+    }
+
+    /// Converts all fields from big-endian to host byte order.
+    fn convert_from_big_endian(self) -> Self {
+        Self {
+            record_type: i16::from_be(self.record_type),
+            flags: u16::from_be(self.flags),
+            reserved1: u32::from_be(self.reserved1),
+            file_id: u32::from_be(self.file_id),
+            create_date: u32::from_be(self.create_date),
+            content_mod_date: u32::from_be(self.content_mod_date),
+            attribute_mod_date: u32::from_be(self.attribute_mod_date),
+            access_date: u32::from_be(self.access_date),
+            backup_date: u32::from_be(self.backup_date),
+            bsd_info: self.bsd_info.convert_from_big_endian(),
+            user_info: self.user_info.convert_from_big_endian(),
+            finder_info: self.finder_info,
+            text_encoding: u32::from_be(self.text_encoding),
+            reserved2: u32::from_be(self.reserved2),
+            data_fork: self.data_fork.convert_from_big_endian(),
+            resource_fork: self.resource_fork.convert_from_big_endian(),
+        }
+    }
+}
+
+/// B-Tree node descriptor (`BTNodeDescriptor` in `<hfs/hfs_format.h>`).
+#[repr(C, packed)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Pod, Zeroable)]
+pub struct BtNodeDescriptor {
+    pub f_link: u32,
+    pub b_link: u32,
+    pub kind: i8,
+    pub height: u8,
+    pub num_records: u16,
+    pub reserved: u16,
+}
+const_assert_eq!(size_of::<BtNodeDescriptor>(), BtNodeDescriptor::SIZE);
+
+impl BtNodeDescriptor {
+    pub const SIZE: usize = 14;
+
+    /// Parses a B-Tree node descriptor from its big-endian on-disk
+    /// representation.
+    pub fn from_big_endian_bytes(bytes: &[u8; Self::SIZE]) -> Self {
+        bytemuck::pod_read_unaligned::<Self>(bytes).convert_from_big_endian()
+    }
+
+    /// Converts all fields from big-endian to host byte order.
+    fn convert_from_big_endian(self) -> Self {
+        Self {
+            f_link: u32::from_be(self.f_link),
+            b_link: u32::from_be(self.b_link),
+            kind: self.kind,
+            height: self.height,
+            num_records: u16::from_be(self.num_records),
+            reserved: u16::from_be(self.reserved),
+        }
+    }
+}
+
+/// B-Tree header record (`BTHeaderRec` in `<hfs/hfs_format.h>`).
+#[repr(C, packed)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Pod, Zeroable)]
+pub struct BtHeaderRec {
+    pub tree_depth: u16,
+    pub root_node: u32,
+    pub leaf_records: u32,
+    pub first_leaf_node: u32,
+    pub last_leaf_node: u32,
+    pub node_size: u16,
+    pub max_key_length: u16,
+    pub total_nodes: u32,
+    pub free_nodes: u32,
+    pub reserved1: u16,
+    pub clump_size: u32,
+    pub btree_type: u8,
+    pub key_compare_type: u8,
+    pub attributes: u32,
+    pub reserved3: [u32; 16],
+}
+const_assert_eq!(size_of::<BtHeaderRec>(), BtHeaderRec::SIZE);
+
+impl BtHeaderRec {
+    pub const SIZE: usize = 106;
+
+    /// Parses a B-Tree header record from its big-endian on-disk
+    /// representation.
+    pub fn from_big_endian_bytes(bytes: &[u8; Self::SIZE]) -> Self {
+        bytemuck::pod_read_unaligned::<Self>(bytes).convert_from_big_endian()
+    }
+
+    /// Converts all fields from big-endian to host byte order.
+    fn convert_from_big_endian(self) -> Self {
+        Self {
+            tree_depth: u16::from_be(self.tree_depth),
+            root_node: u32::from_be(self.root_node),
+            leaf_records: u32::from_be(self.leaf_records),
+            first_leaf_node: u32::from_be(self.first_leaf_node),
+            last_leaf_node: u32::from_be(self.last_leaf_node),
+            node_size: u16::from_be(self.node_size),
+            max_key_length: u16::from_be(self.max_key_length),
+            total_nodes: u32::from_be(self.total_nodes),
+            free_nodes: u32::from_be(self.free_nodes),
+            reserved1: u16::from_be(self.reserved1),
+            clump_size: u32::from_be(self.clump_size),
+            btree_type: self.btree_type,
+            key_compare_type: self.key_compare_type,
+            attributes: u32::from_be(self.attributes),
+            reserved3: self.reserved3.map(u32::from_be),
+        }
+    }
 }
 
 /// Parsed payload of a catalog B-Tree leaf record.
@@ -384,6 +646,25 @@ pub enum HfsCatalogRecord {
     Thread,
 }
 
+impl HfsCatalogRecord {
+    fn from_be_slice(data_bytes: &[u8]) -> Option<Self> {
+        let (record_type_bytes, _) = data_bytes.split_first_chunk::<2>()?;
+        match i16::from_be_bytes(*record_type_bytes) {
+            HFS_PLUS_FOLDER_RECORD => {
+                let (bytes, _) =
+                    data_bytes.split_first_chunk::<{ HfsPlusCatalogFolder::SIZE }>()?;
+                Some(Self::Folder(HfsPlusCatalogFolder::from_big_endian_bytes(bytes)))
+            }
+            HFS_PLUS_FILE_RECORD => {
+                let (bytes, _) = data_bytes.split_first_chunk::<{ HfsPlusCatalogFile::SIZE }>()?;
+                Some(Self::File(HfsPlusCatalogFile::from_big_endian_bytes(bytes)))
+            }
+            HFS_PLUS_FOLDER_THREAD_RECORD | HFS_PLUS_FILE_THREAD_RECORD => Some(Self::Thread),
+            _ => None,
+        }
+    }
+}
+
 /// A single entry yielded by [`HfsBTreeIterator`].
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct HfsBTreeEntry {
@@ -392,43 +673,276 @@ pub struct HfsBTreeEntry {
     pub record: HfsCatalogRecord,
 }
 
-/// Iterates over leaf records in the HFS+ catalog B-Tree.
-// TODO(https://crbug.com/575525008): Consider implementing `Iterator` (possibly with
-//   `Peekable`) to make `HfsBTreeIterator` more idiomatic.
-pub struct HfsBTreeIterator<S = HfsForkReadStream> {
-    // TODO(https://crbug.com/575525008): Remove leading underscore once used.
-    _stream: Option<S>,
-    // TODO(https://crbug.com/575525008): Remove `test_entries` after
-    //   implementing this class.
-    test_entries: VecDeque<HfsBTreeEntry>,
-    current_record: Option<HfsBTreeEntry>,
+/// Converts an ASCII byte string to UTF-16 code units at compile time.
+const fn ascii_to_utf16<const N: usize>(ascii: &[u8; N]) -> [u16; N] {
+    let mut utf16 = [0u16; N];
+    let mut i = 0;
+    while i < N {
+        utf16[i] = ascii[i] as u16;
+        i += 1;
+    }
+    utf16
 }
 
-impl<S: Read + Seek> HfsBTreeIterator<S> {
-    pub fn new(stream: S) -> Result<Self, HfsError> {
-        // TODO(https://crbug.com/575525008): Read B-Tree header node and initialize leaf
-        // iteration.
-        let _ = stream;
-        Err(HfsError::Unimplemented)
+/// Decodes big-endian `u16` values from `bytes`. A trailing odd byte is
+/// ignored.
+fn be_u16s(bytes: &[u8]) -> impl DoubleEndedIterator<Item = u16> + '_ {
+    bytes.as_chunks::<2>().0.iter().map(|&chunk| u16::from_be_bytes(chunk))
+}
+
+/// Reserved HFS+ catalog key for private metadata folder
+/// (`"\0\0\0\0HFS+ Private Data"`).
+const HFS_METADATA_FOLDER: [u16; 21] = ascii_to_utf16(b"\0\0\0\0HFS+ Private Data");
+
+/// Reserved HFS+ catalog key for private directory metadata folder
+/// (`".HFS+ Private Directory Data\r"`).
+const HFS_DIR_METADATA_FOLDER: [u16; 29] = ascii_to_utf16(b".HFS+ Private Directory Data\r");
+
+/// Key of a catalog B-Tree leaf record (`HFSPlusCatalogKey` in
+/// `<hfs/hfs_format.h>`), excluding the leading `keyLength`.
+struct CatalogKey {
+    parent_id: u32,
+    name: Vec<u16>,
+}
+
+impl CatalogKey {
+    fn from_be_slice(key_bytes: &[u8]) -> Option<Self> {
+        let (parent_id_bytes, rest) = key_bytes.split_first_chunk::<4>()?;
+        let (name_len_bytes, rest) = rest.split_first_chunk::<2>()?;
+        let name_byte_len = usize::from(u16::from_be_bytes(*name_len_bytes)) * 2;
+        let name_bytes = rest.get(..name_byte_len)?;
+        Some(Self {
+            parent_id: u32::from_be_bytes(*parent_id_bytes),
+            name: be_u16s(name_bytes).collect(),
+        })
     }
 
-    pub fn from_entries_for_testing(entries: impl Into<VecDeque<HfsBTreeEntry>>) -> Self {
-        Self { _stream: None, test_entries: entries.into(), current_record: None }
+    /// Checks if this is a Mac OS X reserved key that should not have it or
+    /// its contents iterated over.
+    fn is_unexported(&self) -> bool {
+        self.name == HFS_DIR_METADATA_FOLDER || self.name == HFS_METADATA_FOLDER
+    }
+}
+
+/// A loaded and validated B-Tree leaf node.
+struct LeafNode {
+    descriptor: BtNodeDescriptor,
+    /// Per-record byte offsets into the node data, taken from the offset
+    /// table at the end of the node. There are `num_records + 1` entries; the
+    /// last entry marks the start of the node's free space.
+    record_offsets: Vec<u16>,
+    /// The number of records read from this node.
+    records_read: usize,
+}
+
+impl LeafNode {
+    /// Parses and validates the node descriptor and record offset table of
+    /// the leaf node in `node_data`.
+    fn parse(node_data: &[u8]) -> Option<Self> {
+        let (descriptor_bytes, _) = node_data.split_first_chunk::<{ BtNodeDescriptor::SIZE }>()?;
+        let descriptor = BtNodeDescriptor::from_big_endian_bytes(descriptor_bytes);
+        if descriptor.kind != BT_LEAF_NODE {
+            return None;
+        }
+
+        // Each B-Tree node ends with a table of `numRecords + 1` big-endian
+        // `u16` offsets stored in reverse order at the end of the node. Entry
+        // `i` gives the byte offset of record `i` within the node and the final
+        // entry marks the start of free space. Records must lie between the
+        // node descriptor and the offset table itself.
+        let num_offsets = usize::from(descriptor.num_records) + 1;
+        let table_size = num_offsets * 2;
+        let records_end = node_data.len().checked_sub(table_size)?;
+        if records_end < BtNodeDescriptor::SIZE {
+            return None;
+        }
+
+        let record_offsets: Vec<u16> = be_u16s(&node_data[records_end..]).rev().collect();
+
+        let offsets_in_bounds = record_offsets
+            .iter()
+            .all(|&offset| (BtNodeDescriptor::SIZE..=records_end).contains(&usize::from(offset)));
+        if !offsets_in_bounds || !record_offsets.is_sorted() {
+            return None;
+        }
+
+        Some(Self { descriptor, record_offsets, records_read: 0 })
     }
 
-    pub fn has_next(&self) -> bool {
-        // TODO(https://crbug.com/575525008): Check `leaf_records_read < header.leaf_records`.
-        !self.test_entries.is_empty()
+    /// Parses the key and catalog record of the next unread record in
+    /// `node_data`.
+    fn parse_current_record(
+        &self,
+        node_data: &[u8],
+        max_key_length: u16,
+    ) -> Option<(CatalogKey, HfsCatalogRecord)> {
+        let start = usize::from(*self.record_offsets.get(self.records_read)?);
+        let end = usize::from(*self.record_offsets.get(self.records_read + 1)?);
+        let record_bytes = node_data.get(start..end)?;
+
+        let (key_len_bytes, rest) = record_bytes.split_first_chunk::<2>()?;
+        let key_length = u16::from_be_bytes(*key_len_bytes);
+        if key_length > max_key_length {
+            return None;
+        }
+
+        // The data portion of a keyed record begins immediately after the key,
+        // at `record_offset + sizeof(keyLength) + keyLength`.
+        let (key_bytes, data_bytes) = rest.split_at_checked(usize::from(key_length))?;
+        let key = CatalogKey::from_be_slice(key_bytes)?;
+        let record = HfsCatalogRecord::from_be_slice(data_bytes)?;
+        Some((key, record))
     }
 
-    pub fn next_record(&mut self) -> bool {
-        // TODO(https://crbug.com/575525008): Read next record from the current B-Tree leaf.
-        self.current_record = self.test_entries.pop_front();
-        self.current_record.is_some()
+    fn is_fully_read(&self) -> bool {
+        self.records_read >= usize::from(self.descriptor.num_records)
+    }
+}
+
+/// Iterates over leaf records in the HFS+ catalog B-Tree.
+///
+/// Rust port of `safe_browsing::dmg::HFSBTreeIterator`.
+pub struct HfsBTreeIterator {
+    stream: HfsForkReadStream,
+    header: BtHeaderRec,
+    folder_cnid_map: HashMap<u32, Vec<u16>>,
+    unexported_parents: HashSet<u32>,
+    /// The total number of leaf records read from all the leaf nodes.
+    leaf_records_read: u32,
+    /// The node ID of the leaf being read.
+    current_leaf_number: u32,
+    /// The raw data of the leaf node at `current_leaf_number`. Reused across
+    /// nodes to avoid reallocating.
+    leaf_data: Vec<u8>,
+    /// The leaf node at `current_leaf_number`, or `None` if it has not been
+    /// read yet.
+    current_leaf: Option<LeafNode>,
+}
+
+impl HfsBTreeIterator {
+    pub fn try_new(mut stream: HfsForkReadStream) -> Result<Self, HfsError> {
+        if stream.seek(SeekFrom::Start(0)).map_err(|_| HfsError::IoError)? != 0 {
+            return Err(HfsError::IoError);
+        }
+
+        let mut node_bytes = [0u8; BtNodeDescriptor::SIZE];
+        stream.read_exact(&mut node_bytes).map_err(|_| HfsError::IoError)?;
+        let node = BtNodeDescriptor::from_big_endian_bytes(&node_bytes);
+        if node.kind != BT_HEADER_NODE {
+            return Err(HfsError::InvalidBTree);
+        }
+
+        let mut header_bytes = [0u8; BtHeaderRec::SIZE];
+        stream.read_exact(&mut header_bytes).map_err(|_| HfsError::IoError)?;
+        let header = BtHeaderRec::from_big_endian_bytes(&header_bytes);
+        let node_size = usize::from(header.node_size);
+        if node_size < BtNodeDescriptor::SIZE {
+            return Err(HfsError::InvalidBTree);
+        }
+
+        let current_leaf_number = header.first_leaf_node;
+        Ok(Self {
+            stream,
+            header,
+            folder_cnid_map: HashMap::new(),
+            unexported_parents: HashSet::new(),
+            leaf_records_read: 0,
+            current_leaf_number,
+            leaf_data: vec![0u8; node_size],
+            current_leaf: None,
+        })
     }
 
-    pub fn current_record(&self) -> Option<&HfsBTreeEntry> {
-        self.current_record.as_ref()
+    fn build_entry(&mut self, key: CatalogKey, record: HfsCatalogRecord) -> HfsBTreeEntry {
+        match record {
+            HfsCatalogRecord::Folder(folder) => {
+                let unexported =
+                    key.is_unexported() || self.unexported_parents.contains(&key.parent_id);
+                if unexported {
+                    self.unexported_parents.insert(folder.folder_id);
+                }
+
+                let path = if key.parent_id != 0
+                    && let Some(parent_path) = self.folder_cnid_map.get(&key.parent_id)
+                {
+                    Self::join_path(parent_path, &key.name)
+                } else {
+                    key.name
+                };
+                self.folder_cnid_map.insert(folder.folder_id, path.clone());
+                HfsBTreeEntry { path, unexported, record }
+            }
+            HfsCatalogRecord::File(_) => {
+                // Matching the C++ implementation, an unseen parent CNID is
+                // registered with an empty path, so later folders under it get
+                // a leading separator.
+                let parent_path = self.folder_cnid_map.entry(key.parent_id).or_default();
+                let path = Self::join_path(parent_path, &key.name);
+                let unexported = self.unexported_parents.contains(&key.parent_id);
+                HfsBTreeEntry { path, unexported, record }
+            }
+            HfsCatalogRecord::Thread => {
+                // Thread records are used to quickly locate a file or folder by
+                // CNID. They are not needed during catalog iteration; the next
+                // record is located via the node's offset table.
+                HfsBTreeEntry { path: Vec::new(), unexported: false, record }
+            }
+        }
+    }
+
+    fn join_path(parent: &[u16], name: &[u16]) -> Vec<u16> {
+        let mut path = Vec::with_capacity(parent.len() + 1 + name.len());
+        path.extend_from_slice(parent);
+        path.push(FILE_PATH_SEPARATOR);
+        path.extend_from_slice(name);
+        path
+    }
+
+    /// Attempts to seek to the node at `self.current_leaf_number`. Returns
+    /// `true` on success and `false` on failure.
+    fn seek_to_current_leaf(&mut self) -> bool {
+        if self.current_leaf_number >= self.header.total_nodes {
+            return false;
+        }
+        let offset = u64::from(self.current_leaf_number) * u64::from(self.header.node_size);
+        self.stream.seek(SeekFrom::Start(offset)).is_ok()
+    }
+
+    /// Reads the node at `self.current_leaf_number` into `self.leaf_data` and
+    /// parses it as a leaf node.
+    fn read_current_leaf(&mut self) -> Option<LeafNode> {
+        if !self.seek_to_current_leaf() || self.stream.read_exact(&mut self.leaf_data).is_err() {
+            return None;
+        }
+        LeafNode::parse(&self.leaf_data)
+    }
+}
+
+impl Iterator for HfsBTreeIterator {
+    type Item = HfsBTreeEntry;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.leaf_records_read >= self.header.leaf_records {
+            return None;
+        }
+        if self.current_leaf.is_none() {
+            self.current_leaf = self.read_current_leaf();
+        }
+        let leaf = self.current_leaf.as_mut()?;
+        let (key, record) =
+            leaf.parse_current_record(&self.leaf_data, self.header.max_key_length)?;
+
+        self.leaf_records_read += 1;
+        leaf.records_read += 1;
+
+        // If all records from this leaf have been read, follow the forward link
+        // to the next B-Tree leaf node.
+        if leaf.is_fully_read() {
+            self.current_leaf_number = leaf.descriptor.f_link;
+            self.current_leaf = None;
+        }
+
+        Some(self.build_entry(key, record))
     }
 }
 
@@ -437,6 +951,7 @@ pub struct HfsIterator {
     stream: SharedStream,
     volume_header: HfsPlusVolumeHeader,
     catalog: HfsBTreeIterator,
+    current_item: Option<HfsBTreeEntry>,
 }
 
 impl HfsIterator {
@@ -462,65 +977,39 @@ impl HfsIterator {
             volume_header.block_size,
             volume_header.catalog_file,
         );
-        let catalog = HfsBTreeIterator::new(catalog_file)?;
+        let catalog = HfsBTreeIterator::try_new(catalog_file)?;
 
-        Ok(Self { stream, volume_header, catalog })
-    }
-
-    /// Constructs an [`HfsIterator`] backed by a pre-populated
-    /// [`HfsBTreeIterator`] for unit testing.
-    pub fn new_for_testing(
-        stream: SharedStream,
-        block_size: u32,
-        catalog: HfsBTreeIterator,
-    ) -> Self {
-        Self {
-            stream,
-            volume_header: HfsPlusVolumeHeader {
-                signature: HFS_PLUS_SIG_WORD,
-                block_size,
-                catalog_file: HfsPlusForkData::default(),
-            },
-            catalog,
-        }
+        Ok(Self { stream, volume_header, catalog, current_item: None })
     }
 
     /// Advances the iterator to the next exported file or folder record.
     /// Returns `false` at end-of-catalog or on corrupt record data.
     pub fn next_item(&mut self) -> bool {
-        while self.catalog.has_next() {
-            if !self.catalog.next_record() {
-                return false;
-            }
-            if let Some(entry) = self.catalog.current_record()
-                && !entry.unexported
+        self.current_item = self.catalog.find(|entry| {
+            !entry.unexported
                 && matches!(entry.record, HfsCatalogRecord::Folder(_) | HfsCatalogRecord::File(_))
-            {
-                return true;
-            }
-        }
-        false
+        });
+        self.current_item.is_some()
+    }
+
+    /// Returns the catalog record of the current item, if any.
+    fn current_record(&self) -> Option<&HfsCatalogRecord> {
+        self.current_item.as_ref().map(|entry| &entry.record)
     }
 
     /// Returns true if the current item is a directory.
     pub fn is_directory(&self) -> bool {
-        matches!(
-            self.catalog.current_record(),
-            Some(HfsBTreeEntry { record: HfsCatalogRecord::Folder(_), .. })
-        )
+        matches!(self.current_record(), Some(HfsCatalogRecord::Folder(_)))
     }
 
     /// Returns true if the current item is a file.
     pub fn is_file(&self) -> bool {
-        matches!(
-            self.catalog.current_record(),
-            Some(HfsBTreeEntry { record: HfsCatalogRecord::File(_), .. })
-        )
+        matches!(self.current_record(), Some(HfsCatalogRecord::File(_)))
     }
 
     /// Returns true if the current item is a symbolic link.
     pub fn is_symbolic_link(&self) -> bool {
-        let file_mode = match self.catalog.current_record().map(|e| &e.record) {
+        let file_mode = match self.current_record() {
             Some(HfsCatalogRecord::Folder(folder)) => folder.bsd_info.file_mode,
             Some(HfsCatalogRecord::File(file)) => file.bsd_info.file_mode,
             _ => return false,
@@ -530,7 +1019,7 @@ impl HfsIterator {
 
     /// Returns true if the current item is a hard link.
     pub fn is_hard_link(&self) -> bool {
-        match self.catalog.current_record().map(|e| &e.record) {
+        match self.current_record() {
             Some(HfsCatalogRecord::File(file)) => {
                 file.user_info.fd_type == HARD_LINK_FILE_TYPE
                     && file.user_info.fd_creator == HFS_PLUS_CREATOR
@@ -542,7 +1031,7 @@ impl HfsIterator {
     /// Returns true if the current item is `decmpfs`-compressed
     /// (`UF_COMPRESSED`).
     pub fn is_decmpfs_compressed(&self) -> bool {
-        match self.catalog.current_record().map(|e| &e.record) {
+        match self.current_record() {
             Some(HfsCatalogRecord::File(file)) => (file.bsd_info.owner_flags & UF_COMPRESSED) != 0,
             _ => false,
         }
@@ -550,7 +1039,7 @@ impl HfsIterator {
 
     /// Returns the full UTF-16 path of the current catalog item.
     pub fn path(&self) -> &[u16] {
-        self.catalog.current_record().map_or(&[], |entry| entry.path.as_slice())
+        self.current_item.as_ref().map_or(&[], |entry| entry.path.as_slice())
     }
 
     /// Returns a reader for the data fork of the current file item, or `None`
@@ -559,7 +1048,7 @@ impl HfsIterator {
         if self.is_hard_link() {
             return None;
         }
-        match self.catalog.current_record().map(|e| &e.record) {
+        match self.current_record() {
             Some(HfsCatalogRecord::File(file)) => Some(Box::new(HfsForkReadStream::new(
                 self.stream.clone(),
                 self.volume_header.block_size,

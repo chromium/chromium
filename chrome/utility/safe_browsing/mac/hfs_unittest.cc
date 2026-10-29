@@ -90,10 +90,6 @@ class HFSIteratorTest : public testing::TestWithParam<bool> {
 
   void TestTargetFiles(safe_browsing::dmg::HFSIterator* hfs_reader,
                        bool case_sensitive) {
-    if (GetParam()) {
-      GTEST_SKIP() << "TODO(crbug.com/575525008): Remove once Rust "
-                      "HFSIterator is implemented.";
-    }
     std::set<std::u16string> files, dirs;
     GetTargetFiles(case_sensitive, &files, &dirs);
 
@@ -153,10 +149,6 @@ class HFSFileReadTest
 
  protected:
   void SetUp() override {
-    if (std::get<1>(GetParam())) {
-      GTEST_SKIP() << "TODO(crbug.com/575525008): Remove once Rust "
-                      "HFSIterator is implemented.";
-    }
     ASSERT_NO_FATAL_FAILURE(
         test::GetTestFile(std::get<0>(GetParam()), &hfs_file_));
 
@@ -274,14 +266,6 @@ class HFSBTreeIteratorTest : public testing::TestWithParam<bool> {
   HFSBTreeIteratorTest() {
     scoped_feature_list_.InitWithFeatureState(kSafeBrowsingRustDmgParser,
                                               GetParam());
-  }
-
- protected:
-  void SetUp() override {
-    if (GetParam()) {
-      GTEST_SKIP() << "TODO(crbug.com/575525008): Remove once Rust "
-                      "HFSIterator is implemented.";
-    }
   }
 
  private:
