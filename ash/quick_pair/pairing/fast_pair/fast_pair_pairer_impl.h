@@ -6,6 +6,7 @@
 #define ASH_QUICK_PAIR_PAIRING_FAST_PAIR_FAST_PAIR_PAIRER_IMPL_H_
 
 #include <optional>
+#include <string_view>
 
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_gatt_service_client.h"
@@ -134,7 +135,7 @@ class FastPairPairerImpl : public FastPairPairer,
   // true. If the timer cannot be stopped, this function returns false,
   // informing the caller that the timer has expired and the caller should not
   // proceed with bond creation.
-  bool StopCreateBondTimer(const std::string& callback_name);
+  bool StopCreateBondTimer(std::string_view callback_name);
 
   // device::BluetoothDevice::Pair callback
   void OnPairConnected(

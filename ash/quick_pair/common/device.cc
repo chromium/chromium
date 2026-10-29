@@ -5,6 +5,7 @@
 #include "ash/quick_pair/common/device.h"
 
 #include <ostream>
+#include <string_view>
 
 #include "ash/quick_pair/common/protocol.h"
 #include "base/logging.h"
@@ -13,8 +14,8 @@
 namespace {
 
 std::ostream& OutputToStream(std::ostream& stream,
-                             const std::string& metadata_id,
-                             const std::string& ble_address,
+                             std::string_view metadata_id,
+                             std::string_view ble_address,
                              const std::optional<std::string>& classic_address,
                              const std::optional<std::string>& display_name,
                              const ash::quick_pair::Protocol& protocol) {

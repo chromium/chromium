@@ -4,10 +4,13 @@
 
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 
+#include <string_view>
+
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/protocol.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/sparse_histogram.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/cross_device/logging/logging.h"
 #include "components/metrics/structured/structured_events.h"
@@ -254,7 +257,7 @@ const char kPopularPeripheral_SRSXB33_3_Name[] = "SRSXB33_3";
 
 const char kPopularPeripheral_Other_Name[] = "Other";
 
-const std::string GetFastPairTrackedModelId(const std::string& model_id) {
+std::string_view GetFastPairTrackedModelId(std::string_view model_id) {
   if (model_id == kPopularPeripheral_BoatRockerz255Pro_ModelId) {
     return kPopularPeripheral_BoatRockerz255Pro_Name;
   }
@@ -565,7 +568,7 @@ enum class ConnectToServiceError {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/bluetooth/enums.xml:BluetoothConnectToServiceError)
 
-ConnectToServiceError GetConnectToServiceError(const std::string& error) {
+ConnectToServiceError GetConnectToServiceError(std::string_view error) {
   if (error == kAcceptFailedString) {
     return ConnectToServiceError::kAcceptFailed;
   }
@@ -846,20 +849,20 @@ const char kKeyBasedWriteRequest[] = "FastPair.KeyBasedWriteRequest.Latency";
 
 const std::string GetEngagementFlowInitialModelIdMetric(
     const ash::quick_pair::Device& device) {
-  return std::string(kEngagementFlowInitialMetric) + "." +
-         GetFastPairTrackedModelId(device.metadata_id());
+  return base::StrCat({kEngagementFlowInitialMetric, ".",
+                       GetFastPairTrackedModelId(device.metadata_id())});
 }
 
 const std::string GetEngagementFlowSubsequentModelIdMetric(
     const ash::quick_pair::Device& device) {
-  return std::string(kEngagementFlowSubsequentMetric) + "." +
-         GetFastPairTrackedModelId(device.metadata_id());
+  return base::StrCat({kEngagementFlowSubsequentMetric, ".",
+                       GetFastPairTrackedModelId(device.metadata_id())});
 }
 
 const std::string GetRetroactiveEngagementFlowModelIdMetric(
     const ash::quick_pair::Device& device) {
-  return std::string(kRetroactiveEngagementFlowMetric) + "." +
-         GetFastPairTrackedModelId(device.metadata_id());
+  return base::StrCat({kRetroactiveEngagementFlowMetric, ".",
+                       GetFastPairTrackedModelId(device.metadata_id())});
 }
 
 // The retroactive engagement flow doesn't record retroactive successes
@@ -867,8 +870,8 @@ const std::string GetRetroactiveEngagementFlowModelIdMetric(
 // to record metrics split by model ID.
 const std::string GetAccountKeyWriteResultRetroactiveModelIdMetric(
     const ash::quick_pair::Device& device) {
-  return std::string(kFastPairAccountKeyWriteResultRetroactiveMetric) + "." +
-         GetFastPairTrackedModelId(device.metadata_id());
+  return base::StrCat({kFastPairAccountKeyWriteResultRetroactiveMetric, ".",
+                       GetFastPairTrackedModelId(device.metadata_id())});
 }
 
 std::optional<std::string>
@@ -1312,7 +1315,7 @@ void RecordMessageStreamConnectToServiceResult(bool success) {
   base::UmaHistogramBoolean(kMessageStreamConnectToServiceResult, success);
 }
 
-void RecordMessageStreamConnectToServiceError(const std::string& error) {
+void RecordMessageStreamConnectToServiceError(std::string_view error) {
   base::UmaHistogramEnumeration(kMessageStreamConnectToServiceError,
                                 GetConnectToServiceError(error));
 }

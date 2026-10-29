@@ -5,6 +5,8 @@
 #ifndef ASH_QUICK_PAIR_COMMON_FAST_PAIR_FAST_PAIR_METRICS_H_
 #define ASH_QUICK_PAIR_COMMON_FAST_PAIR_FAST_PAIR_METRICS_H_
 
+#include <string_view>
+
 #include "ash/quick_pair/common/account_key_failure.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_http_result.h"
 #include "ash/quick_pair/common/pair_failure.h"
@@ -395,7 +397,7 @@ COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordMessageStreamConnectToServiceResult(bool success);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
-void RecordMessageStreamConnectToServiceError(const std::string& error);
+void RecordMessageStreamConnectToServiceError(std::string_view error);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordMessageStreamConnectToServiceTime(

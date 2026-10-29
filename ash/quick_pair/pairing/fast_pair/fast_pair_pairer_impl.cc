@@ -922,7 +922,7 @@ void FastPairPairerImpl::OnCreateBondTimeout() {
       .Run(device_, PairFailure::kCreateBondTimeout);
 }
 
-bool FastPairPairerImpl::StopCreateBondTimer(const std::string& callback_name) {
+bool FastPairPairerImpl::StopCreateBondTimer(std::string_view callback_name) {
   if (create_bond_timeout_timer_.IsRunning()) {
     RecordCreateBondTime(base::TimeTicks::Now() - create_bond_start_time_);
     create_bond_timeout_timer_.Stop();
