@@ -1113,8 +1113,25 @@ void MediaStreamVideoTrack::StopAndNotify(base::OnceClosure callback) {
   TRACE_EVENT("media", "MediaStreamVideoTrack::StopAndNotify");
   DCHECK_CALLED_ON_VALID_THREAD(main_render_thread_checker_);
   if (source_) {
-    source_->RemoveTrack(this, std::move(callback));
-    source_ = nullptr;
+    // MediaStreamVideoSource::RemoveTrack() stops the source if this was its
+    // last track. That synchronously fires 'ended' on other
+    // MediaStreamTrackImpls sharing the source, which runs script, which can
+    // trigger a GC. If nothing else references the MediaStreamComponentImpl
+    // owning |this|, its pre-finalizer deletes |this| while this frame is still
+    // on the stack. See https://crbug.com/576215540.
+    //
+    // Clear |source_| before calling RemoveTrack() so that the re-entrant
+    // Stop() call from ~MediaStreamVideoTrack() does not try to remove |this|
+    // from the source a second time. The destructor's Stop() call takes care
+    // of ending the sinks and stopping |refresh_timer_|, and |callback| is
+    // owned by the source once RemoveTrack() has been called, so there is
+    // nothing left to do here if |this| is gone.
+    base::WeakPtr<MediaStreamVideoTrack> weak_this = weak_factory_.GetWeakPtr();
+    MediaStreamVideoSource* source = std::exchange(source_, nullptr).get();
+    source->RemoveTrack(this, std::move(callback));
+    if (!weak_this) {
+      return;
+    }
   } else if (callback) {
     std::move(callback).Run();
   }
