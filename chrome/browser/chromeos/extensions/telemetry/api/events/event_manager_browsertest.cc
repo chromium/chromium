@@ -40,6 +40,7 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace chromeos {
 
@@ -71,7 +72,7 @@ class TelemetryExtensionEventManagerTest : public InProcessBrowserTest {
   void AddTab(BrowserWindowInterface* target_browser, const GURL& url) {
     NavigateParams params(target_browser, url, ui::PAGE_TRANSITION_TYPED);
     params.tabstrip_index = 0;
-    params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     Navigate(&params);
     content::WaitForLoadStop(params.navigated_or_inserted_contents);
   }

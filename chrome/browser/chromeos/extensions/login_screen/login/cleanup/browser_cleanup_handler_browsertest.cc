@@ -22,7 +22,7 @@
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
 #include "content/public/test/browser_test.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace {
 
@@ -79,7 +79,8 @@ class BrowserCleanupHandlerTest : public policy::DevicePolicyCrosBrowserTest {
             active_session->account_id()));
   }
 
-  void OpenNewBrowserPage(std::string page, WindowOpenDisposition disposition) {
+  void OpenNewBrowserPage(std::string page,
+                          ui::mojom::WindowOpenDisposition disposition) {
     GURL page_url = embedded_test_server()->GetURL(page);
 
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
@@ -118,12 +119,16 @@ IN_PROC_BROWSER_TEST_F(BrowserCleanupHandlerTest, Cleanup) {
   WaitForSessionStart();
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  OpenNewBrowserPage("/simple.html", WindowOpenDisposition::kCurrentTab);
-  OpenNewBrowserPage("/iframe.html", WindowOpenDisposition::kNewForegroundTab);
+  OpenNewBrowserPage("/simple.html",
+                     ui::mojom::WindowOpenDisposition::kCurrentTab);
+  OpenNewBrowserPage("/iframe.html",
+                     ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   OpenNewBrowserPage("/beforeunload.html",
-                     WindowOpenDisposition::kNewBackgroundTab);
-  OpenNewBrowserPage("/unload.html", WindowOpenDisposition::kNewWindow);
-  OpenNewBrowserPage("/title1.html", WindowOpenDisposition::kNewWindow);
+                     ui::mojom::WindowOpenDisposition::kNewBackgroundTab);
+  OpenNewBrowserPage("/unload.html",
+                     ui::mojom::WindowOpenDisposition::kNewWindow);
+  OpenNewBrowserPage("/title1.html",
+                     ui::mojom::WindowOpenDisposition::kNewWindow);
 
   ASSERT_EQ(3U, GlobalBrowserCollection::GetInstance()->GetSize());
   ASSERT_EQ(5, GetHistorySize());
@@ -139,7 +144,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCleanupHandlerTest, CleanupWhenBrowsersClosed) {
   WaitForSessionStart();
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  OpenNewBrowserPage("/simple.html", WindowOpenDisposition::kCurrentTab);
+  OpenNewBrowserPage("/simple.html",
+                     ui::mojom::WindowOpenDisposition::kCurrentTab);
   ui_test_utils::BrowserDestroyedObserver observer(browser());
   chrome::CloseAllBrowsersWithProfile(GetActiveUserProfile(),
                                       /*skip_beforeunload=*/true);

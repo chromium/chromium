@@ -17,8 +17,8 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/grit/extensions_browser_resources.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/browser_window_util.h"
@@ -90,7 +90,7 @@ void ExtensionTask::Activate() {
   // when it works on Android.
   GURL url = extensions::util::GetExtensionsPageUrl(extension->id());
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
 #else
   chrome::ShowExtensions(browser, extension->id());

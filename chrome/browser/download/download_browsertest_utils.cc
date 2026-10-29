@@ -30,7 +30,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "third_party/blink/public/common/switches.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/views/views_switches.h"
 
 using content::DownloadManager;
@@ -240,7 +240,7 @@ bool DownloadTestBase::VerifyNoDownloads() const {
 void DownloadTestBase::DownloadAndWaitWithDisposition(
     BrowserWindowInterface* browser,
     const GURL& url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     int browser_test_flags,
     bool prompt_for_download) {
   // Setup notification, navigate, and block.
@@ -262,7 +262,7 @@ void DownloadTestBase::DownloadAndWait(BrowserWindowInterface* browser,
                                        const GURL& url,
                                        bool prompt_for_download) {
   DownloadAndWaitWithDisposition(
-      browser, url, WindowOpenDisposition::kCurrentTab,
+      browser, url, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP, prompt_for_download);
 }
 
@@ -402,7 +402,7 @@ bool DownloadTestBase::RunSizeTest(BrowserWindowInterface* browser,
   // separate tab.
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser, finish_url, WindowOpenDisposition::kNewForegroundTab,
+      browser, finish_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   observer->WaitForFinished();
   EXPECT_EQ(1u, observer->NumDownloadsSeenInState(DownloadItem::COMPLETE));

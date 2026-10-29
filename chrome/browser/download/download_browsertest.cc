@@ -161,9 +161,9 @@
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
@@ -1328,7 +1328,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_IncognitoRegular) {
   // Download a file in the on-record browser and check that it was downloaded
   // correctly.
   DownloadAndWaitWithDisposition(browser(), url,
-                                 WindowOpenDisposition::kCurrentTab,
+                                 ui::mojom::WindowOpenDisposition::kCurrentTab,
                                  ui_test_utils::BROWSER_TEST_NO_WAIT);
   GetDownloads(browser(), &download_items);
   ASSERT_EQ(1UL, download_items.size());
@@ -1356,7 +1356,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_IncognitoRegular) {
   // Download a file in the incognito browser and check that it was downloaded
   // correctly.
   DownloadAndWaitWithDisposition(incognito, url,
-                                 WindowOpenDisposition::kCurrentTab,
+                                 ui::mojom::WindowOpenDisposition::kCurrentTab,
                                  ui_test_utils::BROWSER_TEST_NO_WAIT);
   GetDownloads(incognito, &download_items);
   ASSERT_EQ(1UL, download_items.size());
@@ -1379,7 +1379,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DontCloseNewTab1) {
 
   // Open a web page and wait.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::kNewBackgroundTab,
+      browser(), url, ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // We should have two tabs now.
@@ -1397,8 +1397,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CloseNewTab1) {
   GURL url =
       embedded_test_server()->GetURL("/" + std::string(kDownloadTest1Path));
 
-  DownloadAndWaitWithDisposition(browser(), url,
-                                 WindowOpenDisposition::kNewBackgroundTab, 0);
+  DownloadAndWaitWithDisposition(
+      browser(), url, ui::mojom::WindowOpenDisposition::kNewBackgroundTab, 0);
 
   // When the download finishes, we should still have one tab.
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
@@ -1426,7 +1426,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DontCloseNewTab2) {
   // Download a file in a new tab and wait (via Javascript).
   base::FilePath file(FILE_PATH_LITERAL("download-test1.lib"));
   DownloadAndWaitWithDisposition(browser(), GURL("javascript:openNew()"),
-                                 WindowOpenDisposition::kCurrentTab,
+                                 ui::mojom::WindowOpenDisposition::kCurrentTab,
                                  ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
 
   // When the download finishes, we should have two tabs.
@@ -1456,7 +1456,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DontCloseNewTab3) {
   observer.StartWatchingNewWebContents();
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("javascript:openNew()"),
-      WindowOpenDisposition::kCurrentTab,
+      ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
   observer.Wait();
 
@@ -1467,7 +1467,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DontCloseNewTab3) {
       embedded_test_server()->GetURL("/" + std::string(kDownloadTest1Path));
 
   DownloadAndWaitWithDisposition(browser(), url,
-                                 WindowOpenDisposition::kCurrentTab,
+                                 ui::mojom::WindowOpenDisposition::kCurrentTab,
                                  ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   // When the download finishes, we should have two tabs.
@@ -1497,7 +1497,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CloseNewTab2) {
   // The file to download is "download-test1.lib".
   base::FilePath file(FILE_PATH_LITERAL("download-test1.lib"));
   DownloadAndWaitWithDisposition(browser(), GURL("javascript:openNew()"),
-                                 WindowOpenDisposition::kCurrentTab,
+                                 ui::mojom::WindowOpenDisposition::kCurrentTab,
                                  ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
 
   // When the download finishes, we should still have one tab.
@@ -1529,7 +1529,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CloseNewTab3) {
   base::FilePath file(FILE_PATH_LITERAL("download-test1.lib"));
   DownloadAndWaitWithDisposition(
       browser(), GURL("javascript:document.getElementById('form').submit()"),
-      WindowOpenDisposition::kCurrentTab,
+      ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
 
   // When the download finishes, we should still have one tab.
@@ -4187,7 +4187,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_Remove) {
 
   // Download a file.
   DownloadAndWaitWithDisposition(browser(), url,
-                                 WindowOpenDisposition::kCurrentTab,
+                                 ui::mojom::WindowOpenDisposition::kCurrentTab,
                                  ui_test_utils::BROWSER_TEST_NO_WAIT);
   GetDownloads(browser(), &download_items);
   ASSERT_EQ(1UL, download_items.size());
@@ -4250,7 +4250,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_PercentComplete) {
 
   // Start downloading a file, wait for it to be created.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::kCurrentTab,
+      browser(), url, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
   progress_waiter->WaitForFinished();
   EXPECT_EQ(1u, progress_waiter->NumDownloadsSeenInState(
@@ -4465,7 +4465,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, SecurityLevels) {
                                            http_server.GetURL("/simple.html")));
   DownloadAndWaitWithDisposition(
       browser(), https_server.GetURL("/downloads/a_zip_file.zip"),
-      WindowOpenDisposition::kNewBackgroundTab,
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
   histogram_tester.ExpectTotalCount("Security.SecurityLevel.DownloadStarted",
                                     2);
@@ -4991,7 +4991,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest,
   std::unique_ptr<content::DownloadTestObserver> in_progress_observer(
       new DisableSafeBrowsingOnInProgressDownload(browser()));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), download_url, WindowOpenDisposition::kNewBackgroundTab,
+      browser(), download_url,
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
   in_progress_observer->WaitForFinished();
 
@@ -5026,7 +5027,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DangerousFileWithSBDisabledBeforeStart) {
           browser(), 1,
           content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_QUIT));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), download_url, WindowOpenDisposition::kNewBackgroundTab,
+      browser(), download_url,
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
   dangerous_observer->WaitForFinished();
 
@@ -5262,7 +5264,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, MAYBE_NewWindow) {
 
   // Download a file in a new window and wait.
   DownloadAndWaitWithDisposition(browser(), url,
-                                 WindowOpenDisposition::kNewWindow,
+                                 ui::mojom::WindowOpenDisposition::kNewWindow,
                                  ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   // When the download finishes, the download surface SHOULD NOT be visible in

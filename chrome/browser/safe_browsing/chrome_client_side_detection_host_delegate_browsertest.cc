@@ -24,7 +24,7 @@
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace safe_browsing {
 
@@ -41,7 +41,7 @@ class ChromeClientSideDetectionHostDelegateTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUpOnMainThread();
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL("http://foo/0"),
-        WindowOpenDisposition::kNewForegroundTab,
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
     Profile* profile = browser()->GetProfile();
     navigation_observer_manager_ =

@@ -65,8 +65,8 @@
 #include "net/base/url_util.h"
 #include "net/cert/x509_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
@@ -405,7 +405,7 @@ void DownloadProtectionService::ShowDetailsForDownload(
 
   navigator->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
-          learn_more_url, WindowOpenDisposition::kNewForegroundTab,
+          learn_more_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }

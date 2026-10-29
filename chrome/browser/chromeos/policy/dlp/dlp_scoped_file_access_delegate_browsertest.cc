@@ -44,8 +44,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "ui/base/metadata/base_type_conversion.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/shell_dialogs/selected_file_info.h"
@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(DlpScopedFileAccessDelegateBrowserTest,
 
   NavigateParams params(browser(), GURL("about:blank"),
                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params.disposition = WindowOpenDisposition::kNewBackgroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
   Navigate(&params);
 
   TestJSAction("document.getElementById('idb_cached').click()",
@@ -436,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(DlpScopedFileAccessDelegateBrowserTest,
 
   NavigateParams params(browser(), GURL("about:blank"),
                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
-  params.disposition = WindowOpenDisposition::kNewBackgroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
   Navigate(&params);
 
   TestJSAction("document.getElementById('idb_cached').click()",

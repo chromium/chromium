@@ -19,7 +19,7 @@
 #include "content/public/test/test_file_error_injector.h"
 #include "extensions/browser/install_verifier.h"
 #include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class BrowserWindowInterface;
 class DownloadPrefs;
@@ -184,11 +184,12 @@ class DownloadTestBase : public InProcessBrowserTest {
   // |prompt_for_download| indicates whether to prompt for the download location
   // and should generally be false, since the download location prompt can
   // cause the browser test to time out.
-  void DownloadAndWaitWithDisposition(BrowserWindowInterface* browser,
-                                      const GURL& url,
-                                      WindowOpenDisposition disposition,
-                                      int browser_test_flags,
-                                      bool prompt_for_download = false);
+  void DownloadAndWaitWithDisposition(
+      BrowserWindowInterface* browser,
+      const GURL& url,
+      ui::mojom::WindowOpenDisposition disposition,
+      int browser_test_flags,
+      bool prompt_for_download = false);
 
   // Download a file in the current tab, then wait for the download to finish.
   void DownloadAndWait(BrowserWindowInterface* browser,

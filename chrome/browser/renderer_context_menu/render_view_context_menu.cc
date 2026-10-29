@@ -289,9 +289,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/color/color_provider.h"
 #include "ui/display/types/display_constants.h"
@@ -881,7 +881,7 @@ void OnBrowserCreated(const GURL& link_url,
          destination browser which is not correct. */
       ui::PAGE_TRANSITION_TYPED);
   nav_params.initiator_origin = initiator_origin;
-  nav_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  nav_params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   // We are opening the link across profiles, so sending the referer
   // header is a privacy risk.
   nav_params.referrer = content::Referrer();
@@ -3934,7 +3934,7 @@ void RenderViewContextMenu::OpenURLWithExtraHeaders(
     const GURL& url,
     const GURL& referring_url,
     const url::Origin& initiator,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     ui::PageTransition transition,
     const std::string& extra_headers,
     bool started_from_context_menu,
@@ -3977,13 +3977,14 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
 
   switch (id) {
     case IDC_CONTENT_CONTEXT_OPENLINKNEWTAB: {
-      WindowOpenDisposition new_tab_disposition =
-          WindowOpenDisposition::kNewBackgroundTab;
+      ui::mojom::WindowOpenDisposition new_tab_disposition =
+          ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
       BrowserWindowInterface* browser = nullptr;
       if (IsInProgressiveWebApp()) {
         browser = FindNormalBrowser(GetProfile());
-        new_tab_disposition = browser ? WindowOpenDisposition::kNewForegroundTab
-                                      : WindowOpenDisposition::kNewWindow;
+        new_tab_disposition =
+            browser ? ui::mojom::WindowOpenDisposition::kNewForegroundTab
+                    : ui::mojom::WindowOpenDisposition::kNewWindow;
       }
 
       OpenURLParams params = GetOpenURLParamsWithExtraHeaders(
@@ -4009,7 +4010,8 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       DCHECK(!IsInProgressiveWebApp());
       OpenURLWithExtraHeaders(
           params_.link_url, params_.frame_url, params_.frame_origin,
-          WindowOpenDisposition::kNewWindow, ui::PAGE_TRANSITION_LINK,
+          ui::mojom::WindowOpenDisposition::kNewWindow,
+          ui::PAGE_TRANSITION_LINK,
           /*extra_headers=*/std::string(),
           /*started_from_context_menu=*/true,
           page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
@@ -4024,7 +4026,8 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       // incognito browser tab.
       OpenURLWithExtraHeaders(
           params_.link_url, params_.frame_url, params_.frame_origin,
-          WindowOpenDisposition::kOffTheRecord, ui::PAGE_TRANSITION_LINK,
+          ui::mojom::WindowOpenDisposition::kOffTheRecord,
+          ui::PAGE_TRANSITION_LINK,
           /*extra_headers=*/std::string(),
           /*started_from_context_menu=*/true,
           page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
@@ -4188,7 +4191,8 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     case IDC_CONTENT_CONTEXT_OPEN_ORIGINAL_IMAGE_NEW_TAB:
       OpenURLWithExtraHeaders(
           params_.src_url, params_.frame_url, params_.frame_origin,
-          WindowOpenDisposition::kNewBackgroundTab, ui::PAGE_TRANSITION_LINK,
+          ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+          ui::PAGE_TRANSITION_LINK,
           /*extra_headers=*/std::string(), /*started_from_context_menu=*/false,
           /*navigation_handle_callback=*/{});
       break;
@@ -4200,7 +4204,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     case IDC_CONTENT_CONTEXT_OPENIMAGENEWTAB:
     case IDC_CONTENT_CONTEXT_OPENAVNEWTAB:
       OpenURL(params_.src_url, params_.frame_url, params_.frame_origin,
-              WindowOpenDisposition::kNewBackgroundTab,
+              ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
               ui::PAGE_TRANSITION_LINK);
       break;
 
@@ -4269,7 +4273,8 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     }
 
     case IDC_RELOAD:
-      chrome::Reload(GetBrowser(), WindowOpenDisposition::kCurrentTab);
+      chrome::Reload(GetBrowser(),
+                     ui::mojom::WindowOpenDisposition::kCurrentTab);
       break;
 
     case IDC_LIVE_CAPTION:
@@ -4383,7 +4388,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     }
     case IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB: {
       auto disposition = ui::DispositionFromEventFlags(
-          event_flags, WindowOpenDisposition::kNewForegroundTab);
+          event_flags, ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 
       GURL navigation_url = selection_navigation_url_;
       if (google_util::IsGoogleSearchUrl(navigation_url)) {
@@ -4432,7 +4437,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     }
     case IDC_CONTENT_CONTEXT_GOTOURL: {
       auto disposition = ui::DispositionFromEventFlags(
-          event_flags, WindowOpenDisposition::kNewForegroundTab);
+          event_flags, ui::mojom::WindowOpenDisposition::kNewForegroundTab);
       OpenURL(selection_navigation_url_, GURL(), {}, disposition,
               ui::PAGE_TRANSITION_LINK);
       break;
@@ -5064,7 +5069,8 @@ void RenderViewContextMenu::ExecOpenWebApp() {
     return;
   }
 
-  WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab;
+  ui::mojom::WindowOpenDisposition disposition =
+      ui::mojom::WindowOpenDisposition::kCurrentTab;
   if (web_app::AppBrowserController::IsForWebApp(GetBrowser(), *app_id)) {
     // This is safe because this is read-only and IsTabbedWindowModeEnabled
     // handles edge-case states by returning false.
@@ -5075,7 +5081,7 @@ void RenderViewContextMenu::ExecOpenWebApp() {
       // The same-app menu item explicitly promises a new window. Do not let
       // focus-existing or navigate-existing reuse the source window.
       // WebAppLaunchProcess enforces prevent-close for all launch callers.
-      disposition = WindowOpenDisposition::kNewWindow;
+      disposition = ui::mojom::WindowOpenDisposition::kNewWindow;
     }
   }
   apps::AppLaunchParams launch_params(
@@ -5110,8 +5116,8 @@ void RenderViewContextMenu::ExecProtocolHandler(int event_flags,
 
   base::RecordAction(
       UserMetricsAction("RegisterProtocolHandler.ContextMenu_Open"));
-  WindowOpenDisposition disposition = ui::DispositionFromEventFlags(
-      event_flags, WindowOpenDisposition::kNewForegroundTab);
+  ui::mojom::WindowOpenDisposition disposition = ui::DispositionFromEventFlags(
+      event_flags, ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   OpenURL(handlers[handler_index].TranslateUrl(params_.link_url),
           params_.frame_url, params_.frame_origin, disposition,
           ui::PAGE_TRANSITION_LINK);
@@ -5852,8 +5858,8 @@ void RenderViewContextMenu::ExecLanguageSettings(int event_flags) {
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       GetProfile(), chromeos::settings::mojom::kLanguagesSubpagePath);
 #else
-  WindowOpenDisposition disposition = ui::DispositionFromEventFlags(
-      event_flags, WindowOpenDisposition::kNewForegroundTab);
+  ui::mojom::WindowOpenDisposition disposition = ui::DispositionFromEventFlags(
+      event_flags, ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   GURL url = chrome::GetSettingsUrl(chrome::kLanguageOptionsSubPage);
   OpenURL(url, GURL(), {}, disposition, ui::PAGE_TRANSITION_LINK);
 #endif
@@ -5862,8 +5868,8 @@ void RenderViewContextMenu::ExecLanguageSettings(int event_flags) {
 void RenderViewContextMenu::ExecProtocolHandlerSettings(int event_flags) {
   base::RecordAction(
       UserMetricsAction("RegisterProtocolHandler.ContextMenu_Settings"));
-  WindowOpenDisposition disposition = ui::DispositionFromEventFlags(
-      event_flags, WindowOpenDisposition::kNewForegroundTab);
+  ui::mojom::WindowOpenDisposition disposition = ui::DispositionFromEventFlags(
+      event_flags, ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   GURL url = chrome::GetSettingsUrl(chrome::kHandlerSettingsSubPage);
   OpenURL(url, GURL(), {}, disposition, ui::PAGE_TRANSITION_LINK);
 }
@@ -6248,7 +6254,8 @@ void RenderViewContextMenu::OpenLinkInSplitView(
     // Create new background tab.
     OpenURLParams params = GetOpenURLParamsWithExtraHeaders(
         params_.link_url, params_.frame_url, params_.frame_origin,
-        WindowOpenDisposition::kNewBackgroundTab, ui::PAGE_TRANSITION_LINK,
+        ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+        ui::PAGE_TRANSITION_LINK,
         /*extra_headers=*/std::string(), /*started_from_context_menu=*/true);
     const WebContents* new_web_contents = source_web_contents_->OpenURL(
         params, page_load_metrics::NavigationInitiatorHolder::AttacherCallback(

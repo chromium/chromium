@@ -21,7 +21,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace visited_url_ranking {
 
@@ -62,7 +62,7 @@ class DesktopTabModelURLVisitDataFetcherTest : public InProcessBrowserTest {
                        const GURL url,
                        const std::string title) {
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser, url, WindowOpenDisposition::kNewForegroundTab,
+        browser, url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
     content::WebContents* web_contents =
         browser->GetTabStripModel()->GetActiveWebContents();

@@ -19,8 +19,8 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 using content::OpenURLParams;
 using content::Referrer;
@@ -99,7 +99,7 @@ GURL AccessibilityLabelsBubbleModel::GetHelpPageURL() const {
 
 void AccessibilityLabelsBubbleModel::OpenHelpPage() {
   OpenURLParams params = OpenURLParams::CreateBrowserInitiated(
-      GetHelpPageURL(), WindowOpenDisposition::kNewForegroundTab,
+      GetHelpPageURL(), ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui::PAGE_TRANSITION_LINK);
   if (web_contents_) {
     web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});

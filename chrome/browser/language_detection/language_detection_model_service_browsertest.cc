@@ -54,7 +54,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #endif
 
 namespace language_detection {
@@ -421,7 +421,8 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
       "TranslateModelService.LanguageDetectionModel.WasLoaded", true, 1);
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), english_url(), WindowOpenDisposition::kNewForegroundTab,
+      browser(), english_url(),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   RetryForHistogramUntilCountReached(
@@ -451,7 +452,8 @@ IN_PROC_BROWSER_TEST_F(LanguageDetectionModelServiceBrowserTest,
       "TranslateModelService.LanguageDetectionModel.WasLoaded", true, 1);
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), english_url(), WindowOpenDisposition::kNewBackgroundTab,
+      browser(), english_url(),
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   // Opening the browser causes the first model deferral event. The second

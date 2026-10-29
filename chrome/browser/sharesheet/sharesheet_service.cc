@@ -28,7 +28,7 @@
 #include "components/services/app_service/public/cpp/icon_effects.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/views/view.h"
 
@@ -417,7 +417,7 @@ void SharesheetService::LaunchApp(const std::u16string& target_name,
                                   apps::IntentPtr intent) {
   app_service_proxy_->LaunchAppWithIntent(
       base::UTF16ToUTF8(target_name),
-      apps::GetEventFlags(WindowOpenDisposition::kNewWindow,
+      apps::GetEventFlags(ui::mojom::WindowOpenDisposition::kNewWindow,
                           /*prefer_container=*/true),
       std::move(intent), apps::LaunchSource::kFromSharesheet,
       std::make_unique<apps::WindowInfo>(display::kDefaultDisplayId),

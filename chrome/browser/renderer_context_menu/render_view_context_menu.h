@@ -36,7 +36,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/menus/simple_menu_model.h"
@@ -266,7 +266,7 @@ class RenderViewContextMenu
       const GURL& url,
       const GURL& referring_url,
       const url::Origin& initiator,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       ui::PageTransition transition,
       const std::string& extra_headers,
       bool started_from_context_menu,

@@ -28,7 +28,7 @@
 #include "content/public/test/download_test_observer.h"
 #include "crypto/sha2.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 #if BUILDFLAG(IS_MAC)
 #include <memory>
@@ -75,7 +75,7 @@ class DownloadProtectionServiceBrowserTest : public InProcessBrowserTest {
     // This call will block until the navigation completes, but will not wait
     // for the download to finish.
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::kCurrentTab,
+        browser(), url, ui::mojom::WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
     observer.WaitForFinished();

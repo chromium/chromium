@@ -33,7 +33,7 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 namespace chromeos {
@@ -81,7 +81,8 @@ class TelemetryExtensionUtilBrowserTest : public InProcessBrowserTest {
                                const GURL& url) {
     return content::WebContents::FromRenderFrameHost(
         ui_test_utils::NavigateToURLWithDisposition(
-            target_browser, url, WindowOpenDisposition::kNewForegroundTab,
+            target_browser, url,
+            ui::mojom::WindowOpenDisposition::kNewForegroundTab,
             ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   }
 

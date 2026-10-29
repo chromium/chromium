@@ -40,7 +40,7 @@
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "ui/aura/window.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace {
 std::string GetRegistrationCode(std::string_view type) {
@@ -259,7 +259,7 @@ void EchoPrivateGetUserConsentFunction::OnMoreInfoLinkClicked() {
   // window is useless until the dialog is closed.
   ash::BrowserController::GetInstance()->OpenUrl(
       account_id, GURL(ash::kChromeUIEchoLearnMoreURL),
-      {.disposition = WindowOpenDisposition::kNewWindow});
+      {.disposition = ui::mojom::WindowOpenDisposition::kNewWindow});
 }
 
 void EchoPrivateGetUserConsentFunction::Finalize(bool consent) {

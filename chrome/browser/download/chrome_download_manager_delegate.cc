@@ -101,8 +101,8 @@
 #include "net/base/mime_util.h"
 #include "net/base/network_change_notifier.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1473,7 +1473,8 @@ void ChromeDownloadManagerDelegate::OpenDownload(DownloadItem* download) {
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           net::FilePathToFileURL(download->GetTargetFilePath()),
-          WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK);
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+          ui::PAGE_TRANSITION_LINK);
 
   if (download->GetMimeType() == "application/x-x509-user-cert") {
     chrome::ShowSettingsSubPage(browser, "certificates");
