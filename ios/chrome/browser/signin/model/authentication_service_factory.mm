@@ -18,9 +18,9 @@
 
 namespace {
 
-std::unique_ptr<KeyedService> BuildAuthenticationService(ProfileIOS* profile) {
+std::unique_ptr<KeyedService> BuildAuthenticationService(ProfileIOS& profile) {
   auto service = std::make_unique<AuthenticationService>(
-      profile, profile->GetPrefs(),
+      &profile, profile.GetPrefs(),
       ChromeAccountManagerServiceFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile),
       SyncServiceFactory::GetForProfile(profile));
@@ -30,7 +30,7 @@ std::unique_ptr<KeyedService> BuildAuthenticationService(ProfileIOS* profile) {
 }
 
 std::unique_ptr<KeyedService> BuildAuthenticationServiceForTesting(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   // In production OnNetworkInitialized is called by
@@ -46,7 +46,7 @@ std::unique_ptr<KeyedService> BuildAuthenticationServiceForTesting(
 }  // namespace
 
 // static
-AuthenticationServiceFactory::TestingFactory
+AuthenticationServiceFactory::TestingFactoryByRef
 AuthenticationServiceFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildAuthenticationServiceForTesting);
 }
@@ -64,7 +64,7 @@ AuthenticationServiceFactory::AuthenticationServiceFactory(PassKey key)
 
 std::unique_ptr<KeyedService>
 AuthenticationServiceFactory::BuildServiceInstanceFor(
-    ProfileIOS* profile) const {
+    ProfileIOS& profile) const {
   return BuildAuthenticationService(profile);
 }
 
