@@ -307,7 +307,7 @@ export class
 
   override onAutocompleteResultChanged(result: AutocompleteResult) {
     // Reuse the mixin's dropdown/selection logic, but notify the wrapper via
-    // `result-changed` only for accepted results (mirrors cr-composebox).
+    // `result-changed` only for accepted results.
     const isValidResult =
         !this.submitting && result.queryId === this.activeQueryId;
     if (isValidResult && this.composeboxNoFlickerSuggestionsFix &&
