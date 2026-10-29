@@ -52,6 +52,8 @@ class TestCreditCardSaveManager : public CreditCardSaveManager {
 
   payments::UploadCardRequestDetails* upload_request();
 
+  payments::UpdateCardRequestDetails* update_card_request_details();
+
   bool should_request_expiration_date_from_user();
 
   bool should_request_name_from_user();

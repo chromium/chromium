@@ -77,6 +77,11 @@ TestCreditCardSaveManager::upload_request() {
   return &upload_request_;
 }
 
+payments::UpdateCardRequestDetails*
+TestCreditCardSaveManager::update_card_request_details() {
+  return &update_card_request_details_;
+}
+
 bool TestCreditCardSaveManager::should_request_expiration_date_from_user() {
   return should_request_expiration_date_from_user_;
 }

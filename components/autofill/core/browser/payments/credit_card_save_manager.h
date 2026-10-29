@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_request_details.h"
+#include "components/autofill/core/browser/strike_databases/payments/cardholder_name_fix_flow_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/payments/credit_card_save_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/payments/cvc_storage_strike_database.h"
 #include "components/strike_database/strike_database.h"
@@ -163,6 +164,11 @@ class CreditCardSaveManager {
   // Begins the process to offer server CVC save to the user.
   virtual void AttemptToOfferCvcUploadSave(const CreditCard& card);
 
+  // Begins the process to offer updating the cardholder name of an existing
+  // server card. `card` is the masked server card matched from the submitted
+  // form, with the cardholder name and CVC that the user entered.
+  virtual bool AttemptToOfferCardholderNameUpdate(const CreditCard& card);
+
   // Returns true if all the conditions for enabling the upload of credit card
   // are satisfied.
   virtual bool IsCreditCardUploadEnabled();
@@ -217,6 +223,9 @@ class CreditCardSaveManager {
   // Returns the CvcStorageStrikeDatabase for `client_`.
   CvcStorageStrikeDatabase* GetCvcStorageStrikeDatabase();
 
+  // Returns the CardholderNameFixFlowStrikeDatabase for `client_`.
+  CardholderNameFixFlowStrikeDatabase* GetCardholderNameFixFlowStrikeDatabase();
+
   // Query the CvcStorageStrikeDatabase to check if the offer-to-save prompt for
   // this CVC should be blocked.
   bool DetermineAndLogCvcSaveStrikeDatabaseBlockDecision();
@@ -232,6 +241,15 @@ class CreditCardSaveManager {
       const std::u16string& context_token,
       std::unique_ptr<base::DictValue> legal_message,
       std::vector<std::pair<int, int>> supported_card_bin_ranges);
+
+  // Called when the GetDetailsForUpdateCard preflight request for `card`
+  // completes. On success, stores `card` and `context_token` for the UpdateCard
+  // request and shows the cardholder name update offer prompt for `card`. On
+  // failure, ends the flow without showing any UI.
+  void OnDidGetDetailsForUpdateCard(
+      const CreditCard& card,
+      payments::PaymentsAutofillClient::PaymentsRpcResult result,
+      const std::string& context_token);
 
   // Logs the number of strikes that a card had when save succeeded.
   void LogStrikesPresentWhenCardSaved(bool is_local, const int num_strikes);
@@ -297,6 +315,13 @@ class CreditCardSaveManager {
   // Called once the user makes a decision with respect to the server CVC
   // offer-to-save prompt.
   void OnUserDidDecideOnCvcUploadSave(
+      payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
+      const payments::PaymentsAutofillClient::UserProvidedCardDetails&
+          user_provided_card_details);
+
+  // Called once the user makes a decision with respect to the cardholder name
+  // update offer prompt.
+  void OnUserDidDecideOnCardholderNameUpdate(
       payments::PaymentsAutofillClient::SaveCardOfferUserDecision user_decision,
       const payments::PaymentsAutofillClient::UserProvidedCardDetails&
           user_provided_card_details);
@@ -384,12 +409,15 @@ class CreditCardSaveManager {
 
   const raw_ref<AutofillClient> client_;
 
-  // The credit card to be saved if local credit card or local or server CVC
-  // save is accepted.
+  // The credit card to be saved or updated if local credit card, local or
+  // server CVC save, or server cardholder name update is accepted.
   CreditCard card_save_candidate_;
 
   // Collected information about a pending upload request.
   payments::UploadCardRequestDetails upload_request_;
+
+  // Collected information about a pending card update request.
+  payments::UpdateCardRequestDetails update_card_request_details_;
 
   // A bitmask of |AutofillMetrics::CardUploadDecisionMetric| representing the
   // decisions made when determining if credit card upload save should be
@@ -441,6 +469,9 @@ class CreditCardSaveManager {
   std::optional<CreditCardSaveStrikeDatabase> credit_card_save_strike_database_;
 
   std::optional<CvcStorageStrikeDatabase> cvc_storage_strike_database_;
+
+  std::optional<CardholderNameFixFlowStrikeDatabase>
+      cardholder_name_fix_flow_strike_database_;
 
   // Profiles that are only preliminarily imported. Those profiles are used
   // during a card import to determine the name and country for storing a new
