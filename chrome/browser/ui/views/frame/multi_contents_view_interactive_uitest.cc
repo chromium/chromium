@@ -126,8 +126,9 @@ class MultiContentsViewUiTest
   auto EnterSplitView(int active_tab,
                       std::optional<int> other_tab = std::nullopt,
                       double ratio = 0.5) {
-    return SplitViewInteractiveTestMixin::EnterSplitView(active_tab, other_tab,
-                                                         GetParam(), ratio);
+    return Steps(SplitViewInteractiveTestMixin::EnterSplitView(
+                     active_tab, other_tab, GetParam(), ratio),
+                 FinishTabstripAnimations());
   }
 
   auto CreateTabsAndEnterSplitView() {
