@@ -438,10 +438,21 @@ use-after-free bugs:
   bugs, prevents accidental ivar capture, and produces clear stack traces.
 - **Never reference `self` (or ivars) directly inside a block:** Referencing
   `self` or `_ivar` inside a block strongly retains `self`. Always capture
-  `__weak __typeof(self) weakSelf = self;`.
+  `__weak __typeof(self) weakSelf = self;` (except in transient synchronous
+  blocks; see below).
 - **Never capture raw C++ objects or `this` in a block:** Blocks do not manage
   C++ lifetimes, and calling a C++ member function in a block implicitly
   captures raw `this`.
+- **Exception — transient synchronous blocks:** Some APIs take blocks that are
+  executed synchronously before the method returns and are not retained
+  afterwards (often annotated with `NS_NOESCAPE` in system headers, such as
+  `-[NSArray enumerateObjectsUsingBlock:]` or
+  `+[UIView performWithoutAnimation:]`). Because these blocks are transient and
+  their lifetime is strictly bound to the current call stack, they cannot create
+  retain cycles or extend object lifetimes beyond the method execution.
+  Transient synchronous blocks do not need as much scrutiny: they can safely
+  capture `self` directly (without `weakSelf`) and do not need to be factored
+  into a single helper method call as long as they remain readable.
 - **Do not use blocks in C++ classes:** In a C++ class, bind a
   `base::OnceCallback` / `base::RepeatingCallback` (using `base::WeakPtr<T>`)
   and convert it with `base::CallbackToBlock(...)` when calling an API that
