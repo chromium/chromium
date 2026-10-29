@@ -176,12 +176,17 @@ FeatureCache::ExtensionFeatureData FeatureCache::CreateCacheEntry(
     features.available_features.push_back(feature.get());
   }
 
-  std::ranges::sort(features.dev_mode_restricted_features, std::ranges::less{},
-                    &Feature::name);
-  std::ranges::sort(features.available_features, std::ranges::less{},
-                    &Feature::name);
-  DCHECK(std::ranges::unique(features.dev_mode_restricted_features).empty());
-  DCHECK(std::ranges::unique(features.available_features).empty());
+  // `FeatureProvider::GetAllFeatures()` returns a `FeatureMap`
+  // (`base::flat_map`) keyed by `Feature::name`, so iterating over it in order
+  // guarantees that both vectors are strictly sorted by name with no
+  // duplicates.
+  DCHECK(std::ranges::adjacent_find(features.dev_mode_restricted_features,
+                                    std::ranges::greater_equal{},
+                                    &Feature::name) ==
+         features.dev_mode_restricted_features.end());
+  DCHECK(std::ranges::adjacent_find(
+             features.available_features, std::ranges::greater_equal{},
+             &Feature::name) == features.available_features.end());
 
   return features;
 }
