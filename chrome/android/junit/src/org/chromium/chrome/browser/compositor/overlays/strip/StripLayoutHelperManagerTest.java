@@ -1609,21 +1609,23 @@ public class StripLayoutHelperManagerTest {
         mStripLayoutHelperManager.getUpdatedSceneOverlayTree(
                 new RectF(), new RectF(), mResourceManager);
 
-        // Compare the native compositor new tab button's bounds (converted from dp to px) against
-        // the WebUI inputView's location and dimensions, as well as the origin and size forwarded
-        // to EventForwarder and the native WebUI host.
-        var newTabButton = mStripLayoutHelperManager.getNewTabButton();
+        // Compare the native compositor new tab button's touch target bounds (converted from dp to
+        // px) against the WebUI inputView's location and dimensions, as well as the origin and size
+        // forwarded to EventForwarder and the native WebUI host.
+        RectF touchTarget = mStripLayoutHelperManager.getNewTabButton().getTouchTargetBounds();
         var metrics = inputView.getResources().getDisplayMetrics();
-        int expectedXPx = ViewUtils.dpToPx(metrics, newTabButton.getDrawX());
-        int expectedYPx = ViewUtils.dpToPx(metrics, newTabButton.getDrawY());
-        int expectedWidthPx = ViewUtils.dpToPx(metrics, newTabButton.getWidth());
-        int expectedHeightPx = ViewUtils.dpToPx(metrics, newTabButton.getHeight());
+        int expectedXPx = ViewUtils.dpToPx(metrics, touchTarget.left);
+        int expectedYPx = ViewUtils.dpToPx(metrics, touchTarget.top);
+        int expectedWidthPx = ViewUtils.dpToPx(metrics, touchTarget.width());
+        int expectedHeightPx = ViewUtils.dpToPx(metrics, touchTarget.height());
+        int stripHeightPx = ViewUtils.dpToPx(metrics, mStripLayoutHelperManager.getHeight());
+        int expectedInputHeightPx = Math.min(expectedHeightPx, stripHeightPx - expectedYPx);
 
         assertEquals(View.VISIBLE, inputView.getVisibility());
         assertEquals(expectedXPx, inputView.getTranslationX(), 0f);
         assertEquals(expectedYPx, inputView.getTranslationY(), 0f);
         assertEquals(expectedWidthPx, inputView.getLayoutParams().width);
-        assertEquals(expectedHeightPx, inputView.getLayoutParams().height);
+        assertEquals(expectedInputHeightPx, inputView.getLayoutParams().height);
         verify(mEventForwarder).setContainerViewOriginInCompositorSurface(expectedXPx, expectedYPx);
         verify(mNtbWebUiCoordinatorJniMock).resize(1L, expectedWidthPx, expectedHeightPx);
 

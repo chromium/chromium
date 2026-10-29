@@ -496,7 +496,7 @@ public abstract class StripLayoutView implements VirtualView {
     }
 
     /** Returns cached touch target bounds. */
-    protected RectF getTouchTargetBounds() {
+    public RectF getTouchTargetBounds() {
         return mTouchTargetBounds;
     }
 

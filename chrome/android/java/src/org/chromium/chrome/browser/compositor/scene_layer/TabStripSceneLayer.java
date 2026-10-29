@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.compositor.scene_layer;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil.FOLIO_FOOT_LENGTH_DP;
 
 import android.content.res.Resources;
+import android.graphics.RectF;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
@@ -192,14 +193,20 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         TintedCompositorButton newTabButton = layoutHelper.getNewTabButton();
         long ntbWebUiHost = layoutHelper.getNtbWebUiNativePtr();
         if (ntbWebUiHost != 0) {
+            RectF touchTarget = newTabButton.getTouchTargetBounds();
+            // touchTarget is relative to the ControlContainer (where touchTarget.top includes
+            // topPadding via setTouchTargetInsets), whereas updateNtbWebUi accepts coordinates
+            // relative to tab_strip_layer_, which is already offset by y = topPaddingPx.
+            // TODO(crbug.com/565326385): Apply layoutHelper.getNewTabBtnVisualOffset() in the
+            // WebUI CSS while keeping mInputView and the WebUI scene layer aligned.
             TabStripSceneLayerJni.get()
                     .updateNtbWebUi(
                             mNativePtr,
                             ntbWebUiHost,
-                            Math.round(newTabButton.getDrawX() * mDpToPx),
-                            Math.round(newTabButton.getDrawY() * mDpToPx),
-                            Math.round(newTabButton.getWidth() * mDpToPx),
-                            Math.round(newTabButton.getHeight() * mDpToPx));
+                            Math.round(touchTarget.left * mDpToPx),
+                            Math.round(touchTarget.top * mDpToPx - topPaddingPx),
+                            Math.round(touchTarget.width() * mDpToPx),
+                            Math.round(touchTarget.height() * mDpToPx));
         } else {
             TabStripSceneLayerJni.get()
                     .updateNewTabButton(

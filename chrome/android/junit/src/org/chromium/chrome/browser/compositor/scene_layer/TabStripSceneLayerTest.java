@@ -695,6 +695,36 @@ public class TabStripSceneLayerTest {
     }
 
     @Test
+    public void testUpdateNtbWebUi() {
+        float topPadding = 5.f;
+        mNewTabButton.setDrawX(100.f);
+        mNewTabButton.setDrawY(3.f);
+        mNewTabButton.setTouchTargetInsets(null, topPadding, null, -topPadding);
+        when(mStripLayoutHelperManager.getNtbWebUiNativePtr()).thenReturn(2L);
+
+        float topPaddingPx = topPadding * DP_TO_PX;
+        mTabStripSceneLayer.pushButtonsAndBackground(
+                mStripLayoutHelperManager,
+                mTrailingButtonsCoordinator,
+                0,
+                0,
+                0.0f,
+                0.0f,
+                0.0f,
+                topPaddingPx);
+
+        var touchTarget = mNewTabButton.getTouchTargetBounds();
+        verify(mTabStripSceneMock, times(1))
+                .updateNtbWebUi(
+                        1L,
+                        2L,
+                        Math.round(touchTarget.left * DP_TO_PX),
+                        Math.round(touchTarget.top * DP_TO_PX - topPaddingPx),
+                        Math.round(touchTarget.width() * DP_TO_PX),
+                        Math.round(touchTarget.height() * DP_TO_PX));
+    }
+
+    @Test
     public void testUpdateGlicButton() {
         mGlicButton.setKeyboardFocused(true);
         mTabStripSceneLayer.pushButtonsAndBackground(
