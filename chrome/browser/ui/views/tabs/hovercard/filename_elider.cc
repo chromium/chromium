@@ -105,8 +105,9 @@ FilenameElider::LineLengths FilenameElider::GetLineLengths(
 
   // Since we truncated, expect the string to start with ellipsis, then
   // calculate the length of the string sans ellipsis.
-  CHECK_EQ(gfx::kEllipsisUTF16[0], tentative_second_line[0],
-           base::NotFatalUntil::M162);
+  // TODO(crbug.com/577275387): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK_EQ(gfx::kEllipsisUTF16[0], tentative_second_line[0]);
 
   // TODO(crbug.com/1239317): Elision is still a little flaky, so we'll make
   // sure we didn't stop in the middle of a grapheme. The +1 is to move past
