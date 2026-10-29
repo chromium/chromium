@@ -28,10 +28,10 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.SettingsActivityInterface;
@@ -42,13 +42,14 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests for the Search in Settings. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DoNotBatch(reason = "Tests cannot run batched because they launch a Settings activity.")
+@Batch(Batch.PER_CLASS)
 public class SettingsSearchCoordinatorTest {
     @Rule public SettingsTestRule<?> mSettingsTestRule = new SettingsTestRule<>(null);
 
     @After
     public void tearDown() {
-        mSettingsTestRule.getActivity().finish();
+        mSettingsTestRule.finishActivity();
+        ThreadUtils.runOnUiThreadBlocking(RecentSearchQueue::deleteDiskData);
     }
 
     private @Nullable SettingsActivityInterface getSettingsActivity() {
