@@ -11945,6 +11945,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"android-multiprofile", flag_descriptions::kAndroidMultiprofileName,
      flag_descriptions::kAndroidMultiprofileDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidMultiprofile)},
+
+    {"android-multiprofile-startup-data",
+     flag_descriptions::kAndroidMultiprofileStartupDataName,
+     flag_descriptions::kAndroidMultiprofileStartupDataDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kAndroidMultiprofileStartupData)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

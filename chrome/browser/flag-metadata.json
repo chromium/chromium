@@ -504,6 +504,11 @@
     "expiry_milestone": 165
   },
   {
+    "name": "android-multiprofile-startup-data",
+    "owners": [ "hanxi@google.com", "clank-start@google.com" ],
+    "expiry_milestone": 165
+  },
+  {
     "name": "android-navigation-blur-transition-animation",
     "owners": [
       "evanluo@google.com",

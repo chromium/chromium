@@ -15495,6 +15495,7 @@ from previous Chrome versions.
   <int value="135017596" label="OverlayScrollbarsOSSetting:disabled"/>
   <int value="136557248" label="PartitionAllocMemoryTagging:enabled"/>
   <int value="136924140" label="OfflineIndicatorV2:enabled"/>
+  <int value="137159418" label="AndroidMultiprofileStartupData:disabled"/>
   <int value="137866995" label="ImeKoreanModeSwitchDebug:enabled"/>
   <int value="138020994" label="LacrosProfileMigrationForAnyUser:enabled"/>
   <int value="138345654" label="enable-ambient-authentication-in-incognito"/>
@@ -18564,6 +18565,7 @@ from previous Chrome versions.
   <int value="1069325321" label="CrostiniGpuSupport:enabled"/>
   <int value="1069628859" label="MostVisitedTilesCustomization:disabled"/>
   <int value="1070164693" label="MidiManagerDynamicInstantiation:disabled"/>
+  <int value="1070183461" label="AndroidMultiprofileStartupData:enabled"/>
   <int value="1070266809" label="ReaderModeToggleLinks:enabled"/>
   <int value="1070300488" label="disable-webgl"/>
   <int value="1070449228" label="ContextualSuggestionsCarousel:enabled"/>

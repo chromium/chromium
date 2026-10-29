@@ -258,6 +258,11 @@ inline constexpr char kAndroidMultiprofileName[] = "Android Multi-Profile";
 inline constexpr char kAndroidMultiprofileDescription[] =
     "Enable multi-profile support on Android.";
 
+inline constexpr char kAndroidMultiprofileStartupDataName[] =
+    "Android Multi-Profile for Startup Data";
+inline constexpr char kAndroidMultiprofileStartupDataDescription[] =
+    "Enable multi-profile support in Android profile startup.";
+
 inline constexpr char kEnforceIncognitoIsolationName[] =
     "Enforce Incognito Isolation";
 inline constexpr char kEnforceIncognitoIsolationDescription[] =
