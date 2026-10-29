@@ -20,6 +20,10 @@ domato_rules = [
   "//third_party/domato/src/rules/tagattributes.txt",
 ]
 
+# Generated grammar code isn't under test, and coverage-instrumenting it makes
+# webidl_in_process_fuzzer too large to link on Windows.
+_domatolpm_remove_configs = [ "//build/config/coverage:default_coverage" ]
+
 template("domatolpm") {
   _name = target_name
   _script_target_name = "${_name}_domatolpm_gen"
@@ -129,6 +133,7 @@ template("domatolpm") {
     ]
     deps = [ "//testing/libfuzzer/research/domatolpm:domatolpm_context" ]
     sources = _generated_cpps
+    configs -= _domatolpm_remove_configs
   }
 }
 
@@ -230,5 +235,6 @@ template("domatolpm_fuzzer") {
       "${_gen_file_format}.cc",
       "${_gen_file_format}.h",
     ]
+    configs -= _domatolpm_remove_configs
   }
 }
