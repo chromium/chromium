@@ -30,7 +30,6 @@ using chrome_test_util::OpenLinkInNewTabButton;
 using chrome_test_util::SettingsDestinationButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuPrivacyButton;
-using chrome_test_util::TabGridCellAtIndex;
 using chrome_test_util::WebViewMatcher;
 
 namespace {
@@ -109,33 +108,18 @@ void SwitchToNormalMode() {
   // Enter the tab grid to switch modes.
   [ChromeEarlGrey showTabSwitcher];
 
-  // Switch modes and exit the tab grid.
-  const int tab_index = [ChromeEarlGrey indexOfActiveNormalTab];
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::TabGridOpenTabsPanelButton()]
-      performAction:grey_tap()];
+  // Switch to the regular tabs panel and wait for it to become visible.
   [ChromeEarlGrey
-      waitForSufficientlyVisibleElementWithMatcher:TabGridCellAtIndex(
-                                                       tab_index)];
-  [[EarlGrey selectElementWithMatcher:TabGridCellAtIndex(tab_index)]
-      performAction:grey_tap()];
+      waitForAndTapButton:chrome_test_util::TabGridOpenTabsPanelButton()];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      chrome_test_util::RegularTabGrid()];
 
-  BOOL success = NO;
-  // Turn off synchronization of GREYAssert to test the pending states.
-  {
-    ScopedSynchronizationDisabler disabler;
-    success =
-        base::test::ios::WaitUntilConditionOrTimeout(kWaitElementTimeout, ^{
-          return ![ChromeEarlGrey isIncognitoMode];
-        });
-    Wait(chrome_test_util::ToolsMenuButton(), @"Tool Menu");
-  }
-
-  if (!success) {
-    // TODO(crbug.com/40622599): Avoid asserting directly unless the test fails,
-    // due to timing issues.
-    GREYFail(@"Failed to switch to normal mode.");
-  }
+  // Exit the tab grid.
+  [ChromeEarlGrey hideTabSwitcher];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      chrome_test_util::ToolsMenuButton()];
+  GREYAssertFalse([ChromeEarlGrey isIncognitoMode],
+                  @"Failed to switch to normal mode.");
 }
 
 }  // namespace
