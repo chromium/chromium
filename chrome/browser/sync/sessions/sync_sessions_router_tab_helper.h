@@ -24,9 +24,6 @@ class SyncSessionsWebContentsRouter;
 // TabHelper class that forwards tab-level WebContentsObserver events to a
 // (per-profile) sessions router. The router is responsible for forwarding
 // these events to sessions sync.
-// A TabHelper is a WebContentsObserver tied to the top level WebContents for a
-// browser tab.
-// https://chromium.googlesource.com/chromium/src/+/main/docs/tab_helpers.md
 class SyncSessionsRouterTabHelper
     : public content::WebContentsObserver,
       public translate::TranslateDriver::LanguageDetectionObserver,

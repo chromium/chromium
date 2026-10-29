@@ -202,7 +202,7 @@ class TabInterface;
 class PageContextEligibilityHelper;
 
 // This class holds state that is scoped to a tab in Android. It is constructed
-// after the WebContents/tab_helpers, and destroyed before.
+// after the WebContents, and destroyed before.
 class TabFeatures {
  public:
   TabFeatures(content::WebContents* web_contents, Profile* profile);

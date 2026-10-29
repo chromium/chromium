@@ -358,7 +358,7 @@ class TabAndroid : public tabs::TabInterface,
   // outlives all `ScopedUnownedUserData` registrations during teardown.
   ui::UnownedUserDataHost unowned_user_data_host_;
 
-  // Holds tab-scoped state. Constructed after tab_helpers.
+  // Holds tab-scoped state.
   std::unique_ptr<tabs::TabFeatures> tab_features_;
 
   raw_ptr<tabs::TabCollection> parent_collection_ = nullptr;

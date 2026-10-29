@@ -29,8 +29,6 @@ tluk@chromium.org
 # structural changes, use usual OWNERS rules.
 per-file BUILD.gn=*
 
-per-file tab_helpers.*=avi@chromium.org
-
 # Instant/Search files.
 per-file browser_instant_controller*=file://chrome/browser/search/OWNERS
 

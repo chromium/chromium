@@ -289,7 +289,7 @@ class TabInterface : public SupportsTabHandles {
   //  BrowserWindowFeatures, but some code (e.g. tab_helpers) are currently
   //  created in these unit tests. The proper solution is to convert these
   //  tab_helpers to TabFeatures, which is tracked in
-  //  https://crbug.com/369319589.
+  //  https://crbug.com/540709814.
   // This is a long winded way of saying: if you are using this code from
   // TabFeatures or BrowserWindowFeatures, you can safely assume that this is
   // always non-nullptr.
