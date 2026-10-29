@@ -13,6 +13,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/jni_zero/jni_zero.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -25,8 +26,10 @@ using jni_zero::ScopedJavaLocalRef;
 namespace httpclient {
 
 // static
-static int64_t JNI_SimpleHttpClient_Init(JNIEnv* env, Profile* profile) {
-  return reinterpret_cast<intptr_t>(new HttpClientBridge(profile));
+static jni_zero::JniUniquePtr<HttpClientBridge> JNI_SimpleHttpClient_Init(
+    JNIEnv* env,
+    Profile* profile) {
+  return jni_zero::MakeUnique<HttpClientBridge>(profile);
 }
 
 HttpClientBridge::HttpClientBridge(Profile* profile) {
@@ -36,10 +39,6 @@ HttpClientBridge::HttpClientBridge(Profile* profile) {
 }
 
 HttpClientBridge::~HttpClientBridge() = default;
-
-void HttpClientBridge::Destroy(JNIEnv* env) {
-  delete this;
-}
 
 void HttpClientBridge::SendNetworkRequest(
     JNIEnv* env,

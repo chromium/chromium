@@ -30,8 +30,6 @@ class HttpClientBridge {
   HttpClientBridge(const HttpClientBridge& client) = delete;
   HttpClientBridge& operator=(const HttpClientBridge& client) = delete;
 
-  void Destroy(JNIEnv* env);
-
   void SendNetworkRequest(JNIEnv* env,
                           const GURL& gurl,
                           const std::string& request_type,

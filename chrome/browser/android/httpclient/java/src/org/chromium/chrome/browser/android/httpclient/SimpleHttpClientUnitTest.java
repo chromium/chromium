@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.android.httpclient;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
+import org.jni_zero.JniUniquePtr;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,11 +30,11 @@ import java.util.Map;
 /** Unit test for {@link SimpleHttpClient}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class SimpleHttpClientUnitTest {
-    private static final long FAKE_NATIVE_POINTER = 123456789L;
     @Rule public MockitoRule mRule = MockitoJUnit.rule();
 
     @Mock public SimpleHttpClient.Natives mNativeMock;
     @Mock public Profile mMockProfile;
+    @Mock private JniUniquePtr<SimpleHttpClient.NativeHttpClientBridge> mNativeBridge;
 
     private SimpleHttpClient mHttpClient;
 
@@ -40,17 +42,22 @@ public class SimpleHttpClientUnitTest {
     public void setUp() {
         ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
         SimpleHttpClientJni.setInstanceForTesting(mNativeMock);
-        Mockito.when(mNativeMock.init(mMockProfile)).thenReturn(FAKE_NATIVE_POINTER);
+        Mockito.when(mNativeMock.init(mMockProfile)).thenReturn(mNativeBridge);
 
         mHttpClient = new SimpleHttpClient(mMockProfile);
 
         Mockito.verify(mNativeMock).init(mMockProfile);
     }
 
+    @After
+    public void tearDown() {
+        mHttpClient.destroy();
+    }
+
     @Test
     public void testDestroy() {
         mHttpClient.destroy();
-        Mockito.verify(mNativeMock).destroy(FAKE_NATIVE_POINTER);
+        Mockito.verify(mNativeBridge).destroy();
     }
 
     @Test
@@ -70,7 +77,7 @@ public class SimpleHttpClientUnitTest {
 
         Mockito.verify(mNativeMock)
                 .sendNetworkRequest(
-                        eq(FAKE_NATIVE_POINTER),
+                        eq(mNativeBridge),
                         eq(JUnitTestGURLs.BLUE_1),
                         eq(requestType),
                         eq(requestBody),

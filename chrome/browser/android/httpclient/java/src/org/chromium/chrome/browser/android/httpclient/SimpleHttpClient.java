@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.android.httpclient;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -15,6 +18,7 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.net.NetworkTrafficAnnotationTag;
@@ -36,10 +40,13 @@ import java.util.function.Consumer;
 @JNINamespace("httpclient")
 @NullMarked
 public class SimpleHttpClient implements Destroyable {
+    @JniType("::httpclient::HttpClientBridge")
+    interface NativeHttpClientBridge extends JniTypeToken {}
+
     private static final ProfileKeyedMap<SimpleHttpClient> sClients =
             ProfileKeyedMap.createMapOfDestroyables();
 
-    private long mNativeBridge;
+    private @Nullable JniUniquePtr<NativeHttpClientBridge> mNativeBridge;
 
     /**
      * Data structure representing HTTP response. Used between native and Java.
@@ -87,8 +94,10 @@ public class SimpleHttpClient implements Destroyable {
      */
     @Override
     public void destroy() {
-        SimpleHttpClientJni.get().destroy(mNativeBridge);
-        mNativeBridge = 0;
+        if (mNativeBridge != null) {
+            mNativeBridge.destroy();
+            mNativeBridge = null;
+        }
     }
 
     /**
@@ -108,15 +117,16 @@ public class SimpleHttpClient implements Destroyable {
             Map<String, String> headers,
             NetworkTrafficAnnotationTag annotation,
             Callback<HttpResponse> responseConsumer) {
-        assert mNativeBridge != 0;
+        assert mNativeBridge != null;
         assert gurl.isValid();
 
+        JniUniquePtr<NativeHttpClientBridge> nativeBridge = mNativeBridge;
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
                 () ->
                         SimpleHttpClientJni.get()
                                 .sendNetworkRequest(
-                                        mNativeBridge,
+                                        nativeBridge,
                                         gurl,
                                         requestType,
                                         body,
@@ -146,12 +156,10 @@ public class SimpleHttpClient implements Destroyable {
 
     @NativeMethods
     interface Natives {
-        long init(@JniType("Profile*") Profile profile);
-
-        void destroy(long nativeHttpClientBridge);
+        JniUniquePtr<NativeHttpClientBridge> init(@JniType("Profile*") Profile profile);
 
         void sendNetworkRequest(
-                long nativeHttpClientBridge,
+                JniPtr<NativeHttpClientBridge> self,
                 @JniType("GURL") GURL gurl,
                 @JniType("std::string") String requestType,
                 @JniType("std::vector<uint8_t>") byte[] body,

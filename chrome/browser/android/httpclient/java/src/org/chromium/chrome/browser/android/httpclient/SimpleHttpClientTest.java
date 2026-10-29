@@ -9,6 +9,7 @@ import android.content.Context;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,6 +66,13 @@ public class SimpleHttpClientTest {
                 () ->
                         mHttpClient =
                                 new SimpleHttpClient(ProfileManager.getLastUsedRegularProfile()));
+    }
+
+    @After
+    public void tearDown() {
+        if (mHttpClient != null) {
+            ThreadUtils.runOnUiThreadBlocking(() -> mHttpClient.destroy());
+        }
     }
 
     @Test
