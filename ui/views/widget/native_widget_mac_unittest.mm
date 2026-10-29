@@ -99,6 +99,7 @@ class WidgetModalVisibilityObserver : public views::WidgetObserver {
 // Test NSWindow that provides hooks via method overrides to verify behavior.
 @interface NativeWidgetMacTestWindow : NativeWidgetMacNSWindow
 @property(readonly, nonatomic) int invalidateShadowCount;
+@property(readonly, nonatomic) int setStyleMaskCount;
 @property(assign, nonatomic) BOOL fakeOnInactiveSpace;
 @property(assign, nonatomic) BOOL fakeOcclusionStateVisible;
 @property(assign, nonatomic) bool* deallocFlag;
@@ -287,6 +288,36 @@ class NativeWidgetMacTest : public WidgetTest {
     return native_widget->focus_manager_;
   }
 };
+
+// TODO(crbug.com/567908586): Remove this test with the guard in
+// ApplyNSWindowSizeConstraints().
+TEST_F(NativeWidgetMacTest, SizeConstraintsAvoidRedundantStyleMaskChanges) {
+  NativeWidgetMacTestWindow* window;
+  Widget* widget = CreateWidgetWithTestWindow(
+      CreateParams(Widget::InitParams::TYPE_WINDOW), &window);
+  auto* bridge = BridgedNativeWidgetTestApi(widget).bridge();
+
+  bridge->SetSizeConstraints(gfx::Size(100, 100), gfx::Size(500, 500), true,
+                             true);
+  const NSWindowStyleMask resizable_style_mask = window.styleMask;
+  EXPECT_TRUE(resizable_style_mask & NSWindowStyleMaskResizable);
+  const int style_mask_count = window.setStyleMaskCount;
+
+  bridge->SetSizeConstraints(gfx::Size(120, 130), gfx::Size(600, 700), true,
+                             true);
+  EXPECT_EQ(style_mask_count, window.setStyleMaskCount);
+  EXPECT_EQ(resizable_style_mask, window.styleMask);
+  EXPECT_TRUE(NSEqualSizes(NSMakeSize(120, 130), window.contentMinSize));
+  EXPECT_TRUE(NSEqualSizes(NSMakeSize(600, 700), window.contentMaxSize));
+
+  bridge->SetSizeConstraints(gfx::Size(120, 130), gfx::Size(600, 700), false,
+                             true);
+  EXPECT_GT(window.setStyleMaskCount, style_mask_count);
+  EXPECT_EQ(resizable_style_mask & ~NSWindowStyleMaskResizable,
+            window.styleMask);
+
+  widget->CloseNow();
+}
 
 TEST_F(NativeWidgetMacTest, ScreenshotProtectionTracksWindowSize) {
   struct CaptureExclusionCall {
@@ -3892,6 +3923,7 @@ TEST_F(NativeWidgetMacTest, SizeChangeNotifiedBeforeMoveChange) {
 @implementation NativeWidgetMacTestWindow
 
 @synthesize invalidateShadowCount = _invalidateShadowCount;
+@synthesize setStyleMaskCount = _setStyleMaskCount;
 @synthesize fakeOnInactiveSpace = _fakeOnInactiveSpace;
 @synthesize fakeOcclusionStateVisible = _fakeOcclusionStateVisible;
 @synthesize deallocFlag = _deallocFlag;
@@ -3906,6 +3938,11 @@ TEST_F(NativeWidgetMacTest, SizeChangeNotifiedBeforeMoveChange) {
 - (void)invalidateShadow {
   ++_invalidateShadowCount;
   [super invalidateShadow];
+}
+
+- (void)setStyleMask:(NSWindowStyleMask)styleMask {
+  ++_setStyleMaskCount;
+  [super setStyleMask:styleMask];
 }
 
 - (BOOL)isOnActiveSpace {

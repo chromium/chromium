@@ -54,7 +54,14 @@ void ApplyNSWindowSizeConstraints(NSWindow* window,
   } else {
     style_mask &= ~NSWindowStyleMaskResizable;
   }
-  window.styleMask = style_mask;
+
+  // Redundant writes during green-button hover can crash fullscreen entry on
+  // macOS 27.0/27.0.1 (FB25258584, fixed in 27.2).
+  // TODO(crbug.com/567908586): Remove guard and test once protection for
+  // macOS 27.0.x is no longer needed.
+  if (style_mask != window.styleMask) {
+    window.styleMask = style_mask;
+  }
 
   SetNSWindowCanFullscreen(window, can_fullscreen);
 
