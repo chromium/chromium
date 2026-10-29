@@ -1276,20 +1276,22 @@ impl<A: Array> SmallVec<A> {
 
     /// Re-allocate to set the capacity to `max(new_cap, inline_size())`.
     ///
-    /// Panics if `new_cap` is less than the vector's length
-    /// or if the capacity computation overflows `usize`.
+    /// If `new_cap` is less than the vector's length, this is a no-op.
+    /// Panics if the capacity computation overflows `usize`.
     pub fn grow(&mut self, new_cap: usize) {
         infallible(self.try_grow(new_cap))
     }
 
     /// Re-allocate to set the capacity to `max(new_cap, inline_size())`.
     ///
-    /// Panics if `new_cap` is less than the vector's length
+    /// If `new_cap` is less than the vector's length, this is a no-op.
     pub fn try_grow(&mut self, new_cap: usize) -> Result<(), CollectionAllocErr> {
         unsafe {
             let unspilled = !self.spilled();
             let (ptr, &mut len, cap) = self.triple_mut();
-            assert!(new_cap >= len);
+            if new_cap < len {
+                return Ok(());
+            }
             if new_cap <= Self::inline_capacity() {
                 if unspilled {
                     return Ok(());
