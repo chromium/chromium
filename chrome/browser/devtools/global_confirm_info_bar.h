@@ -48,6 +48,10 @@ class GlobalConfirmInfoBar : public infobars::InfoBarManager::Observer {
   // Closes all the infobars.
   void Close();
 
+  base::WeakPtr<GlobalConfirmInfoBar> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   class DelegateProxy;
 

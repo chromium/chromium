@@ -589,7 +589,7 @@ void ChromeDevToolsManagerDelegate::SetActiveWebSocketConnections(
   } else if (count > 0 && !infobar_) {
     auto delegate = std::make_unique<DevToolsRemoteServerInfobarDelegate>();
     delegate->AddObserver(this);
-    infobar_ = GlobalConfirmInfoBar::Show(std::move(delegate));
+    infobar_ = GlobalConfirmInfoBar::Show(std::move(delegate))->GetWeakPtr();
   }
 }
 
