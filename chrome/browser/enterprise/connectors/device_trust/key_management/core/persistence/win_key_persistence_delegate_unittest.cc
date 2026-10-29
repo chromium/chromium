@@ -4,9 +4,11 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/win_key_persistence_delegate.h"
 
+#include <optional>
 #include <string>
 #include <utility>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_reg_util_win.h"
@@ -97,7 +99,8 @@ class WinKeyPersistenceDelegateTest : public testing::Test {
 
   std::unique_ptr<WinKeyPersistenceDelegate> persistence_delegate_;
   std::wstring key_path_;
-  crypto::ScopedFakeUnexportableKeyProvider scoped_key_provider_;
+  std::optional<crypto::ScopedFakeUnexportableKeyProvider> scoped_key_provider_{
+      std::in_place};
   registry_util::RegistryOverrideManager registry_override_manager_;
 };
 
@@ -227,6 +230,31 @@ TEST_F(WinKeyPersistenceDelegateTest, ValidHardwareKeyPair_Success) {
   // Should expect no failure metrics.
   histogram_tester.ExpectTotalCount(
       base::StringPrintf(kErrorHistogramFormat, "LoadKeyPair"), 0);
+}
+
+// Tests that loading a hardware key pair fails cleanly when there is no
+// unexportable key provider, e.g. because the TPM was disabled after the key
+// was stored.
+TEST_F(WinKeyPersistenceDelegateTest, LoadKeyPair_NoKeyProvider) {
+  base::HistogramTester histogram_tester;
+
+  scoped_refptr<SigningKeyPair> key_pair =
+      persistence_delegate_->CreateKeyPair();
+  ASSERT_TRUE(key_pair);
+  SetRegistryKeyInfo(BPKUR::CHROME_BROWSER_HW_KEY,
+                     key_pair->key()->GetWrappedKey());
+
+  scoped_key_provider_.reset();
+  crypto::ScopedNullUnexportableKeyProvider null_key_provider;
+
+  LoadPersistedKeyResult result;
+  EXPECT_FALSE(
+      persistence_delegate_->LoadKeyPair(KeyStorageType::kPermanent, &result));
+
+  EXPECT_EQ(result, LoadPersistedKeyResult::kMalformedKey);
+  histogram_tester.ExpectUniqueSample(
+      base::StringPrintf(kErrorHistogramFormat, "LoadKeyPair"),
+      KeyPersistenceError::kCreateSigningKeyFromWrappedFailed, 1);
 }
 
 // TODO(b/290068551): Add test coverage for this method.

@@ -169,7 +169,8 @@ scoped_refptr<SigningKeyPair> WinKeyPersistenceDelegate::LoadKeyPair(
     return ReturnLoadKeyError(LoadPersistedKeyResult::kMalformedKey, result);
   }
 
-  auto signing_key = provider->FromWrappedSigningKeySlowly(wrapped);
+  std::unique_ptr<crypto::UnexportableSigningKey> signing_key =
+      provider ? provider->FromWrappedSigningKeySlowly(wrapped) : nullptr;
   if (!signing_key) {
     RecordFailure(
         KeyPersistenceOperation::kLoadKeyPair,
