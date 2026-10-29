@@ -237,4 +237,14 @@ BASE_FEATURE_PARAM(bool,
                    &kGeminiContextualSuggestionsCues,
                    false);
 
+BASE_FEATURE_PARAM(bool,
+                   kEnablePrivateInsightsLogging,
+                   &kGeminiContextualSuggestionsCues,
+                   false);
+
+bool IsPrivateInsightsLoggingEnabled() {
+  return IsGeminiContextualSuggestionsCuesEnabled() &&
+         kEnablePrivateInsightsLogging.Get();
+}
+
 }  // namespace contextual_cueing

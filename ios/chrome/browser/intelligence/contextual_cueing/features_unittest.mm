@@ -128,4 +128,36 @@ TEST_F(ContextualCueingFeaturesTest, AudienceTierParamsOverride) {
   EXPECT_TRUE(kShowCuesToAllUsers.Get());
 }
 
+// Tests that Private Insights logging is off by default, and is on only when
+// `kEnablePrivateInsightsLogging` is set and contextual cues are enabled.
+TEST_F(ContextualCueingFeaturesTest, IsPrivateInsightsLoggingEnabled) {
+  base::FieldTrialParams params;
+  params[kEnablePrivateInsightsLogging.name] = "true";
+
+  // Disabled by default, even with contextual cues enabled.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        {kPageActionMenu, kGeminiContextualSuggestionsCues}, {});
+    EXPECT_FALSE(IsPrivateInsightsLoggingEnabled());
+  }
+
+  // Disabled without the `kPageActionMenu` dependency.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        kGeminiContextualSuggestionsCues, params);
+    EXPECT_FALSE(IsPrivateInsightsLoggingEnabled());
+  }
+
+  // Enabled when `kPageActionMenu` and the feature with the param are enabled.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {{kPageActionMenu, {}}, {kGeminiContextualSuggestionsCues, params}},
+        {});
+    EXPECT_TRUE(IsPrivateInsightsLoggingEnabled());
+  }
+}
+
 }  // namespace contextual_cueing

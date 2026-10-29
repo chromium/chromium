@@ -10196,6 +10196,7 @@
                     "name": "Enabled_Main_ANE_InfobarAndChip",
                     "params": {
                         "EducationClassifierThreshold": "2.0",
+                        "EnablePrivateInsightsLogging": "true",
                         "ForceMessageUiOnly": "false",
                         "ForceOmniboxChipUiOnly": "false",
                         "GlobalCapCount": "4",
@@ -10392,6 +10393,26 @@
                     "name": "Enabled",
                     "enable_features": [
                         "IOSPasswordAutoSubmission"
+                    ]
+                }
+            ]
+        }
+    ],
+    "IOSPrivateInsights": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "fcp_population_name_contextual_cues": "chrome/private_insights/contextual_cues",
+                        "fcp_server_uri": "https://federatedcompute-pa.googleapis.com/",
+                        "upload_interval": "30s"
+                    },
+                    "enable_features": [
+                        "PrivateInsightsFeature"
                     ]
                 }
             ]
