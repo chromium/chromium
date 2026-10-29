@@ -52,7 +52,11 @@ void WaylandBubble::Hide() {
   }
 
   WaylandWindow::Hide();
+  auto weak_this = AsWeakPtr();
   Deactivate();
+  if (!weak_this) {
+    return;
+  }
   subsurface_.reset();
   connection()->Flush();
 }
@@ -90,14 +94,22 @@ void WaylandBubble::SetInputRegion(
 
 void WaylandBubble::Activate() {
   if (subsurface_ && activatable_ && parent_window()) {
+    auto weak_this = AsWeakPtr();
     parent_window()->ActivateBubble(this);
+    if (!weak_this) {
+      return;
+    }
   }
   WaylandWindow::Activate();
 }
 
 void WaylandBubble::Deactivate() {
   if (IsActive()) {
+    auto weak_this = AsWeakPtr();
     parent_window()->ActivateBubble(nullptr);
+    if (!weak_this) {
+      return;
+    }
   }
   WaylandWindow::Deactivate();
 }

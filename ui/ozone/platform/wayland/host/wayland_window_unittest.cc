@@ -6375,6 +6375,81 @@ TEST_P(WaylandWindowTest, WaylandBubbleShowUaf) {
   wayland_bubble->Show(false);
 }
 
+TEST_P(WaylandWindowTest, WaylandBubbleActivateUaf) {
+  MockWaylandPlatformWindowDelegate bubble_delegate(connection_.get());
+  gfx::Rect bubble_bounds(10, 10, 50, 50);
+  auto wayland_bubble =
+      CreateWaylandWindowWithParams(PlatformWindowType::kBubble, bubble_bounds,
+                                    &bubble_delegate, window_->GetWidget());
+  ASSERT_TRUE(wayland_bubble);
+
+  EXPECT_CALL(bubble_delegate, OnActivationChanged(true)).WillOnce([&]() {
+    wayland_bubble.reset();
+  });
+
+  // This should not crash if the bubble is destroyed during Activate().
+  wayland_bubble->Activate();
+  EXPECT_FALSE(wayland_bubble);
+}
+
+TEST_P(WaylandWindowTest, WaylandBubbleDeactivateUaf) {
+  MockWaylandPlatformWindowDelegate bubble_delegate(connection_.get());
+  gfx::Rect bubble_bounds(10, 10, 50, 50);
+  auto wayland_bubble =
+      CreateWaylandWindowWithParams(PlatformWindowType::kBubble, bubble_bounds,
+                                    &bubble_delegate, window_->GetWidget());
+  ASSERT_TRUE(wayland_bubble);
+
+  wayland_bubble->Activate();
+  EXPECT_TRUE(wayland_bubble->IsActive());
+
+  // Verify normal deactivation updates state without destroying the bubble.
+  wayland_bubble->Deactivate();
+  EXPECT_FALSE(wayland_bubble->IsActive());
+
+  wayland_bubble->Activate();
+  EXPECT_TRUE(wayland_bubble->IsActive());
+
+  EXPECT_CALL(bubble_delegate, OnActivationChanged(false)).WillOnce([&]() {
+    wayland_bubble.reset();
+  });
+
+  // This should not crash if the bubble is destroyed during Deactivate().
+  wayland_bubble->Deactivate();
+  EXPECT_FALSE(wayland_bubble);
+}
+
+TEST_P(WaylandWindowTest, WaylandBubbleHideUaf) {
+  MockWaylandPlatformWindowDelegate bubble_delegate(connection_.get());
+  gfx::Rect bubble_bounds(10, 10, 50, 50);
+  auto wayland_bubble =
+      CreateWaylandWindowWithParams(PlatformWindowType::kBubble, bubble_bounds,
+                                    &bubble_delegate, window_->GetWidget());
+  ASSERT_TRUE(wayland_bubble);
+  EXPECT_TRUE(wayland_bubble->IsVisible());
+
+  wayland_bubble->Activate();
+  EXPECT_TRUE(wayland_bubble->IsActive());
+
+  // Verify normal Hide() deactivates and hides the bubble.
+  wayland_bubble->Hide();
+  EXPECT_FALSE(wayland_bubble->IsActive());
+  EXPECT_FALSE(wayland_bubble->IsVisible());
+
+  wayland_bubble->Show(false);
+  EXPECT_TRUE(wayland_bubble->IsVisible());
+  wayland_bubble->Activate();
+  EXPECT_TRUE(wayland_bubble->IsActive());
+
+  EXPECT_CALL(bubble_delegate, OnActivationChanged(false)).WillOnce([&]() {
+    wayland_bubble.reset();
+  });
+
+  // This should not crash if the bubble is destroyed during Hide().
+  wayland_bubble->Hide();
+  EXPECT_FALSE(wayland_bubble);
+}
+
 TEST_P(WaylandWindowTest, WaylandPopupShowUaf) {
   MockWaylandPlatformWindowDelegate popup_delegate(connection_.get());
   PlatformWindowInitProperties properties;
