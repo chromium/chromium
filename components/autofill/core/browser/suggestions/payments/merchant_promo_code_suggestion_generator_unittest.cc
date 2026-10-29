@@ -102,7 +102,7 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
       {GURL("https://www.example.com")},
       /*offer_details_url=*/GURL("https://offer-details-url.com/"),
       display_strings, "test_promo_code_1",
-      /*offer_reward_amount=*/"5% off", /*issue_time=*/base::Time());
+      /*offer_short_title=*/"5% off", /*issue_time=*/base::Time());
   test_api(payments_data_manager())
       .AddOfferData(std::make_unique<AutofillOfferData>(wallet_direct_offer));
 
@@ -145,7 +145,7 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
       {GURL("https://www.example.com")},
       /*offer_details_url=*/GURL("https://offer-details-url.com/"),
       display_strings, "test_promo_code_1",
-      /*offer_reward_amount=*/"5% off", /*issue_time=*/base::Time());
+      /*offer_short_title=*/"5% off", /*issue_time=*/base::Time());
   test_api(payments_data_manager())
       .AddOfferData(std::make_unique<AutofillOfferData>(wallet_direct_offer));
 
@@ -179,7 +179,7 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
       /*offer_id=*/"1", expiry, merchant_origins,
       /*offer_details_url=*/GURL("https://offer-details-url.com/"),
       display_strings, promo_code,
-      /*offer_reward_amount=*/"test_offer_reward_amount_1",
+      /*offer_short_title=*/"test_offer_short_title_1",
       /*issue_time=*/base::Time());
 
   DisplayStrings display_strings2;
@@ -189,7 +189,7 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
       /*offer_id=*/"2", expiry, merchant_origins,
       /*offer_details_url=*/GURL("https://offer-details-url.com/"),
       display_strings2, promo_code2,
-      /*offer_reward_amount=*/"test_offer_reward_amount_2",
+      /*offer_short_title=*/"test_offer_short_title_2",
       /*issue_time=*/base::Time());
 
   test_api(payments_data_manager())
@@ -202,7 +202,7 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
   ASSERT_EQ(promo_code_suggestions.size(), 4u);
 
   EXPECT_EQ(promo_code_suggestions[0].main_text.value,
-            u"test_offer_reward_amount_1");
+            u"test_offer_short_title_1");
   EXPECT_EQ(promo_code_suggestions[0].GetPayload<Suggestion::PromoCode>(),
             Suggestion::PromoCode("test_promo_code_1"));
 
@@ -222,7 +222,7 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
             SuggestionType::kMerchantPromoCodeEntry);
 
   EXPECT_EQ(promo_code_suggestions[1].main_text.value,
-            u"test_offer_reward_amount_2");
+            u"test_offer_short_title_2");
   EXPECT_EQ(promo_code_suggestions[1].GetPayload<Suggestion::PromoCode>(),
             Suggestion::PromoCode("test_promo_code_2"));
   EXPECT_THAT(promo_code_suggestions[1],
@@ -269,8 +269,8 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
             /*offer_details_url=*/GURL("https://offer-details-url.com/"),
             display_strings,
             /*promo_code=*/base::StrCat({"test_promo_code_", offer_id}),
-            /*offer_reward_amount=*/
-            base::StrCat({"test_offer_reward_amount_", offer_id}),
+            /*offer_short_title=*/
+            base::StrCat({"test_offer_short_title_", offer_id}),
             /*issue_time=*/base::Time()));
   }
 
@@ -286,7 +286,7 @@ TEST_F(MerchantPromoCodeSuggestionGeneratorTest,
               SuggestionType::kMerchantPromoCodeEntry);
     EXPECT_EQ(promo_code_suggestions[i].main_text.value,
               base::UTF8ToUTF16(base::StrCat(
-                  {"test_offer_reward_amount_", base::NumberToString(i + 1)})));
+                  {"test_offer_short_title_", base::NumberToString(i + 1)})));
     EXPECT_EQ(promo_code_suggestions[i].GetPayload<Suggestion::PromoCode>(),
               Suggestion::PromoCode(base::StrCat(
                   {"test_promo_code_", base::NumberToString(i + 1)})));

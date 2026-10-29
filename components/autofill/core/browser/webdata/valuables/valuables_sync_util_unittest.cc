@@ -186,7 +186,7 @@ TEST(OfferSyncUtilTest, CreateOfferDataFromValuableSpecifics) {
   EXPECT_EQ("SAFEWAY50", offer.GetPromoCode());
   EXPECT_EQ("50% off your next purchase",
             offer.GetDisplayStrings().value_prop_text);
-  EXPECT_EQ("50% off", offer.GetOfferRewardAmount());
+  EXPECT_EQ("50% off", offer.GetOfferShortTitle());
   EXPECT_EQ(GURL("https://safeway.com/offer-details"),
             offer.GetOfferDetailsUrl());
   EXPECT_THAT(offer.GetMerchantOrigins(),

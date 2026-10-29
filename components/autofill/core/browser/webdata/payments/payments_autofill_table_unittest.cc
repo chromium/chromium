@@ -1406,7 +1406,7 @@ TEST_F(PaymentsAutofillTableTest, SetAndGetOfferData) {
                          "Click the promo code field at checkout to autofill "
                          "it."},
       /*promo_code=*/"5DOLLARSOFF",
-      /*offer_reward_amount=*/"$5",
+      /*offer_short_title=*/"$5",
       /*issue_time=*/base::Time::FromSecondsSinceUnixEpoch(100));
   // An offer redeemable at several merchants.
   autofill_offer_data.emplace_back(
@@ -1423,7 +1423,7 @@ TEST_F(PaymentsAutofillTableTest, SetAndGetOfferData) {
                          "Click the promo code field at checkout to autofill "
                          "it."},
       /*promo_code=*/"10PCTOFF",
-      /*offer_reward_amount=*/"10%",
+      /*offer_short_title=*/"10%",
       /*issue_time=*/base::Time::FromSecondsSinceUnixEpoch(200));
 
   table_->SetAutofillOffers(autofill_offer_data);
@@ -1438,7 +1438,7 @@ TEST_F(PaymentsAutofillTableTest, SetAndGetOfferData) {
     ASSERT_NE(it, output_offer_data.end());
     const AutofillOfferData& actual = **it;
 
-    EXPECT_EQ(expected.GetOfferRewardAmount(), actual.GetOfferRewardAmount());
+    EXPECT_EQ(expected.GetOfferShortTitle(), actual.GetOfferShortTitle());
     EXPECT_EQ(expected.GetPromoCode(), actual.GetPromoCode());
     EXPECT_EQ(expected.GetExpiry(), actual.GetExpiry());
     EXPECT_EQ(expected.GetIssueTime(), actual.GetIssueTime());
@@ -1474,7 +1474,7 @@ TEST_F(PaymentsAutofillTableTest, SetAndGetOfferData_OpaqueOfferIds) {
         /*offer_details_url=*/GURL("https://www.offer_example.com/"),
         /*display_strings=*/DisplayStrings{},
         /*promo_code=*/"5DOLLARSOFF",
-        /*offer_reward_amount=*/"$5",
+        /*offer_short_title=*/"$5",
         /*issue_time=*/base::Time());
   }
 

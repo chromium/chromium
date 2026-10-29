@@ -20,7 +20,7 @@ AutofillOfferData::AutofillOfferData(std::string offer_id,
                                      GURL offer_details_url,
                                      DisplayStrings display_strings,
                                      std::string promo_code,
-                                     std::string offer_reward_amount,
+                                     std::string offer_short_title,
                                      base::Time issue_time)
     : offer_type_(OfferType::WALLET_DIRECT_OFFER),
       offer_id_(std::move(offer_id)),
@@ -29,7 +29,7 @@ AutofillOfferData::AutofillOfferData(std::string offer_id,
       offer_details_url_(std::move(offer_details_url)),
       merchant_origins_(std::move(merchant_origins)),
       display_strings_(std::move(display_strings)),
-      offer_reward_amount_(std::move(offer_reward_amount)),
+      offer_short_title_(std::move(offer_short_title)),
       promo_code_(std::move(promo_code)) {}
 
 AutofillOfferData::AutofillOfferData() = default;
@@ -53,8 +53,7 @@ int AutofillOfferData::Compare(
     return comparison;
   }
 
-  comparison =
-      offer_reward_amount_.compare(other_offer_data.offer_reward_amount_);
+  comparison = offer_short_title_.compare(other_offer_data.offer_short_title_);
   if (comparison != 0) {
     return comparison;
   }

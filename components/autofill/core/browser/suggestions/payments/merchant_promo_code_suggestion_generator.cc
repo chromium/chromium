@@ -50,7 +50,7 @@ std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
        base::span(promo_code_offers).first(num_promo_codes)) {
     // For each promo code, create a suggestion.
     std::u16string main_text =
-        base::UTF8ToUTF16(promo_code_offer->GetOfferRewardAmount());
+        base::UTF8ToUTF16(promo_code_offer->GetOfferShortTitle());
     Suggestion& suggestion = suggestions.emplace_back(
         main_text, SuggestionType::kMerchantPromoCodeEntry);
     suggestion.icon = Suggestion::Icon::kOfferTag;

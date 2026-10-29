@@ -627,7 +627,7 @@ TEST_F(ValuableSyncBridgeTest, MergeFullSyncData_Offers) {
               ElementsAre(GURL("https://safeway.com/")));
   EXPECT_EQ(offers[0].GetDisplayStrings().value_prop_text,
             "50% off your next purchase");
-  EXPECT_EQ(offers[0].GetOfferRewardAmount(), "50% off");
+  EXPECT_EQ(offers[0].GetOfferShortTitle(), "50% off");
   EXPECT_EQ(offers[0].GetExpiry(),
             base::Time::UnixEpoch() + base::Microseconds(123456789));
 }

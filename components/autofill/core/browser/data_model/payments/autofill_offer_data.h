@@ -45,7 +45,7 @@ class AutofillOfferData {
                     GURL offer_details_url,
                     DisplayStrings display_strings,
                     std::string promo_code,
-                    std::string offer_reward_amount,
+                    std::string offer_short_title,
                     base::Time issue_time);
 
   // TODO(crbug.com/40932427): Refactor this class to ensure the correct access
@@ -80,9 +80,7 @@ class AutofillOfferData {
   }
   const GURL& GetOfferDetailsUrl() const { return offer_details_url_; }
   const DisplayStrings& GetDisplayStrings() const { return display_strings_; }
-  const std::string& GetOfferRewardAmount() const {
-    return offer_reward_amount_;
-  }
+  const std::string& GetOfferShortTitle() const { return offer_short_title_; }
   const std::string& GetPromoCode() const { return promo_code_; }
 
 #ifdef UNIT_TEST
@@ -130,11 +128,8 @@ class AutofillOfferData {
   // Optional server-driven strings for certain offer elements.
   DisplayStrings display_strings_;
 
-  // TODO(crbug.com/546252995): Rename `offer_reward_amount_` to
-  // `offer_short_title_`, since direct offers store their short title here.
-  // The string including the reward details of the offer. Could be either
-  // percentage off (XXX%) or fixed amount off ($XXX).
-  std::string offer_reward_amount_;
+  // The short title of the offer.
+  std::string offer_short_title_;
 
   // A promo/gift/coupon code that can be applied at checkout with the merchant.
   std::string promo_code_;

@@ -145,6 +145,8 @@ constexpr std::string_view kPaymentsUpiVpaTable = "payments_upi_vpa";
 
 constexpr std::string_view kOfferDataTable = "offer_data";
 constexpr std::string_view kOfferId = "offer_id";
+// TODO(crbug.com/546252995): Rename `offer_reward_amount` to
+// `offer_short_title`.
 constexpr std::string_view kOfferRewardAmount = "offer_reward_amount";
 constexpr std::string_view kExpiry = "expiry";
 constexpr std::string_view kOfferDetailsUrl = "offer_details_url";
@@ -472,7 +474,7 @@ bool InsertOffer(sql::Database& db, const AutofillOfferData& offer) {
       {kOfferId, kOfferRewardAmount, kExpiry, kOfferDetailsUrl, kPromoCode,
        kValuePropText, kSeeDetailsText, kUsageInstructionsText, kIssueTime});
   insert_offer.BindString(0, offer.GetOfferId());
-  insert_offer.BindString(1, offer.GetOfferRewardAmount());
+  insert_offer.BindString(1, offer.GetOfferShortTitle());
   insert_offer.BindTime(2, offer.GetExpiry());
   insert_offer.BindString(3, offer.GetOfferDetailsUrl().spec());
   insert_offer.BindString(4, offer.GetPromoCode());
@@ -1478,7 +1480,7 @@ bool PaymentsAutofillTable::GetAutofillOffers(
   while (s.Step()) {
     int index = 0;
     std::string offer_id = s.ColumnString(index++);
-    std::string offer_reward_amount = s.ColumnString(index++);
+    std::string offer_short_title = s.ColumnString(index++);
     base::Time expiry = s.ColumnTime(index++);
     GURL offer_details_url = GURL(s.ColumnStringView(index++));
     std::string promo_code = s.ColumnString(index++);
@@ -1503,7 +1505,7 @@ bool PaymentsAutofillTable::GetAutofillOffers(
     autofill_offer_data->emplace_back(std::make_unique<AutofillOfferData>(
         std::move(offer_id), expiry, std::move(merchant_origins),
         std::move(offer_details_url), std::move(display_strings),
-        std::move(promo_code), std::move(offer_reward_amount), issue_time));
+        std::move(promo_code), std::move(offer_short_title), issue_time));
   }
 
   return s.Succeeded();

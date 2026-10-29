@@ -34,7 +34,7 @@ bool IsOfferValid(const AutofillOfferData* offer) {
   }
 
   if (!offer->GetOfferDetailsUrl().is_valid() ||
-      offer->GetOfferRewardAmount().empty()) {
+      offer->GetOfferShortTitle().empty()) {
     return false;
   }
 

@@ -214,9 +214,9 @@ class VirtualCardUsageData;
 //
 //   offer_id           The unique server ID for this offer data.
 //   offer_reward_amount
-//                      The string including the reward details of the offer.
-//                      Could be either percentage cashback (XXX%) or fixed
-//                      amount cashback (XXX$).
+//                      TODO(crbug.com/546252995): Rename `offer_reward_amount`
+//                      to `offer_short_title`.
+//                      The short title of the offer.
 //   expiry             The timestamp when the offer will go expired. Expired
 //                      offers will not be shown in the frontend.
 //   offer_details_url  The link leading to the offer terms and conditions page.

@@ -178,7 +178,7 @@ AutofillValuableSpecifics CreateSpecificsFromOfferData(
       offer.GetOfferDetailsUrl().possibly_invalid_spec());
   sync_pb::Offer* offer_proto = specifics.mutable_offer();
   offer_proto->set_offer_code(offer.GetPromoCode());
-  offer_proto->set_offer_short_title(offer.GetOfferRewardAmount());
+  offer_proto->set_offer_short_title(offer.GetOfferShortTitle());
   offer_proto->set_description(offer.GetDisplayStrings().value_prop_text);
   offer_proto->set_expiration_time_unix_epoch_micros(
       (offer.GetExpiry() - base::Time::UnixEpoch()).InMicroseconds());
@@ -219,7 +219,7 @@ AutofillOfferData CreateOfferDataFromValuableSpecifics(
       /*offer_details_url=*/GURL(specifics.pass_view_url()),
       std::move(display_strings),
       /*promo_code=*/offer_proto.offer_code(),
-      /*offer_reward_amount=*/offer_proto.offer_short_title(), issue_time);
+      /*offer_short_title=*/offer_proto.offer_short_title(), issue_time);
 }
 
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromLoyaltyCard(
