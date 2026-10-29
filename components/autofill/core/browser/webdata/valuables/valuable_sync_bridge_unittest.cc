@@ -118,10 +118,12 @@ class ValuableSyncBridgeTest : public testing::Test {
  public:
   // Creates the `bridge()` and mocks its `ValuablesTable`.
   void SetUp() override {
-    feature_list_.InitWithFeatures({syncer::kSyncWalletFlightReservations,
-                                    syncer::kSyncWalletVehicleRegistrations,
-                                    features::kAutofillAiWalletShopping},
-                                   /*disabled_features=*/{});
+    feature_list_.InitWithFeatures(
+        {syncer::kSyncWalletFlightReservations,
+         syncer::kSyncWalletVehicleRegistrations,
+         features::kAutofillAiWalletShopping,
+         features::kAutofillEnableWalletDisclosureNoticePublicPass},
+        /*disabled_features=*/{});
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&valuables_table_);
     db_.AddTable(&sync_metadata_table_);
@@ -200,7 +202,8 @@ class ValuableSyncBridgeTest : public testing::Test {
   syncer::EntityData EntityInstanceToEntityData(const EntityInstance& entity) {
     return std::move(
         *CreateEntityDataFromEntityInstance(entity,
-                                            /*base_specifics=*/{}));
+                                            /*base_specifics=*/{},
+                                            /*legal_message_token=*/{}));
   }
 
   // Tells the processor to start syncing with pre-existing `offers`.
@@ -881,7 +884,8 @@ TEST_F(ValuableSyncBridgeTest, GetStorageKey) {
   EntityInstance vehicle = GetServerVehicleEntityInstance(
       {.guid = "00000000-0000-4000-8000-300000000000"});
   std::unique_ptr<syncer::EntityData> entity =
-      CreateEntityDataFromEntityInstance(vehicle, /*base_specifics=*/{});
+      CreateEntityDataFromEntityInstance(vehicle, /*base_specifics=*/{},
+                                         /*legal_message_token=*/{});
   ASSERT_TRUE(bridge().IsEntityDataValid(*entity));
   EXPECT_EQ("00000000-0000-4000-8000-300000000000",
             bridge().GetStorageKey(*entity));
@@ -891,7 +895,8 @@ TEST_F(ValuableSyncBridgeTest, GetClientTag) {
   EntityInstance vehicle = GetServerVehicleEntityInstance(
       {.guid = "00000000-0000-4000-8000-300000000000"});
   std::unique_ptr<syncer::EntityData> entity =
-      CreateEntityDataFromEntityInstance(vehicle, /*base_specifics=*/{});
+      CreateEntityDataFromEntityInstance(vehicle, /*base_specifics=*/{},
+                                         /*legal_message_token=*/{});
   ASSERT_TRUE(bridge().IsEntityDataValid(*entity));
   EXPECT_EQ("00000000-0000-4000-8000-300000000000",
             bridge().GetClientTag(*entity));
@@ -1156,6 +1161,125 @@ TEST_F(ValuableSyncBridgeTest, EntityInstanceChanged_WithLegalMessageToken) {
   bridge().EntityInstanceChanged(
       EntityInstanceChange(EntityInstanceChange::ADD, vehicle.guid(), vehicle),
       "test_token");
+}
+
+// Tests that `GetDataForCommit()` reads a stored legal message token from
+// `EntityTable` while the entity is unsynced (without `GetAllDataForDebugging`
+// populating it), and that `ApplyIncrementalSyncChanges()` clears it once the
+// commit succeeds.
+TEST_F(ValuableSyncBridgeTest,
+       GetDataForCommit_PreservesLegalMessageTokenUntilCommitSucceeds) {
+  ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
+  const EntityInstance vehicle = GetServerVehicleEntityInstance();
+  ASSERT_TRUE(entity_table_.AddOrUpdateEntityInstance(vehicle, "test_token"));
+
+  // `GetAllDataForDebugging()` (`GetData()`) does not query or attach
+  // `legal_message_token`.
+  std::unique_ptr<syncer::DataBatch> debug_batch =
+      bridge().GetAllDataForDebugging();
+  ASSERT_TRUE(debug_batch);
+  ASSERT_TRUE(debug_batch->HasNext());
+  EXPECT_FALSE(debug_batch->Next()
+                   .second->specifics.autofill_valuable()
+                   .has_legal_message_token());
+
+  // While the entity is unsynced, `ApplyIncrementalSyncChanges()` keeps the
+  // token and `GetDataForCommit()` includes it on retry.
+  ON_CALL(mock_processor(), IsEntityUnsynced(vehicle.guid().value()))
+      .WillByDefault(Return(true));
+  EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
+      bridge().CreateMetadataChangeList(), syncer::EntityChangeList()));
+
+  std::unique_ptr<syncer::DataBatch> retry_batch =
+      bridge().GetDataForCommit({vehicle.guid().value()});
+  ASSERT_TRUE(retry_batch);
+  ASSERT_TRUE(retry_batch->HasNext());
+  EXPECT_EQ(retry_batch->Next()
+                .second->specifics.autofill_valuable()
+                .legal_message_token(),
+            "test_token");
+  EXPECT_FALSE(retry_batch->HasNext());
+
+  // Once the commit succeeds (`IsEntityUnsynced` is false),
+  // `OnCommitCompleted()` triggers `ApplyIncrementalSyncChanges()` with an
+  // empty `EntityChangeList`, which clears the stored token in `EntityTable`.
+  ON_CALL(mock_processor(), IsEntityUnsynced(vehicle.guid().value()))
+      .WillByDefault(Return(false));
+  EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
+      bridge().CreateMetadataChangeList(), syncer::EntityChangeList()));
+  EXPECT_EQ(entity_table_.GetLegalMessageToken(vehicle.guid()), std::nullopt);
+
+  std::unique_ptr<syncer::DataBatch> post_commit_batch =
+      bridge().GetDataForCommit({vehicle.guid().value()});
+  ASSERT_TRUE(post_commit_batch);
+  ASSERT_TRUE(post_commit_batch->HasNext());
+  EXPECT_FALSE(post_commit_batch->Next()
+                   .second->specifics.autofill_valuable()
+                   .has_legal_message_token());
+}
+
+// Tests that locally updating an entity before its initial creation commit has
+// synced preserves the pending `legal_message_token` in both `Put()` and
+// `GetDataForCommit()`, while subsequent updates after commit completion do not
+// include the token.
+TEST_F(
+    ValuableSyncBridgeTest,
+    EntityInstanceChanged_LocalUpdateBeforeInitialSyncPreservesLegalMessageToken) {
+  ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
+  const EntityInstance vehicle = GetServerVehicleEntityInstance();
+  ASSERT_TRUE(entity_table_.AddOrUpdateEntityInstance(vehicle, "test_token"));
+  ON_CALL(mock_processor(), IsEntityUnsynced(vehicle.guid().value()))
+      .WillByDefault(Return(true));
+
+  // Simulate a local edit to the entity while it is still unsynced.
+  const EntityInstance updated_vehicle =
+      GetServerVehicleEntityInstance({.model = u"Updated Model"});
+  ASSERT_EQ(updated_vehicle.guid(), vehicle.guid());
+  ASSERT_TRUE(entity_table_.AddOrUpdateEntityInstance(updated_vehicle));
+
+  EXPECT_CALL(mock_processor(), Put)
+      .WillOnce([&updated_vehicle](
+                    const std::string& storage_key,
+                    std::unique_ptr<syncer::EntityData> entity_data,
+                    syncer::MetadataChangeList*) {
+        ASSERT_EQ(storage_key, updated_vehicle.guid().value());
+        EXPECT_EQ(
+            entity_data->specifics.autofill_valuable().legal_message_token(),
+            "test_token");
+      });
+  bridge().EntityInstanceChanged(
+      EntityInstanceChange(EntityInstanceChange::UPDATE, updated_vehicle.guid(),
+                           updated_vehicle),
+      /*legal_message_token=*/std::nullopt);
+
+  std::unique_ptr<syncer::DataBatch> retry_batch =
+      bridge().GetDataForCommit({updated_vehicle.guid().value()});
+  ASSERT_TRUE(retry_batch);
+  ASSERT_TRUE(retry_batch->HasNext());
+  EXPECT_EQ(retry_batch->Next()
+                .second->specifics.autofill_valuable()
+                .legal_message_token(),
+            "test_token");
+
+  // Once the initial commit succeeds, the token is cleared and later updates no
+  // longer include a `legal_message_token`.
+  ON_CALL(mock_processor(), IsEntityUnsynced(vehicle.guid().value()))
+      .WillByDefault(Return(false));
+  EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
+      bridge().CreateMetadataChangeList(), syncer::EntityChangeList()));
+  EXPECT_EQ(entity_table_.GetLegalMessageToken(vehicle.guid()), std::nullopt);
+
+  EXPECT_CALL(mock_processor(), Put)
+      .WillOnce([](const std::string&,
+                   std::unique_ptr<syncer::EntityData> entity_data,
+                   syncer::MetadataChangeList*) {
+        EXPECT_FALSE(entity_data->specifics.autofill_valuable()
+                         .has_legal_message_token());
+      });
+  bridge().EntityInstanceChanged(
+      EntityInstanceChange(EntityInstanceChange::UPDATE, updated_vehicle.guid(),
+                           updated_vehicle),
+      /*legal_message_token=*/std::nullopt);
 }
 
 // Tests that `EntityInstanceChanged()` ignores a local entity REMOVE

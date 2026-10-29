@@ -2435,4 +2435,28 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion159ToCurrent) {
     }
   }
 }
+
+// Version 161 adds the `legal_message_token` column to
+// `autofill_ai_entities_metadata_wallet`.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion160ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_160.sql")));
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(160, VersionFromConnection(&connection));
+    EXPECT_FALSE(connection.DoesColumnExist(
+        "autofill_ai_entities_metadata_wallet", "legal_message_token"));
+  }
+
+  DoMigration();
+
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
+              VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesColumnExist(
+        "autofill_ai_entities_metadata_wallet", "legal_message_token"));
+  }
+}
 }  // anonymous namespace

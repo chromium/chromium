@@ -16,9 +16,11 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -75,6 +77,7 @@ namespace wallet_metadata {
 constexpr char kTableName[] = "autofill_ai_entities_metadata_wallet";
 constexpr char kEntityGuid[] = "entity_guid";
 constexpr char kManagementUrl[] = "management_url";
+constexpr char kLegalMessageToken[] = "legal_message_token";
 }  // namespace wallet_metadata
 
 std::optional<EntityInstance::RecordType> ToSafeRecordType(
@@ -144,7 +147,8 @@ bool EntityTable::CreateTablesIfNecessary() {
         db(), /*table_name=*/wallet_metadata::kTableName,
         /*column_names_and_types=*/
         {{wallet_metadata::kEntityGuid, "TEXT NOT NULL PRIMARY KEY"},
-         {wallet_metadata::kManagementUrl, "TEXT NOT NULL"}});
+         {wallet_metadata::kManagementUrl, "TEXT NOT NULL"},
+         {wallet_metadata::kLegalMessageToken, "TEXT NOT NULL DEFAULT ''"}});
   };
   return create_attributes_table() && create_entities_table() &&
          create_entities_metadata_table() && create_wallet_metadata_table();
@@ -247,6 +251,13 @@ bool EntityTable::MigrateToVersion(int version,
           {{"entity_guid", "TEXT NOT NULL PRIMARY KEY"},
            {"management_url", "TEXT NOT NULL"}});
     }
+    case 161: {
+      // In this version, `legal_message_token` was added to
+      // `autofill_ai_entities_metadata_wallet`.
+      return sql::AddColumn(*db(), "autofill_ai_entities_metadata_wallet",
+                            "legal_message_token",
+                            /*type=*/"TEXT NOT NULL DEFAULT ''");
+    }
   }
   return true;
 }
@@ -338,15 +349,18 @@ bool EntityTable::AddEntityMetadata(
 
 bool EntityTable::AddWalletMetadata(
     const EntityInstance::EntityId& guid,
-    const EntityInstance::WalletRecordTypePayload& payload) {
+    const EntityInstance::WalletRecordTypePayload& payload,
+    std::string_view legal_message_token) {
   sql::Statement s;
   sql::CachedInsertBuilder(
       SQL_FROM_HERE, *db(), s, wallet_metadata::kTableName,
-      {wallet_metadata::kEntityGuid, wallet_metadata::kManagementUrl});
+      {wallet_metadata::kEntityGuid, wallet_metadata::kManagementUrl,
+       wallet_metadata::kLegalMessageToken});
   s.BindString(0, *guid);
   // Note that this will store an empty URL and create a non-fatal dump
   // if the payload is corrupted for some reason.
   s.BindString(1, payload.management_url.spec());
+  s.BindString(2, legal_message_token);
   return s.Run();
 }
 
@@ -362,7 +376,8 @@ bool EntityTable::AddOrUpdateEntityMetadata(
          AddEntityMetadata(metadata) && transaction.Commit();
 }
 
-bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
+bool EntityTable::AddEntityInstance(const EntityInstance& entity,
+                                    std::string_view legal_message_token) {
   // Unmasked entities must never be persisted on disk.
   CHECK(!entity.IsUnmaskedEntity());
 
@@ -403,17 +418,32 @@ bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
   if (const auto* wallet_payload =
           std::get_if<EntityInstance::WalletRecordTypePayload>(
               &entity.record_type_data())) {
-    if (!AddWalletMetadata(entity.guid(), *wallet_payload)) {
+    if (!AddWalletMetadata(entity.guid(), *wallet_payload,
+                           legal_message_token)) {
       return false;
     }
   }
   return transaction.Commit();
 }
 
-bool EntityTable::AddOrUpdateEntityInstance(const EntityInstance& entity) {
+bool EntityTable::AddOrUpdateEntityInstance(
+    const EntityInstance& entity,
+    std::optional<std::string_view> legal_message_token) {
   sql::Transaction transaction(db());
-  return transaction.Begin() && RemoveEntityInstance(entity.guid()) &&
-         AddEntityInstance(entity) && transaction.Commit();
+  if (!transaction.Begin()) {
+    return false;
+  }
+  std::string existing_token;
+  if (!legal_message_token.has_value() &&
+      entity.record_type() == EntityInstance::RecordType::kServerWallet &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableWalletDisclosureNoticePublicPass)) {
+    existing_token = GetLegalMessageToken(entity.guid()).value_or("");
+  }
+  return RemoveEntityInstance(entity.guid()) &&
+         AddEntityInstance(entity,
+                           legal_message_token.value_or(existing_token)) &&
+         transaction.Commit();
 }
 
 bool EntityTable::DeleteEntityInstances(
@@ -533,6 +563,58 @@ std::optional<EntityType> EntityTable::GetEntityType(
     return std::nullopt;
   }
   return StringToEntityType(s.ColumnString(0));
+}
+
+std::optional<std::string> EntityTable::GetLegalMessageToken(
+    const EntityInstance::EntityId& guid) const {
+  sql::Statement s;
+  sql::CachedSelectBuilder(SQL_FROM_HERE, *db(), s, wallet_metadata::kTableName,
+                           {wallet_metadata::kLegalMessageToken},
+                           /*modifiers=*/"WHERE entity_guid = ?");
+  s.BindString(0, *guid);
+  if (!s.Step() || !s.Succeeded()) {
+    return std::nullopt;
+  }
+  std::string token = s.ColumnString(0);
+  if (token.empty()) {
+    return std::nullopt;
+  }
+  return token;
+}
+
+std::vector<EntityInstance::EntityId>
+EntityTable::GetEntityGuidsWithLegalMessageToken() const {
+  sql::Statement s;
+  sql::CachedSelectBuilder(SQL_FROM_HERE, *db(), s, wallet_metadata::kTableName,
+                           {wallet_metadata::kEntityGuid},
+                           /*modifiers=*/"WHERE legal_message_token != ''");
+  std::vector<EntityInstance::EntityId> guids;
+  while (s.Step()) {
+    guids.emplace_back(s.ColumnString(0));
+  }
+  if (!s.Succeeded()) {
+    return {};
+  }
+  return guids;
+}
+
+bool EntityTable::ClearLegalMessageTokens(
+    base::span<const EntityInstance::EntityId> guids) {
+  if (guids.empty()) {
+    return true;
+  }
+  std::string placeholders = base::JoinString(
+      std::vector<std::string_view>(guids.size(), sql::kPlaceholder), ", ");
+  sql::Statement s;
+  sql::UpdateBuilder(
+      *db(), s, wallet_metadata::kTableName,
+      {wallet_metadata::kLegalMessageToken},
+      /*where_clause=*/base::StrCat({"entity_guid IN (", placeholders, ")"}));
+  s.BindString(0, "");
+  for (size_t i = 0; i < guids.size(); ++i) {
+    s.BindString(i + 1, *guids[i]);
+  }
+  return s.Run();
 }
 
 std::map<EntityInstance::EntityId, EntityInstance::EntityMetadata>

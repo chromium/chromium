@@ -243,7 +243,8 @@ TEST(EntitySyncUtilTest, CreateEntityDataFromEntityInstance) {
   EntityInstance vehicle_entity = test::GetVehicleEntityInstance();
   std::unique_ptr<syncer::EntityData> entity_data =
       CreateEntityDataFromEntityInstance(vehicle_entity,
-                                         /*base_specifics=*/{});
+                                         /*base_specifics=*/{},
+                                         /*legal_message_token=*/{});
 
   sync_pb::AutofillValuableSpecifics specifics =
       entity_data->specifics.autofill_valuable();

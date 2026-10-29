@@ -32,7 +32,7 @@ ChromeValuablesMetadata SerializeChromeValuablesMetadata(
 std::unique_ptr<syncer::EntityData> CreateEntityDataFromEntityInstance(
     const EntityInstance& entity,
     const sync_pb::AutofillValuableSpecifics& base_specifics,
-    std::string_view legal_message_token = {});
+    std::string_view legal_message_token);
 
 // For a given `EntityInstance`, returns the corresponding
 // `sync_pb::AutofillValuableSpecifics`. It is assumed that the entity passed to
