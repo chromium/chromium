@@ -41,10 +41,10 @@ void LoggedExtensionFunction::OnResponded() {
   if (logger && log_on_completion_) {
     CHECK(response_type(), base::NotFatalUntil::M160);
     bool success = *response_type() == ResponseType::kSucceeded;
-    UNSAFE_TODO(logger->Log(
-        logging::LOGGING_INFO, "%s[%s] %s. (elapsed time: %" PRId64 "ms)",
-        name(), request_id_str.c_str(), success ? "succeeded" : "failed",
-        elapsed.InMilliseconds()));
+    logger->Log(logging::LOGGING_INFO,
+                "%s[%s] %s. (elapsed time: %" PRId64 "ms)", name(),
+                request_id_str.c_str(), success ? "succeeded" : "failed",
+                elapsed.InMilliseconds());
   }
 
   // Log performance issues separately from completion.
@@ -58,10 +58,10 @@ void LoggedExtensionFunction::OnResponded() {
                            "PERFORMANCE WARNING: " + log_message);
     }
   } else if (logger && elapsed >= slow_threshold_) {
-    UNSAFE_TODO(logger->Log(
-        logging::LOGGING_WARNING,
-        "PERFORMANCE WARNING: %s[%s] was slow. (elapsed time: %" PRId64 "ms)",
-        name(), request_id_str.c_str(), elapsed.InMilliseconds()));
+    logger->Log(logging::LOGGING_WARNING,
+                "PERFORMANCE WARNING: %s[%s] was slow. (elapsed time: %" PRId64
+                "ms)",
+                name(), request_id_str.c_str(), elapsed.InMilliseconds());
   }
   ExtensionFunction::OnResponded();
 }

@@ -5,7 +5,6 @@
 #include "components/drive/event_logger.h"
 
 #include "base/logging.h"
-#include "base/strings/stringprintf.h"
 
 namespace drive {
 
@@ -31,18 +30,6 @@ void EventLogger::LogRawString(logging::LogSeverity severity,
   ++next_event_id_;
   if (history_.size() > history_size_)
     history_.pop_front();
-}
-
-void EventLogger::Log(logging::LogSeverity severity, const char* format, ...) {
-  std::string what;
-
-  va_list args;
-  va_start(args, format);
-  UNSAFE_TODO(base::StringAppendV(&what, format, args));
-  va_end(args);
-
-  DVLOG(1) << what;
-  LogRawString(severity, what);
 }
 
 void EventLogger::SetHistorySize(size_t history_size) {

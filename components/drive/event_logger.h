@@ -10,13 +10,13 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/logging.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "components/drive/drive_export.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace drive {
 
@@ -51,8 +51,14 @@ class COMPONENTS_DRIVE_EXPORT EventLogger {
 
   // Logs a message with formatting.
   // Can be called from any thread as long as the object is alive.
-  PRINTF_FORMAT(3, 4)
-  void Log(logging::LogSeverity severity, const char* format, ...);
+  template <typename... Args>
+  void Log(logging::LogSeverity severity,
+           const absl::FormatSpec<Args...>& format,
+           const Args&... args) {
+    std::string what = absl::StrFormat(format, args...);
+    DVLOG(1) << what;
+    LogRawString(severity, what);
+  }
 
   // Sets the history size. The existing history is cleared.
   // Can be called from any thread as long as the object is alive.
