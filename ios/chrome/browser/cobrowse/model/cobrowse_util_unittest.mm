@@ -118,3 +118,68 @@ TEST_F(CobrowseUtilTest,
   EXPECT_FALSE(IsAimCobrowseWebSelectionSearchEligible(aim_eligibility_service,
                                                        profile_->GetPrefs()));
 }
+
+// Tests IsAimCobrowseAddTabEligible is true when kAimCobrowse is enabled with
+// default parameters.
+TEST_F(CobrowseUtilTest, TestIsAimCobrowseAddTabEligibleByDefault) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kAimCobrowse, kAssistantContainer}, {});
+
+  EXPECT_TRUE(IsAimCobrowseAddTabEligible(profile_.get()));
+  AimEligibilityService* aim_eligibility_service =
+      IOSChromeAimEligibilityServiceFactory::GetForProfile(profile_.get());
+  EXPECT_TRUE(IsAimCobrowseAddTabEligible(aim_eligibility_service,
+                                          profile_->GetPrefs()));
+}
+
+// Tests IsAimCobrowseAddTabEligible is true when the Add Tab entrypoint
+// parameter is explicitly set to "true".
+TEST_F(CobrowseUtilTest, TestIsAimCobrowseAddTabEligibleWhenParamEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{kAimCobrowse, {{kAimCobrowseAddTabEntrypointParam, "true"}}},
+       {kAssistantContainer, {}}},
+      {});
+
+  EXPECT_TRUE(IsAimCobrowseAddTabEligible(profile_.get()));
+  AimEligibilityService* aim_eligibility_service =
+      IOSChromeAimEligibilityServiceFactory::GetForProfile(profile_.get());
+  EXPECT_TRUE(IsAimCobrowseAddTabEligible(aim_eligibility_service,
+                                          profile_->GetPrefs()));
+}
+
+// Tests IsAimCobrowseAddTabEligible is false when the Add Tab entrypoint
+// parameter is disabled, while IsAimCobrowseEligible and
+// IsAimCobrowseWebSelectionSearchEligible remain true.
+TEST_F(CobrowseUtilTest, TestIsAimCobrowseAddTabEligibleWhenParamDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{kAimCobrowse, {{kAimCobrowseAddTabEntrypointParam, "false"}}},
+       {kAssistantContainer, {}},
+       {kAimCobrowseWebSelectionSearch, {}}},
+      {});
+
+  EXPECT_FALSE(IsAimCobrowseAddTabEligible(profile_.get()));
+  EXPECT_TRUE(IsAimCobrowseEligible(profile_.get()));
+  EXPECT_TRUE(IsAimCobrowseWebSelectionSearchEligible(profile_.get()));
+  AimEligibilityService* aim_eligibility_service =
+      IOSChromeAimEligibilityServiceFactory::GetForProfile(profile_.get());
+  EXPECT_FALSE(IsAimCobrowseAddTabEligible(aim_eligibility_service,
+                                           profile_->GetPrefs()));
+  EXPECT_TRUE(
+      IsAimCobrowseEligible(aim_eligibility_service, profile_->GetPrefs()));
+  EXPECT_TRUE(IsAimCobrowseWebSelectionSearchEligible(aim_eligibility_service,
+                                                      profile_->GetPrefs()));
+}
+
+// Tests IsAimCobrowseAddTabEligible is false when kAimCobrowse is disabled.
+TEST_F(CobrowseUtilTest, TestIsAimCobrowseAddTabEligibleWhenCobrowseDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kAssistantContainer}, {kAimCobrowse});
+
+  EXPECT_FALSE(IsAimCobrowseAddTabEligible(profile_.get()));
+  AimEligibilityService* aim_eligibility_service =
+      IOSChromeAimEligibilityServiceFactory::GetForProfile(profile_.get());
+  EXPECT_FALSE(IsAimCobrowseAddTabEligible(aim_eligibility_service,
+                                           profile_->GetPrefs()));
+}

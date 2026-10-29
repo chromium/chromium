@@ -2997,6 +2997,89 @@ TEST_F(ComposeboxInputPlateMediatorTest,
   EXPECT_EQ(transferred_session.get(), raw_mock_session);
 }
 
+// Tests that `didCreateSearchURL:` in AIM mode with the active tab attached
+// routes through the standard search navigation flow instead of invoking the
+// Assistant when the `kAimCobrowseAddTabEntrypointParam` parameter is `false`.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       DidCreateSearchURLLoadsInTabWhenAddTabEntrypointDisabled) {
+  base::test::ScopedFeatureList cobrowse_features;
+  cobrowse_features.InitWithFeaturesAndParameters(
+      {{contextual_tasks::kContextualTasks, {}},
+       {kAimCobrowse, {{kAimCobrowseAddTabEntrypointParam, "false"}}}},
+      {});
+
+  SetAIMEligible(true);
+  EXPECT_CALL(*aim_eligibility_service_, IsCobrowseEligible())
+      .WillRepeatedly(testing::Return(true));
+  SetDSEGoogle(true);
+
+  web::FakeWebState* active_web_state =
+      static_cast<web::FakeWebState*>(web_state_list_->GetActiveWebState());
+  ASSERT_TRUE(active_web_state);
+  PrepareForAutoAttachment(active_web_state);
+
+  TestBrowser browser(profile_.get());
+  CobrowseBrowserAgent::CreateForBrowser(&browser);
+  CobrowseBrowserAgent* cobrowse_agent =
+      CobrowseBrowserAgent::FromBrowser(&browser);
+
+  id mock_browser_coordinator_handler =
+      OCMProtocolMock(@protocol(BrowserCoordinatorCommands));
+  id mock_scene_handler = OCMProtocolMock(@protocol(SceneCommands));
+
+  auto mock_session =
+      std::make_unique<testing::NiceMock<TestContextualSearchSessionHandle>>();
+  TestContextualSearchSessionHandle* raw_mock_session = mock_session.get();
+  testing::NiceMock<contextual_search::MockContextualSearchContextController>
+      mock_controller;
+  ON_CALL(*raw_mock_session, GetController())
+      .WillByDefault(testing::Return(&mock_controller));
+
+  ComposeboxInputPlateMediator* mediator =
+      CreateMediator(std::move(mock_session), ComposeboxEntrypoint::kOther,
+                     ComposeboxMode::kAIM, cobrowse_agent,
+                     mock_browser_coordinator_handler, mock_scene_handler);
+  TestComposeboxInputPlateConsumer* consumer =
+      [[TestComposeboxInputPlateConsumer alloc] init];
+  mediator.consumer = consumer;
+  FakeComposeboxURLLoader* fake_loader = [[FakeComposeboxURLLoader alloc] init];
+  mediator.URLLoader = fake_loader;
+
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+    [mediator disconnect];
+  }));
+
+  base::UnguessableToken identifier = [mediator
+      createInputItemForWebState:active_web_state
+                          source:ComposeboxInputItemSource::kCurrentTab];
+  ASSERT_EQ(consumer.items.count, 1U);
+  ComposeboxInputItem* tab_item = consumer.items.firstObject;
+  EXPECT_EQ(tab_item.identifier, identifier);
+
+  tab_item.serverToken = base::UnguessableToken::Create();
+  [mediator setState:ComposeboxInputItemState::kLoaded onItem:tab_item];
+
+  __block BOOL composebox_hidden = NO;
+  __block BOOL assistant_shown = NO;
+  OCMStub([mock_browser_coordinator_handler hideComposebox])
+      .andDo(^(NSInvocation*) {
+        composebox_hidden = YES;
+      });
+  OCMStub([mock_scene_handler showAssistantWithNewSession])
+      .andDo(^(NSInvocation*) {
+        assistant_shown = YES;
+      });
+
+  GURL search_url("https://www.google.com/search?q=test&udm=50");
+  [mediator didCreateSearchURL:search_url];
+
+  EXPECT_FALSE(composebox_hidden);
+  EXPECT_FALSE(assistant_shown);
+  EXPECT_FALSE(cobrowse_agent->IsSessionActive());
+  EXPECT_FALSE(cobrowse_agent->GetCobrowseContext());
+  EXPECT_EQ(fake_loader.loadedURL, search_url);
+}
+
 // Tests that applying `ComposeboxFocusParams` with `attachedTabItems` in a
 // `kCobrowse` mediator restores the tabs, prevents duplicate auto-attachment on
 // focus, and deletes the file from the session handle when removed.

@@ -1148,6 +1148,16 @@ constexpr FeatureEntry::FeatureVariation kAssistantContainerVariations[] = {
     {"30% medium detent", kAssistantContainer30, nullptr},
     {"60% medium detent", kAssistantContainer60, nullptr}};
 
+constexpr FeatureEntry::FeatureParam kAimCobrowseWithAddTabEntrypoint[] = {
+    {kAimCobrowseAddTabEntrypointParam, "true"}};
+constexpr FeatureEntry::FeatureParam kAimCobrowseWithoutAddTabEntrypoint[] = {
+    {kAimCobrowseAddTabEntrypointParam, "false"}};
+
+constexpr FeatureEntry::FeatureVariation kAimCobrowseVariations[] = {
+    {"with Add Tab entrypoint", kAimCobrowseWithAddTabEntrypoint, nullptr},
+    {"without Add Tab entrypoint", kAimCobrowseWithoutAddTabEntrypoint,
+     nullptr}};
+
 constexpr FeatureEntry::FeatureParam kAutoSubmissionDismissThenSubmit[] = {
     {"auto-submission-type", "DismissThenSubmit"},
 };
@@ -2505,7 +2515,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      FEATURE_VALUE_TYPE(kIOSSaveToPhotosSignedOut)},
     {"aim-cobrowse", flag_descriptions::kAimCobrowseName,
      flag_descriptions::kAimCobrowseDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kAimCobrowse)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kAimCobrowse,
+                                    kAimCobrowseVariations,
+                                    "IOSAimCobrowse")},
     {"ios-date-to-calendar-signed-out",
      flag_descriptions::kIOSDateToCalendarSignedOutName,
      flag_descriptions::kIOSDateToCalendarSignedOutDescription,

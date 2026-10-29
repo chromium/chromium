@@ -70,7 +70,8 @@ inline constexpr char kAimButtonRefactorDescription[] =
 
 inline constexpr char kAimCobrowseName[] = "AimCobrowse";
 inline constexpr char kAimCobrowseDescription[] =
-    "Enables the AimCobrowse feature.";
+    "Enables the AimCobrowse feature (including the Add Tab entrypoint by "
+    "default).";
 
 inline constexpr char kAimCobrowseWebSelectionSearchName[] =
     "AIM Cobrowse Web Selection Search";
