@@ -439,9 +439,10 @@ message AutofillValuableSpecifics {
 
   // Opaque legal message token issued by Google Wallet. This token certifies
   // that the user was shown the necessary notices and disclosures prior to
-  // upserting the pass into Wallet. It is transient and only set during upsert
-  // operations, never persisted. It will only exist for public non-readonly
-  // passes.
+  // upserting the pass into Wallet. It is only set during initial upsert
+  // commits and is not persisted by the sync server or across clients (though
+  // the client temporarily stores it in `EntityTable` until the commit
+  // succeeds). It will only exist for public non-readonly passes.
   optional bytes legal_message_token = 19;
 }
 // LINT.ThenChange(//components/autofill/core/browser/webdata/valuables/valuables_sync_util.cc:TrimAutofillValuableSpecificsDataForCaching)

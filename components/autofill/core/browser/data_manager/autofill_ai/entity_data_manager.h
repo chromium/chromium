@@ -98,12 +98,13 @@ class EntityDataManager
   // Adds an entity if it doesn't exist in the database yet; otherwise updates
   // it.
   //
-  // `legal_message_token` is an optional, transient token generated and
+  // `legal_message_token` is an optional, single-use token generated and
   // encrypted by Google Wallet, certifying that the user was shown the required
   // notice disclosures before saving a public writable pass. When provided, it
-  // is forwarded to the sync server via
-  // `AutofillValuableSpecifics::legal_message_token`. It is not persisted in
-  // the local database or stored on `entity`.
+  // is persisted in `EntityTable` until the initial Sync commit completes and
+  // forwarded to the sync server via
+  // `AutofillValuableSpecifics::legal_message_token`. It is not stored on
+  // `entity`.
   //
   // Each call fires Observer::OnEntityInstancesChanged() asynchronously.
   // So beware of calling this in a loop.

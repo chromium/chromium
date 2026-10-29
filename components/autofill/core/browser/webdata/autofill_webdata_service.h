@@ -124,8 +124,9 @@ class AutofillWebDataService : public WebDataServiceBase {
       base::OnceCallback<void(EntityInstanceChange)> on_success);
 
   // Overload of `AddOrUpdateEntityInstance` that accepts an optional
-  // `legal_message_token`. The token is passed to the DB sequence and sync
-  // bridge to populate the sync specifics for pass upserts.
+  // `legal_message_token`. The token is persisted in `EntityTable` until the
+  // initial Sync commit completes and passed to the sync bridge to populate the
+  // sync specifics for pass upserts.
   void AddOrUpdateEntityInstance(
       EntityInstance entity,
       std::optional<std::string> legal_message_token,
