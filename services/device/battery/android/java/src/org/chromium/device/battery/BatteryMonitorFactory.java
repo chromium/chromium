@@ -37,7 +37,7 @@ public class BatteryMonitorFactory implements InterfaceFactory<@Nullable Battery
             new BatteryStatusCallback() {
                 @Override
                 public void onBatteryStatusChanged(BatteryStatus batteryStatus) {
-                    ThreadUtils.assertOnUiThread();
+                    ThreadUtils.checkUiThread();
 
                     mHasStatusUpdate = true;
                     mBatteryStatus = batteryStatus;
@@ -56,7 +56,7 @@ public class BatteryMonitorFactory implements InterfaceFactory<@Nullable Battery
 
     @Override
     public BatteryMonitor createImpl() {
-        ThreadUtils.assertOnUiThread();
+        ThreadUtils.checkUiThread();
 
         if (mSubscribedMonitors.isEmpty()) {
             mManager.start();
@@ -72,7 +72,7 @@ public class BatteryMonitorFactory implements InterfaceFactory<@Nullable Battery
     }
 
     void unsubscribe(BatteryMonitorImpl monitor) {
-        ThreadUtils.assertOnUiThread();
+        ThreadUtils.checkUiThread();
 
         assert mSubscribedMonitors.contains(monitor);
         mSubscribedMonitors.remove(monitor);

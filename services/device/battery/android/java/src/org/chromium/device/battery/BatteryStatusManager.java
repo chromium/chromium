@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskRunner;
@@ -94,6 +95,10 @@ class BatteryStatusManager {
         return new BatteryStatusManager(callback, batteryManager);
     }
 
+    boolean isEnabledForTesting() {
+        return mEnabled;
+    }
+
     /** Starts listening for intents. */
     void start() {
         if (DeviceFeatureMap.isEnabled(
@@ -103,11 +108,14 @@ class BatteryStatusManager {
         }
 
         if (mEnabled) return;
-        if (ContextUtils.registerProtectedBroadcastReceiver(
-                        ContextUtils.getApplicationContext(), mReceiver, mFilter)
-                != null) {
-            mEnabled = true;
-        }
+        // Deliver broadcasts on the Chromium UI thread (which may differ from the Android main
+        // thread in WebView) where BatteryMonitor Mojo endpoints are bound.
+        ContextUtils.registerProtectedBroadcastReceiver(
+                ContextUtils.getApplicationContext(),
+                mReceiver,
+                mFilter,
+                ThreadUtils.getUiThreadHandler());
+        mEnabled = true;
     }
 
     void startAsync() {
@@ -115,8 +123,14 @@ class BatteryStatusManager {
 
         sSequencedTaskRunner.execute(
                 () -> {
+                    // Deliver broadcasts on the Chromium UI thread (which may differ from the
+                    // Android main thread in WebView) where BatteryMonitor Mojo endpoints are
+                    // bound.
                     ContextUtils.registerProtectedBroadcastReceiver(
-                            ContextUtils.getApplicationContext(), mReceiver, mFilter);
+                            ContextUtils.getApplicationContext(),
+                            mReceiver,
+                            mFilter,
+                            ThreadUtils.getUiThreadHandler());
                 });
         mEnabled = true;
     }

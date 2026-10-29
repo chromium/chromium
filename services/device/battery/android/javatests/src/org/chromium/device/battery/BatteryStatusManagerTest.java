@@ -4,8 +4,13 @@
 
 package org.chromium.device.battery;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.BatteryManager;
+import android.os.Handler;
 
 import androidx.test.filters.SmallTest;
 
@@ -14,7 +19,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.device.DeviceFeatureList;
 import org.chromium.device.mojom.BatteryStatus;
 
 /** Test suite for BatteryStatusManager. */
@@ -181,6 +189,38 @@ public class BatteryStatusManagerTest {
     public void testStartStopSucceeds() {
         mManager.start();
         mManager.stop();
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(DeviceFeatureList.BATTERY_STATUS_MANAGER_BROADCAST_RECEIVER_IN_BACKGROUND)
+    public void testStartStopWithoutStickyIntent() {
+        Context originalContext = ContextUtils.getApplicationContext();
+        Context contextWithoutStickyIntent =
+                new ContextWrapper(originalContext) {
+                    @Override
+                    public Intent registerReceiver(
+                            BroadcastReceiver receiver,
+                            IntentFilter filter,
+                            String broadcastPermission,
+                            Handler scheduler,
+                            int flags) {
+                        return null;
+                    }
+
+                    @Override
+                    public void unregisterReceiver(BroadcastReceiver receiver) {}
+                };
+        ContextUtils.initApplicationContextForTests(contextWithoutStickyIntent);
+        try {
+            Assert.assertFalse(mManager.isEnabledForTesting());
+            mManager.start();
+            Assert.assertTrue(mManager.isEnabledForTesting());
+            mManager.stop();
+            Assert.assertFalse(mManager.isEnabledForTesting());
+        } finally {
+            ContextUtils.initApplicationContextForTests(originalContext);
+        }
     }
 
     @Test
