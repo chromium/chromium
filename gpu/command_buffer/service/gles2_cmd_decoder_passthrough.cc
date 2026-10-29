@@ -58,6 +58,11 @@ namespace gpu {
 namespace gles2 {
 
 namespace {
+
+// TODO(https://crbug.com/574216445): Remove post safe roll out of M160.
+BASE_FEATURE(kDisallowSharedImageRedifinition,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 GLenum GetterForTextureTarget(GLenum target) {
   switch (target) {
     case GL_TEXTURE_2D:
@@ -3028,6 +3033,25 @@ void GLES2DecoderPassthroughImpl::PerformIdleMemoryTrim() {
     return;
   }
   api()->glTrimMemoryANGLEFn(GL_MEMORY_TRIM_HIGH_ANGLE);
+}
+
+bool GLES2DecoderPassthroughImpl::CanRedefineBoundTexture(GLenum target) {
+  if (!base::FeatureList::IsEnabled(kDisallowSharedImageRedifinition)) {
+    return true;
+  }
+
+  TextureTarget internal_texture_target =
+      GLenumToTextureTarget(TextureTargetToTextureType(target));
+
+  // Invalid texture targets will be discarded by angle.
+  if (internal_texture_target == TextureTarget::kUnkown) {
+    return true;
+  }
+
+  auto client_id = bound_textures_[static_cast<size_t>(internal_texture_target)]
+                                  [active_texture_unit_]
+                                      .client_id;
+  return !resources_->texture_shared_image_map.contains(client_id);
 }
 
 #define GLES2_CMD_OP(name)                                 \

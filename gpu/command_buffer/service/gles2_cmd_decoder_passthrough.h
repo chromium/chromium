@@ -488,6 +488,8 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl : public GLES2Decoder {
 
   void BuildRequestableExtensionString();
 
+  bool CanRedefineBoundTexture(GLenum target);
+
   PassthroughProgramCache* get_passthrough_program_cache() const;
 
   int commands_to_process_;

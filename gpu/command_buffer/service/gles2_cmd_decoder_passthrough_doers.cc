@@ -741,6 +741,10 @@ error::Error GLES2DecoderPassthroughImpl::DoCompressedTexImage2D(
     GLint border,
     GLsizei image_size,
     const void* data) {
+  if (!CanRedefineBoundTexture(target)) {
+    return error::kNoError;
+  }
+
   CheckErrorCallbackState();
   api()->glCompressedTexImage2DFn(target, level, internalformat, width, height,
                                   border, image_size, data);
@@ -787,6 +791,10 @@ error::Error GLES2DecoderPassthroughImpl::DoCompressedTexImage3D(
     GLint border,
     GLsizei image_size,
     const void* data) {
+  if (!CanRedefineBoundTexture(target)) {
+    return error::kNoError;
+  }
+
   CheckErrorCallbackState();
   api()->glCompressedTexImage3DFn(target, level, internalformat, width, height,
                                   depth, border, image_size, data);
@@ -858,6 +866,10 @@ error::Error GLES2DecoderPassthroughImpl::DoCopyTexImage2D(
     GLsizei width,
     GLsizei height,
     GLint border) {
+  if (!CanRedefineBoundTexture(target)) {
+    return error::kNoError;
+  }
+
   CheckErrorCallbackState();
   api()->glCopyTexImage2DFn(target, level, internalformat, x, y, width, height,
                             border);
@@ -2923,6 +2935,10 @@ error::Error GLES2DecoderPassthroughImpl::DoTexImage2D(GLenum target,
                                                        GLenum type,
                                                        GLsizei image_size,
                                                        const void* pixels) {
+  if (!CanRedefineBoundTexture(target)) {
+    return error::kNoError;
+  }
+
   ScopedUnpackStateButAlignmentReset reset_unpack(
       api(), image_size != 0 && feature_info_->gl_version_info().is_es3, false);
 
@@ -2953,6 +2969,10 @@ error::Error GLES2DecoderPassthroughImpl::DoTexImage3D(GLenum target,
                                                        GLenum type,
                                                        GLsizei image_size,
                                                        const void* pixels) {
+  if (!CanRedefineBoundTexture(target)) {
+    return error::kNoError;
+  }
+
   ScopedUnpackStateButAlignmentReset reset_unpack(
       api(), image_size != 0 && feature_info_->gl_version_info().is_es3, true);
 
@@ -3039,6 +3059,10 @@ error::Error GLES2DecoderPassthroughImpl::DoTexStorage3D(GLenum target,
                                                          GLsizei width,
                                                          GLsizei height,
                                                          GLsizei depth) {
+  if (!CanRedefineBoundTexture(target)) {
+    return error::kNoError;
+  }
+
   CheckErrorCallbackState();
   api()->glTexStorage3DFn(target, levels, internalFormat, width, height, depth);
   if (CheckErrorCallbackState()) {
@@ -3607,6 +3631,10 @@ error::Error GLES2DecoderPassthroughImpl::DoTexStorage2DEXT(
     GLenum internalFormat,
     GLsizei width,
     GLsizei height) {
+  if (!CanRedefineBoundTexture(target)) {
+    return error::kNoError;
+  }
+
   CheckErrorCallbackState();
   api()->glTexStorage2DEXTFn(target, levels, internalFormat, width, height);
   if (CheckErrorCallbackState()) {
