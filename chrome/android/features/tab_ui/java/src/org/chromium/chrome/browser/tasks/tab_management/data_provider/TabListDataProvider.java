@@ -145,6 +145,16 @@ public abstract class TabListDataProvider {
     protected abstract boolean shouldShowTab(Tab tab);
 
     /**
+     * Returns whether the {@link TabGroupItem} for {@code tabGroupId} is about to be removed, so
+     * insertions skip past it. Subclasses that show {@link TabGroupItem}s override this.
+     *
+     * @param tabGroupId The ID of the tab group to check.
+     */
+    protected boolean isGroupRemoving(Token tabGroupId) {
+        return false;
+    }
+
+    /**
      * Creates a {@link TabItem} from the given {@link Tab}.
      *
      * @param selectedTab The currently selected {@link Tab} in the model, or null if none.
@@ -506,6 +516,14 @@ public abstract class TabListDataProvider {
         for (Tab tab : model) {
             int tabId = tab.getId();
             Token tabGroupId = tab.getTabGroupId();
+            // Skip headers of groups being removed. When a group's last tab merges into a later
+            // group, its empty header stays in mItems until didRemoveTabGroup, and no TabModel
+            // tab would ever step past it.
+            while (itemIndex < mItems.size()
+                    && mItems.get(itemIndex) instanceof TabGroupItem groupItem
+                    && isGroupRemoving(groupItem.getTabGroupId())) {
+                itemIndex++;
+            }
             // A TabGroupItem is placed at the position of its first member tab in TabModel.
             if (matchesTabGroupId(targetItem, tabGroupId)) return itemIndex;
             // Advance past an existing group header so its child tabs land after the header.

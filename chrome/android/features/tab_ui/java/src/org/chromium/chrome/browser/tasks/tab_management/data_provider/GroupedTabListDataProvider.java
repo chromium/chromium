@@ -236,6 +236,11 @@ public class GroupedTabListDataProvider extends TabListDataProvider {
     }
 
     @Override
+    protected boolean isGroupRemoving(Token tabGroupId) {
+        return getTabModelIfGroupExists(tabGroupId) == null;
+    }
+
+    @Override
     protected int indexOfItemForTab(TabModel model, @TabId int tabId) {
         int index = super.indexOfItemForTab(model, tabId);
         if (index != TabList.INVALID_TAB_INDEX) return index;

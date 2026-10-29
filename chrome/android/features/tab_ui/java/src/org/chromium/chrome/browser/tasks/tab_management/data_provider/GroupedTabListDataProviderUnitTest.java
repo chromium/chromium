@@ -746,14 +746,11 @@ public class GroupedTabListDataProviderUnitTest extends TabListDataProviderTestB
         ungroupTab(mTab1, TAB_GROUP_ID, /* newIndex= */ 0);
         removeTabGroup(TAB_GROUP_ID, DidRemoveTabGroupReason.UNGROUP);
 
-        verify(mObserver).onItemsInserted(List.of(item(TAB1_ID)), /* after= */ null);
-        verify(mObserver)
-                .onItemsRemoved(
-                        List.of(
-                                group(
-                                        TAB_GROUP_ID,
-                                        /* isSelected= */ false,
-                                        /* isCollapsed= */ true)));
+        // The emptied group card is skipped, so mTab1 lands after it until it is removed.
+        TabGroupItem groupItem =
+                group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true);
+        verify(mObserver).onItemsInserted(List.of(item(TAB1_ID)), groupItem);
+        verify(mObserver).onItemsRemoved(List.of(groupItem));
         verifyNoMoreInteractions(mObserver);
         assertItems(item(TAB1_ID), item(TAB2_ID));
     }
@@ -816,6 +813,50 @@ public class GroupedTabListDataProviderUnitTest extends TabListDataProviderTestB
                         group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true),
                         PayloadType.GROUP_MEMBERSHIP);
         verifyNoMoreInteractions(mObserver);
+    }
+
+    @Test
+    public void testMergeGroupIntoLaterGroup_GroupedMode_MatchesTabModelOrder() {
+        groupTabs(TAB_GROUP_ID, mTab1);
+        groupTabs(TAB_GROUP_ID_2, mTab2);
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ false, mTab1, mTab2);
+
+        removingTabGroup(TAB_GROUP_ID);
+        mTab1.setTabGroupId(TAB_GROUP_ID_2);
+        moveTab(mTab1, /* newIndex= */ 1);
+        mTabGroupObserver.didMoveTabOutOfGroup(mTab1, TAB_GROUP_ID);
+        mTabGroupObserver.didMergeTabToGroup(mTab1, /* isDestinationTab= */ false);
+        removeTabGroup(TAB_GROUP_ID, DidRemoveTabGroupReason.MERGE);
+
+        assertItems(group(TAB_GROUP_ID_2, /* isSelected= */ false, /* isCollapsed= */ true));
+    }
+
+    @Test
+    public void testMergeGroupIntoLaterGroup_NestedMode_Expanded_MatchesTabModelOrder() {
+        groupTabs(TAB_GROUP_ID, mTab1);
+        groupTabs(TAB_GROUP_ID_2, mTab2);
+        mCollapsed.put(TAB_GROUP_ID, /* value= */ false);
+        mCollapsed.put(TAB_GROUP_ID_2, /* value= */ false);
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ true, mTab1, mTab2);
+
+        // Mirrors TabCollectionTabModelImpl merging mTab1 into TAB_GROUP_ID_2: TAB_GROUP_ID's
+        // header stays in the list with no tabs until didRemoveTabGroup fires after the merge.
+        removingTabGroup(TAB_GROUP_ID);
+        mTab1.setTabGroupId(TAB_GROUP_ID_2);
+        moveTab(mTab1, /* newIndex= */ 1);
+        mTabGroupObserver.didMoveTabOutOfGroup(mTab1, TAB_GROUP_ID);
+        mTabGroupObserver.didMergeTabToGroup(mTab1, /* isDestinationTab= */ false);
+        removeTabGroup(TAB_GROUP_ID, DidRemoveTabGroupReason.MERGE);
+
+        TabGroupItem oldGroupItem =
+                group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ false);
+        // mTab1's child row already exists, so it moves to after mTab2 instead of being inserted.
+        verify(mObserver).onItemsMoved(List.of(item(TAB1_ID)), item(TAB2_ID));
+        verify(mObserver).onItemsRemoved(List.of(oldGroupItem));
+        assertItems(
+                group(TAB_GROUP_ID_2, /* isSelected= */ false, /* isCollapsed= */ false),
+                item(TAB2_ID),
+                item(TAB1_ID));
     }
 
     // ============================================================================================
@@ -911,6 +952,7 @@ public class GroupedTabListDataProviderUnitTest extends TabListDataProviderTestB
     public void testDidChangeTabGroupCollapsed_NestedMode_Expand_InsertsChildItems() {
         groupTabs(TAB_GROUP_ID, mTab1, mTab2);
         mCollapsed.put(TAB_GROUP_ID, /* value= */ true);
+        mSelectedTab = mTab2;
         setUpProviderWithTabs(/* supportsGroupExpansion= */ true, mTab1, mTab2);
         assertItems(group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true));
 
@@ -924,13 +966,13 @@ public class GroupedTabListDataProviderUnitTest extends TabListDataProviderTestB
                         PayloadType.COLLAPSED);
         verify(mObserver)
                 .onItemsInserted(
-                        List.of(item(TAB1_ID), item(TAB2_ID)),
+                        List.of(item(TAB1_ID), selected(TAB2_ID)),
                         group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ false));
         verifyNoMoreInteractions(mObserver);
         assertItems(
                 group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ false),
                 item(TAB1_ID),
-                item(TAB2_ID));
+                selected(TAB2_ID));
     }
 
     @Test
@@ -1250,6 +1292,28 @@ public class GroupedTabListDataProviderUnitTest extends TabListDataProviderTestB
     }
 
     @Test
+    public void testDidSelectTab_CollapsedMode_CloseSelectedTabInGroup_KeepsGroupSelected() {
+        groupTabs(TAB_GROUP_ID, mTab2, mTab3);
+        mSelectedTab = mTab2;
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ false, mTab1, mTab2, mTab3);
+
+        // Mirrors TabCollectionTabModelImpl#removeTabsAndSelectNext: the closed tab leaves the
+        // model and didSelectTab fires before didRemoveTabForClosure.
+        mModelTabs.remove(mTab2);
+        selectTab(mTab3, TAB2_ID);
+        mTabModelObserver.didRemoveTabForClosure(mTab2);
+
+        verify(mObserver)
+                .onItemUpdated(
+                        group(TAB_GROUP_ID, /* isSelected= */ true, /* isCollapsed= */ true),
+                        PayloadType.GROUP_MEMBERSHIP);
+        verifyNoMoreInteractions(mObserver);
+        assertItems(
+                item(TAB1_ID),
+                group(TAB_GROUP_ID, /* isSelected= */ true, /* isCollapsed= */ true));
+    }
+
+    @Test
     public void testDidSelectTab_NestedMode_SelectsChildTab_NeverSelectsGroupHeader() {
         groupTabs(TAB_GROUP_ID, mTab2, mTab3);
         mCollapsed.put(TAB_GROUP_ID, /* value= */ false);
@@ -1295,6 +1359,22 @@ public class GroupedTabListDataProviderUnitTest extends TabListDataProviderTestB
                 group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ false),
                 item(TAB2_ID),
                 selected(TAB3_ID));
+    }
+
+    @Test
+    public void testDidSelectTab_NestedMode_TabInCollapsedGroup_OnlyDeselectsPrevious() {
+        groupTabs(TAB_GROUP_ID, mTab2, mTab3);
+        mSelectedTab = mTab1;
+        setUpProviderWithTabs(/* supportsGroupExpansion= */ true, mTab1, mTab2, mTab3);
+
+        selectTab(mTab2, TAB1_ID);
+
+        // The collapsed group has no child row for mTab2, and NESTED headers never take selection.
+        verify(mObserver).onItemUpdated(item(TAB1_ID), PayloadType.SELECTION);
+        verifyNoMoreInteractions(mObserver);
+        assertItems(
+                item(TAB1_ID),
+                group(TAB_GROUP_ID, /* isSelected= */ false, /* isCollapsed= */ true));
     }
 
     // ============================================================================================
