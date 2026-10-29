@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/i18n/rtl.h"
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/strings/string_util.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
@@ -311,7 +311,8 @@ RequestResult I18nHooksDelegate::HandleGetUILanguage(
     const APISignature::V8ParseResult& parse_result) {
   DCHECK_EQ(binding::AsyncResponseType::kNone, parse_result.async_type);
   RequestResult result(RequestResult::HANDLED);
-  const std::string lang = base::i18n::GetConfiguredLocale();
+  const std::string lang =
+      std::string(base::i18n::GetDefaultIcuLocale().tag_string());
   DCHECK(!lang.empty());
 
   result.return_value = gin::StringToSymbol(script_context->isolate(), lang);

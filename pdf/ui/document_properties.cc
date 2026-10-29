@@ -7,8 +7,8 @@
 #include <optional>
 #include <string>
 
+#include "base/i18n/icubridge/default_icu_locale.h"
 #include "base/i18n/number_formatting.h"
-#include "base/i18n/rtl.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/strings/grit/components_strings.h"
 #include "pdf/document_metadata.h"
@@ -67,7 +67,8 @@ std::u16string GetOrientation(const gfx::Size& size) {
 bool ShowInches() {
   UErrorCode error_code = U_ZERO_ERROR;
   UMeasurementSystem system = ulocdata_getMeasurementSystem(
-      base::i18n::GetConfiguredLocale().c_str(), &error_code);
+      std::string(base::i18n::GetDefaultIcuLocale().tag_string()).c_str(),
+      &error_code);
 
   // On error, assume the units are SI.
   return U_SUCCESS(error_code) && system == UMS_US;
