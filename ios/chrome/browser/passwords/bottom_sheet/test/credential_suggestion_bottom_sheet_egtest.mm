@@ -354,9 +354,8 @@ void VerifyManualFillShowsSignInActionButton(
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 
   // Set up reauth module.
-  [CredentialSuggestionBottomSheetAppInterface
-      mockReauthenticationModuleExpectedResult:ReauthenticationResult::
-                                                   kSuccess];
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
 
   // Make sure the fake passkey keychain provider bridge is set.
   [IOSChromePasskeyClientAppInterface setUpFakePasskeyKeychainProviderBridge];

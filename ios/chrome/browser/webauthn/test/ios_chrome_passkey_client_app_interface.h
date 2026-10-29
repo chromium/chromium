@@ -7,15 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
-
 @interface IOSChromePasskeyClientAppInterface : NSObject
 
 // Sets up a fake PasskeyKeychainProviderBridge for testing.
 + (void)setUpFakePasskeyKeychainProviderBridge;
-
-// Sets the expected result for the mock ReauthenticationModule.
-+ (void)setMockReauthenticationResult:(ReauthenticationResult)result;
 
 @end
 

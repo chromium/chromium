@@ -7,17 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
-
 // CredentialSuggestionBottomSheetAppInterface contains the app-side
 // implementation for helpers. These helpers are compiled into
 // the app binary and can be called from either app or test code.
 @interface CredentialSuggestionBottomSheetAppInterface : NSObject
-
-// Sets a re-authentication mock (i.e. what asks user for fingerprint to
-// view password) and its options for next test.
-+ (void)mockReauthenticationModuleExpectedResult:
-    (ReauthenticationResult)expectedResult;
 
 // Sets the pref recording the number of times the bottom sheet was dismissed.
 // Used to either suppress or force the bottom sheet to appear in tests.

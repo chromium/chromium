@@ -4,16 +4,11 @@
 
 #import "ios/chrome/browser/webauthn/test/ios_chrome_passkey_client_app_interface.h"
 
-#import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/functional/callback.h"
-#import "ios/chrome/browser/device_reauth/model/reauthentication_service.h"
-#import "ios/chrome/browser/device_reauth/model/reauthentication_service_factory.h"
 #import "ios/chrome/browser/webauthn/public/scoped_passkey_keychain_provider_override.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
-#import "ios/chrome/common/ui/reauthentication/fake_reauthentication_module.h"
-#import "ios/chrome/test/app/chrome_test_util.h"
 
 namespace {
 
@@ -87,14 +82,6 @@ class FakePasskeyKeychainProvider : public PasskeyKeychainProvider {
   [IOSChromePasskeyClientAppInterface
       scopedPasskeyKeychainProviderBridgeOverride] =
       ScopedPasskeyKeychainProviderBridgeOverride::MakeAndArmForTesting(bridge);
-}
-
-+ (void)setMockReauthenticationResult:(ReauthenticationResult)result {
-  FakeReauthenticationModule* fakeReauthModule =
-      ReauthenticationServiceFactory::GetForProfile(
-          chrome_test_util::GetOriginalProfile())
-          ->GetReauthModule();
-  [fakeReauthModule setExpectedResult:result];
 }
 
 @end

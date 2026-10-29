@@ -9,6 +9,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/webauthn/ios/features.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/device_reauth/test/reauthentication_app_interface.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/webauthn/test/ios_chrome_passkey_client_app_interface.h"
 #import "ios/chrome/browser/webauthn/ui/passkey_incognito_interstitial_view_controller.h"
@@ -69,8 +70,8 @@ id<GREYMatcher> IncognitoInterstitialView() {
   [IOSChromePasskeyClientAppInterface setUpFakePasskeyKeychainProviderBridge];
 
   // Mock a successful reauthentication result by default.
-  [IOSChromePasskeyClientAppInterface
-      setMockReauthenticationResult:ReauthenticationResult::kSuccess];
+  [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
+                                    ReauthenticationResult::kSuccess];
 
   // Set up server.
   net::test_server::RegisterDefaultHandlers(self.testServer);
