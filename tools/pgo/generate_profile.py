@@ -647,6 +647,14 @@ def run_benchmark(benchmark: Benchmark, args: OptionsNamespace):
             disabled_features.append('SessionRestoreInfobar')
 
     browser_args = benchmark.ProduceBrowserArgs(disabled_features)
+    if (
+        not args.android_browser
+        and sys.platform == 'win32'
+        and args.target_arch == 'x86'
+    ):
+        # TODO(crbug.com/555762263): Sandboxed 32-bit renderers crash at
+        # startup in PGO-instrumented builds. Remove once root-caused.
+        browser_args.append('--no-sandbox')
     if is_crossbench:
         if args.android_browser:
             browser_args = get_crossbench_variations_browser_args(browser_args)
