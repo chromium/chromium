@@ -348,4 +348,32 @@ suite('LocationBar', function() {
     await microtasksFinished();
     assertFalse(permissionDashboard.hasAttribute('visible'));
   });
+
+  test('WaitForStateDefersContents', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    locationBar = document.createElement('location-bar');
+    locationBar.waitForState = true;
+    locationBar.locationBarState = {
+      ...locationBar.locationBarState,
+      locationBarFlags: {
+        ...locationBar.locationBarState.locationBarFlags,
+        popupOpen: true,
+      },
+    };
+    document.body.appendChild(locationBar);
+    await microtasksFinished();
+    assertFalse(!!locationBar.shadowRoot.querySelector('readonly-omnibox'));
+    // The host classes also wait for the contents.
+    assertFalse(locationBar.classList.contains('popup-open'));
+
+    locationBar.waitForState = false;
+    await microtasksFinished();
+    assertTrue(!!locationBar.shadowRoot.querySelector('readonly-omnibox'));
+    assertTrue(locationBar.classList.contains('popup-open'));
+
+    // Once rendered, the contents stay.
+    locationBar.waitForState = true;
+    await microtasksFinished();
+    assertTrue(!!locationBar.shadowRoot.querySelector('readonly-omnibox'));
+  });
 });

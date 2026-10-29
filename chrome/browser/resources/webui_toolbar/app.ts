@@ -109,6 +109,7 @@ export class ToolbarAppElement extends AppElementBase {
       isPerformanceInterventionButtonEnabled_: {type: Boolean},
       isMediaButtonEnabled_: {type: Boolean},
       isInitialized_: {type: Boolean},
+      hasReceivedToolbarState_: {type: Boolean},
       webUIToolbarFullyEnabled_: {type: Boolean},
     };
   }
@@ -258,7 +259,10 @@ export class ToolbarAppElement extends AppElementBase {
   private iconTable_: IconTable;
   private isPageInitialized_: boolean = false;
   private hasReadState_ = false;
-  private hasReceivedToolbarState_ = false;
+  // Set when the browser's first ToolbarState (the ToolbarUIService.bind()
+  // answer) arrives, and reset when this element is disconnected. Reactive
+  // because the template derives the location bar's waitForState from it.
+  protected accessor hasReceivedToolbarState_: boolean = false;
   private initializeSessionId_: number = 0;
   private resizeObserver_?: ResizeObserver;
 

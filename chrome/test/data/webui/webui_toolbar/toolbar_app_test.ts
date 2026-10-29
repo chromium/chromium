@@ -215,6 +215,12 @@ suite('ToolbarAppTest', () => {
 
     assertEquals(
         1, browserProxy.toolbarUIHandler.getCallCount('onPageInitialized'));
+    assertEquals(7, startTrackingCalls.length);
+
+    // The location bar contents, which track elements of their own, render
+    // once the browser's state arrives.
+    browserProxy.fireToolbarStateListener([], createMockToolbarState());
+    await microtasksFinished();
     assertEquals(9, startTrackingCalls.length);
   });
 
@@ -264,6 +270,12 @@ suite('ToolbarAppTest', () => {
     // Verify app initializes synchronously without needing a Mojo update
     assertEquals(
         1, browserProxy.toolbarUIHandler.getCallCount('onPageInitialized'));
+    assertEquals(7, startTrackingCalls.length);
+
+    // The location bar contents, which track elements of their own, render
+    // once the browser's state arrives.
+    browserProxy.fireToolbarStateListener([], createMockToolbarState());
+    await microtasksFinished();
     assertEquals(9, startTrackingCalls.length);
 
     // Verify initial boot snapshot captures the correct values
@@ -272,6 +284,32 @@ suite('ToolbarAppTest', () => {
     assertFalse(snapshot.isNavigationLoading);
     assertTrue(snapshot.backButtonEnabled);
     assertFalse(snapshot.forwardButtonEnabled);
+  });
+
+  test('Sync Enabled - Location Bar Waits For State', async () => {
+    browserProxy.setInitialState({
+      initialWebUISurfaceSyncEnabled: true,
+      isFallbackPrewarming: false,
+      isNavigationLoading: false,
+      backButtonEnabled: true,
+      forwardButtonEnabled: false,
+    });
+
+    app = document.createElement('toolbar-app');
+    document.body.appendChild(app);
+    await microtasksFinished();
+
+    // The toolbar renders and initializes synchronously, but the location bar
+    // contents wait for the browser's state.
+    const locationBar = app.shadowRoot.querySelector('location-bar');
+    assertTrue(!!locationBar);
+    assertFalse(!!locationBar.shadowRoot.querySelector('readonly-omnibox'));
+    assertEquals(
+        1, browserProxy.toolbarUIHandler.getCallCount('onPageInitialized'));
+
+    browserProxy.fireToolbarStateListener([], createMockToolbarState());
+    await microtasksFinished();
+    assertTrue(!!locationBar.shadowRoot.querySelector('readonly-omnibox'));
   });
 
   test('Sync Enabled - Synchronous Mojo Update', async () => {

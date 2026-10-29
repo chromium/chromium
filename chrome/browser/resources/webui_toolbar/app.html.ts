@@ -45,7 +45,8 @@ ${this.isSplitTabsButtonEnabled_ ? html`
 ${this.isLocationBarEnabled_ ? html`
   <location-bar id="location-bar"
       .locationBarState="${this.toolbarState_.locationBarState}"
-      .touchUi="${this.toolbarState_.touchUi}">
+      .touchUi="${this.toolbarState_.touchUi}"
+      .waitForState="${!this.hasReceivedToolbarState_}">
   </location-bar>
 ` : ''}
 ${this.isExtensionsContainerEnabled_ ? html`
