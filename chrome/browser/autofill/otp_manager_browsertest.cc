@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/command_line.h"
 #include "base/test/run_until.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
@@ -13,7 +14,6 @@
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
-#include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
@@ -23,9 +23,13 @@
 #include "components/one_time_tokens/core/browser/fake_sms_otp_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_backend_notification.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/switches.h"
 
 namespace autofill {
 
@@ -140,6 +144,7 @@ class OtpTestAutofillClient : public TestContentAutofillClient {
 }  // namespace
 
 class OtpManagerBrowserTest : public PlatformBrowserTest {
+  void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
 
  protected:
@@ -164,6 +169,13 @@ class OtpManagerBrowserTest : public PlatformBrowserTest {
   TestAutofillManagerInjector<OtpTestAutofillManager>
       autofill_manager_injector_;
 };
+
+void OtpManagerBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
+  PlatformBrowserTest::SetUpCommandLine(command_line);
+  // Slower test bots (chromeos, debug, etc.) are flaky due to slower loading
+  // interacting with deferred commits.
+  command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
+}
 
 void OtpManagerBrowserTest::SetUpOnMainThread() {
   PlatformBrowserTest::SetUpOnMainThread();
@@ -222,16 +234,11 @@ IN_PROC_BROWSER_TEST_P(OtpManagerWithWebOtpApiBrowserTest,
                                     "123456", base::TimeTicks::Now()));
 
   // Simulate click on field.
-  std::vector<const FormStructure*> forms =
-      test_api(autofill_manager()).form_structures();
-  ASSERT_EQ(forms.size(), 1u);
-  const FormStructure& form = *forms.front();
-  const AutofillField& first_field = *form.fields().front();
-  autofill_manager().OnAskForValuesToFill(
-      form.ToFormData(), first_field.global_id(), gfx::Rect(),
-      AutofillSuggestionTriggerSource::kFormControlElementClicked,
-      /*password_request=*/std::nullopt,
-      autofill::AutofillManagerTestApi::pass_key());
+  content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
+  content::MainThreadFrameObserver(
+      web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost())
+      .Wait();
+  content::SimulateMouseClickOrTapElementWithId(web_contents(), "otp");
   ASSERT_TRUE(autofill_manager().WaitForSuggestionsShown(1));
 
   // Verify expectations: The OTP should be suggested by autofill unless the
