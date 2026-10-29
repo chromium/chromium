@@ -4,6 +4,8 @@
 
 #include "content/browser/webid/navigation_interceptor.h"
 
+#include <optional>
+
 #include "base/auto_reset.h"
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
@@ -32,6 +34,7 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/webid/federated_request.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content::webid {
 
@@ -171,6 +174,21 @@ NavigationThrottle::ThrottleCheckResult NavigationInterceptor::ProcessRequest(
   RenderFrameHost* rfh = document_.AsRenderFrameHostIfValid();
 
   if (!rfh) {
+    return PROCEED;
+  }
+
+  const std::optional<url::Origin>& initiator_origin =
+      navigation_handle()->GetInitiatorOrigin();
+  if (!initiator_origin ||
+      !initiator_origin->IsSameOriginWith(rfh->GetLastCommittedOrigin())) {
+    // The FedCM request is made on behalf of `rfh`, the document currently
+    // shown in the navigated frame, so only intercept navigations that a
+    // document with the same origin initiated. Otherwise, a document could
+    // start a request on behalf of a cross-origin document that it is allowed
+    // to navigate, e.g. its popup. Popups that the RP opens are still
+    // intercepted, because their initial empty document inherits the RP's
+    // origin. Navigations without an initiator origin, e.g. ones the user
+    // starts from the browser UI, are not intercepted.
     return PROCEED;
   }
 

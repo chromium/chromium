@@ -2733,9 +2733,11 @@ IN_PROC_BROWSER_TEST_F(WebIdEmbedderInitiatedLoginTest,
       shell()->web_contents(), url::Origin::Create(config_url),
       "not_real_account", base::DoNothing());
 
-  // Kick off the identity credential request via a navigation.
+  // Kick off the identity credential request via a navigation that the RP page
+  // initiates. Navigations without an initiator are not intercepted.
   LoadStopObserver stop_observer(shell()->web_contents());
-  shell()->LoadURL(config_url.Resolve("/intercept"));
+  EXPECT_TRUE(BeginNavigateToURLFromRenderer(shell(),
+                                             config_url.Resolve("/intercept")));
 
   // Wait for the redirect to load.
   stop_observer.Wait();

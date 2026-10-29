@@ -20,6 +20,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
@@ -354,6 +355,40 @@ IN_PROC_BROWSER_TEST_F(NavigationInterceptorBrowserTest,
       ExecJs(web_contents(), "document.getElementById('link').click();"));
 
   run_loop.Run();
+}
+
+// Scenario 6: The opener navigates its popup after the popup loaded a
+// cross-origin page.
+// Not intercepted, because the page shown in the popup did not initiate the
+// navigation, so it must not become the RP. Regression test for
+// crbug.com/574633825.
+IN_PROC_BROWSER_TEST_F(NavigationInterceptorBrowserTest,
+                       OpenerNavigatesCrossOriginPopup) {
+  auto mock = std::make_unique<NiceMock<MockIdentityRequestDialogController>>();
+  ON_CALL(*mock, ShowLoadingDialog).WillByDefault(Return(true));
+  EXPECT_CALL(*mock, ShowAccountsDialog).Times(0);
+  test_browser_client_->SetIdentityRequestDialogController(std::move(mock));
+
+  EXPECT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL("/rp")));
+
+  // `localhost` is cross-origin to the opener's 127.0.0.1 and, like it, a
+  // potentially trustworthy origin that can use FedCM.
+  const GURL popup_url = embedded_test_server()->GetURL("localhost", "/rp");
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace("window.popup = window.open($1);", popup_url)));
+  WebContents* popup = new_shell_observer.GetShell()->web_contents();
+  EXPECT_TRUE(WaitForLoadStop(popup));
+  EXPECT_EQ(popup->GetLastCommittedURL(), popup_url);
+
+  const GURL idp_url = idp_server_.GetURL("/oauth");
+  TestNavigationObserver navigation_observer(popup);
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace("window.popup.location = $1;", idp_url)));
+  navigation_observer.Wait();
+
+  EXPECT_TRUE(navigation_observer.last_navigation_succeeded());
+  EXPECT_EQ(popup->GetLastCommittedURL(), idp_url);
 }
 
 }  // namespace

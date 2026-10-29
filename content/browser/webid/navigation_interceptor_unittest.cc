@@ -7,6 +7,7 @@
 #include <variant>
 
 #include "base/containers/to_vector.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
@@ -200,6 +201,8 @@ TEST_F(NavigationInterceptorTest, WillProcessResponse) {
   mock_navigation_handle.set_render_frame_host(
       web_contents()->GetPrimaryMainFrame());
   mock_navigation_handle.set_is_in_primary_main_frame(true);
+  mock_navigation_handle.set_initiator_origin(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->AddHeader("FedCM-Intercept-Navigation",
@@ -248,6 +251,8 @@ TEST_F(NavigationInterceptorTest,
   mock_navigation_handle.set_render_frame_host(
       web_contents()->GetPrimaryMainFrame());
   mock_navigation_handle.set_is_in_primary_main_frame(true);
+  mock_navigation_handle.set_initiator_origin(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->AddHeader("Federation-Initiate-Request",
@@ -295,6 +300,8 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseWithRedirect) {
   mock_navigation_handle.set_render_frame_host(
       web_contents()->GetPrimaryMainFrame());
   mock_navigation_handle.set_is_in_primary_main_frame(true);
+  mock_navigation_handle.set_initiator_origin(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Simulate a redirect.
   mock_navigation_handle.set_is_same_document(false);
@@ -345,6 +352,8 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseNoActivation) {
   mock_navigation_handle.set_render_frame_host(
       web_contents()->GetPrimaryMainFrame());
   mock_navigation_handle.set_is_in_primary_main_frame(true);
+  mock_navigation_handle.set_initiator_origin(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->AddHeader("FedCM-Intercept-Navigation",
@@ -365,6 +374,43 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseNoActivation) {
   EXPECT_EQ(result, NavigationThrottle::PROCEED);
 }
 
+// Navigations without an initiator origin, e.g. ones the user starts from the
+// browser UI, should not be intercepted.
+TEST_F(NavigationInterceptorTest, WillProcessResponseWithoutInitiator) {
+  // Uses an in-process data decoder service for testing.
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
+
+  NavigateAndCommit(GURL("https://rp.example/"));
+
+  InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
+  mock_navigation_handle.set_url(base_url_);
+  EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
+      .WillRepeatedly(
+          Return(web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
+  mock_navigation_handle.set_render_frame_host(
+      web_contents()->GetPrimaryMainFrame());
+  mock_navigation_handle.set_is_in_primary_main_frame(true);
+
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->AddHeader("FedCM-Intercept-Navigation",
+                     net::structured_headers::SerializeDictionary(
+                         EncodeParams({
+                             {"config_url", "https://idp.example/fedcm.json"},
+                             {"client_id", "1234"},
+                         }))
+                         .value());
+  mock_navigation_handle.set_response_headers(headers);
+
+  MockNavigationThrottleRegistry registry(&mock_navigation_handle);
+
+  MockRequestInitiator mock_initiator;
+  NavigationInterceptor interceptor(registry, mock_initiator.GetInitiator());
+
+  EXPECT_CALL(mock_initiator, Run).Times(0);
+  interceptor.WillStartRequest();
+  EXPECT_EQ(interceptor.WillProcessResponse(), NavigationThrottle::PROCEED);
+}
+
 TEST_F(NavigationInterceptorTest, NavigationAfterStartRequest) {
   // Uses an in-process data decoder service for testing.
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
@@ -383,6 +429,8 @@ TEST_F(NavigationInterceptorTest, NavigationAfterStartRequest) {
   mock_navigation_handle.set_render_frame_host(
       web_contents()->GetPrimaryMainFrame());
   mock_navigation_handle.set_is_in_primary_main_frame(true);
+  mock_navigation_handle.set_initiator_origin(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->AddHeader("FedCM-Intercept-Navigation",
@@ -423,6 +471,8 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseTokenRequestFails) {
   mock_navigation_handle.set_render_frame_host(
       web_contents()->GetPrimaryMainFrame());
   mock_navigation_handle.set_is_in_primary_main_frame(true);
+  mock_navigation_handle.set_initiator_origin(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->AddHeader("FedCM-Intercept-Navigation",
@@ -490,6 +540,8 @@ TEST_F(NavigationInterceptorTest,
   mock_navigation_handle.set_render_frame_host(
       web_contents()->GetPrimaryMainFrame());
   mock_navigation_handle.set_is_in_primary_main_frame(true);
+  mock_navigation_handle.set_initiator_origin(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->AddHeader("FedCM-Intercept-Navigation",
@@ -939,6 +991,8 @@ TEST_F(NavigationInterceptorTest, WillProcessResponseWithConnectionStatus) {
   mock_navigation_handle.set_render_frame_host(
       web_contents()->GetPrimaryMainFrame());
   mock_navigation_handle.set_is_in_primary_main_frame(true);
+  mock_navigation_handle.set_initiator_origin(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->AddHeader("Federation-RP-Connection-Status",
@@ -989,6 +1043,8 @@ TEST_F(NavigationInterceptorTest,
   mock_navigation_handle.set_render_frame_host(
       web_contents()->GetPrimaryMainFrame());
   mock_navigation_handle.set_is_in_primary_main_frame(true);
+  mock_navigation_handle.set_initiator_origin(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->AddHeader("Federation-RP-Connection-Status",
@@ -1044,6 +1100,8 @@ TEST_F(NavigationInterceptorTest,
       .WillRepeatedly(Return(popup->GetPrimaryMainFrame()->GetGlobalId()));
   mock_navigation_handle.set_render_frame_host(popup->GetPrimaryMainFrame());
   mock_navigation_handle.set_is_in_primary_main_frame(true);
+  mock_navigation_handle.set_initiator_origin(
+      popup->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->AddHeader("Federation-RP-Connection-Status",
@@ -1095,6 +1153,8 @@ TEST_F(NavigationInterceptorTest,
   mock_navigation_handle.set_render_frame_host(
       web_contents()->GetPrimaryMainFrame());
   mock_navigation_handle.set_is_in_primary_main_frame(true);
+  mock_navigation_handle.set_initiator_origin(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->AddHeader("Federation-RP-Connection-Status",
@@ -1140,6 +1200,8 @@ TEST_F(NavigationInterceptorTest,
   mock_navigation_handle.set_render_frame_host(
       web_contents()->GetPrimaryMainFrame());
   mock_navigation_handle.set_is_in_primary_main_frame(true);
+  mock_navigation_handle.set_initiator_origin(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Simulate a redirect: idp.example/redirect -> idp.example/login.
   // Note that NavigationHandle::GetURL() returns the post-redirect URL
@@ -1208,6 +1270,8 @@ TEST_F(NavigationInterceptorTest,
   mock_navigation_handle.set_render_frame_host(
       web_contents()->GetPrimaryMainFrame());
   mock_navigation_handle.set_is_in_primary_main_frame(true);
+  mock_navigation_handle.set_initiator_origin(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   // Simulate a redirect: attacker.example -> victim.example.
   // Note that NavigationHandle::GetURL() returns the post-redirect URL
@@ -1287,6 +1351,8 @@ TEST_F(EmbedderLoginNavigationInterceptorTest,
   mock_navigation_handle.set_render_frame_host(
       web_contents()->GetPrimaryMainFrame());
   mock_navigation_handle.set_is_in_primary_main_frame(true);
+  mock_navigation_handle.set_initiator_origin(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->AddHeader("Federation-RP-Connection-Status",
@@ -1301,6 +1367,90 @@ TEST_F(EmbedderLoginNavigationInterceptorTest,
   interceptor.WillStartRequest();
   auto result = interceptor.WillProcessResponse();
   EXPECT_EQ(result, NavigationThrottle::PROCEED);
+}
+
+// A navigation that a cross-origin document initiated, e.g. the opener of the
+// navigated window, should not start a FedCM request on behalf of the document
+// shown in the navigated frame. Regression test for crbug.com/574633825.
+TEST_F(EmbedderLoginNavigationInterceptorTest, IgnoreCrossOriginInitiator) {
+  // Uses an in-process data decoder service for testing.
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
+
+  FederatedEmbedderLoginRequest::Set(web_contents(),
+                                     url::Origin::Create(base_url_),
+                                     /*account_id=*/"1234", base::DoNothing());
+
+  NavigateAndCommit(GURL("https://rp.example/"));
+  InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
+  mock_navigation_handle.set_url(base_url_);
+  EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
+      .WillRepeatedly(
+          Return(web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
+  mock_navigation_handle.set_render_frame_host(
+      web_contents()->GetPrimaryMainFrame());
+  mock_navigation_handle.set_is_in_primary_main_frame(true);
+  mock_navigation_handle.set_initiator_origin(
+      url::Origin::Create(GURL("https://other.example/")));
+
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->AddHeader("FedCM-Intercept-Navigation",
+                     net::structured_headers::SerializeDictionary(
+                         EncodeParams({
+                             {"config_url", "https://idp.example/fedcm.json"},
+                             {"client_id", "1234"},
+                         }))
+                         .value());
+  mock_navigation_handle.set_response_headers(headers);
+
+  MockNavigationThrottleRegistry registry(&mock_navigation_handle);
+
+  MockRequestInitiator mock_initiator;
+  NavigationInterceptor interceptor(registry, mock_initiator.GetInitiator());
+
+  EXPECT_CALL(mock_initiator, Run).Times(0);
+  interceptor.WillStartRequest();
+  EXPECT_EQ(interceptor.WillProcessResponse(), NavigationThrottle::PROCEED);
+}
+
+// The Federation-RP-Connection-Status header should be ignored for a
+// navigation that a cross-origin document initiated. Regression test for
+// crbug.com/574633825.
+TEST_F(EmbedderLoginNavigationInterceptorTest,
+       IgnoreConnectionStatusFromCrossOriginInitiator) {
+  // Uses an in-process data decoder service for testing.
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder;
+
+  bool connection_status_received = false;
+  FederatedEmbedderLoginRequest::Set(
+      web_contents(), url::Origin::Create(base_url_), /*account_id=*/"1234",
+      base::BindLambdaForTesting(
+          [&](FederatedLoginResult) { connection_status_received = true; }));
+
+  NavigateAndCommit(GURL("https://rp.example/"));
+  InterceptorMockNavigationHandle mock_navigation_handle(web_contents());
+  mock_navigation_handle.set_url(base_url_);
+  EXPECT_CALL(mock_navigation_handle, GetPreviousRenderFrameHostId)
+      .WillRepeatedly(
+          Return(web_contents()->GetPrimaryMainFrame()->GetGlobalId()));
+  mock_navigation_handle.set_render_frame_host(
+      web_contents()->GetPrimaryMainFrame());
+  mock_navigation_handle.set_is_in_primary_main_frame(true);
+  mock_navigation_handle.set_initiator_origin(
+      url::Origin::Create(GURL("https://other.example/")));
+
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->AddHeader("Federation-RP-Connection-Status",
+                     "status=\"connected\", account_id=\"1234\"");
+  mock_navigation_handle.set_response_headers(headers);
+
+  MockNavigationThrottleRegistry registry(&mock_navigation_handle);
+
+  MockRequestInitiator mock_initiator;
+  NavigationInterceptor interceptor(registry, mock_initiator.GetInitiator());
+
+  interceptor.WillStartRequest();
+  EXPECT_EQ(interceptor.WillProcessResponse(), NavigationThrottle::PROCEED);
+  EXPECT_FALSE(connection_status_received);
 }
 
 TEST_F(NavigationInterceptorTest, TokenRequestFailsSynchronousDestruction) {
@@ -1319,6 +1469,8 @@ TEST_F(NavigationInterceptorTest, TokenRequestFailsSynchronousDestruction) {
   mock_navigation_handle.set_render_frame_host(
       web_contents()->GetPrimaryMainFrame());
   mock_navigation_handle.set_is_in_primary_main_frame(true);
+  mock_navigation_handle.set_initiator_origin(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>("");
   headers->AddHeader("FedCM-Intercept-Navigation",
