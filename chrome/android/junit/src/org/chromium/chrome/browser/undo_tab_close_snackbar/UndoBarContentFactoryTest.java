@@ -7,8 +7,8 @@ package org.chromium.chrome.browser.undo_tab_close_snackbar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 
-import static org.chromium.chrome.browser.undo_tab_close_snackbar.UndoClosureSnapshot.forSavedGroups;
-import static org.chromium.chrome.browser.undo_tab_close_snackbar.UndoClosureSnapshot.forTabModel;
+import static org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.forSavedGroups;
+import static org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.forTabModel;
 
 import android.content.Context;
 
@@ -22,6 +22,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 
 import java.util.Collections;

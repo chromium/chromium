@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.undo_tab_close_snackbar;
+package org.chromium.chrome.browser.tabmodel.undo;
 
-import static org.chromium.chrome.browser.undo_tab_close_snackbar.UndoClosureSnapshot.forSavedGroups;
-import static org.chromium.chrome.browser.undo_tab_close_snackbar.UndoClosureSnapshot.forTabModel;
+import static org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.forSavedGroups;
+import static org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.forTabModel;
 
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
@@ -13,7 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoClosureSnapshot.ClosedTab;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot.ClosedTab;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
@@ -26,7 +26,7 @@ import java.util.Set;
 
 /** Static factory methods that capture an {@link UndoClosureSnapshot} at close time. */
 @NullMarked
-final class UndoClosureSnapshotFactory {
+public final class UndoClosureSnapshotFactory {
     private UndoClosureSnapshotFactory() {}
 
     /**
@@ -39,7 +39,7 @@ final class UndoClosureSnapshotFactory {
      * @param isTabGroupSyncEnabled Whether tab group sync is enabled for the model's profile.
      * @return The immutable snapshot representing the closure state.
      */
-    static UndoClosureSnapshot captureFromTabModel(
+    public static UndoClosureSnapshot captureFromTabModel(
             TabModel tabModel, List<Tab> tabs, boolean isAllTabs, boolean isTabGroupSyncEnabled) {
         List<ClosedTab> closedTabs = new ArrayList<>(tabs.size());
         Map<Token, @Nullable String> groupTitles = new HashMap<>();
@@ -91,7 +91,7 @@ final class UndoClosureSnapshotFactory {
      * @param tabGroupSyncService The service used to look up saved tab group details.
      * @return The immutable snapshot representing the closure state.
      */
-    static UndoClosureSnapshot captureSavedGroups(
+    public static UndoClosureSnapshot captureSavedGroups(
             List<Tab> tabs,
             List<String> syncIds,
             @Nullable TabGroupSyncService tabGroupSyncService) {

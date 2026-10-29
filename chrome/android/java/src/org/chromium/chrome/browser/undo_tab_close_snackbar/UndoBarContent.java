@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.undo_tab_close_snackbar;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.tabmodel.undo.UndoClosureSnapshot;
 
 /**
  * The immutable content of one undo snackbar: the closure it describes, its text and its UMA type.

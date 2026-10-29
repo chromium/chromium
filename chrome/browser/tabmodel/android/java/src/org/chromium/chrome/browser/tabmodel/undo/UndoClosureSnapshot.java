@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.undo_tab_close_snackbar;
+package org.chromium.chrome.browser.tabmodel.undo;
 
 import androidx.annotation.IntDef;
 
@@ -23,7 +23,7 @@ import java.util.Set;
 
 /** An immutable snapshot of the state required to show the undo snackbar. */
 @NullMarked
-final class UndoClosureSnapshot {
+public final class UndoClosureSnapshot {
     /** The kind of closure event a snapshot was captured from. */
     @IntDef({ClosureKind.TAB_MODEL, ClosureKind.SAVED_GROUPS})
     @Retention(RetentionPolicy.SOURCE)
@@ -36,7 +36,7 @@ final class UndoClosureSnapshot {
     }
 
     /** Represents a closed tab captured at close time. */
-    static final class ClosedTab {
+    public static final class ClosedTab {
         /** The identifier of the closed tab. */
         public final int id;
 
@@ -54,7 +54,7 @@ final class UndoClosureSnapshot {
          * @param groupId The identifier of the tab group this tab belonged to, or null if
          *     ungrouped.
          */
-        ClosedTab(int id, String title, @Nullable Token groupId) {
+        public ClosedTab(int id, String title, @Nullable Token groupId) {
             this.id = id;
             this.title = title;
             this.groupId = groupId;
@@ -115,7 +115,7 @@ final class UndoClosureSnapshot {
      * @param isAllTabs Whether all tabs were closed.
      * @return The immutable snapshot.
      */
-    static UndoClosureSnapshot forTabModel(
+    public static UndoClosureSnapshot forTabModel(
             List<ClosedTab> tabs,
             Map<Token, @Nullable String> groupTitles,
             Set<Token> hidingGroupIds,
@@ -145,7 +145,7 @@ final class UndoClosureSnapshot {
      * @param savedGroupTabCount The tab count of the saved group, if applicable.
      * @return The immutable snapshot.
      */
-    static UndoClosureSnapshot forSavedGroups(
+    public static UndoClosureSnapshot forSavedGroups(
             List<ClosedTab> tabs,
             List<String> savedTabGroupSyncIds,
             @Nullable String savedGroupTitle,
@@ -208,7 +208,7 @@ final class UndoClosureSnapshot {
      * @param ids The tab identifiers to exclude.
      * @return The modified snapshot or this instance if nothing changes.
      */
-    UndoClosureSnapshot withoutTabs(Collection<Integer> ids) {
+    public UndoClosureSnapshot withoutTabs(Collection<Integer> ids) {
         List<ClosedTab> newTabs = new ArrayList<>();
         for (ClosedTab tab : tabs) {
             if (!ids.contains(tab.id)) {
@@ -236,7 +236,7 @@ final class UndoClosureSnapshot {
      * @param gid The identifier of the restored group.
      * @return The modified snapshot or this instance if nothing changes.
      */
-    UndoClosureSnapshot withGroupRestored(Token gid) {
+    public UndoClosureSnapshot withGroupRestored(Token gid) {
         if (!groupTitles.containsKey(gid)
                 || (!hidingGroupIds.contains(gid) && survivingGroupIds.contains(gid))) {
             return this;
@@ -265,7 +265,7 @@ final class UndoClosureSnapshot {
      *
      * @return True if the snapshot is empty, false otherwise.
      */
-    boolean isEmpty() {
+    public boolean isEmpty() {
         return tabs.isEmpty() && savedTabGroupSyncIds.isEmpty();
     }
 
@@ -274,7 +274,7 @@ final class UndoClosureSnapshot {
      *
      * @return The array of tab identifiers.
      */
-    int[] tabIds() {
+    public int[] tabIds() {
         int[] ids = new int[tabs.size()];
         for (int i = 0; i < tabs.size(); i++) {
             ids[i] = tabs.get(i).id;
