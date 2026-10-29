@@ -32,6 +32,13 @@ using ::testing::IsNull;
 using ::testing::NotNull;
 using ::testing::Return;
 
+std::unique_ptr<syncer::AgileSymmetricKeySet> CreateKeySet() {
+  std::unique_ptr<syncer::AgileSymmetricKeySet> key_set =
+      syncer::AgileSymmetricKeySet::CreateEmpty();
+  key_set->RotatePrimaryToNewlyGeneratedRandomKey();
+  return key_set;
+}
+
 syncer::EntityData CreateEntityData(
     const ContainerId& container_id,
     const syncer::AgileSymmetricKeySet& key_set) {
@@ -64,39 +71,36 @@ class TabContextContainerSyncBridgeTest : public ::testing::Test {
     WaitUntilModelReadyToSync(mock_processor_);
   }
 
+  ContainerId CreateContainer() {
+    const ContainerId container_id(base::Uuid::GenerateRandomV4());
+    bridge_->CreateContainer(container_id, CreateKeySet());
+    return container_id;
+  }
+
   base::test::TaskEnvironment task_environment_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
   std::unique_ptr<TabContextContainerSyncBridge> bridge_;
 };
 
-TEST_F(TabContextContainerSyncBridgeTest, ShouldCreateContainerAndGenerateKey) {
+TEST_F(TabContextContainerSyncBridgeTest, ShouldCreateContainerAndStoreKey) {
   EXPECT_CALL(mock_processor_, Put);
 
-  std::optional<ContainerId> container_id = bridge_->CreateContainer();
-  ASSERT_TRUE(container_id.has_value());
+  const ContainerId container_id(base::Uuid::GenerateRandomV4());
+  std::unique_ptr<syncer::AgileSymmetricKeySet> key_set = CreateKeySet();
+  const uint32_t expected_primary_key_id = key_set->primary_key_id();
 
-  const syncer::AgileSymmetricKeySet* key_set =
-      bridge_->GetEncryptionKeyForContainer(*container_id);
-  ASSERT_THAT(key_set, NotNull());
-  EXPECT_GT(key_set->size(), 0u);
-  EXPECT_NE(key_set->primary_key_id(), 0u);
-}
+  bridge_->CreateContainer(container_id, std::move(key_set));
 
-TEST_F(TabContextContainerSyncBridgeTest,
-       ShouldNotCreateContainerWhenNotTrackingMetadata) {
-  ON_CALL(mock_processor_, IsTrackingMetadata).WillByDefault(Return(false));
-  EXPECT_CALL(mock_processor_, Put).Times(0);
-
-  std::optional<ContainerId> container_id = bridge_->CreateContainer();
-  EXPECT_FALSE(container_id.has_value());
+  const syncer::AgileSymmetricKeySet* stored_key_set =
+      bridge_->GetStoredEncryptionKeyForContainer(container_id);
+  ASSERT_THAT(stored_key_set, NotNull());
+  EXPECT_EQ(stored_key_set->primary_key_id(), expected_primary_key_id);
 }
 
 TEST_F(TabContextContainerSyncBridgeTest,
        ShouldStoreKeySetOnRemoteAddAndUpdate) {
   const ContainerId container_id(base::Uuid::GenerateRandomV4());
-  std::unique_ptr<syncer::AgileSymmetricKeySet> key_set =
-      syncer::AgileSymmetricKeySet::CreateEmpty();
-  key_set->RotatePrimaryToNewlyGeneratedRandomKey();
+  std::unique_ptr<syncer::AgileSymmetricKeySet> key_set = CreateKeySet();
 
   syncer::EntityChangeList changes;
   changes.push_back(syncer::EntityChange::CreateAdd(
@@ -107,16 +111,14 @@ TEST_F(TabContextContainerSyncBridgeTest,
                                        std::move(changes));
 
   const syncer::AgileSymmetricKeySet* stored_key_set =
-      bridge_->GetEncryptionKeyForContainer(container_id);
+      bridge_->GetStoredEncryptionKeyForContainer(container_id);
   ASSERT_THAT(stored_key_set, NotNull());
   EXPECT_EQ(stored_key_set->primary_key_id(), key_set->primary_key_id());
 }
 
 TEST_F(TabContextContainerSyncBridgeTest, ShouldRemoveKeySetOnRemoteDelete) {
   const ContainerId container_id(base::Uuid::GenerateRandomV4());
-  std::unique_ptr<syncer::AgileSymmetricKeySet> key_set =
-      syncer::AgileSymmetricKeySet::CreateEmpty();
-  key_set->RotatePrimaryToNewlyGeneratedRandomKey();
+  std::unique_ptr<syncer::AgileSymmetricKeySet> key_set = CreateKeySet();
 
   syncer::EntityChangeList add_changes;
   add_changes.push_back(syncer::EntityChange::CreateAdd(
@@ -124,36 +126,35 @@ TEST_F(TabContextContainerSyncBridgeTest, ShouldRemoveKeySetOnRemoteDelete) {
       CreateEntityData(container_id, *key_set)));
   bridge_->ApplyIncrementalSyncChanges(bridge_->CreateMetadataChangeList(),
                                        std::move(add_changes));
-  ASSERT_THAT(bridge_->GetEncryptionKeyForContainer(container_id), NotNull());
+  ASSERT_THAT(bridge_->GetStoredEncryptionKeyForContainer(container_id),
+              NotNull());
 
   syncer::EntityChangeList delete_changes;
   delete_changes.push_back(syncer::EntityChange::CreateDelete(
       container_id.value().AsLowercaseString(), syncer::EntityData()));
   bridge_->ApplyIncrementalSyncChanges(bridge_->CreateMetadataChangeList(),
                                        std::move(delete_changes));
-  EXPECT_THAT(bridge_->GetEncryptionKeyForContainer(container_id), IsNull());
+  EXPECT_THAT(bridge_->GetStoredEncryptionKeyForContainer(container_id),
+              IsNull());
 }
 
 TEST_F(TabContextContainerSyncBridgeTest, ShouldReturnDataForCommit) {
-  std::optional<ContainerId> container_id = bridge_->CreateContainer();
-  ASSERT_TRUE(container_id.has_value());
+  const ContainerId container_id = CreateContainer();
 
   std::unique_ptr<syncer::DataBatch> batch =
-      bridge_->GetDataForCommit({container_id->value().AsLowercaseString()});
+      bridge_->GetDataForCommit({container_id.value().AsLowercaseString()});
   ASSERT_THAT(batch, NotNull());
   EXPECT_TRUE(batch->HasNext());
   const syncer::KeyAndData& pair = batch->Next();
-  EXPECT_EQ(pair.first, container_id->value().AsLowercaseString());
+  EXPECT_EQ(pair.first, container_id.value().AsLowercaseString());
   EXPECT_EQ(pair.second->specifics.encrypted_tab_context_container().uuid(),
-            container_id->value().AsLowercaseString());
+            container_id.value().AsLowercaseString());
   EXPECT_FALSE(batch->HasNext());
 }
 
 TEST_F(TabContextContainerSyncBridgeTest, ShouldReturnAllDataForDebugging) {
-  std::optional<ContainerId> container1 = bridge_->CreateContainer();
-  std::optional<ContainerId> container2 = bridge_->CreateContainer();
-  ASSERT_TRUE(container1.has_value());
-  ASSERT_TRUE(container2.has_value());
+  CreateContainer();
+  CreateContainer();
 
   std::unique_ptr<syncer::DataBatch> batch = bridge_->GetAllDataForDebugging();
   ASSERT_THAT(batch, NotNull());
@@ -175,10 +176,10 @@ TEST_F(TabContextContainerSyncBridgeTest, ShouldReloadLocalDataFromStore) {
       processor1.CreateForwardingProcessor());
   WaitUntilModelReadyToSync(processor1);
 
-  std::optional<ContainerId> container_id = bridge1->CreateContainer();
-  ASSERT_TRUE(container_id.has_value());
-  const uint32_t primary_key_id =
-      bridge1->GetEncryptionKeyForContainer(*container_id)->primary_key_id();
+  const ContainerId container_id(base::Uuid::GenerateRandomV4());
+  std::unique_ptr<syncer::AgileSymmetricKeySet> key_set = CreateKeySet();
+  const uint32_t primary_key_id = key_set->primary_key_id();
+  bridge1->CreateContainer(container_id, std::move(key_set));
 
   bridge1.reset();
 
@@ -189,7 +190,7 @@ TEST_F(TabContextContainerSyncBridgeTest, ShouldReloadLocalDataFromStore) {
   WaitUntilModelReadyToSync(processor2);
 
   const syncer::AgileSymmetricKeySet* reloaded_key_set =
-      bridge2->GetEncryptionKeyForContainer(*container_id);
+      bridge2->GetStoredEncryptionKeyForContainer(container_id);
   ASSERT_THAT(reloaded_key_set, NotNull());
   EXPECT_EQ(reloaded_key_set->primary_key_id(), primary_key_id);
 }

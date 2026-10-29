@@ -38,22 +38,20 @@ class TabContextContainerSyncBridge : public syncer::DataTypeSyncBridge {
       const TabContextContainerSyncBridge&) = delete;
   ~TabContextContainerSyncBridge() override;
 
-  // Creates a new container using a newly-generated random encryption key. The
-  // container's ID is returned upon success or nullopt in case of failure.
-  // Failure may occur if the user is signed out from the browser, the user
-  // didn't enable tab sync or in other edge cases such as Sync not having
-  // downloaded the initial data from the server (which happens shortly after
-  // sign-in).
-  std::optional<ContainerId> CreateContainer();
+  // Creates and persists a new container with `container_id` and `key_set`.
+  // Requires `IsTrackingMetadata()` to be true and `key_set` to be non-null and
+  // non-empty.
+  void CreateContainer(const ContainerId& container_id,
+                       std::unique_ptr<syncer::AgileSymmetricKeySet> key_set);
 
-  // Returns the encryption key for a container or null if no container exists
-  // with ID `container_id`.
-  const syncer::AgileSymmetricKeySet* GetEncryptionKeyForContainer(
+  // Returns the stored encryption key for a container or null if no container
+  // exists with ID `container_id`.
+  const syncer::AgileSymmetricKeySet* GetStoredEncryptionKeyForContainer(
       const ContainerId& container_id) const;
 
   // Returns true if the change processor is tracking metadata (i.e., local data
   // has loaded and sync is ready).
-  bool IsTrackingMetadataForTesting() const;
+  bool IsTrackingMetadata() const;
 
   // syncer::DataTypeSyncBridge implementation.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()

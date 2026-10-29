@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/uuid.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/crypto/agile_symmetric_key_set.h"
 #include "components/sync/protocol/encrypted_tab_context_item_specifics.pb.h"
@@ -100,7 +101,17 @@ std::optional<ContainerId> TabContextSyncServiceImpl::CreateContainer() {
       syncer::PassphraseType::kTrustedVaultPassphrase) {
     return std::nullopt;
   }
-  return container_bridge_->CreateContainer();
+  if (!container_bridge_->IsTrackingMetadata()) {
+    return std::nullopt;
+  }
+
+  const ContainerId container_id(base::Uuid::GenerateRandomV4());
+  std::unique_ptr<syncer::AgileSymmetricKeySet> key_set =
+      syncer::AgileSymmetricKeySet::CreateEmpty();
+  key_set->RotatePrimaryToNewlyGeneratedRandomKey();
+
+  container_bridge_->CreateContainer(container_id, std::move(key_set));
+  return container_id;
 }
 
 void TabContextSyncServiceImpl::UploadPageContext(
@@ -114,7 +125,7 @@ void TabContextSyncServiceImpl::UploadPageContext(
   }
 
   const syncer::AgileSymmetricKeySet* key_set =
-      container_bridge_->GetEncryptionKeyForContainer(container_id);
+      container_bridge_->GetStoredEncryptionKeyForContainer(container_id);
   if (!key_set || key_set->size() == 0) {
     std::move(callback).Run(UploadOutcome::kFailed);
     return;
@@ -149,7 +160,7 @@ void TabContextSyncServiceImpl::OnPageContextCompressedAndEncrypted(
 void TabContextSyncServiceImpl::GetContainerAccessToken(
     const ContainerId& container_id,
     base::OnceCallback<void(std::optional<std::string>)> cb) {
-  if (!container_bridge_->GetEncryptionKeyForContainer(container_id)) {
+  if (!container_bridge_->GetStoredEncryptionKeyForContainer(container_id)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(cb), std::nullopt));
     return;
@@ -170,7 +181,7 @@ void TabContextSyncServiceImpl::OnEphemeralKeyFetched(
   }
 
   const syncer::AgileSymmetricKeySet* container_key_set =
-      container_bridge_->GetEncryptionKeyForContainer(container_id);
+      container_bridge_->GetStoredEncryptionKeyForContainer(container_id);
   if (!container_key_set) {
     // The container could have been removed during key fetching.
     std::move(cb).Run(std::nullopt);
@@ -192,8 +203,7 @@ TabContextSyncServiceImpl::GetSyncControllerDelegateForItem() {
 }
 
 bool TabContextSyncServiceImpl::IsActiveForTesting() const {
-  return container_bridge_ &&
-         container_bridge_->IsTrackingMetadataForTesting();  // IN-TEST
+  return container_bridge_ && container_bridge_->IsTrackingMetadata();
 }
 
 }  // namespace sync_tab_context

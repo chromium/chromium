@@ -4,8 +4,13 @@
 
 #include "components/sync_tab_context/tab_context_container_sync_bridge.h"
 
+#include <memory>
+#include <optional>
+#include <string>
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -31,6 +36,16 @@ sync_pb::EncryptedTabContextContainerSpecifics ToSpecifics(
   specifics.set_uuid(container_id.value().AsLowercaseString());
   *specifics.mutable_encryption_key() = key_set.ToProto();
   return specifics;
+}
+
+std::unique_ptr<syncer::EntityData> ToEntityData(
+    const ContainerId& container_id,
+    const syncer::AgileSymmetricKeySet& key_set) {
+  auto entity_data = std::make_unique<syncer::EntityData>();
+  *entity_data->specifics.mutable_encrypted_tab_context_container() =
+      ToSpecifics(container_id, key_set);
+  entity_data->name = container_id.value().AsLowercaseString();
+  return entity_data;
 }
 
 bool AreSpecificsValid(
@@ -60,20 +75,17 @@ TabContextContainerSyncBridge::~TabContextContainerSyncBridge() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-std::optional<ContainerId> TabContextContainerSyncBridge::CreateContainer() {
+void TabContextContainerSyncBridge::CreateContainer(
+    const ContainerId& container_id,
+    std::unique_ptr<syncer::AgileSymmetricKeySet> key_set) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!change_processor()->IsTrackingMetadata()) {
-    return std::nullopt;
-  }
-
+  CHECK(change_processor()->IsTrackingMetadata());
   CHECK(store_);
+  CHECK(container_id.value().is_valid());
+  CHECK(key_set);
+  CHECK_GT(key_set->size(), 0u);
 
-  const ContainerId container_id(base::Uuid::GenerateRandomV4());
-  std::unique_ptr<syncer::AgileSymmetricKeySet> key_set =
-      syncer::AgileSymmetricKeySet::CreateEmpty();
-  key_set->RotatePrimaryToNewlyGeneratedRandomKey();
-
-  sync_pb::EncryptedTabContextContainerSpecifics specifics =
+  const sync_pb::EncryptedTabContextContainerSpecifics specifics =
       ToSpecifics(container_id, *key_set);
   const std::string storage_key = container_id.value().AsLowercaseString();
 
@@ -81,11 +93,7 @@ std::optional<ContainerId> TabContextContainerSyncBridge::CreateContainer() {
       store_->CreateWriteBatch();
   write_batch->WriteData(storage_key, specifics.SerializeAsString());
 
-  auto entity_data = std::make_unique<syncer::EntityData>();
-  *entity_data->specifics.mutable_encrypted_tab_context_container() = specifics;
-  entity_data->name = storage_key;
-
-  change_processor()->Put(storage_key, std::move(entity_data),
+  change_processor()->Put(storage_key, ToEntityData(container_id, *key_set),
                           write_batch->GetMetadataChangeList());
 
   store_->CommitWriteBatch(
@@ -94,17 +102,16 @@ std::optional<ContainerId> TabContextContainerSyncBridge::CreateContainer() {
                      weak_ptr_factory_.GetWeakPtr()));
 
   entries_[container_id] = std::move(key_set);
-  return container_id;
 }
 
 const syncer::AgileSymmetricKeySet*
-TabContextContainerSyncBridge::GetEncryptionKeyForContainer(
+TabContextContainerSyncBridge::GetStoredEncryptionKeyForContainer(
     const ContainerId& container_id) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return base::FindPtrOrNull(entries_, container_id);
 }
 
-bool TabContextContainerSyncBridge::IsTrackingMetadataForTesting() const {
+bool TabContextContainerSyncBridge::IsTrackingMetadata() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return change_processor()->IsTrackingMetadata();
 }
@@ -184,11 +191,7 @@ TabContextContainerSyncBridge::GetDataForCommit(StorageKeyList storage_keys) {
     const ContainerId container_id(base::Uuid::ParseCaseInsensitive(key));
     if (const syncer::AgileSymmetricKeySet* key_set =
             base::FindPtrOrNull(entries_, container_id)) {
-      auto entity_data = std::make_unique<syncer::EntityData>();
-      *entity_data->specifics.mutable_encrypted_tab_context_container() =
-          ToSpecifics(container_id, *key_set);
-      entity_data->name = key;
-      batch->Put(key, std::move(entity_data));
+      batch->Put(key, ToEntityData(container_id, *key_set));
     }
   }
   return batch;
@@ -199,12 +202,8 @@ TabContextContainerSyncBridge::GetAllDataForDebugging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto batch = std::make_unique<syncer::MutableDataBatch>();
   for (const auto& [container_id, key_set] : entries_) {
-    auto entity_data = std::make_unique<syncer::EntityData>();
-    *entity_data->specifics.mutable_encrypted_tab_context_container() =
-        ToSpecifics(container_id, *key_set);
     const std::string key = container_id.value().AsLowercaseString();
-    entity_data->name = key;
-    batch->Put(key, std::move(entity_data));
+    batch->Put(key, ToEntityData(container_id, *key_set));
   }
   return batch;
 }

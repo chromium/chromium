@@ -206,6 +206,12 @@ class TabContextSyncServiceImplTest : public ::testing::Test {
 };
 
 TEST_F(TabContextSyncServiceImplTest,
+       ShouldNotCreateContainerWhenNotTrackingMetadata) {
+  ASSERT_FALSE(service_->IsActiveForTesting());
+  EXPECT_EQ(service_->CreateContainer(), std::nullopt);
+}
+
+TEST_F(TabContextSyncServiceImplTest,
        ShouldNotCreateContainerWhenPassphraseIsNotTrustedVault) {
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return service_->IsActiveForTesting(); }));
