@@ -4,8 +4,11 @@
 
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
 
+#include "chrome/browser/lookalikes/lookalike_url_service.h"
+#include "chrome/browser/lookalikes/lookalike_url_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/lookalikes/core/safety_tip_test_utils.h"
+#include "components/lookalikes/core/safety_tips_config.h"
 #include "components/url_formatter/spoof_checks/idn_spoof_checker.h"
 #include "components/url_formatter/url_formatter.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -99,6 +102,41 @@ TEST_F(LookalikeThrottleTest, SpoofsBlocked) {
           << "Failed: " << test_case.hostname;
     }
   }
+}
+
+// Verifies that `LookalikeUrlService::NeedsEngagedSitesForCheck()` returns
+// false for URLs that early-return in `CheckUrlForLookalikes()` before
+// consulting `engaged_sites`, and true for URLs that require `engaged_sites`.
+TEST_F(LookalikeThrottleTest, NeedsEngagedSitesForCheck) {
+  LookalikeUrlService* service =
+      LookalikeUrlServiceFactory::GetForProfile(profile());
+  ASSERT_TRUE(service);
+
+  const GURL kTopDomainUrl("https://www.google.com/search?q=test");
+  const GURL kNonTopUrl("https://non-top-example-domain.com/path");
+
+  // 1. Without a Safety Tips remote config proto, `CheckUrlForLookalikes()`
+  // fails safe and returns immediately without consulting `engaged_sites`.
+  lookalikes::SetSafetyTipsRemoteConfigProto(nullptr);
+  EXPECT_FALSE(service->NeedsEngagedSitesForCheck(kNonTopUrl));
+
+  // 2. Once the Safety Tips remote config proto is populated, top 500 domains,
+  // safe TLDs (.gov), localhost, and non-HTTP(S) URLs early-return without
+  // `engaged_sites`, whereas non-top domains require `engaged_sites`.
+  lookalikes::InitializeSafetyTipConfig();
+  EXPECT_FALSE(service->NeedsEngagedSitesForCheck(kTopDomainUrl));
+  EXPECT_FALSE(service->NeedsEngagedSitesForCheck(GURL("https://agency.gov/")));
+  EXPECT_FALSE(
+      service->NeedsEngagedSitesForCheck(GURL("http://localhost:8080/")));
+  EXPECT_FALSE(service->NeedsEngagedSitesForCheck(GURL("chrome://settings")));
+  EXPECT_TRUE(service->NeedsEngagedSitesForCheck(kNonTopUrl));
+
+  // 3. Once the user has dismissed a warning for `kNonTopUrl`, navigation
+  // throttle checks early-return without consulting `engaged_sites`.
+  service->SetUserIgnore(kNonTopUrl);
+  EXPECT_FALSE(service->NeedsEngagedSitesForCheck(kNonTopUrl));
+  service->ResetWarningDismissedETLDPlusOnesForTesting();
+  EXPECT_TRUE(service->NeedsEngagedSitesForCheck(kNonTopUrl));
 }
 
 }  // namespace lookalikes

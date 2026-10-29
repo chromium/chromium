@@ -48,6 +48,9 @@ using lookalikes::GetETLDPlusOne;
 using lookalikes::LookalikeActionType;
 using lookalikes::LookalikeUrlMatchType;
 
+BASE_FEATURE(kOptimizeLookalikeUrlNavigationThrottle,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
 
 // When enabled, navigations where neither the first nor the last URL of the
@@ -269,13 +272,28 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::WillProcessResponse() {
 
   LookalikeUrlService* service =
       LookalikeUrlServiceFactory::GetForProfile(profile_);
-  if (!use_test_profile_ && service->EngagedSitesNeedUpdating()) {
+  if (!use_test_profile_ && service->EngagedSitesNeedUpdating() &&
+      (!base::FeatureList::IsEnabled(kOptimizeLookalikeUrlNavigationThrottle) ||
+       NeedsEngagedSitesForNavigation(service))) {
     service->ForceUpdateEngagedSites(
         base::BindOnce(&LookalikeUrlNavigationThrottle::PerformChecksDeferred,
                        weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
     return content::NavigationThrottle::DEFER;
   }
   return PerformChecks(service->GetLatestEngagedSites());
+}
+
+bool LookalikeUrlNavigationThrottle::NeedsEngagedSitesForNavigation(
+    const LookalikeUrlService* service) const {
+  const GURL& first_url = navigation_handle()->GetRedirectChain()[0];
+  const GURL& last_url = navigation_handle()->GetURL();
+  if (first_url.GetHost() != last_url.GetHost() &&
+      !lookalike_cache_.contains(first_url.GetHost()) &&
+      service->NeedsEngagedSitesForCheck(first_url)) {
+    return true;
+  }
+  return !lookalike_cache_.contains(last_url.GetHost()) &&
+         service->NeedsEngagedSitesForCheck(last_url);
 }
 
 const char* LookalikeUrlNavigationThrottle::GetNameForLogging() {

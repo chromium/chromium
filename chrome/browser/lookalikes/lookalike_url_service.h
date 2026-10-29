@@ -110,6 +110,15 @@ class LookalikeUrlService : public KeyedService {
     base::TimeDelta get_domain_info_duration;
   };
 
+  // Returns true if `CheckUrlForLookalikes()` (with
+  // `stop_checking_on_allowlist_or_ignore=true`) for `url` will reach the stage
+  // that inspects `engaged_sites`. Returns false when `url` is guaranteed to
+  // early-return with `LookalikeActionType::kNone` before `GetDomainInfo()` or
+  // `engaged_sites` is consulted (e.g., non-HTTP/HTTPS, localhost, safe TLD,
+  // previously ignored warning, missing Safety Tips proto, enterprise
+  // allowlisted, or top 500 domain). Must be called on the UI sequence.
+  bool NeedsEngagedSitesForCheck(const GURL& url) const;
+
   // This is the main function to call to check if a url is a lookalike URL. It
   // runs all of the necessary checks on `url` before returning a result.
   // If `url` is a lookalike, returns a result with the `action_type` and
@@ -149,6 +158,16 @@ class LookalikeUrlService : public KeyedService {
   void ResetWarningDismissedETLDPlusOnesForTesting();
 
  private:
+  // Evaluates the inexpensive early-return checks that precede
+  // `GetDomainInfo()` and `engaged_sites` inspection in
+  // `CheckUrlForLookalikes()`. Returns true if the check should stop early
+  // without consulting `engaged_sites`. When `result` is non-null, populates
+  // `is_warning_previously_dismissed` and `is_allowlisted` as applicable.
+  bool ShouldStopCheckingBeforeEngagedSites(
+      const GURL& url,
+      bool stop_checking_on_allowlist_or_ignore,
+      LookalikeUrlCheckResult* result) const;
+
   // Called when an async engaged site computation is finished.
   void OnUpdateEngagedSitesCompleted(
       std::vector<lookalikes::DomainInfo> new_engaged_sites);

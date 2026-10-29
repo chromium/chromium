@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -22,11 +23,19 @@ namespace content {
 class NavigationThrottleRegistry;
 }  // namespace content
 
+class LookalikeUrlService;
 class Profile;
 
 namespace lookalikes {
 struct DomainInfo;
 }
+
+// When enabled, `LookalikeUrlNavigationThrottle` skips deferring navigation
+// responses on stale `engaged_sites` lists when all URLs checked in the
+// redirect chain early-return in `LookalikeUrlService::CheckUrlForLookalikes()`
+// before `engaged_sites` is consulted (such as top domains, safe TLDs,
+// allowlisted domains, or when the Safety Tips configuration proto is absent).
+BASE_DECLARE_FEATURE(kOptimizeLookalikeUrlNavigationThrottle);
 
 // Returns true if the redirect is deemed to be safe. These are generally
 // defensive registrations where the domain owner redirects the IDN to the ASCII
@@ -62,6 +71,13 @@ class LookalikeUrlNavigationThrottle : public content::NavigationThrottle {
   void SetUseTestProfileForTesting() { use_test_profile_ = true; }
 
  private:
+  // Returns true if `PerformChecks()` for this navigation's redirect chain
+  // requires an up-to-date `engaged_sites` list. Returns false when both the
+  // initial and final URLs in the redirect chain are either already present in
+  // `lookalike_cache_` or early-return in `CheckUrlForLookalikes()` without
+  // consulting `engaged_sites`.
+  bool NeedsEngagedSitesForNavigation(const LookalikeUrlService* service) const;
+
   // Performs synchronous top domain and engaged site checks on the navigated
   // and redirected urls. Uses |engaged_sites| for the engaged site checks.
   ThrottleCheckResult PerformChecks(

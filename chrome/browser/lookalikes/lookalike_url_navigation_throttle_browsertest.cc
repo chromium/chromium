@@ -261,7 +261,7 @@ class LookalikeUrlNavigationThrottleBrowserTest : public InProcessBrowserTest {
   void SetUp() override {
     // TODO(b:507481593): Some tests are failing when enabling these features.
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features*/ {},
+        /*enabled_features*/ {kOptimizeLookalikeUrlNavigationThrottle},
         /*disabled_features*/ {omnibox::internal::kWebUIOmniboxPopup,
                                omnibox::internal::kWebUIOmniboxAimPopup});
     InProcessBrowserTest::SetUp();
@@ -1060,6 +1060,21 @@ IN_PROC_BROWSER_TEST_F(LookalikeUrlNavigationThrottleBrowserTest,
   test_clock()->Advance(base::Hours(1));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUIVersionURL)));
+  histograms.ExpectTotalCount(
+      "NavigationSuggestion.UpdateEngagedSitesDeferTime", 0);
+}
+
+// Tests that navigations to URLs that early-return in CheckUrlForLookalikes()
+// before inspecting engaged sites (such as top domains or safe TLDs) are not
+// deferred when the engaged sites list is stale.
+IN_PROC_BROWSER_TEST_F(LookalikeUrlNavigationThrottleBrowserTest,
+                       TopDomainNavigationNotDeferredForEngagedSites) {
+  base::HistogramTester histograms;
+  // Advance clock to make the engaged sites list stale.
+  test_clock()->Advance(base::Hours(1));
+  NavigateToURLSync(browser(), GetURL("google.com"));
+  test_clock()->Advance(base::Hours(1));
+  NavigateToURLSync(browser(), GetURL("site.gov"));
   histograms.ExpectTotalCount(
       "NavigationSuggestion.UpdateEngagedSitesDeferTime", 0);
 }
