@@ -19,6 +19,10 @@ source_set("reporting") {
       "realtime_reporting_client_factory.h",
       "reporting_event_router_factory.h",
     ]
+
+    if (enterprise_cdp_attribution) {
+      sources += [ "tab_cdp_actor_tracker.h" ]
+    }
   }
 
   if (enterprise_cloud_content_analysis && enable_extensions_core) {
@@ -38,6 +42,7 @@ source_set("reporting") {
     "//components/keyed_service/content",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//content/public/browser",
+    "//net",
   ]
 
   deps = [
@@ -69,6 +74,10 @@ source_set("impl") {
       "realtime_reporting_client_factory.cc",
       "reporting_event_router_factory.cc",
     ]
+
+    if (enterprise_cdp_attribution) {
+      sources += [ "tab_cdp_actor_tracker.cc" ]
+    }
   }
 
   if (enterprise_cloud_content_analysis && enable_extensions_core) {
@@ -129,6 +138,10 @@ source_set("unit_tests") {
     "realtime_reporting_client_unittest.cc",
     "reporting_event_router_unittest.cc",
   ]
+
+  if (enterprise_cdp_attribution) {
+    sources += [ "tab_cdp_actor_tracker_unittest.cc" ]
+  }
 
   if (enterprise_cloud_content_analysis && enable_extensions_core) {
     sources += [
