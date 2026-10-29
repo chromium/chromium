@@ -141,15 +141,13 @@ void PreconnectManagerImpl::Start(
   if (!url.SchemeIsHTTPOrHTTPS()) {
     return;
   }
-  PreresolveInfo* info;
-  if (preresolve_info_.find(url) == preresolve_info_.end()) {
-    auto iterator_and_whether_inserted = preresolve_info_.emplace(
-        url, std::make_unique<PreresolveInfo>(url, requests.size()));
-    info = iterator_and_whether_inserted.first->second.get();
+  auto [it, inserted] = preresolve_info_.try_emplace(url);
+  if (inserted) {
+    it->second = std::make_unique<PreresolveInfo>(url, requests.size());
   } else {
-    info = preresolve_info_.find(url)->second.get();
-    info->queued_count += requests.size();
+    it->second->queued_count += requests.size();
   }
+  PreresolveInfo* const info = it->second.get();
 
   for (auto& request : requests) {
     PreresolveJobId job_id =
