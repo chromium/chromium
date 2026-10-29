@@ -43,6 +43,19 @@ BOOL CanPerformOcclusionUpdates() {
   return predicate ? predicate() : NO;
 }
 
+// Returns YES if `ancestor` is `window`'s parent window, its parent's parent,
+// and so on.
+BOOL IsAncestorWindow(NSWindow* ancestor, NSWindow* window) {
+  NSWindow* parent = [window parentWindow];
+  while (parent) {
+    if (parent == ancestor) {
+      return YES;
+    }
+    parent = [parent parentWindow];
+  }
+  return NO;
+}
+
 NSString* const kWindowDidChangePositionInWindowList =
     @"ChromeWindowDidChangePositionInWindowList";
 constexpr char kWindowIsOccludedKey[] = "ChromeWindowIsOccludedKey";
@@ -339,9 +352,10 @@ bool WindowHasOpaqueFrameBackgroundView(NSView* view) {
   }
 
   // The checker cycles through the window list when performing its manual
-  // occlusion checks. Child windows don't appear in this list, so don't
-  // trigger an occlusion check unless `window` is a parent window
-  // (i.e. is not the child of another window).
+  // occlusion checks, and only a parent window (i.e. one that is not the child
+  // of another window) triggers one. The list can include child windows, and
+  // -isWindowOccluded:windowList: never treats a child's ancestors as covering
+  // it.
   if ([window parentWindow] == nil) {
     return YES;
   }
@@ -602,6 +616,14 @@ bool WindowHasOpaqueFrameBackgroundView(NSView* view) {
       // Continue looping through `windowList` in case an active key/main window
       // that is actually in front of `window` appears later in the list.
       seenWindow = YES;
+      continue;
+    }
+
+    // Chrome orders child windows above their parents, so `window`'s ancestors
+    // can't cover it, even an active one that the checks below would treat as
+    // in front of an inactive `window` (e.g. a browser window and its
+    // omnibox popup).
+    if (IsAncestorWindow(nextWindow, window)) {
       continue;
     }
 

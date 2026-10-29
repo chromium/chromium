@@ -291,6 +291,32 @@ struct Version {
 
 @end
 
+@interface TestOrderedWindowsSwizzler : NSObject
++ (NSArray<NSWindow*>* __strong*)testOrderedWindows;
++ (std::unique_ptr<base::apple::ScopedObjCClassSwizzler>&)swizzler;
+@end
+
+@implementation TestOrderedWindowsSwizzler
++ (NSArray<NSWindow*>* __strong*)testOrderedWindows {
+  static NSArray<NSWindow*>* windows = nil;
+  return &windows;
+}
+- (NSArray<NSWindow*>*)orderedWindows {
+  if (NSArray<NSWindow*>* windows =
+          *[TestOrderedWindowsSwizzler testOrderedWindows]) {
+    return windows;
+  }
+  return [TestOrderedWindowsSwizzler swizzler]
+      ->InvokeOriginal<NSArray<NSWindow*>*>(self, _cmd);
+}
++ (std::unique_ptr<base::apple::ScopedObjCClassSwizzler>&)swizzler {
+  static base::NoDestructor<
+      std::unique_ptr<base::apple::ScopedObjCClassSwizzler>>
+      swizzler;
+  return *swizzler;
+}
+@end
+
 namespace content {
 
 // A stub class for WebContentsNSViewHost.
@@ -580,7 +606,19 @@ class WindowOcclusionBrowserTestMac : public ContentBrowserTest {
     host_b_.OnWindowVisibilityChanged(visibility);
   }
 
+  void OverrideOrderedWindows(NSArray<NSWindow*>* windows) {
+    if (![TestOrderedWindowsSwizzler swizzler]) {
+      [TestOrderedWindowsSwizzler swizzler] =
+          std::make_unique<base::apple::ScopedObjCClassSwizzler>(
+              [NSApplication class], [TestOrderedWindowsSwizzler class],
+              @selector(orderedWindows));
+    }
+    *[TestOrderedWindowsSwizzler testOrderedWindows] = windows;
+  }
+
   void TearDownInProcessBrowserTestFixture() override {
+    *[TestOrderedWindowsSwizzler testOrderedWindows] = nil;
+    [TestOrderedWindowsSwizzler swizzler].reset();
     [window_a_web_contents_view_cocoa_ setHost:nullptr];
     [window_b_web_contents_view_cocoa_ setHost:nullptr];
   }
@@ -1197,6 +1235,77 @@ IN_PROC_BROWSER_TEST_F(WindowOcclusionBrowserTestMac,
   AddSubviewOfView(window_a_web_contents_view_cocoa_, window_a_.contentView);
   EXPECT_EQ(WindowAWebContentsVisibility(),
             remote_cocoa::mojom::Visibility::kVisible);
+}
+
+// Verifies that a child window is not occluded by its parent window, even if
+// the parent is active and would otherwise occlude an inactive window, in
+// either order in -[NSApplication orderedWindows].
+IN_PROC_BROWSER_TEST_F(
+    WindowOcclusionBrowserTestMac,
+    ManualOcclusionDetectionActiveParentDoesNotOccludeChildWindow) {
+  InitWindowA();
+  [window_a_ setCanBecomeKeyOrMainForTesting:YES];
+
+  InitWindowB(NSInsetRect(window_a_.frame, 10, 10));
+  [window_b_ setCanBecomeKeyOrMainForTesting:YES];
+
+  [window_a_ addChildWindow:window_b_ ordered:NSWindowAbove];
+  WaitForOcclusionUpdate();
+
+  OverrideOrderedWindows(@[ window_b_, window_a_ ]);
+
+  [window_a_ setKeyWindowForTesting:YES];
+  [window_a_ setMainWindowForTesting:YES];
+
+  PostNotification(NSWindowDidBecomeMainNotification, window_a_);
+
+  EXPECT_EQ(WindowBWebContentsVisibility(),
+            remote_cocoa::mojom::Visibility::kVisible);
+  EXPECT_FALSE([window_b_ isOccluded]);
+  EXPECT_EQ(WindowAWebContentsVisibility(),
+            remote_cocoa::mojom::Visibility::kVisible);
+
+  // A stale list can put the parent ahead of its child. It still can't cover
+  // the child.
+  OverrideOrderedWindows(@[ window_a_, window_b_ ]);
+  PostNotification(NSWindowDidBecomeMainNotification, window_a_);
+
+  EXPECT_EQ(WindowBWebContentsVisibility(),
+            remote_cocoa::mojom::Visibility::kVisible);
+  EXPECT_FALSE([window_b_ isOccluded]);
+
+  [window_a_ removeChildWindow:window_b_];
+}
+
+// Verifies that a child window is still occluded by an unrelated active window
+// that covers it, ensuring the parent exemption doesn't bypass all occlusion.
+IN_PROC_BROWSER_TEST_F(
+    WindowOcclusionBrowserTestMac,
+    ManualOcclusionDetectionActiveNonParentOccludesChildWindow) {
+  InitWindowA();
+  [window_a_ setCanBecomeKeyOrMainForTesting:YES];
+
+  InitWindowB(NSInsetRect(window_a_.frame, 10, 10));
+  [window_b_ setCanBecomeKeyOrMainForTesting:YES];
+
+  [window_a_ addChildWindow:window_b_ ordered:NSWindowAbove];
+  WaitForOcclusionUpdate();
+
+  WindowAndWebContents third = MakeWindowAndWebContents(window_a_.frame);
+  [third.window setCanBecomeKeyOrMainForTesting:YES];
+  OrderWindowFront(third.window);
+  [third.window setKeyWindowForTesting:YES];
+  [third.window setMainWindowForTesting:YES];
+
+  OverrideOrderedWindows(@[ window_b_, third.window, window_a_ ]);
+
+  PostNotification(NSWindowDidBecomeMainNotification, third.window);
+
+  EXPECT_EQ(WindowBWebContentsVisibility(),
+            remote_cocoa::mojom::Visibility::kOccluded);
+
+  [window_a_ removeChildWindow:window_b_];
+  [third.window close];
 }
 
 }  // namespace content
