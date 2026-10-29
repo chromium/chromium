@@ -766,6 +766,9 @@ void ContextualTasksWebContentsUserData::OnHandshakeComplete(
     page_state.last_sent_suggest_inputs_serialized.clear();
   }
 
+  if (ContextualTasksPanelController::IsWebContentsInPanel(&GetWebContents())) {
+    UpdateImplicitTabContext();
+  }
   if (ShouldMountContextLibrary() && !page_state.context_library_is_active) {
     SendMountContextLibrary();
   }
@@ -1215,6 +1218,7 @@ void ContextualTasksWebContentsUserData::
     base::UmaHistogramEnumeration(
         "ContextualTasks.ThreadContextLibrary.UpdateOutcome",
         ThreadContextLibraryUpdateOutcome::kEmptyConvertedContext);
+    UpdateImplicitTabContext();
     return;
   }
 
@@ -1320,6 +1324,7 @@ void ContextualTasksWebContentsUserData::
 
   // The restored tabs may be the only tabs in the session (e.g. when reopening
   // a previous thread), so mount the context library if it is not mounted.
+  UpdateImplicitTabContext();
   UpdateContextLibraryInputState();
 }
 
@@ -1452,7 +1457,6 @@ bool ContextualTasksWebContentsUserData::ResetSmartTabSharing() {
     model->SetSmartTabSharingActive(default_active);
     model->OnContextChanged();
   }
-  UpdateImplicitTabContext();
   UpdateContextLibraryInputState();
   if (was_active != default_active || had_override) {
     NotifyExtensionFramesTabContextUpdated();
@@ -1956,7 +1960,15 @@ void ContextualTasksWebContentsUserData::DeleteTabContext(int32_t tab_id) {
   }
 #if !BUILDFLAG(IS_ANDROID)
   contextual_tasks::RemoveTabUnderline(tab_id, GetBrowserWindowInterface());
+  RemoveAttachedTabUnderline(*session_tab_id, *this,
+                             GetBrowserWindowInterface());
 #endif
+  if (is_attached && attached_tab->url.is_valid()) {
+    dismissed_implicit_urls_.insert(attached_tab->url);
+  }
+  if (is_restored && restored_tab->url.is_valid()) {
+    dismissed_implicit_urls_.insert(restored_tab->url);
+  }
   // Remove attached and restored tabs.
   GURL current_url;
   std::string current_title;
@@ -2127,9 +2139,26 @@ void ContextualTasksWebContentsUserData::ClearInputPlateState() {
 
 void ContextualTasksWebContentsUserData::UpdateImplicitTabContext() {
   BrowserWindowInterface* browser_window = GetBrowserWindowInterface();
-  auto* controller = browser_window
-                         ? ContextualTasksPanelController::From(browser_window)
-                         : nullptr;
+  auto* panel_controller =
+      browser_window ? ContextualTasksPanelController::From(browser_window)
+                     : nullptr;
+  // Only the contextual task `WebContents` shown in an open side panel owns the
+  // implicit tab. A `WebContents` outside the panel, one in a closed panel, or
+  // a cached `WebContents` for another task (e.g. after a thread switch) drops
+  // any stale suggestion instead.
+  const content::WebContents* active_panel_web_contents =
+      panel_controller ? panel_controller->GetActiveWebContents() : nullptr;
+  const bool owns_implicit_tab =
+      panel_controller && panel_controller->IsPanelOpenForContextualTask() &&
+      ContextualTasksPanelController::IsWebContentsInPanel(&GetWebContents()) &&
+      active_panel_web_contents == &GetWebContents();
+  if (!owns_implicit_tab) {
+    RemoveImplicitTabContext();
+    return;
+  }
+
+  contextual_search::ContextualSearchSessionHandle* session_handle =
+      GetOrCreateContextualSessionHandle();
   Profile* profile =
       Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
   auto* tab_list =
@@ -2143,39 +2172,42 @@ void ContextualTasksWebContentsUserData::UpdateImplicitTabContext() {
                    : SessionID::InvalidValue();
   const GURL last_committed_url =
       tab_contents ? tab_contents->GetLastCommittedURL() : GURL();
+  const std::u16string tab_title_u16 =
+      tab_contents ? tab_contents->GetTitle() : std::u16string();
+  const std::string tab_title = base::UTF16ToUTF8(tab_title_u16);
+
   SiteExclusionDetail site_exclusion_detail;
-  contextual_search::ContextualSearchSessionHandle* session_handle = nullptr;
-  if (!GetPrimaryPageSearchState().is_zero_state || !controller ||
-      !ContextualTasksPanelController::IsWebContentsInPanel(
-          &GetWebContents()) ||
-      !controller->IsPanelOpenForContextualTask() ||
-      controller->GetActiveWebContents() != &GetWebContents() ||
-      !GetIsTabAutoSuggestionChipEnabled() || !CanShareTabContext(profile) ||
-      IsSmartTabSharingActive() || !session_id.is_valid() ||
-      !IsValidUrlForSuggestedTab(last_committed_url, profile,
-                                 site_exclusion_detail) ||
-      dismissed_implicit_urls_.contains(last_committed_url) ||
-      !(session_handle = GetOrCreateContextualSessionHandle())) {
+  const bool can_add_implicit_tab =
+      session_handle && contextual_tasks::GetIsTabAutoSuggestionChipEnabled() &&
+      contextual_tasks::CanShareTabContext(profile) &&
+      !IsSmartTabSharingActive() && active_tab && tab_contents &&
+      session_id.is_valid() &&
+      contextual_tasks::IsValidUrlForSuggestedTab(last_committed_url, profile,
+                                                  site_exclusion_detail) &&
+      !session_handle->IsTabDeselected(session_id, last_committed_url,
+                                       tab_title) &&
+      !dismissed_implicit_urls_.contains(last_committed_url);
+  if (!can_add_implicit_tab) {
+    RemoveImplicitTabContext();
+    return;
+  }
+
+  if (session_handle->HasTabInContext(
+          session_id, last_committed_url, tab_title,
+          implicit_tab_ ? std::make_optional(implicit_tab_->token)
+                        : std::nullopt)) {
     RemoveImplicitTabContext();
     return;
   }
 
   const tabs::TabHandle tab_handle = active_tab->GetHandle();
-  const std::string tab_title = base::UTF16ToUTF8(tab_contents->GetTitle());
   const std::vector<contextual_search::TabInfo> selected_tabs =
       GetSelectedTabs();
   auto existing_it = std::ranges::find(selected_tabs, session_id.id(),
                                        &contextual_search::TabInfo::tab_id);
   if (existing_it != selected_tabs.end()) {
-    if (implicit_tab_ && existing_it->context_token == implicit_tab_->token) {
-      if (existing_it->url == last_committed_url &&
-          existing_it->title == tab_title) {
-        return;
-      }
-    } else {
-      // Active tab was manually attached; keep it and drop any stale
-      // suggestion.
-      RemoveImplicitTabContext();
+    if (existing_it->url == last_committed_url &&
+        existing_it->title == tab_title) {
       return;
     }
   } else if (implicit_tab_.has_value()) {
@@ -2206,6 +2238,9 @@ void ContextualTasksWebContentsUserData::OnManualTabContextAdded(
     const GURL& url,
     SessionID tab_session_id) {
   dismissed_implicit_urls_.erase(url);
+  if (auto* session_handle = GetExistingContextualSessionHandle()) {
+    session_handle->RemoveDeselectedTab(tab_session_id);
+  }
   if (implicit_tab_ &&
       std::ranges::any_of(GetSelectedTabs(), [&](const auto& t) {
         return t.context_token == implicit_tab_->token &&

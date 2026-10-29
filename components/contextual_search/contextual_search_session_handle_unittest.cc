@@ -2661,6 +2661,37 @@ TEST_F(ContextualSearchSessionHandleTest,
 }
 
 TEST_F(ContextualSearchSessionHandleTest,
+       HasTabInContextMatchesRestoredAndAttachedTabs) {
+  auto local_handle = service_->CreateSessionForTesting(
+      std::make_unique<MockContextualSearchContextController>(), nullptr);
+  local_handle->CheckSearchContentSharingSettings(&prefs_);
+  const GURL restored_url("https://example.com/restored");
+  const GURL attached_url("https://example.com/attached");
+  const GURL other_url("https://example.com/other");
+  const SessionID other_tab_id = SessionID::FromSerializedValue(99);
+
+  local_handle->SetRestoredTabs(
+      {MakeRestoredTab(restored_url.spec(), "Restored", 10)});
+  const base::UnguessableToken attached_token =
+      local_handle->AddPendingDelayedTab(20, attached_url, "Attached");
+
+  // A restored tab matches by equivalent URL (ignoring the fragment).
+  EXPECT_TRUE(local_handle->HasTabInContext(
+      other_tab_id, GURL("https://example.com/restored#ref"), "",
+      std::nullopt));
+  // An attached tab matches by tab ID or equivalent URL.
+  EXPECT_TRUE(local_handle->HasTabInContext(SessionID::FromSerializedValue(20),
+                                            other_url, "", std::nullopt));
+  EXPECT_TRUE(local_handle->HasTabInContext(other_tab_id, attached_url, "",
+                                            std::nullopt));
+  // The attached tab with `ignored_token` is skipped.
+  EXPECT_FALSE(local_handle->HasTabInContext(SessionID::FromSerializedValue(20),
+                                             attached_url, "", attached_token));
+  EXPECT_FALSE(
+      local_handle->HasTabInContext(other_tab_id, other_url, "", std::nullopt));
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
        DeselectedTabsUrlsAreStoredInTabContextState) {
   auto local_handle = service_->CreateSessionForTesting(
       std::make_unique<MockContextualSearchContextController>(), nullptr);

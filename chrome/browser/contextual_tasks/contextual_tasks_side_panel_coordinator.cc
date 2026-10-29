@@ -2728,10 +2728,7 @@ void ContextualTasksSidePanelCoordinator::AttachTabsToTask(
           if (user_data) {
             user_data->OnTabContextRemoved(attached_tab.context_token);
           }
-          if (!session_handle->DeleteFile(attached_tab.context_token)) {
-            session_handle->RemoveUploadedContextToken(
-                attached_tab.context_token);
-          }
+          session_handle->DeleteTabContext(attached_tab.context_token);
         }
       }
 

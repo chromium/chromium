@@ -95,6 +95,15 @@ void UpdateContextualSearchWebContentsHelperForTask(
     existing_session = helper->session_handle();
   }
 
+  const bool task_changed =
+      helper->task_id().has_value() && helper->task_id() != task_id;
+  if (task_changed) {
+    if (auto* user_data =
+            ContextualTasksWebContentsUserData::FromWebContents(web_contents)) {
+      user_data->OnTaskChanged();
+    }
+  }
+
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       session_handle;
   if (existing_session) {
@@ -125,16 +134,16 @@ void UpdateContextualSearchWebContentsHelperForTask(
 
   // Update the session handle with the new task ID.
   if (session_handle) {
-    if (helper->task_id().has_value() && helper->task_id() != task_id) {
-      if (auto* user_data = ContextualTasksWebContentsUserData::FromWebContents(
-              web_contents)) {
-        user_data->OnTaskChanged();
-      }
-    }
     session_handle->CheckSearchContentSharingSettings(
         browser_window->GetProfile()->GetPrefs());
     helper->SetTaskSession(task_id, std::move(session_handle),
                            /*input_state_model=*/nullptr);
+    if (task_changed) {
+      if (auto* user_data = ContextualTasksWebContentsUserData::FromWebContents(
+              web_contents)) {
+        user_data->UpdateImplicitTabContext();
+      }
+    }
     if (auto* provider = ActiveTaskContextProvider::From(browser_window)) {
       provider->RefreshContext();
     }

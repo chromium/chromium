@@ -323,6 +323,11 @@ class ContextualTasksExtensionHandlerBrowserTestBase
     tasks_service->AssociateTabWithTask(
         *side_panel_task_id_,
         sessions::SessionTabHelper::IdForTab(web_contents_));
+    mock_session_handle_ = nullptr;
+    if (auto* tab_helper =
+            ContextualSearchWebContentsHelper::FromWebContents(web_contents_)) {
+      tab_helper->SetTaskSession(std::nullopt, nullptr, nullptr);
+    }
 
     auto panel_contents = content::WebContents::Create(
         content::WebContents::CreateParams(web_contents_->GetBrowserContext()));
@@ -5955,18 +5960,16 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksExtensionHandlerBrowserTest,
     OnPageChanged_ZeroStateInSidePanel_AddsImplicitTabAndUpdatesOnNavigation) {
-  GURL url1;
-  GURL url2;
-  auto* user_data = StartTestServerAndOpenSidePanel(&url1, &url2);
-  ASSERT_NE(user_data, nullptr);
-  EXPECT_TRUE(user_data->GetSelectedTabs().empty());
-  EXPECT_FALSE(user_data->GetAutoSuggestedTabHandle().has_value());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+  handler_ = nullptr;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
 
-  // 1. `OnPageChanged(false)` does not add implicit context.
-  EXPECT_CALL(mock_panel_page_, PostSearchMessage(_)).Times(0);
-  SendOnPageChanged(false);
-  mock_panel_page_.FlushForTesting();
-  testing::Mock::VerifyAndClearExpectations(&mock_panel_page_);
+  EmbedHandlerInSidePanel();
+  auto* user_data =
+      ContextualTasksWebContentsUserData::FromWebContents(panel_web_contents_);
+  ASSERT_NE(user_data, nullptr);
   EXPECT_TRUE(user_data->GetSelectedTabs().empty());
   EXPECT_FALSE(user_data->GetAutoSuggestedTabHandle().has_value());
 
@@ -5992,7 +5995,8 @@ IN_PROC_BROWSER_TEST_F(
         });
   };
 
-  // 2. `OnPageChanged(true)` attaches the active tab as pending delayed.
+  // 1. Showing the side panel next to `url1` attaches the active tab as pending
+  // delayed and mounts `CONTEXT_LIBRARY`.
   base::RunLoop zero_state_loop;
   EXPECT_CALL(mock_panel_page_, OnTabContextUpdated(_, _))
       .WillOnce([&url1](std::vector<searchbox::mojom::TabInfoPtr> tabs,
@@ -6002,8 +6006,15 @@ IN_PROC_BROWSER_TEST_F(
         EXPECT_TRUE(submitted_tab_ids.empty());
       });
   expect_context_library(true, zero_state_loop);
-  SendOnPageChanged(true);
+  ShowSidePanel();
   zero_state_loop.Run();
+  mock_panel_page_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&mock_panel_page_);
+
+  // 2. `OnPageChanged(false)` and `OnPageChanged(true)` preserve the implicit
+  // active tab context in the side panel.
+  SendOnPageChanged(false);
+  SendOnPageChanged(true);
   mock_panel_page_.FlushForTesting();
   testing::Mock::VerifyAndClearExpectations(&mock_panel_page_);
 
@@ -6492,7 +6503,8 @@ IN_PROC_BROWSER_TEST_F(
               on_response) {
         base::RunLoop run_loop;
         EXPECT_CALL(mock_page_, PostSearchMessage(_))
-            .WillRepeatedly([&](mojo_base::ProtoWrapper wrapper) {
+            .WillRepeatedly([&on_response,
+                             &run_loop](mojo_base::ProtoWrapper wrapper) {
               auto message = wrapper.As<lens::ClientToSearchMessage>();
               if (!message.has_value() ||
                   !message->has_on_submit_query_response() || !on_response) {
@@ -6581,6 +6593,133 @@ IN_PROC_BROWSER_TEST_F(
         EXPECT_EQ(1002u, response.removed_contexts(0).request_id().uuid());
       }));
   EXPECT_TRUE(file_info2.is_superceded);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerContextLibraryBrowserTest,
+    ActiveThread_HistoryThreadRestore_AttachesDifferentActiveTabWithoutDuplicatingMatch) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL cats_url = embedded_test_server()->GetURL("/title1.html");
+  const GURL dogs_url = embedded_test_server()->GetURL("/title2.html");
+  handler_ = nullptr;
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), cats_url, WindowOpenDisposition::kNewBackgroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), dogs_url));
+
+  EmbedHandlerInSidePanel();
+  ContextualTasksPanelController::From(browser())->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      /*use_no_animation=*/true);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::FromWebContents(panel_web_contents_);
+  ASSERT_NE(user_data, nullptr);
+
+  {
+    lens::SearchToClientMessage page_changed;
+    page_changed.mutable_on_page_changed()->set_is_zero_state(false);
+    std::vector<uint8_t> bytes(page_changed.ByteSizeLong());
+    page_changed.SerializeToArray(bytes.data(), bytes.size());
+    handler_->OnWebviewMessage(bytes, std::nullopt);
+  }
+  ASSERT_EQ(user_data->GetSelectedTabs().size(), 1u);
+  EXPECT_EQ(user_data->GetSelectedTabs()[0].url, dogs_url);
+
+  lens::SearchToClientMessage::UpdateThreadContextLibrary history_library;
+  AddWebpageContext(history_library, 1, cats_url.spec(), "Cats");
+  SendUpdateThreadContextLibrary(history_library);
+
+  ASSERT_EQ(mock_session_handle_->GetTabContextState().restored.size(), 1u);
+  EXPECT_EQ(mock_session_handle_->GetTabContextState().restored[0].url,
+            cats_url);
+  ASSERT_EQ(user_data->GetSelectedTabs().size(), 1u);
+  EXPECT_EQ(user_data->GetSelectedTabs()[0].url, dogs_url);
+
+  // Navigating back to `cats_url` deduplicates against the restored `cats_url`
+  // so no duplicate unsubmitted chip is created.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), cats_url));
+  EXPECT_TRUE(user_data->GetSelectedTabs().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerContextLibraryBrowserTest,
+    SidePanel_NewTabAndThreadSwitch_ImplicitlyAttachesActiveTabUnlessDeselected) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+  handler_ = nullptr;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url1));
+
+  EmbedHandlerInSidePanel();
+  auto* panel_controller = ContextualTasksPanelController::From(browser());
+  panel_controller->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      /*use_no_animation=*/true);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::FromWebContents(panel_web_contents_);
+  ASSERT_NE(user_data, nullptr);
+
+  // 1. Opening the side panel next to `url1` implicitly attaches `url1`
+  // immediately without waiting for `OnPageChanged`.
+  ASSERT_EQ(user_data->GetSelectedTabs().size(), 1u);
+  EXPECT_EQ(user_data->GetSelectedTabs()[0].url, url1);
+
+  const std::optional<ContextualTask> task1 =
+      panel_controller->GetCurrentTask();
+  ASSERT_TRUE(task1.has_value());
+
+  // 2. Opening a new tab (`url2`) associated with the task next to the side
+  // panel switches the implicit tab context to `url2`.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url2, WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  auto* tab_list = TabListInterface::From(browser());
+  ASSERT_EQ(tab_list->GetTabCount(), 2);
+  auto* tasks_service =
+      ContextualTasksServiceFactory::GetForProfile(browser()->GetProfile());
+  tasks_service->AssociateTabWithTask(
+      task1->GetTaskId(), sessions::SessionTabHelper::IdForTab(
+                              tab_list->GetActiveTab()->GetContents()));
+  panel_controller->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
+      /*use_no_animation=*/true);
+  ASSERT_EQ(user_data->GetSelectedTabs().size(), 1u);
+  EXPECT_EQ(user_data->GetSelectedTabs()[0].url, url2);
+
+  // 3. Switching back to Tab 0 (`url1`) switches the implicit tab back to
+  // `url1`.
+  tab_list->ActivateTab(tab_list->GetTab(0)->GetHandle());
+  ASSERT_EQ(user_data->GetSelectedTabs().size(), 1u);
+  EXPECT_EQ(user_data->GetSelectedTabs()[0].url, url1);
+
+  // 4. Explicitly deselecting `url1` removes it and keeps it deselected even
+  // after switching to Tab 1 (`url2`) and back to Tab 0 (`url1`).
+  static_cast<searchbox::mojom::PageHandler*>(handler_)->DeleteTabContext(
+      tab_list->GetTab(0)->GetHandle().raw_value());
+  EXPECT_TRUE(user_data->GetSelectedTabs().empty());
+
+  tab_list->ActivateTab(tab_list->GetTab(1)->GetHandle());
+  ASSERT_EQ(user_data->GetSelectedTabs().size(), 1u);
+  EXPECT_EQ(user_data->GetSelectedTabs()[0].url, url2);
+
+  tab_list->ActivateTab(tab_list->GetTab(0)->GetHandle());
+  EXPECT_TRUE(user_data->GetSelectedTabs().empty());
+
+  // 5. Changing the current side panel task (e.g. starting a new thread or
+  // switching threads) resets the previous task's deselection and implicitly
+  // attaches `url1` for the new task.
+  ContextualTask task2 = tasks_service->CreateTask();
+  mock_session_handle_ = nullptr;
+  ContextualTasksUiServiceFactory::GetForBrowserContext(browser()->GetProfile())
+      ->OnTaskChanged(browser(), panel_web_contents_, task1->GetTaskId(),
+                      task2.GetTaskId(), /*is_shown_in_tab=*/false);
+  ASSERT_EQ(user_data->GetSelectedTabs().size(), 1u);
+  EXPECT_EQ(user_data->GetSelectedTabs()[0].url, url1);
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
