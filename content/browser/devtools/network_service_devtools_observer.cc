@@ -29,7 +29,7 @@ void DispatchToAgents(DevToolsAgentHostImpl* agent_host,
                       void (Handler::*method)(MethodArgs...),
                       Args&&... args) {
   for (auto* h : Handler::ForAgentHost(agent_host))
-    (h->*method)(std::forward<Args>(args)...);
+    (h->*method)(args...);
 }
 
 RenderFrameHostImpl* GetRenderFrameHostImplFrom(
