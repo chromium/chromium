@@ -158,7 +158,7 @@ class TaskTracker {
   // made and removed when the corresponding ViewerHandle is destroyed.
   base::ObserverList<ViewRequestDelegate> viewers_;
 
-  // Viewers added after `content_ready_` becomes true that are awaiting an
+  // Viewers added after `distilled_article_` is populated that are awaiting an
   // asynchronous `NotifyPendingViewer()` task. Stored here rather than bound
   // into `PostTask()` so `RemoveViewer()` can drop the pointer before the
   // caller destroys `ViewRequestDelegate`.

@@ -80,17 +80,17 @@ void TaskTracker::StartBlobFetcher() {
 void TaskTracker::AddSaveCallback(SaveCallback callback) {
   DCHECK(!callback.is_null());
   save_callbacks_.push_back(std::move(callback));
-  if (content_ready_) {
-    // Distillation for this task has already completed, and so it can be
-    // immediately saved.
-    ScheduleSaveCallbacks(true);
+  if (distilled_article_) {
+    // Distillation for this task has already completed, and so the save
+    // callback can be immediately scheduled.
+    ScheduleSaveCallbacks(content_ready_);
   }
 }
 
 std::unique_ptr<ViewerHandle> TaskTracker::AddViewer(
     ViewRequestDelegate* delegate) {
   viewers_.AddObserver(delegate);
-  if (content_ready_) {
+  if (distilled_article_) {
     // Distillation for this task has already completed, and so the delegate can
     // be immediately told of the result.
     pending_viewers_.push_back(delegate);

@@ -470,5 +470,111 @@ TEST_F(DomDistillerTaskTrackerTest,
   EXPECT_FALSE(cancel_callback.Cancelled());
 }
 
+// Tests that a viewer added after distillation fails (while an existing viewer
+// still keeps the `TaskTracker` alive) receives `OnArticleReady()` with an
+// empty article rather than waiting indefinitely.
+TEST_F(DomDistillerTaskTrackerTest, TestViewerAddedAfterDistillationFails) {
+  MockDistillerFactory distiller_factory;
+  auto owned_distiller =
+      std::make_unique<FakeDistiller>(/*execute_callback=*/false);
+  FakeDistiller* distiller = owned_distiller.get();
+  EXPECT_CALL(distiller_factory, CreateDistillerImpl()).WillOnce([&] {
+    return owned_distiller.release();
+  });
+
+  TestCancelCallback cancel_callback;
+  TaskTracker task_tracker(GetDefaultEntry(), cancel_callback.GetCallback(),
+                           nullptr);
+
+  base::RunLoop first_viewer_loop;
+  FakeViewRequestDelegate viewer_delegate1;
+  std::unique_ptr<ViewerHandle> handle1(
+      task_tracker.AddViewer(&viewer_delegate1));
+  EXPECT_CALL(viewer_delegate1, OnArticleReady(_))
+      .WillOnce([&](const DistilledArticleProto* article) {
+        ASSERT_TRUE(article);
+        EXPECT_EQ(0, article->pages_size());
+        first_viewer_loop.Quit();
+      });
+
+  task_tracker.StartDistiller(&distiller_factory,
+                              std::unique_ptr<DistillerPage>(),
+                              /*use_cache=*/false);
+  distiller->RunDistillerCallback(std::make_unique<DistilledArticleProto>());
+  first_viewer_loop.Run();
+
+  base::RunLoop second_viewer_loop;
+  FakeViewRequestDelegate viewer_delegate2;
+  EXPECT_CALL(viewer_delegate2, OnArticleReady(_))
+      .WillOnce([&](const DistilledArticleProto* article) {
+        ASSERT_TRUE(article);
+        EXPECT_EQ(0, article->pages_size());
+        second_viewer_loop.Quit();
+      });
+  std::unique_ptr<ViewerHandle> handle2(
+      task_tracker.AddViewer(&viewer_delegate2));
+  second_viewer_loop.Run();
+
+  handle1.reset();
+  handle2.reset();
+  EXPECT_TRUE(cancel_callback.Cancelled());
+}
+
+// Tests that a save callback added after distillation fails is invoked with
+// `distillation_succeeded = false` and does not prevent `MaybeCancel()` from
+// cancelling the `TaskTracker` once all viewer handles are released.
+TEST_F(DomDistillerTaskTrackerTest,
+       TestSaveCallbackAddedAfterDistillationFails) {
+  MockDistillerFactory distiller_factory;
+  auto owned_distiller =
+      std::make_unique<FakeDistiller>(/*execute_callback=*/false);
+  FakeDistiller* distiller = owned_distiller.get();
+  EXPECT_CALL(distiller_factory, CreateDistillerImpl()).WillOnce([&] {
+    return owned_distiller.release();
+  });
+
+  TestCancelCallback cancel_callback;
+  TaskTracker task_tracker(GetDefaultEntry(), cancel_callback.GetCallback(),
+                           nullptr);
+
+  base::RunLoop viewer_loop;
+  FakeViewRequestDelegate viewer_delegate;
+  std::unique_ptr<ViewerHandle> handle(
+      task_tracker.AddViewer(&viewer_delegate));
+  EXPECT_CALL(viewer_delegate, OnArticleReady(_))
+      .WillOnce([&](const DistilledArticleProto* article) {
+        ASSERT_TRUE(article);
+        EXPECT_EQ(0, article->pages_size());
+        viewer_loop.Quit();
+      });
+
+  task_tracker.StartDistiller(&distiller_factory,
+                              std::unique_ptr<DistillerPage>(),
+                              /*use_cache=*/false);
+  distiller->RunDistillerCallback(std::make_unique<DistilledArticleProto>());
+  viewer_loop.Run();
+
+  base::RunLoop save_loop;
+  bool save_callback_executed = false;
+  MockSaveCallback save_callback;
+  EXPECT_CALL(save_callback, Save(_, _, false))
+      .WillOnce([&](const ArticleEntry&, const DistilledArticleProto* article,
+                    bool succeeded) {
+        ASSERT_TRUE(article);
+        EXPECT_FALSE(succeeded);
+        EXPECT_EQ(0, article->pages_size());
+        save_callback_executed = true;
+        save_loop.Quit();
+      });
+  task_tracker.AddSaveCallback(base::BindOnce(
+      &MockSaveCallback::Save, base::Unretained(&save_callback)));
+  save_loop.Run();
+  EXPECT_TRUE(save_callback_executed);
+  EXPECT_FALSE(cancel_callback.Cancelled());
+
+  handle.reset();
+  EXPECT_TRUE(cancel_callback.Cancelled());
+}
+
 }  // namespace test
 }  // namespace dom_distiller
