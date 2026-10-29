@@ -521,11 +521,6 @@ TEST_P(CopySharedImageHelperTest, ReadPixelsYUVTopLeftOrigin) {
 }
 
 TEST_P(CopySharedImageHelperTest, ReadPixelsYUVBottomLeftOrigin) {
-  // TODO(crbug.com/570097637): Graphite reads the wrong rows when scaling a
-  // sub rect of a bottom left origin image.
-  if (context_state_->IsGraphiteDawn()) {
-    GTEST_SKIP() << "Scaled sub rect readback is broken on Graphite";
-  }
   RunReadPixelsYUVRGBATest(kBottomLeft_GrSurfaceOrigin);
 }
 
