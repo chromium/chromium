@@ -4,23 +4,23 @@
 
 #include "chrome/browser/ash/app_list/search/files/file_title.h"
 
+#include <array>
 #include <string>
-#include <vector>
+#include <string_view>
 
 #include "base/files/file_path.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace app_list {
 namespace {
 
-std::string StripHostedFileExtensions(const std::string& filename) {
-  static const base::NoDestructor<std::vector<std::string>> hosted_extensions(
+std::string_view StripHostedFileExtensions(std::string_view filename) {
+  static constexpr auto kHostedExtensions = std::to_array<std::string_view>(
       {".GDOC", ".GSHEET", ".GSLIDES", ".GDRAW", ".GTABLE", ".GLINK", ".GFORM",
        ".GMAPS", ".GSITE"});
 
-  for (const auto& extension : *hosted_extensions) {
+  for (std::string_view extension : kHostedExtensions) {
     if (base::EndsWith(filename, extension,
                        base::CompareCase::INSENSITIVE_ASCII)) {
       return filename.substr(0, filename.size() - extension.size());
