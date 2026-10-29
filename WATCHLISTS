@@ -218,9 +218,6 @@
                   'chrome/android/java/src/org/chromium/chrome/browser/settings/privacy/PrivacyPreferences.java|'\
                   'chrome/android/java/src/org/chromium/chrome/browser/metrics/UmaSessionStats.java',
     },
-    'android_vertical_tabs': {
-      'filepath': 'chrome/android/features/tab_ui/.*vertical_tab.*',
-    },
     'android_webapk': {
       'filepath': 'chrome/android/webapk/|'\
                   'chrome/browser/android/webapk/',
@@ -2664,7 +2661,6 @@
                            'ckitagawa+watch@chromium.org'],
     'android_uma_settings': ['asvitkine+watch@chromium.org',
                              'gayane+watch@chromium.org'],
-    'android_vertical_tabs': ['agazal@google.com'],
     'android_webapk': ['webapks-watchlist@chromium.org'],
     'android_webview': ['android-webview-reviews@chromium.org'],
     'android_webview_network_service': [],
