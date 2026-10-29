@@ -4,6 +4,7 @@
 
 module cc.mojom;
 
+import "cc/mojom/root_scroll_offset_update_frequency.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "services/viz/public/mojom/compositing/selection.mojom";
 import "services/viz/public/mojom/compositing/tracked_element_rects.mojom";
@@ -125,21 +126,6 @@ struct RenderFrameMetadata {
 
   [EnableIf=is_android|is_ios]
   bool has_transparent_background;
-};
-
-[EnableIf=is_android|is_ios]
-enum RootScrollOffsetUpdateFrequency {
-  // The client will only be notified of root scroll offsets via the regular
-  // RenderFrameMetadata updates. This is the default behavior. See
-  // `RenderFrameMetadataObserverImpl::ShouldSendRenderFrameMetadata()` for
-  // details on when the RenderFrameMetadata updates occur.
-  kNone,
-  // The client will also be notified with an updated root scroll offset when a
-  // scroll ends in addition to offset updates sent via RenderFrameMetadata
-  // updates.
-  kOnScrollEnd,
-  // The client will be notified of any change to the root scroll offset.
-  kAllUpdates,
 };
 
 // This interface is provided by the renderer. It impacts the frequency with

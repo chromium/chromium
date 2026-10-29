@@ -8,7 +8,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
-#include "cc/mojom/render_frame_metadata.mojom-shared.h"
+#include "cc/mojom/root_scroll_offset_update_frequency.mojom-shared.h"
 #include "content/browser/android/render_widget_host_connector.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_widget_host.h"

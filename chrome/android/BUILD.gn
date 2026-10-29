@@ -316,7 +316,7 @@ if (_is_default_toolchain) {
       "//base:virtual_document_path_java",
       "//base/version_info/android:version_constants_java",
       "//cc:cc_java",
-      "//cc/mojom:mojom_java",
+      "//cc/mojom:android_mojo_bindings_java",
       "//chrome/android/features/keyboard_accessory:public_java",
       "//chrome/android/features/tab_ui:java_resources",
       "//chrome/android/features/tab_ui/public:java",

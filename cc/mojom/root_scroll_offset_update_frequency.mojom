@@ -1,0 +1,20 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module cc.mojom;
+
+[EnableIf=is_android|is_ios]
+enum RootScrollOffsetUpdateFrequency {
+  // The client will only be notified of root scroll offsets via the regular
+  // RenderFrameMetadata updates. This is the default behavior. See
+  // `RenderFrameMetadataObserverImpl::ShouldSendRenderFrameMetadata()` for
+  // details on when the RenderFrameMetadata updates occur.
+  kNone,
+  // The client will also be notified with an updated root scroll offset when a
+  // scroll ends in addition to offset updates sent via RenderFrameMetadata
+  // updates.
+  kOnScrollEnd,
+  // The client will be notified of any change to the root scroll offset.
+  kAllUpdates,
+};

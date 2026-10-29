@@ -31,6 +31,7 @@ mojom("mojom") {
   ]
 
   public_deps = [
+    ":android_mojo_bindings",
     ":mojom_browser_controls",
     "//mojo/public/mojom/base",
     "//services/viz/public/mojom",
@@ -75,6 +76,7 @@ mojom("mojom") {
       ]
       traits_headers = [ "overscroll_behavior_mojom_traits.h" ]
     },
+
     {
       types = [
         {
@@ -145,6 +147,16 @@ mojom("mojom_browser_controls") {
   blink_cpp_typemaps = shared_typemaps
 
   deps = [ "//services/viz/public/mojom:surfaces" ]
+}
+
+mojom("android_mojo_bindings") {
+  generate_blink = true
+  generate_java = true
+  sources = [ "root_scroll_offset_update_frequency.mojom" ]
+
+  export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/public/platform/web_common.h"
 }
 
 mojom("mojom_layer_trees") {
