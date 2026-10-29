@@ -23,10 +23,21 @@ public class TestFeedServer implements WebServer.RequestHandler {
     private static final String TAG = "TestFeedServer";
     private static final String FEED_RESPONSE_BINARYPB_PATH =
             "/chrome/test/data/android/feed/v2/feed_query_normal_response.binarypb";
+    private final String mResponsePath;
     private WebServer mServer;
     private boolean mReceivedQueryRequest;
 
+    /** Serves the default synthetic feed response. */
     public TestFeedServer() {
+        this(FEED_RESPONSE_BINARYPB_PATH);
+    }
+
+    /**
+     * @param responsePath Path, relative to the isolated test data root, of the serialized {@code
+     *     feedwire.Response} to serve for feed queries.
+     */
+    public TestFeedServer(String responsePath) {
+        mResponsePath = responsePath;
         try {
             mServer = new WebServer(0, false);
             ThreadUtils.runOnUiThreadBlocking(
@@ -62,15 +73,14 @@ public class TestFeedServer implements WebServer.RequestHandler {
     private void tryHandleRequest(WebServer.HTTPRequest request, OutputStream output)
             throws IOException {
         if (request.getMethod().equals("GET") && request.getURI().contains("/FeedQuery?")) {
-            WebServer.writeResponse(
-                    output, WebServer.STATUS_OK, feedQueryResponse(FEED_RESPONSE_BINARYPB_PATH));
+            WebServer.writeResponse(output, WebServer.STATUS_OK, feedQueryResponse(mResponsePath));
             return;
         }
         if (request.getURI().contains("queryInteractiveFeed")) {
             WebServer.writeResponse(
                     output,
                     WebServer.STATUS_OK,
-                    readFile(UrlUtils.getIsolatedTestFilePath(FEED_RESPONSE_BINARYPB_PATH)));
+                    readFile(UrlUtils.getIsolatedTestFilePath(mResponsePath)));
             return;
         }
 
