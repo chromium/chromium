@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_DOM_DISTILLER_CORE_TASK_TRACKER_H_
 #define COMPONENTS_DOM_DISTILLER_CORE_TASK_TRACKER_H_
 
+#include <deque>
 #include <string>
 #include <vector>
 
@@ -138,6 +139,8 @@ class TaskTracker {
   void AddDistilledContentToStore(const DistilledArticleProto& content);
 
   void NotifyViewersAndCallbacks();
+  // Dequeues and notifies the next viewer in `pending_viewers_`.
+  void NotifyPendingViewer();
   void NotifyViewer(ViewRequestDelegate* delegate);
 
   bool IsAnySourceRunning() const;
@@ -154,6 +157,12 @@ class TaskTracker {
   // A ViewRequestDelegate will be added to this list when a view request is
   // made and removed when the corresponding ViewerHandle is destroyed.
   base::ObserverList<ViewRequestDelegate> viewers_;
+
+  // Viewers added after `content_ready_` becomes true that are awaiting an
+  // asynchronous `NotifyPendingViewer()` task. Stored here rather than bound
+  // into `PostTask()` so `RemoveViewer()` can drop the pointer before the
+  // caller destroys `ViewRequestDelegate`.
+  std::deque<raw_ptr<ViewRequestDelegate>> pending_viewers_;
 
   std::unique_ptr<Distiller> distiller_;
   bool blob_fetcher_running_;

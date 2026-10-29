@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
 #include "components/dom_distiller/core/article_distillation_update.h"
@@ -416,6 +417,56 @@ TEST_F(DomDistillerTaskTrackerTest, ContentIsSaved) {
 
   ASSERT_EQ(stored_distilled_article.SerializeAsString(),
             distilled_article.SerializeAsString());
+  EXPECT_FALSE(cancel_callback.Cancelled());
+}
+
+// Tests that cancelling a `ViewerHandle` and destroying its
+// `ViewRequestDelegate` before the posted notification runs does not
+// dereference a freed delegate when `AddViewer()` is called after content is
+// already ready.
+TEST_F(DomDistillerTaskTrackerTest,
+       TestViewerCancelledAfterContentReadyBeforeNotification) {
+  MockDistillerFactory distiller_factory;
+  FakeDistiller* distiller = new FakeDistiller(true);
+  EXPECT_CALL(distiller_factory, CreateDistillerImpl())
+      .WillOnce(Return(distiller));
+  TestCancelCallback cancel_callback;
+  TaskTracker task_tracker(GetDefaultEntry(), cancel_callback.GetCallback(),
+                           nullptr);
+
+  base::RunLoop initial_ready_loop;
+  FakeViewRequestDelegate viewer_delegate;
+  std::unique_ptr<ViewerHandle> handle(
+      task_tracker.AddViewer(&viewer_delegate));
+  EXPECT_CALL(viewer_delegate, OnArticleReady(_))
+      .WillOnce(
+          [&](const DistilledArticleProto*) { initial_ready_loop.Quit(); });
+
+  task_tracker.StartDistiller(&distiller_factory,
+                              std::unique_ptr<DistillerPage>(),
+                              /*use_cache=*/false);
+  initial_ready_loop.Run();
+
+  // Add a second and third viewer after content is ready, then cancel the
+  // second viewer's handle and destroy its delegate before the posted
+  // notification tasks execute.
+  auto cancelled_delegate = std::make_unique<FakeViewRequestDelegate>();
+  EXPECT_CALL(*cancelled_delegate, OnArticleReady(_)).Times(0);
+  std::unique_ptr<ViewerHandle> cancelled_handle(
+      task_tracker.AddViewer(cancelled_delegate.get()));
+
+  FakeViewRequestDelegate active_delegate;
+  EXPECT_CALL(active_delegate, OnArticleReady(_));
+  std::unique_ptr<ViewerHandle> active_handle(
+      task_tracker.AddViewer(&active_delegate));
+
+  cancelled_handle.reset();
+  cancelled_delegate.reset();
+
+  base::RunLoop pending_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, pending_loop.QuitClosure());
+  pending_loop.Run();
   EXPECT_FALSE(cancel_callback.Cancelled());
 }
 

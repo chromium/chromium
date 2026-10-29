@@ -6,8 +6,10 @@
 
 #include <stddef.h>
 
+#include <deque>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/location.h"
@@ -42,6 +44,7 @@ TaskTracker::TaskTracker(const ArticleEntry& entry,
 TaskTracker::~TaskTracker() {
   DCHECK(destruction_allowed_);
   DCHECK(viewers_.empty());
+  DCHECK(pending_viewers_.empty());
 }
 
 void TaskTracker::StartDistiller(DistillerFactory* factory,
@@ -90,9 +93,10 @@ std::unique_ptr<ViewerHandle> TaskTracker::AddViewer(
   if (content_ready_) {
     // Distillation for this task has already completed, and so the delegate can
     // be immediately told of the result.
+    pending_viewers_.push_back(delegate);
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&TaskTracker::NotifyViewer,
-                                  weak_ptr_factory_.GetWeakPtr(), delegate));
+        FROM_HERE, base::BindOnce(&TaskTracker::NotifyPendingViewer,
+                                  weak_ptr_factory_.GetWeakPtr()));
   }
   return std::make_unique<ViewerHandle>(base::BindOnce(
       &TaskTracker::RemoveViewer, weak_ptr_factory_.GetWeakPtr(), delegate));
@@ -116,6 +120,7 @@ bool TaskTracker::HasUrl(const GURL& url) const {
 }
 
 void TaskTracker::RemoveViewer(ViewRequestDelegate* delegate) {
+  std::erase(pending_viewers_, delegate);
   viewers_.RemoveObserver(delegate);
   if (viewers_.empty()) {
     MaybeCancel();
@@ -240,6 +245,17 @@ void TaskTracker::NotifyViewersAndCallbacks() {
 
   // Already inside a callback run SaveCallbacks directly.
   DoSaveCallbacks(content_ready_);
+}
+
+void TaskTracker::NotifyPendingViewer() {
+  // A pending viewer may have been removed by `RemoveViewer()` before this
+  // posted task ran.
+  if (pending_viewers_.empty()) {
+    return;
+  }
+  ViewRequestDelegate* delegate = pending_viewers_.front();
+  pending_viewers_.pop_front();
+  NotifyViewer(delegate);
 }
 
 void TaskTracker::NotifyViewer(ViewRequestDelegate* delegate) {
