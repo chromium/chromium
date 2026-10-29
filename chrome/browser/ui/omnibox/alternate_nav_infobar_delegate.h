@@ -15,6 +15,7 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 namespace content {
 class WebContents;
@@ -45,7 +46,7 @@ class AlternateNavInfoBarDelegate : public ConfirmInfoBarDelegate {
   const gfx::VectorIcon& GetVectorIcon() const override;
   std::u16string GetLinkText() const override;
   GURL GetLinkURL() const override;
-  bool LinkClicked(WindowOpenDisposition disposition) override;
+  bool LinkClicked(ui::mojom::WindowOpenDisposition disposition) override;
 
   // ConfirmInfoBarDelegate:
   std::u16string GetMessageText() const override;
@@ -54,7 +55,7 @@ class AlternateNavInfoBarDelegate : public ConfirmInfoBarDelegate {
       const override;
   bool InlineSubstitutionLinkClicked(
       size_t index,
-      WindowOpenDisposition disposition) override;
+      ui::mojom::WindowOpenDisposition disposition) override;
   int GetButtons() const override;
 
  private:

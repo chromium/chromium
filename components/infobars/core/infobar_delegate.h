@@ -10,7 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "url/gurl.h"
 
 class ConfirmInfoBarDelegate;
@@ -304,7 +304,7 @@ class InfoBarDelegate {
   //
   // The |disposition| specifies how the resulting document should be loaded
   // (based on the event flags present when the link was clicked).
-  virtual bool LinkClicked(WindowOpenDisposition disposition);
+  virtual bool LinkClicked(ui::mojom::WindowOpenDisposition disposition);
 
   // Called when the user clicks on the close button to dismiss the infobar.
   virtual void InfoBarDismissed();

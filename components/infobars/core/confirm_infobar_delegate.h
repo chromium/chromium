@@ -13,8 +13,8 @@
 #include "build/build_config.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/infobars/core/infobar_manager.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/text_constants.h"
 
 namespace infobars {
@@ -159,8 +159,9 @@ class ConfirmInfoBarDelegate : public infobars::InfoBarDelegate {
   // The |disposition| specifies how the resulting document should be loaded
   // (based on the event flags present when the link was clicked).
   // If this function returns true, the infobar is then immediately closed.
-  virtual bool InlineSubstitutionLinkClicked(size_t index,
-                                             WindowOpenDisposition disposition);
+  virtual bool InlineSubstitutionLinkClicked(
+      size_t index,
+      ui::mojom::WindowOpenDisposition disposition);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(const Observer* observer);

@@ -77,7 +77,8 @@ bool InfoBarDelegate::ShouldExpire(const NavigationDetails& details) const {
          ((nav_entry_id_ != details.entry_id) || details.is_reload);
 }
 
-bool InfoBarDelegate::LinkClicked(WindowOpenDisposition disposition) {
+bool InfoBarDelegate::LinkClicked(
+    ui::mojom::WindowOpenDisposition disposition) {
   infobar()->owner()->OpenURL(GetLinkURL(), disposition);
   return false;
 }

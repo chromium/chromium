@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/infobars/core/infobar_delegate.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class GURL;
 class TestInfoBar;
@@ -105,11 +106,11 @@ class InfoBarManager {
   // Opens a URL according to the specified |disposition|.
   // `text_fragment` is an optional text fragment to scroll to.
   virtual void OpenURL(const GURL& url,
-                       WindowOpenDisposition disposition,
+                       ui::mojom::WindowOpenDisposition disposition,
                        const std::string& text_fragment) = 0;
 
   // Opens a URL according to the specified `disposition`.
-  void OpenURL(const GURL& url, WindowOpenDisposition disposition) {
+  void OpenURL(const GURL& url, ui::mojom::WindowOpenDisposition disposition) {
     OpenURL(url, disposition, std::string());
   }
 

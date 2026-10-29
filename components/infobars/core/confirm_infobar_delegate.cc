@@ -146,7 +146,7 @@ bool ConfirmInfoBarDelegate::ExtraButtonPressed() {
 
 bool ConfirmInfoBarDelegate::InlineSubstitutionLinkClicked(
     size_t index,
-    WindowOpenDisposition disposition) {
+    ui::mojom::WindowOpenDisposition disposition) {
   return false;
 }
 

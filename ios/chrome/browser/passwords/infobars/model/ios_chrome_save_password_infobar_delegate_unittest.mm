@@ -42,6 +42,7 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/base/mojom/window_open_disposition.mojom.h"
 #import "url/gurl.h"
 
 namespace {
@@ -69,7 +70,7 @@ class MockInfoBarManager : public infobars::InfoBarManager {
   MOCK_METHOD(void,
               OpenURL,
               (const GURL& url,
-               WindowOpenDisposition disposition,
+               ui::mojom::WindowOpenDisposition disposition,
                const std::string& text_fragment),
               (override));
 };

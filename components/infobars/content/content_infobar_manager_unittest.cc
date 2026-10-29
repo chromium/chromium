@@ -5,8 +5,8 @@
 #include "components/infobars/content/content_infobar_manager.h"
 
 #include <memory>
-#include <string>
 #include <optional>
+#include <string>
 
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
@@ -15,7 +15,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 namespace infobars {
@@ -76,12 +76,13 @@ TEST_F(ContentInfoBarManagerTest, OpenURLWithTextFragment) {
   std::string text_fragment = "text=hello";
 
   // Trigger OpenURL with a text fragment.
-  manager()->OpenURL(url, WindowOpenDisposition::kCurrentTab, text_fragment);
+  manager()->OpenURL(url, ui::mojom::WindowOpenDisposition::kCurrentTab,
+                     text_fragment);
 
   ASSERT_TRUE(delegate().last_params().has_value());
   EXPECT_EQ(url, delegate().last_params()->url);
   // A CURRENT_TAB disposition gets converted to NEW_FOREGROUND_TAB in OpenURL.
-  EXPECT_EQ(WindowOpenDisposition::kNewForegroundTab,
+  EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
             delegate().last_params()->disposition);
   EXPECT_TRUE(
       delegate().last_params()->internal_scroll_to_text_fragment.has_value());
@@ -91,11 +92,12 @@ TEST_F(ContentInfoBarManagerTest, OpenURLWithTextFragment) {
   delegate().reset();
 
   // Trigger OpenURL with an empty text fragment.
-  manager()->OpenURL(url, WindowOpenDisposition::kNewForegroundTab, "");
+  manager()->OpenURL(url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                     "");
 
   ASSERT_TRUE(delegate().last_params().has_value());
   EXPECT_EQ(url, delegate().last_params()->url);
-  EXPECT_EQ(WindowOpenDisposition::kNewForegroundTab,
+  EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
             delegate().last_params()->disposition);
   EXPECT_FALSE(
       delegate().last_params()->internal_scroll_to_text_fragment.has_value());

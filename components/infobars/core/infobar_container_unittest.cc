@@ -13,6 +13,7 @@
 #include "components/infobars/core/infobar_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 namespace infobars {
@@ -66,7 +67,7 @@ class TestInfoBarManager : public InfoBarManager {
   ~TestInfoBarManager() override = default;
   int GetActiveEntryID() override { return 0; }
   void OpenURL(const GURL&,
-               WindowOpenDisposition,
+               ui::mojom::WindowOpenDisposition,
                const std::string&) override {}
 
   using InfoBarManager::AddInfoBar;
