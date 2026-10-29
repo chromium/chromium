@@ -4238,7 +4238,8 @@ OAuth Multilogin call. -->
   <summary>
     Records events reached in the sign-in funnel originating from {AccessPoint}.
     Recorded whenever a corresponding step in the sign-in flow is reached (e.g.
-    when a sign-in promo UI is shown to the user with or without an account).
+    when a sign-in promo UI is shown to the user with or without an account, or
+    when the user clicks a button on the sign-in promo UI).
 
     A step can be recorded multiple times within the same flow. For example, the
     promo shown events are recorded every time the sign-in promo is shown,

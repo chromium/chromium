@@ -693,6 +693,9 @@ public class FirstRunIntegrationTest {
                         .expectIntRecord(
                                 "Signin.SigninFunnel.StartPage",
                                 SigninFunnelEvent.PROMO_SHOWN_NO_ACCOUNT)
+                        .expectIntRecord(
+                                "Signin.SigninFunnel.StartPage",
+                                SigninFunnelEvent.SIGNIN_DECLINED_BUTTON_CLICKED)
                         .build();
 
         initializePreferences(new FirstRunPagesTestCase().setShouldShowHistorySyncPromo(true));
@@ -744,6 +747,9 @@ public class FirstRunIntegrationTest {
                 HistogramWatcher.newBuilder()
                         // Signin.SignIn.Started is recorded only once for the whole FRE.
                         .expectIntRecord("Signin.SignIn.Started", SigninAccessPoint.START_PAGE)
+                        .expectIntRecord(
+                                "Signin.SigninFunnel.StartPage",
+                                SigninFunnelEvent.SIGNIN_BUTTON_CLICKED)
                         // The promo shown event is recorded every time the promo is shown.
                         .expectIntRecordTimes(
                                 "Signin.SigninFunnel.StartPage",

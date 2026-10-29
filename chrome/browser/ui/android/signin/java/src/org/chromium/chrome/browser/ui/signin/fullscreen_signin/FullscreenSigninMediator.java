@@ -597,6 +597,9 @@ public class FullscreenSigninMediator
 
     @Override
     public void addAccount() {
+        // "Add account to device" was clicked in the account picker.
+        SigninMetricsUtils.logSigninFunnelEvent(
+                mAccessPoint, SigninFunnelEvent.ACCOUNT_PICKER_ADD_ACCOUNT_CLICKED);
         mDelegate.addAccount(mConfig.selectedAccountEmail);
     }
 
@@ -616,6 +619,8 @@ public class FullscreenSigninMediator
      */
     private void onSelectedAccountClicked() {
         if (isContinueOrDismissClicked()) return;
+        SigninMetricsUtils.logSigninFunnelEvent(
+                mAccessPoint, SigninFunnelEvent.CHOOSE_OTHER_ACCOUNT_CLICKED);
 
         IdentityManager identityManager =
                 IdentityServicesProvider.get()
@@ -640,10 +645,15 @@ public class FullscreenSigninMediator
             return;
         }
         if (mSelectedAccount == null) {
+            // Without an account, the button starts the add account flow instead of signing in.
+            SigninMetricsUtils.logSigninFunnelEvent(
+                    mAccessPoint, SigninFunnelEvent.ADD_ACCOUNT_CLICKED);
             mDelegate.addAccount(mConfig.selectedAccountEmail);
             return;
         }
 
+        SigninMetricsUtils.logSigninFunnelEvent(
+                mAccessPoint, SigninFunnelEvent.SIGNIN_BUTTON_CLICKED);
         if (DeviceInfo.isAutomotive()) {
             mDelegate.displayDeviceLockPage(mSelectedAccount.getId());
             return;
@@ -872,6 +882,8 @@ public class FullscreenSigninMediator
 
         assert mDelegate.getNativeInitializationPromise().isFulfilled();
 
+        SigninMetricsUtils.logSigninFunnelEvent(
+                mAccessPoint, SigninFunnelEvent.SIGNIN_DECLINED_BUTTON_CLICKED);
         dismiss();
     }
 

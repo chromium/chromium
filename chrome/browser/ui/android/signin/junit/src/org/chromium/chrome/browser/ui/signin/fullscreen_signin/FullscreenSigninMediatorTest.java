@@ -512,6 +512,37 @@ public class FullscreenSigninMediatorTest {
         assertFalse(mModel.get(FullscreenSigninProperties.ENABLE_ACCOUNT_SELECTION));
     }
 
+    @Test
+    public void testSigninFunnel_signinButtonClicked_ignoredIfAlreadyClicked() {
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        setUpSigninSupported(true);
+        createMediator();
+        initializeNative();
+
+        mModel.get(FullscreenSigninProperties.ON_CONTINUE_AS_CLICKED).onClick(null);
+        mModel.get(FullscreenSigninProperties.ON_CONTINUE_AS_CLICKED).onClick(null);
+
+        verify(mSigninMetricsUtilsJniMock, times(1))
+                .logSigninFunnelEvent(
+                        SigninAccessPoint.START_PAGE, SigninFunnelEvent.SIGNIN_BUTTON_CLICKED);
+    }
+
+    @Test
+    public void testSigninFunnel_signinDeclinedButtonClicked_ignoredIfAlreadyClicked() {
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        setUpSigninSupported(true);
+        createMediator();
+        initializeNative();
+
+        mModel.get(FullscreenSigninProperties.ON_CONTINUE_AS_CLICKED).onClick(null);
+        mModel.get(FullscreenSigninProperties.ON_DISMISS_CLICKED).onClick(null);
+
+        verify(mSigninMetricsUtilsJniMock, never())
+                .logSigninFunnelEvent(
+                        SigninAccessPoint.START_PAGE,
+                        SigninFunnelEvent.SIGNIN_DECLINED_BUTTON_CLICKED);
+    }
+
     private void setUpSigninSupported(boolean isSigninSupported) {
         when(mExternalAuthUtilsMock.canUseGooglePlayServices()).thenReturn(isSigninSupported);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);

@@ -1364,6 +1364,11 @@ chromium-metrics-reviews@google.com.
 <enum name="SigninFunnelEvent">
   <int value="0" label="PromoShownWithAccount"/>
   <int value="1" label="PromoShownNoAccount"/>
+  <int value="2" label="ChooseOtherAccountClicked"/>
+  <int value="3" label="SigninButtonClicked"/>
+  <int value="4" label="SigninDeclinedButtonClicked"/>
+  <int value="5" label="AddAccountClicked"/>
+  <int value="6" label="AccountPickerAddAccountClicked"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/base/signin_metrics.h:SigninFunnelEvent) -->
