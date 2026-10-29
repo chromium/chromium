@@ -257,6 +257,13 @@ interface RenderWidgetHostNSViewHost {
            gfx.mojom.Range out_actual_range,
            bool success);
 
+  // Asynchronously query the first rectangle of the text in |requested_range|
+  // from the renderer, and return it as |rect| in the same coordinates as the
+  // |out_rect| of SyncGetFirstRectForRange. Return null if there was no focused
+  // RenderWidgetHost to query.
+  GetFirstRectForRange(gfx.mojom.Range requested_range) =>
+      (gfx.mojom.Rect? rect);
+
   // Forward the corresponding edit menu command to the RenderWidgetHost's
   // delegate.
   ExecuteEditCommand(string command);

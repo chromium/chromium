@@ -2454,6 +2454,51 @@ void RenderWidgetHostViewMac::SyncGetFirstRectForRange(
   std::move(callback).Run(out_rect, out_actual_range, success);
 }
 
+void RenderWidgetHostViewMac::GetFirstRectForRange(
+    const gfx::Range& requested_range,
+    GetFirstRectForRangeCallback callback) {
+  TRACE_EVENT1("ime", "RenderWidgetHostViewMac::GetFirstRectForRange",
+               "requested range", requested_range.ToString());
+  RenderWidgetHostImpl* focused_widget = GetFocusedWidget();
+  if (!focused_widget) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  // Ask the renderer for the bounds, since waiting for it here doesn't block
+  // and the cache may only have approximate bounds (e.g. the caret's, when
+  // kCachedFirstRectAllowRangeOutsideSelection is enabled).
+  TextInputClientMac::GetInstance()->AsyncGetFirstRectForRange(
+      focused_widget, requested_range,
+      base::BindOnce(&RenderWidgetHostViewMac::OnGotFirstRectForRange,
+                     weak_factory_.GetWeakPtr(), requested_range,
+                     GetDeviceScaleFactor(), std::move(callback)));
+}
+
+void RenderWidgetHostViewMac::OnGotFirstRectForRange(
+    const gfx::Range& requested_range,
+    float device_scale_factor,
+    GetFirstRectForRangeCallback callback,
+    gfx::Rect blink_rect) {
+  gfx::Rect rect =
+      gfx::ScaleToEnclosingRect(blink_rect, 1.f / device_scale_factor);
+
+  // If the renderer returns an empty rect, fall back to the cached bounds.
+  if (rect.IsEmpty() && GetFocusedWidget()) {
+    gfx::Rect cached_rect;
+    if (GetCachedFirstRectForCharacterRange(requested_range, &cached_rect,
+                                            /*actual_range=*/nullptr) ==
+        GetCachedFirstRectResult::kFound) {
+      rect = cached_rect;
+    }
+  }
+
+  // Clamp to the viewport so that a compromised renderer can't place UI outside
+  // the page. See https://crbug.com/519210950.
+  rect.AdjustToFit(gfx::Rect(GetVisibleViewportSize()));
+  std::move(callback).Run(rect);
+}
+
 void RenderWidgetHostViewMac::ExecuteEditCommand(const std::string& command) {
   if (host()->delegate()) {
     host()->delegate()->ExecuteEditCommand(command, std::nullopt);

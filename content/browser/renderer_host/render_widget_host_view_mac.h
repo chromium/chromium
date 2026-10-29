@@ -432,6 +432,8 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
                                 gfx::Rect* out_rect,
                                 gfx::Range* out_actual_range,
                                 bool* out_success) override;
+  void GetFirstRectForRange(const gfx::Range& requested_range,
+                            GetFirstRectForRangeCallback callback) override;
   void ExecuteEditCommand(const std::string& command) override;
   void Undo() override;
   void Redo() override;
@@ -621,6 +623,13 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
       const TextInputManager::TextSelection* selection,
       gfx::Rect* rect,
       gfx::Range* actual_range);
+
+  // Completes GetFirstRectForRange() with `blink_rect`, the renderer's bounds
+  // for `requested_range` in physical pixels.
+  void OnGotFirstRectForRange(const gfx::Range& requested_range,
+                              float device_scale_factor,
+                              GetFirstRectForRangeCallback callback,
+                              gfx::Rect blink_rect);
 
   // Interface through which the NSView is to be manipulated. This points either
   // to |in_process_ns_view_bridge_| or to |remote_ns_view_|.

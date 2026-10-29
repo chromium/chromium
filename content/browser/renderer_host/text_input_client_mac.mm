@@ -215,7 +215,7 @@ void TextInputClientMac::AsyncGetFirstRectForRange(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   base::WeakPtr<RenderFrameHostImpl> rfhi =
       GetWeakFocusedRenderFrameHostImpl(rwh);
-  AsyncRequest(rfhi, range, "FirstRect",
+  AsyncRequest(rfhi, range, "AsyncFirstRect",
                base::BindOnce(&TransformFirstRectResult, rfhi)
                    .Then(std::move(result_callback)));
 }

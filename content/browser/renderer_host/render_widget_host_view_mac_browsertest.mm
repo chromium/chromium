@@ -9,20 +9,25 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #import "base/mac/mac_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_timeouts.h"
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
+#include "content/browser/renderer_host/text_input_client_mac.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_accessibility_state.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "content/public/browser/web_contents.h"
@@ -35,6 +40,7 @@
 #include "content/shell/browser/shell.h"
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "ui/events/test/cocoa_test_event_utils.h"
+#include "ui/gfx/geometry/rect.h"
 
 @interface TextInputFlagChangeWaiter : NSObject
 @end
@@ -115,6 +121,9 @@
 @interface FakeSpellChecker : NSObject
 @property(strong) void (^correctionCompletionHandler)(NSString*);
 @property(strong) NSString* acceptedString;
+// The number of correction indicators shown, and the rect of the last one.
+@property NSUInteger correctionIndicatorCount;
+@property NSRect correctionIndicatorRect;
 - (void)waitForCheckString;
 - (void)reset;
 @end
@@ -125,6 +134,8 @@
 
 @synthesize correctionCompletionHandler = _correctionCompletionHandler;
 @synthesize acceptedString = _acceptedString;
+@synthesize correctionIndicatorCount = _correctionIndicatorCount;
+@synthesize correctionIndicatorRect = _correctionIndicatorRect;
 
 - (instancetype)init {
   if (self = [super init]) {
@@ -174,6 +185,8 @@
                     completionHandler:(void (^)(NSString*))completionHandler {
   self.correctionCompletionHandler = completionHandler;
   self.acceptedString = primaryString;
+  _correctionIndicatorCount++;
+  _correctionIndicatorRect = rect;
 }
 
 - (void)dismissCorrectionIndicatorForView:(NSView*)view {
@@ -241,6 +254,119 @@ class TextSelectionWaiter : public TextInputManager::Observer {
   int expected_changes_;
   int observed_changes_;
 };
+
+// Stores GetFirstRectForRange() requests instead of sending them to the
+// renderer, so that tests control when the responses arrive.
+class HoldingTextInputClientMacDelegate
+    : public TextInputClientMac::AsyncRequestDelegate {
+ public:
+  HoldingTextInputClientMacDelegate() = default;
+  ~HoldingTextInputClientMacDelegate() override = default;
+
+  void GetCharacterIndexAtPoint(
+      RenderFrameHost* rfh,
+      const TextInputClientMac::RequestToken& request_token,
+      const gfx::Point& point) override {}
+
+  void GetFirstRectForRange(
+      RenderFrameHost* rfh,
+      const TextInputClientMac::RequestToken& request_token,
+      const gfx::Range& range) override {
+    first_rect_requests_.push_back(request_token);
+  }
+
+  const std::vector<TextInputClientMac::RequestToken>& first_rect_requests()
+      const {
+    return first_rect_requests_;
+  }
+
+ private:
+  std::vector<TextInputClientMac::RequestToken> first_rect_requests_;
+};
+
+// Holds GetFirstRectForRange() requests in a HoldingTextInputClientMacDelegate
+// while in scope, with a timeout long enough that they don't expire during a
+// test.
+class ScopedHeldFirstRectRequests {
+ public:
+  ScopedHeldFirstRectRequests()
+      : original_timeout_(
+            TextInputClientMac::GetInstance()->GetTimeoutForTesting()) {
+    auto delegate = std::make_unique<HoldingTextInputClientMacDelegate>();
+    delegate_ = delegate.get();
+    TextInputClientMac::GetInstance()->SetTimeoutForTesting(
+        TestTimeouts::action_timeout());
+    TextInputClientMac::GetInstance()->SetAsyncRequestDelegateForTesting(
+        std::move(delegate));
+  }
+
+  ScopedHeldFirstRectRequests(const ScopedHeldFirstRectRequests&) = delete;
+  ScopedHeldFirstRectRequests& operator=(const ScopedHeldFirstRectRequests&) =
+      delete;
+
+  ~ScopedHeldFirstRectRequests() {
+    delegate_ = nullptr;
+    TextInputClientMac::GetInstance()->SetAsyncRequestDelegateForTesting(
+        nullptr);
+    TextInputClientMac::GetInstance()->SetTimeoutForTesting(original_timeout_);
+  }
+
+  const std::vector<TextInputClientMac::RequestToken>& requests() const {
+    return delegate_->first_rect_requests();
+  }
+
+  // Responds to all held requests with `rect`, and waits for the responses to
+  // be handled.
+  void RespondToAll(const gfx::Rect& rect) {
+    for (const TextInputClientMac::RequestToken& request_token : requests()) {
+      TextInputClientMac::GetInstance()->SetFirstRectAndSignal(request_token,
+                                                               rect);
+    }
+    base::RunLoop run_loop;
+    GetUIThreadTaskRunner({})->PostTask(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+ private:
+  const base::TimeDelta original_timeout_;
+  raw_ptr<HoldingTextInputClientMacDelegate> delegate_ = nullptr;
+};
+
+// Makes the primary main frame the focused frame, so that TextInputClientMac
+// sends its requests there.
+void FocusPrimaryMainFrame(Shell* shell) {
+  auto* web_contents_impl =
+      static_cast<WebContentsImpl*>(shell->web_contents());
+  auto* root = web_contents_impl->GetPrimaryFrameTree().root();
+  web_contents_impl->GetPrimaryFrameTree().SetFocusedFrame(
+      root, root->current_frame_host()->GetSiteInstance()->group());
+}
+
+// Types `text` into `rwhv_cocoa`, waiting for each character to be checked for
+// text replacements.
+void TypeTextAndWaitForChecks(RenderWidgetHostViewCocoa* rwhv_cocoa,
+                              FakeSpellChecker* fakeSpellChecker,
+                              NSString* text) {
+  for (NSUInteger i = 0; i < text.length; i++) {
+    unichar c = [text characterAtIndex:i];
+    [rwhv_cocoa keyEvent:cocoa_test_event_utils::KeyEventWithKeyCode(
+                             c, c, NSEventTypeKeyDown, 0)];
+    [rwhv_cocoa keyEvent:cocoa_test_event_utils::KeyEventWithKeyCode(
+                             c, c, NSEventTypeKeyUp, 0)];
+    [fakeSpellChecker waitForCheckString];
+  }
+}
+
+// Presses and releases the key with `key_code`, which types `character`.
+void PressKey(RenderWidgetHostViewCocoa* rwhv_cocoa,
+              unsigned short key_code,
+              unichar character,
+              NSUInteger modifiers) {
+  [rwhv_cocoa keyEvent:cocoa_test_event_utils::KeyEventWithKeyCode(
+                           key_code, character, NSEventTypeKeyDown, modifiers)];
+  [rwhv_cocoa keyEvent:cocoa_test_event_utils::KeyEventWithKeyCode(
+                           key_code, character, NSEventTypeKeyUp, modifiers)];
+}
 
 }  // namespace
 
@@ -517,9 +643,10 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
   EXPECT_EQ("omw", current_value);
 
   // For active text replacement suggestion, the completion handler should be
-  // set.
-  EXPECT_TRUE(fakeSpellChecker.correctionCompletionHandler != nil)
-      << "showCorrectionIndicatorOfType should be called";
+  // set once the bounds of the text to be replaced arrive.
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return fakeSpellChecker.correctionCompletionHandler != nil;
+  })) << "showCorrectionIndicatorOfType should be called";
 
   TextSelectionWaiter selection_waiter(rwhv_mac);
   NSEvent* backspaceDownEvent = cocoa_test_event_utils::KeyEventWithKeyCode(
@@ -594,9 +721,10 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
   EXPECT_EQ("omw", text);
 
   // For active text replacement suggestion, the completion handler should be
-  // set.
-  EXPECT_TRUE(fakeSpellChecker.correctionCompletionHandler != nil)
-      << "showCorrectionIndicatorOfType should be called";
+  // set once the bounds of the text to be replaced arrive.
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return fakeSpellChecker.correctionCompletionHandler != nil;
+  })) << "showCorrectionIndicatorOfType should be called";
 
   // Wait for any pending DOM update or selection sync to complete between
   // browser and renderer process.
@@ -736,6 +864,422 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
   EXPECT_TRUE(fakeSpellChecker.correctionCompletionHandler == nil)
       << "showCorrectionIndicatorOfType should not be called when cursor is in "
          "middle";
+}
+
+// Tests that the text replacement indicator is shown for the bounds of the
+// text to be replaced.
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
+                       TextReplacementIndicatorCoversReplacedText) {
+  GURL url("data:text/html,<div id=editor contenteditable "
+           "style='font:20px monospace;padding:10px'></div>");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderWidgetHostView* rwhv =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetView();
+  RenderWidgetHostViewMac* rwhv_mac =
+      static_cast<RenderWidgetHostViewMac*>(rwhv);
+  RenderWidgetHostViewCocoa* rwhv_cocoa = rwhv_mac->GetInProcessNSView();
+
+  // Set up fake spell checker to provide text replacement ("omw" -> "On my
+  // way").
+  FakeSpellChecker* fakeSpellChecker = [[FakeSpellChecker alloc] init];
+  rwhv_cocoa.spellCheckerForTesting =
+      static_cast<NSSpellChecker*>(fakeSpellChecker);
+
+  EXPECT_TRUE(ExecJs(shell(), "editor.focus()"));
+  FocusPrimaryMainFrame(shell());
+
+  // Ensure the input router is active to handle key events.
+  static_cast<RenderWidgetHostImpl*>(rwhv->GetRenderWidgetHost())
+      ->input_router()
+      ->MakeActive();
+
+  TypeTextAndWaitForChecks(rwhv_cocoa, fakeSpellChecker, @"omw");
+  ASSERT_EQ("omw", EvalJs(shell(), "editor.textContent"));
+
+  // The indicator is shown once the bounds of "omw" arrive from the renderer.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return fakeSpellChecker.correctionIndicatorCount > 0; }));
+
+  // Flip the indicator's rect, which is in the view's coordinates, so that its
+  // origin is at the upper-left corner like the page's.
+  const NSRect indicator_rect = fakeSpellChecker.correctionIndicatorRect;
+  const double indicator_top =
+      NSHeight(rwhv_cocoa.frame) - NSMaxY(indicator_rect);
+
+  const EvalJsResult text_bounds_result = EvalJs(shell(), R"(
+      (() => {
+        const range = document.createRange();
+        range.setStart(editor.firstChild, 0);
+        range.setEnd(editor.firstChild, 3);
+        const bounds = range.getBoundingClientRect();
+        return [bounds.left, bounds.top, bounds.width, bounds.height];
+      })())");
+  const base::ListValue& text_bounds = text_bounds_result.ExtractList();
+  ASSERT_EQ(4u, text_bounds.size());
+  const double text_left = text_bounds[0].GetDouble();
+  const double text_top = text_bounds[1].GetDouble();
+  const double text_width = text_bounds[2].GetDouble();
+  const double text_height = text_bounds[3].GetDouble();
+
+  // The indicator's bounds are rounded out to whole DIPs.
+  constexpr double kTolerance = 2;
+  EXPECT_NEAR(NSMinX(indicator_rect), text_left, kTolerance);
+  EXPECT_NEAR(NSWidth(indicator_rect), text_width, kTolerance);
+  // The indicator and the text overlap vertically.
+  EXPECT_LT(indicator_top, text_top + text_height);
+  EXPECT_GT(indicator_top + NSHeight(indicator_rect), text_top);
+}
+
+// Tests that a text replacement is accepted if the text changes before the
+// bounds of the text to be replaced arrive from the renderer, when the
+// correction indicator hasn't been shown yet.
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
+                       TextReplacementAcceptedWhenTextChangesBeforeRect) {
+  GURL url("data:text/html,<textarea id=editor autofocus></textarea>");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderWidgetHostView* rwhv =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetView();
+  RenderWidgetHostViewMac* rwhv_mac =
+      static_cast<RenderWidgetHostViewMac*>(rwhv);
+  RenderWidgetHostViewCocoa* rwhv_cocoa = rwhv_mac->GetInProcessNSView();
+
+  // Set up fake spell checker to provide text replacement ("omw" -> "On my
+  // way").
+  FakeSpellChecker* fakeSpellChecker = [[FakeSpellChecker alloc] init];
+  rwhv_cocoa.spellCheckerForTesting =
+      static_cast<NSSpellChecker*>(fakeSpellChecker);
+
+  EXPECT_TRUE(ExecJs(shell(), "editor.focus()"));
+  FocusPrimaryMainFrame(shell());
+
+  // Ensure the input router is active to handle key events.
+  static_cast<RenderWidgetHostImpl*>(rwhv->GetRenderWidgetHost())
+      ->input_router()
+      ->MakeActive();
+
+  // Hold the requests for the bounds of the text to be replaced.
+  ScopedHeldFirstRectRequests held_requests;
+
+  TypeTextAndWaitForChecks(rwhv_cocoa, fakeSpellChecker, @"omw");
+  ASSERT_FALSE(held_requests.requests().empty());
+  EXPECT_EQ(0u, fakeSpellChecker.correctionIndicatorCount);
+
+  // Type a space before the bounds of "omw" arrive.
+  [rwhv_cocoa keyEvent:cocoa_test_event_utils::KeyEventWithKeyCode(
+                           ' ', ' ', NSEventTypeKeyDown, 0)];
+  [rwhv_cocoa keyEvent:cocoa_test_event_utils::KeyEventWithKeyCode(
+                           ' ', ' ', NSEventTypeKeyUp, 0)];
+
+  // The replacement is applied even though the indicator was never shown.
+  EXPECT_EQ("On my way ", EvalJs(shell(), R"(
+      new Promise(resolve => {
+        const check = () => {
+          if (editor.value === 'On my way ') {
+            resolve(editor.value);
+          } else {
+            setTimeout(check, 10);
+          }
+        };
+        check();
+      }))"));
+  EXPECT_EQ(0u, fakeSpellChecker.correctionIndicatorCount);
+
+  // Bounds that arrive after the text changed don't show the indicator.
+  held_requests.RespondToAll(gfx::Rect(10, 10, 30, 20));
+  EXPECT_EQ(0u, fakeSpellChecker.correctionIndicatorCount);
+}
+
+// Verifies that a text replacement is accepted if a newline is typed before the
+// bounds of the text to be replaced arrive from the renderer.
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
+                       TextReplacementAcceptedWhenNewlineTypedBeforeRect) {
+  GURL url("data:text/html,<textarea id=editor autofocus></textarea>");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderWidgetHostView* rwhv =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetView();
+  RenderWidgetHostViewMac* rwhv_mac =
+      static_cast<RenderWidgetHostViewMac*>(rwhv);
+  RenderWidgetHostViewCocoa* rwhv_cocoa = rwhv_mac->GetInProcessNSView();
+
+  // Set up fake spell checker to provide text replacement ("omw" -> "On my
+  // way").
+  FakeSpellChecker* fakeSpellChecker = [[FakeSpellChecker alloc] init];
+  rwhv_cocoa.spellCheckerForTesting =
+      static_cast<NSSpellChecker*>(fakeSpellChecker);
+
+  EXPECT_TRUE(ExecJs(shell(), "editor.focus()"));
+  FocusPrimaryMainFrame(shell());
+
+  // Ensure the input router is active to handle key events.
+  static_cast<RenderWidgetHostImpl*>(rwhv->GetRenderWidgetHost())
+      ->input_router()
+      ->MakeActive();
+
+  // Hold the requests for the bounds of the text to be replaced.
+  ScopedHeldFirstRectRequests held_requests;
+
+  TypeTextAndWaitForChecks(rwhv_cocoa, fakeSpellChecker, @"omw");
+  ASSERT_FALSE(held_requests.requests().empty());
+
+  // Press Return before the bounds of "omw" arrive.
+  [rwhv_cocoa keyEvent:cocoa_test_event_utils::KeyEventWithKeyCode(
+                           kVK_Return, '\r', NSEventTypeKeyDown, 0)];
+  [rwhv_cocoa keyEvent:cocoa_test_event_utils::KeyEventWithKeyCode(
+                           kVK_Return, '\r', NSEventTypeKeyUp, 0)];
+
+  EXPECT_EQ("On my way\n", EvalJs(shell(), R"(
+      new Promise(resolve => {
+        const check = () => {
+          if (editor.value === 'On my way\n') {
+            resolve(editor.value);
+          } else {
+            setTimeout(check, 10);
+          }
+        };
+        check();
+      }))"));
+
+  held_requests.RespondToAll(gfx::Rect(10, 10, 30, 20));
+  EXPECT_EQ(0u, fakeSpellChecker.correctionIndicatorCount);
+}
+
+// Verifies that a text replacement isn't accepted if only the selection
+// changes before the bounds of the text to be replaced arrive from the
+// renderer.
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
+                       TextReplacementNotAcceptedWhenCaretMovesBeforeRect) {
+  GURL url("data:text/html,<textarea id=editor autofocus></textarea>");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderWidgetHostView* rwhv =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetView();
+  RenderWidgetHostViewMac* rwhv_mac =
+      static_cast<RenderWidgetHostViewMac*>(rwhv);
+  RenderWidgetHostViewCocoa* rwhv_cocoa = rwhv_mac->GetInProcessNSView();
+
+  // Set up fake spell checker to provide text replacement ("omw" -> "On my
+  // way").
+  FakeSpellChecker* fakeSpellChecker = [[FakeSpellChecker alloc] init];
+  rwhv_cocoa.spellCheckerForTesting =
+      static_cast<NSSpellChecker*>(fakeSpellChecker);
+
+  EXPECT_TRUE(ExecJs(shell(), "editor.focus()"));
+  FocusPrimaryMainFrame(shell());
+
+  // Ensure the input router is active to handle key events.
+  static_cast<RenderWidgetHostImpl*>(rwhv->GetRenderWidgetHost())
+      ->input_router()
+      ->MakeActive();
+
+  // Hold the requests for the bounds of the text to be replaced.
+  ScopedHeldFirstRectRequests held_requests;
+
+  TypeTextAndWaitForChecks(rwhv_cocoa, fakeSpellChecker, @"omw");
+  ASSERT_FALSE(held_requests.requests().empty());
+
+  // Move the caret left before the bounds of "omw" arrive.
+  TextSelectionWaiter selection_waiter(rwhv_mac);
+  constexpr NSUInteger kArrowKeyModifiers =
+      NSEventModifierFlagFunction | NSEventModifierFlagNumericPad;
+  [rwhv_cocoa keyEvent:cocoa_test_event_utils::KeyEventWithKeyCode(
+                           kVK_LeftArrow, NSLeftArrowFunctionKey,
+                           NSEventTypeKeyDown, kArrowKeyModifiers)];
+  [rwhv_cocoa keyEvent:cocoa_test_event_utils::KeyEventWithKeyCode(
+                           kVK_LeftArrow, NSLeftArrowFunctionKey,
+                           NSEventTypeKeyUp, kArrowKeyModifiers)];
+  selection_waiter.Wait();
+
+  // Type at the caret, so that the text reflects any replacement made before.
+  TypeTextAndWaitForChecks(rwhv_cocoa, fakeSpellChecker, @"x");
+  EXPECT_EQ("omxw", EvalJs(shell(), "editor.value"));
+
+  held_requests.RespondToAll(gfx::Rect(10, 10, 30, 20));
+  EXPECT_EQ(0u, fakeSpellChecker.correctionIndicatorCount);
+}
+
+// Verifies that a text replacement isn't accepted if its text is edited before
+// its bounds arrive from the renderer, when other text follows it.
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
+                       TextReplacementNotAcceptedWhenTextDeletedBeforeRect) {
+  GURL url(
+      "data:text/html,<textarea id=editor autofocus>hello  world</textarea>");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderWidgetHostView* rwhv =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetView();
+  RenderWidgetHostViewMac* rwhv_mac =
+      static_cast<RenderWidgetHostViewMac*>(rwhv);
+  RenderWidgetHostViewCocoa* rwhv_cocoa = rwhv_mac->GetInProcessNSView();
+
+  // Set up fake spell checker to provide text replacement ("omw" -> "On my
+  // way").
+  FakeSpellChecker* fakeSpellChecker = [[FakeSpellChecker alloc] init];
+  rwhv_cocoa.spellCheckerForTesting =
+      static_cast<NSSpellChecker*>(fakeSpellChecker);
+
+  EXPECT_TRUE(ExecJs(shell(), "editor.focus()"));
+  FocusPrimaryMainFrame(shell());
+
+  // Ensure the input router is active to handle key events.
+  static_cast<RenderWidgetHostImpl*>(rwhv->GetRenderWidgetHost())
+      ->input_router()
+      ->MakeActive();
+
+  // Place the caret between the two spaces.
+  EXPECT_TRUE(ExecJs(shell(), "editor.setSelectionRange(6, 6);"));
+
+  // Hold the requests for the bounds of the text to be replaced.
+  ScopedHeldFirstRectRequests held_requests;
+
+  TypeTextAndWaitForChecks(rwhv_cocoa, fakeSpellChecker, @"omw");
+  ASSERT_EQ("hello omw world", EvalJs(shell(), "editor.value"));
+  ASSERT_FALSE(held_requests.requests().empty());
+
+  // Delete the "w" before the bounds of "omw" arrive.
+  TextSelectionWaiter selection_waiter(rwhv_mac);
+  [rwhv_cocoa keyEvent:cocoa_test_event_utils::KeyEventWithKeyCode(
+                           kVK_Delete, '\b', NSEventTypeKeyDown, 0)];
+  [rwhv_cocoa keyEvent:cocoa_test_event_utils::KeyEventWithKeyCode(
+                           kVK_Delete, '\b', NSEventTypeKeyUp, 0)];
+  selection_waiter.Wait();
+
+  // Type at the caret, so that the text reflects any replacement made before.
+  TypeTextAndWaitForChecks(rwhv_cocoa, fakeSpellChecker, @"x");
+  EXPECT_EQ("hello omx world", EvalJs(shell(), "editor.value"));
+
+  held_requests.RespondToAll(gfx::Rect(10, 10, 30, 20));
+  EXPECT_EQ(0u, fakeSpellChecker.correctionIndicatorCount);
+}
+
+// Verifies that a text replacement isn't accepted when Backspace deletes part
+// of the text to be replaced while its indicator is shown.
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
+                       TextReplacementNotAcceptedOnBackspace) {
+  GURL url("data:text/html,<textarea id=editor autofocus></textarea>");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderWidgetHostView* rwhv =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetView();
+  RenderWidgetHostViewMac* rwhv_mac =
+      static_cast<RenderWidgetHostViewMac*>(rwhv);
+  RenderWidgetHostViewCocoa* rwhv_cocoa = rwhv_mac->GetInProcessNSView();
+
+  // Set up fake spell checker to provide text replacement ("omw" -> "On my
+  // way").
+  FakeSpellChecker* fakeSpellChecker = [[FakeSpellChecker alloc] init];
+  rwhv_cocoa.spellCheckerForTesting =
+      static_cast<NSSpellChecker*>(fakeSpellChecker);
+
+  EXPECT_TRUE(ExecJs(shell(), "editor.focus()"));
+  FocusPrimaryMainFrame(shell());
+
+  // Ensure the input router is active to handle key events.
+  static_cast<RenderWidgetHostImpl*>(rwhv->GetRenderWidgetHost())
+      ->input_router()
+      ->MakeActive();
+
+  // Place the caret before existing text, so that "omw" is followed by text.
+  EXPECT_TRUE(ExecJs(
+      shell(), "editor.value = ' dark'; editor.setSelectionRange(0, 0);"));
+  TypeTextAndWaitForChecks(rwhv_cocoa, fakeSpellChecker, @"omw");
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return fakeSpellChecker.correctionIndicatorCount > 0; }));
+
+  TextSelectionWaiter selection_waiter(rwhv_mac);
+  PressKey(rwhv_cocoa, kVK_Delete, '\b', 0);
+  selection_waiter.Wait();
+
+  // Wait for a replacement, if any, to reach the page.
+  RunUntilInputProcessed(rwhv->GetRenderWidgetHost());
+  EXPECT_EQ("om dark", EvalJs(shell(), "editor.value").ExtractString());
+}
+
+// Verifies that a text replacement isn't accepted when Forward Delete deletes
+// the text after it while its indicator is shown.
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
+                       TextReplacementNotAcceptedOnForwardDelete) {
+  GURL url("data:text/html,<textarea id=editor autofocus></textarea>");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderWidgetHostView* rwhv =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetView();
+  RenderWidgetHostViewMac* rwhv_mac =
+      static_cast<RenderWidgetHostViewMac*>(rwhv);
+  RenderWidgetHostViewCocoa* rwhv_cocoa = rwhv_mac->GetInProcessNSView();
+
+  // Set up fake spell checker to provide text replacement ("omw" -> "On my
+  // way").
+  FakeSpellChecker* fakeSpellChecker = [[FakeSpellChecker alloc] init];
+  rwhv_cocoa.spellCheckerForTesting =
+      static_cast<NSSpellChecker*>(fakeSpellChecker);
+
+  EXPECT_TRUE(ExecJs(shell(), "editor.focus()"));
+  FocusPrimaryMainFrame(shell());
+
+  // Ensure the input router is active to handle key events.
+  static_cast<RenderWidgetHostImpl*>(rwhv->GetRenderWidgetHost())
+      ->input_router()
+      ->MakeActive();
+
+  // Place the caret before two spaces, so that "omw" is still followed by a
+  // space after one of them is deleted.
+  EXPECT_TRUE(ExecJs(
+      shell(), "editor.value = '  dark'; editor.setSelectionRange(0, 0);"));
+  TypeTextAndWaitForChecks(rwhv_cocoa, fakeSpellChecker, @"omw");
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return fakeSpellChecker.correctionIndicatorCount > 0; }));
+
+  TextSelectionWaiter selection_waiter(rwhv_mac);
+  PressKey(rwhv_cocoa, kVK_ForwardDelete, NSDeleteFunctionKey,
+           NSEventModifierFlagFunction);
+  selection_waiter.Wait();
+
+  // Wait for a replacement, if any, to reach the page.
+  RunUntilInputProcessed(rwhv->GetRenderWidgetHost());
+  EXPECT_EQ("omw dark", EvalJs(shell(), "editor.value").ExtractString());
+}
+
+// Verifies that a text replacement is accepted when a space is typed after it
+// while its indicator is shown.
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
+                       TextReplacementAcceptedOnSpace) {
+  GURL url("data:text/html,<textarea id=editor autofocus></textarea>");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderWidgetHostView* rwhv =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetView();
+  RenderWidgetHostViewMac* rwhv_mac =
+      static_cast<RenderWidgetHostViewMac*>(rwhv);
+  RenderWidgetHostViewCocoa* rwhv_cocoa = rwhv_mac->GetInProcessNSView();
+
+  // Set up fake spell checker to provide text replacement ("omw" -> "On my
+  // way").
+  FakeSpellChecker* fakeSpellChecker = [[FakeSpellChecker alloc] init];
+  rwhv_cocoa.spellCheckerForTesting =
+      static_cast<NSSpellChecker*>(fakeSpellChecker);
+
+  EXPECT_TRUE(ExecJs(shell(), "editor.focus()"));
+  FocusPrimaryMainFrame(shell());
+
+  // Ensure the input router is active to handle key events.
+  static_cast<RenderWidgetHostImpl*>(rwhv->GetRenderWidgetHost())
+      ->input_router()
+      ->MakeActive();
+
+  TypeTextAndWaitForChecks(rwhv_cocoa, fakeSpellChecker, @"omw");
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return fakeSpellChecker.correctionIndicatorCount > 0; }));
+
+  TextSelectionWaiter selection_waiter(rwhv_mac);
+  PressKey(rwhv_cocoa, kVK_Space, ' ', 0);
+  selection_waiter.Wait();
+
+  // Wait for the replacement to reach the page.
+  RunUntilInputProcessed(rwhv->GetRenderWidgetHost());
+  EXPECT_EQ("On my way ", EvalJs(shell(), "editor.value").ExtractString());
 }
 
 // Tests that selection is synced between browser and renderer when

@@ -2300,34 +2300,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TextInputClient.FirstRect.TimedOut" enum="Boolean"
-    expires_after="2027-02-28">
-  <owner>joenotcharles@google.com</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Recorded per call from a browser process thread to query
-    GetFirstRectForRange on a renderer process. If True the call timed out
-    before receiving a response.
-
-    Only recorded on macOS.
-  </summary>
-</histogram>
-
-<histogram name="TextInputClient.FirstRect2" units="ms"
-    expires_after="2027-02-28">
-  <owner>joenotcharles@google.com</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Recorded per call from a browser process thread to query
-    GetFirstRectForRange on a renderer process, with the duration of the query.
-    The call is effectively synchronous, blocking all other tasks from running
-    on the browser thread for that duration. The duration is tracked with
-    LiveTicks so doesn't include time when the system is suspended.
-
-    Only recorded on macOS.
-  </summary>
-</histogram>
-
 <histogram name="TextInputClient.GetCachedFirstRectResult"
     enum="GetCachedFirstRectResult" expires_after="2027-02-28">
   <owner>joenotcharles@google.com</owner>
@@ -2355,6 +2327,48 @@ chromium-metrics-reviews@google.com.
 
     Only recorded on macOS.
   </summary>
+</histogram>
+
+<histogram name="TextInputClient.{FirstRectRequest}.TimedOut" enum="Boolean"
+    expires_after="2027-02-28">
+  <owner>joenotcharles@google.com</owner>
+  <owner>bryanoltman@google.com</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Recorded per call from a browser process thread to query {FirstRectRequest}
+    on a renderer process. If True the call timed out before receiving a
+    response.
+
+    Only recorded on macOS.
+  </summary>
+  <token key="FirstRectRequest">
+    <variant name="AsyncFirstRect"
+        summary="GetFirstRectForRange asynchronously"/>
+    <variant name="FirstRect" summary="GetFirstRectForRange"/>
+  </token>
+</histogram>
+
+<histogram name="TextInputClient.{FirstRectRequest}2" units="ms"
+    expires_after="2027-02-28">
+  <owner>joenotcharles@google.com</owner>
+  <owner>bryanoltman@google.com</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Recorded per call from a browser process thread to query
+    GetFirstRectForRange on a renderer process, with the duration of the query.
+    {FirstRectRequest} The duration is tracked with LiveTicks so doesn't include
+    time when the system is suspended.
+
+    Only recorded on macOS.
+  </summary>
+  <token key="FirstRectRequest">
+    <variant name="AsyncFirstRect"
+        summary="The call is asynchronous, so the browser thread is not
+                 blocked while waiting."/>
+    <variant name="FirstRect"
+        summary="The call is effectively synchronous, blocking all other
+                 tasks from running on the browser thread for that duration."/>
+  </token>
 </histogram>
 
 <histogram name="Touch.DevicePosture.{Instance}" enum="PostureMode"

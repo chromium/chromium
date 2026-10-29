@@ -12,12 +12,15 @@
 #include <unistd.h>
 
 #include <limits>
+#include <memory>
+#include <optional>
 #include <string>
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/apple/scoped_nsautorelease_pool.h"
 #include "base/command_line.h"
 #include "base/containers/queue.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -25,11 +28,13 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/viz/common/surfaces/child_local_surface_id_allocator.h"
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
@@ -80,6 +85,7 @@
 #include "ui/events/blink/web_input_event_traits.h"
 #include "ui/events/test/cocoa_test_event_utils.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/gfx/range/range.h"
 #include "ui/latency/latency_info.h"
@@ -2812,6 +2818,131 @@ TEST_F(RenderWidgetHostViewMacTest, SyncGetFirstRectForRange_Clamped) {
   // Y should be clamped to 0.
   gfx::Rect expected_rect(0, 0, 10 / dsf, 20 / dsf);
   EXPECT_EQ(rect, expected_rect);
+
+  // Restore default delegate.
+  TextInputClientMac::GetInstance()->SetAsyncRequestDelegateForTesting(nullptr);
+}
+
+// Answers GetFirstRectForRange() requests with a fixed rect. Replies from a
+// separate task, as the renderer does, because TextInputClientMac holds its
+// lock while sending an async request.
+class AsyncFakeTextInputClientMacDelegate
+    : public TextInputClientMac::AsyncRequestDelegate {
+ public:
+  explicit AsyncFakeTextInputClientMacDelegate(const gfx::Rect& response_rect)
+      : response_rect_(response_rect) {}
+
+  void GetCharacterIndexAtPoint(
+      RenderFrameHost* rfh,
+      const TextInputClientMac::RequestToken& request_token,
+      const gfx::Point& point) override {
+    FAIL() << "Unexpected call to GetCharacterIndexAtPoint";
+  }
+
+  void GetFirstRectForRange(
+      RenderFrameHost* rfh,
+      const TextInputClientMac::RequestToken& request_token,
+      const gfx::Range& range) override {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&TextInputClientMac::SetFirstRectAndSignal,
+                       base::Unretained(TextInputClientMac::GetInstance()),
+                       request_token, response_rect_));
+  }
+
+ private:
+  const gfx::Rect response_rect_;
+};
+
+// Verifies that GetFirstRectForRange() returns the renderer's bounds for the
+// requested range, converted to DIPs, when the cache only has the caret's
+// bounds for it.
+TEST_F(RenderWidgetHostViewMacTest, GetFirstRectForRangeAsksRenderer) {
+  base::test::ScopedFeatureList feature_list(
+      features::kCachedFirstRectAllowRangeOutsideSelection);
+
+  // Focus the root frame tree node so GetFocusedRenderFrameHostImpl succeeds.
+  contents()->GetPrimaryFrameTree().SetFocusedFrame(
+      contents()->GetPrimaryFrameTree().root(), nullptr);
+  rwhv_mac_->SetBounds(gfx::Rect(0, 0, 800, 600));
+
+  // With the caret after "omw", the cached bounds for "omw" are the caret's.
+  const gfx::Rect caret_rect(40, 10, 1, 20);
+  rwhv_mac_->SelectionChanged(u"omw", 0, gfx::Range(3, 3));
+  rwhv_mac_->SelectionBoundsChanged(caret_rect, base::i18n::LEFT_TO_RIGHT,
+                                    caret_rect, base::i18n::LEFT_TO_RIGHT,
+                                    gfx::Rect(), false);
+  gfx::Rect cached_rect;
+  ASSERT_EQ(rwhv_mac_->GetCachedFirstRectForCharacterRange(
+                gfx::Range(0, 3), &cached_rect, nullptr),
+            RenderWidgetHostViewMac::GetCachedFirstRectResult::kFound);
+  ASSERT_EQ(cached_rect, caret_rect);
+
+  // The renderer reports the bounds of "omw" in physical pixels.
+  const gfx::Rect text_rect(10, 10, 30, 20);
+  TextInputClientMac::GetInstance()->SetAsyncRequestDelegateForTesting(
+      std::make_unique<AsyncFakeTextInputClientMacDelegate>(
+          gfx::ScaleToEnclosingRect(text_rect,
+                                    rwhv_mac_->GetDeviceScaleFactor())));
+
+  base::test::TestFuture<const std::optional<gfx::Rect>&> future;
+  rwhv_mac_->GetFirstRectForRange(gfx::Range(0, 3), future.GetCallback());
+  EXPECT_EQ(future.Get(), text_rect);
+
+  // Restore default delegate.
+  TextInputClientMac::GetInstance()->SetAsyncRequestDelegateForTesting(nullptr);
+}
+
+// Verifies that GetFirstRectForRange() returns the cached bounds for the
+// requested range when the renderer has none.
+TEST_F(RenderWidgetHostViewMacTest, GetFirstRectForRangeFallsBackToCachedRect) {
+  base::test::ScopedFeatureList feature_list(
+      features::kCachedFirstRectAllowRangeOutsideSelection);
+
+  // Focus the root frame tree node so GetFocusedRenderFrameHostImpl succeeds.
+  contents()->GetPrimaryFrameTree().SetFocusedFrame(
+      contents()->GetPrimaryFrameTree().root(), nullptr);
+  rwhv_mac_->SetBounds(gfx::Rect(0, 0, 800, 600));
+
+  const gfx::Rect caret_rect(40, 10, 1, 20);
+  rwhv_mac_->SelectionChanged(u"omw", 0, gfx::Range(3, 3));
+  rwhv_mac_->SelectionBoundsChanged(caret_rect, base::i18n::LEFT_TO_RIGHT,
+                                    caret_rect, base::i18n::LEFT_TO_RIGHT,
+                                    gfx::Rect(), false);
+
+  // The renderer has no bounds for "omw", e.g. because it's in an EditContext
+  // whose page didn't provide any.
+  TextInputClientMac::GetInstance()->SetAsyncRequestDelegateForTesting(
+      std::make_unique<AsyncFakeTextInputClientMacDelegate>(gfx::Rect()));
+
+  base::test::TestFuture<const std::optional<gfx::Rect>&> future;
+  rwhv_mac_->GetFirstRectForRange(gfx::Range(0, 3), future.GetCallback());
+  EXPECT_EQ(future.Get(), caret_rect);
+
+  // Restore default delegate.
+  TextInputClientMac::GetInstance()->SetAsyncRequestDelegateForTesting(nullptr);
+}
+
+// Verifies that GetFirstRectForRange() clamps the renderer's bounds to the
+// visible viewport.
+TEST_F(RenderWidgetHostViewMacTest, GetFirstRectForRangeClamped) {
+  // Focus the root frame tree node so GetFocusedRenderFrameHostImpl succeeds.
+  contents()->GetPrimaryFrameTree().SetFocusedFrame(
+      contents()->GetPrimaryFrameTree().root(), nullptr);
+  rwhv_mac_->SetBounds(gfx::Rect(0, 0, 800, 600));
+
+  // Forged rect outside of the viewport, in physical pixels.
+  TextInputClientMac::GetInstance()->SetAsyncRequestDelegateForTesting(
+      std::make_unique<AsyncFakeTextInputClientMacDelegate>(
+          gfx::Rect(-100, -200, 10, 20)));
+
+  base::test::TestFuture<const std::optional<gfx::Rect>&> future;
+  rwhv_mac_->GetFirstRectForRange(gfx::Range(1, 2), future.GetCallback());
+
+  // X and Y are clamped to the viewport's origin.
+  const float dsf = rwhv_mac_->GetDeviceScaleFactor();
+  const gfx::Rect expected_rect(0, 0, 10 / dsf, 20 / dsf);
+  EXPECT_EQ(future.Get(), expected_rect);
 
   // Restore default delegate.
   TextInputClientMac::GetInstance()->SetAsyncRequestDelegateForTesting(nullptr);
