@@ -30,9 +30,11 @@
 
 #include "third_party/blink/renderer/core/loader/resource/image_resource.h"
 
+#include <array>
 #include <memory>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -51,6 +53,7 @@
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
+#include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -370,6 +373,162 @@ TEST_F(ImageResourceTest, BitmapMultipartImage) {
                   ->GetImage()
                   ->PaintImageForCurrentFrame()
                   .is_multipart());
+}
+
+TEST_F(ImageResourceTest, MultipartImageMemoryAccounting) {
+  ResourceFetcher* fetcher = CreateFetcher();
+  KURL test_url(kTestURL);
+  ScopedMockedURLLoad scoped_mocked_url_load(test_url, GetTestFilePath());
+
+  auto* image_resource = ImageResource::CreateForTest(test_url);
+  fetcher->StartLoad(image_resource);
+
+  ResourceResponse multipart_response(NullUrl());
+  multipart_response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
+  multipart_response.SetHttpHeaderField(
+      http_names::kContentType,
+      AtomicString("multipart/x-mixed-replace; boundary=boundary"));
+  image_resource->Loader()->DidReceiveResponse(
+      WrappedResourceResponse(multipart_response),
+      /*body=*/mojo::ScopedDataPipeConsumerHandle(),
+      /*cached_metadata=*/std::nullopt);
+  EXPECT_FALSE(image_resource->GetContent()->HasImage());
+
+  constexpr std::string_view kBoundary = "--boundary\n";
+  constexpr std::string_view kContentType = "Content-Type: image/jpeg\n\n";
+  constexpr size_t kMultipartSize =
+      kContentType.size() + sizeof(kJpegImage2) + kBoundary.size();
+  std::array<char, kMultipartSize> part;
+  base::span<char> part_span(part);
+  part_span.take_first(kContentType.size()).copy_from(kContentType);
+  part_span.take_first(sizeof(kJpegImage2))
+      .copy_from(base::as_chars(base::span(kJpegImage2)));
+  part_span.take_first(kBoundary.size()).copy_from(kBoundary);
+  ASSERT_TRUE(part_span.empty());
+
+  const int64_t initial = V8ExternalMemoryAccounterBase::
+      GetTotalAmountOfExternalAllocatedMemoryForTesting(
+          task_environment_.isolate());
+
+  // Feed the first part.
+  image_resource->AppendData(kBoundary);
+  image_resource->AppendData(part);
+  EXPECT_FALSE(image_resource->GetContent()->HasImage());
+  const int64_t size_after_first_part =
+      V8ExternalMemoryAccounterBase::
+          GetTotalAmountOfExternalAllocatedMemoryForTesting(
+              task_environment_.isolate()) -
+      initial;
+  // Expect a full image to be accounted for, plus any additional buffered data.
+  // Avoid being too precise, since that will just place restrictions on data
+  // management in the MultipartImageResourceParser. The important part is that
+  // it's bounded.
+  EXPECT_GE(size_after_first_part, sizeof(kJpegImage2));
+  EXPECT_LE(size_after_first_part, sizeof(kJpegImage2) + kMultipartSize);
+
+  for (size_t i = 0; i < 5; ++i) {
+    // Feed an additional piece of a part. Split randomly. Feed enough to
+    // include the header and part of the payload.
+    const size_t split_offset = kMultipartSize - (i + 1) * 8;
+    auto [first_piece, second_piece] = base::span(part).split_at(split_offset);
+    image_resource->AppendData(first_piece);
+    EXPECT_TRUE(image_resource->GetContent()->HasImage());
+
+    const int64_t size_before_second_piece =
+        V8ExternalMemoryAccounterBase::
+            GetTotalAmountOfExternalAllocatedMemoryForTesting(
+                task_environment_.isolate()) -
+        initial;
+    // Expect a full image to be accounted for, plus any additional buffered
+    // data.
+    EXPECT_GE(size_before_second_piece, sizeof(kJpegImage2));
+    EXPECT_LE(size_before_second_piece, sizeof(kJpegImage2) + kMultipartSize);
+    image_resource->AppendData(second_piece);
+  }
+
+  image_resource->Loader()->DidFinishLoading(base::TimeTicks(), 0, 0, 0);
+  const int64_t size_after_finish_loading =
+      V8ExternalMemoryAccounterBase::
+          GetTotalAmountOfExternalAllocatedMemoryForTesting(
+              task_environment_.isolate()) -
+      initial;
+  // Expect a full image to be accounted for, and no additional buffered data.
+  EXPECT_EQ(size_after_finish_loading, sizeof(kJpegImage2));
+}
+
+TEST_F(ImageResourceTest, MultipartImageDecodeErrorMemoryAccounting) {
+  ResourceFetcher* fetcher = CreateFetcher();
+  KURL test_url(kTestURL);
+  ScopedMockedURLLoad scoped_mocked_url_load(test_url, GetTestFilePath());
+
+  auto* image_resource = ImageResource::CreateForTest(test_url);
+  fetcher->StartLoad(image_resource);
+
+  ResourceResponse multipart_response(NullUrl());
+  multipart_response.SetMimeType(AtomicString("multipart/x-mixed-replace"));
+  multipart_response.SetHttpHeaderField(
+      http_names::kContentType,
+      AtomicString("multipart/x-mixed-replace; boundary=boundary"));
+  image_resource->Loader()->DidReceiveResponse(
+      WrappedResourceResponse(multipart_response),
+      /*body=*/mojo::ScopedDataPipeConsumerHandle(),
+      /*cached_metadata=*/std::nullopt);
+  EXPECT_FALSE(image_resource->GetContent()->HasImage());
+
+  constexpr std::string_view kBoundary = "--boundary\n";
+  constexpr std::string_view kContentType = "Content-Type: image/jpeg\n\n";
+  constexpr auto kPayload = base::span(kJpegImage2);
+
+  const int64_t initial = V8ExternalMemoryAccounterBase::
+      GetTotalAmountOfExternalAllocatedMemoryForTesting(
+          task_environment_.isolate());
+
+  // Feed the first part.
+  image_resource->AppendData(kBoundary);
+  image_resource->AppendData(kContentType);
+  image_resource->AppendData(base::as_chars(kPayload));
+  image_resource->AppendData(kBoundary);
+
+  // We haven't decoded any payload yet.
+  EXPECT_FALSE(image_resource->GetContent()->HasImage());
+  EXPECT_FALSE(image_resource->ErrorOccurred());
+
+  const int64_t size_after_first_part =
+      V8ExternalMemoryAccounterBase::
+          GetTotalAmountOfExternalAllocatedMemoryForTesting(
+              task_environment_.isolate()) -
+      initial;
+  // Expect a full image to be accounted for and a little additional buffered
+  // data.
+  EXPECT_GE(size_after_first_part, sizeof(kJpegImage2));
+
+  // Feed a second part - this time with an error.
+  image_resource->AppendData(kContentType);
+  std::array<uint8_t, 2> corrupt_header = {
+      static_cast<uint8_t>(kPayload[0] ^ 0x04),
+      static_cast<uint8_t>(kPayload[1] ^ 0x40)};
+  image_resource->AppendData(base::as_chars(base::span(corrupt_header)));
+  image_resource->AppendData(base::as_chars(kPayload.subspan(2u)));
+  image_resource->AppendData(kBoundary);
+
+  // We have decoded the first part now.
+  EXPECT_TRUE(image_resource->GetContent()->HasImage());
+  EXPECT_FALSE(image_resource->ErrorOccurred());
+
+  // Start feeding a third part. This will flush the second part and trigger
+  // the decode error.
+  image_resource->AppendData(kContentType);
+
+  EXPECT_FALSE(image_resource->GetContent()->HasImage());
+  EXPECT_TRUE(image_resource->ErrorOccurred());
+
+  const int64_t size_after_decode_error =
+      V8ExternalMemoryAccounterBase::
+          GetTotalAmountOfExternalAllocatedMemoryForTesting(
+              task_environment_.isolate()) -
+      initial;
+  // Expect accounting to return to zero.
+  EXPECT_EQ(size_after_decode_error, 0);
 }
 
 TEST_F(ImageResourceTest, CancelOnRemoveObserver) {

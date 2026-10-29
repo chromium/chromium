@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_IMAGE_RESOURCE_CONTENT_H_
 
 #include <cstddef>
+#include <optional>
 
 #include "base/auto_reset.h"
 #include "base/dcheck_is_on.h"
@@ -217,6 +218,10 @@ class CORE_EXPORT ImageResourceContent final
   }
   bool CanBeSpeculativelyDecoded() const;
   ImageDecoder::CompressionFormat GetCompressionFormat() const;
+
+  // Returns the number of bytes of image data as held by the contained
+  // Image. Returns std::nullopt if there's no image, or the image has no data.
+  std::optional<size_t> ImageDataSize() const;
 
   // Returns the number of bytes of image data which should be used for entropy
   // calculations. Ideally this should exclude metadata from within the image

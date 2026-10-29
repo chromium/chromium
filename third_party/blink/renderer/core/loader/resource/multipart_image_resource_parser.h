@@ -72,6 +72,8 @@ class CORE_EXPORT MultipartImageResourceParser final
   void Finish();
   void Cancel() { is_cancelled_ = true; }
 
+  wtf_size_t BufferedBytes() const { return data_.size(); }
+
   void Trace(Visitor*) const;
 
   static wtf_size_t SkippableLengthForTest(const Vector<char>& data,

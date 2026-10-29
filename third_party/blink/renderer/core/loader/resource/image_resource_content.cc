@@ -590,15 +590,18 @@ ImageDecoder::CompressionFormat ImageResourceContent::GetCompressionFormat()
                                             GetResponse().HttpContentType());
 }
 
+std::optional<size_t> ImageResourceContent::ImageDataSize() const {
+  if (image_ && image_->HasData()) {
+    return image_->DataSize();
+  }
+  return std::nullopt;
+}
+
 uint64_t ImageResourceContent::ContentSizeForEntropy() const {
   int64_t resource_length = GetResponse().ExpectedContentLength();
   if (resource_length <= 0) {
-    if (image_ && image_->HasData()) {
-      // WPT and LayoutTests server returns -1 or 0 for the content length.
-      resource_length = image_->DataSize();
-    } else {
-      resource_length = 0;
-    }
+    // WPT and LayoutTests server returns -1 or 0 for the content length.
+    resource_length = ImageDataSize().value_or(0);
   }
   return resource_length;
 }
