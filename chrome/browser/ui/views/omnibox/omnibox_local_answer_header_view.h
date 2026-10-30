@@ -23,9 +23,6 @@ class OmniboxLocalAnswerHeaderView : public views::View {
  public:
   OmniboxLocalAnswerHeaderView();
 
-  // views::View:
-  void OnThemeChanged() override;
-
   // Toggle visibility between `throbber_` and `icon_`.
   void SetThrobberVisibility(bool visible);
 

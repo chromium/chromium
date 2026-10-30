@@ -12,7 +12,6 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -37,20 +36,15 @@ OmniboxLocalAnswerHeaderView::OmniboxLocalAnswerHeaderView() {
       gfx::Insets::TLBR(10, 21, 10, 0), 8));
   throbber_ = AddChildView(std::make_unique<views::Throbber>(kIconSize));
   icon_ = AddChildView(std::make_unique<views::ImageView>());
-  text_ = AddChildView(std::make_unique<views::Label>());
-  text_->SetFontList(views::TypographyProvider::Get().GetFont(
-      CONTEXT_OMNIBOX_POPUP, STYLE_SMALL));
-  SetThrobberVisibility(false);
-}
-
-void OmniboxLocalAnswerHeaderView::OnThemeChanged() {
-  views::View::OnThemeChanged();
   icon_->SetImage(ui::ImageModel::FromVectorIcon(
       features::IsRoundedIconsEnabled() ? omnibox::kSummarizeAutoIcon
                                         : omnibox::kSummarizeAutoOldIcon,
       kColorOmniboxResultsIcon, kIconSize));
-  text_->SetEnabledColor(
-      GetColorProvider()->GetColor(kColorOmniboxResultsTextDimmed));
+  text_ = AddChildView(std::make_unique<views::Label>());
+  text_->SetFontList(views::TypographyProvider::Get().GetFont(
+      CONTEXT_OMNIBOX_POPUP, STYLE_SMALL));
+  text_->SetEnabledColor(kColorOmniboxResultsTextDimmed);
+  SetThrobberVisibility(false);
 }
 
 void OmniboxLocalAnswerHeaderView::SetThrobberVisibility(bool visible) {
