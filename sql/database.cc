@@ -533,6 +533,8 @@ bool Database::Open(const base::FilePath& path) {
   DCHECK_NE(path_string, kSqliteOpenInMemoryPath)
       << "Path conflicts with SQLite magic identifier";
 
+  CHECK(!executing_error_callback_, base::NotFatalUntil::M161);
+
   absl::Cleanup report_success = [this, open_timer = base::ElapsedTimer()] {
     RecordTimingHistogram("Sql.Database.DatabaseOpenTime.",
                           open_timer.Elapsed());
@@ -564,6 +566,8 @@ bool Database::OpenInMemory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   TRACE_EVENT0("sql", "Database::OpenInMemory");
+
+  CHECK(!executing_error_callback_, base::NotFatalUntil::M161);
 
   in_memory_ = true;
   return OpenInternal(kSqliteOpenInMemoryPath);

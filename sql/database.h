@@ -533,8 +533,8 @@ class COMPONENT_EXPORT(SQL) Database {
   // The callback will be called on the sequence used for database operations.
   // The callback will never be called after the `Database` instance is
   // destroyed. The callback must never destroy the `Database` instance or call
-  // `Close()` / `CloseAndDelete()` (use `Poison()` / `RazeAndPoison()`
-  // instead).
+  // `Open()` / `OpenInMemory()` / `Close()` / `CloseAndDelete()` (use
+  // `Poison()` / `RazeAndPoison()` instead of closing).
   using ErrorCallback = base::RepeatingCallback<void(int, Statement*)>;
   void set_error_callback(ErrorCallback callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -591,6 +591,8 @@ class COMPONENT_EXPORT(SQL) Database {
   // occurs, this function will invoke the error callback if it is present and
   // then may attempt to open the database a second time. If the second attempt
   // succeeds, it will return true.
+  //
+  // `Open()` cannot be called from within an error callback.
   [[nodiscard]] bool Open(const base::FilePath& db_file_path);
 
   // Alternative to Open() that creates an in-memory database.
@@ -599,6 +601,8 @@ class COMPONENT_EXPORT(SQL) Database {
   //
   // The memory associated with the database will be released when the database
   // is closed.
+  //
+  // `OpenInMemory()` cannot be called from within an error callback.
   [[nodiscard]] bool OpenInMemory();
 
   // Returns true if the database has been successfully opened.
