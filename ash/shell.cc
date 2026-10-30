@@ -364,11 +364,7 @@ Shell* Shell::instance_ = nullptr;
 Shell* Shell::CreateInstance(ShellInitParams init_params) {
   CHECK(!instance_);
   instance_ = new Shell(std::move(init_params.delegate));
-  instance_->Init(init_params.context_factory, init_params.local_state,
-                  std::move(init_params.keyboard_ui_factory),
-                  std::move(init_params.quick_pair_mediator_factory),
-                  init_params.dbus_bus,
-                  std::move(init_params.native_display_delegate));
+  instance_->Init(std::move(init_params));
   return instance_;
 }
 
@@ -1284,15 +1280,15 @@ Shell::~Shell() {
   instance_ = nullptr;
 }
 
-void Shell::Init(
-    ui::ContextFactory* context_factory,
-    PrefService* local_state,
-    std::unique_ptr<keyboard::KeyboardUIFactory> keyboard_ui_factory,
-    std::unique_ptr<ash::quick_pair::Mediator::Factory>
-        quick_pair_mediator_factory,
-    scoped_refptr<dbus::Bus> dbus_bus,
-    std::unique_ptr<display::NativeDisplayDelegate> native_display_delegate) {
-  native_display_delegate_ = std::move(native_display_delegate);
+void Shell::Init(ShellInitParams init_params) {
+  ui::ContextFactory* context_factory = init_params.context_factory;
+  PrefService* local_state = init_params.local_state;
+  std::unique_ptr<keyboard::KeyboardUIFactory> keyboard_ui_factory =
+      std::move(init_params.keyboard_ui_factory);
+  std::unique_ptr<quick_pair::Mediator::Factory> quick_pair_mediator_factory =
+      std::move(init_params.quick_pair_mediator_factory);
+  scoped_refptr<dbus::Bus> dbus_bus = std::move(init_params.dbus_bus);
+  native_display_delegate_ = std::move(init_params.native_display_delegate);
   login_unlock_throughput_recorder_ =
       std::make_unique<LoginUnlockThroughputRecorder>();
   unlock_throughput_recorder_ = std::make_unique<UnlockThroughputRecorder>();

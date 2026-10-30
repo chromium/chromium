@@ -25,6 +25,7 @@ static_library("sanitize_ui") {
     "//chromeos/ash/components/install_attributes",
     "//chromeos/strings/",
     "//content/public/browser",
+    "//mojo/public/cpp/bindings",
     "//ui/base",
     "//ui/web_dialogs",
     "//ui/webui",

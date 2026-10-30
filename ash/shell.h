@@ -5,8 +5,10 @@
 #ifndef ASH_SHELL_H_
 #define ASH_SHELL_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -20,13 +22,13 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/tab_strip_delegate.h"
-#include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
 #include "ash/system/input_device_settings/touchscreen_metrics_recorder.h"
 #include "ash/system/toast/system_nudge_pause_manager_impl.h"
 #include "ash/wm/system_modal_container_event_filter_delegate.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
@@ -66,12 +68,7 @@ class ImageSkia;
 class Point;
 }  // namespace gfx
 
-namespace keyboard {
-class KeyboardUIFactory;
-}
-
 namespace ui {
-class ContextFactory;
 class KeyboardCapability;
 class UserActivityPowerManagerNotifier;
 }  // namespace ui
@@ -981,14 +978,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   explicit Shell(std::unique_ptr<ShellDelegate> shell_delegate);
   ~Shell() override;
 
-  void Init(
-      ui::ContextFactory* context_factory,
-      PrefService* local_state,
-      std::unique_ptr<keyboard::KeyboardUIFactory> keyboard_ui_factory,
-      std::unique_ptr<ash::quick_pair::Mediator::Factory>
-          quick_pair_mediator_factory,
-      scoped_refptr<dbus::Bus> dbus_bus,
-      std::unique_ptr<display::NativeDisplayDelegate> native_display_delegate);
+  void Init(ShellInitParams init_params);
 
   // Initializes the display manager and related components.
   void InitializeDisplayManager();
