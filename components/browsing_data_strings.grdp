@@ -137,20 +137,11 @@
   <message name="IDS_DEL_AUTOFILL_COUNTER_AND_MORE" desc="This message is added at the end of an enumeration of form data types to indicate that there is additional form data (e.g. form autocompletion suggestions or other saved entities) that is not enumerated, e.g.: '3 payment methods, 2 addresses, and more'.">
     and more
   </message>
-  <message name="IDS_DEL_AUTOFILL_COUNTER_ONE_TYPE_SYNCED" desc="A counter showing that the user has one type of form data and that it is synced. The type will be substituted, this message only provides the (synced) part.">
-    <ph name="TYPE_1">$1<ex>2 payment methods</ex></ph> (synced)
-  </message>
   <message name="IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES" desc="A counter showing that the user has two types of form data. The types and their counts will be substituted, this message only provides the comma separator.">
     <ph name="TYPE_1">$1<ex>2 payment methods</ex></ph>, <ph name="TYPE_2">$2<ex>1 address</ex></ph>
   </message>
-  <message name="IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES_SYNCED" desc="A counter showing that the user has two types of form data and that they are synced. The types and their counts will be substituted, this message only provides the comma separator.">
-    <ph name="TYPE_1">$1<ex>2 payment methods</ex></ph>, <ph name="TYPE_2">$2<ex>1 address</ex></ph> (synced)
-  </message>
   <message name="IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES" desc="A counter showing that the user has three types of form data. The types and their counts will be substituted, this message only provides the comma separators.">
     <ph name="TYPE_1">$1<ex>2 payment methods</ex></ph>, <ph name="TYPE_2">$2<ex>1 address</ex></ph>, <ph name="TYPE_3">$3<ex>and more</ex></ph>
-  </message>
-  <message name="IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES_SYNCED" desc="A counter showing that the user has three types of form data and that they are synced. The types and their counts will be substituted, this message only provides the comma separators.">
-    <ph name="TYPE_1">$1<ex>2 payment methods</ex></ph>, <ph name="TYPE_2">$2<ex>1 address</ex></ph>, <ph name="TYPE_3">$3<ex>and more</ex></ph> (synced)
   </message>
   <message name="IDS_DEL_COOKIES_COUNTER" desc="A static message shown in the Clear Browsing Data dialog explaining to the user that deleting cookies and site data will result in the user being signed out of most websites.">
     This will sign you out of most websites.

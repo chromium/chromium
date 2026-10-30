@@ -22,7 +22,6 @@
 #include "components/browsing_data/core/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -329,11 +328,6 @@ std::u16string GetCounterTextFromResult(
                                     : IDS_DEL_AUTOFILL_COUNTER_AND_MORE));
     }
 
-    // TODO(crbug.com/40066949): Clean this up once Sync-the-feature is gone on
-    // all platforms.
-    bool synced = !syncer::IsReplaceSyncPromosWithSignInPromosEnabled() &&
-                  autofill_result->is_sync_enabled();
-
     // TODO(crbug.com/371539581): Exclude payment methods from this part,
     // because it can be attributed as "synced", while payment methods are
     // always local.
@@ -345,25 +339,19 @@ std::u16string GetCounterTextFromResult(
         break;
       case 1:
         payment_methods_addresses_autocomplete_entries_part =
-            synced ? l10n_util::GetStringFUTF16(
-                         IDS_DEL_AUTOFILL_COUNTER_ONE_TYPE_SYNCED,
-                         displayed_strings[0])
-                   : displayed_strings[0];
+            displayed_strings[0];
         break;
       case 2:
         payment_methods_addresses_autocomplete_entries_part =
-            l10n_util::GetStringFUTF16(
-                synced ? IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES_SYNCED
-                       : IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES,
-                displayed_strings[0], displayed_strings[1]);
+            l10n_util::GetStringFUTF16(IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES,
+                                       displayed_strings[0],
+                                       displayed_strings[1]);
         break;
       case 3:
         payment_methods_addresses_autocomplete_entries_part =
             l10n_util::GetStringFUTF16(
-                synced ? IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES_SYNCED
-                       : IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES,
-                displayed_strings[0], displayed_strings[1],
-                displayed_strings[2]);
+                IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES, displayed_strings[0],
+                displayed_strings[1], displayed_strings[2]);
         break;
       default:
         NOTREACHED();

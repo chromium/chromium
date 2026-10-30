@@ -22,7 +22,6 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/collaboration_id.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -375,43 +374,24 @@ SyncStatus CollaborationServiceImpl::GetSyncStatus() {
   // However, setting `kSyncDisabledByEnterprise` is necessary for properly
   // displaying an error message/hiding the "Share group" entry point if sync is
   // disabled.
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    bool any_type_disabled_by_policy = false;
-    for (const syncer::UserSelectableType type : kRequiredTypes) {
-      if (user_settings->IsTypeManagedByPolicy(type)) {
-        any_type_disabled_by_policy = true;
-        break;
-      }
+  bool any_type_disabled_by_policy = false;
+  for (const syncer::UserSelectableType type : kRequiredTypes) {
+    if (user_settings->IsTypeManagedByPolicy(type)) {
+      any_type_disabled_by_policy = true;
+      break;
     }
-    if (any_type_disabled_by_policy ||
-        sync_service_->GetDisableReasons().Has(
-            syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
-      return SyncStatus::kSyncDisabledByEnterprise;
-    }
+  }
+  if (any_type_disabled_by_policy ||
+      sync_service_->GetDisableReasons().Has(
+          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
+    return SyncStatus::kSyncDisabledByEnterprise;
   }
 
   if (user_settings->GetSelectedTypes().HasAll(kRequiredTypes)) {
     return SyncStatus::kSyncEnabled;
   }
 
-  // TODO(crbug.com/40066949): Simplify this code once all users are migrated
-  // away from Sync-the-feature.
-  if (sync_service_->IsSyncFeatureEnabled()) {
-    // Sync-the-feature is enabled, but the required data types are not.
-    // The user needs to enable them in settings.
-    return SyncStatus::kSyncWithoutTabGroup;
-  } else {
-    if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-      // Sync-the-feature is not required, but the user needs to enable
-      // the required data types in settings. Note that this also includes cases
-      // where the user is not signed in at all - that is covered by
-      // GetSigninStatus().
-      return SyncStatus::kSyncWithoutTabGroup;
-    } else {
-      // The user needs to enable Sync-the-feature.
-      return SyncStatus::kNotSyncing;
-    }
-  }
+  return SyncStatus::kSyncWithoutTabGroup;
 }
 
 SigninStatus CollaborationServiceImpl::GetSigninStatus() {

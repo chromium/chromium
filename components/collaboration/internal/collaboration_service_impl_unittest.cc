@@ -317,19 +317,11 @@ TEST_F(CollaborationServiceImplTest, SyncStatusChanges) {
   EXPECT_EQ(service_->GetServiceStatus().sync_status,
             SyncStatus::kSyncWithoutTabGroup);
 
-  if (syncer::IsReplaceSyncPromosWithSignInPromosEnabled()) {
-    // If sync-the-feature is not required, kNotSyncing is never happening.
-    test_sync_service_->SetSignedOut();
-    test_sync_service_->FireStateChanged();
-    EXPECT_EQ(service_->GetServiceStatus().sync_status,
-              SyncStatus::kSyncWithoutTabGroup);
-  } else {
-    // Sign out removes sync consent.
-    test_sync_service_->SetSignedOut();
-    test_sync_service_->FireStateChanged();
-    EXPECT_EQ(service_->GetServiceStatus().sync_status,
-              SyncStatus::kNotSyncing);
-  }
+  // If sync-the-feature is not required, kNotSyncing is never happening.
+  test_sync_service_->SetSignedOut();
+  test_sync_service_->FireStateChanged();
+  EXPECT_EQ(service_->GetServiceStatus().sync_status,
+            SyncStatus::kSyncWithoutTabGroup);
 }
 
 TEST_F(CollaborationServiceImplTest, SyncTypeDisabledByEnterprise) {
