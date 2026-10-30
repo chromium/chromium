@@ -623,9 +623,6 @@ impl MutableProcessState {
         self.0
     }
 
-    // TODO(crbug.com/568880876): Mark the process as used when it is locked to
-    // a site, so that a `Locked` lock is never unused. This must match the C++
-    // `ProcessState::SetProcessLock()`.
     fn set_process_lock(&mut self, lock_to_set: AssignableProcessLock) {
         let old_lock = std::mem::take(&mut self.0.process_lock);
         self.0.process_lock = old_lock.transition_to_state(lock_to_set).into();

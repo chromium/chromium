@@ -888,11 +888,6 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
     return false;
   }
 
-  // TODO(crbug.com/568880876): Mark the process as used when it is locked to a
-  // site. SiteInstanceImpl::LockProcessIfNeeded() already calls SetIsUsed()
-  // right after locking, but tests that call LockProcess() directly leave the
-  // process locked and unused. This must match the Rust
-  // `ProcessState::set_process_lock()`.
   void SetProcessLock(const ProcessLock& lock_to_set,
                       const IsolationContext& context) {
     CHECK(!lock_to_set.is_invalid());
@@ -937,6 +932,11 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
     // used process can never become unused again. This must match the Rust
     // `ProcessLock<Invalid>::transition()`.
     process_lock_ = lock_to_set;
+    if (process_lock_.IsLockedToSite()) {
+      // A lock that is locked to a site is never unused. This must match the
+      // Rust `ProcessLock<Locked>::new()`.
+      SetProcessIsUsed(/*shard=*/std::nullopt);
+    }
     AddBrowsingInstanceInfo(context);
   }
 

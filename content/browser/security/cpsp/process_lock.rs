@@ -103,15 +103,17 @@ pub struct NotYetAssigned;
 /// used.
 ///
 /// This state is used for processes that host content but aren't restricted to
-/// a specific site principal (e.g., default SiteInstanceGroups on Android). As
-/// a terminal state, no further transitions are allowed.
+/// a specific site principal (e.g., default SiteInstanceGroups on Android). An
+/// `Unlocked` lock is always marked as used. As a terminal state, no further
+/// transitions are allowed.
 pub struct Unlocked;
 
 /// A terminal state where the process is strictly locked to a specific site
 /// principal.
 ///
-/// This state corresponds to `IsLockedToSite()` being true. As a terminal
-/// state, no further transitions are allowed.
+/// This state corresponds to `IsLockedToSite()` being true. A `Locked` lock is
+/// always marked as used. As a terminal state, no further transitions are
+/// allowed.
 pub struct Locked;
 
 /// A zero-cost type-safe wrapper around a C++ ProcessLock that uses typestates
@@ -122,10 +124,6 @@ pub struct ProcessLock<S: ProcessLockState> {
 }
 
 impl<S: ProcessLockState> ProcessLock<S> {
-    fn new(cpp_lock: UniquePtr<ffi::CppProcessLock>) -> Self {
-        Self { cpp_lock, _phantom: PhantomData }
-    }
-
     fn as_ffi(&self) -> &ffi::CppProcessLock {
         &self.cpp_lock
     }
@@ -176,7 +174,7 @@ mod private {
 
 impl ProcessLock<Invalid> {
     fn new_invalid() -> Self {
-        Self::new(ffi::create_invalid())
+        Self { cpp_lock: ffi::create_invalid(), _phantom: PhantomData }
     }
 
     /// Consumes the invalid lock and transitions to the provided
@@ -200,6 +198,10 @@ impl Default for ProcessLock<Invalid> {
 }
 
 impl ProcessLock<NotYetAssigned> {
+    fn new(cpp_lock: UniquePtr<ffi::CppProcessLock>) -> Self {
+        Self { cpp_lock, _phantom: PhantomData }
+    }
+
     /// Consumes the not yet assigned lock and transitions to the provided
     /// `AssignableProcessLock` if the transition is valid.
     fn transition(self, new_state: AssignableProcessLock) -> AssignableProcessLock {
@@ -220,9 +222,28 @@ impl ProcessLock<NotYetAssigned> {
         }
     }
 
-    fn into_unlocked(mut self) -> ProcessLock<Unlocked> {
-        self.mark_used();
-        ProcessLock::new(self.cpp_lock)
+    fn into_unlocked(self) -> ProcessLock<Unlocked> {
+        ProcessLock::<Unlocked>::new(self.cpp_lock)
+    }
+}
+
+impl ProcessLock<Unlocked> {
+    /// Makes an `Unlocked` lock and marks it as used. Thus an `Unlocked` lock
+    /// is never unused.
+    fn new(cpp_lock: UniquePtr<ffi::CppProcessLock>) -> Self {
+        let mut lock = Self { cpp_lock, _phantom: PhantomData };
+        lock.mark_used();
+        lock
+    }
+}
+
+impl ProcessLock<Locked> {
+    /// Makes a `Locked` lock and marks it as used. Thus a `Locked` lock is
+    /// never unused. This must match the C++ `ProcessState::SetProcessLock()`.
+    fn new(cpp_lock: UniquePtr<ffi::CppProcessLock>) -> Self {
+        let mut lock = Self { cpp_lock, _phantom: PhantomData };
+        lock.mark_used();
+        lock
     }
 }
 
@@ -287,13 +308,12 @@ impl StatefulProcessLock {
             StatefulProcessLock::NotYetAssigned(lock) => {
                 StatefulProcessLock::Unlocked(lock.into_unlocked())
             }
-            // An `Unlocked` lock is already marked as used since `into_unlocked()`
-            // is the only way to get to that state.
+            // An `Unlocked` lock is already marked as used since
+            // `ProcessLock<Unlocked>::new()` marks it as used when it makes it.
             StatefulProcessLock::Unlocked(lock) => StatefulProcessLock::Unlocked(lock),
-            StatefulProcessLock::Locked(mut lock) => {
-                lock.mark_used();
-                StatefulProcessLock::Locked(lock)
-            }
+            // A `Locked` lock is already marked as used since
+            // `ProcessLock<Locked>::new()` marks it as used when it makes it.
+            StatefulProcessLock::Locked(lock) => StatefulProcessLock::Locked(lock),
         }
     }
 }
@@ -322,9 +342,9 @@ impl AssignableProcessLock {
             *cpp_lock
         );
         if cpp_lock.is_locked_to_site() {
-            AssignableProcessLock::Locked(ProcessLock::new(cpp_lock))
+            AssignableProcessLock::Locked(ProcessLock::<Locked>::new(cpp_lock))
         } else if cpp_lock.allows_any_site() {
-            AssignableProcessLock::NotYetAssigned(ProcessLock::new(cpp_lock))
+            AssignableProcessLock::NotYetAssigned(ProcessLock::<NotYetAssigned>::new(cpp_lock))
         } else {
             panic!("Invalid or unknown ProcessLock state for AssignableProcessLock: {}", *cpp_lock);
         }

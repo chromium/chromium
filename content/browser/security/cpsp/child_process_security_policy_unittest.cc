@@ -3827,6 +3827,40 @@ TEST_P(ChildProcessSecurityPolicyTest, CannotLockUsedProcessToSite) {
           : "Cannot lock an already used process to .*bar\\.com");
 }
 
+// Tests that a process is marked as used when it is locked to a site.
+TEST_P(ChildProcessSecurityPolicyTest, LockToSiteMarksProcessAsUsed) {
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+  TestBrowserContext context;
+  MockRenderProcessHost process(&context);
+  const ChildProcessId process_id = process.GetID();
+
+  scoped_refptr<SiteInstanceImpl> foo_instance =
+      SiteInstanceImpl::CreateForTesting(&context, GURL("https://foo.com"));
+
+  // An allows-any-site lock does not mark the process as used.
+  p->LockProcess(
+      foo_instance->GetIsolationContext(), process_id,
+      ProcessLock::CreateAllowAnySite(
+          StoragePartitionConfig::CreateDefault(&context),
+          WebExposedIsolationInfo::CreateNonIsolated(),
+          /*cross_origin_isolation_key=*/std::nullopt, context.UniqueToken()));
+  EXPECT_TRUE(p->GetProcessLock(process_id).is_unused());
+
+  // A lock to a site marks the process as used.
+  p->LockProcess(foo_instance->GetIsolationContext(), process_id,
+                 ProcessLock::FromSiteInfo(foo_instance->GetSiteInfo()));
+  EXPECT_TRUE(p->GetProcessLock(process_id).IsLockedToSite());
+  EXPECT_FALSE(p->GetProcessLock(process_id).is_unused());
+
+  // Note: A process that allows any site but has been used (the "Unlocked"
+  // state in process_lock.rs) is also considered used. C++ ProcessLock does not
+  // yet represent this state explicitly; it is currently the combination of
+  // AllowsAnySite() and set_is_used().
+  // TODO(crbug.com/562982504): Represent the Unlocked state explicitly
+  // in the C++ ProcessLock, matching the typestates in process_lock.rs.
+}
+
 // Tests that queries for GetProcessLock work after RenderProcessHost removal
 // until the corresponding Handles are gone. See https://crbug.com/470831168.
 TEST_P(ChildProcessSecurityPolicyTest, GetProcessLockAfterProcessRemoval) {
