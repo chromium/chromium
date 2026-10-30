@@ -109,6 +109,11 @@ _signflinger_jar_path =
     "//third_party/android_build_tools/signflinger/cipd/signflinger.jar"
 _signflinger_binary_path =
     "//third_party/android_build_tools/signflinger/cipd/signflinger"
+_signflinger_inputs = [ _signflinger_binary_path ]
+if (!use_native_image_inputs) {
+  # Local actions on other hosts run signflinger on the JVM.
+  _signflinger_inputs += java_paths_for_inputs + [ _signflinger_jar_path ]
+}
 _global_synthetics_dex_path =
     "//third_party/r8/cipd/lib/global_synthetics.dex.jar"
 _default_lint_jar_path = "//third_party/android_build_tools/lint/cipd/lint.jar"
@@ -1699,13 +1704,16 @@ if (enable_java_templates) {
         deps = _deps
         depfile = "$target_gen_dir/$target_name.d"
         outputs = [ invoker.output ]
-        inputs = [
-                   _chrome_d8_binary_path,
-                   _custom_d8_path,
-                   _r8_path,
-                   _signflinger_binary_path,
-                   _signflinger_jar_path,
-                 ] + java_paths_for_inputs
+        inputs = native_image_java_paths_for_inputs +
+                 [ _chrome_d8_binary_path ] + _signflinger_inputs
+        if (!use_native_image_inputs) {
+          # Local actions on other hosts run D8 on the JVM. _signflinger_inputs
+          # already includes java_paths_for_inputs.
+          inputs += [
+            _custom_d8_path,
+            _r8_path,
+          ]
+        }
         if (defined(invoker.inputs)) {
           inputs += invoker.inputs
         }
@@ -2724,11 +2732,7 @@ if (enable_java_templates) {
 
     _script = "//build/android/gyp/apkbuilder.py"
 
-    _inputs = [
-      invoker.packaged_resources_path,
-      _signflinger_jar_path,
-      _signflinger_binary_path,
-    ]
+    _inputs = [ invoker.packaged_resources_path ] + _signflinger_inputs
 
     _outputs = [ invoker.output_apk_path ]
     _data = [ invoker.output_apk_path ]
@@ -2894,7 +2898,7 @@ if (enable_java_templates) {
 
     action_with_pydeps(target_name) {
       depfile = "$target_gen_dir/$target_name.d"
-      inputs = java_paths_for_inputs + _inputs
+      inputs = _inputs
       deps = _deps
       data = _data
       outputs = _outputs
@@ -2998,10 +3002,20 @@ if (enable_java_templates) {
 
       if (invoker.use_turbine) {
         script = "//build/android/gyp/turbine.py"
-        inputs = java_paths_for_inputs + [ android_sdk_jar ]
+        inputs = [ android_sdk_jar ]
       } else if (invoker.enable_errorprone) {
         script = "//build/android/gyp/errorprone.py"
-        inputs = javac_paths_for_inputs
+        inputs = []
+
+        # errorprone.py uses the native-image only with Chromium's plugin.
+        if (build_with_chromium) {
+          inputs +=
+              native_image_java_paths_for_inputs + [ _error_prone_native_image ]
+        }
+        if (!use_native_image_inputs || !build_with_chromium) {
+          # Local actions on other hosts run Error Prone on the JVM.
+          inputs += java_paths_for_inputs
+        }
       } else {
         script = "//build/android/gyp/compile_java.py"
         inputs = javac_paths_for_inputs
@@ -3048,7 +3062,7 @@ if (enable_java_templates) {
         inputs += _java_srcjars
       }
 
-      inputs += invoker.source_files + [ _build_config ] + java_paths_for_inputs
+      inputs += invoker.source_files + [ _build_config ]
 
       if (invoker.source_files != []) {
         inputs += [ invoker.target_sources_file ]
@@ -3101,10 +3115,12 @@ if (enable_java_templates) {
                               !_has_annotation_processors
         outputs += [ invoker.generated_jar_path ]
         if (_use_turbine_binary) {
-          # Still requires java_paths_for_inputs for lib/ct.sym.
+          # The native-image needs no JRE.
+          inputs += native_image_java_paths_for_inputs
           _turbine_path = "//third_party/turbine/cipd/turbine"
           _turbine_flag = "--turbine-binary-path"
         } else {
+          inputs += java_paths_for_inputs
           _turbine_path = "//third_party/turbine/cipd/turbine.jar"
           _turbine_flag = "--turbine-jar-path"
           args += [
@@ -3132,6 +3148,9 @@ if (enable_java_templates) {
         # checkout_android_prebuilts_build_tools=True in .gclient.
         if (enable_kythe_annotations && !invoker.enable_errorprone) {
           args += [ "--enable-kythe-annotations" ]
+
+          # The kythe extractor runs on the JVM.
+          inputs += java_paths_for_inputs
         }
       }
       if (treat_warnings_as_errors) {
@@ -3181,9 +3200,6 @@ if (enable_java_templates) {
           # https://source.chromium.org/chromium/chromium/src/+/main:tools/android/errorprone_plugin/src/org/chromium/tools/errorprone/plugin/UseNetworkAnnotations.java;l=84;drc=dfd88085261b662a5c0a1abea1a3b120b08e8e48
           inputs += [ "//tools/android/errorprone_plugin/OWNERS" ]
           args += [ "--has-chromium-plugin" ]
-          if (host_os == "linux" && host_cpu == "x64") {
-            inputs += [ _error_prone_native_image ]
-          }
         }
         if (defined(testonly) && testonly) {
           args += [ "--testonly" ]
@@ -4677,11 +4693,9 @@ template("create_android_app_bundle_module") {
   #       through @FileArg() references (see below) and will be listed in the
   #       generated depfile instead.
   _inputs = [
-    invoker.build_config,
-    invoker.app_bundle_build_config,
-    _signflinger_jar_path,
-    _signflinger_binary_path,
-  ]
+              invoker.build_config,
+              invoker.app_bundle_build_config,
+            ] + _signflinger_inputs
   _outputs = [ invoker.module_zip_path ]
   _args = [
     "--format=bundle-module",
@@ -4789,7 +4803,7 @@ template("create_android_app_bundle_module") {
 
   action_with_pydeps(target_name) {
     deps = _deps
-    inputs = java_paths_for_inputs + _inputs
+    inputs = _inputs
     outputs = _outputs
     script = _script
     depfile = "$target_gen_dir/$target_name.d"
