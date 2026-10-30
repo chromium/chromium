@@ -152,22 +152,51 @@ suite('NewTabPageLeftHandSideTest', () => {
     assertTrue(iframe.classList.contains('ready'));
   });
 
-  test('updates expanded width and ready state on NTP_LHS_READY', async () => {
-    await createLeftHandSide();
+  test(
+      'keeps rail folded while updating expanded width on NTP_LHS_READY in' +
+          ' hybrid mode',
+      async () => {
+        await createLeftHandSide();
 
-    postLhsMessage({
-      type: NtpLhsMessageType.NTP_LHS_READY,
-      width: 320,
-    });
-    await microtasksFinished();
+        postLhsMessage({
+          type: NtpLhsMessageType.NTP_LHS_READY,
+          width: 320,
+        });
+        await microtasksFinished();
 
-    const iframe = getExpandedIframe();
-    assertTrue(!!iframe);
-    assertEquals('320px', iframe.style.width);
-    assertFalse(iframe.hidden);
-    assertFalse(iframe.inert);
-    assertTrue(iframe.classList.contains('ready'));
-  });
+        const folded =
+            leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+        const iframe = getExpandedIframe();
+        assertTrue(!!iframe);
+        assertEquals('320px', iframe.style.width);
+        assertFalse(folded.hidden);
+        assertTrue(iframe.hidden);
+        assertFalse(iframe.inert);
+        assertTrue(iframe.classList.contains('ready'));
+      });
+
+  test(
+      'expands once NTP_LHS_READY arrives if clicked before ready',
+      async () => {
+        await createLeftHandSide();
+
+        const folded =
+            leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+        const iframe = getExpandedIframe()!;
+
+        folded.click();
+        await microtasksFinished();
+        assertFalse(folded.hidden);
+        assertTrue(iframe.hidden);
+
+        postLhsMessage({
+          type: NtpLhsMessageType.NTP_LHS_READY,
+          width: 320,
+        });
+        await microtasksFinished();
+        assertTrue(folded.hidden);
+        assertFalse(iframe.hidden);
+      });
 
   test('falls back to default width on invalid or missing width', async () => {
     await createLeftHandSide();
@@ -189,7 +218,7 @@ suite('NewTabPageLeftHandSideTest', () => {
       await microtasksFinished();
 
       assertEquals('261px', iframe.style.width);
-      assertFalse(iframe.hidden);
+      assertTrue(iframe.hidden);
     }
   });
 
@@ -247,6 +276,7 @@ suite('NewTabPageLeftHandSideTest', () => {
         leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
 
     postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY});
+    folded.click();
     await microtasksFinished();
     assertFalse(expanded.hidden);
     assertTrue(folded.hidden);
@@ -267,7 +297,6 @@ suite('NewTabPageLeftHandSideTest', () => {
         leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
 
     postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY});
-    postLhsMessage({type: NtpLhsMessageType.NTP_LHS_CLOSE});
     await microtasksFinished();
     assertTrue(expanded.hidden);
     assertFalse(folded.hidden);
@@ -288,7 +317,6 @@ suite('NewTabPageLeftHandSideTest', () => {
         leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
 
     postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY});
-    postLhsMessage({type: NtpLhsMessageType.NTP_LHS_CLOSE});
     await microtasksFinished();
     assertTrue(expanded.hidden);
     assertFalse(folded.hidden);
@@ -329,7 +357,6 @@ suite('NewTabPageLeftHandSideTest', () => {
                 '#folded')!;
 
         postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY});
-        postLhsMessage({type: NtpLhsMessageType.NTP_LHS_CLOSE});
         await microtasksFinished();
         assertTrue(expanded.hidden);
         assertFalse(folded.hidden);

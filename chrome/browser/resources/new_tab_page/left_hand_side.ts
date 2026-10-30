@@ -160,7 +160,6 @@ export class LeftHandSideElement extends CrLitElement {
             data.width :
             DEFAULT_EXPANDED_LHS_WIDTH_PX;
         this.isExpandedReady_ = true;
-        this.isExpanded_ = true;
         break;
       }
       case NtpLhsMessageType.NTP_LHS_CLOSE: {
