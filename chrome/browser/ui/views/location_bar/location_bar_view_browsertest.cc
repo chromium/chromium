@@ -432,6 +432,50 @@ IN_PROC_BROWSER_TEST_F(SecurityIndicatorTest, CheckIndicatorText) {
       location_bar_view->location_icon_view()->GetText(), "not secure"));
 }
 
+// Tests that `LocationBarView::Update()` animates security indicator changes on
+// in-tab navigations (`contents == nullptr`), suppresses the animation on tab
+// switches (`contents != nullptr`), and invalidates layout.
+IN_PROC_BROWSER_TEST_F(SecurityIndicatorTest,
+                       UpdateAnimationAndLayoutOnNavigationAndTabSwitch) {
+  net::EmbeddedTestServer secure_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  secure_server.SetSSLConfig(
+      net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
+  secure_server.AddDefaultHandlers(GetChromeTestDataDir());
+  ASSERT_TRUE(secure_server.Start());
+  const GURL mock_secure_url = secure_server.GetURL("a.test", "/empty.html");
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL mock_nonsecure_url =
+      embedded_test_server()->GetURL("example.test", "/empty.html");
+
+  LocationBarView* location_bar_view = GetLocationBarView();
+  LocationIconView* icon_view = location_bar_view->location_icon_view();
+
+  // In-tab navigation from SECURE to WARNING (`Update(nullptr)`) animates the
+  // security chip.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), mock_secure_url));
+  EXPECT_FALSE(icon_view->is_animating_label());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), mock_nonsecure_url));
+  EXPECT_TRUE(icon_view->ShouldShowLabel());
+  EXPECT_TRUE(icon_view->is_animating_label());
+
+  // Open a second SECURE tab, then switch back to the WARNING tab
+  // (`Update(contents)` with non-null `contents`): animation is suppressed and
+  // layout is invalidated.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), mock_secure_url, WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  EXPECT_FALSE(icon_view->ShouldShowLabel());
+  views::test::RunScheduledLayout(location_bar_view);
+  EXPECT_FALSE(location_bar_view->needs_layout());
+
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+  EXPECT_TRUE(icon_view->ShouldShowLabel());
+  EXPECT_FALSE(icon_view->is_animating_label());
+  EXPECT_TRUE(location_bar_view->needs_layout());
+}
+
 class LocationBarViewGeolocationBackForwardCacheBrowserTest
     : public LocationBarViewBrowserTest {
  public:
