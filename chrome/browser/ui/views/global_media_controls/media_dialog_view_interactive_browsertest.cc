@@ -60,7 +60,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/controls/combobox/combobox.h"
@@ -199,7 +199,7 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
         base::FilePath(
             FILE_PATH_LITERAL("video-with-different-metadata.html")));
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::kNewForegroundTab,
+        browser(), url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 

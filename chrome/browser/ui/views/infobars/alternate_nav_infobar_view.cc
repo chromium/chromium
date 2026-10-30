@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/omnibox/alternate_nav_infobar_delegate.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar_with_styled_label.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"

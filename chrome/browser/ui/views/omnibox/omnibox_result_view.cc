@@ -38,8 +38,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
@@ -592,7 +592,7 @@ void OmniboxResultView::ButtonPressed(OmniboxPopupSelection::LineState state,
                                       const ui::Event& event) {
   popup_view_->controller()->edit_model()->OpenSelection(
       OmniboxPopupSelection(model_index_, state), event.time_stamp(),
-      WindowOpenDisposition::kCurrentTab,
+      ui::mojom::WindowOpenDisposition::kCurrentTab,
       /*via_keyboard=*/event.IsKeyEvent());
   if (state ==
       OmniboxPopupSelection::LineState::kFocusedButtonRemoveSuggestion) {
@@ -640,9 +640,10 @@ bool OmniboxResultView::OnMouseDragged(const ui::MouseEvent& event) {
 
 void OmniboxResultView::OnMouseReleased(const ui::MouseEvent& event) {
   if (event.IsOnlyMiddleMouseButton() || event.IsOnlyLeftMouseButton()) {
-    const auto disposition = event.IsOnlyLeftMouseButton()
-                                 ? WindowOpenDisposition::kCurrentTab
-                                 : WindowOpenDisposition::kNewBackgroundTab;
+    const auto disposition =
+        event.IsOnlyLeftMouseButton()
+            ? ui::mojom::WindowOpenDisposition::kCurrentTab
+            : ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
     popup_view_->controller()->edit_model()->OpenSelection(
         OmniboxPopupSelection(model_index_), event.time_stamp(), disposition);
   }

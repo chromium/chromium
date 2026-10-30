@@ -26,7 +26,7 @@
 #include "content/public/common/referrer.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -257,7 +257,8 @@ TEST_F(IOSPromoBubbleViewTest, AcceptOpensUrl_QRCode) {
         EXPECT_EQ(params.url.path(), "/chrome/go-mobile/");
         EXPECT_TRUE(params.url.query().contains("ios-campaign"));
         EXPECT_TRUE(params.url.query().contains("android-campaign"));
-        EXPECT_EQ(params.disposition, WindowOpenDisposition::kNewForegroundTab);
+        EXPECT_EQ(params.disposition,
+                  ui::mojom::WindowOpenDisposition::kNewForegroundTab);
       });
 
   // Click Accept. Expect it to return true (close bubble).

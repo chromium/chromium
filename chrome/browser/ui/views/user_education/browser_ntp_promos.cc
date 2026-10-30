@@ -35,8 +35,8 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/extension_urls.h"
 #include "ui/actions/actions.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 using user_education::NtpPromoContent;
 using user_education::NtpPromoSpecification;
@@ -77,7 +77,7 @@ void InvokeExtensionsPromo(ContextPtr context) {
   NavigateParams params(
       context->AsA<BrowserUserEducationContext>()->GetBrowserView().browser(),
       url_with_utm, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::kCurrentTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
   Navigate(&params);
 }
 

@@ -83,7 +83,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
@@ -208,7 +208,7 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
 
   void AddTabToBrowser(const GURL& tab_url) {
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), tab_url, WindowOpenDisposition::kNewForegroundTab,
+        browser(), tab_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 

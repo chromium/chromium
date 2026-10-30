@@ -62,7 +62,7 @@
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
@@ -419,7 +419,7 @@ class PageSpecificSiteDataDialogWithRelatedWebAppsInteractiveUiTest
                           apps::AppLaunchParams(
                               app_id,
                               apps::LaunchContainer::kLaunchContainerTab,
-                              WindowOpenDisposition::kCurrentTab,
+                              ui::mojom::WindowOpenDisposition::kCurrentTab,
                               apps::LaunchSource::kFromTest),
                           base::DoNothing());
                     },

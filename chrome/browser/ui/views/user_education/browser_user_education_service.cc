@@ -152,9 +152,9 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/vector_icons.h"
@@ -395,7 +395,8 @@ CreateNavigationAction(GURL target) {
          user_education::FeaturePromoHandle promo_handle) {
         auto* browser = GetBrowser(ctx);
         NavigateParams params(browser, url, ui::PAGE_TRANSITION_LINK);
-        params.disposition = WindowOpenDisposition::kNewForegroundTab;
+        params.disposition =
+            ui::mojom::WindowOpenDisposition::kNewForegroundTab;
         Navigate(&params);
       },
       std::move(target));
@@ -793,7 +794,7 @@ void MaybeRegisterChromeFeaturePromos(
                                           chrome::ChromeUINewTabPageURLAsGURL(),
                                           ui::PAGE_TRANSITION_LINK);
                     params.disposition =
-                        WindowOpenDisposition::kNewForegroundTab;
+                        ui::mojom::WindowOpenDisposition::kNewForegroundTab;
                     Navigate(&params);
                   }
                 }

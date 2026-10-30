@@ -42,7 +42,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "net/cert/cert_status_flags.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -915,7 +915,7 @@ WebUIReadOnlyOmnibox::OnKey(
         }
       }
 
-      WindowOpenDisposition disposition =
+      ui::mojom::WindowOpenDisposition disposition =
           searchbox::ComputeOpenDispositionFromModifiersAndLogToUma(
               shift, control, alt, command);
       if (!control) {
@@ -999,7 +999,8 @@ WebUIReadOnlyOmnibox::OnKey(
         if (selection.IsButtonFocused()) {
           controller()->edit_model()->OpenSelection(
               selection, base::TimeTicks::Now(),
-              WindowOpenDisposition::kCurrentTab, /*via_keyboard=*/true);
+              ui::mojom::WindowOpenDisposition::kCurrentTab,
+              /*via_keyboard=*/true);
         }
       }
       break;

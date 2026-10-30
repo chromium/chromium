@@ -29,7 +29,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace {
 // Returns  true if the url is a url that should be opened after a browser is
@@ -44,7 +44,7 @@ bool ShouldOpenUrlAfterBrowserCreation(const GURL& url) {
 // not replace existing tabs.
 void OpenNewTabInBrowser(const GURL& url, BrowserWindowInterface* browser) {
   if (browser) {
-    browser->OpenGURL(url, WindowOpenDisposition::kSingletonTab);
+    browser->OpenGURL(url, ui::mojom::WindowOpenDisposition::kSingletonTab);
   }
 }
 

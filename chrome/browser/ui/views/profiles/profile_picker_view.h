@@ -21,6 +21,7 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -91,7 +92,7 @@ class ProfilePickerView
       content::WebContents* source,
       std::unique_ptr<content::WebContents> new_contents,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override;

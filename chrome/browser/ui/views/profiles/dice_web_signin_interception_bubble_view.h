@@ -17,6 +17,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace views {
@@ -128,7 +129,7 @@ class DiceWebSigninInterceptionBubbleView
       content::WebContents* source,
       std::unique_ptr<content::WebContents> new_contents,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override;

@@ -20,7 +20,7 @@
 #include "components/infobars/core/infobar_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/text_constants.h"
@@ -44,7 +44,7 @@ class FakeInfoBarManager : public infobars::InfoBarManager {
 
   int GetActiveEntryID() override { return 0; }
   void OpenURL(const GURL& url,
-               WindowOpenDisposition disposition,
+               ui::mojom::WindowOpenDisposition disposition,
                const std::string& text_fragment) override {}
 };
 
@@ -142,7 +142,7 @@ class InlineSubstitutionTestDelegate : public FakeConfirmInfoBarDelegate {
 
   bool InlineSubstitutionLinkClicked(
       size_t index,
-      WindowOpenDisposition disposition) override {
+      ui::mojom::WindowOpenDisposition disposition) override {
     if (clicked_index_out_) {
       *clicked_index_out_ = index;
     }

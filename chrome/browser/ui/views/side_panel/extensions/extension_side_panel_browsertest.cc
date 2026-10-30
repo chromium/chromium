@@ -79,9 +79,9 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/actions/actions.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
@@ -206,7 +206,7 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
     int tab_count = browser()->GetTabStripModel()->count();
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL("http://example.com"),
-        WindowOpenDisposition::kNewForegroundTab,
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     ASSERT_EQ(tab_count + 1, browser()->GetTabStripModel()->count());
   }
@@ -2930,7 +2930,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionCloseSidePanelBrowserTest,
 
   // Open a second tab.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
+      browser(), GURL("about:blank"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* second_tab_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
@@ -3081,7 +3082,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionOnOpenedEventSidePanelBrowserTest,
 
   // Open a new tab, which hides the panel.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
+      browser(), GURL("about:blank"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_FALSE(side_panel_ui->IsSidePanelEntryShowing(extension_key));
 
@@ -3226,7 +3228,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionOnClosedEventSidePanelBrowserTest,
                        OnClosedEvent_TabClosed) {
   // Open a new tab first to prevent the browser from shutting down.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
+      browser(), GURL("about:blank"),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_EQ(2, browser()->GetTabStripModel()->count());
 

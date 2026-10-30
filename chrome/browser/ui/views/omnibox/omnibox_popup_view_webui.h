@@ -18,7 +18,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -49,7 +49,8 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView,
   void GetPopupAccessibleNodeData(ui::AXNodeData* node_data) const override;
   void StepSelection(OmniboxPopupSelection::Direction direction,
                      OmniboxPopupSelection::Step step) override;
-  void OpenCurrentSelection(WindowOpenDisposition disposition) override;
+  void OpenCurrentSelection(
+      ui::mojom::WindowOpenDisposition disposition) override;
   bool IsSelectionPopupControlled() const override;
 
   // OmniboxEditModel::Observer:

@@ -30,8 +30,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -643,7 +643,7 @@ void OmniboxSuggestionButtonRowView::ButtonPressed(
         match().IsToolbelt()) {
       popup_view_->controller()->edit_model()->SetPopupSelection(selection);
     }
-    WindowOpenDisposition disposition =
+    ui::mojom::WindowOpenDisposition disposition =
         ui::DispositionFromEventFlags(event.flags());
     popup_view_->controller()->edit_model()->OpenSelection(
         selection, event.time_stamp(), disposition,

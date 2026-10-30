@@ -24,7 +24,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/buildflags/buildflags.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/window_controller.h"
@@ -238,9 +238,9 @@ IN_PROC_BROWSER_TEST_F(SidePanelWebUIViewTest,
 
   // Create tabs, and new window for testing.
   browser()->OpenGURL(GURL(kTestUrl1ForThisBrowser),
-                      WindowOpenDisposition::kCurrentTab);
+                      ui::mojom::WindowOpenDisposition::kCurrentTab);
   browser()->OpenGURL(GURL(kTestUrl2ForThisBrowser),
-                      WindowOpenDisposition::kNewBackgroundTab);
+                      ui::mojom::WindowOpenDisposition::kNewBackgroundTab);
   EXPECT_EQ(browser()->GetTabStripModel()->count(), 2);
   EXPECT_EQ(browser()->GetTabStripModel()->active_index(), 0);
   content::WaitForLoadStop(
@@ -267,9 +267,9 @@ IN_PROC_BROWSER_TEST_F(SidePanelWebUIViewTest,
   BrowserWindowInterface* new_browser = CreateBrowser(browser()->GetProfile());
   EXPECT_TRUE(new_browser);
   new_browser->OpenGURL(GURL(kTestUrl1ForNewBrowser),
-                        WindowOpenDisposition::kCurrentTab);
+                        ui::mojom::WindowOpenDisposition::kCurrentTab);
   new_browser->OpenGURL(GURL(kTestUrl2ForNewBrowser),
-                        WindowOpenDisposition::kNewBackgroundTab);
+                        ui::mojom::WindowOpenDisposition::kNewBackgroundTab);
   EXPECT_EQ(new_browser->GetTabStripModel()->count(), 2);
   EXPECT_EQ(new_browser->GetTabStripModel()->active_index(), 0);
   content::WaitForLoadStop(

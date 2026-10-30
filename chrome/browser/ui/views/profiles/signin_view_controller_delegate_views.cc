@@ -46,8 +46,8 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/animating_layout_manager.h"
@@ -332,7 +332,7 @@ content::WebContents* SigninViewControllerDelegateViews::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {
@@ -725,7 +725,7 @@ SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
     content::OpenURLParams params =
         content::OpenURLParams::CreateBrowserInitiated(
             active_contents->GetVisibleURL(),
-            WindowOpenDisposition::kCurrentTab,
+            ui::mojom::WindowOpenDisposition::kCurrentTab,
             ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
 
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

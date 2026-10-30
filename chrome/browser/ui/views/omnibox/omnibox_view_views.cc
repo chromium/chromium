@@ -121,8 +121,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
@@ -2235,7 +2235,7 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
         }
       }
 
-      WindowOpenDisposition disposition =
+      ui::mojom::WindowOpenDisposition disposition =
           searchbox::ComputeOpenDispositionFromModifiersAndLogToUma(
               shift, control, alt, command);
       if (controller()->IsPopupOpen() && !control) {
@@ -2380,7 +2380,8 @@ bool OmniboxViewViews::HandleKeyEvent(views::Textfield* textfield,
             controller()->edit_model()->GetPopupSelection();
         if (selection.IsButtonFocused()) {
           controller()->edit_model()->OpenSelection(
-              selection, event.time_stamp(), WindowOpenDisposition::kCurrentTab,
+              selection, event.time_stamp(),
+              ui::mojom::WindowOpenDisposition::kCurrentTab,
               /*via_keyboard=*/true);
           return true;
         }
