@@ -18,7 +18,7 @@
 #include "components/webapps/browser/webapps_client.h"
 #include "components/webapps/common/constants.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/text_elider.h"
 
@@ -165,11 +165,11 @@ void PwaBottomSheetController::ShowBottomSheetInstaller(
   // is still shown.
   ScopedJavaLocalRef<jstring> j_url = ConvertUTF16ToJavaString(
       env, url_formatter::FormatUrlForSecurityDisplay(
-               web_app_banner_data_.manifest().start_url,
+               web_app_banner_data_.manifest().start_url(),
                url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
 
   std::u16string elided_description = gfx::TruncateString(
-      web_app_banner_data_.manifest().description.value_or(u""),
+      web_app_banner_data_.manifest().description().value_or(u""),
       webapps::kMaximumDescriptionLength, gfx::CHARACTER_BREAK);
   ScopedJavaLocalRef<jstring> j_description =
       ConvertUTF16ToJavaString(env, elided_description);

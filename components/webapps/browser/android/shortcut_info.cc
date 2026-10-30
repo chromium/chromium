@@ -14,10 +14,8 @@
 #include "build/android_buildflags.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "components/webapps/browser/features.h"
-#include "shortcut_info.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
-#include "third_party/blink/public/common/manifest/manifest_util.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace webapps {
 
@@ -67,7 +65,7 @@ ShortcutInfo::~ShortcutInfo() = default;
 std::unique_ptr<ShortcutInfo> ShortcutInfo::CreateShortcutInfo(
     const GURL& url,
     const GURL& manifest_url,
-    const blink::mojom::Manifest& manifest,
+    const blink::Manifest& manifest,
     const mojom::WebPageMetadata& web_page_metadata,
     const GURL& primary_icon_url,
     bool primary_icon_maskable) {
@@ -147,12 +145,9 @@ void ShortcutInfo::UpdateFromWebPageMetadata(
   }
 }
 
-void ShortcutInfo::UpdateFromManifest(const blink::mojom::Manifest& manifest) {
-  if (blink::IsEmptyManifest(manifest)) {
-    return;
-  }
-  std::u16string s_name = manifest.short_name.value_or(std::u16string());
-  std::u16string f_name = manifest.name.value_or(std::u16string());
+void ShortcutInfo::UpdateFromManifest(const blink::Manifest& manifest) {
+  std::u16string s_name = manifest.short_name().value_or(std::u16string());
+  std::u16string f_name = manifest.name().value_or(std::u16string());
   if (!s_name.empty() || !f_name.empty()) {
     short_name = s_name;
     name = f_name;
@@ -163,28 +158,29 @@ void ShortcutInfo::UpdateFromManifest(const blink::mojom::Manifest& manifest) {
     user_title = short_name;
   }
 
-  if (manifest.description.has_value()) {
-    description = manifest.description.value();
+  if (manifest.description().has_value()) {
+    description = manifest.description().value();
   }
 
   // Set the url based on the manifest value, if any.
-  if (manifest.start_url.is_valid()) {
-    url = manifest.start_url;
+  if (manifest.start_url().is_valid()) {
+    url = manifest.start_url();
   }
 
-  if (manifest.scope.is_valid()) {
-    scope = manifest.scope;
+  if (manifest.scope().is_valid()) {
+    scope = manifest.scope();
   }
 
-  if (manifest.id.is_valid()) {
-    manifest_id = manifest.id;
+  if (manifest.id().is_valid()) {
+    manifest_id = manifest.id();
   }
 
   // Set the display based on the manifest value, if any.
-  if (manifest.display != DisplayMode::kUndefined)
-    display = manifest.display;
+  if (manifest.display() != DisplayMode::kUndefined) {
+    display = manifest.display();
+  }
 
-  for (const auto& item : manifest.display_override) {
+  for (const auto& item : manifest.display_override()) {
     if (item.display() == DisplayMode::kBrowser ||
         item.display() == DisplayMode::kMinimalUi ||
         item.display() == DisplayMode::kStandalone ||
@@ -199,42 +195,47 @@ void ShortcutInfo::UpdateFromManifest(const blink::mojom::Manifest& manifest) {
       display == DisplayMode::kMinimalUi) {
     // Set the orientation based on the manifest value, or ignore if the display
     // mode is different from 'standalone', 'fullscreen' or 'minimal-ui'.
-    if (manifest.orientation !=
+    if (manifest.orientation() !=
         device::mojom::ScreenOrientationLockType::DEFAULT) {
       // TODO(mlamouri): Send a message to the developer console if we ignored
       // Manifest orientation because display property is not set.
-      orientation = manifest.orientation;
+      orientation = manifest.orientation();
     }
   }
 
   // Set the theme and background colors based on the manifest values, if any.
-  theme_color = manifest.theme_color;
-  background_color = manifest.background_color;
+  theme_color = manifest.theme_color();
+  background_color = manifest.background_color();
 
   // Set the icon urls based on the icons in the manifest, if any.
   icon_urls.clear();
-  for (const auto& icon : manifest.icons)
+  for (const auto& icon : manifest.icons()) {
     icon_urls.push_back(icon.src.spec());
+  }
 
   // Set the screenshots urls based on the screenshots in the manifest, if any.
   screenshot_urls.clear();
-  for (const auto& screenshot : manifest.screenshots)
-    screenshot_urls.push_back(screenshot->image.src);
+  for (const auto& screenshot : manifest.screenshots()) {
+    screenshot_urls.push_back(screenshot.image.src);
+  }
 
-  if (manifest.share_target) {
+  if (manifest.share_target()) {
     share_target = ShareTarget();
-    share_target->action = manifest.share_target->action;
-    share_target->method = manifest.share_target->method;
-    share_target->enctype = manifest.share_target->enctype;
-    if (manifest.share_target->params.text)
-      share_target->params.text = *manifest.share_target->params.text;
-    if (manifest.share_target->params.title)
-      share_target->params.title = *manifest.share_target->params.title;
-    if (manifest.share_target->params.url)
-      share_target->params.url = *manifest.share_target->params.url;
+    share_target->action = manifest.share_target()->action;
+    share_target->method = manifest.share_target()->method;
+    share_target->enctype = manifest.share_target()->enctype;
+    if (manifest.share_target()->params.text) {
+      share_target->params.text = *manifest.share_target()->params.text;
+    }
+    if (manifest.share_target()->params.title) {
+      share_target->params.title = *manifest.share_target()->params.title;
+    }
+    if (manifest.share_target()->params.url) {
+      share_target->params.url = *manifest.share_target()->params.url;
+    }
 
     for (blink::Manifest::FileFilter manifest_share_target_file :
-         manifest.share_target->params.files) {
+         manifest.share_target()->params.files) {
       ShareTargetParamsFile share_target_params_file;
       share_target_params_file.name = manifest_share_target_file.name;
       share_target_params_file.accept = manifest_share_target_file.accept;
@@ -242,7 +243,7 @@ void ShortcutInfo::UpdateFromManifest(const blink::mojom::Manifest& manifest) {
     }
   }
 
-  shortcut_items = manifest.shortcuts;
+  shortcut_items = manifest.shortcuts();
   if (shortcut_items.size() > kMaxShortcuts)
     shortcut_items.resize(kMaxShortcuts);
 
@@ -273,12 +274,11 @@ void ShortcutInfo::UpdateFromManifest(const blink::mojom::Manifest& manifest) {
 
   // Set the dark theme and dark background colors based on the manifest values,
   // if any.
-  dark_theme_color = manifest.dark_theme_color;
-  dark_background_color = manifest.dark_background_color;
+  dark_theme_color = manifest.dark_theme_color();
+  dark_background_color = manifest.dark_background_color();
 }
 
-void ShortcutInfo::UpdateBestSplashIcon(
-    const blink::mojom::Manifest& manifest) {
+void ShortcutInfo::UpdateBestSplashIcon(const blink::Manifest& manifest) {
   ideal_splash_image_size_in_px =
       WebappsIconUtils::GetIdealSplashImageSizeInPx();
   minimum_splash_image_size_in_px =
@@ -290,11 +290,11 @@ void ShortcutInfo::UpdateBestSplashIcon(
   params.ideal_icon_size_in_px = ideal_splash_image_size_in_px;
   params.minimum_icon_size_in_px = minimum_splash_image_size_in_px;
   params.purpose = blink::mojom::ManifestImageResource_Purpose::MASKABLE;
-  auto result =
-      blink::ManifestIconSelector::FindBestMatchingIcon(manifest.icons, params);
+  auto result = blink::ManifestIconSelector::FindBestMatchingIcon(
+      manifest.icons(), params);
   if (!result) {
     params.purpose = blink::mojom::ManifestImageResource_Purpose::ANY;
-    result = blink::ManifestIconSelector::FindBestMatchingIcon(manifest.icons,
+    result = blink::ManifestIconSelector::FindBestMatchingIcon(manifest.icons(),
                                                                params);
   }
   if (result) {

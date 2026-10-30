@@ -152,20 +152,18 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
     return;
   }
 
-  blink::mojom::ManifestPtr mojo_manifest =
-      blink::ManifestToMojom(*data.manifest);
   if (!webapps::WebappsUtils::AreWebManifestUrlsWebApkCompatible(
-          *mojo_manifest)) {
+          *data.manifest)) {
     return;
   }
 
-  CHECK(!mojo_manifest->id.is_empty());
+  CHECK(!data.manifest->id().is_empty());
 
   // If there isn't an existing manifest ID, check if either manifest URL or
   // start URL are the same. If neither of them are the same, we treat the
   // manifest as one of another WebAPK.
   if (web_manifest_id_.is_empty() && web_manifest_url_ != *data.manifest_url &&
-      start_url_ != mojo_manifest->start_url) {
+      start_url_ != data.manifest->start_url()) {
     return;
   }
 
@@ -173,16 +171,16 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
   // different from the current one, continue observing as the id is the
   // identity for the application. We will treat the manifest with different id
   // as the one of another WebAPK.
-  if (!web_manifest_id_.is_empty() && web_manifest_id_ != mojo_manifest->id) {
+  if (!web_manifest_id_.is_empty() && web_manifest_id_ != data.manifest->id()) {
     return;
   }
 
-  info_.UpdateFromManifest(*mojo_manifest);
+  info_.UpdateFromManifest(*data.manifest);
   info_.manifest_url = *data.manifest_url;
   info_.best_primary_icon_url = *data.primary_icon_url;
   info_.is_primary_icon_maskable = data.has_maskable_primary_icon;
   primary_icon_ = *data.primary_icon;
-  info_.UpdateBestSplashIcon(*mojo_manifest);
+  info_.UpdateBestSplashIcon(*data.manifest);
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());

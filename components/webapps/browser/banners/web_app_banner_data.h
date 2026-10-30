@@ -10,7 +10,7 @@
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
@@ -21,11 +21,11 @@ namespace webapps {
 struct WebAppBannerData {
   WebAppBannerData() = delete;
   WebAppBannerData(ManifestId manifest_id,
-                   blink::mojom::ManifestPtr manifest,
+                   blink::Manifest manifest,
                    mojom::WebPageMetadataPtr metadata,
                    GURL manifest_url);
   WebAppBannerData(ManifestId manifest_id,
-                   const blink::mojom::Manifest& manifest,
+                   const blink::Manifest& manifest,
                    const mojom::WebPageMetadata& metadata,
                    GURL manifest_url);
   WebAppBannerData(const WebAppBannerData&);
@@ -33,7 +33,7 @@ struct WebAppBannerData {
 
   const std::u16string& GetAppName() const;
 
-  const blink::mojom::Manifest& manifest() const;
+  const blink::Manifest& manifest() const;
 
   const mojom::WebPageMetadata& web_page_metadata() const;
 
@@ -57,9 +57,8 @@ struct WebAppBannerData {
   std::vector<Screenshot> screenshots;
 
  private:
-  // The manifest object. This is never null, it will instead be an empty
-  // manifest so callers don't have to worry about null checks.
-  const blink::mojom::ManifestPtr manifest_ptr;
+  // The manifest object.
+  const blink::Manifest manifest_;
 
   // The web page metadata object. This is never null, it will instead be
   // empty so callers don't have to worry about null checks.

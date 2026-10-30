@@ -27,7 +27,6 @@
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/app_banner/app_banner.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-forward.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -113,7 +112,7 @@ class AppBannerManager final : public content::WebContentsObserver {
     // Returns if `DoNativeAppInstallableCheck` should be called given the
     // manifest. Only can return `true` on Android.
     virtual bool ShouldDoNativeAppCheck(
-        const blink::mojom::Manifest& manifest) const = 0;
+        const blink::Manifest& manifest) const = 0;
 
     using NativeCheckCallback = base::OnceCallback<void(
         base::expected<NativeAppBannerData, InstallableStatusCode>)>;
@@ -122,17 +121,16 @@ class AppBannerManager final : public content::WebContentsObserver {
     // of the public interface to keep all control flow in this class.
     // Note: the `callback` can be called synchronously on errors and in
     // tests.
-    virtual void DoNativeAppInstallableCheck(
-        content::WebContents* web_contents,
-        const GURL& validated_url,
-        const blink::mojom::Manifest& manifest,
-        NativeCheckCallback callback) = 0;
+    virtual void DoNativeAppInstallableCheck(content::WebContents* web_contents,
+                                             const GURL& validated_url,
+                                             const blink::Manifest& manifest,
+                                             NativeCheckCallback callback) = 0;
 
     virtual void OnWebAppInstallableCheckedNoErrors(
         const ManifestId& manifest_id) = 0;
 
     virtual base::expected<void, InstallableStatusCode>
-    CanRunWebAppInstallableChecks(const blink::mojom::Manifest& manifest) = 0;
+    CanRunWebAppInstallableChecks(const blink::Manifest& manifest) = 0;
 
     // Returns whether installation of apps from |platform| is supported on the
     // current device and the platform delivers apps considered replacements for
@@ -346,8 +344,7 @@ class AppBannerManager final : public content::WebContentsObserver {
 
   // Returns whether the site would prefer a related non-web app be installed
   // instead of the PWA or a related non-web app is already installed.
-  bool ShouldDeferToRelatedNonWebApp(
-      const blink::mojom::Manifest& manifest) const;
+  bool ShouldDeferToRelatedNonWebApp(const blink::Manifest& manifest) const;
 
   // Return a string identifying this app for metrics. If no page data is
   // available then std::nullopt is returned.

@@ -16,7 +16,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -75,16 +75,16 @@ bool WebappsUtils::IsWebApkInstalled(const GURL& url) {
 
 // static
 bool WebappsUtils::AreWebManifestUrlsWebApkCompatible(
-    const blink::mojom::Manifest& manifest) {
-  for (const auto& icon : manifest.icons) {
+    const blink::Manifest& manifest) {
+  for (const auto& icon : manifest.icons()) {
     if (!IsUrlWebApkCompatible(icon.src))
       return false;
   }
 
   // Do not check "related_applications" URLs because they are not used by
   // WebAPKs.
-  return IsUrlWebApkCompatible(manifest.start_url) &&
-         IsUrlWebApkCompatible(manifest.scope);
+  return IsUrlWebApkCompatible(manifest.start_url()) &&
+         IsUrlWebApkCompatible(manifest.scope());
 }
 
 // static

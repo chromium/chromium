@@ -14,6 +14,10 @@
 #error "Android implementation should not be included for non-Android builds."
 #endif
 
+namespace blink {
+class Manifest;
+}
+
 namespace webapps {
 
 class WebappsClientAndroid : public ChromeWebappsClient {
@@ -52,7 +56,7 @@ class WebappsClientAndroid : public ChromeWebappsClient {
                                      const GURL& site_url) const override;
 
   void OnManifestSeen(content::BrowserContext* browsing_context,
-                      const blink::mojom::Manifest& manifest) const override;
+                      const blink::Manifest& manifest) const override;
 
   // TODO(crbug.com/40269982): Implement.
   void SaveInstallationDismissedForMl(content::BrowserContext* browsing_context,

@@ -183,26 +183,24 @@ mojom::WebPageMetadataPtr BuildDefaultMetadata() {
 }
 
 // Builds WebAPK compatible blink::Manifest.
-blink::mojom::ManifestPtr BuildWebAPKManifest() {
+blink::Manifest BuildWebAPKManifest() {
   GURL start_url = GURL(kDefaultStartUrl);
-  auto manifest = blink::mojom::Manifest::New();
-  manifest->name = kDefaultManifestName;
-  manifest->short_name = kDefaultManifestShortName;
-  manifest->start_url = start_url;
-  manifest->scope = start_url.GetWithoutFilename();
-  manifest->has_valid_specified_start_url = true;
-  manifest->id = start_url.GetWithoutRef();
-  manifest->display = kDefaultManifestDisplayMode;
-
   blink::Manifest::ImageResource primary_icon;
   primary_icon.type = u"image/png";
   primary_icon.sizes.push_back(gfx::Size(144, 144));
   primary_icon.purpose.push_back(
       blink::mojom::ManifestImageResource_Purpose::ANY);
   primary_icon.src = GURL(kDefaultIconUrl);
-  manifest->icons.push_back(primary_icon);
 
-  return manifest;
+  return std::move(blink::Manifest::Builder(start_url,
+                                            start_url.GetWithoutRef(),
+                                            start_url.GetWithoutFilename())
+                       .SetName(kDefaultManifestName)
+                       .SetShortName(kDefaultManifestShortName)
+                       .SetHasValidSpecifiedStartUrl(true)
+                       .SetDisplay(kDefaultManifestDisplayMode)
+                       .SetIcons({primary_icon}))
+      .BuildChecked();
 }
 
 }  // anonymous namespace
@@ -254,45 +252,29 @@ class TestInstallableManager : public InstallableManager {
                                   /*manifest_url=*/GURL());
   }
 
-  void SetManifestWithError(blink::mojom::ManifestPtr manifest,
+  void SetManifestWithError(std::optional<blink::Manifest> manifest,
                             const GURL& manifest_url,
                             InstallableStatusCode error) {
-    if (!manifest->icons.empty()) {
-      SetPrimaryIcon(manifest->icons[0].src);
+    if (manifest && !manifest->icons().empty()) {
+      SetPrimaryIcon(manifest->icons()[0].src);
     }
-    auto result = blink::ManifestFromMojom(*manifest);
-    std::optional<blink::Manifest> parsed_manifest;
-    if (result.has_value()) {
-      parsed_manifest = std::move(result.value());
-    }
-    page_data_->OnManifestFetched(std::move(parsed_manifest), manifest_url,
-                                  error);
+    page_data_->OnManifestFetched(std::move(manifest), manifest_url, error);
   }
 
-  void SetManifest(blink::mojom::ManifestPtr manifest) {
-    if (!manifest->icons.empty()) {
-      SetPrimaryIcon(manifest->icons[0].src);
+  void SetManifest(blink::Manifest manifest) {
+    if (!manifest.icons().empty()) {
+      SetPrimaryIcon(manifest.icons()[0].src);
     }
 
-    auto result = blink::ManifestFromMojom(*manifest);
-    std::optional<blink::Manifest> parsed_manifest;
-    if (result.has_value()) {
-      parsed_manifest = std::move(result.value());
-    }
-    page_data_->OnManifestFetched(std::move(parsed_manifest),
+    page_data_->OnManifestFetched(std::move(manifest),
                                   GURL(kDefaultManifestUrl));
   }
 
   // Like SetManifest(), but does not fake a successful fetch of the manifest's
   // first icon, so the icon round can be made to fail (InitPageData defaults
   // it to NO_ACCEPTABLE_ICON) while the manifest itself stays promotable.
-  void SetManifestWithoutIcon(blink::mojom::ManifestPtr manifest) {
-    auto result = blink::ManifestFromMojom(*manifest);
-    std::optional<blink::Manifest> parsed_manifest;
-    if (result.has_value()) {
-      parsed_manifest = std::move(result.value());
-    }
-    page_data_->OnManifestFetched(std::move(parsed_manifest),
+  void SetManifestWithoutIcon(blink::Manifest manifest) {
+    page_data_->OnManifestFetched(std::move(manifest),
                                   GURL(kDefaultManifestUrl));
   }
 
@@ -443,18 +425,18 @@ class AddToHomescreenDataFetcherTest
     histograms.ExpectTotalCount("Webapp.AddToHomescreenDialog.Timeout", 1);
   }
 
-  void SetManifest(blink::mojom::ManifestPtr manifest) {
+  void SetManifest(blink::Manifest manifest) {
     installable_manager_->SetManifest(std::move(manifest));
   }
 
-  void SetManifestWithError(blink::mojom::ManifestPtr manifest,
+  void SetManifestWithError(std::optional<blink::Manifest> manifest,
                             const GURL& manifest_url,
                             InstallableStatusCode error) {
     installable_manager_->SetManifestWithError(std::move(manifest),
                                                manifest_url, error);
   }
 
-  void SetManifestWithoutIcon(blink::mojom::ManifestPtr manifest) {
+  void SetManifestWithoutIcon(blink::Manifest manifest) {
     installable_manager_->SetManifestWithoutIcon(std::move(manifest));
   }
 
@@ -618,8 +600,8 @@ TEST_F(AddToHomescreenDataFetcherTest, NoIconManifest) {
   scoped_feature_list.InitAndDisableFeature(
       features::kAndroidInstallAnyPageAsDiyAppStopgap);
 
-  blink::mojom::ManifestPtr manifest = BuildWebAPKManifest();
-  manifest->icons.clear();
+  blink::Manifest manifest =
+      std::move(BuildWebAPKManifest().ToBuilder().SetIcons({})).BuildChecked();
   SetManifest(std::move(manifest));
 
   base::HistogramTester histograms;
@@ -724,9 +706,11 @@ TEST_F(AddToHomescreenDataFetcherTest, InstallableManifest) {
 TEST_F(AddToHomescreenDataFetcherTest, ManifestNoNameNoShortName) {
   // Test that when the manifest does not provide either Manifest::short_name
   // nor Manifest::name but web page metadata provides a application-name.
-  blink::mojom::ManifestPtr manifest = BuildWebAPKManifest();
-  manifest->name = std::nullopt;
-  manifest->short_name = std::nullopt;
+  blink::Manifest manifest = std::move(BuildWebAPKManifest()
+                                           .ToBuilder()
+                                           .SetName(std::nullopt)
+                                           .SetShortName(std::nullopt))
+                                 .BuildChecked();
   SetManifest(std::move(manifest));
   mojom::WebPageMetadataPtr metadata = BuildDefaultMetadata();
   SetWebPageMetadata(std::move(metadata));
@@ -748,8 +732,8 @@ TEST_F(AddToHomescreenDataFetcherTest, ManifestNoNameNoShortName) {
 TEST_F(AddToHomescreenDataFetcherTest, NoManifestIcons) {
   // Test that when the manifest does not provide any icon, we fallback to use
   // favicon.
-  blink::mojom::ManifestPtr manifest = BuildWebAPKManifest();
-  manifest->icons.clear();
+  blink::Manifest manifest =
+      std::move(BuildWebAPKManifest().ToBuilder().SetIcons({})).BuildChecked();
   SetManifest(std::move(manifest));
 
   std::vector<blink::mojom::FaviconURLPtr> favicon_urls;
@@ -779,8 +763,10 @@ TEST_F(AddToHomescreenDataFetcherTest, NoManifestIcons) {
 TEST_F(AddToHomescreenDataFetcherTest, ManifestDisplayMode) {
   // Test that when the manifest does not provide display mode, we fallback to
   // install with DisplayMode::kMinimalUi.
-  blink::mojom::ManifestPtr manifest = BuildWebAPKManifest();
-  manifest->display = blink::mojom::DisplayMode::kUndefined;
+  blink::Manifest manifest =
+      std::move(BuildWebAPKManifest().ToBuilder().SetDisplay(
+                    blink::mojom::DisplayMode::kUndefined))
+          .BuildChecked();
   SetManifest(std::move(manifest));
   mojom::WebPageMetadataPtr metadata = BuildDefaultMetadata();
   SetWebPageMetadata(std::move(metadata));
@@ -971,8 +957,10 @@ TEST_F(AddToHomescreenDataFetcherTest, AnyPage_ManifestDisplayBrowser) {
   scoped_feature_list.InitAndEnableFeature(
       features::kAndroidInstallAnyPageAsDiyAppStopgap);
 
-  blink::mojom::ManifestPtr manifest = BuildWebAPKManifest();
-  manifest->display = blink::mojom::DisplayMode::kBrowser;
+  blink::Manifest manifest =
+      std::move(BuildWebAPKManifest().ToBuilder().SetDisplay(
+                    blink::mojom::DisplayMode::kBrowser))
+          .BuildChecked();
   SetManifest(std::move(manifest));
 
   base::HistogramTester histograms;
@@ -999,12 +987,8 @@ TEST_F(AddToHomescreenDataFetcherTest, AnyPage_Manifest404) {
   GURL document_url("https://www.example.com/sub/index.html");
   NavigateAndCommit(document_url);
 
-  auto manifest = blink::mojom::Manifest::New();
-  manifest->start_url = document_url;
-  manifest->scope = document_url.GetWithoutFilename();
-  manifest->id = document_url.GetWithoutRef();
   SetManifestWithError(
-      std::move(manifest), GURL(kDefaultManifestUrl),
+      blink::Manifest::CreateDefault(document_url), GURL(kDefaultManifestUrl),
       InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR);
 
   SetWebPageMetadata(BuildDefaultMetadata());
@@ -1087,8 +1071,8 @@ TEST_F(AddToHomescreenDataFetcherTest, AnyPage_ManifestMissingSuitableIcon) {
   GURL document_url("https://www.example.com/index.html");
   NavigateAndCommit(document_url);
 
-  blink::mojom::ManifestPtr manifest = BuildWebAPKManifest();
-  manifest->icons.clear();
+  blink::Manifest manifest =
+      std::move(BuildWebAPKManifest().ToBuilder().SetIcons({})).BuildChecked();
   SetManifest(std::move(manifest));
 
   base::HistogramTester histograms;
@@ -1119,8 +1103,8 @@ TEST_F(AddToHomescreenDataFetcherTest,
   GURL document_url("https://www.example.com/subpage.html");
   NavigateAndCommit(document_url);
 
-  blink::mojom::ManifestPtr manifest = BuildWebAPKManifest();
-  manifest->icons.clear();
+  blink::Manifest manifest =
+      std::move(BuildWebAPKManifest().ToBuilder().SetIcons({})).BuildChecked();
   SetManifest(std::move(manifest));
   SetPrimaryIcon(document_url);
 
@@ -1143,8 +1127,7 @@ TEST_F(AddToHomescreenDataFetcherTest, AnyPage_ResetDuringRound1) {
   scoped_feature_list.InitAndEnableFeature(
       features::kAndroidInstallAnyPageAsDiyAppStopgap);
 
-  auto manifest = blink::mojom::Manifest::New();
-  SetManifestWithError(std::move(manifest), GURL(),
+  SetManifestWithError(std::nullopt, GURL(),
                        InstallableStatusCode::USER_NAVIGATED);
 
   ObserverWaiter waiter;
@@ -1198,12 +1181,8 @@ TEST_F(AddToHomescreenDataFetcherTest, AnyPage_FlagOff_Manifest404) {
   GURL document_url("https://www.example.com/sub/index.html");
   NavigateAndCommit(document_url);
 
-  auto manifest = blink::mojom::Manifest::New();
-  manifest->start_url = document_url;
-  manifest->scope = document_url.GetWithoutFilename();
-  manifest->id = document_url.GetWithoutRef();
   SetManifestWithError(
-      std::move(manifest), GURL(kDefaultManifestUrl),
+      blink::Manifest::CreateDefault(document_url), GURL(kDefaultManifestUrl),
       InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR);
   SetWebPageMetadata(BuildDefaultMetadata());
   SetPrimaryIcon(GURL(kDefaultIconUrl));
@@ -1224,7 +1203,7 @@ TEST_F(AddToHomescreenDataFetcherTest, EmptyManifestParseErrorIsShortcut) {
       features::kAndroidInstallAnyPageAsDiyAppStopgap);
 
   SetManifestWithError(
-      blink::mojom::Manifest::New(), GURL(),
+      std::nullopt, GURL(),
       InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR);
   SetPrimaryIcon(GURL(kDefaultIconUrl));
 
@@ -1275,8 +1254,10 @@ TEST_F(AddToHomescreenDataFetcherTest, ManifestWithCredentialsIsShortcut) {
   scoped_feature_list.InitAndEnableFeature(
       features::kAndroidInstallAnyPageAsDiyAppStopgap);
 
-  blink::mojom::ManifestPtr manifest = BuildWebAPKManifest();
-  manifest->start_url = GURL("https://user:pass@www.example.com/index.html");
+  blink::Manifest manifest =
+      std::move(BuildWebAPKManifest().ToBuilder().SetStartUrl(
+                    GURL("https://user:pass@www.example.com/index.html")))
+          .BuildChecked();
   SetManifest(std::move(manifest));
 
   base::HistogramTester histograms;
@@ -1411,9 +1392,10 @@ TEST_F(AddToHomescreenDataFetcherTest, DisplayMatrixBothFormFactors) {
     {
       ResetPageData();
       SetPrimaryIcon(GURL(kDefaultIconUrl));
-      blink::mojom::ManifestPtr manifest = BuildWebAPKManifest();
-      manifest->icons.clear();
-      manifest->display = blink::mojom::DisplayMode::kStandalone;
+      blink::Manifest manifest =
+          std::move(BuildWebAPKManifest().ToBuilder().SetIcons({}).SetDisplay(
+                        blink::mojom::DisplayMode::kStandalone))
+              .BuildChecked();
       SetManifest(std::move(manifest));
       SetWebPageMetadata(BuildDefaultMetadata());
       ObserverWaiter waiter;
@@ -1430,8 +1412,10 @@ TEST_F(AddToHomescreenDataFetcherTest, DisplayMatrixBothFormFactors) {
     {
       ResetPageData();
       SetPrimaryIcon(GURL(kDefaultIconUrl));
-      blink::mojom::ManifestPtr manifest = BuildWebAPKManifest();
-      manifest->display = blink::mojom::DisplayMode::kBrowser;
+      blink::Manifest manifest =
+          std::move(BuildWebAPKManifest().ToBuilder().SetDisplay(
+                        blink::mojom::DisplayMode::kBrowser))
+              .BuildChecked();
       SetManifest(std::move(manifest));
       SetWebPageMetadata(BuildDefaultMetadata());
       ObserverWaiter waiter;

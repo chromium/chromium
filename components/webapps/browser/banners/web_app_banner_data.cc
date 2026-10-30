@@ -9,31 +9,30 @@
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/common/web_page_metadata.mojom.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
 namespace webapps {
 
 WebAppBannerData::WebAppBannerData(ManifestId manifest_id,
-                                   blink::mojom::ManifestPtr manifest_ptr,
+                                   blink::Manifest manifest,
                                    mojom::WebPageMetadataPtr metadata,
                                    GURL manifest_url)
     : manifest_id(std::move(manifest_id)),
       manifest_url(std::move(manifest_url)),
-      manifest_ptr(std::move(manifest_ptr)),
+      manifest_(std::move(manifest)),
       web_page_metadata_ptr(std::move(metadata)) {
   CHECK(this->manifest_id.is_valid());
-  CHECK(this->manifest_ptr);
   CHECK(this->web_page_metadata_ptr);
 }
 WebAppBannerData::WebAppBannerData(ManifestId manifest_id,
-                                   const blink::mojom::Manifest& manifest,
+                                   const blink::Manifest& manifest,
                                    const mojom::WebPageMetadata& metadata,
                                    GURL manifest_url)
     : manifest_id(std::move(manifest_id)),
       manifest_url(std::move(manifest_url)),
-      manifest_ptr(manifest.Clone()),
+      manifest_(manifest),
       web_page_metadata_ptr(metadata.Clone()) {
   CHECK(this->manifest_id.is_valid());
 }
@@ -44,13 +43,13 @@ WebAppBannerData::WebAppBannerData(const WebAppBannerData& other)
       primary_icon(other.primary_icon),
       has_maskable_primary_icon(other.has_maskable_primary_icon),
       screenshots(other.screenshots),
-      manifest_ptr(other.manifest_ptr.Clone()),
+      manifest_(other.manifest_),
       web_page_metadata_ptr(other.web_page_metadata_ptr->Clone()) {}
 WebAppBannerData::~WebAppBannerData() = default;
 
 const std::u16string& WebAppBannerData::GetAppName() const {
-  if (manifest().name.has_value()) {
-    return manifest().name.value();
+  if (manifest().name().has_value()) {
+    return manifest().name().value();
   }
   if (!web_page_metadata().application_name.empty()) {
     return web_page_metadata().application_name;
@@ -58,8 +57,8 @@ const std::u16string& WebAppBannerData::GetAppName() const {
   return web_page_metadata().title;
 }
 
-const blink::mojom::Manifest& WebAppBannerData::manifest() const {
-  return *manifest_ptr;
+const blink::Manifest& WebAppBannerData::manifest() const {
+  return manifest_;
 }
 
 const mojom::WebPageMetadata& WebAppBannerData::web_page_metadata() const {

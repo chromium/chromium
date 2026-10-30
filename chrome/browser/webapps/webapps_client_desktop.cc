@@ -25,6 +25,7 @@
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/origin.h"
 
 namespace webapps {
@@ -193,11 +194,12 @@ bool WebappsClientDesktop::IsUrlControlledBySeenManifest(
 
 void WebappsClientDesktop::OnManifestSeen(
     content::BrowserContext* browsing_context,
-    const blink::mojom::Manifest& manifest) const {
+    const blink::Manifest& manifest) const {
   auto* provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(browsing_context));
   if (provider && provider->is_registry_ready()) {
-    provider->visited_manifest_manager().OnManifestSeen(manifest);
+    provider->visited_manifest_manager().OnManifestSeen(
+        *blink::ManifestToMojom(manifest));
   }
 }
 

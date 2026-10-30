@@ -15,7 +15,7 @@
 
 class GURL;
 
-namespace blink::mojom {
+namespace blink {
 class Manifest;
 }
 
@@ -108,10 +108,10 @@ class WebappsClient {
       content::BrowserContext* browsing_context,
       const GURL& site_url) const = 0;
 
-  // Called when a manifest is seen by the AppBannerManager. This manifest
-  // must be non-empty. Note that this may be the 'default' manifest.
+  // Called when a manifest is seen by the AppBannerManager. Note that this may
+  // be the 'default' manifest.
   virtual void OnManifestSeen(content::BrowserContext* browsing_context,
-                              const blink::mojom::Manifest& manifest) const = 0;
+                              const blink::Manifest& manifest) const = 0;
 
   // The user has ignored the installation dialog and it went away due to
   // another interaction (e.g. the tab was changed, page navigated, etc).

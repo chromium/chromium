@@ -54,7 +54,6 @@ class ShortcutInfoTest : public testing::Test {
 
  protected:
   ShortcutInfo info_;
-  blink::mojom::Manifest manifest_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -77,23 +76,27 @@ TEST_F(ShortcutInfoTest, CreateShortcutInfo) {
   metadata->application_name = u"new title";
   metadata->application_url = GURL("https://example.com/path/application-url");
 
-  manifest_.display = blink::mojom::DisplayMode::kFullscreen;
-  manifest_.theme_color = 0xffcc0000;
-  manifest_.id = GURL("https://example.com/path/id");
+  blink::Manifest manifest =
+      std::move(blink::Manifest::Builder(GURL("https://example.com/path/start"),
+                                         GURL("https://example.com/path/id"),
+                                         GURL("https://example.com/path/"))
+                    .SetDisplay(blink::mojom::DisplayMode::kFullscreen)
+                    .SetThemeColor(0xffcc0000))
+          .BuildChecked();
 
   GURL manifest_url("https://example.com/manifest_url");
   GURL icon_url("https://example.com/icon");
 
   std::unique_ptr<ShortcutInfo> info = ShortcutInfo::CreateShortcutInfo(
-      test_url, manifest_url, manifest_, *metadata, icon_url, true);
+      test_url, manifest_url, manifest, *metadata, icon_url, true);
 
-  EXPECT_EQ(metadata->application_url, info->url);
+  EXPECT_EQ(manifest.start_url(), info->url);
   EXPECT_EQ(metadata->application_name, info->name);
   EXPECT_EQ(metadata->application_name, info->short_name);
   EXPECT_EQ(metadata->application_name, info->user_title);
-  EXPECT_EQ(manifest_.display, info->display);
-  EXPECT_EQ(manifest_.theme_color, info->theme_color);
-  EXPECT_EQ(manifest_.id, info->manifest_id);
+  EXPECT_EQ(manifest.display(), info->display);
+  EXPECT_EQ(manifest.theme_color(), info->theme_color);
+  EXPECT_EQ(manifest.id(), info->manifest_id);
   EXPECT_EQ(manifest_url, info->manifest_url);
   EXPECT_EQ(icon_url, info->best_primary_icon_url);
   EXPECT_TRUE(info->is_primary_icon_maskable);
@@ -102,50 +105,46 @@ TEST_F(ShortcutInfoTest, CreateShortcutInfo) {
 
 TEST_F(ShortcutInfoTest, AllAttributesUpdate) {
   info_.name = u"old name";
-  manifest_.name = u"new name";
-
   info_.short_name = u"old short name";
-  manifest_.short_name = u"new short name";
-
   info_.url = GURL("https://old.com/start");
-  manifest_.start_url = GURL("https://new.com/start");
-
   info_.scope = GURL("https://old.com/");
-  manifest_.scope = GURL("https://new.com/");
-
   info_.display = blink::mojom::DisplayMode::kStandalone;
-  manifest_.display = blink::mojom::DisplayMode::kFullscreen;
-
   info_.theme_color = 0xffff0000;
-  manifest_.theme_color = 0xffcc0000;
-
   info_.background_color = 0xffaa0000;
-  manifest_.background_color = 0xffbb0000;
-
   info_.dark_theme_color = 0x000000;
-  manifest_.dark_theme_color = 0x7a7a7a;
-
   info_.dark_background_color = 0x000000;
-  manifest_.dark_background_color = 0x7a7a7a;
-
   info_.icon_urls.push_back("https://old.com/icon.png");
+
   blink::Manifest::ImageResource icon;
   icon.src = GURL("https://new.com/icon.png");
-  manifest_.icons.push_back(icon);
 
-  info_.UpdateFromManifest(manifest_);
+  blink::Manifest manifest =
+      std::move(blink::Manifest::Builder(GURL("https://new.com/start"),
+                                         GURL("https://new.com/start"),
+                                         GURL("https://new.com/"))
+                    .SetName(u"new name")
+                    .SetShortName(u"new short name")
+                    .SetDisplay(blink::mojom::DisplayMode::kFullscreen)
+                    .SetThemeColor(0xffcc0000)
+                    .SetBackgroundColor(0xffbb0000)
+                    .SetDarkThemeColor(0x7a7a7a)
+                    .SetDarkBackgroundColor(0x7a7a7a)
+                    .SetIcons({icon}))
+          .BuildChecked();
 
-  ASSERT_EQ(manifest_.name, info_.name);
-  ASSERT_EQ(manifest_.short_name, info_.short_name);
-  ASSERT_EQ(manifest_.start_url, info_.url);
-  ASSERT_EQ(manifest_.scope, info_.scope);
-  ASSERT_EQ(manifest_.display, info_.display);
-  ASSERT_EQ(manifest_.theme_color, info_.theme_color);
-  ASSERT_EQ(manifest_.background_color, info_.background_color);
-  ASSERT_EQ(manifest_.dark_theme_color, info_.dark_theme_color);
-  ASSERT_EQ(manifest_.dark_background_color, info_.dark_background_color);
+  info_.UpdateFromManifest(manifest);
+
+  ASSERT_EQ(manifest.name(), info_.name);
+  ASSERT_EQ(manifest.short_name(), info_.short_name);
+  ASSERT_EQ(manifest.start_url(), info_.url);
+  ASSERT_EQ(manifest.scope(), info_.scope);
+  ASSERT_EQ(manifest.display(), info_.display);
+  ASSERT_EQ(manifest.theme_color(), info_.theme_color);
+  ASSERT_EQ(manifest.background_color(), info_.background_color);
+  ASSERT_EQ(manifest.dark_theme_color(), info_.dark_theme_color);
+  ASSERT_EQ(manifest.dark_background_color(), info_.dark_background_color);
   ASSERT_EQ(1u, info_.icon_urls.size());
-  ASSERT_EQ(manifest_.icons[0].src, GURL(info_.icon_urls[0]));
+  ASSERT_EQ(manifest.icons()[0].src, GURL(info_.icon_urls[0]));
 }
 
 TEST_F(ShortcutInfoTest, UpdateFromWebPageMetadata) {
@@ -265,25 +264,34 @@ TEST_F(ShortcutInfoTest, NotContainEmptyOrDuplicateWebApkIcons) {
 }
 
 TEST_F(ShortcutInfoTest, NameFallsBackToShortName) {
-  manifest_.short_name = u"short_name";
-  info_.UpdateFromManifest(manifest_);
+  blink::Manifest manifest =
+      std::move(blink::Manifest::Builder(GURL("https://example.com/"))
+                    .SetShortName(u"short_name"))
+          .BuildChecked();
+  info_.UpdateFromManifest(manifest);
 
-  ASSERT_EQ(manifest_.short_name, info_.name);
+  ASSERT_EQ(manifest.short_name(), info_.name);
 }
 
 TEST_F(ShortcutInfoTest, ShortNameFallsBackToName) {
-  manifest_.name = u"name";
-  info_.UpdateFromManifest(manifest_);
+  blink::Manifest manifest =
+      std::move(blink::Manifest::Builder(GURL("https://example.com/"))
+                    .SetName(u"name"))
+          .BuildChecked();
+  info_.UpdateFromManifest(manifest);
 
-  ASSERT_EQ(manifest_.name, info_.short_name);
+  ASSERT_EQ(manifest.name(), info_.short_name);
 }
 
 TEST_F(ShortcutInfoTest, UserTitleBecomesShortName) {
-  manifest_.short_name = u"name";
+  blink::Manifest manifest =
+      std::move(blink::Manifest::Builder(GURL("https://example.com/"))
+                    .SetShortName(u"name"))
+          .BuildChecked();
   info_.user_title = u"title";
-  info_.UpdateFromManifest(manifest_);
+  info_.UpdateFromManifest(manifest);
 
-  ASSERT_EQ(manifest_.short_name, info_.user_title);
+  ASSERT_EQ(manifest.short_name(), info_.user_title);
 }
 
 // Test that if a manifest with an empty name and empty short_name is passed,
@@ -295,33 +303,42 @@ TEST_F(ShortcutInfoTest, IgnoreEmptyNameAndShortName) {
 
   info_.name = initial_name;
   info_.short_name = initial_short_name;
-  manifest_.display = blink::mojom::DisplayMode::kStandalone;
-  manifest_.name = std::u16string();
-  info_.UpdateFromManifest(manifest_);
+  blink::Manifest manifest =
+      std::move(blink::Manifest::Builder(GURL("https://example.com/"))
+                    .SetDisplay(blink::mojom::DisplayMode::kStandalone)
+                    .SetName(std::u16string()))
+          .BuildChecked();
+  info_.UpdateFromManifest(manifest);
 
   ASSERT_EQ(initial_name, info_.name);
   ASSERT_EQ(initial_short_name, info_.short_name);
 }
 
 TEST_F(ShortcutInfoTest, ShortcutItemsPopulated) {
-  manifest_.shortcuts.push_back(CreateShortcut(
+  std::vector<blink::Manifest::ShortcutItem> shortcuts;
+  shortcuts.push_back(CreateShortcut(
       "shortcut_1",
       {CreateImage("/i1_1.ico", {16, 16}, Purpose::ANY),
        CreateImage("/i1_2.ico", {64, 64}, Purpose::ANY),
        CreateImage("/i1_3.ico", {192, 192}, Purpose::ANY),  // best icon.
        CreateImage("/i1_4.ico", {256, 256}, Purpose::ANY)}));
 
-  manifest_.shortcuts.push_back(CreateShortcut(
+  shortcuts.push_back(CreateShortcut(
       "shortcut_2",
       {CreateImage("/i2_1.ico", {192, 194}, Purpose::ANY),  // not square.
        CreateImage("/i2_2.ico", {194, 194}, Purpose::ANY)}));
 
   // Nothing chosen.
-  manifest_.shortcuts.push_back(CreateShortcut(
+  shortcuts.push_back(CreateShortcut(
       "shortcut_3", {CreateImage("/i3_1.ico", {16, 16}, Purpose::ANY)}));
 
+  blink::Manifest manifest =
+      std::move(blink::Manifest::Builder(GURL("https://example.com/"))
+                    .SetShortcuts(std::move(shortcuts)))
+          .BuildChecked();
+
   WebappsIconUtils::SetIdealShortcutSizeForTesting(192);
-  info_.UpdateFromManifest(manifest_);
+  info_.UpdateFromManifest(manifest);
 
   ASSERT_EQ(info_.best_shortcut_icon_urls.size(), 3u);
   EXPECT_EQ(info_.best_shortcut_icon_urls[0].GetPath(), "/i1_3.ico");
@@ -337,20 +354,26 @@ TEST_F(ShortcutInfoTest, ShortcutItemsPopulated) {
 TEST_F(ShortcutInfoTest, UpdateFromManifestTwiceKeepsShortcutVectorsInSync) {
   WebappsIconUtils::SetIdealShortcutSizeForTesting(192);
 
-  manifest_.shortcuts.push_back(CreateShortcut(
+  std::vector<blink::Manifest::ShortcutItem> shortcuts;
+  shortcuts.push_back(CreateShortcut(
       "shortcut_1", {CreateImage("/i1.ico", {192, 192}, Purpose::ANY)}));
-  manifest_.shortcuts.push_back(CreateShortcut(
+  shortcuts.push_back(CreateShortcut(
       "shortcut_2", {CreateImage("/i2.ico", {192, 192}, Purpose::ANY)}));
-  manifest_.shortcuts.push_back(CreateShortcut(
+  shortcuts.push_back(CreateShortcut(
       "shortcut_3", {CreateImage("/i3.ico", {192, 192}, Purpose::ANY)}));
 
-  info_.UpdateFromManifest(manifest_);
+  blink::Manifest manifest =
+      std::move(blink::Manifest::Builder(GURL("https://example.com/"))
+                    .SetShortcuts(shortcuts))
+          .BuildChecked();
+
+  info_.UpdateFromManifest(manifest);
   ASSERT_EQ(info_.shortcut_items.size(), 3u);
   ASSERT_EQ(info_.best_shortcut_icon_urls.size(), 3u);
 
   // The same manifest again, e.g. a second page load inside the WebAPK scope.
   // Before the fix this produced 3 shortcut items but 6 icon URLs.
-  info_.UpdateFromManifest(manifest_);
+  info_.UpdateFromManifest(manifest);
   EXPECT_EQ(info_.shortcut_items.size(), 3u);
   ASSERT_EQ(info_.best_shortcut_icon_urls.size(), 3u);
   EXPECT_EQ(info_.best_shortcut_icon_urls[0].GetPath(), "/i1.ico");
@@ -358,10 +381,12 @@ TEST_F(ShortcutInfoTest, UpdateFromManifestTwiceKeepsShortcutVectorsInSync) {
   EXPECT_EQ(info_.best_shortcut_icon_urls[2].GetPath(), "/i3.ico");
 
   // A changed manifest must replace, not extend, the chosen icon URLs.
-  manifest_.shortcuts.erase(manifest_.shortcuts.begin());
-  manifest_.shortcuts[0].icons = {
-      CreateImage("/i2_new.ico", {192, 192}, Purpose::ANY)};
-  info_.UpdateFromManifest(manifest_);
+  shortcuts.erase(shortcuts.begin());
+  shortcuts[0].icons = {CreateImage("/i2_new.ico", {192, 192}, Purpose::ANY)};
+  blink::Manifest updated_manifest =
+      std::move(manifest.ToBuilder().SetShortcuts(std::move(shortcuts)))
+          .BuildChecked();
+  info_.UpdateFromManifest(updated_manifest);
   EXPECT_EQ(info_.shortcut_items.size(), 2u);
   ASSERT_EQ(info_.best_shortcut_icon_urls.size(), 2u);
   EXPECT_EQ(info_.best_shortcut_icon_urls[0].GetPath(), "/i2_new.ico");
@@ -372,73 +397,103 @@ TEST_F(ShortcutInfoTest, UpdateFromManifestTwiceKeepsShortcutVectorsInSync) {
 // required name value is used.
 TEST_F(ShortcutInfoTest, ShortcutShortNameBackfilled) {
   // Create a shortcut without a |short_name|.
-  manifest_.shortcuts.push_back(
-      CreateShortcut(/* name= */ "name", /* icons= */ {}));
+  std::vector<blink::Manifest::ShortcutItem> shortcuts;
+  shortcuts.push_back(CreateShortcut(/* name= */ "name", /* icons= */ {}));
 
-  info_.UpdateFromManifest(manifest_);
+  blink::Manifest manifest =
+      std::move(blink::Manifest::Builder(GURL("https://example.com/"))
+                    .SetShortcuts(std::move(shortcuts)))
+          .BuildChecked();
+
+  info_.UpdateFromManifest(manifest);
 
   ASSERT_EQ(info_.shortcut_items.size(), 1u);
   EXPECT_EQ(info_.shortcut_items[0].short_name, u"name");
 }
 
 TEST_F(ShortcutInfoTest, FindMaskableSplashIcon) {
-  manifest_.icons.push_back(
-      CreateImage("/icon_48.png", {48, 48}, Purpose::ANY));
-  manifest_.icons.push_back(
-      CreateImage("/icon_96.png", {96, 96}, Purpose::ANY));
-  manifest_.icons.push_back(
-      CreateImage("/icon_144.png", {144, 144}, Purpose::MASKABLE));
+  blink::Manifest manifest =
+      std::move(
+          blink::Manifest::Builder(GURL("https://example.com/"))
+              .SetIcons({CreateImage("/icon_48.png", {48, 48}, Purpose::ANY),
+                         CreateImage("/icon_96.png", {96, 96}, Purpose::ANY),
+                         CreateImage("/icon_144.png", {144, 144},
+                                     Purpose::MASKABLE)}))
+          .BuildChecked();
 
-  info_.UpdateBestSplashIcon(manifest_);
+  info_.UpdateBestSplashIcon(manifest);
 
   EXPECT_EQ(info_.splash_image_url.GetPath(), "/icon_144.png");
   EXPECT_TRUE(info_.is_splash_image_maskable);
 }
 
 TEST_F(ShortcutInfoTest, SplashIconFallbackToAny) {
-  manifest_.icons.push_back(
-      CreateImage("/icon_48.png", {48, 48}, Purpose::ANY));
-  manifest_.icons.push_back(
-      CreateImage("/icon_96.png", {96, 96}, Purpose::ANY));
-  manifest_.icons.push_back(
-      CreateImage("/icon_144.png", {144, 144}, Purpose::ANY));
+  blink::Manifest manifest =
+      std::move(
+          blink::Manifest::Builder(GURL("https://example.com/"))
+              .SetIcons(
+                  {CreateImage("/icon_48.png", {48, 48}, Purpose::ANY),
+                   CreateImage("/icon_96.png", {96, 96}, Purpose::ANY),
+                   CreateImage("/icon_144.png", {144, 144}, Purpose::ANY)}))
+          .BuildChecked();
 
-  info_.UpdateBestSplashIcon(manifest_);
+  info_.UpdateBestSplashIcon(manifest);
 
   EXPECT_EQ(info_.splash_image_url.GetPath(), "/icon_144.png");
   EXPECT_FALSE(info_.is_splash_image_maskable);
 }
 
 TEST_F(ShortcutInfoTest, DisplayOverride) {
-  manifest_.display = DisplayMode::kBrowser;
-  manifest_.display_override = {
-      DisplayOverride::Create(DisplayMode::kMinimalUi)};
-  info_.UpdateFromManifest(manifest_);
-  EXPECT_EQ(info_.display, DisplayMode::kMinimalUi);
-
-  manifest_.display = DisplayMode::kFullscreen;
-  manifest_.display_override = {DisplayOverride::Create(DisplayMode::kBrowser)};
-  info_.UpdateFromManifest(manifest_);
-  EXPECT_EQ(info_.display, DisplayMode::kBrowser);
-
-  manifest_.display = DisplayMode::kStandalone;
-  manifest_.display_override = {
-      DisplayOverride::Create(DisplayMode::kFullscreen)};
-  info_.UpdateFromManifest(manifest_);
-  EXPECT_EQ(info_.display, DisplayMode::kFullscreen);
-
-  manifest_.display = DisplayMode::kMinimalUi;
-  manifest_.display_override = {
-      DisplayOverride::Create(DisplayMode::kStandalone)};
-  info_.UpdateFromManifest(manifest_);
-  EXPECT_EQ(info_.display, DisplayMode::kStandalone);
+  {
+    blink::Manifest manifest =
+        std::move(blink::Manifest::Builder(GURL("https://example.com/"))
+                      .SetDisplay(DisplayMode::kBrowser)
+                      .SetDisplayOverride(
+                          {DisplayOverride::Create(DisplayMode::kMinimalUi)}))
+            .BuildChecked();
+    info_.UpdateFromManifest(manifest);
+    EXPECT_EQ(info_.display, DisplayMode::kMinimalUi);
+  }
+  {
+    blink::Manifest manifest =
+        std::move(blink::Manifest::Builder(GURL("https://example.com/"))
+                      .SetDisplay(DisplayMode::kFullscreen)
+                      .SetDisplayOverride(
+                          {DisplayOverride::Create(DisplayMode::kBrowser)}))
+            .BuildChecked();
+    info_.UpdateFromManifest(manifest);
+    EXPECT_EQ(info_.display, DisplayMode::kBrowser);
+  }
+  {
+    blink::Manifest manifest =
+        std::move(blink::Manifest::Builder(GURL("https://example.com/"))
+                      .SetDisplay(DisplayMode::kStandalone)
+                      .SetDisplayOverride(
+                          {DisplayOverride::Create(DisplayMode::kFullscreen)}))
+            .BuildChecked();
+    info_.UpdateFromManifest(manifest);
+    EXPECT_EQ(info_.display, DisplayMode::kFullscreen);
+  }
+  {
+    blink::Manifest manifest =
+        std::move(blink::Manifest::Builder(GURL("https://example.com/"))
+                      .SetDisplay(DisplayMode::kMinimalUi)
+                      .SetDisplayOverride(
+                          {DisplayOverride::Create(DisplayMode::kStandalone)}))
+            .BuildChecked();
+    info_.UpdateFromManifest(manifest);
+    EXPECT_EQ(info_.display, DisplayMode::kStandalone);
+  }
 }
 
 TEST_F(ShortcutInfoTest, ManifestIdGenerated) {
-  manifest_.start_url = GURL("https://new.com/start");
-  manifest_.id = GURL("https://new.com/new_id");
+  blink::Manifest manifest =
+      blink::Manifest::Builder(GURL("https://new.com/start"),
+                               GURL("https://new.com/new_id"),
+                               GURL("https://new.com/"))
+          .BuildChecked();
 
-  info_.UpdateFromManifest(manifest_);
+  info_.UpdateFromManifest(manifest);
 
   EXPECT_EQ(info_.manifest_id.spec(), "https://new.com/new_id");
 }

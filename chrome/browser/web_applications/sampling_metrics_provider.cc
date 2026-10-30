@@ -143,7 +143,7 @@ void MaybeEmitUkmMetricsForPromotable(
     tabs::TabInterface* tab,
     const webapps::WebAppBannerData& banner_data,
     IdSet& emitted_ids) {
-  const GURL& url = banner_data.manifest().start_url;
+  const GURL& url = banner_data.manifest().start_url();
   if (emitted_ids.contains(url.spec())) {
     return;
   }
@@ -152,12 +152,12 @@ void MaybeEmitUkmMetricsForPromotable(
   DailyInteraction interaction;
   interaction.start_url = url;
   interaction.installed = false;
-  if (!banner_data.manifest().display_override.empty()) {
-    interaction.effective_display_mode =
-        static_cast<int>(banner_data.manifest().display_override[0].display());
+  if (!banner_data.manifest().display_override().empty()) {
+    interaction.effective_display_mode = static_cast<int>(
+        banner_data.manifest().display_override()[0].display());
   } else {
     interaction.effective_display_mode =
-        static_cast<int>(banner_data.manifest().display);
+        static_cast<int>(banner_data.manifest().display());
   }
   interaction.promotable = true;
   FlushOldRecordsAndUpdate(interaction,

@@ -35,9 +35,9 @@
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -119,14 +119,14 @@ AppBannerManagerDesktop::ParamsToPerformInstallableWebAppCheck() {
 }
 
 bool AppBannerManagerDesktop::ShouldDoNativeAppCheck(
-    const blink::mojom::Manifest& manifest) const {
+    const blink::Manifest& manifest) const {
   return false;
 }
 
 void AppBannerManagerDesktop::DoNativeAppInstallableCheck(
     content::WebContents* web_contents,
     const GURL& validated_url,
-    const blink::mojom::Manifest& manifest,
+    const blink::Manifest& manifest,
     NativeCheckCallback callback) {
   NOTREACHED();
 }
@@ -136,7 +136,7 @@ void AppBannerManagerDesktop::OnWebAppInstallableCheckedNoErrors(
 
 base::expected<void, InstallableStatusCode>
 AppBannerManagerDesktop::CanRunWebAppInstallableChecks(
-    const blink::mojom::Manifest& manifest) {
+    const blink::Manifest& manifest) {
   return base::ok();
 }
 
@@ -218,14 +218,10 @@ AppBannerManager::ShowBannerUiResult AppBannerManagerDesktop::ShowBannerUi(
       AppBannerSettingsHelper::APP_BANNER_EVENT_DID_SHOW,
       app_banner_manager_->GetCurrentTime());
   TrackDisplayEvent(DISPLAY_EVENT_WEB_APP_BANNER_CREATED);
-  std::optional<webapps::ManifestId> manifest_id =
-      webapps::ManifestId::Create(config.web_app_data.manifest().id);
-  if (!manifest_id.has_value()) {
-    return AppBannerManager::ShowBannerUiResult::kFailed;
-  }
   CreateWebApp(install_source,
                base::BindOnce(&AppBannerManagerDesktop::DidFinishCreatingWebApp,
-                              weak_factory_.GetWeakPtr(), *manifest_id,
+                              weak_factory_.GetWeakPtr(),
+                              config.web_app_data.manifest_id,
                               weak_factory_.GetWeakPtr()));
   return AppBannerManager::ShowBannerUiResult::kShownAppInstallationDialog;
 }

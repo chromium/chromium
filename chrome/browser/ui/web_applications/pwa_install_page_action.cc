@@ -26,7 +26,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -232,9 +231,6 @@ bool PwaInstallPageActionController::ShouldShowIph(
     return false;
   }
   if (iph_pending_) {
-    return false;
-  }
-  if (blink::IsEmptyManifest(data.manifest()) || !data.manifest_id.is_valid()) {
     return false;
   }
   webapps::AppId app_id =

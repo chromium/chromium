@@ -261,13 +261,14 @@ AppBannerManagerAndroid::ParamsToPerformInstallableWebAppCheck() {
 }
 
 bool AppBannerManagerAndroid::ShouldDoNativeAppCheck(
-    const blink::mojom::Manifest& manifest) const {
-  if (!manifest.prefer_related_applications || java_banner_manager_.is_null()) {
+    const blink::Manifest& manifest) const {
+  if (!manifest.prefer_related_applications() ||
+      java_banner_manager_.is_null()) {
     return false;
   }
   // Ensure there is at least one related app specified that is supported on
   // the current platform.
-  for (const auto& application : manifest.related_applications) {
+  for (const auto& application : manifest.related_applications()) {
     if (base::EqualsASCII(application.platform.value_or(std::u16string()),
                           kPlatformPlay)) {
       return true;
@@ -279,13 +280,13 @@ bool AppBannerManagerAndroid::ShouldDoNativeAppCheck(
 void AppBannerManagerAndroid::DoNativeAppInstallableCheck(
     content::WebContents* web_contents,
     const GURL& validated_url,
-    const blink::mojom::Manifest& manifest,
+    const blink::Manifest& manifest,
     NativeCheckCallback callback) {
-  CHECK(manifest.prefer_related_applications &&
+  CHECK(manifest.prefer_related_applications() &&
         !java_banner_manager_.is_null());
 
   InstallableStatusCode code = InstallableStatusCode::NO_ERROR_DETECTED;
-  for (const auto& application : manifest.related_applications) {
+  for (const auto& application : manifest.related_applications()) {
     base::expected<QueryNativeAppConfig, InstallableStatusCode> result =
         GetNativeAppFetchRequestConfig(validated_url, application);
 
@@ -318,7 +319,7 @@ void AppBannerManagerAndroid::OnWebAppInstallableCheckedNoErrors(
 
 base::expected<void, InstallableStatusCode>
 AppBannerManagerAndroid::CanRunWebAppInstallableChecks(
-    const blink::mojom::Manifest& manifest) {
+    const blink::Manifest& manifest) {
   if (!webapps::WebappsUtils::AreWebManifestUrlsWebApkCompatible(manifest)) {
     return base::unexpected(
         InstallableStatusCode::URL_NOT_SUPPORTED_FOR_WEBAPK);

@@ -26,6 +26,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "url/origin.h"
 
 namespace webapps {
@@ -124,7 +125,7 @@ bool WebappsClientAndroid::IsUrlControlledBySeenManifest(
 
 void WebappsClientAndroid::OnManifestSeen(
     content::BrowserContext* browsing_context,
-    const blink::mojom::Manifest& manifest) const {}
+    const blink::Manifest& manifest) const {}
 
 void WebappsClientAndroid::SaveInstallationDismissedForMl(
     content::BrowserContext* browsing_context,

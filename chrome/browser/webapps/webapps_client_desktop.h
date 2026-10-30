@@ -13,6 +13,10 @@
 #error "Desktop implementation should not be included in Android builds."
 #endif
 
+namespace blink {
+class Manifest;
+}
+
 namespace webapps {
 
 class WebappsClientDesktop : public ChromeWebappsClient {
@@ -49,7 +53,7 @@ class WebappsClientDesktop : public ChromeWebappsClient {
   bool IsUrlControlledBySeenManifest(content::BrowserContext* browsing_context,
                                      const GURL& site_url) const override;
   void OnManifestSeen(content::BrowserContext* browsing_context,
-                      const blink::mojom::Manifest& manifest) const override;
+                      const blink::Manifest& manifest) const override;
   void SaveInstallationIgnoredForMl(content::BrowserContext* browsing_context,
                                     const GURL& manifest_id) const override;
   void SaveInstallationDismissedForMl(content::BrowserContext* browsing_context,

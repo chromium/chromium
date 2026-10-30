@@ -174,16 +174,15 @@ class AppBannerManagerAndroid : public AppBannerManager::Delegate {
   // AppBannerManager::Delegate overrides.
   bool CanRequestAppBanner() const override;
   InstallableParams ParamsToPerformInstallableWebAppCheck() override;
-  bool ShouldDoNativeAppCheck(
-      const blink::mojom::Manifest& manifest) const override;
+  bool ShouldDoNativeAppCheck(const blink::Manifest& manifest) const override;
   void DoNativeAppInstallableCheck(content::WebContents* web_contents,
                                    const GURL& validated_url,
-                                   const blink::mojom::Manifest& manifest,
+                                   const blink::Manifest& manifest,
                                    NativeCheckCallback callback) override;
   void OnWebAppInstallableCheckedNoErrors(
       const ManifestId& manifest_id) override;
   base::expected<void, InstallableStatusCode> CanRunWebAppInstallableChecks(
-      const blink::mojom::Manifest& manifest) override;
+      const blink::Manifest& manifest) override;
   bool IsSupportedNonWebAppPlatform(
       const std::u16string& platform) const override;
   bool IsRelatedNonWebAppInstalled(

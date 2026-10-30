@@ -13,52 +13,61 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 
 namespace webapps {
 
 namespace {
 
-blink::mojom::ManifestPtr GetValidManifest() {
-  auto manifest = blink::mojom::Manifest::New();
-  manifest->name = u"foo";
-  manifest->short_name = u"bar";
-  manifest->start_url = GURL("http://example.com");
-  manifest->id = manifest->start_url;
-  manifest->display = blink::mojom::DisplayMode::kStandalone;
-
+blink::Manifest GetValidManifest() {
   blink::Manifest::ImageResource icon;
   icon.type = u"image/png";
   icon.sizes.push_back(gfx::Size(144, 144));
-  manifest->icons.push_back(icon);
+  icon.src = GURL("http://example.com/icon.png");
 
-  return manifest;
+  return std::move(blink::Manifest::Builder(GURL("http://example.com"),
+                                            GURL("http://example.com"),
+                                            GURL("http://example.com"))
+                       .SetName(u"foo")
+                       .SetShortName(u"bar")
+                       .SetDisplay(blink::mojom::DisplayMode::kStandalone)
+                       .SetIcons({icon}))
+      .BuildChecked();
 }
 
 }  // anonymous namespace
 
 TEST(WebappsUtilsTest, Compatible) {
   EXPECT_TRUE(
-      WebappsUtils::AreWebManifestUrlsWebApkCompatible(*GetValidManifest()));
+      WebappsUtils::AreWebManifestUrlsWebApkCompatible(GetValidManifest()));
 }
 
 TEST(WebappsUtilsTest, CompatibleURLHasNoPassword) {
-  const GURL kUrlWithPassword("http://answer:42@life/universe/and/everything");
+  const GURL kStartUrlWithPassword(
+      "http://answer:42@example.com/life/universe/and/everything");
+  const GURL kScopeWithPassword("http://answer:42@example.com/");
+  const GURL kIconWithPassword("http://answer:42@example.com/icon.png");
 
-  blink::mojom::ManifestPtr manifest = GetValidManifest();
-  manifest->start_url = kUrlWithPassword;
-  manifest->id = kUrlWithPassword;
-  EXPECT_FALSE(WebappsUtils::AreWebManifestUrlsWebApkCompatible(*manifest));
+  blink::Manifest manifest_start_url =
+      std::move(
+          GetValidManifest().ToBuilder().SetStartUrl(kStartUrlWithPassword))
+          .BuildChecked();
+  EXPECT_FALSE(
+      WebappsUtils::AreWebManifestUrlsWebApkCompatible(manifest_start_url));
 
-  manifest = GetValidManifest();
-  manifest->scope = kUrlWithPassword;
-  EXPECT_FALSE(WebappsUtils::AreWebManifestUrlsWebApkCompatible(*manifest));
+  blink::Manifest manifest_scope =
+      std::move(GetValidManifest().ToBuilder().SetScope(kScopeWithPassword))
+          .BuildChecked();
+  EXPECT_FALSE(
+      WebappsUtils::AreWebManifestUrlsWebApkCompatible(manifest_scope));
 
-  manifest = GetValidManifest();
-  manifest->icons[0].src = kUrlWithPassword;
-  EXPECT_FALSE(WebappsUtils::AreWebManifestUrlsWebApkCompatible(*manifest));
+  blink::Manifest::ImageResource icon;
+  icon.src = kIconWithPassword;
+  blink::Manifest manifest_icon =
+      std::move(GetValidManifest().ToBuilder().SetIcons({icon})).BuildChecked();
+  EXPECT_FALSE(WebappsUtils::AreWebManifestUrlsWebApkCompatible(manifest_icon));
 }
 
 class WebappsUtilsPruneHistoryTest : public content::RenderViewHostTestHarness {
