@@ -751,7 +751,13 @@ source_set("rust_bmp_ffi_cpp") {
     ":skia_core_public_headers",
     "//build/rust:cxx_cppdeps",
   ]
-  deps = [ ":rust_bmp_ffi_cxx_generated_gen" ]
+
+  # Compiles private Skia files that include raw_ptr.h. ":skia" depends on
+  # partition_alloc privately, so this needs the dep directly.
+  deps = [
+    ":rust_bmp_ffi_cxx_generated_gen",
+    "//base/allocator/partition_allocator:raw_ptr",
+  ]
   check_includes =
       false  # Logically part of skia, but split out for build reasons
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -848,7 +854,13 @@ source_set("rust_jpeg_ffi_cpp") {
     ":skia_core_public_headers",
     "//build/rust:cxx_cppdeps",
   ]
-  deps = [ ":rust_jpeg_ffi_cxx_generated_gen" ]
+
+  # Compiles private Skia files that include raw_ptr.h. ":skia" depends on
+  # partition_alloc privately, so this needs the dep directly.
+  deps = [
+    ":rust_jpeg_ffi_cxx_generated_gen",
+    "//base/allocator/partition_allocator:raw_ptr",
+  ]
   check_includes =
       false  # Logically part of skia, but split out for build reasons
   configs -= [ "//build/config/compiler:chromium_code" ]
