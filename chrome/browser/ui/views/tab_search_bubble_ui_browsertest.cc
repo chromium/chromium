@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -84,6 +86,13 @@ class WebUIChangeObserver : public views::WidgetObserver,
 
 class TabSearchBubbleUIBrowserTest : public DialogBrowserTest {
  public:
+  TabSearchBubbleUIBrowserTest() {
+    // TODO(crbug.com/579025166): Fix test failures related to missing tab
+    // search bubble.
+    scoped_feature_list_.InitAndDisableFeature(
+        organizer_panel::kOrganizerPanel);
+  }
+
   // Launching TabSearch is an async event. To capture the dialog for a pixel
   // test, this requires a couple of observers + callbacks to get the timing
   // right.
@@ -105,6 +114,9 @@ class TabSearchBubbleUIBrowserTest : public DialogBrowserTest {
       webui_change_observer.Wait();
     }
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(TabSearchBubbleUIBrowserTest, InvokeUi_default) {

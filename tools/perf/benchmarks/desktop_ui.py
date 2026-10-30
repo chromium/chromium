@@ -48,6 +48,9 @@ class DesktopUI(perf_benchmark.PerfBenchmark):
     options.AppendExtraBrowserArgs(
       '--enable-features=ui-debug-tools-enable-synthetic-events'
     )
+    # TODO(crbug.com/579025166): Disable OrganizerPanel as ShowTabSearch opens
+    # OrganizerPanel instead of TabSearch bubble.
+    options.AppendExtraBrowserArgs('--disable-features=OrganizerPanel')
 
   @classmethod
   def Name(cls):

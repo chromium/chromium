@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
@@ -35,6 +36,12 @@ namespace {
 class VerticalTabStripTopContainerInteractiveUiTest
     : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest> {
  public:
+  const std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    // TODO(crbug.com/579025166): Fix test failures related to missing tab
+    // search bubble.
+    return {organizer_panel::kOrganizerPanel};
+  }
+
   auto SendTabSearchAccelerator() {
 #if BUILDFLAG(IS_MAC)
     constexpr int kModifiers = ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN;

@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_highlight_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -105,6 +106,12 @@ class MultiContentsViewUiTest
       public ::testing::WithParamInterface<split_tabs::SplitTabLayout> {
  public:
   MultiContentsViewUiTest() = default;
+
+  const std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    // TODO(crbug.com/579025166): Fix test failures related to missing tab
+    // search bubble.
+    return {organizer_panel::kOrganizerPanel};
+  }
 
   void SetUpOnMainThread() override {
     SplitViewInteractiveTestMixin::SetUpOnMainThread();

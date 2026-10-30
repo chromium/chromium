@@ -77,6 +77,7 @@ source_set("impl") {
     "//chrome/browser/ui/views/toolbar",
     "//chrome/browser/ui/webui:webui_util",
     "//components/saved_tab_groups/public",
+    "//content/public/browser",
     "//ui/actions",
     "//ui/decoration",
     "//ui/views/controls/webview",

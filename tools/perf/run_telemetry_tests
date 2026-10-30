@@ -27,8 +27,15 @@ def main():
       top_level_dir=path_util.GetTelemetryDir(),
       client_configs=[chromium_config.CLIENT_CONFIG_PATH, telemetry_test_config]
   )
+  # TODO(crbug.com/579030694): Disable OrganizerPanel flag due to eager WebUI
+  # loading creating extra inspectable contexts in DevToolsClientBackendTest.
+  passed_args = sys.argv[1:] + [
+      '--extra-browser-args=--disable-features=OrganizerPanel',
+  ]
   return unittest_runner.Run(
-      project_config, disable_cloud_storage_io_during_test=True)
+      project_config,
+      disable_cloud_storage_io_during_test=True,
+      passed_args=passed_args)
 
 if __name__ == '__main__':
   sys.exit(main())

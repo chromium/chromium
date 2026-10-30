@@ -21,6 +21,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
@@ -118,10 +119,12 @@ class NetworkRequestMetricsBrowserTest
     // Disable InitialWebUI and WebUI Omnibox Popup features to prevent
     // background preloaded WebUI navigations from flakily recording extra
     // samples in the test's histograms.
+    // TODO(crbug.com/579030694): Investigate lazy loading OrganizerPanel.
     scoped_feature_list_.InitWithFeatures(
         {}, {features::kInitialWebUI, features::kWebUIReloadButton,
              omnibox::internal::kWebUIOmniboxPopup,
-             omnibox::internal::kWebUIOmniboxAimPopup});
+             omnibox::internal::kWebUIOmniboxAimPopup,
+             organizer_panel::kOrganizerPanel});
   }
   ~NetworkRequestMetricsBrowserTest() override = default;
 

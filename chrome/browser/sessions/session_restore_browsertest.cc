@@ -86,6 +86,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/browser/ui/startup/startup_types.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -289,6 +290,9 @@ BrowserWindowInterface* FindBrowserWithType(BrowserWindowInterface::Type type) {
 class SessionRestoreTest : public InProcessBrowserTest {
  public:
   SessionRestoreTest() {
+    // TODO(crbug.com/579030694): Investigate lazy loading OrganizerPanel.
+    scoped_feature_list_.InitAndDisableFeature(
+        organizer_panel::kOrganizerPanel);
     dependency_manager_subscription_ =
         BrowserContextDependencyManager::GetInstance()
             ->RegisterCreateServicesCallbackForTesting(
@@ -499,9 +503,7 @@ class SessionRestoreTest : public InProcessBrowserTest {
   // existing tests run with the prewarm feature enabled.
   test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
       test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   base::test::ScopedFeatureList scoped_feature_list_;
-#endif  // !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   base::CallbackListSubscription dependency_manager_subscription_;
 };

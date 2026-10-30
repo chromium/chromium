@@ -201,6 +201,9 @@ class VerticalTabStripRegionView final
   // strip.
   gfx::Rect GetTabStripDraggableBounds() const override;
 
+  // Returns whether the resize area should be visible.
+  bool ShouldShowResizeArea() const;
+
   void OnExpandOnHoverEnabledChanged(bool enabled);
   void UpdateExpandOnHoverState(std::optional<bool> hovered = std::nullopt);
   void OnMouseVelocityHeuristicInterval();

@@ -122,6 +122,7 @@ if (toolkit_views) {
       "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/side_panel:side_panel_views_dependent",
       "//chrome/browser/ui/tabs:tab_menu",
+      "//chrome/browser/ui/tabs/organizer",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/frame:browser_view_header",
       "//chrome/browser/ui/views/interaction",

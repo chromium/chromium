@@ -512,7 +512,7 @@ void VerticalTabStripRegionView::Layout(PassKey) {
   resize_area_->SetBoundsRect(gfx::Rect(bounds().right() - resize_area_width_,
                                         0, resize_area_width_,
                                         bounds().height()));
-  resize_area_->SetVisible(organizer_panel_show_percent_ == 0.0);
+  resize_area_->SetVisible(ShouldShowResizeArea());
   shadow_frame_->SetBoundsRect(GetLocalBounds());
 
   // Ensure that we update the drop arrow position so that it does not render in
@@ -784,8 +784,7 @@ void VerticalTabStripRegionView::OnResize(int resize_amount,
   }
 
   if (done_resizing) {
-    resize_area_->SetVisible(!state_controller_->IsCollapsed() ||
-                             !state_controller_->IsExpandOnHoverEnabled());
+    resize_area_->SetVisible(ShouldShowResizeArea());
     base::RecordAction(base::UserMetricsAction(
         new_state.collapsed ? "VerticalTabs_TabStrip_ResizeToCollapsed"
                             : "VerticalTabs_TabStrip_ResizeToUncollapsed"));
@@ -927,9 +926,7 @@ void VerticalTabStripRegionView::OnCollapseStateChanged(
   // the collapsing state.
   bool collapsed = state != tabs::VerticalTabStripCollapseState::kExpanded;
 
-  resize_area_->SetVisible(!collapsed ||
-                           !state_controller_->IsExpandOnHoverEnabled() ||
-                           resize_area_->is_resizing());
+  resize_area_->SetVisible(ShouldShowResizeArea());
 
   resize_area_width_ = collapsed ? kCollapsedResizeAreaWidth : kResizeAreaWidth;
 
@@ -981,9 +978,20 @@ gfx::Rect VerticalTabStripRegionView::GetTabStripDraggableBounds() const {
   return tab_strip_draggable_bounds;
 }
 
+bool VerticalTabStripRegionView::ShouldShowResizeArea() const {
+  CHECK(state_controller_);
+  CHECK(resize_area_);
+  if (organizer_panel_show_percent_ > 0.0) {
+    return false;
+  }
+  const bool collapsed = state_controller_->GetCollapseState() !=
+                         tabs::VerticalTabStripCollapseState::kExpanded;
+  return !collapsed || !state_controller_->IsExpandOnHoverEnabled() ||
+         resize_area_->is_resizing();
+}
+
 void VerticalTabStripRegionView::OnExpandOnHoverEnabledChanged(bool enabled) {
-  resize_area_->SetVisible(!state_controller_->IsCollapsed() || !enabled ||
-                           resize_area_->is_resizing());
+  resize_area_->SetVisible(ShouldShowResizeArea());
   UpdateExpandOnHoverState();
 }
 

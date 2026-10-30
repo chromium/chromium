@@ -6,12 +6,14 @@
 
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
@@ -38,7 +40,12 @@
 
 class TabSearchBubbleHostBrowserTest : public InProcessBrowserTest {
  public:
-  TabSearchBubbleHostBrowserTest() = default;
+  TabSearchBubbleHostBrowserTest() {
+    // TODO(crbug.com/579025166): Fix test failures related to missing tab
+    // search bubble.
+    scoped_feature_list_.InitAndDisableFeature(
+        organizer_panel::kOrganizerPanel);
+  }
 
   BrowserView* browser_view() {
     return BrowserView::GetBrowserViewForBrowser(browser());
@@ -67,6 +74,7 @@ class TabSearchBubbleHostBrowserTest : public InProcessBrowserTest {
   // real AppKit fullscreen Space transitions are flaky there.
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen_;
 #endif
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostBrowserTest,
@@ -157,6 +165,10 @@ IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostBrowserTest,
 class FullscreenTabSearchBubbleDialogTest : public DialogBrowserTest {
  public:
   FullscreenTabSearchBubbleDialogTest() {
+    // TODO(crbug.com/579025166): Fix test failures related to missing tab
+    // search bubble.
+    scoped_feature_list_.InitAndDisableFeature(
+        organizer_panel::kOrganizerPanel);
 #if BUILDFLAG(IS_CHROMEOS)
     chromeos::MultitaskMenuNudgeController::SetSuppressNudgeForTesting(true);
 #endif
@@ -179,6 +191,7 @@ class FullscreenTabSearchBubbleDialogTest : public DialogBrowserTest {
   // real AppKit fullscreen Space transitions are flaky there.
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen_;
 #endif
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(FullscreenTabSearchBubbleDialogTest, InvokeUi_default) {

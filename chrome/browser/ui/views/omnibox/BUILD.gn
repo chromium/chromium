@@ -394,6 +394,7 @@ if (!is_chromeos_device) {
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/permission_bubble",
+      "//chrome/browser/ui/tabs/organizer",
       "//chrome/browser/ui/views/accessibility:dump_accessibility_events_views_browsertest_base",
       "//chrome/browser/ui/views/frame",
       "//chrome/browser/ui/views/frame:browser_view_header",

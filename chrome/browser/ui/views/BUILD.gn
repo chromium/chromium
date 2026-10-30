@@ -1770,6 +1770,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/browser_window:create_browser_window",
     "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/browser/ui/login",
+    "//chrome/browser/ui/tabs/organizer",
     "//chrome/browser/ui/test:dialog",
     "//chrome/browser/ui/views/extensions:extensions_views_utils",
     "//chrome/browser/ui/views/frame:browser_view_header",

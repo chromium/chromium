@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/split_view_layout_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -138,8 +139,10 @@ class ToolbarViewTest : public ToolbarAccessibilityTest {
         /*disabled_features=*/
         // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox
         // is enabled and then remove these two Features.
+        // TODO(crbug.com/579030694): Investigate lazy loading OrganizerPanel.
         {omnibox::internal::kWebUIOmniboxPopup,
-         omnibox::internal::kWebUIOmniboxAimPopup});
+         omnibox::internal::kWebUIOmniboxAimPopup,
+         organizer_panel::kOrganizerPanel});
 
     // TODO(crbug.com/557287887): Make SplitViewLayoutMenuModel work with
     // OpenSideBySideTab.

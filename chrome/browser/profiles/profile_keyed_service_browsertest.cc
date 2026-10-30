@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -417,11 +418,13 @@ class ProfileKeyedServiceGuestBrowserTest
   ProfileKeyedServiceGuestBrowserTest() {
     // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox is
     // enabled and then remove this.
+    // TODO(crbug.com/579030694): Investigate lazy loading OrganizerPanel.
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/
         {omnibox::internal::kWebUIOmniboxPopup,
-         omnibox::internal::kWebUIOmniboxAimPopup});
+         omnibox::internal::kWebUIOmniboxAimPopup,
+         organizer_panel::kOrganizerPanel});
   }
   ~ProfileKeyedServiceGuestBrowserTest() override = default;
 
@@ -445,10 +448,12 @@ class ProfileKeyedServiceGuestBrowserTest
   ProfileKeyedServiceGuestBrowserTest() {
     // TODO(crbug.com/452061489): Fix tests that fail when the WebUI Omnibox is
     // enabled and then remove this.
+    // TODO(crbug.com/579030694): Investigate lazy loading OrganizerPanel.
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/{omnibox::internal::kWebUIOmniboxPopup,
-                               omnibox::internal::kWebUIOmniboxAimPopup});
+                               omnibox::internal::kWebUIOmniboxAimPopup,
+                               organizer_panel::kOrganizerPanel});
   }
   ~ProfileKeyedServiceGuestBrowserTest() override = default;
 

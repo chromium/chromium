@@ -554,6 +554,7 @@ if (!is_android) {
       deps += [
         "//chrome/browser/ui:toolbar_controller_util",
         "//chrome/browser/ui/global_media_controls",
+        "//chrome/browser/ui/tabs/organizer",
         "//chrome/browser/ui/views/contextual_tasks",
         "//chrome/browser/ui/views/global_media_controls",
         "//chrome/browser/ui/views/performance_controls",
@@ -651,6 +652,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser/ui/tabs:features",
       "//chrome/browser/ui/tabs:tab_menu",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/tabs/organizer",
       "//chrome/browser/ui/translate:test_support",
       "//chrome/browser/ui/views/extensions:extension_popup",
       "//chrome/browser/ui/views/extensions:extensions_menu_coordinator",

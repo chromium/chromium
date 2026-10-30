@@ -1314,6 +1314,7 @@ if (!is_android) {
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/find_bar",
       "//chrome/browser/ui/startup",
+      "//chrome/browser/ui/tabs/organizer",
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/zoom",
       "//chrome/test:test_support",

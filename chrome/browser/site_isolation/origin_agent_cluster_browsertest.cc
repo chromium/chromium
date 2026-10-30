@@ -15,6 +15,7 @@
 #include "chrome/browser/metrics/metrics_memory_details.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
+#include "chrome/browser/ui/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -182,10 +183,12 @@ class OriginAgentClusterBrowserTest : public InProcessBrowserTest {
     // To keep the tests easier to reason about, turn off both the spare
     // renderer process and process reuse for subframes in different
     // BrowsingInstances.
+    // TODO(crbug.com/579030694): Investigate lazy loading OrganizerPanel.
     std::vector<base::test::FeatureRef> enabled_features = {
         features::kDisableProcessReuse};
     std::vector<base::test::FeatureRef> disabled_features = {
-        features::kSpareRendererForSitePerProcess};
+        features::kSpareRendererForSitePerProcess,
+        organizer_panel::kOrganizerPanel};
 
     // Origin isolation ads exclusion is enabled whenever logical OAC is enabled
     // (regardless of whether origin-keyed processes are enabled). We do this to
