@@ -16826,6 +16826,21 @@
             ]
         }
     ],
+    "SkipDuplicateOnUrlUpdated": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SkipDuplicateOnUrlUpdated"
+                    ]
+                }
+            ]
+        }
+    ],
     "SkipImageClassificationScoringForNonPageLoadTriggers": [
         {
             "platforms": [

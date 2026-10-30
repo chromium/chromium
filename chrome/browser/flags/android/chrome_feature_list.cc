@@ -517,6 +517,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kShowTabListAnimations,
     &kSidePanelTopHairlineRefactorAndroid,
     &kSideUiAllowPause,
+    &kSkipDuplicateOnUrlUpdated,
     &kStartSurfaceReturnTime,
     &kSubmenusInAppMenu,
     &kSubmenusInAppMenuLff,
@@ -985,6 +986,7 @@ BASE_FEATURE(kShortCircuitUnfocusAnimation, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kShowTabListAnimations, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSidePanelTopHairlineRefactorAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSideUiAllowPause, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSkipDuplicateOnUrlUpdated, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kStartSurfaceReturnTime, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kSubmenusInAppMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSubmenusInAppMenuLff, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -91,6 +91,7 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
+import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.NavigationResult;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -1583,6 +1584,54 @@ public class TabUnitTest {
                         /* pdfInfo= */ notNull());
         assertEquals(livePdfNativePage, mTab.getNativePage());
         assertFalse(mTab.getNativePage().isFrozen());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SKIP_DUPLICATE_ON_URL_UPDATED)
+    @DisableFeatures(ChromeFeatureList.ANDROID_SETTINGS_URL)
+    public void testDidFinishNavigationInPrimaryMainFrame_DoesNotFireRedundantOnUrlUpdated() {
+        mTab.setNativePtrForTesting(1);
+        mTab.updateAttachment(mWindowAndroid, mDelegateFactory);
+        when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
+        mTab.setWebContentsForTesting(mWebContents);
+        TabWebContentsObserver.from(mTab).initWebContents(mWebContents);
+
+        NavigationHandle navigation = mock(NavigationHandle.class);
+        when(navigation.hasCommitted()).thenReturn(true);
+        when(navigation.getUrl()).thenReturn(new GURL("https://example.com"));
+        when(navigation.isInPrimaryMainFrame()).thenReturn(true);
+        when(navigation.isSameDocument()).thenReturn(false);
+
+        TabWebContentsObserver.from(mTab)
+                .getWebContentsObserverForTesting()
+                .didFinishNavigationInPrimaryMainFrame(navigation);
+
+        verify(mObserver, never()).onUrlUpdated(mTab);
+    }
+
+    @Test
+    @DisableFeatures({
+        ChromeFeatureList.ANDROID_SETTINGS_URL,
+        ChromeFeatureList.SKIP_DUPLICATE_ON_URL_UPDATED
+    })
+    public void testDidFinishNavigationInPrimaryMainFrame_FiresOnUrlUpdatedWhenFlagDisabled() {
+        mTab.setNativePtrForTesting(1);
+        mTab.updateAttachment(mWindowAndroid, mDelegateFactory);
+        when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
+        mTab.setWebContentsForTesting(mWebContents);
+        TabWebContentsObserver.from(mTab).initWebContents(mWebContents);
+
+        NavigationHandle navigation = mock(NavigationHandle.class);
+        when(navigation.hasCommitted()).thenReturn(true);
+        when(navigation.getUrl()).thenReturn(new GURL("https://example.com"));
+        when(navigation.isInPrimaryMainFrame()).thenReturn(true);
+        when(navigation.isSameDocument()).thenReturn(false);
+
+        TabWebContentsObserver.from(mTab)
+                .getWebContentsObserverForTesting()
+                .didFinishNavigationInPrimaryMainFrame(navigation);
+
+        verify(mObserver).onUrlUpdated(mTab);
     }
 
     private void handleDidFinishNavigation(TabImpl tab, GURL url) {
