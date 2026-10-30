@@ -428,6 +428,11 @@ export class ProfilePickerMainViewElement extends
     return Number(tile.dataset['index']);
   }
 
+  // @override
+  getScrollableContainer(): HTMLElement {
+    return this.$.profilesContainer;
+  }
+
   setDraggingTransitionDurationForTesting(duration: number) {
     this.dragDuration_ = duration;
   }

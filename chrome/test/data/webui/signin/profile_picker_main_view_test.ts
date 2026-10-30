@@ -1100,4 +1100,67 @@ suite('ProfilePickerProfilesReorderingTest', function() {
         ['profile1', 'profile0', 'profile2'],
         'Order after moving last profile left');
   });
+
+  test('ProfileReorder_ScrollOnDragNearEdges', async function() {
+    await setupProfileReorderingTest(4);
+
+    const profilesContainer = mainViewElement.$.profilesContainer;
+    profilesContainer.style.maxHeight = '200px';
+    profilesContainer.style.width = '200px';
+
+    assertTrue(profilesContainer.scrollHeight > profilesContainer.clientHeight);
+    assertEquals(0, profilesContainer.scrollTop);
+
+    const cards = Array.from(
+        mainViewElement.shadowRoot.querySelectorAll<ProfileCardElement>(
+            'profile-card'));
+    const containerRect = profilesContainer.getBoundingClientRect();
+    const card0Rect = cards[0]!.getBoundingClientRect();
+    const dragX = card0Rect.left + card0Rect.width / 2;
+
+    // Drag the first profile card near the bottom edge of the container to
+    // trigger downward scrolling.
+    cards[0]!.dispatchEvent(new DragEvent('dragstart', {
+      clientX: dragX,
+      clientY: card0Rect.top + card0Rect.height / 2,
+    }));
+    mainViewElement.dispatchEvent(new DragEvent('dragover', {
+      clientX: dragX,
+      clientY: containerRect.bottom - 10,
+    }));
+
+    while (profilesContainer.scrollTop + profilesContainer.clientHeight <
+           profilesContainer.scrollHeight) {
+      await new Promise(resolve => requestAnimationFrame(resolve));
+    }
+    assertTrue(profilesContainer.scrollTop > 0);
+
+    // End drag; scrolling should stop.
+    cards[0]!.dispatchEvent(new DragEvent('dragend'));
+    await microtasksFinished();
+
+    const scrollTopAfterEnd = profilesContainer.scrollTop;
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    assertEquals(scrollTopAfterEnd, profilesContainer.scrollTop);
+
+    // Drag the last profile card near the top edge to trigger upward scrolling.
+    const card3Rect = cards[3]!.getBoundingClientRect();
+    cards[3]!.dispatchEvent(new DragEvent('dragstart', {
+      clientX: dragX,
+      clientY: card3Rect.top + card3Rect.height / 2,
+    }));
+    mainViewElement.dispatchEvent(new DragEvent('dragover', {
+      clientX: dragX,
+      clientY: containerRect.top + 10,
+    }));
+
+    while (profilesContainer.scrollTop > 0) {
+      await new Promise(resolve => requestAnimationFrame(resolve));
+    }
+    assertEquals(0, profilesContainer.scrollTop);
+
+    cards[3]!.dispatchEvent(new DragEvent('dragend'));
+    await microtasksFinished();
+  });
+
 });
