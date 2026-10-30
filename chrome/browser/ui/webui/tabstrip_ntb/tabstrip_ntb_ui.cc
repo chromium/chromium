@@ -135,9 +135,14 @@ void TabStripNtbUI::BindPage(
     mojo::PendingRemote<tabstrip_ntb::mojom::Page> page) {
   page_.reset();
   page_.Bind(std::move(page));
+  if (button_visible_.has_value()) {
+    // If the button visibility was set before the page was bound, set it now.
+    page_->SetButtonVisible(*button_visible_);
+  }
 }
 
 void TabStripNtbUI::SetButtonVisible(bool visible) {
+  button_visible_ = visible;
   if (page_.is_bound()) {
     page_->SetButtonVisible(visible);
   }

@@ -459,9 +459,9 @@ public class StripLayoutHelper
         /**
          * Fades out trailing buttons.
          *
-         * @param fade Whether the buttons should be made visible (true) or hidden (false).
+         * @param visible Whether the buttons should be made visible (true) or hidden (false).
          */
-        void fadeCompositorButtons(boolean fade);
+        void fadeCompositorButtons(boolean visible);
 
         /** Returns true if the Glic button is currently visible. */
         boolean isGlicButtonVisible();

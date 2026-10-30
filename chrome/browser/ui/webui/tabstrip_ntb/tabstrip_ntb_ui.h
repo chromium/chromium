@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_TABSTRIP_NTB_TABSTRIP_NTB_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_TABSTRIP_NTB_TABSTRIP_NTB_UI_H_
 
+#include <optional>
 #include <string_view>
 
 #include "chrome/browser/ui/webui/tabstrip_ntb/tabstrip_ntb.mojom.h"
@@ -80,6 +81,7 @@ class TabStripNtbUI : public TopChromeWebUIController,
   mojo::Receiver<tabstrip_ntb::mojom::PageHandlerFactory>
       page_factory_receiver_{this};
   mojo::Remote<tabstrip_ntb::mojom::Page> page_;
+  std::optional<bool> button_visible_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
