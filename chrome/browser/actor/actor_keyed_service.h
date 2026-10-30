@@ -5,18 +5,22 @@
 #ifndef CHROME_BROWSER_ACTOR_ACTOR_KEYED_SERVICE_H_
 #define CHROME_BROWSER_ACTOR_ACTOR_KEYED_SERVICE_H_
 
+#include <compare>
 #include <memory>
+#include <string>
+#include <variant>
 #include <vector>
 
 #include "base/callback_list.h"
 #include "base/compiler_specific.h"
-#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
+#include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
@@ -273,17 +277,21 @@ class ActorKeyedService : public KeyedService,
       MessageTriggerTaskStoppedCallback callback);
   void OnMessageTriggerTaskStopped(const std::string& message_id);
 
-  // Holds information about a task that is preparing resources before an
-  // ActorTask is formally created.
-  // Note: `triggering_context_id` refers to the same context identifier as
-  // `glic_trigger_message_id` and `message_id` on neighboring methods.
-  struct PendingTask {
-    std::string triggering_context_id;
-  };
+  // Adds a pending task for an external trigger (an intent from the Gemini
+  // app) that arrives before the FCM message. It has no triggering context ID
+  // yet, so it is stored under a placeholder key. It is replaced by the first
+  // `AddPendingTask()` call, removed when a task is created, and expires after
+  // `timeout`. Calling it again only restarts `timeout`.
+  void AddExternalTriggerPendingTask(base::TimeDelta timeout);
+
+  // Returns true if an external trigger pending task is waiting for a task.
+  bool HasExternalTriggerPendingTaskForTesting() const;
 
   // Registers a pending task for the given unique triggering context ID.
   // While pending, the task is preparing resources before an ActorTask is
   // formally created.
+  // Note: `triggering_context_id` refers to the same context identifier as
+  // `glic_trigger_message_id` and `message_id` on neighboring methods.
   void AddPendingTask(const std::string& triggering_context_id);
 
   // Removes a pending task (e.g. on cancellation, failure, or handoff).
@@ -316,6 +324,17 @@ class ActorKeyedService : public KeyedService,
   base::WeakPtr<ActorKeyedService> GetWeakPtr();
 
  private:
+  // Placeholder key for the external trigger pending task, which has no
+  // triggering context ID until the FCM message arrives.
+  struct ExternalTriggerToken {
+    friend auto operator<=>(const ExternalTriggerToken&,
+                            const ExternalTriggerToken&) = default;
+  };
+  using PendingTaskKey = std::variant<ExternalTriggerToken, std::string>;
+
+  // Returns the `pending_tasks_` key for the external trigger pending task.
+  static PendingTaskKey ExternalTriggerKey();
+
   TaskId CreateTaskImpl(
       std::unique_ptr<actor::ui::UiEventDispatcher> ui_event_dispatcher,
       const TaskSourceInfo& source_info,
@@ -339,6 +358,7 @@ class ActorKeyedService : public KeyedService,
   void InitializeTraceRecording(const base::FilePath& trace_path);
   void OnTraceFilePathResolved(const base::FilePath& resolved_path);
   void OnTraceFileInitDone(bool success);
+  void RemoveExternalTriggerPendingTask();
   void NotifyPendingTaskCountChanged();
 
   // Serializes journal events to a file when --actor-trace-path is set.
@@ -391,11 +411,15 @@ class ActorKeyedService : public KeyedService,
   base::RepeatingCallbackList<void(const std::string&)>
       message_trigger_task_stopped_callbacks_;
 
-  base::flat_map<std::string, PendingTask> pending_tasks_;
+  // Single source of truth for the pending task count.
+  base::flat_set<PendingTaskKey> pending_tasks_;
   base::RepeatingCallbackList<void(size_t)>
       pending_task_count_change_callback_list_;
   base::RepeatingCallbackList<void(const std::string&)>
       pending_task_added_callback_list_;
+  // Expiry for the `ExternalTriggerToken` entry only. The state itself lives
+  // in `pending_tasks_`.
+  base::OneShotTimer external_trigger_expiry_;
 
 #if BUILDFLAG(IS_ANDROID)
   base::RepeatingCallbackList<void(const std::string&)>

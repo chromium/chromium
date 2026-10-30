@@ -94,8 +94,9 @@ public class ActorTaskTimeoutParameters {
     }
 
     /**
-     * Gets the timeout duration for the "Preparing to start your task…" snackbar shown after an
-     * external trigger fallback before a task starts actuating.
+     * Gets the timeout duration while waiting for an externally triggered task to start (used both
+     * for the foreground "Preparing to start your task…" snackbar and for keeping the background
+     * foreground service alive while awaiting the server signal).
      *
      * @return The preparing-to-start-task timeout in milliseconds.
      */

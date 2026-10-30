@@ -241,6 +241,7 @@ void ActorKeyedService::Shutdown() {
     StopTask(task_id, ActorTask::StoppedReason::kShutdown);
   }
 
+  external_trigger_expiry_.Stop();
   if (!pending_tasks_.empty()) {
     pending_tasks_.clear();
     NotifyPendingTaskCountChanged();
@@ -522,6 +523,8 @@ void ActorKeyedService::ResetForTesting() {
     }
   }
   active_tasks_.clear();
+  external_trigger_expiry_.Stop();
+  pending_tasks_.clear();
 }
 
 TaskId ActorKeyedService::CreateTask(
@@ -603,6 +606,8 @@ TaskId ActorKeyedService::CreateTaskImpl(
       ui_state_manager->GetNavigationDelegate());
 
   NotifyTaskStateChanged(*active_tasks_[task_id]);
+
+  RemoveExternalTriggerPendingTask();
 
   return task_id;
 }
@@ -1045,20 +1050,44 @@ void ActorKeyedService::OnMessageTriggerTaskStopped(
   message_trigger_task_stopped_callbacks_.Notify(message_id);
 }
 
+// static
+ActorKeyedService::PendingTaskKey ActorKeyedService::ExternalTriggerKey() {
+  return PendingTaskKey(ExternalTriggerToken());
+}
+
+void ActorKeyedService::AddExternalTriggerPendingTask(base::TimeDelta timeout) {
+  external_trigger_expiry_.Start(
+      FROM_HERE, timeout,
+      base::BindOnce(&ActorKeyedService::RemoveExternalTriggerPendingTask,
+                     base::Unretained(this)));
+  if (pending_tasks_.insert(ExternalTriggerKey()).second) {
+    NotifyPendingTaskCountChanged();
+  }
+}
+
+bool ActorKeyedService::HasExternalTriggerPendingTaskForTesting() const {
+  return pending_tasks_.contains(ExternalTriggerKey());
+}
+
 void ActorKeyedService::AddPendingTask(
     const std::string& triggering_context_id) {
   CHECK(!triggering_context_id.empty());
-  auto [it, inserted] = pending_tasks_.try_emplace(
-      triggering_context_id, PendingTask{triggering_context_id});
+  auto [_, inserted] =
+      pending_tasks_.insert(PendingTaskKey(triggering_context_id));
   if (inserted) {
-    NotifyPendingTaskCountChanged();
+    // The FCM pending task replaces the external trigger pending task, so the
+    // pending count does not drop to zero during the handoff.
+    external_trigger_expiry_.Stop();
+    if (pending_tasks_.erase(ExternalTriggerKey()) == 0) {
+      NotifyPendingTaskCountChanged();
+    }
     pending_task_added_callback_list_.Notify(triggering_context_id);
   }
 }
 
 void ActorKeyedService::RemovePendingTask(
     const std::string& triggering_context_id) {
-  if (pending_tasks_.erase(triggering_context_id) > 0) {
+  if (pending_tasks_.erase(PendingTaskKey(triggering_context_id)) > 0) {
     NotifyPendingTaskCountChanged();
   }
 }
@@ -1069,7 +1098,7 @@ size_t ActorKeyedService::GetPendingTasksCount() const {
 
 bool ActorKeyedService::HasPendingTask(
     const std::string& triggering_context_id) const {
-  return pending_tasks_.contains(triggering_context_id);
+  return pending_tasks_.contains(PendingTaskKey(triggering_context_id));
 }
 
 base::CallbackListSubscription
@@ -1084,7 +1113,7 @@ base::CallbackListSubscription ActorKeyedService::AddPendingTaskAddedCallback(
 }
 
 void ActorKeyedService::NotifyPendingTaskCountChanged() {
-  pending_task_count_change_callback_list_.Notify(pending_tasks_.size());
+  pending_task_count_change_callback_list_.Notify(GetPendingTasksCount());
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1099,5 +1128,12 @@ void ActorKeyedService::EnsureForegroundServiceStarted(
   ensure_foreground_service_started_callbacks_.Notify(glic_trigger_message_id);
 }
 #endif
+
+void ActorKeyedService::RemoveExternalTriggerPendingTask() {
+  external_trigger_expiry_.Stop();
+  if (pending_tasks_.erase(ExternalTriggerKey()) > 0) {
+    NotifyPendingTaskCountChanged();
+  }
+}
 
 }  // namespace actor

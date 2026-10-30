@@ -212,6 +212,11 @@ int32_t ActorKeyedServiceAndroid::GetPendingTasksCount() {
   return static_cast<int32_t>(service_->GetPendingTasksCount());
 }
 
+void ActorKeyedServiceAndroid::AddExternalTriggerPendingTask(
+    int64_t timeout_ms) {
+  service_->AddExternalTriggerPendingTask(base::Milliseconds(timeout_ms));
+}
+
 void ActorKeyedServiceAndroid::AddPendingTask(const std::string& context_id) {
   service_->AddPendingTask(context_id);
 }

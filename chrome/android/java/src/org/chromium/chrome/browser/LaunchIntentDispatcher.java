@@ -65,7 +65,6 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
-import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.ui.widget.Toast;
@@ -84,9 +83,6 @@ public class LaunchIntentDispatcher {
     /** Extra indicating launch mode used. */
     public static final String EXTRA_LAUNCH_MODE =
             "com.google.android.apps.chrome.EXTRA_LAUNCH_MODE";
-
-    private static final String START_ACTOR_FOREGROUND_SERVICE =
-            "org.chromium.chrome.browser.actor.START_ACTOR_FOREGROUND_SERVICE";
 
     private static final String GLIC_EXTERNAL_TRIGGERING_ACTION =
             GlicIntentConstants.ACTION_EXTERNAL_TRIGGERING;
@@ -207,15 +203,11 @@ public class LaunchIntentDispatcher {
                 // TODO(b/557413667): It should be possible to warm up Glic instance here as
                 // well, in the future.
                 if (ActorUtils.isBackgroundActuationEnabled()) {
-                    Intent serviceIntent =
-                            new Intent(
-                                    currentActivity,
-                                    org.chromium.chrome.browser.actor.ActorForegroundService.class);
-                    serviceIntent.setAction(START_ACTOR_FOREGROUND_SERVICE);
-                    IntentUtils.addTrustedIntentExtras(serviceIntent);
-                    ForegroundServiceUtils.getInstance().startForegroundService(serviceIntent);
-                    // TODO(b/548905982): Ensure foreground service started before finishing
-                    // activity.
+                    ActorKeyedService actorService =
+                            ActorKeyedServiceFactory.getForProfile(profile);
+                    if (actorService != null) {
+                        actorService.addExternalTriggerPendingTask();
+                    }
                     currentActivity.setResult(Activity.RESULT_OK);
                     recordExternalTriggerDispatchResult(
                             ExternalTriggerDispatchResult.STARTED_BACKGROUND_SERVICE);
