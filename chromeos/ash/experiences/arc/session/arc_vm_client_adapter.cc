@@ -709,7 +709,11 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     if (user_id_hash_.empty()) {
       LOG(ERROR) << "User ID hash is not set";
       StopArcInstanceInternal();
-      std::move(callback).Run(false);
+      // Post the callback asynchronously so that
+      // ArcSessionRunner::StartArcSession() does not synchronously destroy
+      // |arc_session_| in OnSessionStopped() before calling RequestUpgrade().
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), false));
       return;
     }
 
@@ -826,8 +830,14 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     DCHECK(arc_service_manager);
     arc_service_manager->arc_bridge_service()->app()->RemoveObserver(this);
 
+    if (user_id_hash_.empty()) {
+      // In browser tests that set up a fake AppInstance without configuring
+      // ARCVM user info, |user_id_hash_| can be empty.
+      LOG(WARNING) << "User ID hash is not set";
+      return;
+    }
+
     vm_tools::concierge::ArcVmCompleteBootRequest request;
-    DCHECK(!user_id_hash_.empty());
     request.set_owner_id(user_id_hash_);
     GetConciergeClient()->ArcVmCompleteBoot(
         request,

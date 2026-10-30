@@ -5,7 +5,6 @@
 #include "chromeos/ash/experiences/arc/session/arc_session_impl.h"
 
 #include <fcntl.h>
-#include <grp.h>
 #include <poll.h>
 #include <unistd.h>
 
@@ -251,24 +250,19 @@ std::unique_ptr<ArcClientAdapter> ArcSessionDelegateImpl::CreateClient() {
 
 // static
 base::ScopedFD ArcSessionDelegateImpl::CreateSocketInternal() {
-  constexpr char kArcBridgeSocketPath[] = "/run/chrome/arc_bridge.sock";
   constexpr char kArcVmBridgeSocketPath[] = "/run/chrome/arc/arc_bridge.sock";
-  constexpr char kArcBridgeSocketGroup[] = "arc-bridge";
 
-  const base::FilePath socket_path(IsArcVmEnabled() ? kArcVmBridgeSocketPath
-                                                    : kArcBridgeSocketPath);
-  if (IsArcVmEnabled()) {
-    base::File::Error error;
-    const base::FilePath socket_dir(socket_path.DirName());
-    if (!base::CreateDirectoryAndGetError(socket_dir, &error)) {
-      LOG(ERROR) << "Failed to create " << socket_dir << ": "
-                 << base::File::ErrorToString(error);
-      return base::ScopedFD();
-    }
-    if (!base::SetPosixFilePermissions(socket_dir, 0700)) {
-      PLOG(ERROR) << "Could not set permissions: " << socket_dir;
-      return base::ScopedFD();
-    }
+  const base::FilePath socket_path(kArcVmBridgeSocketPath);
+  base::File::Error error;
+  const base::FilePath socket_dir(socket_path.DirName());
+  if (!base::CreateDirectoryAndGetError(socket_dir, &error)) {
+    LOG(ERROR) << "Failed to create " << socket_dir << ": "
+               << base::File::ErrorToString(error);
+    return base::ScopedFD();
+  }
+  if (!base::SetPosixFilePermissions(socket_dir, 0700)) {
+    PLOG(ERROR) << "Could not set permissions: " << socket_dir;
+    return base::ScopedFD();
   }
 
   mojo::NamedPlatformChannel::Options options;
@@ -284,36 +278,8 @@ base::ScopedFD ArcSessionDelegateImpl::CreateSocketInternal() {
   }
 
   // Change permissions on the socket. Note that since arcvm doesn't directly
-  // share the socket with ARC, it can use 0600 and the default group. arcvm
-  // build doesn't have `kArcBridgeSocketGroup` in the first place.
-  if (!IsArcVmEnabled()) {
-    struct group arc_bridge_group;
-    struct group* arc_bridge_group_res = nullptr;
-    int ret = 0;
-    char buf[10000];
-    do {
-      ret = getgrnam_r(kArcBridgeSocketGroup, &arc_bridge_group, buf,
-                       sizeof(buf), &arc_bridge_group_res);
-    } while (ret == EINTR);
-    if (ret != 0) {
-      LOG(ERROR) << "getgrnam_r: "
-                 << UNSAFE_TODO(strerror_r(ret, buf, sizeof(buf)));
-      return base::ScopedFD();
-    }
-
-    if (!arc_bridge_group_res) {
-      LOG(ERROR) << "Group '" << kArcBridgeSocketGroup << "' not found";
-      return base::ScopedFD();
-    }
-
-    if (chown(socket_path.value().c_str(), -1, arc_bridge_group.gr_gid) < 0) {
-      PLOG(ERROR) << "chown failed";
-      return base::ScopedFD();
-    }
-  }
-
-  if (!base::SetPosixFilePermissions(socket_path,
-                                     IsArcVmEnabled() ? 0600 : 0660)) {
+  // share the socket with ARC, it can use 0600 and the default group.
+  if (!base::SetPosixFilePermissions(socket_path, 0600)) {
     PLOG(ERROR) << "Could not set permissions: " << socket_path;
     return base::ScopedFD();
   }

@@ -6,12 +6,10 @@
 
 #include <memory>
 
-#include "base/command_line.h"
 #include "base/scoped_observation.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/dbus/upstart/fake_upstart_client.h"
-#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,17 +46,6 @@ TEST_F(ArcClientAdapterTest, ConstructDestruct) {
   base::ScopedObservation<ArcClientAdapter, ArcClientAdapter::Observer>
       adapter_observation(this);
   adapter_observation.Observe(adapter.get());
-}
-
-TEST_F(ArcClientAdapterTest, ConstructDestruct_WithARCVM) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->InitFromArgv({"", "--enable-arcvm"});
-  ASSERT_TRUE(IsArcVmEnabled());
-
-  auto vm_adapter = ArcClientAdapter::Create();
-  base::ScopedObservation<ArcClientAdapter, ArcClientAdapter::Observer>
-      vm_adapter_observation(this);
-  vm_adapter_observation.Observe(vm_adapter.get());
 }
 
 }  // namespace

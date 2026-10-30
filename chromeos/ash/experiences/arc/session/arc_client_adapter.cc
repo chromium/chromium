@@ -5,8 +5,6 @@
 #include "chromeos/ash/experiences/arc/session/arc_client_adapter.h"
 
 #include "chromeos/ash/components/dbus/arc/arc.pb.h"
-#include "chromeos/ash/experiences/arc/arc_util.h"
-#include "chromeos/ash/experiences/arc/session/arc_container_client_adapter.h"
 #include "chromeos/ash/experiences/arc/session/arc_start_params.h"
 #include "chromeos/ash/experiences/arc/session/arc_vm_client_adapter.h"
 
@@ -72,8 +70,7 @@ void ArcClientAdapter::RemoveObserver(Observer* observer) {
 
 // static
 std::unique_ptr<ArcClientAdapter> ArcClientAdapter::Create() {
-  return IsArcVmEnabled() ? CreateArcVmClientAdapter()
-                          : CreateArcContainerClientAdapter();
+  return CreateArcVmClientAdapter();
 }
 
 StartArcMiniInstanceRequest

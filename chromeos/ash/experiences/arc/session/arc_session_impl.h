@@ -220,11 +220,6 @@ class ArcSessionImpl : public ArcSession,
   // which should be accept(2)ed to connect ArcBridgeService Mojo channel.
   void OnUpgraded(base::ScopedFD socket_fd, bool result);
 
-  // D-Bus callback for UpgradeArcContainer when the upgrade fails.
-  // |low_free_disk_space| signals whether the failure was due to low free disk
-  // space.
-  void OnUpgradeError(bool low_free_disk_space);
-
   // Called when Mojo connection is established (or canceled during the
   // connect.)
   void OnMojoConnected(
