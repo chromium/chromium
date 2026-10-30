@@ -759,6 +759,7 @@ if (!limit_android_deps) {
         "//third_party/android_deps:guava_java",
         "//third_party/android_deps:kotlin_stdlib_java",
       ]
+      jar_excluded_patterns = [ "META-INF/services/kotlinx.coroutines*" ]
     }
   }
 

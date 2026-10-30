@@ -855,6 +855,13 @@ No modifications.
                 sb.append('    "io/grpc/binder/internal/IntentNameResolver*",\n')
                 sb.append('  ]\n')
                 break
+            case 'com_google_mlkit_genai_prompt':
+                // Duplicate of META-INF/services in kotlinx_coroutines_android_java (which is in
+                // the base split), causing R8 ServiceLoader inlining to fail across splits.
+                sb.append('  jar_excluded_patterns = [\n')
+                sb.append('    "META-INF/services/kotlinx.coroutines*",\n')
+                sb.append('  ]\n')
+                break
         }
     }
 

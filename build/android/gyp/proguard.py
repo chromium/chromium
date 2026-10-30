@@ -71,7 +71,7 @@ _IGNORE_WARNINGS = (
     # r8, see b/538647947. Public builds use obfuscated classes under
     # com.google.android.gms.internal.mlkit_genai_prompt, while internal Clank
     # builds use un-obfuscated classes from google3 CIPD.
-    r'com/google/(?:android/gms/internal/mlkit_genai_prompt/zzy[a-z]|mlkit/genai/prompt/internal/.*)\.class:.*Could not inline ServiceLoader\.load',
+    r'com/google/(?:android/gms/internal/mlkit_genai_prompt/zz[a-z]+|mlkit/genai/prompt/internal/.*)\.class:.*Could not inline ServiceLoader\.load',
     # This class is referenced by kotlinx-coroutines-core-jvm but it does not
     # depend on it. Not actually needed though.
     r'Missing class org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement',

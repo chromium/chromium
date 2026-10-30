@@ -1677,17 +1677,17 @@
     {
         "name": "genai-common",
         "group": "com.google.mlkit",
-        "version": "1.0.0-beta4"
+        "version": "1.0.0-beta5"
     },
     {
         "name": "genai-prompt",
         "group": "com.google.mlkit",
-        "version": "1.0.0-beta4"
+        "version": "1.0.0-beta5"
     },
     {
         "name": "genai-schema",
         "group": "com.google.mlkit",
-        "version": "1.0.0-alpha1"
+        "version": "1.0.0-alpha2"
     },
     {
         "name": "protobuf-javalite",
@@ -2047,7 +2047,7 @@
     {
         "name": "kotlinx-coroutines-reactive",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.7.3"
+        "version": "1.11.0"
     },
     {
         "name": "kotlinx-coroutines-test",
