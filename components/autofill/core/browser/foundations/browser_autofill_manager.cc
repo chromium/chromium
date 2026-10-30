@@ -1916,50 +1916,33 @@ void BrowserAutofillManager::FillOrPreviewForm(
   if (!form || !trigger_field) {
     return;
   }
-  std::visit(absl::Overload{
-                 [&](const AutofillProfile*) {
-                   form_filler_->FillOrPreviewForm(
-                       action_persistence, filling_payload, CHECK_DEREF(form),
-                       CHECK_DEREF(trigger_field), trigger_source,
-                       blocked_fields, FillId::Create(),
-                       /*forced_fill_values=*/{},
-                       FormFiller::RefillOptions::NotRefill());
-                 },
-                 [&](const CreditCard* credit_card) {
-                   // We still need to take care of authentication
-                   // flows, which is why we do not forward right
-                   // away to FormFiller.
-                   FillOrPreviewCreditCardForm(
-                       action_persistence, CHECK_DEREF(form),
-                       CHECK_DEREF(trigger_field), *credit_card, trigger_source,
-                       require_user_confirmation, blocked_fields);
-                 },
-                 [&](const EntityInstance*) {
-                   form_filler_->FillOrPreviewForm(
-                       action_persistence, filling_payload, CHECK_DEREF(form),
-                       CHECK_DEREF(trigger_field), trigger_source,
-                       blocked_fields, FillId::Create(),
-                       /*forced_fill_values=*/{},
-                       FormFiller::RefillOptions::NotRefill());
-                 },
-                 [&](const VerifiedProfile*) {
-                   form_filler_->FillOrPreviewForm(
-                       action_persistence, filling_payload, CHECK_DEREF(form),
-                       CHECK_DEREF(trigger_field), trigger_source,
-                       blocked_fields, FillId::Create(),
-                       /*forced_fill_values=*/{},
-                       FormFiller::RefillOptions::NotRefill());
-                 },
-                 [&](const OtpFillData*) {
-                   form_filler_->FillOrPreviewForm(
-                       action_persistence, filling_payload, CHECK_DEREF(form),
-                       CHECK_DEREF(trigger_field), trigger_source,
-                       blocked_fields, FillId::Create(),
-                       /*forced_fill_values=*/{},
-                       FormFiller::RefillOptions::NotRefill());
-                 }},
-             filling_payload);
+  if (const CreditCard* const* credit_card =
+          std::get_if<const CreditCard*>(&filling_payload)) {
+    // We still need to take care of authentication flows, which is why we do
+    // not forward right away to FormFiller.
+    FillOrPreviewCreditCardForm(action_persistence, CHECK_DEREF(form),
+                                CHECK_DEREF(trigger_field),
+                                CHECK_DEREF(*credit_card), trigger_source,
+                                require_user_confirmation, blocked_fields);
+    return;
+  }
+  const FillingProduct filling_product = std::visit(
+      absl::Overload{
+          [](const AutofillProfile*) { return FillingProduct::kAddress; },
+          [](const CreditCard*) -> FillingProduct { NOTREACHED(); },
+          [](const EntityInstance*) { return FillingProduct::kAutofillAi; },
+          [](const VerifiedProfile*) {
+            return FillingProduct::kIdentityCredential;
+          },
+          [](const OtpFillData*) { return FillingProduct::kOneTimePassword; }},
+      filling_payload);
+  form_filler_->FillOrPreviewForm(
+      action_persistence, filling_product, filling_payload, CHECK_DEREF(form),
+      CHECK_DEREF(trigger_field), trigger_source, blocked_fields,
+      FillId::Create(),
+      /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
 }
+
 void BrowserAutofillManager::FillOrPreviewField(
     mojom::ActionPersistence action_persistence,
     mojom::FieldActionType action_type,
@@ -2116,10 +2099,10 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
           return;
         }
         self.form_filler_->FillOrPreviewForm(
-            action_persistence, &credit_card, CHECK_DEREF(cached_form),
-            CHECK_DEREF(cached_trigger_field), trigger_source, blocked_fields,
-            FillId::Create(), /*forced_fill_values=*/{},
-            FormFiller::RefillOptions::NotRefill());
+            action_persistence, FillingProduct::kCreditCard, &credit_card,
+            CHECK_DEREF(cached_form), CHECK_DEREF(cached_trigger_field),
+            trigger_source, blocked_fields, FillId::Create(),
+            /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
       };
 
   // Called when fetching the credit card was successful.

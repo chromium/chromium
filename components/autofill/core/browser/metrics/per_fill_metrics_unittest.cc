@@ -8,12 +8,14 @@
 #include "base/containers/to_vector.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace autofill::autofill_metrics {
 namespace {
@@ -40,6 +42,18 @@ class PerFillMetricsTest : public AutofillMetricsBaseTest,
   void FillForm(FormData form,
                 FillingPayload filling_payload,
                 std::optional<FieldGlobalId> trigger_field_id = std::nullopt) {
+    FillingProduct filling_product = std::visit(
+        absl::Overload{
+            [](const AutofillProfile*) { return FillingProduct::kAddress; },
+            [](const CreditCard*) { return FillingProduct::kCreditCard; },
+            [](const EntityInstance*) { return FillingProduct::kAutofillAi; },
+            [](const VerifiedProfile*) {
+              return FillingProduct::kIdentityCredential;
+            },
+            [](const OtpFillData*) {
+              return FillingProduct::kOneTimePassword;
+            }},
+        filling_payload);
     FormStructure& form_structure = CHECK_DEREF(
         test_api(autofill_manager()).FindCachedFormById(form.global_id()));
     AutofillField& autofill_field = CHECK_DEREF(form_structure.GetFieldById(
@@ -47,8 +61,8 @@ class PerFillMetricsTest : public AutofillMetricsBaseTest,
     test_api(autofill_manager())
         .form_filler()
         .FillOrPreviewForm(
-            mojom::ActionPersistence::kFill, filling_payload, form_structure,
-            autofill_field, AutofillTriggerSource::kPopup,
+            mojom::ActionPersistence::kFill, filling_product, filling_payload,
+            form_structure, autofill_field, AutofillTriggerSource::kPopup,
             /*blocked_fields=*/{}, FillId::Create(),
             /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
   }

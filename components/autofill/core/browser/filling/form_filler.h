@@ -179,6 +179,7 @@ class FormFiller {
   // TODO(crbug.com/40227071): Clean up the API.
   void FillOrPreviewForm(
       mojom::ActionPersistence action_persistence,
+      FillingProduct filling_product,
       const FillingPayload& filling_payload,
       FormStructure& form,
       AutofillField& trigger_field,
@@ -250,6 +251,7 @@ class FormFiller {
       mojom::ActionPersistence action_persistence,
       const FormStructure& form,
       const AutofillField& autofill_trigger_field,
+      FillingProduct filling_product,
       const AugmentedFillingPayload& augmented_filling_payload,
       const base::flat_set<FieldGlobalId>& blocked_fields,
       FillId fill_id,
@@ -285,6 +287,7 @@ class FormFiller {
       base::span<const FormFieldData> browser_filled_fields,
       const base::flat_set<FieldGlobalId>& safe_filled_field_ids,
       const absl::flat_hash_map<FieldGlobalId, FieldType>& filled_field_types,
+      FillingProduct filling_product,
       const AugmentedFillingPayload& augmented_filling_payload) const;
 
   // Appends `TriggerFillFieldLogEvent` and `FillFieldLogEvents` to the relevant

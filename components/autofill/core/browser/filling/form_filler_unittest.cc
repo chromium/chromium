@@ -65,6 +65,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace autofill {
 namespace {
@@ -257,9 +258,21 @@ class FormFillerTest
       const FormFieldData& trigger_field,
       FillingPayload filling_payload,
       AutofillTriggerSource trigger_source = AutofillTriggerSource::kPopup) {
+    FillingProduct filling_product = std::visit(
+        absl::Overload{
+            [](const AutofillProfile*) { return FillingProduct::kAddress; },
+            [](const CreditCard*) { return FillingProduct::kCreditCard; },
+            [](const EntityInstance*) { return FillingProduct::kAutofillAi; },
+            [](const VerifiedProfile*) {
+              return FillingProduct::kIdentityCredential;
+            },
+            [](const OtpFillData*) {
+              return FillingProduct::kOneTimePassword;
+            }},
+        filling_payload);
     return ApplyFormAction(std::move(form), [&](const FormData& form) {
       form_filler().FillOrPreviewForm(
-          mojom::ActionPersistence::kFill, filling_payload,
+          mojom::ActionPersistence::kFill, filling_product, filling_payload,
           *GetFormStructure(form),
           *GetAutofillField(form.global_id(), trigger_field.global_id()),
           trigger_source, /*blocked_fields=*/{}, FillId::Create(),
@@ -314,8 +327,8 @@ class FormFillerTest
           return base::ToVector(data, &FormFieldData::global_id);
         });
     form_filler().FillOrPreviewForm(
-        mojom::ActionPersistence::kPreview, &virtual_card,
-        *GetFormStructure(form),
+        mojom::ActionPersistence::kPreview, FillingProduct::kCreditCard,
+        &virtual_card, *GetFormStructure(form),
         *GetAutofillField(form.global_id(), field.global_id()),
         AutofillTriggerSource::kPopup, /*blocked_fields=*/{}, FillId::Create(),
         /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
@@ -1989,11 +2002,11 @@ TEST_F(FormFillerTest, FillOrPreviewForm_WithBlockedFields) {
       .WillOnce(Return(std::vector<FieldGlobalId>{
           form.fields()[0].global_id(), form.fields()[1].global_id()}));
 
-  form_filler().FillOrPreviewForm(mojom::ActionPersistence::kFill, &profile,
-                                  *form_structure, *form_structure->field(0),
-                                  AutofillTriggerSource::kPopup, blocked_fields,
-                                  FillId::Create(), /*forced_fill_values=*/{},
-                                  FormFiller::RefillOptions::NotRefill());
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, FillingProduct::kAddress, &profile,
+      *form_structure, *form_structure->field(0), AutofillTriggerSource::kPopup,
+      blocked_fields, FillId::Create(), /*forced_fill_values=*/{},
+      FormFiller::RefillOptions::NotRefill());
 
   // Verify that the skip reasons explicitly included being blocked.
   base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>> skip_reasons =
@@ -2026,11 +2039,11 @@ TEST_F(FormFillerTest, Refill_UsesBlockedFields) {
   EXPECT_CALL(autofill_driver(), ApplyFormAction)
       .WillOnce(
           Return(std::vector<FieldGlobalId>{form.fields()[0].global_id()}));
-  form_filler().FillOrPreviewForm(mojom::ActionPersistence::kFill, &profile,
-                                  *form_structure, *form_structure->field(0),
-                                  AutofillTriggerSource::kPopup, blocked_fields,
-                                  FillId::Create(), /*forced_fill_values=*/{},
-                                  FormFiller::RefillOptions::NotRefill());
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, FillingProduct::kAddress, &profile,
+      *form_structure, *form_structure->field(0), AutofillTriggerSource::kPopup,
+      blocked_fields, FillId::Create(), /*forced_fill_values=*/{},
+      FormFiller::RefillOptions::NotRefill());
 
   // Append a new field to the form, which will trigger a refill when the form
   // is re-parsed.
@@ -2109,12 +2122,14 @@ TEST_F(FormFillerTest, InitialFillsHaveDistinctIds) {
   FormsSeen({form1, form2});
 
   form_filler().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, &credit_card, *GetFormStructure(form1),
+      mojom::ActionPersistence::kFill, FillingProduct::kCreditCard,
+      &credit_card, *GetFormStructure(form1),
       *GetAutofillField(form1.global_id(), form1.fields().front().global_id()),
       AutofillTriggerSource::kPopup, /*blocked_fields=*/{}, FillId::Create(),
       /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
   form_filler().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, &credit_card, *GetFormStructure(form2),
+      mojom::ActionPersistence::kFill, FillingProduct::kCreditCard,
+      &credit_card, *GetFormStructure(form2),
       *GetAutofillField(form2.global_id(), form2.fields().front().global_id()),
       AutofillTriggerSource::kPopup, /*blocked_fields=*/{}, FillId::Create(),
       /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
@@ -2156,7 +2171,8 @@ TEST_F(FormFillerTest, FillAndRefillHaveSameFillId) {
   FormsSeen({form});
 
   form_filler().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, &credit_card, *GetFormStructure(form),
+      mojom::ActionPersistence::kFill, FillingProduct::kCreditCard,
+      &credit_card, *GetFormStructure(form),
       *GetAutofillField(form.global_id(), form.fields().front().global_id()),
       AutofillTriggerSource::kPopup, /*blocked_fields=*/{}, FillId::Create(),
       /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
@@ -2243,7 +2259,8 @@ TEST_F(FormFillerTest, ProgrammaticRefillBeforeTimeout) {
 
   // The original fill.
   form_filler().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, &credit_card, *GetFormStructure(form),
+      mojom::ActionPersistence::kFill, FillingProduct::kCreditCard,
+      &credit_card, *GetFormStructure(form),
       *GetAutofillField(form.global_id(), form.fields().front().global_id()),
       AutofillTriggerSource::kPopup, /*blocked_fields=*/{}, FillId::Create(),
       /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
@@ -2293,7 +2310,8 @@ TEST_F(FormFillerTest, NoProgrammaticRefillAfterTimeout) {
 
   // The original fill.
   form_filler().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, &credit_card, *GetFormStructure(form),
+      mojom::ActionPersistence::kFill, FillingProduct::kCreditCard,
+      &credit_card, *GetFormStructure(form),
       *GetAutofillField(form.global_id(), form.fields().front().global_id()),
       AutofillTriggerSource::kPopup, /*blocked_fields=*/{}, FillId::Create(),
       /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
@@ -2419,7 +2437,8 @@ TEST_P(RefillTest_SuppressAutomaticRefills, SuppressAutomaticRefills) {
   FormsSeen({form});
 
   form_filler().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, &credit_card, *GetFormStructure(form),
+      mojom::ActionPersistence::kFill, FillingProduct::kCreditCard,
+      &credit_card, *GetFormStructure(form),
       *GetAutofillField(form.global_id(), form.fields().front().global_id()),
       AutofillTriggerSource::kPopup, /*blocked_fields=*/{}, FillId::Create(),
       /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
@@ -2911,10 +2930,10 @@ TEST_F(FormFillerTest, PreviewOtp_SingleField) {
       });
 
   form_filler().FillOrPreviewForm(
-      mojom::ActionPersistence::kPreview, &otp_fill_data, *form_structure,
-      *form_structure->field(0), AutofillTriggerSource::kPopup,
-      /*blocked_fields=*/{}, FillId::Create(), /*forced_fill_values=*/{},
-      FormFiller::RefillOptions::NotRefill());
+      mojom::ActionPersistence::kPreview, FillingProduct::kOneTimePassword,
+      &otp_fill_data, *form_structure, *form_structure->field(0),
+      AutofillTriggerSource::kPopup, /*blocked_fields=*/{}, FillId::Create(),
+      /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
 
   ASSERT_EQ(previewed_fields.size(), 1u);
   EXPECT_THAT(previewed_fields[0], AutofilledWith(u"123456"));
@@ -2958,10 +2977,10 @@ TEST_F(FormFillerTest, PreviewOtp_MultiField) {
       });
 
   form_filler().FillOrPreviewForm(
-      mojom::ActionPersistence::kPreview, &otp_fill_data, *form_structure,
-      *form_structure->field(0), AutofillTriggerSource::kPopup,
-      /*blocked_fields=*/{}, FillId::Create(), /*forced_fill_values=*/{},
-      FormFiller::RefillOptions::NotRefill());
+      mojom::ActionPersistence::kPreview, FillingProduct::kOneTimePassword,
+      &otp_fill_data, *form_structure, *form_structure->field(0),
+      AutofillTriggerSource::kPopup, /*blocked_fields=*/{}, FillId::Create(),
+      /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
 
   EXPECT_THAT(previewed_fields,
               ElementsAre(AutofilledWith(u"4"), AutofilledWith(u"3"),
@@ -3071,10 +3090,10 @@ TEST_F(FormFillerTest, FillOtp_SkipReasonsAppliedDuringFill) {
       });
 
   form_filler().FillOrPreviewForm(
-      mojom::ActionPersistence::kFill, &otp_fill_data, *form_structure,
-      *form_structure->field(0), AutofillTriggerSource::kPopup, blocked_fields,
-      FillId::Create(), /*forced_fill_values=*/{},
-      FormFiller::RefillOptions::NotRefill());
+      mojom::ActionPersistence::kFill, FillingProduct::kOneTimePassword,
+      &otp_fill_data, *form_structure, *form_structure->field(0),
+      AutofillTriggerSource::kPopup, blocked_fields, FillId::Create(),
+      /*forced_fill_values=*/{}, FormFiller::RefillOptions::NotRefill());
 
   // Only field 0 should be sent to the renderer to be filled.
   ASSERT_EQ(filled_fields.size(), 1u);
