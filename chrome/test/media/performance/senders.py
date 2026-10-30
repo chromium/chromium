@@ -9,6 +9,7 @@ only place that looks at the OS name; everything else calls Sender methods.
 
 import abc
 import glob
+import http.client
 import json
 import logging
 import os
@@ -17,6 +18,7 @@ import shutil
 import subprocess
 import tempfile
 import time
+import urllib.error
 import urllib.request
 
 import perf_config
@@ -35,8 +37,44 @@ _CHROMEDRIVER_FLAGS = (
 _CHROMEDRIVER_CHECK_ATTEMPTS = 15
 _CHROMEDRIVER_READY_ATTEMPTS = 30
 
+_CFT_JSON_TIMEOUT_SECS = 30
+_CFT_JSON_ATTEMPTS = 3
+_CFT_JSON_RETRY_DELAY_SECS = 2
+CURL_DOWNLOAD_FLAGS = '-fL --retry 3 --retry-delay 2'
+
 WIN_REMOTE_TMP_DIR = 'C:/cft_temp'
 WIN_SYSTEM32_TAR = 'C:/Windows/System32/tar.exe'
+
+
+def _fetch_cft_json():
+    """Downloads and parses the Chrome for Testing versions JSON."""
+    last_error = None
+    for attempt in range(1, _CFT_JSON_ATTEMPTS + 1):
+        try:
+            with urllib.request.urlopen(
+                perf_config.CFT_JSON_URL, timeout=_CFT_JSON_TIMEOUT_SECS
+            ) as url:
+                return json.loads(url.read().decode())
+        except (
+            urllib.error.URLError,
+            http.client.HTTPException,
+            OSError,
+            ValueError,
+        ) as e:
+            last_error = e
+            logging.warning(
+                'CfT JSON download attempt %d/%d failed: %s',
+                attempt,
+                _CFT_JSON_ATTEMPTS,
+                e,
+            )
+            if attempt < _CFT_JSON_ATTEMPTS:
+                time.sleep(_CFT_JSON_RETRY_DELAY_SECS * (2 ** (attempt - 1)))
+    raise RuntimeError(
+        f'Failed to download Chrome for Testing JSON from '
+        f'{perf_config.CFT_JSON_URL} after {_CFT_JSON_ATTEMPTS} attempts: '
+        f'{last_error}'
+    ) from last_error
 
 
 def download_cft_urls(platform_name, version=None):
@@ -50,8 +88,7 @@ def download_cft_urls(platform_name, version=None):
         (version, chrome_url, chromedriver_url)
     """
     logging.info("Downloading Chrome for Testing JSON data...")
-    with urllib.request.urlopen(perf_config.CFT_JSON_URL) as url:
-        data = json.loads(url.read().decode())
+    data = _fetch_cft_json()
 
     for v in reversed(data['versions']):
         # Match exact version OR the beginning of a version.
@@ -364,8 +401,10 @@ class Sender(abc.ABC):
             )
         else:
             subprocess.run(
-                f"curl -fL {chrome_url} -o {tmp_dir}/{chrome_zip} && "
-                f"curl -fL {driver_url} -o {tmp_dir}/{driver_zip} && "
+                f"curl {CURL_DOWNLOAD_FLAGS} {chrome_url} "
+                f"-o {tmp_dir}/{chrome_zip} && "
+                f"curl {CURL_DOWNLOAD_FLAGS} {driver_url} "
+                f"-o {tmp_dir}/{driver_zip} && "
                 f"unzip -o {tmp_dir}/{chrome_zip} -d {tmp_dir} && "
                 f"unzip -o {tmp_dir}/{driver_zip} -d {tmp_dir}",
                 shell=True,
@@ -522,8 +561,10 @@ class PosixSender(Sender):
             # -f makes curl fail on HTTP errors instead of saving the error
             # page as the zip.
             self._run_checked(
-                f"curl -fL {chrome_url} -o {tmp}/{chrome_zip} && "
-                f"curl -fL {driver_url} -o {tmp}/{driver_zip} && "
+                f"curl {CURL_DOWNLOAD_FLAGS} {chrome_url} "
+                f"-o {tmp}/{chrome_zip} && "
+                f"curl {CURL_DOWNLOAD_FLAGS} {driver_url} "
+                f"-o {tmp}/{driver_zip} && "
                 f"unzip -o {tmp}/{chrome_zip} -d {tmp} && "
                 f"unzip -o {tmp}/{driver_zip} -d {tmp}",
                 'downloading and unzipping Chrome',
@@ -770,8 +811,10 @@ class WindowsSender(Sender):
                 f"Remove-Item -Path '{tmp}/chrome*',"
                 f"'{tmp}/chromedriver*' -Recurse -Force "
                 f"-ErrorAction SilentlyContinue; "
-                f"curl.exe -fL '{chrome_url}' -o '{chrome_zip_path}'; "
-                f"curl.exe -fL '{driver_url}' -o '{driver_zip_path}'; "
+                f"curl.exe {CURL_DOWNLOAD_FLAGS} '{chrome_url}' "
+                f"-o '{chrome_zip_path}'; "
+                f"curl.exe {CURL_DOWNLOAD_FLAGS} '{driver_url}' "
+                f"-o '{driver_zip_path}'; "
                 f"if (Test-Path '{WIN_SYSTEM32_TAR}') {{ "
                 f"Set-Location '{tmp}'; "
                 f"& '{WIN_SYSTEM32_TAR}' -xf '{chrome_zip}'; "

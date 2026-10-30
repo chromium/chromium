@@ -4,9 +4,13 @@
 # found in the LICENSE file.
 """Unit tests for senders.py."""
 
+import http.client
+import io
+import json
 import subprocess
 import unittest
 from unittest import mock
+import urllib.error
 
 import perf_test_fakes as fakes
 from perf_test_fakes import MAC_HOST, NO_ROUTE, WIN_HOST, completed, make_args
@@ -104,6 +108,115 @@ class MakeSenderTest(unittest.TestCase):
         self.assertEqual(senders.LinuxSender.TMP_DIR, '/tmp')
         self.assertEqual(senders.CrosSender.TMP_DIR, '/usr/local/tmp')
         self.assertEqual(senders.WindowsSender.TMP_DIR, 'C:/cft_temp')
+
+
+class DownloadCftUrlsTest(unittest.TestCase):
+    def setUp(self):
+        super().setUp()
+        sleep_patch = mock.patch('time.sleep')
+        self.addCleanup(sleep_patch.stop)
+        self.sleep = sleep_patch.start()
+        self.payload = json.dumps(
+            {
+                'versions': [
+                    {
+                        'version': '119.0.0.1',
+                        'downloads': {
+                            'chrome': [
+                                {'platform': 'mac-arm64', 'url': 'http://c119'}
+                            ],
+                            'chromedriver': [
+                                {'platform': 'mac-arm64', 'url': 'http://d119'}
+                            ],
+                        },
+                    },
+                    {
+                        'version': '120.0.1.2',
+                        'downloads': {
+                            'chrome': [
+                                {
+                                    'platform': 'mac-arm64',
+                                    'url': _CHROME_URL,
+                                }
+                            ],
+                            'chromedriver': [
+                                {
+                                    'platform': 'mac-arm64',
+                                    'url': _DRIVER_URL,
+                                }
+                            ],
+                        },
+                    },
+                ]
+            }
+        ).encode()
+
+    def _response(self):
+        resp = io.BytesIO(self.payload)
+        resp.__enter__ = lambda s: s
+        resp.__exit__ = lambda *args: None
+        return resp
+
+    def test_matches_milestone_prefix_and_sets_timeout(self):
+        with mock.patch(
+            'urllib.request.urlopen', return_value=self._response()
+        ) as urlopen:
+            with self.assertLogs(level='INFO'):
+                result = senders.download_cft_urls('mac-arm64', '119')
+        self.assertEqual(result, ('119.0.0.1', 'http://c119', 'http://d119'))
+        urlopen.assert_called_once_with(
+            senders.perf_config.CFT_JSON_URL, timeout=30
+        )
+        self.sleep.assert_not_called()
+
+    def test_defaults_to_latest_version(self):
+        with mock.patch(
+            'urllib.request.urlopen', return_value=self._response()
+        ):
+            with self.assertLogs(level='INFO'):
+                result = senders.download_cft_urls('mac-arm64')
+        self.assertEqual(result, ('120.0.1.2', _CHROME_URL, _DRIVER_URL))
+
+    def test_retries_transient_errors_with_exponential_backoff(self):
+        with mock.patch(
+            'urllib.request.urlopen',
+            side_effect=[
+                urllib.error.URLError('temporary failure'),
+                http.client.IncompleteRead(b'{'),
+                self._response(),
+            ],
+        ) as urlopen:
+            with self.assertLogs(level='WARNING') as logs:
+                result = senders.download_cft_urls('mac-arm64', '120')
+        self.assertEqual(result, ('120.0.1.2', _CHROME_URL, _DRIVER_URL))
+        self.assertEqual(urlopen.call_count, 3)
+        self.assertEqual(
+            self.sleep.call_args_list, [mock.call(2), mock.call(4)]
+        )
+        self.assertEqual(len(logs.output), 2)
+
+    def test_raises_after_exhausting_attempts(self):
+        error = urllib.error.URLError('503 Service Unavailable')
+        with mock.patch('urllib.request.urlopen', side_effect=error) as urlopen:
+            with self.assertLogs(level='WARNING'):
+                with self.assertRaises(RuntimeError) as ctx:
+                    senders.download_cft_urls('mac-arm64', '120')
+        self.assertEqual(urlopen.call_count, 3)
+        self.assertEqual(
+            self.sleep.call_args_list, [mock.call(2), mock.call(4)]
+        )
+        self.assertIn('after 3 attempts', str(ctx.exception))
+        self.assertIs(ctx.exception.__cause__, error)
+
+    def test_unknown_version_raises(self):
+        with mock.patch(
+            'urllib.request.urlopen', return_value=self._response()
+        ):
+            with self.assertLogs(level='INFO'):
+                with self.assertRaisesRegex(
+                    RuntimeError, 'Could not find downloads for version 999'
+                ):
+                    senders.download_cft_urls('mac-arm64', '999')
 
 
 class DetectPlatformTest(fakes.SenderTestCase):
@@ -340,7 +453,11 @@ class InstallChromeTest(fakes.SenderTestCase):
         self.assertEqual(version, '120.0.1.2')
         self.assertEqual(app_path, _MAC_APP)
         self.assertEqual(sender.driver_path, _MAC_DRIVER)
-        self.assertTrue(self.ssh.ran_prefix(f'curl -fL {_CHROME_URL} '))
+        self.assertTrue(
+            self.ssh.ran_prefix(
+                f'curl {senders.CURL_DOWNLOAD_FLAGS} {_CHROME_URL} '
+            )
+        )
         self.assertTrue(self.ssh.ran(_MAC_XATTR))
         self.assertTrue(self.ssh.ran(_MAC_CHMOD))
         spawned = self.popen.call_args[0][0][-1]
@@ -439,7 +556,10 @@ class InstallChromeWindowsTest(fakes.SenderTestCase):
             if c.startswith(_WIN_SETUP_PREFIX)
         ]
         self.assertEqual(len(setup), 1)
-        self.assertIn(f"curl.exe -fL '{_WIN_CHROME_URL}'", setup[0])
+        self.assertIn(
+            f"curl.exe {senders.CURL_DOWNLOAD_FLAGS} '{_WIN_CHROME_URL}'",
+            setup[0],
+        )
         for command in (_WIN_TASK_DELETE, _WIN_TASK_CREATE, _WIN_TASK_RUN):
             self.assertTrue(self.ssh.ran(command), command)
 
@@ -533,6 +653,25 @@ class LocalInstallTest(fakes.SenderTestCase):
                     app_path, _ = sender.install_chrome('120')
                 self.assertEqual(app_path, expected)
                 self.assertEqual(sender.driver_path, _MAC_DRIVER)
+
+    def test_local_download_uses_retry_flags(self):
+        self.run.side_effect = None
+        self.run.return_value = completed()
+        self._patch('os.path.exists', return_value=False)
+        self._patch('platform.machine', return_value='x86_64')
+        self._patch(
+            'senders.download_cft_urls',
+            return_value=('120.0.1.2', _CHROME_URL, _DRIVER_URL),
+        )
+        sender = senders.make_sender(
+            make_args(sender='localhost', sender_os='linux')
+        )
+        with self.assertLogs(level='INFO'):
+            sender.install_chrome('120')
+        download_cmd = self.run.call_args_list[0][0][0]
+        self.assertIn(
+            f'curl {senders.CURL_DOWNLOAD_FLAGS} {_CHROME_URL}', download_cmd
+        )
 
 
 class CleanupTest(fakes.SenderTestCase):
