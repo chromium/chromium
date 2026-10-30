@@ -90,6 +90,7 @@ def _GetSystemInfo(
         'is_asan': is_asan,
         'is_clang_coverage': is_clang_coverage,
         'target_cpu_bits': target_cpu_bits,
+        'skia_backend_type': 'GaneshGL',
       },
       'feature_status': {'gpu_compositing': 'enabled', 'opengl': 'enabled_on'},
     },

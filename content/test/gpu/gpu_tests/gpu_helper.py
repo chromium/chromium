@@ -222,12 +222,20 @@ def GetSkiaRenderer(gpu_info: tgi.GPUInfo | None) -> str:
       gpu_feature_status
       and gpu_feature_status.get('gpu_compositing') == 'enabled'
     )
-    if skia_renderer_enabled:
-      if HasVulkanSkiaRenderer(gpu_feature_status):
+    if skia_renderer_enabled and gpu_info.aux_attributes:
+      skia_backend_type = gpu_info.aux_attributes.get('skia_backend_type')
+      if skia_backend_type == 'GaneshVulkan':
         retval = 'renderer-skia-vulkan'
-      # The check for GL must come after Vulkan since the 'opengl' feature can
-      # be enabled for WebGL and interop even if SkiaRenderer is using Vulkan.
-      elif HasGlSkiaRenderer(gpu_feature_status):
+      elif skia_backend_type in (
+        'GaneshGL',
+        # TODO(crbug.com/41495111): Switch Graphite backends to generate
+        # renderer-graphite-dawn-* tags instead of renderer-skia-gl.
+        'GraphiteDawnD3D11',
+        'GraphiteDawnD3D12',
+        'GraphiteDawnMetal',
+        'GraphiteDawnOpenGLES',
+        'GraphiteDawnVulkan',
+      ):
         retval = 'renderer-skia-gl'
   return retval
 
@@ -262,20 +270,6 @@ def GetClangCoverage(gpu_info: tgi.GPUInfo | None) -> str:
   if gpu_info and gpu_info.aux_attributes.get('is_clang_coverage', False):
     return 'clang-coverage'
   return 'no-clang-coverage'
-
-
-def HasGlSkiaRenderer(gpu_feature_status: dict[str, str]) -> bool:
-  return (
-    bool(gpu_feature_status)
-    and gpu_feature_status.get('opengl') == 'enabled_on'
-  )
-
-
-def HasVulkanSkiaRenderer(gpu_feature_status: dict[str, str]) -> bool:
-  return (
-    bool(gpu_feature_status)
-    and gpu_feature_status.get('vulkan') == 'enabled_on'
-  )
 
 
 def ReplaceTags(tags: list[str]) -> list[str]:

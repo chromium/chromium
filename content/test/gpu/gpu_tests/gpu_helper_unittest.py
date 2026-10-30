@@ -45,8 +45,6 @@ def CreateGpuDeviceDict(
   }
 
 
-
-
 @dataclasses.dataclass
 class TagHelperTestCase:
   """Struct-like class for defining a tag helper test case."""
@@ -296,29 +294,57 @@ class TagHelpersUnittest(unittest.TestCase):
       TagHelperTestCase('renderer-software'),
       # No GPU Compositing.
       TagHelperTestCase(
-        'renderer-software', feature_status={'gpu_compositing': 'disabled'}
+        'renderer-software',
+        feature_status={'gpu_compositing': 'disabled'},
+        aux_attributes={'skia_backend_type': 'GaneshGL'},
+      ),
+      # No aux_attributes.
+      TagHelperTestCase(
+        'renderer-software', feature_status={'gpu_compositing': 'enabled'}
       ),
       # No renderer.
       TagHelperTestCase(
-        'renderer-software', feature_status={'gpu_compositing': 'enabled'}
+        'renderer-software',
+        feature_status={'gpu_compositing': 'enabled'},
+        aux_attributes={'skia_backend_type': 'None'},
       ),
       # Vulkan Skia Renderer.
       TagHelperTestCase(
         'renderer-skia-vulkan',
-        feature_status={
-          'gpu_compositing': 'enabled',
-          'vulkan': 'enabled_on',
-          'opengl': 'enabled_on',
-        },
+        feature_status={'gpu_compositing': 'enabled'},
+        aux_attributes={'skia_backend_type': 'GaneshVulkan'},
       ),
       # GL Skia Renderer.
       TagHelperTestCase(
         'renderer-skia-gl',
-        feature_status={
-          'gpu_compositing': 'enabled',
-          'vulkan': 'enabled_off',
-          'opengl': 'enabled_on',
-        },
+        feature_status={'gpu_compositing': 'enabled'},
+        aux_attributes={'skia_backend_type': 'GaneshGL'},
+      ),
+      # Graphite Dawn Backends (currently mapped to renderer-skia-gl).
+      TagHelperTestCase(
+        'renderer-skia-gl',
+        feature_status={'gpu_compositing': 'enabled'},
+        aux_attributes={'skia_backend_type': 'GraphiteDawnD3D11'},
+      ),
+      TagHelperTestCase(
+        'renderer-skia-gl',
+        feature_status={'gpu_compositing': 'enabled'},
+        aux_attributes={'skia_backend_type': 'GraphiteDawnD3D12'},
+      ),
+      TagHelperTestCase(
+        'renderer-skia-gl',
+        feature_status={'gpu_compositing': 'enabled'},
+        aux_attributes={'skia_backend_type': 'GraphiteDawnMetal'},
+      ),
+      TagHelperTestCase(
+        'renderer-skia-gl',
+        feature_status={'gpu_compositing': 'enabled'},
+        aux_attributes={'skia_backend_type': 'GraphiteDawnOpenGLES'},
+      ),
+      TagHelperTestCase(
+        'renderer-skia-gl',
+        feature_status={'gpu_compositing': 'enabled'},
+        aux_attributes={'skia_backend_type': 'GraphiteDawnVulkan'},
       ),
     ]
 
