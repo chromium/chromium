@@ -47,6 +47,14 @@ message ContextualCueingRequest {
   // The history of contextual cueing shown to the user sorted in
   // reverse-chronological order.
   repeated ContextualCueingHistory contextual_cueing_history = 4 [deprecated = true];
+
+  // The historical tabs for the user.
+  //
+  // Only the URL and title will be populated for each historical tab.
+  //
+  // It is guaranteed that tabs in active_tab_page_context and
+  // background_tabs will not be in historical_tabs.
+  repeated Tab historical_tabs = 5;
 }
 
 message ContextualCueingHistory {

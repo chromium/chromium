@@ -31,7 +31,7 @@ message ZeroStateSuggestionsLoggingData {
   ModelExecutionInfo model_execution_info = 3 [features = { field_presence: EXPLICIT }];
 }
 
-// Next ID: 8
+// Next ID: 9
 message ZeroStateSuggestionsRequest {
   oneof request {
     // The context of the page to generate suggestions for. This is used when
@@ -61,6 +61,12 @@ message ZeroStateSuggestionsRequest {
 
   // Whether the request is for a managed account.
   bool is_account_managed = 7 [features = { field_presence: EXPLICIT }];
+
+  // Pages the user recently visited, most recent first, used to ground
+  // browsing-history based suggestions. Doesn't include pages already in
+  // `request`. Independent of the `request` oneof: may be sent with or
+  // without page context.
+  repeated Tab recent_pages = 8;
 }
 
 message ZeroStatePageContextList {

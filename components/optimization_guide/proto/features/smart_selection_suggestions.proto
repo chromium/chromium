@@ -108,15 +108,18 @@ message SmartSelectionSuggestion {
 // The durations form a hierarchy where parent durations subsume child
 // durations (plus any other overhead at each level):
 //
-//   mes_total_ms                         (total MES request handling)
-//   |-- mes_image_preprocessing_ms       (MES image crop/dim/highlight)
-//   +-- model_execution_ms               (backend GenerateContent RPC)
-//       |-- model_content_processing_ms  (multimodal tokenization)
-//       |-- model_prefill_queue_wait_ms  (prefill queue wait)
-//       |-- model_prefill_ms             (prompt prefill)
-//       |-- model_decode_queue_wait_ms   (prefill-to-decode queue + KV
-//       transfer)
-//       +-- model_decode_ms              (output token decoding)
+//   mes_total_ms                               (total MES request handling)
+//   |-- mes_image_preprocessing_ms             (MES image crop/dim/highlight)
+//   +-- model_execution_ms                     (backend GenerateContent RPC)
+//       |-- model_content_processing_ms        (multimodal tokenization)
+//       |-- model_prefill_queue_wait_ms        (prefill queue wait)
+//       |-- model_prefill_ms                   (prompt prefill)
+//       |-- model_local_recovery_queue_wait_ms (local recovery queue wait)
+//       |-- model_local_recovery_transfer_ms   (local recovery KV transfer)
+//       |-- model_local_recovery_ms            (local recovery compute)
+//       |-- model_decode_queue_wait_ms         (prefill-to-decode queue + KV
+//       |                                       transfer)
+//       +-- model_decode_ms                    (output token decoding)
 message SmartSelectionLatencyMetrics {
   int64 mes_total_ms = 1 [features = { field_presence: EXPLICIT }];
 
@@ -133,6 +136,12 @@ message SmartSelectionLatencyMetrics {
   int64 model_decode_ms = 7 [features = { field_presence: EXPLICIT }];
 
   int64 model_decode_queue_wait_ms = 8 [features = { field_presence: EXPLICIT }];
+
+  int64 model_local_recovery_queue_wait_ms = 9 [features = { field_presence: EXPLICIT }];
+
+  int64 model_local_recovery_transfer_ms = 10 [features = { field_presence: EXPLICIT }];
+
+  int64 model_local_recovery_ms = 11 [features = { field_presence: EXPLICIT }];
 }
 
 enum SmartSelectionToolId {
