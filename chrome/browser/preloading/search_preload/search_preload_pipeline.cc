@@ -60,17 +60,6 @@ SearchPreloadSignalResult SearchPreloadPipeline::StartPrefetch(
     bool is_navigation_likely,
     bool should_ignore_saver_modes,
     bool is_ahead_of_imminent_navigation) {
-  // Don't trigger prefetch if already triggered and is alive.
-  //
-  // TODO(crbug.com/394213503): Reconsider the behavior when prefetch is already
-  // triggered but not alive. Currently, the main reason that a triggered
-  // prefetch fails for DSE (embedder trigger, no TTL) is the failure of the
-  // load of the prefetch. (There should be no other timeouts nor expiration.)
-  // In general, retriggering may be useful.
-  if (prefetch_handle_) {
-    return SearchPreloadSignalResult::kNotTriggeredAlreadyTriggered;
-  }
-
   auto* preloading_data =
       content::PreloadingData::GetOrCreateForWebContents(&web_contents);
 
@@ -85,6 +74,27 @@ SearchPreloadSignalResult SearchPreloadPipeline::StartPrefetch(
       std::move(same_url_matcher),
       /*triggering_primary_page_source_id=*/
       web_contents.GetPrimaryMainFrame()->GetPageUkmSourceId());
+
+  // Don't trigger prefetch if already triggered and is alive.
+  //
+  // TODO(crbug.com/394213503): Reconsider the behavior when prefetch is already
+  // triggered but not alive. Currently, the main reason that a triggered
+  // prefetch fails for DSE (embedder trigger, no TTL) is the failure of the
+  // load of the prefetch. (There should be no other timeouts nor expiration.)
+  // In general, retriggering may be useful.
+  if (prefetch_handle_) {
+    // Eligibility and triggering outcome will be handled in
+    // `content::PrefetchService` if the `PrefetchRequest` is triggered. This is
+    // not the case, so handle them ad-hoc here.
+    attempt->SetEligibility(content::PreloadingEligibility::kEligible);
+
+    if (!attempt->ShouldHoldback()) {
+      attempt->SetTriggeringOutcome(
+          content::PreloadingTriggeringOutcome::kDuplicate);
+    }
+
+    return SearchPreloadSignalResult::kNotTriggeredAlreadyTriggered;
+  }
 
   std::optional<content::PrefetchPriority> priority = std::nullopt;
   switch (features::kDsePreload2PrefetchPriorityPolicy.Get()) {
