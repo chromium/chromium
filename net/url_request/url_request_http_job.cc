@@ -350,6 +350,16 @@ std::unique_ptr<URLRequestJob> URLRequestHttpJob::Create(URLRequest* request) {
   DCHECK(request->context()->http_transaction_factory());
   DCHECK(url.SchemeIsHTTPOrHTTPS() || url.SchemeIsWSOrWSS());
 
+  // GURL accepts hostnames that IsCanonicalizedHostCompliant() rejects (e.g.,
+  // "a!b.test", or ones with labels over 63 characters). TransportSecurityState
+  // can't canonicalize such hosts, so HSTS entries for parent domains with
+  // includeSubdomains don't apply to them. HostResolverManager rejects them,
+  // but they could still be sent to a proxy, so reject them here.
+  if (!IsCanonicalizedHostCompliant(url.host()) && !url.HostIsIPAddress() &&
+      base::FeatureList::IsEnabled(features::kRejectNonCompliantHttpHosts)) {
+    return std::make_unique<URLRequestErrorJob>(request, ERR_INVALID_URL);
+  }
+
   SSLUpgradeDecision upgrade_decision = SSLUpgradeDecision::kNoUpgrade;
   if (TransportSecurityState* hsts =
           request->context()->transport_security_state()) {
