@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="@dimen/settings_search_ui_top_margin"
+    android:paddingBottom="@dimen/settings_search_ui_bottom_margin"
+    android:paddingStart="@dimen/settings_item_margin"
+    android:paddingEnd="@dimen/settings_item_margin">
+    <!-- Parent supplies row padding; this view is the visible pill. -->
+    <LinearLayout
+        android:id="@+id/search_header_box"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/settings_search_ui_height"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:background="@drawable/pill_background"
+        android:backgroundTint="@macro/settings_container_background_color"
+        tools:ignore="UselessParent">
+        <ImageView
+            android:id="@+id/search_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="@dimen/settings_search_icon_margin"
+            android:layout_marginEnd="@dimen/settings_search_icon_margin"
+            android:paddingStart="@dimen/settings_search_icon_padding"
+            android:paddingEnd="@dimen/settings_search_icon_padding"
+            android:src="@drawable/ic_search_24dp"
+            android:importantForAccessibility="no"
+            app:tint="@color/default_icon_color_tint_list"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/min_touch_target_size"
+            android:gravity="center_vertical"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+            android:text="@string/search_in_settings_hint"/>
+    </LinearLayout>
+</FrameLayout>

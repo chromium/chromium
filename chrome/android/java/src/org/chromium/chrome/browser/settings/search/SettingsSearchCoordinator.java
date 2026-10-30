@@ -54,6 +54,8 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceGroup.PreferencePositionCallback;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.slidingpanelayout.widget.SlidingPaneLayout;
 
 import org.chromium.base.Callback;
@@ -308,7 +310,8 @@ public class SettingsSearchCoordinator
         //         |                  +------ searchBox (dual-column)
         //         |                  +------ searchQuery
         //         |                  +------ help/menuButton
-        //         +--- searchBox (single-column)
+        //         +--- searchBox (single-column, hidden when SettingsSearchCollapsibleSearchBox is
+        //              enabled; the search bar is then MainSettings' PREF_SEARCH_HEADER list row)
         ViewGroup appBar = requireViewById(R.id.app_bar_layout);
         // Update the search bar width whenever the app bar layout width changes (e.g. when the
         // side panel is opened/closed).
@@ -388,7 +391,7 @@ public class SettingsSearchCoordinator
                     new View.OnAttachStateChangeListener() {
                         @Override
                         public void onViewAttachedToWindow(View v) {
-                            requestAccessibilityFocus(v);
+                            requestAccessibilityFocus(getSingleColumnFocusTarget(v));
                         }
 
                         @Override
@@ -454,7 +457,11 @@ public class SettingsSearchCoordinator
                 .setVisibility(show ? View.VISIBLE : View.GONE);
     }
 
-    private void onClickSearchBox(View view) {
+    private void onClickSearchBox(@Nullable View view) {
+        // Entering search is asynchronous (clearFragmentWithCallback() commits the empty/recent
+        // fragment later and the detail pane animates open), so ignore repeated taps.
+        if (mFragmentState != FS_SETTINGS) return;
+
         RecordHistogram.recordBooleanHistogram("Settings.Search.UiOpened", true);
         if (mFirstUiEntered) {
             RecordHistogram.recordBooleanHistogram("Settings.Search.UiOpenedPerSession", true);
@@ -511,7 +518,7 @@ public class SettingsSearchCoordinator
         View searchBox = findViewById(R.id.search_box);
         if (searchBox == null) return;
 
-        searchBox.setVisibility(isShowingMainSettings() ? View.VISIBLE : View.GONE);
+        searchBox.setVisibility(singleColumnSearchBoxVisibility(isShowingMainSettings()));
     }
 
     @Override
@@ -598,6 +605,7 @@ public class SettingsSearchCoordinator
         }
 
         updateSearchUiWidth();
+        refreshListSearchHeader();
 
         // Determine the search bar visibility.
         View searchBox = requireViewById(R.id.search_box);
@@ -605,9 +613,9 @@ public class SettingsSearchCoordinator
                 () -> {
                     if (mIsDestroyed || mFragmentState != FS_SETTINGS) return;
                     boolean showingMain = isShowingMainSettings();
-                    searchBox.setVisibility(showingMain ? View.VISIBLE : View.GONE);
+                    searchBox.setVisibility(singleColumnSearchBoxVisibility(showingMain));
                     if (showingMain && shouldAutoFocusSearchBox()) {
-                        requestAccessibilityFocus(searchBox);
+                        requestAccessibilityFocus(getSingleColumnFocusTarget(searchBox));
                     }
                 });
 
@@ -662,6 +670,15 @@ public class SettingsSearchCoordinator
                         updateSearchUiWidth();
                         maybeInitSearchResultsFragmentCallback(f);
                         maybeReturnToSearchState(f);
+                    }
+
+                    @Override
+                    public void onFragmentViewCreated(
+                            FragmentManager fm,
+                            Fragment f,
+                            View v,
+                            @Nullable Bundle savedInstanceState) {
+                        if (f instanceof MainSettings) refreshListSearchHeader();
                     }
                 },
                 false);
@@ -810,7 +827,78 @@ public class SettingsSearchCoordinator
         return mSearchLensButtonFadeTransition;
     }
 
+    private boolean usesListSearchHeader() {
+        return isCollapsibleSearchBoxEnabled() && !mUseMultiColumnSupplier.getAsBoolean();
+    }
+
+    private int singleColumnSearchBoxVisibility(boolean show) {
+        return show && !usesListSearchHeader() ? View.VISIBLE : View.GONE;
+    }
+
+    private @Nullable MainSettings findAttachedMainSettings() {
+        // Search UI is only created with MultiColumnSettings; it is null only for standalone
+        // Settings activities, which have no search UI.
+        FragmentManager fm = getSettingsFragmentManager();
+        if (mMultiColumnSettings == null || fm == null) return null;
+
+        // Look the fragment up rather than using MultiColumnSettings#getMainSettings(): after
+        // activity recreation the FragmentManager restores its own MainSettings, and
+        // getMainSettings() can hand back a new, never-attached instance.
+        Fragment f = fm.findFragmentById(R.id.preferences_header);
+        return (f instanceof MainSettings ms && ms.getView() != null) ? ms : null;
+    }
+
+    private void refreshListSearchHeader() {
+        if (!isCollapsibleSearchBoxEnabled() || mIsDestroyed) return;
+
+        MainSettings ms = findAttachedMainSettings();
+        boolean show = !mUseMultiColumnSupplier.getAsBoolean();
+        if (ms != null) {
+            ms.setSearchHeaderClickListener(
+                    show
+                            ? p -> {
+                                onClickSearchBox(null);
+                                return true;
+                            }
+                            : null);
+        }
+    }
+
+    private @Nullable View findListSearchHeaderRow() {
+        MainSettings ms = findAttachedMainSettings();
+        RecyclerView list = ms != null ? ms.getListView() : null;
+        if (list == null
+                || !(list.getAdapter() instanceof PreferencePositionCallback cb)
+                || list.getLayoutManager() == null) {
+            return null;
+        }
+        int pos = cb.getPreferenceAdapterPosition(MainSettings.PREF_SEARCH_HEADER);
+        if (pos < 0) return null;
+
+        // The row can be missing before PreferenceGroupAdapter syncs and the RecyclerView lays
+        // out, or when the header is scrolled out of view.
+        // TODO(crbug.com/462148859): Defer accessibility focus until the header row is laid out
+        // (e.g. via
+        // OnChildAttachStateChangeListener) if this turns out to matter in practice.
+        RecyclerView.ViewHolder vh = list.findViewHolderForAdapterPosition(pos);
+        return vh != null ? vh.itemView : null;
+    }
+
+    private @Nullable View getSingleColumnFocusTarget(View searchBox) {
+        if (usesListSearchHeader()) {
+            return findListSearchHeaderRow();
+        }
+        return searchBox;
+    }
+
     private void showUiInSingleColumn(View searchBox, boolean show) {
+        if (usesListSearchHeader()) {
+            searchBox.setVisibility(View.GONE);
+            if (show && shouldAutoFocusSearchBox()) {
+                requestAccessibilityFocus(getSingleColumnFocusTarget(searchBox));
+            }
+            return;
+        }
         // Delay showing the UI until its width gets set. This mitigates the UI being seen
         // with a wrong width initially.
         if (show && !mSingleColumnWidthInitialized) {
@@ -846,7 +934,9 @@ public class SettingsSearchCoordinator
      * see https://crbug.com/547995740.
      */
     @SuppressLint("AccessibilityFocus")
-    private void requestAccessibilityFocus(View searchBox) {
+    private void requestAccessibilityFocus(@Nullable View searchBox) {
+        if (searchBox == null) return;
+
         searchBox.requestFocus();
         searchBox.performAccessibilityAction(
                 AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null);
@@ -1671,6 +1761,7 @@ public class SettingsSearchCoordinator
         View searchBox = requireViewById(R.id.search_box);
         UiUtils.removeViewFromParent(searchBox);
         View query = requireViewById(R.id.search_query_container);
+        refreshListSearchHeader();
         if (mUseMultiColumn) {
             ViewGroup actionBar = requireViewById(R.id.action_bar);
             setSearchBoxVerticalMargin(searchBox, true);
@@ -1716,7 +1807,7 @@ public class SettingsSearchCoordinator
                 // search UI is always hidden except at main settings in which the UI is
                 // never suppressed.
                 if (mFragmentState == FS_SETTINGS) {
-                    searchBox.setVisibility(View.VISIBLE);
+                    searchBox.setVisibility(singleColumnSearchBoxVisibility(true));
                 }
             } else {
                 searchBox.setVisibility(View.GONE);

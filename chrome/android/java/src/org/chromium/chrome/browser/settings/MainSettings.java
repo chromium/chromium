@@ -104,6 +104,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
                 HomepageManager.HomepageStateListener,
                 SettingsCustomTabLauncher.SettingsCustomTabLauncherClient {
     private final CallbackController mCallbackController = new CallbackController();
+    public static final String PREF_SEARCH_HEADER = "settings_search_header";
     public static final String PREF_SETTINGS_PROMO_CARD = "settings_promo_card";
     public static final String PREF_ACCOUNT_AND_GOOGLE_SERVICES_SECTION =
             "account_and_google_services_section";
@@ -473,6 +474,26 @@ public class MainSettings extends ChromeBaseSettingsFragment
                                 return false;
                             });
         }
+        maybeAddSearchHeaderPreference();
+    }
+
+    protected void maybeAddSearchHeaderPreference() {
+        if (!ChromeFeatureList.sSettingsSearchCollapsibleSearchBox.isEnabled()) return;
+
+        SettingsUtils.addPreferencesFromResource(this, R.xml.settings_search_header_preference);
+    }
+
+    public void setSearchHeaderClickListener(
+            Preference.@Nullable OnPreferenceClickListener listener) {
+        Preference pref = findPreference(PREF_SEARCH_HEADER);
+        if (pref == null) return;
+
+        pref.setOnPreferenceClickListener(listener);
+        boolean visible = listener != null;
+        if (pref.isVisible() == visible) return;
+
+        pref.setVisible(visible);
+        notifyPreferencesUpdated();
     }
 
     private static boolean shouldShowSafetyHubPref() {
