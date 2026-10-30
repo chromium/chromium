@@ -408,3 +408,71 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest, VerifyCanUseSpareProcess) {
   // third-party NTP used the spare process.
   EXPECT_EQ(InstantUsesSpareRenderer(), new_process == spare_process);
 }
+
+// Verifies that accessors planted on a same-origin subframe's Object.prototype
+// or window.chrome before commit cannot run script synchronously inside
+// SearchBoxExtension::Install() during DidClearWindowObject() and detach the
+// frame while observers are still on the stack.
+IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest,
+                       SearchBoxExtensionInstallDoesNotRunScript) {
+  GURL base_url =
+      https_test_server().GetURL("ntp.example.com", "/instant_extended.html");
+  GURL ntp_url = https_test_server().GetURL("ntp.example.com",
+                                            "/instant_extended_ntp.html");
+  SetupInstant(browser()->GetProfile(), base_url, ntp_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ntp_url));
+  content::WebContents* contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  const char* kScript = R"(
+    (async () => {
+      // Case 1: Setter on child Object.prototype.searchBox.
+      const iframe1 = document.createElement('iframe');
+      iframe1.src = '/title1.html';
+      const load1 = new Promise(resolve => {
+        iframe1.addEventListener('load', () => resolve('loaded1'));
+      });
+      document.body.appendChild(iframe1);
+
+      let protoSetterFired = false;
+      Object.defineProperty(
+          iframe1.contentWindow.Object.prototype, 'searchBox', {
+            configurable: true,
+            set() {
+              protoSetterFired = true;
+              iframe1.remove();
+            }
+          });
+
+      const status1 = await load1;
+      const hasSearchBox1 = Boolean(
+          iframe1.contentWindow.chrome &&
+          iframe1.contentWindow.chrome.embeddedSearch &&
+          iframe1.contentWindow.chrome.embeddedSearch.searchBox);
+
+      // Case 2: Accessor on child window.chrome.
+      const iframe2 = document.createElement('iframe');
+      iframe2.src = '/title1.html';
+      const load2 = new Promise(resolve => {
+        iframe2.addEventListener('load', () => resolve('loaded2'));
+      });
+      document.body.appendChild(iframe2);
+
+      let chromeGetterFired = false;
+      Object.defineProperty(iframe2.contentWindow, 'chrome', {
+        configurable: true,
+        get() {
+          chromeGetterFired = true;
+          iframe2.remove();
+          return {};
+        }
+      });
+
+      const status2 = await load2;
+      return `${status1}:${protoSetterFired}:${hasSearchBox1}:` +
+             `${status2}:${chromeGetterFired}`;
+    })()
+  )";
+  EXPECT_EQ("loaded1:false:true:loaded2:false",
+            content::EvalJs(contents, kScript));
+}

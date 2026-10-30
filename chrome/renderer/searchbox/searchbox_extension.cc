@@ -31,7 +31,6 @@
 #include "components/ntp_tiles/tile_source.h"
 #include "components/ntp_tiles/tile_visual_type.h"
 #include "content/public/common/url_constants.h"
-#include "content/public/renderer/chrome_object_extensions_utils.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "gin/data_object_builder.h"
@@ -674,6 +673,19 @@ void SearchBoxExtension::Install(blink::WebLocalFrame* frame) {
 
   v8::Context::Scope context_scope(context);
 
+  // This runs from RenderFrameObserver::DidClearWindowObject(), in the middle
+  // of a navigation commit. Author script must not run here: a page can
+  // install accessors on the frame's Object.prototype or window.chrome (they
+  // survive the initial-empty-document -> same-origin commit because the
+  // v8::Context is reused), and property operations below could otherwise
+  // invoke them synchronously. Such script can detach the frame, destroying
+  // the RenderFrameImpl and its observers while they are still on the stack
+  // (use-after-free). Make V8 throw instead of running script, and give up
+  // installing the bindings if any property operation fails.
+  v8::Isolate::DisallowJavascriptExecutionScope no_script(
+      isolate, v8::Isolate::DisallowJavascriptExecutionScope::THROW_ON_FAILURE);
+  v8::TryCatch try_catch(isolate);
+
   auto* searchbox_controller = cppgc::MakeGarbageCollected<SearchBoxBindings>(
       isolate->GetCppHeap()->GetAllocationHandle());
   v8::Local<v8::Object> searchbox_wrapper;
@@ -689,19 +701,47 @@ void SearchBoxExtension::Install(blink::WebLocalFrame* frame) {
     return;
   }
 
-  v8::Local<v8::Object> chrome =
-      content::GetOrCreateChromeObject(isolate, context);
+  // Same as content::GetOrCreateChromeObject(), but uses CreateDataProperty()
+  // and tolerates property operations failing (see above) instead of
+  // CHECK-crashing on them.
+  v8::Local<v8::Object> global = context->Global();
+  v8::Local<v8::Value> chrome_value;
+  v8::Local<v8::Object> chrome;
+  if (global->Get(context, gin::StringToSymbol(isolate, "chrome"))
+          .ToLocal(&chrome_value) &&
+      chrome_value->IsObject()) {
+    chrome = chrome_value.As<v8::Object>();
+  } else {
+    if (try_catch.HasCaught()) {
+      return;
+    }
+    chrome = v8::Object::New(isolate);
+    if (!global
+             ->CreateDataProperty(
+                 context, gin::StringToSymbol(isolate, "chrome"), chrome)
+             .FromMaybe(false)) {
+      return;
+    }
+  }
+
   v8::Local<v8::Object> embedded_search = v8::Object::New(isolate);
-  embedded_search
-      ->Set(context, gin::StringToV8(isolate, "searchBox"), searchbox_wrapper)
-      .ToChecked();
-  embedded_search
-      ->Set(context, gin::StringToV8(isolate, "newTabPage"), newtabpage_wrapper)
-      .ToChecked();
-  chrome
-      ->Set(context, gin::StringToSymbol(isolate, "embeddedSearch"),
-            embedded_search)
-      .ToChecked();
+  if (!embedded_search
+           ->CreateDataProperty(context,
+                                gin::StringToSymbol(isolate, "searchBox"),
+                                searchbox_wrapper)
+           .FromMaybe(false) ||
+      !embedded_search
+           ->CreateDataProperty(context,
+                                gin::StringToSymbol(isolate, "newTabPage"),
+                                newtabpage_wrapper)
+           .FromMaybe(false) ||
+      !chrome
+           ->CreateDataProperty(context,
+                                gin::StringToSymbol(isolate, "embeddedSearch"),
+                                embedded_search)
+           .FromMaybe(false)) {
+    return;
+  }
 }
 
 // static
