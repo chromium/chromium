@@ -45,7 +45,6 @@
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 #include "remoting/host/security_key/security_key_auth_handler.h"
 #include "remoting/host/webauthn/remote_webauthn_state_change_notifier.h"
-#include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/proto/terminal.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
@@ -57,6 +56,10 @@
 namespace base {
 class TimeDelta;
 }  // namespace base
+
+namespace remoting::protocol {
+class MicrophoneControl;
+}  // namespace remoting::protocol
 
 namespace remoting {
 

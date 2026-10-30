@@ -21,8 +21,6 @@
 #include "net/base/ip_endpoint.h"
 #include "remoting/base/errors.h"
 #include "remoting/base/session_policies.h"
-#include "remoting/proto/internal.pb.h"
-#include "remoting/proto/video.pb.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/client_stub.h"
 #include "remoting/protocol/clipboard_stub.h"
@@ -287,9 +285,7 @@ class MockVideoStub : public VideoStub {
               ProcessVideoPacketPtr,
               (const VideoPacket* video_packet, base::OnceClosure* done));
   void ProcessVideoPacket(std::unique_ptr<VideoPacket> video_packet,
-                          base::OnceClosure done) override {
-    ProcessVideoPacketPtr(video_packet.get(), &done);
-  }
+                          base::OnceClosure done) override;
 };
 
 class MockSession : public Session {

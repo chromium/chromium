@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/task/single_thread_task_runner.h"
+#include "remoting/proto/video.pb.h"
 #include "remoting/protocol/session_plugin.h"
 #include "remoting/protocol/video_stream.h"
 #include "remoting/signaling/signaling_address.h"
@@ -40,6 +41,12 @@ MockCursorShapeStub::~MockCursorShapeStub() = default;
 
 MockVideoStub::MockVideoStub() = default;
 MockVideoStub::~MockVideoStub() = default;
+
+void MockVideoStub::ProcessVideoPacket(
+    std::unique_ptr<VideoPacket> video_packet,
+    base::OnceClosure done) {
+  ProcessVideoPacketPtr(video_packet.get(), &done);
+}
 
 MockSession::MockSession() {
   ON_CALL(*this, SetEventHandler(testing::_))

@@ -23,6 +23,8 @@
 #include "remoting/base/fifo_buffer.h"
 #include "remoting/base/ipc_fifo_buffer.h"
 #include "remoting/proto/audio.pb.h"
+#include "remoting/proto/control.pb.h"
+#include "remoting/proto/event.pb.h"
 #include "remoting/protocol/audio_source.h"
 #include "remoting/protocol/audio_stream.h"
 #include "remoting/protocol/audio_stub.h"

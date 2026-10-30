@@ -6,14 +6,11 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
-#include "net/base/ip_endpoint.h"
-#include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/host/input_injector.h"
+#include "remoting/proto/control.pb.h"
 #include "remoting/proto/event.pb.h"
-#include "remoting/proto/video.pb.h"
 #include "remoting/protocol/transport.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
-#include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 
 namespace remoting {
 
