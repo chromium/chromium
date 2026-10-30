@@ -466,9 +466,12 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver,
 
     if (last_minimum_size_ != widget->GetMinimumSize() ||
         last_maximum_size_ != widget->GetMaximumSize()) {
-      OnResizabilityOrSizeConstraintsChanged();
+      // Cache the new constraints first: the call below may destroy `this`
+      // (via ResetFloatedWindow -> UnfloatImpl) when the new minimum size makes
+      // the window no longer floatable.
       last_minimum_size_ = widget->GetMinimumSize();
       last_maximum_size_ = widget->GetMaximumSize();
+      OnResizabilityOrSizeConstraintsChanged();
     }
   }
   void OnWidgetDestroyed(views::Widget* widget) override {

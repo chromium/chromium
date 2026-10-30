@@ -947,6 +947,37 @@ TEST_F(WindowFloatTest, AlwaysOnTopWindow) {
   EXPECT_FALSE(WindowState::Get(always_on_top_window.get())->IsFloated());
 }
 
+// Regression test: when a floated window's minimum size changes such that it
+// can no longer be floated, FloatedWindowInfo::OnWidgetSizeConstraintsChanged
+// triggers ResetFloatedWindow(), which synchronously destroys the
+// FloatedWindowInfo (`this`). The handler must not write to its members after
+// that point. Under ASAN this previously reported heap-use-after-free.
+TEST_F(WindowFloatTest, MinimumSizeChangeUnfloatsWindowNoUAF) {
+  UpdateDisplay("800x600");
+  // Create and float a window with a custom frame so we can change its
+  // minimum size and have Widget::OnSizeConstraintsChanged() fire.
+  auto window = CreateWindowWithAppType(AppType::SYSTEM_APP, {300, 300},
+                                        kShellWindowId_DeskContainerA,
+                                        new TestWidgetDelegateAsh);
+  auto* custom_frame =
+      static_cast<TestFrameViewAsh*>(FrameViewAsh::Get(window.get()));
+  wm::ActivateWindow(window.get());
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(window.get())->IsFloated());
+
+  // Set a minimum size larger than the work area so CanFloatWindow() returns
+  // false. This drives:
+  //   FloatedWindowInfo::OnWidgetSizeConstraintsChanged()
+  //     -> OnResizabilityOrSizeConstraintsChanged()
+  //       -> FloatController::ResetFloatedWindow()
+  //         -> ... -> UnfloatImpl()  (erases FloatedWindowInfo from the map)
+  // and `this` is destroyed mid-call.
+  custom_frame->SetMinimumSize(gfx::Size(100, 100000));
+
+  // If we reach here without an ASAN heap-use-after-free, the bug is fixed.
+  EXPECT_FALSE(WindowState::Get(window.get())->IsFloated());
+}
+
 // Tests that for unresizable windows, floatability depends on its window state
 // type.
 TEST_F(WindowFloatTest, UnresizableFloatPerWindowState) {
