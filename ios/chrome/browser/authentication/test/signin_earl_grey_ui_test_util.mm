@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/signin/model/test_constants.h"
+#import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -361,9 +362,14 @@ id<GREYMatcher> SignOutSnackbarLabelMatcher() {
 + (void)dismissSigninConfirmationSnackbarForIdentity:
             (FakeSystemIdentity*)identity
                                        assertVisible:(BOOL)assertVisible {
+  // Mirrors the title selection in `CreateIdentitySnackbarMessage()`, which
+  // falls back to a generic title for identities without a given name.
   NSString* signedInSnackbarTitle =
-      l10n_util::GetNSStringF(IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
-                              base::SysNSStringToUTF16(identity.userGivenName));
+      identity.userGivenName
+          ? l10n_util::GetNSStringF(
+                IDS_IOS_ACCOUNT_MENU_SWITCH_CONFIRMATION_TITLE,
+                base::SysNSStringToUTF16(identity.userGivenName))
+          : l10n_util::GetNSString(IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE);
   [self dismissSigninConfirmationSnackbarWithTitle:signedInSnackbarTitle
                                      assertVisible:assertVisible];
 }
