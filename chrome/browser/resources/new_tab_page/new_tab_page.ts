@@ -10,14 +10,13 @@
  */
 
 export {GlifAnimationState} from '//resources/cr_components/composebox/common.js';
-export {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
 export {COLOR_PROVIDER_CHANGED, ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 export {PlaceholderTextCycler} from 'chrome://resources/cr_components/searchbox/placeholder_text_cycler.js';
 export {SearchboxBrowserProxy} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 export {SearchboxIconElement} from 'chrome://resources/cr_components/searchbox/searchbox_icon.js';
 export {SearchboxMatchElement} from 'chrome://resources/cr_components/searchbox/searchbox_match.js';
 export type {CrA11yAnnouncerMessagesSentEvent} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-export {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
+export type {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 export type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 export {browserProxyFactory as browserCommandProxyFactory} from 'chrome://resources/js/browser_command.mojom-webui.js';
 export {BrowserProxyImpl} from 'chrome://resources/js/metrics_reporter/browser_proxy.js';
@@ -29,16 +28,14 @@ export {IconType} from 'chrome://resources/mojo/components/omnibox/browser/sugge
 export {AppElement, CONTEXTUAL_ENTRYPOINT_ELEMENT_ID, CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, NtpCustomizeChromeEntryPoint, NtpElement} from './app.js';
 export {BackgroundManager} from './background_manager.js';
 export {CustomizeDialogPage} from './customize_dialog_types.js';
-export {DoodleShareDialogElement} from './doodle_share_dialog.js';
 export {C2PA_MARKER, hasC2paMetadata, MAX_C2PA_PIXELS, MAX_C2PA_SEARCH_BYTES, processFile, SUPPORTED_C2PA_FILE_TYPES} from './image_processor.js';
 export type {ProcessedFile} from './image_processor.js';
 export {LeftHandSideElement, NtpLhsMessageType} from './left_hand_side.js';
 export {LogoElement} from './logo.js';
-export {recordBoolean, recordDuration, recordEnumeration, recordLinearValue, recordLoadDuration, recordLogValue, recordOccurrence, recordPerdecage, recordSmallCount, recordSparseValueWithPersistentHash} from './metrics_utils.js';
+export {recordBoolean, recordDuration, recordEnumeration, recordLinearValue, recordLoadDuration, recordLogValue, recordOccurrence, recordPerdecage, recordSmallCount, recordSparseValueWithPersistentHash, recordVoiceAction, VoiceAction, VoiceError} from './metrics_utils.js';
 export {NtpSearchboxElement} from './ntp_searchbox.js';
 export {checkTransparency, isBMP, isPNG, isWebP} from './transparency.js';
 export {$$} from './utils.js';
-export {Action as VoiceAction, Error as VoiceError} from './voice_search_overlay.js';
 export {WindowProxy} from './window_proxy.js';
 
 export * from './new_tab_page.mojom-webui.js';

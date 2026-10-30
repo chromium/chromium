@@ -28,6 +28,8 @@ _ts_files = [
 # ntp_modules.txt.
 _ntp_entry_points = [
   "action_chips/action_chips.js",
+  "action_chips/action_chips_proxy.js",
+  "doodle_share_dialog.js",
   "lens_upload_dialog.js",
   "logo.js",
   "metrics_utils.js",

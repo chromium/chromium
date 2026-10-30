@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {recordBoolean, recordDuration, recordEnumeration, recordLinearValue, recordLoadDuration, recordLogValue, recordOccurrence, recordPerdecage, recordSmallCount, recordSparseValueWithPersistentHash} from 'chrome://new-tab-page/new_tab_page.js';
+import {recordBoolean, recordDuration, recordEnumeration, recordLinearValue, recordLoadDuration, recordLogValue, recordOccurrence, recordPerdecage, recordSmallCount, recordSparseValueWithPersistentHash, recordVoiceAction, VoiceAction} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -86,5 +86,12 @@ suite('NewTabPageMetricsUtilsTest', () => {
         /*value=*/ 5);
     assertEquals(1, metrics.count('foo.metric'));
     assertEquals(1, metrics.count('foo.metric', 5));
+  });
+
+  test('recordVoiceAction', () => {
+    recordVoiceAction(VoiceAction.ACTIVATE);
+    assertEquals(1, metrics.count('NewTabPage.VoiceActions'));
+    assertEquals(
+        1, metrics.count('NewTabPage.VoiceActions', VoiceAction.ACTIVATE));
   });
 });

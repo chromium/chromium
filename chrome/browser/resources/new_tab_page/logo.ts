@@ -4,7 +4,6 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import './doodle_share_dialog.js';
 import './doodle_icons.html.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
@@ -258,8 +257,12 @@ export class LogoElement extends CrLitElement {
     return !!this.imageDoodle_?.animationUrl;
   }
 
-  protected onShareButtonClick_(e: Event) {
+  protected async onShareButtonClick_(e: Event) {
     e.stopPropagation();
+    // <ntp-doodle-share-dialog> may be defined in lazy_load.js, which may not
+    // have been loaded yet if the share button is clicked right after the NTP
+    // loads. Wait for it to load before stamping the dialog.
+    await WindowProxy.getInstance().ensureLazyLoaded();
     this.showShareDialog_ = true;
   }
 

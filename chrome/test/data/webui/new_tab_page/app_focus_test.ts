@@ -53,6 +53,7 @@ suite('NewTabPageAppFocusTest', () => {
                                                    removeEventListener() {},
                                                  }));
     windowProxy.setPromiseResolveFor('waitForLazyRender');
+    windowProxy.setPromiseResolveFor('ensureLazyLoaded');
     windowProxy.setResultFor('createIframeSrc', '');
     windowProxy.setResultFor('url', url);
     fakeMetricsPrivate();

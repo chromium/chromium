@@ -3,17 +3,16 @@
 // found in the LICENSE file.
 
 import {ActionChipsApiProxyImpl, VoiceSearchAction} from 'chrome://new-tab-page/lazy_load.js';
-import type {ActionChipClickDetail, ComposeboxFuseboxActionRequest, Module} from 'chrome://new-tab-page/lazy_load.js';
+import type {ActionChipClickDetail, ComposeboxFuseboxActionRequest, ComposeboxVoiceSearchElement, CustomizeButtonsElement, Module} from 'chrome://new-tab-page/lazy_load.js';
 import {ActionChipsRetrievalState, ComposeboxProxyImpl, ModuleRegistry, NtpComposeboxElement} from 'chrome://new-tab-page/lazy_load.js';
 import {ActionChipsHandlerRemote, ActionChipsPageCallbackRouter, IconType, InputSource, QueryActionOverride, SearchboxOverride} from 'chrome://new-tab-page/new_tab_page.js';
 import type {ActionChipsPageRemote, CustomizeButtonsDocumentRemote, FuseboxAction, TabInfo} from 'chrome://new-tab-page/new_tab_page.js';
 import {$$, BackgroundManager, browserCommandProxyFactory, CONTEXTUAL_ENTRYPOINT_ELEMENT_ID, CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, CustomizeButtonsHandlerRemote, customizeButtonsProxyFactory, CustomizeChromeSection, CustomizeDialogPage, GlifAnimationState, newTabPageProxyFactory, NtpCustomizeChromeEntryPoint, NtpElement, SearchboxBrowserProxy, SidePanelOpenTrigger, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import type {AppElement, CustomizeButtonsElement, NtpSearchboxElement, PageRemote} from 'chrome://new-tab-page/new_tab_page.js';
+import type {AppElement, NtpSearchboxElement, PageRemote} from 'chrome://new-tab-page/new_tab_page.js';
 import {NtpBackgroundImageSource, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.js';
 import {ComposeboxFile} from 'chrome://resources/cr_components/composebox/common.js';
 import {PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ContextUploadStatus, ModelMode, ToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
-import type {ComposeboxVoiceSearchElement} from 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import {WindowProxy as ComposeboxWindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
@@ -105,6 +104,7 @@ suite('NewTabPageAppTest', () => {
                         removeEventListener: () => {},
                       }));
     windowProxy.setPromiseResolveFor('waitForLazyRender');
+    windowProxy.setPromiseResolveFor('ensureLazyLoaded');
     windowProxy.setResultFor('createIframeSrc', '');
     windowProxy.setResultFor('url', url);
     backgroundManager = installMock(BackgroundManager);
@@ -214,6 +214,36 @@ suite('NewTabPageAppTest', () => {
       assertEquals(
           1, metrics.count(VOICE_ACTIONS_METRIC, VoiceAction.ACTIVATE));
     });
+
+    test(
+        'voice search overlay waits for the lazy loaded code to load',
+        async () => {
+          const lazyRenderResolver = new PromiseResolver<void>();
+          windowProxy.setResultFor(
+              'waitForLazyRender', lazyRenderResolver.promise);
+          const lazyLoadResolver = new PromiseResolver<void>();
+          windowProxy.resetResolver('ensureLazyLoaded');
+          windowProxy.setResultFor(
+              'ensureLazyLoaded', lazyLoadResolver.promise);
+          await recreateApp();
+
+          // Act.
+          $$(app, '#searchbox')!.dispatchEvent(new Event('open-voice-search'));
+          await microtasksFinished();
+
+          // Assert.
+          assertEquals(1, windowProxy.getCallCount('ensureLazyLoaded'));
+          assertFalse(
+              !!app.shadowRoot.querySelector('ntp-voice-search-overlay'));
+
+          // Act.
+          lazyLoadResolver.resolve();
+          await microtasksFinished();
+
+          // Assert.
+          assertTrue(
+              !!app.shadowRoot.querySelector('ntp-voice-search-overlay'));
+        });
 
     test('voice search keyboard shortcut', async () => {
       // Test correct shortcut opens voice search.
@@ -1069,6 +1099,31 @@ suite('NewTabPageAppTest', () => {
       // Assert.
       assertTrue(scrim.hidden);
       assertFalse(!!app.shadowRoot.querySelector('ntp-lens-upload-dialog'));
+    });
+
+    test('lens upload dialog waits for lazy loaded code to load', async () => {
+      // Arrange.
+      const ensureLazyLoadedResolver = new PromiseResolver<void>();
+      windowProxy.resetResolver('ensureLazyLoaded');
+      windowProxy.setResultFor(
+          'ensureLazyLoaded', ensureLazyLoadedResolver.promise);
+      callbackRouterRemote.setTheme(createTheme());
+      await callbackRouterRemote.$.flushForTesting();
+
+      // Act.
+      $$(app, '#searchbox')!.dispatchEvent(new Event('open-lens-search'));
+      await microtasksFinished();
+
+      // Assert: dialog is not stamped until ensureLazyLoaded resolves.
+      assertEquals(1, windowProxy.getCallCount('ensureLazyLoaded'));
+      assertFalse(!!app.shadowRoot.querySelector('ntp-lens-upload-dialog'));
+
+      // Act: resolve lazy load.
+      ensureLazyLoadedResolver.resolve();
+      await microtasksFinished();
+
+      // Assert.
+      assertTrue(!!app.shadowRoot.querySelector('ntp-lens-upload-dialog'));
     });
   });
 
@@ -5640,7 +5695,7 @@ suite('NewTabPageAppTest', () => {
           const searchbox = $$(app, '#searchbox');
           assertTrue(!!searchbox);
           searchbox.dispatchEvent(new Event('open-voice-search'));
-          await app.updateComplete;
+          await microtasksFinished();
 
           const voiceSearch =
               app.shadowRoot.querySelector<ComposeboxVoiceSearchElement>(
@@ -5714,7 +5769,7 @@ suite('NewTabPageAppTest', () => {
           const searchbox = $$(app, '#searchbox');
           assertTrue(!!searchbox);
           searchbox.dispatchEvent(new Event('open-voice-search'));
-          await app.updateComplete;
+          await microtasksFinished();
 
           const voiceSearch =
               app.shadowRoot.querySelector<ComposeboxVoiceSearchElement>(
@@ -5784,7 +5839,7 @@ suite('NewTabPageAppTest', () => {
 
       // Act: Open voice search dialog.
       $$(app, '#searchbox')!.dispatchEvent(new Event('open-voice-search'));
-      await app.updateComplete;
+      await microtasksFinished();
 
       const voiceSearch =
           app.shadowRoot.querySelector<ComposeboxVoiceSearchElement>(
@@ -5824,7 +5879,7 @@ suite('NewTabPageAppTest', () => {
             shiftKey: true,
             code: 'Period',
           }));
-          await app.updateComplete;
+          await microtasksFinished();
 
           const voiceSearch =
               app.shadowRoot.querySelector<ComposeboxVoiceSearchElement>(
@@ -6025,6 +6080,7 @@ suite('NewTabPageAppReducedMotionTest', () => {
     windowProxy =
         installMock(WindowProxy, (mock) => WindowProxy.setInstance(mock));
     windowProxy.setResultFor('waitForLazyRender', Promise.resolve());
+    windowProxy.setResultFor('ensureLazyLoaded', Promise.resolve());
     windowProxy.setResultFor('createIframeSrc', '');
     windowProxy.setResultFor('now', new Date());
     windowProxy.setResultFor('url', url);
@@ -6206,6 +6262,7 @@ suite('NewTabPageAppContextMenuAnimationTest', () => {
     windowProxy =
         installMock(WindowProxy, (mock) => WindowProxy.setInstance(mock));
     windowProxy.setResultFor('waitForLazyRender', Promise.resolve());
+    windowProxy.setResultFor('ensureLazyLoaded', Promise.resolve());
     windowProxy.setResultFor('createIframeSrc', '');
     windowProxy.setResultFor('now', new Date());
     windowProxy.setResultFor('url', new URL(location.href));
