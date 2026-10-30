@@ -14,13 +14,13 @@ assert(toolkit_views)
 # //chrome/browser/safe_browsing.
 source_set("safe_browsing") {
   public = [
-    "password_reuse_modal_warning_dialog.h",
+    "password_protection/password_reuse_modal_warning_dialog.h",
     "tailored_security_desktop_dialog_manager.h",
     "tailored_security_unconsented_modal.h",
   ]
 
   sources = [
-    "password_reuse_modal_warning_dialog.cc",
+    "password_protection/password_reuse_modal_warning_dialog.cc",
     "tailored_security_desktop_dialog_manager.cc",
     "tailored_security_unconsented_modal.cc",
   ]
@@ -61,7 +61,7 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
-    "password_reuse_modal_warning_dialog_browsertest.cc",
+    "password_protection/password_reuse_modal_warning_dialog_browsertest.cc",
     "tailored_security_desktop_dialog_manager_browsertest.cc",
   ]
 
