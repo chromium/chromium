@@ -214,7 +214,7 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
             30000,
         )
 
-    def test_extract_rust_crate_paths(self):
+    def test_extract_copybara_paths(self):
         gn = gn_utils.GnParser({}, {})
 
         rust_lib = gn_utils.GnParser.Target(
@@ -237,20 +237,33 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
         gn.all_targets[build_script.name] = build_script
 
         cxx_action = gn_utils.GnParser.Target(
-            "//net/base:rust_bridge", "action"
+            "//components/prefs:rust_bridge", "action"
         )
-        cxx_action.build_file_path = "net/base"
+        cxx_action.build_file_path = "components/prefs"
         cxx_action.script = (
             "//third_party/rust/cxx/chromium_integration/run_cxxbridge.py"
         )
         cxx_action.common.sources.add(
             "//third_party/rust/chromium_crates_io/vendor/cxx-v1/include/cxx.h"
         )
+        cxx_action.common.sources.add("//base/third_party/nspr/prtime.cc")
+        cxx_action.common.inputs.add("//third_party/jdk/bin/java")
         gn.all_targets[cxx_action.name] = cxx_action
 
+        components_paths, third_party_paths = (
+            gen_android_bp.extract_copybara_paths(gn)
+        )
         self.assertEqual(
-            gen_android_bp.extract_rust_crate_paths(gn),
+            components_paths,
             [
+                "components/prefs/**",
+            ],
+        )
+        self.assertEqual(
+            third_party_paths,
+            [
+                "base/third_party/nspr/**",
+                "third_party/lss/**",
                 "third_party/rust/chromium_crates_io/vendor/cxx-v1/**",
                 "third_party/rust/chromium_crates_io/vendor/serde-v1/**",
                 "third_party/rust/chromium_crates_io/vendor/small_ctor-v0_1/**",
@@ -260,21 +273,28 @@ class TestRunGN2BPUnitTest(unittest.TestCase):
             ],
         )
 
-    def test_write_copybara_rust_crates_file(self):
+    def test_write_copybara_paths_file(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
-            gen_android_bp.write_copybara_rust_crates_file(
+            gen_android_bp.write_copybara_paths_file(
                 tmp_dir,
+                ["components/cronet/**", "components/prefs/**"],
                 [
-                    "third_party/rust/chromium_crates_io/vendor/small_ctor-v0_1/**",
+                    "third_party/abseil-cpp/**",
                     "third_party/rust/small_ctor/**",
                 ],
             )
-            sky_path = pathlib.Path(tmp_dir) / "copybara_rust_crates.bara.sky"
+            sky_path = (
+                pathlib.Path(tmp_dir) / "copybara_generated_paths.bara.sky"
+            )
             self.assertTrue(sky_path.exists())
             content = sky_path.read_text()
             self.assertIn(
-                'RUST_CRATE_PATHS = [\n'
-                '    "third_party/rust/chromium_crates_io/vendor/small_ctor-v0_1/**",\n'
+                'COMPONENTS_PATHS = [\n'
+                '    "components/cronet/**",\n'
+                '    "components/prefs/**",\n'
+                ']\n\n'
+                'THIRD_PARTY_PATHS = [\n'
+                '    "third_party/abseil-cpp/**",\n'
                 '    "third_party/rust/small_ctor/**",\n'
                 ']\n',
                 content,
