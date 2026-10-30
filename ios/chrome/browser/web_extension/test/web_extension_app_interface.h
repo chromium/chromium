@@ -21,7 +21,7 @@
 + (BOOL)wasExtensionServiceWaitedUpon;
 
 // Sets whether the `ExtensionService` (when using `FakeExtensionService`)
-// is ready.
+// is `ready`.
 + (void)setExtensionServiceReady:(BOOL)ready;
 
 // Returns whether the original profile is at the `kPrepareUI` stage.

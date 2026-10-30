@@ -32,7 +32,8 @@
 
 #pragma mark Mocking and Expectations
 
-// Creates a new CameraController mock with `authorizationStatus` set.
+// Creates and returns a new CameraController mock with `authorizationStatus`
+// set.
 + (id)cameraControllerMockWithAuthorizationStatus:
     (AVAuthorizationStatus)authorizationStatus;
 
@@ -54,16 +55,20 @@
 
 #pragma mark CameraControllerDelegate calls
 
-// Calls `cameraStateChanged:` on the presented QRScannerViewController.
+// Calls `cameraStateChanged:` with `state` on the presented
+// QRScannerViewController.
 + (void)callCameraStateChanged:(scanner::CameraState)state;
 
-// Calls `torchStateChanged:` on the presented QRScannerViewController.
+// Calls `torchStateChanged:` with `torchIsOn` on the presented
+// QRScannerViewController.
 + (void)callTorchStateChanged:(BOOL)torchIsOn;
 
-// Calls `torchAvailabilityChanged:` on the presented QRScannerViewController.
+// Calls `torchAvailabilityChanged:` with `torchIsAvailable` on the presented
+// QRScannerViewController.
 + (void)callTorchAvailabilityChanged:(BOOL)torchIsAvailable;
 
-// Calls `receiveQRScannerResult:` on the presented QRScannerViewController.
+// Calls `receiveQRScannerResult:` with `result` on the presented
+// QRScannerViewController.
 + (void)callReceiveQRScannerResult:(NSString*)result;
 
 #pragma mark Modal helpers for dialogs
@@ -107,7 +112,8 @@
 // Starts a LoadQuery handler that stores the last query loaded.
 + (void)startLoadQueryHandler;
 
-// Asserts that the loaded query matches `query`.
+// Asserts that the loaded query matches `query`. Returns nil on success, or an
+// NSError if the assertion fails.
 + (NSError*)assertQueryLoaded:(NSString*)query;
 
 @end

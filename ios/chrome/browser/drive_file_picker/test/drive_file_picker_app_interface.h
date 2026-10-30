@@ -19,8 +19,9 @@
 // Begins the creation of a DriveListResult object.
 + (void)beginDriveListResult;
 
-// Adds a DriveItem with the given parameters to the DriveListResult being
-// created. This should be called between paired `beginDriveListResult` and
+// Adds a DriveItem with the given `identifier`, `name`, `isFolder`, `mimeType`,
+// and `canDownload` parameters to the DriveListResult being created. This
+// should be called between paired `beginDriveListResult` and
 // `endDriveListResult` calls.
 + (void)addDriveItemWithIdentifier:(NSString*)identifier
                               name:(NSString*)name

@@ -21,24 +21,25 @@ class OptimizationGuideTestAppInterfaceWrapper {
 // The app interface for optimization guide EG2 tests.
 @interface OptimizationGuideTestAppInterface : NSObject
 
-// Sets the hints server URL used by the optimization guide infra.
+// Sets the hints server `url` used by the optimization guide infra.
 + (void)setGetHintsURL:(NSString*)url;
 
-// Sets up component updates hints for testing.
+// Sets up component updates hints at `url` for testing.
 + (void)setComponentUpdateHints:(NSString*)url;
 
-// Registers the optimization type for which hints should be fetched for.
+// Registers the optimization `type` for which hints should be fetched.
 + (void)registerOptimizationType:
     (optimization_guide::proto::OptimizationType)type;
 
-// Invokes `CanApplyOptimization` on the the host for its side effect but does
-// not return anything.
+// Invokes `CanApplyOptimization` for `url`, `type`, and `metadata` on the host
+// for its side effect, without returning a value.
 + (void)canApplyOptimization:(NSString*)url
                         type:(optimization_guide::proto::OptimizationType)type
                     metadata:
                         (optimization_guide::OptimizationMetadata*)metadata;
 
-// Add hint to OptimizationGuide for testing purposes.
+// Adds a hint for `url` and `type` with `serialized_any` and `type_url` to
+// OptimizationGuide for testing purposes.
 + (void)addHintForTesting:(NSString*)url
                      type:(optimization_guide::proto::OptimizationType)type
            serialized_any:(NSData*)serialized_any

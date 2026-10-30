@@ -10,6 +10,8 @@
 // The app interface for HTTPS upgrade tests.
 @interface InsecureFormWarningAppInterface : NSObject
 
+// Sets `portTreatedAsSecure` and `portTreatedAsInsecure` for insecure form
+// warning testing.
 + (void)setInsecureFormPortsForTesting:(int)portTreatedAsSecure
                  portTreatedAsInsecure:(int)portTreatedAsInsecure;
 

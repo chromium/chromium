@@ -10,7 +10,8 @@
 // App interface to interact with the PageContextWrapper from integration tests.
 @interface PageContextAppInterface : NSObject
 
-// Fetches the latest APC with specific configuration.
+// Fetches and returns the serialized latest APC with `useRichExtraction` and
+// `useActionableMode` configuration.
 + (NSData*)fetchLatestAPCWithRichExtraction:(BOOL)useRichExtraction
                              actionableMode:(BOOL)useActionableMode;
 

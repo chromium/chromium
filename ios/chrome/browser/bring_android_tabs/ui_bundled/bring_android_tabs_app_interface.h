@@ -14,7 +14,7 @@ enum class BringAndroidTabsTestSession;
 // methods for the tests to read the session properties.
 @interface BringAndroidTabsAppInterface : NSObject
 
-// Adds a session from the test server used by test cases to the fake sync
+// Adds a session of `sessionType` from `testServerHost` to the fake sync
 // server.
 + (void)addFakeSyncServerSession:(BringAndroidTabsTestSession)sessionType
                   fromTestServer:(NSString*)testServerHost;

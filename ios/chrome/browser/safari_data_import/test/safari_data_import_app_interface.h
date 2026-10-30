@@ -12,8 +12,9 @@ enum class SafariDataImportTestFile { kValid, kPartiallyValid, kInvalid };
 
 @interface SafariDataImportAppInterface : NSObject
 
-/// If the file picker is currently being presented, select the file, dismiss
-/// the picker and returns `nil`. Otherwise, returns an error message.
+/// If the file picker is currently being presented, selects `file`, dismisses
+/// the picker with `completion`, and returns `nil`. Otherwise, returns an error
+/// message.
 + (NSString*)selectFile:(SafariDataImportTestFile)file
              completion:(void (^)())completion;
 

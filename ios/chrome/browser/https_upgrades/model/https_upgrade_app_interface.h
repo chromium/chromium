@@ -10,11 +10,24 @@
 // The app interface for HTTPS upgrade tests.
 @interface HttpsUpgradeAppInterface : NSObject
 
+// Sets the testing `HTTPSPort` and whether to `useFakeHTTPS` for HTTPS
+// upgrades.
 + (void)setHTTPSPortForTesting:(int)HTTPSPort useFakeHTTPS:(bool)useFakeHTTPS;
+
+// Sets the fallback `HTTPPort` for testing HTTPS upgrades.
 + (void)setFallbackHttpPortForTesting:(int)HTTPPort;
+
+// Sets the fallback delay `fallbackDelayInMilliseconds` for testing HTTPS
+// upgrades.
 + (void)setFallbackDelayForTesting:(int)fallbackDelayInMilliseconds;
+
+// Returns YES if the HTTPS-Only Mode upgrade timer is currently running.
 + (BOOL)isHttpsOnlyModeTimerRunning;
+
+// Returns YES if the omnibox HTTPS upgrade timer is currently running.
 + (BOOL)isOmniboxUpgradeTimerRunning;
+
+// Clears the HTTPS upgrade allowlist.
 + (void)clearAllowlist;
 
 @end

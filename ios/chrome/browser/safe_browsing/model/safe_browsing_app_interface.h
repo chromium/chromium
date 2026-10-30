@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
                       forceRequest:(BOOL)forceRequest
                    intelligentScan:(BOOL)intelligentScan;
 
-// Triggers the completion of visual classification with `scores`.
+// Triggers the completion of visual classification for `url` with `scores`.
 + (void)triggerClassificationDoneWithURL:(NSString*)url
                             visualScores:(NSArray<NSNumber*>*)scores;
 
@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSInteger)cachedRealTimeURLClientSideDetectionTypeForURL:(NSString*)url;
 
 // Sets whether the local resource / localhost pre-classification check should
-// be bypassed for testing.
+// be bypassed (`bypass`) for testing.
 + (void)setBypassLocalResourceCheckForTesting:(BOOL)bypass;
 
 // Sets up a mock phishing report server that records whether the outgoing
