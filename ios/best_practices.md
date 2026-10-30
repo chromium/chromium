@@ -856,3 +856,8 @@ ______________________________________________________________________
   - To verify page navigation in EarlGrey tests, use
     `[ChromeEarlGrey waitForWebStateVisibleURL:...]` rather than asserting on
     `OmniboxText`. (Enforced by [`PRESUBMIT.py`](PRESUBMIT.py).)
+  - **EarlGrey helper and AppInterface headers (`*app_interface.h`,
+    `*earl_grey.h`):** Must follow the header documentation and categorization
+    requirements described in
+    [Accessing app internals](/docs/ios/testing.md#accessing-app-internals).
+    (Enforced by [`PRESUBMIT.py`](PRESUBMIT.py).)

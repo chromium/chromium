@@ -116,6 +116,29 @@ GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(MyTestAppInterface)
 If you don't you'll get linker errors that read like “Undefined symbols for
 architecture… MyTestAppInterface”
 
+##### Header documentation and Model Context Protocol (MCP) conformance
+
+All EarlGrey test helpers (`*earl_grey*.h`) and App Interface classes
+(`*app_interface*.h`) are automatically ingested by the EarlGrey MCP server
+driver (`//ios/testing/earl_grey_mcp/`) to dynamically expose testing interfaces
+as strongly-typed tools for AI agents.
+
+To guarantee complete tool schemas and prevent overflowing LLM context limits,
+`//ios/PRESUBMIT.py` enforces the following invariants on all exposed headers:
+
+1. **Method Descriptions**: Every class (`+`) and instance (`-`) method
+   declaration must have a preceding comment block (`// ...`) describing its
+   behavior. Block comments (`/* ... */`) are not allowed.
+2. **Parameter Enclosure**: Every parameter (except `error:(NSError**)`, which
+   is reserved for error reporting) must be documented in the comment with its
+   exact parameter name enclosed in backticks (e.g. `` `<paramName>` ``).
+3. **Return Value Descriptions**: All non-`void` return types must be described
+   (e.g., `Returns ...`).
+4. **Category Grouping & Breadth Caps**: Use `#pragma mark - <Category>` to
+   group related methods. Classes with more than 35 methods must be partitioned
+   into categories containing at most 35 methods each, with no more than 35
+   categories per class.
+
 #### Creating test targets and adding the target to test suites
 
 1. Create a test target. Add a target(`source_set`) named "eg2_tests" into the

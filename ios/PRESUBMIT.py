@@ -929,7 +929,9 @@ def _CheckEarlGreyHeaderDocstrings(input_api, output_api):
     error_message = (
         'EarlGrey header methods must have complete docstrings documenting '
         'their functionality, arguments (in backticks, e.g. `paramName`), and '
-        'return values so that MCP tool schemas have complete metadata.'
+        'return values so that MCP tool schemas have complete metadata.\n'
+        'See docs/ios/testing.md#accessing-app-internals for header '
+        'documentation requirements and examples.'
     )
     return [output_api.PresubmitError(error_message, items=errors)]
 
