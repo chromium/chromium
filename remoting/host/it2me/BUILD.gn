@@ -15,7 +15,7 @@ if (is_mac) {
   import("//third_party/icu/config.gni")
 }
 
-source_set("constants") {
+static_library("constants") {
   sources = [
     "it2me_constants.cc",
     "it2me_constants.h",
@@ -23,7 +23,7 @@ source_set("constants") {
   deps = [ "//remoting/host/native_messaging" ]
 }
 
-source_set("helpers") {
+static_library("helpers") {
   sources = [
     "it2me_helpers.cc",
     "it2me_helpers.h",
@@ -35,7 +35,7 @@ source_set("helpers") {
   ]
 }
 
-source_set("common") {
+static_library("common") {
   sources = [
     "it2me_confirmation_dialog.h",
     "it2me_confirmation_dialog_proxy.cc",

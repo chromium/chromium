@@ -49,7 +49,7 @@ source_set("file_transfer") {
   }
 }
 
-source_set("common") {
+static_library("common") {
   public = [
     "buffered_file_writer.h",
     "directory_helpers.h",
@@ -151,7 +151,7 @@ if (is_win) {
   }
 }
 
-source_set("test_support") {
+static_library("test_support") {
   testonly = true
 
   sources = [

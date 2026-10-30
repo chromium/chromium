@@ -4,7 +4,7 @@
 
 import("//remoting/build/config/remoting_build.gni")
 
-source_set("webauthn") {
+static_library("webauthn") {
   sources = [
     "desktop_session_type_util.cc",
     "desktop_session_type_util.h",

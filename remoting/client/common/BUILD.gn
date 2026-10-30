@@ -4,7 +4,7 @@
 
 import("//remoting/remoting_options.gni")
 
-source_set("common") {
+static_library("common") {
   sources = [
     "client_status_observer.h",
     "frame_consumer_wrapper.cc",

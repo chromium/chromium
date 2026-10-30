@@ -4,7 +4,7 @@
 
 import("//remoting/build/config/remoting_build.gni")
 
-source_set("security_key") {
+static_library("security_key") {
   sources = [
     "security_key_auth_handler.cc",
     "security_key_auth_handler.h",
