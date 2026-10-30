@@ -92,6 +92,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser:global_features",
+    "//chrome/browser/ash/login/test:user_session_test_environment_delegate",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/prefs",
     "//chrome/browser/profiles:profile",

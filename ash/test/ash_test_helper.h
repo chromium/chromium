@@ -27,6 +27,7 @@
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "ui/aura/test/aura_test_helper.h"
 
 class BrowserWithTestWindowTest;
@@ -78,10 +79,6 @@ namespace input_method {
 class MockInputMethodManagerImpl;
 }  // namespace input_method
 
-namespace test {
-class UserSessionTestEnvironment;
-}  // namespace test
-
 // A helper class that does common initialization required for Ash. Creates a
 // root window and an ash::Shell instance with a test delegate.
 class AshTestHelper : public aura::test::AuraTestHelper {
@@ -109,6 +106,14 @@ class AshTestHelper : public aura::test::AuraTestHelper {
     // If this is not set, a TestShellDelegate will be used automatically.
     std::unique_ptr<ShellDelegate> delegate;
     raw_ptr<PrefService> local_state = nullptr;
+
+    // Passed to `UserSessionTestEnvironment` created during `SetUp()`, e.g. to
+    // integrate with ProfileManager. Must not be set if
+    // `UserSessionTestEnvironment` is not created by `AshTestHelper`, i.e.,
+    // when UserManager or SessionManager is already initialized before
+    // `SetUp()`.
+    std::unique_ptr<ash::test::UserSessionTestEnvironment::Delegate>
+        user_session_test_environment_delegate;
 
     // True if a fake global `CrasAudioHandler` should be created.
     bool create_global_cras_audio_handler = true;

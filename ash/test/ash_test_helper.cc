@@ -400,10 +400,16 @@ void AshTestHelper::SetUp(InitParams init_params) {
       !session_manager::SessionManager::Get()) {
     user_session_test_environment_ =
         std::make_unique<ash::test::UserSessionTestEnvironment>(
-            init_params.local_state);
-  } else if (!session_manager::SessionManager::Get()) {
-    session_manager_ = std::make_unique<session_manager::SessionManager>(
-        std::make_unique<session_manager::FakeSessionManagerDelegate>());
+            init_params.local_state,
+            std::move(init_params.user_session_test_environment_delegate));
+  } else {
+    // The delegate is only for UserSessionTestEnvironment, which is not
+    // created in this case.
+    CHECK(!init_params.user_session_test_environment_delegate);
+    if (!session_manager::SessionManager::Get()) {
+      session_manager_ = std::make_unique<session_manager::SessionManager>(
+          std::make_unique<session_manager::FakeSessionManagerDelegate>());
+    }
   }
 
   // SystemLocationProvider has to be initialized before GeolocationController,

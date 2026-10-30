@@ -15,13 +15,13 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/speech_recognition_recognizer_client_impl.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile_manager.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/prefs/pref_service.h"
 #include "components/soda/constants.h"
@@ -63,12 +63,16 @@ class ProjectorSodaInstallationControllerTest : public ChromeAshTestBase {
   ~ProjectorSodaInstallationControllerTest() override = default;
 
   // ChromeAshTestBase:
+  void SetUpInitParams(AshTestHelper::InitParams& init_params) override {
+    ChromeAshTestBase::SetUpInitParams(init_params);
+    init_params.user_session_test_environment_delegate =
+        std::make_unique<test::ChromeUserSessionTestEnvironmentDelegate>(
+            TestingBrowserProcess::GetGlobal());
+  }
+
   void SetUp() override {
     ChromeAshTestBase::SetUp();
 
-    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
-        TestingBrowserProcess::GetGlobal());
-    ASSERT_TRUE(testing_profile_manager_->SetUp());
     testing_profile_ = ProfileManager::GetPrimaryUserProfile();
 
     soda_installer_ = std::make_unique<speech::MockSodaInstaller>();
@@ -113,14 +117,6 @@ class ProjectorSodaInstallationControllerTest : public ChromeAshTestBase {
     soda_installer_.reset();
 
     ChromeAshTestBase::TearDown();
-    // ProfileManager is destroyed in OnSubsystemsTornDown()
-    // invoked inside AshTestHelper::TearDown().
-    EXPECT_FALSE(testing_profile_manager_.get());
-  }
-
-  void OnSubsystemsTornDown() override {
-    ChromeAshTestBase::OnSubsystemsTornDown();
-    testing_profile_manager_.reset();
   }
 
   MockAppClient& app_client() { return *mock_app_client_; }
@@ -139,8 +135,6 @@ class ProjectorSodaInstallationControllerTest : public ChromeAshTestBase {
 
  private:
   raw_ptr<Profile, DanglingUntriaged> testing_profile_ = nullptr;
-
-  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
 
   std::unique_ptr<speech::MockSodaInstaller> soda_installer_;
   std::unique_ptr<MockProjectorClient> mock_client_;

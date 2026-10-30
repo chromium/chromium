@@ -17,5 +17,6 @@ specific_include_rules = {
   ],
   "ash_test_helper\\.h": [
     "+components/session_manager/core/session_manager.h",
+    "+components/session_manager/test/user_session_test_environment.h",
   ]
 }
