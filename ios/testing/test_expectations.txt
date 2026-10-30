@@ -137,8 +137,6 @@ crbug.com/564394196 GeminiContainerTestCase/testOpenAppsActivityFromToolbar [ Fa
 
 # Gardening suppression 2026-09-22
 crbug.com/564394196 GeminiCopresenceTestCase/testOpenSettingsFromToolbar [ Pass Failure ]
-crbug.com/564394196 [ iPad ] GeminiDynamicSettingsTestCase/testLoadDynamicSettings [ Failure ]
-crbug.com/564394196 [ iPhone Simulator ] GeminiDynamicSettingsTestCase/testLoadDynamicSettings [ Pass Failure ]
 
 # Picture-in-picture issues on iPad
 # Gardening suppression 2026-09-23
