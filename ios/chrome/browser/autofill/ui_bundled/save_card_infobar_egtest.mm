@@ -323,6 +323,16 @@ void FillAndSubmitXframeCreditCardForm() {
 
 #pragma mark - Page interaction helper methods
 
+// Loads the credit card upload form and waits for Autofill to parse it.
+// `BrowserAutofillManager::ValidateSubmittedForm()` drops submissions of forms
+// that are not yet in the Autofill form cache, so filling and submitting right
+// after the page load is racy.
+- (void)loadCreditCardUploadForm {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kCreditCardUploadForm)];
+  GREYAssertTrue([AutofillAppInterface waitForFormToBeCachedInMainFrame],
+                 @"Forms were not parsed and cached.");
+}
+
 - (void)fillAndSubmitFormWithID:(NSString*)formID {
   [ChromeEarlGrey tapWebStateElementWithID:formID];
   [self submitForm];
@@ -383,7 +393,7 @@ void FillAndSubmitXframeCreditCardForm() {
                       errorCode:(int)errorCode
                    forLocalSave:(BOOL)localSave
                      numStrikes:(std::optional<int>)numStrikes {
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(kCreditCardUploadForm)];
+  [self loadCreditCardUploadForm];
 
   // Set up the Google Payments server response.
   [AutofillAppInterface setPaymentsResponse:fakeResponse
@@ -1107,7 +1117,7 @@ void FillAndSubmitXframeCreditCardForm() {
 - (void)testStickySavePromptJourney {
   const GURL testPageURL = self.testServer->GetURL(kCreditCardUploadForm);
 
-  [ChromeEarlGrey loadURL:testPageURL];
+  [self loadCreditCardUploadForm];
 
   // Set up the Google Payments server response.
   [AutofillAppInterface setPaymentsResponse:kResponseGetUploadDetailsFailure
@@ -1349,7 +1359,7 @@ void FillAndSubmitXframeCreditCardForm() {
   GREYAssertEqual(0U, [AutofillAppInterface localCreditCount],
                   @"There should be no saved credit card.");
 
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(kCreditCardUploadForm)];
+  [self loadCreditCardUploadForm];
 
   // Set up the Google Payments server response.
   [AutofillAppInterface setPaymentsResponse:kResponseGetUploadDetailsFailure
@@ -1408,7 +1418,7 @@ void FillAndSubmitXframeCreditCardForm() {
   GREYAssertEqual(0U, [AutofillAppInterface localCreditCount],
                   @"There should be no saved credit card.");
 
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(kCreditCardUploadForm)];
+  [self loadCreditCardUploadForm];
 
   // Set up the Google Payments server response.
   [AutofillAppInterface setPaymentsResponse:kResponseGetUploadDetailsFailure
