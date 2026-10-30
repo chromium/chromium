@@ -663,8 +663,9 @@ export class OmniboxEverywhereOmniboxElement extends
   // the collapse animation finishes (`!dropdownIsVisible && !hasUserInput_`) so
   // the 1-line pill is back at rest until the next expansion.
   protected onBottomControlsAnimationEnd_(e: AnimationEvent) {
-    if (e.target === e.currentTarget && !this.dropdownIsVisible &&
-        !this.hasUserInput_) {
+    if (e.target === e.currentTarget &&
+        e.animationName === 'loomniboxTopControlsEnter' &&
+        !this.dropdownIsVisible && !this.hasUserInput_) {
       this.removeAttribute('has-expanded');
     }
   }
