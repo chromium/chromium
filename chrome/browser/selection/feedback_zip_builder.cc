@@ -16,6 +16,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/selection/suggestion_service.h"
@@ -27,6 +28,7 @@ struct FeedbackZipBuilder::State {
   SkBitmap screenshot;
   std::optional<EncodedImage> mes_screenshot;
   std::optional<optimization_guide::proto::AnnotatedPageContent> apc;
+  std::optional<std::u16string> selected_text;
 };
 
 FeedbackZipBuilder::FeedbackZipBuilder() : state_(std::make_unique<State>()) {}
@@ -49,6 +51,11 @@ void FeedbackZipBuilder::SetApc(
     optimization_guide::proto::AnnotatedPageContent apc) {
   CHECK(state_);
   state_->apc = std::move(apc);
+}
+
+void FeedbackZipBuilder::SetSelectedText(std::u16string selected_text) {
+  CHECK(state_);
+  state_->selected_text = std::move(selected_text);
 }
 
 void FeedbackZipBuilder::CreateZip(
@@ -95,7 +102,10 @@ std::optional<base::FilePath> FeedbackZipBuilder::CreateZipOnThreadPool(
                         state.mes_screenshot->bytes)) ||
       (state.apc.has_value() &&
        !base::WriteFile(dir.AppendASCII("apc.pb"),
-                        state.apc->SerializeAsString()))) {
+                        state.apc->SerializeAsString())) ||
+      (state.selected_text.has_value() &&
+       !base::WriteFile(dir.AppendASCII("selection.txt"),
+                        base::UTF16ToUTF8(*state.selected_text)))) {
     return std::nullopt;
   }
 

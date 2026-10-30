@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -31,6 +32,7 @@ class FeedbackZipBuilder {
   void SetScreenshot(SkBitmap screenshot);
   void SetMesScreenshot(EncodedImage mes_screenshot);
   void SetApc(optimization_guide::proto::AnnotatedPageContent apc);
+  void SetSelectedText(std::u16string selected_text);
 
   // Creates a ZIP file at `target_zip_path` (using `base::GetUniquePath` to
   // avoid overwriting an existing file) containing the artifacts recorded
@@ -39,6 +41,7 @@ class FeedbackZipBuilder {
   // - `mes_screenshot.{png,jpg}`: the cropped/downscaled screenshot sent to
   //   MES,
   // - `apc.pb`: the serialized AnnotatedPageContent proto,
+  // - `selection.txt`: the UTF-8 text selection,
   // and passes the created ZIP path to `callback` (or `std::nullopt` on
   // failure).
   void CreateZip(

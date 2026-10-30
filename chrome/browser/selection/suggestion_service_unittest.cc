@@ -1090,6 +1090,7 @@ TEST_F(SuggestionServiceUnitTest, CreateFeedbackZip) {
   aoi.screenshot.eraseColor(SK_ColorGREEN);
   aoi.bounds = gfx::Rect(10, 20, 30, 40);
   aoi.apc.mutable_main_frame_data()->set_title("Feedback Test Page");
+  aoi.selected_text = u"Selected feedback text";
 
   SuggestionsFuture suggestions_future;
   service().RequestSuggestions(aoi, suggestions_future.GetCallback());
@@ -1134,6 +1135,11 @@ TEST_F(SuggestionServiceUnitTest, CreateFeedbackZip) {
   optimization_guide::proto::AnnotatedPageContent apc;
   ASSERT_TRUE(apc.ParseFromString(apc_str));
   EXPECT_THAT(apc, EqualsProto(aoi.apc));
+
+  std::string selected_text;
+  ASSERT_TRUE(base::ReadFileToString(
+      extract_dir.GetPath().AppendASCII("selection.txt"), &selected_text));
+  EXPECT_EQ(selected_text, "Selected feedback text");
 
   service().UnregisterTool(&gemini_tool);
 }
@@ -1223,6 +1229,7 @@ TEST_F(SuggestionServiceUnitTest,
   aoi.screenshot.allocN32Pixels(60, 40);
   aoi.screenshot.eraseColor(SK_ColorRED);
   aoi.apc.mutable_main_frame_data()->set_title("Disabled Server Test");
+  aoi.selected_text = u"Disabled server selection";
 
   SuggestionsFuture suggestions_future;
   service().RequestSuggestions(aoi, suggestions_future.GetCallback());
@@ -1250,6 +1257,8 @@ TEST_F(SuggestionServiceUnitTest,
   EXPECT_FALSE(base::PathExists(
       extract_dir.GetPath().AppendASCII("mes_screenshot.png")));
   EXPECT_FALSE(base::PathExists(extract_dir.GetPath().AppendASCII("apc.pb")));
+  EXPECT_FALSE(
+      base::PathExists(extract_dir.GetPath().AppendASCII("selection.txt")));
 
   service().UnregisterTool(&gemini_tool);
 }
