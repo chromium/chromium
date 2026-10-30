@@ -129,6 +129,7 @@
 
   // May update layout/scroll/style
   await checkHasNoSideEffect(`div.getBoundingClientRect()`);
+  await checkHasNoSideEffect(`div.getBoundingClientRect().toJSON()`);
   await checkHasNoSideEffect(`global_getComputedStyle(div)`);
 
   testRunner.completeTest();
