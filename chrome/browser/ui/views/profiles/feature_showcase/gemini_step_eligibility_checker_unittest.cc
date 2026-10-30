@@ -34,6 +34,7 @@ class TestVariationsService : public variations::TestVariationsService {
 
   void NotifySeedFetched() {
     OnSeedStoreResult(/*is_delta_compressed=*/false,
+                      /*geo_or_day_changed=*/false,
                       /*store_success=*/true, variations::VariationsSeed());
   }
 };

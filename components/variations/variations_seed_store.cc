@@ -25,6 +25,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/client_filterable_state.h"
+#include "components/variations/metrics.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/proto/variations_seed.pb.h"
 #include "components/variations/seed_reader_writer.h"
@@ -510,9 +511,12 @@ void VariationsSeedStore::RecordLastFetchTime(base::Time fetch_time) {
   }
 }
 
-void VariationsSeedStore::UpdateSeedDateAndLogDayChange(base::Time seed_date) {
+UpdateSeedDateResult VariationsSeedStore::UpdateSeedDateAndLogDayChange(
+    base::Time seed_date) {
+  const UpdateSeedDateResult result = GetSeedDateUpdateResult(seed_date);
   LogSeedDayChange(seed_date);
   seed_reader_writer_->SetSeedDate(seed_date);
+  return result;
 }
 
 bool VariationsSeedStore::UpdateSessionCountryAndGeoLevel1(

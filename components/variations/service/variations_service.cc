@@ -863,9 +863,19 @@ void VariationsService::StoreSeed(std::string seed_data,
                                   bool is_gzip_compressed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::OnceCallback<void(bool, VariationsSeed)> done_callback =
-      base::BindOnce(&VariationsService::OnSeedStoreResult,
-                     weak_ptr_factory_.GetWeakPtr(), is_delta_compressed);
+  const UpdateSeedDateResult date_result =
+      field_trial_creator_.seed_store()->GetSeedDateUpdateResult(seed_date);
+  const bool day_changed = date_result == UpdateSeedDateResult::kNewDay ||
+                           date_result == UpdateSeedDateResult::kNoOldDate;
+  const bool geo_changed =
+      !country_code.empty() &&
+      (country_code != field_trial_creator_.seed_store()->GetLatestCountry() ||
+       geo_level1 != field_trial_creator_.seed_store()->GetLatestGeoLevel1());
+  const bool geo_or_day_changed = geo_changed || day_changed;
+
+  base::OnceCallback<void(bool, VariationsSeed)> done_callback = base::BindOnce(
+      &VariationsService::OnSeedStoreResult, weak_ptr_factory_.GetWeakPtr(),
+      is_delta_compressed, geo_or_day_changed);
   field_trial_creator_.seed_store()->StoreSeedData(
       std::move(done_callback), std::move(seed_data), std::move(seed_signature),
       std::move(country_code), std::move(geo_level1), seed_date,
@@ -874,6 +884,7 @@ void VariationsService::StoreSeed(std::string seed_data,
 }
 
 void VariationsService::OnSeedStoreResult(bool is_delta_compressed,
+                                          bool geo_or_day_changed,
                                           bool store_success,
                                           VariationsSeed seed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -905,6 +916,9 @@ void VariationsService::OnSeedStoreResult(bool is_delta_compressed,
     }
 
     NotifySeedFetched();
+    if (geo_or_day_changed) {
+      NotifyCountryOrAdminAreaChanged();
+    }
   }
 }
 
@@ -1174,6 +1188,14 @@ void VariationsService::NotifySeedFetched() {
 
   for (auto& observer : observer_list_) {
     observer.OnSeedFetched();
+  }
+}
+
+void VariationsService::NotifyCountryOrAdminAreaChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  for (auto& observer : observer_list_) {
+    observer.OnCountryOrAdminAreaChanged();
   }
 }
 
@@ -1695,10 +1717,16 @@ void VariationsService::RecordSuccessfulFetchSeedNotModified(
   // Callers set `response_date` to std::nullopt for insecure HTTP retries
   // because unauthenticated Date headers cannot be trusted. A null date logs
   // kNoNewDate and keeps the stored seed date.
-  field_trial_creator_.seed_store()->UpdateSeedDateAndLogDayChange(
-      response_date.value_or(base::Time()));
-  field_trial_creator_.seed_store()->UpdateSessionCountryAndGeoLevel1(
-      country_code, geo_level1);
+  const UpdateSeedDateResult date_result =
+      field_trial_creator_.seed_store()->UpdateSeedDateAndLogDayChange(
+          response_date.value_or(base::Time()));
+  const bool geo_changed =
+      field_trial_creator_.seed_store()->UpdateSessionCountryAndGeoLevel1(
+          country_code, geo_level1);
+  if (geo_changed || date_result == UpdateSeedDateResult::kNewDay ||
+      date_result == UpdateSeedDateResult::kNoOldDate) {
+    NotifyCountryOrAdminAreaChanged();
+  }
 }
 
 VariationsSeedStore* VariationsService::GetSeedStoreForTesting() {

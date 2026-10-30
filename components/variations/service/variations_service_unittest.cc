@@ -326,8 +326,8 @@ class TestVariationsService : public VariationsService {
           std::move(country_code), std::move(geo_level1), seed_date,
           is_delta_compressed, is_gzip_compressed);
     } else {
-      OnSeedStoreResult(is_delta_compressed, seed_stores_succeed_,
-                        VariationsSeed());
+      OnSeedStoreResult(is_delta_compressed, /*geo_or_day_changed=*/false,
+                        seed_stores_succeed_, VariationsSeed());
     }
   }
 
@@ -382,6 +382,10 @@ class TestVariationsServiceObserver : public VariationsService::Observer {
 
   void OnSeedFetched() override { ++seed_fetched_notified_; }
 
+  void OnCountryOrAdminAreaChanged() override {
+    ++country_or_admin_area_changed_notified_;
+  }
+
   int best_effort_changes_notified() const {
     return best_effort_changes_notified_;
   }
@@ -389,6 +393,10 @@ class TestVariationsServiceObserver : public VariationsService::Observer {
   int crticial_changes_notified() const { return crticial_changes_notified_; }
 
   int seed_fetched_notified() const { return seed_fetched_notified_; }
+
+  int country_or_admin_area_changed_notified() const {
+    return country_or_admin_area_changed_notified_;
+  }
 
  private:
   // Number of notification received with BEST_EFFORT severity.
@@ -399,6 +407,9 @@ class TestVariationsServiceObserver : public VariationsService::Observer {
 
   // Number of notifications received for seed fetch completion.
   int seed_fetched_notified_ = 0;
+
+  // Number of notifications received for country / admin area / day changes.
+  int country_or_admin_area_changed_notified_ = 0;
 };
 
 // Constants used to create the test seed.
@@ -987,18 +998,75 @@ TEST_F(VariationsServiceTest, Observer_OnSeedFetched) {
   // Simulating a successful seed store should trigger OnSeedFetched()
   // notification.
   service.OnSeedStoreResult(/*is_delta_compressed=*/false,
+                            /*geo_or_day_changed=*/false,
                             /*store_success=*/true, VariationsSeed());
   EXPECT_EQ(1, observer.seed_fetched_notified());
 
   // Failed seed store should not trigger OnSeedFetched() notification.
   service.OnSeedStoreResult(/*is_delta_compressed=*/false,
+                            /*geo_or_day_changed=*/false,
                             /*store_success=*/false, VariationsSeed());
   EXPECT_EQ(1, observer.seed_fetched_notified());
 
   // 304 response (RecordSuccessfulFetchSeedNotModified) should not trigger
-  // OnSeedFetched() notification.
-  service.RecordSuccessfulFetchSeedNotModified(base::Time::Now());
+  // OnSeedFetched() notification, even if geo or date changes.
+  service.RecordSuccessfulFetchSeedNotModified(base::Time::Now(), "us",
+                                               "us-ca");
   EXPECT_EQ(1, observer.seed_fetched_notified());
+
+  service.RemoveObserver(&observer);
+}
+
+TEST_F(VariationsServiceTest, Observer_OnCountryOrAdminAreaChanged) {
+  TestVariationsService service(
+      std::make_unique<web_resource::TestRequestAllowedNotifier>(
+          &prefs_, network_tracker_),
+      &prefs_, GetMetricsStateManager(), /*use_secure_url=*/true);
+
+  TestVariationsServiceObserver observer;
+  service.AddObserver(&observer);
+
+  EXPECT_EQ(0, observer.country_or_admin_area_changed_notified());
+
+  base::Time initial_time;
+  ASSERT_TRUE(
+      base::Time::FromUTCString("2024-01-01 00:00:00 UTC", &initial_time));
+  prefs_.SetTime(prefs::kVariationsSeedDate, initial_time);
+
+  // 304 response on the same day with no geo change should not trigger
+  // OnCountryOrAdminAreaChanged() notification.
+  service.RecordSuccessfulFetchSeedNotModified(initial_time);
+  EXPECT_EQ(0, observer.country_or_admin_area_changed_notified());
+
+  // 304 response with updated geo headers should trigger
+  // OnCountryOrAdminAreaChanged().
+  service.RecordSuccessfulFetchSeedNotModified(initial_time, "us", "us-ca");
+  EXPECT_EQ(1, observer.country_or_admin_area_changed_notified());
+
+  // Subsequent 304 response on the same day with identical geo headers should
+  // not trigger OnCountryOrAdminAreaChanged().
+  service.RecordSuccessfulFetchSeedNotModified(initial_time, "us", "us-ca");
+  EXPECT_EQ(1, observer.country_or_admin_area_changed_notified());
+
+  // 304 response on a new UTC day should trigger OnCountryOrAdminAreaChanged()
+  // even if geo headers are unchanged.
+  service.RecordSuccessfulFetchSeedNotModified(initial_time + base::Days(1),
+                                               "us", "us-ca");
+  EXPECT_EQ(2, observer.country_or_admin_area_changed_notified());
+
+  // 200 OK seed store with geo_or_day_changed=true should also trigger
+  // OnCountryOrAdminAreaChanged().
+  service.OnSeedStoreResult(/*is_delta_compressed=*/false,
+                            /*geo_or_day_changed=*/true,
+                            /*store_success=*/true, VariationsSeed());
+  EXPECT_EQ(3, observer.country_or_admin_area_changed_notified());
+
+  // 200 OK seed store with geo_or_day_changed=false should not trigger
+  // OnCountryOrAdminAreaChanged().
+  service.OnSeedStoreResult(/*is_delta_compressed=*/false,
+                            /*geo_or_day_changed=*/false,
+                            /*store_success=*/true, VariationsSeed());
+  EXPECT_EQ(3, observer.country_or_admin_area_changed_notified());
 
   service.RemoveObserver(&observer);
 }
