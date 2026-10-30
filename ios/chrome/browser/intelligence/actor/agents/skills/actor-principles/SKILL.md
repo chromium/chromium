@@ -31,5 +31,5 @@ single source of truth; this skill only says how to apply it.
 - The exceptions listed under a principle are deliberate. Do not flag a change
   that falls under one of them.
 - If the change and the document disagree in a way the document does not
-  anticipate, say so as a question rather than a finding, so the authors can
-  decide whether the code or the principle should change.
+  anticipate, report a finding phrased as a question, so the authors can decide
+  whether the code or the principle should change.

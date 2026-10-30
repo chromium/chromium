@@ -27,10 +27,11 @@ known exceptions.
 **Why.** The actor service is intended to be compatible with any AI provider
 that wants to actuate in the browser.
 
-**For a CL, this means.** There are no mentions of a given AI provider (e.g.
-Gemini).
+**For a CL, this means.** There are no mentions of, or specialized logic for, a
+given AI provider or client (e.g. Gemini).
 
-**Exceptions.** None.
+**Exceptions.** Caller identification for attribution or telemetry, without
+branching behavior on it.
 
 ### Decoupled UI
 
@@ -41,7 +42,8 @@ Gemini).
 **For a CL, this means.** The actor service is the headless layer under
 `model/`, `tools/` and `public/`; `ui/` and `coordinator/` are the actor's own
 presentation layer, which consumes the service like any other client. The
-service should not be the source of any direct UI elements, such as text labels.
+service should not be the source of any direct UI elements, such as text labels,
+or alter its state to drive UI presentation.
 
 **Exceptions.** UI data flowing *through* the actor service, though not
 originating from it.
