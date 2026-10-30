@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/ui/views/toolbar/webui_pinned_toolbar_actions_test_base.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
+#include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -1033,6 +1035,16 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
   base::RunLoop run_loop;
 
   model_->UpdatePinnedState(action_id, true);
+
+  // The WebUI hasn't rendered the button yet, so its element can't be found.
+  // Verify GetBubbleAnchor() falls back to the location bar.
+  ASSERT_TRUE(pinned_actions->IsActionPinnedOrPoppedOut(action_id));
+  ASSERT_FALSE(BrowserElements::From(browser())->GetElement(
+      webui_toolbar::ActionIdToElementIdentifier(action_id)));
+  pinned_actions->allow_missing_anchor_for_testing_ = true;
+  EXPECT_EQ(pinned_actions->GetBubbleAnchor(action_id).GetIfView(),
+            GetLocationBarView());
+  pinned_actions->allow_missing_anchor_for_testing_ = false;
 
   pinned_actions->PostOrQueueActionAfterAnimation(
       base::BindLambdaForTesting([&]() {

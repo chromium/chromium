@@ -85,6 +85,8 @@ class WebUIPinnedToolbarActions : public PinnedToolbarActions,
                            RightClickPinnedAction);
   FRIEND_TEST_ALL_PREFIXES(WebUIPinnedToolbarActionsBrowserTest,
                            LongPressPinnedAction);
+  FRIEND_TEST_ALL_PREFIXES(WebUIPinnedToolbarActionsBrowserTest,
+                           PostOrQueueActionAfterAnimation_SingleButton);
 
   // PinnedToolbarActionsModel::Observer:
   void OnActionsChanged() override;
@@ -131,6 +133,11 @@ class WebUIPinnedToolbarActions : public PinnedToolbarActions,
   std::list<std::unique_ptr<PendingAnchorRequest>> pending_anchor_requests_;
   // Implements DownloadButton for the downloads button, when it's displayed.
   const std::unique_ptr<WebUIDownloadButton> download_button_;
+  // Allows only WebUIPinnedToolbarActionsBrowserTest to exercise
+  // GetBubbleAnchor()'s fallback for when a pinned action's element can't be
+  // found, which otherwise CHECKs in tests. This should NOT be used by other
+  // tests!
+  bool allow_missing_anchor_for_testing_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_PINNED_TOOLBAR_ACTIONS_H_
