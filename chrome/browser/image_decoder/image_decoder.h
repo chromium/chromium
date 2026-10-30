@@ -15,6 +15,7 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/thread_annotations.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace data_decoder {
@@ -136,14 +137,13 @@ class ImageDecoder {
   void OnDecodeImageSucceeded(const SkBitmap& decoded_image, int request_id);
   void OnDecodeImageFailed(int request_id);
 
+  base::Lock map_lock_;
+
   // id to use for the next Start() request that comes in.
-  int image_request_id_counter_;
+  int image_request_id_counter_ GUARDED_BY(map_lock_);
 
   // Map of request id's to ImageRequests.
-  RequestMap image_request_id_map_;
-
-  // Protects |image_request_id_map_| and |image_request_id_counter_|.
-  base::Lock map_lock_;
+  RequestMap image_request_id_map_ GUARDED_BY(map_lock_);
 };
 
 #endif  // CHROME_BROWSER_IMAGE_DECODER_IMAGE_DECODER_H_
