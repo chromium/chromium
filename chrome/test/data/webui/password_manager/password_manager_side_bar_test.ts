@@ -7,8 +7,7 @@ import 'chrome://password-manager/password_manager.js';
 import type {PasswordManagerSideBarElement} from 'chrome://password-manager/password_manager.js';
 import {CheckupSubpage, Page, PasswordManagerImpl, Router} from 'chrome://password-manager/password_manager.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {makeInsecureCredential} from './test_util.js';
@@ -25,12 +24,12 @@ suite('PasswordManagerSideBarTest', function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     sidebar = document.createElement('password-manager-side-bar');
     document.body.appendChild(sidebar);
-    return flushTasks();
+    return microtasksFinished();
   });
 
   test('check layout', function() {
     assertTrue(isVisible(sidebar));
-    const sideBarEntries = sidebar.shadowRoot!.querySelectorAll('a');
+    const sideBarEntries = sidebar.shadowRoot.querySelectorAll('a');
     assertEquals(3, sideBarEntries.length);
   });
 
@@ -42,7 +41,7 @@ suite('PasswordManagerSideBarTest', function() {
         assertEquals(differentPage, Router.getInstance().currentRoute.page);
 
         const element =
-            sidebar.shadowRoot!.querySelector<HTMLElement>(`#${page}`)!;
+            sidebar.shadowRoot.querySelector<HTMLElement>(`#${page}`)!;
         element.click();
         assertEquals(page, Router.getInstance().currentRoute.page);
       }));
@@ -88,7 +87,7 @@ suite('PasswordManagerSideBarTest', function() {
         // data changes, so mimic that action to ensure the element responds.
         passwordManager.listeners.insecureCredentialsListener(
             passwordManager.data.insecureCredentials);
-        await flushTasks();
+        await microtasksFinished();
 
         assertFalse(isVisible(sidebar.$.compromisedPasswords));
       });
@@ -109,7 +108,7 @@ suite('PasswordManagerSideBarTest', function() {
     assertTrue(!!passwordManager.listeners.insecureCredentialsListener);
     passwordManager.listeners.insecureCredentialsListener(
         passwordManager.data.insecureCredentials);
-    await flushTasks();
+    await microtasksFinished();
     // The compromised passwords are not of the correct type; do not display the
     // count.
     assertFalse(isVisible(sidebar.$.compromisedPasswords));
@@ -127,7 +126,7 @@ suite('PasswordManagerSideBarTest', function() {
     assertTrue(!!passwordManager.listeners.insecureCredentialsListener);
     passwordManager.listeners.insecureCredentialsListener(
         passwordManager.data.insecureCredentials);
-    await flushTasks();
+    await microtasksFinished();
     // The compromised is of the correct type, but muted; do not display the
     // count.
     assertFalse(isVisible(sidebar.$.compromisedPasswords));
@@ -165,7 +164,7 @@ suite('PasswordManagerSideBarTest', function() {
     assertTrue(!!passwordManager.listeners.insecureCredentialsListener);
     passwordManager.listeners.insecureCredentialsListener(
         passwordManager.data.insecureCredentials);
-    await flushTasks();
+    await microtasksFinished();
     // The three passwords with types of one of LEAKED or PHISHED should be
     // reflected in the sidebar. The others should not.
     assertTrue(isVisible(sidebar.$.compromisedPasswords));
@@ -187,7 +186,7 @@ suite('PasswordManagerSideBarTest', function() {
     assertTrue(!!passwordManager.listeners.insecureCredentialsListener);
     passwordManager.listeners.insecureCredentialsListener(
         passwordManager.data.insecureCredentials);
-    await flushTasks();
+    await microtasksFinished();
     // There are three digits of compromised passwords, which should
     // overflow and show '99+'.
     assertTrue(isVisible(sidebar.$.compromisedPasswords));
@@ -209,7 +208,7 @@ suite('PasswordManagerSideBarTest', function() {
     assertTrue(!!passwordManager.listeners.insecureCredentialsListener);
     passwordManager.listeners.insecureCredentialsListener(
         passwordManager.data.insecureCredentials);
-    await flushTasks();
+    await microtasksFinished();
     // Verify that the overflow starts at 100, and is not off-by-one.
     assertTrue(isVisible(sidebar.$.compromisedPasswords));
     assertEquals('99', sidebar.$.compromisedPasswords.innerText);

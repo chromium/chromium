@@ -6,26 +6,25 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import './add_password_dialog.js';
-import '../shared_style.css.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import type {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {PasswordManagerImpl} from '../password_manager_proxy.js';
 import {Page, Router} from '../router.js';
-import {ShowPasswordMixin} from '../show_password_mixin.js';
+import {ShowPasswordMixinLit} from '../show_password_mixin_lit.js';
 
 import {PASSWORD_NOTE_MAX_CHARACTER_COUNT, PASSWORD_NOTE_WARNING_CHARACTER_COUNT, PasswordNoteAction, recordPasswordNoteAction} from './add_password_dialog.js';
-import {getTemplate} from './edit_password_dialog.html.js';
+import {getCss} from './edit_password_dialog.css.js';
+import {getHtml} from './edit_password_dialog.html.js';
 
 export interface EditPasswordDialogElement {
   $: {
@@ -70,74 +69,52 @@ function getConflictingUsernames(
 }
 
 const EditPasswordDialogElementBase =
-    ShowPasswordMixin(I18nMixin(PolymerElement));
+    ShowPasswordMixinLit(I18nMixinLit(CrLitElement));
 
 export class EditPasswordDialogElement extends EditPasswordDialogElementBase {
   static get is() {
     return 'edit-password-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      credential: Object,
-      showRedirect: {
-        type: Boolean,
-        value: false,
-      },
-
-      username_: String,
-      password_: String,
-
-      note_: {
-        type: String,
-        value: '',
-      },
-
-      conflictingUsernames_: {
-        type: Object,
-        values: () => new Map(),
-      },
-
-      usernameErrorMessage_: {
-        type: String,
-        computed: 'computeUsernameErrorMessage_(credential, username_, ' +
-            'conflictingUsernames_)',
-      },
-
-      canEditPassword_: {
-        type: Boolean,
-        computed: 'computeCanEditPassword_(credential, username_, password_, ' +
-            'note_)',
-      },
+      credential: {type: Object},
+      showRedirect: {type: Boolean},
+      username_: {type: String},
+      password_: {type: String},
+      note_: {type: String},
+      conflictingUsernames_: {type: Object},
+      usernameErrorMessage_: {type: String},
+      canEditPassword_: {type: Boolean},
     };
   }
 
-  declare credential: chrome.passwordsPrivate.PasswordUiEntry;
-  declare showRedirect: boolean;
-  declare private username_: string;
-  declare private password_: string;
-  declare private note_: string;
-  declare private conflictingUsernames_: Map<string, string>;
-  declare private usernameErrorMessage_: string|null;
-  declare private canEditPassword_: boolean;
+  accessor credential: chrome.passwordsPrivate.PasswordUiEntry;
+  accessor showRedirect: boolean = false;
+  protected accessor username_: string = '';
+  protected accessor password_: string = '';
+  protected accessor note_: string = '';
+  private accessor conflictingUsernames_: Map<string, string> = new Map();
+  protected accessor usernameErrorMessage_: string|null = null;
+  protected accessor canEditPassword_: boolean = false;
   private setSavedPasswordsListener_: (
       (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void)|null = null;
 
-  override ready() {
-    super.ready();
-    assert(this.credential.password);
+  override connectedCallback() {
+    super.connectedCallback();
 
+    assert(this.credential.password);
     this.username_ = this.credential.username;
     this.password_ = this.credential.password;
     this.note_ = this.credential.note ?? '';
-  }
-
-  override connectedCallback() {
-    super.connectedCallback();
 
     this.setSavedPasswordsListener_ = credentialList => {
       // Passkeys and federated credential may have the same username as a
@@ -163,6 +140,26 @@ export class EditPasswordDialogElement extends EditPasswordDialogElementBase {
     this.setSavedPasswordsListener_ = null;
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedProperties.has('credential') ||
+        changedPrivateProperties.has('username_') ||
+        changedPrivateProperties.has('conflictingUsernames_')) {
+      this.usernameErrorMessage_ = this.computeUsernameErrorMessage_();
+    }
+
+    if (changedProperties.has('credential') ||
+        changedPrivateProperties.has('username_') ||
+        changedPrivateProperties.has('password_') ||
+        changedPrivateProperties.has('note_') ||
+        changedPrivateProperties.has('conflictingUsernames_')) {
+      this.canEditPassword_ = this.computeCanEditPassword_();
+    }
+  }
+
   private computeUsernameErrorMessage_(): string|null {
     if (!this.conflictingUsernames_) {
       return null;
@@ -177,27 +174,38 @@ export class EditPasswordDialogElement extends EditPasswordDialogElementBase {
     return null;
   }
 
-  private doesUsernameExistAlready_(): boolean {
+  protected doesUsernameExistAlready_(): boolean {
     return !!this.usernameErrorMessage_;
   }
 
+  protected onUsernameValueChanged_(e: CustomEvent<{value: string}>) {
+    this.username_ = e.detail.value;
+  }
 
-  private onCancel_() {
+  protected onPasswordValueChanged_(e: CustomEvent<{value: string}>) {
+    this.password_ = e.detail.value;
+  }
+
+  protected onNoteValueChanged_(e: CustomEvent<{value: string}>) {
+    this.note_ = e.detail.value;
+  }
+
+  protected onCancelClick_() {
     this.$.dialog.close();
   }
 
-  private getFootnote_(): string {
+  protected getFootnote_(): string {
     assert(this.credential.affiliatedDomains);
     return this.i18n(
         'editPasswordFootnote',
         this.credential.affiliatedDomains[0]?.name ?? '');
   }
 
-  private showRedirect_(): boolean {
+  protected showRedirect_(): boolean {
     return this.showRedirect && this.doesUsernameExistAlready_();
   }
 
-  private getViewExistingPasswordAriaDescription_(): string {
+  protected getViewExistingPasswordAriaDescription_(): string {
     if (!this.conflictingUsernames_) {
       return '';
     }
@@ -208,7 +216,7 @@ export class EditPasswordDialogElement extends EditPasswordDialogElementBase {
         '';
   }
 
-  private onViewExistingPasswordClick_(e: Event) {
+  protected onViewExistingPasswordClick_(e: Event) {
     e.preventDefault();
     assert(this.conflictingUsernames_.has(this.username_));
     Router.getInstance().navigateTo(
@@ -216,11 +224,11 @@ export class EditPasswordDialogElement extends EditPasswordDialogElementBase {
     this.$.dialog.close();
   }
 
-  private isNoteInputInvalid_(): boolean {
+  protected isNoteInputInvalid_(): boolean {
     return this.note_.length > PASSWORD_NOTE_MAX_CHARACTER_COUNT;
   }
 
-  private getFirstNoteFooter_(): string {
+  protected getFirstNoteFooter_(): string {
     return this.note_.length < PASSWORD_NOTE_WARNING_CHARACTER_COUNT ?
         '' :
         this.i18n(
@@ -228,7 +236,7 @@ export class EditPasswordDialogElement extends EditPasswordDialogElementBase {
             PASSWORD_NOTE_MAX_CHARACTER_COUNT);
   }
 
-  private getSecondNoteFooter_(): string {
+  protected getSecondNoteFooter_(): string {
     return this.note_.length < PASSWORD_NOTE_WARNING_CHARACTER_COUNT ?
         '' :
         this.i18n(
@@ -241,7 +249,7 @@ export class EditPasswordDialogElement extends EditPasswordDialogElementBase {
         this.password_.length > 0 && !this.isNoteInputInvalid_();
   }
 
-  private onEditClick_() {
+  protected onEditClick_() {
     assert(this.computeCanEditPassword_());
     this.recordPasswordNoteMetrics();
     this.credential.password = this.password_;

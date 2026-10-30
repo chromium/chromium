@@ -1,0 +1,60 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=../shared_style_lit.css.js
+ * #include=shared-style-lit cr-shared-style-lit cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  align-items: center;
+  display: flex;
+}
+
+#image {
+  height: 120px;
+  width: 248px;
+}
+
+a[href] {
+  color: var(--cr-link-color);
+}
+
+#cardContent {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  margin-block: 16px;
+  margin-inline-end: 6px;
+  margin-inline-start: 24px;
+}
+
+#title {
+  font-size: 15px;
+  font-weight: 500;
+  margin-top: 10px;
+  margin-bottom: 6px;
+}
+
+#actionButton {
+  margin-top: 10px;
+  width: fit-content;
+}
+
+#avatar {
+  border-radius: 50%;
+  height: 20px;
+  width: 20px;
+}
+
+#closeButton {
+  margin-top: 10px;
+  margin-right: 10px;
+  margin-bottom: auto;
+}

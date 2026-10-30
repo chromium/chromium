@@ -67,11 +67,11 @@ suite('PasswordManagerAppTest', function() {
   [Page.PASSWORDS, Page.CHECKUP, Page.SETTINGS].forEach(
       page => test(`Clicking ${page} in the sidebar`, async () => {
         const element =
-            app.$.sidebar.shadowRoot!.querySelector<HTMLElement>(`#${page}`)!;
+            app.$.sidebar.shadowRoot.querySelector<HTMLElement>(`#${page}`)!;
         element.click();
         await app.$.sidebar.$.menu.updateComplete;
         const ironItem =
-            app.$.sidebar.shadowRoot!.querySelector<HTMLElement>(`#${page}`)!;
+            app.$.sidebar.shadowRoot.querySelector<HTMLElement>(`#${page}`)!;
         assertTrue(ironItem.classList.contains('selected'));
         if (page === Page.CHECKUP) {
           assertEquals(
@@ -145,7 +145,7 @@ suite('PasswordManagerAppTest', function() {
 
   test('Test help button', async function() {
     const button =
-        app.$.toolbar.shadowRoot!.querySelector<HTMLElement>('#helpButton');
+        app.$.toolbar.shadowRoot.querySelector<HTMLElement>('#helpButton');
     assertTrue(!!button);
     button.click();
     const url = await openWindowProxy.whenCalled('openUrl');

@@ -11,21 +11,20 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import '../shared_style.css.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {htmlEscape} from 'chrome://resources/js/util.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {PasswordManagerImpl} from '../password_manager_proxy.js';
-import {UserUtilMixin} from '../user_utils_mixin.js';
+import {UserUtilMixinLit} from '../user_utils_mixin_lit.js';
 
-import {getTemplate} from './multi_store_delete_password_dialog.html.js';
+import {getCss} from './multi_store_delete_password_dialog.css.js';
+import {getHtml} from './multi_store_delete_password_dialog.html.js';
 
 export interface MultiStoreDeletePasswordDialogElement {
   $: {
@@ -37,7 +36,7 @@ export interface MultiStoreDeletePasswordDialogElement {
 }
 
 const MultiStoreDeletePasswordDialogElementBase =
-    UserUtilMixin(I18nMixin(PolymerElement));
+    UserUtilMixinLit(I18nMixinLit(CrLitElement));
 
 export class MultiStoreDeletePasswordDialogElement extends
     MultiStoreDeletePasswordDialogElementBase {
@@ -45,35 +44,32 @@ export class MultiStoreDeletePasswordDialogElement extends
     return 'multi-store-delete-password-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * The password whose copies are to be removed.
        */
-      duplicatedPassword: Object,
+      duplicatedPassword: {type: Object},
 
-      removeFromAccountChecked_: {
-        type: Boolean,
-        // Both checkboxes are selected by default (see
-        // |removeFromDeviceChecked_| as well), since removing from both
-        // locations is the most common case.
-        value: true,
-      },
-
-      removeFromDeviceChecked_: {
-        type: Boolean,
-        value: true,
-      },
+      // Both checkboxes are selected by default (see
+      // |removeFromDeviceChecked_| as well), since removing from both
+      // locations is the most common case.
+      removeFromAccountChecked_: {type: Boolean},
+      removeFromDeviceChecked_: {type: Boolean},
     };
   }
 
-  declare duplicatedPassword: chrome.passwordsPrivate.PasswordUiEntry;
-  declare private removeFromAccountChecked_: boolean;
-  declare private removeFromDeviceChecked_: boolean;
+  accessor duplicatedPassword: chrome.passwordsPrivate.PasswordUiEntry;
+  protected accessor removeFromAccountChecked_: boolean = true;
+  protected accessor removeFromDeviceChecked_: boolean = true;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -86,7 +82,17 @@ export class MultiStoreDeletePasswordDialogElement extends
     this.$.dialog.showModal();
   }
 
-  private onRemoveButtonClick_() {
+  protected onRemoveFromAccountCheckedChanged_(
+      e: CustomEvent<{value: boolean}>) {
+    this.removeFromAccountChecked_ = e.detail.value;
+  }
+
+  protected onRemoveFromDeviceCheckedChanged_(
+      e: CustomEvent<{value: boolean}>) {
+    this.removeFromDeviceChecked_ = e.detail.value;
+  }
+
+  protected onRemoveButtonClick_() {
     let fromStores: chrome.passwordsPrivate.PasswordStoreSet =
         chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
     if (this.removeFromAccountChecked_ && this.removeFromDeviceChecked_) {
@@ -98,25 +104,21 @@ export class MultiStoreDeletePasswordDialogElement extends
     }
     PasswordManagerImpl.getInstance().removeCredential(
         this.duplicatedPassword.id, fromStores);
-    this.dispatchEvent(new CustomEvent('password-removed', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        removedFromStores: fromStores,
-      },
-    }));
+    this.fire('password-removed', {
+      removedFromStores: fromStores,
+    });
     this.$.dialog.close();
   }
 
-  private onCancelButtonClick_() {
+  protected onCancelButtonClick_() {
     this.$.dialog.close();
   }
 
-  private shouldDisableRemoveButton_(): boolean {
+  protected shouldDisableRemoveButton_(): boolean {
     return !this.removeFromAccountChecked_ && !this.removeFromDeviceChecked_;
   }
 
-  private getDialogBodyMessage_(): TrustedHTML {
+  protected getDialogBodyMessage_(): TrustedHTML {
     assert(this.duplicatedPassword.affiliatedDomains);
 
     return this.i18nAdvanced('deletePasswordDialogBody', {

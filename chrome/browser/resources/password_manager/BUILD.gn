@@ -108,25 +108,31 @@ build_webui("build") {
     "searchable_label.ts",
     "sharing/metrics_utils.ts",
     "show_password_mixin.ts",
+    "show_password_mixin_lit.ts",
     "sync_browser_proxy.ts",
     "user_utils_mixin.ts",
+    "user_utils_mixin_lit.ts",
   ]
 
   # Files that are passed as input to css_to_wrapper().
   css_files = [
+    "checkup_section.css",
     "cr_input_style.css",
-    "cr_nav_menu_item_style.css",
     "cr_page_host_style.css",
     "cr_scrollable.css",
     "cr_spinner_style.css",
     "credential_details/credential_details_card.css",
     "credential_details/credential_details_card_lit.css",
     "credential_details/credential_note.css",
+    "dialogs/add_password_dialog.css",
     "dialogs/delete_passkey_dialog.css",
     "dialogs/delete_password_disclaimer_dialog.css",
     "dialogs/edit_passkey_dialog.css",
+    "dialogs/edit_password_dialog.css",
+    "dialogs/multi_store_delete_password_dialog.css",
     "dialogs/trusted_vault_error_dialog.css",
     "full_data_reset.css",
+    "notification_cards/notification_card.css",
     "passwords_exporter.css",
     "prefs/pref_toggle_button.css",
     "shared_style.css",
@@ -135,7 +141,9 @@ build_webui("build") {
     "sharing/share_password_dialog_header.css",
     "sharing/share_password_group_avatar.css",
     "sharing/share_password_recipient.css",
+    "side_bar.css",
     "site_favicon.css",
+    "toolbar.css",
   ]
 
   icons_html_files = [ "icons.html" ]

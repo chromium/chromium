@@ -51,6 +51,7 @@ suite('PasswordManagerAppTest', function() {
 
     const app = document.createElement('password-manager-app');
     document.body.appendChild(app);
+    await app.$.toolbar.updateComplete;
     app.setNarrowForTesting(false);
     await flushTasks();
 
@@ -139,7 +140,7 @@ suite('PasswordManagerAppTest', function() {
                 await flushTasks();
 
                 const listRow =
-                    app.$.checkup.shadowRoot!.querySelector<HTMLElement>(
+                    app.$.checkup.shadowRoot.querySelector<HTMLElement>(
                         `#${type}Row`);
                 assertTrue(!!listRow);
                 listRow.click();
@@ -168,6 +169,6 @@ suite('PasswordManagerAppTest', function() {
                 assertEquals(
                     Page.CHECKUP, Router.getInstance().currentRoute.page);
                 assertEquals(app.shadowRoot!.activeElement, app.$.checkup);
-                assertEquals(app.$.checkup.shadowRoot!.activeElement, listRow);
+                assertEquals(app.$.checkup.shadowRoot.activeElement, listRow);
               }));
 });

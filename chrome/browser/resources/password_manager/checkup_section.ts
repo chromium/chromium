@@ -3,31 +3,29 @@
 // found in the LICENSE file.
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import './cr_spinner_style.css.js';
-import './shared_style.css.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './checkup_section.html.js';
+import {getCss} from './checkup_section.css.js';
+import {getHtml} from './checkup_section.html.js';
 import type {FocusConfig} from './focus_config.js';
 import type {CredentialsChangedListener, PasswordCheckStatusChangedListener} from './password_manager_proxy.js';
 import {PasswordCheckInteraction, PasswordManagerImpl} from './password_manager_proxy.js';
 import type {Route} from './router.js';
-import {CheckupSubpage, Page, RouteObserverMixin, Router, UrlParam} from './router.js';
-import {UserUtilMixin} from './user_utils_mixin.js';
+import {CheckupSubpage, Page, RouteObserverMixinLit, Router, UrlParam} from './router.js';
+import {UserUtilMixinLit} from './user_utils_mixin_lit.js';
 
 const CheckState = chrome.passwordsPrivate.PasswordCheckState;
 
@@ -46,113 +44,84 @@ export interface CheckupSectionElement {
 }
 
 const CheckupSectionElementBase =
-    UserUtilMixin(RouteObserverMixin(I18nMixin(PolymerElement)));
+    UserUtilMixinLit(RouteObserverMixinLit(I18nMixinLit(CrLitElement)));
 
 export class CheckupSectionElement extends CheckupSectionElementBase {
   static get is() {
     return 'checkup-section';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      focusConfig: {
-        type: Object,
-        observer: 'focusConfigChanged_',
-      },
+      focusConfig: {type: Object},
 
       /**
        * The number of checked passwords as a formatted string.
        */
-      checkedPasswordsText_: String,
+      checkedPasswordsText_: {type: String},
 
       /**
        * The number of compromised passwords as a formatted string.
        */
-      compromisedPasswordsText_: String,
+      compromisedPasswordsText_: {type: String},
 
       /**
        * The number of weak passwords as a formatted string.
        */
-      reusedPasswordsText_: String,
+      reusedPasswordsText_: {type: String},
 
       /**
        * The number of weak passwords as a formatted string.
        */
-      weakPasswordsText_: String,
+      weakPasswordsText_: {type: String},
 
       /**
        * Suggested action to take upon compromised passwords discovery.
        */
-      compromisedPasswordsSuggestion_: String,
+      compromisedPasswordsSuggestion_: {type: String},
 
       /**
        * The status indicates progress and affects banner, title and icon.
        */
-      status_: {
-        type: Object,
-        observer: 'onStatusChanged_',
-      },
+      status_: {type: Object},
 
-      compromisedPasswords_: {
-        type: Array,
-        observer: 'onCompromisedPasswordsChanged_',
-      },
-
-      reusedPasswords_: {
-        type: Array,
-        observer: 'onReusedPasswordsChanged_',
-      },
-
-      weakPasswords_: {
-        type: Array,
-        observer: 'onWeakPasswordsChanged_',
-      },
-
-      isCheckRunning_: {
-        type: Boolean,
-        computed: 'computeIsCheckRunning_(status_)',
-      },
-
-      isCheckSuccessful_: {
-        type: Boolean,
-        computed: 'computeIsCheckSuccessful_(status_)',
-      },
-
-      bannerImage_: {
-        type: Array,
-        value: 'checkup_result_banner_error',
-        computed: 'computeBannerImage_(status_, compromisedPasswords_, ' +
-            'reusedPasswords_, weakPasswords_)',
-      },
-
-      passwordCount_: {
-        type: Number,
-        value: 0,
-        observer: 'updateCheckedPasswordsText_',
-      },
+      compromisedPasswords_: {type: Array},
+      reusedPasswords_: {type: Array},
+      weakPasswords_: {type: Array},
+      isCheckRunning_: {type: Boolean},
+      isCheckSuccessful_: {type: Boolean},
+      bannerImage_: {type: String},
+      passwordCount_: {type: Number},
     };
   }
 
-  declare focusConfig: FocusConfig;
-  declare private checkedPasswordsText_: string;
-  declare private compromisedPasswordsText_: string;
-  declare private reusedPasswordsText_: string;
-  declare private weakPasswordsText_: string;
-  declare private compromisedPasswordsSuggestion_: string;
-  declare private status_: chrome.passwordsPrivate.PasswordCheckStatus;
-  declare private compromisedPasswords_:
-      chrome.passwordsPrivate.PasswordUiEntry[];
-  declare private weakPasswords_: chrome.passwordsPrivate.PasswordUiEntry[];
-  declare private isCheckRunning_: boolean;
-  declare private isCheckSuccessful_: boolean;
-  declare private bannerImage_: string;
-  declare private reusedPasswords_: chrome.passwordsPrivate.PasswordUiEntry[];
+  accessor focusConfig: FocusConfig;
+  protected accessor checkedPasswordsText_: string = '';
+  private accessor compromisedPasswordsText_: string = '';
+  protected accessor reusedPasswordsText_: string = '';
+  protected accessor weakPasswordsText_: string = '';
+  private accessor compromisedPasswordsSuggestion_: string = '';
+  private accessor status_: chrome.passwordsPrivate.PasswordCheckStatus|
+      undefined;
+  protected accessor compromisedPasswords_:
+      chrome.passwordsPrivate.PasswordUiEntry[] = [];
+  protected accessor weakPasswords_: chrome.passwordsPrivate.PasswordUiEntry[] =
+      [];
+  protected accessor isCheckRunning_: boolean = false;
+  private accessor isCheckSuccessful_: boolean = false;
+  protected accessor bannerImage_: string = 'checkup_result_banner_error';
+  protected accessor reusedPasswords_:
+      chrome.passwordsPrivate.PasswordUiEntry[] = [];
   private didCheckAutomatically_: boolean = false;
-  declare private passwordCount_: number;
+  private accessor passwordCount_: number = 0;
 
   private statusChangedListener_: PasswordCheckStatusChangedListener|null =
       null;
@@ -232,6 +201,59 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
     this.setSavedPasswordsListener_ = null;
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('focusConfig')) {
+      this.focusConfigChanged_(changedProperties.get('focusConfig'));
+    }
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('status_')) {
+      this.isCheckRunning_ = this.computeIsCheckRunning_();
+      this.isCheckSuccessful_ = this.computeIsCheckSuccessful_();
+    }
+
+    if (changedPrivateProperties.has('passwordCount_') &&
+        !changedPrivateProperties.has('status_')) {
+      this.updateCheckedPasswordsText_();
+    }
+
+    if (changedPrivateProperties.has('compromisedPasswords_')) {
+      this.onCompromisedPasswordsChanged_();
+    }
+
+    if (changedPrivateProperties.has('reusedPasswords_')) {
+      this.onReusedPasswordsChanged_();
+    }
+
+    if (changedPrivateProperties.has('weakPasswords_')) {
+      this.onWeakPasswordsChanged_();
+    }
+
+    if (changedPrivateProperties.has('status_') ||
+        changedPrivateProperties.has('compromisedPasswords_') ||
+        changedPrivateProperties.has('reusedPasswords_') ||
+        changedPrivateProperties.has('weakPasswords_')) {
+      this.bannerImage_ = this.computeBannerImage_();
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('status_')) {
+      this.onStatusChanged_(
+          this.status_!,
+          changedPrivateProperties.get('status_') as
+                  chrome.passwordsPrivate.PasswordCheckStatus |
+              undefined);
+    }
+  }
+
   override currentRouteChanged(route: Route): void {
     const param = route.queryParameters.get(UrlParam.START_CHECK) || '';
     if (param === 'true' && !this.didCheckAutomatically_) {
@@ -248,7 +270,7 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
 
   private async onStatusChanged_(
       newStatus: chrome.passwordsPrivate.PasswordCheckStatus,
-      oldStatus: chrome.passwordsPrivate.PasswordCheckStatus) {
+      oldStatus?: chrome.passwordsPrivate.PasswordCheckStatus) {
     // if state is unchanged - nothing to do.
     if (oldStatus !== undefined && oldStatus.state === newStatus.state) {
       return;
@@ -340,14 +362,17 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
    * @return true iff a check is running right according to the given |status|.
    */
   private computeIsCheckRunning_(): boolean {
-    return this.status_.state === CheckState.RUNNING;
+    return !!this.status_ && this.status_.state === CheckState.RUNNING;
   }
 
   private computeIsCheckSuccessful_(): boolean {
-    return this.status_.state === CheckState.IDLE;
+    return !!this.status_ && this.status_.state === CheckState.IDLE;
   }
 
-  private didCompromiseCheckFail_(): boolean {
+  protected didCompromiseCheckFail_(): boolean {
+    if (!this.status_) {
+      return false;
+    }
     return [
       CheckState.OFFLINE,
       CheckState.SIGNED_OUT,
@@ -356,18 +381,18 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
     ].includes(this.status_.state);
   }
 
-  private showRetryButton_(): boolean {
-    return !this.computeIsCheckRunning_() && !this.computeIsCheckSuccessful_();
+  protected showRetryButton_(): boolean {
+    return !this.isCheckRunning_ && !this.isCheckSuccessful_;
   }
 
-  private showCheckButton_(): boolean {
-    return this.status_.state !== CheckState.NO_PASSWORDS;
+  protected showCheckButton_(): boolean {
+    return !!this.status_ && this.status_.state !== CheckState.NO_PASSWORDS;
   }
 
   /**
    * Starts/Restarts bulk password check.
    */
-  private onPasswordCheckButtonClick_() {
+  protected onPasswordCheckButtonClick_() {
     PasswordManagerImpl.getInstance().startBulkPasswordCheck();
     PasswordManagerImpl.getInstance().recordPasswordCheckInteraction(
         PasswordCheckInteraction.START_CHECK_MANUALLY);
@@ -378,20 +403,20 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
       return 'checkup_result_banner_error';
     }
 
-    if (this.computeIsCheckRunning_() ||
+    if (this.isCheckRunning_ ||
         this.status_.state === CheckState.NO_PASSWORDS) {
       return 'checkup_result_banner_running';
     }
-    if (this.computeIsCheckSuccessful_()) {
+    if (this.isCheckSuccessful_) {
       return this.hasAnyIssues_() ? 'checkup_result_banner_compromised' :
                                     'checkup_result_banner_ok';
     }
     return 'checkup_result_banner_error';
   }
 
-  private getIcon_(
+  protected getIcon_(
       issues: chrome.passwordsPrivate.PasswordUiEntry[],
-      checkForError: boolean): string {
+      checkForError: boolean = false): string {
     if (checkForError && this.status_ && this.didCompromiseCheckFail_()) {
       return 'cr:error-filled';
     }
@@ -407,12 +432,12 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
         !!this.reusedPasswords_.length || !!this.weakPasswords_.length;
   }
 
-  private hasIssues_(issues: chrome.passwordsPrivate.PasswordUiEntry[]):
+  protected hasIssues_(issues: chrome.passwordsPrivate.PasswordUiEntry[]):
       boolean {
     return !!issues.length;
   }
 
-  private getCompromisedSectionLabel_(): string {
+  protected getCompromisedSectionLabel_(): string {
     if (this.status_ && this.didCompromiseCheckFail_()) {
       // In case of an error, don't show "No compromised passwords" title since
       // this might be a lie.
@@ -423,7 +448,7 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
     return this.compromisedPasswordsText_;
   }
 
-  private getCompromisedSectionSublabel_(): string {
+  protected getCompromisedSectionSublabel_(): string {
     if (!this.status_ || !this.compromisedPasswords_) {
       return '';
     }
@@ -450,17 +475,17 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
     }
   }
 
-  private getReusedSectionSublabel_(): string {
+  protected getReusedSectionSublabel_(): string {
     return this.reusedPasswords_.length ? this.i18n('reusedPasswordsTitle') :
                                           this.i18n('reusedPasswordsEmpty');
   }
 
-  private getWeakSectionSublabel_(): string {
+  protected getWeakSectionSublabel_(): string {
     return this.weakPasswords_.length ? this.i18n('weakPasswordsTitle') :
                                         this.i18n('weakPasswordsEmpty');
   }
 
-  private onCompromisedClick_() {
+  protected onCompromisedClick_() {
     if (!this.compromisedPasswords_.length) {
       return;
     }
@@ -469,7 +494,7 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
         Page.CHECKUP_DETAILS, CheckupSubpage.COMPROMISED);
   }
 
-  private onReusedClick_() {
+  protected onReusedClick_() {
     if (!this.reusedPasswords_.length) {
       return;
     }
@@ -478,7 +503,7 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
         Page.CHECKUP_DETAILS, CheckupSubpage.REUSED);
   }
 
-  private onWeakClick_() {
+  protected onWeakClick_() {
     if (!this.weakPasswords_.length) {
       return;
     }
@@ -486,15 +511,11 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
     Router.getInstance().navigateTo(Page.CHECKUP_DETAILS, CheckupSubpage.WEAK);
   }
 
-  private showCheckupSublabel_(): boolean {
-    return this.computeIsCheckRunning_();
-  }
-
-  private getCheckupSublabelValue_(): TrustedHTML {
+  protected getCheckupSublabelValue_(): TrustedHTML {
     if (!this.status_ || this.actionableError === null) {
       return sanitizeInnerHtml('');
     }
-    if (this.computeIsCheckRunning_()) {
+    if (this.isCheckRunning_) {
       return sanitizeInnerHtml(this.i18n(
           'checkupProgress', this.status_.alreadyProcessed || 0,
           this.status_.totalNumberOfPasswords || 0));
@@ -513,7 +534,7 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
         {substitutions: [this.i18n('localPasswordManager')]});
   }
 
-  private onCheckupStatusSubLabelClick_(e: Event) {
+  protected onCheckupStatusSubLabelClick_(e: Event) {
     const target = e.target as HTMLElement;
     if (target.tagName === 'A') {
       e.preventDefault();
@@ -523,18 +544,21 @@ export class CheckupSectionElement extends CheckupSectionElementBase {
     }
   }
 
-  private showCheckupResult_(): boolean {
-    assert(this.status_);
-    if (this.computeIsCheckRunning_()) {
+  protected showCheckupResult_(): boolean {
+    if (!this.status_) {
+      return false;
+    }
+    if (this.isCheckRunning_) {
       return false;
     }
     return this.status_.state !== CheckState.NO_PASSWORDS;
   }
 
-  private focusConfigChanged_(_newConfig: FocusConfig, oldConfig: FocusConfig) {
+  private focusConfigChanged_(oldConfig?: FocusConfig) {
     // focusConfig is set only once on the parent, so this observer should
     // only fire once.
     assert(!oldConfig);
+    assert(this.focusConfig);
 
     this.focusConfig.set(Page.CHECKUP_DETAILS, () => {
       const previousRoute = Router.getInstance().previousRoute;

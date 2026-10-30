@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 
 import type {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import type {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Route} from './router.js';
-import {Page, RouteObserverMixin, Router, UrlParam} from './router.js';
-import {getTemplate} from './toolbar.html.js';
+import {Page, RouteObserverMixinLit, Router, UrlParam} from './router.js';
+import {getCss} from './toolbar.css.js';
+import {getHtml} from './toolbar.html.js';
 
 export interface PasswordManagerToolbarElement {
   $: {
@@ -24,7 +24,7 @@ export interface PasswordManagerToolbarElement {
 }
 
 const PasswordManagerToolbarElementBase =
-    I18nMixin(RouteObserverMixin(PolymerElement));
+    I18nMixinLit(RouteObserverMixinLit(CrLitElement));
 
 export class PasswordManagerToolbarElement extends
     PasswordManagerToolbarElementBase {
@@ -32,19 +32,23 @@ export class PasswordManagerToolbarElement extends
     return 'password-manager-toolbar';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      narrow: Boolean,
-      pageName: String,
+      narrow: {type: Boolean},
+      pageName: {type: String},
     };
   }
 
-  declare narrow: boolean;
-  declare pageName: string;
+  accessor narrow: boolean = false;
+  accessor pageName: string = '';
 
   override currentRouteChanged(newRoute: Route, _oldRoute: Route): void {
     this.updateSearchTerm(newRoute.queryParameters);
@@ -54,7 +58,7 @@ export class PasswordManagerToolbarElement extends
     return this.$.mainToolbar.getSearchField();
   }
 
-  private onSearchChanged_(event: CustomEvent<string>) {
+  protected onSearchChanged_(event: CustomEvent<string>) {
     const newParams = new URLSearchParams();
     if (event.detail) {
       newParams.set(UrlParam.SEARCH_TERM, event.detail);
@@ -74,19 +78,20 @@ export class PasswordManagerToolbarElement extends
     }
   }
 
-  private onHelpClick_() {
+  protected onHelpClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         this.i18n('passwordManagerLearnMoreURL'));
   }
 
-  private onKeyDown_(e: KeyboardEvent) {
+  protected onKeydown_(e: KeyboardEvent) {
     if (e.key === 'Enter') {
-      this.dispatchEvent(new CustomEvent(
-          'search-enter-click', {bubbles: true, composed: true}));
+      this.fire('search-enter-click');
       e.preventDefault();
     }
   }
 }
+
+export type ToolbarElement = PasswordManagerToolbarElement;
 
 declare global {
   interface HTMLElementTagNameMap {

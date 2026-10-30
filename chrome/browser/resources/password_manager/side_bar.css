@@ -1,0 +1,24 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_nav_menu_item_style_lit.css.js
+ * #include=cr-nav-menu-item-style-lit
+ * #css_wrapper_metadata_end */
+
+cr-menu-selector {
+  box-sizing: border-box;
+  display: block;
+  height: 100%;
+  overflow: visible;
+  overscroll-behavior: contain;
+  padding-top: 8px;
+  width: 250px;
+}
+
+#compromisedPasswords {
+  margin-inline-end: 20px;
+  margin-inline-start: auto;
+}

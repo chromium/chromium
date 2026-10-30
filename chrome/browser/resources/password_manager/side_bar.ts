@@ -6,19 +6,19 @@ import 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import 'chrome://resources/cr_elements/cr_ripple/cr_ripple.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import './cr_nav_menu_item_style.css.js';
 import './icons.html.js';
 
 import type {CrMenuSelectorElement} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {CredentialsChangedListener} from './password_manager_proxy.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
 import type {Route} from './router.js';
-import {Page, RouteObserverMixin, Router, UrlParam} from './router.js';
-import {getTemplate} from './side_bar.html.js';
+import {Page, RouteObserverMixinLit, Router, UrlParam} from './router.js';
+import {getCss} from './side_bar.css.js';
+import {getHtml} from './side_bar.html.js';
 
 /**
  * Represents different referrers when navigating to the Password Check page.
@@ -51,7 +51,7 @@ export interface PasswordManagerSideBarElement {
   };
 }
 
-const PasswordManagerSideBarElementBase = RouteObserverMixin(PolymerElement);
+const PasswordManagerSideBarElementBase = RouteObserverMixinLit(CrLitElement);
 
 export class PasswordManagerSideBarElement extends
     PasswordManagerSideBarElementBase {
@@ -59,23 +59,27 @@ export class PasswordManagerSideBarElement extends
     return 'password-manager-side-bar';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       // The id of the currently selected page.
-      selectedPage_: String,
+      selectedPage_: {type: String},
 
       // The count of compromised passwords currently known to the password
       // manager.
-      compromisedPasswords_: Number,
+      compromisedPasswords_: {type: Number},
     };
   }
 
-  declare private selectedPage_: Page;
-  declare private compromisedPasswords_: number;
+  private accessor selectedPage_: Page = Page.PASSWORDS;
+  protected accessor compromisedPasswords_: number = 0;
   private insecureCredentialsChangedListener_: CredentialsChangedListener|null =
       null;
 
@@ -115,7 +119,7 @@ export class PasswordManagerSideBarElement extends
     this.selectedPage_ = route.page;
   }
 
-  private onSelectorActivate_(event: CustomEvent<{selected: Page}>) {
+  protected onSelectorIronActivate_(event: CustomEvent<{selected: Page}>) {
     Router.getInstance().navigateTo(event.detail.selected);
     if (event.detail.selected === Page.CHECKUP) {
       const params = new URLSearchParams();
@@ -125,11 +129,10 @@ export class PasswordManagerSideBarElement extends
           'PasswordManager.BulkCheck.PasswordCheckReferrer',
           PasswordCheckReferrer.PASSWORD_SETTINGS, PasswordCheckReferrer.COUNT);
     }
-    this.dispatchEvent(
-        new CustomEvent('close-drawer', {bubbles: true, composed: true}));
+    this.fire('close-drawer');
   }
 
-  private getSelectedPage_(): string {
+  protected getSelectedPage_(): string {
     switch (this.selectedPage_) {
       case Page.CHECKUP_DETAILS:
         return Page.CHECKUP;
@@ -144,11 +147,11 @@ export class PasswordManagerSideBarElement extends
    * Prevent clicks on sidebar items from navigating. These are only links for
    * accessibility purposes, taps are handled separately.
    */
-  private onItemClick_(e: Event) {
+  protected onItemClick_(e: Event) {
     e.preventDefault();
   }
 
-  private getCompromisedPasswordsBadge_(): string {
+  protected getCompromisedPasswordsBadge_(): string {
     if (this.compromisedPasswords_ > 99) {
       return '99+';
     }
@@ -167,6 +170,8 @@ export class PasswordManagerSideBarElement extends
         'passwords-icon:settings-old';
   }
 }
+
+export type SideBarElement = PasswordManagerSideBarElement;
 
 declare global {
   interface HTMLElementTagNameMap {

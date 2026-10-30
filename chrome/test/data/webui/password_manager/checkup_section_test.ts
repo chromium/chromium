@@ -8,9 +8,8 @@ import type {PluralStringProxy} from 'chrome://password-manager/password_manager
 import {CheckupSubpage, Page, PasswordCheckInteraction, PasswordManagerActionableError, PasswordManagerImpl, PluralStringProxyImpl, Router, UrlParam} from 'chrome://password-manager/password_manager.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {createPasswordEntry, makeInsecureCredential, makePasswordCheckStatus} from './test_util.js';
@@ -66,7 +65,6 @@ suite('CheckupSectionTest', function() {
     pluralString = new CheckupTestPluralStringProxy();
     PluralStringProxyImpl.setInstance(pluralString);
     Router.getInstance().navigateTo(Page.CHECKUP);
-    return flushTasks();
   });
 
   test('IDLE state', async function() {
@@ -76,7 +74,7 @@ suite('CheckupSectionTest', function() {
 
     const section = document.createElement('checkup-section');
     document.body.appendChild(section);
-    await flushTasks();
+    await microtasksFinished();
 
     assertTrue(isVisible(section.$.checkupResult));
     assertTrue(isVisible(section.$.refreshButton));
@@ -95,7 +93,7 @@ suite('CheckupSectionTest', function() {
     const section = document.createElement('checkup-section');
     document.body.appendChild(section);
     assertEquals(10, await pluralString.whenCalled('checkingPasswords'));
-    await flushTasks();
+    await microtasksFinished();
 
     assertFalse(isVisible(section.$.checkupResult));
     assertTrue(isVisible(section.$.refreshButton));
@@ -114,7 +112,7 @@ suite('CheckupSectionTest', function() {
 
     const section = document.createElement('checkup-section');
     document.body.appendChild(section);
-    await flushTasks();
+    await microtasksFinished();
 
     assertFalse(isVisible(section.$.checkupResult));
     assertFalse(isVisible(section.$.refreshButton));
@@ -140,7 +138,7 @@ suite('CheckupSectionTest', function() {
         const section = document.createElement('checkup-section');
         document.body.appendChild(section);
         await passwordManager.whenCalled('getPasswordManagerActionableError');
-        await flushTasks();
+        await microtasksFinished();
 
         assertFalse(isVisible(section.$.checkupResult));
         assertFalse(isVisible(section.$.refreshButton));
@@ -152,7 +150,7 @@ suite('CheckupSectionTest', function() {
         assertTrue(!!unlockLink);
 
         unlockLink.click();
-        await flushTasks();
+        await microtasksFinished();
 
         assertEquals(
             1, passwordManager.getCallCount('startTrustedVaultUnlock'));
@@ -168,7 +166,7 @@ suite('CheckupSectionTest', function() {
 
                  const section = document.createElement('checkup-section');
                  document.body.appendChild(section);
-                 await flushTasks();
+                 await microtasksFinished();
 
                  assertTrue(isVisible(section.$.checkupResult));
                  assertFalse(isVisible(section.$.refreshButton));
@@ -193,7 +191,6 @@ suite('CheckupSectionTest', function() {
 
     const section = document.createElement('checkup-section');
     document.body.appendChild(section);
-    await flushTasks();
 
     section.$.refreshButton.click();
     await passwordManager.whenCalled('startBulkPasswordCheck');
@@ -234,13 +231,13 @@ suite('CheckupSectionTest', function() {
     document.body.appendChild(section);
     await passwordManager.whenCalled('getInsecureCredentials');
     await passwordManager.whenCalled('getPasswordCheckStatus');
+    await microtasksFinished();
 
     // Expect a proper number of insecure credentials as a parameter to
     // PluralStringProxy.
-    assertEquals(3, await pluralString.whenCalled('compromisedPasswords'));
-    assertEquals(0, await pluralString.whenCalled('reusedPasswords'));
-    assertEquals(4, await pluralString.whenCalled('weakPasswords'));
-    await flushTasks();
+    assertArrayEquals([0, 3], pluralString.getArgs('compromisedPasswords'));
+    assertArrayEquals([0, 0], pluralString.getArgs('reusedPasswords'));
+    assertArrayEquals([0, 4], pluralString.getArgs('weakPasswords'));
 
     // Expect string returned by PluralStringProxy.
     assertEquals('compromisedPasswords', section.$.compromisedRow.label);
@@ -267,11 +264,10 @@ suite('CheckupSectionTest', function() {
     document.body.appendChild(section);
     passwordManager.whenCalled('getPasswordCheckStatus');
 
-    await flushTasks();
+    await microtasksFinished();
 
     await pluralString.whenCalled('checkedPasswords');
-    // getPluralString() for 'checkedPasswords' is called 2 times with 0 and 10.
-    assertArrayEquals([0, 10], pluralString.getArgs('checkedPasswords'));
+    assertArrayEquals([10], pluralString.getArgs('checkedPasswords'));
     assertEquals(
         'checkedPasswords', section.$.checkupStatusLabel.textContent.trim());
   });
@@ -297,8 +293,9 @@ suite('CheckupSectionTest', function() {
                 document.body.appendChild(section);
                 await passwordManager.whenCalled('getInsecureCredentials');
                 await passwordManager.whenCalled('getPasswordCheckStatus');
+                await microtasksFinished();
 
-                const listRow = section.shadowRoot!.querySelector<HTMLElement>(
+                const listRow = section.shadowRoot.querySelector<HTMLElement>(
                     `#${type}Row`);
                 assertTrue(!!listRow);
                 listRow.click();
@@ -323,8 +320,9 @@ suite('CheckupSectionTest', function() {
                 document.body.appendChild(section);
                 await passwordManager.whenCalled('getInsecureCredentials');
                 await passwordManager.whenCalled('getPasswordCheckStatus');
+                await microtasksFinished();
 
-                const listRow = section.shadowRoot!.querySelector<HTMLElement>(
+                const listRow = section.shadowRoot.querySelector<HTMLElement>(
                     `#${type}Row`);
                 assertTrue(!!listRow);
                 listRow.click();
@@ -343,7 +341,6 @@ suite('CheckupSectionTest', function() {
 
     const section = document.createElement('checkup-section');
     document.body.appendChild(section);
-    await flushTasks();
 
     await passwordManager.whenCalled('startBulkPasswordCheck');
     const interaction =
@@ -361,20 +358,19 @@ suite('CheckupSectionTest', function() {
     document.body.appendChild(section);
     passwordManager.whenCalled('getPasswordCheckStatus');
 
-    await flushTasks();
+    await microtasksFinished();
 
     await pluralString.whenCalled('checkedPasswords');
-    // getPluralString() for 'checkedPasswords' is called 2 times with 0 and 10.
-    assertArrayEquals([0, 10], pluralString.getArgs('checkedPasswords'));
+    assertArrayEquals([10], pluralString.getArgs('checkedPasswords'));
 
     assertTrue(!!passwordManager.listeners.savedPasswordListChangedListener);
     passwordManager.listeners.savedPasswordListChangedListener(
         Array(9).fill(createPasswordEntry()));
+    await microtasksFinished();
 
     await pluralString.whenCalled('checkedPasswords');
-    // getPluralString() for 'checkedPasswords' is called 3 times with 0, 10
-    // and 9.
-    assertArrayEquals([0, 10, 9], pluralString.getArgs('checkedPasswords'));
+    // getPluralString() for 'checkedPasswords' is called 2 times with 10 and 9.
+    assertArrayEquals([10, 9], pluralString.getArgs('checkedPasswords'));
   });
 
   test('Compromised section - subheader', async function() {
@@ -410,12 +406,13 @@ suite('CheckupSectionTest', function() {
 
     await passwordManager.whenCalled('getInsecureCredentials');
     await passwordManager.whenCalled('getPasswordCheckStatus');
+    await microtasksFinished();
 
     // Expect a proper number of insecure credentials as a parameter to
     // PluralStringProxy.
-    assertEquals(3, await pluralString.whenCalled('compromisedPasswords'));
-    assertEquals(3, await pluralString.whenCalled('compromisedPasswordsTitle'));
-    await flushTasks();
+    assertArrayEquals([0, 3], pluralString.getArgs('compromisedPasswords'));
+    assertArrayEquals(
+        [0, 3], pluralString.getArgs('compromisedPasswordsTitle'));
 
     // Expect string returned by PluralStringProxy.
     assertEquals('compromisedPasswords', section.$.compromisedRow.label);

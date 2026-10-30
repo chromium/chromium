@@ -1,27 +1,8 @@
-<style include="shared-style">
-  /* General toolbar layout. */
-  cr-toolbar {
-    min-height: 56px;
-    --cr-toolbar-center-basis: var(--password-manager-main-basis);
-    --cr-toolbar-header-white-space: nowrap;
-  }
-
-  cr-toolbar:not([narrow]) {
-    --cr-toolbar-left-spacer-width: var(--side-bar-width);
-  }
-
-  #product-logo {
-    height: 24px;
-    margin-inline-end: 16px;
-    margin-top: 6px;
-    width: 24px;
-  }
-</style>
-<cr-toolbar id="mainToolbar" on-keydown="onKeyDown_"
-    page-name="[[pageName]]" clear-label="$i18n{clearSearch}"
+<cr-toolbar id="mainToolbar" @keydown="${this.onKeydown_}"
+    page-name="${this.pageName}" clear-label="$i18n{clearSearch}"
     search-prompt="$i18n{searchPrompt}" menu-label="$i18n{menuButtonLabel}"
-    autofocus on-search-changed="onSearchChanged_"
-    role="banner" show-menu="[[narrow]]" narrow="[[narrow]]"
+    autofocus @search-changed="${this.onSearchChanged_}"
+    role="banner" ?show-menu="${this.narrow}" ?narrow="${this.narrow}"
     narrow-threshold="1300">
   <picture slot="product-logo">
     <img id="product-logo"
@@ -29,6 +10,6 @@
         role="presentation">
   </picture>
   <cr-icon-button id="helpButton" iron-icon="cr:help"
-      title="$i18n{help}" on-click="onHelpClick_" suppress-rtl-flip>
+      title="$i18n{help}" @click="${this.onHelpClick_}" suppress-rtl-flip>
   </cr-icon-button>
 </cr-toolbar>

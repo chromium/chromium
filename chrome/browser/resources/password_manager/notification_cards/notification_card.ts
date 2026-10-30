@@ -2,23 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {PasswordManagerImpl} from '../password_manager_proxy.js';
 import {Page, Router, UrlParam} from '../router.js';
 import {BatchUploadPasswordsEntryPoint, SyncBrowserProxyImpl} from '../sync_browser_proxy.js';
 
-import {getTemplate} from './notification_card.html.js';
+import {getCss} from './notification_card.css.js';
+import {getHtml} from './notification_card.html.js';
 import type {NotificationCard} from './notification_cards_browser_proxy.js';
 import {NotificationCardsProxyImpl} from './notification_cards_browser_proxy.js';
 
@@ -75,24 +73,33 @@ export interface NotificationCardElement {
 
 const isOpenedAsShortcut = window.matchMedia('(display-mode: standalone)');
 
-const NotificationCardElementBase = I18nMixin(PolymerElement);
+const NotificationCardElementBase = I18nMixinLit(CrLitElement);
 
 export class NotificationCardElement extends NotificationCardElementBase {
   static get is() {
     return 'notification-card';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      card: Object,
+      card: {type: Object},
     };
   }
 
-  declare card: NotificationCard;
+  accessor card: NotificationCard = {
+    id: NotificationCardId.CHECKUP,
+    title: '',
+    description: '',
+    isDismissible: false,
+  };
 
   override connectedCallback() {
     super.connectedCallback();
@@ -112,18 +119,18 @@ export class NotificationCardElement extends NotificationCardElementBase {
     }
   }
 
-  private getDescription_(): TrustedHTML {
+  protected getDescription_(): TrustedHTML {
     return sanitizeInnerHtml(this.card.description);
   }
 
-  private getBannerImageName_(): string {
+  protected getBannerImageName_(): string {
     if (this.card.id === NotificationCardId.ACCOUNT_AWARE_PASSWORD_SIGNIN) {
       return NotificationCardId.ACCESS_ON_ANY_DEVICE;
     }
     return this.card.id;
   }
 
-  private onActionButtonClick_() {
+  protected onActionButtonClick_() {
     switch (this.card.id) {
       case NotificationCardId.CHECKUP:
         const params = new URLSearchParams();
@@ -159,15 +166,14 @@ export class NotificationCardElement extends NotificationCardElementBase {
     this.close_();
   }
 
-  private onCloseClick_() {
+  protected onCloseClick_() {
     NotificationCardsProxyImpl.getInstance().recordNotificationDismissed(
         this.card.id);
     this.close_();
   }
 
   private close_() {
-    this.dispatchEvent(
-        new CustomEvent('card-closed', {bubbles: true, composed: true}));
+    this.fire('card-closed');
   }
 }
 

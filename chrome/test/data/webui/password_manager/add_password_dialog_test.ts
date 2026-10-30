@@ -8,8 +8,7 @@ import {Page, PASSWORD_NOTE_MAX_CHARACTER_COUNT, PasswordManagerImpl, Router, Sy
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
@@ -27,22 +26,22 @@ suite('AddPasswordDialogTest', function() {
     PasswordManagerImpl.setInstance(passwordManager);
     syncProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(syncProxy);
-    return flushTasks();
+    return microtasksFinished();
   });
 
   test('url validation works', async function() {
     const dialog = document.createElement('add-password-dialog');
     document.body.appendChild(dialog);
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(isVisible(dialog.$.storePicker));
     assertFalse(dialog.$.websiteInput.invalid);
 
     // Make url invalid
     dialog.$.websiteInput.value = 'abc';
-    await dialog.$.websiteInput.updateComplete;
+    await microtasksFinished();
     dialog.$.websiteInput.dispatchEvent(new CustomEvent('input'));
     assertEquals('abc', await passwordManager.whenCalled('getUrlCollection'));
-    await flushTasks();
+    await microtasksFinished();
 
     assertTrue(dialog.$.websiteInput.invalid);
     assertEquals(
@@ -51,15 +50,15 @@ suite('AddPasswordDialogTest', function() {
     // Now make URL valid again
     passwordManager.reset();
     dialog.$.websiteInput.value = 'www';
-    await dialog.$.websiteInput.updateComplete;
+    await microtasksFinished();
     dialog.$.websiteInput.dispatchEvent(new CustomEvent('input'));
     assertEquals('www', await passwordManager.whenCalled('getUrlCollection'));
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(dialog.$.websiteInput.invalid);
 
     // But after losing focus url is no longer valid due to missing '.'
     dialog.$.websiteInput.dispatchEvent(new CustomEvent('blur'));
-    await dialog.$.websiteInput.updateComplete;
+    await microtasksFinished();
     assertTrue(dialog.$.websiteInput.invalid);
     assertEquals(
         dialog.i18n('missingTLD', 'www.com'),
@@ -79,22 +78,23 @@ suite('AddPasswordDialogTest', function() {
 
     const dialog = document.createElement('add-password-dialog');
     document.body.appendChild(dialog);
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(isVisible(dialog.$.storePicker));
 
     // Enter website for which user has a saved password.
     dialog.$.websiteInput.value = 'www.example.com';
-    await dialog.$.websiteInput.updateComplete;
+    await microtasksFinished();
     dialog.$.websiteInput.dispatchEvent(new CustomEvent('input'));
     assertEquals(
         'www.example.com',
         await passwordManager.whenCalled('getUrlCollection'));
+    await microtasksFinished();
     assertFalse(dialog.$.usernameInput.invalid);
     assertTrue(dialog.$.viewExistingPasswordLink.hidden);
 
     // Update username to the same value and observe error.
     dialog.$.usernameInput.value = 'test';
-    await dialog.$.usernameInput.updateComplete;
+    await microtasksFinished();
     assertTrue(dialog.$.usernameInput.invalid);
     assertEquals(
         dialog.i18n('usernameAlreadyUsed', 'www.example.com'),
@@ -103,7 +103,7 @@ suite('AddPasswordDialogTest', function() {
 
     // Update username and observe no error.
     dialog.$.usernameInput.value = 'test2';
-    await dialog.$.usernameInput.updateComplete;
+    await microtasksFinished();
     assertFalse(dialog.$.usernameInput.invalid);
     assertTrue(dialog.$.viewExistingPasswordLink.hidden);
 
@@ -111,11 +111,12 @@ suite('AddPasswordDialogTest', function() {
     // error again.
     passwordManager.reset();
     dialog.$.websiteInput.value = 'www.example2.com';
-    await dialog.$.websiteInput.updateComplete;
+    await microtasksFinished();
     dialog.$.websiteInput.dispatchEvent(new CustomEvent('input'));
     assertEquals(
         'www.example2.com',
         await passwordManager.whenCalled('getUrlCollection'));
+    await microtasksFinished();
     assertTrue(dialog.$.usernameInput.invalid);
     assertEquals(
         dialog.i18n('usernameAlreadyUsed', 'www.example2.com'),
@@ -127,7 +128,7 @@ suite('AddPasswordDialogTest', function() {
   test('show/hide password', async function() {
     const dialog = document.createElement('add-password-dialog');
     document.body.appendChild(dialog);
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(isVisible(dialog.$.storePicker));
 
     assertEquals(
@@ -138,6 +139,7 @@ suite('AddPasswordDialogTest', function() {
         'icon-visibility', dialog.$.showPasswordButton.getAttribute('class'));
 
     dialog.$.showPasswordButton.click();
+    await microtasksFinished();
 
     assertEquals(
         dialog.i18n('hidePassword'), dialog.$.showPasswordButton.title);
@@ -151,19 +153,20 @@ suite('AddPasswordDialogTest', function() {
   test('note validation works', async function() {
     const dialog = document.createElement('add-password-dialog');
     document.body.appendChild(dialog);
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(isVisible(dialog.$.storePicker));
     assertFalse(dialog.$.noteInput.invalid);
 
     // Make note 899 characters long.
     dialog.$.noteInput.value = '.'.repeat(899);
+    await microtasksFinished();
     assertFalse(dialog.$.noteInput.invalid);
     assertEquals('', dialog.$.noteInput.firstFooter);
     assertEquals('', dialog.$.noteInput.secondFooter);
 
     // After 900 characters there are footers.
     dialog.$.noteInput.value = '.'.repeat(900);
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(dialog.$.noteInput.invalid);
     assertEquals(
         dialog.i18n(
@@ -180,7 +183,7 @@ suite('AddPasswordDialogTest', function() {
     // valid.
     dialog.$.noteInput.value =
         '.'.repeat(PASSWORD_NOTE_MAX_CHARACTER_COUNT + 1);
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(dialog.$.noteInput.invalid);
     assertEquals(
         dialog.i18n(
@@ -198,7 +201,7 @@ suite('AddPasswordDialogTest', function() {
   test('password is saved', async function() {
     const dialog = document.createElement('add-password-dialog');
     document.body.appendChild(dialog);
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(isVisible(dialog.$.storePicker));
 
     // Enter website
@@ -206,10 +209,11 @@ suite('AddPasswordDialogTest', function() {
     dialog.$.usernameInput.value = 'test';
     dialog.$.passwordInput.value = 'lastPass';
     dialog.$.noteInput.value = 'secret note.';
-    await dialog.$.websiteInput.updateComplete;
+    await microtasksFinished();
     dialog.$.websiteInput.dispatchEvent(new CustomEvent('input'));
 
     await passwordManager.whenCalled('getUrlCollection');
+    await microtasksFinished();
 
     assertFalse(dialog.$.addButton.disabled);
     dialog.$.addButton.click();
@@ -239,15 +243,16 @@ suite('AddPasswordDialogTest', function() {
 
     const dialog = document.createElement('add-password-dialog');
     document.body.appendChild(dialog);
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(isVisible(dialog.$.storePicker));
 
     // Enter website
     dialog.$.websiteInput.value = 'www.example.com';
     dialog.$.usernameInput.value = 'test';
-    await dialog.$.websiteInput.updateComplete;
+    await microtasksFinished();
     dialog.$.websiteInput.dispatchEvent(new CustomEvent('input'));
     await passwordManager.whenCalled('getUrlCollection');
+    await microtasksFinished();
 
     assertTrue(dialog.$.usernameInput.invalid);
     assertFalse(dialog.$.viewExistingPasswordLink.hidden);
@@ -266,7 +271,7 @@ suite('AddPasswordDialogTest', function() {
 
     const dialog = document.createElement('add-password-dialog');
     document.body.appendChild(dialog);
-    await flushTasks();
+    await microtasksFinished();
 
     // "Account" is selected by default.
     assertTrue(isVisible(dialog.$.storePicker));
@@ -283,7 +288,7 @@ suite('AddPasswordDialogTest', function() {
 
     const dialog = document.createElement('add-password-dialog');
     document.body.appendChild(dialog);
-    await flushTasks();
+    await microtasksFinished();
 
     assertFalse(isVisible(dialog.$.storePicker));
   });
@@ -296,7 +301,7 @@ suite('AddPasswordDialogTest', function() {
 
     const dialog = document.createElement('add-password-dialog');
     document.body.appendChild(dialog);
-    await flushTasks();
+    await microtasksFinished();
 
     dialog.$.storePicker.value =
         chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT;
@@ -306,14 +311,11 @@ suite('AddPasswordDialogTest', function() {
     dialog.$.usernameInput.value = 'test';
     dialog.$.passwordInput.value = 'lastPass';
     dialog.$.noteInput.value = 'secret note.';
-    await dialog.$.websiteInput.updateComplete;
+    await microtasksFinished();
     dialog.$.websiteInput.dispatchEvent(new CustomEvent('input'));
 
-    await Promise.all([
-      passwordManager.whenCalled('getUrlCollection'),
-      dialog.$.usernameInput.updateComplete,
-      dialog.$.passwordInput.updateComplete,
-    ]);
+    await passwordManager.whenCalled('getUrlCollection');
+    await microtasksFinished();
 
     assertFalse(dialog.$.addButton.disabled);
     dialog.$.addButton.click();
@@ -335,7 +337,7 @@ suite('AddPasswordDialogTest', function() {
 
     const dialog = document.createElement('add-password-dialog');
     document.body.appendChild(dialog);
-    await flushTasks();
+    await microtasksFinished();
 
     dialog.$.storePicker.value =
         chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
@@ -345,14 +347,11 @@ suite('AddPasswordDialogTest', function() {
     dialog.$.usernameInput.value = 'test';
     dialog.$.passwordInput.value = 'lastPass';
     dialog.$.noteInput.value = 'secret note.';
-    await dialog.$.websiteInput.updateComplete;
+    await microtasksFinished();
     dialog.$.websiteInput.dispatchEvent(new CustomEvent('input'));
 
-    await Promise.all([
-      passwordManager.whenCalled('getUrlCollection'),
-      dialog.$.usernameInput.updateComplete,
-      dialog.$.passwordInput.updateComplete,
-    ]);
+    await passwordManager.whenCalled('getUrlCollection');
+    await microtasksFinished();
 
     assertFalse(dialog.$.addButton.disabled);
     dialog.$.addButton.click();
@@ -369,14 +368,14 @@ suite('AddPasswordDialogTest', function() {
   test('error when leaving website blank', async function() {
     const dialog = document.createElement('add-password-dialog');
     document.body.appendChild(dialog);
-    await flushTasks();
+    await microtasksFinished();
 
     assertFalse(dialog.$.websiteInput.invalid);
     assertFalse(dialog.$.websiteInput.hasAttribute('show-error-message'));
-    assertEquals(null, dialog.$.websiteInput.errorMessage);
+    assertEquals('', dialog.$.websiteInput.errorMessage);
     // Simulate losing focus.
     dialog.$.websiteInput.dispatchEvent(new CustomEvent('blur'));
-    await dialog.$.websiteInput.updateComplete;
+    await microtasksFinished();
 
     assertTrue(dialog.$.websiteInput.invalid);
     assertFalse(dialog.$.websiteInput.hasAttribute('show-error-message'));
@@ -384,9 +383,9 @@ suite('AddPasswordDialogTest', function() {
 
     // Simulate losing focus.
     dialog.$.websiteInput.value = 'abc';
-    await dialog.$.websiteInput.updateComplete;
+    await microtasksFinished();
     dialog.$.websiteInput.dispatchEvent(new CustomEvent('blur'));
-    await dialog.$.websiteInput.updateComplete;
+    await microtasksFinished();
 
     assertTrue(dialog.$.websiteInput.invalid);
     assertTrue(dialog.$.websiteInput.hasAttribute('show-error-message'));
@@ -398,13 +397,12 @@ suite('AddPasswordDialogTest', function() {
   test('error when leaving password blank', async function() {
     const dialog = document.createElement('add-password-dialog');
     document.body.appendChild(dialog);
-    await flushTasks();
+    await microtasksFinished();
 
     assertFalse(dialog.$.passwordInput.invalid);
 
     dialog.$.passwordInput.dispatchEvent(new CustomEvent('blur'));
-    await dialog.$.websiteInput.updateComplete;
-    await flushTasks();
+    await microtasksFinished();
 
     assertTrue(dialog.$.passwordInput.invalid);
   });

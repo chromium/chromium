@@ -6,26 +6,24 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import '/shared/settings/md_select.css.js';
-import '../shared_style.css.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import type {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {PasswordManagerImpl} from '../password_manager_proxy.js';
 import {Page, Router} from '../router.js';
-import {ShowPasswordMixin} from '../show_password_mixin.js';
-import {UserUtilMixin} from '../user_utils_mixin.js';
+import {ShowPasswordMixinLit} from '../show_password_mixin_lit.js';
+import {UserUtilMixinLit} from '../user_utils_mixin_lit.js';
 
-import {getTemplate} from './add_password_dialog.html.js';
+import {getCss} from './add_password_dialog.css.js';
+import {getHtml} from './add_password_dialog.html.js';
 
 /**
  * Represents different user interactions related to adding credential from the
@@ -108,7 +106,7 @@ export const PASSWORD_NOTE_WARNING_CHARACTER_COUNT = 900;
 export const PASSWORD_NOTE_MAX_CHARACTER_COUNT = 1000;
 
 const AddPasswordDialogElementBase =
-    UserUtilMixin(ShowPasswordMixin(I18nMixin(PolymerElement)));
+    UserUtilMixinLit(ShowPasswordMixinLit(I18nMixinLit(CrLitElement)));
 
 function getUsernamesByOrigin(
     passwords: chrome.passwordsPrivate.PasswordUiEntry[]):
@@ -131,93 +129,50 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
     return 'add-password-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      website_: {
-        type: String,
-        value: '',
-      },
-
-      username_: {
-        type: String,
-        value: '',
-      },
-
-      password_: {
-        type: String,
-        value: '',
-      },
-
-      note_: {
-        type: String,
-        value: '',
-      },
-
-      urlCollection_: Object,
-
-      usernamesBySignonRealm_: {
-        type: Object,
-        values: () => new Map(),
-      },
+      website_: {type: String},
+      username_: {type: String},
+      password_: {type: String},
+      note_: {type: String},
+      urlCollection_: {type: Object},
+      usernamesBySignonRealm_: {type: Object},
 
       /**
        * Error message if the website input is invalid.
        */
-      websiteErrorMessage_: {type: String, value: null},
+      websiteErrorMessage_: {type: String},
 
-      usernameErrorMessage_: {
-        type: String,
-        computed: 'computeUsernameErrorMessage_(urlCollection_, username_, ' +
-            'usernamesBySignonRealm_)',
-      },
-
-      isPasswordInvalid_: {
-        type: Boolean,
-        value: false,
-      },
-
-      canAddPassword_: {
-        type: Boolean,
-        computed: 'computeCanAddPassword_(websiteErrorMessage_, website_, ' +
-            'usernameErrorMessage_, password_, note_)',
-      },
-
-      storeOptionAccountValue_: {
-        type: String,
-        value: chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT,
-        readonly: true,
-      },
-
-      storeOptionDeviceValue_: {
-        type: String,
-        value: chrome.passwordsPrivate.PasswordStoreSet.DEVICE,
-        readonly: true,
-      },
+      usernameErrorMessage_: {type: String},
+      isPasswordInvalid_: {type: Boolean},
+      canAddPassword_: {type: Boolean},
     };
   }
 
-  static get observers() {
-    return [
-      'updateDefaultStore_(isAccountStoreUser)',
-    ];
-  }
-
-  declare private website_: string;
-  declare private username_: string;
-  declare private password_: string;
-  declare private note_: string;
-  declare private usernamesBySignonRealm_: Map<string, Set<string>>;
-  declare private websiteErrorMessage_: string|null;
-  declare private usernameErrorMessage_: string|null;
-  declare private canAddPassword_: boolean;
-  declare private isPasswordInvalid_: boolean;
-  declare private urlCollection_: chrome.passwordsPrivate.UrlCollection|null;
-  declare private readonly storeOptionAccountValue_: string;
-  declare private readonly storeOptionDeviceValue_: string;
+  protected accessor website_: string = '';
+  protected accessor username_: string = '';
+  protected accessor password_: string = '';
+  protected accessor note_: string = '';
+  private accessor usernamesBySignonRealm_: Map<string, Set<string>> =
+      new Map();
+  protected accessor websiteErrorMessage_: string|null = null;
+  protected accessor usernameErrorMessage_: string|null = null;
+  protected accessor canAddPassword_: boolean = false;
+  protected accessor isPasswordInvalid_: boolean = false;
+  private accessor urlCollection_: chrome.passwordsPrivate.UrlCollection|null =
+      null;
+  protected readonly storeOptionAccountValue_: string =
+      chrome.passwordsPrivate.PasswordStoreSet.ACCOUNT;
+  protected readonly storeOptionDeviceValue_: string =
+      chrome.passwordsPrivate.PasswordStoreSet.DEVICE;
 
   private setSavedPasswordsListener_: (
       (entries: chrome.passwordsPrivate.PasswordUiEntry[]) => void)|null = null;
@@ -244,10 +199,60 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
     this.setSavedPasswordsListener_ = null;
   }
 
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+    if (changedPrivateProperties.has('urlCollection_') ||
+        changedPrivateProperties.has('username_') ||
+        changedPrivateProperties.has('usernamesBySignonRealm_')) {
+      this.usernameErrorMessage_ = this.computeUsernameErrorMessage_();
+    }
+
+    if (changedPrivateProperties.has('websiteErrorMessage_') ||
+        changedPrivateProperties.has('website_') ||
+        changedPrivateProperties.has('urlCollection_') ||
+        changedPrivateProperties.has('username_') ||
+        changedPrivateProperties.has('usernamesBySignonRealm_') ||
+        changedPrivateProperties.has('password_') ||
+        changedPrivateProperties.has('note_')) {
+      this.canAddPassword_ = this.computeCanAddPassword_();
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has('isAccountStoreUser')) {
+      this.updateDefaultStore_();
+    }
+  }
+
   private updateDefaultStore_() {
     if (this.isAccountStoreUser) {
       this.$.storePicker.value = this.storeOptionAccountValue_;
     }
+  }
+
+  protected onWebsiteValueChanged_(e: CustomEvent<{value: string}>) {
+    this.website_ = e.detail.value;
+  }
+
+  protected onUsernameValueChanged_(e: CustomEvent<{value: string}>) {
+    this.username_ = e.detail.value;
+  }
+
+  protected onPasswordValueChanged_(e: CustomEvent<{value: string}>) {
+    this.password_ = e.detail.value;
+  }
+
+  protected onNoteValueChanged_(e: CustomEvent<{value: string}>) {
+    this.note_ = e.detail.value;
+  }
+
+  protected onCancelClick_() {
+    this.closeDialog_();
   }
 
   private closeDialog_() {
@@ -259,7 +264,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
   /**
    * Helper function that checks whether the entered url is valid.
    */
-  private validateWebsite_() {
+  protected onWebsiteInput_() {
     if (this.website_.length === 0) {
       this.websiteErrorMessage_ = null;
       return;
@@ -274,7 +279,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
         .catch(() => this.websiteErrorMessage_ = this.i18n('notValidWebsite'));
   }
 
-  private onWebsiteInputBlur_() {
+  protected onWebsiteInputBlur_() {
     if (this.website_.length === 0) {
       this.websiteErrorMessage_ = '';
     } else if (!this.websiteErrorMessage_ && !this.website_.includes('.')) {
@@ -283,11 +288,11 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
     }
   }
 
-  private isWebsiteInputInvalid_(): boolean {
+  protected isWebsiteInputInvalid_(): boolean {
     return this.websiteErrorMessage_ !== null;
   }
 
-  private showWebsiteError_(): boolean {
+  protected showWebsiteError_(): boolean {
     return !!this.websiteErrorMessage_ && this.websiteErrorMessage_.length > 0;
   }
 
@@ -305,19 +310,23 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
     return null;
   }
 
-  private doesUsernameExistAlready_(): boolean {
+  protected doesUsernameExistAlready_(): boolean {
     return !!this.usernameErrorMessage_;
   }
 
-  private onPasswordInput_() {
+  protected onPasswordInput_() {
     this.isPasswordInvalid_ = this.password_.length === 0;
   }
 
-  private isNoteInputInvalid_(): boolean {
+  protected onPasswordBlur_() {
+    this.onPasswordInput_();
+  }
+
+  protected isNoteInputInvalid_(): boolean {
     return this.note_.length > PASSWORD_NOTE_MAX_CHARACTER_COUNT;
   }
 
-  private getFirstNoteFooter_(): string {
+  protected getFirstNoteFooter_(): string {
     return this.note_.length < PASSWORD_NOTE_WARNING_CHARACTER_COUNT ?
         '' :
         this.i18n(
@@ -325,7 +334,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
             PASSWORD_NOTE_MAX_CHARACTER_COUNT);
   }
 
-  private getSecondNoteFooter_(): string {
+  protected getSecondNoteFooter_(): string {
     return this.note_.length < PASSWORD_NOTE_WARNING_CHARACTER_COUNT ?
         '' :
         this.i18n(
@@ -349,7 +358,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
     return true;
   }
 
-  private onAddClick_() {
+  protected onAddClick_() {
     assert(this.computeCanAddPassword_());
     assert(this.urlCollection_);
     recordAddCredentialInteraction(
@@ -374,7 +383,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
         .catch(() => {});
   }
 
-  private getViewExistingPasswordAriaDescription_(): string {
+  protected getViewExistingPasswordAriaDescription_(): string {
     return this.urlCollection_ ?
         this.i18n(
             'viewExistingPasswordAriaDescription', this.username_,
@@ -382,7 +391,7 @@ export class AddPasswordDialogElement extends AddPasswordDialogElementBase {
         '';
   }
 
-  private onViewExistingPasswordClick_(e: Event) {
+  protected onViewExistingPasswordClick_(e: Event) {
     recordAddCredentialInteraction(
         AddCredentialFromSettingsUserInteractions.DUPLICATE_CREDENTIAL_VIEWED);
     e.preventDefault();

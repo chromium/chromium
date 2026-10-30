@@ -1,83 +1,34 @@
-<style include="shared-style cr-shared-style">
-  :host {
-    align-items: center;
-    display: flex;
-  }
-
-  #image {
-    height: 120px;
-    width: 248px;
-  }
-
-  a[href] {
-    color: var(--cr-link-color);
-  }
-
-  #cardContent {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    justify-content: center;
-    margin-block: 16px;
-    margin-inline-end: 6px;
-    margin-inline-start: 24px;
-  }
-
-  #title {
-    font-size: 15px;
-    font-weight: 500;
-    margin-top: 10px;
-    margin-bottom: 6px;
-  }
-
-  #actionButton {
-    margin-top: 10px;
-    width: fit-content;
-  }
-
-  #avatar {
-    border-radius: 50%;
-    height: 20px;
-    width: 20px;
-  }
-
-  #closeButton {
-    margin-top: 10px;
-    margin-right: 10px;
-    margin-bottom: auto;
-  }
-</style>
 <picture id="image">
   <if expr="_google_chrome">
     <source class="banner"
-        srcset="./images/[[getBannerImageName_(card.id)]]_dark.svg"
+        srcset="./images/${this.getBannerImageName_()}_dark.svg"
         media="(prefers-color-scheme: dark)">
     <img class="banner" alt=""
-        src="./images/[[getBannerImageName_(card.id)]].svg">
+        src="./images/${this.getBannerImageName_()}.svg">
   </if>
   <if expr="not _google_chrome">
     <source class="banner"
-        srcset="./images/[[getBannerImageName_(card.id)]]_dark_non_branded.svg"
+        srcset="./images/${this.getBannerImageName_()}_dark_non_branded.svg"
         media="(prefers-color-scheme: dark)">
     <img class="banner" alt=""
-        src="./images/[[getBannerImageName_(card.id)]]_non_branded.svg">
+        src="./images/${this.getBannerImageName_()}_non_branded.svg">
   </if>
 </picture>
 <div id="cardContent">
-  <h2 id="title">[[card.title]]</h2>
+  <h2 id="title">${this.card.title}</h2>
   <div id="description" class="cr-primary-text label"
-      inner-h-t-m-l="[[getDescription_(card)]]"></div>
-  <cr-button id="actionButton" hidden="[[!card.actionButtonText]]"
-      class="action-button" on-click="onActionButtonClick_">
-    <template is="dom-if" if="[[card.actionButtonAvatarUrl]]">
+      .innerHTML="${this.getDescription_()}"></div>
+  <cr-button id="actionButton" ?hidden="${!this.card.actionButtonText}"
+      class="action-button" @click="${this.onActionButtonClick_}">
+    ${this.card.actionButtonAvatarUrl ? html`
       <img id="avatar" slot="prefix-icon"
-          src="[[card.actionButtonAvatarUrl]]" alt="">
-    </template>
-    [[card.actionButtonText]]
+          src="${this.card.actionButtonAvatarUrl}" alt="">
+    ` : ''}
+    ${this.card.actionButtonText}
   </cr-button>
 </div>
 <cr-icon-button id="closeButton" class="icon-clear no-overlap"
-    hidden="[[!card.isDismissible]]"
-    on-click="onCloseClick_" title="$i18n{close}"
+    ?hidden="${!this.card.isDismissible}"
+    @click="${this.onCloseClick_}" title="$i18n{close}"
     aria-label="$i18n{closeNotificationCardButtonAriaLabel}">
 </cr-icon-button>

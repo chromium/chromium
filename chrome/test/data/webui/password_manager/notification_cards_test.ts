@@ -67,7 +67,7 @@ suite('PasswordsSectionTest', function() {
         notificationCardsProxy.card.description,
         cardElement.$.description.textContent.trim());
     assertFalse(isVisible(cardElement.$.actionButton));
-    const shownImage = cardElement.shadowRoot!.querySelector('img');
+    const shownImage = cardElement.shadowRoot.querySelector('img');
     assertTrue(!!shownImage);
     assertEquals(
         'chrome://password-manager/images/test_promo.svg', shownImage.src);
@@ -276,13 +276,13 @@ suite('PasswordsSectionTest', function() {
     assertTrue(!!cardElement);
     assertTrue(isVisible(cardElement.$.actionButton));
     const bannerImage =
-        cardElement.shadowRoot!.querySelector<HTMLImageElement>('img.banner');
+        cardElement.shadowRoot.querySelector<HTMLImageElement>('img.banner');
     assertTrue(!!bannerImage);
     assertEquals(
         'chrome://password-manager/images/access_on_any_device_promo.svg',
         bannerImage.src);
     const avatarImage =
-        cardElement.shadowRoot!.querySelector<HTMLImageElement>('#avatar');
+        cardElement.shadowRoot.querySelector<HTMLImageElement>('#avatar');
     assertTrue(!!avatarImage);
     assertEquals(
         notificationCardsProxy.card.actionButtonAvatarUrl, avatarImage.src);

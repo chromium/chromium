@@ -12,7 +12,7 @@ import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
-import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {TestPrefsBrowserProxy} from './test_prefs_browser_proxy.js';
@@ -293,9 +293,8 @@ suite('PasswordDetailsCardTest', function() {
     assertTrue(!!deleteDialog);
     assertTrue(deleteDialog.$.dialog.open);
     deleteDialog.$.removeFromAccountCheckbox.click();
-    await deleteDialog.$.removeFromAccountCheckbox.updateComplete;
     deleteDialog.$.removeFromDeviceCheckbox.click();
-    await deleteDialog.$.removeFromDeviceCheckbox.updateComplete;
+    await microtasksFinished();
 
     assertFalse(deleteDialog.$.removeFromAccountCheckbox.checked);
     assertFalse(deleteDialog.$.removeFromDeviceCheckbox.checked);

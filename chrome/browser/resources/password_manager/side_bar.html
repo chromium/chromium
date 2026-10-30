@@ -1,40 +1,25 @@
-<style include="cr-nav-menu-item-style">
-  cr-menu-selector {
-    box-sizing: border-box;
-    display: block;
-    height: 100%;
-    overflow: visible;
-    overscroll-behavior: contain;
-    padding-top: 8px;
-    width: 250px;
-  }
-
-  #compromisedPasswords {
-    margin-inline-end: 20px;
-    margin-inline-start: auto;
-  }
-</style>
 <div role="navigation">
   <cr-menu-selector id="menu" attr-for-selected="path"
-      selected-attribute="selected" on-iron-activate="onSelectorActivate_"
-      selected="[[getSelectedPage_(selectedPage_)]]">
+      selected-attribute="selected"
+      @iron-activate="${this.onSelectorIronActivate_}"
+      .selected="${this.getSelectedPage_()}">
     <a id="passwords" role="menuitem" class="cr-nav-menu-item"
-        path="passwords" href="/passwords" on-click="onItemClick_">
+        path="passwords" href="/passwords" @click="${this.onItemClick_}">
       <cr-icon icon="cr20:password-manager"></cr-icon>
       $i18n{passwords}
       <cr-ripple></cr-ripple>
     </a>
     <a id="checkup" role="menuitem" class="cr-nav-menu-item"
-        path="checkup" href="/checkup" on-click="onItemClick_">
-      <cr-icon icon="[[getInventoryIcon_()]]"></cr-icon>
+        path="checkup" href="/checkup" @click="${this.onItemClick_}">
+      <cr-icon icon="${this.getInventoryIcon_()}"></cr-icon>
       <span>$i18n{checkup}</span>
-      <div id="compromisedPasswords" hidden$="[[!compromisedPasswords_]]">
-        [[getCompromisedPasswordsBadge_(compromisedPasswords_)]]</div>
+      <div id="compromisedPasswords" ?hidden="${!this.compromisedPasswords_}">
+        ${this.getCompromisedPasswordsBadge_()}</div>
       <cr-ripple></cr-ripple>
     </a>
     <a id="settings" role="menuitem" class="cr-nav-menu-item"
-        path="settings" href="/settings" on-click="onItemClick_">
-      <cr-icon icon="[[getSettingsIcon_()]]"></cr-icon>
+        path="settings" href="/settings" @click="${this.onItemClick_}">
+      <cr-icon icon="${this.getSettingsIcon_()}"></cr-icon>
       $i18n{settings}
       <cr-ripple></cr-ripple>
     </a>

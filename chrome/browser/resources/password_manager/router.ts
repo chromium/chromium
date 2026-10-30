@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import {dedupingMixin as litDedupingMixin} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin as polymerDedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 /**
  * The different pages that can be shown at a time.
@@ -210,7 +212,7 @@ let routerInstance: Router|null = null;
 
 type Constructor<T> = new (...args: any[]) => T;
 
-export const RouteObserverMixin = dedupingMixin(
+export const RouteObserverMixin = polymerDedupingMixin(
     <T extends Constructor<PolymerElement>>(superClass: T): T&
     Constructor<RouteObserverMixinInterface> => {
       class RouteObserverMixin extends superClass {
@@ -236,6 +238,34 @@ export const RouteObserverMixin = dedupingMixin(
       }
 
       return RouteObserverMixin;
+    });
+
+export const RouteObserverMixinLit = litDedupingMixin(
+    <T extends Constructor<CrLitElement>>(superClass: T): T&
+    Constructor<RouteObserverMixinInterface> => {
+      class RouteObserverMixinLit extends superClass {
+        override connectedCallback() {
+          super.connectedCallback();
+
+          Router.getInstance().addObserver(this);
+
+          this.currentRouteChanged(
+              Router.getInstance().currentRoute,
+              Router.getInstance().currentRoute);
+        }
+
+        override disconnectedCallback() {
+          super.disconnectedCallback();
+
+          Router.getInstance().removeObserver(this);
+        }
+
+        currentRouteChanged(_newRoute: Route, _oldRoute?: Route): void {
+          assertNotReached();
+        }
+      }
+
+      return RouteObserverMixinLit;
     });
 
 export interface RouteObserverMixinInterface {

@@ -9,7 +9,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 import {createAffiliatedDomain, createPasswordEntry} from './test_util.js';
@@ -23,7 +23,6 @@ suite('EditPasswordDialogTest', function() {
     metricsTracker = fakeMetricsPrivate();
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
-    return flushTasks();
   });
 
   test('password displayed correctly', async function() {
@@ -37,14 +36,14 @@ suite('EditPasswordDialogTest', function() {
     const dialog = document.createElement('edit-password-dialog');
     dialog.credential = password;
     document.body.appendChild(dialog);
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(password.username, dialog.$.usernameInput.value);
     assertEquals(password.password, dialog.$.passwordInput.value);
     assertEquals('password', dialog.$.passwordInput.type);
 
     const listItemElements =
-        dialog.shadowRoot!.querySelectorAll<HTMLAnchorElement>('a.site-link');
+        dialog.shadowRoot.querySelectorAll<HTMLAnchorElement>('a.site-link');
     assertEquals(listItemElements.length, password.affiliatedDomains.length);
 
     password.affiliatedDomains.forEach((expectedDomain, i) => {
@@ -63,7 +62,6 @@ suite('EditPasswordDialogTest', function() {
     const dialog = document.createElement('edit-password-dialog');
     dialog.credential = password;
     document.body.appendChild(dialog);
-    await flushTasks();
 
     assertEquals(
         loadTimeData.getString('showPassword'),
@@ -74,6 +72,7 @@ suite('EditPasswordDialogTest', function() {
         'icon-visibility', dialog.$.showPasswordButton.getAttribute('class'));
 
     dialog.$.showPasswordButton.click();
+    await microtasksFinished();
 
     assertEquals(
         loadTimeData.getString('hidePassword'),
@@ -102,11 +101,11 @@ suite('EditPasswordDialogTest', function() {
     const dialog = document.createElement('edit-password-dialog');
     dialog.credential = passwordManager.data.passwords[1]!;
     document.body.appendChild(dialog);
-    await flushTasks();
+    await microtasksFinished();
 
     // Update username to the same value as other credential and observe error.
     dialog.$.usernameInput.value = 'username1';
-    await dialog.$.usernameInput.updateComplete;
+    await microtasksFinished();
     assertTrue(dialog.$.usernameInput.invalid);
     assertEquals(
         dialog.i18n('usernameAlreadyUsed', 'www.example.com'),
@@ -141,17 +140,16 @@ suite('EditPasswordDialogTest', function() {
     const dialog = document.createElement('edit-password-dialog');
     dialog.credential = passwordManager.data.passwords[0]!;
     document.body.appendChild(dialog);
-    await flushTasks();
 
     // Update username to the same value as the passkey. There should not be an
     // error.
     dialog.$.usernameInput.value = 'passkey-username';
-    await dialog.$.usernameInput.updateComplete;
+    await microtasksFinished();
     assertFalse(dialog.$.usernameInput.invalid);
 
     // Update username to the same value as the federated credential.
     dialog.$.usernameInput.value = 'federated-username';
-    await dialog.$.usernameInput.updateComplete;
+    await microtasksFinished();
     assertFalse(dialog.$.usernameInput.invalid);
   });
 
@@ -172,11 +170,11 @@ suite('EditPasswordDialogTest', function() {
     const dialog = document.createElement('edit-password-dialog');
     dialog.credential = passwordManager.data.passwords[1]!;
     document.body.appendChild(dialog);
-    await flushTasks();
+    await microtasksFinished();
 
     // Update username to the same value as other credential and observe error.
     dialog.$.usernameInput.value = 'test';
-    await dialog.$.usernameInput.updateComplete;
+    await microtasksFinished();
     assertTrue(dialog.$.usernameInput.invalid);
     assertEquals(
         dialog.i18n('usernameAlreadyUsed', 'www.example.com'),
@@ -184,6 +182,7 @@ suite('EditPasswordDialogTest', function() {
 
     assertTrue(dialog.$.viewExistingPasswordLink.hidden);
     dialog.showRedirect = true;
+    await microtasksFinished();
 
     assertFalse(dialog.$.viewExistingPasswordLink.hidden);
 
@@ -199,19 +198,19 @@ suite('EditPasswordDialogTest', function() {
     const dialog = document.createElement('edit-password-dialog');
     dialog.credential = password;
     document.body.appendChild(dialog);
-    await flushTasks();
 
     assertFalse(dialog.$.passwordNote.invalid);
 
     // Make note 899 characters long.
     dialog.$.passwordNote.value = '.'.repeat(899);
+    await microtasksFinished();
     assertFalse(dialog.$.passwordNote.invalid);
     assertEquals('', dialog.$.passwordNote.firstFooter);
     assertEquals('', dialog.$.passwordNote.secondFooter);
 
     // After 900 characters there are footers.
     dialog.$.passwordNote.value = '.'.repeat(900);
-    await flushTasks();
+    await microtasksFinished();
     assertFalse(dialog.$.passwordNote.invalid);
     assertEquals(
         dialog.i18n(
@@ -228,7 +227,7 @@ suite('EditPasswordDialogTest', function() {
     // valid.
     dialog.$.passwordNote.value =
         '.'.repeat(PASSWORD_NOTE_MAX_CHARACTER_COUNT + 1);
-    await flushTasks();
+    await microtasksFinished();
     assertTrue(dialog.$.passwordNote.invalid);
     assertEquals(
         dialog.i18n(
@@ -249,16 +248,12 @@ suite('EditPasswordDialogTest', function() {
     const dialog = document.createElement('edit-password-dialog');
     dialog.credential = password;
     document.body.appendChild(dialog);
-    await flushTasks();
 
     // Enter website
     dialog.$.usernameInput.value = 'username2';
     dialog.$.passwordInput.value = 'sTroNgPA$$wOrD';
     dialog.$.passwordNote.value = 'super secret note.';
-    await Promise.all([
-      dialog.$.usernameInput.updateComplete,
-      dialog.$.passwordInput.updateComplete,
-    ]);
+    await microtasksFinished();
 
     assertFalse(dialog.$.saveButton.disabled);
     dialog.$.saveButton.click();
@@ -293,12 +288,12 @@ suite('EditPasswordDialogTest', function() {
                 const dialog = document.createElement('edit-password-dialog');
                 dialog.credential = password;
                 document.body.appendChild(dialog);
-                await flushTasks();
+                await microtasksFinished();
 
                 // Enter website
                 dialog.$.passwordInput.value = 'sTroNgPA$$wOrD';
                 dialog.$.passwordNote.value = testCase.newNote;
-                await dialog.$.passwordInput.updateComplete;
+                await microtasksFinished();
 
                 assertFalse(dialog.$.saveButton.disabled);
                 dialog.$.saveButton.click();

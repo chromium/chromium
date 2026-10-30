@@ -1,166 +1,61 @@
-<style include="shared-style cr-shared-style cr-spinner-style">
-  #checkupContent {
-    margin-top: 16px;
-  }
-
-  a[href] {
-    color: var(--cr-link-color);
-  }
-
-  #checkupStatus {
-    align-items: center;
-    display: flex;
-    min-height: 72px;
-  }
-
-  #illustartion {
-    align-items: center;
-    background-color: var(--google-grey-50);
-    border-top-left-radius: inherit;
-    border-top-right-radius: inherit;
-    display: flex;
-    height: 120px;
-    justify-content: center;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    #illustartion {
-      background-color: #1F1F1F;
-    }
-  }
-
-  #bannerImage {
-    height: 96px;
-  }
-
-  #spinner {
-    --cr-spinner-size: 16px;
-    margin-inline-start: 20px;
-  }
-
-  #labelWrapper {
-    flex: 1;
-    margin-inline-end: var(--control-label-spacing);
-    margin-inline-start: 20px;
-  }
-
-  #refreshButton {
-    margin-inline-end: 10px;
-    --cr-icon-button-fill-color: var(--google-grey-700);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    #refreshButton {
-      --cr-icon-button-fill-color: var(--google-grey-300);
-    }
-  }
-
-  #retryButton {
-    margin-inline-end: 20px;
-  }
-
-  cr-link-row[non-clickable]::part(icon) {
-    display: none;
-  }
-
-  cr-link-row {
-    --cr-link-row-start-icon-color: var(--google-green-700);
-    --cr-link-row-icon-width: 16px;
-  }
-
-  cr-link-row[show-yellow-icon] {
-    --cr-link-row-start-icon-color: var(--google-yellow-700);
-  }
-
-  cr-link-row[show-red-icon] {
-    --cr-link-row-start-icon-color: var(--google-red-600);
-  }
-
-  .secondary-text-on-surface {
-    /* Change the color of the sublabel. It's sadly not exposed as its own
-       variable in the <cr-link-row>, so we override this existing variable,
-       which is close enough. */
-    --cr-secondary-text-color: var(--google-grey-700);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    cr-link-row {
-      --cr-link-row-start-icon-color: var(--google-green-300);
-    }
-
-    cr-link-row[show-yellow-icon] {
-      --cr-link-row-start-icon-color: var(--google-yellow-300);
-    }
-
-    cr-link-row[show-red-icon] {
-      --cr-link-row-start-icon-color: var(--google-red-300);
-    }
-
-    .secondary-text-on-surface {
-      /* Change the color of the sublabel, see above. */
-      --cr-secondary-text-color: var(--google-grey-400);
-    }
-  }
-</style>
 <h2 class="page-title">$i18n{checkupTitle}</h2>
 <div id="checkupContent" class="card">
   <div id="illustartion" role="presentation">
     <picture>
-      <source class="banner" srcset="./images/[[bannerImage_]]_dark.svg"
+      <source class="banner" srcset="./images/${this.bannerImage_}_dark.svg"
           media="(prefers-color-scheme: dark)">
       <img id="bannerImage" class="banner" alt=""
-          src="./images/[[bannerImage_]].svg">
+          src="./images/${this.bannerImage_}.svg">
     </picture>
   </div>
   <div class="hr" id="checkupStatus">
-    <div id="spinner" class="spinner" hidden$="[[!isCheckRunning_]]"></div>
+    <div id="spinner" class="spinner" ?hidden="${!this.isCheckRunning_}"></div>
     <div id="labelWrapper">
-      <div id="checkupStatusLabel" class="title">[[checkedPasswordsText_]]</div>
+      <div id="checkupStatusLabel" class="title">${this.checkedPasswordsText_}</div>
       <div id="checkupStatusSubLabel" class="cr-secondary-text label"
-          inner-h-t-m-l="[[getCheckupSublabelValue_(status_, actionableError)]]"
-          on-click="onCheckupStatusSubLabelClick_">
+          .innerHTML="${this.getCheckupSublabelValue_()}"
+          @click="${this.onCheckupStatusSubLabelClick_}">
       </div>
     </div>
-    <div id="checkupButtons" hidden="[[!showCheckButton_(status_)]]">
+    <div id="checkupButtons" ?hidden="${!this.showCheckButton_()}">
       <cr-icon-button id="refreshButton" class="icon-refresh"
-          disabled="[[isCheckRunning_]]" hidden="[[showRetryButton_(status_)]]"
-          on-click="onPasswordCheckButtonClick_" title="$i18n{reload}"
+          ?disabled="${this.isCheckRunning_}" ?hidden="${this.showRetryButton_()}"
+          @click="${this.onPasswordCheckButtonClick_}" title="$i18n{reload}"
           aria-label="$i18n{runCheckupAriaDescription}">
       </cr-icon-button>
-      <cr-button id="retryButton" hidden="[[!showRetryButton_(status_)]]"
-          class="action-button" on-click="onPasswordCheckButtonClick_">
+      <cr-button id="retryButton" ?hidden="${!this.showRetryButton_()}"
+          class="action-button" @click="${this.onPasswordCheckButtonClick_}">
         $i18n{tryAgain}
       </cr-button>
     </div>
   </div>
-  <div id="checkupResult" hidden="[[!showCheckupResult_(status_)]]">
+  <div id="checkupResult" ?hidden="${!this.showCheckupResult_()}">
     <cr-link-row id="compromisedRow" class="hr secondary-text-on-surface"
-        start-icon="[[getIcon_(compromisedPasswords_, 'true', status_)]]"
-        label="[[getCompromisedSectionLabel_(status_, compromisedPasswordsText_)]]"
-        sub-label="[[getCompromisedSectionSublabel_(
-            status_, compromisedPasswordsSuggestion_)]]"
-        show-yellow-icon$="[[didCompromiseCheckFail_(status_)]]"
-        show-red-icon$="[[hasIssues_(compromisedPasswords_)]]"
-        non-clickable$="[[!hasIssues_(compromisedPasswords_)]]"
-        on-click="onCompromisedClick_" role-description="button"
+        start-icon="${this.getIcon_(this.compromisedPasswords_, true)}"
+        label="${this.getCompromisedSectionLabel_()}"
+        sub-label="${this.getCompromisedSectionSublabel_()}"
+        ?show-yellow-icon="${this.didCompromiseCheckFail_()}"
+        ?show-red-icon="${this.hasIssues_(this.compromisedPasswords_)}"
+        ?non-clickable="${!this.hasIssues_(this.compromisedPasswords_)}"
+        @click="${this.onCompromisedClick_}" role-description="button"
         aria-show-label aria-show-sublabel>
     </cr-link-row>
     <cr-link-row id="reusedRow" class="hr secondary-text-on-surface"
-        start-icon="[[getIcon_(reusedPasswords_)]]"
-        label="[[reusedPasswordsText_]]"
-        sub-label="[[getReusedSectionSublabel_(reusedPasswords_)]]"
-        show-yellow-icon$="[[hasIssues_(reusedPasswords_)]]"
-        non-clickable$="[[!hasIssues_(reusedPasswords_)]]"
-        on-click="onReusedClick_" role-description="button"
+        start-icon="${this.getIcon_(this.reusedPasswords_)}"
+        label="${this.reusedPasswordsText_}"
+        sub-label="${this.getReusedSectionSublabel_()}"
+        ?show-yellow-icon="${this.hasIssues_(this.reusedPasswords_)}"
+        ?non-clickable="${!this.hasIssues_(this.reusedPasswords_)}"
+        @click="${this.onReusedClick_}" role-description="button"
         aria-show-label aria-show-sublabel>
     </cr-link-row>
     <cr-link-row id="weakRow" class="hr secondary-text-on-surface"
-        start-icon="[[getIcon_(weakPasswords_)]]"
-        label="[[weakPasswordsText_]]"
-        sub-label="[[getWeakSectionSublabel_(weakPasswords_)]]"
-        show-yellow-icon$="[[hasIssues_(weakPasswords_)]]"
-        non-clickable$="[[!hasIssues_(weakPasswords_)]]"
-        on-click="onWeakClick_" role-description="button"
+        start-icon="${this.getIcon_(this.weakPasswords_)}"
+        label="${this.weakPasswordsText_}"
+        sub-label="${this.getWeakSectionSublabel_()}"
+        ?show-yellow-icon="${this.hasIssues_(this.weakPasswords_)}"
+        ?non-clickable="${!this.hasIssues_(this.weakPasswords_)}"
+        @click="${this.onWeakClick_}" role-description="button"
         aria-show-label aria-show-sublabel>
     </cr-link-row>
   </div>
