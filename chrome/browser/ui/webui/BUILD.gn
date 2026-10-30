@@ -790,6 +790,7 @@ if (!is_android) {
     deps = [
       "//chrome/browser:chrome_content_browser_client_parts",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/webui/top_chrome",
       "//chrome/common",
       "//components/prefs",
       "//content/public/browser",
