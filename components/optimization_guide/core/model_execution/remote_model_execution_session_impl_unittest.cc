@@ -412,7 +412,7 @@ TEST_F(RemoteModelExecutionSessionImplTest,
   EXPECT_THAT(log_observer.messages,
               testing::Contains(
                   "StreamingSession [MODEL_EXECUTION_FEATURE_SCAM_DETECTION] "
-                  "Disconnected (dropped 2 pending requests)"));
+                  "Disconnected (dropped 1 pending requests)"));
 }
 
 TEST_F(RemoteModelExecutionSessionImplTest, SuccessfulStreamingResponses) {
@@ -1087,6 +1087,91 @@ TEST_F(RemoteModelExecutionSessionImplTest,
               testing::ElementsAre(
                   std::pair{ConnectionState::kConnecting, std::nullopt},
                   std::pair{ConnectionState::kConnected, std::nullopt}));
+}
+
+TEST_F(RemoteModelExecutionSessionImplTest,
+       ReentrantDisconnectToDisconnectSkipsStaleNotification) {
+  StreamingModelExecutionOptions options;
+  options.idle_disconnect_timeout = base::Minutes(5);
+  auto* session =
+      CreateSession(ModelBasedCapabilityKey::kScamDetection, options);
+
+  // Reconnects on the initial disconnect, while `Connect()` synchronously fails
+  // back into `kDisconnected`.
+  bool reconnected = false;
+  TestObserver reconnecting_observer(base::BindRepeating(
+      [](RemoteModelExecutionSession* session,
+         FakeStreamingWebSocketClient* client, bool* reconnected,
+         ConnectionState state, std::optional<DisconnectReason>) {
+        if (state == ConnectionState::kDisconnected && !*reconnected) {
+          *reconnected = true;
+          client->on_connect = base::BindRepeating(
+              [](FakeStreamingWebSocketClient* client) {
+                client->SimulateError("Connect failed");
+              },
+              base::Unretained(client));
+          session->Send(BuildTestMessage("reconnect"));
+        }
+      },
+      session, fake_client_.get(), &reconnected));
+  TestObserver second_observer;
+  session->AddObserver(&reconnecting_observer);
+  session->AddObserver(&second_observer);
+
+  session->Send(BuildTestMessage("query"));
+  fake_client_->SimulateConnected();
+  task_environment_.FastForwardBy(base::Minutes(5));
+
+  EXPECT_THAT(
+      second_observer.events,
+      testing::ElementsAre(
+          std::pair{ConnectionState::kConnecting, std::nullopt},
+          std::pair{ConnectionState::kConnected, std::nullopt},
+          std::pair{ConnectionState::kConnecting, std::nullopt},
+          std::pair{ConnectionState::kDisconnected, DisconnectReason::kError}));
+}
+
+TEST_F(
+    RemoteModelExecutionSessionImplTest,
+    SendPendingRequestsSynchronousFailureAndReconnectSkipsStaleNotification) {
+  auto* session = CreateSession(ModelBasedCapabilityKey::kScamDetection);
+
+  // When the first connection's `SendPendingRequests()` fails synchronously,
+  // reconnect and complete the new connection back to `kConnected` before the
+  // outer `OnConnected()` finishes.
+  TestObserver observer(base::BindRepeating(
+      [](RemoteModelExecutionSession* session,
+         FakeStreamingWebSocketClient* client, ConnectionState state,
+         std::optional<DisconnectReason>) {
+        if (state == ConnectionState::kDisconnected) {
+          session->Send(BuildTestMessage("request 3"));
+          client->SimulateConnected();
+        }
+      },
+      session, fake_client_.get()));
+  session->AddObserver(&observer);
+
+  session->Send(BuildTestMessage("request 1"));
+  session->Send(BuildTestMessage("request 2"));
+
+  fake_client_->on_send = base::BindRepeating(
+      [](FakeStreamingWebSocketClient* client) {
+        client->on_send.Reset();
+        client->SimulateError("Write failed");
+      },
+      base::Unretained(fake_client_.get()));
+
+  fake_client_->SimulateConnected();
+
+  EXPECT_EQ(session->connection_state(), ConnectionState::kConnected);
+  EXPECT_EQ(fake_client_->sent_requests.size(), 2u);
+  EXPECT_THAT(
+      observer.events,
+      testing::ElementsAre(
+          std::pair{ConnectionState::kConnecting, std::nullopt},
+          std::pair{ConnectionState::kDisconnected, DisconnectReason::kError},
+          std::pair{ConnectionState::kConnecting, std::nullopt},
+          std::pair{ConnectionState::kConnected, std::nullopt}));
 }
 
 TEST_F(RemoteModelExecutionSessionImplTest,

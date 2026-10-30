@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_REMOTE_MODEL_EXECUTION_SESSION_IMPL_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_REMOTE_MODEL_EXECUTION_SESSION_IMPL_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -114,7 +115,9 @@ class RemoteModelExecutionSessionImpl
   ConnectionState connection_state() const { return connection_state_; }
 
  private:
+  uint64_t SetConnectionState(ConnectionState state);
   void NotifyObservers(
+      uint64_t state_change_id,
       std::optional<DisconnectReason> disconnect_reason = std::nullopt);
   void HandleDisconnection(
       std::optional<OptimizationGuideModelExecutionError> error,
@@ -124,7 +127,7 @@ class RemoteModelExecutionSessionImpl
   void OnIdleTimeout();
   void StartConnection();
   void OnAccessTokenReceived(const std::string& access_token);
-  void SendPendingRequests();
+  void SendPendingRequests(uint64_t state_change_id);
   void DispatchResponse(OptimizationGuideModelStreamingResult result);
   void DispatchError(OptimizationGuideModelExecutionError error);
 
@@ -136,6 +139,7 @@ class RemoteModelExecutionSessionImpl
   const raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 
   ConnectionState connection_state_ = ConnectionState::kDisconnected;
+  uint64_t state_change_id_ = 0;
   base::ReentrantObserverList<Observer> observers_;
 
   base::RetainingOneShotTimer idle_timer_;

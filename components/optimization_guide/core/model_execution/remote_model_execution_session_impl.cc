@@ -245,11 +245,12 @@ void RemoteModelExecutionSessionImpl::StartConnection() {
     return;
   }
 
-  connection_state_ = ConnectionState::kConnecting;
+  const uint64_t state_change_id =
+      SetConnectionState(ConnectionState::kConnecting);
   base::WeakPtr<RemoteModelExecutionSessionImpl> weak_ptr =
       weak_ptr_factory_.GetWeakPtr();
-  NotifyObservers();
-  if (!weak_ptr) {
+  NotifyObservers(state_change_id);
+  if (!weak_ptr || state_change_id_ != state_change_id) {
     return;
   }
 
@@ -299,23 +300,26 @@ void RemoteModelExecutionSessionImpl::OnAccessTokenReceived(
   client_->Connect();
 }
 
-void RemoteModelExecutionSessionImpl::SendPendingRequests() {
+void RemoteModelExecutionSessionImpl::SendPendingRequests(
+    uint64_t state_change_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   base::WeakPtr<RemoteModelExecutionSessionImpl> weak_ptr =
       weak_ptr_factory_.GetWeakPtr();
   while (!pending_requests_.empty()) {
-    client_->Send(std::move(pending_requests_.front()));
-    if (!weak_ptr || connection_state_ != ConnectionState::kConnected) {
+    std::vector<uint8_t> request = std::move(pending_requests_.front());
+    pending_requests_.pop_front();
+    client_->Send(std::move(request));
+    if (!weak_ptr || state_change_id_ != state_change_id) {
       return;
     }
-    pending_requests_.pop_front();
   }
 }
 
 void RemoteModelExecutionSessionImpl::OnConnected() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(connection_state_, ConnectionState::kConnecting);
-  connection_state_ = ConnectionState::kConnected;
+  const uint64_t state_change_id =
+      SetConnectionState(ConnectionState::kConnected);
   RecordConnectionStatusHistogram(
       feature_, StreamingConnectionStatusInternal::kConnected);
   STREAMING_SESSION_LOGGER(optimization_guide_logger_, feature_)
@@ -324,12 +328,12 @@ void RemoteModelExecutionSessionImpl::OnConnected() {
   ResetIdleTimer();
   base::WeakPtr<RemoteModelExecutionSessionImpl> weak_ptr =
       weak_ptr_factory_.GetWeakPtr();
-  SendPendingRequests();
+  SendPendingRequests(state_change_id);
   // `SendPendingRequests` can trigger disconnection and session destruction.
-  if (!weak_ptr || connection_state_ != ConnectionState::kConnected) {
+  if (!weak_ptr) {
     return;
   }
-  NotifyObservers();
+  NotifyObservers(state_change_id);
 }
 
 void RemoteModelExecutionSessionImpl::OnMessage(std::vector<uint8_t> message) {
@@ -487,9 +491,21 @@ RemoteModelExecutionSessionImpl::GetAdditionalHeaders() {
   return additional_headers;
 }
 
+uint64_t RemoteModelExecutionSessionImpl::SetConnectionState(
+    ConnectionState state) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_NE(connection_state_, state);
+  connection_state_ = state;
+  return ++state_change_id_;
+}
+
 void RemoteModelExecutionSessionImpl::NotifyObservers(
+    uint64_t state_change_id,
     std::optional<DisconnectReason> disconnect_reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (state_change_id_ != state_change_id) {
+    return;
+  }
   const ConnectionState state = connection_state_;
   CHECK_EQ(state == ConnectionState::kDisconnected,
            disconnect_reason.has_value());
@@ -499,11 +515,11 @@ void RemoteModelExecutionSessionImpl::NotifyObservers(
     observer.OnConnectionStateChanged(state, disconnect_reason);
     // An observer may synchronously destroy the session, or trigger another
     // state transition (e.g. by causing a synchronous write error on a
-    // connected session with `Send()`). In the latter case the reentrant
+    // connected session with `Send()`). In the latter case a reentrant
     // `NotifyObservers()` call has already notified every observer of the newer
     // state, so stop here rather than delivering duplicate or stale
     // notifications to the remaining observers.
-    if (!weak_ptr || connection_state_ != state) {
+    if (!weak_ptr || state_change_id_ != state_change_id) {
       return;
     }
   }
@@ -533,16 +549,17 @@ void RemoteModelExecutionSessionImpl::HandleDisconnection(
   idle_timer_.Stop();
   pending_requests_.clear();
   access_token_.clear();
-  connection_state_ = ConnectionState::kDisconnected;
+  const uint64_t state_change_id =
+      SetConnectionState(ConnectionState::kDisconnected);
   base::WeakPtr<RemoteModelExecutionSessionImpl> weak_ptr =
       weak_ptr_factory_.GetWeakPtr();
   if (error) {
     DispatchError(*error);
-    if (!weak_ptr || connection_state_ != ConnectionState::kDisconnected) {
+    if (!weak_ptr) {
       return;
     }
   }
-  NotifyObservers(GetDisconnectReason(disconnect_reason));
+  NotifyObservers(state_change_id, GetDisconnectReason(disconnect_reason));
 }
 
 void RemoteModelExecutionSessionImpl::ResetIdleTimer() {
