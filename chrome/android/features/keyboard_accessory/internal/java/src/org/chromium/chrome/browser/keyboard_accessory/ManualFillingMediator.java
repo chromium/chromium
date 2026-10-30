@@ -652,8 +652,10 @@ class ManualFillingMediator
             // Re-triggering the style and space update here ensures that FIELD_BOUNDS are used to
             // adjust the screen position once they become available. Ideally, this call should not
             // be necessary.
-            if (ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {
+            if (DeviceInfo.isDesktop()
+                    && ChromeFeatureList.isEnabled(
+                            ChromeFeatureList
+                                    .AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {
                 updateStyleAndControlSpaceForState(mModel.get(KEYBOARD_EXTENSION_STATE));
             }
             return;
@@ -1044,8 +1046,10 @@ class ManualFillingMediator
     private @Px int getTopOffset() {
         @Px int contentOffset = Math.round(getVisibleViewport().top);
 
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {
+        if (DeviceInfo.isDesktop()
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList
+                                .AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {
             return getTopOffsetForDynamicPositioning() + contentOffset;
         }
 
@@ -1093,8 +1097,10 @@ class ManualFillingMediator
      * boundary of the focused field, ensuring the bar is displayed near the field.
      */
     private @Px int getHorizontalOffset() {
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {
+        if (DeviceInfo.isDesktop()
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList
+                                .AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {
             @Px int viewportLeft = Math.round(getVisibleViewport().left);
             @Px
             int leftBound =
@@ -1118,8 +1124,10 @@ class ManualFillingMediator
     }
 
     private @Px int getMaxWidth() {
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {
+        if (DeviceInfo.isDesktop()
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList
+                                .AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {
             return mActivity
                     .getResources()
                     .getDimensionPixelSize(
@@ -1142,9 +1150,10 @@ class ManualFillingMediator
         if (requiresVisibleSheet(extensionState)) {
             boolean isDocked = !useUndockedLayout;
             if (isDocked
-                    || ChromeFeatureList.isEnabled(
-                            ChromeFeatureList
-                                    .AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {
+                    || (DeviceInfo.isDesktop()
+                            && ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList
+                                            .AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING))) {
                 mAccessorySheet.setStyle(isDocked);
             }
         }

@@ -84,6 +84,14 @@ class AutofillAgentTestApi {
             uses_keyboard_accessory_for_suggestions);
   }
 
+  void set_keyboard_accessory_uses_dynamic_positioning(
+      bool keyboard_accessory_uses_dynamic_positioning) {
+    const_cast<AutofillAgent::Config&>(agent_->config_)
+        .keyboard_accessory_uses_dynamic_positioning =
+        AutofillAgent::KeyboardAccessoryUsesDynamicPositioning(
+            keyboard_accessory_uses_dynamic_positioning);
+  }
+
   const FormCache& form_cache() { return agent_->form_cache_; }
 
   PasswordAutofillAgent* password_autofill_agent() {

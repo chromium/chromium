@@ -11,6 +11,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/android/device_info.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/to_vector.h"
@@ -800,8 +801,10 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
     // method before the ManualFillingController updates visibility. This
     // ensures the bar's screen position is updated before the controller makes
     // it visible.
-    bool should_show_before_mf = base::FeatureList::IsEnabled(
-        features::kAutofillAndroidKeyboardAccessoryDynamicPositioning);
+    bool should_show_before_mf =
+        base::android::device_info::is_desktop() &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillAndroidKeyboardAccessoryDynamicPositioning);
 
     if (should_show_before_mf) {
       view_->Show();

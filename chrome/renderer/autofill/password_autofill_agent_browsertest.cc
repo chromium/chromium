@@ -63,6 +63,10 @@
 #include "third_party/blink/public/web/web_local_frame_client.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "third_party/blink/public/web/win/web_font_rendering.h"
 #endif
@@ -767,11 +771,26 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
     }
   }
 
-  void SimulateElementClick(const WebElement element) {
-    SimulatePointClick(element.BoundsInWidget().CenterPoint());
+  void SimulateFocusChangeCompleteIfAndroid() {
+#if BUILDFLAG(IS_ANDROID)
+    if (GetMainFrame() && GetMainFrame()->AutofillClient()) {
+      GetMainFrame()->AutofillClient()->DidCompleteFocusChangeInFrame();
+    }
+#endif
   }
 
-  using ChromeRenderViewTest::SimulateElementClick;
+  void SimulateElementClick(const WebElement element) {
+    SimulatePointClick(element.BoundsInWidget().CenterPoint());
+    SimulateFocusChangeCompleteIfAndroid();
+  }
+
+  bool SimulateElementClick(const std::string& element_id) {
+    bool result = ChromeRenderViewTest::SimulateElementClick(element_id);
+    if (result) {
+      SimulateFocusChangeCompleteIfAndroid();
+    }
+    return result;
+  }
 
   void SimulateSuggestionChoice(WebInputElement& username_input) {
     std::u16string username(kAliceUsername16);
@@ -5226,9 +5245,15 @@ TEST_F(PasswordAutofillAgentTest,
   FocusElement(kUsernameName);
 
 #if BUILDFLAG(IS_ANDROID)
-  EXPECT_CALL(fake_autofill_driver_,
-              AskForValuesToFill(_, _, _, _, Eq(std::nullopt)))
-      .Times(1);
+  if (!base::android::device_info::is_desktop() ||
+      !base::FeatureList::IsEnabled(
+          features::kAutofillAndroidKeyboardAccessoryDynamicPositioning)) {
+    EXPECT_CALL(fake_autofill_driver_,
+                AskForValuesToFill(_, _, _, _, Eq(std::nullopt)))
+        .Times(1);
+  } else {
+    CheckSuggestionsNotShown();
+  }
 #else
   CheckSuggestionsNotShown();
 #endif
@@ -5269,10 +5294,16 @@ TEST_F(PasswordAutofillAgentTest,
   FocusElement(kUsernameName);
 
 #if BUILDFLAG(IS_ANDROID)
-  EXPECT_CALL(fake_autofill_driver_,
-              AskForValuesToFill(_, _, _, _, Eq(std::nullopt)))
-      .Times(1);
-  task_environment_.FastForwardBy(base::Seconds(1));
+  if (!base::android::device_info::is_desktop() ||
+      !base::FeatureList::IsEnabled(
+          features::kAutofillAndroidKeyboardAccessoryDynamicPositioning)) {
+    EXPECT_CALL(fake_autofill_driver_,
+                AskForValuesToFill(_, _, _, _, Eq(std::nullopt)))
+        .Times(1);
+    task_environment_.FastForwardBy(base::Seconds(1));
+  } else {
+    CheckSuggestionsNotShown();
+  }
 #else
   CheckSuggestionsNotShown();
 #endif  // BUILDFLAG(IS_ANDROID)

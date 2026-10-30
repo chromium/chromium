@@ -18,6 +18,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -32,6 +33,7 @@ public class NoSwipeViewPagerTest {
 
     @Before
     public void setUp() {
+        DeviceInfo.setIsDesktopForTesting(true);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mViewPager = new NoSwipeViewPager(mActivity, null);
         mAdapter = mock(AccessoryPagerAdapter.class);

@@ -73,6 +73,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.ViewPresence;
 import org.chromium.base.test.util.Batch;
@@ -1043,6 +1044,7 @@ public class KeyboardAccessoryViewTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)
     public void testUndockedStyleWithDynamicPositioning_BottomNotch() throws InterruptedException {
+        DeviceInfo.setIsDesktopForTesting(true);
         ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
         KeyboardAccessoryView view = mKeyboardAccessoryView.take();
 
@@ -1077,6 +1079,7 @@ public class KeyboardAccessoryViewTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)
     public void testUndockedStyleWithDynamicPositioning_TopNotch() throws InterruptedException {
+        DeviceInfo.setIsDesktopForTesting(true);
         ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
         KeyboardAccessoryView view = mKeyboardAccessoryView.take();
 
@@ -1111,6 +1114,7 @@ public class KeyboardAccessoryViewTest {
     @EnableFeatures(ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)
     public void testUndockedStyleWithDynamicPositioning_ClampedToMargin()
             throws InterruptedException {
+        DeviceInfo.setIsDesktopForTesting(true);
         ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
         KeyboardAccessoryView view = mKeyboardAccessoryView.take();
 

@@ -101,6 +101,8 @@ class AutofillAgent : public content::RenderFrameObserver,
       base::StrongAlias<class UserGestureRequiredTag, bool>;
   using UsesKeyboardAccessoryForSuggestions =
       base::StrongAlias<class UsesKeyboardAccessoryForSuggestionsTag, bool>;
+  using KeyboardAccessoryUsesDynamicPositioning =
+      base::StrongAlias<class KeyboardAccessoryUsesDynamicPositioningTag, bool>;
 
   struct Config {
     // Controls whether or not all datalists shall be extracted into
@@ -132,6 +134,11 @@ class AutofillAgent : public content::RenderFrameObserver,
     // information in or near the keyboard instead.
     UsesKeyboardAccessoryForSuggestions uses_keyboard_accessory_for_suggestions{
         BUILDFLAG(IS_ANDROID)};
+
+    // Controls whether the keyboard accessory is dynamically positioned near
+    // the focused field rather than docked at the bottom of the screen.
+    KeyboardAccessoryUsesDynamicPositioning
+        keyboard_accessory_uses_dynamic_positioning{false};
   };
 
   // `PasswordAutofillAgent` and `PasswordGenerationAgent` may be `nullptr`. If
