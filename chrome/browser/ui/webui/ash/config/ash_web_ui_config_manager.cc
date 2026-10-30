@@ -564,7 +564,8 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
   AddWebUIConfig(
       std::make_unique<personalization_app::PersonalizationAppUIConfig>(
           base::BindRepeating(
-              [](const ApplicationLocaleStorage* application_locale_storage,
+              [](PrefService* local_state,
+                 const ApplicationLocaleStorage* application_locale_storage,
                  scoped_refptr<network::SharedURLLoaderFactory>
                      shared_url_loader_factory,
                  content::WebUI* web_ui,
@@ -575,10 +576,11 @@ void AshWebUIConfigManager::RegisterWebUIConfigs() {
                 manta::MantaService* manta_service =
                     MantaServiceProvider::Get().Find(account_id);
                 return personalization_app::CreatePersonalizationAppUI(
-                    application_locale_storage,
+                    local_state, application_locale_storage,
                     std::move(shared_url_loader_factory), web_ui, url,
                     manta_service);
               },
+              base::Unretained(&local_state_.get()),
               base::Unretained(&application_locale_storage_.get()),
               shared_url_loader_factory_)),
       /*is_stateful=*/true);

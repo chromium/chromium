@@ -16,6 +16,7 @@
 #include "url/gurl.h"
 
 class ApplicationLocaleStorage;
+class PrefService;
 
 namespace content {
 class WebUI;
@@ -44,12 +45,13 @@ enum class ManagedSeaPenSettings {
 
 // Creates a PersonalizationAppUI. Used as a callback by
 // PersonalizationAppUIConfig.
-// `application_locale_storage` must not be null and must outlive the returned
-// `WebUIController`.
+// `local_state` and `application_locale_storage` must not be null and must
+// outlive the returned `WebUIController`.
 // `shared_url_loader_factory` must not be null.
 // `manta_service` is the profile's MantaService, resolved by the caller and
 // injected into the SeaPen fetcher; it may be null.
 std::unique_ptr<content::WebUIController> CreatePersonalizationAppUI(
+    PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     content::WebUI* web_ui,

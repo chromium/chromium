@@ -76,6 +76,7 @@ std::optional<std::string> GetCountryCode() {
 }  // namespace
 
 std::unique_ptr<content::WebUIController> CreatePersonalizationAppUI(
+    PrefService* local_state,
     const ApplicationLocaleStorage* application_locale_storage,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     content::WebUI* web_ui,
@@ -91,10 +92,9 @@ std::unique_ptr<content::WebUIController> CreatePersonalizationAppUI(
       ash::personalization_app::PersonalizationAppThemeProviderImpl>(web_ui);
   auto user_provider = std::make_unique<
       ash::personalization_app::PersonalizationAppUserProviderImpl>(web_ui);
-  // TODO(crbug.com/404133902): Avoid using g_browser_process.
   auto wallpaper_provider = std::make_unique<
       ash::personalization_app::PersonalizationAppWallpaperProviderImpl>(
-      g_browser_process->local_state(), web_ui,
+      local_state, web_ui,
       std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>(
           application_locale_storage, shared_url_loader_factory));
   auto sea_pen_provider = std::make_unique<
