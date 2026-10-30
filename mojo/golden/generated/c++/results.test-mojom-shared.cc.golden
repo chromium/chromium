@@ -48,11 +48,7 @@ bool ResultInterface_Method_ResponseParam_Result_Data::Validate(
     }
     case ResultInterface_Method_ResponseParam_Result_Tag::kFailure: {
 
-      if (!mojo::internal::ValidatePointerNonNullable(
-              object->data.f_failure, 2, validation_context)) {
-        return false;
-      }
-      if (!mojo::internal::ValidateStruct(object->data.f_failure, validation_context))
+      if (!mojo::internal::ValidateNonNullStruct(object->data.f_failure, validation_context, 2))
         return false;
       return true;
     }
@@ -99,11 +95,7 @@ bool ResultInterface_SyncMethod_ResponseParam_Result_Data::Validate(
     }
     case ResultInterface_SyncMethod_ResponseParam_Result_Tag::kFailure: {
 
-      if (!mojo::internal::ValidatePointerNonNullable(
-              object->data.f_failure, 2, validation_context)) {
-        return false;
-      }
-      if (!mojo::internal::ValidateStruct(object->data.f_failure, validation_context))
+      if (!mojo::internal::ValidateNonNullStruct(object->data.f_failure, validation_context, 2))
         return false;
       return true;
     }

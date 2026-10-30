@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
@@ -218,6 +219,37 @@ bool ValidateNonInlinedUnion(const Pointer<T>& input,
          T::Validate(input.Get(), validation_context, false);
 }
 
+// Same as the above functions, but additionally validate that `input` is not
+// null, reporting an error for `field_index` otherwise. Used by generated code
+// for non-nullable fields, since a single (non-inlined) call per field results
+// in smaller code than calling ValidatePointerNonNullable() separately.
+template <typename T>
+NOINLINE bool ValidateNonNullContainer(
+    const Pointer<T>& input,
+    ValidationContext* validation_context,
+    const ContainerValidateParams* validate_params,
+    int field_index) {
+  return ValidatePointerNonNullable(input, field_index, validation_context) &&
+         ValidateContainer(input, validation_context, validate_params);
+}
+
+template <typename T>
+NOINLINE bool ValidateNonNullStruct(const Pointer<T>& input,
+                                    ValidationContext* validation_context,
+                                    int field_index) {
+  return ValidatePointerNonNullable(input, field_index, validation_context) &&
+         ValidateStruct(input, validation_context);
+}
+
+template <typename T>
+NOINLINE bool ValidateNonNullNonInlinedUnion(
+    const Pointer<T>& input,
+    ValidationContext* validation_context,
+    int field_index) {
+  return ValidatePointerNonNullable(input, field_index, validation_context) &&
+         ValidateNonInlinedUnion(input, validation_context);
+}
+
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 bool ValidateHandleOrInterface(const AssociatedInterface_Data& input,
                                ValidationContext* validation_context);
@@ -230,6 +262,28 @@ bool ValidateHandleOrInterface(const Interface_Data& input,
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
 bool ValidateHandleOrInterface(const Handle_Data& input,
                                ValidationContext* validation_context);
+
+// Same as the above functions, but additionally validate that `input` is not an
+// invalid handle / interface, reporting an error for `field_index` otherwise.
+// Used by generated code for non-nullable fields, since a single call results
+// in smaller code.
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateNonNullHandleOrInterface(const AssociatedInterface_Data& input,
+                                      ValidationContext* validation_context,
+                                      int field_index);
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateNonNullHandleOrInterface(
+    const AssociatedEndpointHandle_Data& input,
+    ValidationContext* validation_context,
+    int field_index);
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateNonNullHandleOrInterface(const Interface_Data& input,
+                                      ValidationContext* validation_context,
+                                      int field_index);
+COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)
+bool ValidateNonNullHandleOrInterface(const Handle_Data& input,
+                                      ValidationContext* validation_context,
+                                      int field_index);
 
 }  // namespace internal
 }  // namespace mojo

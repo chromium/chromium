@@ -114,11 +114,7 @@ bool BasicUnion_Data::Validate(
     }
     case BasicUnion_Tag::kStructValue: {
 
-      if (!mojo::internal::ValidatePointerNonNullable(
-              object->data.f_struct_value, 4, validation_context)) {
-        return false;
-      }
-      if (!mojo::internal::ValidateStruct(object->data.f_struct_value, validation_context))
+      if (!mojo::internal::ValidateNonNullStruct(object->data.f_struct_value, validation_context, 4))
         return false;
       return true;
     }
@@ -150,14 +146,11 @@ bool StructInUnion_Data::Validate(
   [[maybe_unused]] const StructInUnion_Data* object =
       static_cast<const StructInUnion_Data*>(data);
 
-  if (!mojo::internal::ValidatePointerNonNullable(
-          object->value, 2, validation_context)) {
-    return false;
-  }
   constexpr const mojo::internal::ContainerValidateParams& value_validate_params =
       mojo::internal::GetArrayValidator<0, false, nullptr>();
-  if (!mojo::internal::ValidateContainer(object->value, validation_context,
-                                         &value_validate_params)) {
+  if (!mojo::internal::ValidateNonNullContainer(
+          object->value, validation_context,
+          &value_validate_params, 2)) {
     return false;
   }
 

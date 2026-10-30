@@ -56,14 +56,11 @@ bool IFace_Method_ResponseParams_Data::Validate(
   [[maybe_unused]] const IFace_Method_ResponseParams_Data* object =
       static_cast<const IFace_Method_ResponseParams_Data*>(data);
 
-  if (!mojo::internal::ValidatePointerNonNullable(
-          object->result, 1, validation_context)) {
-    return false;
-  }
   constexpr const mojo::internal::ContainerValidateParams& result_validate_params =
       mojo::internal::GetArrayValidator<0, false, nullptr>();
-  if (!mojo::internal::ValidateContainer(object->result, validation_context,
-                                         &result_validate_params)) {
+  if (!mojo::internal::ValidateNonNullContainer(
+          object->result, validation_context,
+          &result_validate_params, 1)) {
     return false;
   }
 

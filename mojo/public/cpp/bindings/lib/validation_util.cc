@@ -277,5 +277,47 @@ bool ValidateHandleOrInterface(const Handle_Data& input,
   return false;
 }
 
+namespace {
+
+template <typename T>
+bool ValidateNonNullHandleOrInterfaceImpl(const T& input,
+                                          ValidationContext* validation_context,
+                                          int field_index) {
+  return ValidateHandleOrInterfaceNonNullable(input, field_index,
+                                              validation_context) &&
+         ValidateHandleOrInterface(input, validation_context);
+}
+
+}  // namespace
+
+bool ValidateNonNullHandleOrInterface(const AssociatedInterface_Data& input,
+                                      ValidationContext* validation_context,
+                                      int field_index) {
+  return ValidateNonNullHandleOrInterfaceImpl(input, validation_context,
+                                              field_index);
+}
+
+bool ValidateNonNullHandleOrInterface(
+    const AssociatedEndpointHandle_Data& input,
+    ValidationContext* validation_context,
+    int field_index) {
+  return ValidateNonNullHandleOrInterfaceImpl(input, validation_context,
+                                              field_index);
+}
+
+bool ValidateNonNullHandleOrInterface(const Interface_Data& input,
+                                      ValidationContext* validation_context,
+                                      int field_index) {
+  return ValidateNonNullHandleOrInterfaceImpl(input, validation_context,
+                                              field_index);
+}
+
+bool ValidateNonNullHandleOrInterface(const Handle_Data& input,
+                                      ValidationContext* validation_context,
+                                      int field_index) {
+  return ValidateNonNullHandleOrInterfaceImpl(input, validation_context,
+                                              field_index);
+}
+
 }  // namespace internal
 }  // namespace mojo

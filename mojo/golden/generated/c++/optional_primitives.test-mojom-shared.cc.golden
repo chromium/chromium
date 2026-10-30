@@ -33,36 +33,27 @@ bool OptionalPrimitives_Data::Validate(
   [[maybe_unused]] const OptionalPrimitives_Data* object =
       static_cast<const OptionalPrimitives_Data*>(data);
 
-  if (!mojo::internal::ValidatePointerNonNullable(
-          object->uints, 5, validation_context)) {
-    return false;
-  }
   constexpr const mojo::internal::ContainerValidateParams& uints_validate_params =
       mojo::internal::GetArrayValidator<0, true, nullptr>();
-  if (!mojo::internal::ValidateContainer(object->uints, validation_context,
-                                         &uints_validate_params)) {
+  if (!mojo::internal::ValidateNonNullContainer(
+          object->uints, validation_context,
+          &uints_validate_params, 5)) {
     return false;
   }
 
-  if (!mojo::internal::ValidatePointerNonNullable(
-          object->boolarray, 6, validation_context)) {
-    return false;
-  }
   constexpr const mojo::internal::ContainerValidateParams& boolarray_validate_params =
       mojo::internal::GetArrayValidator<0, true, nullptr>();
-  if (!mojo::internal::ValidateContainer(object->boolarray, validation_context,
-                                         &boolarray_validate_params)) {
+  if (!mojo::internal::ValidateNonNullContainer(
+          object->boolarray, validation_context,
+          &boolarray_validate_params, 6)) {
     return false;
   }
 
-  if (!mojo::internal::ValidatePointerNonNullable(
-          object->bitmap, 7, validation_context)) {
-    return false;
-  }
   constexpr const mojo::internal::ContainerValidateParams& bitmap_validate_params =
       mojo::internal::GetMapValidator<*&mojo::internal::GetArrayValidator<0, false, nullptr>(), *&mojo::internal::GetArrayValidator<0, true, nullptr>()>();
-  if (!mojo::internal::ValidateContainer(object->bitmap, validation_context,
-                                         &bitmap_validate_params)) {
+  if (!mojo::internal::ValidateNonNullContainer(
+          object->bitmap, validation_context,
+          &bitmap_validate_params, 7)) {
     return false;
   }
 

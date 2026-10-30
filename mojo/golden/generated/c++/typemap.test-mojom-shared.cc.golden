@@ -33,14 +33,11 @@ bool Typemapped_Data::Validate(
   [[maybe_unused]] const Typemapped_Data* object =
       static_cast<const Typemapped_Data*>(data);
 
-  if (!mojo::internal::ValidatePointerNonNullable(
-          object->optional_container, 4, validation_context)) {
-    return false;
-  }
   constexpr const mojo::internal::ContainerValidateParams& optional_container_validate_params =
       mojo::internal::GetArrayValidator<0, true, nullptr>();
-  if (!mojo::internal::ValidateContainer(object->optional_container, validation_context,
-                                         &optional_container_validate_params)) {
+  if (!mojo::internal::ValidateNonNullContainer(
+          object->optional_container, validation_context,
+          &optional_container_validate_params, 4)) {
     return false;
   }
 
@@ -67,11 +64,7 @@ bool IFaceWithTypemap_Echo_Params_Data::Validate(
   [[maybe_unused]] const IFaceWithTypemap_Echo_Params_Data* object =
       static_cast<const IFaceWithTypemap_Echo_Params_Data*>(data);
 
-  if (!mojo::internal::ValidatePointerNonNullable(
-          object->param, 1, validation_context)) {
-    return false;
-  }
-  if (!mojo::internal::ValidateStruct(object->param, validation_context))
+  if (!mojo::internal::ValidateNonNullStruct(object->param, validation_context, 1))
     return false;
 
   return true;
@@ -97,11 +90,7 @@ bool IFaceWithTypemap_Echo_ResponseParams_Data::Validate(
   [[maybe_unused]] const IFaceWithTypemap_Echo_ResponseParams_Data* object =
       static_cast<const IFaceWithTypemap_Echo_ResponseParams_Data*>(data);
 
-  if (!mojo::internal::ValidatePointerNonNullable(
-          object->out, 1, validation_context)) {
-    return false;
-  }
-  if (!mojo::internal::ValidateStruct(object->out, validation_context))
+  if (!mojo::internal::ValidateNonNullStruct(object->out, validation_context, 1))
     return false;
 
   return true;

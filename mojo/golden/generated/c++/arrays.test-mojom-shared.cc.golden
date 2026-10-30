@@ -56,97 +56,83 @@ bool StructWithArrays_Data::Validate(
   [[maybe_unused]] const StructWithArrays_Data* object =
       static_cast<const StructWithArrays_Data*>(data);
 
-  if (!mojo::internal::ValidatePointerNonNullable(
-          object->structs, 1, validation_context)) {
-    return false;
-  }
   constexpr const mojo::internal::ContainerValidateParams& structs_validate_params =
       mojo::internal::GetArrayValidator<0, false, nullptr>();
-  if (!mojo::internal::ValidateContainer(object->structs, validation_context,
-                                         &structs_validate_params)) {
+  if (!mojo::internal::ValidateNonNullContainer(
+          object->structs, validation_context,
+          &structs_validate_params, 1)) {
     return false;
   }
 
   constexpr const mojo::internal::ContainerValidateParams& nullable_structs_validate_params =
       mojo::internal::GetArrayValidator<0, false, nullptr>();
-  if (!mojo::internal::ValidateContainer(object->nullable_structs, validation_context,
-                                         &nullable_structs_validate_params)) {
+  if (!mojo::internal::ValidateContainer(
+          object->nullable_structs, validation_context,
+          &nullable_structs_validate_params)) {
     return false;
   }
 
-  if (!mojo::internal::ValidatePointerNonNullable(
-          object->nullable_elements, 3, validation_context)) {
-    return false;
-  }
   constexpr const mojo::internal::ContainerValidateParams& nullable_elements_validate_params =
       mojo::internal::GetArrayValidator<0, true, nullptr>();
-  if (!mojo::internal::ValidateContainer(object->nullable_elements, validation_context,
-                                         &nullable_elements_validate_params)) {
+  if (!mojo::internal::ValidateNonNullContainer(
+          object->nullable_elements, validation_context,
+          &nullable_elements_validate_params, 3)) {
     return false;
   }
 
-  if (!mojo::internal::ValidatePointerNonNullable(
-          object->fixed_size_structs, 4, validation_context)) {
-    return false;
-  }
   constexpr const mojo::internal::ContainerValidateParams& fixed_size_structs_validate_params =
       mojo::internal::GetArrayValidator<2, false, nullptr>();
-  if (!mojo::internal::ValidateContainer(object->fixed_size_structs, validation_context,
-                                         &fixed_size_structs_validate_params)) {
+  if (!mojo::internal::ValidateNonNullContainer(
+          object->fixed_size_structs, validation_context,
+          &fixed_size_structs_validate_params, 4)) {
     return false;
   }
 
-  if (!mojo::internal::ValidatePointerNonNullable(
-          object->nested_structs, 5, validation_context)) {
-    return false;
-  }
   constexpr const mojo::internal::ContainerValidateParams& nested_structs_validate_params =
       mojo::internal::GetArrayValidator<0, false, &mojo::internal::GetArrayValidator<0, false, nullptr>()>();
-  if (!mojo::internal::ValidateContainer(object->nested_structs, validation_context,
-                                         &nested_structs_validate_params)) {
+  if (!mojo::internal::ValidateNonNullContainer(
+          object->nested_structs, validation_context,
+          &nested_structs_validate_params, 5)) {
     return false;
   }
 
   constexpr const mojo::internal::ContainerValidateParams& nullable_nested_structs_validate_params =
       mojo::internal::GetArrayValidator<0, true, &mojo::internal::GetArrayValidator<0, false, nullptr>()>();
-  if (!mojo::internal::ValidateContainer(object->nullable_nested_structs, validation_context,
-                                         &nullable_nested_structs_validate_params)) {
+  if (!mojo::internal::ValidateContainer(
+          object->nullable_nested_structs, validation_context,
+          &nullable_nested_structs_validate_params)) {
     return false;
   }
 
-  if (!mojo::internal::ValidatePointerNonNullable(
-          object->struct_map, 7, validation_context)) {
-    return false;
-  }
   constexpr const mojo::internal::ContainerValidateParams& struct_map_validate_params =
       mojo::internal::GetMapValidator<*&mojo::internal::GetArrayValidator<0, false, &mojo::internal::GetArrayValidator<0, false, nullptr>()>(), *&mojo::internal::GetArrayValidator<0, false, nullptr>()>();
-  if (!mojo::internal::ValidateContainer(object->struct_map, validation_context,
-                                         &struct_map_validate_params)) {
+  if (!mojo::internal::ValidateNonNullContainer(
+          object->struct_map, validation_context,
+          &struct_map_validate_params, 7)) {
     return false;
   }
 
   constexpr const mojo::internal::ContainerValidateParams& nullable_struct_map_validate_params =
       mojo::internal::GetMapValidator<*&mojo::internal::GetArrayValidator<0, false, &mojo::internal::GetArrayValidator<0, false, nullptr>()>(), *&mojo::internal::GetArrayValidator<0, false, nullptr>()>();
-  if (!mojo::internal::ValidateContainer(object->nullable_struct_map, validation_context,
-                                         &nullable_struct_map_validate_params)) {
+  if (!mojo::internal::ValidateContainer(
+          object->nullable_struct_map, validation_context,
+          &nullable_struct_map_validate_params)) {
     return false;
   }
 
-  if (!mojo::internal::ValidatePointerNonNullable(
-          object->strings, 9, validation_context)) {
-    return false;
-  }
   constexpr const mojo::internal::ContainerValidateParams& strings_validate_params =
       mojo::internal::GetArrayValidator<0, false, &mojo::internal::GetArrayValidator<0, false, nullptr>()>();
-  if (!mojo::internal::ValidateContainer(object->strings, validation_context,
-                                         &strings_validate_params)) {
+  if (!mojo::internal::ValidateNonNullContainer(
+          object->strings, validation_context,
+          &strings_validate_params, 9)) {
     return false;
   }
 
   constexpr const mojo::internal::ContainerValidateParams& nullable_strings_validate_params =
       mojo::internal::GetArrayValidator<0, true, &mojo::internal::GetArrayValidator<0, false, nullptr>()>();
-  if (!mojo::internal::ValidateContainer(object->nullable_strings, validation_context,
-                                         &nullable_strings_validate_params)) {
+  if (!mojo::internal::ValidateContainer(
+          object->nullable_strings, validation_context,
+          &nullable_strings_validate_params)) {
     return false;
   }
 

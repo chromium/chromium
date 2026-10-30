@@ -79,21 +79,13 @@ bool WebUiPageHandlerFactory_CreatePageHandler_Params_Data::Validate(
   [[maybe_unused]] const WebUiPageHandlerFactory_CreatePageHandler_Params_Data* object =
       static_cast<const WebUiPageHandlerFactory_CreatePageHandler_Params_Data*>(data);
 
-  if (!mojo::internal::ValidateHandleOrInterfaceNonNullable(
-          object->page, 1, validation_context)) {
-    return false;
-  }
-  if (!mojo::internal::ValidateHandleOrInterface(object->page,
-                                                 validation_context)) {
+  if (!mojo::internal::ValidateNonNullHandleOrInterface(
+          object->page, validation_context, 1)) {
     return false;
   }
 
-  if (!mojo::internal::ValidateHandleOrInterfaceNonNullable(
-          object->handler, 2, validation_context)) {
-    return false;
-  }
-  if (!mojo::internal::ValidateHandleOrInterface(object->handler,
-                                                 validation_context)) {
+  if (!mojo::internal::ValidateNonNullHandleOrInterface(
+          object->handler, validation_context, 2)) {
     return false;
   }
 
