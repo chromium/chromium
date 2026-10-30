@@ -754,6 +754,7 @@ build_webui("build") {
     "site_settings/action_link.css",
     "site_settings/add_site_dialog.css",
     "site_settings/category_setting_exceptions.css",
+    "site_settings/chooser_exception_list_entry.css",
     "site_settings/clear_storage_dialog_shared.css",
     "site_settings/media_picker.css",
     "site_settings/search_highlight_style.css",

@@ -2,75 +2,74 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
 import 'chrome://settings/settings.js';
 import 'chrome://webui-test/cr_elements/cr_policy_strings.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {loadTimeData} from 'chrome://settings/settings.js';
 import type {ChooserException, ChooserExceptionListElement, RawChooserException, RawSiteException, SiteException} from 'chrome://settings/lazy_load.js';
-import {ChooserType, ContentSettingsTypes, SiteSettingSource, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ChooserType, ContentSettingsTypes, SiteSettingsBrowserProxyImpl, SiteSettingSource} from 'chrome://settings/lazy_load.js';
+import {loadTimeData} from 'chrome://settings/settings.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
 import type {SiteSettingsPref} from './test_util.js';
-import {createContentSettingTypeToValuePair,createRawChooserException,createRawSiteException,createSiteSettingsPrefs} from './test_util.js';
-// clang-format on
+import {createContentSettingTypeToValuePair, createRawChooserException, createRawSiteException, createSiteSettingsPrefs} from './test_util.js';
 
 /** @fileoverview Suite of tests for chooser-exception-list. */
 
 /**
- * An example pref that does not contain any entries.
+ * Creates an example pref that does not contain any entries.
  */
-let prefsEmpty: SiteSettingsPref;
-
-/**
- * An example pref with only user granted USB exception.
- */
-let prefsUserProvider: SiteSettingsPref;
-
-/**
- * An example pref with only policy granted USB exception.
- */
-let prefsPolicyProvider: SiteSettingsPref;
-
-/**
- * An example pref with 3 USB exception items. The first item will have a user
- * granted site exception and a policy granted site exception. The second item
- * will only have a policy granted site exception. The last item will only have
- * a user granted site exception.
- */
-let prefsUsb: SiteSettingsPref;
-
-/**
- * Creates all the test
- */
-function populateTestExceptions() {
-  prefsEmpty = createSiteSettingsPrefs(
+function createPrefsEmpty(): SiteSettingsPref {
+  return createSiteSettingsPrefs(
       [] /* defaultsList */, [] /* exceptionsList */,
       [] /* chooserExceptionsList */);
+}
 
-  prefsUserProvider = createSiteSettingsPrefs(
-      [] /* defaultsList */, [] /* exceptionsList */,
-      [createContentSettingTypeToValuePair(ContentSettingsTypes.USB_DEVICES, [
-        createRawChooserException(
-            ChooserType.USB_DEVICES,
-            [createRawSiteException('https://foo.com')]),
-      ])] /* chooserExceptionsList */);
+/**
+ * Creates an example pref with only user granted USB exception.
+ */
+function createPrefsUserProvider(): SiteSettingsPref {
+  return createSiteSettingsPrefs(
+      [] /* defaultsList */, [] /* exceptionsList */, [
+        createContentSettingTypeToValuePair(
+            ContentSettingsTypes.USB_DEVICES,
+            [
+              createRawChooserException(
+                  ChooserType.USB_DEVICES,
+                  [createRawSiteException('https://foo.com')]),
+            ]),
+      ] /* chooserExceptionsList */);
+}
 
-  prefsPolicyProvider = createSiteSettingsPrefs(
-      [] /* defaultsList */, [] /* exceptionsList */,
-      [createContentSettingTypeToValuePair(ContentSettingsTypes.USB_DEVICES, [
-        createRawChooserException(
-            ChooserType.USB_DEVICES,
-            [createRawSiteException(
-                'https://foo.com', {source: SiteSettingSource.POLICY})]),
-      ])] /* chooserExceptionsList */);
+/**
+ * Creates an example pref with only policy granted USB exception.
+ */
+function createPrefsPolicyProvider(): SiteSettingsPref {
+  return createSiteSettingsPrefs(
+      [] /* defaultsList */, [] /* exceptionsList */, [
+        createContentSettingTypeToValuePair(
+            ContentSettingsTypes.USB_DEVICES,
+            [
+              createRawChooserException(
+                  ChooserType.USB_DEVICES,
+                  [createRawSiteException(
+                      'https://foo.com', {source: SiteSettingSource.POLICY})]),
+            ]),
+      ] /* chooserExceptionsList */);
+}
 
-  prefsUsb =
-      createSiteSettingsPrefs([] /* defaultsList */, [] /* exceptionsList */, [
+/**
+ * Creates an example pref with 3 USB exception items. The first item will have
+ * a user granted site exception and a policy granted site exception. The second
+ * item will only have a policy granted site exception. The last item will only
+ * have a user granted site exception.
+ */
+function createPrefsUsb(): SiteSettingsPref {
+  return createSiteSettingsPrefs(
+      [] /* defaultsList */, [] /* exceptionsList */, [
         createContentSettingTypeToValuePair(
             ContentSettingsTypes.USB_DEVICES,
             [
@@ -111,8 +110,6 @@ suite('ChooserExceptionList', function() {
 
   // Initialize a chooser-exception-list before each test.
   setup(function() {
-    populateTestExceptions();
-
     browserProxy = new TestSiteSettingsBrowserProxy();
     SiteSettingsBrowserProxyImpl.setInstance(browserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -122,8 +119,6 @@ suite('ChooserExceptionList', function() {
 
   /**
    * Configures the test element for a particular category.
-   * @param chooserType The chooser type to set up the element for.
-   * @param prefs The prefs to use.
    */
   function setUpChooserType(
       contentType: ContentSettingsTypes, chooserType: ChooserType,
@@ -154,6 +149,7 @@ suite('ChooserExceptionList', function() {
   }
 
   test('getChooserExceptionList API used', async function() {
+    const prefsUsb = createPrefsUsb();
     setUpChooserType(
         ContentSettingsTypes.USB_DEVICES, ChooserType.USB_DEVICES, prefsUsb);
     assertEquals(ContentSettingsTypes.USB_DEVICES, testElement.category);
@@ -180,21 +176,21 @@ suite('ChooserExceptionList', function() {
     // The first chooser exception should render two site exceptions with
     // site-list-entry elements.
     const firstSiteListEntries =
-        chooserExceptionListEntries[0]!.shadowRoot!.querySelectorAll(
+        chooserExceptionListEntries[0]!.shadowRoot.querySelectorAll(
             'site-list-entry');
     assertEquals(2, firstSiteListEntries.length);
 
     // The second chooser exception should render one site exception with
     // a site-list-entry element.
     const secondSiteListEntries =
-        chooserExceptionListEntries[1]!.shadowRoot!.querySelectorAll(
+        chooserExceptionListEntries[1]!.shadowRoot.querySelectorAll(
             'site-list-entry');
     assertEquals(1, secondSiteListEntries.length);
 
     // The last chooser exception should render one site exception with a
     // site-list-entry element.
     const thirdSiteListEntries =
-        chooserExceptionListEntries[2]!.shadowRoot!.querySelectorAll(
+        chooserExceptionListEntries[2]!.shadowRoot.querySelectorAll(
             'site-list-entry');
     assertEquals(1, thirdSiteListEntries.length);
   });
@@ -204,7 +200,7 @@ suite('ChooserExceptionList', function() {
       async function() {
         setUpChooserType(
             ContentSettingsTypes.USB_DEVICES, ChooserType.USB_DEVICES,
-            prefsUserProvider);
+            createPrefsUserProvider());
         assertEquals(ContentSettingsTypes.USB_DEVICES, testElement.category);
         assertEquals(ChooserType.USB_DEVICES, testElement.chooserType);
         const chooserType =
@@ -218,7 +214,7 @@ suite('ChooserExceptionList', function() {
         assertTrue(!!chooserExceptionListEntry);
 
         const siteListEntry =
-            chooserExceptionListEntry.shadowRoot!.querySelector(
+            chooserExceptionListEntry.shadowRoot.querySelector(
                 'site-list-entry');
         assertTrue(!!siteListEntry);
 
@@ -235,7 +231,7 @@ suite('ChooserExceptionList', function() {
       async function() {
         setUpChooserType(
             ContentSettingsTypes.USB_DEVICES, ChooserType.USB_DEVICES,
-            prefsPolicyProvider);
+            createPrefsPolicyProvider());
         assertEquals(ContentSettingsTypes.USB_DEVICES, testElement.category);
         assertEquals(ChooserType.USB_DEVICES, testElement.chooserType);
         const chooserType =
@@ -249,7 +245,7 @@ suite('ChooserExceptionList', function() {
         assertTrue(!!chooserExceptionListEntry);
 
         const siteListEntry =
-            chooserExceptionListEntry.shadowRoot!.querySelector(
+            chooserExceptionListEntry.shadowRoot.querySelector(
                 'site-list-entry');
         assertTrue(!!siteListEntry);
 
@@ -266,7 +262,7 @@ suite('ChooserExceptionList', function() {
       async function() {
         setUpChooserType(
             ContentSettingsTypes.USB_DEVICES, ChooserType.USB_DEVICES,
-            prefsUsb);
+            createPrefsUsb());
         assertEquals(ContentSettingsTypes.USB_DEVICES, testElement.category);
         assertEquals(ChooserType.USB_DEVICES, testElement.chooserType);
         const chooserType =
@@ -283,7 +279,7 @@ suite('ChooserExceptionList', function() {
         // The first chooser exception contains mixed provider site
         // exceptions.
         const siteListEntries =
-            chooserExceptionListEntries[0]!.shadowRoot!.querySelectorAll(
+            chooserExceptionListEntries[0]!.shadowRoot.querySelectorAll(
                 'site-list-entry');
         assertEquals(2, siteListEntries.length);
 
@@ -304,20 +300,23 @@ suite('ChooserExceptionList', function() {
 
   test('Empty list', async function() {
     setUpChooserType(
-        ContentSettingsTypes.USB_DEVICES, ChooserType.USB_DEVICES, prefsEmpty);
+        ContentSettingsTypes.USB_DEVICES, ChooserType.USB_DEVICES,
+        createPrefsEmpty());
     assertEquals(ContentSettingsTypes.USB_DEVICES, testElement.category);
     assertEquals(ChooserType.USB_DEVICES, testElement.chooserType);
     const chooserType =
         await browserProxy.whenCalled('getChooserExceptionList');
     assertEquals(ChooserType.USB_DEVICES, chooserType);
     assertEquals(0, testElement.chooserExceptions.length);
-    const emptyListMessage = testElement.shadowRoot!.querySelector<HTMLElement>(
-        '#emptyListMessage')!;
-    assertFalse(emptyListMessage.hidden);
+    const emptyListMessage =
+        testElement.shadowRoot!.querySelector<HTMLElement>('#emptyListMessage');
+    assertTrue(!!emptyListMessage);
+    assertTrue(isVisible(emptyListMessage));
     assertEquals('No USB devices found', emptyListMessage.textContent.trim());
   });
 
   test('resetChooserExceptionForSite API used', async function() {
+    const prefsUserProvider = createPrefsUserProvider();
     setUpChooserType(
         ContentSettingsTypes.USB_DEVICES, ChooserType.USB_DEVICES,
         prefsUserProvider);
@@ -341,13 +340,14 @@ suite('ChooserExceptionList', function() {
     assertTrue(!!chooserExceptionListEntry);
 
     const siteListEntry =
-        chooserExceptionListEntry.shadowRoot!.querySelector('site-list-entry');
+        chooserExceptionListEntry.shadowRoot.querySelector('site-list-entry');
     assertTrue(!!siteListEntry);
+    assertTrue(!!siteListEntry.shadowRoot);
 
     assertFalse(isChildVisible(siteListEntry, '#actionMenuButton'));
 
     const resetButton =
-        siteListEntry.shadowRoot!.querySelector<HTMLElement>('#resetSite');
+        siteListEntry.shadowRoot.querySelector<HTMLElement>('#resetSite');
     assertTrue(!!resetButton);
     assertTrue(isVisible(resetButton));
 
@@ -362,6 +362,7 @@ suite('ChooserExceptionList', function() {
       'The show-tooltip event is fired when mouse hovers over policy ' +
           'indicator and the common tooltip is shown',
       async function() {
+        const prefsPolicyProvider = createPrefsPolicyProvider();
         setUpChooserType(
             ContentSettingsTypes.USB_DEVICES, ChooserType.USB_DEVICES,
             prefsPolicyProvider);
@@ -385,7 +386,7 @@ suite('ChooserExceptionList', function() {
         assertTrue(!!chooserExceptionListEntry);
 
         const siteListEntry =
-            chooserExceptionListEntry.shadowRoot!.querySelector(
+            chooserExceptionListEntry.shadowRoot.querySelector(
                 'site-list-entry');
         assertTrue(!!siteListEntry);
 
@@ -398,7 +399,6 @@ suite('ChooserExceptionList', function() {
          * |text| Tooltip text to display.
          * |el| Event target element.
          * |eventType| The event type to dispatch to |el|.
-         * @type {Array<{text: string, el: !Element, eventType: string}>}
          */
         const testsParams = [
           {text: 'a', el: testElement, eventType: 'mouseleave'},
@@ -423,6 +423,7 @@ suite('ChooserExceptionList', function() {
   test(
       'The exception list is updated when the prefs are modified',
       async function() {
+        const prefsUserProvider = createPrefsUserProvider();
         setUpChooserType(
             ContentSettingsTypes.USB_DEVICES, ChooserType.USB_DEVICES,
             prefsUserProvider);
@@ -441,6 +442,7 @@ suite('ChooserExceptionList', function() {
         browserProxy.resetResolver('getChooserExceptionList');
 
         // Simulate a change in preferences.
+        const prefsPolicyProvider = createPrefsPolicyProvider();
         setUpChooserType(
             ContentSettingsTypes.USB_DEVICES, ChooserType.USB_DEVICES,
             prefsPolicyProvider);
@@ -465,7 +467,7 @@ suite('ChooserExceptionList', function() {
       async function() {
         setUpChooserType(
             ContentSettingsTypes.USB_DEVICES, ChooserType.USB_DEVICES,
-            prefsPolicyProvider);
+            createPrefsPolicyProvider());
         assertEquals(ContentSettingsTypes.USB_DEVICES, testElement.category);
         assertEquals(ChooserType.USB_DEVICES, testElement.chooserType);
         let chooserType =
@@ -479,12 +481,13 @@ suite('ChooserExceptionList', function() {
         assertTrue(!!chooserExceptionListEntry);
 
         const siteListEntry =
-            chooserExceptionListEntry.shadowRoot!.querySelector(
+            chooserExceptionListEntry.shadowRoot.querySelector(
                 'site-list-entry');
         assertTrue(!!siteListEntry);
+        assertTrue(!!siteListEntry.shadowRoot);
         // Ensure that the incognito tooltip is hidden.
         const incognitoTooltip =
-            siteListEntry.shadowRoot!.querySelector('#incognitoTooltip');
+            siteListEntry.shadowRoot.querySelector('#incognitoTooltip');
         assertFalse(!!incognitoTooltip);
 
         // Simulate an incognito session being created.
@@ -492,8 +495,8 @@ suite('ChooserExceptionList', function() {
         browserProxy.setIncognito(true);
         chooserType = await browserProxy.whenCalled('getChooserExceptionList');
         assertEquals(ChooserType.USB_DEVICES, chooserType);
-        // Flush the container to ensure that the container is populated.
-        flush();
+        // Wait for the updated exception list to render.
+        await microtasksFinished();
 
         chooserExceptionListEntry = testElement.shadowRoot!.querySelector(
             'chooser-exception-list-entry');
@@ -502,7 +505,7 @@ suite('ChooserExceptionList', function() {
             item => item.incognito));
 
         const siteListEntries =
-            chooserExceptionListEntry.shadowRoot!.querySelectorAll(
+            chooserExceptionListEntry.shadowRoot.querySelectorAll(
                 'site-list-entry');
         assertEquals(2, siteListEntries.length);
         assertTrue(
@@ -516,8 +519,9 @@ suite('ChooserExceptionList', function() {
         Array.from(siteListEntries)
             .filter(entry => entry.model.incognito)
             .forEach(entry => {
+              assertTrue(!!entry.shadowRoot);
               const incognitoTooltip =
-                  entry.shadowRoot!.querySelector('#incognitoTooltip');
+                  entry.shadowRoot.querySelector('#incognitoTooltip');
               // Make sure it is not hidden if it is an incognito
               // exception
               assertTrue(!!incognitoTooltip);
@@ -529,6 +533,7 @@ suite('ChooserExceptionList', function() {
       });
 
   test('show confirmation dialog on reset settings', async function() {
+    const prefsUserProvider = createPrefsUserProvider();
     setUpChooserType(
         ContentSettingsTypes.USB_DEVICES, ChooserType.USB_DEVICES,
         prefsUserProvider);
@@ -552,14 +557,16 @@ suite('ChooserExceptionList', function() {
     assertTrue(!!chooserExceptionListEntry);
 
     const siteListEntry =
-        chooserExceptionListEntry.shadowRoot!.querySelector('site-list-entry');
+        chooserExceptionListEntry.shadowRoot.querySelector('site-list-entry');
     assertTrue(!!siteListEntry);
 
     // Check both cancelling and accepting the dialog closes it.
     assertFalse(testElement.$.confirmResetSettings.open);
     ['cancel-button', 'action-button'].forEach(buttonType => {
-      testElement.shadowRoot!
-          .querySelector<HTMLElement>('#resetSettingsButton')!.click();
+      const resetButton = testElement.shadowRoot!.querySelector<HTMLElement>(
+          '#resetSettingsButton');
+      assertTrue(!!resetButton);
+      resetButton.click();
       assertTrue(testElement.$.confirmResetSettings.open);
       const actionButtonList =
           testElement.shadowRoot!.querySelectorAll<HTMLElement>(

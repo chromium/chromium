@@ -1,20 +1,14 @@
-    <style include="cr-shared-style settings-shared">
-      site-list-entry {
-        display: block;
-      }
-    </style>
-
     <div class="cr-row first">
-      <h2 class="flex">[[exception.displayName]]</h2>
+      <h2 class="flex">${this.exception.displayName}</h2>
     </div>
 
     <div class="list-frame menu-content" id="listContainer"
         role="list" focusgroup="listbox block">
-      <template is="dom-repeat" items="[[exception.sites]]">
-        <site-list-entry model="[[item]]"
-            chooser-type="[[exception.chooserType]]"
-            chooser-object="[[exception.object]]"
+      ${this.exception.sites.map(item => html`
+        <site-list-entry .model="${item}"
+            .chooserType="${this.exception.chooserType}"
+            .chooserObject="${this.exception.object}"
             read-only-list>
         </site-list-entry>
-      </template>
+      `)}
     </div>
