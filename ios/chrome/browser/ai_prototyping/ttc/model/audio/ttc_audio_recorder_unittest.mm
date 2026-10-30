@@ -65,7 +65,7 @@ TEST_F(TTCAudioRecorderTest, TestAudioRecorderDefaults) {
   EXPECT_FALSE(recorder.recording);
 
   // Verifies that idempotent stops before starting do not crash or alter state.
-  [recorder removeTapFromInputNode:nil];
+  [recorder removeTap];
   [recorder reset];
 
   EXPECT_FALSE(recorder.isRecording);
@@ -79,7 +79,7 @@ TEST_F(TTCAudioRecorderTest, TestAudioRecorderStopCycles) {
   ASSERT_TRUE(recorder != nil);
 
   for (int i = 0; i < 5; ++i) {
-    [recorder removeTapFromInputNode:nil];
+    [recorder removeTap];
     [recorder reset];
   }
 

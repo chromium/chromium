@@ -216,6 +216,8 @@ ProcessedAudioBuffer ProcessInputBuffer(AVAudioFormat* target_format,
     _isRecording = YES;
     return YES;
   }
+  // Remove any prior tap and reset state if the existing tap cannot be reused.
+  [self removeTap];
 
   AVAudioFormat* micTapFormat = _micTapFormat;
   AVAudioConverter* inputConverter = nil;
@@ -275,13 +277,13 @@ ProcessedAudioBuffer ProcessInputBuffer(AVAudioFormat* target_format,
   return YES;
 }
 
-- (void)removeTapFromInputNode:(AVAudioInputNode*)inputNode {
+- (void)removeTap {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (!_isRecording && !_hasInstalledTap) {
     return;
   }
 
-  AVAudioInputNode* targetNode = inputNode ?: _tappedInputNode;
+  AVAudioInputNode* targetNode = _tappedInputNode;
   if (_hasInstalledTap && targetNode) {
     @try {
       [targetNode removeTapOnBus:kAudioInputBus];
@@ -299,9 +301,7 @@ ProcessedAudioBuffer ProcessInputBuffer(AVAudioFormat* target_format,
 
 - (void)reset {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (_hasInstalledTap && _tappedInputNode) {
-    [self removeTapFromInputNode:_tappedInputNode];
-  }
+  [self removeTap];
   _inputConverter = nil;
   _tappedInputNode = nil;
   _tappedInputFormat = nil;

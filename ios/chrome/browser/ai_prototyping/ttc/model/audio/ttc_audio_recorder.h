@@ -26,8 +26,8 @@
 - (BOOL)installTapOnInputNode:(AVAudioInputNode*)inputNode
                         error:(NSError**)error;
 
-// Safely removes the audio tap from `inputNode` and stops capture.
-- (void)removeTapFromInputNode:(AVAudioInputNode*)inputNode;
+// Safely removes any installed audio tap and stops capture.
+- (void)removeTap;
 
 // Resets any internal converters or cached buffers.
 - (void)reset;

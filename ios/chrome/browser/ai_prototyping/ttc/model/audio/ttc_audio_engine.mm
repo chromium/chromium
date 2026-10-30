@@ -410,18 +410,13 @@ bool IsAudioFormatValid(AVAudioFormat* format) {
               object:self.audioEngine];
 }
 
-// Removes the microphone tap from `self.audioEngine.inputNode` if installed.
+// Removes the microphone tap via `self.recorder` if installed.
 - (void)removeRecorderTapIfNeeded {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (self.isAudioEngineRunningForTesting) {
     return;
   }
-  AVAudioInputNode* inputNode = nil;
-  @try {
-    inputNode = self.audioEngine.inputNode;
-  } @catch (NSException* exception) {
-  }
-  [self.recorder removeTapFromInputNode:inputNode];
+  [self.recorder removeTap];
 }
 
 // Recreates `self.audioEngine` to recover from a transient CoreAudio graph or
@@ -520,7 +515,7 @@ bool IsAudioFormatValid(AVAudioFormat* format) {
     [self.audioEngine prepare];
     NSError* startError = nil;
     if (![self.audioEngine startAndReturnError:&startError]) {
-      [self.recorder removeTapFromInputNode:inputNode];
+      [self.recorder removeTap];
       if (error) {
         *error = startError;
       }
