@@ -28,23 +28,38 @@ namespace {
 // Returns JavaScript that runs `script` and evaluates to the result of the
 // entry point, or to undefined if `script` doesn't declare it:
 //
-//   (() => {
+//   (createCustomFormControlManager => (() => {
 //     <script>
 //     ;return typeof createCustomFormControlManager === 'function'
 //         ? createCustomFormControlManager() : undefined;
-//   })()
+//   })())(undefined)
 //
-// - The function keeps the script's top-level declarations local, so that
-//   they don't become globals of the isolated world, which would leak into
-//   scripts loaded later for the same document.
+// - The inner function keeps the script's top-level declarations local, so
+//   that they don't become globals of the isolated world, which would leak
+//   into scripts loaded later for the same document.
+// - The outer function's parameter shadows the entry point's name, so that if
+//   `script` doesn't declare it, the lookup doesn't fall through to the
+//   world's global object, which would find a function that an earlier script
+//   for the same document assigned to `window.createCustomFormControlManager`.
+// - The two functions are separate scopes, so that a script that declares the
+//   entry point with `let` or `const` doesn't fail with a SyntaxError for
+//   redeclaring the outer function's parameter.
 // - The newline before `;return` ends a trailing `//` comment, and the
 //   semicolon ends a last statement without one.
 std::string WrapScript(std::string_view script) {
   // Every script declares this function, which returns the script's manager.
   static constexpr char kEntryPoint[] = "createCustomFormControlManager";
-  return base::StrCat({"(() => {\n", script, "\n;return typeof ", kEntryPoint,
-                       " === 'function' ? ", kEntryPoint,
-                       "() : undefined;\n})()"});
+  return base::StrCat({"(", kEntryPoint, " => (() => {\n", script,
+                       "\n;return typeof ", kEntryPoint, " === 'function' ? ",
+                       kEntryPoint, "() : undefined;\n})())(undefined)"});
+}
+
+// Returns whether `value` can be a manager. `IsObject()` is also true for
+// functions, arrays and promises (e.g. the result of an `async` entry point),
+// so these are excluded explicitly.
+bool IsManager(v8::Local<v8::Value> value) {
+  return !value.IsEmpty() && value->IsObject() && !value->IsFunction() &&
+         !value->IsArray() && !value->IsPromise();
 }
 
 }  // namespace
@@ -95,8 +110,9 @@ bool CustomFormControlScriptExecutor::LoadScript(std::string_view script) {
     return false;
   }
   // The script threw (empty result), didn't declare the entry point
-  // (undefined), or the entry point didn't return an object.
-  if (manager.IsEmpty() || !manager->IsObject()) {
+  // (undefined), or the entry point returned something that can't be a
+  // manager.
+  if (!IsManager(manager)) {
     return false;
   }
   manager_.Reset(isolate, manager.As<v8::Object>());

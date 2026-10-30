@@ -75,6 +75,19 @@ TEST_F(CustomFormControlScriptExecutorTest, LoadsScriptsWithUnusualEndings) {
       "function createCustomFormControlManager() { return m }"));
 }
 
+// Tests that scripts can declare the entry point with `const` or `let`.
+TEST_F(CustomFormControlScriptExecutorTest,
+       LoadsEntryPointDeclaredWithLetOrConst) {
+  for (const char* script : {
+           "const createCustomFormControlManager = function() { return {}; };",
+           "let createCustomFormControlManager = () => ({});",
+       }) {
+    SCOPED_TRACE(script);
+    EXPECT_TRUE(executor_->LoadScript(script));
+    EXPECT_TRUE(executor_->has_manager());
+  }
+}
+
 // Tests that a failed load drops the manager of an earlier script.
 TEST_F(CustomFormControlScriptExecutorTest, FailedLoadDropsPreviousManager) {
   ASSERT_TRUE(executor_->LoadScript(kValidScript));
@@ -83,14 +96,19 @@ TEST_F(CustomFormControlScriptExecutorTest, FailedLoadDropsPreviousManager) {
 }
 
 // Tests that loading fails, and no manager is kept, if the script doesn't
-// declare the entry point, throws, or doesn't return an object.
+// declare the entry point as a function, throws, or the entry point's result
+// isn't an object or is a function, array or promise.
 TEST_F(CustomFormControlScriptExecutorTest, FailsWithoutValidManager) {
   for (const char* script : {
            "var x = 1;",
            "throw new Error('error');",
+           "const createCustomFormControlManager = {};",
            "function createCustomFormControlManager() { return 42; }",
            "function createCustomFormControlManager() { return null; }",
            "function createCustomFormControlManager() {}",
+           "function createCustomFormControlManager() { return []; }",
+           "function createCustomFormControlManager() { return () => {}; }",
+           "async function createCustomFormControlManager() { return {}; }",
            "function createCustomFormControlManager() { throw 1; }",
        }) {
     SCOPED_TRACE(script);
@@ -107,6 +125,28 @@ TEST_F(CustomFormControlScriptExecutorTest, ScriptDoesNotLeakIntoMainWorld) {
   )"));
   EXPECT_TRUE(IsUndefinedInMainWorld("createCustomFormControlManager"));
   EXPECT_TRUE(IsUndefinedInMainWorld("window.leaked"));
+}
+
+// Tests that a script that doesn't declare the entry point doesn't pick up a
+// global left by an earlier script.
+TEST_F(CustomFormControlScriptExecutorTest, IgnoresGlobalsOfEarlierScripts) {
+  // Leave a global with the entry point's name in the isolated world.
+  ASSERT_TRUE(executor_->LoadScript(R"(
+    window.createCustomFormControlManager = () => ({});
+    function createCustomFormControlManager() { return {}; }
+  )"));
+  // The global is still there for later scripts, so the next check isn't
+  // passing just because the global is gone.
+  ASSERT_TRUE(executor_->LoadScript(R"(
+    function createCustomFormControlManager() {
+      return typeof window.createCustomFormControlManager === 'function'
+          ? {} : null;
+    }
+  )"));
+  // A script without the entry point fails instead of calling the global, and
+  // the previous manager is dropped.
+  EXPECT_FALSE(executor_->LoadScript("var x = 1;"));
+  EXPECT_FALSE(executor_->has_manager());
 }
 
 // Tests that the manager is dropped when a new document is committed.
@@ -173,6 +213,30 @@ TEST_F(CustomFormControlScriptExecutorTest,
     function createCustomFormControlManager() { return {}; }
   )"));
   EXPECT_FALSE(child_executor);
+}
+
+// Tests that the manager of a subframe is dropped when the subframe is
+// detached, which doesn't commit a new document.
+TEST_F(CustomFormControlScriptExecutorTest, DropsManagerOnFrameDetach) {
+  LoadHTML("<iframe src='about:blank'></iframe>");
+  blink::WebLocalFrame* child = GetMainFrame()->FirstChild()->ToWebLocalFrame();
+  CustomFormControlScriptExecutor child_executor(
+      *content::RenderFrame::FromWebFrame(child), kWorldId);
+  ASSERT_TRUE(child_executor.LoadScript(kValidScript));
+
+  ExecuteJavaScriptForTests("document.querySelector('iframe').remove();");
+  EXPECT_FALSE(child_executor.has_manager());
+}
+
+// Tests that `document.open()` in a script, which keeps the document's script
+// contexts, doesn't prevent the script from loading.
+TEST_F(CustomFormControlScriptExecutorTest, LoadsScriptThatOpensDocument) {
+  EXPECT_TRUE(executor_->LoadScript(R"(
+    document.open();
+    document.close();
+    function createCustomFormControlManager() { return {}; }
+  )"));
+  EXPECT_TRUE(executor_->has_manager());
 }
 
 }  // namespace

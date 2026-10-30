@@ -48,8 +48,9 @@ class CustomFormControlScriptExecutor : public content::RenderFrameObserver {
   // Runs `script` and keeps the manager returned by its
   // `createCustomFormControlManager()`, replacing any previous one. Returns
   // false, and keeps no manager, if the script throws an exception, doesn't
-  // declare `createCustomFormControlManager()`, or the function doesn't return
-  // an object. Also returns false if running the script detaches the frame; the
+  // declare `createCustomFormControlManager()`, or the function's result isn't
+  // an object or is a function, array or promise (e.g. because the function is
+  // `async`). Also returns false if running the script detaches the frame; the
   // executor may then already be destroyed when this returns.
   bool LoadScript(std::string_view script);
 
