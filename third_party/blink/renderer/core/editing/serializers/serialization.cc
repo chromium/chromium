@@ -848,8 +848,8 @@ static bool StripSvgUseNonLocalHrefs(Node& node) {
     SVGURLReferenceResolver resolver(use->HrefString(), use->GetDocument());
     if (!resolver.IsLocal() || resolver.AbsoluteUrl().ProtocolIsData()) {
       node.remove();
+      return true;
     }
-    return true;
   }
   bool stripped = false;
   for (Node* child = node.firstChild(); child;) {
