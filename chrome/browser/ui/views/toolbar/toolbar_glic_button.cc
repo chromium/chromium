@@ -304,6 +304,10 @@ void ToolbarGlicButton::SetVisible(bool visible) {
   GlicButton<ToolbarButton>::SetVisible(visible);
 }
 
+bool ToolbarGlicButton::IsVisible() const {
+  return views::View::GetVisible();
+}
+
 void ToolbarGlicButton::SetGlicPanelIsOpen(bool open) {
   GlicButton<ToolbarButton>::SetGlicPanelIsOpen(open);
 }

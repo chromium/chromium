@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/glic/tab_strip_glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
+#include "chrome/browser/ui/views/toolbar/test_support/glic_button_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_glic_button.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
@@ -355,9 +356,8 @@ class ToolbarGlicButtonThemeTest : public InProcessBrowserTest {
   }
 
  protected:
-  glic::ToolbarGlicButton* glic_button() {
-    return views::AsViewClass<glic::ToolbarGlicButton>(
-        glic::GlicButtonInterface::FromBrowser(browser()));
+  GlicButtonTestAccessor glic_button() {
+    return GlicButtonTestAccessor(browser());
   }
 
  private:
@@ -376,22 +376,22 @@ IN_PROC_BROWSER_TEST_F(ToolbarGlicButtonThemeTest, CustomThemeFallback) {
   FakeThemeService* fake_theme_service = static_cast<FakeThemeService*>(
       ThemeServiceFactory::GetForProfile(browser()->GetProfile()));
   ASSERT_TRUE(fake_theme_service);
-  ASSERT_TRUE(glic_button());
+  ASSERT_TRUE(glic_button().GetControl());
 
   // 1. By default, the button should not use the fallback text color.
-  EXPECT_NE(glic_button()->GetTextColorForTesting(views::Button::STATE_NORMAL),
-            glic_button()->GetColorProvider()->GetColor(
+  EXPECT_NE(glic_button().GetTextColor(),
+            glic_button().GetColorProvider()->GetColor(
                 kColorAvatarButtonHighlightDefaultForeground));
 
   // 2. Enable the custom theme fallback in the fake theme service.
   fake_theme_service->set_using_extension_theme(true);
 
   // Trigger OnThemeChanged to update the button colors.
-  glic_button()->OnThemeChanged();
+  glic_button().OnThemeChanged();
 
   // 3. Verify that the button now uses the custom theme fallback color.
-  EXPECT_EQ(glic_button()->GetTextColorForTesting(views::Button::STATE_NORMAL),
-            glic_button()->GetColorProvider()->GetColor(
+  EXPECT_EQ(glic_button().GetTextColor(),
+            glic_button().GetColorProvider()->GetColor(
                 kColorAvatarButtonHighlightDefaultForeground));
 }
 
@@ -400,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarGlicButtonThemeTest,
   FakeThemeService* fake_theme_service = static_cast<FakeThemeService*>(
       ThemeServiceFactory::GetForProfile(browser()->GetProfile()));
   ASSERT_TRUE(fake_theme_service);
-  ASSERT_TRUE(glic_button());
+  ASSERT_TRUE(glic_button().GetControl());
 
   auto theme_supplier = base::MakeRefCounted<TestCustomThemeSupplier>();
   theme_supplier->SetColor(ThemeProperties::COLOR_FRAME_ACTIVE, SK_ColorBLACK);
@@ -409,17 +409,16 @@ IN_PROC_BROWSER_TEST_F(ToolbarGlicButtonThemeTest,
       SkColorSetRGB(0x20, 0x20, 0x20));
   fake_theme_service->set_using_extension_theme(true);
   fake_theme_service->SetCustomThemeSupplier(theme_supplier);
-  glic_button()->OnThemeChanged();
+  glic_button().OnThemeChanged();
 
-  const SkColor text_color =
-      glic_button()->GetTextColorForTesting(views::Button::STATE_NORMAL);
-  const SkColor expected_fg_color = glic_button()->GetColorProvider()->GetColor(
+  const SkColor text_color = glic_button().GetTextColor();
+  const SkColor expected_fg_color = glic_button().GetColorProvider()->GetColor(
       kColorAvatarButtonHighlightDefaultForeground);
   EXPECT_EQ(text_color, expected_fg_color);
 
   // The text color must be light and contrast adequately with the dark
   // background.
-  const SkColor bg_color = glic_button()->GetColorProvider()->GetColor(
+  const SkColor bg_color = glic_button().GetColorProvider()->GetColor(
       kColorAvatarButtonHighlightDefault);
   EXPECT_FALSE(color_utils::IsDark(text_color));
   EXPECT_GE(color_utils::GetContrastRatio(text_color, bg_color),

@@ -71,6 +71,7 @@ class ToolbarGlicButton : public GlicButton<ToolbarButton>,
    */
   void SetNudgeLabel(std::string label) override;
   void SetVisible(bool visible) override;
+  bool IsVisible() const override;
   void SetGlicPanelIsOpen(bool open) override;
   void UpdateStyle(bool should_match_toolbar) override;
 

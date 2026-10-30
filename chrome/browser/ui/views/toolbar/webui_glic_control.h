@@ -38,7 +38,6 @@ class WebUIGlicControl : public glic::ToolbarGlicButtonInterface,
   // Re-evaluates whether the custom (extension) theme fallback colors should be
   // used, mirroring `glic::ToolbarGlicButton::OnThemeChanged()`.
   void OnThemeChanged();
-  bool IsVisible() const { return should_show_ && is_pinned_; }
   bool IsContextMenuShowingForTesting() const;
 
   // glic::ToolbarGlicButtonInterface:
@@ -46,6 +45,7 @@ class WebUIGlicControl : public glic::ToolbarGlicButtonInterface,
   bool GetIsShowingNudge() const override;
   void SetNudgeLabel(std::string label) override;
   void SetVisible(bool visible) override;
+  bool IsVisible() const override;
   void SetGlicPanelIsOpen(bool open) override;
   void UpdateStyle(bool should_match_toolbar) override;
 

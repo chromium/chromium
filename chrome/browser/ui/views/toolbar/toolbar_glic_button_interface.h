@@ -17,6 +17,7 @@ class ToolbarGlicButtonInterface {
   virtual bool GetIsShowingNudge() const = 0;
   virtual void SetNudgeLabel(std::string label) = 0;
   virtual void SetVisible(bool visible) = 0;
+  virtual bool IsVisible() const = 0;
   virtual void SetGlicPanelIsOpen(bool open) = 0;
   virtual void UpdateStyle(bool should_match_toolbar) = 0;
 

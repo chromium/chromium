@@ -79,8 +79,6 @@ using policy::PolicyTest;
 
 namespace glic {
 
-class GlicButtonInterface;
-
 namespace {
 
 int ToInt(GlicActuationOnWebPolicyState state) {
@@ -199,9 +197,7 @@ class GlicPolicyTest : public PolicyTest {
   }
 
   bool IsGlicButtonVisible(BrowserWindowInterface* browser) {
-    views::LabelButton* button =
-        glic::GlicButtonInterface::FromBrowser(browser);
-    return button && button->GetVisible();
+    return glic::GlicButtonInterface::IsVisible(browser);
   }
 
   void SetGlicPolicy(

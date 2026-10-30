@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 class BrowserWindowInterface;
 
@@ -19,6 +20,10 @@ class WebContents;
 namespace glic {
 class ToolbarGlicButtonInterface;
 }  // namespace glic
+
+namespace ui {
+class ColorProvider;
+}  // namespace ui
 
 namespace views {
 class LabelButton;
@@ -70,8 +75,21 @@ class GlicButtonTestAccessor {
   void Click() const;
   void RightClick() const;
 
+  // Returns the `ColorProvider` associated with the Glic button or its hosting
+  // WebUI toolbar.
+  const ui::ColorProvider* GetColorProvider() const;
+
+  // Notifies the Glic button (or its hosting WebUI toolbar) of a theme change
+  // and waits for any resulting WebUI style updates to settle.
+  void OnThemeChanged() const;
+
+  // Returns the current text/foreground color of the Glic button in its normal
+  // state.
+  SkColor GetTextColor() const;
+
  private:
   views::LabelButton* GetViewsButton() const;
+  bool IsElementTrackedVisible() const;
   bool HasCollapsedState(bool collapsed) const;
   content::WebContents* GetWebContents() const;
 

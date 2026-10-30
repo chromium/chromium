@@ -60,7 +60,6 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/glic/glic_button_interface.h"  // nogncheck crbug.com/40147906
-#include "ui/views/controls/button/label_button.h"  // nogncheck crbug.com/40147906
 #endif
 
 namespace glic {
@@ -476,8 +475,7 @@ ContextualCueingHelper::AutoOpenGlicSidePanel(
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  views::LabelButton* glic_button = glic::GlicButtonInterface::FromBrowser(bwi);
-  if (!glic_button || !glic_button->GetVisible()) {
+  if (!glic::GlicButtonInterface::IsVisible(bwi)) {
     return RecordAutoOpenResult(
         GlicAutoOpenResult::kPreventedFromButtonNotVisible);
   }

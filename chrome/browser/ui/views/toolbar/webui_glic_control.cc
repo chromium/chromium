@@ -142,6 +142,10 @@ void WebUIGlicControl::SetVisible(bool visible) {
   delegate_->OnPreferredSizeChanged();
 }
 
+bool WebUIGlicControl::IsVisible() const {
+  return should_show_ && is_pinned_;
+}
+
 void WebUIGlicControl::SetGlicPanelIsOpen(bool open) {
   if (is_panel_open_ == open) {
     return;

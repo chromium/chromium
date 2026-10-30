@@ -206,6 +206,7 @@ class ToolbarView : public views::AccessiblePaneView,
   // Returns the native Views Glic button, or nullptr if the Glic button is not
   // created or is rendered by the WebUI toolbar (`features::kWebUIGlicButton`).
   views::LabelButton* GetGlicButton();
+  glic::ToolbarGlicButtonInterface* glic_button() { return glic_button_; }
 
   // TODO(crbug.com/513238408): Remove this once toolbar layout/overflow is
   // fixed.

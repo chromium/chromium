@@ -21,4 +21,15 @@ views::LabelButton* GlicButtonInterface::FromBrowser(
   return browser_view->GetGlicButton();
 }
 
+// static
+bool GlicButtonInterface::IsVisible(BrowserWindowInterface* browser) {
+  if (!browser) {
+    return false;
+  }
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  CHECK(browser_view);
+  return browser_view->IsGlicButtonVisible();
+}
+
 }  // namespace glic

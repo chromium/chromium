@@ -316,6 +316,7 @@ class BrowserView : public BrowserWindow,
   }
 
   views::LabelButton* GetGlicButton();
+  bool IsGlicButtonVisible();
 
   // Accessor for the BrowserView's TabSearchBubbleHost instance.
   TabSearchBubbleHost* GetTabSearchBubbleHost();

@@ -233,6 +233,7 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/reload_control.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_glic_button_interface.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
@@ -1361,6 +1362,20 @@ views::LabelButton* BrowserView::GetGlicButton() {
 
   return BrowserElementsViews::From(browser_.get())
       ->GetViewAs<views::LabelButton>(kGlicButtonElementId);
+}
+
+bool BrowserView::IsGlicButtonVisible() {
+  auto* controller = tabs::VerticalTabStripStateController::From(browser_);
+  if ((vertical_tab_strip_region_view_ && controller &&
+       controller->ShouldDisplayVerticalTabs()) ||
+      base::FeatureList::IsEnabled(features::kGlicHorizontalTabToolbarButton)) {
+    glic::ToolbarGlicButtonInterface* glic_button =
+        toolbar() ? toolbar()->glic_button() : nullptr;
+    return glic_button && glic_button->IsVisible();
+  }
+
+  views::LabelButton* glic_button = GetGlicButton();
+  return glic_button && glic_button->GetVisible();
 }
 
 TabSearchBubbleHost* BrowserView::GetTabSearchBubbleHost() {

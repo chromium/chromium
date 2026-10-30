@@ -19,6 +19,7 @@ namespace glic {
 class GlicButtonInterface {
  public:
   static views::LabelButton* FromBrowser(BrowserWindowInterface* browser);
+  static bool IsVisible(BrowserWindowInterface* browser);
 
   // Width factor of button, used in animations.
   virtual float GetWidthFactor() const = 0;
