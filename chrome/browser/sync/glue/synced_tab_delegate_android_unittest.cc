@@ -29,8 +29,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-namespace browser_sync {
-
 namespace {
 
 using testing::_;
@@ -158,5 +156,3 @@ TEST_F(SyncedTabDelegateAndroidTest,
 }
 
 }  // namespace
-
-}  // namespace browser_sync

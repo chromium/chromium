@@ -15,8 +15,6 @@ namespace sync_sessions {
 class SyncedTabDelegate;
 }  // namespace sync_sessions
 
-namespace browser_sync {
-
 class SyncedWindowDelegateAndroid : public sync_sessions::SyncedWindowDelegate {
  public:
   SyncedWindowDelegateAndroid(TabModel* tab_model, bool is_tabbed_activity);
@@ -43,7 +41,5 @@ class SyncedWindowDelegateAndroid : public sync_sessions::SyncedWindowDelegate {
   const raw_ptr<TabModel> tab_model_;
   const bool is_tabbed_activity_ = false;
 };
-
-}  // namespace browser_sync
 
 #endif  // CHROME_BROWSER_SYNC_GLUE_SYNCED_WINDOW_DELEGATE_ANDROID_H_

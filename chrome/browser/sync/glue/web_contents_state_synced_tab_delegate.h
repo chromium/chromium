@@ -12,8 +12,6 @@
 #include "chrome/browser/ui/sync/tab_contents_synced_tab_delegate.h"
 #include "components/sessions/core/session_id.h"
 
-namespace browser_sync {
-
 // An implementation of TabContentsSyncedTabDelegate, with overridden
 // functions specific to Android, as a tab can exist without a web contents
 // being present (placeholder tab). This is a temporary representation of a
@@ -57,7 +55,5 @@ class WebContentsStateSyncedTabDelegate : public TabContentsSyncedTabDelegate {
   std::unique_ptr<WebContentsStateByteBuffer> web_contents_buffer_;
   std::unique_ptr<content::WebContents> web_contents_;
 };
-
-}  // namespace browser_sync
 
 #endif  // CHROME_BROWSER_SYNC_GLUE_WEB_CONTENTS_STATE_SYNCED_TAB_DELEGATE_H_

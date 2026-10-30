@@ -20,10 +20,6 @@
 
 struct NavigateParams;
 
-namespace browser_sync {
-class SyncedWindowDelegateAndroid;
-}
-
 namespace content {
 class WebContents;
 }
@@ -41,6 +37,7 @@ class AndroidTabStripModelAdapter;
 }
 
 class Profile;
+class SyncedWindowDelegateAndroid;
 class TabAndroid;
 class TabModelObserver;
 
@@ -391,8 +388,7 @@ class TabModel : public TabListInterface {
   std::unique_ptr<AndroidLiveTabContext> live_tab_context_;
 
   // The SyncedWindowDelegate associated with this TabModel.
-  std::unique_ptr<browser_sync::SyncedWindowDelegateAndroid>
-      synced_window_delegate_;
+  std::unique_ptr<SyncedWindowDelegateAndroid> synced_window_delegate_;
 
   raw_ptr<Profile, DanglingUntriaged> profile_;
 

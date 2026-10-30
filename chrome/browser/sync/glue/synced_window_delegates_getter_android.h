@@ -11,8 +11,6 @@ namespace sync_sessions {
 class SyncedWindowDelegate;
 }
 
-namespace browser_sync {
-
 // This class defines how to access SyncedWindowDelegates on Android.
 class SyncedWindowDelegatesGetterAndroid
     : public sync_sessions::SyncedWindowDelegatesGetter {
@@ -30,7 +28,5 @@ class SyncedWindowDelegatesGetterAndroid
   SyncedWindowDelegateMap GetSyncedWindowDelegates() override;
   const sync_sessions::SyncedWindowDelegate* FindById(SessionID id) override;
 };
-
-}  // namespace browser_sync
 
 #endif  // CHROME_BROWSER_SYNC_GLUE_SYNCED_WINDOW_DELEGATES_GETTER_ANDROID_H_

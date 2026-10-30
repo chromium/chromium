@@ -14,8 +14,6 @@
 
 using sync_sessions::SyncedTabDelegate;
 
-namespace browser_sync {
-
 // SyncedWindowDelegateAndroid implementations
 
 SyncedWindowDelegateAndroid::SyncedWindowDelegateAndroid(
@@ -78,5 +76,3 @@ bool SyncedWindowDelegateAndroid::ShouldSync() const {
   }
   return true;
 }
-
-}  // namespace browser_sync

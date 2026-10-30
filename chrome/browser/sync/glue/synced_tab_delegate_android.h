@@ -20,7 +20,6 @@ namespace tasks {
 class TaskTabHelper;
 }
 
-namespace browser_sync {
 // On Android a tab can exist even without web contents.
 
 // SyncedTabDelegateAndroid specializes TabContentsSyncedTabDelegate with
@@ -57,6 +56,5 @@ class SyncedTabDelegateAndroid : public TabContentsSyncedTabDelegate {
  private:
   const raw_ptr<TabAndroidDataProvider> tab_android_data_provider_;
 };
-}  // namespace browser_sync
 
 #endif  // CHROME_BROWSER_SYNC_GLUE_SYNCED_TAB_DELEGATE_ANDROID_H_

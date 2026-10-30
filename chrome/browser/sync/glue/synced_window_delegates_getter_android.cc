@@ -11,8 +11,6 @@
 
 using sync_sessions::SyncedWindowDelegate;
 
-namespace browser_sync {
-
 SyncedWindowDelegatesGetterAndroid::SyncedWindowDelegatesGetterAndroid() =
     default;
 SyncedWindowDelegatesGetterAndroid::~SyncedWindowDelegatesGetterAndroid() =
@@ -35,5 +33,3 @@ const SyncedWindowDelegate* SyncedWindowDelegatesGetterAndroid::FindById(
   // In case we don't find the browser (e.g. for Developer Tools).
   return tab_model ? tab_model->GetSyncedWindowDelegate() : nullptr;
 }
-
-}  // namespace browser_sync

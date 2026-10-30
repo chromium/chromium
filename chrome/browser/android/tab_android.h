@@ -32,6 +32,7 @@
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 class GURL;
+class SyncedTabDelegateAndroid;
 class TabAndroidDataProvider;
 class TabModelJniBridge;
 class Profile;
@@ -43,10 +44,6 @@ class Layer;
 namespace android {
 class TabWebContentsDelegateAndroid;
 }  // namespace android
-
-namespace browser_sync {
-class SyncedTabDelegateAndroid;
-}  // namespace browser_sync
 
 namespace content {
 class DevToolsAgentHost;
@@ -350,7 +347,7 @@ class TabAndroid : public tabs::TabInterface,
   std::unique_ptr<android::TabWebContentsDelegateAndroid>
       web_contents_delegate_;
   scoped_refptr<content::DevToolsAgentHost> devtools_host_;
-  std::unique_ptr<browser_sync::SyncedTabDelegateAndroid> synced_tab_delegate_;
+  std::unique_ptr<SyncedTabDelegateAndroid> synced_tab_delegate_;
 
   // The unowned user data host that can be used by `tab_features_` and other
   // tab-scoped objects. Must be declared before `tab_features_`,

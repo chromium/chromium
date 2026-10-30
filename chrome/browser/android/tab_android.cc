@@ -302,8 +302,7 @@ bool TabAndroid::IsOffscreenRendering() const {
 
 sync_sessions::SyncedTabDelegate* TabAndroid::GetSyncedTabDelegate() {
   if (!synced_tab_delegate_) {
-    synced_tab_delegate_ =
-        std::make_unique<browser_sync::SyncedTabDelegateAndroid>(this);
+    synced_tab_delegate_ = std::make_unique<SyncedTabDelegateAndroid>(this);
     if (web_contents_) {
       synced_tab_delegate_->SetWebContents(
           web_contents_.get(),

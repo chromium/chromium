@@ -52,7 +52,7 @@ class SyncSessionsClientImpl final : public sync_sessions::SyncSessionsClient {
 #if BUILDFLAG(IS_ANDROID)
         // Android doesn't have multi-profile support, so no need to pass the
         // profile in.
-        std::make_unique<browser_sync::SyncedWindowDelegatesGetterAndroid>();
+        std::make_unique<SyncedWindowDelegatesGetterAndroid>();
 #else   // BUILDFLAG(IS_ANDROID)
         std::make_unique<browser_sync::BrowserSyncedWindowDelegatesGetter>(
             profile);

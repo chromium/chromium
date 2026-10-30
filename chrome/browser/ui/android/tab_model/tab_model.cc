@@ -41,7 +41,7 @@ TabModel::TabModel(Profile* profile,
                        custom_tab_profile_type,
                    TabModelType tab_model_type)
     : live_tab_context_(new AndroidLiveTabContext(this)),
-      synced_window_delegate_(new browser_sync::SyncedWindowDelegateAndroid(
+      synced_window_delegate_(new SyncedWindowDelegateAndroid(
           this,
           activity_type == ActivityType::kTabbed)),
       profile_(profile),
