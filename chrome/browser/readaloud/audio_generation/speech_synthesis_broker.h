@@ -34,6 +34,29 @@ class SpeechSynthesisBroker {
   static inline const base::i18n::LanguageTag kDefaultLanguageTag =
       base::i18n::GetKnownLanguageTag("en");
 
+  // Abort reasons for speech synthesis pre-flight checks.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(SpeechSynthesisAbortReason)
+  enum class AbortReason {
+    kNullOptimizationGuideService = 0,
+    kEmptyTextChunk = 1,
+    kMaxValue = kEmptyTextChunk,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/readaloud/enums.xml:ReadAloudSynthesisModelExecutionAbortReason)
+
+  // Server results for speech synthesis remote execution.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(SpeechSynthesisServerResult)
+  enum class ServerResult {
+    kSuccess = 0,
+    kModelExecutionError = 1,
+    kEmptyResponse = 2,
+    kMaxValue = kEmptyResponse,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/readaloud/enums.xml:ReadAloudSynthesisModelExecutionServerResult)
+
   // Callback invoked when speech synthesis completes.
   // Receives raw response payload bytes (mojo_base::BigBuffer) and success
   // status.

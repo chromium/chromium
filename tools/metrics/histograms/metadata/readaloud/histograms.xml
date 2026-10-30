@@ -365,6 +365,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ReadAloud.StandardPlayback.Outcome"
+    enum="ReadAloudStandardPlaybackOutcome" expires_after="2027-10-26">
+  <owner>ericchao@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
+  <summary>
+    Records the outcome of the initial standard playback startup phase, spanning
+    from user Play trigger until the first audio chunk starts rendering (or
+    startup fails/aborts). Not recorded for subsequent unpausing or mid-article
+    chunking.
+  </summary>
+</histogram>
+
 <histogram name="ReadAloud.StandardPlayback.PlaybackPositionOnManualClose"
     enum="PlaybackLocation" expires_after="2027-04-18">
   <owner>andresmolina@google.com</owner>
@@ -376,6 +388,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ReadAloud.StandardPlayback.TimeToFirstAudio" units="ms"
+    expires_after="2027-10-26">
+  <owner>ericchao@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
+  <summary>
+    Measures perceived cold-start latency from user Play trigger to the start of
+    first audio output. Recorded only on initial playback success.
+
+    Note: This is an acceptable proxy for TTFA. It measures the time until the
+    browser receives the 'playing' signal from the utility process. It
+    underestimates the physical latency by the audio hardware buffer duration
+    (~20-100ms) but includes IPC delay. Given distillation/synthesis is the
+    bottleneck, this is close enough for our purpose.
+  </summary>
+</histogram>
+
 <histogram name="ReadAloud.StandardPlayback.TimeToMidLoadingManualClose"
     units="ms" expires_after="2027-04-18">
   <owner>andresmolina@google.com</owner>
@@ -384,6 +412,46 @@ chromium-metrics-reviews@google.com.
     Android only. Recorded when the user closes the player while the playback is
     still loading. Records how long it takes for users to hit X while the
     playback is still loading. Recorded only for standard playbacks.
+  </summary>
+</histogram>
+
+<histogram name="ReadAloud.Synthesis.ModelExecution.AbortReason"
+    enum="ReadAloudSynthesisModelExecutionAbortReason"
+    expires_after="2027-10-26">
+  <owner>ericchao@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
+  <summary>
+    Recorded when a speech synthesis request is aborted before dispatching to
+    the Optimization Guide model execution service due to missing prerequisites
+    (null OptimizationGuideKeyedService or empty text chunk).
+  </summary>
+</histogram>
+
+<histogram name="ReadAloud.Synthesis.ModelExecution.Error"
+    enum="OptimizationGuideModelExecutionError" expires_after="2027-10-26">
+  <owner>ericchao@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
+  <summary>
+    Records the OptimizationGuideModelExecutionError returned by the
+    Optimization Guide model execution service when executing the
+    ReadAloudSynthesize capability fails. Emitted when a value of &quot;Model
+    execution error&quot; is emitted to
+    ReadAloud.Synthesis.ModelExecution.ServerResult.
+  </summary>
+</histogram>
+
+<histogram name="ReadAloud.Synthesis.ModelExecution.ServerResult"
+    enum="ReadAloudSynthesisModelExecutionServerResult"
+    expires_after="2027-10-26">
+  <owner>ericchao@google.com</owner>
+  <owner>chrome-readaloud-team@google.com</owner>
+  <summary>
+    Records the server result of a speech synthesis request when
+    SpeechSynthesisBroker receives a response from the Optimization Guide model
+    execution service (success, model execution error, or empty response).
+    Recorded per synthesis text chunk to track backend/model RPC reliability,
+    root-cause failure attribution, and server request volume independently of
+    client session lifecycle.
   </summary>
 </histogram>
 

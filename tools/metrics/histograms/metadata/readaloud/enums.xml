@@ -92,10 +92,16 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Default search engine is not Google"/>
 </enum>
 
+<!-- LINT.IfChange(ReadAloudOverviewModelExecutionAbortReason) -->
+
 <enum name="ReadAloudOverviewModelExecutionAbortReason">
   <int value="0" label="Null OptimizationGuideKeyedService"/>
   <int value="1" label="Empty page content"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/readaloud/audio_generation/overview_generation_broker.h:OverviewModelExecutionAbortReason) -->
+
+<!-- LINT.IfChange(ReadAloudOverviewModelExecutionServerResult) -->
 
 <enum name="ReadAloudOverviewModelExecutionServerResult">
   <int value="0" label="Success"/>
@@ -103,11 +109,17 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Empty response"/>
 </enum>
 
+<!-- LINT.ThenChange(//chrome/browser/readaloud/audio_generation/overview_generation_broker.h:OverviewModelExecutionServerResult) -->
+
+<!-- LINT.IfChange(ReadAloudOverviewOutcome) -->
+
 <enum name="ReadAloudOverviewOutcome">
   <int value="0" label="Success"/>
   <int value="1" label="Overview generation failed"/>
   <int value="2" label="Overview content parsing failed"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/readaloud/read_aloud_service.h:OverviewOutcome) -->
 
 <enum name="ReadAloudSpeed">
   <int value="0" label="0.5x"/>
@@ -119,6 +131,38 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="3.0x"/>
   <int value="7" label="4.0x"/>
 </enum>
+
+<!-- LINT.IfChange(ReadAloudStandardPlaybackOutcome) -->
+
+<enum name="ReadAloudStandardPlaybackOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Distillation failed"/>
+  <int value="2" label="Empty content"/>
+  <int value="3" label="Initial synthesis failed"/>
+  <int value="4" label="Play on ready timeout"/>
+  <int value="5" label="Utility disconnected"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/readaloud/read_aloud_service.h:StandardPlaybackOutcome) -->
+
+<!-- LINT.IfChange(ReadAloudSynthesisModelExecutionAbortReason) -->
+
+<enum name="ReadAloudSynthesisModelExecutionAbortReason">
+  <int value="0" label="Null OptimizationGuideKeyedService"/>
+  <int value="1" label="Empty text chunk"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/readaloud/audio_generation/speech_synthesis_broker.h:SpeechSynthesisAbortReason) -->
+
+<!-- LINT.IfChange(ReadAloudSynthesisModelExecutionServerResult) -->
+
+<enum name="ReadAloudSynthesisModelExecutionServerResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Model execution error"/>
+  <int value="2" label="Empty response"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/readaloud/audio_generation/speech_synthesis_broker.h:SpeechSynthesisServerResult) -->
 
 <enum name="RejectionReason">
   <int value="0" label="UNKNOWN_REJECTION_REASON"/>

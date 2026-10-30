@@ -59,6 +59,13 @@ namespace {
 
 constexpr char kTestVoiceId[] = "msf00006";
 constexpr std::u16string_view kTestPreviewText = u"Voice preview sample text.";
+constexpr char kOverviewOutcomeHistogram[] = "ReadAloud.Overview.Outcome";
+constexpr char kOverviewTotalDurationHistogram[] =
+    "ReadAloud.Overview.TotalDuration";
+constexpr char kStandardPlaybackOutcomeHistogram[] =
+    "ReadAloud.StandardPlayback.Outcome";
+constexpr char kStandardPlaybackTimeToFirstAudioHistogram[] =
+    "ReadAloud.StandardPlayback.TimeToFirstAudio";
 
 class TestDistillerPage : public dom_distiller::test::MockDistillerPage {
  public:
@@ -1902,9 +1909,9 @@ TEST_F(ReadAloudServiceTest,
   DeliverDistilledArticle(view_delegate);
   EXPECT_EQ(fake_controller()->play_count(), 1);
 
-  histograms.ExpectUniqueSample("ReadAloud.Overview.Outcome",
+  histograms.ExpectUniqueSample(kOverviewOutcomeHistogram,
                                 ReadAloudService::OverviewOutcome::kSuccess, 1);
-  histograms.ExpectTotalCount("ReadAloud.Overview.TotalDuration", 1);
+  histograms.ExpectTotalCount(kOverviewTotalDurationHistogram, 1);
 
   // Once overview_script_loaded_ is true, pausing and calling Play() again
   // must immediately forward Play() to the utility process.
@@ -2199,9 +2206,9 @@ TEST_F(ReadAloudServiceTest, OverviewModeUtilityParsingFailureTriggersError) {
   DeliverDistilledArticle(view_delegate);
 
   histograms.ExpectUniqueSample(
-      "ReadAloud.Overview.Outcome",
+      kOverviewOutcomeHistogram,
       ReadAloudService::OverviewOutcome::kContentParsingFailed, 1);
-  histograms.ExpectTotalCount("ReadAloud.Overview.TotalDuration", 0);
+  histograms.ExpectTotalCount(kOverviewTotalDurationHistogram, 0);
 }
 
 TEST_F(ReadAloudServiceTest, OverviewModeGenerationFailureTriggersError) {
@@ -2247,9 +2254,154 @@ TEST_F(ReadAloudServiceTest, OverviewModeGenerationFailureTriggersError) {
   view_delegate->OnArticleReady(&proto);
 
   histograms.ExpectUniqueSample(
-      "ReadAloud.Overview.Outcome",
+      kOverviewOutcomeHistogram,
       ReadAloudService::OverviewOutcome::kGenerationFailed, 1);
-  histograms.ExpectTotalCount("ReadAloud.Overview.TotalDuration", 0);
+  histograms.ExpectTotalCount(kOverviewTotalDurationHistogram, 0);
+}
+
+TEST_F(ReadAloudServiceTest, StandardPlaybackSuccessLogsMetrics) {
+  base::HistogramTester histograms;
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  dom_distiller::ViewRequestDelegate* view_delegate = nullptr;
+  ExpectDistillation(GURL("https://www.example.com/article"), &view_delegate);
+
+  service()->Play(web_contents());
+  ASSERT_NE(view_delegate, nullptr);
+
+  dom_distiller::DistilledArticleProto proto;
+  proto.add_pages()->set_text_content("Test article content");
+  view_delegate->OnArticleReady(&proto);
+
+  service()->OnPlaybackStateChanged(read_aloud::mojom::PlaybackState::kPlaying);
+
+  histograms.ExpectUniqueSample(
+      kStandardPlaybackOutcomeHistogram,
+      ReadAloudService::StandardPlaybackOutcome::kSuccess, 1);
+  histograms.ExpectTotalCount(kStandardPlaybackTimeToFirstAudioHistogram, 1);
+}
+
+TEST_F(ReadAloudServiceTest, StandardPlaybackDistillationFailureLogsMetrics) {
+  base::HistogramTester histograms;
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  dom_distiller::ViewRequestDelegate* view_delegate = nullptr;
+  ExpectDistillation(GURL("https://www.example.com/article"), &view_delegate);
+
+  service()->Play(web_contents());
+  ASSERT_NE(view_delegate, nullptr);
+
+  view_delegate->OnArticleReady(nullptr);
+
+  histograms.ExpectUniqueSample(
+      kStandardPlaybackOutcomeHistogram,
+      ReadAloudService::StandardPlaybackOutcome::kDistillationFailed, 1);
+  histograms.ExpectTotalCount(kStandardPlaybackTimeToFirstAudioHistogram, 0);
+}
+
+TEST_F(ReadAloudServiceTest, StandardPlaybackEmptyContentLogsMetrics) {
+  base::HistogramTester histograms;
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  dom_distiller::ViewRequestDelegate* view_delegate = nullptr;
+  ExpectDistillation(GURL("https://www.example.com/article"), &view_delegate);
+
+  service()->Play(web_contents());
+  ASSERT_NE(view_delegate, nullptr);
+
+  dom_distiller::DistilledArticleProto proto;
+  proto.add_pages()->set_text_content("");
+  view_delegate->OnArticleReady(&proto);
+
+  histograms.ExpectUniqueSample(
+      kStandardPlaybackOutcomeHistogram,
+      ReadAloudService::StandardPlaybackOutcome::kEmptyContent, 1);
+  histograms.ExpectTotalCount(kStandardPlaybackTimeToFirstAudioHistogram, 0);
+}
+
+TEST_F(ReadAloudServiceTest,
+       StandardPlaybackInitialSynthesisFailureLogsMetrics) {
+  base::HistogramTester histograms;
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  ExpectDistillation(GURL("https://www.example.com/article"));
+
+  service()->Play(web_contents());
+
+  service()->OnPlaybackStateChanged(read_aloud::mojom::PlaybackState::kError);
+
+  histograms.ExpectUniqueSample(
+      kStandardPlaybackOutcomeHistogram,
+      ReadAloudService::StandardPlaybackOutcome::kInitialSynthesisFailed, 1);
+  histograms.ExpectTotalCount(kStandardPlaybackTimeToFirstAudioHistogram, 0);
+}
+
+TEST_F(ReadAloudServiceTest, StandardPlaybackPlayOnReadyTimeoutLogsMetrics) {
+  base::HistogramTester histograms;
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  ExpectDistillation(GURL("https://www.example.com/article"));
+
+  service()->Play(web_contents());
+
+  service()->OnPlaybackStateChanged(read_aloud::mojom::PlaybackState::kPaused);
+
+  histograms.ExpectUniqueSample(
+      kStandardPlaybackOutcomeHistogram,
+      ReadAloudService::StandardPlaybackOutcome::kPlayOnReadyTimeout, 1);
+  histograms.ExpectTotalCount(kStandardPlaybackTimeToFirstAudioHistogram, 0);
+}
+
+TEST_F(ReadAloudServiceTest, StandardPlaybackUtilityDisconnectLogsMetrics) {
+  base::HistogramTester histograms;
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  SetFakeController(std::make_unique<FakePlaybackController>());
+  ExpectDistillation(GURL("https://www.example.com/article"));
+
+  service()->Play(web_contents());
+
+  fake_controller()->Reset();
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histograms.GetBucketCount(kStandardPlaybackOutcomeHistogram,
+                                     ReadAloudService::StandardPlaybackOutcome::
+                                         kUtilityDisconnected) == 1;
+  }));
+
+  histograms.ExpectUniqueSample(
+      kStandardPlaybackOutcomeHistogram,
+      ReadAloudService::StandardPlaybackOutcome::kUtilityDisconnected, 1);
+  histograms.ExpectTotalCount(kStandardPlaybackTimeToFirstAudioHistogram, 0);
+}
+
+TEST_F(ReadAloudServiceTest, StandardPlaybackPauseResumeDoesNotReArmMetrics) {
+  base::HistogramTester histograms;
+  NavigateAndCommit(GURL("https://www.example.com/article"));
+  dom_distiller::ViewRequestDelegate* view_delegate = nullptr;
+  ExpectDistillation(GURL("https://www.example.com/article"), &view_delegate);
+
+  service()->Play(web_contents());
+  ASSERT_NE(view_delegate, nullptr);
+
+  dom_distiller::DistilledArticleProto proto;
+  proto.add_pages()->set_text_content("Test article content");
+  view_delegate->OnArticleReady(&proto);
+
+  // Initial playback start.
+  service()->OnPlaybackStateChanged(read_aloud::mojom::PlaybackState::kPlaying);
+  histograms.ExpectUniqueSample(
+      kStandardPlaybackOutcomeHistogram,
+      ReadAloudService::StandardPlaybackOutcome::kSuccess, 1);
+  histograms.ExpectTotalCount(kStandardPlaybackTimeToFirstAudioHistogram, 1);
+
+  // User pauses playback.
+  service()->Pause();
+  service()->OnPlaybackStateChanged(read_aloud::mojom::PlaybackState::kPaused);
+
+  // User unpauses (Play is called again).
+  service()->Play(web_contents());
+  service()->OnPlaybackStateChanged(read_aloud::mojom::PlaybackState::kPlaying);
+
+  // Metric counts must NOT have increased; resume should not log as a new
+  // setup.
+  histograms.ExpectUniqueSample(
+      kStandardPlaybackOutcomeHistogram,
+      ReadAloudService::StandardPlaybackOutcome::kSuccess, 1);
+  histograms.ExpectTotalCount(kStandardPlaybackTimeToFirstAudioHistogram, 1);
 }
 
 TEST_F(ReadAloudServiceTest, OverviewModeSendsPlayBeforeOverviewContent) {

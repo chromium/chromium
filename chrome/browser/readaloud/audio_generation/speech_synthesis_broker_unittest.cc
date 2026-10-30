@@ -8,6 +8,7 @@
 
 #include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
@@ -17,6 +18,17 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace readaloud {
+
+namespace {
+
+constexpr char kAbortReasonHistogram[] =
+    "ReadAloud.Synthesis.ModelExecution.AbortReason";
+constexpr char kServerResultHistogram[] =
+    "ReadAloud.Synthesis.ModelExecution.ServerResult";
+constexpr char kModelExecutionErrorHistogram[] =
+    "ReadAloud.Synthesis.ModelExecution.Error";
+
+}  // namespace
 
 class SpeechSynthesisBrokerTest : public ::testing::Test {
  protected:
@@ -91,6 +103,7 @@ TEST_F(SpeechSynthesisBrokerTest, SetLanguageCodeInvalidTagFallback) {
 }
 
 TEST_F(SpeechSynthesisBrokerTest, SynthesizeSpeechNullOptGuideService) {
+  base::HistogramTester histograms;
   bool callback_called = false;
   broker_.SynthesizeSpeech(
       /*opt_guide_service=*/nullptr, u"Hello world",
@@ -101,10 +114,14 @@ TEST_F(SpeechSynthesisBrokerTest, SynthesizeSpeechNullOptGuideService) {
             EXPECT_EQ(response_bytes.size(), 0u);
           }));
   EXPECT_TRUE(callback_called);
+  histograms.ExpectUniqueSample(
+      kAbortReasonHistogram,
+      SpeechSynthesisBroker::AbortReason::kNullOptimizationGuideService, 1);
 }
 
 TEST_F(SpeechSynthesisBrokerTest, SynthesizeSpeechEmptyTextChunk) {
   testing::NiceMock<MockOptimizationGuideKeyedService> mock_opt_guide;
+  base::HistogramTester histograms;
   bool callback_called = false;
   broker_.SynthesizeSpeech(
       &mock_opt_guide, u"",
@@ -115,10 +132,14 @@ TEST_F(SpeechSynthesisBrokerTest, SynthesizeSpeechEmptyTextChunk) {
             EXPECT_EQ(response_bytes.size(), 0u);
           }));
   EXPECT_TRUE(callback_called);
+  histograms.ExpectUniqueSample(
+      kAbortReasonHistogram,
+      SpeechSynthesisBroker::AbortReason::kEmptyTextChunk, 1);
 }
 
 TEST_F(SpeechSynthesisBrokerTest, SynthesizeSpeechModelExecutionSuccess) {
   testing::NiceMock<MockOptimizationGuideKeyedService> mock_opt_guide;
+  base::HistogramTester histograms;
 
   std::string fake_response_payload = "fake_serialized_proto_bytes_12345";
   optimization_guide::proto::Any any;
@@ -152,10 +173,14 @@ TEST_F(SpeechSynthesisBrokerTest, SynthesizeSpeechModelExecutionSuccess) {
                       "fake_serialized_proto_bytes_12345");
           }));
   EXPECT_TRUE(callback_called);
+  histograms.ExpectUniqueSample(
+      kServerResultHistogram, SpeechSynthesisBroker::ServerResult::kSuccess, 1);
+  histograms.ExpectTotalCount(kModelExecutionErrorHistogram, 0);
 }
 
 TEST_F(SpeechSynthesisBrokerTest, SynthesizeSpeechModelExecutionFailure) {
   testing::NiceMock<MockOptimizationGuideKeyedService> mock_opt_guide;
+  base::HistogramTester histograms;
 
   EXPECT_CALL(
       mock_opt_guide,
@@ -189,6 +214,102 @@ TEST_F(SpeechSynthesisBrokerTest, SynthesizeSpeechModelExecutionFailure) {
             EXPECT_EQ(response_bytes.size(), 0u);
           }));
   EXPECT_TRUE(callback_called);
+  histograms.ExpectUniqueSample(
+      kServerResultHistogram,
+      SpeechSynthesisBroker::ServerResult::kModelExecutionError, 1);
+  histograms.ExpectUniqueSample(
+      kModelExecutionErrorHistogram,
+      optimization_guide::OptimizationGuideModelExecutionError::
+          ModelExecutionError::kGenericFailure,
+      1);
+}
+
+TEST_F(SpeechSynthesisBrokerTest,
+       SynthesizeSpeechModelExecutionFailureUnknownError) {
+  testing::NiceMock<MockOptimizationGuideKeyedService> mock_opt_guide;
+  base::HistogramTester histograms;
+
+  EXPECT_CALL(
+      mock_opt_guide,
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kReadAloudSynthesize,
+          testing::_, testing::_, testing::_))
+      .WillOnce(
+          [](optimization_guide::ModelBasedCapabilityKey feature,
+             const google::protobuf::MessageLite& request_metadata,
+             const optimization_guide::ModelExecutionOptions& options,
+             optimization_guide::OptimizationGuideModelExecutionResultCallback
+                 callback) {
+            optimization_guide::OptimizationGuideModelExecutionResult result(
+                base::unexpected(
+                    optimization_guide::OptimizationGuideModelExecutionError::
+                        FromModelExecutionError(
+                            optimization_guide::
+                                OptimizationGuideModelExecutionError::
+                                    ModelExecutionError::kUnknown)),
+                /*execution_info=*/nullptr);
+            std::move(callback).Run(std::move(result), /*log_entry=*/nullptr);
+          });
+
+  bool callback_called = false;
+  broker_.SynthesizeSpeech(
+      &mock_opt_guide, u"Hello world",
+      base::BindLambdaForTesting(
+          [&](mojo_base::BigBuffer response_bytes, bool success) {
+            callback_called = true;
+            EXPECT_FALSE(success);
+            EXPECT_EQ(response_bytes.size(), 0u);
+          }));
+  EXPECT_TRUE(callback_called);
+  histograms.ExpectUniqueSample(
+      kServerResultHistogram,
+      SpeechSynthesisBroker::ServerResult::kModelExecutionError, 1);
+  histograms.ExpectUniqueSample(
+      kModelExecutionErrorHistogram,
+      optimization_guide::OptimizationGuideModelExecutionError::
+          ModelExecutionError::kUnknown,
+      1);
+  histograms.ExpectBucketCount(kModelExecutionErrorHistogram, 0, 1);
+}
+
+TEST_F(SpeechSynthesisBrokerTest, SynthesizeSpeechModelExecutionEmptyResponse) {
+  testing::NiceMock<MockOptimizationGuideKeyedService> mock_opt_guide;
+  base::HistogramTester histograms;
+
+  optimization_guide::proto::Any any;
+  any.set_value("");
+
+  EXPECT_CALL(
+      mock_opt_guide,
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kReadAloudSynthesize,
+          testing::_, testing::_, testing::_))
+      .WillOnce(
+          [&any](
+              optimization_guide::ModelBasedCapabilityKey feature,
+              const google::protobuf::MessageLite& request_metadata,
+              const optimization_guide::ModelExecutionOptions& options,
+              optimization_guide::OptimizationGuideModelExecutionResultCallback
+                  callback) {
+            optimization_guide::OptimizationGuideModelExecutionResult result(
+                any, /*execution_info=*/nullptr);
+            std::move(callback).Run(std::move(result), /*log_entry=*/nullptr);
+          });
+
+  bool callback_called = false;
+  broker_.SynthesizeSpeech(
+      &mock_opt_guide, u"Hello world",
+      base::BindLambdaForTesting(
+          [&](mojo_base::BigBuffer response_bytes, bool success) {
+            callback_called = true;
+            EXPECT_FALSE(success);
+            EXPECT_EQ(response_bytes.size(), 0u);
+          }));
+  EXPECT_TRUE(callback_called);
+  histograms.ExpectUniqueSample(
+      kServerResultHistogram,
+      SpeechSynthesisBroker::ServerResult::kEmptyResponse, 1);
+  histograms.ExpectTotalCount(kModelExecutionErrorHistogram, 0);
 }
 
 TEST_F(SpeechSynthesisBrokerTest, BuildSynthesizeRequestWithVoiceOverride) {

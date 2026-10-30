@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "base/i18n/tag_converters.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -13,6 +14,17 @@
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 
 namespace readaloud {
+
+namespace {
+
+constexpr char kAbortReasonHistogram[] =
+    "ReadAloud.Synthesis.ModelExecution.AbortReason";
+constexpr char kServerResultHistogram[] =
+    "ReadAloud.Synthesis.ModelExecution.ServerResult";
+constexpr char kModelExecutionErrorHistogram[] =
+    "ReadAloud.Synthesis.ModelExecution.Error";
+
+}  // namespace
 
 SpeechSynthesisBroker::SpeechSynthesisBroker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -85,6 +97,10 @@ void SpeechSynthesisBroker::SynthesizeSpeech(
     SynthesizeSpeechCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!opt_guide_service || text_chunk.empty()) {
+    base::UmaHistogramEnumeration(
+        kAbortReasonHistogram, !opt_guide_service
+                                   ? AbortReason::kNullOptimizationGuideService
+                                   : AbortReason::kEmptyTextChunk);
     std::move(callback).Run(mojo_base::BigBuffer(), /*success=*/false);
     return;
   }
@@ -114,6 +130,10 @@ void SpeechSynthesisBroker::OnModelExecutionResult(
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!result.response.has_value()) {
+    base::UmaHistogramEnumeration(kServerResultHistogram,
+                                  ServerResult::kModelExecutionError);
+    base::UmaHistogramEnumeration(kModelExecutionErrorHistogram,
+                                  result.response.error().error());
     std::move(callback).Run(mojo_base::BigBuffer(), /*success=*/false);
     return;
   }
@@ -123,9 +143,12 @@ void SpeechSynthesisBroker::OnModelExecutionResult(
   // Browser process.
   const std::string& raw_bytes = result.response.value().value();
   if (raw_bytes.empty()) {
+    base::UmaHistogramEnumeration(kServerResultHistogram,
+                                  ServerResult::kEmptyResponse);
     std::move(callback).Run(mojo_base::BigBuffer(), /*success=*/false);
     return;
   }
+  base::UmaHistogramEnumeration(kServerResultHistogram, ServerResult::kSuccess);
   mojo_base::BigBuffer buffer(base::as_byte_span(raw_bytes));
   std::move(callback).Run(std::move(buffer), /*success=*/true);
 }

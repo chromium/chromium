@@ -92,6 +92,21 @@ class ReadAloudService
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/readaloud/enums.xml:ReadAloudOverviewOutcome)
 
+  // Outcome of standard (Classic mode) playback preparation in
+  // ReadAloudService. These values are persisted to logs. Entries should not be
+  // renumbered and numeric values should never be reused.
+  // LINT.IfChange(StandardPlaybackOutcome)
+  enum class StandardPlaybackOutcome {
+    kSuccess = 0,
+    kDistillationFailed = 1,
+    kEmptyContent = 2,
+    kInitialSynthesisFailed = 3,
+    kPlayOnReadyTimeout = 4,
+    kUtilityDisconnected = 5,
+    kMaxValue = kUtilityDisconnected,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/readaloud/enums.xml:ReadAloudStandardPlaybackOutcome)
+
   // Interface for dispatching events from the native service to the UI.
   // State changes are sent to the UI via this delegate.
   class Delegate {
@@ -292,6 +307,15 @@ class ReadAloudService
   // Releases the media session, distillation and utility resources without
   // notifying the delegate.
   void ResetPlayback();
+  // Records successful standard playback startup and TTFA to UMA if waiting for
+  // the initial audio playback.
+  void MaybeRecordStartupSuccess();
+  // Records the outcome of the standard playback startup phase to UMA if
+  // waiting for the initial audio playback. Clears startup tracking state.
+  void MaybeRecordStartupOutcome(StandardPlaybackOutcome outcome);
+  // Clears transient startup tracking state. Does not reset
+  // `first_audio_emitted_` flag, which should persist across pause/resume.
+  void ClearStartupTrackingState();
 
   raw_ptr<Profile> profile_;
   PlaybackControllerBinder controller_binder_;
@@ -329,6 +353,13 @@ class ReadAloudService
   // Tracks explicit user playback intent in the browser process across
   // asynchronous distillation and overview generation operations.
   bool user_requested_play_ = false;
+
+  // Tracks startup lifecycle (from Play() trigger to first audio rendering).
+  // Cleared on first audio chunk or startup error to prevent re-recording
+  // across subsequent pause/resume or mid-article buffering events.
+  base::TimeTicks standard_playback_start_time_;
+  bool waiting_for_first_audio_ = false;
+  bool first_audio_emitted_ = false;
 
   base::WeakPtrFactory<ReadAloudService> weak_factory_{this};
 };
