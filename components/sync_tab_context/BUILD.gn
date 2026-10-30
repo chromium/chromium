@@ -22,6 +22,8 @@ static_library("sync_tab_context") {
     "ephemeral_key_fetcher.h",
     "http_rpc_based_ephemeral_key_fetcher.cc",
     "http_rpc_based_ephemeral_key_fetcher.h",
+    "pending_ephemeral_container.cc",
+    "pending_ephemeral_container.h",
     "tab_context_container_sync_bridge.cc",
     "tab_context_container_sync_bridge.h",
     "tab_context_item_sync_bridge.cc",
@@ -89,6 +91,7 @@ source_set("unit_tests") {
   sources = [
     "build_container_access_token_unittest.cc",
     "http_rpc_based_ephemeral_key_fetcher_unittest.cc",
+    "pending_ephemeral_container_unittest.cc",
     "tab_context_container_sync_bridge_unittest.cc",
     "tab_context_item_sync_bridge_unittest.cc",
     "tab_context_sync_service_impl_unittest.cc",
