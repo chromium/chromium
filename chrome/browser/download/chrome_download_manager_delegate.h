@@ -341,6 +341,14 @@ class ChromeDownloadManagerDelegate
   void ShouldCompleteDownloadInternal(uint32_t download_id,
                                       base::OnceClosure user_complete_callback);
 
+#if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && BUILDFLAG(IS_ANDROID)
+  // Returns whether a confirmation dialog should be shown before completing a
+  // non-dangerous APK download on Android.
+  bool ShouldShowNonDangerousApkSafeBrowsingWarning(
+      download::DownloadItem* item,
+      const SafeBrowsingState& state) const;
+#endif
+
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
   // Called when obfuscated download files are deobfuscated.
   void OnDeobfuscationComplete(

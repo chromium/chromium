@@ -1099,12 +1099,7 @@ bool ChromeDownloadManagerDelegate::IsDownloadReadyForCompletion(
       return false;
     }
 #if BUILDFLAG(IS_ANDROID)
-  } else if (ShouldShowSafeBrowsingAndroidDownloadWarnings() &&
-             IsApkFile(item) && state->is_complete() && !item->IsDangerous() &&
-             item->GetDangerType() !=
-                 download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED &&
-             !item->IsUserConfirmed() &&
-             download_prefs_->download_restriction() != policy::DownloadRestriction::MALICIOUS_FILES) {
+  } else if (ShouldShowNonDangerousApkSafeBrowsingWarning(item, *state)) {
     // Don't complete the download of a non-dangerous file until the user
     // consents.
     if (DownloadController::GetInstance()->ShowDangerousDownloadDialog(item)) {
@@ -1123,6 +1118,38 @@ bool ChromeDownloadManagerDelegate::IsDownloadReadyForCompletion(
 #endif  // BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
   return true;
 }
+
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
+bool ChromeDownloadManagerDelegate::
+    ShouldShowNonDangerousApkSafeBrowsingWarning(
+        download::DownloadItem* item,
+        const SafeBrowsingState& state) const {
+  // The download of the APK should be complete before a warning is shown.
+  if (!ShouldShowSafeBrowsingAndroidDownloadWarnings() || !IsApkFile(item) ||
+      !state.is_complete()) {
+    return false;
+  }
+
+  // Dangerous downloads are handled separately by DownloadController, and
+  // already-validated or user-confirmed downloads do not need another prompt.
+  if (item->IsDangerous() ||
+      item->GetDangerType() == download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED ||
+      item->IsUserConfirmed()) {
+    return false;
+  }
+
+  // Suppress the confirmation dialog when enterprise policy only restricts
+  // malicious files or when the APK is from a registered app store.
+  if (download_prefs_->download_restriction() ==
+          policy::DownloadRestriction::MALICIOUS_FILES ||
+      safe_browsing::DownloadProtectionService::WasFromRegisteredAppStore(
+          item)) {
+    return false;
+  }
+
+  return true;
+}
+#endif  // BUILDFLAG(IS_ANDROID) && BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID)
 void ChromeDownloadManagerDelegate::OnDeobfuscationComplete(

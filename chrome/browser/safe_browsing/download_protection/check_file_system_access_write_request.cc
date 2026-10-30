@@ -110,7 +110,8 @@ void CheckFileSystemAccessWriteRequest::NotifySendRequest(
 void CheckFileSystemAccessWriteRequest::SetDownloadProtectionData(
     const std::string& token,
     const ClientDownloadResponse::Verdict& verdict,
-    const ClientDownloadResponse::TailoredVerdict& tailored_verdict) {
+    const ClientDownloadResponse::TailoredVerdict& tailored_verdict,
+    bool is_registered_app_store) {
   // TODO(crbug.com/41477698): Actually store token for
   // IncidentReportingService usage.
 }

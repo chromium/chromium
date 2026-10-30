@@ -3117,6 +3117,8 @@ TEST_F(DownloadProtectionServiceTest, GetAndSetDownloadProtectionData) {
   NiceMockDownloadItem item;
   EXPECT_TRUE(DownloadProtectionService::GetDownloadPingToken(&item).empty());
   EXPECT_FALSE(DownloadProtectionService::HasDownloadProtectionVerdict(&item));
+  EXPECT_FALSE(DownloadProtectionService::WasFromRegisteredAppStore(&item));
+  EXPECT_FALSE(DownloadProtectionService::WasFromRegisteredAppStore(nullptr));
   std::string token = "download_ping_token";
   ClientDownloadResponse::Verdict verdict = ClientDownloadResponse::DANGEROUS;
   ClientDownloadResponse::TailoredVerdict tailored_verdict;
@@ -3126,6 +3128,7 @@ TEST_F(DownloadProtectionServiceTest, GetAndSetDownloadProtectionData) {
                                                        tailored_verdict);
   EXPECT_EQ(token, DownloadProtectionService::GetDownloadPingToken(&item));
   EXPECT_TRUE(DownloadProtectionService::HasDownloadProtectionVerdict(&item));
+  EXPECT_FALSE(DownloadProtectionService::WasFromRegisteredAppStore(&item));
   EXPECT_EQ(verdict,
             DownloadProtectionService::GetDownloadProtectionVerdict(&item));
   EXPECT_EQ(
@@ -3138,12 +3141,64 @@ TEST_F(DownloadProtectionServiceTest, GetAndSetDownloadProtectionData) {
       ClientDownloadResponse::TailoredVerdict());
   EXPECT_TRUE(DownloadProtectionService::GetDownloadPingToken(&item).empty());
   EXPECT_TRUE(DownloadProtectionService::HasDownloadProtectionVerdict(&item));
+  EXPECT_FALSE(DownloadProtectionService::WasFromRegisteredAppStore(&item));
   EXPECT_EQ(ClientDownloadResponse::SAFE,
             DownloadProtectionService::GetDownloadProtectionVerdict(&item));
   EXPECT_EQ(
       ClientDownloadResponse::TailoredVerdict::VERDICT_TYPE_UNSPECIFIED,
       DownloadProtectionService::GetDownloadProtectionTailoredVerdict(&item)
           .tailored_verdict_type());
+
+  DownloadProtectionService::SetDownloadProtectionData(
+      &item, std::string(), ClientDownloadResponse::SAFE,
+      ClientDownloadResponse::TailoredVerdict(),
+      /*is_registered_app_store=*/true);
+  EXPECT_TRUE(DownloadProtectionService::WasFromRegisteredAppStore(&item));
+}
+
+TEST_F(DownloadProtectionServiceTest, CheckClientDownloadRegisteredAppStore) {
+  ClientDownloadResponse response;
+  response.set_verdict(ClientDownloadResponse::SAFE);
+  response.set_is_registered_app_store(true);
+  sb_service_->GetTestURLLoaderFactory(profile())->AddResponse(
+      download_service_->GetDownloadRequestUrl().spec(),
+      response.SerializeAsString());
+
+  NiceMockDownloadItem item;
+#if BUILDFLAG(IS_MAC)
+  PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.dmg"},  // url_chain
+                           "http://www.google.com/",              // referrer
+                           FILE_PATH_LITERAL("a.tmp"),            // tmp_path
+                           FILE_PATH_LITERAL("a.dmg"));           // final_path
+#else
+  PrepareBasicDownloadItem(&item, {"http://www.evil.com/a.exe"},  // url_chain
+                           "http://www.google.com/",              // referrer
+                           FILE_PATH_LITERAL("a.tmp"),            // tmp_path
+                           FILE_PATH_LITERAL("a.exe"));           // final_path
+#endif
+  content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
+
+  EXPECT_CALL(*sb_service_->mock_database_manager(),
+              MatchDownloadAllowlistUrl(_, _))
+      .WillRepeatedly(
+          [](const GURL& url, base::OnceCallback<void(bool)> callback) {
+            std::move(callback).Run(false);
+          });
+#if !BUILDFLAG(IS_MAC)
+  EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _));
+  EXPECT_CALL(*binary_feature_extractor_.get(),
+              ExtractImageFeatures(
+                  tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _));
+#endif
+
+  RunLoop run_loop;
+  download_service_->CheckClientDownload(
+      &item,
+      base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
+                          base::Unretained(this), run_loop.QuitClosure()));
+  run_loop.Run();
+  EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
+  EXPECT_TRUE(DownloadProtectionService::WasFromRegisteredAppStore(&item));
 }
 
 TEST_F(DownloadProtectionServiceTest,

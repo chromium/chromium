@@ -63,7 +63,8 @@ class CheckFileSystemAccessWriteRequest
   void SetDownloadProtectionData(
       const std::string& token,
       const ClientDownloadResponse::Verdict& verdict,
-      const ClientDownloadResponse::TailoredVerdict& tailored_verdict) override;
+      const ClientDownloadResponse::TailoredVerdict& tailored_verdict,
+      bool is_registered_app_store) override;
 #if !BUILDFLAG(IS_ANDROID)
   void MaybeBeginFeedbackForDownload(DownloadCheckResult result,
                                      bool upload_requested,
