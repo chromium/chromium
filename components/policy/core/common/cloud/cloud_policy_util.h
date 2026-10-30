@@ -8,8 +8,13 @@
 #include <memory>
 #include <string>
 
+#include "build/build_config.h"
 #include "components/policy/policy_export.h"
 #include "components/version_info/channel.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/feature_list.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include "base/functional/callback_forward.h"
@@ -21,6 +26,12 @@ enum Channel : int;
 }  // namespace enterprise_management
 
 namespace policy {
+
+#if BUILDFLAG(IS_ANDROID)
+// Enables reporting the Android device name (falling back to the hardware model
+// name when unset) in `policy::GetMachineName()`. Used as a kill switch.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kReportAndroidMachineName);
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Returns the name of the machine. This function is platform specific.
 POLICY_EXPORT std::string GetMachineName();

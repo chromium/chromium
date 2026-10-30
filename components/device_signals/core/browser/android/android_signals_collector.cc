@@ -12,6 +12,7 @@
 
 #include "base/android/android_info.h"
 #include "base/android/device_info.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
@@ -95,9 +96,10 @@ void AndroidSignalsCollector::GetOsSignals(
   OsSignalsResponse signal_response;
 
   if (permission == UserPermission::kGranted) {
-    // TODO(crbug.com/449189531): Refactor and use `policy::GetDeviceName()`
-    // instead.
-    signal_response.display_name = base::android::device_info::device_name();
+    signal_response.display_name =
+        base::FeatureList::IsEnabled(policy::kReportAndroidMachineName)
+            ? policy::GetDeviceName()
+            : base::android::device_info::device_name();
   }
   signal_response.operating_system = policy::GetOSPlatform();
   signal_response.os_version = base::SysInfo::OperatingSystemVersion();

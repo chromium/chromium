@@ -102,12 +102,7 @@ TEST_F(MachineLevelUserCloudPolicyStatusProviderTest, GetStatusComplete) {
 
   const std::string* machine = status.FindString(kMachineKey);
   ASSERT_TRUE(machine);
-#if BUILDFLAG(IS_ANDROID)
-  // On Android, GetMachineName() always returns an empty string.
-  EXPECT_TRUE(machine->empty());
-#else
   EXPECT_FALSE(machine->empty());
-#endif
 
   const std::string* last_report = status.FindString(kLastReportTimeKey);
   ASSERT_TRUE(last_report);
@@ -133,12 +128,7 @@ TEST_F(MachineLevelUserCloudPolicyStatusProviderTest, GetStatusMojoComplete) {
   EXPECT_EQ(kEnrollmentTokenValue, status->enrollment_token);
   EXPECT_EQ(kExpectedDescriptionKey, status->policy_description_key);
   ASSERT_TRUE(status->machine.has_value());
-#if BUILDFLAG(IS_ANDROID)
-  // On Android, GetMachineName() always returns an empty string.
-  EXPECT_TRUE(status->machine->empty());
-#else
   EXPECT_FALSE(status->machine->empty());
-#endif
   ASSERT_TRUE(status->last_cloud_report_sent_timestamp.has_value());
   EXPECT_FALSE(status->last_cloud_report_sent_timestamp->empty());
   EXPECT_FALSE(status->status.empty());

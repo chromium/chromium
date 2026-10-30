@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/device_signals/core/browser/android/mock_os_security_info_provider.h"
 #include "components/device_signals/core/browser/browser_utils.h"
@@ -60,6 +61,7 @@ constexpr char kVerifyAppsSuccessLatencyHistogramName[] =
     "Enterprise.DeviceSignals.Collection.Success.VerifyApps.Latency";
 
 constexpr int kSampleHarmfulAppsErrorCode = 123;
+constexpr char kFakeDeviceName[] = "Test Device Name";
 
 }  // namespace
 
@@ -70,6 +72,7 @@ class AndroidSignalsCollectorTest : public GenericOsSignalsCollectorTestBase {
   void SetUp() override {
     task_environment_ = std::make_unique<content::BrowserTaskEnvironment>();
     GenericOsSignalsCollectorTestBase::SetUp();
+    base::android::device_info::set_device_name_for_testing(kFakeDeviceName);
     auto mock_os_security_info_provider =
         std::make_unique<NiceMock<MockOsSecurityInfoProvider>>();
     mock_os_security_info_provider_ = mock_os_security_info_provider.get();
@@ -84,12 +87,16 @@ class AndroidSignalsCollectorTest : public GenericOsSignalsCollectorTestBase {
     SetHarmfulAppsResult(HasHarmfulAppsResultStatus::SUCCESS, 2);
   }
 
+  void TearDown() override {
+    base::android::device_info::reset_device_name_for_testing();
+    GenericOsSignalsCollectorTestBase::TearDown();
+  }
+
   // Helper function to check a subset of signals that should or should not be
   // collected based on permission.
   void CheckOsSignalsCollected(OsSignalsResponse& response,
                                bool can_collect_pii) {
-    CheckSignalsCollected(response, can_collect_pii,
-                          base::android::device_info::device_name());
+    CheckSignalsCollected(response, can_collect_pii, kFakeDeviceName);
 
     EXPECT_EQ(response.os_version, base::SysInfo::OperatingSystemVersion());
     EXPECT_EQ(response.device_model, base::android::android_info::model());
@@ -219,6 +226,45 @@ TEST_F(AndroidSignalsCollectorTest, GetOsSignals_Success) {
   CheckOsSignalsCollected(response.os_signals_response.value(),
                           /*can_collect_pii=*/true);
   ExpectCollectionSuccessLogged({SignalName::kOsSignals});
+}
+
+// Tests that disabling `policy::kReportAndroidMachineName` reverts
+// `display_name` to `base::android::device_info::device_name()` (returning the
+// custom device name when set, and `""` rather than `Build.MODEL` when unset).
+TEST_F(AndroidSignalsCollectorTest, GetOsSignalsKillSwitchDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(policy::kReportAndroidMachineName);
+  SetFakeBrowserPolicyData();
+
+  {
+    SignalsAggregationRequest empty_request;
+    SignalsAggregationResponse response;
+    base::RunLoop run_loop;
+    signal_collector_->GetSignal(SignalName::kOsSignals,
+                                 UserPermission::kGranted, empty_request,
+                                 response, run_loop.QuitClosure());
+    run_loop.Run();
+
+    ASSERT_FALSE(response.top_level_error.has_value());
+    ASSERT_TRUE(response.os_signals_response);
+    CheckOsSignalsCollected(response.os_signals_response.value(),
+                            /*can_collect_pii=*/true);
+  }
+
+  base::android::device_info::set_device_name_for_testing("");
+  {
+    SignalsAggregationRequest empty_request;
+    SignalsAggregationResponse response;
+    base::RunLoop run_loop;
+    signal_collector_->GetSignal(SignalName::kOsSignals,
+                                 UserPermission::kGranted, empty_request,
+                                 response, run_loop.QuitClosure());
+    run_loop.Run();
+
+    ASSERT_FALSE(response.top_level_error.has_value());
+    ASSERT_TRUE(response.os_signals_response);
+    EXPECT_EQ(response.os_signals_response->display_name, "");
+  }
 }
 
 // Tests that `screen_lock_secured` is DISABLED when the device is not secured.

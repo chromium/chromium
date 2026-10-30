@@ -21,6 +21,7 @@ import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.os.Build;
+import android.provider.Settings;
 
 import org.junit.After;
 import org.junit.Before;
@@ -41,11 +42,43 @@ public class DeviceInfoUnitTest {
     @Before
     public void setUp() {
         DeviceInfo.resetGmsInfoForTesting();
+        DeviceInfo.resetDeviceNameForTesting();
     }
 
     @After
     public void tearDown() {
         DeviceInfo.resetGmsInfoForTesting();
+        DeviceInfo.resetDeviceNameForTesting();
+    }
+
+    @Test
+    public void testGetDeviceName() {
+        assertNull(DeviceInfo.getDeviceName());
+
+        Settings.Global.putString(
+                ContextUtils.getApplicationContext().getContentResolver(),
+                Settings.Global.DEVICE_NAME,
+                "Pixel Test Device");
+        assertEquals("Pixel Test Device", DeviceInfo.getDeviceName());
+
+        DeviceInfo.setDeviceNameForTesting("Override Device Name");
+        assertEquals("Override Device Name", DeviceInfo.getDeviceName());
+
+        DeviceInfo.resetDeviceNameForTesting();
+        assertEquals("Pixel Test Device", DeviceInfo.getDeviceName());
+    }
+
+    @Test
+    public void testGetDeviceName_runtimeExceptionReturnsNull() {
+        Context originalContext = ContextUtils.getApplicationContext();
+        Context mockContext = mock(Context.class);
+        when(mockContext.getContentResolver()).thenThrow(new SecurityException());
+        ContextUtils.initApplicationContextForTests(mockContext);
+        try {
+            assertNull(DeviceInfo.getDeviceName());
+        } finally {
+            ContextUtils.initApplicationContextForTests(originalContext);
+        }
     }
 
     @Test

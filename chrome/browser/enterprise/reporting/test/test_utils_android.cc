@@ -4,7 +4,6 @@
 
 #include "chrome/browser/enterprise/reporting/test/test_utils.h"
 
-#include "base/android/device_info.h"
 #include "base/run_loop.h"
 #include "components/device_signals/core/browser/android/os_security_info_provider.h"
 #include "components/device_signals/core/browser/browser_utils.h"
@@ -77,8 +76,7 @@ void VerifyDeviceIdentifier(
     em::BrowserDeviceIdentifier& browser_device_identifier,
     bool can_collect_pii_signals) {
   EXPECT_EQ(browser_device_identifier.computer_name(),
-            can_collect_pii_signals ? base::android::device_info::device_name()
-                                    : std::string());
+            can_collect_pii_signals ? policy::GetDeviceName() : std::string());
 }
 
 void VerifyOsReportSignals(const em::OSReport& os_report,

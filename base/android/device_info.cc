@@ -193,6 +193,15 @@ void reset_is_foldable_for_testing() {
   get_holder().reset();
 }
 
+void set_device_name_for_testing(const std::string& device_name) {
+  Java_DeviceInfo_setDeviceNameForTesting(AttachCurrentThread(),  // IN-TEST
+                                          device_name);
+}
+
+void reset_device_name_for_testing() {
+  Java_DeviceInfo_resetDeviceNameForTesting(AttachCurrentThread());  // IN-TEST
+}
+
 }  // namespace base::android::device_info
 
 DEFINE_JNI(DeviceInfo)
