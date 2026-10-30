@@ -44,7 +44,6 @@ class HorizontalTabClosingHelper : public views::MouseWatcherListener {
   }
 
   int GetUnpinnedContainerWidth() const;
-  bool IsLastVisibleUnpinnedChild(const TabCollectionNode* child_node) const;
 
   bool in_tab_close() const { return in_tab_close_; }
 

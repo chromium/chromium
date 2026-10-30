@@ -35,9 +35,6 @@ class TabGroupStyle {
   // Returns the leading padding for a tab group header when it is the first
   // item in the tab strip.
   static int GetLeadingGroupHeaderPadding();
-  // Returns the trailing padding for a collapsed tab group header when it is
-  // the last item in the tab strip.
-  static int GetTrailingGroupHeaderPadding();
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_COMMON_TAB_GROUP_STYLE_H_

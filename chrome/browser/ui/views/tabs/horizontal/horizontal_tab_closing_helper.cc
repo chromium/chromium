@@ -328,23 +328,6 @@ bool HorizontalTabClosingHelper::IsLastVisibleTab(
   return child_node && child_node == GetLastVisibleTab();
 }
 
-bool HorizontalTabClosingHelper::IsLastVisibleUnpinnedChild(
-    const TabCollectionNode* child_node) const {
-  TabCollectionNode* unpinned_node =
-      child_node
-          ? root_node_->GetChildNodeOfType(TabCollectionNode::Type::UNPINNED)
-          : nullptr;
-  if (!unpinned_node) {
-    return false;
-  }
-  for (const auto& child : std::views::reverse(unpinned_node->children())) {
-    if (child->view() && child->view()->GetVisible()) {
-      return child.get() == child_node;
-    }
-  }
-  return false;
-}
-
 bool HorizontalTabClosingHelper::IsUnpinnedContainerOverflowing() const {
   if (UnpinnedTabContainerView* unpinned_container = GetUnpinnedContainer()) {
     if (const auto* scroll_view =

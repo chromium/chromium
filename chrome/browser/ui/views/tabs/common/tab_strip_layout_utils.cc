@@ -182,14 +182,6 @@ int GetLeadingChildPadding(const views::View* child) {
   return 0;
 }
 
-int GetTrailingChildPadding(const views::View* child) {
-  if (const auto* group_view = views::AsViewClass<TabGroupView>(child);
-      group_view && group_view->IsCollapsed()) {
-    return TabGroupStyle::GetTrailingGroupHeaderPadding();
-  }
-  return 0;
-}
-
 TabStripCollectionLayoutInfo CollectVisibleChildLayoutInfo(
     TabCollectionNode::ChildViews children,
     int container_height,
@@ -228,10 +220,6 @@ TabStripCollectionLayoutInfo CollectVisibleChildLayoutInfo(
     collection.total_preferred_width += pref_width;
     collection.total_crossover_width += crossover_width;
     collection.total_min_width += min_width;
-  }
-  if (!collection.visible_children.empty()) {
-    collection.trailing_padding =
-        GetTrailingChildPadding(collection.visible_children.back().view);
   }
   return collection;
 }
