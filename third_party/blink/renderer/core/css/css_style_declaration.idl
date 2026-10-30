@@ -26,8 +26,8 @@
     [CEReactions, RaisesException=Setter, SetterCallWith=ExecutionContext] attribute DOMString cssText;
     readonly attribute unsigned long length;
     [Affects=Nothing] getter DOMString item(unsigned long index);
-    DOMString getPropertyValue(DOMString property);
-    DOMString getPropertyPriority(DOMString property);
+    [Affects=Nothing] DOMString getPropertyValue(DOMString property);
+    [Affects=Nothing] DOMString getPropertyPriority(DOMString property);
     [CEReactions, RaisesException, CallWith=ExecutionContext] void setProperty(DOMString property, [LegacyNullToEmptyString] DOMString value, optional [LegacyNullToEmptyString] DOMString priority = "");
     // void setPropertyValue(DOMString property, [LegacyNullToEmptyString] DOMString value);
     // void setPropertyPriority(DOMString property, [LegacyNullToEmptyString] DOMString priority);

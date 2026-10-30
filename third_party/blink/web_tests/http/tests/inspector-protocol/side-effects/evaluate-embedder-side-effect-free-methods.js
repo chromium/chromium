@@ -73,6 +73,12 @@
   await checkHasNoSideEffect(`domTokenList.contains({})`);
   await checkHasNoSideEffect(`domTokenList.contains()`);
 
+  // CSSStyleDeclaration
+  await checkHasNoSideEffect(`bodyStyle.getPropertyValue('display')`);
+  await checkHasNoSideEffect(`bodyStyle.getPropertyPriority('display')`);
+  await checkHasNoSideEffect(
+      `global_getComputedStyle(div).getPropertyValue('display')`);
+
   // Element
   await checkHasNoSideEffect(`div.getAttributeNames()`);
   await checkHasNoSideEffect(`divNoAttrs.getAttributeNames()`);

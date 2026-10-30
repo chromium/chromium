@@ -45,6 +45,12 @@ Expression `domTokenList.contains({})`
 has side effect: false, expected: false
 Expression `domTokenList.contains()`
 has side effect: false, expected: false
+Expression `bodyStyle.getPropertyValue('display')`
+has side effect: false, expected: false
+Expression `bodyStyle.getPropertyPriority('display')`
+has side effect: false, expected: false
+Expression `global_getComputedStyle(div).getPropertyValue('display')`
+has side effect: false, expected: false
 Expression `div.getAttributeNames()`
 has side effect: false, expected: false
 Expression `divNoAttrs.getAttributeNames()`
