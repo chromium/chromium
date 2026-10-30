@@ -70,7 +70,7 @@ export class ComposeboxFileThumbnailElement extends CrLitElement {
     return this.isUploading_;
   }
 
-  protected lensSendRawFileMediaTypesEnabled_: boolean =
+  private lensSendRawFileMediaTypesEnabled_: boolean =
       loadTimeData.getBoolean('lensSendRawFileMediaTypesEnabled');
 
   protected accessor tabFaviconChipsToCoinsEnabled_: boolean =

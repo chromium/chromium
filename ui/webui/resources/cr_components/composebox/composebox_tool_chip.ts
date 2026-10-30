@@ -38,7 +38,7 @@ export class ComposeboxToolChipElement extends I18nMixinLit
     };
   }
 
-  protected accessor inputState: InputState|null = null;
+  accessor inputState: InputState|null = null;
   accessor isCanvasQuerySubmitted: boolean = false;
 
 

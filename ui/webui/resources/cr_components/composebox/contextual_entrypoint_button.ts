@@ -81,7 +81,7 @@ export class ContextualEntrypointButtonElement extends
   accessor energyEffectAnimationEnabled: boolean = false;
   accessor disableFallbackGlifAnimation: boolean = false;
   accessor smartTabSharingActive: boolean = false;
-  protected accessor entrypointAriaLabel_: string = '';
+  private accessor entrypointAriaLabel_: string = '';
   protected accessor windowWidthBelowThreshold_: boolean = false;
   protected accessor isLensSearchbox_: boolean =
       loadTimeData.valueExists('isLensSearchbox') &&

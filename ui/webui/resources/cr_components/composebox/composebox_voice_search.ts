@@ -315,10 +315,10 @@ export class ComposeboxVoiceSearchElement extends
   protected accessor detailsUrl_: string =
       `https://support.google.com/chrome/?p=ui_voice_search&hl=${
           window.navigator.language}`;
-  protected accessor error_: VoiceSearchError|null = null;
+  private accessor error_: VoiceSearchError|null = null;
   protected accessor errorMessage_: string = '';
-  protected accessor finalResult_: string = '';
-  protected accessor interimResult_: string = '';
+  private accessor finalResult_: string = '';
+  private accessor interimResult_: string = '';
   protected accessor listeningPlaceholder_: string =
       loadTimeData.getString('voiceListening');
   protected accessor transcript_: string = '';

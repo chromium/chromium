@@ -51,11 +51,11 @@ export class ChromeUrlsAppElement extends CrLitElement {
   protected accessor webuiUrlInfos_: WebuiUrlInfo[] = [];
   protected accessor internalUrlInfos_: WebuiUrlInfo[] = [];
   protected accessor commandUrls_: Url[] = [];
-  protected accessor internalUisEnabled_: boolean = false;
-  protected tracker_: EventTracker = new EventTracker();
+  private accessor internalUisEnabled_: boolean = false;
+  private tracker_: EventTracker = new EventTracker();
 
   // <if expr="is_ios">
-  protected loadUrlsTimeout_: number|null = null;
+  private loadUrlsTimeout_: number|null = null;
   // </if>
 
   override connectedCallback() {

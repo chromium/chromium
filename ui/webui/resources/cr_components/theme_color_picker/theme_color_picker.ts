@@ -68,7 +68,7 @@ export class ThemeColorPickerElement extends ThemeColorPickerElementBase {
   protected accessor greyDefaultColor_: Color = EMPTY_COLOR;
   protected accessor colors_: ChromeColor[] = [];
   private accessor theme_: Theme|undefined;
-  protected accessor selectedColor_: SelectedColor = {type: ColorType.NONE};
+  private accessor selectedColor_: SelectedColor = {type: ColorType.NONE};
   protected accessor isDefaultColorSelected_: boolean = false;
   protected accessor isGreyDefaultColorSelected_: boolean = false;
   protected accessor isCustomColorSelected_: boolean = false;

@@ -144,7 +144,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   private loadingStateMinimumMs_ = LOADING_STATE_MINIMUM_MS;
   private queryResultMinAge_ = QUERY_RESULT_MINIMUM_AGE;
   protected accessor searchResult_: SearchResult|null = null;
-  protected accessor searchResultDirty_: boolean = false;
+  private accessor searchResultDirty_: boolean = false;
   protected accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
   private searchTimestamp_: number = 0;

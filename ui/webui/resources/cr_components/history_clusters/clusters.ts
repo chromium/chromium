@@ -130,9 +130,9 @@ export class HistoryClustersElement extends HistoryClustersElementBase {
   accessor scrollOffset: number = 0;
   accessor scrollTarget: HTMLElement = document.documentElement;
   accessor timeRangeStart: Date|undefined;
-  protected accessor canLoadMore_: boolean = false;
+  private accessor canLoadMore_: boolean = false;
   protected accessor clusters_: Cluster[] = [];
-  protected accessor hasResult_: boolean = false;
+  private accessor hasResult_: boolean = false;
   protected accessor resultQuery_: string = '';
   private browserProxy_: BrowserProxy;
   private accessor inSidePanel_: boolean =

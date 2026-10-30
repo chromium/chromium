@@ -178,14 +178,14 @@ export class ContextualActionMenuElement extends
   protected accessor enableMultiTabSelection_: boolean =
       loadTimeData.getBoolean('composeboxContextMenuEnableMultiTabSelection');
   protected accessor tabPreviewUrl_: string = '';
-  protected accessor tabPreviewsEnabled_: boolean =
+  private accessor tabPreviewsEnabled_: boolean =
       loadTimeData.getBoolean('composeboxShowContextMenuTabPreviews');
-  protected maxFileCount_: number =
+  private maxFileCount_: number =
       loadTimeData.getInteger('composeboxFileMaxCount');
   private metricsSource_: string = loadTimeData.getString('composeboxSource');
   protected accessor showContextMenuHeaders_: boolean =
       loadTimeData.getBoolean('ShowContextMenuHeaders');
-  protected enableTabDeselection_: boolean =
+  private enableTabDeselection_: boolean =
       getLoadTimeBoolean('composeboxContextMenuEnableTabDeselection', false);
   // Whether the "single tab" arm of context management is enabled.
   private singleTabMenuItemEnabled_: boolean =

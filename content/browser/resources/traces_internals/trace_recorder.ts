@@ -166,14 +166,14 @@ export class TraceRecorderElement extends CrLitElement {
   protected accessor bufferFillPolicy: TraceConfig_BufferConfig_FillPolicy =
       TraceConfig_BufferConfig_FillPolicy.RING_BUFFER;
 
-  protected traceConfig: TraceConfig|undefined;
-  protected trackEventConfig: TrackEventConfig|undefined;
-  protected accessor enabledCategories: Set<string> = new Set();
-  protected accessor enabledTags: Set<string> = new Set();
-  protected accessor disabledTags: Set<string> = new Set();
+  private traceConfig: TraceConfig|undefined;
+  private trackEventConfig: TrackEventConfig|undefined;
+  private accessor enabledCategories: Set<string> = new Set();
+  private accessor enabledTags: Set<string> = new Set();
+  private accessor disabledTags: Set<string> = new Set();
 
   // <if expr="is_win">
-  protected etwConfig: EtwConfig|undefined;
+  private etwConfig: EtwConfig|undefined;
 
   protected accessor etwEvents: Array<{
     name: string,
@@ -181,7 +181,7 @@ export class TraceRecorderElement extends CrLitElement {
     provider: EtwProviderType,
     description: string,
   }> = [];
-  protected accessor enabledEtwEvents:
+  private accessor enabledEtwEvents:
       {[provider in EtwProviderType]: Set<string>} = {
         'memory': new Set(),
         'scheduler': new Set(),
@@ -194,12 +194,12 @@ export class TraceRecorderElement extends CrLitElement {
   protected accessor categoriesExpanded_: boolean = false;
   protected accessor tagsExpanded_: boolean = false;
 
-  protected stackSamplingConfig: ChromiumStackSamplingProfilerConfig|undefined;
+  private stackSamplingConfig: ChromiumStackSamplingProfilerConfig|undefined;
   protected accessor stackSamplingExpanded_: boolean = false;
   protected accessor stackSamplingEnabled: boolean = false;
   protected accessor stackSamplingIntervalMs: number = 50;
 
-  protected heapProfilingConfig: ChromiumSamplingHeapProfilerConfig|undefined;
+  private heapProfilingConfig: ChromiumSamplingHeapProfilerConfig|undefined;
   protected accessor heapProfilingExpanded_: boolean = false;
   protected accessor heapProfilingEnabled: boolean = false;
   protected accessor heapSamplingIntervalKb: number = 128;
@@ -218,7 +218,7 @@ export class TraceRecorderElement extends CrLitElement {
   }
 
   protected accessor bufferUsage: number = 0;
-  protected accessor hadDataLoss: boolean = false;
+  private accessor hadDataLoss: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();

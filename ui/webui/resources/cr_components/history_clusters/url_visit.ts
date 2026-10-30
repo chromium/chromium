@@ -97,7 +97,6 @@ export class UrlVisitElement extends ClusterMenuElementBase {
   accessor query: string = '';
   accessor visit: URLVisit|undefined;
   accessor fromPersistence: boolean = false;
-  protected annotations_: string[] = [];
   protected accessor allowDeletingHistory_: boolean =
       loadTimeData.getBoolean('allowDeletingHistory');
   protected accessor inSidePanel_: boolean =

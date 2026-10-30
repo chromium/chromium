@@ -139,7 +139,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   accessor entrypointName: string = '';
   accessor lensButtonDisabled: boolean = false;
   accessor applyContextButtonBackground: boolean = false;
-  protected isRtl_: boolean = document.documentElement.dir === 'rtl';
 
   // If isCollapsible is set to true, the composebox will be a pill shape until
   // it gets focused, at which point it will expand. If false, defaults to the

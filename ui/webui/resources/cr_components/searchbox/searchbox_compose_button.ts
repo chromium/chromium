@@ -171,7 +171,7 @@ export class SearchboxComposeButtonElement extends
     }
   }
 
-  protected onMouseEnter_ = () => {
+  private onMouseEnter_ = () => {
     if (this.$.glowAnimationWrapper) {
       this.$.glowAnimationWrapper.classList.remove('play-landing-animation');
       this.$.glowAnimationWrapper.addEventListener(
@@ -189,7 +189,7 @@ export class SearchboxComposeButtonElement extends
     }
   };
 
-  protected onMouseLeave_ = () => {
+  private onMouseLeave_ = () => {
     if (this.$.glowAnimationWrapper) {
       this.$.glowAnimationWrapper.removeEventListener(
           'mousemove', this.onMouseMove);

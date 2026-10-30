@@ -247,7 +247,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   protected accessor showAdd_: boolean = false;
   private accessor maxVisibleColumnCount_: number = 0;
   protected accessor tiles_: MostVisitedTile[] = [];
-  protected accessor toastSource_: TileSource = TileSource.CUSTOM_LINKS;
+  private accessor toastSource_: TileSource = TileSource.CUSTOM_LINKS;
   protected accessor visible_: boolean = false;
   private adding_: boolean = false;
   private isTileMoveInProgress_: boolean = false;
