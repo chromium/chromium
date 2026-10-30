@@ -703,13 +703,20 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         return mBrandedColorScheme;
     }
 
+    private void setBrandedColorScheme(@BrandedColorScheme int brandedColorScheme) {
+        mBrandedColorScheme = brandedColorScheme;
+        if (mOmniboxResourceProvider != null) {
+            mOmniboxResourceProvider.setBrandedColorScheme(brandedColorScheme);
+        }
+    }
+
     @Override
     public void onTintChanged(
             @Nullable ColorStateList tint,
             @Nullable ColorStateList activityFocusTint,
             @BrandedColorScheme int brandedColorScheme) {
         if (tint == null) return;
-        mBrandedColorScheme = brandedColorScheme;
+        setBrandedColorScheme(brandedColorScheme);
         mTint = activityFocusTint != null ? activityFocusTint : tint;
         mLocationBar.updateColors();
         notifyColorSchemeChanged();
@@ -780,7 +787,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                         ? mThemeColorProvider.getBrandedColorScheme()
                         : OmniboxResourceProvider.getBrandedColorScheme(
                                 getContext(), isIncognitoBranded(), background);
-        mBrandedColorScheme = brandedColorScheme;
+        setBrandedColorScheme(brandedColorScheme);
         mTint =
                 mThemeColorProvider != null && mThemeColorProvider.getTint() != null
                         ? mThemeColorProvider.getTint()

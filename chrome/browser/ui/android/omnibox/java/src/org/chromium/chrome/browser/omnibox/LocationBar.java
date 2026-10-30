@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdownScrollListener;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
@@ -53,11 +52,6 @@ public interface LocationBar {
 
     /** Returns the {@link VoiceRecognitionHandler} associated with this LocationBar. */
     default @Nullable VoiceRecognitionHandler getVoiceRecognitionHandler() {
-        return null;
-    }
-
-    /** Returns the {@link OmniboxResourceProvider} associated with this LocationBar. */
-    default @Nullable OmniboxResourceProvider getResourceProvider() {
         return null;
     }
 

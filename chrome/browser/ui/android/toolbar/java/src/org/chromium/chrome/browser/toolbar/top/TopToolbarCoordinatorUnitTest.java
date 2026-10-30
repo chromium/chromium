@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.fusebox.Fusebox.FuseboxState;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
@@ -69,6 +70,7 @@ import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoord
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -148,6 +150,7 @@ public class TopToolbarCoordinatorUnitTest {
             ObservableSuppliers.createMonotonic();
 
     private Activity mActivity;
+    private OmniboxResourceProvider mOmniboxResourceProvider;
     private ToolbarControlContainer mControlContainer;
     private ToolbarTablet mToolbarLayout;
     private ToolbarProgressBar mProgressBar;
@@ -157,6 +160,8 @@ public class TopToolbarCoordinatorUnitTest {
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mOmniboxResourceProvider =
+                new OmniboxResourceProvider(mActivity, BrandedColorScheme.APP_DEFAULT);
         ResourceFactoryJni.setInstanceForTesting(mResourceFactoryJni);
 
         mControlContainer =
@@ -224,7 +229,8 @@ public class TopToolbarCoordinatorUnitTest {
                         mOnSigninTapped,
                         mDownloadButtonStateSupplier,
                         mOnDownloadButtonClicked,
-                        /* suppressTabStripAtStart= */ false);
+                        /* suppressTabStripAtStart= */ false,
+                        mOmniboxResourceProvider);
     }
 
     private boolean isGlicActionChipVisible() {
@@ -581,7 +587,8 @@ public class TopToolbarCoordinatorUnitTest {
                 mOnSigninTapped,
                 mDownloadButtonStateSupplier,
                 mOnDownloadButtonClicked,
-                /* suppressTabStripAtStart= */ false);
+                /* suppressTabStripAtStart= */ false,
+                mOmniboxResourceProvider);
         assertEquals(mOnLongClickListener, Shadows.shadowOf(toolbarPhone).getOnLongClickListener());
     }
 

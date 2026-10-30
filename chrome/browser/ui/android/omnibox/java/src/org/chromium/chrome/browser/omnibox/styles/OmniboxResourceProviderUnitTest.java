@@ -309,6 +309,18 @@ public class OmniboxResourceProviderUnitTest {
     }
 
     @Test
+    public void getStandardSuggestionBackgroundColor() {
+        final int incognitoColor = mContext.getColor(R.color.search_suggestion_bg_color_incognito);
+        final int defaultColor = mContext.getColor(R.color.search_suggestion_bg_color);
+
+        mProvider.setBrandedColorScheme(BrandedColorScheme.INCOGNITO);
+        assertEquals(incognitoColor, mProvider.getStandardSuggestionBackgroundColor());
+
+        mProvider.setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
+        assertEquals(defaultColor, mProvider.getStandardSuggestionBackgroundColor());
+    }
+
+    @Test
     public void getStatusSeparatorColor() {
         final int darkColor = mContext.getColor(R.color.locationbar_status_separator_color_dark);
         final int lightColor = mContext.getColor(R.color.locationbar_status_separator_color_light);
@@ -728,5 +740,17 @@ public class OmniboxResourceProviderUnitTest {
         assertEquals(
                 IncognitoColors.getHeadline2ThickPrimary(/* isIncognito= */ true),
                 incognitoProvider.getPopupAttachmentsHeaderTextRes(/* useLarge= */ true));
+    }
+
+    @Test
+    public void getScrolledOmniboxBackgroundColor() {
+        final int incognitoColor = mContext.getColor(R.color.omnibox_scrolled_bg_incognito);
+        final int defaultColor = mContext.getColor(R.color.toolbar_text_box_bg_color);
+
+        mProvider.setBrandedColorScheme(BrandedColorScheme.INCOGNITO);
+        assertEquals(incognitoColor, mProvider.getScrolledOmniboxBackgroundColor());
+
+        mProvider.setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
+        assertEquals(defaultColor, mProvider.getScrolledOmniboxBackgroundColor());
     }
 }

@@ -179,8 +179,7 @@ public class BaseCarouselSuggestionViewBinderUnitTest {
         PropertyModelChangeProcessor.create(model, view, mBinder);
 
         assertEquals(
-                OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
-                        mContext, BrandedColorScheme.APP_DEFAULT),
+                mResourceProvider.getStandardSuggestionBackgroundColor(),
                 ((ColorDrawable) view.getBackground()).getColor());
         assertNotNull(view.getOutlineProvider());
         assertTrue(view.getClipToOutline());

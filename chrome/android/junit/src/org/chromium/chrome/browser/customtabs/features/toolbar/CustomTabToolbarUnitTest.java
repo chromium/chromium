@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.Minimi
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.CustomTabLocationBar;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.status.PageInfoIphController;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -116,6 +117,7 @@ public class CustomTabToolbarUnitTest {
     private final View mParentView = new View(ContextUtils.getApplicationContext());
     private BrowserStateBrowserControlsVisibilityDelegate mControlsVisibleDelegate;
     private Activity mActivity;
+    private OmniboxResourceProvider mOmniboxResourceProvider;
     private CustomTabToolbar mToolbar;
     private CustomTabLocationBar mLocationBar;
     private TextView mTitleBar;
@@ -144,6 +146,8 @@ public class CustomTabToolbarUnitTest {
         MinimizedFeatureUtils.setDeviceEligibleForMinimizedCustomTabForTesting(true);
 
         mActivity = Robolectric.buildActivity(TestActivity.class).get();
+        mOmniboxResourceProvider =
+                new OmniboxResourceProvider(mActivity, BrandedColorScheme.APP_DEFAULT);
         mToolbar =
                 (CustomTabToolbar)
                         LayoutInflater.from(mActivity)
@@ -170,7 +174,8 @@ public class CustomTabToolbarUnitTest {
                 mThemeColorProvider,
                 mIncognitoStateProvider,
                 /* incognitoWindowCountSupplier= */ null,
-                mWindowAndroid);
+                mWindowAndroid,
+                mOmniboxResourceProvider);
         mLocationBar =
                 (CustomTabLocationBar)
                         mToolbar.createLocationBar(
@@ -393,8 +398,22 @@ public class CustomTabToolbarUnitTest {
         mToolbar.onTintChanged(tint, tint, BrandedColorScheme.LIGHT_BRANDED_THEME);
 
         assertEquals(BrandedColorScheme.LIGHT_BRANDED_THEME, mToolbar.getBrandedColorScheme());
+        assertEquals(
+                BrandedColorScheme.LIGHT_BRANDED_THEME,
+                mOmniboxResourceProvider.getBrandedColorScheme());
         assertEquals(tint, ImageViewCompat.getImageTintList(mSecurityIcon));
         verify(observer).onColorSchemeChanged(initialColor, BrandedColorScheme.LIGHT_BRANDED_THEME);
+    }
+
+    @Test
+    public void testOnPrimaryColorChanged_UpdatesOmniboxResourceProviderScheme() {
+        when(mToolbarDataProvider.getPrimaryColor()).thenReturn(Color.BLACK);
+        mToolbar.onPrimaryColorChanged(/* shouldAnimate= */ false);
+
+        assertEquals(BrandedColorScheme.DARK_BRANDED_THEME, mToolbar.getBrandedColorScheme());
+        assertEquals(
+                BrandedColorScheme.DARK_BRANDED_THEME,
+                mOmniboxResourceProvider.getBrandedColorScheme());
     }
 
     private void assertUrlAndTitleVisible(boolean titleVisible, boolean urlVisible) {

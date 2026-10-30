@@ -95,7 +95,6 @@ import org.chromium.chrome.browser.toolbar.optional_button.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.signin_button.SigninButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -395,6 +394,7 @@ public class ToolbarPhoneTest {
     public void testToolbarColorSameAsSuggestionColorWhenFocus_activeColorOmnibox() {
         LocationBarCoordinator locationBarCoordinator =
                 (LocationBarCoordinator) mToolbar.getLocationBar();
+        OmniboxResourceProvider resourceProvider = mToolbar.getOmniboxResourceProviderForTesting();
         ColorDrawable toolbarBackgroundDrawable = mToolbar.getBackgroundDrawable();
         mToolbar.setLocationBarBackgroundDrawableForTesting(mLocationbarBackgroundDrawable);
         int nonFocusedRadius =
@@ -414,15 +414,12 @@ public class ToolbarPhoneTest {
                 () -> {
                     Criteria.checkThat(
                             toolbarBackgroundDrawable.getColor(),
-                            Matchers.is(
-                                    OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
-                                            mToolbar.getContext(),
-                                            BrandedColorScheme.APP_DEFAULT)));
+                            Matchers.is(resourceProvider.getSuggestionsDropdownBackgroundColor()));
                 });
-        verify(mLocationbarBackgroundDrawable)
-                .setBackgroundColor(
-                        OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
-                                mToolbar.getContext(), BrandedColorScheme.APP_DEFAULT));
+        int expectedLocationBarColor =
+                ThreadUtils.runOnUiThreadBlocking(
+                        resourceProvider::getStandardSuggestionBackgroundColor);
+        verify(mLocationbarBackgroundDrawable).setBackgroundColor(expectedLocationBarColor);
         verify(mLocationbarBackgroundDrawable, atLeastOnce()).setCornerRadius(focusedRadius);
 
         // Clear focus on the Omnibox
@@ -434,10 +431,7 @@ public class ToolbarPhoneTest {
                 () -> {
                     Criteria.checkThat(
                             toolbarBackgroundDrawable.getColor(),
-                            Matchers.not(
-                                    OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
-                                            mToolbar.getContext(),
-                                            BrandedColorScheme.APP_DEFAULT)));
+                            Matchers.not(resourceProvider.getSuggestionsDropdownBackgroundColor()));
                 });
         verify(mLocationbarBackgroundDrawable, atLeastOnce()).setBackgroundColor(anyInt());
         verify(mLocationbarBackgroundDrawable, atLeastOnce()).setCornerRadius(nonFocusedRadius);

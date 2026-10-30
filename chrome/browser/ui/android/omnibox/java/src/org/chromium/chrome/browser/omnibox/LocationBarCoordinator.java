@@ -766,11 +766,6 @@ public class LocationBarCoordinator
     }
 
     @Override
-    public OmniboxResourceProvider getResourceProvider() {
-        return mResourceProvider;
-    }
-
-    @Override
     public @Nullable OmniboxStub getOmniboxStub() {
         return mLocationBarMediator;
     }

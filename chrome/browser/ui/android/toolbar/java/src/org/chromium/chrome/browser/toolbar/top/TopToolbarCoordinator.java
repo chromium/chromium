@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
@@ -221,6 +222,7 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
      *     display.
      * @param onDownloadButtonClicked Runnable to be called when the download button is tapped.
      * @param suppressTabStripAtStart if {@code true}, suppress tab strip when Chrome starts.
+     * @param omniboxResourceProvider The {@link OmniboxResourceProvider} for Omnibox resources.
      */
     public TopToolbarCoordinator(
             ToolbarControlContainer controlContainer,
@@ -271,7 +273,8 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
             Runnable onSigninTapped,
             NonNullObservableSupplier<DownloadToolbarButtonState> downloadButtonStateSupplier,
             Runnable onDownloadButtonClicked,
-            boolean suppressTabStripAtStart) {
+            boolean suppressTabStripAtStart,
+            OmniboxResourceProvider omniboxResourceProvider) {
         mSuppressTabStripAtStart = suppressTabStripAtStart;
         mToolbarLayout = toolbarLayout;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
@@ -404,7 +407,8 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                 normalThemeColorProvider,
                 incognitoStateProvider,
                 incognitoWindowCountSupplier,
-                windowAndroid);
+                windowAndroid,
+                omniboxResourceProvider);
         mAppMenuButtonHelperSupplier = appMenuButtonHelperSupplier;
         new OneShotCallback<>(mAppMenuButtonHelperSupplier, this::setAppMenuButtonHelper);
         homepageEnabledSupplier.addSyncObserverAndCallIfNonNull(
