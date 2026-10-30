@@ -323,6 +323,73 @@ TEST_F(SerializationTest,
   EXPECT_EQ(kNotFound, final_markup.find("javascript:")) << final_markup;
 }
 
+// Regression test for https://crbug.com/578083806
+TEST_F(SerializationTest,
+       StrictlyProcessedMarkupStripsNestedSvgUseNonLocalHrefs) {
+  const String select_markup =
+      "<select><svg><use href='#safe'>"
+      "<use href='https://example.com/external.svg#payload'></use>"
+      "<use href='http://example.com/external.svg#payload'></use>"
+      "<use xlink:href='https://example.com/external.svg#payload'></use>"
+      "<use href='data:image/svg+xml,<svg id=\"x\"></svg>#x'></use>"
+      "<use href='#also-safe'></use>"
+      "</use></svg></select>";
+  const String sanitized_select = StrictlyProcessedMarkup(select_markup);
+  EXPECT_EQ(kNotFound, sanitized_select.find("external.svg"))
+      << sanitized_select;
+  EXPECT_EQ(kNotFound, sanitized_select.find("data:")) << sanitized_select;
+  EXPECT_NE(kNotFound, sanitized_select.find("href=\"#safe\""))
+      << sanitized_select;
+  EXPECT_NE(kNotFound, sanitized_select.find("href=\"#also-safe\""))
+      << sanitized_select;
+
+  const String plain_nested_markup =
+      "<svg><use href='#safe'>"
+      "<use href='https://example.com/external.svg#payload'></use>"
+      "</use></svg>";
+  const String sanitized_plain_nested =
+      StrictlyProcessedMarkup(plain_nested_markup);
+  EXPECT_EQ(kNotFound, sanitized_plain_nested.find("external.svg"))
+      << sanitized_plain_nested;
+  EXPECT_NE(kNotFound, sanitized_plain_nested.find("href=\"#safe\""))
+      << sanitized_plain_nested;
+
+  const String display_contents_markup =
+      "<svg><use href='#safe' style='display: contents'>"
+      "<use href='https://example.com/external.svg#payload' "
+      "style='display: contents'></use>"
+      "</use></svg>";
+  const String sanitized_display_contents =
+      StrictlyProcessedMarkup(display_contents_markup);
+  EXPECT_EQ(kNotFound, sanitized_display_contents.find("external.svg"))
+      << sanitized_display_contents;
+  EXPECT_NE(kNotFound, sanitized_display_contents.find("href=\"#safe\""))
+      << sanitized_display_contents;
+
+  const String deep_with_style_markup =
+      "<style>div { color: rgb(1, 2, 3); }</style>"
+      "<select><svg><use href='#safe1'><g><use href='#safe2'>"
+      "<use href='https://example.com/external.svg#payload'></use>"
+      "</use></g></use></svg></select>"
+      "<div>safe</div>";
+  const String sanitized_deep = StrictlyProcessedMarkup(deep_with_style_markup);
+  EXPECT_EQ(kNotFound, sanitized_deep.find("external.svg")) << sanitized_deep;
+  EXPECT_NE(kNotFound, sanitized_deep.find("href=\"#safe1\""))
+      << sanitized_deep;
+  EXPECT_NE(kNotFound, sanitized_deep.find("href=\"#safe2\""))
+      << sanitized_deep;
+  EXPECT_NE(kNotFound, sanitized_deep.find("color: rgb(1, 2, 3)"))
+      << sanitized_deep;
+
+  // Keeping only local <use> elements should not force heavyweight style
+  // sanitization.
+  const String local_only_markup =
+      "<div><span style=\"display: none\">hidden</span>"
+      "<svg><defs><rect id=\"r\" width=\"10\" height=\"10\"></rect></defs>"
+      "<use href=\"#r\"><use href=\"#r\"></use></use></svg></div>";
+  EXPECT_EQ(local_only_markup, StrictlyProcessedMarkup(local_only_markup));
+}
+
 // Regression test for https://crbug.com/40840595
 TEST_F(SerializationTest, CSSFontFaceLoadCrash) {
   const String markup =
