@@ -62,6 +62,12 @@ void BrowserContextDependencyManager::DisableBrowserContextServicesByDefault(
   DependencyManager::DisableContextServicesByDefault(context);
 }
 
+bool BrowserContextDependencyManager::
+    AreBrowserContextServicesDisabledByDefault(
+        content::BrowserContext* context) const {
+  return DependencyManager::AreContextServicesDisabledByDefault(context);
+}
+
 // static
 BrowserContextDependencyManager*
 BrowserContextDependencyManager::GetInstance() {

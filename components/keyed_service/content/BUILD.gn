@@ -37,6 +37,7 @@ source_set("unit_tests") {
   sources = [ "browser_context_dependency_manager_unittest.cc" ]
   deps = [
     ":content",
+    "//content/test:test_support",
     "//testing/gtest",
   ]
 }

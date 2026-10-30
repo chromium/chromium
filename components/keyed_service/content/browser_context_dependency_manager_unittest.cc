@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+
 #include "base/memory/raw_ptr.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class BrowserContextDependencyManagerUnittests : public ::testing::Test {
@@ -169,4 +172,19 @@ TEST_F(BrowserContextDependencyManagerUnittests, ComplexGraph) {
   EXPECT_STREQ("intermediary_service", (*shutdown_order())[3].c_str());
   EXPECT_STREQ("other_root", (*shutdown_order())[4].c_str());
   EXPECT_STREQ("everything_depends_on_me", (*shutdown_order())[5].c_str());
+}
+
+// Tests that AreBrowserContextServicesDisabledByDefault() is true only for the
+// contexts passed to DisableBrowserContextServicesByDefault().
+TEST_F(BrowserContextDependencyManagerUnittests, ServicesDisabledByDefault) {
+  content::BrowserTaskEnvironment task_environment;
+  content::TestBrowserContext disabled_context;
+  content::TestBrowserContext other_context;
+
+  manager()->DisableBrowserContextServicesByDefault(&disabled_context);
+
+  EXPECT_TRUE(
+      manager()->AreBrowserContextServicesDisabledByDefault(&disabled_context));
+  EXPECT_FALSE(
+      manager()->AreBrowserContextServicesDisabledByDefault(&other_context));
 }

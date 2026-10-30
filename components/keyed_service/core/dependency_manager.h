@@ -106,6 +106,10 @@ class KEYED_SERVICE_EXPORT DependencyManager {
   // Must be called before any service is created for |context|.
   void DisableContextServicesByDefault(void* context);
 
+  // Returns whether DisableContextServicesByDefault() has been called for
+  // |context|.
+  bool AreContextServicesDisabledByDefault(void* context) const;
+
  private:
   friend class KeyedServiceBaseFactory;
 
@@ -129,10 +133,6 @@ class KEYED_SERVICE_EXPORT DependencyManager {
   // specified by `factories`.
   static void DestroyFactoriesInOrder(void* context,
                                       const OrderedFactories& factories);
-
-  // Returns whether DisableContextServicesByDefault() has been called for
-  // |context|.
-  bool AreContextServicesDisabledByDefault(void* context) const;
 
   DependencyGraph dependency_graph_;
 

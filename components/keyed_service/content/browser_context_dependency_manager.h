@@ -81,6 +81,11 @@ class KEYED_SERVICE_EXPORT BrowserContextDependencyManager
   // Must be called before any service is created for |context|.
   void DisableBrowserContextServicesByDefault(content::BrowserContext* context);
 
+  // Returns whether DisableBrowserContextServicesByDefault() has been called
+  // for |context|.
+  bool AreBrowserContextServicesDisabledByDefault(
+      content::BrowserContext* context) const;
+
   static BrowserContextDependencyManager* GetInstance();
 
   BrowserContextDependencyManager(const BrowserContextDependencyManager&) =
