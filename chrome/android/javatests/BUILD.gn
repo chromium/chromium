@@ -2190,6 +2190,7 @@ android_library("chrome_unit_test_java_various") {
     ":common_unit_test_deps_java",
     "//chrome/browser/ui/android/actions:java",
     "//chrome/browser/ui/android/pdf:pdf_utils_java",
+    "//components/omnibox/browser:scheme_classifier_java",
     "//components/omnibox/common:features_java",
     "//ui/accessibility:ax_base_java",
   ]

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 
+#include <memory>
+
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -26,21 +28,14 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-static int64_t
+static jni_zero::JniUniquePtr<AutocompleteSchemeClassifier>
 JNI_ChromeAutocompleteSchemeClassifier_CreateAutocompleteClassifier(
     JNIEnv* env,
     Profile* profile) {
   CHECK(profile, base::NotFatalUntil::M161);
 
-  return reinterpret_cast<intptr_t>(
-      new ChromeAutocompleteSchemeClassifier(profile));
-}
-
-static void JNI_ChromeAutocompleteSchemeClassifier_DeleteAutocompleteClassifier(
-    JNIEnv* env,
-    int64_t chrome_autocomplete_scheme_classifier) {
-  delete reinterpret_cast<ChromeAutocompleteSchemeClassifier*>(
-      chrome_autocomplete_scheme_classifier);
+  return jni_zero::MakeUnique(std::unique_ptr<AutocompleteSchemeClassifier>(
+      std::make_unique<ChromeAutocompleteSchemeClassifier>(profile)));
 }
 #endif
 

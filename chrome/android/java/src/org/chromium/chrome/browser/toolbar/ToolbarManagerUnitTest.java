@@ -347,7 +347,7 @@ public class ToolbarManagerUnitTest {
         ChromeAutocompleteSchemeClassifierJni.setInstanceForTesting(
                 mChromeAutocompleteSchemeClassifierJni);
         when(mChromeAutocompleteSchemeClassifierJni.createAutocompleteClassifier(any()))
-                .thenReturn(1L);
+                .thenAnswer(invocation -> JniUniquePtr.createForTesting(1L));
         FaviconHelperJni.setInstanceForTesting(mFaviconHelperNatives);
         when(mFaviconHelperNatives.init()).thenReturn(1L);
         LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeNatives);

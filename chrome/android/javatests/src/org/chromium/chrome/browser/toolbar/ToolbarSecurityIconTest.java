@@ -5,6 +5,7 @@ package org.chromium.chrome.browser.toolbar;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 
@@ -110,6 +111,9 @@ public final class ToolbarSecurityIconTest {
         SecurityStateModelJni.setInstanceForTesting(mSecurityStateMocks);
         ChromeAutocompleteSchemeClassifierJni.setInstanceForTesting(
                 mChromeAutocompleteSchemeClassifierJni);
+        doAnswer(invocation -> JniUniquePtr.createForTesting(1L))
+                .when(mChromeAutocompleteSchemeClassifierJni)
+                .createAutocompleteClassifier(any());
         LocationBarModelJni.setInstanceForTesting(mLocationBarModelJni);
 
         GURL exampleUrl = JUnitTestGURLs.EXAMPLE_URL;

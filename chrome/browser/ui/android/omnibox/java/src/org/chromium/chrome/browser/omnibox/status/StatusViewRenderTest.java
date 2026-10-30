@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.status;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
@@ -18,6 +20,7 @@ import android.widget.LinearLayout;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.test.filters.MediumTest;
 
+import org.jni_zero.JniUniquePtr;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -108,6 +111,9 @@ public class StatusViewRenderTest {
     public void setUp() {
         ChromeAutocompleteSchemeClassifierJni.setInstanceForTesting(
                 mChromeAutocompleteSchemeClassifierJni);
+        doAnswer(invocation -> JniUniquePtr.createForTesting(1L))
+                .when(mChromeAutocompleteSchemeClassifierJni)
+                .createAutocompleteClassifier(any());
 
         doReturn(true).when(mIncognitoProfile).isOffTheRecord();
 

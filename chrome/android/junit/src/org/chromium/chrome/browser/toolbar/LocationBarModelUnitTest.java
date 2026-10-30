@@ -153,6 +153,8 @@ public class LocationBarModelUnitTest {
     public void setUp() {
         ChromeAutocompleteSchemeClassifierJni.setInstanceForTesting(
                 mChromeAutocompleteSchemeClassifierJni);
+        when(mChromeAutocompleteSchemeClassifierJni.createAutocompleteClassifier(any()))
+                .thenAnswer(invocation -> JniUniquePtr.createForTesting(1L));
         LocationBarModelJni.setInstanceForTesting(mLocationBarModelJni);
         OmniboxUrlEmphasizerJni.setInstanceForTesting(mOmniboxUrlEmphasizerJni);
         SecurityStateModelJni.setInstanceForTesting(mSecurityStateModelJni);

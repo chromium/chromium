@@ -381,6 +381,7 @@ android_library("util_java") {
 }
 
 generate_jni("jni_headers") {
+  deps = [ "//components/omnibox/browser:scheme_classifier_jni" ]
   sources = [
     "java/src/org/chromium/chrome/browser/omnibox/ChromeAutocompleteProviderClient.java",
     "java/src/org/chromium/chrome/browser/omnibox/ChromeAutocompleteSchemeClassifier.java",

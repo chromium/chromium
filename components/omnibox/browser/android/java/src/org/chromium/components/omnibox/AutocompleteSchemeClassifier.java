@@ -5,22 +5,32 @@
 package org.chromium.components.omnibox;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
+import org.jni_zero.JniUniquePtr;
 
 import org.chromium.build.annotations.NullMarked;
 
 /** Dumb wrapper around the pointer to the C++ class AutocompleteSchemeClassifier. */
 @NullMarked
 public class AutocompleteSchemeClassifier {
-    private final long mNativePtr;
+    @JniType("::AutocompleteSchemeClassifier")
+    public interface NativeAutocompleteSchemeClassifier extends JniTypeToken {}
 
-    protected AutocompleteSchemeClassifier(long nativePtr) {
+    private final JniUniquePtr<NativeAutocompleteSchemeClassifier> mNativePtr;
+
+    protected AutocompleteSchemeClassifier(
+            JniUniquePtr<NativeAutocompleteSchemeClassifier> nativePtr) {
         this.mNativePtr = nativePtr;
     }
 
-    public void destroy() {}
+    public void destroy() {
+        mNativePtr.destroy();
+    }
 
     @CalledByNative
-    protected long getNativePtr() {
+    protected JniPtr<NativeAutocompleteSchemeClassifier> getNativePtr() {
         return mNativePtr;
     }
 }
