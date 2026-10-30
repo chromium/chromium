@@ -110,6 +110,21 @@ public class CastWebContentsActivityTest {
         }
     }
 
+    /** Activity test subclass that counts calls to finishAndRemoveTask. */
+    public static class CastWebContentsActivityWithFinishCounter extends CastWebContentsActivity {
+        private int mFinishAndRemoveTaskCount;
+
+        @Override
+        public void finishAndRemoveTask() {
+            mFinishAndRemoveTaskCount++;
+            super.finishAndRemoveTask();
+        }
+
+        public int getFinishAndRemoveTaskCount() {
+            return mFinishAndRemoveTaskCount;
+        }
+    }
+
     private interface ObservableWebContents extends WebContents, WebContentsObserver.Observable {}
 
     private final Cell<MediaPlaying> mMediaPlaying = new Cell<>(new MediaPlaying(false, false));
@@ -207,6 +222,21 @@ public class CastWebContentsActivityTest {
         mActivity.finishForTesting();
         Intent intent = mShadowActivity.getNextStartedActivity();
         assertNull(intent);
+    }
+
+    @Test
+    public void testMultipleFinishRequestsCallFinishAndRemoveTaskOnce() {
+        ActivityController<CastWebContentsActivityWithFinishCounter> lifecycle =
+                Robolectric.buildActivity(
+                        CastWebContentsActivityWithFinishCounter.class,
+                        defaultIntentForCastWebContentsActivity(mWebContents));
+        CastWebContentsActivityWithFinishCounter activity = lifecycle.get();
+        activity.testingModeForTesting();
+        lifecycle.create().start().resume();
+
+        activity.finishForTesting();
+        lifecycle.pause().stop();
+        assertEquals(1, activity.getFinishAndRemoveTaskCount());
     }
 
     @Test

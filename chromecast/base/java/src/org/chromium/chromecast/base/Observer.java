@@ -91,4 +91,24 @@ public interface Observer<T> {
     static <A, B> Observer<Both<A, B>> both(BiFunction<? super A, ? super B, ? extends Scope> f) {
         return data -> f.apply(data.first, data.second);
     }
+
+    /**
+     * Adapts an Observer so that it can be opened at most once.
+     *
+     * <p>Subsequent activations return a no-op Scope without invoking the underlying Observer.
+     *
+     * @param <T> The type of the data to be observed.
+     * @param observer The Observer to adapt.
+     * @return An Observer that opens at most once.
+     */
+    static <T> Observer<T> once(Observer<? super T> observer) {
+        Box<Boolean> activated = new Box<>(false);
+        return data -> {
+            if (activated.value) {
+                return Scope.NO_OP;
+            }
+            activated.value = true;
+            return observer.open(data);
+        };
+    }
 }

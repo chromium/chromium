@@ -135,4 +135,33 @@ public class ObserverTest {
         sub.close();
         assertThat(result, contains("closed 1 b"));
     }
+
+    @Test
+    public void testOnceOnlyOpensOnFirstActivation() {
+        Controller<String> controller = new Controller<>();
+        List<String> result = new ArrayList<>();
+        controller.subscribe(
+                Observer.once(
+                        (String s) -> {
+                            result.add("open " + s);
+                            return () -> result.add("close " + s);
+                        }));
+        controller.set("a");
+        controller.set("b");
+        controller.set("c");
+        assertThat(result, contains("open a", "close a"));
+    }
+
+    @Test
+    public void testOnceWithObserverOfSuperclass() {
+        Controller<Derived> controller = new Controller<>();
+        List<String> result = new ArrayList<>();
+        Observer<Base> baseObserver = Observer.onOpen((Base base) -> result.add(base.toString()));
+        Observer<Derived> observer = Observer.once(baseObserver);
+        controller.subscribe(observer);
+        controller.set(new Derived());
+        controller.reset();
+        controller.set(new Derived());
+        assertThat(result, contains("Derived"));
+    }
 }

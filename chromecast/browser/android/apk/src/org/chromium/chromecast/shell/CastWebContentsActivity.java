@@ -154,7 +154,7 @@ public class CastWebContentsActivity extends ComponentActivity {
                             // process before the teardown timer in CastWebContentsSurfaceHelper
                             // fires.
                             if (!CastBrowserHelper.isBrowserInitialized()) {
-                                finishAndRemoveTask();
+                                mIsFinishingState.set("Browser process not initialized");
                                 return;
                             }
 
@@ -351,12 +351,13 @@ public class CastWebContentsActivity extends ComponentActivity {
                         });
 
         mIsFinishingState.subscribe(
-                Observer.onOpen(
-                        (String reason) -> {
-                            Log.d(TAG, "Finishing activity: %s", reason);
-                            mSurfaceHelperState.reset();
-                            finishAndRemoveTask();
-                        }));
+                Observer.once(
+                        Observer.onOpen(
+                                (String reason) -> {
+                                    Log.d(TAG, "Finishing activity: %s", reason);
+                                    mSurfaceHelperState.reset();
+                                    finishAndRemoveTask();
+                                })));
 
         // If a new Intent arrives after finishing, start a new Activity instead of recycling this.
         gotIntentAfterFinishingState.subscribe(
