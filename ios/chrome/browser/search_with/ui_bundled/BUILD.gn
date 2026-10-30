@@ -8,7 +8,9 @@ source_set("ui_bundled") {
     "search_with_mediator.mm",
   ]
   deps = [
+    "//components/contextual_search:public",
     "//components/enterprise/data_controls/core/browser:features",
+    "//components/lens",
     "//components/omnibox/browser",
     "//components/prefs",
     "//components/search_engines",
@@ -26,6 +28,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/web_selection/model",
     "//ios/web/public",
+    "//third_party/omnibox_proto",
   ]
 }
 
@@ -37,11 +40,14 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/contextual_search:prefs",
+    "//components/contextual_search:public",
     "//components/prefs",
     "//components/search_engines",
+    "//components/variations:test_support",
     "//ios/chrome/browser/aim/model:aim_availability",
     "//ios/chrome/browser/aim/model:test_support",
     "//ios/chrome/browser/cobrowse/model",
+    "//ios/chrome/browser/composebox/model",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

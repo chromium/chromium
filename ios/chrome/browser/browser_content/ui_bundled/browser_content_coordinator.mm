@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/browser_content/ui_bundled/browser_edit_menu_handler.h"
 #import "ios/chrome/browser/browser_content/ui_bundled/edit_menu_alert_delegate.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
+#import "ios/chrome/browser/composebox/model/ios_contextual_search_service_factory.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_edit_menu_builder.h"
 #import "ios/chrome/browser/enterprise/data_protection/public/features.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
@@ -130,10 +131,13 @@
       IOSChromeAimEligibilityServiceFactory::GetForProfile(profile);
   CobrowseBrowserAgent* cobrowseBrowserAgent =
       CobrowseBrowserAgent::FromBrowser(browser);
+  contextual_search::ContextualSearchService* contextualSearchService =
+      ContextualSearchServiceFactory::GetForProfile(profile);
   _searchWithMediator = [[SearchWithMediator alloc]
       initWithTemplateURLService:templateURLService
            aimEligibilityService:aimEligibilityService
             cobrowseBrowserAgent:cobrowseBrowserAgent
+         contextualSearchService:contextualSearchService
                      prefService:profile->GetPrefs()
                        incognito:incognito];
 

@@ -9,6 +9,10 @@
 
 #import "ios/chrome/browser/browser_content/model/edit_menu_builder.h"
 
+namespace contextual_search {
+class ContextualSearchService;
+}  // namespace contextual_search
+
 class AimEligibilityService;
 class CobrowseBrowserAgent;
 class PrefService;
@@ -24,6 +28,8 @@ class TemplateURLService;
     initWithTemplateURLService:(TemplateURLService*)templateURLService
          aimEligibilityService:(AimEligibilityService*)aimEligibilityService
           cobrowseBrowserAgent:(CobrowseBrowserAgent*)cobrowseBrowserAgent
+       contextualSearchService:
+           (contextual_search::ContextualSearchService*)contextualSearchService
                    prefService:(PrefService*)prefService
                      incognito:(BOOL)incognito NS_DESIGNATED_INITIALIZER;
 

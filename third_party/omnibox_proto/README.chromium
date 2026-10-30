@@ -2,8 +2,8 @@ Name: Omnibox Protos
 Short Name: omnibox_proto
 URL: This is the canonical public repository
 Update Mechanism: Manual
-Version: 1000197265
-Date: 2026-10-15
+Version: 1008882281
+Date: 2026-10-28
 License: BSD-3-Clause
 License File: LICENSE
 Shipped: yes

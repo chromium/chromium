@@ -4,14 +4,24 @@
 
 #import "ios/chrome/browser/search_with/ui_bundled/search_with_mediator.h"
 
+#import <memory>
+#import <utility>
+
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
+#import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
+#import "components/contextual_search/contextual_search_context_controller.h"
+#import "components/contextual_search/contextual_search_metrics_recorder.h"
+#import "components/contextual_search/contextual_search_service.h"
+#import "components/contextual_search/contextual_search_session_handle.h"
 #import "components/enterprise/data_controls/core/browser/features.h"
+#import "components/lens/lens_overlay_invocation_source.h"
 #import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/prefs/pref_service.h"
 #import "components/search_engines/template_url.h"
@@ -31,6 +41,7 @@
 #import "ios/chrome/browser/web_selection/model/web_selection_response.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -85,14 +96,21 @@ void LogSelectedNumberChar(NSUInteger textLength) {
   raw_ptr<AimEligibilityService> _aimEligibilityService;
   // The browser agent for cobrowse.
   raw_ptr<CobrowseBrowserAgent> _cobrowseBrowserAgent;
+  // The service for creating contextual search sessions.
+  raw_ptr<contextual_search::ContextualSearchService> _contextualSearchService;
   // The profile preference service.
   raw_ptr<PrefService> _prefService;
+  // The contextual search session handle for generating the AIM search URL.
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      _contextualSearchSession;
 }
 
 - (instancetype)
     initWithTemplateURLService:(TemplateURLService*)templateURLService
          aimEligibilityService:(AimEligibilityService*)aimEligibilityService
           cobrowseBrowserAgent:(CobrowseBrowserAgent*)cobrowseBrowserAgent
+       contextualSearchService:
+           (contextual_search::ContextualSearchService*)contextualSearchService
                    prefService:(PrefService*)prefService
                      incognito:(BOOL)incognito {
   if ((self = [super init])) {
@@ -100,15 +118,18 @@ void LogSelectedNumberChar(NSUInteger textLength) {
     _templateURLService = templateURLService;
     _aimEligibilityService = aimEligibilityService;
     _cobrowseBrowserAgent = cobrowseBrowserAgent;
+    _contextualSearchService = contextualSearchService;
     _prefService = prefService;
   }
   return self;
 }
 
 - (void)shutdown {
+  _contextualSearchSession.reset();
   _templateURLService = nullptr;
   _aimEligibilityService = nullptr;
   _cobrowseBrowserAgent = nullptr;
+  _contextualSearchService = nullptr;
   _prefService = nullptr;
 }
 
@@ -282,14 +303,10 @@ void LogSelectedNumberChar(NSUInteger textLength) {
   LogSelectedNumberChar([text length]);
 
   if (isDefaultSearchEngineGoogle && !incognito && _cobrowseBrowserAgent &&
+      _contextualSearchService &&
       IsAimCobrowseWebSelectionSearchEligible(_aimEligibilityService,
                                               _prefService)) {
-    CobrowseContext* context =
-        [CobrowseContext cobrowseContextWithSearchQuery:text];
-    context.entrypoint = AssistantAimEntrypoint::kWebSelectionSearchWith;
-    _cobrowseBrowserAgent->SetCobrowseContext(context);
-    _cobrowseBrowserAgent->SetSessionActive(true);
-    [self.sceneHandler showAssistantWithNewSession];
+    [self startCobrowseSearchForText:text];
     return;
   }
 
@@ -300,6 +317,53 @@ void LogSelectedNumberChar(NSUInteger textLength) {
                                 inBackground:NO
                                     appendTo:OpenPosition::kCurrentTab];
   [self.sceneHandler openURLInNewTab:command];
+}
+
+// Creates a contextual search session and generates the AIM URL for `text`.
+- (void)startCobrowseSearchForText:(NSString*)text {
+  auto configParams = std::make_unique<
+      contextual_search::ContextualSearchContextController::ConfigParams>();
+  configParams->send_lns_surface = false;
+  configParams->enable_viewport_images = true;
+  configParams->prioritize_suggestions_for_the_first_attached_document = true;
+
+  _contextualSearchSession = _contextualSearchService->CreateSession(
+      std::move(configParams),
+      contextual_search::ContextualSearchSource::kContextualTasks,
+      lens::LensOverlayInvocationSource::kOmniboxContextualQuery);
+  if (!_contextualSearchSession) {
+    return;
+  }
+  _contextualSearchSession->NotifySessionStarted();
+
+  auto searchURLRequestInfo =
+      std::make_unique<contextual_search::ContextualSearchContextController::
+                           CreateSearchUrlRequestInfo>();
+  searchURLRequestInfo->search_url_type =
+      contextual_search::ContextualSearchContextController::SearchUrlType::kAim;
+  searchURLRequestInfo->query_text = base::SysNSStringToUTF8(text);
+  searchURLRequestInfo->query_start_time = base::Time::Now();
+  searchURLRequestInfo->aim_entry_point =
+      omnibox::IOS_CHROME_COBROWSE_SEARCH_WITH;
+
+  __weak __typeof(self) weakSelf = self;
+  _contextualSearchSession->CreateSearchUrl(
+      std::move(searchURLRequestInfo), base::BindOnce(^(GURL URL) {
+        [weakSelf didCreateCobrowseSearchURL:std::move(URL)];
+      }));
+}
+
+// Invokes the Assistant with a new Cobrowse session once `URL` is generated.
+- (void)didCreateCobrowseSearchURL:(GURL)URL {
+  if (!_cobrowseBrowserAgent || !URL.is_valid()) {
+    return;
+  }
+  CobrowseContext* context = [[CobrowseContext alloc] initWithURL:URL];
+  context.entrypoint = AssistantAimEntrypoint::kWebSelectionSearchWith;
+  [context setContextualSearchSession:std::move(_contextualSearchSession)];
+  _cobrowseBrowserAgent->SetCobrowseContext(context);
+  _cobrowseBrowserAgent->SetSessionActive(true);
+  [self.sceneHandler showAssistantWithNewSession];
 }
 
 // Returns the action to trigger the search with feature. Calls `handler` on
