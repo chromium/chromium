@@ -2588,6 +2588,7 @@ if (is_linux) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:browser_init_state",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/web_applications",
       "//chrome/common:constants",
       "//ui/ozone",
       "//ui/views",

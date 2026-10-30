@@ -20,6 +20,7 @@
 #include <vector>
 
 #include "base/base_paths.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/environment.h"
@@ -391,6 +392,8 @@ std::string GetWMClassFromAppName(std::string app_name) {
 
 std::string GetXdgAppIdForWebApp(std::string app_name,
                                  const base::FilePath& profile_path) {
+  CHECK(!app_name.empty());
+  CHECK(!profile_path.empty());
   auto remainder = base::RemovePrefix(app_name, web_app::kCrxAppPrefix);
   if (remainder) {
     app_name = std::string(*remainder);
@@ -681,8 +684,11 @@ std::string GetDesktopFileContents(
   base::CommandLine cmd_line = shell_integration::CommandLineArgsForLauncher(
       url, extension_id, profile_path, run_on_os_login_mode);
   cmd_line.SetProgram(chrome_exe_path);
+  const std::string wmclass =
+      extension_id.empty() ? GetWMClassFromAppName(app_name)
+                           : GetXdgAppIdForWebApp(app_name, profile_path);
   return GetDesktopFileContentsForCommand(
-      cmd_line, app_name, url, title, icon_name, categories, mime_type,
+      cmd_line, app_name, url, title, icon_name, wmclass, categories, mime_type,
       no_display, GetDirectLaunchMimeTypeHandler(), std::move(action_info));
 }
 
@@ -697,6 +703,7 @@ std::string GetDesktopFileContentsForCommandImpl(
     const GURL& url,
     const std::u16string& title,
     const std::string& icon_name,
+    const std::string& wmclass,
     const std::string& categories,
     const std::string& mime_type,
     bool no_display,
@@ -774,7 +781,6 @@ std::string GetDesktopFileContentsForCommandImpl(
   if (no_display)
     g_key_file_set_string(key_file, kDesktopEntry, "NoDisplay", "true");
 
-  std::string wmclass = GetWMClassFromAppName(app_name);
   g_key_file_set_string(key_file, kDesktopEntry, "StartupWMClass",
                         wmclass.c_str());
 
@@ -802,14 +808,15 @@ std::string GetDesktopFileContentsForCommand(
     const GURL& url,
     const std::u16string& title,
     const std::string& icon_name,
+    const std::string& wmclass,
     const std::string& categories,
     const std::string& mime_type,
     bool no_display,
     std::string_view extra_mime_types,
     std::set<web_app::DesktopActionInfo> action_info) {
   return GetDesktopFileContentsForCommandImpl(
-      command_line, app_name, url, title, icon_name, categories, mime_type,
-      no_display, extra_mime_types, std::move(action_info),
+      command_line, app_name, url, title, icon_name, wmclass, categories,
+      mime_type, no_display, extra_mime_types, std::move(action_info),
       /*accepts_uris=*/false);
 }
 
@@ -827,7 +834,8 @@ std::string GetDesktopFileContentsForProfile(const base::FilePath& chrome_exe,
   // a handler, but URLs dropped onto the launcher still open in the profile.
   return GetDesktopFileContentsForCommandImpl(
       command_line, /*app_name=*/desktop_id, /*url=*/GURL(), title,
-      icon_path.value(), /*categories=*/"Network;WebBrowser;",
+      icon_path.value(), GetWMClassFromAppName(desktop_id),
+      /*categories=*/"Network;WebBrowser;",
       /*mime_type=*/"", /*no_display=*/false, /*extra_mime_types=*/"",
       /*action_info=*/{}, /*accepts_uris=*/true);
 }

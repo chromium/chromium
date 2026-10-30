@@ -437,6 +437,8 @@ TEST(ShellIntegrationTest, GetDesktopFileContents) {
 }
 
 TEST(ShellIntegrationTest, GetDesktopFileContentsForApps) {
+  base::ScopedEnvironmentVariableOverride scoped_override(
+      "CHROME_WEB_APP_DESKTOP_ID_PREFIX");
   const base::FilePath kChromeExePath("/opt/google/chrome/google-chrome");
   struct TestCases {
     const char* const url;
@@ -470,48 +472,53 @@ TEST(ShellIntegrationTest, GetDesktopFileContentsForApps) {
        "Terminal=false\n"
        "Type=Application\n"
        "Name=Lawful example\n"
-       "Exec=/opt/google/chrome/google-chrome --app-id=TestAppId\n"
+       "Exec=/opt/google/chrome/google-chrome --profile-directory=Default "
+       "--app-id=TestAppId\n"
        "Icon=IconName\n"
-       "StartupWMClass=example.app\n"
+       "StartupWMClass=chrome-TestAppId-Default\n"
        "Actions=action1;action2;action3;action4;action5\n\n"
        "[Desktop Action action1]\n"
        "Name=Action 1\n"
-       "Exec=/opt/google/chrome/google-chrome --app-id=TestAppId "
+       "Exec=/opt/google/chrome/google-chrome --profile-directory=Default "
+       "--app-id=TestAppId "
        "--app-launch-url-for-shortcuts-menu-item=https://example.com/"
        "action1\n\n"
        "[Desktop Action action2]\n"
        "Name=Action 2\n"
-       "Exec=/opt/google/chrome/google-chrome --app-id=TestAppId "
+       "Exec=/opt/google/chrome/google-chrome --profile-directory=Default "
+       "--app-id=TestAppId "
        "--app-launch-url-for-shortcuts-menu-item=https://example.com/"
        "action2\n\n"
        "[Desktop Action action3]\n"
        "Name=Action 3\n"
-       "Exec=/opt/google/chrome/google-chrome --app-id=TestAppId "
+       "Exec=/opt/google/chrome/google-chrome --profile-directory=Default "
+       "--app-id=TestAppId "
        "--app-launch-url-for-shortcuts-menu-item=https://example.com/"
        "action3\n\n"
        "[Desktop Action action4]\n"
        "Name=Action 4\n"
-       "Exec=/opt/google/chrome/google-chrome --app-id=TestAppId "
+       "Exec=/opt/google/chrome/google-chrome --profile-directory=Default "
+       "--app-id=TestAppId "
        "--app-launch-url-for-shortcuts-menu-item=https://example.com/"
        "action4\n\n"
        "[Desktop Action action5]\n"
        "Name=Action 5\n"
-       "Exec=/opt/google/chrome/google-chrome --app-id=TestAppId "
+       "Exec=/opt/google/chrome/google-chrome --profile-directory=Default "
+       "--app-id=TestAppId "
        "--app-launch-url-for-shortcuts-menu-item=https://example.com/"
        "action%%205\n"},
   });
 
   for (size_t i = 0; i < std::size(test_cases); i++) {
     SCOPED_TRACE(i);
-    EXPECT_EQ(
-        test_cases[i].expected_output,
-        GetDesktopFileContents(
-            kChromeExePath,
-            web_app::GenerateApplicationNameFromURL(GURL(test_cases[i].url)),
-            GURL(test_cases[i].url), "TestAppId",
-            base::ASCIIToUTF16(test_cases[i].title), test_cases[i].icon_name,
-            base::FilePath(), "", "", test_cases[i].nodisplay, "",
-            test_cases[i].action_info));
+    EXPECT_EQ(test_cases[i].expected_output,
+              GetDesktopFileContents(
+                  kChromeExePath,
+                  web_app::GenerateApplicationNameFromAppId("TestAppId"),
+                  GURL(test_cases[i].url), "TestAppId",
+                  base::ASCIIToUTF16(test_cases[i].title),
+                  test_cases[i].icon_name, base::FilePath("Default"), "", "",
+                  test_cases[i].nodisplay, "", test_cases[i].action_info));
   }
 }
 
@@ -780,6 +787,34 @@ TEST(ShellIntegrationTest, GetXdgAppIdForWebAppWithDesktopIdPrefix) {
   EXPECT_EQ("org.example.Browser.chrome-extensionid-Profile_1",
             GetXdgAppIdForWebApp("_crx_extensionid",
                                  base::FilePath("/tmp/Profile 1")));
+}
+
+TEST(ShellIntegrationTest, UrlShortcutKeepsLegacyStartupWMClass) {
+  const std::string contents = GetDesktopFileContents(
+      base::FilePath("/opt/google/chrome/google-chrome"), "example.com_",
+      GURL("https://example.com"), "", u"Example", "",
+      base::FilePath("/tmp/Profile 1"), "", "", false, "", {});
+  EXPECT_EQ("example.com",
+            internal::GetDesktopEntryStringValueFromFromDesktopFileForTest(
+                "StartupWMClass", contents));
+}
+
+TEST(ShellIntegrationTest, WebAppDesktopFileMatchesWindowAppId) {
+  const base::FilePath profile_path("/tmp/Profile 1");
+  const std::string app_name = "_crx_extensionid";
+  const base::FilePath chrome_exe_path("/opt/google/chrome/google-chrome");
+
+  for (const char* prefix : {"", "org.example.Browser."}) {
+    base::ScopedEnvironmentVariableOverride scoped_override(
+        "CHROME_WEB_APP_DESKTOP_ID_PREFIX", prefix);
+    const std::string contents = GetDesktopFileContents(
+        chrome_exe_path, app_name, GURL("https://example.com"), "extensionid",
+        u"Example App", "chrome-extensionid-Profile_1", profile_path,
+        "Network;", "", false, "", {});
+    EXPECT_EQ(GetXdgAppIdForWebApp(app_name, profile_path),
+              internal::GetDesktopEntryStringValueFromFromDesktopFileForTest(
+                  "StartupWMClass", contents));
+  }
 }
 
 TEST(ShellIntegrationTest, GetPerProfileDesktopId) {

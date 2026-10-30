@@ -693,6 +693,7 @@ std::string GetShortcutFileName(const base::FilePath& profile_path,
 base::FilePath GetAppDesktopShortcutFilename(const base::FilePath& profile_path,
                                              const std::string& app_id) {
   CHECK(!app_id.empty());
+  CHECK(!profile_path.empty());
   std::string shortcut_filename = GetShortcutFileName(profile_path, app_id);
   return base::FilePath(shortcut_filename.append(".desktop"));
 }

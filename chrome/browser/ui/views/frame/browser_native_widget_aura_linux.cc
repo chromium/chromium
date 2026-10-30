@@ -6,7 +6,9 @@
 
 #include <string>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/shell_integration_linux.h"
 #include "chrome/browser/ui/browser_init_state.h"
@@ -15,6 +17,7 @@
 #include "chrome/browser/ui/views/frame/browser_native_widget_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/pref_names.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/platform_window.h"
@@ -85,9 +88,15 @@ BrowserNativeWidgetAuraLinux::GetWindowClass() const {
   window_class.wm_class_class = shell_integration_linux::GetProgramClassClass();
 
   if (is_app && browser.GetProfile()) {
+    const std::string& app_name =
+        BrowserInitState::From(&browser)->create_params().app_name;
+    CHECK(!app_name.empty());
+    CHECK(!browser.GetProfile()->GetPath().empty());
     window_class.wayland_app_id = shell_integration_linux::GetXdgAppIdForWebApp(
-        BrowserInitState::From(&browser)->create_params().app_name,
-        browser.GetProfile()->GetPath());
+        app_name, browser.GetProfile()->GetPath());
+    if (base::StartsWith(app_name, web_app::kCrxAppPrefix)) {
+      window_class.wm_class_name = window_class.wayland_app_id;
+    }
   } else {
     window_class.wayland_app_id = window_class.wm_class_class;
     // Give windows of non-default profiles their own identity if a matching

@@ -85,13 +85,15 @@ std::string GetDesktopFileContents(
 
 // Returns contents for .desktop file that executes command_line. This is a more
 // general form of GetDesktopFileContents. If |no_display| is true, the shortcut
-// will not be visible to the user in menus.
+// will not be visible to the user in menus. |wmclass| is written to the
+// StartupWMClass key.
 std::string GetDesktopFileContentsForCommand(
     const base::CommandLine& command_line,
     const std::string& app_name,
     const GURL& url,
     const std::u16string& title,
     const std::string& icon_name,
+    const std::string& wmclass,
     const std::string& categories,
     const std::string& mime_type,
     bool no_display,
