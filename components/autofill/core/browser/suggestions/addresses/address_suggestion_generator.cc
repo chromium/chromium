@@ -154,16 +154,17 @@ bool ShouldUseNationalFormatPhoneNumber(FieldType trigger_field_type) {
 
 std::u16string GetFormattedPhoneNumber(const AutofillProfile& profile,
                                        const std::string& app_locale,
-                                       bool should_use_national_format) {
+                                       FieldType trigger_field_type) {
   const std::string phone_home_whole_number =
       base::UTF16ToUTF8(profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale));
   const std::string address_home_country =
       base::UTF16ToUTF8(profile.GetRawInfo(ADDRESS_HOME_COUNTRY));
 
   const std::string formatted_phone_number =
-      should_use_national_format
+      ShouldUseNationalFormatPhoneNumber(trigger_field_type)
           ? i18n::FormatPhoneNationallyForDisplay(phone_home_whole_number,
-                                                  address_home_country)
+                                                  address_home_country,
+                                                  trigger_field_type)
           : i18n::FormatPhoneForDisplay(phone_home_whole_number,
                                         address_home_country);
   return base::UTF8ToUTF16(formatted_phone_number);
@@ -565,9 +566,8 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
     std::u16string main_text = GetProfileSuggestionMainText(
         profile, app_locale, trigger_field, trigger_field_type);
     if (trigger_field_type_group == FieldTypeGroup::kPhone) {
-      main_text = GetFormattedPhoneNumber(
-          profile, app_locale,
-          ShouldUseNationalFormatPhoneNumber(trigger_field_type));
+      main_text =
+          GetFormattedPhoneNumber(profile, app_locale, trigger_field_type);
     }
     Suggestion& suggestion =
         suggestions.emplace_back(main_text, suggestion_type);

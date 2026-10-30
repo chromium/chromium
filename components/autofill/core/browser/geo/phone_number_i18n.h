@@ -11,6 +11,8 @@
 #include <string>
 #include <string_view>
 
+#include "components/autofill/core/browser/field_types.h"
+
 namespace i18n::phonenumbers {
 class PhoneNumber;
 }  // namespace i18n::phonenumbers
@@ -101,9 +103,12 @@ std::u16string GetFormattedPhoneNumberForDisplay(const AutofillProfile& profile,
 
 // Returns `phone_number` in i18n::phonenumbers::PhoneNumberUtil::
 // PhoneNumberFormat::NATIONAL format if the number is valid for
-// `country_code`. Otherwise, returns the given `phone_number`.
+// `country_code` (without a trunk prefix if `field_type` is
+// `PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX`). Otherwise, returns the
+// given `phone_number`.
 std::string FormatPhoneNationallyForDisplay(std::string_view phone_number,
-                                            const std::string& country_code);
+                                            const std::string& country_code,
+                                            FieldType field_type);
 
 // Formats the given number `phone_number` to
 // i18n::phonenumbers::PhoneNumberUtil::PhoneNumberFormat::INTERNATIONAL format

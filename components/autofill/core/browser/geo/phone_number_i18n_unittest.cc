@@ -284,32 +284,67 @@ TEST(PhoneNumberUtilTest, FormatPhoneForResponse) {
 // Tests that phone numbers are correctly formatted in a national format.
 TEST(PhoneNumberUtilTest, FormatPhoneNationallyForDisplay) {
   // Invalid US and Brazilian numbers are not formatted.
-  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("1234567890", "US"),
+  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("1234567890", "US",
+                                                  PHONE_HOME_CITY_AND_NUMBER),
             "1234567890");
-  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("(11) 13333-4444", "BR"),
+  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("(11) 13333-4444", "BR",
+                                                  PHONE_HOME_CITY_AND_NUMBER),
             "(11) 13333-4444");
-  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("(11) 13333-4444", "IN"),
+  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("(11) 13333-4444", "IN",
+                                                  PHONE_HOME_CITY_AND_NUMBER),
             "(11) 13333-4444");
 
   // Valid US, Canadian, UK, and Brazilian numbers are nationally formatted.
-  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("2024440000", "US"),
+  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("2024440000", "US",
+                                                  PHONE_HOME_CITY_AND_NUMBER),
             "(202) 444-0000");
-  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("+1(202)4440000", "US"),
+  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("+1(202)4440000", "US",
+                                                  PHONE_HOME_CITY_AND_NUMBER),
             "(202) 444-0000");
-  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("12024440000", "US"),
+  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("12024440000", "US",
+                                                  PHONE_HOME_CITY_AND_NUMBER),
             "(202) 444-0000");
-  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("(202)4440000", "US"),
+  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("(202)4440000", "US",
+                                                  PHONE_HOME_CITY_AND_NUMBER),
             "(202) 444-0000");
-  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("202-444-0000", "US"),
+  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("202-444-0000", "US",
+                                                  PHONE_HOME_CITY_AND_NUMBER),
             "(202) 444-0000");
-  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("+1(819)555 9999", "CA"),
+  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("+1(819)555 9999", "CA",
+                                                  PHONE_HOME_CITY_AND_NUMBER),
             "(819) 555-9999");
-  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("18195559999", "CA"),
+  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("18195559999", "CA",
+                                                  PHONE_HOME_CITY_AND_NUMBER),
             "(819) 555-9999");
-  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("+4402076014444", "UK"),
+  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("+4402076014444", "UK",
+                                                  PHONE_HOME_CITY_AND_NUMBER),
             "020 7601 4444");
-  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("2138835600", "BR"),
+  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay("2138835600", "BR",
+                                                  PHONE_HOME_CITY_AND_NUMBER),
             "(21) 3883-5600");
+}
+
+// Tests that phone numbers are correctly formatted in a national format
+// without trunk prefix.
+TEST(PhoneNumberUtilTest, FormatPhoneNationallyForDisplayWithoutTrunkPrefix) {
+  // Invalid number is not formatted.
+  EXPECT_EQ(
+      i18n::FormatPhoneNationallyForDisplay(
+          "5151231234", "US", PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX),
+      "5151231234");
+  // Valid numbers are formatted without trunk prefix.
+  EXPECT_EQ(
+      i18n::FormatPhoneNationallyForDisplay(
+          "5152231234", "US", PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX),
+      "(515) 223-1234");
+  EXPECT_EQ(i18n::FormatPhoneNationallyForDisplay(
+                "+4402076014444", "UK",
+                PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX),
+            "20 7601 4444");
+  EXPECT_EQ(
+      i18n::FormatPhoneNationallyForDisplay(
+          "+4930123456", "DE", PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX),
+      "30 123456");
 }
 
 // Tests that the phone numbers are correctly formatted to display to the user.

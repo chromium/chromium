@@ -1119,6 +1119,27 @@ TEST_F(AddressSuggestionGeneratorTest,
   EXPECT_EQ(suggestions[0].main_text.value, u"+1 234-567-8910");
 }
 
+// Tests that the suggestion text for
+// `PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX` is formatted the same way
+// as `PHONE_HOME_CITY_AND_NUMBER`, but without the trunk prefix.
+TEST_F(AddressSuggestionGeneratorTest,
+       CreateSuggestionsFromProfiles_PhoneNumberWithoutTrunkPrefix) {
+  AutofillProfile profile(AddressCountryCode("US"));
+  profile.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"+4930123456");
+
+  auto get_suggestions = [&](FieldType type) {
+    return CreateSuggestionsFromProfilesForTest({profile}, {type},
+                                                SuggestionType::kAddressEntry,
+                                                type, FormFieldData());
+  };
+  EXPECT_THAT(get_suggestions(PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX),
+              SuggestionVectorMainTextsAre(Suggestion::Text(
+                  u"30 123456", Suggestion::Text::IsPrimary(true))));
+  EXPECT_THAT(get_suggestions(PHONE_HOME_CITY_AND_NUMBER),
+              SuggestionVectorMainTextsAre(Suggestion::Text(
+                  u"030 123456", Suggestion::Text::IsPrimary(true))));
+}
+
 // Tests that suggestions are not offered on non address fields.
 TEST_F(AddressSuggestionGeneratorTest, NotAddressField) {
   AutofillProfile profile1 = test::GetFullProfile();
