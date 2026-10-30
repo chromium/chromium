@@ -40,6 +40,7 @@ source_set("unit_tests") {
   sources = [
     "file_transfer_portal_unittest.cc",
     "portal_unittest.cc",
+    "request_unittest.cc",
     "session_unittest.cc",
     "systemd_unittest.cc",
   ]

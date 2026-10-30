@@ -63,10 +63,18 @@ void Request::Initialize(dbus::ObjectProxy* object_proxy,
   options["handle_token"] =
       dbus_utils::Variant::Wrap<"s">(std::move(handle_token));
   dbus_utils::WriteValue(*writer, options);
+  method_call_pending_ = true;
+  dbus::ObjectProxy::ResponseOrErrorCallback callback;
+  if (is_long_lived()) {
+    callback = base::BindOnce(
+        &Request::OnLongLivedMethodResponse, weak_ptr_factory_.GetWeakPtr(),
+        close_after_reply_, bus_, portal_service_name_, request_object_path_);
+  } else {
+    callback = base::BindOnce(&Request::OnMethodResponse,
+                              weak_ptr_factory_.GetWeakPtr());
+  }
   object_proxy->CallMethodWithErrorResponse(
-      method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-      base::BindOnce(&Request::OnMethodResponse,
-                     weak_ptr_factory_.GetWeakPtr()));
+      method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT, std::move(callback));
 }
 
 Request::Request(scoped_refptr<dbus::Bus> bus, ResponseCallback callback)
@@ -79,8 +87,53 @@ Request::~Request() {
     return;
   }
 
+  if (is_long_lived() && method_call_pending_) {
+    // The request's object path isn't known yet. OnLongLivedMethodResponse()
+    // closes the request once it is.
+    close_after_reply_->data = true;
+    return;
+  }
+
+  CloseRequest(std::move(bus_), portal_service_name_, request_object_path_);
+}
+
+// static
+void Request::OnLongLivedMethodResponse(
+    base::WeakPtr<Request> request,
+    scoped_refptr<base::RefCountedData<bool>> close_after_reply,
+    scoped_refptr<dbus::Bus> bus,
+    const std::string& portal_service_name,
+    const dbus::ObjectPath& expected_object_path,
+    dbus::Response* response,
+    dbus::ErrorResponse* error_response) {
+  if (request) {
+    request->OnMethodResponse(response, error_response);
+    return;
+  }
+  if (!close_after_reply->data) {
+    return;
+  }
+
+  dbus::ObjectPath object_path;
+  if (response) {
+    dbus::MessageReader reader(response);
+    reader.PopObjectPath(&object_path);
+  }
+  if (object_path != expected_object_path) {
+    bus->RemoveObjectProxy(portal_service_name, expected_object_path,
+                           base::DoNothing());
+  }
+  if (object_path.IsValid()) {
+    CloseRequest(std::move(bus), portal_service_name, object_path);
+  }
+}
+
+// static
+void Request::CloseRequest(scoped_refptr<dbus::Bus> bus,
+                           const std::string& portal_service_name,
+                           const dbus::ObjectPath& request_object_path) {
   auto* request_proxy =
-      bus_->GetObjectProxy(portal_service_name_, request_object_path_);
+      bus->GetObjectProxy(portal_service_name, request_object_path);
   dbus::MethodCall method_call(kRequestInterface, "Close");
   request_proxy->CallMethod(
       &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
@@ -90,8 +143,17 @@ Request::~Request() {
             bus->RemoveObjectProxy(portal_service_name, request_object_path,
                                    base::DoNothing());
           },
-          std::move(bus_), std::move(request_object_path_),
-          std::move(portal_service_name_)));
+          std::move(bus), request_object_path, portal_service_name));
+}
+
+void Request::EndRequest() {
+  if (!bus_) {
+    return;
+  }
+  bus_->RemoveObjectProxy(portal_service_name_, request_object_path_,
+                          base::DoNothing());
+  bus_.reset();
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void Request::SetCallback(ResponseCallback callback) {
@@ -100,13 +162,20 @@ void Request::SetCallback(ResponseCallback callback) {
 }
 
 void Request::Release() {
+  // Long-lived requests must be closed to end their effect.
+  CHECK(!is_long_lived());
   released_ = true;
 }
 
 void Request::OnMethodResponse(dbus::Response* response,
                                dbus::ErrorResponse* error_response) {
+  method_call_pending_ = false;
   if (!response) {
     VLOG(1) << "Method call failed.";
+    if (is_long_lived()) {
+      // No request object was created, so there is nothing to close.
+      EndRequest();
+    }
     Finish(base::unexpected(ResponseError::kMethodCallFailed));
     return;
   }
@@ -204,10 +273,16 @@ void Request::Finish(base::expected<Dictionary, ResponseError>&& result) {
     return;
   }
 
-  bus_->RemoveObjectProxy(portal_service_name_, request_object_path_,
-                          base::DoNothing());
-  bus_.reset();
-  weak_ptr_factory_.InvalidateWeakPtrs();
+  // A long-lived request stays open after it succeeds, until this object is
+  // destroyed. It may also exist if connecting to the signal failed. Other
+  // errors mean the request is over or was never created.
+  const bool keep_open =
+      is_long_lived() &&
+      (result.has_value() ||
+       result.error() == ResponseError::kSignalConnectionFailed);
+  if (!keep_open) {
+    EndRequest();
+  }
   std::move(callback_).Run(std::move(result));
   // `this` may be destroyed by the callback.
 }
