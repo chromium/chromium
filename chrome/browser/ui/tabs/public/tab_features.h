@@ -462,11 +462,6 @@ class TabFeatures {
     return page_action_controller_.get();
   }
 
-  JsOptimizationsPageActionController*
-  js_optimizations_page_action_controller() {
-    return js_optimizations_page_action_controller_.get();
-  }
-
   FileSystemAccessPageActionController*
   file_system_access_page_action_controller() {
     return file_system_access_page_action_controller_.get();

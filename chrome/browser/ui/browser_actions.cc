@@ -913,9 +913,8 @@ void BrowserActions::InitializePageActionIconActions() {
                         .toolbar_button_provider()
                         ->GetBubbleAnchor(kActionShowJsOptimizationsIcon);
 
-                bwi->GetActiveTabInterface()
-                    ->GetTabFeatures()
-                    ->js_optimizations_page_action_controller()
+                JsOptimizationsPageActionController::From(
+                    bwi->GetActiveTabInterface())
                     ->ShowBubble(anchor, item);
               },
               bwi))

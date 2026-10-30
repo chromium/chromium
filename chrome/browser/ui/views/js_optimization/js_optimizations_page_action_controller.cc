@@ -35,6 +35,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(JsOptimizationsPageActionController,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(JsOptimizationsPageActionController,
                                       kBubbleButtonElementId);
 
+DEFINE_USER_DATA(JsOptimizationsPageActionController);
+
 namespace {
 JsOptimizationsPageActionController::BubbleCreatedCallback& GetTestCallback() {
   static base::NoDestructor<
@@ -50,11 +52,18 @@ void JsOptimizationsPageActionController::SetBubbleCreatedCallbackForTesting(
   GetTestCallback() = std::move(callback);
 }
 
+// static
+JsOptimizationsPageActionController* JsOptimizationsPageActionController::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
+
 JsOptimizationsPageActionController::JsOptimizationsPageActionController(
     tabs::TabInterface& tab_interface,
     page_actions::PageActionController& page_action_controller)
     : tabs::ContentsObservingTabFeature(tab_interface),
-      page_action_controller_(page_action_controller) {
+      page_action_controller_(page_action_controller),
+      scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
   UpdateIconVisibility();
 }
 

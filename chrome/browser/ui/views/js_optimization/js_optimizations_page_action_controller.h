@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 namespace page_actions {
@@ -30,6 +31,8 @@ class ActionItem;
 class JsOptimizationsPageActionController
     : public tabs::ContentsObservingTabFeature {
  public:
+  DECLARE_USER_DATA(JsOptimizationsPageActionController);
+
   explicit JsOptimizationsPageActionController(
       tabs::TabInterface& tab_interface,
       page_actions::PageActionController& page_action_controller);
@@ -38,6 +41,8 @@ class JsOptimizationsPageActionController
       const JsOptimizationsPageActionController&) = delete;
   JsOptimizationsPageActionController& operator=(
       const JsOptimizationsPageActionController&) = delete;
+
+  static JsOptimizationsPageActionController* From(tabs::TabInterface* tab);
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBubbleBodyElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kBubbleButtonElementId);
@@ -61,6 +66,9 @@ class JsOptimizationsPageActionController
 
   const raw_ref<page_actions::PageActionController> page_action_controller_;
   raw_ptr<views::BubbleDialogModelHost> bubble_ = nullptr;
+
+  ui::ScopedUnownedUserData<JsOptimizationsPageActionController>
+      scoped_unowned_user_data_;
 
   base::WeakPtrFactory<JsOptimizationsPageActionController> weak_factory_{this};
 };

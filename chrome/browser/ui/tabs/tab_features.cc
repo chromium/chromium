@@ -604,8 +604,9 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   if (page_action_controller_->ActionExists(kActionShowJsOptimizationsIcon)) {
     js_optimizations_page_action_controller_ =
-        std::make_unique<JsOptimizationsPageActionController>(
-            tab, *page_action_controller_);
+        GetUserDataFactory()
+            .CreateInstance<JsOptimizationsPageActionController>(
+                tab, tab, *page_action_controller_);
   }
 
   page_context_eligibility_helper_ =
