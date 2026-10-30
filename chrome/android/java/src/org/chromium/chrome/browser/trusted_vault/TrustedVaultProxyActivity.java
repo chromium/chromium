@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.sync.ui;
+package org.chromium.chrome.browser.trusted_vault;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
@@ -17,21 +17,53 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.ServiceImpl;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.components.trusted_vault.SecurityDomainId;
 import org.chromium.components.trusted_vault.TrustedVaultClient;
+import org.chromium.components.trusted_vault.TrustedVaultClient.ProxyIntentFactory;
 import org.chromium.components.trusted_vault.TrustedVaultUserActionTriggerForUMA;
 
 /**
- * {@link SyncTrustedVaultProxyActivity} has no own UI and just acts as a proxy to launch an
- * activity related to trusted vault user actions (passed via PendingIntent). The reason for using
- * this proxy activity is to detect when the proxied activity (key retrieval or degraded
- * recoverability fix UI) finishes and notify TrustedVaultClient about changes.
+ * {@link TrustedVaultProxyActivity} has no own UI and just acts as a proxy to launch an activity
+ * related to trusted vault user actions (passed via PendingIntent). The reason for using this proxy
+ * activity is to detect when the proxied activity (key retrieval or degraded recoverability fix UI)
+ * finishes and notify TrustedVaultClient about changes.
  */
 @NullMarked
-public class SyncTrustedVaultProxyActivity extends AsyncInitializationActivity {
+public class TrustedVaultProxyActivity extends AsyncInitializationActivity {
+    /** {@link ServiceImpl} implementation of {@link ProxyIntentFactory}. */
+    @ServiceImpl(ProxyIntentFactory.class)
+    public static final class ProxyIntentFactoryImpl implements ProxyIntentFactory {
+        /** {@link ProxyIntentFactory} implementation. */
+        @Override
+        public Intent createKeyRetrievalProxyIntent(
+                PendingIntent keyRetrievalIntent,
+                @TrustedVaultUserActionTriggerForUMA int userActionTrigger,
+                @SecurityDomainId int securityDomainId) {
+            return createProxyIntent(
+                    keyRetrievalIntent,
+                    userActionTrigger,
+                    REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL,
+                    securityDomainId);
+        }
+
+        /** {@link ProxyIntentFactory} implementation. */
+        @Override
+        public Intent createRecoverabilityDegradedProxyIntent(
+                PendingIntent recoverabilityDegradedIntent,
+                @TrustedVaultUserActionTriggerForUMA int userActionTrigger,
+                @SecurityDomainId int securityDomainId) {
+            return createProxyIntent(
+                    recoverabilityDegradedIntent,
+                    userActionTrigger,
+                    REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED,
+                    securityDomainId);
+        }
+    }
+
     private static final String TAG = "SyncUI";
 
     // Note that the implementation relies on request codes being >0 (default value for
@@ -43,58 +75,25 @@ public class SyncTrustedVaultProxyActivity extends AsyncInitializationActivity {
     private static final String EXTRA_KEY_PROXIED_INTENT = "proxied_intent";
     private static final String EXTRA_KEY_REQUEST_CODE = "request_code";
     private static final String EXTRA_KEY_USER_ACTION_TRIGGER = "user_action_trigger";
+    private static final String EXTRA_KEY_SECURITY_DOMAIN_ID = "security_domain_id";
 
     private @TrustedVaultUserActionTriggerForUMA int mUserActionTrigger;
     private int mRequestCode;
-
-    /**
-     * Creates an intent that launches an SyncTrustedVaultProxyActivity for the purpose of
-     * key retrieval.
-     *
-     * @param keyRetrievalIntent Actual key retrieval intent, which will be launched by
-     * SyncTrustedVaultProxyActivity.
-     * @param userActionTrigger Enum representing which UI surface triggered the intent.
-     *
-     * @return the intent for launching SyncTrustedVaultProxyActivity
-     */
-    public static Intent createKeyRetrievalProxyIntent(
-            PendingIntent keyRetrievalIntent,
-            @TrustedVaultUserActionTriggerForUMA int userActionTrigger) {
-        return createProxyIntent(
-                keyRetrievalIntent, userActionTrigger, REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL);
-    }
-
-    /**
-     * Creates an intent that launches an SyncTrustedVaultProxyActivity for the purpose of
-     * fixing the recoverability degraded case.
-     *
-     * @param recoverabilityDegradedIntent Actual recoverability degraded fix intent, which will be
-     *         launched by SyncTrustedVaultProxyActivity.
-     * @param userActionTrigger Enum representing which UI surface triggered the intent.
-     *
-     * @return the intent for launching SyncTrustedVaultProxyActivity
-     */
-    public static Intent createRecoverabilityDegradedProxyIntent(
-            PendingIntent recoverabilityDegradedIntent,
-            @TrustedVaultUserActionTriggerForUMA int userActionTrigger) {
-        return createProxyIntent(
-                recoverabilityDegradedIntent,
-                userActionTrigger,
-                REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED);
-    }
+    private @SecurityDomainId int mSecurityDomainId;
 
     private static Intent createProxyIntent(
             PendingIntent proxiedIntent,
             @TrustedVaultUserActionTriggerForUMA int userActionTrigger,
-            int requestCode) {
+            int requestCode,
+            @SecurityDomainId int securityDomainId) {
         Intent proxyIntent =
-                new Intent(
-                        ContextUtils.getApplicationContext(), SyncTrustedVaultProxyActivity.class);
+                new Intent(ContextUtils.getApplicationContext(), TrustedVaultProxyActivity.class);
         proxyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         proxyIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         proxyIntent.putExtra(EXTRA_KEY_PROXIED_INTENT, proxiedIntent);
         proxyIntent.putExtra(EXTRA_KEY_REQUEST_CODE, requestCode);
         proxyIntent.putExtra(EXTRA_KEY_USER_ACTION_TRIGGER, userActionTrigger);
+        proxyIntent.putExtra(EXTRA_KEY_SECURITY_DOMAIN_ID, securityDomainId);
         return proxyIntent;
     }
 
@@ -112,10 +111,12 @@ public class SyncTrustedVaultProxyActivity extends AsyncInitializationActivity {
                 IntentUtils.safeGetParcelableExtra(getIntent(), EXTRA_KEY_PROXIED_INTENT);
         mRequestCode = getIntent().getIntExtra(EXTRA_KEY_REQUEST_CODE, -1);
         mUserActionTrigger = getIntent().getIntExtra(EXTRA_KEY_USER_ACTION_TRIGGER, -1);
+        mSecurityDomainId = getIntent().getIntExtra(EXTRA_KEY_SECURITY_DOMAIN_ID, -1);
 
         assert proxiedIntent != null;
         assert mRequestCode != -1;
         assert mUserActionTrigger != -1;
+        assert mSecurityDomainId != -1;
 
         try {
             startIntentSenderForResult(
@@ -171,12 +172,12 @@ public class SyncTrustedVaultProxyActivity extends AsyncInitializationActivity {
         // notifications (SyncErrorNotifier), because the user may ignore or dismiss a notification.
         switch (mRequestCode) {
             case REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL:
-                TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC)
+                TrustedVaultClient.get(mSecurityDomainId)
                         .recordKeyRetrievalTrigger(mUserActionTrigger);
                 break;
 
             case REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED:
-                TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC)
+                TrustedVaultClient.get(mSecurityDomainId)
                         .recordRecoverabilityDegradedFixTrigger(mUserActionTrigger);
                 break;
 
@@ -195,13 +196,12 @@ public class SyncTrustedVaultProxyActivity extends AsyncInitializationActivity {
                 // Upon key retrieval completion, the keys in TrustedVaultClient could have changed.
                 // This is done even if the user cancelled the flow (i.e. resultCode != RESULT_OK)
                 // because it's harmless to issue a redundant notifyKeysChanged().
-                TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC)
-                        .notifyKeysChanged(mUserActionTrigger);
+                TrustedVaultClient.get(mSecurityDomainId).notifyKeysChanged(mUserActionTrigger);
                 break;
 
             case REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED:
                 // Same as above, it is harmless to issue redundant notifyRecoverabilityChanged().
-                TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC).notifyRecoverabilityChanged();
+                TrustedVaultClient.get(mSecurityDomainId).notifyRecoverabilityChanged();
                 break;
 
             default:

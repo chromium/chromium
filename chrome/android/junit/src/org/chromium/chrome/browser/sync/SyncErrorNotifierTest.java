@@ -14,6 +14,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.os.Bundle;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -49,8 +50,14 @@ public class SyncErrorNotifierTest {
     @Mock private NotificationManagerProxy mNotificationManagerProxy;
     @Mock private SyncService mSyncService;
     @Mock private TrustedVaultClient mTrustedVaultClient;
+    @Mock private TrustedVaultClient.ProxyIntentFactory mTrustedVaultProxyIntent;
 
     @Captor private ArgumentCaptor<NotificationWrapper> mNotificationWrapperCaptor;
+
+    @Before
+    public void setup() {
+        when(mTrustedVaultClient.getProxyIntentFactory()).thenReturn(mTrustedVaultProxyIntent);
+    }
 
     @Test
     public void testNoNotification() {

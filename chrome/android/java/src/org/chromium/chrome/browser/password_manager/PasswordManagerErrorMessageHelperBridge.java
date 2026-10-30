@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.chrome.browser.sync.ui.SyncTrustedVaultProxyActivity;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.AccountInfo;
@@ -147,13 +146,19 @@ public class PasswordManagerErrorMessageHelperBridge {
         assert activity instanceof ChromeBaseAppCompatActivity;
         final ChromeBaseAppCompatActivity chromeActivity = (ChromeBaseAppCompatActivity) activity;
 
-        TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC)
+        TrustedVaultClient trustedVaultClient =
+                TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC);
+        trustedVaultClient
                 .createKeyRetrievalIntent(primaryAccountInfo)
                 .then(
                         (intent) -> {
                             var proxyIntent =
-                                    SyncTrustedVaultProxyActivity.createKeyRetrievalProxyIntent(
-                                            intent, trustedVaultUserActionTriggerForUMA);
+                                    trustedVaultClient
+                                            .getProxyIntentFactory()
+                                            .createKeyRetrievalProxyIntent(
+                                                    intent,
+                                                    trustedVaultUserActionTriggerForUMA,
+                                                    SecurityDomainId.CHROME_SYNC);
                             ActivityResultTracker tracker =
                                     chromeActivity.getActivityResultTracker();
                             ActivityResultTracker.ResultListener listener =

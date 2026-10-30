@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitio
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.chrome.browser.sync.ui.PassphraseActivity;
-import org.chromium.chrome.browser.sync.ui.SyncTrustedVaultProxyActivity;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
@@ -256,9 +255,13 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
                 .then(
                         realIntent ->
                                 promise.fulfill(
-                                        SyncTrustedVaultProxyActivity.createKeyRetrievalProxyIntent(
-                                                realIntent,
-                                                TrustedVaultUserActionTriggerForUMA.NOTIFICATION)),
+                                        mTrustedVaultClient
+                                                .getProxyIntentFactory()
+                                                .createKeyRetrievalProxyIntent(
+                                                        realIntent,
+                                                        TrustedVaultUserActionTriggerForUMA
+                                                                .NOTIFICATION,
+                                                        SecurityDomainId.CHROME_SYNC)),
                         exception -> promise.reject(exception));
         return promise;
     }

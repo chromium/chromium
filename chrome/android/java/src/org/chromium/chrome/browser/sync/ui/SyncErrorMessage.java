@@ -72,6 +72,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
     private final SyncService mSyncService;
     private final MessageDispatcher mMessageDispatcher;
     private final PropertyModel mModel;
+    private final TrustedVaultClient mTrustedVaultClient;
     private static @Nullable MessageDispatcher sMessageDispatcherForTesting;
 
     private static final UnownedUserDataKey<SyncErrorMessage> SYNC_ERROR_MESSAGE_KEY =
@@ -136,6 +137,7 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
         mIdentityManager = identityManager;
         mSyncService = assumeNonNull(SyncServiceFactory.getForProfile(mProfile));
         mSyncService.addSyncStateChangedListener(this);
+        mTrustedVaultClient = TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC);
 
         String errorMessage = getMessage(activity);
         String title = getTitle(activity);
@@ -345,16 +347,19 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
         if (primaryAccountInfo == null) {
             return;
         }
-        TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC)
+        mTrustedVaultClient
                 .createKeyRetrievalIntent(primaryAccountInfo)
                 .then(
                         (intent) -> {
                             IntentUtils.safeStartActivity(
                                     getApplicationContext(),
-                                    SyncTrustedVaultProxyActivity.createKeyRetrievalProxyIntent(
-                                            intent,
-                                            TrustedVaultUserActionTriggerForUMA
-                                                    .NEW_TAB_PAGE_INFOBAR));
+                                    mTrustedVaultClient
+                                            .getProxyIntentFactory()
+                                            .createKeyRetrievalProxyIntent(
+                                                    intent,
+                                                    TrustedVaultUserActionTriggerForUMA
+                                                            .NEW_TAB_PAGE_INFOBAR,
+                                                    SecurityDomainId.CHROME_SYNC));
                         },
                         (exception) -> {
                             var error = exception == null ? "unknown error." : exception;
@@ -370,15 +375,16 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener {
         if (primaryAccountInfo == null) {
             return;
         }
-        TrustedVaultClient.get(SecurityDomainId.CHROME_SYNC)
+        mTrustedVaultClient
                 .createRecoverabilityDegradedIntent(primaryAccountInfo)
                 .then(
                         (intent) -> {
                             var action = TrustedVaultUserActionTriggerForUMA.NEW_TAB_PAGE_INFOBAR;
                             var proxyIntent =
-                                    SyncTrustedVaultProxyActivity
+                                    mTrustedVaultClient
+                                            .getProxyIntentFactory()
                                             .createRecoverabilityDegradedProxyIntent(
-                                                    intent, action);
+                                                    intent, action, SecurityDomainId.CHROME_SYNC);
                             IntentUtils.safeStartActivity(getApplicationContext(), proxyIntent);
                         },
                         (exception) -> {
