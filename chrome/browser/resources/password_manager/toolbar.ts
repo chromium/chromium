@@ -7,7 +7,6 @@ import 'chrome://resources/cr_elements/cr_drawer/cr_drawer.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 
-import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import type {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import type {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -24,11 +23,8 @@ export interface PasswordManagerToolbarElement {
   };
 }
 
-const PASSWORD_MANAGER_OVERFLOW_MENU_ELEMENT_ID =
-    'PasswordManagerUI::kOverflowMenuElementId';
-
 const PasswordManagerToolbarElementBase =
-    HelpBubbleMixin(I18nMixin(RouteObserverMixin(PolymerElement)));
+    I18nMixin(RouteObserverMixin(PolymerElement));
 
 export class PasswordManagerToolbarElement extends
     PasswordManagerToolbarElementBase {
@@ -52,21 +48,6 @@ export class PasswordManagerToolbarElement extends
 
   override currentRouteChanged(newRoute: Route, _oldRoute: Route): void {
     this.updateSearchTerm(newRoute.queryParameters);
-  }
-
-  override ready() {
-    super.ready();
-    this.$.mainToolbar.addEventListener('dom-change', (e) => {
-      const crToolbar = e.target as HTMLElement;
-      if (!crToolbar) {
-        return;
-      }
-      const menuButton = crToolbar.shadowRoot?.getElementById('menuButton');
-      if (menuButton) {
-        this.registerHelpBubble(
-            PASSWORD_MANAGER_OVERFLOW_MENU_ELEMENT_ID, menuButton);
-      }
-    });
   }
 
   get searchField(): CrToolbarSearchFieldElement {

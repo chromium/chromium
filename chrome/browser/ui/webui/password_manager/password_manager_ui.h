@@ -55,9 +55,7 @@ class PasswordManagerUI : public ui::MojoWebUIController,
   static scoped_refptr<base::RefCountedMemory> GetFaviconResourceBytes(
       ui::ResourceScaleFactor scale_factor);
 
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSettingsMenuItemElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAddShortcutElementId);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOverflowMenuElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSharePasswordElementId);
   DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kAddShortcutCustomEventId);
 

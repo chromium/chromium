@@ -9,7 +9,6 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import './cr_nav_menu_item_style.css.js';
 import './icons.html.js';
 
-import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import type {CrMenuSelectorElement} from 'chrome://resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -49,15 +48,10 @@ export interface PasswordManagerSideBarElement {
   $: {
     menu: CrMenuSelectorElement,
     compromisedPasswords: HTMLElement,
-    settings: HTMLElement,
   };
 }
 
-const PASSWORD_MANAGER_SETTINGS_MENU_ITEM_ELEMENT_ID =
-    'PasswordManagerUI::kSettingsMenuItemElementId';
-
-const PasswordManagerSideBarElementBase =
-    HelpBubbleMixin(RouteObserverMixin(PolymerElement));
+const PasswordManagerSideBarElementBase = RouteObserverMixin(PolymerElement);
 
 export class PasswordManagerSideBarElement extends
     PasswordManagerSideBarElementBase {
@@ -101,8 +95,6 @@ export class PasswordManagerSideBarElement extends
                     });
               })
               .length;
-      this.registerHelpBubble(
-          PASSWORD_MANAGER_SETTINGS_MENU_ITEM_ELEMENT_ID, this.$.settings);
     };
 
     PasswordManagerImpl.getInstance().getInsecureCredentials().then(

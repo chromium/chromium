@@ -823,11 +823,7 @@ void AddPluralStrings(content::WebUI* web_ui) {
 
 }  // namespace
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordManagerUI,
-                                      kSettingsMenuItemElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordManagerUI, kAddShortcutElementId);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordManagerUI,
-                                      kOverflowMenuElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordManagerUI,
                                       kSharePasswordElementId);
 DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(PasswordManagerUI,
@@ -858,10 +854,8 @@ PasswordManagerUI::PasswordManagerUI(content::WebUI* web_ui)
 
   ui::TrackedElementHandlerDocumentSingleton::Register(
       this, std::vector<ui::ElementIdentifier>{
-                PasswordManagerUI::kSettingsMenuItemElementId,
                 PasswordManagerUI::kAddShortcutElementId,
-                PasswordManagerUI::kSharePasswordElementId,
-                PasswordManagerUI::kOverflowMenuElementId});
+                PasswordManagerUI::kSharePasswordElementId});
 }
 
 PasswordManagerUI::~PasswordManagerUI() = default;
