@@ -32,8 +32,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/theme_provider.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -356,9 +356,10 @@ content::WebContents* SimpleWebViewDialog::GetActiveWebContents() const {
   return web_view_->web_contents();
 }
 
-void SimpleWebViewDialog::HandleCommandWithDisposition(int id,
-                                                       WindowOpenDisposition,
-                                                       base::TimeTicks) {
+void SimpleWebViewDialog::HandleCommandWithDisposition(
+    int id,
+    ui::mojom::WindowOpenDisposition,
+    base::TimeTicks) {
   WebContents* web_contents = web_view_->web_contents();
   switch (id) {
     case IDC_BACK:

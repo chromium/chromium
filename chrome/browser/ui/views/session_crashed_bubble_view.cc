@@ -48,7 +48,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
@@ -94,8 +94,8 @@ bool DoesSupportConsentCheck() {
 void OpenUmaLink(BrowserWindowInterface* browser, const ui::Event& event) {
   browser->OpenGURL(
       GURL("https://support.google.com/chrome/answer/96817"),
-      ui::DispositionFromEventFlags(event.flags(),
-                                    WindowOpenDisposition::kNewForegroundTab));
+      ui::DispositionFromEventFlags(
+          event.flags(), ui::mojom::WindowOpenDisposition::kNewForegroundTab));
   RecordBubbleHistogramValue(SESSION_CRASHED_BUBBLE_HELP);
 }
 

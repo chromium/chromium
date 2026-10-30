@@ -36,7 +36,7 @@
 #include "storage/browser/test/test_file_system_context.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -116,7 +116,7 @@ class WebFileHandlersFileLaunchBrowserTest
                            const extensions::ExtensionId& extension_id,
                            apps::LaunchCallback callback) {
     const int32_t event_flags =
-        apps::GetEventFlags(WindowOpenDisposition::kNewWindow,
+        apps::GetEventFlags(ui::mojom::WindowOpenDisposition::kNewWindow,
                             /*prefer_container=*/true);
     apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())
         ->LaunchAppWithIntent(extension_id, event_flags, std::move(intent),

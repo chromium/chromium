@@ -66,7 +66,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/gfx/native_ui_types.h"
@@ -1342,7 +1342,7 @@ IN_PROC_BROWSER_TEST_F(WebstoreReinstallerDialogViewTest,
   // tab.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://www.google.com/"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   base::RunLoop run_loop;
   views::AnyWidgetObserver install_dialog_observer(

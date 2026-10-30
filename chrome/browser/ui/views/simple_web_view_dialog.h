@@ -18,6 +18,7 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -103,7 +104,7 @@ class SimpleWebViewDialog : public views::View,
 
   // Implements CommandUpdaterDelegate:
   void HandleCommandWithDisposition(int id,
-                                    WindowOpenDisposition,
+                                    ui::mojom::WindowOpenDisposition,
                                     base::TimeTicks) override;
 
  private:

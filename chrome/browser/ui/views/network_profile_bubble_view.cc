@@ -19,8 +19,8 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/label.h"
@@ -94,8 +94,8 @@ bool NetworkProfileBubbleView::Accept() {
 void NetworkProfileBubbleView::LinkClicked(const ui::Event& event) {
   NetworkProfileBubble::RecordUmaEvent(
       NetworkProfileBubble::METRIC_LEARN_MORE_CLICKED);
-  WindowOpenDisposition disposition = ui::DispositionFromEventFlags(
-      event.flags(), WindowOpenDisposition::kNewForegroundTab);
+  ui::mojom::WindowOpenDisposition disposition = ui::DispositionFromEventFlags(
+      event.flags(), ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           GURL("https://sites.google.com/a/chromium.org/dev/administrators/"

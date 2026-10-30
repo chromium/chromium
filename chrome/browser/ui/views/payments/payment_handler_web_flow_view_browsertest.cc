@@ -62,8 +62,8 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/button.h"
@@ -1366,7 +1366,8 @@ IN_PROC_BROWSER_TEST_F(
   // behavior and prevent accidental parent tab navigation.
   content::OpenURLParams current_tab_params =
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL("https://example.com"), WindowOpenDisposition::kCurrentTab,
+          GURL("https://example.com"),
+          ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_LINK);
   EXPECT_EQ(nullptr, payment_handler_contents->GetDelegate()->OpenURLFromTab(
                          payment_handler_contents, current_tab_params,
@@ -1376,7 +1377,8 @@ IN_PROC_BROWSER_TEST_F(
   // parent tab's WebContents.
   content::OpenURLParams new_tab_params =
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL("https://example.com"), WindowOpenDisposition::kNewForegroundTab,
+          GURL("https://example.com"),
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK);
   content::WebContents* result =
       payment_handler_contents->GetDelegate()->OpenURLFromTab(

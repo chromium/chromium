@@ -13,7 +13,7 @@
 #include "media/capture/capture_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/views/controls/label.h"
 
 namespace {
@@ -32,7 +32,7 @@ class TestInfoBarManager : public infobars::InfoBarManager {
 
   int GetActiveEntryID() override { return 0; }
   void OpenURL(const GURL& url,
-               WindowOpenDisposition disposition,
+               ui::mojom::WindowOpenDisposition disposition,
                const std::string& text_fragment) override {}
 };
 

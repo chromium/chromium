@@ -29,8 +29,8 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/test/ui_controls.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/focus/focus_manager.h"
@@ -298,7 +298,7 @@ void KeyboardAccessTest::TestSystemMenuReopenClosedTabWithKeyboard() {
 
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("chrome://version/"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   ASSERT_EQ(1, browser()->GetTabStripModel()->active_index());
@@ -438,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, ReserveKeyboardAccelerators) {
       "</script></html>";
   GURL url("data:text/html," + kBadPage);
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, true,
@@ -446,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardAccessTest, ReserveKeyboardAccelerators) {
   ASSERT_EQ(0, browser()->GetTabStripModel()->active_index());
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_EQ(2, browser()->GetTabStripModel()->active_index());
 
@@ -537,7 +537,7 @@ IN_PROC_BROWSER_TEST_F(KeyboardAccessSimplificationKombuchaTest,
             ui_test_utils::NavigateToURL(browser(), GURL("chrome://version/")));
         ui_test_utils::NavigateToURLWithDisposition(
             browser(), GURL("chrome://version/"),
-            WindowOpenDisposition::kNewForegroundTab,
+            ui::mojom::WindowOpenDisposition::kNewForegroundTab,
             ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
         ASSERT_EQ(1, browser()->GetTabStripModel()->active_index());
         browser()->GetTabStripModel()->CloseSelectedTabs();

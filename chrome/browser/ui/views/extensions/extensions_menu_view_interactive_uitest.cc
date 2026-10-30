@@ -46,7 +46,7 @@
 #include "extensions/test/permissions_manager_waiter.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/widget_test.h"
@@ -755,7 +755,7 @@ IN_PROC_BROWSER_TEST_P(ActivateWithReloadExtensionsMenuInteractiveUITest,
     EXPECT_TRUE(action_runner->WantsToRun(extension.get()));
     // Manual reload should then allow for script inject and blocked actions to
     // run.
-    chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+    chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
     ASSERT_TRUE(content::WaitForLoadStop(web_contents));
     EXPECT_TRUE(DidInjectScript(web_contents));
     EXPECT_FALSE(action_runner->WantsToRun(extension.get()));

@@ -43,9 +43,9 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/gfx/animation/animation_test_api.h"
@@ -98,13 +98,14 @@ class RecordingOpenURLDelegate : public content::WebContentsDelegate {
 
   int call_count() const { return call_count_; }
   content::WebContents* source() const { return source_; }
-  WindowOpenDisposition disposition() const { return disposition_; }
+  ui::mojom::WindowOpenDisposition disposition() const { return disposition_; }
   const GURL& url() const { return url_; }
 
  private:
   int call_count_ = 0;
   raw_ptr<content::WebContents> source_ = nullptr;
-  WindowOpenDisposition disposition_ = WindowOpenDisposition::kUnknown;
+  ui::mojom::WindowOpenDisposition disposition_ =
+      ui::mojom::WindowOpenDisposition::kUnknown;
   GURL url_;
 };
 
@@ -114,7 +115,7 @@ class RecordingAddNewContentsDelegate : public content::WebContentsDelegate {
       content::WebContents* source,
       std::unique_ptr<content::WebContents> new_contents,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override {
@@ -129,12 +130,13 @@ class RecordingAddNewContentsDelegate : public content::WebContentsDelegate {
 
   int call_count() const { return call_count_; }
   content::WebContents* source() const { return source_; }
-  WindowOpenDisposition disposition() const { return disposition_; }
+  ui::mojom::WindowOpenDisposition disposition() const { return disposition_; }
 
  private:
   int call_count_ = 0;
   raw_ptr<content::WebContents> source_ = nullptr;
-  WindowOpenDisposition disposition_ = WindowOpenDisposition::kUnknown;
+  ui::mojom::WindowOpenDisposition disposition_ =
+      ui::mojom::WindowOpenDisposition::kUnknown;
   std::unique_ptr<content::WebContents> new_contents_;
 };
 
@@ -906,7 +908,7 @@ TEST_F(DocumentPipHostTest, AddNewContents_BlocksWhenOpenerHasNoDelegate) {
   auto popup =
       content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
   host->AddNewContents(host->GetChildWebContents(), std::move(popup), GURL(),
-                       WindowOpenDisposition::kNewPopup,
+                       ui::mojom::WindowOpenDisposition::kNewPopup,
                        blink::mojom::WindowFeatures(), /*user_gesture=*/false,
                        &was_blocked);
   EXPECT_TRUE(was_blocked);
@@ -924,7 +926,8 @@ TEST_F(DocumentPipHostTest, OpenURLFromTab_CurrentTabClosesPipWindow) {
 
   content::OpenURLParams params =
       content::OpenURLParams::CreateRendererInitiated(
-          GURL("https://example.test/"), WindowOpenDisposition::kCurrentTab,
+          GURL("https://example.test/"),
+          ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_LINK, content::Referrer(),
           child->GetPrimaryMainFrame()->GetCurrentInitiatorNavigationState());
   EXPECT_EQ(nullptr, host->OpenURLFromTab(child, params, base::NullCallback()));
@@ -953,7 +956,7 @@ TEST_F(DocumentPipHostTest, OpenURLFromTab_NewForegroundTabRoutesToOpener) {
 
   content::OpenURLParams params =
       content::OpenURLParams::CreateRendererInitiated(
-          url, WindowOpenDisposition::kNewForegroundTab,
+          url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK, content::Referrer(),
           child->GetPrimaryMainFrame()->GetCurrentInitiatorNavigationState());
   EXPECT_EQ(opener(),
@@ -961,7 +964,7 @@ TEST_F(DocumentPipHostTest, OpenURLFromTab_NewForegroundTabRoutesToOpener) {
 
   EXPECT_EQ(1, opener_delegate.call_count());
   EXPECT_EQ(opener(), opener_delegate.source());
-  EXPECT_EQ(WindowOpenDisposition::kNewForegroundTab,
+  EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
             opener_delegate.disposition());
   EXPECT_EQ(url, opener_delegate.url());
   EXPECT_TRUE(host->GetWidget());
@@ -1425,14 +1428,16 @@ TEST_F(DocumentPipHostTest, AddNewContents_ForwardsToOpenerDelegate) {
   auto popup =
       content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
   content::WebContents* popup_ptr = popup.get();
-  content::WebContents* result = host->AddNewContents(
-      host->GetChildWebContents(), std::move(popup), GURL(),
-      WindowOpenDisposition::kNewPopup, blink::mojom::WindowFeatures(),
-      /*user_gesture=*/true, &was_blocked);
+  content::WebContents* result =
+      host->AddNewContents(host->GetChildWebContents(), std::move(popup),
+                           GURL(), ui::mojom::WindowOpenDisposition::kNewPopup,
+                           blink::mojom::WindowFeatures(),
+                           /*user_gesture=*/true, &was_blocked);
 
   EXPECT_EQ(1, opener_delegate.call_count());
   EXPECT_EQ(opener(), opener_delegate.source());
-  EXPECT_EQ(WindowOpenDisposition::kNewPopup, opener_delegate.disposition());
+  EXPECT_EQ(ui::mojom::WindowOpenDisposition::kNewPopup,
+            opener_delegate.disposition());
   EXPECT_EQ(popup_ptr, result);
   EXPECT_FALSE(was_blocked);
   opener()->SetDelegate(nullptr);

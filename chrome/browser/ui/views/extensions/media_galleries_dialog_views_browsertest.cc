@@ -20,8 +20,8 @@
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -61,7 +61,8 @@ class MediaGalleriesInteractiveDialogTest : public DialogBrowserTest {
     EXPECT_CALL(controller_, WebContents())
         .WillRepeatedly(testing::Return(content));
     ui_test_utils::NavigateToURLWithDispositionBlockUntilNavigationsComplete(
-        browser(), about_blank, 1, WindowOpenDisposition::kCurrentTab,
+        browser(), about_blank, 1,
+        ui::mojom::WindowOpenDisposition::kCurrentTab,
         IsInteractiveUi() ? ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP : 0);
   }
 

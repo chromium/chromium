@@ -74,8 +74,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/window.h"
 #include "ui/base/base_window.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_policy.h"
@@ -540,7 +540,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest,
   NavigateParams p(browser_window_interface(), GURL("http://www.google.com"),
                    ui::PAGE_TRANSITION_LINK);
   p.window_action = NavigateParams::WindowAction::kShowWindow;
-  p.disposition = WindowOpenDisposition::kSingletonTab;
+  p.disposition = ui::mojom::WindowOpenDisposition::kSingletonTab;
   Navigate(&p);
 
   // Click the "Cancel" button.

@@ -73,7 +73,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/color_palette.h"
@@ -485,7 +485,7 @@ content::WebContents* PaymentHandlerWebFlowViewController::OpenURLFromTab(
   // Reject CURRENT_TAB to maintain existing behavior for internal navigations.
   // OpenURLFromTab is implemented so that external links (e.g. PageInfo "Learn
   // more") are routed to the parent tab.
-  if (params.disposition == WindowOpenDisposition::kCurrentTab) {
+  if (params.disposition == ui::mojom::WindowOpenDisposition::kCurrentTab) {
     return nullptr;
   }
   if (!state() || !state()->GetWebContents()) {
@@ -498,7 +498,7 @@ content::WebContents* PaymentHandlerWebFlowViewController::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {
@@ -507,8 +507,8 @@ content::WebContents* PaymentHandlerWebFlowViewController::AddNewContents(
   BrowserWindowInterface* const browser =
       ProfileBrowserCollection::GetForProfile(profile_)->GetLastActiveBrowser();
   if (browser && user_gesture &&
-      (disposition == WindowOpenDisposition::kNewForegroundTab ||
-       disposition == WindowOpenDisposition::kNewPopup)) {
+      (disposition == ui::mojom::WindowOpenDisposition::kNewForegroundTab ||
+       disposition == ui::mojom::WindowOpenDisposition::kNewPopup)) {
     chrome::AddWebContents(browser, source, std::move(new_contents), target_url,
                            disposition, window_features);
   }
