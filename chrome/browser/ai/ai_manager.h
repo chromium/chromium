@@ -208,6 +208,7 @@ class AIManager : public base::SupportsUserData::Data,
           client);
 
 #if !BUILDFLAG(IS_ANDROID)
+  // Validates `options` (setting `backend` if unset) and compiles the schema.
   base::expected<DecisionModelSchemaCompiler::CompiledSchema,
                  blink::mojom::ModelAvailabilityCheckResult>
   CheckDecisionModelOptions(

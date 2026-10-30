@@ -730,7 +730,31 @@ TEST_F(AIManagerTest, CreateDecisionModelWithExplicitBackendOption) {
               optimization_guide::proto::PassageEmbeddingsModelMetadata()),
       });
 
-  // Verify availability can be checked per backend.
+  // Verify availability defaults to the first enabled backend and can be
+  // checked per backend.
+  {
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    ai_manager_->CanCreateDecisionModel(
+        blink::mojom::AIDecisionModelCreateOptions::New(),
+        future.GetCallback());
+    EXPECT_EQ(future.Get(),
+              blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+  }
+  {
+    base::test::ScopedFeatureList reversed_list;
+    reversed_list.InitWithFeaturesAndParameters(
+        {{blink::features::kAIDecisionModelAPI,
+          {{"backend", "language_model,embedding_gemma_v1"}}},
+         {on_device_model::features::kOnDeviceModelForceCpuBackend, {}},
+         {optimization_guide::kOptimizationGuideManifestBroker, {}}},
+        {});
+    base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+    ai_manager_->CanCreateDecisionModel(
+        blink::mojom::AIDecisionModelCreateOptions::New(),
+        future.GetCallback());
+    EXPECT_EQ(future.Get(),
+              blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
+  }
   {
     auto options = blink::mojom::AIDecisionModelCreateOptions::New();
     options->backend = AIManager::DecisionModelBackend::kLanguageModel;
@@ -771,6 +795,52 @@ TEST_F(AIManagerTest, CreateDecisionModelWithExplicitBackendOption) {
   GetAIManagerRemote().FlushForTesting();
 
   EXPECT_EQ(GetAIManagerContextBoundObjectSetSize(), 2u);
+}
+
+TEST_F(AIManagerTest, DecisionModelRejectsDisabledBackendOption) {
+  for (bool enable_embedding_gemma_v1 : {true, false}) {
+    SCOPED_TRACE(enable_embedding_gemma_v1);
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeaturesAndParameters(
+        {{blink::features::kAIDecisionModelAPI,
+          {{"backend", enable_embedding_gemma_v1 ? "embedding_gemma_v1"
+                                                 : "language_model"}}},
+         {on_device_model::features::kOnDeviceModelForceCpuBackend, {}},
+         {optimization_guide::kOptimizationGuideManifestBroker, {}}},
+        {});
+    const auto enabled =
+        enable_embedding_gemma_v1
+            ? AIManager::DecisionModelBackend::kEmbeddingGemmaV1
+            : AIManager::DecisionModelBackend::kLanguageModel;
+    const auto disabled =
+        enable_embedding_gemma_v1
+            ? AIManager::DecisionModelBackend::kLanguageModel
+            : AIManager::DecisionModelBackend::kEmbeddingGemmaV1;
+
+    for (auto backend : {enabled, disabled}) {
+      auto options = blink::mojom::AIDecisionModelCreateOptions::New();
+      options->backend = backend;
+      base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+      ai_manager_->CanCreateDecisionModel(std::move(options),
+                                          future.GetCallback());
+      EXPECT_EQ(future.Get(),
+                backend == enabled
+                    ? blink::mojom::ModelAvailabilityCheckResult::kDownloadable
+                    : blink::mojom::ModelAvailabilityCheckResult::
+                          kUnavailableFeatureNotEnabled);
+    }
+
+    mojo::PendingRemote<blink::mojom::AIManagerCreateDecisionModelClient>
+        client;
+    std::ignore = client.InitWithNewPipeAndPassReceiver();
+    auto options = MakeBooleanDecisionModelOptions();
+    options->backend = disabled;
+    mojo::test::BadMessageObserver bad_message_observer;
+    GetAIManagerRemote()->CreateDecisionModel(
+        std::move(client), std::move(options), mojo::NullRemote());
+    EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+              "Decisions API backend unavailable");
+  }
 }
 #else
 TEST_F(AIManagerTest, CanCreateDecisionModelUnavailableOnAndroid) {

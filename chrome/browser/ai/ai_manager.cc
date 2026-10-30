@@ -4,8 +4,12 @@
 
 #include "chrome/browser/ai/ai_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
+#include <string_view>
+#include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/containers/fixed_flat_set.h"
@@ -18,6 +22,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
@@ -720,18 +725,6 @@ std::string_view AILanguageModelSamplingModeToString(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-AIManager::DecisionModelBackend GetDecisionModelBackend() {
-  using Backend = AIManager::DecisionModelBackend;
-  static constexpr base::FeatureParam<Backend>::Option kOptions[] = {
-      {Backend::kEmbeddingGemmaV1, "embedding_gemma_v1"},
-      {Backend::kLanguageModel, "language_model"},
-  };
-  const base::FeatureParam<Backend> kBackend{
-      &blink::features::kAIDecisionModelAPI, "backend",
-      Backend::kEmbeddingGemmaV1, &kOptions};
-  return kBackend.Get();
-}
-
 // Only the manifest broker resolves the Prompt API's model from its feature
 // config. Also requires the CPU backend as a temporary workaround for GPU
 // backend scoring issues: on GPU, scoring options back to back on session
@@ -747,6 +740,32 @@ bool AreLanguageModelDecisionModelFeaturesEnabled() {
              optimization_guide::kOptimizationGuideManifestBroker) &&
          base::FeatureList::IsEnabled(
              on_device_model::features::kOnDeviceModelForceCpuBackend);
+}
+
+// Returns backends enabled by `backend` (`"*"` or `,`-separated names; use
+// `%2C` on `--enable-features`); the first enabled backend is the default.
+std::vector<AIManager::DecisionModelBackend> GetEnabledDecisionModelBackends() {
+  using Backend = AIManager::DecisionModelBackend;
+  static constexpr std::pair<std::string_view, Backend> kBackends[] = {
+      {"embedding_gemma_v1", Backend::kEmbeddingGemmaV1},
+      {"language_model", Backend::kLanguageModel},
+  };
+  const base::FeatureParam<std::string> kBackend{
+      &blink::features::kAIDecisionModelAPI, "backend", "*"};
+  std::vector<Backend> enabled;
+  for (const std::string& token :
+       base::SplitString(kBackend.Get(), ",", base::TRIM_WHITESPACE,
+                         base::SPLIT_WANT_NONEMPTY)) {
+    for (const auto& [name, backend] : kBackends) {
+      if ((token == "*" || token == name) &&
+          (backend != Backend::kLanguageModel ||
+           AreLanguageModelDecisionModelFeaturesEnabled()) &&
+          !std::ranges::contains(enabled, backend)) {
+        enabled.push_back(backend);
+      }
+    }
+  }
+  return enabled;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -1985,6 +2004,20 @@ AIManager::CheckDecisionModelOptions(
     blink::mojom::AIDecisionModelCreateOptionsPtr& options,
     bool require_questions) {
   CHECK(options);
+  const std::vector<DecisionModelBackend> enabled =
+      GetEnabledDecisionModelBackends();
+  if (!options->backend && !enabled.empty()) {
+    options->backend = enabled.front();
+  }
+  if (!options->backend || !std::ranges::contains(enabled, *options->backend)) {
+    // Blink only creates after `CanCreateDecisionModel()` reports the API as
+    // available, which it never does when the backend is disabled.
+    if (require_questions) {
+      receivers_.ReportBadMessage("Decisions API backend unavailable");
+    }
+    return base::unexpected(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableFeatureNotEnabled);
+  }
   // TODO(crbug.com/565849508): Track supported languages for DecisionModel.
   if (!CheckAndFixLanguages(
           options, "DecisionModel",
@@ -2038,15 +2071,7 @@ void AIManager::CanCreateDecisionModel(
     return;
   }
 
-  const DecisionModelBackend backend =
-      options->backend.value_or(GetDecisionModelBackend());
-
-  if (backend == DecisionModelBackend::kLanguageModel) {
-    if (!AreLanguageModelDecisionModelFeaturesEnabled()) {
-      std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
-                                  kUnavailableFeatureNotEnabled);
-      return;
-    }
+  if (options->backend == DecisionModelBackend::kLanguageModel) {
     // Same foundation model and use case as the Prompt API, resolved from its
     // feature config, which is also what picks the model version (e.g. Gemma
     // 4).
@@ -2057,7 +2082,7 @@ void AIManager::CanCreateDecisionModel(
     return;
   }
 
-  CHECK_EQ(backend, DecisionModelBackend::kEmbeddingGemmaV1);
+  CHECK_EQ(*options->backend, DecisionModelBackend::kEmbeddingGemmaV1);
   auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
   if (!service_launcher->AllowedToLaunch()) {
     std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
@@ -2093,26 +2118,18 @@ void AIManager::CreateDecisionModel(
     receivers_.ReportBadMessage("Policy or user setting disabled");
     return;
   }
-  const DecisionModelBackend backend =
-      options->backend.value_or(GetDecisionModelBackend());
   auto schema = CheckDecisionModelOptions(options, /*require_questions=*/true);
   if (!schema.has_value()) {
     return;
   }
 
-  if (backend == DecisionModelBackend::kLanguageModel) {
-    // Blink only creates after `CanCreateDecisionModel()` reports the API as
-    // available, which it never does without these.
-    if (!AreLanguageModelDecisionModelFeaturesEnabled()) {
-      receivers_.ReportBadMessage("Decisions API backend unavailable");
-      return;
-    }
+  if (options->backend == DecisionModelBackend::kLanguageModel) {
     CreateLanguageModelDecisionModel(
         std::move(client), std::move(schema).value(), std::move(monitor));
     return;
   }
 
-  CHECK_EQ(backend, DecisionModelBackend::kEmbeddingGemmaV1);
+  CHECK_EQ(*options->backend, DecisionModelBackend::kEmbeddingGemmaV1);
   auto* service_launcher = AISemanticEmbedderServiceLauncher::Get();
   if (!service_launcher->AllowedToLaunch()) {
     on_device_ai::SendClientRemoteError(
