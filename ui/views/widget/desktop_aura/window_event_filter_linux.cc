@@ -51,13 +51,13 @@ void WindowEventFilterLinux::HandleLocatedEventWithHitTest(
     gfx::Vector2d delta =
         event->AsMouseEvent()->location() - begin_drag_location_.value();
     if (abs(delta.x()) >= threshold || abs(delta.y()) >= threshold) {
-      ResetCaptionHold();
+      begin_drag_location_.reset();
       MaybeDispatchHostWindowDragMovement(HTCAPTION, event);
     }
     return;
   }
 
-  ResetCaptionHold();
+  begin_drag_location_.reset();
 
   if (event->IsTouchEvent()) {
     HandleTouchEventWithHitTest(hit_test, event->AsTouchEvent());
@@ -142,10 +142,6 @@ void WindowEventFilterLinux::OnClickedCaption(ui::MouseEvent* event,
     }
   } else if (event->changed_button_flags() & ui::EF_LEFT_MOUSE_BUTTON) {
     begin_drag_location_ = event->location();
-    // Prevent a renderer-initiated data drag from latching onto the held
-    // button while the window-drag threshold has not yet been reached.
-    caption_hold_drag_suppression_ =
-        DesktopDragDropClientOzone::ScopedSuppressForWindowMove();
     return;
   } else {
     return;
@@ -204,11 +200,6 @@ void WindowEventFilterLinux::OnClickedCaption(ui::MouseEvent* event,
       break;
     }
   }
-}
-
-void WindowEventFilterLinux::ResetCaptionHold() {
-  begin_drag_location_.reset();
-  caption_hold_drag_suppression_.RunAndReset();
 }
 
 void WindowEventFilterLinux::HandleTouchEventWithHitTest(

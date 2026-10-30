@@ -53,10 +53,6 @@ class VIEWS_EXPORT WindowEventFilterLinux : public ui::EventHandler {
   // Called when the user clicked the caption area.
   void OnClickedCaption(ui::MouseEvent* event, int previous_click_component);
 
-  // Clears `begin_drag_location_` and releases the associated data drag
-  // suppression.
-  void ResetCaptionHold();
-
   // Tracks touches pressed on the caption or a resize border and suppresses
   // data drags while they are held.
   void HandleTouchEventWithHitTest(int hit_test, ui::TouchEvent* event);
@@ -98,11 +94,6 @@ class VIEWS_EXPORT WindowEventFilterLinux : public ui::EventHandler {
   // The drag will only happen if the system-provided mouse move threshold is
   // met.
   std::optional<gfx::Point> begin_drag_location_;
-
-  // Suppresses renderer-initiated data drags while `begin_drag_location_` is
-  // set, so that a data drag cannot latch onto the user's caption click-hold.
-  // Must be reset whenever `begin_drag_location_` is reset.
-  base::ScopedClosureRunner caption_hold_drag_suppression_;
 
   // The pointer ID of a touch that was pressed on the caption or a resize
   // border and has not yet been released or cancelled.

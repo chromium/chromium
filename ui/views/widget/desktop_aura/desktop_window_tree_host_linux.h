@@ -105,9 +105,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
   FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformImplTestWithTouch,
                            HitTest);
   FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformImplTest,
-                           CaptionHoldSuppressesDataDrag);
-  FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformImplTest,
-                           CaptionClickReleaseEndsDragSuppression);
+                           CaptionHoldHandsOffMoveAfterThreshold);
   FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformImplTest,
                            CaptionTouchHoldSuppressesDataDrag);
   FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformImplTest,
