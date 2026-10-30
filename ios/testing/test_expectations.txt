@@ -256,3 +256,4 @@ crbug.com/579169631 [ iPhone Simulator ] BrowserEditMenuHandlerTestCase/testURLM
 crbug.com/579112740 [ Simulator ] BrowserEditMenuHandlerTestCase/testUnitMenu [ Pass Failure ]
 crbug.com/579253465 [ Simulator ] BrowserEditMenuHandlerTestCase/testBasicMenu [ Pass Failure ]
 crbug.com/579499405 [ iPhone Simulator ] BrowserEditMenuHandlerTestCase/testPhoneMenu [ Pass Failure ]
+crbug.com/579570304 GeminiExplainWithGeminiTestCase/testExplainWithGeminiSignedOut [ Pass Failure ]
