@@ -116,7 +116,7 @@ def _ParseArgs(args):
     parser.add_argument(
         '--skip-custom-d8',
         action='store_true',
-        help='When rebuilding the CustomD8 jar, this may be '
+        help='When rebuilding the ChromeD8 jar, this may be '
         'necessary to avoid incompatibility with the new r8 '
         'jar.',
     )
@@ -386,14 +386,9 @@ def _CreateFinalDex(
 
 
 def _ScanClassInputJars(class_inputs):
-    """Returns ({jar: [(subpath, size), ...]}, [service_jars], {skipped_jars}).
-
-    skipped_jars contains jars with .class entries that are not dexed (e.g.
-    META-INF/versions/9/Foo.class in multi-release jars).
-    """
+    """Returns ({jar: [(subpath, size), ...]}, [service_jars])."""
     jar_class_entries = {}
     service_jars = []
-    skipped_jars = set()
     for jar in class_inputs:
         entries = []
         has_services = False
@@ -406,14 +401,10 @@ def _ScanClassInputJars(class_inputs):
                     'META-INF/services/'
                 ) and not subpath.endswith('/'):
                     has_services = True
-                elif subpath.endswith('.class') and (
-                    os.path.basename(subpath) not in _SKIPPED_CLASS_FILE_NAMES
-                ):
-                    skipped_jars.add(jar)
         jar_class_entries[jar] = entries
         if has_services:
             service_jars.append(jar)
-    return jar_class_entries, service_jars, skipped_jars
+    return jar_class_entries, service_jars
 
 
 def _IsClassFile(path):
@@ -488,17 +479,13 @@ def _PartitionClassEntriesIntoShards(jar_class_entries, target_shard_size):
     return [dict(s) for s in shards if s]
 
 
-def _BuildJarInputArgs(shard_map, jar_class_entries, skipped_jars=()):
+def _BuildJarInputArgs(shard_map, jar_class_entries):
     args = []
     for jar, entry_names in shard_map.items():
         if not entry_names:
             continue
         args += ['--jar-input', jar]
-        # Without --jar-class, CustomD8 dexes every .class entry in the jar,
-        # including ones that _IsClassFile() skips.
-        if jar in skipped_jars or len(entry_names) < len(
-            jar_class_entries[jar]
-        ):
+        if len(entry_names) < len(jar_class_entries[jar]):
             for name in entry_names:
                 args += ['--jar-class', name]
     return args
@@ -510,7 +497,6 @@ def _CreateIntermediateDexJar(
     dex_cmd,
     output_jar,
     jar_class_entries,
-    skipped_jars,
     services_map,
 ):
     num_classes = sum(len(v) for v in jar_class_entries.values())
@@ -537,9 +523,7 @@ def _CreateIntermediateDexJar(
     shard_dex_cmd = [a for a in dex_cmd if a != _GRAALVM_XMS_FLAG]
 
     def run_shard(idx):
-        cmd_args = _BuildJarInputArgs(
-            shards[idx], jar_class_entries, skipped_jars
-        )
+        cmd_args = _BuildJarInputArgs(shards[idx], jar_class_entries)
         _RunD8(
             shard_dex_cmd + cmd_args,
             [],
@@ -623,12 +607,12 @@ def main(args):
 
     depfile_deps = options.class_inputs_filearg + options.dex_inputs_filearg
 
-    use_custom_d8_binary = (
+    use_chrome_d8_binary = (
         not options.skip_custom_d8
         and sys.platform == 'linux'
         and platform.machine() == 'x86_64'
     )
-    if use_custom_d8_binary:
+    if use_chrome_d8_binary:
         dex_cmd = [
             _CHROME_D8_BINARY_PATH,
             f'-Djava.home={build_utils.JAVA_HOME}',
@@ -656,11 +640,11 @@ def main(args):
             options.r8_jar_path,
             'com.android.tools.r8.D8',
         ]
-    elif not use_custom_d8_binary:
+    elif not use_chrome_d8_binary:
         dex_cmd += [
             '-cp',
             f'{options.r8_jar_path}:{options.custom_d8_jar_path}',
-            'org.chromium.build.CustomD8',
+            'org.chromium.build.ChromeD8',
         ]
 
     if options.release:
@@ -701,11 +685,11 @@ def main(args):
             options.intermediate
             and options.class_inputs
             and not options.dex_inputs
-            and use_custom_d8_binary
+            and use_chrome_d8_binary
             and not options.dump_inputs
         ):
-            jar_class_entries, class_service_jars, skipped_jars = (
-                _ScanClassInputJars(options.class_inputs)
+            jar_class_entries, class_service_jars = _ScanClassInputJars(
+                options.class_inputs
             )
             services_map = _CreateServicesMap(class_service_jars)
             _CreateIntermediateDexJar(
@@ -714,7 +698,6 @@ def main(args):
                 dex_cmd,
                 output.name,
                 jar_class_entries,
-                skipped_jars,
                 services_map,
             )
         else:

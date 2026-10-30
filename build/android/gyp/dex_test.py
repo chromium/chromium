@@ -305,9 +305,7 @@ Warning: Missing class com.example.Foo
                 z.writestr('META-INF/services/pkg.Svc', b'pkg.Bar\n')
                 z.writestr('META-INF/versions/9/pkg/Bar.class', b'c' * 50)
 
-            entries, service_jars, skipped_jars = dex._ScanClassInputJars(
-                [jar1, jar2]
-            )
+            entries, service_jars = dex._ScanClassInputJars([jar1, jar2])
             self.assertEqual(
                 entries,
                 {
@@ -316,7 +314,6 @@ Warning: Missing class com.example.Foo
                 },
             )
             self.assertEqual(service_jars, [jar2])
-            self.assertEqual(skipped_jars, {jar2})
 
     def testPartitionClassEntriesIntoShards_KeepsNestsTogether(self):
         jar_entries = {
@@ -348,15 +345,13 @@ Warning: Missing class com.example.Foo
         jar_entries = {
             'full.jar': [('a/A.class', 10), ('a/B.class', 20)],
             'part.jar': [('b/C.class', 10), ('b/D.class', 20)],
-            'skipped.jar': [('c/E.class', 10)],
         }
         shard = {
             'full.jar': ['a/A.class', 'a/B.class'],
             'part.jar': ['b/D.class'],
             'empty.jar': [],
-            'skipped.jar': ['c/E.class'],
         }
-        args = dex._BuildJarInputArgs(shard, jar_entries, {'skipped.jar'})
+        args = dex._BuildJarInputArgs(shard, jar_entries)
         self.assertEqual(
             args,
             [
@@ -366,10 +361,6 @@ Warning: Missing class com.example.Foo
                 'part.jar',
                 '--jar-class',
                 'b/D.class',
-                '--jar-input',
-                'skipped.jar',
-                '--jar-class',
-                'c/E.class',
             ],
         )
 
