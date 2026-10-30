@@ -1,1 +1,1 @@
-chromeos-chrome-amd64-159.0.8128.0_pre1728684_rc-r1-merged.afdo.bz2
+chromeos-chrome-amd64-159.0.8130.0_pre1729752_rc-r1-merged.afdo.bz2
