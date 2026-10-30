@@ -13,9 +13,12 @@
   "sign": [
     "remoting_core.dll",
     "remoting_crashpad_handler.exe",
+    "remoting_curtain.exe",
     "remoting_desktop.exe",
     "remoting_host.exe",
     "remoting_native_messaging_host.exe",
+    "remoting_network.exe",
+    "remoting_peer_connection.exe",
     "remoting_start_host.exe",
     "remote_assistance_host.exe",
     "remote_assistance_host_uiaccess.exe",
