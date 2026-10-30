@@ -980,7 +980,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                         @Override
                         public void tabRemoved(Tab tab) {
                             closeIfNoTabsAndHomepageEnabled(
-                                    false, /* shouldRemoveWindowWithZeroTabs= */ false);
+                                    false,
+                                    mSupportedProfileType == SupportedProfileType.OFF_THE_RECORD);
                         }
 
                         private void closeIfNoTabsAndHomepageEnabled(
