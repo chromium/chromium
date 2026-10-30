@@ -8,7 +8,6 @@ import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.view.View;
 
 import androidx.annotation.IntDef;
 
@@ -42,7 +41,7 @@ public class BottomBarEducationDialogCoordinator
     private final Supplier<@Nullable Tab> mTabSupplier;
     private @Nullable PropertyModel mDialogModel;
     private @Nullable Tracker mTracker;
-    private @Nullable View mDialogView;
+    private @Nullable PropertyModel mContentModel;
     private @State int mState = State.IDLE;
 
     @IntDef({State.IDLE, State.SHOWING, State.OUTCOME_RECORDED})
@@ -83,7 +82,7 @@ public class BottomBarEducationDialogCoordinator
             mModalDialogManager.dismissDialog(
                     mDialogModel, DialogDismissalCause.ACTIVITY_DESTROYED);
             mDialogModel = null;
-            mDialogView = null;
+            mContentModel = null;
         }
     }
 
@@ -122,15 +121,18 @@ public class BottomBarEducationDialogCoordinator
 
     private void showDialog() {
         mState = State.SHOWING;
-        mDialogView =
-                BottomBarEducationUtils.inflateDialogContent(
+        PropertyModel contentModel =
+                BottomBarEducationUtils.createDialogContentModel(
                         mContext, /* onSettingsClicked= */ this::onLearnMoreClicked);
+        mContentModel = contentModel;
 
         Resources resources = mContext.getResources();
         mDialogModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(ModalDialogProperties.CONTROLLER, this)
-                        .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView)
+                        .with(
+                                ModalDialogProperties.CUSTOM_VIEW,
+                                BottomBarEducationUtils.createContentView(mContext, contentModel))
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 resources,
@@ -203,15 +205,12 @@ public class BottomBarEducationDialogCoordinator
         return true;
     }
 
-    private void updateIllustrationVisibility(Configuration config) {
-        if (mDialogView != null) {
-            BottomBarEducationUtils.updateIllustrationVisibility(mDialogView, config);
-        }
-    }
-
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        updateIllustrationVisibility(newConfig);
+        if (mContentModel == null) return;
+        mContentModel.set(
+                BottomBarEducationContentProperties.IS_ILLUSTRATION_VISIBLE,
+                BottomBarEducationUtils.isIllustrationVisible(newConfig));
     }
 
     @Override
@@ -237,7 +236,7 @@ public class BottomBarEducationDialogCoordinator
                         : EducationOnboardingEvent.DISMISSED_OTHER;
         maybeRecordOutcome(event);
         mDialogModel = null;
-        mDialogView = null;
+        mContentModel = null;
         mTracker = null;
     }
 }

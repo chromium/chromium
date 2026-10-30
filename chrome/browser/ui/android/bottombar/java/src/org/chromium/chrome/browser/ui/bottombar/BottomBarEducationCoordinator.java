@@ -431,12 +431,14 @@ public class BottomBarEducationCoordinator
                 };
 
         View bubbleView =
-                BottomBarEducationUtils.inflateBubbleContent(
+                BottomBarEducationUtils.createContentView(
                         mContext,
-                        geminiFocused,
-                        /* onSettingsClicked= */ openSettingsAndDismiss,
-                        /* onPositiveClicked= */ onShowMeClicked,
-                        /* onNegativeClicked= */ dismissAndTurnOffBottomBar);
+                        BottomBarEducationUtils.createBubbleContentModel(
+                                mContext,
+                                geminiFocused,
+                                /* onSettingsClicked= */ openSettingsAndDismiss,
+                                /* onPositiveClicked= */ onShowMeClicked,
+                                /* onNegativeClicked= */ dismissAndTurnOffBottomBar));
 
         // Determine the horizontal anchor target. For the default variant, the bubble and its
         // arrow point to the center of the bottom bar. For the Gemini-focused variant, they

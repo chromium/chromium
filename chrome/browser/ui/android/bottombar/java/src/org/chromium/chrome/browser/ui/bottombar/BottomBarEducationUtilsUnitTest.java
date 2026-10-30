@@ -12,7 +12,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
@@ -94,8 +93,8 @@ public class BottomBarEducationUtilsUnitTest {
     }
 
     @Test
-    public void testInflateBubbleContent_GeminiFocused() {
-        View view = inflateBubbleContent(/* glicFocused= */ true);
+    public void testCreateBubbleContent_GeminiFocused() {
+        View view = createBubbleContentView(/* glicFocused= */ true);
         assertTextAndLink(
                 view,
                 R.string.bottom_bar_education_title_gemini,
@@ -109,8 +108,8 @@ public class BottomBarEducationUtilsUnitTest {
     }
 
     @Test
-    public void testInflateBubbleContent_Ergonomics() {
-        View view = inflateBubbleContent(/* glicFocused= */ false);
+    public void testCreateBubbleContent_Ergonomics() {
+        View view = createBubbleContentView(/* glicFocused= */ false);
         assertTextAndLink(
                 view,
                 R.string.bottom_bar_education_title_ergonomics,
@@ -124,8 +123,12 @@ public class BottomBarEducationUtilsUnitTest {
     }
 
     @Test
-    public void testInflateDialogContent() {
-        View view = BottomBarEducationUtils.inflateDialogContent(mContext, mOnSettingsClicked);
+    public void testCreateDialogContent() {
+        View view =
+                BottomBarEducationUtils.createContentView(
+                        mContext,
+                        BottomBarEducationUtils.createDialogContentModel(
+                                mContext, mOnSettingsClicked));
         assertTextAndLink(
                 view,
                 R.string.bottom_bar_education_title_opt_in,
@@ -140,30 +143,20 @@ public class BottomBarEducationUtilsUnitTest {
 
     @Test
     @Config(qualifiers = "land")
-    public void testInflateBubbleContent_LandscapeHidesIllustration() {
-        View view = inflateBubbleContent(/* glicFocused= */ true);
+    public void testCreateBubbleContent_LandscapeHidesIllustration() {
+        View view = createBubbleContentView(/* glicFocused= */ true);
         assertEquals(View.GONE, view.findViewById(R.id.education_illustration).getVisibility());
     }
 
-    @Test
-    public void testUpdateIllustrationVisibility() {
-        View view = inflateBubbleContent(/* glicFocused= */ true);
-        View illustration = view.findViewById(R.id.education_illustration);
-
-        Configuration landscapeConfig = new Configuration();
-        landscapeConfig.orientation = Configuration.ORIENTATION_LANDSCAPE;
-        BottomBarEducationUtils.updateIllustrationVisibility(view, landscapeConfig);
-        assertEquals(View.GONE, illustration.getVisibility());
-
-        Configuration portraitConfig = new Configuration();
-        portraitConfig.orientation = Configuration.ORIENTATION_PORTRAIT;
-        BottomBarEducationUtils.updateIllustrationVisibility(view, portraitConfig);
-        assertEquals(View.VISIBLE, illustration.getVisibility());
-    }
-
-    private View inflateBubbleContent(boolean glicFocused) {
-        return BottomBarEducationUtils.inflateBubbleContent(
-                mContext, glicFocused, mOnSettingsClicked, mOnPositiveClicked, mOnNegativeClicked);
+    private View createBubbleContentView(boolean glicFocused) {
+        return BottomBarEducationUtils.createContentView(
+                mContext,
+                BottomBarEducationUtils.createBubbleContentModel(
+                        mContext,
+                        glicFocused,
+                        mOnSettingsClicked,
+                        mOnPositiveClicked,
+                        mOnNegativeClicked));
     }
 
     private void assertTextAndLink(View view, int expectedTitleRes, int expectedBodyRes) {
