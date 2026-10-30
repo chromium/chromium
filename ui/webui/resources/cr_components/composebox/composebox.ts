@@ -154,6 +154,11 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     return loadTimeData.valueExists('webUIOmniboxAskGAboutThisPageEnabled') &&
         loadTimeData.getBoolean('webUIOmniboxAskGAboutThisPageEnabled');
   }
+  private get contextualTasksUpdatedEntryPointsEnabled_(): boolean {
+    return loadTimeData.valueExists(
+               'contextualTasksUpdatedEntryPointsEnabled') &&
+        loadTimeData.getBoolean('contextualTasksUpdatedEntryPointsEnabled');
+  }
   private pageHandler_: PageHandlerRemote;
   private searchboxHandler_: SearchboxPageHandlerRemote;
   private resizeObservers_: ResizeObserver[] = [];
@@ -446,12 +451,19 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       }
       return;
     }
-    // AutoSuggestedTabContext is routed differently for Omnibox Page Action.
-    // when it opens a side panel to cobrowse.
+    // AutoSuggestedTabContext is routed differently for Ask Google entry points
+    // when opening a side panel to cobrowse.
     // TODO(crbug.com/486707842): Move check to the
     // Contextual Tasks embedder.
-    const askGAndPageAction = this.webUIOmniboxAskGAboutThisPageEnabled_ &&
-        invocationSource === 'OmniboxPageAction' && this.isSidePanel;
+    const isOmniboxAskG = this.webUIOmniboxAskGAboutThisPageEnabled_ &&
+        invocationSource === 'OmniboxPageAction';
+    const isUpdatedEntryPoint =
+        this.contextualTasksUpdatedEntryPointsEnabled_ &&
+        (invocationSource === 'ContentAreaContextMenuPage' ||
+         invocationSource === 'AppMenu' ||
+         invocationSource === 'HomeworkActionChip');
+    const askGAndPageAction =
+        (isOmniboxAskG || isUpdatedEntryPoint) && this.isSidePanel;
 
     // We should delete the automatic active tab if it is different from the
     // current tab when webUIOmniboxAskGAboutThisPageEnabled_ is true. Make sure

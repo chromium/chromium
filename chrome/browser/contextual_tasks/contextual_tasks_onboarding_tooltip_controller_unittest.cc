@@ -353,4 +353,48 @@ TEST_F(ContextualTasksOnboardingTooltipControllerTest,
             ContextualTasksOnboardingBubbleView::Variant::kAskGoogle);
 }
 
+TEST_F(ContextualTasksOnboardingTooltipControllerTest,
+       IsAskGoogleEntryPointEligible) {
+  controller()->SetEntryPoint(
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION);
+  EXPECT_TRUE(controller()->is_ask_google_entry_point_eligible_for_testing());
+
+  controller()->SetEntryPoint(
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_OMNIBOX_TAB_SEARCH);
+  EXPECT_TRUE(controller()->is_ask_google_entry_point_eligible_for_testing());
+
+  controller()->SetEntryPoint(
+      omnibox::ChromeAimEntryPoint::
+          DESKTOP_CHROME_COBROWSE_OMNIBOX_CONTEXTUAL_SUGGESTION);
+  EXPECT_TRUE(controller()->is_ask_google_entry_point_eligible_for_testing());
+
+  controller()->SetEntryPoint(omnibox::ChromeAimEntryPoint::
+                                  DESKTOP_CHROME_COBROWSE_OMNIBOX_POPUP_BUTTON);
+  EXPECT_TRUE(controller()->is_ask_google_entry_point_eligible_for_testing());
+
+  // Without UpdatedEntryPoints enabled, updated entry points are ineligible.
+  controller()->SetEntryPoint(omnibox::ChromeAimEntryPoint::
+                                  DESKTOP_CHROME_PAGE_CONTEXT_MENU_ASK_GOOGLE);
+  EXPECT_FALSE(controller()->is_ask_google_entry_point_eligible_for_testing());
+
+  controller()->SetEntryPoint(
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_APP_MENU_ASK_GOOGLE);
+  EXPECT_FALSE(controller()->is_ask_google_entry_point_eligible_for_testing());
+
+  controller()->SetEntryPoint(
+      omnibox::ChromeAimEntryPoint::
+          DESKTOP_CHROME_CHROMNIENT_HOMEWORK_ACTION_CHIP);
+  EXPECT_FALSE(controller()->is_ask_google_entry_point_eligible_for_testing());
+}
+
+TEST_F(ContextualTasksOnboardingTooltipControllerTest,
+       IsAskGoogleEntryPointEligible_OmniboxDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(omnibox::kWebUIOmniboxAskGAboutThisPage);
+
+  controller()->SetEntryPoint(
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION);
+  EXPECT_FALSE(controller()->is_ask_google_entry_point_eligible_for_testing());
+}
+
 }  // namespace contextual_tasks

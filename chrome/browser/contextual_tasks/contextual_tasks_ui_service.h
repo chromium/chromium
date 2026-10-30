@@ -123,6 +123,8 @@ class ContextualTasksUiService : public KeyedService {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  Profile* profile() const { return profile_; }
+
   // Registers a tracked window with its ID, associated task ID, and URL.
   void RegisterWindow(ContextualTaskId task_id,
                       const GURL& url,

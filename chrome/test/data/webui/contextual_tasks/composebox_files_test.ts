@@ -1224,48 +1224,57 @@ suite('ContextualTasksComposeboxForkAutoTabTest', () => {
 
   suite('SourcesAndUploadTiming', () => {
     test(
-        'app menu source with ask-G in the side panel keeps the ' +
+        'non-ask-G source with ask-G in the side panel keeps the ' +
             'default semantics',
         async () => {
           loadTimeData.overrideValues({
             webUIOmniboxAskGAboutThisPageEnabled: true,
           });
-          await assertDefaultAutoTabSemantics('AppMenu', true);
+          await assertDefaultAutoTabSemantics('FindInPage', true);
         });
 
-    test(
-        'page action with ask-G in the side panel uploads immediately ' +
-            'and keeps the chip on null',
-        async () => {
-          loadTimeData.overrideValues({
-            webUIOmniboxAskGAboutThisPageEnabled: true,
+    for (const source
+             of ['OmniboxPageAction',
+                 'ContentAreaContextMenuPage',
+                 'AppMenu',
+                 'HomeworkActionChip',
+    ]) {
+      test(
+          `${source} with ask-G in the side panel uploads immediately ` +
+              'and keeps the chip on null',
+          async () => {
+            loadTimeData.overrideValues({
+              webUIOmniboxAskGAboutThisPageEnabled: true,
+              contextualTasksUpdatedEntryPointsEnabled: true,
+            });
+            await mountApp();
+            const {innerComposebox, wrapper} = parts;
+            wrapper.isSidePanel = true;
+            await wrapper.updateComplete;
+            await innerComposebox.updateComplete;
+
+            const stopCallCount =
+                mockSearchboxPageHandler.getCallCount(STOP_AUTOCOMPLETE_FN);
+            await expectAddTabContext(
+                AUTO_TOKEN,
+                () => pushAutoTab(
+                    createTabInfo(1, 'Auto tab', 'https://a.example.com'),
+                    source));
+            await settle();
+
+            const addArgs =
+                mockSearchboxPageHandler.getArgs(ADD_TAB_CONTEXT_FN);
+            assertEquals(false, addArgs[addArgs.length - 1][1]);
+            assertEquals(
+                stopCallCount,
+                mockSearchboxPageHandler.getCallCount(STOP_AUTOCOMPLETE_FN));
+
+            await pushAutoTab(null, source);
+            await settle();
+            assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
+            assertEquals(1, innerComposebox.attachedContext.size);
           });
-          await mountApp();
-          const {innerComposebox, wrapper} = parts;
-          wrapper.isSidePanel = true;
-          await wrapper.updateComplete;
-          await innerComposebox.updateComplete;
-
-          const stopCallCount =
-              mockSearchboxPageHandler.getCallCount(STOP_AUTOCOMPLETE_FN);
-          await expectAddTabContext(
-              AUTO_TOKEN,
-              () => pushAutoTab(
-                  createTabInfo(1, 'Auto tab', 'https://a.example.com'),
-                  'OmniboxPageAction'));
-          await settle();
-
-          const addArgs = mockSearchboxPageHandler.getArgs(ADD_TAB_CONTEXT_FN);
-          assertEquals(false, addArgs[addArgs.length - 1][1]);
-          assertEquals(
-              stopCallCount,
-              mockSearchboxPageHandler.getCallCount(STOP_AUTOCOMPLETE_FN));
-
-          await pushAutoTab(null, 'OmniboxPageAction');
-          await settle();
-          assertTrue(innerComposebox.getHasAutomaticActiveTabChipToken());
-          assertEquals(1, innerComposebox.attachedContext.size);
-        });
+    }
 
     test('delays the upload outside the side panel', async () => {
       await mountApp();

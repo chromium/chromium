@@ -253,18 +253,30 @@ EntrypointSource ConvertContextualSearchSourceToEntrypointSource(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-bool ShouldResetZeroStateForOmniboxAction(
+bool ShouldResetZeroStateForAskGoogleEntryPoint(
     const GURL& url,
     ContextualTasksUiService* service,
     omnibox::ChromeAimEntryPoint entry_point) {
-  return base::FeatureList::IsEnabled(
-             omnibox::kWebUIOmniboxAskGAboutThisPage) &&
-         entry_point == omnibox::ChromeAimEntryPoint::
-                            DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION &&
+  const bool is_omnibox_action =
+      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxAskGAboutThisPage) &&
+      entry_point ==
+          omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION;
+
+  const bool is_updated_entry_point =
+      contextual_tasks::AreContextualTasksUpdatedEntryPointsEnabled(
+          service->profile()) &&
+      (entry_point == omnibox::ChromeAimEntryPoint::
+                          DESKTOP_CHROME_PAGE_CONTEXT_MENU_ASK_GOOGLE ||
+       entry_point ==
+           omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_APP_MENU_ASK_GOOGLE ||
+       entry_point == omnibox::ChromeAimEntryPoint::
+                          DESKTOP_CHROME_CHROMNIENT_HOMEWORK_ACTION_CHIP);
+
+  return (is_omnibox_action || is_updated_entry_point) &&
          ContextualTasksUI::IsZeroState(url, service);
 }
 #else
-bool ShouldResetZeroStateForOmniboxAction(
+bool ShouldResetZeroStateForAskGoogleEntryPoint(
     const GURL& url,
     ContextualTasksUiService* service,
     omnibox::ChromeAimEntryPoint entry_point) {
@@ -3703,11 +3715,12 @@ void ContextualTasksUiService::StartTaskUiInSidePanelImpl(
     return;
   }
 
-  // If the side panel is already open and an Omnibox page action triggers an
+  // If the side panel is already open and an Ask Google entry point triggers an
   // in-place zero-state reset, reset the panel with the new task and forward
   // the session handle directly to it.
   if (!IsContextualTasksSidePanelRearchitectureEnabled() &&
-      ShouldResetZeroStateForOmniboxAction(url, this, options.entry_point)) {
+      ShouldResetZeroStateForAskGoogleEntryPoint(url, this,
+                                                 options.entry_point)) {
     ResetZeroStateInOpenSidePanel(panel_contents, tab_interface, url,
                                   std::move(session_handle),
                                   options.entry_point);
@@ -3738,7 +3751,8 @@ void ContextualTasksUiService::StartTaskUiInSidePanelImpl(
   }
 
   if (IsContextualTasksSidePanelRearchitectureEnabled()) {
-    if (ShouldResetZeroStateForOmniboxAction(url, this, options.entry_point)) {
+    if (ShouldResetZeroStateForAskGoogleEntryPoint(url, this,
+                                                   options.entry_point)) {
       // TODO(crbug.com/537842795): Understand if this flow is possible in the
       // rearchitecture and handle accordingly. For now, just load the URL.
     }

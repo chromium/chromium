@@ -891,21 +891,28 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
 
   // LINT.IfChange(ContextualTasksTooltipLogic)
   private get isAskGEntryPointEligible_(): boolean {
+    const isOmniboxAskGEnabled =
+        loadTimeData.valueExists('webUIOmniboxAskGAboutThisPageEnabled') &&
+        loadTimeData.getBoolean('webUIOmniboxAskGAboutThisPageEnabled');
     if (this.isShownInTab_) {
-      return this.entryPoint_ === 'omnibox_tab_search';
+      return isOmniboxAskGEnabled && this.entryPoint_ === 'omnibox_tab_search';
     }
-    return this.entryPoint_ === 'omnibox_tab_search' ||
-        this.entryPoint_ === 'omnibox_action' ||
-        this.entryPoint_ === 'omnibox_contextual_suggestion' ||
-        this.entryPoint_ === 'omnibox_popup_button';
-  }
+    const isOmniboxEntryPoint = isOmniboxAskGEnabled &&
+        (this.entryPoint_ === 'omnibox_tab_search' ||
+         this.entryPoint_ === 'omnibox_action' ||
+         this.entryPoint_ === 'omnibox_contextual_suggestion' ||
+         this.entryPoint_ === 'omnibox_popup_button');
 
-  // <if expr="not is_android">
-  private get isAskGEligible_(): boolean {
-    return loadTimeData.getBoolean('webUIOmniboxAskGAboutThisPageEnabled') &&
-        this.isAskGEntryPointEligible_;
+    const isUpdatedEntryPointsEnabled =
+        loadTimeData.valueExists('contextualTasksUpdatedEntryPointsEnabled') &&
+        loadTimeData.getBoolean('contextualTasksUpdatedEntryPointsEnabled');
+    const isUpdatedEntryPoint = isUpdatedEntryPointsEnabled &&
+        (this.entryPoint_ === 'page_context_menu' ||
+         this.entryPoint_ === 'app_menu' ||
+         this.entryPoint_ === 'homework_action_chip');
+
+    return isOmniboxEntryPoint || isUpdatedEntryPoint;
   }
-  // </if>
 
   private updateTooltipVisibility_() {
     const onboardingTooltip =
@@ -944,15 +951,13 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
 
     // Calculate AskG tooltip
     this.askGTooltipTarget_ = this.updateInfoTooltip_(
-        this.askGTooltipState_, this.isAskGEligible_, activeTabChipTarget,
-        askGTooltip);
+        this.askGTooltipState_, this.isAskGEntryPointEligible_,
+        activeTabChipTarget, askGTooltip);
     // </if>
 
     // 3. Calculate Onboarding tooltip (Suppressed if AskG is eligible)
     if (onboardingTooltip) {
-      const suppressOnboarding =
-          loadTimeData.getBoolean('webUIOmniboxAskGAboutThisPageEnabled') &&
-          this.isAskGEntryPointEligible_;
+      const suppressOnboarding = this.isAskGEntryPointEligible_;
       const hasToken = crComposebox.getHasAutomaticActiveTabChipToken() &&
           !suppressOnboarding;
       onboardingTooltip.updateTooltipVisibility(
