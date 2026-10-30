@@ -52,6 +52,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PLAYREADY)
+#include "base/win/windows_version.h"
 #include "media/base/win/mf_feature_checks.h"
 #endif
 
@@ -168,12 +169,19 @@ const char16_t kUnexpectedResult16[] = u"unexpected result";
 #define EXPECT_WV_HW_SECURE_PERSISTENT_SESSION EXPECT_UNSUPPORTED
 #endif
 
+// These tests are gated on BUILDFLAG(ENABLE_PLAYREADY)
+// (enable_playready = is_win && is_chrome_branded in components/cdm/common/playready.gni),
+// so they only compile on official Chrome-branded Windows builders.
+// Because win64-clang-tests and win64-dcheck-tests run on Windows-10
+// SupportMediaFoundationEncryptedPlayback() returns true (WIN10_22H2 >= WIN10_20H1),
+// so the test does not skip.
 #if BUILDFLAG(ENABLE_PLAYREADY)
-#define SKIP_IF_WINDOWS_PLAYREADY_INCOMPATIBLE()            \
-  if (!media::SupportMediaFoundationEncryptedPlayback()) {  \
-    GTEST_SKIP() << "This PlayReady implementation is not"  \
-                 << "available on this version of Windows"; \
-    return;                                                 \
+#define SKIP_IF_WINDOWS_PLAYREADY_INCOMPATIBLE()               \
+  if ((base::win::GetVersion() < base::win::Version::WIN11) || \
+      !media::SupportMediaFoundationEncryptedPlayback()) {     \
+    GTEST_SKIP() << "This PlayReady implementation is not "    \
+                 << "available on this version of Windows";    \
+    return;                                                    \
   }
 
 const char kPlayReadyKeySystemBase[] = "com.microsoft.playready";
