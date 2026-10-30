@@ -4,13 +4,10 @@
 
 #include <stddef.h>
 
-#include <algorithm>
-#include <cstring>
 #include <string>
 #include <tuple>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
@@ -29,28 +26,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
-#include "third_party/leveldatabase/src/include/leveldb/comparator.h"
 
 namespace content::indexed_db {
 namespace {
 
 static const size_t kDefaultMaxOpenIteratorsPerDatabase = 50;
-
-class SimpleLDBComparator : public leveldb::Comparator {
- public:
-  static const SimpleLDBComparator* Get() {
-    static const base::NoDestructor<SimpleLDBComparator> simple_ldb_comparator;
-    return simple_ldb_comparator.get();
-  }
-  int Compare(const leveldb::Slice& a, const leveldb::Slice& b) const override {
-    size_t len = std::min(a.size(), b.size());
-    return UNSAFE_TODO(memcmp(a.data(), b.data(), len));
-  }
-  const char* Name() const override { return "temp_comparator"; }
-  void FindShortestSeparator(std::string* start,
-                             const leveldb::Slice& limit) const override {}
-  void FindShortSuccessor(std::string* key) const override {}
-};
 
 class TransactionalLevelDBDatabaseTest : public LevelDBScopesTestBase {
  public:
