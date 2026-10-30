@@ -73,6 +73,18 @@
   <message name="IDS_CONTEXTUAL_TASKS_AVATAR_TOOLTIP_HEADER" desc="Header of the tooltip shown when hovering over the profile avatar in the side panel toolbar. The tooltip also shows the name and email of the Google Account the user is signed in to on the web.">
     Google Account
   </message>
+  <message name="IDS_CONTEXTUAL_TASKS_ACCOUNT_MENU_BUTTON_ACCESSIBLE_NAME" desc="Accessible name for the profile avatar button in the side panel toolbar that opens a menu with the user's Google Account information.">
+    Google Account
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_ACCOUNT_MENU_NAME_AND_EMAIL" desc="Text in the side panel toolbar account menu that shows the full name and email address of the Google Account the user is signed in to on the web.">
+    <ph name="FULL_NAME">$1<ex>Jane Doe</ex></ph> - <ph name="EMAIL">$2<ex>janedoe@gmail.com</ex></ph>
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_ACCOUNT_MENU_MANAGE_ACCOUNT" desc="Item in the side panel toolbar account menu that opens the Google Account management page in a new tab.">
+    Manage your Google Account
+  </message>
+  <message name="IDS_CONTEXTUAL_TASKS_ACCOUNT_MENU_SIGN_OUT" desc="Item in the side panel toolbar account menu that signs the user out of their Google Account on the web. Shown when the user is signed in to one Google Account on the web.">
+    Sign out
+  </message>
   <message name="IDS_CONTEXTUAL_TASKS_SIDE_PANEL_CONTEXT_TOOL_TIP" desc="Tool tip text displayed on the context button on the side panel to show tabs and files context attached to the current thread.">
     Tabs and files
   </message>

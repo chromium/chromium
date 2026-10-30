@@ -471,16 +471,13 @@ base::DictValue ContextualTasksUIBase::GetContextualTasksLoadTimeData(
   base::DictValue dict;
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      // TODO(b/578986274): Replace with a dedicated string in M159.
-      {"accountMenuButtonAccessibleName", IDS_MANAGE_PASSWORDS_LINK},
-      // TODO(b/578986274): Replace with a dedicated string in M159.
+      {"accountMenuButtonAccessibleName",
+       IDS_CONTEXTUAL_TASKS_ACCOUNT_MENU_BUTTON_ACCESSIBLE_NAME},
       {"accountMenuManageAccount",
-       IDS_OMNIBOX_PEDAL_MANAGE_GOOGLE_ACCOUNT_HINT},
-      // TODO(b/578986274): Replace with a dedicated string in M159.
+       IDS_CONTEXTUAL_TASKS_ACCOUNT_MENU_MANAGE_ACCOUNT},
       {"accountMenuNameAndEmail",
-       IDS_ACCESSIBLE_WINDOW_TITLE_WITH_PROFILE_FORMAT},
-      // TODO(b/578986274): Replace with a dedicated string in M159.
-      {"accountMenuSignOut", IDS_SYNC_ERROR_USER_MENU_SIGNOUT_BUTTON},
+       IDS_CONTEXTUAL_TASKS_ACCOUNT_MENU_NAME_AND_EMAIL},
+      {"accountMenuSignOut", IDS_CONTEXTUAL_TASKS_ACCOUNT_MENU_SIGN_OUT},
       {"close", IDS_CLOSE},
       {"closeTooltip", IDS_CONTEXTUAL_TASKS_SIDE_PANEL_CLOSE_TOOL_TIP},
       {"contextTooltip", IDS_CONTEXTUAL_TASKS_SIDE_PANEL_CONTEXT_TOOL_TIP},
