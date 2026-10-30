@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -237,7 +238,7 @@ ReadJSONRulesResult& ReadJSONRulesResult::operator=(ReadJSONRulesResult&&) =
 std::vector<FileBackedRulesetSource> FileBackedRulesetSource::CreateStatic(
     const Extension& extension,
     RulesetFilter ruleset_filter) {
-  const std::vector<DNRManifestData::RulesetInfo>& rulesets =
+  base::span<const DNRManifestData::RulesetInfo> rulesets =
       declarative_net_request::DNRManifestData::GetRulesets(extension);
 
   bool only_enabled = ruleset_filter == RulesetFilter::kIncludeManifestEnabled;

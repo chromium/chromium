@@ -4,10 +4,12 @@
 
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/no_destructor.h"
+#include "base/containers/map_util.h"
+#include "base/containers/span.h"
 #include "extensions/common/api/declarative_net_request.h"
 
 namespace extensions {
@@ -26,39 +28,36 @@ DNRManifestData::RulesetInfo& DNRManifestData::RulesetInfo::operator=(
     RulesetInfo&&) = default;
 
 DNRManifestData::DNRManifestData(std::vector<RulesetInfo> rulesets)
-    : rulesets(std::move(rulesets)) {
-  for (const RulesetInfo& info : this->rulesets)
-    manifest_id_to_ruleset_map.emplace(info.manifest_id, &info);
+    : rulesets_(std::move(rulesets)) {
+  for (const RulesetInfo& info : rulesets_) {
+    manifest_id_to_ruleset_map_.emplace(info.manifest_id, &info);
+  }
 }
 
 DNRManifestData::~DNRManifestData() = default;
 
 // static
-const std::vector<DNRManifestData::RulesetInfo>& DNRManifestData::GetRulesets(
+base::span<const DNRManifestData::RulesetInfo> DNRManifestData::GetRulesets(
     const Extension& extension) {
-  // Since we return a reference, use a function local static for the case where
-  // the extension didn't specify any rulesets.
-  static const base::NoDestructor<std::vector<DNRManifestData::RulesetInfo>>
-      empty_vector;
-
   const auto* data = extension.GetManifestData<DNRManifestData>();
-  if (!data)
-    return *empty_vector;
+  if (!data) {
+    return {};
+  }
 
-  return data->rulesets;
+  return data->rulesets_;
 }
 
-const DNRManifestData::ManifestIDToRulesetMap&
-DNRManifestData::GetManifestIDToRulesetMap(const Extension& extension) {
-  // Since we return a reference, use a function local static for the case where
-  // the extension didn't specify any rulesets.
-  static const base::NoDestructor<ManifestIDToRulesetMap> empty_map;
+const DNRManifestData::RulesetInfo* DNRManifestData::FindRulesetByManifestID(
+    std::string_view manifest_id) const {
+  return base::FindPtrOrNull(manifest_id_to_ruleset_map_, manifest_id);
+}
 
+// static
+const DNRManifestData::RulesetInfo* DNRManifestData::FindRulesetByManifestID(
+    const Extension& extension,
+    std::string_view manifest_id) {
   const auto* data = extension.GetManifestData<DNRManifestData>();
-  if (!data)
-    return *empty_map;
-
-  return data->manifest_id_to_ruleset_map;
+  return data ? data->FindRulesetByManifestID(manifest_id) : nullptr;
 }
 
 // static
@@ -68,7 +67,7 @@ const DNRManifestData::RulesetInfo& DNRManifestData::GetRuleset(
   const auto* data = extension.GetManifestData<DNRManifestData>();
   DCHECK(data);
 
-  const std::vector<DNRManifestData::RulesetInfo>& rulesets = data->rulesets;
+  const std::vector<DNRManifestData::RulesetInfo>& rulesets = data->rulesets_;
 
   int index = ruleset_id.value() - kMinValidStaticRulesetID.value();
   CHECK_GE(index, 0);

@@ -24,6 +24,7 @@
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/api/declarative_net_request.h"
+#include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
 #include "extensions/common/api/declarative_net_request/test_utils.h"
 #include "extensions/common/extension.h"
 #include "net/http/http_response_headers.h"
@@ -585,11 +586,10 @@ base::flat_set<int> GetDisabledRuleIdsFromMatcherForTesting(
     const RulesetManager& ruleset_manager,
     const Extension& extension,
     const std::string& ruleset_id_string) {
-  const DNRManifestData::ManifestIDToRulesetMap& public_id_map =
-      DNRManifestData::GetManifestIDToRulesetMap(extension);
-  auto it = public_id_map.find(ruleset_id_string);
-  CHECK(public_id_map.end() != it);
-  RulesetID ruleset_id = it->second->id;
+  const DNRManifestData::RulesetInfo* info =
+      DNRManifestData::FindRulesetByManifestID(extension, ruleset_id_string);
+  CHECK(info);
+  RulesetID ruleset_id = info->id;
 
   const CompositeMatcher* composite_matcher =
       ruleset_manager.GetMatcherForExtension(extension.id());

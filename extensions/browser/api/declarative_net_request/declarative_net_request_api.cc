@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -104,6 +105,14 @@ uint64_t GetAllowActionPriority(
   }
 
   return max_priority;
+}
+
+const declarative_net_request::DNRManifestData::RulesetInfo*
+FindRulesetByManifestID(
+    const declarative_net_request::DNRManifestData* manifest_data,
+    std::string_view manifest_id) {
+  return manifest_data ? manifest_data->FindRulesetByManifestID(manifest_id)
+                       : nullptr;
 }
 
 }  // namespace
@@ -322,35 +331,36 @@ DeclarativeNetRequestUpdateEnabledRulesetsFunction::Run() {
 
   std::set<RulesetID> ids_to_disable;
   std::set<RulesetID> ids_to_enable;
-  const DNRManifestData::ManifestIDToRulesetMap& public_id_map =
-      DNRManifestData::GetManifestIDToRulesetMap(*extension());
+  const auto* manifest_data = extension()->GetManifestData<DNRManifestData>();
 
   if (params->options.enable_ruleset_ids) {
     for (const std::string& public_id_to_enable :
          *params->options.enable_ruleset_ids) {
-      auto it = public_id_map.find(public_id_to_enable);
-      if (it == public_id_map.end()) {
+      const DNRManifestData::RulesetInfo* info =
+          FindRulesetByManifestID(manifest_data, public_id_to_enable);
+      if (!info) {
         return RespondNow(Error(ErrorUtils::FormatErrorMessage(
             declarative_net_request::kInvalidRulesetIDError,
             public_id_to_enable)));
       }
 
-      ids_to_enable.insert(it->second->id);
+      ids_to_enable.insert(info->id);
     }
   }
 
   if (params->options.disable_ruleset_ids) {
     for (const std::string& public_id_to_disable :
          *params->options.disable_ruleset_ids) {
-      auto it = public_id_map.find(public_id_to_disable);
-      if (it == public_id_map.end()) {
+      const DNRManifestData::RulesetInfo* info =
+          FindRulesetByManifestID(manifest_data, public_id_to_disable);
+      if (!info) {
         return RespondNow(Error(ErrorUtils::FormatErrorMessage(
             declarative_net_request::kInvalidRulesetIDError,
             public_id_to_disable)));
       }
 
       // |ruleset_ids_to_enable| takes priority over |ruleset_ids_to_disable|.
-      RulesetID id = it->second->id;
+      RulesetID id = info->id;
       if (ids_to_enable.contains(id)) {
         continue;
       }
@@ -432,10 +442,10 @@ DeclarativeNetRequestUpdateStaticRulesFunction::Run() {
   auto params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.has_value());
 
-  const DNRManifestData::ManifestIDToRulesetMap& public_id_map =
-      DNRManifestData::GetManifestIDToRulesetMap(*extension());
-  auto it = public_id_map.find(params->options.ruleset_id);
-  if (it == public_id_map.end()) {
+  const DNRManifestData::RulesetInfo* info =
+      DNRManifestData::FindRulesetByManifestID(*extension(),
+                                               params->options.ruleset_id);
+  if (!info) {
     return RespondNow(Error(ErrorUtils::FormatErrorMessage(
         declarative_net_request::kInvalidRulesetIDError,
         params->options.ruleset_id)));
@@ -453,7 +463,7 @@ DeclarativeNetRequestUpdateStaticRulesFunction::Run() {
   DCHECK(extension());
 
   rules_monitor_service->UpdateStaticRules(
-      *extension(), it->second->id, std::move(rule_ids_to_update),
+      *extension(), info->id, std::move(rule_ids_to_update),
       base::BindOnce(
           &DeclarativeNetRequestUpdateStaticRulesFunction::OnStaticRulesUpdated,
           this));
@@ -484,15 +494,15 @@ DeclarativeNetRequestGetDisabledRuleIdsFunction::Run() {
   auto params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.has_value());
 
-  const DNRManifestData::ManifestIDToRulesetMap& public_id_map =
-      DNRManifestData::GetManifestIDToRulesetMap(*extension());
-  auto it = public_id_map.find(params->options.ruleset_id);
-  if (it == public_id_map.end()) {
+  const DNRManifestData::RulesetInfo* info =
+      DNRManifestData::FindRulesetByManifestID(*extension(),
+                                               params->options.ruleset_id);
+  if (!info) {
     return RespondNow(Error(ErrorUtils::FormatErrorMessage(
         declarative_net_request::kInvalidRulesetIDError,
         params->options.ruleset_id)));
   }
-  RulesetID ruleset_id = it->second->id;
+  RulesetID ruleset_id = info->id;
 
   auto* rules_monitor_service =
       declarative_net_request::RulesMonitorService::Get(browser_context());

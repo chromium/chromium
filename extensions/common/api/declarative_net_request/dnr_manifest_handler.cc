@@ -160,10 +160,8 @@ bool DNRManifestHandler::Parse(Extension* extension, std::u16string* error) {
 bool DNRManifestHandler::Validate(const Extension& extension,
                                   std::string* error,
                                   std::vector<InstallWarning>* warnings) const {
-  const auto* data = extension.GetManifestData<DNRManifestData>();
-  DCHECK(data);
-
-  for (const DNRManifestData::RulesetInfo& info : data->rulesets) {
+  for (const DNRManifestData::RulesetInfo& info :
+       DNRManifestData::GetRulesets(extension)) {
     // Check file path validity. We don't use Extension::GetResource since it
     // returns a failure if the relative path contains Windows path separators
     // and we have already normalized the path separators.

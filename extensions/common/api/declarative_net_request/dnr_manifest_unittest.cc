@@ -4,6 +4,7 @@
 
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -83,7 +84,7 @@ class DNRManifestTest : public testing::Test {
       EXPECT_TRUE(extension.get()->install_warnings().empty());
     }
 
-    const std::vector<DNRManifestData::RulesetInfo>& rulesets =
+    base::span<const DNRManifestData::RulesetInfo> rulesets =
         DNRManifestData::GetRulesets(*extension);
     ASSERT_EQ(info.size(), rulesets.size());
     for (size_t i = 0; i < rulesets.size(); ++i) {
