@@ -536,7 +536,7 @@ BASE_FEATURE(kDirectOpusAudioDecoding, base::FEATURE_ENABLED_BY_DEFAULT);
 // ResourceMultiBufferDataProvider (crbug.com/572363265).
 // TODO(crbug.com/572363265): Remove after M158 reaches stable.
 BASE_FEATURE(kDisallowMixedOpaqueMediaResponses,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Adds an animation to document picture-in-picture resizes.
 BASE_FEATURE(kDocumentPictureInPictureAnimateResize,

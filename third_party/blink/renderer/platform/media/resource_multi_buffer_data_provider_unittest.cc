@@ -698,6 +698,8 @@ TEST_F(ResourceMultiBufferDataProviderTest,
 // `UrlData`.
 TEST_F(ResourceMultiBufferDataProviderTest,
        MixedOpaqueResponseDoesNotMutateUrlData) {
+  base::test::ScopedFeatureList feature_list(
+      media::kDisallowMixedOpaqueMediaResponses);
   url_index_ = std::make_unique<UrlIndex>(
       &fetch_context_, task_environment_.GetMainThreadTaskRunner());
 
