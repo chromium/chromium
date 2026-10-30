@@ -10,13 +10,11 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/icu/source/common/unicode/brkiter.h"
 #include "third_party/icu/source/common/unicode/utext.h"
-#include "third_party/icu/source/common/unicode/utf8.h"
 
 namespace query_parser {
 namespace {
@@ -94,32 +92,6 @@ void AddMatch(size_t start,
   }
 }
 
-// Converts an index in a utf8 string into the index in the corresponding utf16
-// string and returns the utf16 index. This is intended to be called in a loop
-// iterating through a utf8 string.
-//
-// utf8_string: the utf8 string.
-// utf8_length: length of the utf8 string.
-// offset: the utf8 offset to convert.
-// utf8_pos: current offset in the utf8 string. This is modified and on return
-//           matches offset.
-// wide_pos: current index in the wide string. This is the same as the return
-//           value.
-size_t AdvanceAndReturnUTF16Pos(const char* utf8_string,
-                                int32_t utf8_length,
-                                int32_t offset,
-                                int32_t* utf8_pos,
-                                size_t* utf16_pos) {
-  DCHECK(offset >= *utf8_pos && offset <= utf8_length);
-
-  UChar32 wide_char;
-  while (*utf8_pos < offset) {
-    UNSAFE_TODO(U8_NEXT(utf8_string, *utf8_pos, utf8_length, wide_char));
-    *utf16_pos += (wide_char <= 0xFFFF) ? 1 : 2;
-  }
-  return *utf16_pos;
-}
-
 // Given a character break iterator over a UTF-8 string, set the iterator
 // position to |*utf8_pos| and move by |count| characters. |count| can
 // be either positive or negative.
@@ -182,25 +154,6 @@ void Snippet::ExtractMatchPositions(const std::string& offsets_str,
     // Switch to DCHECK after debugging http://crbug.com/15261.
     CHECK(end >= start);
     AddMatch(start, end, match_positions);
-  }
-}
-
-// static
-void Snippet::ConvertMatchPositionsToWide(
-    const std::string& utf8_string,
-    Snippet::MatchPositions* match_positions) {
-  DCHECK(match_positions);
-  int32_t utf8_pos = 0;
-  size_t utf16_pos = 0;
-  const char* utf8_cstring = utf8_string.c_str();
-  const int32_t utf8_length = static_cast<int32_t>(utf8_string.size());
-  for (auto i = match_positions->begin(); i != match_positions->end(); ++i) {
-    i->first = AdvanceAndReturnUTF16Pos(utf8_cstring, utf8_length,
-                                        static_cast<int32_t>(i->first),
-                                        &utf8_pos, &utf16_pos);
-    i->second = AdvanceAndReturnUTF16Pos(utf8_cstring, utf8_length,
-                                         static_cast<int32_t>(i->second),
-                                         &utf8_pos, &utf16_pos);
   }
 }
 
