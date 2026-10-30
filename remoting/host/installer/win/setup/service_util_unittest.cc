@@ -26,6 +26,20 @@ std::wstring CreateUniqueEventName(const wchar_t* prefix) {
 
 }  // namespace
 
+TEST(ServiceUtilTest, DoesEventExist_EventDoesNotExist) {
+  std::wstring event_name = CreateUniqueEventName(L"Local\\TestEventExists");
+  EXPECT_FALSE(DoesEventExist(event_name.c_str()));
+}
+
+TEST(ServiceUtilTest, DoesEventExist_EventExists) {
+  std::wstring event_name = CreateUniqueEventName(L"Local\\TestEventExists");
+  base::win::ScopedHandle event(::CreateEventW(nullptr, /*bManualReset=*/TRUE,
+                                               /*bInitialState=*/FALSE,
+                                               event_name.c_str()));
+  ASSERT_TRUE(event.is_valid());
+  EXPECT_TRUE(DoesEventExist(event_name.c_str()));
+}
+
 TEST(ServiceUtilTest, IsHostSessionActive_EventDoesNotExist) {
   std::wstring event_name = CreateUniqueEventName(L"Local\\TestSessionActive");
   EXPECT_FALSE(IsHostSessionActive(event_name.c_str()));

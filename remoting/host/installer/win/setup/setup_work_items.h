@@ -36,11 +36,15 @@ std::unique_ptr<WorkItemList> CreateInstallWorkItemList(
 // - Creates `install_dir`.
 // - Deploys payload files with staged rename (moving locked files to .old).
 // - Registers COM & Native Messaging registry entries.
-// - Signals the global CrdHostUpdatePending event.
+// - Updates the host Windows service configuration (applied on next service
+//   start).
+// - Signals the global CrdHostUpdatePending event if it exists, or starts the
+//   host service if the daemon exited during the update.
 // The host service is NOT stopped, allowing the active session to continue.
 std::unique_ptr<WorkItemList> CreateUpdatePendingWorkItemList(
     const base::FilePath& source_dir,
     const base::FilePath& install_dir,
+    const base::FilePath& host_config_path,
     std::wstring event_name_for_testing = std::wstring());
 
 // Builds the complete WorkItemList for uninstalling Chrome Remote Desktop.

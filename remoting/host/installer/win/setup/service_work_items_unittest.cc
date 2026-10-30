@@ -6,6 +6,7 @@
 
 #include <windows.h>
 
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -30,12 +31,23 @@ class FakeServiceManager : public ServiceManager {
  public:
   ServiceStateQueryResult GetServiceState() override { return state_; }
 
+  std::optional<std::wstring> GetServiceBinaryPathName() override {
+    return binary_path_name_;
+  }
+
   bool InstallOrUpdateService(const base::FilePath& host_binary_path,
                               const base::FilePath& host_config_path) override {
     install_called_ = true;
     if (state_ == ServiceStateQueryResult::kNotInstalled) {
       state_ = ServiceStateQueryResult::kStopped;
     }
+    binary_path_name_ = host_binary_path.value();
+    return true;
+  }
+
+  bool SetServiceBinaryPathName(const std::wstring& binary_path_name) override {
+    set_binary_path_called_ = true;
+    binary_path_name_ = binary_path_name;
     return true;
   }
 
@@ -54,20 +66,31 @@ class FakeServiceManager : public ServiceManager {
   bool UninstallService() override {
     uninstall_called_ = true;
     state_ = ServiceStateQueryResult::kNotInstalled;
+    binary_path_name_.reset();
     return true;
   }
 
   void set_state(ServiceStateQueryResult state) { state_ = state; }
   ServiceStateQueryResult state() const { return state_; }
 
+  void set_binary_path_name(std::optional<std::wstring> binary_path_name) {
+    binary_path_name_ = std::move(binary_path_name);
+  }
+  const std::optional<std::wstring>& binary_path_name() const {
+    return binary_path_name_;
+  }
+
   bool install_called() const { return install_called_; }
+  bool set_binary_path_called() const { return set_binary_path_called_; }
   bool start_called() const { return start_called_; }
   bool stop_called() const { return stop_called_; }
   bool uninstall_called() const { return uninstall_called_; }
 
  private:
   ServiceStateQueryResult state_ = ServiceStateQueryResult::kNotInstalled;
+  std::optional<std::wstring> binary_path_name_;
   bool install_called_ = false;
+  bool set_binary_path_called_ = false;
   bool start_called_ = false;
   bool stop_called_ = false;
   bool uninstall_called_ = false;
@@ -147,17 +170,25 @@ TEST_F(ServiceWorkItemsTest,
             ServiceStateQueryResult::kNotInstalled);
 }
 
-TEST_F(ServiceWorkItemsTest,
-       InstallOrUpdateServiceWorkItem_RollbackPreservesExistingService) {
+TEST_F(
+    ServiceWorkItemsTest,
+    InstallOrUpdateServiceWorkItem_RollbackRestoresPreviousBinaryPathWhenExisted) {
+  const std::wstring kOldBinaryPath =
+      L"\"C:\\Old\\remoting_host.exe\" --type=daemon";
   fake_service_manager_.set_state(ServiceStateQueryResult::kStopped);
+  fake_service_manager_.set_binary_path_name(kOldBinaryPath);
 
-  InstallOrUpdateServiceWorkItem item(install_dir_.Append(L"test_host.exe"),
+  base::FilePath new_host_exe = install_dir_.Append(L"test_host.exe");
+  InstallOrUpdateServiceWorkItem item(new_host_exe,
                                       config_dir_.Append(L"host.json"));
   EXPECT_TRUE(item.Do());
   EXPECT_TRUE(fake_service_manager_.install_called());
+  EXPECT_EQ(fake_service_manager_.binary_path_name(), new_host_exe.value());
 
   item.Rollback();
   EXPECT_FALSE(fake_service_manager_.uninstall_called());
+  EXPECT_TRUE(fake_service_manager_.set_binary_path_called());
+  EXPECT_EQ(fake_service_manager_.binary_path_name(), kOldBinaryPath);
 }
 
 TEST_F(ServiceWorkItemsTest,
@@ -274,6 +305,26 @@ TEST_F(ServiceWorkItemsTest,
 
   SignalUpdatePendingWorkItem item(event_name);
   EXPECT_TRUE(item.Do());
+}
+
+TEST_F(ServiceWorkItemsTest, ConditionEventExists_TrueWhenEventExists) {
+  std::wstring event_name =
+      CreateUniqueEventName(L"Local\\ConditionEventExists");
+  base::win::ScopedHandle event(::CreateEventW(nullptr, /*bManualReset=*/TRUE,
+                                               /*bInitialState=*/FALSE,
+                                               event_name.c_str()));
+  ASSERT_TRUE(event.is_valid());
+
+  ConditionEventExists condition(event_name);
+  EXPECT_TRUE(condition.ShouldRun());
+}
+
+TEST_F(ServiceWorkItemsTest, ConditionEventExists_FalseWhenEventDoesNotExist) {
+  std::wstring event_name =
+      CreateUniqueEventName(L"Local\\ConditionEventMissing");
+
+  ConditionEventExists condition(event_name);
+  EXPECT_FALSE(condition.ShouldRun());
 }
 
 }  // namespace remoting::installer

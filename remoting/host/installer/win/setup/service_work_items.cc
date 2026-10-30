@@ -13,6 +13,7 @@
 
 #include <windows.h>
 
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -33,10 +34,18 @@ class DefaultServiceManager : public ServiceManager {
     return GetHostServiceState();
   }
 
+  std::optional<std::wstring> GetServiceBinaryPathName() override {
+    return remoting::installer::GetServiceBinaryPathName();
+  }
+
   bool InstallOrUpdateService(const base::FilePath& host_binary_path,
                               const base::FilePath& host_config_path) override {
     return remoting::installer::InstallOrUpdateService(host_binary_path,
                                                        host_config_path);
+  }
+
+  bool SetServiceBinaryPathName(const std::wstring& binary_path_name) override {
+    return remoting::installer::SetServiceBinaryPathName(binary_path_name);
   }
 
   bool StartService() override { return StartHostService(); }
@@ -60,6 +69,18 @@ ServiceManager* GetServiceManager() {
 
 void SetServiceManagerForTesting(ServiceManager* service_manager) {
   g_service_manager_override = service_manager;
+}
+
+ConditionEventExists::ConditionEventExists(std::wstring event_name_for_testing)
+    : event_name_for_testing_(std::move(event_name_for_testing)) {}
+
+ConditionEventExists::~ConditionEventExists() = default;
+
+bool ConditionEventExists::ShouldRun() const {
+  const wchar_t* name = event_name_for_testing_.empty()
+                            ? kHostUpdatePendingEventName
+                            : event_name_for_testing_.c_str();
+  return DoesEventExist(name);
 }
 
 StopServiceWorkItem::StopServiceWorkItem() = default;
@@ -111,6 +132,9 @@ bool InstallOrUpdateServiceWorkItem::DoImpl() {
     // much safer to leave a service registered than to risk deleting a working
     // pre-existing host service during rollback.
     existed_previously_ = true;
+    previous_binary_path_name_ =
+        GetServiceManager()->GetServiceBinaryPathName().value_or(
+            std::wstring());
   }
 
   return GetServiceManager()->InstallOrUpdateService(host_binary_path_,
@@ -121,11 +145,10 @@ void InstallOrUpdateServiceWorkItem::RollbackImpl() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  // TODO(crbug.com/551615326): When `existed_previously_` is true, record and
-  // restore the prior service configuration (`lpBinaryPathName`, etc.) on
-  // rollback.
   if (!existed_previously_) {
     GetServiceManager()->UninstallService();
+  } else if (!previous_binary_path_name_.empty()) {
+    GetServiceManager()->SetServiceBinaryPathName(previous_binary_path_name_);
   }
 }
 

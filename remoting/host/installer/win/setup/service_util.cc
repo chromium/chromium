@@ -13,10 +13,14 @@
 
 #include <windows.h>
 
+#include <stdint.h>
+
 #include <array>
+#include <optional>
 #include <string>
 
 #include "base/command_line.h"
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -60,6 +64,12 @@ void ConfigureServiceProperties(SC_HANDLE service) {
 }
 
 }  // namespace
+
+bool DoesEventExist(const wchar_t* event_name) {
+  base::win::ScopedHandle event(
+      ::OpenEventW(SYNCHRONIZE, /*bInheritHandle=*/FALSE, event_name));
+  return event.is_valid();
+}
 
 bool IsHostSessionActive(const wchar_t* event_name_for_testing) {
   base::win::ScopedHandle event(::OpenEventW(
@@ -144,6 +154,80 @@ ServiceStateQueryResult GetHostServiceState() {
       // start it and StopServiceWorkItem stops it.
       return ServiceStateQueryResult::kStopPending;
   }
+}
+
+std::optional<std::wstring> GetServiceBinaryPathName() {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  ScopedScHandle scm(
+      ::OpenSCManagerW(nullptr, SERVICES_ACTIVE_DATABASE, SC_MANAGER_CONNECT));
+  if (!scm.is_valid()) {
+    PLOG(ERROR) << "Failed to open Service Control Manager";
+    return std::nullopt;
+  }
+
+  ScopedScHandle service(
+      ::OpenServiceW(scm.Get(), kWindowsServiceName, SERVICE_QUERY_CONFIG));
+  if (!service.is_valid()) {
+    if (::GetLastError() != ERROR_SERVICE_DOES_NOT_EXIST) {
+      PLOG(ERROR) << "Failed to open service " << kWindowsServiceName;
+    }
+    return std::nullopt;
+  }
+
+  DWORD bytes_needed = 0;
+  if (!::QueryServiceConfigW(service.Get(), nullptr, 0, &bytes_needed) &&
+      ::GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
+    PLOG(ERROR) << "Failed to query config size for service "
+                << kWindowsServiceName;
+    return std::nullopt;
+  }
+
+  auto buffer = base::HeapArray<uint8_t>::Uninit(bytes_needed);
+  auto* config = reinterpret_cast<QUERY_SERVICE_CONFIGW*>(buffer.data());
+  if (!::QueryServiceConfigW(service.Get(), config, bytes_needed,
+                             &bytes_needed)) {
+    PLOG(ERROR) << "Failed to query config for service " << kWindowsServiceName;
+    return std::nullopt;
+  }
+
+  if (!config->lpBinaryPathName) {
+    return std::nullopt;
+  }
+  return std::wstring(config->lpBinaryPathName);
+}
+
+bool SetServiceBinaryPathName(const std::wstring& binary_path_name) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  ScopedScHandle scm(
+      ::OpenSCManagerW(nullptr, SERVICES_ACTIVE_DATABASE, SC_MANAGER_CONNECT));
+  if (!scm.is_valid()) {
+    PLOG(ERROR) << "Failed to open Service Control Manager";
+    return false;
+  }
+
+  ScopedScHandle service(
+      ::OpenServiceW(scm.Get(), kWindowsServiceName, SERVICE_CHANGE_CONFIG));
+  if (!service.is_valid()) {
+    PLOG(ERROR) << "Failed to open service " << kWindowsServiceName;
+    return false;
+  }
+
+  if (!::ChangeServiceConfigW(
+          service.Get(), SERVICE_NO_CHANGE, SERVICE_NO_CHANGE,
+          SERVICE_NO_CHANGE, binary_path_name.c_str(),
+          /*lpLoadOrderGroup=*/nullptr, /*lpdwTagId=*/nullptr,
+          /*lpDependencies=*/nullptr, /*lpServiceStartName=*/nullptr,
+          /*lpPassword=*/nullptr, /*lpDisplayName=*/nullptr)) {
+    PLOG(ERROR) << "Failed to restore binary path for service "
+                << kWindowsServiceName;
+    return false;
+  }
+
+  return true;
 }
 
 bool InstallOrUpdateService(const base::FilePath& host_binary_path,

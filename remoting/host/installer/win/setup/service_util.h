@@ -17,6 +17,9 @@
 // - `WorkItem` subclasses, rollback state tracking, or the `ServiceManager`
 //   abstraction used by `WorkItem`s. Put those in `service_work_items.{h,cc}`.
 
+#include <optional>
+#include <string>
+
 #include "base/files/file_path.h"
 #include "remoting/base/branding.h"
 
@@ -33,6 +36,9 @@ enum class ServiceStateQueryResult {
   kError,
 };
 
+// Returns true if the specified kernel event exists and can be opened.
+bool DoesEventExist(const wchar_t* event_name);
+
 // Returns true if the running host service currently has an active desktop
 // session (i.e. `event_name_for_testing` is openable and signaled).
 bool IsHostSessionActive(
@@ -46,6 +52,15 @@ bool SignalHostUpdatePending(
 
 // Queries the current state of the Chrome Remote Desktop Windows service.
 ServiceStateQueryResult GetHostServiceState();
+
+// Queries the current binary path name (`lpBinaryPathName`) configured for the
+// Chrome Remote Desktop Windows service. Returns `std::nullopt` if the service
+// does not exist or its configuration cannot be queried.
+std::optional<std::wstring> GetServiceBinaryPathName();
+
+// Updates the binary path name (`lpBinaryPathName`) of an existing Chrome
+// Remote Desktop Windows service.
+bool SetServiceBinaryPathName(const std::wstring& binary_path_name);
 
 // Installs or updates the Windows service configuration for Chrome Remote
 // Desktop, including 1-minute failure recovery actions.

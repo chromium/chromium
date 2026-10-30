@@ -7,6 +7,7 @@
 #include <windows.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -38,12 +39,22 @@ class FakeServiceManager : public ServiceManager {
  public:
   ServiceStateQueryResult GetServiceState() override { return state_; }
 
+  std::optional<std::wstring> GetServiceBinaryPathName() override {
+    return binary_path_name_;
+  }
+
   bool InstallOrUpdateService(const base::FilePath& host_binary_path,
                               const base::FilePath& host_config_path) override {
     install_called_ = true;
     if (state_ == ServiceStateQueryResult::kNotInstalled) {
       state_ = ServiceStateQueryResult::kStopped;
     }
+    binary_path_name_ = host_binary_path.value();
+    return true;
+  }
+
+  bool SetServiceBinaryPathName(const std::wstring& binary_path_name) override {
+    binary_path_name_ = binary_path_name;
     return true;
   }
 
@@ -65,10 +76,12 @@ class FakeServiceManager : public ServiceManager {
   bool UninstallService() override {
     uninstall_called_ = true;
     state_ = ServiceStateQueryResult::kNotInstalled;
+    binary_path_name_.reset();
     return true;
   }
 
   void set_state(ServiceStateQueryResult state) { state_ = state; }
+  ServiceStateQueryResult state() const { return state_; }
   void set_start_succeeds(bool succeeds) { start_succeeds_ = succeeds; }
 
   bool install_called() const { return install_called_; }
@@ -78,6 +91,7 @@ class FakeServiceManager : public ServiceManager {
 
  private:
   ServiceStateQueryResult state_ = ServiceStateQueryResult::kNotInstalled;
+  std::optional<std::wstring> binary_path_name_;
   bool start_succeeds_ = true;
   bool install_called_ = false;
   bool start_called_ = false;
@@ -160,6 +174,7 @@ TEST_F(SetupWorkItemsTest, CreateInstallWorkItemList_FailureRollback) {
 }
 
 TEST_F(SetupWorkItemsTest, CreateUpdatePendingWorkItemList_Success) {
+  fake_service_manager_.set_state(ServiceStateQueryResult::kRunning);
   std::wstring event_name =
       CreateUniqueEventName(L"Local\\TestUpdatePendingPipeline");
   base::win::ScopedHandle event(::CreateEventW(nullptr, /*bManualReset=*/TRUE,
@@ -167,14 +182,39 @@ TEST_F(SetupWorkItemsTest, CreateUpdatePendingWorkItemList_Success) {
                                                event_name.c_str()));
   ASSERT_TRUE(event.is_valid());
 
-  std::unique_ptr<WorkItemList> list =
-      CreateUpdatePendingWorkItemList(source_dir_, install_dir_, event_name);
+  std::unique_ptr<WorkItemList> list = CreateUpdatePendingWorkItemList(
+      source_dir_, install_dir_, config_dir_.Append(L"host.json"), event_name);
   ASSERT_TRUE(list);
 
   EXPECT_TRUE(list->Do());
+  EXPECT_FALSE(fake_service_manager_.stop_called());
+  EXPECT_TRUE(fake_service_manager_.install_called());
+  EXPECT_FALSE(fake_service_manager_.start_called());
   EXPECT_EQ(::WaitForSingleObject(event.Get(), 0),
             static_cast<DWORD>(WAIT_OBJECT_0));
   EXPECT_TRUE(base::PathExists(install_dir_.Append(kHostBinaryName)));
+}
+
+TEST_F(
+    SetupWorkItemsTest,
+    CreateUpdatePendingWorkItemList_StartsServiceWhenEventMissingAndStopsOnRollback) {
+  fake_service_manager_.set_state(ServiceStateQueryResult::kStopped);
+  std::wstring event_name =
+      CreateUniqueEventName(L"Local\\TestUpdatePendingEventMissing");
+
+  std::unique_ptr<WorkItemList> list = CreateUpdatePendingWorkItemList(
+      source_dir_, install_dir_, config_dir_.Append(L"host.json"), event_name);
+  ASSERT_TRUE(list);
+
+  EXPECT_TRUE(list->Do());
+  EXPECT_FALSE(fake_service_manager_.stop_called());
+  EXPECT_TRUE(fake_service_manager_.install_called());
+  EXPECT_TRUE(fake_service_manager_.start_called());
+  EXPECT_EQ(fake_service_manager_.state(), ServiceStateQueryResult::kRunning);
+
+  list->Rollback();
+  EXPECT_TRUE(fake_service_manager_.stop_called());
+  EXPECT_EQ(fake_service_manager_.state(), ServiceStateQueryResult::kStopped);
 }
 
 TEST_F(SetupWorkItemsTest, CreateUninstallWorkItemList_Success) {

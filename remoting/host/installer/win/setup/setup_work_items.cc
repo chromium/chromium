@@ -6,7 +6,6 @@
 
 #include <memory>
 #include <string>
-#include <utility>
 
 #include "chrome/installer/util/work_item.h"
 #include "chrome/installer/util/work_item_list.h"
@@ -38,14 +37,20 @@ std::unique_ptr<WorkItemList> CreateInstallWorkItemList(
 std::unique_ptr<WorkItemList> CreateUpdatePendingWorkItemList(
     const base::FilePath& source_dir,
     const base::FilePath& install_dir,
+    const base::FilePath& host_config_path,
     std::wstring event_name_for_testing) {
   std::unique_ptr<WorkItemList> list(WorkItem::CreateWorkItemList());
 
   list->AddCreateDirWorkItem(install_dir);
   list->AddWorkItem(new DeployFilesWorkItem(source_dir, install_dir));
   list->AddWorkItem(new HostRegistryWorkItem(install_dir));
+  base::FilePath host_binary = install_dir.Append(kHostBinaryName);
   list->AddWorkItem(
-      new SignalUpdatePendingWorkItem(std::move(event_name_for_testing)));
+      new InstallOrUpdateServiceWorkItem(host_binary, host_config_path));
+  list->AddWorkItem(WorkItem::CreateConditionalWorkItem(
+      std::make_unique<ConditionEventExists>(event_name_for_testing),
+      std::make_unique<SignalUpdatePendingWorkItem>(event_name_for_testing),
+      std::make_unique<StartServiceWorkItem>()));
 
   return list;
 }
