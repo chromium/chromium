@@ -21,7 +21,6 @@
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/media_session.h"
-#include "media/base/media_switches.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 
@@ -120,7 +119,7 @@ base::RepeatingClosure GetStopCastingCallback(
   }
 
   const auto& route_id = route->media_route_id();
-  auto cast_mode = HasRemotePlaybackRoute(item)
+  auto cast_mode = route->media_source().IsRemotePlaybackSource()
                        ? media_router::MediaCastMode::REMOTE_PLAYBACK
                        : media_router::MediaCastMode::TAB_MIRROR;
 
@@ -139,22 +138,6 @@ base::RepeatingClosure GetStopCastingCallback(
   return stop_casting_callback;
 }
 
-bool HasRemotePlaybackRoute(
-    base::WeakPtr<media_message_center::MediaNotificationItem> item) {
-  if (base::FeatureList::IsEnabled(media::kMediaRemotingWithoutFullscreen) &&
-      item &&
-      item->GetSourceType() ==
-          media_message_center::SourceType::kLocalMediaSession) {
-    const auto* media_session_item =
-        static_cast<global_media_controls::MediaSessionNotificationItem*>(
-            item.get());
-    return media_session_item->GetRemotePlaybackMetadata() &&
-           media_session_item->GetRemotePlaybackMetadata()
-               ->remote_playback_started;
-  }
-  return false;
-}
-
 std::optional<media_router::MediaRoute> GetSessionRoute(
     const std::string& item_id,
     base::WeakPtr<media_message_center::MediaNotificationItem> item,
@@ -169,20 +152,14 @@ std::optional<media_router::MediaRoute> GetSessionRoute(
     return std::nullopt;
   }
 
-  // Return std::nullopt if fallback to tab mirroring is disabled, and
-  // media session doesn't have an associated Remote Playback route.
-  if (!base::FeatureList::IsEnabled(
-          media_router::kFallbackToAudioTabMirroring) &&
-      !HasRemotePlaybackRoute(item)) {
-    return std::nullopt;
-  }
-
   auto* web_contents =
       content::MediaSession::GetWebContentsFromRequestId(item_id);
   if (!web_contents) {
     return std::nullopt;
   }
 
+  // Associate Remote Playback and Tab Mirroring routes with the media session
+  // of the tab that started them, regardless of feature state.
   const int item_tab_id =
       sessions::SessionTabHelper::IdForTab(web_contents).id();
   for (const auto& route :

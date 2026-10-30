@@ -154,9 +154,6 @@ TEST_F(CastDeviceListHostTest, StartRemotePlayback) {
   host_->SelectDevice(sink.id);
 }
 
-// TODO(crbug.com/1486680): Enable this on Chrome OS once stopping mirroring
-// routes in the global media controls is implemented.
-#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(CastDeviceListHostTest, StartAudioTabMirroring) {
   auto sink = CreateMediaSink();
   sink.cast_modes = {media_router::MediaCastMode::TAB_MIRROR};
@@ -167,7 +164,6 @@ TEST_F(CastDeviceListHostTest, StartAudioTabMirroring) {
               StartCasting(sink.id, media_router::MediaCastMode::TAB_MIRROR));
   host_->SelectDevice(sink.id);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(CastDeviceListHostTest, OnSinksDiscovered) {
   EXPECT_CALL(*this, OnSinksDiscoveredCallback());

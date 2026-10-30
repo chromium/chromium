@@ -740,11 +740,6 @@ bool MediaNotificationService::HasCastNotificationsForWebContents(
 
 bool MediaNotificationService::HasTabMirroringSessionForWebContents(
     content::WebContents* web_contents) const {
-  if (!base::FeatureList::IsEnabled(
-          media_router::kFallbackToAudioTabMirroring)) {
-    return false;
-  }
-
   // Return true if there exists a tab mirroring session associated with
   // `web_contents`.
   const int item_tab_id =

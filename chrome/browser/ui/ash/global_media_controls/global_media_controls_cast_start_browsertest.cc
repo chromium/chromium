@@ -9,10 +9,8 @@
 #include "ash/system/media/media_tray.h"
 #include "ash/system/status_area_widget.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/global_media_controls/media_notification_provider_impl.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_service.h"
@@ -35,7 +33,6 @@
 #include "content/public/browser/media_session.h"
 #include "content/public/test/browser_test.h"
 #include "media/base/audio_codecs.h"
-#include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
@@ -139,31 +136,6 @@ class GlobalMediaControlsCastStartTest : public InProcessBrowserTest {
   base::CallbackListSubscription create_services_subscription_;
 };
 
-class GlobalMediaControlsCastStartTabMirroringTest
-    : public GlobalMediaControlsCastStartTest {
- public:
-  GlobalMediaControlsCastStartTabMirroringTest() {
-    feature_list_.InitAndEnableFeature(
-        media_router::kFallbackToAudioTabMirroring);
-  }
-  ~GlobalMediaControlsCastStartTabMirroringTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class GlobalMediaControlsCastStartRemotePlaybackTest
-    : public GlobalMediaControlsCastStartTest {
- public:
-  GlobalMediaControlsCastStartRemotePlaybackTest() {
-    feature_list_.InitAndEnableFeature(media::kMediaRemotingWithoutFullscreen);
-  }
-  ~GlobalMediaControlsCastStartRemotePlaybackTest() override = default;
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 IN_PROC_BROWSER_TEST_F(GlobalMediaControlsCastStartTest, StartCasting) {
   auto* profile = GetProfile();
   auto* device_service =
@@ -176,7 +148,7 @@ IN_PROC_BROWSER_TEST_F(GlobalMediaControlsCastStartTest, StartCasting) {
   SelectDevice(device_picker, device_id);
 }
 
-IN_PROC_BROWSER_TEST_F(GlobalMediaControlsCastStartTabMirroringTest,
+IN_PROC_BROWSER_TEST_F(GlobalMediaControlsCastStartTest,
                        StopCastingLocalMediaSessionTabMirroring) {
   content::WebContents* web_contents =
       browser()->GetActiveTabInterface()->GetContents();
@@ -260,7 +232,10 @@ IN_PROC_BROWSER_TEST_F(GlobalMediaControlsCastStartTabMirroringTest,
   EXPECT_TRUE(pip_button->GetVisible());
 }
 
-IN_PROC_BROWSER_TEST_F(GlobalMediaControlsCastStartRemotePlaybackTest,
+// Intentionally runs with default features: the "Stop casting" button must be
+// shown for Remote Playback on ChromeOS, where kMediaRemotingWithoutFullscreen
+// is disabled by default.
+IN_PROC_BROWSER_TEST_F(GlobalMediaControlsCastStartTest,
                        StopCastingLocalMediaSessionRemotePlayback) {
   content::WebContents* web_contents =
       browser()->GetActiveTabInterface()->GetContents();

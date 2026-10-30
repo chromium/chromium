@@ -47,7 +47,6 @@ source_set("browser_tests") {
     ":global_media_controls",
     "//ash",
     "//base/test:test_support",
-    "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/media/router:test_support",
     "//chrome/browser/ui/global_media_controls",
     "//chrome/browser/ui/views/global_media_controls",

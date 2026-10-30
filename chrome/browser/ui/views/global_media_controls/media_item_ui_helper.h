@@ -80,10 +80,6 @@ base::RepeatingClosure GetStopCastingCallback(
     const std::string& id,
     const base::WeakPtr<media_message_center::MediaNotificationItem>& item);
 
-// Returns whether `item` has an associated Remote Playback route.
-bool HasRemotePlaybackRoute(
-    base::WeakPtr<media_message_center::MediaNotificationItem> item);
-
 // Returns the MediaRoute associated with `item`, if one exists.
 std::optional<media_router::MediaRoute> GetSessionRoute(
     const std::string& item_id,

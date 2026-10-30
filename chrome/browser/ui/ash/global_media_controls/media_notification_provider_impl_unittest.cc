@@ -44,7 +44,6 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "media/base/audio_codecs.h"
-#include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "services/media_session/public/cpp/media_session_service.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
@@ -351,10 +350,6 @@ TEST_F(MediaNotificationProviderImplTest, ShowCastFooterView) {
 
 TEST_F(MediaNotificationProviderImplTest,
        ShowCastFooterViewForLocalMediaSession) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      media_router::kFallbackToAudioTabMirroring);
-
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
   sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
@@ -398,10 +393,6 @@ TEST_F(MediaNotificationProviderImplTest,
 
 TEST_F(MediaNotificationProviderImplTest,
        NoCastFooterViewForLocalMediaSessionWithoutRoute) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      media_router::kFallbackToAudioTabMirroring);
-
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
   sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
@@ -426,10 +417,6 @@ TEST_F(MediaNotificationProviderImplTest,
 
 TEST_F(MediaNotificationProviderImplTest,
        NoCastFooterViewForLocalMediaSessionWithUnrelatedRoute) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      media_router::kFallbackToAudioTabMirroring);
-
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
   sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
@@ -460,12 +447,11 @@ TEST_F(MediaNotificationProviderImplTest,
   EXPECT_EQ(nullptr, media_item_ui_view->footer_view_for_testing());
 }
 
+// Runs with default features to ensure that the "Stop casting" button is shown
+// for Remote Playback on ChromeOS, where kMediaRemotingWithoutFullscreen is
+// disabled by default.
 TEST_F(MediaNotificationProviderImplTest,
        ShowCastFooterViewForLocalMediaSessionRemotePlayback) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      media::kMediaRemotingWithoutFullscreen);
-
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
   sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
@@ -517,6 +503,83 @@ TEST_F(MediaNotificationProviderImplTest,
       .NotifyClick(ui::MouseEvent(
           ui::EventType::kMousePressed, gfx::Point(0, 0), gfx::Point(0, 0),
           ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
+}
+
+// The Remote Playback route alone is sufficient to show the "Stop casting"
+// button, even if the media session has not reported Remote Playback metadata.
+TEST_F(MediaNotificationProviderImplTest,
+       ShowCastFooterViewForLocalMediaSessionRemotePlaybackWithoutMetadata) {
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
+                                                   base::NullCallback());
+  content::MediaSession::Get(web_contents.get());
+  int tab_id = sessions::SessionTabHelper::IdForTab(web_contents.get()).id();
+
+  const std::string route_id = "route_remote_playback";
+  media_router::MediaRoute route(
+      route_id,
+      media_router::MediaSource::ForRemotePlayback(
+          tab_id, media::VideoCodec::kVP8, media::AudioCodec::kOpus),
+      "sink_1", "Test Remote Playback Route", true);
+  route.set_media_sink_name("Living Room TV");
+  EXPECT_CALL(*media_router_, GetCurrentRoutes())
+      .WillRepeatedly(
+          testing::Return(std::vector<media_router::MediaRoute>{route}));
+
+  auto request_id =
+      content::MediaSession::GetRequestIdFromWebContents(web_contents.get());
+  SimulateShowNotification(request_id);
+
+  auto notification_list_view = CreateNotificationListView();
+  auto items = notification_list_view->items_for_testing();
+  ASSERT_EQ(1u, items.size());
+
+  global_media_controls::MediaItemUIView* media_item_ui_view =
+      items.begin()->second.get();
+  global_media_controls::MediaItemUIFooter* footer_view =
+      media_item_ui_view->footer_view_for_testing();
+  ASSERT_NE(nullptr, footer_view);
+  EXPECT_TRUE(footer_view->GetVisible());
+}
+
+// Even if fallback to audio tab mirroring is disabled, an active Tab
+// Mirroring route must show the "Stop casting" button in the GMC.
+TEST_F(MediaNotificationProviderImplTest,
+       ShowCastFooterViewForLocalMediaSessionTabMirroringWithFallbackDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      media_router::kFallbackToAudioTabMirroring);
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  sessions::SessionTabHelper::CreateForWebContents(web_contents.get(),
+                                                   base::NullCallback());
+  content::MediaSession::Get(web_contents.get());
+  int tab_id = sessions::SessionTabHelper::IdForTab(web_contents.get()).id();
+
+  media_router::MediaRoute route("route_123",
+                                 media_router::MediaSource::ForTab(tab_id),
+                                 "sink_1", "Test Cast Route", true);
+  route.set_media_sink_name("Living Room TV");
+  EXPECT_CALL(*media_router_, GetCurrentRoutes())
+      .WillRepeatedly(
+          testing::Return(std::vector<media_router::MediaRoute>{route}));
+
+  auto request_id =
+      content::MediaSession::GetRequestIdFromWebContents(web_contents.get());
+  SimulateShowNotification(request_id);
+
+  auto notification_list_view = CreateNotificationListView();
+  auto items = notification_list_view->items_for_testing();
+  ASSERT_EQ(1u, items.size());
+
+  global_media_controls::MediaItemUIView* media_item_ui_view =
+      items.begin()->second.get();
+  global_media_controls::MediaItemUIFooter* footer_view =
+      media_item_ui_view->footer_view_for_testing();
+  ASSERT_NE(nullptr, footer_view);
+  EXPECT_TRUE(footer_view->GetVisible());
 }
 
 TEST_F(MediaNotificationProviderImplTest, ShowDeviceSelectorView) {
