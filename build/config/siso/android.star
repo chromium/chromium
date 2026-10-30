@@ -62,7 +62,7 @@ def __step_config(ctx, step_config):
         {
             "name": "android/write_build_config",
             "command_prefix": platform.python_bin + " ../../build/android/gyp/write_build_config.py",
-            "handler": "android_write_build_config",
+            "handler": "android_write_build_config" if remote_run else None,
             "remote": remote_run,
             "restat_content": True,
             "timeout": "2m",
