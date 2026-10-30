@@ -501,11 +501,15 @@ TEST_F(VideoOverlayWindowViewsTest, HitTestFrameView) {
   EXPECT_EQ(non_client_view->HitTestPoint(point), true);
 }
 
-// With pillarboxing, the close button doesn't cover the video area. Make sure
-// hovering the button doesn't get handled like normal mouse exit events
-// causing the controls to hide.
-// TODO(http://crbug.com/41482397): Fix and re-enable.
-TEST_F(VideoOverlayWindowViewsTest, DISABLED_NoMouseExitWithinWindowBounds) {
+// Verifies that moving the mouse over the close button within pillarboxed
+// window bounds does not hide overlay window controls.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_NoMouseExitWithinWindowBounds \
+  DISABLED_NoMouseExitWithinWindowBounds
+#else
+#define MAYBE_NoMouseExitWithinWindowBounds NoMouseExitWithinWindowBounds
+#endif
+TEST_F(VideoOverlayWindowViewsTest, MAYBE_NoMouseExitWithinWindowBounds) {
   overlay_window().UpdateNaturalSize({10, 400});
   WaitForMove();
 
@@ -612,8 +616,14 @@ TEST_F(VideoOverlayWindowViewsTest, SmallDisplayWorkAreaDoesNotCrash) {
             overlay_window().video_layer_for_testing()->size());
 }
 
-// TODO(http://crbug.com/41482397): Fix and re-enable.
-TEST_F(VideoOverlayWindowViewsTest, DISABLED_ControlsAreHiddenDuringMove) {
+// Verifies that moving the overlay window hides controls during movement and
+// restores control visibility after the move completes.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ControlsAreHiddenDuringMove DISABLED_ControlsAreHiddenDuringMove
+#else
+#define MAYBE_ControlsAreHiddenDuringMove ControlsAreHiddenDuringMove
+#endif
+TEST_F(VideoOverlayWindowViewsTest, MAYBE_ControlsAreHiddenDuringMove) {
   // Set the initial position.
   overlay_window().SetBounds({0, 0, 100, 100});
   WaitForMove();
@@ -636,6 +646,8 @@ TEST_F(VideoOverlayWindowViewsTest, DISABLED_ControlsAreHiddenDuringMove) {
   EXPECT_TRUE(overlay_window().AreControlsVisible());
 }
 
+// Verifies that multiple control visibility updates during window movement
+// leave controls hidden until the move operation finishes.
 TEST_F(VideoOverlayWindowViewsTest,
        ControlsAreHiddenDuringMove_MultipleUpdates) {
   overlay_window().SetBounds({0, 0, 100, 100});
