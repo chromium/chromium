@@ -20,6 +20,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_tokenizer.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/fixed_array.h"
@@ -402,6 +404,42 @@ PendingSafeBrowsingCallbacksMap& GetPendingSafeBrowsingCallbacksMap() {
   return *pending_safe_browsing_callbacks;
 }
 
+// Holds per-request UI task runners for pending SafeBrowsing API requests
+// with a non-null `custom_callback_task_runner`. Guarded by `lock` across UI
+// and Java callback threads.
+struct PendingCustomCallbackTaskRunners {
+  base::Lock lock;
+  std::unordered_map<int64_t, scoped_refptr<base::SequencedTaskRunner>> runners
+      GUARDED_BY(lock);
+};
+
+PendingCustomCallbackTaskRunners& GetPendingCustomCallbackTaskRunners() {
+  static base::NoDestructor<PendingCustomCallbackTaskRunners> instance;
+  return *instance;
+}
+
+scoped_refptr<base::SequencedTaskRunner> GetCallbackTaskRunnerOrDefault(
+    scoped_refptr<base::SequencedTaskRunner> custom_callback_task_runner) {
+  return custom_callback_task_runner ? std::move(custom_callback_task_runner)
+                                     : content::GetUIThreadTaskRunner({});
+}
+
+scoped_refptr<base::SequencedTaskRunner> TakeCustomCallbackTaskRunnerOrDefault(
+    int64_t callback_id) {
+  {
+    PendingCustomCallbackTaskRunners& pending =
+        GetPendingCustomCallbackTaskRunners();
+    base::AutoLock auto_lock(pending.lock);
+    if (auto it = pending.runners.find(callback_id);
+        it != pending.runners.end()) {
+      scoped_refptr<base::SequencedTaskRunner> runner = std::move(it->second);
+      pending.runners.erase(it);
+      return runner;
+    }
+  }
+  return content::GetUIThreadTaskRunner({});
+}
+
 using PendingVerifyAppsCallbacksMap = std::unordered_map<
     int64_t,
     SafeBrowsingApiHandlerBridge::VerifyAppsResponseCallback>;
@@ -542,11 +580,12 @@ static void JNI_SafeBrowsingApiBridge_OnUrlCheckDoneBySafeBrowsingApi(
   JavaIntArrayToIntVector(env, j_threat_attributes, &threat_attributes);
   SafeBrowsingJavaResponseStatus response_status =
       static_cast<SafeBrowsingJavaResponseStatus>(j_response_status);
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&OnUrlCheckDoneBySafeBrowsingApi, callback_id,
-                     lookup_result, threat_type, std::move(threat_attributes),
-                     response_status, check_delta_microseconds));
+  TakeCustomCallbackTaskRunnerOrDefault(callback_id)
+      ->PostTask(FROM_HERE,
+                 base::BindOnce(&OnUrlCheckDoneBySafeBrowsingApi, callback_id,
+                                lookup_result, threat_type,
+                                std::move(threat_attributes), response_status,
+                                check_delta_microseconds));
 }
 
 void OnVerifyAppsEnabledDone(int64_t callback_id, int32_t j_result) {
@@ -646,19 +685,22 @@ void SafeBrowsingApiHandlerBridge::PopulateArtificialDatabase() {
 void SafeBrowsingApiHandlerBridge::StartHashDatabaseUrlCheck(
     ResponseCallback callback,
     const GURL& url,
-    const SBThreatTypeSet& threat_types) {
+    const SBThreatTypeSet& threat_types,
+    scoped_refptr<base::SequencedTaskRunner> custom_callback_task_runner) {
   bool for_browse_url = SBThreatTypeSetIsValidForCheckBrowseUrl(threat_types);
   if (for_browse_url &&
       threat_types.contains(SBThreatType::SB_THREAT_TYPE_URL_PHISHING) &&
       artificially_marked_phishing_urls_.contains(url)) {
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback),
+    GetCallbackTaskRunnerOrDefault(std::move(custom_callback_task_runner))
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(std::move(callback),
                                   SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
                                   ThreatMetadata()));
     return;
   }
   StartUrlCheckBySafeBrowsing(std::move(callback), url, threat_types,
-                              SafeBrowsingJavaProtocol::LOCAL_BLOCK_LIST);
+                              SafeBrowsingJavaProtocol::LOCAL_BLOCK_LIST,
+                              std::move(custom_callback_task_runner));
 }
 
 void SafeBrowsingApiHandlerBridge::StartHashRealTimeUrlCheck(
@@ -666,14 +708,16 @@ void SafeBrowsingApiHandlerBridge::StartHashRealTimeUrlCheck(
     const GURL& url,
     const SBThreatTypeSet& threat_types) {
   StartUrlCheckBySafeBrowsing(std::move(callback), url, threat_types,
-                              SafeBrowsingJavaProtocol::REAL_TIME);
+                              SafeBrowsingJavaProtocol::REAL_TIME,
+                              /*custom_callback_task_runner=*/nullptr);
 }
 
 void SafeBrowsingApiHandlerBridge::StartUrlCheckBySafeBrowsing(
     ResponseCallback callback,
     const GURL& url,
     const SBThreatTypeSet& threat_types,
-    const SafeBrowsingJavaProtocol& protocol) {
+    const SafeBrowsingJavaProtocol& protocol,
+    scoped_refptr<base::SequencedTaskRunner> custom_callback_task_runner) {
   if (interceptor_for_testing_) {
     // For testing, only check the interceptor.
     interceptor_for_testing_->CheckBySafeBrowsing(std::move(callback), url);
@@ -690,10 +734,10 @@ void SafeBrowsingApiHandlerBridge::StartUrlCheckBySafeBrowsing(
   if (!is_safe_browsing_api_available_) {
     // Mark all requests as safe. Only users who have an old, broken GMSCore or
     // have sideloaded Chrome w/o PlayStore should land here.
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), SBThreatType::SB_THREAT_TYPE_SAFE,
-                       ThreatMetadata()));
+    GetCallbackTaskRunnerOrDefault(std::move(custom_callback_task_runner))
+        ->PostTask(FROM_HERE, base::BindOnce(std::move(callback),
+                                             SBThreatType::SB_THREAT_TYPE_SAFE,
+                                             ThreatMetadata()));
     return;
   }
 
@@ -703,6 +747,13 @@ void SafeBrowsingApiHandlerBridge::StartUrlCheckBySafeBrowsing(
       SafeBrowsingResponseCallback(protocol, std::move(callback));
   GetPendingSafeBrowsingCallbacksMap().insert(
       {callback_id, std::move(safe_browsing_callback)});
+  if (custom_callback_task_runner) {
+    PendingCustomCallbackTaskRunners& pending =
+        GetPendingCustomCallbackTaskRunners();
+    base::AutoLock auto_lock(pending.lock);
+    pending.runners.emplace(callback_id,
+                            std::move(custom_callback_task_runner));
+  }
 
   DCHECK(!threat_types.empty());
 

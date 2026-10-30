@@ -13,6 +13,8 @@
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 
@@ -54,9 +56,13 @@ class SafeBrowsingApiHandlerBridge {
   void PopulateArtificialDatabase();
 
   // Makes Native-to-Java call to perform the hash-prefix database check.
-  void StartHashDatabaseUrlCheck(ResponseCallback callback,
-                                 const GURL& url,
-                                 const SBThreatTypeSet& threat_types);
+  // Posts completion onto `custom_callback_task_runner` when non-null, or the
+  // default UI thread task runner otherwise.
+  void StartHashDatabaseUrlCheck(
+      ResponseCallback callback,
+      const GURL& url,
+      const SBThreatTypeSet& threat_types,
+      scoped_refptr<base::SequencedTaskRunner> custom_callback_task_runner);
 
   // Makes Native-to-Java call to perform the privacy-preserving hash real-time
   // check.
@@ -117,10 +123,12 @@ class SafeBrowsingApiHandlerBridge {
  private:
   // Makes Native-to-Java call to check the URL through GMSCore SafeBrowsing
   // API.
-  void StartUrlCheckBySafeBrowsing(ResponseCallback callback,
-                                   const GURL& url,
-                                   const SBThreatTypeSet& threat_types,
-                                   const SafeBrowsingJavaProtocol& protocol);
+  void StartUrlCheckBySafeBrowsing(
+      ResponseCallback callback,
+      const GURL& url,
+      const SBThreatTypeSet& threat_types,
+      const SafeBrowsingJavaProtocol& protocol,
+      scoped_refptr<base::SequencedTaskRunner> custom_callback_task_runner);
 
   // Stores the `result` of a call to get the SafetyNet ID from Java, including
   // an empty result which indicates non-recoverable error.

@@ -7,14 +7,17 @@
 #include <map>
 #include <memory>
 
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_test_util.h"
@@ -75,12 +78,31 @@ class TestClient : public SafeBrowsingDatabaseManager::Client {
 
   void OnCheckBrowseUrlResult(const GURL& url,
                               SBThreatType threat_type) override {
-    EXPECT_EQ(expected_url_, url);
-    EXPECT_EQ(expected_threat_type_, threat_type);
-    is_callback_called_ = true;
+    OnResult(url, threat_type);
+  }
+
+  void OnCheckSubresourceFilterUrlResult(
+      const GURL& url,
+      SBThreatType threat_type,
+      const SubresourceFilterMatch& subresource_filter_match) override {
+    OnResult(url, threat_type);
   }
 
   bool IsCallbackCalled() { return is_callback_called_; }
+
+  void set_on_callback_done(base::OnceClosure on_callback_done) {
+    on_callback_done_ = std::move(on_callback_done);
+  }
+
+  void set_custom_callback_task_runner(
+      scoped_refptr<base::SequencedTaskRunner> custom_callback_task_runner) {
+    custom_callback_task_runner_ = std::move(custom_callback_task_runner);
+  }
+
+  scoped_refptr<base::SequencedTaskRunner> GetCustomCallbackTaskRunner()
+      override {
+    return custom_callback_task_runner_;
+  }
 
   base::WeakPtr<V5GetHashProtocolManager> GetV5GetHashProtocolManager()
       override {
@@ -88,10 +110,21 @@ class TestClient : public SafeBrowsingDatabaseManager::Client {
   }
 
  private:
+  void OnResult(const GURL& url, SBThreatType threat_type) {
+    EXPECT_EQ(expected_url_, url);
+    EXPECT_EQ(expected_threat_type_, threat_type);
+    is_callback_called_ = true;
+    if (on_callback_done_) {
+      std::move(on_callback_done_).Run();
+    }
+  }
+
   scoped_refptr<RemoteSafeBrowsingDatabaseManager> db_;
   GURL expected_url_;
   SBThreatType expected_threat_type_;
   bool is_callback_called_ = false;
+  base::OnceClosure on_callback_done_;
+  scoped_refptr<base::SequencedTaskRunner> custom_callback_task_runner_;
 };
 
 }  // namespace
@@ -176,6 +209,77 @@ TEST_F(RemoteDatabaseManagerTest, CheckBrowseUrl_HashRealtime) {
       /*expected_bucket_count=*/1);
   histogram_tester_.ExpectTotalCount("SB2.RemoteCall.CanCheckUrl.HashDatabase",
                                      /*expected_count=*/0);
+}
+
+TEST_F(RemoteDatabaseManagerTest, CheckBrowseUrl_CustomCallbackTaskRunner) {
+  SafeBrowsingApiHandlerBridge::GetInstance().SetInterceptorForTesting(nullptr);
+  auto custom_callback_runner =
+      base::MakeRefCounted<base::TestSimpleTaskRunner>();
+
+  // `kHashDatabase` posts completion onto `custom_callback_runner`.
+  GURL hash_db_url("https://hashdb.example.com");
+  AddSafeBrowsingResponse(
+      hash_db_url, SafeBrowsingApiLookupResult::SUCCESS,
+      SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING, {},
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_LOCAL_BLOCKLIST,
+      {SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING},
+      SafeBrowsingJavaProtocol::LOCAL_BLOCK_LIST);
+  TestClient hash_db_client(
+      db_, /*expected_url=*/hash_db_url,
+      /*expected_threat_type=*/SB_THREAT_TYPE_URL_PHISHING);
+  hash_db_client.set_custom_callback_task_runner(custom_callback_runner);
+
+  EXPECT_FALSE(db_->CheckBrowseUrl(hash_db_url, {SB_THREAT_TYPE_URL_PHISHING},
+                                   &hash_db_client,
+                                   CheckBrowseUrlType::kHashDatabase));
+  EXPECT_FALSE(hash_db_client.IsCallbackCalled());
+  EXPECT_TRUE(custom_callback_runner->HasPendingTask());
+  custom_callback_runner->RunPendingTasks();
+  EXPECT_TRUE(hash_db_client.IsCallbackCalled());
+
+  // `kHashRealTime` stays on the default UI thread task runner.
+  GURL hash_rt_url("https://hashrt.example.com");
+  AddSafeBrowsingResponse(
+      hash_rt_url, SafeBrowsingApiLookupResult::SUCCESS,
+      SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING, {},
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_REAL_TIME,
+      {SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING},
+      SafeBrowsingJavaProtocol::REAL_TIME);
+  base::RunLoop hash_rt_run_loop;
+  TestClient hash_rt_client(
+      db_, /*expected_url=*/hash_rt_url,
+      /*expected_threat_type=*/SB_THREAT_TYPE_URL_PHISHING);
+  hash_rt_client.set_custom_callback_task_runner(custom_callback_runner);
+  hash_rt_client.set_on_callback_done(hash_rt_run_loop.QuitClosure());
+
+  EXPECT_FALSE(db_->CheckBrowseUrl(hash_rt_url, {SB_THREAT_TYPE_URL_PHISHING},
+                                   &hash_rt_client,
+                                   CheckBrowseUrlType::kHashRealTime));
+  EXPECT_FALSE(custom_callback_runner->HasPendingTask());
+  hash_rt_run_loop.Run();
+  EXPECT_TRUE(hash_rt_client.IsCallbackCalled());
+
+  // `CheckUrlForSubresourceFilter` stays on the default UI thread task runner.
+  GURL subresource_url("https://subresource.example.com");
+  AddSafeBrowsingResponse(
+      subresource_url, SafeBrowsingApiLookupResult::SUCCESS,
+      SafeBrowsingJavaThreatType::NO_THREAT, {},
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_LOCAL_BLOCKLIST,
+      {SafeBrowsingJavaThreatType::SOCIAL_ENGINEERING,
+       SafeBrowsingJavaThreatType::ABUSIVE_EXPERIENCE_VIOLATION,
+       SafeBrowsingJavaThreatType::BETTER_ADS_VIOLATION},
+      SafeBrowsingJavaProtocol::LOCAL_BLOCK_LIST);
+  base::RunLoop subresource_run_loop;
+  TestClient subresource_client(db_, /*expected_url=*/subresource_url,
+                                /*expected_threat_type=*/SB_THREAT_TYPE_SAFE);
+  subresource_client.set_custom_callback_task_runner(custom_callback_runner);
+  subresource_client.set_on_callback_done(subresource_run_loop.QuitClosure());
+
+  EXPECT_FALSE(
+      db_->CheckUrlForSubresourceFilter(subresource_url, &subresource_client));
+  EXPECT_FALSE(custom_callback_runner->HasPendingTask());
+  subresource_run_loop.Run();
+  EXPECT_TRUE(subresource_client.IsCallbackCalled());
 }
 
 TEST_F(RemoteDatabaseManagerTest, ThreatSource) {

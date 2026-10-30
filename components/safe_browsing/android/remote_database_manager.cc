@@ -165,7 +165,8 @@ bool RemoteSafeBrowsingDatabaseManager::CheckBrowseUrl(
   switch (check_type) {
     case CheckBrowseUrlType::kHashDatabase:
       SafeBrowsingApiHandlerBridge::GetInstance().StartHashDatabaseUrlCheck(
-          std::move(callback), url, threat_types);
+          std::move(callback), url, threat_types,
+          client->GetCustomCallbackTaskRunner());
       break;
     case CheckBrowseUrlType::kHashRealTime:
       SafeBrowsingApiHandlerBridge::GetInstance().StartHashRealTimeUrlCheck(
@@ -233,7 +234,8 @@ bool RemoteSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
   SafeBrowsingApiHandlerBridge::GetInstance().StartHashDatabaseUrlCheck(
       std::move(callback), url,
       CreateSBThreatTypeSet({SBThreatType::SB_THREAT_TYPE_SUBRESOURCE_FILTER,
-                             SBThreatType::SB_THREAT_TYPE_URL_PHISHING}));
+                             SBThreatType::SB_THREAT_TYPE_URL_PHISHING}),
+      /*custom_callback_task_runner=*/nullptr);
 
   current_requests_.push_back(std::move(req));
 

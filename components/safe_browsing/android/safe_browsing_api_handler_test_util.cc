@@ -122,7 +122,8 @@ void WithMockSafeBrowsingApiHandler::RunHashDatabaseUrlCheck(
       },
       &run_loop, expected_threat_type, expected_subresource_filter_match));
   SafeBrowsingApiHandlerBridge::GetInstance().StartHashDatabaseUrlCheck(
-      std::move(callback), url, threat_types);
+      std::move(callback), url, threat_types,
+      /*custom_callback_task_runner=*/nullptr);
   run_loop.Run();
 }
 

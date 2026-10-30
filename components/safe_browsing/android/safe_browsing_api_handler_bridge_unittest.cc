@@ -9,6 +9,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/test_simple_task_runner.h"
 #include "base/types/fixed_array.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_test_util.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
@@ -376,6 +377,60 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest, HashDatabaseUrlCheck_Timeout) {
       /*expected_threat_attribute=*/std::nullopt,
       /*expected_threat_attribute_count=*/std::nullopt,
       /*expected_response_status=*/std::nullopt);
+}
+
+TEST_F(SafeBrowsingApiHandlerBridgeTest,
+       HashDatabaseUrlCheck_CustomCallbackTaskRunner) {
+  auto custom_callback_runner =
+      base::MakeRefCounted<base::TestSimpleTaskRunner>();
+
+  // Standard JNI local blocklist check posts completion onto
+  // `custom_callback_runner`.
+  GURL url("https://example.com");
+  AddSafeBrowsingResponse(
+      url, SafeBrowsingApiLookupResult::SUCCESS,
+      SafeBrowsingJavaThreatType::UNWANTED_SOFTWARE, {},
+      SafeBrowsingJavaResponseStatus::SUCCESS_WITH_LOCAL_BLOCKLIST,
+      GetAllSafeBrowsingThreatTypes(),
+      SafeBrowsingJavaProtocol::LOCAL_BLOCK_LIST);
+  base::MockCallback<SafeBrowsingApiHandlerBridge::ResponseCallback> callback;
+  SafeBrowsingApiHandlerBridge::GetInstance().StartHashDatabaseUrlCheck(
+      callback.Get(), url, GetAllThreatTypes(), custom_callback_runner);
+  EXPECT_TRUE(custom_callback_runner->HasPendingTask());
+  EXPECT_CALL(callback,
+              Run(SBThreatType::SB_THREAT_TYPE_URL_UNWANTED, ::testing::_));
+  custom_callback_runner->RunPendingTasks();
+
+  // Command-line artificial phishing early return also posts completion onto
+  // `custom_callback_runner`.
+  SafeBrowsingApiHandlerBridge::GetInstance().PopulateArtificialDatabase();
+  GURL artificial_phishing_url("https://1.example.com/");
+  base::MockCallback<SafeBrowsingApiHandlerBridge::ResponseCallback>
+      artificial_callback;
+  SafeBrowsingApiHandlerBridge::GetInstance().StartHashDatabaseUrlCheck(
+      artificial_callback.Get(), artificial_phishing_url, GetAllThreatTypes(),
+      custom_callback_runner);
+  EXPECT_TRUE(custom_callback_runner->HasPendingTask());
+  EXPECT_CALL(artificial_callback,
+              Run(SBThreatType::SB_THREAT_TYPE_URL_PHISHING, ::testing::_));
+  custom_callback_runner->RunPendingTasks();
+  SafeBrowsingApiHandlerBridge::GetInstance().ClearArtificialDatabase();
+
+  // Non-recoverable API unavailability early return also posts completion onto
+  // `custom_callback_runner`.
+  SafeBrowsingApiHandlerBridge::GetInstance()
+      .OnSafeBrowsingApiNonRecoverableFailure();
+  base::MockCallback<SafeBrowsingApiHandlerBridge::ResponseCallback>
+      unavailable_callback;
+  SafeBrowsingApiHandlerBridge::GetInstance().StartHashDatabaseUrlCheck(
+      unavailable_callback.Get(), url, GetAllThreatTypes(),
+      custom_callback_runner);
+  EXPECT_TRUE(custom_callback_runner->HasPendingTask());
+  EXPECT_CALL(unavailable_callback,
+              Run(SBThreatType::SB_THREAT_TYPE_SAFE, ::testing::_));
+  custom_callback_runner->RunPendingTasks();
+  SafeBrowsingApiHandlerBridge::GetInstance()
+      .ResetSafeBrowsingApiAvailableForTesting();
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest, HashDatabaseUrlCheck_FromCommandline) {
