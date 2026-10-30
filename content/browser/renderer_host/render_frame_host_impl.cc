@@ -17719,14 +17719,25 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
 
   // All frames in the same renderer process share the main thread and V8
   // isolate, so if one frame hangs, every frame in the process is blocked and
-  // killed together. An "unresponsive" report is generated for each frame in
-  // the process, however, only the frame whose `FrameToken` was executing when
-  // the hang occurred will have the actual call stack attached below.
-  const bool is_unresponsive =
+  // killed together. A single `RenderProcessHost` can host multiple
+  // `RenderWidgetHostImpl`s (e.g. sibling cross-origin subframes from the same
+  // site, an A1 -> B -> A2 frame tree, or multiple tabs/popups sharing a
+  // process), and input ack or commit timeouts only mark the single targeted
+  // `RenderWidgetHostImpl` as unresponsive. Check whether any widget in the
+  // process is unresponsive so that all active frames in the hung process
+  // receive `reason: "unresponsive"`.
+  bool is_unresponsive =
       exit_code == RESULT_CODE_HUNG ||
-      (GetRenderWidgetHost() &&
-       GetRenderWidgetHost()->IsCurrentlyUnresponsive()) ||
       !GetProcess()->GetUnresponsiveDocumentJavascriptCallStack().empty();
+  if (!is_unresponsive) {
+    GetProcess()->ForEachRenderFrameHost(
+        [&is_unresponsive](RenderFrameHost* rfh) {
+          if (rfh->GetRenderWidgetHost() &&
+              rfh->GetRenderWidgetHost()->IsCurrentlyUnresponsive()) {
+            is_unresponsive = true;
+          }
+        });
+  }
 
   // Check the termination status to see if a crash occurred (and potentially
   // determine the |reason| for the crash). Note: |is_oom| takes precedence over
