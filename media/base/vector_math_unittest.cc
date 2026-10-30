@@ -315,7 +315,7 @@ TEST_F(VectorMathTest, EmptyInputs) {
   {
     SCOPED_TRACE("FCLAMP");
     FillTestVectors(kInputFillValue, kOutputFillValue);
-    vector_math::FMAC(base::span<float>(), kScale, output_array_);
+    vector_math::FCLAMP(base::span<float>(), output_array_);
     VerifyOutput(kOutputFillValue);
   }
 }
