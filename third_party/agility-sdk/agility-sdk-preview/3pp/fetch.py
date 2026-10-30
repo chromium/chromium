@@ -11,7 +11,7 @@ import requests
 
 _PACKAGE_ID = "microsoft.direct3d.d3d12"
 
-def get_versions():
+def get_versions(preview=False):
     """Fetches available versions of _PACKAGE_ID from NuGet API."""
     # Registration API index for the package
     url = f"https://api.nuget.org/v3/registration5-semver1/{_PACKAGE_ID}/index.json"
@@ -28,7 +28,10 @@ def get_versions():
     for page in data.get('items', []):
         for item in page.get('items', []):
             entry = item['catalogEntry']
-            if entry.get('listed', True):
+            if not entry.get('listed', True):
+                continue
+            is_preview = 'preview' in entry['version'].lower()
+            if is_preview == preview:
                 entries.append(entry)
 
     entries.sort(
@@ -37,8 +40,8 @@ def get_versions():
     )
     return [e['version'] for e in entries]
 
-def do_latest():
-    print(get_versions()[0])
+def do_latest(preview=False):
+    print(get_versions(preview)[0])
 
 
 def get_download_url(version):
@@ -53,17 +56,22 @@ def get_download_url(version):
 
 def main():
     ap = argparse.ArgumentParser()
+    ap.add_argument(
+        '--preview',
+        action='store_true',
+        help='Fetch preview versions instead of stable versions.',
+    )
     sub = ap.add_subparsers()
 
     latest = sub.add_parser("latest")
-    latest.set_defaults(func=do_latest)
+    latest.set_defaults(func=lambda opts: do_latest(opts.preview))
 
     download = sub.add_parser("get_url")
     download.set_defaults(
-        func=lambda : get_download_url(os.environ['_3PP_VERSION']))
+        func=lambda _opts: get_download_url(os.environ['_3PP_VERSION']))
 
     opts = ap.parse_args()
-    opts.func()
+    opts.func(opts)
 
 
 if __name__ == '__main__':
