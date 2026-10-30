@@ -80,6 +80,7 @@ android_emulator_mixin("15-tablet-x64-emulator", "android_35_google_apis_x64_tab
 android_emulator_mixin("15-tablet-landscape-x64-emulator", "android_35_google_apis_x64_tablet_landscape.textpb")
 android_emulator_mixin("15-x64-emulator", "android_35_google_apis_x64.textpb")
 android_emulator_mixin("16-x64-emulator", "android_36_google_apis_x64.textpb")
+android_emulator_mixin("17-desktop-x64-emulator", "android_37_desktop_x64.textpb")
 android_emulator_mixin("17-x64-emulator", "android_37_google_apis_ps16k_x64.textpb")
 android_emulator_mixin("canary-x64-emulator", "android_canary_google_apis_x64.textpb")
 

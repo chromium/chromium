@@ -256,6 +256,20 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-desktop-17-x64-fyi-rel",
+    mirrors = [
+        "ci/android-desktop-17-x64-fyi-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-desktop-17-x64-fyi-rel",
+            "release_try_builder",
+        ],
+    ),
+    ssd = True,
+)
+
+try_.builder(
     name = "android-desktop-arm64-binary-size",
     # TODO(crbug.com/439887309): Enable on ANDROID_BRANCHES
     #branch_selector = branches.selector.ANDROID_BRANCHES,

@@ -34,6 +34,7 @@ ci/android-bfcache-rel
 ci/android-binary-size-generator
 ci/android-canary-x64-fyi-rel
 ci/android-desktop-15-x64-fyi-rel
+ci/android-desktop-17-x64-fyi-rel
 ci/android-desktop-arm64-archive-rel
 ci/android-desktop-arm64-compile-dbg
 ci/android-desktop-arm64-compile-rel
@@ -85,6 +86,7 @@ try/android-bfcache-rel
 try/android-canary-x64-fyi-rel
 try/android-clobber-rel
 try/android-desktop-15-x64-fyi-rel
+try/android-desktop-17-x64-fyi-rel
 try/android-desktop-arm64-binary-size
 try/android-desktop-arm64-clobber-rel
 try/android-desktop-arm64-compile-dbg
