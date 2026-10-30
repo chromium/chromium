@@ -429,7 +429,7 @@ public class PdfUtils {
                 return null;
             }
         } catch (IllegalArgumentException | NullPointerException e) {
-            Log.e(TAG, "Couldn't generate Uri: " + e);
+            Log.e(TAG, "Couldn't generate Uri", e);
             return null;
         }
     }
@@ -478,7 +478,7 @@ public class PdfUtils {
             return pdfPageUrl;
         } catch (UnsupportedEncodingException e) {
             recordIsPdfDownloadUrlEncoded(false);
-            Log.e(TAG, "Unsupported encoding: " + e.getMessage());
+            Log.e(TAG, "Unsupported encoding", e);
             return null;
         }
     }
@@ -506,7 +506,7 @@ public class PdfUtils {
             // #getQueryParameter has already decoded the url.
             return uri.getQueryParameter(UrlConstants.PDF_URL_QUERY_PARAM);
         } catch (UnsupportedOperationException | NullPointerException e) {
-            Log.e(TAG, "Unsupported encoding: " + e.getMessage());
+            Log.e(TAG, "Unsupported encoding", e);
             return null;
         }
     }

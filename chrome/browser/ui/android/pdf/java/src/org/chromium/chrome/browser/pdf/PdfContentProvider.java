@@ -101,7 +101,7 @@ public class PdfContentProvider extends ContentProvider {
                 | SecurityException
                 | IllegalArgumentException
                 | IllegalStateException e) {
-            Log.e(TAG, "Failed to open ParcelFileDescriptor for path: " + filePath, e);
+            Log.e(TAG, "Failed to open ParcelFileDescriptor for path: %s", filePath, e);
         }
         return null;
     }
@@ -109,14 +109,14 @@ public class PdfContentProvider extends ContentProvider {
     private static int extractFd(@Nullable String filePath) {
         if (filePath == null) return -1;
         if (!filePath.startsWith("/proc/")) {
-            Log.e(TAG, "File path may not contain a valid file descriptor: " + filePath);
+            Log.e(TAG, "File path may not contain a valid file descriptor: %s", filePath);
             return -1;
         }
         String fd = filePath.substring(filePath.lastIndexOf('/') + 1);
         try {
             return Integer.parseInt(fd);
         } catch (NumberFormatException ex) {
-            Log.e(TAG, "File path is invalid: " + filePath, ex);
+            Log.e(TAG, "File path is invalid: %s", filePath, ex);
         }
         return -1;
     }
