@@ -92,10 +92,6 @@ class MockContextualTasksExtensionPage : public mojom::ExtensionPage {
   mojo::PendingRemote<mojom::ExtensionPage> BindAndGetRemote();
   void FlushForTesting() { receiver_.FlushForTesting(); }
 
-  MOCK_METHOD(void,
-              PostAimMessage,
-              (const std::vector<uint8_t>& message),
-              (override));
   MOCK_METHOD(void, PostSearchMessage, (mojo_base::ProtoWrapper message), ());
   MOCK_METHOD(void,
               PostSearchMessageWithDocumentId,
@@ -111,7 +107,6 @@ class MockContextualTasksExtensionPage : public mojom::ExtensionPage {
       PostSearchMessage(std::move(message));
     }
   }
-  MOCK_METHOD(void, OnHandshakeComplete, (), (override));
   MOCK_METHOD(void, OnLensOverlayStateChanged, (bool is_showing), (override));
   MOCK_METHOD(void, OnLensCropUpdated, (const GURL& data_uri), (override));
   MOCK_METHOD(void,

@@ -129,28 +129,6 @@ ContextualTasksExtensionHandler::~ContextualTasksExtensionHandler() {
   }
 }
 
-// static
-ContextualTasksExtensionHandler*
-ContextualTasksExtensionHandler::FromWebContents(
-    content::WebContents* web_contents) {
-  if (!web_contents) {
-    return nullptr;
-  }
-  ContextualTasksExtensionHandler* target_handler = nullptr;
-  web_contents->ForEachRenderFrameHostWithAction(
-      [&target_handler](content::RenderFrameHost* rfh) {
-        if (auto* handler =
-                ContextualTasksExtensionHandler::GetForCurrentDocument(rfh)) {
-          if (handler->contextual_tasks_page_.is_bound()) {
-            target_handler = handler;
-            return content::RenderFrameHost::FrameIterationAction::kStop;
-          }
-        }
-        return content::RenderFrameHost::FrameIterationAction::kContinue;
-      });
-  return target_handler;
-}
-
 contextual_tasks::ContextualTasksWebContentsUserData*
 ContextualTasksExtensionHandler::GetOrCreateWebContentsUserData() const {
   content::WebContents* web_contents =
@@ -726,16 +704,6 @@ void ContextualTasksExtensionHandler::GetPageClassification(
   std::move(callback).Run("INVALID_SPEC");
 }
 void ContextualTasksExtensionHandler::OnThumbnailRemoved() {}
-
-void ContextualTasksExtensionHandler::PostAimMessage(
-    const lens::ClientToAimMessage& message) {
-  if (contextual_tasks_page_.is_bound()) {
-    const size_t size = message.ByteSizeLong();
-    std::vector<uint8_t> serialized_message(size);
-    message.SerializeToArray(serialized_message.data(), size);
-    contextual_tasks_page_->PostAimMessage(std::move(serialized_message));
-  }
-}
 
 void ContextualTasksExtensionHandler::OnLensCropUpdated(const GURL& data_uri) {
   if (contextual_tasks_page_.is_bound()) {
