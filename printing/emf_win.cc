@@ -27,6 +27,22 @@ namespace {
 // DWORD field of variable length that can sometimes have a length of 0.
 constexpr uint32_t kMinEnhMetaRecordSize = 8;
 
+uint32_t GetExpectedBmiSize(const BITMAPINFOHEADER& bmih) {
+  // Assume values used in PDFium's core/fxge/win32/cgdi_device_driver.cpp are
+  // not going to change.
+  switch (bmih.biBitCount) {
+    case 1:
+    case 8:
+      return sizeof(BITMAPINFOHEADER) +
+             sizeof(RGBQUAD) * (1u << bmih.biBitCount);
+    case 24:
+    case 32:
+      return sizeof(BITMAPINFOHEADER);
+    default:
+      return 0;
+  }
+}
+
 const BITMAPINFOHEADER* GetBitmapInfoHeader(
     base::span<const uint8_t> record_span) {
   if (record_span.size() < sizeof(EMRSTRETCHDIBITS)) {
@@ -37,7 +53,8 @@ const BITMAPINFOHEADER* GetBitmapInfoHeader(
       reinterpret_cast<const EMRSTRETCHDIBITS*>(record_span.data());
   if (sdib_record->offBmiSrc < sizeof(EMRSTRETCHDIBITS) ||
       sdib_record->offBmiSrc % alignof(BITMAPINFOHEADER) != 0 ||
-      sdib_record->cbBmiSrc < sizeof(BITMAPINFOHEADER)) {
+      sdib_record->cbBmiSrc < sizeof(BITMAPINFOHEADER) ||
+      sdib_record->iUsageSrc != DIB_RGB_COLORS) {
     return nullptr;
   }
 
@@ -47,8 +64,19 @@ const BITMAPINFOHEADER* GetBitmapInfoHeader(
     return nullptr;
   }
 
-  return reinterpret_cast<const BITMAPINFOHEADER*>(
+  const auto* bmih = reinterpret_cast<const BITMAPINFOHEADER*>(
       record_span.subspan(sdib_record->offBmiSrc).data());
+  if (bmih->biSize != sizeof(BITMAPINFOHEADER) ||
+      bmih->biCompression != BI_RGB || bmih->biClrUsed != 0) {
+    return nullptr;
+  }
+
+  const uint32_t expected_bmi_size = GetExpectedBmiSize(*bmih);
+  if (expected_bmi_size == 0 || sdib_record->cbBmiSrc != expected_bmi_size) {
+    return nullptr;
+  }
+
+  return bmih;
 }
 
 base::span<const uint8_t> GetGdiCommentData(
@@ -307,7 +335,7 @@ void Emf::Record::SafePlayback(Emf::EnumerationContext* context) const {
       }
 
       const BITMAPINFOHEADER* bmih = GetBitmapInfoHeader(record_span);
-      if (!bmih || bmih->biCompression != BI_RGB) {
+      if (!bmih) {
         return;
       }
 

@@ -302,10 +302,11 @@ TEST(EmfTest, SafePlaybackSkipsInvalidRecords) {
 
   // Corrupt records so `Emf::Record::SafePlayback()` rejects them while
   // `record->nSize` remains valid for enumeration:
-  // - Corrupt `EMR_STRETCHDIBITS` fields (`cbBmiSrc` and `offBmiSrc`).
+  // - Corrupt `EMR_STRETCHDIBITS` and `BITMAPINFOHEADER` fields.
   // - Swap `iType` between `EMR_SETWORLDTRANSFORM` and
   //   `EMR_MODIFYWORLDTRANSFORM` so their sizes no longer match their types.
   EMRSTRETCHDIBITS* stretch_dibits_record = nullptr;
+  BITMAPINFOHEADER* bmih = nullptr;
   bool found_set_world_transform = false;
   bool found_modify_world_transform = false;
   base::span<uint8_t> span = base::as_writable_byte_span(data);
@@ -314,6 +315,10 @@ TEST(EmfTest, SafePlaybackSkipsInvalidRecords) {
     if (record->iType == EMR_STRETCHDIBITS) {
       ASSERT_GE(span.size(), sizeof(EMRSTRETCHDIBITS));
       stretch_dibits_record = reinterpret_cast<EMRSTRETCHDIBITS*>(span.data());
+      ASSERT_LE(stretch_dibits_record->offBmiSrc + sizeof(BITMAPINFOHEADER),
+                span.size());
+      bmih = reinterpret_cast<BITMAPINFOHEADER*>(
+          span.subspan(stretch_dibits_record->offBmiSrc).data());
     } else if (record->iType == EMR_SETWORLDTRANSFORM) {
       ASSERT_EQ(record->nSize, sizeof(EMRSETWORLDTRANSFORM));
       record->iType = EMR_MODIFYWORLDTRANSFORM;
@@ -327,6 +332,7 @@ TEST(EmfTest, SafePlaybackSkipsInvalidRecords) {
     span = span.subspan(record->nSize);
   }
   ASSERT_TRUE(stretch_dibits_record);
+  ASSERT_TRUE(bmih);
   ASSERT_TRUE(found_set_world_transform);
   ASSERT_TRUE(found_modify_world_transform);
 
@@ -337,10 +343,52 @@ TEST(EmfTest, SafePlaybackSkipsInvalidRecords) {
       SafePlaybackAndGetRecordTypes(base::as_byte_span(data)),
       ElementsAre(EMR_HEADER, EMR_SETWORLDTRANSFORM, EMR_MODIFYWORLDTRANSFORM,
                   EMR_RECTANGLE, EMR_RECTANGLE, EMR_EOF));
-
-  // Restore `cbBmiSrc` and make `offBmiSrc` unaligned in `EMR_STRETCHDIBITS`.
   stretch_dibits_record->cbBmiSrc = original_cb_bmi_src;
+
+  // Make `offBmiSrc` unaligned in `EMR_STRETCHDIBITS`.
   ++stretch_dibits_record->offBmiSrc;
+  EXPECT_THAT(
+      SafePlaybackAndGetRecordTypes(base::as_byte_span(data)),
+      ElementsAre(EMR_HEADER, EMR_SETWORLDTRANSFORM, EMR_MODIFYWORLDTRANSFORM,
+                  EMR_RECTANGLE, EMR_RECTANGLE, EMR_EOF));
+  --stretch_dibits_record->offBmiSrc;
+
+  // Set `iUsageSrc` to `DIB_PAL_COLORS` in `EMR_STRETCHDIBITS`.
+  stretch_dibits_record->iUsageSrc = DIB_PAL_COLORS;
+  EXPECT_THAT(
+      SafePlaybackAndGetRecordTypes(base::as_byte_span(data)),
+      ElementsAre(EMR_HEADER, EMR_SETWORLDTRANSFORM, EMR_MODIFYWORLDTRANSFORM,
+                  EMR_RECTANGLE, EMR_RECTANGLE, EMR_EOF));
+  stretch_dibits_record->iUsageSrc = DIB_RGB_COLORS;
+
+  // Set an invalid `biSize` in `BITMAPINFOHEADER`.
+  const DWORD original_bi_size = bmih->biSize;
+  bmih->biSize = sizeof(BITMAPINFOHEADER) - 4;
+  EXPECT_THAT(
+      SafePlaybackAndGetRecordTypes(base::as_byte_span(data)),
+      ElementsAre(EMR_HEADER, EMR_SETWORLDTRANSFORM, EMR_MODIFYWORLDTRANSFORM,
+                  EMR_RECTANGLE, EMR_RECTANGLE, EMR_EOF));
+  bmih->biSize = original_bi_size;
+
+  // Set `biBitCount` to 8 so `cbBmiSrc` is too small for the required 256-color
+  // palette.
+  const WORD original_bi_bit_count = bmih->biBitCount;
+  bmih->biBitCount = 8;
+  EXPECT_THAT(
+      SafePlaybackAndGetRecordTypes(base::as_byte_span(data)),
+      ElementsAre(EMR_HEADER, EMR_SETWORLDTRANSFORM, EMR_MODIFYWORLDTRANSFORM,
+                  EMR_RECTANGLE, EMR_RECTANGLE, EMR_EOF));
+
+  // Set `biBitCount` to an unsupported value (16).
+  bmih->biBitCount = 16;
+  EXPECT_THAT(
+      SafePlaybackAndGetRecordTypes(base::as_byte_span(data)),
+      ElementsAre(EMR_HEADER, EMR_SETWORLDTRANSFORM, EMR_MODIFYWORLDTRANSFORM,
+                  EMR_RECTANGLE, EMR_RECTANGLE, EMR_EOF));
+  bmih->biBitCount = original_bi_bit_count;
+
+  // Set `biClrUsed` to 1.
+  bmih->biClrUsed = 1;
   EXPECT_THAT(
       SafePlaybackAndGetRecordTypes(base::as_byte_span(data)),
       ElementsAre(EMR_HEADER, EMR_SETWORLDTRANSFORM, EMR_MODIFYWORLDTRANSFORM,
