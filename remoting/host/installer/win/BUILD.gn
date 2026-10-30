@@ -7,7 +7,6 @@ import("//remoting/host/installer/credits.gni")
 import("//remoting/host/installer/win/generate_clsids.gni")
 import("//remoting/host/installer/win/host_payload_files.gni")
 import("//remoting/host/installer/win/wix_path.gni")
-import("//third_party/icu/config.gni")
 
 remoting_credits("credits") {
   gn_target = "//remoting/host/installer/win:remoting_me2me_host_archive"
@@ -21,26 +20,7 @@ action("remoting_me2me_host_archive") {
     "//build/zip_helpers.py",
   ]
 
-  deps = [
-    ":credits",
-    "//remoting/host:remoting_native_messaging_manifests",
-    "//remoting/host:remoting_start_host",
-    "//remoting/host/crash:crash_tools",
-    "//remoting/host/it2me:remote_assistance_host",
-    "//remoting/host/it2me:remote_assistance_host_uiaccess",
-    "//remoting/host/remote_open_url",
-    "//remoting/host/webauthn:remote_webauthn",
-    "//remoting/host/win:remoting_core",
-    "//remoting/host/win:remoting_curtain",
-    "//remoting/host/win:remoting_desktop",
-    "//remoting/host/win:remoting_me2me_host",
-    "//remoting/host/win:remoting_native_messaging_host",
-    "//remoting/host/win:remoting_network",
-    "//remoting/host/win:remoting_peer_connection",
-    "//third_party/icu:icudata",
-  ]
-
-  public_deps = [ "//remoting/host/security_key:remote_security_key" ]
+  deps = remoting_win_host_payload_deps
 
   if (target_cpu == "x86") {
     _output = "$root_out_dir/remoting-me2me-host-$target_os.zip"
@@ -66,18 +46,7 @@ action("remoting_me2me_host_archive") {
   # following files will trigger this target to be rebuilt.
   # TODO(zijiehe): Remove inputs parameter once bug 633650 has been
   # addressed.
-  inputs = []
-  foreach(_file, remoting_win_host_payload_files) {
-    if (_file == "CREDITS.txt") {
-      inputs += [ "$root_gen_dir/remoting/CREDITS.txt" ]
-    } else if (_file == "chromoting.ico") {
-      inputs += [ "//remoting/resources/chromoting.ico" ]
-    } else if (get_path_info(_file, "extension") == "json") {
-      inputs += [ "$root_out_dir/remoting/$_file" ]
-    } else {
-      inputs += [ "$root_out_dir/$_file" ]
-    }
-  }
+  inputs = remoting_win_host_payload_inputs
 
   _generated_files = rebase_path(inputs, root_build_dir)
 
@@ -91,6 +60,8 @@ action("remoting_me2me_host_archive") {
   foreach(_file, remoting_win_host_payload_files) {
     _generated_dst_files += [ "files/$_file" ]
   }
+
+  _sign_binaries = string_join("\", \"", remoting_win_host_binaries)
 
   args = [
            rebase_path("$root_gen_dir/remoting_installation", root_build_dir),
@@ -117,6 +88,7 @@ action("remoting_me2me_host_archive") {
            "RDP_DESKTOP_SESSION_CLSID={$rdp_desktop_session_clsid}",
            "VERSION=$chrome_version_full",
            "OFFICIAL_BUILD=$_official_build",
+           "SIGN_BINARIES=$_sign_binaries",
          ]
 }
 

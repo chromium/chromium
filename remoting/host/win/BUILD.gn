@@ -8,20 +8,12 @@ import("//build/win/message_compiler.gni")
 import("//media/media_options.gni")
 import("//remoting/build/config/remoting_build.gni")
 import("//remoting/host/installer/win/generate_clsids.gni")
+import("//remoting/host/installer/win/host_payload_files.gni")
 
 group("all") {
   testonly = true
 
-  deps = [
-    ":remoting_console",
-    ":remoting_curtain",
-    ":remoting_desktop",
-    ":remoting_me2me_host",
-    ":remoting_native_messaging_host",
-    ":remoting_network",
-    ":remoting_peer_connection",
-    "//remoting/host/security_key:remote_security_key",
-  ]
+  deps = [ ":remoting_console" ] + remoting_win_host_binary_deps
 }
 
 # Reference this manifest to indicate that a process is per-monitor DPI aware.

@@ -44,21 +44,16 @@ remoting_win_native_messaging_entries = [
   },
 ]
 
-# Canonical list of payload file names installed into the Chrome Remote Desktop
-# installation directory on Windows.
+# Canonical list of Windows host binary filenames (.exe and .dll) installed
+# into the Chrome Remote Desktop installation directory and Authenticode-signed
+# during official builds.
 #
 # Shared by:
-# 1. //remoting/host/installer/win/BUILD.gn (remoting_me2me_host_archive):
-#    Dynamically generates both `inputs` and `_generated_dst_files` from this
-#    list, preserving order so the Windows MSI archive layout aligns properly.
-#    JSON files are mapped to "$root_out_dir/remoting/", CREDITS.txt to
-#    "$root_gen_dir/remoting/", chromoting.ico to
-#    "//remoting/resources/chromoting.ico", and executables/binaries to
-#    "$root_out_dir/".
-# 2. //remoting/host/installer/win/setup/BUILD.gn (payload_files_header):
-#    Generates <payload_files.h> containing `kPayloadFiles` std::array for the
-#    native installer.
-remoting_win_host_payload_files = [
+# 1. `remoting_win_host_payload_files` (below), which includes these binaries
+#    in both the WiX MSI archive and the native installer payload.
+# 2. //remoting/host/installer/win/BUILD.gn (remoting_me2me_host_archive),
+#    which populates the `sign` list in `parameters.json` via `SIGN_BINARIES`.
+remoting_win_host_binaries = [
   "remote_assistance_host.exe",
   "remote_assistance_host_uiaccess.exe",
   "remote_open_url.exe",
@@ -73,9 +68,24 @@ remoting_win_host_payload_files = [
   "remoting_network.exe",
   "remoting_peer_connection.exe",
   "remoting_start_host.exe",
-  "CREDITS.txt",
-  "chromoting.ico",
 ]
+
+# Canonical list of payload file names installed into the Chrome Remote Desktop
+# installation directory on Windows.
+#
+# Shared by:
+# 1. //remoting/host/installer/win/BUILD.gn (remoting_me2me_host_archive):
+#    Stages payload files into the WiX MSI installer archive.
+# 2. //remoting/host/installer/win/mini_installer/BUILD.gn
+#    (remoting_mini_installer_archive):
+#    Stages payload files into the native installer .7z archive.
+# 3. //remoting/host/installer/win/setup/BUILD.gn (payload_files_header):
+#    Generates <payload_files.h> containing `kPayloadFiles` std::array for the
+#    native installer.
+remoting_win_host_payload_files = remoting_win_host_binaries + [
+                                    "CREDITS.txt",
+                                    "chromoting.ico",
+                                  ]
 
 foreach(_entry, remoting_win_native_messaging_entries) {
   remoting_win_host_payload_files += [ _entry.manifest_name ]
@@ -83,4 +93,49 @@ foreach(_entry, remoting_win_native_messaging_entries) {
 
 if (icu_use_data_file) {
   remoting_win_host_payload_files += [ "icudtl.dat" ]
+}
+
+# Canonical list of GN targets that build `remoting_win_host_binaries`.
+# Shared by `//remoting/host/win:all` and `remoting_win_host_payload_deps`.
+remoting_win_host_binary_deps = [
+  "//remoting/host:remoting_start_host",
+  "//remoting/host/crash:crash_tools",
+  "//remoting/host/it2me:remote_assistance_host",
+  "//remoting/host/it2me:remote_assistance_host_uiaccess",
+  "//remoting/host/remote_open_url",
+  "//remoting/host/security_key:remote_security_key",
+  "//remoting/host/webauthn:remote_webauthn",
+  "//remoting/host/win:remoting_core",
+  "//remoting/host/win:remoting_curtain",
+  "//remoting/host/win:remoting_desktop",
+  "//remoting/host/win:remoting_me2me_host",
+  "//remoting/host/win:remoting_native_messaging_host",
+  "//remoting/host/win:remoting_network",
+  "//remoting/host/win:remoting_peer_connection",
+]
+
+# Canonical list of GN targets that produce `remoting_win_host_payload_files`.
+# Shared by both `remoting_me2me_host_archive` and
+# `remoting_mini_installer_archive`.
+remoting_win_host_payload_deps =
+    remoting_win_host_binary_deps + [
+      "//remoting/host:remoting_native_messaging_manifests",
+      "//remoting/host/installer/win:credits",
+      "//third_party/icu:icudata",
+    ]
+
+# Resolved input file paths corresponding 1:1 with
+# `remoting_win_host_payload_files`.
+remoting_win_host_payload_inputs = []
+foreach(_file, remoting_win_host_payload_files) {
+  if (_file == "CREDITS.txt") {
+    remoting_win_host_payload_inputs += [ "$root_gen_dir/remoting/CREDITS.txt" ]
+  } else if (_file == "chromoting.ico") {
+    remoting_win_host_payload_inputs +=
+        [ "//remoting/resources/chromoting.ico" ]
+  } else if (get_path_info(_file, "extension") == "json") {
+    remoting_win_host_payload_inputs += [ "$root_out_dir/remoting/$_file" ]
+  } else {
+    remoting_win_host_payload_inputs += [ "$root_out_dir/$_file" ]
+  }
 }
