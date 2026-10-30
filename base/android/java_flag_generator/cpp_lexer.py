@@ -29,7 +29,7 @@ def _is_raw_string_quote(text: str, quote_index: int) -> bool:
     p = quote_index - 1
     if p < 0 or text[p] != 'R':
         return False
-    if p >= 2 and text[p - 2:p] == 'u8':
+    if p >= 2 and text[p - 2 : p] == 'u8':
         p -= 2
     elif p >= 1 and text[p - 1] in 'uUL':
         p -= 1
@@ -41,7 +41,7 @@ def _is_digit_separator(text: str, quote_index: int) -> bool:
     j = quote_index - 1
     while j >= 0 and _is_word_char(text[j]):
         j -= 1
-    token = text[j + 1:quote_index]
+    token = text[j + 1 : quote_index]
     return bool(token) and token[0].isdigit()
 
 
@@ -112,9 +112,11 @@ def lex(text: str) -> Tuple[str, str]:
             body_end = n if body_end == -1 else body_end
             end = min(n, body_end + len(end_marker))
             code_parts.append(text[start:end])
-            structure_parts.append(text[start:body_start] +
-                                   _blank(text[body_start:body_end]) +
-                                   text[body_end:end])
+            structure_parts.append(
+                text[start:body_start]
+                + _blank(text[body_start:body_end])
+                + text[body_end:end]
+            )
             i = end
         elif token == "'" and _is_digit_separator(text, start):
             code_parts.append(token)
@@ -126,8 +128,11 @@ def lex(text: str) -> Tuple[str, str]:
             terminated = close < n and text[close] == token
             end = close + 1 if terminated else close
             code_parts.append(text[start:end])
-            structure_parts.append(token + _blank(text[start + 1:close]) +
-                                   (token if terminated else ''))
+            structure_parts.append(
+                token
+                + _blank(text[start + 1 : close])
+                + (token if terminated else '')
+            )
             i = end
     return ''.join(code_parts), ''.join(structure_parts)
 
@@ -149,8 +154,9 @@ def find_matching(structure: str, open_index: int) -> int:
     raise ValueError('Unterminated bracket')
 
 
-def split_top_level(structure: str, start: int,
-                    end: int) -> List[Tuple[int, int]]:
+def split_top_level(
+    structure: str, start: int, end: int
+) -> List[Tuple[int, int]]:
     """Splits structure[start:end] at commas not nested in any bracket."""
     ranges = []
     depth = 0

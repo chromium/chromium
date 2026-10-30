@@ -72,7 +72,8 @@ BASEDIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(1, os.path.join(BASEDIR, '../../../../tools/grit'))
 sys.path.insert(2, os.path.join(BASEDIR, '../../../../tools/python'))
 
-from grit.extern import tclib
+from grit.extern import tclib  # noqa: E402
+
 
 class GrdHandler(sax.handler.ContentHandler):
   """Extracts selected strings from a .grd file.
@@ -83,6 +84,7 @@ class GrdHandler(sax.handler.ContentHandler):
     referenced_xtb_files: A list of all xtb files referenced inside the .grd
       file.
   """
+
   def __init__(self, string_id_set):
     """Constructs a handler that reads selected strings from a .grd file.
 
@@ -134,9 +136,11 @@ class GrdHandler(sax.handler.ContentHandler):
   def __OnOpenMessage(self, message_name):
     """Invoked at the start of a <message> with message's name."""
     assert not self.__IsExtractingMessage()
-    self.__message_name = (message_name if (not (self.__id_set) or
-                           message_name in self.__id_set)
-                           else None)
+    self.__message_name = (
+      message_name
+      if (not (self.__id_set) or message_name in self.__id_set)
+      else None
+    )
     if self.__message_name:
       self.__characters_callback = self.__OnMessageText
 
@@ -149,8 +153,9 @@ class GrdHandler(sax.handler.ContentHandler):
 
   def __OnMessageText(self, containing_element, message_text):
     """Invoked to handle a block of text for a message."""
-    if message_text and (containing_element == 'message' or
-                         containing_element == 'ph'):
+    if message_text and (
+      containing_element == 'message' or containing_element == 'ph'
+    ):
       self.__text_scraps.append(message_text)
       if containing_element == 'message':
         self.__tc_text_scraps.append(message_text)
@@ -159,12 +164,14 @@ class GrdHandler(sax.handler.ContentHandler):
     """Invoked at the end of a message."""
     if self.__IsExtractingMessage():
       self.messages[self.__message_name]["text"] = ''.join(
-          self.__text_scraps).strip()
+        self.__text_scraps
+      ).strip()
 
       # Generate the message ID for each source string to correlate it with its
       # TC translations in the .xtb files.
       self.messages[self.__message_name]["tc_id"] = tclib.GenerateMessageId(
-          ''.join(self.__tc_text_scraps).strip())
+        ''.join(self.__tc_text_scraps).strip()
+      )
 
       self.__message_name = None
       self.__text_scraps = []
@@ -175,6 +182,7 @@ class GrdHandler(sax.handler.ContentHandler):
     """Adds the xtb file path of a 'file'."""
     if os.path.splitext(xtb_file_path)[1].lower() == '.xtb':
       self.referenced_xtb_files.append(xtb_file_path)
+
 
 class XtbHandler(sax.handler.ContentHandler):
   """Extracts selected translations from an .xtd file.
@@ -187,6 +195,7 @@ class XtbHandler(sax.handler.ContentHandler):
     translations: A mapping of translation ids to strings.
     lang: The language parsed from the .xtb file.
   """
+
   def __init__(self, translation_ids):
     """Constructs an instance to parse the given strings from an .xtb file.
 
@@ -270,8 +279,18 @@ class XtbHandler(sax.handler.ContentHandler):
 
 class StringRcMaker(object):
   """Makes .h and .rc files containing strings and translations."""
-  def __init__(self, inputs, expected_xtb_input_files, header_file, rc_file,
-    brand, first_resource_id, string_ids_to_extract, mode_specific_strings):
+
+  def __init__(
+    self,
+    inputs,
+    expected_xtb_input_files,
+    header_file,
+    rc_file,
+    brand,
+    first_resource_id,
+    string_ids_to_extract,
+    mode_specific_strings,
+  ):
     """Constructs a maker.
 
     Args:
@@ -299,7 +318,7 @@ class StringRcMaker(object):
     self.header_file = header_file
     self.rc_file = rc_file
     self.brand = brand
-    self.first_resource_id = first_resource_id;
+    self.first_resource_id = first_resource_id
     self.string_id_set = set(string_ids_to_extract)
     self.mode_specific_strings = mode_specific_strings
     self.__AddModeSpecificStringIds()
@@ -311,6 +330,7 @@ class StringRcMaker(object):
 
   class __TranslationData(object):
     """A container of information about a single translation."""
+
     def __init__(self, resource_id_str, language, translation):
       self.resource_id_str = resource_id_str
       self.language = language
@@ -318,8 +338,10 @@ class StringRcMaker(object):
 
     def __lt__(self, other):
       """Allow __TranslationDatas to be sorted by id then by language."""
-      return (self.resource_id_str, self.language) < (other.resource_id_str,
-                                                      other.language)
+      return (self.resource_id_str, self.language) < (
+        other.resource_id_str,
+        other.language,
+      )
 
   def __AddModeSpecificStringIds(self):
     """Adds the mode-specific strings for all of the current brand's install
@@ -328,8 +350,9 @@ class StringRcMaker(object):
       brand_strings = brands.get(self.brand)
       if not brand_strings:
         raise RuntimeError(
-            'No strings declared for brand \'%s\' in MODE_SPECIFIC_STRINGS for '
-            'message %s' % (self.brand, string_id))
+          'No strings declared for brand \'%s\' in MODE_SPECIFIC_STRINGS for '
+          'message %s' % (self.brand, string_id)
+        )
       self.string_id_set.update(brand_strings)
 
   def __ReadSourceAndTranslatedStrings(self):
@@ -340,12 +363,14 @@ class StringRcMaker(object):
       # Get the name of the grd file sans extension.
       source_name = os.path.splitext(os.path.basename(grd_file))[0]
       # Compute a glob for the translation files.
-      xtb_pattern = os.path.join(os.path.dirname(grd_file), xtb_dir,
-                                 '%s*.xtb' % source_name)
+      xtb_pattern = os.path.join(
+        os.path.dirname(grd_file), xtb_dir, '%s*.xtb' % source_name
+      )
       local_xtb_files = [x.replace('\\', '/') for x in glob.glob(xtb_pattern)]
       all_xtb_files.extend(local_xtb_files)
       translated_strings.extend(
-        self.__ReadSourceAndTranslationsFrom(grd_file, local_xtb_files))
+        self.__ReadSourceAndTranslationsFrom(grd_file, local_xtb_files)
+      )
     translated_strings.sort()
     all_xtb_files.sort()
 
@@ -363,9 +388,14 @@ Missing input files:
 Extra input files:
 {}
 '''
-      print(error.format('\n'.join(self.expected_xtb_input_files),
-                         '\n'.join(all_xtb_files), '\n'.join(missing),
-                         '\n'.join(extra)))
+      print(
+        error.format(
+          '\n'.join(self.expected_xtb_input_files),
+          '\n'.join(all_xtb_files),
+          '\n'.join(missing),
+          '\n'.join(extra),
+        )
+      )
       sys.exit(1)
     return translated_strings
 
@@ -394,8 +424,9 @@ Extra input files:
     grd_file_path = os.path.dirname(grd_file)
     source_xtb_files = []
     for xtb_file in grd_handler.referenced_xtb_files:
-      relative_xtb_file_path = (
-        os.path.join(grd_file_path, xtb_file).replace('\\', '/'))
+      relative_xtb_file_path = os.path.join(grd_file_path, xtb_file).replace(
+        '\\', '/'
+      )
       source_xtb_files.append(relative_xtb_file_path)
     missing_xtb_files = list(set(source_xtb_files) - set(xtb_files))
 
@@ -403,15 +434,15 @@ Extra input files:
     # strings.
     translated_strings = []
     for string_id, string_data in source_strings.items():
-      translated_strings.append(self.__TranslationData(string_id,
-                                                       'EN_US',
-                                                       string_data["text"]))
+      translated_strings.append(
+        self.__TranslationData(string_id, 'EN_US', string_data["text"])
+      )
 
     # Multiple source strings may have the same message text; hence the
     # message id is mapped to a list of string ids instead of a single value.
     translation_ids = {}
-    for (string_id, string_data) in source_strings.items():
-      translation_ids.setdefault(string_data["tc_id"], []).append(string_id);
+    for string_id, string_data in source_strings.items():
+      translation_ids.setdefault(string_data["tc_id"], []).append(string_id)
 
     # Track any xtb files that appear in the xtb folder but are not present in
     # the grd file.
@@ -421,55 +452,60 @@ Extra input files:
     xtb_handler = XtbHandler(translation_ids)
     sax_parser.setContentHandler(xtb_handler)
     for xtb_filename in xtb_files:
-      if not xtb_filename in source_xtb_files:
+      if xtb_filename not in source_xtb_files:
         extra_xtb_files.append(xtb_filename)
       sax_parser.parse(xtb_filename)
       for string_id, string_data in source_strings.items():
-        translated_string = xtb_handler.translations.get(string_id,
-                                                         string_data["text"])
-        translated_strings.append(self.__TranslationData(string_id,
-                                                         xtb_handler.lang,
-                                                         translated_string))
+        translated_string = xtb_handler.translations.get(
+          string_id, string_data["text"]
+        )
+        translated_strings.append(
+          self.__TranslationData(string_id, xtb_handler.lang, translated_string)
+        )
     if missing_xtb_files or extra_xtb_files:
       if missing_xtb_files:
-        missing_error = ("There were files that were found in the .grd file "
-                         "'{}' but do not exist on disk:\n{}")
+        missing_error = (
+          "There were files that were found in the .grd file "
+          "'{}' but do not exist on disk:\n{}"
+        )
         print(missing_error.format(grd_file, '\n'.join(missing_xtb_files)))
 
       if extra_xtb_files:
-        extra_error = ("There were files that exist on disk but were not found "
-                       "in the .grd file '{}':\n{}")
+        extra_error = (
+          "There were files that exist on disk but were not found "
+          "in the .grd file '{}':\n{}"
+        )
         print(extra_error.format(grd_file, '\n'.join(extra_xtb_files)))
 
       sys.exit(1)
     return translated_strings
 
   def __WriteRCFile(self, translated_strings):
-    """Writes a resource file with the strings provided in |translated_strings|.
-    """
-    HEADER_TEXT = (
-      u'#include "%s"\n\n'
-      u'STRINGTABLE\n'
-      u'BEGIN\n'
-      ) % os.path.basename(self.header_file)
-
-    FOOTER_TEXT = (
-      u'END\n'
+    """Writes a resource file with the strings provided in |translated_strings|."""
+    HEADER_TEXT = ('#include "%s"\n\nSTRINGTABLE\nBEGIN\n') % os.path.basename(
+      self.header_file
     )
 
-    with io.open(self.rc_file,
-                 mode='w',
-                 encoding='utf-16',
-                 newline='\n') as outfile:
+    FOOTER_TEXT = 'END\n'
+
+    with io.open(
+      self.rc_file, mode='w', encoding='utf-16', newline='\n'
+    ) as outfile:
       outfile.write(HEADER_TEXT)
       for translation in translated_strings:
         # Escape special characters for the rc file.
-        escaped_text = (translation.translation.replace('"', '""')
-                       .replace('\t', '\\t')
-                       .replace('\n', '\\n'))
-        outfile.write(u'  %s "%s"\n' %
-                      (translation.resource_id_str + '_' + translation.language,
-                       escaped_text))
+        escaped_text = (
+          translation.translation.replace('"', '""')
+          .replace('\t', '\\t')
+          .replace('\n', '\\n')
+        )
+        outfile.write(
+          '  %s "%s"\n'
+          % (
+            translation.resource_id_str + '_' + translation.language,
+            escaped_text,
+          )
+        )
       outfile.write(FOOTER_TEXT)
 
   def __WriteHeaderFile(self, translated_strings):
@@ -489,8 +525,10 @@ Extra input files:
       if lang not in seen_languages:
         seen_languages.add(lang)
         lines.append('#define IDS_L10N_OFFSET_%s %s' % (lang, offset_id))
-        do_languages_lines.append('  HANDLE_LANGUAGE(%s, IDS_L10N_OFFSET_%s)'
-                                  % (lang.replace('_', '-').lower(), lang))
+        do_languages_lines.append(
+          '  HANDLE_LANGUAGE(%s, IDS_L10N_OFFSET_%s)'
+          % (lang.replace('_', '-').lower(), lang)
+        )
         offset_id += 1
       else:
         break
@@ -498,9 +536,13 @@ Extra input files:
     # Write the resource ids themselves.
     resource_id = self.first_resource_id
     for translation_data in translated_strings:
-      lines.append('#define %s %s' % (translation_data.resource_id_str + '_' +
-                                      translation_data.language,
-                                      resource_id))
+      lines.append(
+        '#define %s %s'
+        % (
+          translation_data.resource_id_str + '_' + translation_data.language,
+          resource_id,
+        )
+      )
       resource_id += 1
 
     # Handle mode-specific strings.
@@ -509,26 +551,30 @@ Extra input files:
       brand_strings = brands.get(self.brand)
       if not brand_strings:
         raise RuntimeError(
-            'No strings declared for brand \'%s\' in MODE_SPECIFIC_STRINGS for '
-            'message %s' % (self.brand, string_id))
+          'No strings declared for brand \'%s\' in MODE_SPECIFIC_STRINGS for '
+          'message %s' % (self.brand, string_id)
+        )
       do_mode_strings_lines.append(
         '  HANDLE_MODE_STRING(%s_BASE, %s)'
-        % (string_id, ', '.join([ ('%s_BASE' % s) for s in brand_strings])))
+        % (string_id, ', '.join([('%s_BASE' % s) for s in brand_strings]))
+      )
 
     # Generate defines for the specific strings to extract or take all of the
     # strings found in the translations.
     if self.string_id_set:
-      string_ids_to_write = self.string_id_set;
+      string_ids_to_write = self.string_id_set
     else:
       string_ids_to_write = {t.resource_id_str for t in translated_strings}
 
     # Write out base ID values.
     for string_id in sorted(string_ids_to_write):
-      lines.append('#define %s_BASE %s_%s' % (string_id,
-                                              string_id,
-                                              translated_strings[0].language))
-      installer_string_mapping_lines.append('  HANDLE_STRING(%s_BASE, %s)'
-                                            % (string_id, string_id))
+      lines.append(
+        '#define %s_BASE %s_%s'
+        % (string_id, string_id, translated_strings[0].language)
+      )
+      installer_string_mapping_lines.append(
+        '  HANDLE_STRING(%s_BASE, %s)' % (string_id, string_id)
+      )
 
     with open(self.header_file, 'w') as outfile:
       outfile.write('\n'.join(lines))
@@ -542,48 +588,68 @@ Extra input files:
 
 def BuildArgumentParser():
   parser = argparse.ArgumentParser(
-    description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-  parser.add_argument('-b',
-                      help='identifier of the browser brand (e.g., chromium).'
-                      'This argument is mandatory if the module file included'
-                      'by --extract-datafile contains MODE_SPECIFIC_STRINGS',
-                      dest='brand')
-  parser.add_argument('-i', action='append',
-                      required=True,
-                      help='path to .grd file',
-                      dest='input_grd_files')
-  parser.add_argument('-r', action='append',
-                      required=True,
-                      help='relative path to .xtb dir for each .grd file',
-                      dest='input_xtb_relative_paths')
-  parser.add_argument('-x', action='append',
-                      required=True,
-                      help='expected xtb input files to read',
-                      dest='expected_xtb_input_files')
-  parser.add_argument('--header-file',
-                      required=True,
-                      help='path to generated .h file to write',
-                      dest='header_file')
-  parser.add_argument('--rc-file',
-                      required=True,
-                      help='path to generated .rc file to write',
-                      dest='rc_file')
-  parser.add_argument('--first-resource-id',
-                      type=int,
-                      required=True,
-                      help='first id for the generated string resources',
-                      dest='first_resource_id')
-  parser.add_argument('--extract-datafile',
-                      help='the python file execute that will define the '
-                      'specific strings to extract from the source .grd file.'
-                      'The module should contain a global array STRING_IDS '
-                      'that specifies which string IDs need to be extracted '
-                      '(if no global member by that name exists, then all the '
-                      'strings are extracted). It may also optionally contain '
-                      'a dictionary MODE_SPECIFIC_STRINGS which defines the '
-                      'mode-specific strings to use for a given brand that is '
-                      'extracted.',
-                      dest='extract_datafile')
+    description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+  )
+  parser.add_argument(
+    '-b',
+    help='identifier of the browser brand (e.g., chromium).'
+    'This argument is mandatory if the module file included'
+    'by --extract-datafile contains MODE_SPECIFIC_STRINGS',
+    dest='brand',
+  )
+  parser.add_argument(
+    '-i',
+    action='append',
+    required=True,
+    help='path to .grd file',
+    dest='input_grd_files',
+  )
+  parser.add_argument(
+    '-r',
+    action='append',
+    required=True,
+    help='relative path to .xtb dir for each .grd file',
+    dest='input_xtb_relative_paths',
+  )
+  parser.add_argument(
+    '-x',
+    action='append',
+    required=True,
+    help='expected xtb input files to read',
+    dest='expected_xtb_input_files',
+  )
+  parser.add_argument(
+    '--header-file',
+    required=True,
+    help='path to generated .h file to write',
+    dest='header_file',
+  )
+  parser.add_argument(
+    '--rc-file',
+    required=True,
+    help='path to generated .rc file to write',
+    dest='rc_file',
+  )
+  parser.add_argument(
+    '--first-resource-id',
+    type=int,
+    required=True,
+    help='first id for the generated string resources',
+    dest='first_resource_id',
+  )
+  parser.add_argument(
+    '--extract-datafile',
+    help='the python file execute that will define the '
+    'specific strings to extract from the source .grd file.'
+    'The module should contain a global array STRING_IDS '
+    'that specifies which string IDs need to be extracted '
+    '(if no global member by that name exists, then all the '
+    'strings are extracted). It may also optionally contain '
+    'a dictionary MODE_SPECIFIC_STRINGS which defines the '
+    'mode-specific strings to use for a given brand that is '
+    'extracted.',
+    dest='extract_datafile',
+  )
 
   return parser
 
@@ -599,44 +665,62 @@ def main():
   # was specified.
   extract_datafile = args.extract_datafile
   if extract_datafile:
-    datafile_locals = dict();
+    datafile_locals = dict()
     exec(open(extract_datafile).read(), globals(), datafile_locals)
     if 'STRING_IDS' in datafile_locals:
       string_ids_to_extract = datafile_locals['STRING_IDS']
     if 'MODE_SPECIFIC_STRINGS' in datafile_locals:
       if not string_ids_to_extract:
-        parser.error('MODE_SPECIFIC_STRINGS was specified in file ' +
-          extract_datafile + ' but there were no specific STRING_IDS '
-          'specified for extraction')
+        parser.error(
+          'MODE_SPECIFIC_STRINGS was specified in file '
+          + extract_datafile
+          + ' but there were no specific STRING_IDS '
+          'specified for extraction'
+        )
       mode_specific_strings = datafile_locals['MODE_SPECIFIC_STRINGS']
 
   brand = args.brand
   if brand:
     if not mode_specific_strings:
-      parser.error('A brand was specified (' + brand + ') but no mode '
-        'specific strings were given.')
-    valid_brands = [b for b in
-      next(iter(mode_specific_strings.values())).keys()]
-    if not brand in valid_brands:
-      parser.error('A brand was specified (' + brand + ') but it is not '
-        'a valid brand [' + ', '.join(valid_brands) + '].')
+      parser.error(
+        'A brand was specified (' + brand + ') but no mode '
+        'specific strings were given.'
+      )
+    valid_brands = [
+      b for b in next(iter(mode_specific_strings.values())).keys()
+    ]
+    if brand not in valid_brands:
+      parser.error(
+        'A brand was specified (' + brand + ') but it is not '
+        'a valid brand [' + ', '.join(valid_brands) + '].'
+      )
   elif mode_specific_strings:
-    parser.error('MODE_SPECIFIC_STRINGS were specified but no brand was '
-      'given.')
+    parser.error('MODE_SPECIFIC_STRINGS were specified but no brand was given.')
 
   grd_files = args.input_grd_files
   xtb_relative_paths = args.input_xtb_relative_paths
 
   if len(grd_files) != len(xtb_relative_paths):
-    parser.error('Mismatch in number of grd files ({}) and xtb relative '
-                 'paths ({})'.format(len(grd_files), len(xtb_relative_paths)))
+    parser.error(
+      'Mismatch in number of grd files ({}) and xtb relative paths ({})'.format(
+        len(grd_files), len(xtb_relative_paths)
+      )
+    )
 
   inputs = zip(grd_files, xtb_relative_paths)
 
-  StringRcMaker(inputs, args.expected_xtb_input_files, args.header_file,
-    args.rc_file,  brand, args.first_resource_id, string_ids_to_extract,
-    mode_specific_strings).MakeFiles()
+  StringRcMaker(
+    inputs,
+    args.expected_xtb_input_files,
+    args.header_file,
+    args.rc_file,
+    brand,
+    args.first_resource_id,
+    string_ids_to_extract,
+    mode_specific_strings,
+  ).MakeFiles()
   return 0
+
 
 if '__main__' == __name__:
   sys.exit(main())

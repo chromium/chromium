@@ -21,5 +21,5 @@ if os.path.isdir(src):
   shutil.copytree(src, dst)
 else:
   shutil.copy2(src, dst)
-  #work around https://github.com/ninja-build/ninja/issues/1554
+  # work around https://github.com/ninja-build/ninja/issues/1554
   os.utime(dst, None)

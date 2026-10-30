@@ -28,6 +28,7 @@ class JavaClass:
 @dataclasses.dataclass(frozen=True)
 class FeatureEntry:
     """One `&namespace::kFoo` entry of a kFeaturesExposedToJava array."""
+
     source_path: str
     line: int
     # Namespace qualifier as written, e.g. "autofill::features::", "::" or "".
@@ -42,6 +43,7 @@ class FeatureEntry:
 @dataclasses.dataclass(frozen=True)
 class DefinitionDirective:
     """A `// FEATURE_DEFINITION_FILE: //path/to/file.cc` comment."""
+
     source_path: str
     line: int
     # The path as written in the comment, e.g. "//path/to/file.cc".
@@ -51,6 +53,7 @@ class DefinitionDirective:
 @dataclasses.dataclass(frozen=True)
 class ParsedSource:
     """Everything extracted from one C++ feature list file."""
+
     path: str
     entries: Tuple[FeatureEntry, ...]
     # Namespace enclosing kFeaturesExposedToJava, used for qualified lookup.
@@ -65,6 +68,7 @@ class ParsedSource:
 @dataclasses.dataclass(frozen=True)
 class FeatureDefinition:
     """A feature definition such as `BASE_FEATURE(kFoo, ...)`."""
+
     path: str
     line: int
     namespace: Tuple[str, ...]
@@ -77,7 +81,7 @@ class FeatureDefinition:
 
     @property
     def qualified_name(self) -> str:
-        return '::'.join(self.namespace + (self.identifier, ))
+        return '::'.join(self.namespace + (self.identifier,))
 
 
 @dataclasses.dataclass(frozen=True)
@@ -92,6 +96,7 @@ class ResolvedFeature:
 @dataclasses.dataclass(frozen=True)
 class FeaturesClass:
     """The complete model of the generated Java class."""
+
     java_class: JavaClass
     # Distinct FeatureMap classes of `features`, in order of first appearance.
     feature_maps: Tuple[JavaClass, ...]

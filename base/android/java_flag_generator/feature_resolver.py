@@ -17,8 +17,9 @@ If file.cc is a generated file, also add the GN target that generates it to
 the `deps` of the java_flag_generator() target."""
 
 
-def _lookup_names(entry: models.FeatureEntry,
-                  array_namespace: Tuple[str, ...]) -> List[str]:
+def _lookup_names(
+    entry: models.FeatureEntry, array_namespace: Tuple[str, ...]
+) -> List[str]:
     """Qualified names to try, innermost scope first, like C++ name lookup."""
     if entry.qualifier.startswith('::'):
         return [entry.qualifier[2:] + entry.identifier]
@@ -30,17 +31,19 @@ def _lookup_names(entry: models.FeatureEntry,
 
 
 def _describe(definitions: List[models.FeatureDefinition]) -> str:
-    return '\n'.join(f'    {d.path}:{d.line}: {d.qualified_name} -> '
-                     f'{d.name if d.name is not None else "(unknown)"}'
-                     for d in definitions)
+    return '\n'.join(
+        f'    {d.path}:{d.line}: {d.qualified_name} -> '
+        f'{d.name if d.name is not None else "(unknown)"}'
+        for d in definitions
+    )
 
 
 def resolve(
     source: models.ParsedSource,
     definitions_by_file: Dict[str, List[models.FeatureDefinition]],
     candidates: List[str],
-    directive_files: List[Tuple[models.DefinitionDirective,
-                                str]], ctx: PathContext
+    directive_files: List[Tuple[models.DefinitionDirective, str]],
+    ctx: PathContext,
 ) -> List[Tuple[models.FeatureEntry, models.FeatureDefinition]]:
     """Returns (entry, definition) pairs in entry order.
     Raises GeneratorError listing every problem, including all missing features.
@@ -69,18 +72,24 @@ def resolve(
             # different features.
             matches = by_identifier.get(entry.identifier, [])
             if len({d.qualified_name for d in matches}) > 1:
-                errors.append(f'{where}: error: Cannot tell which definition '
-                              f'"{entry.written}" refers to. Candidates:\n'
-                              f'{_describe(matches)}')
+                errors.append(
+                    f'{where}: error: Cannot tell which definition '
+                    f'"{entry.written}" refers to. Candidates:\n'
+                    f'{_describe(matches)}'
+                )
                 continue
 
         if not matches:
-            missing.append(f'{where}: error: Cannot find the definition of '
-                           f'"{entry.written}".')
+            missing.append(
+                f'{where}: error: Cannot find the definition of '
+                f'"{entry.written}".'
+            )
             continue
         if len({(d.name, d.error) for d in matches}) > 1:
-            errors.append(f'{where}: error: "{entry.written}" has conflicting '
-                          f'definitions:\n{_describe(matches)}')
+            errors.append(
+                f'{where}: error: "{entry.written}" has conflicting '
+                f'definitions:\n{_describe(matches)}'
+            )
             continue
         definition = matches[0]
         if definition.error:
@@ -95,13 +104,16 @@ def resolve(
                 f'{directive.source_path}:{directive.line}: error: '
                 f'FEATURE_DEFINITION_FILE {directive.written_path} is unused: '
                 f'no entry in {source.path} is defined there. Please remove '
-                f'this comment.')
+                f'this comment.'
+            )
 
     if missing:
         searched_list = '\n'.join(f'    {ctx.display(p)}' for p in searched)
         errors.extend(missing)
-        errors.append(f'Searched these files:\n{searched_list}\n' +
-                      _HELP_TEXT.format(source=ctx.display(source.path)))
+        errors.append(
+            f'Searched these files:\n{searched_list}\n'
+            + _HELP_TEXT.format(source=ctx.display(source.path))
+        )
     if errors:
         raise models.GeneratorError(errors)
     return results

@@ -3,16 +3,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from python.generators.diff_tests.testing import Path, DataPath, Metric
-from python.generators.diff_tests.testing import Csv, Json, TextProto
+from python.generators.diff_tests.testing import Path, DataPath, Metric  # noqa: F401
+from python.generators.diff_tests.testing import Csv, Json, TextProto  # noqa: F401
 from python.generators.diff_tests.testing import DiffTestBlueprint
 from python.generators.diff_tests.testing import TestSuite
+
 
 class ChromeJetStream3Stdlib(TestSuite):
   def test_jetstream_3_measure(self):
     return DiffTestBlueprint(
-        trace=DataPath('jetstream_3.pftrace.gz'),
-        query="""
+      trace=DataPath('jetstream_3.pftrace.gz'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.jetstream_3;
 
         SELECT
@@ -24,7 +25,7 @@ class ChromeJetStream3Stdlib(TestSuite):
         FROM chrome_jetstream_3_measure
         ORDER BY name, iteration, subtest;
         """,
-        out=Csv("""
+      out=Csv("""
         "name","top_level_name","iteration","subtest","dur"
         "3d-cube-SP","Sunspider",0,"First",16066000
         "3d-cube-SP","Sunspider",1,"Worst",8198000
@@ -168,12 +169,13 @@ class ChromeJetStream3Stdlib(TestSuite):
         "typescript-octane","typescript-octane",7,"Average",120516000
         "typescript-octane","typescript-octane",8,"Average",119588000
         "typescript-octane","typescript-octane",9,"Average",129313000
-        """))
+        """),
+    )
 
   def test_jetstream_3_score(self):
     return DiffTestBlueprint(
-        trace=DataPath('jetstream_3.pftrace.gz'),
-        query="""
+      trace=DataPath('jetstream_3.pftrace.gz'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.jetstream_3;
 
         SELECT
@@ -182,24 +184,26 @@ class ChromeJetStream3Stdlib(TestSuite):
         FROM chrome_jetstream_3_benchmark_score
         ORDER BY top_level_name;
         """,
-        out=Csv("""
+      out=Csv("""
         "top_level_name","score"
         "Air","513.20932"
         "Sunspider","706.90280"
         "WSL","3.54697"
         "typescript-octane","27.91412"
-        """))
+        """),
+    )
 
   def test_jetstream_3_total_score(self):
     return DiffTestBlueprint(
-        trace=DataPath('jetstream_3.pftrace.gz'),
-        query="""
+      trace=DataPath('jetstream_3.pftrace.gz'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.jetstream_3;
 
         SELECT
           format('%.5f', chrome_jetstream_3_score()) as score;
         """,
-        out=Csv("""
+      out=Csv("""
         "score"
         "77.41656"
-        """))
+        """),
+    )

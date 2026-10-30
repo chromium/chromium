@@ -11,11 +11,11 @@ from os import sys
 
 import synth_common
 
-from synth_common import ms_to_ns
+from synth_common import ms_to_ns  # noqa: F401
 
 trace = synth_common.create_trace()
 
-from chrome_scroll_helper import ChromeScrollHelper
+from chrome_scroll_helper import ChromeScrollHelper  # noqa: E402
 
 helper = ChromeScrollHelper(trace, start_id=1234, start_gesture_id=5678)
 

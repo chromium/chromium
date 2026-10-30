@@ -15,7 +15,6 @@ trace = synth_common.create_trace()
 
 
 class ChromeScrollHelper:
-
   def __init__(self, trace, start_id, start_gesture_id):
     self.trace = trace
     self.id = start_id
@@ -23,35 +22,36 @@ class ChromeScrollHelper:
 
   def begin(self, from_ms, dur_ms):
     self.trace.add_input_latency_event_slice(
-        "GestureScrollBegin",
-        ts=ms_to_ns(from_ms),
-        dur=ms_to_ns(dur_ms),
-        track=self.id,
-        trace_id=self.id,
-        gesture_scroll_id=self.gesture_id,
+      "GestureScrollBegin",
+      ts=ms_to_ns(from_ms),
+      dur=ms_to_ns(dur_ms),
+      track=self.id,
+      trace_id=self.id,
+      gesture_scroll_id=self.gesture_id,
     )
     self.id += 1
 
   def update(self, from_ms, dur_ms, gets_to_gpu=True):
     self.trace.add_input_latency_event_slice(
-        "GestureScrollUpdate",
-        ts=ms_to_ns(from_ms),
-        dur=ms_to_ns(dur_ms),
-        track=self.id,
-        trace_id=self.id,
-        gesture_scroll_id=self.gesture_id,
-        gets_to_gpu=gets_to_gpu,
-        is_coalesced=False,
+      "GestureScrollUpdate",
+      ts=ms_to_ns(from_ms),
+      dur=ms_to_ns(dur_ms),
+      track=self.id,
+      trace_id=self.id,
+      gesture_scroll_id=self.gesture_id,
+      gets_to_gpu=gets_to_gpu,
+      is_coalesced=False,
     )
     self.id += 1
 
   def end(self, from_ms, dur_ms):
     self.trace.add_input_latency_event_slice(
-        "GestureScrollEnd",
-        ts=ms_to_ns(from_ms),
-        dur=ms_to_ns(dur_ms),
-        track=self.id,
-        trace_id=self.id,
-        gesture_scroll_id=self.gesture_id)
+      "GestureScrollEnd",
+      ts=ms_to_ns(from_ms),
+      dur=ms_to_ns(dur_ms),
+      track=self.id,
+      trace_id=self.id,
+      gesture_scroll_id=self.gesture_id,
+    )
     self.id += 1
     self.gesture_id += 1

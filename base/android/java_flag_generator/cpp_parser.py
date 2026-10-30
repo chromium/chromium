@@ -13,12 +13,14 @@ import models
 _ARRAY_NAME = 'kFeaturesExposedToJava'
 _ARRAY_RE = re.compile(r'\b' + _ARRAY_NAME + r'\s*(?:\[[^\]]*\])?\s*=\s*\{')
 _ENTRY_RE = re.compile(r'^&((?:::)?(?:\w+::)*)(k[A-Z]\w*)$')
-_DIRECTIVE_RE = re.compile(r'^[ \t]*//[ \t]*FEATURE_DEFINITION_FILE:(.*)$',
-                           re.MULTILINE)
+_DIRECTIVE_RE = re.compile(
+    r'^[ \t]*//[ \t]*FEATURE_DEFINITION_FILE:(.*)$', re.MULTILINE
+)
 _DIRECTIVE_PATH_RE = re.compile(r'^//[^\s]+$')
 _INCLUDE_RE = re.compile(r'^[ \t]*#[ \t]*include[ \t]*"([^"]+)"', re.MULTILINE)
 _NAMESPACE_OR_BRACE_RE = re.compile(
-    r'\b(?P<inline>inline\s+)?namespace\b\s*(?P<name>[\w:]*)\s*\{|[{}]')
+    r'\b(?P<inline>inline\s+)?namespace\b\s*(?P<name>[\w:]*)\s*\{|[{}]'
+)
 _JNI_GET_NATIVE_MAP_RE = re.compile(r'\bJNI_(\w+)_GetNativeMap\s*\(')
 _MACRO_CALL_RE = re.compile(r'\b([A-Z][A-Z0-9_]*)\s*\(')
 _K_IDENTIFIER_RE = re.compile(r'^k[A-Z]\w*$')
@@ -72,8 +74,12 @@ def _iter_lines_with_offsets(text: str):
         offset += len(line) + 1
 
 
-def _parse_entries(path: str, structure: str, line_numbers: _LineNumberTracker,
-                   body: Tuple[int, int]) -> List[models.FeatureEntry]:
+def _parse_entries(
+    path: str,
+    structure: str,
+    line_numbers: _LineNumberTracker,
+    body: Tuple[int, int],
+) -> List[models.FeatureEntry]:
     body_start, body_end = body
     body_text = structure[body_start:body_end]
     errors = []
@@ -83,7 +89,8 @@ def _parse_entries(path: str, structure: str, line_numbers: _LineNumberTracker,
             errors.append(
                 f'{path}:{line}: error: Preprocessor directives are not '
                 f'supported inside {_ARRAY_NAME}, because the generated '
-                f'Java class is not conditional.')
+                f'Java class is not conditional.'
+            )
     if errors:
         raise models.GeneratorError(errors)
 
@@ -98,20 +105,23 @@ def _parse_entries(path: str, structure: str, line_numbers: _LineNumberTracker,
             if idx != len(pieces) - 1:
                 line = line_numbers.at(end)
                 errors.append(
-                    f'{path}:{line}: error: Empty entry in {_ARRAY_NAME}.')
+                    f'{path}:{line}: error: Empty entry in {_ARRAY_NAME}.'
+                )
             continue
         line = line_numbers.at(start + len(raw) - len(raw.lstrip()))
         m = _ENTRY_RE.match(normalized)
         if not m:
             errors.append(
                 f'{path}:{line}: error: Unsupported entry "{normalized}" in '
-                f'{_ARRAY_NAME}. Expected the form "&namespace::kFeatureName".')
+                f'{_ARRAY_NAME}. Expected the form "&namespace::kFeatureName".'
+            )
             continue
         entry = models.FeatureEntry(path, line, m.group(1), m.group(2))
         if entry.written in seen:
             errors.append(
                 f'{path}:{line}: error: Duplicate entry "{entry.written}" '
-                f'(first listed on line {seen[entry.written]}).')
+                f'(first listed on line {seen[entry.written]}).'
+            )
             continue
         seen[entry.written] = line
         entries.append(entry)
@@ -121,8 +131,8 @@ def _parse_entries(path: str, structure: str, line_numbers: _LineNumberTracker,
 
 
 def _parse_directives(
-        path: str, text: str,
-        line_numbers: _LineNumberTracker) -> List[models.DefinitionDirective]:
+    path: str, text: str, line_numbers: _LineNumberTracker
+) -> List[models.DefinitionDirective]:
     directives = []
     errors = []
     for m in _DIRECTIVE_RE.finditer(text):
@@ -132,7 +142,8 @@ def _parse_directives(
             errors.append(
                 f'{path}:{line}: error: FEATURE_DEFINITION_FILE must be '
                 f'followed by a source-absolute path such as '
-                f'"//path/to/file.cc", found "{value}".')
+                f'"//path/to/file.cc", found "{value}".'
+            )
             continue
         directives.append(models.DefinitionDirective(path, line, value))
     if errors:
@@ -147,15 +158,17 @@ def parse_source(path: str, text: str) -> models.ParsedSource:
 
     matches = list(_ARRAY_RE.finditer(structure))
     if not matches:
-        raise models.GeneratorError([
-            f'{path}: error: Cannot find the definition of {_ARRAY_NAME}.'
-        ])
+        raise models.GeneratorError(
+            [f'{path}: error: Cannot find the definition of {_ARRAY_NAME}.']
+        )
     if len(matches) > 1:
         lines = ', '.join(str(line_numbers.at(m.start())) for m in matches)
-        raise models.GeneratorError([
-            f'{path}: error: Found multiple definitions of {_ARRAY_NAME} '
-            f'(lines {lines}).'
-        ])
+        raise models.GeneratorError(
+            [
+                f'{path}: error: Found multiple definitions of {_ARRAY_NAME} '
+                f'(lines {lines}).'
+            ]
+        )
     array_match = matches[0]
     open_brace = array_match.end() - 1
     try:
@@ -163,22 +176,28 @@ def parse_source(path: str, text: str) -> models.ParsedSource:
     except ValueError as e:
         line = line_numbers.at(open_brace)
         raise models.GeneratorError(
-            [f'{path}:{line}: error: Cannot parse {_ARRAY_NAME}: {e}.']) from e
+            [f'{path}:{line}: error: Cannot parse {_ARRAY_NAME}: {e}.']
+        ) from e
 
-    entries = _parse_entries(path, structure, line_numbers,
-                             (open_brace + 1, close_brace))
+    entries = _parse_entries(
+        path, structure, line_numbers, (open_brace + 1, close_brace)
+    )
     directives = _parse_directives(path, text, line_numbers)
     includes = tuple(m.group(1) for m in _INCLUDE_RE.finditer(code))
 
     _, blanked_structure = cpp_lexer.blank_preprocessor_lines(code, structure)
     array_namespace = _NamespaceTracker(blanked_structure).at(
-        array_match.start())
+        array_match.start()
+    )
 
     feature_map_names = tuple(
-        sorted({
-            m.group(1)
-            for m in _JNI_GET_NATIVE_MAP_RE.finditer(blanked_structure)
-        }))
+        sorted(
+            {
+                m.group(1)
+                for m in _JNI_GET_NATIVE_MAP_RE.finditer(blanked_structure)
+            }
+        )
+    )
 
     return models.ParsedSource(
         path=path,
@@ -186,39 +205,66 @@ def parse_source(path: str, text: str) -> models.ParsedSource:
         array_namespace=array_namespace,
         includes=includes,
         directives=tuple(directives),
-        feature_map_names=feature_map_names)
+        feature_map_names=feature_map_names,
+    )
 
 
-def _definition_from_macro(path: str, line: int, namespace: Tuple[str, ...],
-                           macro: str, identifier: str,
-                           args: List[str]) -> models.FeatureDefinition:
+def _definition_from_macro(
+    path: str,
+    line: int,
+    namespace: Tuple[str, ...],
+    macro: str,
+    identifier: str,
+    args: List[str],
+) -> models.FeatureDefinition:
     derived = identifier[1:]
     where = f'{path}:{line}'
     if macro == 'BASE_FEATURE' or macro == 'BASE_RUNTIME_MUTABLE_FEATURE':
         if len(args) == 2:
-            return models.FeatureDefinition(path, line, namespace, identifier,
-                                            macro, derived)
+            return models.FeatureDefinition(
+                path, line, namespace, identifier, macro, derived
+            )
         if len(args) == 3:
             m = _STRING_LITERAL_RE.match(args[1])
             if m:
-                return models.FeatureDefinition(path, line, namespace,
-                                                identifier, macro, m.group(1))
+                return models.FeatureDefinition(
+                    path, line, namespace, identifier, macro, m.group(1)
+                )
             return models.FeatureDefinition(
-                path, line, namespace, identifier, macro, None,
+                path,
+                line,
+                namespace,
+                identifier,
+                macro,
+                None,
                 f'{where}: The feature name of {identifier} must be a plain '
-                f'string literal, found "{args[1]}".')
+                f'string literal, found "{args[1]}".',
+            )
         return models.FeatureDefinition(
-            path, line, namespace, identifier, macro, None,
+            path,
+            line,
+            namespace,
+            identifier,
+            macro,
+            None,
             f'{where}: {macro}({identifier}, ...) has {len(args)} '
-            f'arguments; expected 2 or 3.')
+            f'arguments; expected 2 or 3.',
+        )
 
     if len(args) >= 2 and _STRING_LITERAL_RE.match(args[1]):
         return models.FeatureDefinition(
-            path, line, namespace, identifier, macro, None,
+            path,
+            line,
+            namespace,
+            identifier,
+            macro,
+            None,
             f'{where}: Cannot determine the feature name of {identifier} from '
-            f'macro {macro}, because it is passed a string literal.')
-    return models.FeatureDefinition(path, line, namespace, identifier, macro,
-                                    derived)
+            f'macro {macro}, because it is passed a string literal.',
+        )
+    return models.FeatureDefinition(
+        path, line, namespace, identifier, macro, derived
+    )
 
 
 def parse_definitions(path: str, text: str) -> List[models.FeatureDefinition]:
@@ -248,13 +294,16 @@ def parse_definitions(path: str, text: str) -> List[models.FeatureDefinition]:
             close_paren = cpp_lexer.find_matching(structure, open_paren)
         except ValueError:
             continue
-        ranges = cpp_lexer.split_top_level(structure, open_paren + 1,
-                                           close_paren)
+        ranges = cpp_lexer.split_top_level(
+            structure, open_paren + 1, close_paren
+        )
         args = [code[s:e].strip() for s, e in ranges]
         if not args or not _K_IDENTIFIER_RE.match(args[0]):
             continue
         line = line_numbers.at(m.start())
         definitions.append(
-            _definition_from_macro(path, line, namespaces.at(m.start()), macro,
-                                   args[0], args))
+            _definition_from_macro(
+                path, line, namespaces.at(m.start()), macro, args[0], args
+            )
+        )
     return definitions

@@ -9,17 +9,17 @@ import sys
 import unittest
 
 sys.path.insert(
-    0, os.path.normpath(os.path.join(os.path.dirname(__file__), os.pardir)))
+    0, os.path.normpath(os.path.join(os.path.dirname(__file__), os.pardir))
+)
 
-import cpp_lexer  # pylint: disable=wrong-import-position
-import cpp_parser  # pylint: disable=wrong-import-position
-import models  # pylint: disable=wrong-import-position
+import cpp_lexer
+import cpp_parser
+import models
 
 _PATH = 'feature_list.cc'
 
 
 class CppLexerTest(unittest.TestCase):
-
     def _blanked(self, text):
         """Returns the expected lexer output, where '~' marks a blanked char."""
         return text.replace('~', ' ')
@@ -35,32 +35,16 @@ class CppLexerTest(unittest.TestCase):
         self.assertEqual(self._blanked(structure), actual_structure)
 
     def testLineComment(self):
-        self._assert_lexed(
-            'a; // b, (c\n'
-            'd;',
-            'a; ~~~~~~~~\n'
-            'd;')
+        self._assert_lexed('a; // b, (c\nd;', 'a; ~~~~~~~~\nd;')
 
     def testBlockComment(self):
-        self._assert_lexed(
-            'a /* b,\n'
-            '(c */ d',
-            'a ~~~~~\n'
-            '~~~~~ d')
+        self._assert_lexed('a /* b,\n(c */ d', 'a ~~~~~\n~~~~~ d')
 
     def testUnterminatedBlockComment(self):
-        self._assert_lexed(
-            'a /* b\n'
-            'c',
-            'a ~~~~\n'
-            '~')
+        self._assert_lexed('a /* b\nc', 'a ~~~~\n~')
 
     def testQuotesInComments(self):
-        self._assert_lexed(
-            "// it's\n"
-            '/* " */ f();',
-            '~~~~~~~\n'
-            '~~~~~~~ f();')
+        self._assert_lexed("// it's\n/* \" */ f();", '~~~~~~~\n~~~~~~~ f();')
 
     def testStringLiterals(self):
         self._assert_lexed(
@@ -68,7 +52,8 @@ class CppLexerTest(unittest.TestCase):
             # Code:
             'f("a(b,c)", "/* d */", "// e");',
             # Structure:
-            'f("~~~~~~", "~~~~~~~", "~~~~");')
+            'f("~~~~~~", "~~~~~~~", "~~~~");',
+        )
 
     def testCharLiterals(self):
         self._assert_lexed(
@@ -76,7 +61,8 @@ class CppLexerTest(unittest.TestCase):
             # Code:
             "f('(', '\"', ',');",
             # Structure:
-            "f('~', '~', '~');")
+            "f('~', '~', '~');",
+        )
 
     def testEscapedQuotes(self):
         self._assert_lexed(
@@ -84,24 +70,24 @@ class CppLexerTest(unittest.TestCase):
             # Code:
             r'f("a\")", b);',
             # Structure:
-            r'f("~~~~", b);')
+            r'f("~~~~", b);',
+        )
         self._assert_lexed(
             r"g('\'', c);",
             # Code:
             r"g('\'', c);",
             # Structure:
-            r"g('~~', c);")
+            r"g('~~', c);",
+        )
 
     def testUnterminatedStringEndsAtNewline(self):
         self._assert_lexed(
-            '"a(b\n'
-            'f(c)',
+            '"a(b\nf(c)',
             # Code:
-            '"a(b\n'
-            'f(c)',
+            '"a(b\nf(c)',
             # Structure:
-            '"~~~\n'
-            'f(c)')
+            '"~~~\nf(c)',
+        )
 
     def testDigitSeparators(self):
         self._assert_lexed(
@@ -109,7 +95,8 @@ class CppLexerTest(unittest.TestCase):
             # Code:
             "x = 1'000'000 + 0x1'FF + 'a';",
             # Structure:
-            "x = 1'000'000 + 0x1'FF + '~';")
+            "x = 1'000'000 + 0x1'FF + '~';",
+        )
 
     def testRawStrings(self):
         self._assert_lexed(
@@ -117,20 +104,23 @@ class CppLexerTest(unittest.TestCase):
             # Code:
             'R"(a "b" (c)";',
             # Structure:
-            'R"(~~~~~~~~)";')
+            'R"(~~~~~~~~)";',
+        )
         # The delimiter allows )" within the string.
         self._assert_lexed(
             'R"x()")x";',
             # Code:
             'R"x()")x";',
             # Structure:
-            'R"x(~~)x";')
+            'R"x(~~)x";',
+        )
         self._assert_lexed(
             'u8R"(a)" LR"(b)" uR"(c)" UR"(d)"',
             # Code:
             'u8R"(a)" LR"(b)" uR"(c)" UR"(d)"',
             # Structure:
-            'u8R"(~)" LR"(~)" uR"(~)" UR"(~)"')
+            'u8R"(~)" LR"(~)" uR"(~)" UR"(~)"',
+        )
 
     def testIdentifierEndingInRIsNotRawStringPrefix(self):
         self._assert_lexed(
@@ -138,7 +128,8 @@ class CppLexerTest(unittest.TestCase):
             # Code:
             'xR"(a)"',
             # Structure:
-            'xR"~~~"')
+            'xR"~~~"',
+        )
 
     def testFindMatching(self):
         structure = 'f(a[b{c}], (d))'
@@ -156,47 +147,60 @@ class CppLexerTest(unittest.TestCase):
     def testSplitTopLevel(self):
         structure = 'a, f(b, c), {d, e}, [f, g],'
         ranges = cpp_lexer.split_top_level(structure, 0, len(structure))
-        self.assertEqual(['a', ' f(b, c)', ' {d, e}', ' [f, g]', ''],
-                         [structure[start:end] for start, end in ranges])
+        self.assertEqual(
+            ['a', ' f(b, c)', ' {d, e}', ' [f, g]', ''],
+            [structure[start:end] for start, end in ranges],
+        )
 
     def testSplitTopLevelWithinRange(self):
         structure = 'f(x, g(y, z))'
         ranges = cpp_lexer.split_top_level(structure, 2, 12)
-        self.assertEqual(['x', ' g(y, z)'],
-                         [structure[start:end] for start, end in ranges])
+        self.assertEqual(
+            ['x', ' g(y, z)'], [structure[start:end] for start, end in ranges]
+        )
 
     def testBlankPreprocessorLines(self):
-        code, structure = cpp_lexer.blank_preprocessor_lines(*cpp_lexer.lex(
-            '#include "a.h"\n'
-            'a;\n'
-            '  # define M(x) \\\n'
-            '    (x)\n'
-            'b;\n'
-            'R"(\n'
-            '#not_a_directive\n'
-            ')";\n'))
+        code, structure = cpp_lexer.blank_preprocessor_lines(
+            *cpp_lexer.lex(
+                '#include "a.h"\n'
+                'a;\n'
+                '  # define M(x) \\\n'
+                '    (x)\n'
+                'b;\n'
+                'R"(\n'
+                '#not_a_directive\n'
+                ')";\n'
+            )
+        )
         self.assertEqual(
-            self._blanked('~~~~~~~~~~~~~~\n'
-                          'a;\n'
-                          '~~~~~~~~~~~~~~~~~\n'
-                          '~~~~~~~\n'
-                          'b;\n'
-                          'R"(\n'
-                          '#not_a_directive\n'
-                          ')";\n'), code)
+            self._blanked(
+                '~~~~~~~~~~~~~~\n'
+                'a;\n'
+                '~~~~~~~~~~~~~~~~~\n'
+                '~~~~~~~\n'
+                'b;\n'
+                'R"(\n'
+                '#not_a_directive\n'
+                ')";\n'
+            ),
+            code,
+        )
         self.assertEqual(
-            self._blanked('~~~~~~~~~~~~~~\n'
-                          'a;\n'
-                          '~~~~~~~~~~~~~~~~~\n'
-                          '~~~~~~~\n'
-                          'b;\n'
-                          'R"(\n'
-                          '~~~~~~~~~~~~~~~~\n'
-                          ')";\n'), structure)
+            self._blanked(
+                '~~~~~~~~~~~~~~\n'
+                'a;\n'
+                '~~~~~~~~~~~~~~~~~\n'
+                '~~~~~~~\n'
+                'b;\n'
+                'R"(\n'
+                '~~~~~~~~~~~~~~~~\n'
+                ')";\n'
+            ),
+            structure,
+        )
 
 
 class ParseSourceTest(unittest.TestCase):
-
     def _entries(self, source):
         return [(entry.line, entry.written) for entry in source.entries]
 
@@ -246,30 +250,35 @@ static int64_t JNI_ChromeFeatureMap_GetNativeMap(JNIEnv* env) {
                     models.FeatureEntry(_PATH, 19, '::', 'kAbsolute'),
                 ),
                 array_namespace=('chrome', 'android'),
-                includes=('chrome/flags/feature_list.h',
-                          'base/feature_list.h'),
+                includes=('chrome/flags/feature_list.h', 'base/feature_list.h'),
                 directives=(
                     models.DefinitionDirective(
-                        _PATH, 8, '//third_party/foo/features.cc'),
+                        _PATH, 8, '//third_party/foo/features.cc'
+                    ),
                     models.DefinitionDirective(
-                        _PATH, 9, '//third_party/bar/features.cc'),
+                        _PATH, 9, '//third_party/bar/features.cc'
+                    ),
                 ),
-                feature_map_names=('ChromeFeatureMap', ),
-            ), cpp_parser.parse_source(_PATH, text))
+                feature_map_names=('ChromeFeatureMap',),
+            ),
+            cpp_parser.parse_source(_PATH, text),
+        )
 
     def testArrayDeclarations(self):
         for declaration in (
-                'const base::Feature* const kFeaturesExposedToJava[] = {',
-                'const base::Feature* const kFeaturesExposedToJava[2] = {',
-                'const base::Feature* const kFeaturesExposedToJava [ ] = {',
-                'const std::array<const base::Feature*, 2> '
-                'kFeaturesExposedToJava = {',
+            'const base::Feature* const kFeaturesExposedToJava[] = {',
+            'const base::Feature* const kFeaturesExposedToJava[2] = {',
+            'const base::Feature* const kFeaturesExposedToJava [ ] = {',
+            'const std::array<const base::Feature*, 2> '
+            'kFeaturesExposedToJava = {',
         ):
             with self.subTest(declaration=declaration):
                 source = cpp_parser.parse_source(
-                    _PATH, declaration + '\n    &kFoo,\n    &kBar,\n};\n')
-                self.assertEqual([(2, 'kFoo'), (3, 'kBar')],
-                                 self._entries(source))
+                    _PATH, declaration + '\n    &kFoo,\n    &kBar,\n};\n'
+                )
+                self.assertEqual(
+                    [(2, 'kFoo'), (3, 'kBar')], self._entries(source)
+                )
 
     def testIgnoresArrayNameInCommentsAndStrings(self):
         text = """\
@@ -278,8 +287,9 @@ static int64_t JNI_ChromeFeatureMap_GetNativeMap(JNIEnv* env) {
 const char kText[] = "kFeaturesExposedToJava[] = {&kInString}";
 const base::Feature* const kFeaturesExposedToJava[] = {&kReal};
 """
-        self.assertEqual([(4, 'kReal')],
-                         self._entries(cpp_parser.parse_source(_PATH, text)))
+        self.assertEqual(
+            [(4, 'kReal')], self._entries(cpp_parser.parse_source(_PATH, text))
+        )
 
     def testEntryFormatting(self):
         text = """\
@@ -293,13 +303,16 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kLast,
 };
 """
-        self.assertEqual([
-            (3, 'kFirst'),
-            (4, 'ns::kSpaced'),
-            (5, 'ns::kWrapped'),
-            (7, 'kAfterBlockComment'),
-            (8, 'kLast'),
-        ], self._entries(cpp_parser.parse_source(_PATH, text)))
+        self.assertEqual(
+            [
+                (3, 'kFirst'),
+                (4, 'ns::kSpaced'),
+                (5, 'ns::kWrapped'),
+                (7, 'kAfterBlockComment'),
+                (8, 'kLast'),
+            ],
+            self._entries(cpp_parser.parse_source(_PATH, text)),
+        )
 
     def testEmptyArray(self):
         text = """\
@@ -318,8 +331,10 @@ const std::array<const base::Feature*, 0> kFeaturesExposedToJava = {};
 const char kText[] = "#include \\"in_string.h\\"";
 const base::Feature* const kFeaturesExposedToJava[] = {&kFoo};
 """
-        self.assertEqual(('a/b.h', 'c.h', 'd.inc'),
-                         cpp_parser.parse_source(_PATH, text).includes)
+        self.assertEqual(
+            ('a/b.h', 'c.h', 'd.inc'),
+            cpp_parser.parse_source(_PATH, text).includes,
+        )
 
     def testArrayNamespace(self):
         array = 'const base::Feature* const kFeaturesExposedToJava[] = {};'
@@ -327,13 +342,13 @@ const base::Feature* const kFeaturesExposedToJava[] = {&kFoo};
             ('', ()),
             ('namespace a {\nnamespace b {\n', ('a', 'b')),
             ('namespace a::b {\n', ('a', 'b')),
-            ('namespace a {\nnamespace {\n', ('a', )),
-            ('namespace a {\ninline namespace v1 {\n', ('a', )),
-            ('namespace a {}\nnamespace b {\n', ('b', )),
-            ('namespace a {\nstruct S {\n  void F() {}\n};\n', ('a', )),
-            ('namespace a {\nnamespace b = c;\n', ('a', )),
-            ('namespace a {\n// }\nconst char kText[] = "}";\n', ('a', )),
-            ('namespace a {\n#define CLOSE_NAMESPACE }\n', ('a', )),
+            ('namespace a {\nnamespace {\n', ('a',)),
+            ('namespace a {\ninline namespace v1 {\n', ('a',)),
+            ('namespace a {}\nnamespace b {\n', ('b',)),
+            ('namespace a {\nstruct S {\n  void F() {}\n};\n', ('a',)),
+            ('namespace a {\nnamespace b = c;\n', ('a',)),
+            ('namespace a {\n// }\nconst char kText[] = "}";\n', ('a',)),
+            ('namespace a {\n#define CLOSE_NAMESPACE }\n', ('a',)),
         ):
             with self.subTest(prefix=prefix):
                 source = cpp_parser.parse_source(_PATH, prefix + array)
@@ -353,19 +368,23 @@ static int64_t JNI_SecondFeatureMap_GetNativeMap (JNIEnv* env) {
 }
 const base::Feature* const kFeaturesExposedToJava[] = {&kFoo};
 """
-        self.assertEqual(('FirstFeatureMap', 'SecondFeatureMap'),
-                         cpp_parser.parse_source(_PATH,
-                                                 text).feature_map_names)
+        self.assertEqual(
+            ('FirstFeatureMap', 'SecondFeatureMap'),
+            cpp_parser.parse_source(_PATH, text).feature_map_names,
+        )
 
     def testErrorNoArray(self):
         text = """\
 BASE_FEATURE(kFoo, base::FEATURE_DISABLED_BY_DEFAULT);
 // const base::Feature* const kFeaturesExposedToJava[] = {&kFoo};
 """
-        self._assert_error([
-            f'{_PATH}: error: Cannot find the definition of '
-            'kFeaturesExposedToJava.'
-        ], text)
+        self._assert_error(
+            [
+                f'{_PATH}: error: Cannot find the definition of '
+                'kFeaturesExposedToJava.'
+            ],
+            text,
+        )
 
     def testErrorMultipleArrays(self):
         text = """\
@@ -375,10 +394,13 @@ const base::Feature* const kFeaturesExposedToJava[] = {&kFoo};
 const base::Feature* const kFeaturesExposedToJava[] = {&kBar};
 #endif
 """
-        self._assert_error([
-            f'{_PATH}: error: Found multiple definitions of '
-            'kFeaturesExposedToJava (lines 2, 4).'
-        ], text)
+        self._assert_error(
+            [
+                f'{_PATH}: error: Found multiple definitions of '
+                'kFeaturesExposedToJava (lines 2, 4).'
+            ],
+            text,
+        )
 
     def testErrorUnbalancedArray(self):
         for body, reason in (
@@ -386,11 +408,14 @@ const base::Feature* const kFeaturesExposedToJava[] = {&kBar};
             ('{&kFoo(];\n', 'Unbalanced "]"'),
         ):
             with self.subTest(reason=reason):
-                self._assert_error([
-                    f'{_PATH}:1: error: Cannot parse kFeaturesExposedToJava: '
-                    f'{reason}.'
-                ], 'const base::Feature* const kFeaturesExposedToJava[] = ' +
-                                   body)
+                self._assert_error(
+                    [
+                        f'{_PATH}:1: error: Cannot parse kFeaturesExposedToJava: '
+                        f'{reason}.'
+                    ],
+                    'const base::Feature* const kFeaturesExposedToJava[] = '
+                    + body,
+                )
 
     def testErrorUnsupportedEntries(self):
         text = """\
@@ -404,16 +429,21 @@ const base::Feature* const kFeaturesExposedToJava[] = {
 """
 
         def message(line, entry):
-            return (f'{_PATH}:{line}: error: Unsupported entry "{entry}" in '
-                    'kFeaturesExposedToJava. Expected the form '
-                    '"&namespace::kFeatureName".')
+            return (
+                f'{_PATH}:{line}: error: Unsupported entry "{entry}" in '
+                'kFeaturesExposedToJava. Expected the form '
+                '"&namespace::kFeatureName".'
+            )
 
-        self._assert_error([
-            message(2, 'kNotAPointer'),
-            message(3, '&kfoo'),
-            message(4, '&GetFeature()'),
-            message(5, '&features::kFoo.member'),
-        ], text)
+        self._assert_error(
+            [
+                message(2, 'kNotAPointer'),
+                message(3, '&kfoo'),
+                message(4, '&GetFeature()'),
+                message(5, '&features::kFoo.member'),
+            ],
+            text,
+        )
 
     def testErrorEmptyEntries(self):
         text = """\
@@ -424,8 +454,9 @@ const base::Feature* const kFeaturesExposedToJava[] = {
 };
 """
         message = 'error: Empty entry in kFeaturesExposedToJava.'
-        self._assert_error([f'{_PATH}:2: {message}', f'{_PATH}:3: {message}'],
-                           text)
+        self._assert_error(
+            [f'{_PATH}:2: {message}', f'{_PATH}:3: {message}'], text
+        )
 
     def testErrorDuplicateEntries(self):
         text = """\
@@ -436,12 +467,15 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBar,
 };
 """
-        self._assert_error([
-            f'{_PATH}:4: error: Duplicate entry "ns::kFoo" (first listed on '
-            'line 2).',
-            f'{_PATH}:5: error: Duplicate entry "kBar" (first listed on line '
-            '3).',
-        ], text)
+        self._assert_error(
+            [
+                f'{_PATH}:4: error: Duplicate entry "ns::kFoo" (first listed on '
+                'line 2).',
+                f'{_PATH}:5: error: Duplicate entry "kBar" (first listed on line '
+                '3).',
+            ],
+            text,
+        )
 
     def testErrorPreprocessorDirectivesInArray(self):
         text = """\
@@ -452,11 +486,14 @@ const base::Feature* const kFeaturesExposedToJava[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 };
 """
-        message = ('error: Preprocessor directives are not supported inside '
-                   'kFeaturesExposedToJava, because the generated Java class '
-                   'is not conditional.')
-        self._assert_error([f'{_PATH}:3: {message}', f'{_PATH}:5: {message}'],
-                           text)
+        message = (
+            'error: Preprocessor directives are not supported inside '
+            'kFeaturesExposedToJava, because the generated Java class '
+            'is not conditional.'
+        )
+        self._assert_error(
+            [f'{_PATH}:3: {message}', f'{_PATH}:5: {message}'], text
+        )
 
     def testErrorInvalidDirectives(self):
         text = """\
@@ -468,22 +505,27 @@ const base::Feature* const kFeaturesExposedToJava[] = {&kFoo};
 """
 
         def message(line, found):
-            return (f'{_PATH}:{line}: error: FEATURE_DEFINITION_FILE must be '
-                    'followed by a source-absolute path such as '
-                    f'"//path/to/file.cc", found "{found}".')
+            return (
+                f'{_PATH}:{line}: error: FEATURE_DEFINITION_FILE must be '
+                'followed by a source-absolute path such as '
+                f'"//path/to/file.cc", found "{found}".'
+            )
 
-        self._assert_error([
-            message(1, 'third_party/foo/features.cc'),
-            message(2, ''),
-            message(3, '//third_party/foo/features.cc, //other.cc'),
-        ], text)
+        self._assert_error(
+            [
+                message(1, 'third_party/foo/features.cc'),
+                message(2, ''),
+                message(3, '//third_party/foo/features.cc, //other.cc'),
+            ],
+            text,
+        )
 
 
 class ParseDefinitionsTest(unittest.TestCase):
-
     def _definition(self, line, namespace, identifier, macro, name):
-        return models.FeatureDefinition(_PATH, line, namespace, identifier,
-                                        macro, name)
+        return models.FeatureDefinition(
+            _PATH, line, namespace, identifier, macro, name
+        )
 
     def testParseDefinitions(self):
         text = """\
@@ -506,20 +548,39 @@ BASE_FEATURE(kNested, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlobal, base::FEATURE_DISABLED_BY_DEFAULT);
 """
-        self.assertEqual([
-            self._definition(3, ('foo', ), 'kDerivedName', 'BASE_FEATURE',
-                             'DerivedName'),
-            self._definition(4, ('foo', ), 'kCustomName', 'BASE_FEATURE',
-                             'CustomFeatureName'),
-            self._definition(6, ('foo', ), 'kRuntimeMutable',
-                             'BASE_RUNTIME_MUTABLE_FEATURE', 'RuntimeMutable'),
-            self._definition(8, ('foo', ), 'kRuntimeMutableCustomName',
-                             'BASE_RUNTIME_MUTABLE_FEATURE',
-                             'RuntimeMutableName'),
-            self._definition(13, ('foo', 'bar'), 'kNested', 'BASE_FEATURE',
-                             'Nested'),
-            self._definition(18, (), 'kGlobal', 'BASE_FEATURE', 'Global'),
-        ], cpp_parser.parse_definitions(_PATH, text))
+        self.assertEqual(
+            [
+                self._definition(
+                    3, ('foo',), 'kDerivedName', 'BASE_FEATURE', 'DerivedName'
+                ),
+                self._definition(
+                    4,
+                    ('foo',),
+                    'kCustomName',
+                    'BASE_FEATURE',
+                    'CustomFeatureName',
+                ),
+                self._definition(
+                    6,
+                    ('foo',),
+                    'kRuntimeMutable',
+                    'BASE_RUNTIME_MUTABLE_FEATURE',
+                    'RuntimeMutable',
+                ),
+                self._definition(
+                    8,
+                    ('foo',),
+                    'kRuntimeMutableCustomName',
+                    'BASE_RUNTIME_MUTABLE_FEATURE',
+                    'RuntimeMutableName',
+                ),
+                self._definition(
+                    13, ('foo', 'bar'), 'kNested', 'BASE_FEATURE', 'Nested'
+                ),
+                self._definition(18, (), 'kGlobal', 'BASE_FEATURE', 'Global'),
+            ],
+            cpp_parser.parse_definitions(_PATH, text),
+        )
 
     def testOtherFeatureMacros(self):
         text = """\
@@ -531,14 +592,25 @@ BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS(kCountryRestricted,
                                        "us", "ca");
 DEFINE_SYNC_AUTOFILL_AI_FEATURE(kSyncAutofillAi);
 """
-        self.assertEqual([
-            self._definition(4, (), 'kCountryRestricted',
-                             'BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS',
-                             'CountryRestricted'),
-            self._definition(7, (), 'kSyncAutofillAi',
-                             'DEFINE_SYNC_AUTOFILL_AI_FEATURE',
-                             'SyncAutofillAi'),
-        ], cpp_parser.parse_definitions(_PATH, text))
+        self.assertEqual(
+            [
+                self._definition(
+                    4,
+                    (),
+                    'kCountryRestricted',
+                    'BASE_FEATURE_WITH_COUNTRY_RESTRICTIONS',
+                    'CountryRestricted',
+                ),
+                self._definition(
+                    7,
+                    (),
+                    'kSyncAutofillAi',
+                    'DEFINE_SYNC_AUTOFILL_AI_FEATURE',
+                    'SyncAutofillAi',
+                ),
+            ],
+            cpp_parser.parse_definitions(_PATH, text),
+        )
 
     def testIgnoredMacroCalls(self):
         text = """\
@@ -564,19 +636,31 @@ BASE_FEATURE(kPlatformDependent,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 """
-        self.assertEqual([
-            self._definition(1, (), 'kPlatformDependent', 'BASE_FEATURE',
-                             'PlatformDependent'),
-        ], cpp_parser.parse_definitions(_PATH, text))
+        self.assertEqual(
+            [
+                self._definition(
+                    1,
+                    (),
+                    'kPlatformDependent',
+                    'BASE_FEATURE',
+                    'PlatformDependent',
+                ),
+            ],
+            cpp_parser.parse_definitions(_PATH, text),
+        )
 
     def testSpecialCharactersInFeatureName(self):
         text = """\
 BASE_FEATURE(kComma, "Comma,Name", base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kParen, "Paren)Name", base::FEATURE_DISABLED_BY_DEFAULT);
 """
-        self.assertEqual([('kComma', 'Comma,Name'), ('kParen', 'Paren)Name')],
-                         [(d.identifier, d.name)
-                          for d in cpp_parser.parse_definitions(_PATH, text)])
+        self.assertEqual(
+            [('kComma', 'Comma,Name'), ('kParen', 'Paren)Name')],
+            [
+                (d.identifier, d.name)
+                for d in cpp_parser.parse_definitions(_PATH, text)
+            ],
+        )
 
     def testInvalidFeatureNames(self):
         text = """\
@@ -587,19 +671,23 @@ BASE_FEATURE(kTooManyArgs, "Name", base::FEATURE_DISABLED_BY_DEFAULT, 1);
 DEFINE_CUSTOM_FEATURE(kCustomMacro, "CustomName");
 """
         definitions = cpp_parser.parse_definitions(_PATH, text)
-        self.assertEqual([None, None, None, None],
-                         [d.name for d in definitions])
-        self.assertEqual([
-            f'{_PATH}:2: The feature name of kNotALiteral must be a plain '
-            'string literal, found "kName".',
-            f'{_PATH}:3: The feature name of kConcatenated must be a plain '
-            'string literal, found ""Foo" "Bar"".',
-            f'{_PATH}:4: BASE_FEATURE(kTooManyArgs, ...) has 4 arguments; '
-            'expected 2 or 3.',
-            f'{_PATH}:5: Cannot determine the feature name of kCustomMacro '
-            'from macro DEFINE_CUSTOM_FEATURE, because it is passed a string '
-            'literal.',
-        ], [d.error for d in definitions])
+        self.assertEqual(
+            [None, None, None, None], [d.name for d in definitions]
+        )
+        self.assertEqual(
+            [
+                f'{_PATH}:2: The feature name of kNotALiteral must be a plain '
+                'string literal, found "kName".',
+                f'{_PATH}:3: The feature name of kConcatenated must be a plain '
+                'string literal, found ""Foo" "Bar"".',
+                f'{_PATH}:4: BASE_FEATURE(kTooManyArgs, ...) has 4 arguments; '
+                'expected 2 or 3.',
+                f'{_PATH}:5: Cannot determine the feature name of kCustomMacro '
+                'from macro DEFINE_CUSTOM_FEATURE, because it is passed a string '
+                'literal.',
+            ],
+            [d.error for d in definitions],
+        )
 
     def testSkipsUnbalancedMacroCalls(self):
         text = """\
@@ -607,9 +695,12 @@ BASE_FEATURE(kUnterminated,
 BASE_FEATURE(kMismatched, ];
 BASE_FEATURE(kValid, base::FEATURE_DISABLED_BY_DEFAULT);
 """
-        self.assertEqual([
-            self._definition(3, (), 'kValid', 'BASE_FEATURE', 'Valid'),
-        ], cpp_parser.parse_definitions(_PATH, text))
+        self.assertEqual(
+            [
+                self._definition(3, (), 'kValid', 'BASE_FEATURE', 'Valid'),
+            ],
+            cpp_parser.parse_definitions(_PATH, text),
+        )
 
 
 if __name__ == '__main__':

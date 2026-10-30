@@ -11,13 +11,23 @@ from python.generators.diff_tests import testing
 from chrome.chrome_stdlib_testsuites import CHROME_STDLIB_TESTSUITES
 
 # Import diff tests from third_party/perfetto/test/trace_processor
-PERFETTO_DIFF_TEST_DIR = os.path.abspath(os.path.join(os.path.dirname(
-                    __file__),
-                    '..', '..', '..', '..', '..',
-                    'third_party', 'perfetto',
-                    'test', 'trace_processor'))
+PERFETTO_DIFF_TEST_DIR = os.path.abspath(
+  os.path.join(
+    os.path.dirname(__file__),
+    '..',
+    '..',
+    '..',
+    '..',
+    '..',
+    'third_party',
+    'perfetto',
+    'test',
+    'trace_processor',
+  )
+)
 sys.path.append(PERFETTO_DIFF_TEST_DIR)
-from diff_tests.stdlib.tests import StdlibSmoke
+from diff_tests.stdlib.tests import StdlibSmoke  # noqa: E402
+
 
 def fetch_all_diff_tests(index_path: str) -> List['testing.TestCase']:
   test_data_path = os.path.abspath(os.path.join(__file__, '../../../data'))

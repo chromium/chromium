@@ -30,7 +30,8 @@ _DATA_DIR = os.path.join(_SCRIPT_DIR, 'data')
 _DATA_SUFFIX = '.in'
 _GOLDENS_DIR = os.path.join(_SCRIPT_DIR, 'golden')
 _GENERATOR_PATH = os.path.normpath(
-    os.path.join(_SCRIPT_DIR, os.pardir, 'java_flag_generator.py'))
+    os.path.join(_SCRIPT_DIR, os.pardir, 'java_flag_generator.py')
+)
 
 # Set this environment variable in order to regenerate the golden text files.
 _REBASELINE = os.environ.get('REBASELINE', '0') != '0'
@@ -56,7 +57,6 @@ _accessed_goldens = set()
 
 
 class BaseTest(unittest.TestCase):
-
     def _copy_test_data(self, dest_dir):
         """Copies the files in test/data/<test name>/ to `dest_dir`.
         Removes _DATA_SUFFIX from the file names.
@@ -68,11 +68,14 @@ class BaseTest(unittest.TestCase):
             for filename in filenames:
                 src_path = os.path.join(dirpath, filename)
                 if not filename.endswith(_DATA_SUFFIX):
-                    self.fail(f'Test data file name must end with '
-                              f'"{_DATA_SUFFIX}": {src_path}')
+                    self.fail(
+                        f'Test data file name must end with '
+                        f'"{_DATA_SUFFIX}": {src_path}'
+                    )
                 rel_path = os.path.relpath(src_path, data_dir)
-                dest_path = os.path.join(dest_dir,
-                                         rel_path[:-len(_DATA_SUFFIX)])
+                dest_path = os.path.join(
+                    dest_dir, rel_path[: -len(_DATA_SUFFIX)]
+                )
                 os.makedirs(os.path.dirname(dest_path), exist_ok=True)
                 shutil.copyfile(src_path, dest_path)
 
@@ -104,14 +107,14 @@ class BaseTest(unittest.TestCase):
         if feature_map_class_name:
             cmd += ['--feature-map-class-name', feature_map_class_name]
         cmd += [f'{_SOURCE_ROOT}/{source}' for source in sources]
-        result = subprocess.run(cmd,
-                                cwd=build_dir,
-                                capture_output=True,
-                                check=False,
-                                text=True)
+        result = subprocess.run(
+            cmd, cwd=build_dir, capture_output=True, check=False, text=True
+        )
         if 'Traceback' in result.stderr:
-            self.fail(f'Generator crashed. Command: {shlex.join(cmd)}\n'
-                      f'{result.stderr}')
+            self.fail(
+                f'Generator crashed. Command: {shlex.join(cmd)}\n'
+                f'{result.stderr}'
+            )
         return build_dir, result
 
     def assert_golden_text_equals(self, generated_text, golden_file):
@@ -132,18 +135,25 @@ class BaseTest(unittest.TestCase):
             return
 
         if golden_text is None:
-            self.fail(f'Golden file does not exist: {golden_path}\n'
-                      f'Run with:\n    REBASELINE=1 {sys.argv[0]}\n'
-                      'to generate it.')
+            self.fail(
+                f'Golden file does not exist: {golden_path}\n'
+                f'Run with:\n    REBASELINE=1 {sys.argv[0]}\n'
+                'to generate it.'
+            )
         if golden_text != generated_text:
             diff = ''.join(
-                difflib.unified_diff(golden_text.splitlines(keepends=True),
-                                     generated_text.splitlines(keepends=True),
-                                     fromfile=golden_path,
-                                     tofile='generated'))
-            self.fail(f'Golden text mismatch:\n{diff}\n'
-                      f'Run with:\n    REBASELINE=1 {sys.argv[0]}\n'
-                      'to regenerate the golden files.')
+                difflib.unified_diff(
+                    golden_text.splitlines(keepends=True),
+                    generated_text.splitlines(keepends=True),
+                    fromfile=golden_path,
+                    tofile='generated',
+                )
+            )
+            self.fail(
+                f'Golden text mismatch:\n{diff}\n'
+                f'Run with:\n    REBASELINE=1 {sys.argv[0]}\n'
+                'to regenerate the golden files.'
+            )
 
     def _parse_depfile(self, path):
         """Returns the output and the inputs listed in a depfile."""
@@ -151,18 +161,22 @@ class BaseTest(unittest.TestCase):
             output, inputs = f.read().split(':', 1)
         return output, inputs.replace('\\\n', ' ').split()
 
-    def _test_generate(self,
-                       *,
-                       sources=(_SOURCE, ),
-                       class_name=_CLASS_NAME,
-                       feature_map_class_name=None):
+    def _test_generate(
+        self,
+        *,
+        sources=(_SOURCE,),
+        class_name=_CLASS_NAME,
+        feature_map_class_name=None,
+    ):
         """Checks the generated class against the test's golden file.
         Returns the output and the inputs listed in the depfile.
         """
-        build_dir, result = self._run_generator(sources, class_name,
-                                                feature_map_class_name)
-        self.assertEqual(0, result.returncode,
-                         f'Generator failed:\n{result.stderr}')
+        build_dir, result = self._run_generator(
+            sources, class_name, feature_map_class_name
+        )
+        self.assertEqual(
+            0, result.returncode, f'Generator failed:\n{result.stderr}'
+        )
         self.assertEqual('', result.stderr)
 
         java_path = class_name.replace('.', '/') + '.java'
@@ -171,50 +185,62 @@ class BaseTest(unittest.TestCase):
             java_source = z.read(java_path).decode('utf-8')
         simple_name = class_name.rsplit('.', 1)[-1]
         self.assert_golden_text_equals(
-            java_source, f'{self._testMethodName}-{simple_name}.java.golden')
+            java_source, f'{self._testMethodName}-{simple_name}.java.golden'
+        )
         return self._parse_depfile(os.path.join(build_dir, _DEPFILE))
 
-    def _test_error(self,
-                    error_snippets=(),
-                    *,
-                    sources=(_SOURCE, ),
-                    class_name=_CLASS_NAME,
-                    feature_map_class_name=None):
+    def _test_error(
+        self,
+        error_snippets=(),
+        *,
+        sources=(_SOURCE,),
+        class_name=_CLASS_NAME,
+        feature_map_class_name=None,
+    ):
         """Checks that the generator fails and reports `error_snippets`.
         Returns stderr.
         """
-        build_dir, result = self._run_generator(sources, class_name,
-                                                feature_map_class_name)
+        build_dir, result = self._run_generator(
+            sources, class_name, feature_map_class_name
+        )
         self.assertEqual(
-            1, result.returncode,
-            f'Expected the generator to fail. stderr:\n{result.stderr}')
+            1,
+            result.returncode,
+            f'Expected the generator to fail. stderr:\n{result.stderr}',
+        )
         for snippet in error_snippets:
             self.assertIn(snippet, result.stderr)
         self.assertFalse(
-            os.path.exists(os.path.join(build_dir, _OUTPUT_SRCJAR)))
+            os.path.exists(os.path.join(build_dir, _OUTPUT_SRCJAR))
+        )
         self.assertFalse(os.path.exists(os.path.join(build_dir, _DEPFILE)))
         return result.stderr
 
 
 @unittest.skipIf(os.name == 'nt', 'Not intended to work on Windows')
 class Tests(BaseTest):
-
     def testDefinitionMacros(self):
         self._test_generate()
 
     def testDefinitionFileDiscovery(self):
         depfile = self._test_generate()
         # The depfile lists every file that was read.
-        self.assertEqual((_OUTPUT_SRCJAR, [
-            '../../chrome/flags/local_features.cc',
-            '../../chrome/flags/test_feature_list.cc',
-            '../../components/both/both_features.cc',
-            '../../components/foo/foo_features.cc',
-            '../../components/unused/unused_features.cc',
-            '../../third_party/bar/bar_features.cc',
-            '../../third_party/both/both_features.cc',
-            'gen/third_party/generated/generated_features.cc',
-        ]), depfile)
+        self.assertEqual(
+            (
+                _OUTPUT_SRCJAR,
+                [
+                    '../../chrome/flags/local_features.cc',
+                    '../../chrome/flags/test_feature_list.cc',
+                    '../../components/both/both_features.cc',
+                    '../../components/foo/foo_features.cc',
+                    '../../components/unused/unused_features.cc',
+                    '../../third_party/bar/bar_features.cc',
+                    '../../third_party/both/both_features.cc',
+                    'gen/third_party/generated/generated_features.cc',
+                ],
+            ),
+            depfile,
+        )
 
     def testNamespaceLookup(self):
         self._test_generate()
@@ -223,13 +249,14 @@ class Tests(BaseTest):
         self._test_generate(sources=[_SOURCE, _OTHER_SOURCE])
 
     def testMultipleFeatureMaps(self):
-        self._test_generate(sources=[
-            _SOURCE, _OTHER_SOURCE, 'chrome/more/more_feature_list.cc'
-        ])
+        self._test_generate(
+            sources=[_SOURCE, _OTHER_SOURCE, 'chrome/more/more_feature_list.cc']
+        )
 
     def testFeatureMapClassName(self):
         self._test_generate(
-            feature_map_class_name='org.chromium.base.BaseFeatureMap')
+            feature_map_class_name='org.chromium.base.BaseFeatureMap'
+        )
 
     def testEmptyFeatureList(self):
         self._test_generate()
@@ -241,7 +268,8 @@ class Tests(BaseTest):
                 'fully-qualified Java class name such as '
                 '"org.chromium.foo.FooFeatures".'
             ],
-            class_name='SampleFeatures')
+            class_name='SampleFeatures',
+        )
 
     def testError_invalidFeatureMapClassName(self):
         # Nested classes are not supported.
@@ -251,26 +279,31 @@ class Tests(BaseTest):
                 'is not a fully-qualified Java class name such as '
                 '"org.chromium.foo.FooFeatures".'
             ],
-            feature_map_class_name='org.chromium.foo.Outer.Map')
+            feature_map_class_name='org.chromium.foo.Outer.Map',
+        )
 
     def testError_noFeatureMap(self):
-        self._test_error([
-            f'{_SOURCE_PATH}: error: Cannot determine the FeatureMap '
-            'class: no JNI_<Name>_GetNativeMap function found. Please set '
-            'feature_map_class_name in the java_flag_generator() target, '
-            'e.g. feature_map_class_name = '
-            '"org.chromium.foo.FooFeatureMap".'
-        ])
+        self._test_error(
+            [
+                f'{_SOURCE_PATH}: error: Cannot determine the FeatureMap '
+                'class: no JNI_<Name>_GetNativeMap function found. Please set '
+                'feature_map_class_name in the java_flag_generator() target, '
+                'e.g. feature_map_class_name = '
+                '"org.chromium.foo.FooFeatureMap".'
+            ]
+        )
 
     def testError_multipleFeatureMaps(self):
-        self._test_error([
-            f'{_SOURCE_PATH}: error: Cannot determine the FeatureMap '
-            'class: found several JNI_<Name>_GetNativeMap functions '
-            '(FirstFeatureMap, SecondFeatureMap). Set '
-            'feature_map_class_name in the java_flag_generator() target, '
-            'e.g. feature_map_class_name = '
-            '"org.chromium.foo.FooFeatureMap".'
-        ])
+        self._test_error(
+            [
+                f'{_SOURCE_PATH}: error: Cannot determine the FeatureMap '
+                'class: found several JNI_<Name>_GetNativeMap functions '
+                '(FirstFeatureMap, SecondFeatureMap). Set '
+                'feature_map_class_name in the java_flag_generator() target, '
+                'e.g. feature_map_class_name = '
+                '"org.chromium.foo.FooFeatureMap".'
+            ]
+        )
 
     def testError_reportsErrorsOfAllSources(self):
         self._test_error(
@@ -280,7 +313,8 @@ class Tests(BaseTest):
                 f'{_OTHER_SOURCE_PATH}: error: Cannot find the definition of '
                 'kFeaturesExposedToJava.',
             ],
-            sources=[_SOURCE, _OTHER_SOURCE])
+            sources=[_SOURCE, _OTHER_SOURCE],
+        )
 
     def testError_missingDefinitions(self):
         stderr = self._test_error()
@@ -299,7 +333,9 @@ to //chrome/flags/test_feature_list.cc, where file.cc contains the feature's \
 BASE_FEATURE() definition.
 If file.cc is a generated file, also add the GN target that generates it to
 the `deps` of the java_flag_generator() target.
-""", stderr)
+""",
+            stderr,
+        )
 
     def testError_ambiguousDefinition(self):
         stderr = self._test_error()
@@ -309,7 +345,9 @@ the `deps` of the java_flag_generator() target.
 Candidates:
     {_SOURCE_PATH}:2: a::kFoo -> FooInA
     {_SOURCE_PATH}:5: b::kFoo -> FooInB
-""", stderr)
+""",
+            stderr,
+        )
 
     def testError_conflictingDefinitions(self):
         stderr = self._test_error()
@@ -318,7 +356,9 @@ Candidates:
 {_SOURCE_PATH}:7: error: "kFoo" has conflicting definitions:
     {_SOURCE_PATH}:3: foo::kFoo -> DesktopFoo
     {_SOURCE_PATH}:5: foo::kFoo -> MobileFoo
-""", stderr)
+""",
+            stderr,
+        )
 
     def testError_invalidFeatureNames(self):
         stderr = self._test_error()
@@ -333,7 +373,9 @@ has 4 arguments; expected 2 or 3.
 {_SOURCE_PATH}:12: error: {_SOURCE_PATH}:6: Cannot determine the feature name \
 of kCustomMacro from macro DEFINE_CUSTOM_FEATURE, because it is passed a \
 string literal.
-""", stderr)
+""",
+            stderr,
+        )
 
     def testError_definitionFileDoesNotExist(self):
         stderr = self._test_error()
@@ -345,30 +387,38 @@ string literal.
     gen/third_party/missing/features.cc
 If the file is generated, add the GN target that generates it to the `deps` \
 of the java_flag_generator() target.
-""", stderr)
+""",
+            stderr,
+        )
 
     def testError_duplicateDefinitionFile(self):
-        self._test_error([
-            f'{_SOURCE_PATH}:2: error: Duplicate FEATURE_DEFINITION_FILE '
-            '//third_party/bar/bar_features.cc (first on line 1).'
-        ])
+        self._test_error(
+            [
+                f'{_SOURCE_PATH}:2: error: Duplicate FEATURE_DEFINITION_FILE '
+                '//third_party/bar/bar_features.cc (first on line 1).'
+            ]
+        )
 
     def testError_redundantDefinitionFiles(self):
-        self._test_error([
-            f'{_SOURCE_PATH}:2: error: FEATURE_DEFINITION_FILE '
-            '//components/foo/foo_features.cc is redundant: it is already '
-            'searched automatically. Remove this comment.',
-            f'{_SOURCE_PATH}:3: error: FEATURE_DEFINITION_FILE '
-            '//chrome/flags/test_feature_list.cc is redundant: it is '
-            'already searched automatically. Remove this comment.',
-        ])
+        self._test_error(
+            [
+                f'{_SOURCE_PATH}:2: error: FEATURE_DEFINITION_FILE '
+                '//components/foo/foo_features.cc is redundant: it is already '
+                'searched automatically. Remove this comment.',
+                f'{_SOURCE_PATH}:3: error: FEATURE_DEFINITION_FILE '
+                '//chrome/flags/test_feature_list.cc is redundant: it is '
+                'already searched automatically. Remove this comment.',
+            ]
+        )
 
     def testError_unusedDefinitionFile(self):
-        self._test_error([
-            f'{_SOURCE_PATH}:1: error: FEATURE_DEFINITION_FILE '
-            '//third_party/bar/bar_features.cc is unused: no entry in '
-            f'{_SOURCE_PATH} is defined there. Please remove this comment.'
-        ])
+        self._test_error(
+            [
+                f'{_SOURCE_PATH}:1: error: FEATURE_DEFINITION_FILE '
+                '//third_party/bar/bar_features.cc is unused: no entry in '
+                f'{_SOURCE_PATH} is defined there. Please remove this comment.'
+            ]
+        )
 
     def testError_sameNestedClassName(self):
         self._test_error(
@@ -376,13 +426,16 @@ of the java_flag_generator() target.
                 f'{_OTHER_SOURCE_PATH}:4: error: "b::kFoo" and "a::kFoo" '
                 f'({_SOURCE_PATH}:4) both map to the nested class "Foo".'
             ],
-            sources=[_SOURCE, _OTHER_SOURCE])
+            sources=[_SOURCE, _OTHER_SOURCE],
+        )
 
     def testError_sameFeatureName(self):
-        self._test_error([
-            f'{_SOURCE_PATH}:6: error: "kBar" and "kFoo" '
-            f'({_SOURCE_PATH}:5) both have the feature name "Bar".'
-        ])
+        self._test_error(
+            [
+                f'{_SOURCE_PATH}:6: error: "kBar" and "kFoo" '
+                f'({_SOURCE_PATH}:5) both have the feature name "Bar".'
+            ]
+        )
 
     def testError_reservedNestedClassNames(self):
         stderr = self._test_error()
@@ -396,7 +449,9 @@ the generated class.
 by the generated class.
 {_SOURCE_PATH}:10: error: Nested class "SampleFeatureMap" would shadow a type \
 used by the generated class.
-""", stderr)
+""",
+            stderr,
+        )
 
     def testError_featureMapNamedLikeGeneratedClass(self):
         self._test_error(
@@ -405,13 +460,16 @@ used by the generated class.
                 'name as its FeatureMap class '
                 'org.chromium.foo.SampleFeatureMap.'
             ],
-            class_name='org.chromium.foo.SampleFeatureMap')
+            class_name='org.chromium.foo.SampleFeatureMap',
+        )
 
     def testEveryDataDirectoryHasATest(self):
         test_names = unittest.TestLoader().getTestCaseNames(type(self))
-        self.assertEqual([],
-                         sorted(set(os.listdir(_DATA_DIR)) - set(test_names)),
-                         'Found test data directories without a test.')
+        self.assertEqual(
+            [],
+            sorted(set(os.listdir(_DATA_DIR)) - set(test_names)),
+            'Found test data directories without a test.',
+        )
 
 
 def main():
@@ -420,8 +478,12 @@ def main():
     # Only remove obsolete goldens when every test ran and passed, since other
     # tests' goldens are not accessed otherwise.
     ran_all_tests = not any(not arg.startswith('-') for arg in sys.argv[1:])
-    if (_REBASELINE and ran_all_tests and result.wasSuccessful()
-            and not result.skipped):
+    if (
+        _REBASELINE
+        and ran_all_tests
+        and result.wasSuccessful()
+        and not result.skipped
+    ):
         for path in glob.glob(os.path.join(_GOLDENS_DIR, '*.golden')):
             if path not in _accessed_goldens:
                 print('Removing obsolete golden:', path)

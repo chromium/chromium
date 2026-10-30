@@ -3,18 +3,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from python.generators.diff_tests.testing import Path, DataPath, Metric
-from python.generators.diff_tests.testing import Csv, Json, TextProto
+from python.generators.diff_tests.testing import Path, DataPath, Metric  # noqa: F401
+from python.generators.diff_tests.testing import Csv, Json, TextProto  # noqa: F401
 from python.generators.diff_tests.testing import DiffTestBlueprint
 from python.generators.diff_tests.testing import TestSuite
 
 
 class ChromeScrollJankStdlib(TestSuite):
-
   def test_chrome_frames_with_missed_vsyncs(self):
     return DiffTestBlueprint(
-        trace=DataPath('chrome_input_with_frame_view.pftrace'),
-        query="""
+      trace=DataPath('chrome_input_with_frame_view.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.scroll_jank.scroll_jank_v3;
 
         SELECT
@@ -24,7 +23,8 @@ class ChromeScrollJankStdlib(TestSuite):
           vsync_interval
         FROM chrome_janky_frames;
         """,
-        out=Path('scroll_jank_v3.out'))
+      out=Path('scroll_jank_v3.out'),
+    )
 
   # https://crrev.com/c/5634125 introduces new *ToPresentation slices,
   # and a new test trace file was added that contains them.
@@ -32,8 +32,8 @@ class ChromeScrollJankStdlib(TestSuite):
   # the test using the old trace can be removed.
   def test_chrome_frames_with_missed_vsyncs_m128(self):
     return DiffTestBlueprint(
-        trace=DataPath('chrome_input_with_frame_view_new.pftrace'),
-        query="""
+      trace=DataPath('chrome_input_with_frame_view_new.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.scroll_jank.scroll_jank_v3;
 
         SELECT
@@ -43,24 +43,26 @@ class ChromeScrollJankStdlib(TestSuite):
           vsync_interval
         FROM chrome_janky_frames;
         """,
-        out=Path('scroll_jank_v3_new.out'))
+      out=Path('scroll_jank_v3_new.out'),
+    )
 
   def test_chrome_frames_with_missed_vsyncs_percentage(self):
     return DiffTestBlueprint(
-        trace=DataPath('chrome_input_with_frame_view.pftrace'),
-        query="""
+      trace=DataPath('chrome_input_with_frame_view.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.scroll_jank.scroll_jank_v3;
 
         SELECT
           delayed_frame_percentage
         FROM chrome_janky_frames_percentage;
         """,
-        out=Path('scroll_jank_v3_percentage.out'))
+      out=Path('scroll_jank_v3_percentage.out'),
+    )
 
   def test_chrome_scrolls(self):
     return DiffTestBlueprint(
-        trace=DataPath('chrome_input_with_frame_view.pftrace'),
-        query="""
+      trace=DataPath('chrome_input_with_frame_view.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
 
         SELECT
@@ -71,18 +73,19 @@ class ChromeScrollJankStdlib(TestSuite):
         FROM chrome_scrolls
         ORDER by id;
         """,
-        out=Csv("""
+      out=Csv("""
         "id","ts","dur","is_fully_captured"
         1,1035865535981926,1255745000,1
         2,1035866799527926,1358505000,1
         3,1035868146266926,111786000,1
         4,1035868607429926,1517121000,1
-        """))
+        """),
+    )
 
   def test_chrome_scrolls_with_incomplete_scroll(self):
     return DiffTestBlueprint(
-        trace=DataPath('scroll_offsets_trace_2.pftrace'),
-        query="""
+      trace=DataPath('scroll_offsets_trace_2.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
 
         SELECT
@@ -93,7 +96,7 @@ class ChromeScrollJankStdlib(TestSuite):
         FROM chrome_scrolls
         ORDER by id;
         """,
-        out=Csv("""
+      out=Csv("""
         "id","ts","dur","is_fully_captured"
         1,1349914859791,449060000,1
         2,1350350536791,380658000,1
@@ -101,12 +104,13 @@ class ChromeScrollJankStdlib(TestSuite):
         4,1351576834791,523443000,1
         5,1352106787791,1128854000,1
         6,1353232027791,140601000,0
-        """))
+        """),
+    )
 
   def test_chrome_scroll_input_offsets(self):
     return DiffTestBlueprint(
-        trace=DataPath('scroll_offsets_trace_2.pftrace'),
-        query="""
+      trace=DataPath('scroll_offsets_trace_2.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.scroll_jank.scroll_offsets;
 
         SELECT
@@ -119,19 +123,20 @@ class ChromeScrollJankStdlib(TestSuite):
         ORDER by ts
         LIMIT 5;
         """,
-        out=Csv("""
+      out=Csv("""
         "scroll_update_id","ts","delta_y","relative_offset_y"
         130,1349914859791,-6.932281,-6.932281
         132,1349923327791,-32.999954,-39.932235
         134,1349931893791,-39.999954,-79.932189
         136,1349940237791,-50.000076,-129.932266
         138,1349948670791,-57.999939,-187.932205
-        """))
+        """),
+    )
 
   def test_chrome_janky_event_latencies_v3(self):
     return DiffTestBlueprint(
-        trace=DataPath('chrome_input_with_frame_view.pftrace'),
-        query="""
+      trace=DataPath('chrome_input_with_frame_view.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.scroll_jank.scroll_jank_intervals;
 
         SELECT
@@ -147,7 +152,7 @@ class ChromeScrollJankStdlib(TestSuite):
         FROM chrome_janky_event_latencies_v3
         JOIN track ON chrome_janky_event_latencies_v3.track_id = track.id;
         """,
-        out=Csv("""
+      out=Csv("""
         "ts","dur","track_name","name","cause_of_jank","sub_cause_of_jank","delayed_frame_count","frame_jank_ts","frame_jank_dur"
         1035866897893926,49303000,"EventLatency","EventLatency","SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",1,1035866935295926,11901000
         1035868162888926,61845000,"EventLatency","EventLatency","SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",1,1035868212811926,11921999
@@ -155,12 +160,13 @@ class ChromeScrollJankStdlib(TestSuite):
         1035869208882926,60201000,"EventLatency","EventLatency","SubmitCompositorFrameToPresentationCompositorFrame","BufferReadyToLatch",1,1035869257151926,11932000
         1035869319831926,71490000,"EventLatency","EventLatency","SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",1,1035869379377926,11944000
         1035869386651926,60311000,"EventLatency","EventLatency","RendererCompositorQueueingDelay","[NULL]",1,1035869434949926,12013000
-        """))
+        """),
+    )
 
   def test_chrome_janky_frame_presentation_intervals(self):
     return DiffTestBlueprint(
-        trace=DataPath('chrome_input_with_frame_view.pftrace'),
-        query="""
+      trace=DataPath('chrome_input_with_frame_view.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.scroll_jank.scroll_jank_intervals;
 
         SELECT
@@ -173,7 +179,7 @@ class ChromeScrollJankStdlib(TestSuite):
         FROM chrome_janky_frame_presentation_intervals
         ORDER by id;
         """,
-        out=Csv("""
+      out=Csv("""
         "id","ts","dur","cause_of_jank","sub_cause_of_jank","delayed_frame_count"
         1,1035866935295926,11901000,"SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",1
         2,1035868212811926,11921999,"SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",1
@@ -181,12 +187,13 @@ class ChromeScrollJankStdlib(TestSuite):
         4,1035869257151926,11932000,"SubmitCompositorFrameToPresentationCompositorFrame","BufferReadyToLatch",1
         5,1035869379377926,11944000,"SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",1
         6,1035869434949926,12013000,"RendererCompositorQueueingDelay","[NULL]",1
-        """))
+        """),
+    )
 
   def test_chrome_scroll_stats(self):
     return DiffTestBlueprint(
-        trace=DataPath('chrome_input_with_frame_view.pftrace'),
-        query="""
+      trace=DataPath('chrome_input_with_frame_view.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.scroll_jank.scroll_jank_intervals;
 
         SELECT
@@ -199,18 +206,19 @@ class ChromeScrollJankStdlib(TestSuite):
         FROM chrome_scroll_stats
         ORDER by scroll_id;
         """,
-        out=Csv("""
+      out=Csv("""
         "scroll_id","missed_vsyncs","frame_count","presented_frame_count","janky_frame_count","janky_frame_percent"
         1,"[NULL]",110,110,0,0.000000
         2,1,120,119,1,0.840000
         3,1,9,6,1,16.670000
         4,4,133,129,4,3.100000
-        """))
+        """),
+    )
 
   def test_chrome_scroll_jank_intervals_v3(self):
     return DiffTestBlueprint(
-        trace=DataPath('chrome_input_with_frame_view.pftrace'),
-        query="""
+      trace=DataPath('chrome_input_with_frame_view.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.scroll_jank.scroll_jank_intervals;
 
         SELECT
@@ -220,7 +228,7 @@ class ChromeScrollJankStdlib(TestSuite):
         FROM chrome_scroll_jank_intervals_v3
         ORDER by id;
         """,
-        out=Csv("""
+      out=Csv("""
         "id","ts","dur"
         1,1035866935295926,11901000
         2,1035868212811926,11921999
@@ -228,12 +236,13 @@ class ChromeScrollJankStdlib(TestSuite):
         4,1035869257151926,11932000
         5,1035869379377926,11944000
         6,1035869434949926,12013000
-        """))
+        """),
+    )
 
   def test_chrome_presented_scroll_offsets(self):
     return DiffTestBlueprint(
-        trace=DataPath('scroll_offsets_trace_2.pftrace'),
-        query="""
+      trace=DataPath('scroll_offsets_trace_2.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.scroll_jank.scroll_offsets;
 
         SELECT
@@ -246,19 +255,20 @@ class ChromeScrollJankStdlib(TestSuite):
         ORDER by ts
         LIMIT 5;
         """,
-        out=Csv("""
+      out=Csv("""
         "scroll_update_id","ts","delta_y","relative_offset_y"
         130,1349963342791,-6.932281,-6.932281
         132,1349985554791,-16.573090,-23.505371
         134,1349996680791,-107.517273,-131.022644
         140,1350007850791,-158.728424,-289.751068
         147,1350018935791,-89.808540,-379.559608
-        """))
+        """),
+    )
 
   def test_chrome_predictor_metrics(self):
     return DiffTestBlueprint(
-        trace=DataPath('scroll_offsets_trace_2.pftrace'),
-        query="""
+      trace=DataPath('scroll_offsets_trace_2.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.scroll_jank.predictor_error;
 
         SELECT
@@ -274,19 +284,20 @@ class ChromeScrollJankStdlib(TestSuite):
         ORDER by present_ts
         LIMIT 5;
         """,
-        out=Csv("""
+      out=Csv("""
         "scroll_update_id","present_ts","delta_y","prev_delta","next_delta","predictor_jank","delta_threshold"
         132,1349985554791,-16.573090,-6.932281,-107.517273,0.000000,1.200000
         134,1349996680791,-107.517273,-16.573090,-158.728424,0.000000,1.200000
         140,1350007850791,-158.728424,-107.517273,-89.808540,0.276306,1.200000
         147,1350018935791,-89.808540,-158.728424,-47.583618,0.000000,1.200000
         148,1350030066791,-47.583618,-89.808540,-98.283493,0.687384,1.200000
-        """))
+        """),
+    )
 
   def test_scroll_jank_cause_map(self):
     return DiffTestBlueprint(
-        trace=TextProto(''),
-        query="""
+      trace=TextProto(''),
+      query="""
         INCLUDE PERFETTO MODULE chrome.event_latency_description;
         INCLUDE PERFETTO MODULE chrome.scroll_jank.scroll_jank_cause_map;
 
@@ -300,16 +311,17 @@ class ChromeScrollJankStdlib(TestSuite):
             FROM chrome_event_latency_stage_descriptions
           );
         """,
-        # Empty output is expected to ensure that all scroll jank causes
-        # correspond to a valid EventLatency stage.
-        out=Csv("""
+      # Empty output is expected to ensure that all scroll jank causes
+      # correspond to a valid EventLatency stage.
+      out=Csv("""
         "event_latency_stage"
-        """))
+        """),
+    )
 
   def test_chrome_scroll_jank_with_pinches(self):
     return DiffTestBlueprint(
-        trace=DataPath('scroll_jank_with_pinch.pftrace'),
-        query="""
+      trace=DataPath('scroll_jank_with_pinch.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.scroll_jank.scroll_jank_v3;
 
         SELECT
@@ -323,7 +335,7 @@ class ChromeScrollJankStdlib(TestSuite):
           ON janks.event_latency_id = presented_frames.id
         ORDER by event_latency_id;
         """,
-        out=Csv("""
+      out=Csv("""
         "cause_of_jank","sub_cause_of_jank","delay_since_last_frame","event_latency_id","event_type"
         "SubmitCompositorFrameToPresentationCompositorFrame","StartDrawToSwapStart",22.252000,754,"GESTURE_SCROLL_UPDATE"
         "SubmitCompositorFrameToPresentationCompositorFrame","SubmitToReceiveCompositorFrame",22.263000,25683,"GESTURE_SCROLL_UPDATE"
@@ -331,14 +343,15 @@ class ChromeScrollJankStdlib(TestSuite):
         "SubmitCompositorFrameToPresentationCompositorFrame","BufferReadyToLatch",22.262000,40846,"GESTURE_SCROLL_UPDATE"
         "BrowserMainToRendererCompositor","[NULL]",22.250000,50230,"GESTURE_SCROLL_UPDATE"
         "SubmitCompositorFrameToPresentationCompositorFrame","BufferReadyToLatch",22.267000,50517,"GESTURE_SCROLL_UPDATE"
-        """))
+        """),
+    )
 
   def test_chrome_event_latencies(self):
     return DiffTestBlueprint(
-        # The surface_frame_trace_id and display_trace_id columns require
-        # https://crrev.com/c/6185817, which was cherry-picked in 133.0.6943.33.
-        trace=DataPath('scroll_m133beta.pftrace'),
-        query="""
+      # The surface_frame_trace_id and display_trace_id columns require
+      # https://crrev.com/c/6185817, which was cherry-picked in 133.0.6943.33.
+      trace=DataPath('scroll_m133beta.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.event_latency;
 
         SELECT
@@ -371,7 +384,7 @@ class ChromeScrollJankStdlib(TestSuite):
         ORDER BY chrome_event_latencies.id
         LIMIT 10;
         """,
-        out=Csv("""
+      out=Csv("""
         "id","name","ts","dur","scroll_update_id","surface_frame_trace_id","display_trace_id","is_presented","event_type","track_name","vsync_interval_ms","is_janky_scrolled_frame","buffer_available_timestamp","buffer_ready_timestamp","latch_timestamp","swap_end_timestamp","presentation_timestamp"
         1393,"EventLatency",9648030168797,31117000,2715127443997596957,-5883104867331890212,197383,1,"FIRST_GESTURE_SCROLL_UPDATE","EventLatency",8.333000,0,9648042077797,"[NULL]",9648052119797,9648052279797,9648061285797
         1472,"EventLatency",9648034310797,43643000,2715127443997596944,-5883104867331890224,197384,1,"GESTURE_SCROLL_UPDATE","EventLatency",8.333000,1,9648050525797,9648058623797,9648065887797,9648073080797,9648077953797
@@ -383,14 +396,15 @@ class ChromeScrollJankStdlib(TestSuite):
         2018,"EventLatency",9648092838797,43426000,2715127443997597400,-5883104867331890183,197391,1,"GESTURE_SCROLL_UPDATE","EventLatency",8.333000,0,9648105944797,9648109986797,9648126173797,9648128941797,9648136264797
         2100,"EventLatency",9648101207797,43390000,2715127443997597392,-5883104867331890179,197392,1,"GESTURE_SCROLL_UPDATE","EventLatency",8.333000,0,9648113821797,9648116687797,9648134608797,9648137873797,9648144597797
         2184,"EventLatency",9648109566797,43363000,2715127443997597384,-5883104867331890192,197393,1,"GESTURE_SCROLL_UPDATE","EventLatency",8.333000,0,9648119837797,9648122956797,9648142849797,9648146215797,9648152929797
-        """))
+        """),
+    )
 
   # A trace from M131 (ToT as of adding this test) has the necessary
   # events/arguments.
   def test_chrome_input_pipeline_steps(self):
     return DiffTestBlueprint(
-        trace=DataPath('scroll_m131.pftrace'),
-        query="""
+      trace=DataPath('scroll_m131.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.input;
 
         SELECT latency_id,
@@ -401,7 +415,7 @@ class ChromeScrollJankStdlib(TestSuite):
         ORDER by input_type
         LIMIT 20;
         """,
-        out=Csv("""
+      out=Csv("""
         "latency_id","input_type","steps"
         -2143831735395279846,"GESTURE_FLING_CANCEL_EVENT","STEP_SEND_INPUT_EVENT_UI"
         -2143831735395279570,"GESTURE_FLING_CANCEL_EVENT","STEP_SEND_INPUT_EVENT_UI"
@@ -423,12 +437,13 @@ class ChromeScrollJankStdlib(TestSuite):
         -2143831735395280250,"GESTURE_SCROLL_UPDATE_EVENT","STEP_SEND_INPUT_EVENT_UI,STEP_HANDLE_INPUT_EVENT_IMPL,STEP_DID_HANDLE_INPUT_AND_OVERSCROLL,STEP_GESTURE_EVENT_HANDLED"
         -2143831735395280248,"GESTURE_SCROLL_UPDATE_EVENT","STEP_SEND_INPUT_EVENT_UI,STEP_HANDLE_INPUT_EVENT_IMPL,STEP_DID_HANDLE_INPUT_AND_OVERSCROLL,STEP_GESTURE_EVENT_HANDLED"
         -2143831735395280246,"GESTURE_SCROLL_UPDATE_EVENT","STEP_SEND_INPUT_EVENT_UI,STEP_HANDLE_INPUT_EVENT_IMPL,STEP_DID_HANDLE_INPUT_AND_OVERSCROLL,STEP_GESTURE_EVENT_HANDLED"
-        """))
+        """),
+    )
 
   def test_task_start_time_input_pipeline(self):
     return DiffTestBlueprint(
-        trace=DataPath('scroll_m131.pftrace'),
-        query="""
+      trace=DataPath('scroll_m131.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.input;
 
         SELECT
@@ -439,9 +454,9 @@ class ChromeScrollJankStdlib(TestSuite):
         ORDER BY latency_id
         LIMIT 10;
         """,
-        # STEP_SEND_INPUT_EVENT_UI does not run in a task,
-        # so its task_start_time_ts will be NULL.
-        out=Csv("""
+      # STEP_SEND_INPUT_EVENT_UI does not run in a task,
+      # so its task_start_time_ts will be NULL.
+      out=Csv("""
         "latency_id","step","task_start_time_ts"
         -2143831735395280256,"STEP_SEND_INPUT_EVENT_UI","[NULL]"
         -2143831735395280256,"STEP_HANDLE_INPUT_EVENT_IMPL",1292554143003210
@@ -453,12 +468,13 @@ class ChromeScrollJankStdlib(TestSuite):
         -2143831735395280254,"STEP_GESTURE_EVENT_HANDLED",1292554165141257
         -2143831735395280250,"STEP_SEND_INPUT_EVENT_UI","[NULL]"
         -2143831735395280250,"STEP_HANDLE_INPUT_EVENT_IMPL",1292554131865210
-        """))
+        """),
+    )
 
   def test_task_start_time_surface_frame_steps(self):
     return DiffTestBlueprint(
-        trace=DataPath('scroll_m132.pftrace'),
-        query="""
+      trace=DataPath('scroll_m132.pftrace'),
+      query="""
       INCLUDE PERFETTO MODULE chrome.graphics_pipeline;
       SELECT
         step,
@@ -467,7 +483,7 @@ class ChromeScrollJankStdlib(TestSuite):
       ORDER BY ts
       LIMIT 10;
       """,
-        out=Csv("""
+      out=Csv("""
       "step","task_start_time_ts"
       "STEP_ISSUE_BEGIN_FRAME","[NULL]"
       "STEP_RECEIVE_BEGIN_FRAME",3030298007485995
@@ -479,12 +495,13 @@ class ChromeScrollJankStdlib(TestSuite):
       "STEP_ISSUE_BEGIN_FRAME","[NULL]"
       "STEP_ISSUE_BEGIN_FRAME","[NULL]"
       "STEP_SUBMIT_COMPOSITOR_FRAME",3030298017634363
-      """))
+      """),
+    )
 
   def test_task_start_time_display_frame_steps(self):
     return DiffTestBlueprint(
-        trace=DataPath('scroll_m132.pftrace'),
-        query="""
+      trace=DataPath('scroll_m132.pftrace'),
+      query="""
       INCLUDE PERFETTO MODULE chrome.graphics_pipeline;
       SELECT
         step,
@@ -493,7 +510,7 @@ class ChromeScrollJankStdlib(TestSuite):
       ORDER BY ts
       LIMIT 10;
       """,
-        out=Csv("""
+      out=Csv("""
       "step","task_start_time_ts"
       "STEP_DRAW_AND_SWAP",3030298019565268
       "STEP_SURFACE_AGGREGATION",3030298019563268
@@ -505,12 +522,13 @@ class ChromeScrollJankStdlib(TestSuite):
       "STEP_BUFFER_SWAP_POST_SUBMIT",3030298031460472
       "STEP_DRAW_AND_SWAP",3030298041020268
       "STEP_SURFACE_AGGREGATION",3030298041017268
-      """))
+      """),
+    )
 
   def test_chrome_coalesced_inputs(self):
     return DiffTestBlueprint(
-        trace=DataPath('scroll_m131.pftrace'),
-        query="""
+      trace=DataPath('scroll_m131.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.input;
 
         SELECT
@@ -520,7 +538,7 @@ class ChromeScrollJankStdlib(TestSuite):
         ORDER BY coalesced_latency_id
         LIMIT 10
         """,
-        out=Csv("""
+      out=Csv("""
         "coalesced_latency_id","presented_latency_id"
         -2143831735395280183,-2143831735395280179
         -2143831735395280158,-2143831735395280153
@@ -532,12 +550,13 @@ class ChromeScrollJankStdlib(TestSuite):
         -2143831735395279796,-2143831735395279808
         -2143831735395279788,-2143831735395279704
         -2143831735395279780,-2143831735395279792
-        """))
+        """),
+    )
 
   def test_chrome_touch_move_to_scroll_update(self):
     return DiffTestBlueprint(
-        trace=DataPath('scroll_m131.pftrace'),
-        query="""
+      trace=DataPath('scroll_m131.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.input;
 
         SELECT
@@ -547,7 +566,7 @@ class ChromeScrollJankStdlib(TestSuite):
         ORDER BY touch_move_latency_id
         LIMIT 10
         """,
-        out=Csv("""
+      out=Csv("""
         "touch_move_latency_id","scroll_update_latency_id"
         -2143831735395280236,-2143831735395280239
         -2143831735395280189,-2143831735395280179
@@ -559,12 +578,13 @@ class ChromeScrollJankStdlib(TestSuite):
         -2143831735395280152,-2143831735395280150
         -2143831735395280148,-2143831735395280146
         -2143831735395280142,-2143831735395280132
-        """))
+        """),
+    )
 
   def test_chrome_touch_move_to_scroll_update_not_forwarded_to_renderer(self):
     return DiffTestBlueprint(
-        trace=DataPath('scroll_with_input_not_forwarded_to_renderer.pftrace'),
-        query="""
+      trace=DataPath('scroll_with_input_not_forwarded_to_renderer.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.input;
 
         SELECT
@@ -574,7 +594,7 @@ class ChromeScrollJankStdlib(TestSuite):
         ORDER BY touch_move_latency_id
         LIMIT 10
         """,
-        out=Csv("""
+      out=Csv("""
         "touch_move_latency_id","scroll_update_latency_id"
         8456911910253096960,8456911910253096967
         8456911910253096963,8456911910253096962
@@ -586,12 +606,13 @@ class ChromeScrollJankStdlib(TestSuite):
         8456911910253096985,8456911910253096984
         8456911910253096990,8456911910253096989
         8456911910253096993,8456911910253096992
-        """))
+        """),
+    )
 
   def test_chrome_scroll_update_refs(self):
     return DiffTestBlueprint(
-        trace=DataPath('scroll_m131.pftrace'),
-        query="""
+      trace=DataPath('scroll_m131.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
 
         SELECT
@@ -604,7 +625,7 @@ class ChromeScrollJankStdlib(TestSuite):
         ORDER BY scroll_update_latency_id
         LIMIT 21
         """,
-        out=Csv("""
+      out=Csv("""
         "scroll_update_latency_id","touch_move_latency_id","presentation_latency_id","surface_frame_id","display_trace_id"
         -2143831735395280256,"[NULL]",-2143831735395280256,1407387768455513,65727
         -2143831735395280254,"[NULL]",-2143831735395280254,1407387768455514,65728
@@ -627,12 +648,13 @@ class ChromeScrollJankStdlib(TestSuite):
         -2143831735395280183,-2143831735395280177,-2143831735395280179,"[NULL]","[NULL]"
         -2143831735395280179,-2143831735395280189,-2143831735395280179,1407387768455503,65717
         -2143831735395280166,-2143831735395280163,-2143831735395280166,1407387768455501,"[NULL]"
-  """))
+  """),
+    )
 
   def test_chrome_scroll_update_input_pipeline(self):
     return DiffTestBlueprint(
-        trace=DataPath('scroll_m131.pftrace'),
-        query="""
+      trace=DataPath('scroll_m131.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
 
         SELECT
@@ -670,7 +692,7 @@ class ChromeScrollJankStdlib(TestSuite):
         ORDER BY pipeline.id
         LIMIT 21
         """,
-        out=Csv("""
+      out=Csv("""
         "id","presented_in_frame_id","is_presented","is_janky","is_inertial","is_first_scroll_update_in_scroll","is_first_scroll_update_in_frame","generation_ts","generation_to_browser_main_dur","browser_tid","touch_move_received_slice_id","touch_move_received_ts","touch_move_processing_dur","scroll_update_created_slice_id","scroll_update_created_ts","scroll_update_processing_dur","scroll_update_created_end_ts","browser_to_compositor_delay_dur","compositor_tid","compositor_dispatch_slice_id","compositor_dispatch_ts","compositor_dispatch_dur","compositor_dispatch_end_ts","compositor_dispatch_to_coalesced_input_handled_dur","compositor_coalesced_input_handled_slice_id","compositor_coalesced_input_handled_ts","compositor_coalesced_input_handled_dur","compositor_coalesced_input_handled_end_ts"
         -2143831735395280256,-2143831735395280256,1,0,1,0,1,1292554141489270,677987,6263,"[NULL]","[NULL]","[NULL]",10781,1292554142167257,363000,1292554142530257,472953,6476,10796,1292554143003210,108000,1292554143111210,10912000,10827,1292554154023210,83000,1292554154106210
         -2143831735395280254,-2143831735395280254,1,0,1,0,1,1292554152575270,1654987,6263,"[NULL]","[NULL]","[NULL]",10830,1292554154230257,259000,1292554154489257,698953,6476,10845,1292554155188210,120000,1292554155308210,9637000,10869,1292554164945210,223000,1292554165168210
@@ -693,12 +715,13 @@ class ChromeScrollJankStdlib(TestSuite):
         -2143831735395280183,-2143831735395280179,0,0,0,0,0,1292554034979270,3955987,6263,10192,1292554038935257,286000,10197,1292554039221257,141000,1292554039362257,17953,6476,10210,1292554039380210,124000,1292554039504210,3940000,10230,1292554043444210,101000,1292554043545210
         -2143831735395280179,-2143831735395280179,1,0,0,0,1,1292554029441270,7839987,6263,10172,1292554037281257,337000,10177,1292554037618257,167000,1292554037785257,451953,6476,10189,1292554038237210,89000,1292554038326210,4800000,10229,1292554043126210,303000,1292554043429210
         -2143831735395280166,-2143831735395280166,1,0,0,1,1,1292554023976270,3704987,6263,10071,1292554027681257,2166000,10102,1292554029847257,236000,1292554030083257,276953,6476,10123,1292554030360210,377000,1292554030737210,-68000,10128,1292554030669210,56000,1292554030725210
-        """))
+        """),
+    )
 
   def test_chrome_scroll_update_frame_pipeline(self):
     return DiffTestBlueprint(
-        trace=DataPath('scroll_m131.pftrace'),
-        query="""
+      trace=DataPath('scroll_m131.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
 
         SELECT
@@ -742,7 +765,7 @@ class ChromeScrollJankStdlib(TestSuite):
         ORDER BY id
         LIMIT 21
         """,
-        out=Csv("""
+      out=Csv("""
         "id","vsync_interval_ms","compositor_resample_slice_id","compositor_resample_ts","compositor_generate_compositor_frame_slice_id","compositor_generate_compositor_frame_ts","compositor_generate_frame_to_submit_frame_dur","compositor_submit_compositor_frame_slice_id","compositor_submit_compositor_frame_ts","compositor_submit_frame_dur","compositor_submit_compositor_frame_end_ts","compositor_to_viz_delay_dur","viz_compositor_utid","viz_receive_compositor_frame_slice_id","viz_receive_compositor_frame_ts","viz_receive_compositor_frame_dur","viz_receive_compositor_frame_end_ts","viz_wait_for_draw_dur","viz_draw_and_swap_slice_id","viz_draw_and_swap_ts","viz_draw_and_swap_dur","viz_send_buffer_swap_slice_id","viz_send_buffer_swap_end_ts","viz_to_gpu_delay_dur","viz_gpu_thread_utid","viz_swap_buffers_slice_id","viz_swap_buffers_ts","viz_swap_buffers_dur","viz_swap_buffers_end_ts","viz_swap_buffers_to_latch_dur","buffer_available_timestamp","buffer_available_to_ready_dur","buffer_ready_timestamp","latch_timestamp","viz_latch_to_presentation_dur","presentation_timestamp"
         -2143831735395280256,11.111000,"[NULL]","[NULL]",10834,1292554154282210,337000,10838,1292554154619210,337000,1292554154956210,139423,6,10840,1292554155095633,126000,1292554155221633,65000,10846,1292554155286633,1295000,10849,1292554156581633,1620498,7,10850,1292554158202131,536000,1292554158738131,10898139,1292554158337270,546000,1292554158883270,1292554169636270,16163000,1292554185799270
         -2143831735395280254,11.111000,"[NULL]","[NULL]",10878,1292554165562210,387000,10881,1292554165949210,363000,1292554166312210,148423,6,10882,1292554166460633,129000,1292554166589633,101000,10885,1292554166690633,1134000,10888,1292554167824633,1573498,7,10889,1292554169398131,545000,1292554169943131,10941139,1292554169517270,487000,1292554170004270,1292554180884270,16107000,1292554196991270
@@ -765,12 +788,13 @@ class ChromeScrollJankStdlib(TestSuite):
         -2143831735395280179,11.111000,10223,1292554042749210,10233,1292554043721210,451000,10239,1292554044172210,315000,1292554044487210,169423,6,10245,1292554044656633,670000,1292554045326633,1785000,10266,1292554047111633,1048000,10271,1292554048159633,1540498,7,10272,1292554049700131,458000,1292554050158131,8651139,1292554049816270,229000,1292554050045270,1292554058809270,15896000,1292554074705270
         -2143831735395280166,11.111000,10124,1292554030360210,10130,1292554030873210,568000,10135,1292554031441210,227000,1292554031668210,919423,6,10141,1292554032587633,754000,1292554033341633,"[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]",1292554039011270,301000,1292554039312270,1292554048008270,15596000,1292554063604270
         -2143831735395280153,11.111000,10469,1292554075561210,10481,1292554076592210,334000,10488,1292554076926210,301000,1292554077227210,177423,6,10494,1292554077404633,138000,1292554077542633,280000,10506,1292554077822633,988000,10509,1292554078810633,1377498,7,10516,1292554080188131,494000,1292554080682131,11265139,1292554080339270,180000,1292554080519270,1292554091947270,16096000,1292554108043270
-        """))
+        """),
+    )
 
   def test_chrome_scroll_frame_info(self):
     return DiffTestBlueprint(
-        trace=DataPath('scroll_m132.pftrace'),
-        query="""
+      trace=DataPath('scroll_m132.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
 
         WITH
@@ -788,15 +812,16 @@ class ChromeScrollJankStdlib(TestSuite):
           -- a frame_display_id.
           (SELECT COUNT(DISTINCT id) FROM frames) AS unique_frame_count
         """,
-        out=Csv("""
+      out=Csv("""
         "frame_count","unique_frame_count"
         259,259
-        """))
+        """),
+    )
 
   def test_chrome_scroll_update_info(self):
     return DiffTestBlueprint(
-        trace=DataPath('scroll_m131.pftrace'),
-        query="""
+      trace=DataPath('scroll_m131.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
 
         SELECT
@@ -853,7 +878,7 @@ class ChromeScrollJankStdlib(TestSuite):
         ORDER BY id
         LIMIT 21
         """,
-        out=Csv("""
+      out=Csv("""
         "id","scroll_id","vsync_interval_ms","is_presented","is_janky","is_inertial","is_first_scroll_update_in_scroll","is_first_scroll_update_in_frame","browser_uptime_dur","generation_ts","touch_move_received_ts","generation_to_browser_main_dur","scroll_update_created_ts","scroll_update_created_end_ts","touch_move_processing_dur","scroll_update_processing_dur","compositor_dispatch_ts","compositor_dispatch_end_ts","browser_to_compositor_delay_dur","compositor_dispatch_dur","compositor_on_begin_frame_ts","compositor_on_begin_frame_end_ts","compositor_dispatch_to_on_begin_frame_delay_dur","compositor_on_begin_frame_dur","compositor_generate_compositor_frame_ts","compositor_on_begin_frame_to_generation_delay_dur","compositor_submit_compositor_frame_ts","compositor_submit_compositor_frame_end_ts","compositor_generate_frame_to_submit_frame_dur","compositor_submit_frame_dur","viz_receive_compositor_frame_ts","viz_receive_compositor_frame_end_ts","compositor_to_viz_delay_dur","viz_receive_compositor_frame_dur","viz_draw_and_swap_ts","viz_wait_for_draw_dur","viz_send_buffer_swap_end_ts","viz_draw_and_swap_dur","viz_swap_buffers_ts","viz_swap_buffers_end_ts","viz_to_gpu_delay_dur","viz_swap_buffers_dur","buffer_available_timestamp","buffer_available_to_ready_dur","buffer_ready_timestamp","latch_timestamp","presentation_timestamp","viz_swap_buffers_to_latch_dur","viz_latch_to_presentation_dur"
         -2143831735395280256,4,11.111000,1,0,1,0,1,623464344481270,1292554141489270,"[NULL]",677987,1292554142167257,1292554142530257,"[NULL]",363000,1292554143003210,1292554143111210,472953,108000,1292554154023210,1292554154106210,10912000,83000,1292554154282210,176000,1292554154619210,1292554154956210,337000,337000,1292554155095633,1292554155221633,139423,126000,1292554155286633,65000,1292554156581633,1295000,1292554158202131,1292554158738131,1620498,536000,1292554158337270,546000,1292554158883270,1292554169636270,1292554185799270,10898139,16163000
         -2143831735395280254,4,11.111000,1,0,1,0,1,623464355567270,1292554152575270,"[NULL]",1654987,1292554154230257,1292554154489257,"[NULL]",259000,1292554155188210,1292554155308210,698953,120000,1292554164945210,1292554165168210,9637000,223000,1292554165562210,394000,1292554165949210,1292554166312210,387000,363000,1292554166460633,1292554166589633,148423,129000,1292554166690633,101000,1292554167824633,1134000,1292554169398131,1292554169943131,1573498,545000,1292554169517270,487000,1292554170004270,1292554180884270,1292554196991270,10941139,16107000
@@ -876,12 +901,13 @@ class ChromeScrollJankStdlib(TestSuite):
         -2143831735395280183,4,11.111000,0,0,0,0,0,623464237971270,1292554034979270,1292554038935257,3955987,1292554039221257,1292554039362257,286000,141000,1292554039380210,1292554039504210,17953,124000,1292554042749210,1292554043545210,3245000,796000,1292554043721210,176000,1292554044172210,1292554044487210,451000,315000,1292554044656633,1292554045326633,169423,670000,1292554047111633,1785000,1292554048159633,1048000,1292554049700131,1292554050158131,1540498,458000,1292554049816270,229000,1292554050045270,1292554058809270,1292554074705270,8651139,15896000
         -2143831735395280179,4,11.111000,1,0,0,0,1,623464232433270,1292554029441270,1292554037281257,7839987,1292554037618257,1292554037785257,337000,167000,1292554038237210,1292554038326210,451953,89000,1292554042749210,1292554043429210,4423000,680000,1292554043721210,292000,1292554044172210,1292554044487210,451000,315000,1292554044656633,1292554045326633,169423,670000,1292554047111633,1785000,1292554048159633,1048000,1292554049700131,1292554050158131,1540498,458000,1292554049816270,229000,1292554050045270,1292554058809270,1292554074705270,8651139,15896000
         -2143831735395280166,4,11.111000,1,0,0,1,1,623464226968270,1292554023976270,1292554027681257,3704987,1292554029847257,1292554030083257,2166000,236000,1292554030360210,1292554030737210,276953,377000,1292554030360210,1292554030725210,-377000,365000,1292554030873210,148000,1292554031441210,1292554031668210,568000,227000,1292554032587633,1292554033341633,919423,754000,"[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]",1292554039011270,301000,1292554039312270,1292554048008270,1292554063604270,"[NULL]",15596000
-        """))
+        """),
+    )
 
   def test_chrome_scroll_frame_info_v4(self):
     return DiffTestBlueprint(
-        trace=DataPath('scroll_m144.pftrace'),
-        query="""
+      trace=DataPath('scroll_m144.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.scroll_jank_v4;
         INCLUDE PERFETTO MODULE chrome.chrome_scrolls_v4;
 
@@ -1034,15 +1060,16 @@ class ChromeScrollJankStdlib(TestSuite):
       "synthetic",1807314982282248105,3,11111000,0,0,43,"[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]","[NULL]",2,46893,16786357921081,110000,97000,16786358031081,-13000,-12086000,"[NULL]",46901,16786358018081,6000,-280000,16786358024081,111000,-101000,46910,16786358135081,163000,1000,46923,16786358298081,707000,-201000,16786359005081,5,-562360,191000,46925,16786358442721,47000,-10000,16786358489721,19000,-1000,46929,16786358508721,308000,-39000,46941,16786358816721,7,5734,-5000,46966,16786358822455,1325000,-231000,16786360147455,14185562,620000,16786359926017,864000,97000,16786360790017,16786374333017,10122000,99000,16786384455017
       "janky",5142157485014685698,2,11111000,1,0,2,90.000061,5708004274017,16784822412017,"[NULL]","[NULL]",5362000,6,3126800,510000,24970,16784825538817,128000,-582000,24984,16784825666817,112000,21000,16784825778817,19264,-259000,2,25013,16784825798081,9000,2000,16784825807081,17146000,11790000,25327,25341,16784842953081,165000,-6000,16784843118081,108000,58000,25361,16784843226081,134000,-88000,25376,16784843360081,481000,267000,16784843841081,5,-392360,-282000,25378,16784843448721,27000,-31000,16784843475721,12000,-8000,25384,16784843487721,327000,-13000,25401,16784843814721,7,45734,37000,25414,16784843860455,1540000,112000,16784845400455,14111562,-269000,16784845162017,571000,-117000,16784845733017,16784859512017,15878000,5583000,16784875390017
       "janky",5142157485014685711,2,11111000,1,0,3,149.999985,5708020148017,16784838286017,"[NULL]","[NULL]",5241000,6,2996800,-130000,25262,16784841282817,126000,-2000,25276,16784841408817,95000,-17000,16784841503817,219264,200000,2,25304,16784841723081,8000,-1000,16784841731081,17913000,767000,25657,25672,16784859644081,183000,18000,16784859827081,106000,-2000,25691,16784859933081,144000,10000,25704,16784860077081,322000,-159000,16784860399081,5,-210360,182000,25706,16784860188721,32000,5000,16784860220721,10000,-2000,25711,16784860230721,285000,-42000,25726,16784860515721,7,11734,-34000,25728,16784860527455,1410000,-130000,16784861937455,19559562,5448000,16784861699017,649000,78000,16784862348017,16784881497017,16059000,181000,16784897556017
-      """))
+      """),
+    )
 
   def test_chrome_scroll_update_info_step_templates(self):
     # Verify that chrome_scroll_update_info_step_templates references at
     # least one valid column name and no invalid column names in
     # chrome_scroll_update_info.
     return DiffTestBlueprint(
-        trace=DataPath('scroll_m131.pftrace'),
-        query="""
+      trace=DataPath('scroll_m131.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
 
         WITH referenced_column_names AS (
@@ -1075,18 +1102,19 @@ class ChromeScrollJankStdlib(TestSuite):
           ) AS existence
         ORDER BY validity DESC;
         """,
-        out=Csv("""
+      out=Csv("""
         "validity","existence"
         "valid",1
         "invalid",0
-        """))
+        """),
+    )
 
   # A trace from M132 (ToT as of adding this test) has the necessary
   # events/arguments (including the ones from the 'view' atrace category).
   def test_chrome_input_dispatch_step(self):
     return DiffTestBlueprint(
-        trace=DataPath('scroll_m132_with_atrace.pftrace'),
-        query="""
+      trace=DataPath('scroll_m132_with_atrace.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.android_input;
 
         SELECT
@@ -1102,10 +1130,11 @@ class ChromeScrollJankStdlib(TestSuite):
         FROM chrome_android_input
         WHERE android_input_id = '0x35f0bf2b'
         """,
-        out=Csv("""
+      out=Csv("""
         "input_reader_processing_start_ts","input_reader_processing_end_ts","input_reader_utid","input_dispatcher_processing_start_ts","input_dispatcher_processing_end_ts","input_dispatcher_utid","deliver_input_event_start_ts","deliver_input_event_end_ts","deliver_input_event_utid"
         1295608261171203,1295608261380838,1404,1295608261495462,1295608262021300,1403,1295608261771463,1295608262613138,7
-        """))
+        """),
+    )
 
   # A trace from M132 has the necessary events/arguments
   # (including the ones from the 'input' atrace category).
@@ -1113,8 +1142,8 @@ class ChromeScrollJankStdlib(TestSuite):
     # Verify that non-fling scrolls have correct durations
     # of the InputReader and InputDispatcher steps.
     return DiffTestBlueprint(
-        trace=DataPath('scroll_m132_with_atrace.pftrace'),
-        query="""
+      trace=DataPath('scroll_m132_with_atrace.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.chrome_scrolls;
 
         SELECT
@@ -1127,7 +1156,7 @@ class ChromeScrollJankStdlib(TestSuite):
         ORDER BY id
         LIMIT 21
         """,
-        out=Csv("""
+      out=Csv("""
         "id","generation_ts","input_reader_dur","input_dispatcher_dur"
         -2143831735395287020,1295608313715311,2742879,267253
         -2143831735395286976,1295608252970311,3011805,381673
@@ -1150,12 +1179,13 @@ class ChromeScrollJankStdlib(TestSuite):
         -2143831735395286875,1295608203149311,2611288,106893
         -2143831735395286872,1295608219756311,3484716,372803
         -2143831735395286868,1295608214189311,3303262,529785
-        """))
+        """),
+    )
 
   def test_chrome_scroll_jank_tags(self):
     return DiffTestBlueprint(
-        trace=DataPath('scroll_m144.pftrace'),
-        query="""
+      trace=DataPath('scroll_m144.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.scroll_jank_tagging;
 
         SELECT
@@ -1164,17 +1194,18 @@ class ChromeScrollJankStdlib(TestSuite):
         FROM chrome_scroll_jank_tags
         ORDER BY frame_id ASC, tag ASC;
         """,
-        out=Csv("""
+      out=Csv("""
         "frame_id","tag"
         -4678090656722456587,"long_wait_for_begin_frame"
         -4678090656722456583,"long_viz_swap_to_latch"
         -4678090656722456583,"long_wait_for_begin_frame"
-        """))
+        """),
+    )
 
   def test_chrome_tagged_janky_scroll_frames(self):
     return DiffTestBlueprint(
-        trace=DataPath('scroll_m144.pftrace'),
-        query="""
+      trace=DataPath('scroll_m144.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.scroll_jank_tagging;
 
         SELECT
@@ -1184,17 +1215,18 @@ class ChromeScrollJankStdlib(TestSuite):
         FROM chrome_tagged_janky_scroll_frames
         ORDER BY frame_id ASC;
         """,
-        out=Csv("""
+      out=Csv("""
         "frame_id","tagged","tags"
         -4678090656722513293,0,"[NULL]"
         -4678090656722456587,1,"long_wait_for_begin_frame"
         -4678090656722456583,1,"long_viz_swap_to_latch,long_wait_for_begin_frame"
-        """))
+        """),
+    )
 
   def test_chrome_scroll_jank_tags_v4(self):
     return DiffTestBlueprint(
-        trace=DataPath('scroll_m144.pftrace'),
-        query="""
+      trace=DataPath('scroll_m144.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.scroll_jank_tagging;
 
         SELECT
@@ -1213,12 +1245,13 @@ class ChromeScrollJankStdlib(TestSuite):
       5142157485014685698,"long_wait_for_begin_frame"
       5142157485014685711,"long_viz_swap_to_latch"
       5142157485014685711,"long_wait_for_begin_frame"
-      """))
+      """),
+    )
 
   def test_chrome_tagged_janky_scroll_frames_v4(self):
     return DiffTestBlueprint(
-        trace=DataPath('scroll_m144.pftrace'),
-        query="""
+      trace=DataPath('scroll_m144.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.scroll_jank_tagging;
 
         SELECT
@@ -1237,4 +1270,5 @@ class ChromeScrollJankStdlib(TestSuite):
       "scroll_update_latency_id","tagged","tags"
       5142157485014685698,1,"long_wait_for_begin_frame"
       5142157485014685711,1,"long_viz_swap_to_latch,long_wait_for_begin_frame"
-      """))
+      """),
+    )

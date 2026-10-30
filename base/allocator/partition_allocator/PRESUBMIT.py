@@ -19,81 +19,90 @@ _SOURCE_FILE_PATTERN = r'.*\.(h|hpp|c|cc|cpp)$'
 # Similar pattern, matching GN files.
 _BUILD_FILE_PATTERN = r'.*\.(gn|gni)$'
 
+
 # This is adapted from Chromium's PRESUBMIT.py. The differences are:
 # - Base path: It is relative to the partition_alloc's source directory instead
 #              of chromium.
 # - Stricter: A single format is allowed: `PATH_ELEM_FILE_NAME_H_`.
 def CheckForIncludeGuards(input_api, output_api):
-    """Check that header files have proper include guards"""
+  """Check that header files have proper include guards"""
 
-    def guard_for_file(file):
-        local_path = file.LocalPath()
-        if input_api.is_windows:
-            local_path = local_path.replace('\\', '/')
-        assert local_path.startswith(_PARTITION_ALLOC_BASE_PATH)
-        guard = input_api.os_path.normpath(
-            local_path[len(_PARTITION_ALLOC_BASE_PATH):])
-        guard = guard + '_'
-        guard = guard.upper()
-        guard = input_api.re.sub(r'[+\\/.-]', '_', guard)
-        return guard
+  def guard_for_file(file):
+    local_path = file.LocalPath()
+    if input_api.is_windows:
+      local_path = local_path.replace('\\', '/')
+    assert local_path.startswith(_PARTITION_ALLOC_BASE_PATH)
+    guard = input_api.os_path.normpath(
+      local_path[len(_PARTITION_ALLOC_BASE_PATH) :]
+    )
+    guard = guard + '_'
+    guard = guard.upper()
+    guard = input_api.re.sub(r'[+\\/.-]', '_', guard)
+    return guard
 
-    def is_partition_alloc_header_file(f):
-        # We only check header files.
-        return f.LocalPath().endswith('.h')
+  def is_partition_alloc_header_file(f):
+    # We only check header files.
+    return f.LocalPath().endswith('.h')
 
-    errors = []
+  errors = []
 
-    for f in input_api.AffectedSourceFiles(is_partition_alloc_header_file):
-        expected_guard = guard_for_file(f)
+  for f in input_api.AffectedSourceFiles(is_partition_alloc_header_file):
+    expected_guard = guard_for_file(f)
 
-        # Unlike the Chromium's top-level PRESUBMIT.py, we enforce a stricter
-        # rule which accepts only `PATH_ELEM_FILE_NAME_H_` per coding style.
-        guard_name_pattern = input_api.re.escape(expected_guard)
-        guard_pattern = input_api.re.compile(r'#ifndef\s+(' +
-                                             guard_name_pattern + ')')
+    # Unlike the Chromium's top-level PRESUBMIT.py, we enforce a stricter
+    # rule which accepts only `PATH_ELEM_FILE_NAME_H_` per coding style.
+    guard_name_pattern = input_api.re.escape(expected_guard)
+    guard_pattern = input_api.re.compile(
+      r'#ifndef\s+(' + guard_name_pattern + ')'
+    )
 
-        guard_name = None
-        guard_line_number = None
-        seen_guard_end = False
-        for line_number, line in enumerate(f.NewContents()):
-            if guard_name is None:
-                match = guard_pattern.match(line)
-                if match:
-                    guard_name = match.group(1)
-                    guard_line_number = line_number
-                continue
+    guard_name = None
+    guard_line_number = None
+    seen_guard_end = False
+    for line_number, line in enumerate(f.NewContents()):
+      if guard_name is None:
+        match = guard_pattern.match(line)
+        if match:
+          guard_name = match.group(1)
+          guard_line_number = line_number
+        continue
 
-            # The line after #ifndef should have a #define of the same name.
-            if line_number == guard_line_number + 1:
-                expected_line = '#define %s' % guard_name
-                if line != expected_line:
-                    errors.append(
-                        output_api.PresubmitPromptWarning(
-                            'Missing "%s" for include guard' % expected_line,
-                            ['%s:%d' % (f.LocalPath(), line_number + 1)],
-                            'Expected: %r\nGot: %r' % (expected_line, line)))
+      # The line after #ifndef should have a #define of the same name.
+      if line_number == guard_line_number + 1:
+        expected_line = '#define %s' % guard_name
+        if line != expected_line:
+          errors.append(
+            output_api.PresubmitPromptWarning(
+              'Missing "%s" for include guard' % expected_line,
+              ['%s:%d' % (f.LocalPath(), line_number + 1)],
+              'Expected: %r\nGot: %r' % (expected_line, line),
+            )
+          )
 
-            if not seen_guard_end and line == '#endif  // %s' % guard_name:
-                seen_guard_end = True
-                continue
+      if not seen_guard_end and line == '#endif  // %s' % guard_name:
+        seen_guard_end = True
+        continue
 
-            if seen_guard_end:
-                if line.strip() != '':
-                    errors.append(
-                        output_api.PresubmitPromptWarning(
-                            'Include guard %s not covering the whole file' %
-                            (guard_name), [f.LocalPath()]))
-                    break  # Nothing else to check and enough to warn once.
+      if seen_guard_end:
+        if line.strip() != '':
+          errors.append(
+            output_api.PresubmitPromptWarning(
+              'Include guard %s not covering the whole file' % (guard_name),
+              [f.LocalPath()],
+            )
+          )
+          break  # Nothing else to check and enough to warn once.
 
-        if guard_name is None:
-            errors.append(
-                output_api.PresubmitPromptWarning(
-                    'Missing include guard in %s\n'
-                    'Recommended name: %s\n' %
-                    (f.LocalPath(), expected_guard)))
+    if guard_name is None:
+      errors.append(
+        output_api.PresubmitPromptWarning(
+          'Missing include guard in %s\n'
+          'Recommended name: %s\n' % (f.LocalPath(), expected_guard)
+        )
+      )
 
-    return errors
+  return errors
+
 
 # In .gn and .gni files, check there are no unexpected dependencies on files
 # located outside of the partition_alloc repository.
@@ -105,318 +114,318 @@ def CheckForIncludeGuards(input_api, output_api):
 # overrides the default build settings and forward the dependencies to
 # partition_alloc.
 def CheckNoExternalImportInGn(input_api, output_api):
-    # Match and capture <path> from import("<path>").
-    import_re = input_api.re.compile(r'^ *import\("([^"]+)"\)')
+  # Match and capture <path> from import("<path>").
+  import_re = input_api.re.compile(r'^ *import\("([^"]+)"\)')
 
-    sources = lambda affected_file: input_api.FilterSourceFile(
-        affected_file,
-        files_to_skip=[],
-        files_to_check=[_BUILD_FILE_PATTERN])
+  sources = lambda affected_file: input_api.FilterSourceFile(  # noqa: E731
+    affected_file, files_to_skip=[], files_to_check=[_BUILD_FILE_PATTERN]
+  )
 
-    errors = []
-    for f in input_api.AffectedSourceFiles(sources):
-        for line_number, line in f.ChangedContents():
-            match = import_re.search(line)
-            if not match:
-                continue
-            import_path = match.group(1)
-            if import_path.startswith('//build_overrides/'):
-                continue
-            if not import_path.startswith('//'):
-                continue;
-            errors.append(output_api.PresubmitError(
-                '%s:%d\nPartitionAlloc disallow external import: %s' %
-                (f.LocalPath(), line_number + 1, import_path)))
-    return errors;
+  errors = []
+  for f in input_api.AffectedSourceFiles(sources):
+    for line_number, line in f.ChangedContents():
+      match = import_re.search(line)
+      if not match:
+        continue
+      import_path = match.group(1)
+      if import_path.startswith('//build_overrides/'):
+        continue
+      if not import_path.startswith('//'):
+        continue
+      errors.append(
+        output_api.PresubmitError(
+          '%s:%d\nPartitionAlloc disallow external import: %s'
+          % (f.LocalPath(), line_number + 1, import_path)
+        )
+      )
+  return errors
+
 
 def CheckNoCpp23(input_api, output_api):
-    """Checks that no C++23 features are used."""
+  """Checks that no C++23 features are used."""
 
-    # 1. RAW_PATTERNS: (Regex Pattern, Feature Name).
-    # These are for syntax features or complex matching needs.
-    RAW_PATTERNS = [
-        # C++23 consteval if statement
-        (r'\bif\s+consteval\b', 'if consteval'),
+  # 1. RAW_PATTERNS: (Regex Pattern, Feature Name).
+  # These are for syntax features or complex matching needs.
+  RAW_PATTERNS = [
+    # C++23 consteval if statement
+    (r'\bif\s+consteval\b', 'if consteval'),
+    # C++23 preprocessor directives
+    (r'^\s*#\s*elifdef\b', '#elifdef'),
+    (r'^\s*#\s*elifndef\b', '#elifndef'),
+    (r'^\s*#\s*warning\b', '#warning'),
+    # C++23 standard library modules
+    (r'\bimport\s+std\b', 'Standard Library Modules'),
+    (r'\bimport\s+std\.compat\b', 'Standard Library Modules'),
+    # C++23 deducing this
+    (r'\bthis\s+auto\b', 'Deducing this (explicit object parameter)'),
+    # C++23 size_t literal suffix
+    (r'\b\d+(?:u|U)?(?:z|Z)(?:u|U)?\b', 'size_t literal suffix (z/Z)'),
+    # C++23 [[assume(...)]] attribute
+    (r'\[\[assume\(.*\)\]\]', '[[assume(...)]] attribute'),
+  ]
 
-        # C++23 preprocessor directives
-        (r'^\s*#\s*elifdef\b', '#elifdef'),
-        (r'^\s*#\s*elifndef\b', '#elifndef'),
-        (r'^\s*#\s*warning\b', '#warning'),
+  # 2. LIBRARY_SYMBOLS: Sequence[Symbol Name].
+  # Those are only for library symbols added in C++23 accessible from
+  # pre-c++23 headers.
+  LIBRARY_SYMBOLS = [
+    # <utility>, <bit>, <functional> additions
+    'std::unreachable',
+    'std::to_underlying',
+    'std::byteswap',
+    'std::forward_like',
+    'std::move_only_function',
+    'std::invoke_r',
+    # <memory> additions:
+    'std::start_lifetime_as',
+    'std::start_lifetime_as_array',
+    'std::out_ptr',
+    'std::inout_ptr',
+    'std::allocate_at_least',
+    # <algorithm> or <ranges> additions:
+    'std::ranges::to',
+    'std::ranges::fold_left',
+    'std::ranges::fold_right',
+    'std::ranges::fold_left_first',
+    'std::ranges::fold_right_last',
+    'std::ranges::fold_left_with_iter',
+    'std::ranges::contains',
+    'views::zip',
+    'views::zip_transform',
+    'views::enumerate',
+    'views::chunk',
+    'views::chunk_by',
+    'views::slide',
+    'views::stride',
+    'views::join_with',
+    'views::adjacent',
+    'views::adjacent_transform',
+    'views::cartesian_product',
+    'views::as_rvalue',
+    'views::as_const',
+    'views::repeat',
+  ]
 
-        # C++23 standard library modules
-        (r'\bimport\s+std\b', 'Standard Library Modules'),
-        (r'\bimport\s+std\.compat\b', 'Standard Library Modules'),
+  compiled_checks = []
 
-        # C++23 deducing this
-        (r'\bthis\s+auto\b', 'Deducing this (explicit object parameter)'),
+  for pattern, feature_name in RAW_PATTERNS:
+    compiled_checks.append((input_api.re.compile(pattern), feature_name))
 
-        # C++23 size_t literal suffix
-        (r'\b\d+(?:u|U)?(?:z|Z)(?:u|U)?\b', 'size_t literal suffix (z/Z)'),
+  for symbol in LIBRARY_SYMBOLS:
+    pattern = r'\b' + input_api.re.escape(symbol) + r'\b'
+    description = f'C++23 library symbol: {symbol}'
+    compiled_checks.append((input_api.re.compile(pattern), description))
 
-        # C++23 [[assume(...)]] attribute
-        (r'\[\[assume\(.*\)\]\]', '[[assume(...)]] attribute'),
-    ]
+  sources = lambda affected_file: input_api.FilterSourceFile(  # noqa: E731
+    affected_file, files_to_skip=[], files_to_check=[_SOURCE_FILE_PATTERN]
+  )
 
-    # 2. LIBRARY_SYMBOLS: Sequence[Symbol Name].
-    # Those are only for library symbols added in C++23 accessible from
-    # pre-c++23 headers.
-    LIBRARY_SYMBOLS = [
-        # <utility>, <bit>, <functional> additions
-        'std::unreachable',
-        'std::to_underlying',
-        'std::byteswap',
-        'std::forward_like',
-        'std::move_only_function',
-        'std::invoke_r',
+  errors = []
+  for f in input_api.AffectedSourceFiles(sources):
+    for line_number, line in enumerate(f.NewContents()):
+      # Rudimentary comment stripping to check code only.
+      line_no_comment = line.split('//')[0]
 
-        # <memory> additions:
-        'std::start_lifetime_as',
-        'std::start_lifetime_as_array',
-        'std::out_ptr',
-        'std::inout_ptr',
-        'std::allocate_at_least',
+      for matcher, error_desc in compiled_checks:
+        if matcher.search(line_no_comment):
+          errors.append(
+            output_api.PresubmitError(
+              '%s:%d\nPartitionAlloc disallows C++23 feature: %s'
+              % (f.LocalPath(), line_number + 1, error_desc)
+            )
+          )
 
-        # <algorithm> or <ranges> additions:
-        'std::ranges::to',
-        'std::ranges::fold_left',
-        'std::ranges::fold_right',
-        'std::ranges::fold_left_first',
-        'std::ranges::fold_right_last',
-        'std::ranges::fold_left_with_iter',
-        'std::ranges::contains',
-        'views::zip',
-        'views::zip_transform',
-        'views::enumerate',
-        'views::chunk',
-        'views::chunk_by',
-        'views::slide',
-        'views::stride',
-        'views::join_with',
-        'views::adjacent',
-        'views::adjacent_transform',
-        'views::cartesian_product',
-        'views::as_rvalue',
-        'views::as_const',
-        'views::repeat',
-    ]
+  return errors
 
-    compiled_checks = []
-
-    for pattern, feature_name in RAW_PATTERNS:
-        compiled_checks.append((input_api.re.compile(pattern), feature_name))
-
-    for symbol in LIBRARY_SYMBOLS:
-        pattern = r'\b' + input_api.re.escape(symbol) + r'\b'
-        description = f'C++23 library symbol: {symbol}'
-        compiled_checks.append((input_api.re.compile(pattern), description))
-
-    sources = lambda affected_file: input_api.FilterSourceFile(
-        affected_file,
-        files_to_skip=[],
-        files_to_check=[_SOURCE_FILE_PATTERN])
-
-    errors = []
-    for f in input_api.AffectedSourceFiles(sources):
-        for line_number, line in enumerate(f.NewContents()):
-            # Rudimentary comment stripping to check code only.
-            line_no_comment = line.split('//')[0]
-
-            for matcher, error_desc in compiled_checks:
-                if matcher.search(line_no_comment):
-                    errors.append(
-                        output_api.PresubmitError(
-                            '%s:%d\nPartitionAlloc disallows C++23 feature: %s'
-                            % (f.LocalPath(), line_number + 1, error_desc)))
-
-    return errors
 
 # partition_alloc uses C++20.
 def CheckNoCpp23Features(input_api, output_api):
-    CPP_23_PATTERNS = (
-        r'#include <(expected|flat_map|flat_set|generator|mdspan|print|'
-        r'spanstream|stacktrace|stdatomic.h|stdfloat)>',
-        r'if !?consteval',
-        r'^#elifn?def',
-        r'std::byteswap',
-        r'#warning',
-        r'static.*operator(\(\)|\[\])',
-        r'std::from_range',
-        r'\[\[assume[^[]*\]\]',
-        r'std::move_only_function',
-        r'std::unreachable',
-        r'std::(in)?out_ptr',
-        r'std::start_lifetime_as',
-        r'std::ranges::(contains|contains_subrange|starts_with|ends_with|'
-        r'find_last|find_last_if|find_last_if_not|iota|shift_left|'
-        r'shift_right|fold_left|fold_left_first|fold_right|fold_right_last|'
-        r'fold_left_with_iter|fold_left_first_with_iter)',
-        # C++23 range constructor for std::string_view (and u16/w variants)
-        # constructed from a single identifier (excludes literals, function
-        # calls, and multiple arguments).
-        r'\bstd::(?:u16|w)?string_view\s*'
-        r'(?:\(\s*([a-zA-Z_]\w*)\s*\)|\{\s*([a-zA-Z_]\w*)\s*\})',
-    )
+  CPP_23_PATTERNS = (
+    r'#include <(expected|flat_map|flat_set|generator|mdspan|print|'
+    r'spanstream|stacktrace|stdatomic.h|stdfloat)>',
+    r'if !?consteval',
+    r'^#elifn?def',
+    r'std::byteswap',
+    r'#warning',
+    r'static.*operator(\(\)|\[\])',
+    r'std::from_range',
+    r'\[\[assume[^[]*\]\]',
+    r'std::move_only_function',
+    r'std::unreachable',
+    r'std::(in)?out_ptr',
+    r'std::start_lifetime_as',
+    r'std::ranges::(contains|contains_subrange|starts_with|ends_with|'
+    r'find_last|find_last_if|find_last_if_not|iota|shift_left|'
+    r'shift_right|fold_left|fold_left_first|fold_right|fold_right_last|'
+    r'fold_left_with_iter|fold_left_first_with_iter)',
+    # C++23 range constructor for std::string_view (and u16/w variants)
+    # constructed from a single identifier (excludes literals, function
+    # calls, and multiple arguments).
+    r'\bstd::(?:u16|w)?string_view\s*'
+    r'(?:\(\s*([a-zA-Z_]\w*)\s*\)|\{\s*([a-zA-Z_]\w*)\s*\})',
+  )
 
-    sources = lambda affected_file: input_api.FilterSourceFile(
-        affected_file,
-        # compiler_specific.h may use these headers in guarded ways.
-        files_to_skip=[
-            r'.*partition_alloc_base/compiler_specific\.h'
-        ],
-        files_to_check=[_SOURCE_FILE_PATTERN])
+  sources = lambda affected_file: input_api.FilterSourceFile(  # noqa: E731
+    affected_file,
+    # compiler_specific.h may use these headers in guarded ways.
+    files_to_skip=[r'.*partition_alloc_base/compiler_specific\.h'],
+    files_to_check=[_SOURCE_FILE_PATTERN],
+  )
 
-    errors = []
-    for f in input_api.AffectedSourceFiles(sources):
-        # for line_number, line in f.ChangedContents():
-        for line_number, line in enumerate(f.NewContents()):
-            for pattern in CPP_23_PATTERNS:
-                match = input_api.re.search(pattern, line)
-                if not match:
-                    continue
-                errors.append(
-                    output_api.PresubmitError(
-                        '%s:%d\nPartitionAlloc disallows C++23 features: `%s`'
-                        % (f.LocalPath(), line_number + 1, match.group(0))))
-    return errors
+  errors = []
+  for f in input_api.AffectedSourceFiles(sources):
+    # for line_number, line in f.ChangedContents():
+    for line_number, line in enumerate(f.NewContents()):
+      for pattern in CPP_23_PATTERNS:
+        match = input_api.re.search(pattern, line)
+        if not match:
+          continue
+        errors.append(
+          output_api.PresubmitError(
+            '%s:%d\nPartitionAlloc disallows C++23 features: `%s`'
+            % (f.LocalPath(), line_number + 1, match.group(0))
+          )
+        )
+  return errors
+
 
 # Check `NDEBUG` is not used inside partition_alloc. We prefer to use the
 # buildflags `#if PA_BUILDFLAG(IS_DEBUG)` instead.
 def CheckNoNDebug(input_api, output_api):
-    sources = lambda affected_file: input_api.FilterSourceFile(
-        affected_file,
-        files_to_skip=[],
-        files_to_check=[_SOURCE_FILE_PATTERN])
+  sources = lambda affected_file: input_api.FilterSourceFile(  # noqa: E731
+    affected_file, files_to_skip=[], files_to_check=[_SOURCE_FILE_PATTERN]
+  )
 
-    errors = []
-    for f in input_api.AffectedSourceFiles(sources):
-        for line_number, line in f.ChangedContents():
-            if 'NDEBUG' in line:
-                errors.append(output_api.PresubmitError('%s:%d\nPartitionAlloc'
-                  % (f.LocalPath(), line_number + 1)
-                  + 'disallows NDEBUG, use PA_BUILDFLAG(IS_DEBUG) instead'))
-    return errors
+  errors = []
+  for f in input_api.AffectedSourceFiles(sources):
+    for line_number, line in f.ChangedContents():
+      if 'NDEBUG' in line:
+        errors.append(
+          output_api.PresubmitError(
+            '%s:%d\nPartitionAlloc' % (f.LocalPath(), line_number + 1)
+            + 'disallows NDEBUG, use PA_BUILDFLAG(IS_DEBUG) instead'
+          )
+        )
+  return errors
 
 
 def CheckUnexpectedPreprocessorDefines(input_api, output_api):
-    """
-    Checks partition_alloc doesn't depend on chrome's specific definitions.
-    """
+  """
+  Checks partition_alloc doesn't depend on chrome's specific definitions.
+  """
 
-    # Macros that are allowed to be used with defined(...)
-    ALLOWED_DEFINITIONS = {
-        # Compiler built-ins
-        'ADDRESS_SANITIZER',
-        'MEMORY_SANITIZER',
-        'THREAD_SANITIZER',
-        '_CPPUNWIND',
-        '_MSC_VER',
-        '_WIN32',
-        '_WIN64',
-        '__AIX',
-        '__APPLE__',
-        '__ARMEL__',
-        '__ARM_FEATURE_BTI_DEFAULT',
-        '__ARM_FEATURE_MEMORY_TAGGING',
-        '__EXCEPTIONS',
-        '__GNUC__',
-        '__LP64__',
-        '__OBJC__',
-        '__arm__',
-        '__clang__',
-        '__clang_analyzer__',
-        '__cpp_constexpr',
-        '__cpp_lib_atomic_value_initialization',
-        '__cpp_lib_three_way_comparison',
-        '__has_attribute',
-        '__has_builtin',
-        '__has_cpp_attribute',
-        '__has_extension',
-        '__has_feature',
-        '__has_warning',
-        '__i386__',
-        '__pic__',
+  # Macros that are allowed to be used with defined(...)
+  ALLOWED_DEFINITIONS = {
+    # Compiler built-ins
+    'ADDRESS_SANITIZER',
+    'MEMORY_SANITIZER',
+    'THREAD_SANITIZER',
+    '_CPPUNWIND',
+    '_MSC_VER',
+    '_WIN32',
+    '_WIN64',
+    '__AIX',
+    '__APPLE__',
+    '__ARMEL__',
+    '__ARM_FEATURE_BTI_DEFAULT',
+    '__ARM_FEATURE_MEMORY_TAGGING',
+    '__EXCEPTIONS',
+    '__GNUC__',
+    '__LP64__',
+    '__OBJC__',
+    '__arm__',
+    '__clang__',
+    '__clang_analyzer__',
+    '__cpp_constexpr',
+    '__cpp_lib_atomic_value_initialization',
+    '__cpp_lib_three_way_comparison',
+    '__has_attribute',
+    '__has_builtin',
+    '__has_cpp_attribute',
+    '__has_extension',
+    '__has_feature',
+    '__has_warning',
+    '__i386__',
+    '__pic__',
+    # System/Library macros
+    'RTLD_DEEPBIND',
+    '_GNU_SOURCE',
+    '_POSIX_MONOTONIC_CLOCK',
+    '_POSIX_THREAD_CPUTIME',
+    '_SC_PAGESIZE',
+    'PR_SET_VMA',
+    'PR_SET_VMA_ANON_NAME',
+    '__BIONIC__',
+    '__GLIBC_PREREQ',
+    '__GLIBC__',
+    '__MALLOC_HOOK_VOLATILE',
+    '__NR_mseal',
+    '__UCLIBC__',
+    '_MIPS_ARCH_LOONGSON',
+    # Gtest
+    'GTEST_HAS_DEATH_TEST',
+    # TODO - The following macros are defined outside of partition_alloc and
+    # should be removed/replaced with PA_BUILDFLAG or PA_CONFIG at some
+    # point.
+    'HAS_HW_CAPS',
+    'HAVE_BACKTRACE',
+    'LINUX_NAME_REGION',
+    'NDEBUG',
+    'NEEDS_HANDLING_OF_HW_CAPABILITIES',
+  }
+  target_path_prefix = 'base/allocator/partition_allocator/src/partition_alloc/'
 
-        # System/Library macros
-        'RTLD_DEEPBIND',
-        '_GNU_SOURCE',
-        '_POSIX_MONOTONIC_CLOCK',
-        '_POSIX_THREAD_CPUTIME',
-        '_SC_PAGESIZE',
-        'PR_SET_VMA',
-        'PR_SET_VMA_ANON_NAME',
-        '__BIONIC__',
-        '__GLIBC_PREREQ',
-        '__GLIBC__',
-        '__MALLOC_HOOK_VOLATILE',
-        '__NR_mseal',
-        '__UCLIBC__',
-        '_MIPS_ARCH_LOONGSON',
+  def is_relevant_file(f):
+    path = f.LocalPath().replace('\\', '/')
+    if path.endswith('/build_config.h'):
+      return False
+    # Exclude tests
+    if any(x in path for x in ('unittest', 'perftest', '/test/', '_unittest')):
+      return False
+    return path.startswith(target_path_prefix) and path.endswith(
+      ('.h', '.cc', '.S', '.mm')
+    )
 
-        # Gtest
-        'GTEST_HAS_DEATH_TEST',
+  defined_regex = input_api.re.compile(r'defined\(\s*(\w+)\s*\)')
 
-        # TODO - The following macros are defined outside of partition_alloc and
-        # should be removed/replaced with PA_BUILDFLAG or PA_CONFIG at some
-        # point.
-        'HAS_HW_CAPS',
-        'HAVE_BACKTRACE',
-        'LINUX_NAME_REGION',
-        'NDEBUG',
-        'NEEDS_HANDLING_OF_HW_CAPABILITIES',
-    }
-    target_path_prefix = (
-        'base/allocator/partition_allocator/src/partition_alloc/')
+  errors = []
 
-    def is_relevant_file(f):
-        path = f.LocalPath().replace('\\', '/')
-        if path.endswith('/build_config.h'):
-            return False
-        # Exclude tests
-        if any(x in path for x in
-               ('unittest', 'perftest', '/test/', '_unittest')):
-            return False
-        return (path.startswith(target_path_prefix) and
-                path.endswith(('.h', '.cc', '.S', '.mm')))
+  for f in input_api.AffectedSourceFiles(is_relevant_file):
+    for line_number, line in f.ChangedContents():
+      matches = defined_regex.findall(line)
+      for macro in matches:
+        # Automatically allow any PartitionAlloc internal macros
+        if macro.startswith(
+          (
+            'PA_',
+            'PARTITION_ALLOC_',
+            'PARTITION_ALLOCATOR_',
+            'PAGE_ALLOCATOR_',
+          )
+        ):
+          continue
 
-    defined_regex = input_api.re.compile(r'defined\(\s*(\w+)\s*\)')
+        # Ignore header guards
+        file_name = input_api.os_path.basename(f.LocalPath())
+        file_guard_part = file_name.upper().replace('.', '_') + '_'
+        if macro.endswith('_H_') and (
+          file_guard_part in macro or macro.startswith('PARTITION_ALLOC_')
+        ):
+          continue
 
-    errors = []
+        if macro in ALLOWED_DEFINITIONS:
+          continue
 
-    for f in input_api.AffectedSourceFiles(is_relevant_file):
-        for line_number, line in f.ChangedContents():
-            matches = defined_regex.findall(line)
-            for macro in matches:
-                # Automatically allow any PartitionAlloc internal macros
-                if macro.startswith((
-                        'PA_',
-                        'PARTITION_ALLOC_',
-                        'PARTITION_ALLOCATOR_',
-                        'PAGE_ALLOCATOR_',
-                )):
-                    continue
+        errors.append(
+          output_api.PresubmitError(
+            f'Unexpected macro `{macro}` in `defined()` in '
+            f'{f.LocalPath()}:{line_number}.\n'
+            f'If this is a new macro, please add it to the '
+            f'allowed list in PRESUBMIT.py if it is a '
+            f'compiler/system built-in.\n'
+            f'Otherwise, use PA_BUILDFLAG or PA_CONFIG '
+            f'instead.',
+            items=[f'{f.LocalPath()}:{line_number}: {line}'],
+          )
+        )
 
-                # Ignore header guards
-                file_name = input_api.os_path.basename(f.LocalPath())
-                file_guard_part = file_name.upper().replace('.', '_') + '_'
-                if macro.endswith('_H_') and (
-                        file_guard_part in macro or
-                        macro.startswith('PARTITION_ALLOC_')):
-                    continue
-
-                if macro in ALLOWED_DEFINITIONS:
-                    continue
-
-                errors.append(
-                    output_api.PresubmitError(
-                        f'Unexpected macro `{macro}` in `defined()` in '
-                        f'{f.LocalPath()}:{line_number}.\n'
-                        f'If this is a new macro, please add it to the '
-                        f'allowed list in PRESUBMIT.py if it is a '
-                        f'compiler/system built-in.\n'
-                        f'Otherwise, use PA_BUILDFLAG or PA_CONFIG '
-                        f'instead.',
-                        items=[f'{f.LocalPath()}:{line_number}: {line}']
-                    )
-                )
-
-    return errors
+  return errors

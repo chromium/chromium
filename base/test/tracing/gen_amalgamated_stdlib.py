@@ -35,66 +35,69 @@ struct FileToSql {
 
 
 def filename_to_variable(filename: str):
-    return "k" + "".join([
-        x.capitalize() for x in filename.replace(os.path.sep, '_').replace(
-            '-', '_').split("_")
-    ])
+  return "k" + "".join(
+    [
+      x.capitalize()
+      for x in filename.replace(os.path.sep, '_').replace('-', '_').split("_")
+    ]
+  )
 
 
 def main(argv):
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--cpp-out', required=True)
-    parser.add_argument('sql_files', nargs='*')
-    args = parser.parse_args(argv)
+  parser = argparse.ArgumentParser()
+  parser.add_argument('--cpp-out', required=True)
+  parser.add_argument('sql_files', nargs='*')
+  args = parser.parse_args(argv)
 
-    root_dir = os.path.commonpath(args.sql_files)
+  root_dir = os.path.commonpath(args.sql_files)
 
-    # Extract the SQL output from each file.
-    sql_outputs = {}
-    for file_name in args.sql_files:
-        with open(file_name, 'r', encoding='utf-8') as f:
-            relpath = os.path.relpath(file_name, root_dir)
-            assert '../' not in relpath
-            sql_outputs[relpath] = f.read()
+  # Extract the SQL output from each file.
+  sql_outputs = {}
+  for file_name in args.sql_files:
+    with open(file_name, 'r', encoding='utf-8') as f:
+      relpath = os.path.relpath(file_name, root_dir)
+      assert '../' not in relpath
+      sql_outputs[relpath] = f.read()
 
-    with open(args.cpp_out, 'w+', encoding='utf-8') as output:
-        output.write(REPLACEMENT_HEADER)
-        output.write(NAMESPACE_BEGIN)
+  with open(args.cpp_out, 'w+', encoding='utf-8') as output:
+    output.write(REPLACEMENT_HEADER)
+    output.write(NAMESPACE_BEGIN)
 
-        # Create the C++ variable for each SQL file.
-        # We emit the SQL as a uint8_t byte array rather than a string literal:
-        # string literals (even when chunked and concatenated) push some
-        # compilers to their limits on very large SQL modules, whereas raw byte
-        # array initializers compile reliably.
-        for path, sql in sql_outputs.items():
-            variable = filename_to_variable(os.path.splitext(path)[0])
-            encoded = sql.encode('utf-8')
-            output.write('\nconst uint8_t {}[] = {{'.format(variable))
-            for i, byte in enumerate(encoded):
-                if i % 16 == 0:
-                    output.write('\n  ')
-                output.write('0x{:02x},'.format(byte))
-                if i % 16 != 15 and i != len(encoded) - 1:
-                    output.write(' ')
-            output.write('\n};\n')
+    # Create the C++ variable for each SQL file.
+    # We emit the SQL as a uint8_t byte array rather than a string literal:
+    # string literals (even when chunked and concatenated) push some
+    # compilers to their limits on very large SQL modules, whereas raw byte
+    # array initializers compile reliably.
+    for path, sql in sql_outputs.items():
+      variable = filename_to_variable(os.path.splitext(path)[0])
+      encoded = sql.encode('utf-8')
+      output.write('\nconst uint8_t {}[] = {{'.format(variable))
+      for i, byte in enumerate(encoded):
+        if i % 16 == 0:
+          output.write('\n  ')
+        output.write('0x{:02x},'.format(byte))
+        if i % 16 != 15 and i != len(encoded) - 1:
+          output.write(' ')
+      output.write('\n};\n')
 
-        output.write(FILE_TO_SQL_STRUCT)
+    output.write(FILE_TO_SQL_STRUCT)
 
-        # Create mapping of filename to variable name for each variable.
-        output.write("\nconst FileToSql kChromeStdlibFilesToSql[] = {")
-        for path in sql_outputs.keys():
-            variable = filename_to_variable(os.path.splitext(path)[0])
+    # Create mapping of filename to variable name for each variable.
+    output.write("\nconst FileToSql kChromeStdlibFilesToSql[] = {")
+    for path in sql_outputs.keys():
+      variable = filename_to_variable(os.path.splitext(path)[0])
 
-            # This is for Windows which has \ as a path separator.
-            path = path.replace("\\", "/")
-            output.write('\n  {{"{}", {}, sizeof({})}},\n'.format(
-                path, variable, variable))
-        output.write("};\n")
+      # This is for Windows which has \ as a path separator.
+      path = path.replace("\\", "/")
+      output.write(
+        '\n  {{"{}", {}, sizeof({})}},\n'.format(path, variable, variable)
+      )
+    output.write("};\n")
 
-        output.write(NAMESPACE_END)
+    output.write(NAMESPACE_END)
 
-    return 0
+  return 0
 
 
 if __name__ == '__main__':
-    sys.exit(main(sys.argv[1:]))
+  sys.exit(main(sys.argv[1:]))

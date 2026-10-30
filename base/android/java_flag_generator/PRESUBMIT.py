@@ -18,7 +18,8 @@ def CommonChecks(input_api, output_api):
                 input_api.os_path.join(test_dir, 'integration_tests.py'),
             ],
             env=env,
-        ))
+        )
+    )
 
 
 def CheckChangeOnUpload(input_api, output_api):

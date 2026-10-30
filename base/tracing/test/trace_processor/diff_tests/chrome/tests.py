@@ -3,8 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from python.generators.diff_tests.testing import Path, DataPath, Metric
-from python.generators.diff_tests.testing import Csv, Json, TextProto
+from python.generators.diff_tests.testing import Path, DataPath, Metric  # noqa: F401
+from python.generators.diff_tests.testing import Csv, Json, TextProto  # noqa: F401
 from python.generators.diff_tests.testing import DiffTestBlueprint
 from python.generators.diff_tests.testing import TestSuite
 
@@ -13,9 +13,8 @@ class ChromeStdlib(TestSuite):
   # Chrome tasks.
   def test_chrome_tasks(self):
     return DiffTestBlueprint(
-        trace=DataPath(
-            'chrome_page_load_all_categories_not_extended.pftrace.gz'),
-        query="""
+      trace=DataPath('chrome_page_load_all_categories_not_extended.pftrace.gz'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.tasks;
 
         SELECT full_name as name, task_type, count() AS count
@@ -24,13 +23,15 @@ class ChromeStdlib(TestSuite):
         HAVING count >= 5
         ORDER BY count DESC, name;
         """,
-        out=Path('chrome_tasks.out'))
+      out=Path('chrome_tasks.out'),
+    )
 
   def test_top_level_java_choreographer_slices_top_level_java_chrome_tasks(
-      self):
+    self,
+  ):
     return DiffTestBlueprint(
-        trace=DataPath('top_level_java_choreographer_slices'),
-        query="""
+      trace=DataPath('top_level_java_choreographer_slices'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.tasks;
 
         SELECT
@@ -41,15 +42,16 @@ class ChromeStdlib(TestSuite):
         AND ts < 263904000000000
         GROUP BY full_name, task_type;
         """,
-        out=Path(
-            'top_level_java_choreographer_slices_top_level_java_chrome_tasks_test.out'
-        ))
+      out=Path(
+        'top_level_java_choreographer_slices_top_level_java_chrome_tasks_test.out'
+      ),
+    )
 
   # Chrome custom navigation event names
   def test_chrome_custom_navigation_tasks(self):
     return DiffTestBlueprint(
-        trace=DataPath('chrome_custom_navigation_trace.gz'),
-        query="""
+      trace=DataPath('chrome_custom_navigation_trace.gz'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.tasks;
 
         SELECT full_name, task_type, count() AS count
@@ -62,19 +64,20 @@ class ChromeStdlib(TestSuite):
         ORDER BY count DESC
         LIMIT 50;
         """,
-        out=Csv("""
+      out=Csv("""
         "full_name","task_type","count"
         "FrameHost::BeginNavigation (SUBFRAME)","navigation_task",5
         "FrameHost::DidStopLoading (SUBFRAME)","navigation_task",3
         "FrameHost::BeginNavigation (PRIMARY_MAIN_FRAME)","navigation_task",1
         "FrameHost::DidCommitProvisionalLoad (SUBFRAME)","navigation_task",1
-        """))
+        """),
+    )
 
   # Chrome custom navigation event names
   def test_chrome_histograms(self):
     return DiffTestBlueprint(
-        trace=DataPath('chrome_5672_histograms.pftrace.gz'),
-        query="""
+      trace=DataPath('chrome_5672_histograms.pftrace.gz'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.histograms;
 
         SELECT
@@ -85,7 +88,7 @@ class ChromeStdlib(TestSuite):
         ORDER BY count DESC, name
         LIMIT 20;
         """,
-        out=Csv("""
+      out=Csv("""
         "name","count"
         "Net.QuicSession.AsyncRead",19207
         "Net.QuicSession.NumQueuedPacketsBeforeWrite",19193
@@ -107,25 +110,27 @@ class ChromeStdlib(TestSuite):
         "Net.QuicSession.CoalesceStreamFrameStatus",551
         "API.StorageAccess.AllowedRequests2",541
         "Net.HttpResponseCode",541
-        """))
+        """),
+    )
 
   def test_speedometer_2_1_score(self):
     return DiffTestBlueprint(
-        trace=DataPath('speedometer_21.perfetto_trace.gz'),
-        query="""
+      trace=DataPath('speedometer_21.perfetto_trace.gz'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.speedometer;
 
         SELECT format("%.1f", chrome_speedometer_score()) AS score
         """,
-        out=Csv("""
+      out=Csv("""
         "score"
         "95.8"
-        """))
+        """),
+    )
 
   def test_speedometer_2_1_iteration(self):
     return DiffTestBlueprint(
-        trace=DataPath('speedometer_21.perfetto_trace.gz'),
-        query="""
+      trace=DataPath('speedometer_21.perfetto_trace.gz'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.speedometer;
 
         SELECT
@@ -135,7 +140,7 @@ class ChromeStdlib(TestSuite):
            FROM chrome_speedometer_iteration
           ORDER BY iteration ASC
         """,
-        out=Csv("""
+      out=Csv("""
         "ts","dur","name","iteration","geomean","score"
         693997310311984,7020297000,"iteration-1",1,"254.2","78.7"
         694004414619984,6308034000,"iteration-2",2,"224.4","89.1"
@@ -147,38 +152,41 @@ class ChromeStdlib(TestSuite):
         694040637173984,6087435000,"iteration-8",8,"203.0","98.5"
         694046772284984,6040820000,"iteration-9",9,"199.3","100.3"
         694052857814984,6063770000,"iteration-10",10,"208.0","96.2"
-        """))
+        """),
+    )
 
   def test_speedometer_2_1_renderer_main_utid(self):
     return DiffTestBlueprint(
-        trace=DataPath('speedometer_21.perfetto_trace.gz'),
-        query="""
+      trace=DataPath('speedometer_21.perfetto_trace.gz'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.speedometer;
 
         SELECT chrome_speedometer_renderer_main_utid();
         """,
-        out=Csv("""
+      out=Csv("""
         "chrome_speedometer_renderer_main_utid()"
         4
-        """))
+        """),
+    )
 
   def test_speedometer_3_score(self):
     return DiffTestBlueprint(
-        trace=DataPath('speedometer_3.perfetto_trace.gz'),
-        query="""
+      trace=DataPath('speedometer_3.perfetto_trace.gz'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.speedometer;
 
         SELECT format("%.2f", chrome_speedometer_score()) AS score
         """,
-        out=Csv("""
+      out=Csv("""
         "score"
         "9.32"
-        """))
+        """),
+    )
 
   def test_speedometer_3_iteration(self):
     return DiffTestBlueprint(
-        trace=DataPath('speedometer_3.perfetto_trace.gz'),
-        query="""
+      trace=DataPath('speedometer_3.perfetto_trace.gz'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.speedometer;
 
         SELECT
@@ -188,7 +196,7 @@ class ChromeStdlib(TestSuite):
            FROM chrome_speedometer_iteration
           ORDER BY iteration ASC
         """,
-        out=Csv("""
+      out=Csv("""
         "ts","dur","name","iteration","geomean","score"
         303831755756,29237440000,"iteration-0",0,"149.6","6.7"
         333069212756,5852045000,"iteration-1",1,"110.7","9.0"
@@ -200,42 +208,45 @@ class ChromeStdlib(TestSuite):
         363456560756,4447621000,"iteration-7",7,"95.5","10.5"
         367904208756,4566333000,"iteration-8",8,"100.8","9.9"
         372470568756,4301553000,"iteration-9",9,"96.9","10.3"
-        """))
+        """),
+    )
 
   def test_speedometer_3_renderer_main_utid(self):
     return DiffTestBlueprint(
-        trace=DataPath('speedometer_3.perfetto_trace.gz'),
-        query="""
+      trace=DataPath('speedometer_3.perfetto_trace.gz'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.speedometer;
 
         SELECT chrome_speedometer_renderer_main_utid();
         """,
-        out=Csv("""
+      out=Csv("""
         "chrome_speedometer_renderer_main_utid()"
         2
-        """))
+        """),
+    )
 
   def test_loadline_2_stages(self):
     return DiffTestBlueprint(
-        trace=DataPath('loadline2_phone_perfetto_trace.pb.gz'),
-        query="""
+      trace=DataPath('loadline2_phone_perfetto_trace.pb.gz'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.loadline_2;
 
         SELECT * FROM chrome_loadline2_stages;
         """,
-        out=Csv("""
+      out=Csv("""
         "page","story_start","start_request","end_request","renderer_ready","visual_mark","visual_raf","visual_presentation","interactive_mark","interactive_raf","interactive_presentation","story_finish"
         "amazon_product",92168959184844,92168964292547,92168971170844,92168972399547,92169083553844,92169188454844,92169184256844,92169685753844,92169695454844,92169733497844,92169878447844
         "cnn_article",92171089712844,92171099378547,92171106636844,92171107875858,92171191827844,92171329926844,92171248159844,92171413627844,92171450327844,92171481210844,92171558926844
         "wikipedia_article",92172730780844,92172739162547,92172746708844,92172747906244,92172801226844,92172843126844,92172846114844,92172826526844,92172877126844,92172879408844,92173054810844
         "globo_homepage",92174078990844,92174091306547,92174101735844,92174091680202,92174166369844,92174220769844,92174277596844,92174638068844,92174679269844,92174710386844,92175115291844
         "google_search_result",92176269047844,92176276990547,92176286094844,92176276922481,92176326400844,92176365000844,92176391496844,92176571700844,92176587400844,92176607896844,92176764223844
-        """))
+        """),
+    )
 
   def test_loadline_2_renderer_slices(self):
     return DiffTestBlueprint(
-        trace=DataPath('loadline2_phone_perfetto_trace.pb.gz'),
-        query="""
+      trace=DataPath('loadline2_phone_perfetto_trace.pb.gz'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.loadline_2;
 
         SELECT
@@ -249,7 +260,7 @@ class ChromeStdlib(TestSuite):
         ORDER BY id
         LIMIT 10;
         """,
-        out=Csv("""
+      out=Csv("""
         "id","page","ts","dur","subsystem"
         1,"wikipedia_article",92172747906244,1398000,"navigation_commit"
         2,"wikipedia_article",92172749304244,12114000,"html_parse"
@@ -261,12 +272,13 @@ class ChromeStdlib(TestSuite):
         8,"wikipedia_article",92172761724244,986000,"js_execute"
         9,"wikipedia_article",92172762710244,4000,"navigation_commit"
         10,"wikipedia_article",92172762714244,146000,"js_execute"
-        """))
+        """),
+    )
 
   def test_loadline_2_renderer_breakdown(self):
     return DiffTestBlueprint(
-        trace=DataPath('loadline2_phone_perfetto_trace.pb.gz'),
-        query="""
+      trace=DataPath('loadline2_phone_perfetto_trace.pb.gz'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.loadline_2;
 
         SELECT
@@ -279,7 +291,7 @@ class ChromeStdlib(TestSuite):
         WHERE page = 'wikipedia_article'
         ORDER BY metric, dur DESC, subsystem;
         """,
-        out=Csv("""
+      out=Csv("""
         "page","metric","subsystem","dur","pct"
         "wikipedia_article","interactive","idle_wait",36979600,"47.04"
         "wikipedia_article","interactive","html_parse",13166000,"16.75"
@@ -299,12 +311,13 @@ class ChromeStdlib(TestSuite):
         "wikipedia_article","visual","paint_compositing",791000,"1.48"
         "wikipedia_article","visual","gc",658000,"1.23"
         "wikipedia_article","visual","other_busy",98000,"0.18"
-        """))
+        """),
+    )
 
   def test_loadline_2_presentation_breakdown(self):
     return DiffTestBlueprint(
-        trace=DataPath('loadline2_phone_perfetto_trace.pb.gz'),
-        query="""
+      trace=DataPath('loadline2_phone_perfetto_trace.pb.gz'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.loadline_2;
 
         SELECT
@@ -315,7 +328,7 @@ class ChromeStdlib(TestSuite):
         WHERE page = 'wikipedia_article' AND metric = 'visual'
         ORDER BY id;
         """,
-        out=Csv("""
+      out=Csv("""
         "stage_depth","stage","dur"
         1,"SendBeginMainFrameToCommit",7436000
         1,"Commit",66000
@@ -330,12 +343,13 @@ class ChromeStdlib(TestSuite):
         2,"BufferReadyToLatch",12718000
         2,"LatchToSwapEnd",1948000
         2,"SwapEndToPresentationCompositorFrame",5977000
-        """))
+        """),
+    )
 
   def test_loadline_2_js_scripts(self):
     return DiffTestBlueprint(
-        trace=DataPath('loadline2_phone_perfetto_trace.pb.gz'),
-        query="""
+      trace=DataPath('loadline2_phone_perfetto_trace.pb.gz'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.loadline_2;
 
         SELECT
@@ -352,7 +366,7 @@ class ChromeStdlib(TestSuite):
         WHERE page = 'wikipedia_article'
         ORDER BY script_id;
         """,
-        out=Csv("""
+      out=Csv("""
         "id","kind","inl","str","status","parse_dur","comp_dur","exec_dur","e2e"
         1,"streamed",0,1,"before_visual",2059000,13000,3587000,23082074
         2,"inline",1,0,"before_visual","[NULL]",141000,120000,268000
@@ -366,12 +380,13 @@ class ChromeStdlib(TestSuite):
         10,"inline",1,0,"after_interactive","[NULL]",18000,6000,25000
         11,"inline",1,0,"after_interactive","[NULL]",16000,4000,22000
         12,"streamed",0,1,"after_interactive",323000,11000,34000,42530074
-        """))
+        """),
+    )
 
   def test_loadline_2_js_script_slices(self):
     return DiffTestBlueprint(
-        trace=DataPath('loadline2_phone_perfetto_trace.pb.gz'),
-        query="""
+      trace=DataPath('loadline2_phone_perfetto_trace.pb.gz'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.loadline_2;
 
         SELECT
@@ -384,7 +399,7 @@ class ChromeStdlib(TestSuite):
         WHERE page = 'wikipedia_article' AND is_inline = 0
         ORDER BY id;
         """,
-        out=Csv("""
+      out=Csv("""
         "stage","ts","dur","script_kind","milestone_status"
         "request",92172761385170,4426000,"streamed","before_visual"
         "response",92172765811170,2316000,"streamed","before_visual"
@@ -406,12 +421,13 @@ class ChromeStdlib(TestSuite):
         "bg_parse",92172849023701,341000,"streamed","after_interactive"
         "compile",92172887343244,11000,"streamed","after_interactive"
         "execute",92172887356244,34000,"streamed","after_interactive"
-        """))
+        """),
+    )
 
   def test_chrome_graphics_pipeline_surface_frame_steps(self):
     return DiffTestBlueprint(
-        trace=DataPath('scroll_m131.pftrace'),
-        query="""
+      trace=DataPath('scroll_m131.pftrace'),
+      query="""
         INCLUDE PERFETTO MODULE chrome.graphics_pipeline;
 
         SELECT
@@ -426,7 +442,7 @@ class ChromeStdlib(TestSuite):
         ORDER BY s.ts
         LIMIT 10;
         """,
-        out=Csv("""
+      out=Csv("""
         "id","ts","dur","step","surface_frame_trace_id","tid"
         209,1292552020392633,142000,"STEP_ISSUE_BEGIN_FRAME",1407387768455321,6440
         210,1292552020907210,1264000,"STEP_RECEIVE_BEGIN_FRAME",1407387768455321,6476
@@ -438,7 +454,8 @@ class ChromeStdlib(TestSuite):
         276,1292552030185257,164000,"STEP_SUBMIT_COMPOSITOR_FRAME",4294967439,6263
         277,1292552030600633,195000,"STEP_RECEIVE_COMPOSITOR_FRAME",4294967439,6440
         302,1292552032277633,178000,"STEP_ISSUE_BEGIN_FRAME",1407387768455322,6440
-        """))
+        """),
+    )
 
   def test_chrome_graphics_pipeline_display_frame_steps(self):
     return DiffTestBlueprint(
@@ -469,7 +486,8 @@ class ChromeStdlib(TestSuite):
       376,1292552039773131,458000,"STEP_BUFFER_SWAP_POST_SUBMIT",65566,7
       394,1292552043191131,48000,"STEP_FINISH_BUFFER_SWAP",65565,7
       397,1292552043253633,75000,"STEP_SWAP_BUFFERS_ACK",65565,6
-      """))
+      """),
+    )
 
   def test_chrome_surface_frame_id_to_first_display_id(self):
     return DiffTestBlueprint(
@@ -496,7 +514,8 @@ class ChromeStdlib(TestSuite):
       4294967459,65717
       4294967460,65718
       4294967461,65719
-      """))
+      """),
+    )
 
   def test_chrome_graphics_pipeline_inputs_to_surface_frames(self):
     return DiffTestBlueprint(
@@ -523,4 +542,5 @@ class ChromeStdlib(TestSuite):
       1407387768455327,-2143831735395279233
       1407387768455328,-2143831735395279258
       1407387768455329,-2143831735395279255
-      """))
+      """),
+    )

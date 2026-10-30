@@ -29,7 +29,8 @@ def remove_header_entries(header, milestone):
     removed = [m for m in HEADER_ENTRY.findall(header) if int(m) <= milestone]
     header = HEADER_ENTRY.sub(
         lambda entry: '' if entry.group(1) in removed else entry.group(0),
-        header)
+        header,
+    )
     return header, removed
 
 
@@ -49,8 +50,9 @@ def remove_unreachable_code(lines, i):
     while begin < len(lines) and indent(lines[begin]) > indent(lines[i]):
         begin += 1
     end = begin
-    while end < len(lines) and (lines[end].isspace()
-                                or indent(lines[end]) >= indent(lines[i])):
+    while end < len(lines) and (
+        lines[end].isspace() or indent(lines[end]) >= indent(lines[i])
+    ):
         end += 1
     while end > begin and re.match(r'\s*(//|$)', lines[end - 1]):
         end -= 1  # Keep the blank lines and comments before the block end.
@@ -82,14 +84,17 @@ def clean_up(contents, milestones):
 def main():
     parser = argparse.ArgumentParser(
         description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter)
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+    )
     parser.add_argument('-m', '--milestone', type=int, required=True)
     milestone = parser.parse_args().milestone
 
     assert Path.cwd() == Path(__file__).resolve().parents[2], (
-        'Must be run from the src/ directory.')
+        'Must be run from the src/ directory.'
+    )
     header, milestones = remove_header_entries(
-        HEADER.read_text(encoding='utf-8'), milestone)
+        HEADER.read_text(encoding='utf-8'), milestone
+    )
     if not milestones:
         print(f'No milestones <= M{milestone} in {HEADER}.')
         return
@@ -97,16 +102,18 @@ def main():
 
     pattern = r'NotFatalUntil::M(%s)\b' % '|'.join(milestones)
     files = subprocess.check_output(
-        [GIT, 'grep', '-lE', pattern, '--', '*.cc', '*.h', '*.mm'],
-        text=True).splitlines()
+        [GIT, 'grep', '-lE', pattern, '--', '*.cc', '*.h', '*.mm'], text=True
+    ).splitlines()
     for file in files:
         path = Path(file)
         contents = clean_up(path.read_text(encoding='utf-8'), milestones)
         path.write_text(contents, encoding='utf-8', newline='\n')
         if re.search(pattern, contents):
             print(f'{file}: Needs a manual clean up.')
-    print(f'Removed M{milestones[0]} to M{milestones[-1]} from {len(files)} '
-          'files.')
+    print(
+        f'Removed M{milestones[0]} to M{milestones[-1]} from {len(files)} '
+        'files.'
+    )
 
     subprocess.check_call([GIT, 'cl', 'format'])
 

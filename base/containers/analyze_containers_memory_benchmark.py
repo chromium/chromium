@@ -27,7 +27,6 @@ _FREED_RE = re.compile(r'freed address (?P<freed_addr>.+)')
 
 
 class ContainerStatsProcessor:
-
   def __init__(self, name: str):
     # e.g. base::flat_map
     self._name = name
@@ -69,7 +68,6 @@ class ContainerStatsProcessor:
 
 
 class TestCaseProcessor:
-
   def __init__(self, name: str):
     # e.g. int -> std::string
     self._name = name
@@ -89,12 +87,12 @@ class TestCaseProcessor:
   def did_finish_container_stats(self, output_dir: str):
     self._finalize_current_container_stats_if_needed()
     with open(
-        os.path.join(output_dir, f'{self._name}.csv'), 'w', newline=''
+      os.path.join(output_dir, f'{self._name}.csv'), 'w', newline=''
     ) as f:
       writer = csv.writer(f)
       # First the column headers...
       writer.writerow(
-          ['size'] + [stats.name for stats in self._finalized_stats]
+        ['size'] + [stats.name for stats in self._finalized_stats]
       )
       # In theory, all processed containers should have the same number of keys,
       # but assert just to be sure.
@@ -106,7 +104,7 @@ class TestCaseProcessor:
           assert keys == sorted(stats.data.keys())
       for key in keys:
         writer.writerow(
-            [key] + [stats.data[key] for stats in self._finalized_stats]
+          [key] + [stats.data[key] for stats in self._finalized_stats]
         )
 
   def _finalize_current_container_stats_if_needed(self):
@@ -118,10 +116,10 @@ class TestCaseProcessor:
 
 def main(argv: Sequence[str]) -> None:
   parser = argparse.ArgumentParser(
-      description='Processes raw output from containers_memory_usage into CSVs.'
+    description='Processes raw output from containers_memory_usage into CSVs.'
   )
   parser.add_argument(
-      '-o', help='directory to write CSV files to', required=True
+    '-o', help='directory to write CSV files to', required=True
   )
   args = parser.parse_args()
 
@@ -149,7 +147,7 @@ def main(argv: Sequence[str]) -> None:
     match = _ALLOC_RE.match(line)
     if match:
       processor.current_container_stats.did_alloc(
-          match.group('alloc_addr'), int(match.group('size'))
+        match.group('alloc_addr'), int(match.group('size'))
       )
       continue
 

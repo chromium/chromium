@@ -14,8 +14,8 @@ from .tests_chrome_interactions import ChromeInteractions
 from .tests_jetstream_3 import ChromeJetStream3Stdlib
 
 CHROME_STDLIB_TESTSUITES = [
-    ChromeScrollJankStdlib,
-    ChromeStdlib,
-    ChromeInteractions,
-    ChromeJetStream3Stdlib,
+  ChromeScrollJankStdlib,
+  ChromeStdlib,
+  ChromeInteractions,
+  ChromeJetStream3Stdlib,
 ]

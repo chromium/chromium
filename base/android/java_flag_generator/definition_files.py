@@ -30,8 +30,9 @@ class PathContext:
         return path
 
 
-def automatic_candidates(source: models.ParsedSource,
-                         ctx: PathContext) -> List[str]:
+def automatic_candidates(
+    source: models.ParsedSource, ctx: PathContext
+) -> List[str]:
     """The source itself plus the .cc of each quoted .h include that exists."""
     candidates = [os.path.normpath(source.path)]
     for include in source.includes:
@@ -48,8 +49,8 @@ def automatic_candidates(source: models.ParsedSource,
 
 
 def resolve_directives(
-        source: models.ParsedSource, candidates: List[str],
-        ctx: PathContext) -> List[Tuple[models.DefinitionDirective, str]]:
+    source: models.ParsedSource, candidates: List[str], ctx: PathContext
+) -> List[Tuple[models.DefinitionDirective, str]]:
     """Maps each FEATURE_DEFINITION_FILE directive to an existing file.
     The source tree is checked first, then root_gen_dir (for generated files).
     """
@@ -72,18 +73,22 @@ def resolve_directives(
                 f'    {in_source}\n'
                 f'    {in_gen}\n'
                 f'If the file is generated, add the GN target that generates '
-                f'it to the `deps` of the java_flag_generator() target.')
+                f'it to the `deps` of the java_flag_generator() target.'
+            )
             continue
         if path in seen:
-            errors.append(f'{where}: error: Duplicate FEATURE_DEFINITION_FILE '
-                          f'{directive.written_path} (first on line '
-                          f'{seen[path]}).')
+            errors.append(
+                f'{where}: error: Duplicate FEATURE_DEFINITION_FILE '
+                f'{directive.written_path} (first on line '
+                f'{seen[path]}).'
+            )
             continue
         if path in candidates:
             errors.append(
                 f'{where}: error: FEATURE_DEFINITION_FILE '
                 f'{directive.written_path} is redundant: it is already '
-                f'searched automatically. Remove this comment.')
+                f'searched automatically. Remove this comment.'
+            )
             continue
         seen[path] = directive.line
         resolved.append((directive, path))
