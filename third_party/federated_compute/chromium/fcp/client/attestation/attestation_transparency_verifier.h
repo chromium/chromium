@@ -21,16 +21,14 @@
 
 #include "absl/functional/any_invocable.h"
 #include "absl/status/statusor.h"
-#include "absl/strings/cord.h"
 #include "fcp/client/attestation/attestation_verifier.h"
 #include "fcp/protos/confidentialcompute/access_policy_endorsement_options.pb.h"
-#include "fcp/protos/confidentialcompute/signed_endorsements.pb.h"
-#include "fcp/protos/federatedcompute/confidential_encryption_config.pb.h"
+#include "fcp/protos/confidentialcompute/payload_transparency.pb.h"
 
 namespace fcp::client::attestation {
 
 // An AttestationTransparencyVerifier requires that the upload encryption key
-// and data access policy are signed by authorized verifying keys and are
+// and pipeline configuration are signed by authorized verifying keys and are
 // (optionally) included in a transparency log such as Rekor.
 //
 // This class does not verify TEE evidence and endorsements itself, but it
@@ -44,10 +42,8 @@ class AttestationTransparencyVerifier : public AttestationVerifier {
       : options_(std::move(options)) {}
 
   absl::StatusOr<VerificationResult> Verify(
-      const absl::Cord& access_policy,
-      const confidentialcompute::SignedEndorsements& signed_endorsements,
-      const google::internal::federatedcompute::v1::
-          ConfidentialEncryptionConfig& encryption_config) override;
+      const confidentialcompute::SignedPayload& pipeline_config,
+      const confidentialcompute::SignedPayload& encryption_key) override;
 
  private:
   confidentialcompute::AccessPolicyEndorsementOptions options_;

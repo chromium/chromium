@@ -24,7 +24,6 @@
 #include "absl/status/status.h"
 #include "absl/status/status_macros.h"
 #include "absl/status/statusor.h"
-#include "absl/strings/cord.h"
 #include "absl/strings/str_cat.h"
 #include "absl/strings/str_join.h"
 #include "absl/strings/string_view.h"
@@ -32,8 +31,8 @@
 #include "absl/time/time.h"
 #include "fcp/confidentialcompute/payload_transparency/payload_transparency.h"
 #include "fcp/protos/confidentialcompute/key.pb.h"
+#include "fcp/protos/confidentialcompute/payload_transparency.pb.h"
 #include "fcp/protos/confidentialcompute/signed_endorsements.pb.h"
-#include "fcp/protos/federatedcompute/confidential_encryption_config.pb.h"
 #include "google/protobuf/repeated_ptr_field.h"
 
 namespace fcp::client::attestation {
@@ -45,7 +44,6 @@ using ::fcp::confidential_compute::payload_transparency::
 using ::fcp::confidentialcompute::Key;
 using ::fcp::confidentialcompute::SignedEndorsements;
 using ::fcp::confidentialcompute::SignedPayload;
-using ::google::internal::federatedcompute::v1::ConfidentialEncryptionConfig;
 
 // Returns an error if `actual_claims` is not a superset of `expected_claims`.
 absl::Status CheckRequiredClaims(
@@ -68,27 +66,18 @@ absl::Status CheckRequiredClaims(
 }  // namespace
 
 absl::StatusOr<AttestationTransparencyVerifier::VerificationResult>
-AttestationTransparencyVerifier::Verify(
-    // The `access_policy` parameter is ignored because the pipeline
-    // configuration in `signed_endorsements` and the upload encryption key in
-    // `encryption_config` contain the SHA-256 digest of the access policy,
-    // ensuring the same level of transparency is maintained while reducing
-    // download sizes. The full policy can be retrieved using the digest (see
-    // proto field comments).
-    const absl::Cord& access_policy,
-    const SignedEndorsements& signed_endorsements,
-    const ConfidentialEncryptionConfig& encryption_config) {
+AttestationTransparencyVerifier::Verify(const SignedPayload& pipeline_config,
+                                        const SignedPayload& encryption_key) {
   const absl::Time now = absl::Now();
 
   // Verify that the encryption key is properly signed, included in a
   // transparency log (if required by `transparency_log_options`), and valid.
   ABSL_ASSIGN_OR_RETURN(
       VerifySignedPayloadResult encryption_key_result,
-      VerifySignedPayload(encryption_config.encryption_key(),
-                          options_.kms_verifying_keys(),
+      VerifySignedPayload(encryption_key, options_.kms_verifying_keys(),
                           options_.transparency_log_options(), now));
   Key key;
-  if (!key.ParseFromString(encryption_config.encryption_key().payload())) {
+  if (!key.ParseFromString(encryption_key.payload())) {
     return absl::InvalidArgumentError("failed to parse encryption key");
   }
   if (encryption_key_result.headers.empty()) {
@@ -128,14 +117,18 @@ AttestationTransparencyVerifier::Verify(
   // transparency log, and valid.
   ABSL_ASSIGN_OR_RETURN(
       VerifySignedPayloadResult pipeline_config_result,
-      VerifySignedPayload(signed_endorsements.pipeline_configuration(),
+      VerifySignedPayload(pipeline_config,
                           options_.access_policy_verifying_keys(),
                           options_.transparency_log_options(), now));
   SignedEndorsements::PipelineConfiguration config;
-  if (!config.ParseFromString(
-          signed_endorsements.pipeline_configuration().payload())) {
+  if (!config.ParseFromString(pipeline_config.payload())) {
     return absl::InvalidArgumentError("failed to parse pipeline configuration");
   }
+  // The pipeline configuration and the upload encryption key both contain the
+  // SHA-256 digest of the access policy, so the full access policy doesn't need
+  // to be downloaded: the same level of transparency is maintained while
+  // reducing download sizes. The full policy can be retrieved using the digest
+  // (see proto field comments).
   if (config.access_policy_sha256() != access_policy_sha256) {
     return absl::InvalidArgumentError(
         "pipeline configuration access policy SHA-256 does not match "
