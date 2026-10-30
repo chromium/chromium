@@ -6783,6 +6783,11 @@
     "expiry_milestone": 152
   },
   {
+    "name": "lens-send-drive-tab-urls-in-composeboxes",
+    "owners": ["hujasonx@google.com", "lens-chrome@google.com"],
+    "expiry_milestone": 165
+  },
+  {
     "name": "lens-stream-service-web-channel-transport-enabled",
     "owners": ["cmyang@google.com", "brandonli@google.com"],
     "expiry_milestone": 165
