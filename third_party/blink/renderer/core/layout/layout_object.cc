@@ -4593,7 +4593,7 @@ void LayoutObject::SetNeedsPaintPropertyUpdate() {
   // itself are also updated. This is due to the fact that we do some
   // reparenting in PaintPropertyTreeBuilder. Without this, we can end up with
   // cycles if only *some* of the related objects are dirtied.
-  if (IsOverscrollContainer()) {
+  if (IsOverscrollContainer() || IsOverscrollAreaParent()) {
     LayoutObject* container = IsOverscrollAreaParent() ? ContainingBox() : this;
     if (container) {
       Element* container_element = DynamicTo<Element>(container->GetNode());

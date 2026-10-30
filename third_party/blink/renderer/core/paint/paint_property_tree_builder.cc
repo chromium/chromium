@@ -518,10 +518,10 @@ class FragmentPaintPropertyTreeBuilder {
 static bool NeedsScrollAndScrollTranslation(
     const LayoutObject& object,
     CompositingReasons direct_compositing_reasons) {
-  if (object.IsOverscrollContainer()) {
-    // Overscroll containing boxes require a scroll node in order to chain
-    // overscroll to their respective ::-internal-overscroll-area-parent
-    // pseudo-elements.
+  if (object.IsOverscrollContainer() || object.IsOverscrollAreaParent()) {
+    // Overscroll containing boxes and overscroll area parents require a scroll
+    // node in order to chain overscroll to their respective
+    // ::-internal-overscroll-area-parent pseudo-elements.
     return true;
   }
   if (!object.IsScrollContainer()) {
@@ -3584,14 +3584,15 @@ FragmentPaintPropertyTreeBuilder::GetMainThreadRepaintReasonsForScroll(
 void FragmentPaintPropertyTreeBuilder::UpdateContentTranslation() {
   const LayoutBox* box = DynamicTo<LayoutBox>(object_);
   if (NeedsPaintPropertyUpdate()) {
-    if (!box || !box->IsOverscrollContainer()) {
+    if (!box ||
+        (!box->IsOverscrollContainer() && !box->IsOverscrollAreaParent())) {
       OnClearTransform(properties_->ClearContentTranslation());
       return;
     }
     DCHECK(NeedsScrollAndScrollTranslation(
         object_, full_context_.direct_compositing_reasons));
 
-    Element* overscroll_container = box->IsPseudoElement()
+    Element* overscroll_container = box->IsOverscrollAreaParent()
                                         ? To<PseudoElement>(box->GetNode())
                                               ->UltimateOriginatingElement()
                                               .GetOverscrollContainer()
@@ -3606,7 +3607,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateContentTranslation() {
     }
 
     wtf_size_t index =
-        box->IsPseudoElement()
+        box->IsOverscrollAreaParent()
             ? overscroll_area_tracker->DOMSortedElements().Find(
                   To<PseudoElement>(box->GetNode())
                       ->UltimateOriginatingElement())

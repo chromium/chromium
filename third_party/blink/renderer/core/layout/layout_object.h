@@ -1576,20 +1576,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   bool HasClipRelatedProperty() const;
 
-  // Both scroll containers that host overscroll area parent pseudo-elements and
-  // overscroll area parent pseudo elements are overcroll containers.
-  // TODO(crbug.com/468055741): See if we can remove the overscroll-area-parent
-  // pseudo check after they can host scrollable overflow.
   bool IsOverscrollContainer() const {
     NOT_DESTROYED();
-    if (!IsBox()) {
-      return false;
-    }
-    if (IsOverscrollAreaParent()) {
-      return true;
-    }
-    return Style().EffectiveOverscrollContainerType() !=
-           EOverscrollContainerType::kNone;
+    return IsBox() && Style().EffectiveOverscrollContainerType() !=
+                          EOverscrollContainerType::kNone;
   }
 
   bool IsContentMovingOverscrollContainer() const {

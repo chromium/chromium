@@ -1515,7 +1515,8 @@ ScrollableArea* GetNearestScrollableArea(LayoutBox* current_box) {
         (next_box->IsScrollContainer() &&
          (next_box->GetScrollableArea()->ScrollsOverflow() ||
           !next_box->GetScrollableArea()->CanPropagateScroll())) ||
-        next_box->IsOverscrollContainer()) {
+        next_box->IsOverscrollContainer() ||
+        next_box->IsOverscrollAreaParent()) {
       CHECK(next_box->GetScrollableArea());
       return next_box->GetScrollableArea();
     }

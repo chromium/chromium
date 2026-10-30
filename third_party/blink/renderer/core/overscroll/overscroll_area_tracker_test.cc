@@ -1021,6 +1021,17 @@ TEST_F(OverscrollAreaTrackerPageTest, OverscrollContainerWithElement) {
             container->GetLayoutObject());
   EXPECT_EQ(content->GetLayoutObject()->Parent(), container->GetLayoutObject());
 
+  EXPECT_TRUE(container->GetLayoutObject()->IsOverscrollContainer());
+  EXPECT_FALSE(container->GetLayoutObject()->IsOverscrollAreaParent());
+  EXPECT_FALSE(
+      overscroll_area_parent->GetLayoutObject()->IsOverscrollContainer());
+  EXPECT_TRUE(
+      overscroll_area_parent->GetLayoutObject()->IsOverscrollAreaParent());
+  EXPECT_FALSE(menu->GetLayoutObject()->IsOverscrollContainer());
+  EXPECT_FALSE(menu->GetLayoutObject()->IsOverscrollAreaParent());
+  EXPECT_FALSE(content->GetLayoutObject()->IsOverscrollContainer());
+  EXPECT_FALSE(content->GetLayoutObject()->IsOverscrollAreaParent());
+
   // We should have snap points for the menu and the initial area:
   const cc::SnapContainerData* snap_container_data =
       overscroll_area_parent->GetLayoutBox()
