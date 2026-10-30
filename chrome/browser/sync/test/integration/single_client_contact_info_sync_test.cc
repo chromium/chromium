@@ -167,14 +167,7 @@ void AddSpecificsToServer(const sync_pb::ContactInfoSpecifics& specifics,
 
 class SingleClientContactInfoSyncTestBase : public SyncTest {
  public:
-  explicit SingleClientContactInfoSyncTestBase(
-      SyncTest::SetupSyncMode setup_sync_mode)
-      : SyncTest(SINGLE_CLIENT) {
-    if (setup_sync_mode == SetupSyncMode::kSyncTransportOnly) {
-      feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-  }
+  SingleClientContactInfoSyncTestBase() : SyncTest(SINGLE_CLIENT) {}
 
   // In SINGLE_CLIENT tests, there's only a single PersonalDataManager.
   autofill::PersonalDataManager* GetPersonalDataManager() const {
@@ -197,18 +190,12 @@ class SingleClientContactInfoSyncTestBase : public SyncTest {
                                        identity_manager->GetPrimaryAccountInfo(
                                            signin::ConsentLevel::kSignin)));
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class SingleClientContactInfoSyncTest
     : public SingleClientContactInfoSyncTestBase,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientContactInfoSyncTest()
-      : SingleClientContactInfoSyncTestBase(GetSetupSyncMode()) {}
-
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
     return GetParam();
   }
@@ -302,8 +289,7 @@ class SingleClientContactInfoPassphraseSyncTest
       public testing::WithParamInterface<
           std::tuple<SyncTest::SetupSyncMode, bool>> {
  public:
-  SingleClientContactInfoPassphraseSyncTest()
-      : SingleClientContactInfoSyncTestBase(GetSetupSyncMode()) {
+  SingleClientContactInfoPassphraseSyncTest() {
 #if BUILDFLAG(IS_CHROMEOS)
     passphrase_feature_.InitWithFeatureState(
         syncer::kSyncEnableContactInfoDataTypeForCustomPassphraseUsers,

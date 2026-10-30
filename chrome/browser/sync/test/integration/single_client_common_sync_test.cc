@@ -133,10 +133,7 @@ class SingleClientCommonSyncTest
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   SingleClientCommonSyncTest() : SyncTest(SINGLE_CLIENT) {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    } else {
+    if (GetSetupSyncMode() != SetupSyncMode::kSyncTransportOnly) {
       // Skip sync-to-signin migration for sync-the-feature tests. This is to
       // avoid the sync state changing between the PRE_ tests.
       scoped_feature_list_.InitAndDisableFeature(
@@ -396,9 +393,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientGetUnsyncedTypesTest,
   ASSERT_TRUE(SetupSync());
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Note: Depending on the state of feature flags (specifically
-  // kReplaceSyncPromosWithSignInPromos), Bookmarks may or may not be considered
-  // selected by default.
+  // Note: Bookmarks may or may not be considered selected by default.
   GetSyncService(0)->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kBookmarks, true);
   // Enable account storage for bookmarks.
@@ -538,15 +533,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientGetUnsyncedTypesTest, SignInPendingState) {
 #if !BUILDFLAG(IS_ANDROID)
 class SingleClientFeatureToTransportSyncTest : public SyncTest {
  public:
-  SingleClientFeatureToTransportSyncTest() : SyncTest(SINGLE_CLIENT) {
-    // Note: kReplaceSyncPromosWithSignInPromos is required so that bookmarks
-    // and reading list are considered selected-by-default for non-syncing
-    // users.
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {syncer::kReplaceSyncPromosWithSignInPromos},
-        /*disabled_features=*/{});
-  }
+  SingleClientFeatureToTransportSyncTest() : SyncTest(SINGLE_CLIENT) {}
 
   ~SingleClientFeatureToTransportSyncTest() override = default;
 
@@ -587,9 +574,6 @@ class SingleClientFeatureToTransportSyncTest : public SyncTest {
     return static_cast<reading_list::DualReadingListModel*>(
         ReadingListModelFactory::GetForBrowserContext(GetProfile(0)));
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 
  protected:
   const GURL kUrl{"https://url.com/"};
@@ -695,10 +679,8 @@ class SingleClientPolicySyncTest
  public:
   SingleClientPolicySyncTest() : SyncTest(SINGLE_CLIENT) {
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitWithFeatures(
-          {syncer::kReplaceSyncPromosWithSignInPromos,
-           switches::kSyncEnableBookmarksInTransportMode},
-          {});
+      scoped_feature_list_.InitAndEnableFeature(
+          switches::kSyncEnableBookmarksInTransportMode);
     }
   }
   ~SingleClientPolicySyncTest() override = default;
@@ -807,12 +789,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientPolicySyncTest,
 
 class SingleClientOldProgressMarkerSyncTest : public SyncTest {
  public:
-  SingleClientOldProgressMarkerSyncTest() : SyncTest(SINGLE_CLIENT) {
-    features_.InitWithFeatures(
-        /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
-                              switches::kSyncEnableBookmarksInTransportMode},
-        /*disabled_features=*/{});
-  }
+  SingleClientOldProgressMarkerSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientOldProgressMarkerSyncTest() override = default;
   SingleClientOldProgressMarkerSyncTest(
       const SingleClientOldProgressMarkerSyncTest&) = delete;
@@ -826,7 +803,8 @@ class SingleClientOldProgressMarkerSyncTest : public SyncTest {
   }
 
  private:
-  base::test::ScopedFeatureList features_;
+  base::test::ScopedFeatureList features_{
+      switches::kSyncEnableBookmarksInTransportMode};
 
  protected:
   const base::Uuid kBookmarkUuid1 =

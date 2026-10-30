@@ -19,14 +19,7 @@ class SingleClientCollaborationGroupSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientCollaborationGroupSyncTest() : SyncTest(SINGLE_CLIENT) {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        data_sharing::features::kDataSharingFeature};
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-    feature_list_.InitWithFeatures(enabled_features, {});
-  }
+  SingleClientCollaborationGroupSyncTest() : SyncTest(SINGLE_CLIENT) {}
 
   ~SingleClientCollaborationGroupSyncTest() override = default;
 
@@ -45,7 +38,8 @@ class SingleClientCollaborationGroupSyncTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      data_sharing::features::kDataSharingFeature};
 };
 
 INSTANTIATE_TEST_SUITE_P(,

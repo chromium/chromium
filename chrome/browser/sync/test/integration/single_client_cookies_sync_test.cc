@@ -77,14 +77,7 @@ class SingleClientCookiesSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientCookiesSyncTest() : SyncTest(SINGLE_CLIENT) {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        ash::features::kFloatingSso};
-    if (GetParam() == SyncTest::SetupSyncMode::kSyncTransportOnly) {
-      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-    features_.InitWithFeatures(enabled_features, /*disabled_features=*/{});
-  }
+  SingleClientCookiesSyncTest() : SyncTest(SINGLE_CLIENT) {}
 
   SingleClientCookiesSyncTest(const SingleClientCookiesSyncTest&) = delete;
   SingleClientCookiesSyncTest& operator=(const SingleClientCookiesSyncTest&) =
@@ -160,7 +153,7 @@ class SingleClientCookiesSyncTest
   }
 
  private:
-  base::test::ScopedFeatureList features_;
+  base::test::ScopedFeatureList features_{ash::features::kFloatingSso};
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 

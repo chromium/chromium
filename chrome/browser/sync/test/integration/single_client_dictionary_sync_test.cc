@@ -30,18 +30,9 @@ class SingleClientDictionarySyncTest
           std::tuple<bool, SyncTest::SetupSyncMode>> {
  public:
   SingleClientDictionarySyncTest() : SyncTest(SINGLE_CLIENT) {
-    std::vector<base::test::FeatureRef> enabled;
-    std::vector<base::test::FeatureRef> disabled;
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      enabled.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-    if (std::get<0>(GetParam())) {
-      enabled.push_back(syncer::kSpellcheckSeparateLocalAndAccountDictionaries);
-    } else {
-      disabled.push_back(
-          syncer::kSpellcheckSeparateLocalAndAccountDictionaries);
-    }
-    feature_list_.InitWithFeatures(enabled, disabled);
+    feature_list_.InitWithFeatureState(
+        syncer::kSpellcheckSeparateLocalAndAccountDictionaries,
+        std::get<0>(GetParam()));
   }
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
@@ -86,16 +77,8 @@ class SingleClientDictionaryTransportModeSyncTest
       public testing::WithParamInterface<bool> {
  public:
   SingleClientDictionaryTransportModeSyncTest() : SyncTest(SINGLE_CLIENT) {
-    std::vector<base::test::FeatureRef> enabled = {
-        syncer::kReplaceSyncPromosWithSignInPromos};
-    std::vector<base::test::FeatureRef> disabled;
-    if (GetParam()) {
-      enabled.push_back(syncer::kSpellcheckSeparateLocalAndAccountDictionaries);
-    } else {
-      disabled.push_back(
-          syncer::kSpellcheckSeparateLocalAndAccountDictionaries);
-    }
-    feature_list_.InitWithFeatures(enabled, disabled);
+    feature_list_.InitWithFeatureState(
+        syncer::kSpellcheckSeparateLocalAndAccountDictionaries, GetParam());
   }
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
@@ -183,7 +166,6 @@ class SingleClientDictionaryWithAccountStorageSyncTest
     std::vector<base::test::FeatureRef> enabled = {
         syncer::kSpellcheckSeparateLocalAndAccountDictionaries};
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      enabled.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
       enabled.push_back(switches::kEnablePreferencesAccountStorage);
       enabled.push_back(syncer::kSeparateLocalAndAccountSearchEngines);
     }

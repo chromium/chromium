@@ -35,7 +35,6 @@
 #include "components/signin/public/base/tink_key.pb.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -208,8 +207,6 @@ class SingleClientDeviceInfoSyncTest
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      enabled_features.emplace_back(syncer::kReplaceSyncPromosWithSignInPromos,
-                                    base::FieldTrialParams{});
       enabled_features.emplace_back(
           switches::kSyncEnableBookmarksInTransportMode,
           base::FieldTrialParams{});

@@ -63,14 +63,7 @@ class SingleClientAccountSettingSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientAccountSettingSyncTest() : SyncTest(SINGLE_CLIENT) {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        syncer::kSyncAccountSettings};
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-    feature_list_.InitWithFeatures(enabled_features, /*disabled_features=*/{});
-  }
+  SingleClientAccountSettingSyncTest() : SyncTest(SINGLE_CLIENT) {}
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
     return GetParam();
@@ -99,7 +92,7 @@ class SingleClientAccountSettingSyncTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{syncer::kSyncAccountSettings};
 };
 
 INSTANTIATE_TEST_SUITE_P(,
