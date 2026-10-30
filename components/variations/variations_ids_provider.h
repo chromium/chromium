@@ -69,7 +69,8 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
  public:
   class COMPONENT_EXPORT(VARIATIONS) Observer {
    public:
-    // Called when variation ids headers are updated.
+    // Called when variation ids headers are updated and at least one header
+    // value has changed.
     virtual void VariationIdsHeaderUpdated() = 0;
 
    protected:
@@ -235,8 +236,12 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsIdsProvider
       const std::vector<SyntheticTrialGroup>& groups) override;
 
   // Updates `active_variation_ids_set_` and `variations_headers_map_` if
-  // necessary.
-  void MaybeUpdateVariationIDsAndHeaders() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  // necessary. `optimize_ipc` must be evaluated by the caller before acquiring
+  // `lock_` because `FeatureList::IsEnabled()` can activate the feature's
+  // backing field trial and synchronously re-enter
+  // `OnFieldTrialGroupFinalized()`.
+  void MaybeUpdateVariationIDsAndHeaders(bool optimize_ipc)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Implementation of ForceVariationIds().
   ForceIdsResult ForceVariationIdsImpl(

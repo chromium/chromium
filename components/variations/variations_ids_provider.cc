@@ -22,7 +22,19 @@
 #include "components/variations/variations_features.h"
 
 namespace variations {
+
+BASE_FEATURE(kOptimizeVariationsIpc, base::FEATURE_DISABLED_BY_DEFAULT);
+
 namespace {
+
+// Must be evaluated before acquiring `VariationsIdsProvider::lock_`: querying
+// `FeatureList::IsEnabled()` may activate the feature's backing field trial,
+// which synchronously invokes `OnFieldTrialGroupFinalized()` on the current
+// thread and acquires `lock_`.
+bool GetOptimizeVariationsIpcFeatureState() {
+  return base::FeatureList::GetInstance() &&
+         base::FeatureList::IsEnabled(kOptimizeVariationsIpc);
+}
 
 VariationsIdsProvider* g_instance = nullptr;
 
@@ -88,11 +100,12 @@ VariationsIdsProvider::GetClientDataHeaders(bool is_signed_in) {
     is_signed_in = false;
   }
 
+  const bool optimize_ipc = GetOptimizeVariationsIpcFeatureState();
   std::string first_party_header_copy;
   std::string any_context_header_copy;
   {
     base::AutoLock lock(lock_);
-    MaybeUpdateVariationIDsAndHeaders();
+    MaybeUpdateVariationIDsAndHeaders(optimize_ipc);
     first_party_header_copy = GetClientDataHeader(
         is_signed_in, Study_GoogleWebVisibility_FIRST_PARTY);
     any_context_header_copy =
@@ -293,7 +306,13 @@ std::string VariationsIdsProvider::GetVariationsString(
 void VariationsIdsProvider::OnFieldTrialGroupFinalized(
     const base::FieldTrial& trial,
     const std::string& group_name) {
+  const bool optimize_ipc = GetOptimizeVariationsIpcFeatureState();
   base::AutoLock scoped_lock(lock_);
+  if (optimize_ipc &&
+      (last_update_time_ == base::Time::Min() ||
+       !HasAnyGoogleVariationID(trial.trial_name(), group_name))) {
+    return;
+  }
   // The finalized field trial may have caused variation IDs to be added to the
   // active set. Reset the last update time to force an update on the next call
   // to `MaybeUpdateVariationIDsAndHeaders()`.
@@ -329,7 +348,8 @@ void VariationsIdsProvider::OnSyntheticTrialsChanged(
   }
 }
 
-void VariationsIdsProvider::MaybeUpdateVariationIDsAndHeaders() {
+void VariationsIdsProvider::MaybeUpdateVariationIDsAndHeaders(
+    bool optimize_ipc) {
   lock_.AssertAcquired();
 
   // Check if an update is needed. If not, return early (the currently cached
@@ -360,17 +380,28 @@ void VariationsIdsProvider::MaybeUpdateVariationIDsAndHeaders() {
   RemoveForceDisabledVariationIds();
 
   // Generate the header values.
+  bool headers_changed = false;
   for (bool is_signed_in : {false, true}) {
     for (auto context : {Study_GoogleWebVisibility_ANY,
                          Study_GoogleWebVisibility_FIRST_PARTY}) {
-      variations_headers_map_[VariationsHeaderKey{is_signed_in, context}] =
+      VariationsHeaderKey key{is_signed_in, context};
+      std::string new_header =
           GenerateBase64EncodedProto(is_signed_in, context);
+      std::string& cached_header = variations_headers_map_[key];
+      if (optimize_ipc && cached_header == new_header) {
+        continue;
+      }
+      cached_header = std::move(new_header);
+      headers_changed = true;
     }
   }
 
-  // Notify observers that the variation IDs header has been updated.
-  for (variations::VariationsIdsProvider::Observer* observer : observer_list_) {
-    observer->VariationIdsHeaderUpdated();
+  if (headers_changed) {
+    // Notify observers that the variation IDs header has been updated.
+    for (variations::VariationsIdsProvider::Observer* observer :
+         observer_list_) {
+      observer->VariationIdsHeaderUpdated();
+    }
   }
 }
 
@@ -593,11 +624,12 @@ std::string VariationsIdsProvider::GetClientDataHeader(
 
 std::vector<VariationID> VariationsIdsProvider::GetVariationsVectorImpl(
     const std::set<IDCollectionKey>& keys) {
+  const bool optimize_ipc = GetOptimizeVariationsIpcFeatureState();
   // Get all the active variation ids while holding the lock.
   std::vector<VariationID> result;
   {
     base::AutoLock scoped_lock(lock_);
-    MaybeUpdateVariationIDsAndHeaders();
+    MaybeUpdateVariationIDsAndHeaders(optimize_ipc);
 
     // Copy the requested variations to the output vector.
     result.reserve(active_variation_ids_set_.size());

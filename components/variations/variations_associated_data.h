@@ -167,6 +167,12 @@ VariationID GetGoogleVariationID(
 COMPONENT_EXPORT(VARIATIONS)
 bool HasGoogleVariationID(IDCollectionKey key, std::string_view trial_name);
 
+// Returns true if there is any `VariationID` associated with the `FieldTrial`
+// group (denoted by `trial_name` and `group_name`) across any collection key.
+COMPONENT_EXPORT(VARIATIONS)
+bool HasAnyGoogleVariationID(std::string_view trial_name,
+                             std::string_view group_name);
+
 // Returns the next time after the given time that a time window will start or
 // end for a VariationID.
 COMPONENT_EXPORT(VARIATIONS)

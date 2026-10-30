@@ -268,4 +268,14 @@ TEST_F(VariationsAssociatedDataTest,
   EXPECT_EQ(base::Time::Max(), GetNextTimeWindowEvent(prev));
 }
 
+TEST_F(VariationsAssociatedDataTest, HasAnyGoogleVariationID) {
+  EXPECT_FALSE(HasAnyGoogleVariationID(TRIAL, GROUP));
+
+  AssociateGoogleVariationIDForTesting(GOOGLE_WEB_PROPERTIES_FIRST_PARTY, TRIAL,
+                                       GROUP, TEST_VALUE_A);
+  EXPECT_TRUE(HasAnyGoogleVariationID(TRIAL, GROUP));
+  EXPECT_FALSE(HasAnyGoogleVariationID(TRIAL, "other_group"));
+  EXPECT_FALSE(HasAnyGoogleVariationID("other_trial", GROUP));
+}
+
 }  // namespace variations

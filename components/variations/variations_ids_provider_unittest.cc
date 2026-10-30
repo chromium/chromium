@@ -4,10 +4,14 @@
 
 #include "components/variations/variations_ids_provider.h"
 
+#include <memory>
 #include <string>
+#include <utility>
 
 #include "base/base64.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
@@ -18,6 +22,7 @@
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations.mojom.h"
 #include "components/variations/variations_associated_data.h"
+#include "components/variations/variations_features.h"
 #include "components/variations/variations_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -568,6 +573,117 @@ TEST_F(VariationsIdsProviderTest, GetVariationsVectorForWebPropertiesKeys) {
   provider.ForceVariationIdsForTesting({"100", "t101"}, "");
   EXPECT_EQ((std::vector<VariationID>{100, 101, 121, 122, 123, 124, 125}),
             provider.GetVariationsVectorForWebPropertiesKeys());
+}
+
+namespace {
+
+class TestVariationsIdsObserver : public VariationsIdsProvider::Observer {
+ public:
+  // VariationsIdsProvider::Observer:
+  void VariationIdsHeaderUpdated() override { ++update_count_; }
+
+  int update_count() const { return update_count_; }
+
+ private:
+  int update_count_ = 0;
+};
+
+}  // namespace
+
+TEST_F(VariationsIdsProviderTest,
+       VariationIdsHeaderUpdated_OnlyNotifiesWhenHeadersChange) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kOptimizeVariationsIpc);
+  base::HistogramTester histogram_tester;
+
+  ScopedVariationsIdsProvider scoped_provider(
+      VariationsIdsProvider::Mode::kUseSignedInState);
+  auto& provider = *scoped_provider;
+
+  TestVariationsIdsObserver observer;
+  provider.AddObserver(&observer);
+
+  scoped_refptr<base::FieldTrial> trial_with_id =
+      CreateInactiveTrialAndAssociateId(
+          "TrialWithId", "g1", GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, 121);
+  scoped_refptr<base::FieldTrial> trial_without_id =
+      base::FieldTrialList::CreateFieldTrial("TrialWithoutId", "g1");
+
+  // Initial empty lookup subscribes to `FieldTrialList` without firing an
+  // update when all headers remain empty.
+  EXPECT_TRUE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
+  EXPECT_EQ(0, observer.update_count());
+  histogram_tester.ExpectTotalCount("Variations.Headers.ExperimentCount", 0);
+
+  // Finalizing a field trial with an associated `VariationID` updates the
+  // header (generating 4 header keys) and notifies observers once.
+  trial_with_id->Activate();
+  EXPECT_FALSE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
+  EXPECT_EQ(1, observer.update_count());
+  histogram_tester.ExpectTotalCount("Variations.Headers.ExperimentCount", 4);
+
+  // Finalizing a field trial without an associated `VariationID` should not
+  // invalidate cached headers (no new `GenerateBase64EncodedProto()` calls) or
+  // notify observers.
+  trial_without_id->Activate();
+  EXPECT_FALSE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
+  EXPECT_EQ(1, observer.update_count());
+  histogram_tester.ExpectTotalCount("Variations.Headers.ExperimentCount", 4);
+
+  // Recomputing headers when the resulting header strings are unchanged does
+  // not re-notify observers.
+  EXPECT_TRUE(provider.ForceDisableVariationIds("999"));
+  EXPECT_FALSE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
+  EXPECT_EQ(1, observer.update_count());
+  histogram_tester.ExpectTotalCount("Variations.Headers.ExperimentCount", 8);
+
+  provider.RemoveObserver(&observer);
+}
+
+TEST_F(VariationsIdsProviderTest, VariationIdsHeaderUpdated_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kOptimizeVariationsIpc);
+
+  ScopedVariationsIdsProvider scoped_provider(
+      VariationsIdsProvider::Mode::kUseSignedInState);
+  auto& provider = *scoped_provider;
+
+  TestVariationsIdsObserver observer;
+  provider.AddObserver(&observer);
+
+  scoped_refptr<base::FieldTrial> trial_without_id =
+      base::FieldTrialList::CreateFieldTrial("TrialWithoutId", "g1");
+
+  EXPECT_TRUE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
+  EXPECT_EQ(1, observer.update_count());
+
+  trial_without_id->Activate();
+  EXPECT_TRUE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
+  EXPECT_EQ(2, observer.update_count());
+
+  provider.RemoveObserver(&observer);
+}
+
+TEST_F(VariationsIdsProviderTest,
+       GetClientDataHeaders_FeatureTrialActivatedWithoutDeadlock) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  auto feature_list = std::make_unique<base::FeatureList>();
+  scoped_refptr<base::FieldTrial> trial = CreateInactiveTrialAndAssociateId(
+      "OptimizeVariationsIpcStudy", "Enabled",
+      GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, 121);
+  feature_list->RegisterFieldTrialOverride(
+      kOptimizeVariationsIpc.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
+      trial.get());
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  ScopedVariationsIdsProvider scoped_provider(
+      VariationsIdsProvider::Mode::kUseSignedInState);
+  auto& provider = *scoped_provider;
+
+  // Querying headers when `kOptimizeVariationsIpc`'s field trial has not yet
+  // been activated must evaluate `IsEnabled(kOptimizeVariationsIpc)` before
+  // acquiring `lock_` so `OnFieldTrialGroupFinalized()` does not self-deadlock.
+  EXPECT_FALSE(provider.GetClientDataHeaders(/*is_signed_in=*/false).is_null());
 }
 
 }  // namespace variations

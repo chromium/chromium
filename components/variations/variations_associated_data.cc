@@ -78,6 +78,17 @@ class GroupMapAccessor {
     return false;
   }
 
+  bool HasAnyID(ActiveGroupId group_identifier) {
+    base::AutoLock scoped_lock(lock_);
+    for (int i = 0; i < ID_COLLECTION_COUNT; ++i) {
+      if (GetIDLocked(static_cast<IDCollectionKey>(i), group_identifier) !=
+          EMPTY_ID) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   void ClearAllMapsForTesting() {
     base::AutoLock scoped_lock(lock_);
 
@@ -227,6 +238,12 @@ VariationID GetGoogleVariationID(
 bool HasGoogleVariationID(IDCollectionKey key, std::string_view trial_name) {
   uint32_t trial_name_hash = HashName(trial_name);
   return GroupMapAccessor::GetInstance()->HasIDForTrial(key, trial_name_hash);
+}
+
+bool HasAnyGoogleVariationID(std::string_view trial_name,
+                             std::string_view group_name) {
+  return GroupMapAccessor::GetInstance()->HasAnyID(
+      MakeActiveGroupId(trial_name, group_name));
 }
 
 base::Time GetNextTimeWindowEvent(base::Time current_time) {
