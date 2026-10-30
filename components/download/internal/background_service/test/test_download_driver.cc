@@ -103,7 +103,9 @@ void TestDownloadDriver::Pause(const std::string& guid) {
 
 void TestDownloadDriver::ResumeWithFactory(
     const std::string& guid,
-    scoped_refptr<network::SharedURLLoaderFactory> factory) {
+    scoped_refptr<network::SharedURLLoaderFactory> factory,
+    const std::optional<url::Origin>& request_initiator,
+    const std::optional<net::IsolationInfo>& isolation_info) {
   auto it = entries_.find(guid);
   if (it == entries_.end())
     return;

@@ -1042,7 +1042,10 @@ void ControllerImpl::UpdateDriverState(Entry* entry) {
         !guids_with_custom_request_params_.contains(entry->guid);
 
     if (driver_entry.has_value() && !requires_custom_params) {
-      driver_->Resume(entry->guid);
+      driver_->ResumeWithFactory(entry->guid,
+                                 entry->request_params.url_loader_factory,
+                                 entry->request_params.initiator,
+                                 entry->request_params.isolation_info);
     } else {
       if (driver_entry.has_value() && entry->has_upload_data) {
         // HTTP POST requests cannot be resumed, they must be restarted.
@@ -1117,8 +1120,9 @@ void ControllerImpl::OnDownloadReadyToStart(const std::string& guid,
   auto driver_entry = driver_->Find(guid);
   if (driver_entry.has_value()) {
     DVLOG(1) << "Download already exists. Resuming.";
-    driver_->ResumeWithFactory(entry->guid,
-                               entry->request_params.url_loader_factory);
+    driver_->ResumeWithFactory(
+        entry->guid, entry->request_params.url_loader_factory,
+        entry->request_params.initiator, entry->request_params.isolation_info);
     return;
   }
 

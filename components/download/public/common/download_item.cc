@@ -26,5 +26,10 @@ void DownloadItem::SetDownloadUrlForTesting(const GURL& url) {
 void DownloadItem::SetURLLoaderFactory(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {}
 
+void DownloadItem::SetRequestInitiator(
+    const std::optional<url::Origin>& request_initiator) {}
+
+void DownloadItem::SetIsolationInfo(
+    const std::optional<net::IsolationInfo>& isolation_info) {}
 
 }  // namespace download
