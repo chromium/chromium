@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
   <int value="61" label="FailureUploadCompleted"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/metrics/private_metrics/private_insights/fcp_event_publisher.h:PrivateInsightsFcpEvent) -->
+<!-- LINT.ThenChange(//components/private_insights/fcp_event_publisher.h:PrivateInsightsFcpEvent) -->
 
 <!-- LINT.IfChange(PrivateInsightsFederatedComputationOutcome) -->
 
@@ -109,7 +109,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Error: Database Reset Failed"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/metrics/private_metrics/private_insights/private_insights_service.h:PrivateInsightsFederatedComputationOutcome) -->
+<!-- LINT.ThenChange(//components/private_insights/private_insights_service.h:PrivateInsightsFederatedComputationOutcome) -->
 
 <!-- LINT.IfChange(PrivateInsightsTriggerUploadOutcome) -->
 
@@ -117,9 +117,10 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Skipped because it was already running"/>
   <int value="1" label="Task was posted"/>
   <int value="2" label="Skipped because there was no data"/>
+  <int value="3" label="Skipped because the FCP server URI was empty"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/metrics/private_metrics/private_insights/private_insights_service.h:PrivateInsightsTriggerUploadOutcome) -->
+<!-- LINT.ThenChange(//components/private_insights/private_insights_service.h:PrivateInsightsTriggerUploadOutcome) -->
 
 <!-- LINT.IfChange(PumaLogRotationOutcome) -->
 

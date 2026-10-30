@@ -18,6 +18,17 @@ namespace private_insights {
 COMPONENT_EXPORT(PRIVATE_INSIGHTS)
 BASE_DECLARE_FEATURE(kPrivateInsightsFeature);
 
+// Routes Contextual Cues uploads through the generic `UploadTask` /
+// `PendingEventsBatch` pipeline, which serializes events on the thread pool
+// and is population agnostic. When disabled, Contextual Cues uses the original
+// upload path, which is left unchanged (events serialized on the main
+// sequence). Populations added after Contextual Cues only ever use the new
+// pipeline; this flag exists to migrate the one pre-existing population
+// without disturbing its rollout.
+// TODO(b/576348553): Remove, along with the original path, once rolled out.
+COMPONENT_EXPORT(PRIVATE_INSIGHTS)
+BASE_DECLARE_FEATURE(kPrivateInsightsUploadTaskPipeline);
+
 // The interval between periodic tasks run by PrivateInsightsService.
 COMPONENT_EXPORT(PRIVATE_INSIGHTS)
 extern const base::FeatureParam<base::TimeDelta> kPrivateInsightsUploadInterval;

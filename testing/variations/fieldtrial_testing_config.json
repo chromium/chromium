@@ -14907,7 +14907,8 @@
                         "upload_interval": "10m"
                     },
                     "enable_features": [
-                        "PrivateInsightsFeature"
+                        "PrivateInsightsFeature",
+                        "PrivateInsightsUploadTaskPipeline"
                     ]
                 }
             ]

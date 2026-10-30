@@ -10,6 +10,9 @@ namespace private_insights {
 
 BASE_FEATURE(kPrivateInsightsFeature, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPrivateInsightsUploadTaskPipeline,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<base::TimeDelta> kPrivateInsightsUploadInterval{
     &kPrivateInsightsFeature, "upload_interval", base::Minutes(30)};
 

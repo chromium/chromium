@@ -4,9 +4,14 @@
 
 #include "components/private_insights/private_insights_service.h"
 
+#include <functional>
+#include <memory>
 #include <string>
+#include <string_view>
+#include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
@@ -246,11 +251,66 @@ void PrivateInsightsService::SerializeEventsToQueryResult(
   }
 }
 
+PrivateInsightsService::UploadTask::UploadTask() = default;
+PrivateInsightsService::UploadTask::UploadTask(UploadTask&&) = default;
+PrivateInsightsService::UploadTask&
+PrivateInsightsService::UploadTask::operator=(UploadTask&&) = default;
+PrivateInsightsService::UploadTask::~UploadTask() = default;
+
+template <typename EventProto>
+PrivateInsightsService::UploadTask PrivateInsightsService::MakeUploadTask(
+    base::circular_deque<EventEntry<EventProto>>& queue,
+    std::string population_name,
+    int max_events,
+    std::string_view requeued_count_histogram,
+    std::string_view dropped_count_histogram) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  UploadTask task;
+  task.task_env = fcp_task_env_;
+  task.server_uri = kFcpServerUri.Get();
+  task.population_name = std::move(population_name);
+  task.trigger_time = base::TimeTicks::Now();
+
+  // Detach the queued events, leaving `queue` empty. (Swap rather than move:
+  // a moved-from `circular_deque` is only "valid but unspecified", whereas
+  // after a swap `queue` is guaranteed empty and ready for new events.)
+  base::circular_deque<EventEntry<EventProto>> detached_events;
+  detached_events.swap(queue);
+
+  // `base::BindOnce` only cancels on an invalidated WeakPtr for member
+  // function targets, so the lambda takes the WeakPtr explicitly and checks
+  // it before touching `queue` (a member of `*this`).
+  task.batch = std::make_unique<TypedPendingEventsBatch<EventProto>>(
+      std::move(detached_events),
+      base::BindOnce(
+          [](base::WeakPtr<PrivateInsightsService> service,
+             base::circular_deque<EventEntry<EventProto>>& target_queue,
+             int max_events, std::string requeued_count_histogram,
+             std::string dropped_count_histogram,
+             base::circular_deque<EventEntry<EventProto>> events) {
+            if (!service) {
+              return;
+            }
+            service->RequeueEvents(std::move(events), target_queue, max_events,
+                                   requeued_count_histogram,
+                                   dropped_count_histogram);
+          },
+          weak_ptr_factory_.GetWeakPtr(), std::ref(queue), max_events,
+          std::string(requeued_count_histogram),
+          std::string(dropped_count_histogram)));
+  return task;
+}
+
 void PrivateInsightsService::TriggerUpload() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_upload_running_) {
     base::UmaHistogramEnumeration(kTriggerUploadOutcomeHistogram,
                                   TriggerUploadOutcome::kSkippedAlreadyRunning);
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(kPrivateInsightsUploadTaskPipeline)) {
+    TriggerUploadTask();
     return;
   }
 
@@ -323,6 +383,90 @@ PrivateInsightsService::UploadBlocking(
   return result;
 }
 
+void PrivateInsightsService::TriggerUploadTask() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!is_upload_running_);
+
+  // TODO(b/574637098): Iterate over registered populations instead of
+  // hard-coding Contextual Cues once the population registry lands.
+  UploadTask task = MakeUploadTask(
+      contextual_cue_events_, kFcpPopulationNameContextualCues.Get(),
+      kMaxContextualCueEvents.Get(),
+      kContextualCueEventsRequeuingRequeuedCountHistogram,
+      kContextualCueEventsRequeuingDroppedCountHistogram);
+  if (task.batch->size() == 0) {
+    base::UmaHistogramEnumeration(kTriggerUploadOutcomeHistogram,
+                                  TriggerUploadOutcome::kSkippedNoData);
+    return;
+  }
+  if (task.server_uri.empty()) {
+    // Misconfiguration; nothing can be uploaded. Record same federated
+    // computation outcome the original path reports from the thread pool, and
+    // drop the batch (the original path doesn't requeue in this case either).
+    base::UmaHistogramEnumeration(kTriggerUploadOutcomeHistogram,
+                                  TriggerUploadOutcome::kSkippedNoServerUri);
+    base::UmaHistogramEnumeration(
+        kFederatedComputationOutcomeHistogram,
+        FederatedComputationOutcome::kErrorNoServerUri);
+    return;
+  }
+
+  is_upload_running_ = true;
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::WithBaseSyncPrimitives(),
+       base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&PrivateInsightsService::RunUploadTask, std::move(task)),
+      base::BindOnce(&PrivateInsightsService::OnUploadTaskComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  base::UmaHistogramEnumeration(kTriggerUploadOutcomeHistogram,
+                                TriggerUploadOutcome::kTaskPosted);
+}
+
+// static
+PrivateInsightsService::UploadTaskResult PrivateInsightsService::RunUploadTask(
+    UploadTask task) {
+  DCHECK(!task.server_uri.empty());  // Checked in TriggerUploadTask().
+  base::UmaHistogramTimes(kUploadPendingTimeHistogram,
+                          base::TimeTicks::Now() - task.trigger_time);
+
+  // Serialize on the thread pool so that the main sequence doesn't pay for
+  // serializing potentially many events. `result()` is only ever touched from
+  // here while an upload is in flight (uploads are serialized by
+  // `is_upload_running_`).
+  task.task_env->result().Clear();
+  task.batch->SerializeToQueryResult(&task.task_env->result());
+
+  base::TimeTicks upload_start_time = base::TimeTicks::Now();
+
+  FcpEventPublisher fcp_event_publisher;
+  FcpFiles fcp_files;
+  FcpLogManager fcp_log_manager;
+  FcpFlags fcp_flags;
+
+  FederatedComputationParams params{
+      .task_env = task.task_env.get(),
+      .event_publisher = &fcp_event_publisher,
+      .files = &fcp_files,
+      .log_manager = &fcp_log_manager,
+      .flags = &fcp_flags,
+      .federated_service_uri = task.server_uri,
+      .api_key = google_apis::GetAPIKey(),
+      .population_name = task.population_name,
+  };
+
+  FederatedComputationResult result =
+      GetRunFederatedComputationFunc().Run(params);
+
+  const base::TimeDelta upload_duration =
+      base::TimeTicks::Now() - upload_start_time;
+  base::UmaHistogramTimes(kUploadTimeHistogram, upload_duration);
+  base::UmaHistogramMediumTimes(kUploadTime2Histogram, upload_duration);
+  return {.task = std::move(task), .result = result};
+}
+
 // static
 PrivateInsightsService::FederatedComputationResult
 PrivateInsightsService::RunFederatedComputation(
@@ -388,6 +532,28 @@ void PrivateInsightsService::OnUploadComplete(
                   kMaxContextualCueEvents.Get(),
                   kContextualCueEventsRequeuingRequeuedCountHistogram,
                   kContextualCueEventsRequeuingDroppedCountHistogram);
+  }
+}
+
+void PrivateInsightsService::OnUploadTaskComplete(
+    UploadTaskResult upload_result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_upload_running_ = false;
+  const FederatedComputationResult& result = upload_result.result;
+  base::UmaHistogramEnumeration(kFederatedComputationOutcomeHistogram,
+                                result.outcome);
+  if (result.contributed_task_count.has_value()) {
+    base::UmaHistogramCounts100(
+        kContributedTaskCountHistogram,
+        static_cast<int>(*result.contributed_task_count));
+  }
+
+  if (result.outcome == FederatedComputationOutcome::kFailed) {
+    // Requeue only when we're sure the contribution failed. If it partially
+    // succeeded or we're unsure, we have to drop the data to avoid accidentally
+    // contributing the same data twice, as it would undermine privacy
+    // guarantees of FCP.
+    upload_result.task.batch->Requeue();
   }
 }
 
