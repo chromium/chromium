@@ -37,6 +37,21 @@ found in the LICENSE file.
 
 <!-- LINT.ThenChange(//chrome/browser/selection/metrics_logger.h:EntryPoint) -->
 
+<!-- LINT.IfChange(SmartSelectionSelectionOutcome) -->
+
+<enum name="SmartSelectionSelectionOutcome">
+  <int value="0" label="Text was preselected when starting the session."/>
+  <int value="1" label="The user completed a spatial selection."/>
+  <int value="2"
+      label="The user explicitly exited the selection mode (e.g., by pressing
+             ESC)."/>
+  <int value="3"
+      label="The selection mode was exited for other reasons - for example
+             tab or browser close."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/selection/metrics_logger.h:SelectionOutcome) -->
+
 </enums>
 
 </histogram-configuration>

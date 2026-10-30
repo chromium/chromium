@@ -42,6 +42,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SmartSelection.Selection.Outcome"
+    enum="SmartSelectionSelectionOutcome" expires_after="2027-04-14">
+  <owner>schwering@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <summary>
+    Records the outcome of the initial selection stage in a Smart Selection UI
+    session. Recorded once per session when the selection stage completes or the
+    session ends.
+  </summary>
+</histogram>
+
 <histogram name="SmartSelection.Suggestions.Latency.{Stage}" units="ms"
     expires_after="2027-04-14">
   <owner>schwering@google.com</owner>

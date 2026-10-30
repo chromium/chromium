@@ -34,13 +34,46 @@ DocumentMimeType GetDocumentMimeType(std::string_view mime_type) {
 }  // namespace
 
 MetricsLogger::MetricsLogger(EntryPoint entry_point,
-                             std::string_view mime_type) {
+                             std::string_view mime_type,
+                             bool has_preselected_region)
+    : has_preselected_region_(has_preselected_region) {
   base::UmaHistogramEnumeration("SmartSelection.Invocation.ByEntryPoint",
                                 entry_point);
   base::UmaHistogramEnumeration("SmartSelection.Invocation.ByDocumentMimeType",
                                 GetDocumentMimeType(mime_type));
+  if (has_preselected_region_) {
+    base::UmaHistogramEnumeration("SmartSelection.Selection.Outcome",
+                                  SelectionOutcome::kPreselectedText);
+  }
 }
 
-MetricsLogger::~MetricsLogger() = default;
+MetricsLogger::~MetricsLogger() {
+  if (!session_end_recorded_) {
+    RecordSessionEnd(/*cancelled_by_user=*/false);
+  }
+}
+
+void MetricsLogger::RecordSpatialSelectionCompleted() {
+  if (has_preselected_region_ || spatial_selection_completed_) {
+    return;
+  }
+  spatial_selection_completed_ = true;
+  base::UmaHistogramEnumeration("SmartSelection.Selection.Outcome",
+                                SelectionOutcome::kSpatialSelectionCompleted);
+}
+
+void MetricsLogger::RecordSessionEnd(bool cancelled_by_user) {
+  if (session_end_recorded_) {
+    return;
+  }
+  session_end_recorded_ = true;
+
+  if (!has_preselected_region_ && !spatial_selection_completed_) {
+    base::UmaHistogramEnumeration("SmartSelection.Selection.Outcome",
+                                  cancelled_by_user
+                                      ? SelectionOutcome::kCancelledByUser
+                                      : SelectionOutcome::kAbandonedOrError);
+  }
+}
 
 }  // namespace selection
