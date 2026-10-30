@@ -136,8 +136,7 @@ bool InputHintChecker::HasInputImplWithThrottling() {
     return false;
   }
 
-  // Input processing is associated with the root view. Early return when the
-  // root view is not available. It can happen in cases like multi-window.
+  // Very inexpensive check.
   if (view_.is_uninitialized()) {
     return false;
   }
@@ -150,6 +149,8 @@ bool InputHintChecker::HasInputImplWithThrottling() {
     return false;
   }
 
+  // Input processing is associated with the root view. Early return when the
+  // root view is not available. It can happen in cases like multi-window.
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> scoped_view = view_.get(env);
   if (!scoped_view) {
