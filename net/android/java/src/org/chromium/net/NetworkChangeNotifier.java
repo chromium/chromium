@@ -267,7 +267,8 @@ public class NetworkChangeNotifier {
                     final ConnectivityManagerWrapper.NetworkState networkState =
                             mAutoDetector.getCurrentNetworkState();
 
-                    updateCurrentConnectionType(networkState.getConnectionType());
+                    updateCurrentConnectionType(
+                            networkState.getConnectionType(), networkState.getNetId());
                     updateCurrentConnectionCost(networkState.getConnectionCost());
                     notifyObserversOfConnectionSubtypeChange(networkState.getConnectionSubtype());
                 }
@@ -356,15 +357,15 @@ public class NetworkChangeNotifier {
     }
 
     private void updateCurrentConnectionType(int newConnectionType) {
+        updateCurrentConnectionType(newConnectionType, getCurrentDefaultNetId());
+    }
+
+    private void updateCurrentConnectionType(int newConnectionType, long defaultNetId) {
         mCurrentConnectionType = newConnectionType;
-        notifyObserversOfConnectionTypeChange(newConnectionType);
+        notifyObserversOfConnectionTypeChange(newConnectionType, defaultNetId);
     }
 
     /** Alerts all observers of a connection change. */
-    void notifyObserversOfConnectionTypeChange(int newConnectionType) {
-        notifyObserversOfConnectionTypeChange(newConnectionType, getCurrentDefaultNetId());
-    }
-
     private void notifyObserversOfConnectionTypeChange(int newConnectionType, long defaultNetId) {
         for (Long nativeChangeNotifier : mNativeChangeNotifiers) {
             NetworkChangeNotifierJni.get()

@@ -111,10 +111,14 @@ public class BackgroundSyncNetworkObserver implements NetworkChangeNotifierAutoD
                             this, new RegistrationPolicyAlwaysRegister());
             RecordHistogram.recordBooleanHistogram(
                     "BackgroundSync.NetworkObserver.HasPermission", true);
+        } else {
+            // Ensure the cached network state is up-to-date for subsequent observers (when
+            // mNotifier is newly constructed above, its constructor already queries the initial
+            // state).
+            // TODO(crbug.com/40936429): remove this call if it is not necessary.
+            mNotifier.updateCurrentNetworkState();
         }
         mNativePtrs.add(nativePtr);
-        // TODO(crbug.com/40936429): remove this call if it is not necessary.
-        mNotifier.updateCurrentNetworkState();
         BackgroundSyncNetworkObserverJni.get()
                 .notifyConnectionTypeChanged(
                         nativePtr, mNotifier.getCurrentNetworkState().getConnectionType());
