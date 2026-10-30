@@ -9,6 +9,7 @@
 
 #include <list>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -19,6 +20,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -34,6 +36,7 @@
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_delegate.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -60,6 +63,7 @@ class MenuHostRootView;
 class MenuItemView;
 class MenuPreTargetHandler;
 class SubmenuView;
+class Textfield;
 class View;
 class ViewTracker;
 
@@ -78,7 +82,8 @@ class MenuControllerUITest;
 // showing, selecting and drag/drop for menus. All relevant events are
 // forwarded to the MenuController from SubmenuView and MenuHost.
 class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
-                                          public WidgetObserver {
+                                          public WidgetObserver,
+                                          public FocusChangeListener {
  public:
   // Enumeration of how the menu should exit.
   enum class ExitType {
@@ -263,12 +268,23 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
   // Returns ui::POST_DISPATCH_NONE if the event was swallowed by the menu.
   ui::PostDispatchAction OnWillDispatchKeyEvent(ui::KeyEvent* event);
 
+  // Returns true if a Textfield hosted inside the active menu stack currently
+  // has focus and receives key events. Public so platform pre-target and IME
+  // handlers (e.g. MenuPreTargetHandlerMac, TextInputHost) can query it.
+  bool HasFocusedTextfield() const;
+
   // Update the submenu's selection based on the current mouse location
   void UpdateSubmenuSelection(SubmenuView* source);
 
   // WidgetObserver overrides:
   void OnWidgetDestroying(Widget* widget) override;
   void OnWidgetShowStateChanged(Widget* widget) override;
+
+  // FocusChangeListener overrides, observing each submenu widget's
+  // FocusManager:
+  void OnWillChangeFocus(View* focused_before, View* focused_now) override;
+  void OnDidChangeFocus(View* focused_before, View* focused_now) override;
+  void OnFocusManagerDestroying(FocusManager* focus_manager) override;
 
   // Only used for testing.
   bool IsCancelAllTimerRunningForTest();
@@ -462,6 +478,33 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
 
   // Returns true if OnKeyPressed handled the key |event|.
   bool OnKeyPressed(const ui::KeyEvent& event);
+
+  // Returns the Textfield focused inside the active menu stack, if any. Kept
+  // up to date by OnDidChangeFocus().
+  Textfield* GetFocusedTextfield();
+
+  // Clears any hot-tracked button and focuses `text_input`. Selection and
+  // accessibility state follow in OnWillChangeFocus() and OnDidChangeFocus().
+  void FocusTextfield(Textfield* text_input);
+
+  // Clears focus from any focused Textfield inside the menu.
+  void ClearFocusedTextfield();
+
+  // Routes a key press the menu did not handle to the focused `text_input`.
+  // Returns the dispatch action if routing finished the key, or std::nullopt
+  // to continue with menu accelerator handling. A key ends one of two ways:
+  // - Consumed: StopPropagation() and POST_DISPATCH_NONE, when the Textfield
+  //   or the menu used it, including character events, which are typed into
+  //   `text_input` here. Nothing else sees the key, and the Aura InputMethods
+  //   reset any composition, so this is avoided while composing.
+  //   (SetSkipped(), used for keys the menu swallows, also consumes.)
+  // - Handled: SetHandled() and POST_DISPATCH_PERFORM_DEFAULT, when a key
+  //   press belongs to the Textfield but the InputMethod still has work to do
+  //   (InsertChar(), composition). Aura stops routing it to the owner widget,
+  //   while propagation continues for the InputMethod.
+  std::optional<ui::PostDispatchAction> RouteKeyEventToTextfield(
+      Textfield* text_input,
+      ui::KeyEvent* event);
 
   // Creates a MenuController. See |for_drop_| member for details on |for_drop|.
   MenuController(bool for_drop, internal::MenuControllerDelegate* delegate);
@@ -823,6 +866,15 @@ class VIEWS_EXPORT MenuController final : public gfx::AnimationDelegate,
   // Observes `owner_` while a menu is running. Declared after `owner_` so it
   // is destroyed first.
   base::ScopedObservation<Widget, WidgetObserver> owner_observation_{this};
+
+  // Observes the FocusManager of each submenu widget shown by this controller,
+  // so menu-hosted Textfields keep accessibility focus and selection however
+  // they gain or lose FocusManager focus.
+  base::ScopedMultiSourceObservation<FocusManager, FocusChangeListener>
+      submenu_focus_manager_observations_{this};
+
+  // The Textfield focused in one of those FocusManagers, if any.
+  ViewTracker focused_textfield_;
 
   // An optional NativeView to which gestures will be forwarded to if
   // RunType::SEND_GESTURE_EVENTS_TO_OWNER is set.
