@@ -141,8 +141,6 @@ class MockEncoder : public webrtc::VideoEncoder {
   MOCK_METHOD1(SetRates, void(const RateControlParameters& parameters));
   MOCK_METHOD1(OnPacketLossRateUpdate, void(float packet_loss_rate));
   MOCK_METHOD1(OnRttUpdate, void(int64_t rtt_ms));
-  MOCK_METHOD1(OnLossNotification,
-               void(const LossNotification& loss_notification));
 
  private:
   int frame_counter_ = 0;
@@ -446,7 +444,7 @@ TEST_F(StatsCollectingEncoderTest, MethodCallsForwardedToInternalEncoder) {
 
   webrtc::VideoCodec* codec_settings_ptr =
       reinterpret_cast<webrtc::VideoCodec*>(0x123456);
-  webrtc::VideoEncoder::Capabilities capabilities(/*loss_notification=*/true);
+  webrtc::VideoEncoder::Capabilities capabilities(/*loss_notification=*/false);
   webrtc::VideoEncoder::Settings kSettings{capabilities, /*number_of_cores=*/2,
                                            /*max_payload_size=*/2400};
   constexpr int kExpectedInitReturnValue = 13;
@@ -455,8 +453,6 @@ TEST_F(StatsCollectingEncoderTest, MethodCallsForwardedToInternalEncoder) {
                     const webrtc::VideoCodec* codec_settings,
                     const webrtc::VideoEncoder::Settings& settings) {
         EXPECT_EQ(codec_settings_ptr, codec_settings);
-        EXPECT_EQ(kSettings.capabilities.loss_notification,
-                  settings.capabilities.loss_notification);
         EXPECT_EQ(kSettings.number_of_cores, settings.number_of_cores);
         EXPECT_EQ(kSettings.max_payload_size, settings.max_payload_size);
         return kExpectedInitReturnValue;
@@ -477,19 +473,6 @@ TEST_F(StatsCollectingEncoderTest, MethodCallsForwardedToInternalEncoder) {
   constexpr int64_t kRttMs = 12345;
   EXPECT_CALL(*internal_encoder_, OnRttUpdate(kRttMs));
   stats_encoder_.OnRttUpdate(kRttMs);
-
-  const webrtc::VideoEncoder::LossNotification kLossNotification{
-      /*timestamp_of_last_decodable=*/7u, /*timestamp_of_last_received=*/9u};
-  EXPECT_CALL(*internal_encoder_, OnLossNotification)
-      .WillOnce(
-          [&kLossNotification](
-              const webrtc::VideoEncoder::LossNotification& loss_notification) {
-            EXPECT_EQ(loss_notification.timestamp_of_last_decodable,
-                      kLossNotification.timestamp_of_last_decodable);
-            EXPECT_EQ(loss_notification.timestamp_of_last_received,
-                      kLossNotification.timestamp_of_last_received);
-          });
-  stats_encoder_.OnLossNotification(kLossNotification);
 }
 
 TEST_F(StatsCollectingEncoderTest, ConcurrentOnEncodedImage) {

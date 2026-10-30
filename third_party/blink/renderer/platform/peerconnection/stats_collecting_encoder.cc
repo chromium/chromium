@@ -164,11 +164,6 @@ void StatsCollectingEncoder::OnRttUpdate(int64_t rtt_ms) {
   encoder_->OnRttUpdate(rtt_ms);
 }
 
-void StatsCollectingEncoder::OnLossNotification(
-    const LossNotification& loss_notification) {
-  encoder_->OnLossNotification(loss_notification);
-}
-
 webrtc::VideoEncoder::EncoderInfo StatsCollectingEncoder::GetEncoderInfo()
     const {
   return encoder_->GetEncoderInfo();

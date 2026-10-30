@@ -76,7 +76,6 @@ class PLATFORM_EXPORT StatsCollectingEncoder
   void SetRates(const RateControlParameters& parameters) override;
   void OnPacketLossRateUpdate(float packet_loss_rate) override;
   void OnRttUpdate(int64_t rtt_ms) override;
-  void OnLossNotification(const LossNotification& loss_notification) override;
   EncoderInfo GetEncoderInfo() const override;
 
  private:
