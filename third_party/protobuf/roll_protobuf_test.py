@@ -4458,6 +4458,82 @@ class RollProtobufStartTest(unittest.TestCase):
             second_head,
             _RunGitCommand(self.repository_root, ['rev-parse', 'HEAD']))
 
+    def testWorktreeAndPatchDiffHelpers(self):
+        checkout = roll_protobuf._ResolveCheckoutPaths(
+            self.fixture.protobuf_directory)
+        self.assertFalse(roll_protobuf._IsGitOperationInProgress(checkout))
+        merge_head = os.path.join(
+            os.path.dirname(checkout.roll_state_directory), 'MERGE_HEAD')
+        pathlib.Path(merge_head).write_text('deadbeef\n', encoding='utf-8')
+        try:
+            self.assertTrue(roll_protobuf._IsGitOperationInProgress(checkout))
+        finally:
+            os.remove(merge_head)
+
+        self.assertEqual(
+            '0006-helper-test.patch',
+            roll_protobuf._NormalizeNewPatchName('patches/0006-helper-test',
+                                                 checkout.protobuf_directory))
+        for invalid in ('', 'bad-name', '007-short', '0006-', '0006-a..b',
+                        '0006-sub/dir', '\u0660006-arabic'):
+            with self.subTest(invalid=invalid):
+                with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                            r'Invalid patch name'):
+                    roll_protobuf._NormalizeNewPatchName(
+                        invalid, checkout.protobuf_directory)
+
+        self.assertTrue(
+            roll_protobuf._IsAllowedLocalPatchPath(
+                'src/google/protobuf/foo.h'))
+        self.assertTrue(
+            roll_protobuf._IsAllowedLocalPatchPath(
+                'python/google/protobuf/bar.py'))
+        for disallowed in ('BUILD.gn', 'CMakeLists.txt',
+                           'src/google/protobuf/descriptor.pb.h',
+                           'src/google/protobuf/any.pb.h'):
+            self.assertFalse(
+                roll_protobuf._IsAllowedLocalPatchPath(disallowed))
+
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'No uncommitted changes'):
+            roll_protobuf._CollectUncommittedPatchPaths(checkout, 'new-patch')
+
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory,
+            {'src/google/protobuf/w_helper.h': '// helper\n'})
+        self.assertEqual(
+            ('src/google/protobuf/w_helper.h', ),
+            roll_protobuf._CollectUncommittedPatchPaths(checkout, 'new-patch'))
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory, {
+                'patches/protobuf_v25/bazel.patch': '// upstream subpatch\n',
+                'patches/0006-note.md': 'companion note\n',
+            })
+        _RunGitCommand(self.repository_root, [
+            'add',
+            '--force',
+            '--',
+            'third_party/protobuf/src/google/protobuf/w_helper.h',
+            'third_party/protobuf/patches/protobuf_v25/bazel.patch',
+            'third_party/protobuf/patches/0006-note.md',
+        ])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Test patch diff helper'])
+        roll_protobuf._RefreshPatchFileFromHeadCommit(checkout,
+                                                      '0006-helper.patch')
+        sub_diff = roll_protobuf._BuildPatchDiffFromCommit(checkout, 'HEAD')
+        self.assertIn(b'src/google/protobuf/w_helper.h\n', sub_diff)
+        self.assertIn(b'patches/protobuf_v25/bazel.patch\n', sub_diff)
+        self.assertNotIn(b'0006-note.md', sub_diff)
+        self.assertNotIn(b'0006-helper.patch', sub_diff)
+        crlf_helper = os.path.join(self.fixture.protobuf_directory,
+                                   'src/google/protobuf/w_helper.h')
+        pathlib.Path(crlf_helper).write_bytes(b'// helper\r\n')
+        roll_protobuf._NormalizeCommittedWorktreeFiles(
+            checkout, ('src/google/protobuf/w_helper.h', ))
+        self.assertEqual(b'// helper\n',
+                         pathlib.Path(crlf_helper).read_bytes())
+
 
 if __name__ == '__main__':
     unittest.main()
