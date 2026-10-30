@@ -175,16 +175,52 @@ TEST(TimeZoneTest, ExtremeTimes) {
       TimeZone::FromString("Asia/Tokyo"),
   };
 
+  // Times whose `InMillisecondsFSinceUnixEpoch()` is non-finite (including
+  // finite `Time` values in `(Time::Min(), Time::Min() + 369 years]` where
+  // `time - Time::UnixEpoch()` clamps to `TimeDelta::Min()`).
+  const base::Time non_finite_unix_epoch_times[] = {
+      base::Time::Min(),
+      base::Time::Min() + base::Microseconds(1),
+      base::Time::Min() +
+          base::Microseconds(base::Time::kMicrosecondsFromWindowsToUnixEpoch),
+      base::Time::Max(),
+  };
+
+  // Boundary finite `Time` values whose `InMillisecondsFSinceUnixEpoch()` is
+  // finite.
+  const base::Time boundary_finite_unix_epoch_times[] = {
+      base::Time::Min() +
+          base::Microseconds(base::Time::kMicrosecondsFromWindowsToUnixEpoch +
+                             1),
+      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FiniteMax()),
+  };
+
   for (const TimeZone& tz : time_zones) {
-    for (base::Time extreme_time : {base::Time::Min(), base::Time::Max()}) {
+    for (base::Time extreme_time : non_finite_unix_epoch_times) {
       for (bool is_local : {false, true}) {
         base::TimeDelta raw_offset = base::Hours(99);
         base::TimeDelta dst_offset = base::Hours(99);
         tz.GetOffset(extreme_time, is_local, raw_offset, dst_offset);
+        // For non-finite Unix epoch timestamps, `GetOffset()` falls back to
+        // `GetRawOffset()` and zero DST without querying ICU.
         EXPECT_EQ(raw_offset, tz.GetRawOffset());
         EXPECT_EQ(dst_offset, base::TimeDelta());
       }
       EXPECT_FALSE(tz.InDaylightTime(extreme_time));
+    }
+
+    for (base::Time boundary_time : boundary_finite_unix_epoch_times) {
+      for (bool is_local : {false, true}) {
+        base::TimeDelta raw_offset = base::Hours(99);
+        base::TimeDelta dst_offset = base::Hours(99);
+        tz.GetOffset(boundary_time, is_local, raw_offset, dst_offset);
+        // ICU returns historical Local Mean Time or future DST at these bounds,
+        // so just verify that `GetOffset()` overwrote the `Hours(99)` sentinel.
+        EXPECT_NE(raw_offset, base::Hours(99));
+        EXPECT_NE(dst_offset, base::Hours(99));
+      }
+      // Expect no crash (`DCHECK(U_SUCCESS(status))`).
+      tz.InDaylightTime(boundary_time);
     }
   }
 }

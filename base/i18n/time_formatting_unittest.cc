@@ -409,6 +409,7 @@ TEST(TimeFormattingTest, TimeFormatAsIso8601WithAndWithoutI18nOptimizations) {
       // Year > 9999 (~10964 CE).
       Time::UnixEpoch() + Days(365 * 9000),
       Time::Min(),
+      Time::Min() + Days(1),
       Time::Max(),
   };
 
