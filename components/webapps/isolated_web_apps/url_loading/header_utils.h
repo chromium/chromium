@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "net/http/http_response_headers.h"
@@ -20,7 +21,7 @@ class IwaSourceWithMode;
 namespace iwa {
 
 COMPONENT_EXPORT(ISOLATED_WEB_APPS)
-const std::string& GetDefaultContentSecurityPolicy();
+std::string_view GetDefaultContentSecurityPolicy();
 
 // Header override is used to allow unsafe connections to ws:// in dev mode
 // for HMR.

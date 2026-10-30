@@ -6,10 +6,11 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <variant>
 
-#include "base/no_destructor.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "url/origin.h"
@@ -23,7 +24,9 @@ inline constexpr char kIsolatedAppCspTemplate[] =
     "default-src 'self';"
     "object-src 'none';"
     "frame-src 'self' https: blob: data:;"
-    "connect-src 'self' https: wss: blob: data:%s;"
+    "connect-src 'self' https: wss: blob: data:"
+    // WebSocket URL override injected here
+    ";"
     "script-src 'self' 'wasm-unsafe-eval';"
     "img-src 'self' https: blob: data:;"
     "media-src 'self' https: blob: data:;"
@@ -32,14 +35,26 @@ inline constexpr char kIsolatedAppCspTemplate[] =
     "require-trusted-types-for 'script';"
     "frame-ancestors 'self';";
 
+constexpr std::string_view kConnectSrcDirective =
+    "connect-src 'self' https: wss: blob: data:";
+constexpr size_t kConnectSrcPos =
+    std::string_view(kIsolatedAppCspTemplate).find(kConnectSrcDirective);
+static_assert(kConnectSrcPos != std::string_view::npos);
+constexpr size_t kConnectSrcEnd = kConnectSrcPos + kConnectSrcDirective.size();
+
+// Split the CSP template into two parts, with the prefix before the format
+// string to be inserted and the suffix after the format string.
+constexpr std::string_view kIsolatedAppCspPrefix =
+    std::string_view(kIsolatedAppCspTemplate).substr(0, kConnectSrcEnd);
+constexpr std::string_view kIsolatedAppCspSuffix =
+    std::string_view(kIsolatedAppCspTemplate).substr(kConnectSrcEnd);
+
 }  // namespace
 
 namespace iwa {
 
-const std::string& GetDefaultContentSecurityPolicy() {
-  static const base::NoDestructor<std::string> default_csp(
-      [] { return base::StringPrintf(kIsolatedAppCspTemplate, ""); }());
-  return *default_csp;
+std::string_view GetDefaultContentSecurityPolicy() {
+  return kIsolatedAppCspTemplate;
 }
 
 std::optional<std::string> GetContentSecurityPolicyWithWebSocketOverride(
@@ -51,9 +66,8 @@ std::optional<std::string> GetContentSecurityPolicyWithWebSocketOverride(
   auto* proxy_source = std::get_if<IwaSourceProxy>(&source->variant());
   if (proxy_source && proxy_source->proxy_url().scheme() == "http") {
     url::Origin origin = proxy_source->proxy_url();
-    std::string proxy_ws_url =
-        base::StringPrintf(" ws://%s:%i", origin.host().c_str(), origin.port());
-    return base::StringPrintf(kIsolatedAppCspTemplate, proxy_ws_url.c_str());
+    return base::StrCat({kIsolatedAppCspPrefix, " ws://", origin.host(), ":",
+                         base::ToString(origin.port()), kIsolatedAppCspSuffix});
   }
 
   return std::nullopt;
@@ -65,10 +79,12 @@ void SetRequiredHeadersForIsolatedApp(
   // Apps could specify a more restrictive CSP than what we enforce, which
   // we don't want to overwrite. We add our CSP here so that existing CSPs
   // will still be enforced. Existing CO*P headers are replaced.
-  headers.AddHeader(
-      "Content-Security-Policy",
-      GetContentSecurityPolicyWithWebSocketOverride(source).value_or(
-          GetDefaultContentSecurityPolicy()));
+  std::optional<std::string> csp_override =
+      GetContentSecurityPolicyWithWebSocketOverride(source);
+  headers.AddHeader("Content-Security-Policy",
+                    csp_override.has_value()
+                        ? std::string_view(*csp_override)
+                        : GetDefaultContentSecurityPolicy());
   headers.SetHeader("Cross-Origin-Opener-Policy", "same-origin");
   headers.SetHeader("Cross-Origin-Embedder-Policy", "require-corp");
   headers.SetHeader("Cross-Origin-Resource-Policy", "same-origin");
@@ -83,16 +99,17 @@ void SetRequiredParsedHeadersForIsolatedApp(
   parsed_headers.cross_origin_embedder_policy.value =
       network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
 
-  // The data is being parsed in browser process, however,
-  // the rule of 2 is not broken because the data can be
-  // only value from local string kIsolatedAppCspTemplate with
-  // single placeholder for 'connect-src' data%s where %s will be
-  // evaluated to url to IWA proxy dev server, the url is validated and
-  // saved to chrome on installation of IWA.
+  // The data is being parsed in the browser process, however, the Rule of 2 is
+  // not broken because the value comes solely from the local constant
+  // `kIsolatedAppCspTemplate`, optionally with a WebSocket URL override
+  // injected into 'connect-src' for the IWA proxy dev server (whose URL is
+  // validated and saved to Chrome upon IWA installation).
+  std::optional<std::string> csp_override =
+      GetContentSecurityPolicyWithWebSocketOverride(source);
   std::vector<network::mojom::ContentSecurityPolicyPtr> parsed_csp =
       network::ParseContentSecurityPolicies(
-          GetContentSecurityPolicyWithWebSocketOverride(source).value_or(
-              GetDefaultContentSecurityPolicy()),
+          csp_override.has_value() ? std::string_view(*csp_override)
+                                   : GetDefaultContentSecurityPolicy(),
           network::mojom::ContentSecurityPolicyType::kEnforce,
           // Otherwise with kMeta frame-ancestors is ignored.
           network::mojom::ContentSecurityPolicySource::kHTTP,

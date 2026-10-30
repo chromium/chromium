@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <variant>
 #include <vector>
 
@@ -220,9 +221,9 @@ class HeaderInjectionURLLoaderClient : public ForwardingURLLoaderClient {
     scoped_refptr<net::HttpResponseHeaders> headers = response_head->headers;
     const base::ByteSize original_size(headers->raw_headers().size());
 
-    std::string csp_header = csp_override_.has_value()
-                                 ? csp_override_.value()
-                                 : iwa::GetDefaultContentSecurityPolicy();
+    std::string_view csp_header = csp_override_.has_value()
+                                      ? std::string_view(*csp_override_)
+                                      : iwa::GetDefaultContentSecurityPolicy();
 
     // Apps could specify a more restrictive CSP than what we enforce, which
     // we don't want to overwrite. We add our CSP here so that existing CSPs
