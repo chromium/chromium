@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller.h"
+#include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -33,9 +34,7 @@ AccountManagerPolicyControllerFactory::AccountManagerPolicyControllerFactory()
           "AccountManagerPolicyController",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/40257657): Check if this service is needed in
-              // Guest mode.
-              .WithGuest(ProfileSelection::kOriginalOnly)
+              .WithGuest(ProfileSelection::kNone)
               .WithAshInternals(ProfileSelection::kNone)
               .Build()) {}
 
@@ -46,6 +45,10 @@ std::unique_ptr<KeyedService>
 AccountManagerPolicyControllerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* const profile = Profile::FromBrowserContext(context);
+  if (!IsAccountManagerAvailable(profile)) {
+    return nullptr;
+  }
+
   auto* account_manager = AccountManagerFactory::Get()->GetAccountManager(
       profile->GetPath().value());
 

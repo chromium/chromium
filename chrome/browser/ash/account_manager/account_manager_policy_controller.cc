@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/constants/ash_pref_names.h"
+#include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/account_manager/account_manager_edu_coexistence_controller.h"
@@ -33,9 +34,7 @@ AccountManagerPolicyController::~AccountManagerPolicyController() {
 
 void AccountManagerPolicyController::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!IsAccountManagerAvailable(profile_))
-    return;
+  CHECK(IsAccountManagerAvailable(profile_));
 
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(

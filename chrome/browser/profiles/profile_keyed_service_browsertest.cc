@@ -1047,7 +1047,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     // TODO(crbug.com/374351946):
     // Verify these are necessary: then reorder or remove.
 
-    "AccountManagerPolicyController",
     "ArcAppsPrivateAPI",
     "AuthTokenValidatorFactory",
     "AutotestPrivateAPI",
