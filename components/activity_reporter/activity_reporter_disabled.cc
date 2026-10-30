@@ -6,9 +6,9 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/version_info/channel.h"
 #include "components/activity_reporter/activity_reporter.h"
-#include "components/prefs/pref_service.h"
 #include "components/update_client/network.h"
 
 namespace activity_reporter {

@@ -47,7 +47,7 @@ enum class InitialDateLastActiveState {
 class ActivityReporter {
  public:
   ActivityReporter(const ActivityReporter&) = delete;
-  ActivityReporter& operator=(const ActivityReporter&&) = delete;
+  ActivityReporter& operator=(const ActivityReporter&) = delete;
 
   // Must be destroyed on the same sequence it was created on.
   virtual ~ActivityReporter() = default;

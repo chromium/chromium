@@ -5,15 +5,20 @@
 #include "components/activity_reporter/configurator.h"
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/enterprise_util.h"
+#include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "base/version_info/channel.h"
@@ -83,10 +88,10 @@ ActivityReporterConfigurator::ActivityReporterConfigurator(
     bool per_user_install)
     : pref_service_provider_(pref_service_provider),
       persisted_data_(update_client::CreatePersistedData(
-          pref_service_provider,
+          std::move(pref_service_provider),
           std::make_unique<ActivityService>())),
       network_fetcher_factory_(network_fetcher_factory),
-      channel_provider_(channel_provider),
+      channel_provider_(std::move(channel_provider)),
       per_user_install_(per_user_install) {}
 
 ActivityReporterConfigurator::~ActivityReporterConfigurator() = default;

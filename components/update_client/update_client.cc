@@ -63,6 +63,8 @@ CrxUpdateItem::~CrxUpdateItem() = default;
 CrxComponent::CrxComponent() = default;
 CrxComponent::CrxComponent(const CrxComponent& other) = default;
 CrxComponent& CrxComponent::operator=(const CrxComponent& other) = default;
+CrxComponent::CrxComponent(CrxComponent&& other) = default;
+CrxComponent& CrxComponent::operator=(CrxComponent&& other) = default;
 CrxComponent::~CrxComponent() = default;
 
 // It is important that an instance of the UpdateClient binds an unretained

@@ -11,7 +11,7 @@ namespace activity_reporter {
 
 namespace {
 
-class ActivityReporterNoImpl : public ActivityReporter {
+class ActivityReporterNoImpl final : public ActivityReporter {
  public:
   ActivityReporterNoImpl() = default;
   void ReportActive() override {

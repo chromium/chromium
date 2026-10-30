@@ -6,14 +6,24 @@
 #define COMPONENTS_ACTIVITY_REPORTER_CONFIGURATOR_H_
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/version_info/channel.h"
 #include "components/update_client/configurator.h"
 
+class GURL;
 class PrefService;
+
+namespace base {
+class TimeDelta;
+class Version;
+}  // namespace base
 
 namespace update_client {
 class CrxCache;
@@ -36,8 +46,8 @@ class ActivityReporterConfigurator final : public update_client::Configurator {
       base::RepeatingCallback<version_info::Channel()> channel_provider,
       bool per_user_install);
   ActivityReporterConfigurator(const ActivityReporterConfigurator&) = delete;
-  ActivityReporterConfigurator& operator=(
-      const ActivityReporterConfigurator&&) = delete;
+  ActivityReporterConfigurator& operator=(const ActivityReporterConfigurator&) =
+      delete;
 
   // Overrides for update_client::Configurator.
   base::TimeDelta InitialDelay() const override;
