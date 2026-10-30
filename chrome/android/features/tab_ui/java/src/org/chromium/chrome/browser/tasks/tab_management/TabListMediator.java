@@ -410,6 +410,7 @@ public class TabListMediator implements TabListNotificationHandler {
     private View.AccessibilityDelegate mAccessibilityDelegate;
     private int mCurrentSpanCount;
     private @Nullable OnLongPressTabItemEventListener mOnLongPressTabItemEventListener;
+    private boolean mSuppressUpdateLayout;
 
     private final ActorUiTabController.Observer mActorObserver =
             new ActorUiTabController.Observer() {
@@ -1156,11 +1157,16 @@ public class TabListMediator implements TabListNotificationHandler {
             mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
             return;
         }
+
+        assert !mSuppressUpdateLayout;
+        mSuppressUpdateLayout = true;
+
         mModelList.clear();
         mTabListLayoutDelegate.reset();
         mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
 
         if (tabs == null && tabGroupSyncIds == null) {
+            mSuppressUpdateLayout = false;
             return;
         }
 
@@ -1194,6 +1200,9 @@ public class TabListMediator implements TabListNotificationHandler {
                 addSavedTabGroupInfoToModel(savedTabGroup, i);
             }
         }
+
+        mSuppressUpdateLayout = false;
+        updateLayout();
     }
 
     /**
@@ -2379,6 +2388,9 @@ public class TabListMediator implements TabListNotificationHandler {
      */
     @VisibleForTesting
     void updateLayout() {
+        if (mSuppressUpdateLayout) {
+            return;
+        }
         // Right now we need to update layout only if there is a price welcome message card in tab
         // switcher.
         if (!mTabListConfig.supportsMessageCards) {

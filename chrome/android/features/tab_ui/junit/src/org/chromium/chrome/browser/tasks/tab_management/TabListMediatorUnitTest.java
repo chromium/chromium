@@ -27,6 +27,7 @@ import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
@@ -101,6 +102,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureOverrides;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -3899,6 +3901,43 @@ public class TabListMediatorUnitTest {
         assertThat(mModelList.lastIndexForMessageItemFromType(PRICE_MESSAGE), equalTo(2));
         mModelList.removeAt(0);
         assertThat(mModelList.lastIndexForMessageItemFromType(PRICE_MESSAGE), equalTo(2));
+    }
+
+    @Test
+    public void testResetWithListOfTabs_CoalesceUpdateLayout() {
+        PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
+        setPriceTrackingEnabledForTesting(true);
+        PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.writeBoolean(
+                PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD, true);
+        ResettersForTesting.register(
+                () ->
+                        PriceTrackingUtilities.SHARED_PREFERENCES_MANAGER.removeKey(
+                                PriceTrackingUtilities.PRICE_WELCOME_MESSAGE_CARD));
+        if (mMediator != null) mMediator.destroy();
+        mMediator =
+                new MediatorBuilder()
+                        .setTabListItemOnClickListenerProvider(null)
+                        .setUndoBarExplicitTrigger(null)
+                        .build();
+        mMediator.registerOrientationListener(mGridLayoutManager);
+        mMediator.initWithNative(mProfile);
+        mModelList.clear();
+
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = List.of(mTab1, mTab2, tab3);
+
+        clearInvocations(mGridLayoutManager);
+        mMediator.resetWithListOfTabs(tabs, null, false);
+
+        verify(mGridLayoutManager, times(1)).getSpanSizeLookup();
+    }
+
+    @Test
+    public void testResetWithListOfTabs_CoalesceUpdateLayout_NullTabsResetsSuppression() {
+        mMediator.resetWithListOfTabs(null, null, false);
+        // Verify subsequent reset does not trip `assert !mSuppressUpdateLayout`.
+        Tab tab = prepareTab(TAB1_ID, TAB1_TITLE, TAB1_URL);
+        mMediator.resetWithListOfTabs(List.of(tab), null, false);
     }
 
     @Test
