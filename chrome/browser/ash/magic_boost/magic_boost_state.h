@@ -10,12 +10,17 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/shell_observer.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+
+namespace variations {
+class VariationsService;
+}  // namespace variations
 
 namespace ash {
 
@@ -34,9 +39,12 @@ class MagicBoostState : public chromeos::MagicBoostState,
   using InjectActiveProfileForTestingCallback =
       base::RepeatingCallback<Profile*()>;
 
-  MagicBoostState();
-  explicit MagicBoostState(InjectActiveProfileForTestingCallback
-                               inject_active_profile_for_testing_callback);
+  // `variations_service` must not be null and must outlive `this`.
+  explicit MagicBoostState(
+      const variations::VariationsService* variations_service);
+  MagicBoostState(const variations::VariationsService* variations_service,
+                  InjectActiveProfileForTestingCallback
+                      inject_active_profile_for_testing_callback);
 
   MagicBoostState(const MagicBoostState&) = delete;
   MagicBoostState& operator=(const MagicBoostState&) = delete;
@@ -90,6 +98,8 @@ class MagicBoostState : public chromeos::MagicBoostState,
   void OnHMRConsentWindowDismissCountUpdated();
 
   void OnRefreshTokensReady();
+
+  const raw_ref<const variations::VariationsService> variations_service_;
 
   // Observes user profile prefs for magic_boost.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;

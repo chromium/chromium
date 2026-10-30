@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/system/mahi/test/mock_mahi_media_app_events_proxy.h"
+#include "base/files/file_path.h"
 #include "base/i18n/language_tag.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -24,6 +25,10 @@
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_events_proxy.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/application_locale_storage/application_locale_storage.h"
+#include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/startup_visibility.h"
+#include "components/metrics/test/test_enabled_state_provider.h"
+#include "components/variations/service/test_variations_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/views/view_utils.h"
 
@@ -44,13 +49,28 @@ class MagicBoostCardControllerTest : public ChromeViewsTestBase {
 
   // ChromeViewsTestBase:
   void SetUp() override {
+    // Needed for `MockMagicBoostState`.
+    PrefService* local_state =
+        TestingBrowserProcess::GetGlobal()->local_state();
+    metrics_state_manager_ = metrics::MetricsStateManager::Create(
+        local_state, &metrics_enabled_state_provider_,
+        /*backup_registry_key=*/std::wstring(),
+        /*user_data_dir=*/base::FilePath(),
+        metrics::StartupVisibility::kUnknown);
+    test_variations_service_ =
+        std::make_unique<variations::TestVariationsService>(
+            local_state, metrics_state_manager_.get());
+    TestingBrowserProcess::GetGlobal()->SetVariationsService(
+        test_variations_service_.get());
+
     ChromeViewsTestBase::SetUp();
 
     // Replace the production `MagicBoostController` with a mock for testing
     card_controller_.SetMagicBoostControllerForTesting(&controller_);
     card_controller_.SetOptInFeature(ash::magic_boost::OptInFeatures::kHmrOnly);
 
-    magic_boost_state_ = std::make_unique<ash::MockMagicBoostState>();
+    magic_boost_state_ = std::make_unique<ash::MockMagicBoostState>(
+        TestingBrowserProcess::GetGlobal()->variations_service());
     magic_boost_state_->set_editor_panel_manager_for_test(
         &mock_editor_manager_);
   }
@@ -63,6 +83,10 @@ class MagicBoostCardControllerTest : public ChromeViewsTestBase {
 
     magic_boost_state_.reset();
     ChromeViewsTestBase::TearDown();
+
+    TestingBrowserProcess::GetGlobal()->SetVariationsService(nullptr);
+    test_variations_service_.reset();
+    metrics_state_manager_.reset();
   }
 
  protected:
@@ -75,6 +99,10 @@ class MagicBoostCardControllerTest : public ChromeViewsTestBase {
 
   testing::NiceMock<ash::MockEditorPanelManager> mock_editor_manager_;
 
+  metrics::TestEnabledStateProvider metrics_enabled_state_provider_{
+      /*consent=*/false, /*enabled=*/false};
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
+  std::unique_ptr<variations::TestVariationsService> test_variations_service_;
   std::unique_ptr<ash::MockMagicBoostState> magic_boost_state_;
   MagicBoostCardController card_controller_{TestingBrowserProcess::GetGlobal()
                                                 ->GetFeatures()

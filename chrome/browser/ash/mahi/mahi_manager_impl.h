@@ -11,6 +11,7 @@
 
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ash/mahi/mahi_cache_manager.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
@@ -26,6 +27,10 @@ namespace gfx {
 class Rect;
 }  // namespace gfx
 
+namespace variations {
+class VariationsService;
+}  // namespace variations
+
 namespace ash {
 
 class MahiNudgeController;
@@ -35,7 +40,9 @@ class MahiManagerImpl : public chromeos::MahiManager,
                         public chromeos::MagicBoostState::Observer,
                         public history::HistoryServiceObserver {
  public:
-  MahiManagerImpl();
+  // `variations_service` must not be null and must outlive `this`.
+  explicit MahiManagerImpl(
+      const variations::VariationsService* variations_service);
 
   MahiManagerImpl(const MahiManagerImpl&) = delete;
   MahiManagerImpl& operator=(const MahiManagerImpl&) = delete;
@@ -154,6 +161,8 @@ class MahiManagerImpl : public chromeos::MahiManager,
   // Updates `current_selected_text_` from web contents manager or media app
   // content manager.
   void UpdateCurrentSelectedText();
+
+  const raw_ref<const variations::VariationsService> variations_service_;
 
   base::ScopedObservation<chromeos::MagicBoostState,
                           chromeos::MagicBoostState::Observer>

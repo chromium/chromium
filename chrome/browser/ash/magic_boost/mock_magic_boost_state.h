@@ -9,12 +9,18 @@
 #include "chrome/browser/ash/magic_boost/magic_boost_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+namespace variations {
+class VariationsService;
+}  // namespace variations
+
 namespace ash {
 
 // A class that mocks `MagicBoostState` to use in tests.
 class MockMagicBoostState : public MagicBoostState {
  public:
-  MockMagicBoostState();
+  // `variations_service` must not be null and must outlive `this`.
+  explicit MockMagicBoostState(
+      const variations::VariationsService* variations_service);
 
   MockMagicBoostState(const MockMagicBoostState&) = delete;
   MockMagicBoostState& operator=(const MockMagicBoostState&) = delete;

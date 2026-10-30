@@ -485,7 +485,8 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   // Needs to be initialized before `read_write_cards_manager_`. This is because
   // `QuickAnswersState` needs `MagicBoostState` to be initialized before it is
   // constructed.
-  magic_boost_state_ = std::make_unique<ash::MagicBoostState>();
+  magic_boost_state_ = std::make_unique<ash::MagicBoostState>(
+      g_browser_process->variations_service());
 
   read_write_cards_manager_ =
       std::make_unique<chromeos::ReadWriteCardsManagerImpl>(
@@ -583,7 +584,8 @@ void ChromeBrowserMainExtraPartsAsh::PostBrowserStart() {
             chromeos::switches::kUseFakeMahiManager)) {
       mahi_manager_ = std::make_unique<ash::FakeMahiManager>();
     } else {
-      mahi_manager_ = std::make_unique<ash::MahiManagerImpl>();
+      mahi_manager_ = std::make_unique<ash::MahiManagerImpl>(
+          g_browser_process->variations_service());
     }
   }
   if (const session_manager::Session* primary_session =

@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
@@ -53,6 +54,10 @@ constexpr std::string_view kDisallowedCountryCode = "cn";
 
 PrefService* local_state() {
   return TestingBrowserProcess::GetGlobal()->local_state();
+}
+
+const variations::VariationsService& variations_service() {
+  return CHECK_DEREF(TestingBrowserProcess::GetGlobal()->variations_service());
 }
 
 // Exercises CanUseMahiService() and IsMahiAvailable() through a real logged-in
@@ -176,7 +181,8 @@ TEST_F(MahiAvailabilityTest, MinorRestrictedUserCannotUseMahi) {
   ASSERT_TRUE(profile);
   SetMantaCapability(profile, account_id, /*can_use_manta=*/false);
 
-  const base::expected<bool, Error> result = CanUseMahiService();
+  const base::expected<bool, Error> result =
+      CanUseMahiService(variations_service());
 
   ASSERT_TRUE(result.has_value());
   EXPECT_FALSE(result.value());
@@ -189,35 +195,36 @@ TEST_F(MahiAvailabilityTest, UnknownMantaCapabilityReportsFeatureBitNotReady) {
   ASSERT_TRUE(profile);
   SetMantaCapability(profile, account_id, /*can_use_manta=*/std::nullopt);
 
-  const base::expected<bool, Error> result = CanUseMahiService();
+  const base::expected<bool, Error> result =
+      CanUseMahiService(variations_service());
 
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), Error::kMantaFeatureBitNotReady);
 }
 
 TEST_F(MahiAvailabilityTest, CanUseMahiService_ReturnsFalseWhenNotLoggedIn) {
-  EXPECT_EQ(CanUseMahiService(), base::ok(false));
+  EXPECT_EQ(CanUseMahiService(variations_service()), base::ok(false));
 }
 
 TEST_F(MahiAvailabilityTest, CanUseMahiService_ReturnsFalseForGuestUser) {
   LogInGuestUser();
-  EXPECT_EQ(CanUseMahiService(), base::ok(false));
+  EXPECT_EQ(CanUseMahiService(variations_service()), base::ok(false));
 }
 
 TEST_F(MahiAvailabilityTest,
        CanUseMahiService_ReturnsTrueForAdultInAllowedCountry) {
   LogInRegularUserWithMantaCapability(/*can_use_manta=*/true);
-  EXPECT_EQ(CanUseMahiService(), base::ok(true));
+  EXPECT_EQ(CanUseMahiService(variations_service()), base::ok(true));
 }
 
 TEST_F(MahiAvailabilityTest,
        CanUseMahiService_ReturnsFalseInDisallowedCountry) {
   LogInRegularUserWithMantaCapability(/*can_use_manta=*/true);
   SetCountryCode(kDisallowedCountryCode);
-  EXPECT_EQ(CanUseMahiService(), base::ok(false));
+  EXPECT_EQ(CanUseMahiService(variations_service()), base::ok(false));
 
   SetCountryCode("");
-  EXPECT_EQ(CanUseMahiService(), base::ok(false));
+  EXPECT_EQ(CanUseMahiService(variations_service()), base::ok(false));
 }
 
 TEST_F(MahiAvailabilityTest,
@@ -229,7 +236,7 @@ TEST_F(MahiAvailabilityTest,
   // Even when not logged in and in a disallowed country, the override switch
   // forces `CanUseMahiService()` to return true.
   SetCountryCode(kDisallowedCountryCode);
-  EXPECT_EQ(CanUseMahiService(), base::ok(true));
+  EXPECT_EQ(CanUseMahiService(variations_service()), base::ok(true));
 }
 
 TEST_F(MahiAvailabilityTest,
@@ -239,10 +246,10 @@ TEST_F(MahiAvailabilityTest,
   // In demo mode, `CanUseMahiService()` skips login/minor checks and evaluates
   // country restrictions directly.
   SetCountryCode(kAllowedCountryCode);
-  EXPECT_EQ(CanUseMahiService(), base::ok(true));
+  EXPECT_EQ(CanUseMahiService(variations_service()), base::ok(true));
 
   SetCountryCode(kDisallowedCountryCode);
-  EXPECT_EQ(CanUseMahiService(), base::ok(false));
+  EXPECT_EQ(CanUseMahiService(variations_service()), base::ok(false));
 }
 
 TEST_F(MahiAvailabilityTest, IsMahiAvailable_ReturnsFalseWhenFeatureDisabled) {
@@ -251,8 +258,8 @@ TEST_F(MahiAvailabilityTest, IsMahiAvailable_ReturnsFalseWhenFeatureDisabled) {
       chromeos::features::kFeatureManagementMahi);
 
   LogInRegularUserWithMantaCapability(/*can_use_manta=*/true);
-  ASSERT_EQ(CanUseMahiService(), base::ok(true));
-  EXPECT_EQ(IsMahiAvailable(), base::ok(false));
+  ASSERT_EQ(CanUseMahiService(variations_service()), base::ok(true));
+  EXPECT_EQ(IsMahiAvailable(variations_service()), base::ok(false));
 }
 
 TEST_F(MahiAvailabilityTest,
@@ -266,17 +273,17 @@ TEST_F(MahiAvailabilityTest,
   ASSERT_TRUE(profile);
 
   SetMantaCapability(profile, account_id, /*can_use_manta=*/std::nullopt);
-  EXPECT_EQ(IsMahiAvailable(),
+  EXPECT_EQ(IsMahiAvailable(variations_service()),
             base::unexpected(Error::kMantaFeatureBitNotReady));
 
   SetMantaCapability(profile, account_id, /*can_use_manta=*/false);
-  EXPECT_EQ(IsMahiAvailable(), base::ok(false));
+  EXPECT_EQ(IsMahiAvailable(variations_service()), base::ok(false));
 
   SetMantaCapability(profile, account_id, /*can_use_manta=*/true);
-  EXPECT_EQ(IsMahiAvailable(), base::ok(true));
+  EXPECT_EQ(IsMahiAvailable(variations_service()), base::ok(true));
 
   SetCountryCode(kDisallowedCountryCode);
-  EXPECT_EQ(IsMahiAvailable(), base::ok(false));
+  EXPECT_EQ(IsMahiAvailable(variations_service()), base::ok(false));
 }
 
 }  // namespace

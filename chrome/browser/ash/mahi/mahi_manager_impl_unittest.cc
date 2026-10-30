@@ -23,6 +23,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/debug/stack_trace.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
@@ -184,13 +185,30 @@ class MahiManagerImplTest : public AshTestBase {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kFeatureManagementMahi},
         /*disabled_features=*/{});
-    AshTestBase::SetUp();
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         chromeos::switches::kMahiRestrictionsOverride);
 
+    // Needed for `MagicBoostState` and `MahiManagerImpl`.
+    PrefService* local_state =
+        TestingBrowserProcess::GetGlobal()->local_state();
+    metrics_state_manager_ = metrics::MetricsStateManager::Create(
+        local_state, &metrics_enabled_state_provider_,
+        /*backup_registry_key=*/std::wstring(),
+        /*user_data_dir=*/base::FilePath(),
+        metrics::StartupVisibility::kUnknown);
+    test_variations_service_ =
+        std::make_unique<variations::TestVariationsService>(
+            local_state, metrics_state_manager_.get());
+    TestingBrowserProcess::GetGlobal()->SetVariationsService(
+        test_variations_service_.get());
+
+    AshTestBase::SetUp();
+
     magic_boost_state_ = std::make_unique<MagicBoostState>(
+        TestingBrowserProcess::GetGlobal()->variations_service(),
         base::BindRepeating([]() { return static_cast<Profile*>(nullptr); }));
-    mahi_manager_impl_ = std::make_unique<MahiManagerImpl>();
+    mahi_manager_impl_ = std::make_unique<MahiManagerImpl>(
+        TestingBrowserProcess::GetGlobal()->variations_service());
     mahi_manager_impl_->mahi_provider_ = CreateMahiProvider();
 
     SimulateUserLogin(kRegularUserLoginInfo);
@@ -202,13 +220,11 @@ class MahiManagerImplTest : public AshTestBase {
     manta_service_provider_.reset();
     identity_manager_provider_.reset();
 
-    if (test_variations_service_) {
-      TestingBrowserProcess::GetGlobal()->SetVariationsService(nullptr);
-      test_variations_service_.reset();
-    }
-    metrics_state_manager_.reset();
-
     AshTestBase::TearDown();
+
+    TestingBrowserProcess::GetGlobal()->SetVariationsService(nullptr);
+    test_variations_service_.reset();
+    metrics_state_manager_.reset();
   }
 
   void SetCountryCode(std::string_view country_code) {
@@ -224,19 +240,7 @@ class MahiManagerImplTest : public AshTestBase {
     mahi_manager_impl_.reset();
     magic_boost_state_.reset();
 
-    PrefService* local_state =
-        TestingBrowserProcess::GetGlobal()->local_state();
     SetCountryCode(country_code);
-    metrics_state_manager_ = metrics::MetricsStateManager::Create(
-        local_state, &metrics_enabled_state_provider_,
-        /*backup_registry_key=*/std::wstring(),
-        /*user_data_dir=*/base::FilePath(),
-        metrics::StartupVisibility::kUnknown);
-    test_variations_service_ =
-        std::make_unique<variations::TestVariationsService>(
-            local_state, metrics_state_manager_.get());
-    TestingBrowserProcess::GetGlobal()->SetVariationsService(
-        test_variations_service_.get());
 
     auto& user_session_test_env =
         ash_test_helper()->user_session_test_environment();
@@ -269,8 +273,10 @@ class MahiManagerImplTest : public AshTestBase {
     // Recreate `magic_boost_state_` and `mahi_manager_impl_` so they initialize
     // against the non-overridden eligibility environment.
     magic_boost_state_ = std::make_unique<MagicBoostState>(
+        TestingBrowserProcess::GetGlobal()->variations_service(),
         base::BindRepeating([]() { return static_cast<Profile*>(nullptr); }));
-    mahi_manager_impl_ = std::make_unique<MahiManagerImpl>();
+    mahi_manager_impl_ = std::make_unique<MahiManagerImpl>(
+        TestingBrowserProcess::GetGlobal()->variations_service());
     mahi_manager_impl_->mahi_provider_ = CreateMahiProvider();
   }
 
@@ -343,6 +349,10 @@ class MahiManagerImplTest : public AshTestBase {
             &test_url_loader_factory_),
         identity_test_env_.identity_manager());
   }
+  metrics::TestEnabledStateProvider metrics_enabled_state_provider_{
+      /*consent=*/false, /*enabled=*/false};
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
+  std::unique_ptr<variations::TestVariationsService> test_variations_service_;
   std::unique_ptr<MagicBoostState> magic_boost_state_;
   std::unique_ptr<MahiManagerImpl> mahi_manager_impl_;
   base::test::ScopedFeatureList feature_list_;
@@ -358,12 +368,8 @@ class MahiManagerImplTest : public AshTestBase {
   chromeos::ScopedMahiWebContentsManagerOverride
       scoped_mahi_web_contents_manager_{&fake_mahi_web_contents_manager_};
 
-  metrics::TestEnabledStateProvider metrics_enabled_state_provider_{
-      /*consent=*/false, /*enabled=*/false};
   network::TestURLLoaderFactory test_url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
-  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
-  std::unique_ptr<variations::TestVariationsService> test_variations_service_;
   std::unique_ptr<FakeIdentityManagerProvider> identity_manager_provider_;
   std::unique_ptr<TestMantaServiceProvider> manta_service_provider_;
 };

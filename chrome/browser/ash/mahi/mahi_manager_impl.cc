@@ -23,6 +23,7 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
@@ -227,8 +228,10 @@ bool IsMahiApproved() {
 
 namespace ash {
 
-MahiManagerImpl::MahiManagerImpl()
-    : cache_manager_(std::make_unique<MahiCacheManager>()),
+MahiManagerImpl::MahiManagerImpl(
+    const variations::VariationsService* variations_service)
+    : variations_service_(CHECK_DEREF(variations_service)),
+      cache_manager_(std::make_unique<MahiCacheManager>()),
       mahi_nudge_controller_(std::make_unique<MahiNudgeController>()) {
   magic_boost_state_observation_.Observe(chromeos::MagicBoostState::Get());
 }
@@ -645,8 +648,8 @@ void MahiManagerImpl::OpenMahiPanelForElucidation(
 }
 
 bool MahiManagerImpl::IsEnabled() {
-  return (mahi_availability::IsMahiAvailable().has_value() &&
-          mahi_availability::IsMahiAvailable().value()) &&
+  return mahi_availability::IsMahiAvailable(variations_service_.get())
+             .value_or(false) &&
          chromeos::MagicBoostState::Get()->hmr_enabled().value_or(false);
 }
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/magic_boost/magic_boost_controller.h"
 
+#include "base/files/file_path.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
@@ -12,7 +13,12 @@
 #include "chrome/browser/ash/magic_boost/mock_editor_panel_manager.h"
 #include "chrome/browser/ash/magic_boost/mock_magic_boost_state.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
+#include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/startup_visibility.h"
+#include "components/metrics/test/test_enabled_state_provider.h"
+#include "components/variations/service/test_variations_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/display/screen.h"
@@ -38,9 +44,24 @@ class MagicBoostControllerTest : public ChromeAshTestBase {
 
   // ChromeAshTestBase:
   void SetUp() override {
+    // Needed for `MockMagicBoostState`.
+    PrefService* local_state =
+        TestingBrowserProcess::GetGlobal()->local_state();
+    metrics_state_manager_ = metrics::MetricsStateManager::Create(
+        local_state, &metrics_enabled_state_provider_,
+        /*backup_registry_key=*/std::wstring(),
+        /*user_data_dir=*/base::FilePath(),
+        metrics::StartupVisibility::kUnknown);
+    test_variations_service_ =
+        std::make_unique<variations::TestVariationsService>(
+            local_state, metrics_state_manager_.get());
+    TestingBrowserProcess::GetGlobal()->SetVariationsService(
+        test_variations_service_.get());
+
     ChromeAshTestBase::SetUp();
 
-    mock_magic_boost_state_ = std::make_unique<MockMagicBoostState>();
+    mock_magic_boost_state_ = std::make_unique<MockMagicBoostState>(
+        TestingBrowserProcess::GetGlobal()->variations_service());
     mock_magic_boost_state_->set_editor_panel_manager_for_test(
         &mock_editor_panel_manager_);
   }
@@ -48,6 +69,10 @@ class MagicBoostControllerTest : public ChromeAshTestBase {
   void TearDown() override {
     mock_magic_boost_state_.reset();
     ChromeAshTestBase::TearDown();
+
+    TestingBrowserProcess::GetGlobal()->SetVariationsService(nullptr);
+    test_variations_service_.reset();
+    metrics_state_manager_.reset();
   }
 
   void OnDisclaimerAcceptButtonPressed(
@@ -67,6 +92,10 @@ class MagicBoostControllerTest : public ChromeAshTestBase {
   }
 
  protected:
+  metrics::TestEnabledStateProvider metrics_enabled_state_provider_{
+      /*consent=*/false, /*enabled=*/false};
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
+  std::unique_ptr<variations::TestVariationsService> test_variations_service_;
   std::unique_ptr<MockMagicBoostState> mock_magic_boost_state_;
   testing::NiceMock<MockEditorPanelManager> mock_editor_panel_manager_;
   MagicBoostControllerImpl controller;

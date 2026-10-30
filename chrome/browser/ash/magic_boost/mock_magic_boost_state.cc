@@ -9,9 +9,11 @@
 
 namespace ash {
 
-MockMagicBoostState::MockMagicBoostState()
-    : MagicBoostState(base::BindRepeating(
-          []() { return static_cast<Profile*>(nullptr); })) {}
+MockMagicBoostState::MockMagicBoostState(
+    const variations::VariationsService* variations_service)
+    : MagicBoostState(variations_service, base::BindRepeating([]() {
+                        return static_cast<Profile*>(nullptr);
+                      })) {}
 
 MockMagicBoostState::~MockMagicBoostState() = default;
 

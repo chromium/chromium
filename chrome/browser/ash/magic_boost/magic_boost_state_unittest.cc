@@ -11,6 +11,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/debug/stack_trace.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_command_line.h"
@@ -20,10 +21,15 @@
 #include "chrome/browser/ash/magic_boost/mock_editor_panel_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
+#include "components/metrics/metrics_state_manager.h"
+#include "components/metrics/startup_visibility.h"
+#include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "components/variations/service/test_variations_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -81,10 +87,12 @@ class TestMagicBoostStateObserver : public MagicBoostState::Observer {
 // `MagicBoostState` test double with a configurable GenAI eligibility result.
 class ConfigurableEligibilityMagicBoostState : public ash::MagicBoostState {
  public:
-  explicit ConfigurableEligibilityMagicBoostState(
+  ConfigurableEligibilityMagicBoostState(
+      const variations::VariationsService* variations_service,
       base::expected<bool, MagicBoostState::Error> expected_eligibility)
-      : ash::MagicBoostState(base::BindRepeating(
-            []() { return static_cast<Profile*>(nullptr); })),
+      : ash::MagicBoostState(variations_service, base::BindRepeating([]() {
+                               return static_cast<Profile*>(nullptr);
+                             })),
         expected_eligibility_(expected_eligibility) {}
 
   void set_expected_eligibility(
@@ -117,12 +125,27 @@ class MagicBoostStateTest : public ChromeAshTestBase {
 
   // ChromeAshTestBase:
   void SetUp() override {
+    // Needed for `MagicBoostState`.
+    PrefService* local_state =
+        TestingBrowserProcess::GetGlobal()->local_state();
+    metrics_state_manager_ = metrics::MetricsStateManager::Create(
+        local_state, &metrics_enabled_state_provider_,
+        /*backup_registry_key=*/std::wstring(),
+        /*user_data_dir=*/base::FilePath(),
+        metrics::StartupVisibility::kUnknown);
+    test_variations_service_ =
+        std::make_unique<variations::TestVariationsService>(
+            local_state, metrics_state_manager_.get());
+    TestingBrowserProcess::GetGlobal()->SetVariationsService(
+        test_variations_service_.get());
+
     ChromeAshTestBase::SetUp();
 
     prefs_ = static_cast<TestingPrefServiceSimple*>(
         ash::Shell::Get()->session_controller()->GetPrimaryUserPrefService());
 
     magic_boost_state_ = std::make_unique<MagicBoostState>(
+        TestingBrowserProcess::GetGlobal()->variations_service(),
         base::BindRepeating([]() { return static_cast<Profile*>(nullptr); }));
     magic_boost_state_->set_editor_panel_manager_for_test(
         &mock_editor_manager_);
@@ -135,6 +158,10 @@ class MagicBoostStateTest : public ChromeAshTestBase {
     magic_boost_state_.reset();
     prefs_ = nullptr;
     ChromeAshTestBase::TearDown();
+
+    TestingBrowserProcess::GetGlobal()->SetVariationsService(nullptr);
+    test_variations_service_.reset();
+    metrics_state_manager_.reset();
   }
 
   ConfigurableEligibilityMagicBoostState* ReplaceWithConfigurableState(
@@ -144,6 +171,7 @@ class MagicBoostStateTest : public ChromeAshTestBase {
     ClearLogin();
 
     auto state = std::make_unique<ConfigurableEligibilityMagicBoostState>(
+        TestingBrowserProcess::GetGlobal()->variations_service(),
         initial_expected);
     auto* state_ptr = state.get();
     state->set_editor_panel_manager_for_test(&mock_editor_manager_);
@@ -171,6 +199,10 @@ class MagicBoostStateTest : public ChromeAshTestBase {
 
  private:
   raw_ptr<TestingPrefServiceSimple> prefs_;
+  metrics::TestEnabledStateProvider metrics_enabled_state_provider_{
+      /*consent=*/false, /*enabled=*/false};
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
+  std::unique_ptr<variations::TestVariationsService> test_variations_service_;
   std::unique_ptr<TestMagicBoostStateObserver> observer_;
   std::unique_ptr<MagicBoostState> magic_boost_state_;
   testing::NiceMock<MockEditorPanelManager> mock_editor_manager_;

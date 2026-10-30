@@ -7,7 +7,6 @@
 #include "ash/constants/generative_ai_country_restrictions.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
-#include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/manta/manta_service_provider.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -21,7 +20,8 @@
 
 namespace ash::mahi_availability {
 
-base::expected<bool, Error> CanUseMahiService() {
+base::expected<bool, Error> CanUseMahiService(
+    const variations::VariationsService& variations_service) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           chromeos::switches::kMahiRestrictionsOverride)) {
     return true;
@@ -55,21 +55,16 @@ base::expected<bool, Error> CanUseMahiService() {
     }
   }
 
-  const std::string country_code =
-      (g_browser_process != nullptr &&
-       g_browser_process->variations_service() != nullptr)
-          ? g_browser_process->variations_service()->GetLatestCountry()
-          : std::string();
-
-  return IsGenerativeAiAllowedForCountry(country_code);
+  return IsGenerativeAiAllowedForCountry(variations_service.GetLatestCountry());
 }
 
-base::expected<bool, Error> IsMahiAvailable() {
+base::expected<bool, Error> IsMahiAvailable(
+    const variations::VariationsService& variations_service) {
   if (!chromeos::features::IsMahiEnabled()) {
     return false;
   }
 
-  return CanUseMahiService();
+  return CanUseMahiService(variations_service);
 }
 
 }  // namespace ash::mahi_availability

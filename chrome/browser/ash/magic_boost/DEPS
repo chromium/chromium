@@ -27,5 +27,6 @@ specific_include_rules = {
   ],
   ".*unittest\\.cc": [
     "+chrome/test/base/chrome_ash_test_base.h",
+    "+chrome/test/base/testing_browser_process.h",
   ]
 }

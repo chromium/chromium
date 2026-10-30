@@ -9,6 +9,10 @@
 
 #include "base/types/expected.h"
 
+namespace variations {
+class VariationsService;
+}  // namespace variations
+
 namespace ash::mahi_availability {
 
 enum class Error { kMantaFeatureBitNotReady };
@@ -21,7 +25,8 @@ enum class Error { kMantaFeatureBitNotReady };
 // This check reads a bit loaded as an async operation:
 // `CanAccessMantaFeaturesWithoutMinorRestrictions`.
 // `Error::kMantaFeatureBitNotRead` is returned if the bit is not ready yet.
-base::expected<bool, Error> CanUseMahiService();
+base::expected<bool, Error> CanUseMahiService(
+    const variations::VariationsService& variations_service);
 
 // Check if the mahi feature is available to use. It can be unavailable if the
 // mahi feature flag is disabled, or the age and country requirements are not
@@ -29,7 +34,8 @@ base::expected<bool, Error> CanUseMahiService();
 //
 // This check reads a bit loaded as an async operation via `CanUseMahiService`.
 // `Error::kMantaFeatureBitNotReady` is returned if the bit is not ready yet.
-base::expected<bool, Error> IsMahiAvailable();
+base::expected<bool, Error> IsMahiAvailable(
+    const variations::VariationsService& variations_service);
 
 }  // namespace ash::mahi_availability
 

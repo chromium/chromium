@@ -16,6 +16,7 @@
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ref.h"
 #include "base/scoped_observation.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -67,15 +68,19 @@ class RefreshTokensLoadedBarrier : public signin::IdentityManager::Observer {
 
 }  // namespace
 
-MagicBoostState::MagicBoostState()
+MagicBoostState::MagicBoostState(
+    const variations::VariationsService* variations_service)
     : MagicBoostState(
+          variations_service,
           MagicBoostState::InjectActiveProfileForTestingCallback()) {}
 
 MagicBoostState::MagicBoostState(
+    const variations::VariationsService* variations_service,
     MagicBoostState::InjectActiveProfileForTestingCallback
         inject_active_profile_for_testing_callback)
-    : inject_active_profile_for_testing_callback_(
-          inject_active_profile_for_testing_callback) {
+    : variations_service_(CHECK_DEREF(variations_service)),
+      inject_active_profile_for_testing_callback_(
+          std::move(inject_active_profile_for_testing_callback)) {
   if (!inject_active_profile_for_testing_callback_.is_null()) {
     CHECK_IS_TEST();
   }
@@ -266,8 +271,8 @@ void MagicBoostState::RegisterPrefChanges(PrefService* pref_service) {
 
 base::expected<bool, chromeos::MagicBoostState::Error>
 MagicBoostState::IsUserEligibleForGenAIFeaturesExpected() const {
-  return mahi_availability::IsMahiAvailable().transform_error(
-      [](mahi_availability::Error error) {
+  return mahi_availability::IsMahiAvailable(variations_service_.get())
+      .transform_error([](mahi_availability::Error error) {
         // Use switch statement to get a compile error if new error types are
         // added to mahi_availability::Error.
         switch (error) {
