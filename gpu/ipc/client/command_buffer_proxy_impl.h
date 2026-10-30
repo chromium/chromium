@@ -136,7 +136,7 @@ class GPU_IPC_CLIENT_EXPORT CommandBufferProxyImpl
 
   // gpu::GpuControl implementation:
   void SetGpuControlClient(GpuControlClient* client)
-      LOCKS_EXCLUDED(shared_state_lock_) override;
+      LOCKS_EXCLUDED(gpu_control_client_lock_) override;
   const gpu::Capabilities& GetCapabilities() const override;
   const gpu::GLCapabilities& GetGLCapabilities() const override;
   void SignalQuery(uint32_t query, base::OnceClosure callback)
@@ -202,12 +202,12 @@ class GPU_IPC_CLIENT_EXPORT CommandBufferProxyImpl
 
   // mojom::CommandBufferClient:
   void OnConsoleMessage(const std::string& message)
-      LOCKS_EXCLUDED(shared_state_lock_) override;
+      LOCKS_EXCLUDED(gpu_control_client_lock_) override;
   void OnDestroyed(gpu::error::ContextLostReason reason,
                    gpu::error::Error error)
       LOCKS_EXCLUDED(shared_state_lock_) override;
   void OnReturnData(const std::vector<uint8_t>& data)
-      LOCKS_EXCLUDED(shared_state_lock_) override;
+      LOCKS_EXCLUDED(gpu_control_client_lock_) override;
   void OnSignalAck(uint32_t id, const CommandBuffer::State& state)
       LOCKS_EXCLUDED(shared_state_lock_) override;
 
@@ -267,7 +267,7 @@ class GPU_IPC_CLIENT_EXPORT CommandBufferProxyImpl
   base::WritableSharedMemoryMapping shared_state_mapping_;
 
   // Lock to access shared state that may be used across multiple threads. This
-  // includes state such as sync token release count, and the GpuControlClient.
+  // includes state such as sync token release count.
   base::Lock shared_state_lock_;
 
   // The last cached state received from the service.
@@ -279,9 +279,36 @@ class GPU_IPC_CLIENT_EXPORT CommandBufferProxyImpl
   raw_ptr<base::Lock> lock_ = nullptr;
   SEQUENCE_CHECKER(lockless_sequence_checker_);
 
+  // Lock to access `gpu_control_client_` from the IO thread. It is separate
+  // from `shared_state_lock_` so that the IO thread is never blocked by the
+  // client thread holding `shared_state_lock_`, e.g. while waiting for a [Sync]
+  // reply.
+  base::Lock gpu_control_client_lock_;
+
   // Client that wants to listen for important events on the GpuControl.
-  raw_ptr<gpu::GpuControlClient> gpu_control_client_
-      GUARDED_BY(shared_state_lock_) = nullptr;
+  //
+  // The locks protect this pointer, not the client. The client methods are
+  // called from both threads without a common lock, so they must be
+  // thread-safe. Clearing the pointer guarantees the client is no longer used
+  // once SetGpuControlClient() returns.
+  //
+  // It is read from two threads:
+  // - The client thread, synchronized via CheckLock() (`lock_` if set, or
+  //   `lockless_sequence_checker_` otherwise). It must not take
+  //   `gpu_control_client_lock_` here: Dawn holds its wire lock while calling
+  //   into CommandBufferProxyImpl, whereas OnReturnData() holds
+  //   `gpu_control_client_lock_` while taking Dawn's wire lock.
+  // - The IO thread (WebGPU only), with `gpu_control_client_lock_` held.
+  //
+  // It is written only by SetGpuControlClient(), under both CheckLock() and
+  // `gpu_control_client_lock_`, so either is enough to read it.
+  // ImplementationBase calls it on the client thread, outside Dawn's wire lock:
+  // - With the client, when the context is initialized.
+  // - With null, when the context is destroyed.
+  //
+  // It isn't annotated with GUARDED_BY, because that only supports a single
+  // lock, and `lock_` may be null (a sequence checker is used instead).
+  raw_ptr<gpu::GpuControlClient> gpu_control_client_ = nullptr;
 
   // Unowned list of DeletionObservers.
   base::ObserverList<DeletionObserver>::Unchecked deletion_observers_;
