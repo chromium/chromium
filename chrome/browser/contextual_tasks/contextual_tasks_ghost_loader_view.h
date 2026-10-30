@@ -30,6 +30,15 @@ class ContextualTasksGhostLoaderView : public views::WebView {
   ContextualTasksGhostLoaderView& operator=(
       const ContextualTasksGhostLoaderView&) = delete;
   ~ContextualTasksGhostLoaderView() override;
+
+  // Toggles whether the scrim displays the protected page error UI instead of
+  // the shimmering ghost loader cards.
+  void SetShowErrorPage(bool show_error_page);
+
+  bool is_showing_error_page() const { return is_showing_error_page_; }
+
+ private:
+  bool is_showing_error_page_ = false;
 };
 
 }  // namespace contextual_tasks

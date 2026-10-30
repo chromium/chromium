@@ -154,6 +154,12 @@ class ContextualTasksPanelController {
   // Returns true if the onboarding or Ask Google tooltip bubble is visible.
   virtual bool IsOnboardingTooltipVisible() const;
 
+  // Toggles the visibility of the protected page error scrim over the panel.
+  virtual void SetErrorPageVisible(bool visible) = 0;
+
+  // Returns whether the protected page error scrim is currently visible.
+  virtual bool IsErrorPageVisible() const = 0;
+
   // Context management.
   // Returns the tab handle of the auto suggested tab if the auto suggested tab
   // chip is shown in the compose box.

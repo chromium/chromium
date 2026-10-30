@@ -159,7 +159,8 @@ ContextualTasksWebView::ContextualTasksWebView(
             browser_window->GetProfile(), ghost_loader_web_contents));
     ConfigureWebContentsBackground(ghost_loader_view_->GetWebContents(),
                                    browser_window->GetProfile());
-    ghost_loader_view_->SetVisible(false);
+    is_error_page_visible_ = ghost_loader_view_->is_showing_error_page();
+    UpdateScrimVisibility();
     webui::SetBrowserWindowInterface(ghost_loader_view_->GetWebContents(),
                                      browser_window);
 
@@ -269,11 +270,29 @@ void ContextualTasksWebView::SetGhostLoaderVisible(bool visible) {
   if (visible && !GetIsGhostLoaderEnabled()) {
     return;
   }
-  ghost_loader_view_->SetVisible(visible);
+  is_ghost_loader_visible_ = visible;
+  UpdateScrimVisibility();
 }
 
 bool ContextualTasksWebView::IsGhostLoaderVisible() const {
-  return ghost_loader_view_ && ghost_loader_view_->GetVisible();
+  return ghost_loader_view_ && ghost_loader_view_->GetVisible() &&
+         !ghost_loader_view_->is_showing_error_page();
+}
+
+void ContextualTasksWebView::SetErrorPageVisible(bool visible) {
+  if (!ghost_loader_view_) {
+    return;
+  }
+  if (visible && !GetIsProtectedPageErrorEnabled()) {
+    return;
+  }
+  is_error_page_visible_ = visible;
+  UpdateScrimVisibility();
+}
+
+bool ContextualTasksWebView::IsErrorPageVisible() const {
+  return ghost_loader_view_ && ghost_loader_view_->GetVisible() &&
+         ghost_loader_view_->is_showing_error_page();
 }
 
 void ContextualTasksWebView::OnThemeChanged() {
@@ -663,6 +682,19 @@ void ContextualTasksWebView::UpdateToolbarStateFromWebContents(
   const GURL& url =
       use_last_committed_url ? wc->GetLastCommittedURL() : wc->GetVisibleURL();
   UpdateToolbarStateForUrl(url, ui_service, toolbar_ui);
+}
+
+void ContextualTasksWebView::UpdateScrimVisibility() {
+  if (!ghost_loader_view_) {
+    return;
+  }
+  if (is_error_page_visible_) {
+    ghost_loader_view_->SetShowErrorPage(true);
+    ghost_loader_view_->SetVisible(true);
+    return;
+  }
+  ghost_loader_view_->SetShowErrorPage(false);
+  ghost_loader_view_->SetVisible(is_ghost_loader_visible_);
 }
 
 BEGIN_METADATA(ContextualTasksWebView)

@@ -1086,5 +1086,52 @@ TEST_F(ContextualTasksWebViewTest,
             blink::mojom::PreferredColorScheme::kLight);
 }
 
+TEST_F(ContextualTasksWebViewTest,
+       ErrorPageScrimTakesPrecedenceOverGhostLoaderAndPersistsAcrossLoads) {
+  web_view_ = std::make_unique<ContextualTasksWebView>(browser_window_.get());
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  web_view_->SetWebContents(web_contents.get());
+
+  EXPECT_FALSE(web_view_->IsGhostLoaderVisible());
+  EXPECT_FALSE(web_view_->IsErrorPageVisible());
+
+  // Showing the error page displays the scrim in error-page mode (`#error`).
+  web_view_->SetErrorPageVisible(true);
+  EXPECT_TRUE(web_view_->IsErrorPageVisible());
+  EXPECT_FALSE(web_view_->IsGhostLoaderVisible());
+  EXPECT_TRUE(web_view_->ghost_loader_view()->GetVisible());
+  EXPECT_TRUE(web_view_->ghost_loader_view()->is_showing_error_page());
+  EXPECT_EQ(
+      web_view_->ghost_loader_view()->GetWebContents()->GetVisibleURL().ref(),
+      "error");
+
+  // Background content navigations and paint/load completion events must not
+  // dismiss the error page scrim.
+  auto sim = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://www.google.com/search?q=test"),
+      web_contents->GetPrimaryMainFrame());
+  sim->Start();
+  EXPECT_TRUE(web_view_->IsErrorPageVisible());
+  EXPECT_FALSE(web_view_->IsGhostLoaderVisible());
+
+  sim->Commit();
+  web_view_->DidFirstVisuallyNonEmptyPaint();
+  web_view_->DidStopLoading();
+  EXPECT_TRUE(web_view_->IsErrorPageVisible());
+  EXPECT_FALSE(web_view_->IsGhostLoaderVisible());
+
+  // Explicitly hiding the error page returns the scrim to hidden ghost-loader
+  // mode.
+  web_view_->SetErrorPageVisible(false);
+  EXPECT_FALSE(web_view_->IsErrorPageVisible());
+  EXPECT_FALSE(web_view_->IsGhostLoaderVisible());
+  EXPECT_FALSE(web_view_->ghost_loader_view()->GetVisible());
+  EXPECT_FALSE(web_view_->ghost_loader_view()->is_showing_error_page());
+  EXPECT_EQ(
+      web_view_->ghost_loader_view()->GetWebContents()->GetVisibleURL().ref(),
+      "ghost-loader");
+}
+
 }  // namespace
 }  // namespace contextual_tasks

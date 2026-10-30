@@ -86,6 +86,13 @@ class ContextualTasksWebView
   // Returns whether the ghost loader overlay is currently visible.
   bool IsGhostLoaderVisible() const;
 
+  // Toggles the visibility of the protected page error scrim overlay.
+  void SetErrorPageVisible(bool visible);
+
+  // Returns whether the protected page error scrim overlay is currently
+  // visible.
+  bool IsErrorPageVisible() const;
+
   // views::View:
   void OnThemeChanged() override;
 
@@ -151,6 +158,10 @@ class ContextualTasksWebView
   void UpdateToolbarStateFromWebContents(content::WebContents* wc,
                                          bool use_last_committed_url = false);
 
+  // Synchronizes `ghost_loader_view_` mode and visibility with
+  // `is_ghost_loader_visible_` and `is_error_page_visible_`.
+  void UpdateScrimVisibility();
+
   // The browser window interface associated with this view.
   raw_ptr<BrowserWindowInterface> browser_window_ = nullptr;
 
@@ -175,6 +186,11 @@ class ContextualTasksWebView
   // Whether the next DidStopLoading() corresponds to an initial or aborted
   // about:blank navigation that should not dismiss the ghost loader.
   bool ignore_next_stop_loading_for_about_blank_ = false;
+
+  // Desired visibility states for the ghost loader and protected page error
+  // scrims hosted in `ghost_loader_view_`.
+  bool is_ghost_loader_visible_ = false;
+  bool is_error_page_visible_ = false;
 
   base::WeakPtrFactory<ContextualTasksWebView> weak_ptr_factory_{this};
 };

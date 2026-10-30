@@ -2974,6 +2974,21 @@ void ContextualTasksSidePanelCoordinator::MoveTaskUiToNewTab() {
   }
 }
 
+void ContextualTasksSidePanelCoordinator::SetErrorPageVisible(bool visible) {
+  if (!contextual_tasks_panel_host_) {
+    return;
+  }
+  if (visible && !GetIsProtectedPageErrorEnabled()) {
+    return;
+  }
+  contextual_tasks_panel_host_->SetErrorPageVisible(visible);
+}
+
+bool ContextualTasksSidePanelCoordinator::IsErrorPageVisible() const {
+  return contextual_tasks_panel_host_ &&
+         contextual_tasks_panel_host_->IsErrorPageVisible();
+}
+
 std::optional<tabs::TabHandle>
 ContextualTasksSidePanelCoordinator::GetAutoSuggestedTabHandle() {
   auto* web_contents = GetActiveWebContents();
