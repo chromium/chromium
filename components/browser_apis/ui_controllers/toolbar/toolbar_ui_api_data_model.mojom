@@ -174,18 +174,9 @@ struct OmniboxActionPointer {
 };
 
 struct OmniboxActionDropText {
-  // The text or URL (e.g. from a link drop) to be dropped into the omnibox.
-  //
-  // String16 is used here instead of url.mojom.Url for two reasons:
-  // 1. Parity with the native Omnibox: The backend classification logic in
-  //    `AutocompleteClassifier::Classify` (and the broader autocomplete
-  //    controller) expects raw user input as a string to distinguish between
-  //    search queries and various URL forms.
-  // 2. Handling sanitization: Blink's renderer-side sanitization (e.g. in
-  //    `RenderProcessHostImpl::FilterURL`) replaces restricted URLs like
-  //    `javascript:` with `about:blank#blocked` in the `text/uri-list` format.
-  //    Using a string allows the WebUI to fall back to `text/plain` to recover
-  //    the raw input for proper processing in the browser process.
+  // The plain text (`text/plain`) dropped into the omnibox. Like the native
+  // omnibox, the browser collapses its whitespace and strips `javascript:`
+  // schemes before showing it.
   mojo_base.mojom.String16 text;
 };
 
@@ -202,7 +193,12 @@ union OmniboxAction {
   OmniboxActionTextInput text_input;
   OmniboxActionKey key;
   OmniboxActionPointer pointer;
+  // A drop is reported as a single action, preferring a URL, then files, then
+  // plain text, like OmniboxViewViews::PerformDrop().
   OmniboxActionDropText drop_text;
+  // Notifies the browser a URL (`text/uri-list`) was dropped into the omnibox.
+  // The browser uses the URL it captured from the drag.
+  mojo_base.mojom.Empty drop_url;
   OmniboxActionDropFile drop_file;
   // Notifies the browser the user started dragging text out of the omnibox.
   mojo_base.mojom.Empty drag_start;

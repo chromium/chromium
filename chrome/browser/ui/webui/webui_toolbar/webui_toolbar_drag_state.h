@@ -5,7 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_DRAG_STATE_H_
 #define CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_DRAG_STATE_H_
 
+#include <optional>
+#include <utility>
+
 #include "content/public/browser/web_contents_user_data.h"
+#include "url/gurl.h"
 
 namespace webui_toolbar {
 
@@ -27,6 +31,10 @@ class WebUIToolbarDragState
   // had a `javascript:` scheme, and clears the flag.
   static bool TakeDragHasJavaScriptUrl(content::WebContents* contents);
 
+  // Returns the first URL of the drag, as captured before `FilterDropData`,
+  // and clears it. Returns nullopt if the drag has no URL.
+  static std::optional<GURL> TakeDragUrl(content::WebContents* contents);
+
   ~WebUIToolbarDragState() override;
 
   bool drag_originated_from_renderer() const {
@@ -39,12 +47,16 @@ class WebUIToolbarDragState
   bool drag_has_javascript_url() const { return drag_has_javascript_url_; }
   void set_drag_has_javascript_url(bool val) { drag_has_javascript_url_ = val; }
 
+  const std::optional<GURL>& drag_url() const { return drag_url_; }
+  void set_drag_url(std::optional<GURL> url) { drag_url_ = std::move(url); }
+
  private:
   explicit WebUIToolbarDragState(content::WebContents* contents);
   friend class content::WebContentsUserData<WebUIToolbarDragState>;
 
   bool drag_originated_from_renderer_ = false;
   bool drag_has_javascript_url_ = false;
+  std::optional<GURL> drag_url_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

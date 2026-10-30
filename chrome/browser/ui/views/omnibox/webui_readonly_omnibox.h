@@ -213,6 +213,7 @@ class WebUIReadOnlyOmnibox
       const toolbar_ui_api::mojom::OmniboxActionPointer& pointer);
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnDropText(
       const toolbar_ui_api::mojom::OmniboxActionDropText& drop_text);
+  base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnDropUrl();
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnDropFile(
       const toolbar_ui_api::mojom::OmniboxActionDropFile& drop_file);
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnDragStart();

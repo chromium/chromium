@@ -1560,6 +1560,72 @@ suite('ReadonlyOmnibox', function() {
     assertEquals('dropped text', args[0].dropText.text);
   });
 
+  // A dropped link is forwarded as a URL drop, without the URL: the browser
+  // uses the URL it captured from the drag, rather than the one the WebUI sees,
+  // e.g. about:blank#blocked in place of a javascript: link.
+  test('Dropping a link forwards a URL drop', async () => {
+    uiHandler.reset();
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData('text/uri-list', 'about:blank#blocked');
+    dataTransfer.setData('text/plain', 'javascript:alert(1)');
+    omnibox.dispatchEvent(
+        new DragEvent('drop', {bubbles: true, cancelable: true, dataTransfer}));
+    await microtasksFinished();
+
+    assertEquals(1, uiHandler.getCallCount('onOmniboxAction'));
+    const args = uiHandler.getArgs('onOmniboxAction');
+    assertTrue(!!args[0].dropUrl);
+  });
+
+  // Like OmniboxViewViews::PerformDrop(), a drop carrying several kinds of data
+  // is forwarded as a single action, preferring a URL, then files, then plain
+  // text.
+  test('Dropping a URL, a file and text forwards the URL', async () => {
+    uiHandler.reset();
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData('text/uri-list', 'https://example.com/');
+    dataTransfer.setData('text/plain', 'dropped text');
+    dataTransfer.items.add(new File([''], 'test.html'));
+    omnibox.dispatchEvent(
+        new DragEvent('drop', {bubbles: true, cancelable: true, dataTransfer}));
+    await microtasksFinished();
+
+    assertEquals(1, uiHandler.getCallCount('onOmniboxAction'));
+    const args = uiHandler.getArgs('onOmniboxAction');
+    assertTrue(!!args[0].dropUrl);
+  });
+
+  test('Dropping a file and text forwards the file', async () => {
+    uiHandler.reset();
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData('text/plain', 'dropped text');
+    dataTransfer.items.add(new File([''], 'test.html'));
+    omnibox.dispatchEvent(
+        new DragEvent('drop', {bubbles: true, cancelable: true, dataTransfer}));
+    await microtasksFinished();
+
+    assertEquals(1, uiHandler.getCallCount('onOmniboxAction'));
+    const args = uiHandler.getArgs('onOmniboxAction');
+    assertTrue(!!args[0].dropFile);
+  });
+
+  // Like the native omnibox, which ignores a drop's empty URLs, a drop with an
+  // empty `text/uri-list` falls back to its plain text.
+  test('Dropping an empty URL and text forwards the text', async () => {
+    uiHandler.reset();
+    const dataTransfer = new DataTransfer();
+    dataTransfer.setData('text/uri-list', '');
+    dataTransfer.setData('text/plain', 'dropped text');
+    omnibox.dispatchEvent(
+        new DragEvent('drop', {bubbles: true, cancelable: true, dataTransfer}));
+    await microtasksFinished();
+
+    assertEquals(1, uiHandler.getCallCount('onOmniboxAction'));
+    const args = uiHandler.getArgs('onOmniboxAction');
+    assertTrue(!!args[0].dropText);
+    assertEquals('dropped text', args[0].dropText.text);
+  });
+
   // Like the native omnibox, dragging text out asks the browser to close the
   // suggestions popup, so that it does not cover the drop target.
   test('Dragging text notifies the browser', async () => {

@@ -219,6 +219,10 @@ class WebUIToolbarInternalWebView : public views::WebView {
             web_contents());
     drag_state->set_drag_originated_from_renderer(did_originate_from_renderer);
     drag_state->set_drag_has_javascript_url(has_javascript_url);
+    drag_state->set_drag_url(
+        drop_data.url_infos.empty()
+            ? std::nullopt
+            : std::make_optional(drop_data.url_infos.front().url));
   }
 
   void PreHandleDragExit() override { ClearCachedDraggedFile(); }

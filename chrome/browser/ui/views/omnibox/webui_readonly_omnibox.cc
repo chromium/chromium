@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/ui/views/page_action/webui_page_action_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/webui/webui_toolbar/browser_controls_service.h"
+#include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_drag_state.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
@@ -49,6 +51,7 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 
 WebUIReadOnlyOmnibox::UpdatePropagator::~UpdatePropagator() = default;
 
@@ -148,6 +151,9 @@ WebUIReadOnlyOmnibox::OnOmniboxAction(
 
     case toolbar_ui_api::mojom::OmniboxAction::Tag::kDropText:
       return OnDropText(*action->get_drop_text());
+
+    case toolbar_ui_api::mojom::OmniboxAction::Tag::kDropUrl:
+      return OnDropUrl();
 
     case toolbar_ui_api::mojom::OmniboxAction::Tag::kDropFile:
       return OnDropFile(*action->get_drop_file());
@@ -1052,6 +1058,26 @@ WebUIReadOnlyOmnibox::OnDropText(
 
   SetUserText(text, /*update_popup=*/false);
   SelectAll(false);
+  return base::ok(std::monostate());
+}
+
+base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
+WebUIReadOnlyOmnibox::OnDropUrl() {
+  // Use the drag's URL as captured by the browser before
+  // `RenderWidgetHost::FilterDropData`, which is the one
+  // OmniboxViewViews::PerformDrop() sees.
+  std::optional<GURL> url = webui_toolbar::WebUIToolbarDragState::TakeDragUrl(
+      toolbar_delegate_ ? toolbar_delegate_->GetWebContents() : nullptr);
+  if (!url) {
+    return base::ok(std::monostate());
+  }
+
+  const std::u16string text =
+      omnibox::StripJavascriptSchemas(base::UTF8ToUTF16(url->spec()));
+  if (!text.empty()) {
+    SetUserText(text, /*update_popup=*/false);
+    SelectAll(false);
+  }
   return base::ok(std::monostate());
 }
 

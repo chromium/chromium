@@ -154,12 +154,14 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/drop_data.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/scoped_accessibility_mode_override.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/common/extension.h"
@@ -4831,6 +4833,13 @@ class WebUIOmniboxDropBrowserTest : public WebUIToolbarWebViewBrowserTest {
 
   using DragOrigin = WebUIToolbarDropSimulator::DragOrigin;
 
+  enum class InitialState {
+    // The omnibox shows no text, as on the New Tab page.
+    kEmpty,
+    // The omnibox shows the URL of the current page.
+    kWithText,
+  };
+
   void TearDownOnMainThread() override {
     navigation_counter_.reset();
     drop_simulator_.reset();
@@ -4850,16 +4859,14 @@ class WebUIOmniboxDropBrowserTest : public WebUIToolbarWebViewBrowserTest {
   content::WebContents* active_web_contents() {
     return browser()->GetTabStripModel()->GetActiveWebContents();
   }
+  content::WebContents* toolbar_web_contents() { return toolbar_web_contents_; }
+  OmniboxView* omnibox_view() { return omnibox_view_; }
 
-  // Loads a page, so that the omnibox shows its URL, waits for the omnibox
-  // WebUI to show the same text as the browser side, and aims drops at the
-  // center of the omnibox. Must be called before any Simulate*Drop()/Expect*()
-  // call.
-  void SetUpOmniboxDropTest() {
-    ASSERT_TRUE(embedded_test_server()->Start());
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), embedded_test_server()->GetURL("/title1.html")));
-
+  // Loads a page that leaves the omnibox in `initial_state`, waits for the
+  // omnibox WebUI to show the same text as the browser side, and aims drops at
+  // the center of the omnibox. Must be called before any
+  // Simulate*Drop()/Expect*() call.
+  void SetUpOmniboxDropTest(InitialState initial_state) {
     ui::TrackedElement* element = nullptr;
     WebUIToolbarWebView* webui_toolbar_view = nullptr;
     views::WebView* web_view = nullptr;
@@ -4875,11 +4882,28 @@ class WebUIOmniboxDropBrowserTest : public WebUIToolbarWebViewBrowserTest {
         webui_toolbar_view->GetLocationBar()->GetOmniboxController();
     ASSERT_TRUE(omnibox_controller_);
 
-    // The omnibox WebUI receives its text asynchronously from the browser.
+    // The omnibox WebUI receives its text asynchronously from the browser, and
+    // its input is empty until then. The test starts on about:blank, so wait
+    // for the WebUI to show it first, so that the text it shows after the
+    // navigation below can only come from the browser.
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return GetRendererOmniboxText() == url::kAboutBlankURL; }));
+
+    if (initial_state == InitialState::kWithText) {
+      ASSERT_TRUE(embedded_test_server()->Start());
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(
+          browser(), embedded_test_server()->GetURL("/title1.html")));
+    } else {
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(
+          browser(), GURL(chrome::kChromeUINewTabURL)));
+    }
+
     ASSERT_TRUE(base::test::RunUntil([&]() {
       const std::u16string text = omnibox_view_->GetText();
-      return !text.empty() &&
-             GetRendererOmniboxText() == base::UTF16ToUTF8(text);
+      if (text.empty() != (initial_state == InitialState::kEmpty)) {
+        return false;
+      }
+      return GetRendererOmniboxText() == base::UTF16ToUTF8(text);
     }));
     initial_omnibox_text_ = base::UTF16ToUTF8(omnibox_view_->GetText());
 
@@ -4912,14 +4936,18 @@ class WebUIOmniboxDropBrowserTest : public WebUIToolbarWebViewBrowserTest {
 
   // Drops on the center of the omnibox. See `WebUIToolbarDropSimulator` for
   // the kinds of drop data.
-  void SimulateTextDrop(const std::string& text, DragOrigin origin) {
-    drop_simulator_->SimulateTextDrop(text, origin);
+  bool SimulateTextDrop(const std::string& text, DragOrigin origin) {
+    return drop_simulator_->SimulateTextDrop(text, origin);
   }
   void SimulateLinkWithTextDrop(const std::string& url, DragOrigin origin) {
     drop_simulator_->SimulateLinkWithTextDrop(url, origin);
   }
   void SimulateFileDrop(const base::FilePath& path, DragOrigin origin) {
     EXPECT_TRUE(drop_simulator_->SimulateFileDrop(path, origin));
+  }
+  // Drop of `drop_data` as it reaches the toolbar.
+  void SimulateDrop(const content::DropData& drop_data) {
+    EXPECT_TRUE(drop_simulator_->PerformDrop(drop_data));
   }
 
   // Both the browser side and the omnibox WebUI show `expected`.
@@ -4958,8 +4986,8 @@ class WebUIOmniboxDropBrowserTest : public WebUIToolbarWebViewBrowserTest {
     ExpectAllSelected();
   }
 
-  // Nothing happened at all: the omnibox still shows the page URL, the popup
-  // did not open and the active tab did not navigate.
+  // Nothing happened at all: the omnibox text is unchanged, the popup did not
+  // open and the active tab did not navigate.
   void ExpectDropIgnored() {
     ExpectNoNavigation();
     ExpectOmniboxText(initial_omnibox_text_);
@@ -4990,17 +5018,84 @@ class WebUIOmniboxDropBrowserTest : public WebUIToolbarWebViewBrowserTest {
   std::unique_ptr<NavigationCounter> navigation_counter_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebUIOmniboxDropBrowserTest, DropPlainText_FromWebPage) {
-  ASSERT_NO_FATAL_FAILURE(SetUpOmniboxDropTest());
+IN_PROC_BROWSER_TEST_F(WebUIOmniboxDropBrowserTest,
+                       DropPlainText_EmptyOmnibox_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpOmniboxDropTest(InitialState::kEmpty));
   SimulateTextDrop("hello world", DragOrigin::kWebPage);
 
   ExpectDroppedInto("hello world");
 }
 
+IN_PROC_BROWSER_TEST_F(WebUIOmniboxDropBrowserTest,
+                       DropPlainText_OmniboxWithText_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpOmniboxDropTest(InitialState::kWithText));
+  SimulateTextDrop("hello world", DragOrigin::kWebPage);
+
+  ExpectDroppedInto("hello world");
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIOmniboxDropBrowserTest, DropPlainText_FromOs) {
+  ASSERT_NO_FATAL_FAILURE(SetUpOmniboxDropTest(InitialState::kEmpty));
+  SimulateTextDrop("hello world", DragOrigin::kOs);
+
+  ExpectDroppedInto("hello world");
+}
+
+// The URL is dropped without a trailing slash, so that the omnibox text tells
+// whether it went through URL canonicalization. Platforms that synthesize
+// `text/uri-list` from URL-like plain text (e.g. Wayland) show the canonical
+// URL, like the native omnibox. Otherwise (e.g. X11) the text is shown as is.
+IN_PROC_BROWSER_TEST_F(WebUIOmniboxDropBrowserTest, DropUrlText_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpOmniboxDropTest(InitialState::kEmpty));
+
+  if (SimulateTextDrop("https://www.example.test", DragOrigin::kWebPage)) {
+    ExpectDroppedInto("https://www.example.test/");
+  } else {
+    ExpectDroppedInto("https://www.example.test");
+  }
+}
+
+// A link longer than the URLs that may be sent over Mojo, e.g. a large data:
+// URL, is dropped into the omnibox, rather than getting the toolbar renderer
+// killed for a bad Mojo message.
+IN_PROC_BROWSER_TEST_F(WebUIOmniboxDropBrowserTest, DropLargeLink_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpOmniboxDropTest(InitialState::kEmpty));
+  const std::string large_url =
+      "data:text/plain," + std::string(url::kMaxURLChars, 'a');
+  content::DropData drop_data;
+  drop_data.did_originate_from_renderer = true;
+  drop_data.url_infos.emplace_back(GURL(large_url), std::u16string());
+
+  content::RenderFrameHostWrapper rfh(
+      toolbar_web_contents()->GetPrimaryMainFrame());
+  content::RenderProcessHostBadMojoMessageWaiter kill_waiter(rfh->GetProcess());
+
+  SimulateDrop(drop_data);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return rfh.IsDestroyed() || !rfh->IsRenderFrameLive() ||
+           base::UTF16ToUTF8(omnibox_view()->GetText()) == large_url;
+  }));
+  EXPECT_TRUE(!rfh.IsDestroyed() && rfh->IsRenderFrameLive())
+      << *kill_waiter.Wait();
+  EXPECT_EQ(large_url, base::UTF16ToUTF8(omnibox_view()->GetText()));
+}
+
+// See DropUrlText_FromWebPage for why the URL has no trailing slash.
+IN_PROC_BROWSER_TEST_F(WebUIOmniboxDropBrowserTest, DropUrlText_FromOs) {
+  ASSERT_NO_FATAL_FAILURE(SetUpOmniboxDropTest(InitialState::kEmpty));
+
+  if (SimulateTextDrop("https://www.example.test", DragOrigin::kOs)) {
+    ExpectDroppedInto("https://www.example.test/");
+  } else {
+    ExpectDroppedInto("https://www.example.test");
+  }
+}
+
 // Dragging a real link produces both `text/uri-list` and `text/plain` holding
 // the same URL.
 IN_PROC_BROWSER_TEST_F(WebUIOmniboxDropBrowserTest, DropUrlLink_FromWebPage) {
-  ASSERT_NO_FATAL_FAILURE(SetUpOmniboxDropTest());
+  ASSERT_NO_FATAL_FAILURE(SetUpOmniboxDropTest(InitialState::kWithText));
   SimulateLinkWithTextDrop("https://www.example.test/", DragOrigin::kWebPage);
 
   ExpectDroppedInto("https://www.example.test/");
@@ -5012,7 +5107,7 @@ IN_PROC_BROWSER_TEST_F(WebUIOmniboxDropBrowserTest, DropFile_FromOs) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   const base::FilePath file_path = temp_dir.GetPath().AppendASCII("test.html");
   ASSERT_TRUE(base::WriteFile(file_path, "<html><body>test</body></html>"));
-  ASSERT_NO_FATAL_FAILURE(SetUpOmniboxDropTest());
+  ASSERT_NO_FATAL_FAILURE(SetUpOmniboxDropTest(InitialState::kWithText));
   SimulateFileDrop(file_path, DragOrigin::kOs);
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -5025,16 +5120,97 @@ IN_PROC_BROWSER_TEST_F(WebUIOmniboxDropBrowserTest, DropFile_FromOs) {
 #endif
 }
 
+// Unlike a dropped file, a dropped `file:` URL is shown in the omnibox whatever
+// the drag origin, like the native omnibox. The URL is already canonical, so
+// it reads the same whether or not a URL was synthesized from the text.
+IN_PROC_BROWSER_TEST_F(WebUIOmniboxDropBrowserTest,
+                       DropFilePathText_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpOmniboxDropTest(InitialState::kEmpty));
+  SimulateTextDrop("file:///tmp/test.html", DragOrigin::kWebPage);
+
+  ExpectDroppedInto("file:///tmp/test.html");
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIOmniboxDropBrowserTest, DropFilePathText_FromOs) {
+  ASSERT_NO_FATAL_FAILURE(SetUpOmniboxDropTest(InitialState::kEmpty));
+  SimulateTextDrop("file:///tmp/test.html", DragOrigin::kOs);
+
+  ExpectDroppedInto("file:///tmp/test.html");
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIOmniboxDropBrowserTest, DropFileLink_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpOmniboxDropTest(InitialState::kEmpty));
+  SimulateLinkWithTextDrop("file:///tmp/test.html", DragOrigin::kWebPage);
+
+  ExpectDroppedInto("file:///tmp/test.html");
+}
+
 // Like the native omnibox, the `javascript:` scheme is stripped from the
-// dropped URL. The renderer only sees `about:blank#blocked` in place of the
-// `javascript:` link, so the URL is recovered from `text/plain`, which a real
-// link drag carries too.
+// dropped URL. The drag source lets `javascript:` links through (see
+// `RenderWidgetHostImpl::StartDragging`), but the toolbar renderer only sees
+// about:blank#blocked in their place, so the browser uses the URL it captured
+// when the drag entered the toolbar. Like a real link drag, the drop also
+// carries the URL as `text/plain`.
 IN_PROC_BROWSER_TEST_F(WebUIOmniboxDropBrowserTest,
                        DropJavaScriptLink_FromWebPage) {
-  ASSERT_NO_FATAL_FAILURE(SetUpOmniboxDropTest());
+  ASSERT_NO_FATAL_FAILURE(SetUpOmniboxDropTest(InitialState::kWithText));
   SimulateLinkWithTextDrop("javascript:alert(1)", DragOrigin::kWebPage);
 
   ExpectDroppedInto("alert(1)");
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIOmniboxDropBrowserTest,
+                       DropJavaScriptText_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpOmniboxDropTest(InitialState::kEmpty));
+  SimulateTextDrop("javascript:alert(1)", DragOrigin::kWebPage);
+
+  ExpectDroppedInto("alert(1)");
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIOmniboxDropBrowserTest, DropJavaScriptText_FromOs) {
+  ASSERT_NO_FATAL_FAILURE(SetUpOmniboxDropTest(InitialState::kEmpty));
+  SimulateTextDrop("javascript:alert(1)", DragOrigin::kOs);
+
+  ExpectDroppedInto("alert(1)");
+}
+
+// Plain text from a web page is never synthesized into a non-HTTP(S) URL, so
+// the text is shown as is.
+IN_PROC_BROWSER_TEST_F(WebUIOmniboxDropBrowserTest,
+                       DropChromeUrlText_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpOmniboxDropTest(InitialState::kEmpty));
+  SimulateTextDrop("chrome://settings", DragOrigin::kWebPage);
+
+  ExpectDroppedInto("chrome://settings");
+}
+
+// A web page process may not request chrome:// URLs, so the drag source
+// rewrites the link to about:blank#blocked (see
+// `RenderWidgetHostImpl::StartDragging`), while `text/plain` keeps the
+// original URL. Like the native omnibox, the link wins.
+IN_PROC_BROWSER_TEST_F(WebUIOmniboxDropBrowserTest,
+                       DropChromeUrlLink_FromWebPage) {
+  ASSERT_NO_FATAL_FAILURE(SetUpOmniboxDropTest(InitialState::kEmpty));
+  content::DropData drop_data;
+  drop_data.did_originate_from_renderer = true;
+  drop_data.url_infos.emplace_back(GURL(content::kBlockedURL),
+                                   std::u16string());
+  drop_data.text = u"chrome://settings";
+  SimulateDrop(drop_data);
+
+  ExpectDroppedInto(content::kBlockedURL);
+}
+
+// See DropUrlText_FromWebPage for why the omnibox text depends on whether a URL
+// was synthesized.
+IN_PROC_BROWSER_TEST_F(WebUIOmniboxDropBrowserTest, DropChromeUrlText_FromOs) {
+  ASSERT_NO_FATAL_FAILURE(SetUpOmniboxDropTest(InitialState::kEmpty));
+
+  if (SimulateTextDrop("chrome://settings", DragOrigin::kOs)) {
+    ExpectDroppedInto("chrome://settings/");
+  } else {
+    ExpectDroppedInto("chrome://settings");
+  }
 }
 
 class WebUIPageActionBrowserTest : public WebUIToolbarWebViewBrowserTest {

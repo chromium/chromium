@@ -193,8 +193,10 @@ std::string DispatchPointerDownAndUp(
     const std::string& pointer_type = "mouse",
     const std::string& opts = "detail: 1, button: 0");
 
-// Counts navigations started in a WebContents, and can assert that none
-// happened.
+// Counts navigations started in the primary main frame of a WebContents, and
+// can assert that none happened. Subframe navigations are ignored, since some
+// pages load subframes on their own, e.g. the One Google Bar on the New Tab
+// page.
 class NavigationCounter : public content::WebContentsObserver {
  public:
   explicit NavigationCounter(content::WebContents* web_contents);

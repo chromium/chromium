@@ -38,6 +38,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
@@ -1066,7 +1067,9 @@ NavigationCounter::~NavigationCounter() = default;
 
 void NavigationCounter::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  navigation_count_++;
+  if (navigation_handle->IsInPrimaryMainFrame()) {
+    navigation_count_++;
+  }
 }
 
 void NavigationCounter::WaitForNoNavigations() {

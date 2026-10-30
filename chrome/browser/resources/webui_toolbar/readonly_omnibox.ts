@@ -48,6 +48,7 @@ interface OmniboxInputDelegate {
       void;
   handleDropText(
       element: ReadonlyOmniboxElement, dragText: OmniboxActionDropText): void;
+  handleDropUrl(element: ReadonlyOmniboxElement): void;
   handleDropFile(
       element: ReadonlyOmniboxElement, dragFile: OmniboxActionDropFile): void;
   handleDragStart(element: ReadonlyOmniboxElement): void;
@@ -173,6 +174,12 @@ class MojoOmniboxInputDelegate implements OmniboxInputDelegate {
       void {
     this.browserProxy_.toolbarUIHandler.onOmniboxAction({
       dropText,
+    });
+  }
+
+  handleDropUrl(_: ReadonlyOmniboxElement): void {
+    this.browserProxy_.toolbarUIHandler.onOmniboxAction({
+      dropUrl: {},
     });
   }
 
@@ -1219,26 +1226,11 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
     const types = e.dataTransfer.types;
 
-    if (types.includes('text/uri-list')) {
-      let url = e.dataTransfer.getData('text/uri-list');
-      // For restricted URLs (e.g. javascript: or chrome:// links), Blink's IPC
-      // sanitization intercepts the drop and overwrites the URL with
-      // about:blank#blocked. We can recover the original string from text/plain
-      // and forward it to C++ where it will be properly sanitized
-      // (e.g. via StripJavascriptSchemas) before being set in the omnibox.
-      if (url.startsWith('about:blank#blocked') &&
-          types.includes('text/plain')) {
-        const plainText = e.dataTransfer.getData('text/plain');
-        if (plainText) {
-          url = plainText;
-        }
-      }
-
-      if (url) {
-        this.inputDelegate_.handleDropText(this, {
-          text: url.split('\n')[0]!,
-        });
-      }
+    // A type can be present with empty data, e.g. setData(type, ''). Fall
+    // through to the other types then, like the native omnibox.
+    if (types.includes('text/uri-list') &&
+        e.dataTransfer.getData('text/uri-list')) {
+      this.inputDelegate_.handleDropUrl(this);
     } else if (types.includes('Files')) {
       this.inputDelegate_.handleDropFile(this, {
         dropPosition: {x: e.clientX, y: e.clientY},

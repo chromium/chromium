@@ -159,6 +159,7 @@ source_set("impl") {
     "//chrome/browser/ui/webui/omnibox_popup",
     "//chrome/browser/ui/webui/searchbox",
     "//chrome/browser/ui/webui/top_chrome",
+    "//chrome/browser/ui/webui/webui_toolbar",
     "//chrome/browser/user_education",
     "//chrome/common:buildflags",
     "//components/input",

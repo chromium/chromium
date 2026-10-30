@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_drag_state.h"
 
+#include <utility>
+
 namespace webui_toolbar {
 
 // static
@@ -47,6 +49,20 @@ bool WebUIToolbarDragState::TakeDragHasJavaScriptUrl(
   bool val = drag_state->drag_has_javascript_url();
   drag_state->set_drag_has_javascript_url(false);
   return val;
+}
+
+// static
+std::optional<GURL> WebUIToolbarDragState::TakeDragUrl(
+    content::WebContents* contents) {
+  if (!contents) {
+    return std::nullopt;
+  }
+  WebUIToolbarDragState* drag_state = FromWebContents(contents);
+  if (!drag_state) {
+    return std::nullopt;
+  }
+
+  return std::exchange(drag_state->drag_url_, std::nullopt);
 }
 
 WebUIToolbarDragState::WebUIToolbarDragState(content::WebContents* contents)
