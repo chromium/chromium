@@ -633,7 +633,7 @@ void TabMenuModel::Build(int index) {
                                              ui::kColorMenuIcon,
                                              kTabMenuIconSize));
     SetEnabledAt(GetItemCount() - 1,
-                 tab_strip_->IsReadLaterSupportedForAny(indices));
+                 tab_strip_->IsReadLaterSupportedForAny(tab_handles));
   }
 
   if (show_glic_items && !glic_displayed) {

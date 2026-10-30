@@ -2421,7 +2421,7 @@ void TabStripModel::RotateFocusedGroup(bool forward) {
 }
 
 bool TabStripModel::IsReadLaterSupportedForAny(
-    const std::vector<int>& indices) {
+    const std::vector<tabs::TabHandle>& tabs) const {
   if (!delegate_->SupportsReadLater()) {
     return false;
   }
@@ -2431,19 +2431,21 @@ bool TabStripModel::IsReadLaterSupportedForAny(
   if (!model || !model->loaded()) {
     return false;
   }
-  for (int index : indices) {
-    if (model->IsUrlSupported(
-            chrome::GetURLToBookmark(GetWebContentsAt(index)))) {
+  for (tabs::TabHandle tab_handle : tabs) {
+    tabs::TabInterface* tab = tab_handle.Get();
+    if (tab && static_cast<tabs::TabModel*>(tab)->owning_model() == this &&
+        tab->GetContents() &&
+        model->IsUrlSupported(chrome::GetURLToBookmark(tab->GetContents()))) {
       return true;
     }
   }
   return false;
 }
 
-void TabStripModel::AddToReadLater(const std::vector<int>& indices) {
+void TabStripModel::AddToReadLater(const std::vector<tabs::TabHandle>& tabs) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
-  AddToReadLaterImpl(indices);
+  AddToReadLaterImpl(tabs);
 }
 
 void TabStripModel::OpenTabGroupEditor(const tab_groups::TabGroupId& group) {
@@ -3109,7 +3111,7 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
           selection_model_.size());
       base::RecordAction(
           UserMetricsAction("DesktopReadingList.AddItem.FromTabContextMenu"));
-      AddToReadLater(GetIndicesForCommand(context_index));
+      AddToReadLater(GetTabsForCommand(context_tab));
       break;
     }
 
@@ -5037,8 +5039,17 @@ void TabStripModel::MoveTabsAndSetPropertiesImpl(
                      destination_index, group, pinned, kRetainCollectionTypes));
 }
 
-void TabStripModel::AddToReadLaterImpl(const std::vector<int>& indices) {
-  std::vector<WebContents*> web_contentses = GetWebContentsesByIndices(indices);
+void TabStripModel::AddToReadLaterImpl(
+    const std::vector<tabs::TabHandle>& tabs) {
+  std::vector<WebContents*> web_contentses;
+  web_contentses.reserve(tabs.size());
+  for (tabs::TabHandle tab_handle : tabs) {
+    tabs::TabInterface* tab = tab_handle.Get();
+    if (tab && static_cast<tabs::TabModel*>(tab)->owning_model() == this &&
+        tab->GetContents()) {
+      web_contentses.push_back(tab->GetContents());
+    }
+  }
   delegate_->AddToReadLater(web_contentses);
 }
 

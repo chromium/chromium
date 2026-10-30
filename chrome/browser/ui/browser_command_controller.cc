@@ -2319,10 +2319,11 @@ void BrowserCommandController::UpdateCommandsForTabState() {
       IDC_OPEN_IN_CHROME,
       IsWebAppOrCustomTab(browser_) && !is_isolated_app && !is_pinned_home_tab);
 
+  tabs::TabInterface* active_tab = browser_->tab_strip_model()->GetActiveTab();
   command_updater_->UpdateCommandEnabled(
       IDC_READING_LIST_MENU_ADD_TAB,
-      browser_->tab_strip_model()->IsReadLaterSupportedForAny(
-          {browser_->tab_strip_model()->active_index()}));
+      active_tab && browser_->tab_strip_model()->IsReadLaterSupportedForAny(
+                        {active_tab->GetHandle()}));
 
   command_updater_->UpdateCommandEnabled(
       IDC_TOGGLE_REQUEST_TABLET_SITE,
