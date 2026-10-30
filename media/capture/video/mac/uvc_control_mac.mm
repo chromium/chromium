@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "media/capture/video/mac/uvc_control_mac.h"
 
 #include <IOKit/IOCFPlugIn.h>
@@ -270,8 +269,9 @@ std::vector<uint8_t> ExtractControls(IOUSBDescriptorHeader* usb_descriptor) {
   if (descriptor->bControlSize > 0) {
     const uint8_t* bytes =
         reinterpret_cast<const uint8_t*>(&descriptor->bmControls[0]);
-    const size_t length = descriptor->bControlSize;
-    return std::vector<uint8_t>(bytes, UNSAFE_TODO(bytes + length));
+    std::vector<uint8_t> controls(descriptor->bControlSize);
+    std::copy_n(bytes, descriptor->bControlSize, controls.begin());
+    return controls;
   }
   return std::vector<uint8_t>();
 }
@@ -689,8 +689,7 @@ IOUSBDevRequestTO UvcControl::CreateEmptyCommand(
   CHECK((endpoint_direction == kUSBIn) || (endpoint_direction == kUSBOut));
   UInt8 interface_number;
   (*interface_.get())->GetInterfaceNumber(interface_.get(), &interface_number);
-  IOUSBDevRequestTO command;
-  memset(&command, 0, sizeof(command));
+  IOUSBDevRequestTO command{};
   command.bmRequestType = USBmakebmRequestType(
       endpoint_direction, UInt8{kUSBClass}, UInt8{kUSBInterface});
   command.bRequest = request_code;
