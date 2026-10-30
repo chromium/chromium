@@ -684,16 +684,16 @@ template("linux_package") {
         if (!is_chrome_branded) {
           package = "chromium"
         }
-        if (current_cpu == "x86") {
-          snap_arch = "i386"
-        } else if (current_cpu == "x64") {
+        if (current_cpu == "x64") {
           snap_arch = "amd64"
         } else if (current_cpu == "arm") {
           snap_arch = "armhf"
         } else if (current_cpu == "arm64") {
           snap_arch = "arm64"
+        } else if (current_cpu == "riscv64") {
+          snap_arch = "riscv64"
         } else {
-          assert(false, "Linux installer not configured for this architecture.")
+          assert(false, "Snap package not configured for this architecture.")
         }
 
         inputs = packaging_files + [
@@ -771,6 +771,11 @@ if (!is_chromeos) {
   if (enable_flatpak) {
     group("dev_flatpak") {
       deps = [ ":unstable_flatpak" ]
+    }
+  }
+  if (enable_snap_package) {
+    group("dev_snap") {
+      deps = [ ":unstable_snap" ]
     }
   }
 }

@@ -90,6 +90,7 @@ bool GetDefaultUserDataDirectory(base::FilePath* result) {
         GetXDGDirectory(env.get(), kXdgConfigHomeEnvVar, kDotConfigDir);
   }
 
+  // LINT.IfChange(DataDirBasename)
 #if BUILDFLAG(GOOGLE_CHROME_FOR_TESTING_BRANDING)
   std::string data_dir_basename = "google-chrome-for-testing";
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -97,6 +98,7 @@ bool GetDefaultUserDataDirectory(base::FilePath* result) {
 #else
   std::string data_dir_basename = "chromium";
 #endif
+  // LINT.ThenChange(//chrome/installer/linux/snap/build.py:ConfigDirName)
   *result = config_dir.Append(data_dir_basename + GetChannelSuffixForDataDir());
   return true;
 }

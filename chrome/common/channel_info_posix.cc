@@ -77,6 +77,7 @@ std::string GetChannelName(WithExtendedStable with_extended_stable) {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
+// LINT.IfChange(ChannelSuffixForDataDir)
 std::string GetChannelSuffixForDataDir() {
   switch (GetChannel()) {
     case version_info::Channel::BETA:
@@ -91,6 +92,7 @@ std::string GetChannelSuffixForDataDir() {
       return std::string();
   }
 }
+// LINT.ThenChange(//chrome/installer/linux/snap/build.py:ConfigDirName)
 
 #if BUILDFLAG(IS_LINUX)
 std::string GetChannelSuffixForExtraFlagsEnvVarName() {
