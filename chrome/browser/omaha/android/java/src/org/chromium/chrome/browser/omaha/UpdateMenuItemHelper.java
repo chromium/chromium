@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateState;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateStatus;
 import org.chromium.chrome.browser.omaha.inline.InAppUpdateController;
-import org.chromium.chrome.browser.omaha.inline.InAppUpdateController.InAppUpdateManageable;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
@@ -137,6 +136,17 @@ public class UpdateMenuItemHelper {
      * @param activity The current {@code Activity}.
      */
     public void onMenuItemClicked(Activity activity) {
+        onMenuItemClicked(activity, /* inAppUpdateController= */ null);
+    }
+
+    /**
+     * Handles a click on the update menu item.
+     *
+     * @param activity The current {@code Activity}.
+     * @param inAppUpdateController The {@link InAppUpdateController}, if available.
+     */
+    public void onMenuItemClicked(
+            Activity activity, @Nullable InAppUpdateController inAppUpdateController) {
         if (mStatus == null) return;
 
         // TODO(crbug.com/553918188): Remove logging once in-app update flow stabilizes.
@@ -149,20 +159,12 @@ public class UpdateMenuItemHelper {
         switch (mStatus.updateState) {
             case UpdateState.UPDATE_AVAILABLE:
                 final String updateUrl = mStatus.updateUrl;
-                // TODO(crbug.com/574106939): Replace Activity instanceof InAppUpdateManageable
-                // with constructor or setter injection from RootUiCoordinator.
                 if (ChromeFeatureList.isEnabled(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-                        && activity instanceof InAppUpdateManageable manageable) {
-                    InAppUpdateController inAppUpdateController =
-                            manageable.getInAppUpdateController();
-                    if (inAppUpdateController != null) {
-                        // TODO(crbug.com/553918188): Remove logging once in-app update flow
-                        // stabilizes.
-                        Log.i(TAG, "Triggering InAppUpdateController.onMenuItemClicked()...");
-                        inAppUpdateController.onMenuItemClicked(
-                                () -> startIntentFallback(activity, updateUrl));
-                        break;
-                    }
+                        && inAppUpdateController != null) {
+                    Log.i(TAG, "Triggering InAppUpdateController.onMenuItemClicked()...");
+                    inAppUpdateController.onMenuItemClicked(
+                            () -> startIntentFallback(activity, updateUrl));
+                    break;
                 }
 
                 if (TextUtils.isEmpty(updateUrl)) {

@@ -172,8 +172,6 @@ import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeMessageController;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
-import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
-import org.chromium.chrome.browser.omaha.inline.InAppUpdateController;
 import org.chromium.chrome.browser.open_in_app.OpenInAppDelegate;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
@@ -317,7 +315,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         implements TabCreatorManager,
                 PolicyChangeListener,
                 SnackbarManageable,
-                InAppUpdateController.InAppUpdateManageable,
                 StatusBarColorController.StatusBarColorProvider,
                 AppMenuDelegate,
                 AppMenuBlocker,
@@ -506,10 +503,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     private final OneshotSupplierImpl<ChromeAndroidTask> mChromeAndroidTaskSupplier =
             new OneshotSupplierImpl<>();
-
-    // TODO(crbug.com/574106939): Move InAppUpdateController initialization out of ChromeActivity
-    // into TabbedRootUiCoordinator.
-    private @Nullable InAppUpdateController mInAppUpdateController;
 
     protected ChromeActivity() {
         mManualFillingComponentSupplier.set(ManualFillingComponentFactory.createComponent());
@@ -1999,15 +1992,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             chromeAndroidTask.removeAllFeaturesForActivity(activityWindowAndroid);
         }
 
-        // TODO(crbug.com/553918188): Remove logging once in-app update flow stabilizes.
-        if (mInAppUpdateController != null) {
-            Log.i(
-                    InAppUpdateController.TAG,
-                    "ChromeActivity.onDestroy: destroying InAppUpdateController");
-            mInAppUpdateController.destroy();
-            mInAppUpdateController = null;
-        }
-
         SnackbarManager snackbarManager = mSnackbarManagerSupplier.get();
         if (snackbarManager != null) {
             SnackbarManagerProvider.detach(snackbarManager);
@@ -2279,23 +2263,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     @Override
     public SnackbarManager getSnackbarManager() {
         return assertNonNull(mSnackbarManagerSupplier.get());
-    }
-
-    /**
-     * Returns the {@link InAppUpdateController} for this Activity, or null if the feature is
-     * disabled.
-     */
-    // TODO(crbug.com/574106939): Move InAppUpdateController and InAppUpdateManageable
-    // out of ChromeActivity into TabbedRootUiCoordinator.
-    @Override
-    public @Nullable InAppUpdateController getInAppUpdateController() {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.IN_APP_UPDATE_FLOW)) {
-            return null;
-        }
-        if (mInAppUpdateController == null) {
-            mInAppUpdateController = new InAppUpdateController(this, mSnackbarManagerSupplier);
-        }
-        return mInAppUpdateController;
     }
 
     @Override
@@ -3119,11 +3086,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             return true;
         }
 
-        if (id == R.id.update_menu_id) {
-            UpdateMenuItemHelper.getInstance(getOriginalProfile()).onMenuItemClicked(this);
-            return true;
-        }
-
         if (id == R.id.quit_chrome && !fromMenu) {
             return ConfirmQuitHelper.getInstance().handleQuitRequest(this);
         }
@@ -3662,30 +3624,9 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 "Android.DeviceSize.ScreenSizeInTensOfInches", sample, 40, 152, 58);
     }
 
-    @Override
-    public boolean onActivityResultWithNative(
-            int requestCode, int resultCode, @Nullable Intent intent) {
-        // TODO(crbug.com/574106939): Handle activity result via ActivityResultWithNativeObserver in
-        // TabbedRootUiCoordinator instead of overriding onActivityResultWithNative in
-        // ChromeActivity.
-        if (requestCode == InAppUpdateController.REQUEST_CODE_IN_APP_UPDATE) {
-            // TODO(crbug.com/553918188): Remove logging once in-app update flow stabilizes.
-            Log.i(
-                    InAppUpdateController.TAG,
-                    "ChromeActivity.onActivityResultWithNative: resultCode=%d",
-                    resultCode);
-            InAppUpdateController inAppUpdateController = getInAppUpdateController();
-            if (inAppUpdateController != null) {
-                inAppUpdateController.handleActivityResult(requestCode, resultCode);
-            }
-            return true;
-        }
-        return super.onActivityResultWithNative(requestCode, resultCode, intent);
-    }
-
     /**
-     * Called when VR mode is entered using this activity. 2D UI components that steal focus or
-     * draw over VR contents should be hidden in this call.
+     * Called when VR mode is entered using this activity. 2D UI components that steal focus or draw
+     * over VR contents should be hidden in this call.
      */
     public void onEnterVr() {}
 

@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.ChromeInactivityTracker.InactivityObserver;
+import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.accessibility.PageZoomIphController;
@@ -143,6 +144,7 @@ import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.ActivityResultWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifetime.ApplicationLifetime;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -166,6 +168,8 @@ import org.chromium.chrome.browser.ntp_customization.theme.NtpSyncedThemeManager
 import org.chromium.chrome.browser.ntp_customization.theme_sync.NtpBackgroundDataSyncController;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerV2;
 import org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorInProductHelpController;
+import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
+import org.chromium.chrome.browser.omaha.inline.InAppUpdateController;
 import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
 import org.chromium.chrome.browser.omnibox.OmniboxChipManager;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
@@ -436,6 +440,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable TabSearchOverlayCoordinator mTabSearchOverlayCoordinator;
     private final VerticalTabsActionDelegate mVerticalTabsActionDelegate;
     private final Runnable mOnTabLayoutAvailable;
+    private final BooleanSupplier mIsWarmOnResumeSupplier;
+    private @Nullable InAppUpdateController mInAppUpdateController;
+    private @Nullable ActivityResultWithNativeObserver mInAppUpdateActivityResultObserver;
+    private @Nullable PauseResumeWithNativeObserver mInAppUpdateResumeObserver;
+    private boolean mInAppUpdateStartupCheckScheduled;
 
     // Activity tab observer that updates the current tab used by various UI components.
     private class RootUiTabObserver extends ActivityTabTabObserver {
@@ -614,6 +623,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param verticalTabsActionDelegate Delegate to handle actions from the vertical tabs UI.
      * @param urlBarVisibleSupplier Supplier indicating if the omnibox URL bar is visible.
      * @param onTabLayoutAvailable Runnable to invoke when the tab layout UI is ready.
+     * @param isWarmOnResumeSupplier Supplier indicating whether the activity is warm on resume.
      */
     public TabbedRootUiCoordinator(
             AppCompatActivity activity,
@@ -672,7 +682,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @Nullable BottomBarHostManager bottomBarHostManager,
             VerticalTabsActionDelegate verticalTabsActionDelegate,
             Supplier<Boolean> urlBarVisibleSupplier,
-            Runnable onTabLayoutAvailable) {
+            Runnable onTabLayoutAvailable,
+            BooleanSupplier isWarmOnResumeSupplier) {
         super(
                 activity,
                 onOmniboxFocusChangedListener,
@@ -781,6 +792,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         mInactivityTrackerSupplier = inactivityTrackerSupplier;
         mVerticalTabsActionDelegate = verticalTabsActionDelegate;
         mOnTabLayoutAvailable = onTabLayoutAvailable;
+        mIsWarmOnResumeSupplier = isWarmOnResumeSupplier;
 
         DataSharingTabGroupsDelegate dataSharingTabGroupsDelegate =
                 createDataSharingTabGroupsDelegate();
@@ -876,11 +888,15 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             Log.w(TAG, "Error getting application info", e);
             mApplicationLabel = mActivity.getResources().getString(R.string.app_name);
         }
+
+        initInAppUpdateObservers();
     }
 
     @Override
     @SuppressWarnings({"NullAway", "UseSharedPreferencesManagerFromChromeCheck"})
     public void onDestroy() {
+        destroyInAppUpdate();
+
         if (mVerticalTabsPreferenceListener != null) {
             ContextUtils.getAppSharedPreferences()
                     .unregisterOnSharedPreferenceChangeListener(mVerticalTabsPreferenceListener);
@@ -1308,6 +1324,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     public void onFinishNativeInitialization() {
         super.onFinishNativeInitialization();
         assert mLayoutManager != null;
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.IN_APP_UPDATE_FLOW)) {
+            scheduleInAppUpdateDeferredStartup();
+        }
 
         mAdvancedProtectionCoordinator =
                 new AdvancedProtectionCoordinator(mWindowAndroid, PrivacySettings.class);
@@ -2014,6 +2034,84 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         }),
                 mTabModelSelectorSupplier,
                 mProfileSupplier);
+    }
+
+    @VisibleForTesting
+    void initInAppUpdateObservers() {
+        // Observers are registered early during pre-inflation startup so they are present when
+        // AsyncInitializationActivity replays queued activity results and resume events during
+        // finishNativeInitialization(). Because these observers only fire once native is ready,
+        // the IN_APP_UPDATE_FLOW feature flag check is deferred to
+        // getOrCreateInAppUpdateController()
+        // inside the callbacks, avoiding the need to make IN_APP_UPDATE_FLOW a CachedFlag.
+        if (mInAppUpdateActivityResultObserver == null) {
+            mInAppUpdateActivityResultObserver =
+                    new ActivityResultWithNativeObserver() {
+                        @Override
+                        public void onActivityResultWithNative(
+                                int requestCode, int resultCode, @Nullable Intent data) {
+                            if (requestCode == InAppUpdateController.REQUEST_CODE_IN_APP_UPDATE) {
+                                InAppUpdateController controller =
+                                        getOrCreateInAppUpdateController();
+                                if (controller != null) {
+                                    controller.handleActivityResult(requestCode, resultCode);
+                                }
+                            }
+                        }
+                    };
+            mActivityLifecycleDispatcher.register(mInAppUpdateActivityResultObserver);
+        }
+        if (mInAppUpdateResumeObserver == null) {
+            mInAppUpdateResumeObserver =
+                    new PauseResumeWithNativeObserver() {
+                        @Override
+                        public void onResumeWithNative() {
+                            if (mIsWarmOnResumeSupplier.getAsBoolean()) {
+                                InAppUpdateController controller =
+                                        getOrCreateInAppUpdateController();
+                                if (controller != null) {
+                                    controller.onResume();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onPauseWithNative() {
+                            // In-app update flow only reacts to warm resume events.
+                        }
+                    };
+            mActivityLifecycleDispatcher.register(mInAppUpdateResumeObserver);
+        }
+    }
+
+    @VisibleForTesting
+    @Nullable InAppUpdateController getOrCreateInAppUpdateController() {
+        if (mActivity == null || mActivity.isFinishing() || mActivity.isDestroyed()) {
+            return null;
+        }
+        if (mInAppUpdateController == null
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.IN_APP_UPDATE_FLOW)) {
+            mInAppUpdateController = new InAppUpdateController(mActivity, mSnackbarManagerSupplier);
+        }
+        return mInAppUpdateController;
+    }
+
+    @VisibleForTesting
+    void scheduleInAppUpdateDeferredStartup() {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.IN_APP_UPDATE_FLOW)) return;
+        if (mInAppUpdateStartupCheckScheduled) return;
+        mInAppUpdateStartupCheckScheduled = true;
+        DeferredStartupHandler.getInstance()
+                .addDeferredTask(
+                        () -> {
+                            InAppUpdateController controller = getOrCreateInAppUpdateController();
+                            if (controller != null) {
+                                Log.i(
+                                        InAppUpdateController.TAG,
+                                        "TabbedRootUiCoordinator: initiating in-app update check");
+                                controller.checkAndStartUpdateFlow();
+                            }
+                        });
     }
 
     private void initUndoGroupSnackbarController() {
@@ -3220,11 +3318,33 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         createBookmarkBarIfNecessary();
     }
 
+    @VisibleForTesting
+    void destroyInAppUpdate() {
+        if (mInAppUpdateActivityResultObserver != null) {
+            mActivityLifecycleDispatcher.unregister(mInAppUpdateActivityResultObserver);
+            mInAppUpdateActivityResultObserver = null;
+        }
+        if (mInAppUpdateResumeObserver != null) {
+            mActivityLifecycleDispatcher.unregister(mInAppUpdateResumeObserver);
+            mInAppUpdateResumeObserver = null;
+        }
+        if (mInAppUpdateController != null) {
+            mInAppUpdateController.destroy();
+            mInAppUpdateController = null;
+        }
+        mInAppUpdateStartupCheckScheduled = false;
+    }
+
     // MenuOrKeyboardActionHandler implementation
     @Override
     public boolean handleMenuOrKeyboardAction(int id, boolean fromMenu) {
         if (super.handleMenuOrKeyboardAction(id, fromMenu)) return true;
-        if (id == R.id.switch_keyboard_focus_row) {
+        if (id == R.id.update_menu_id) {
+            Profile originalProfile = mProfileSupplier.asNonNull().get().getOriginalProfile();
+            UpdateMenuItemHelper.getInstance(originalProfile)
+                    .onMenuItemClicked(mActivity, getOrCreateInAppUpdateController());
+            return true;
+        } else if (id == R.id.switch_keyboard_focus_row) {
             mKeyboardFocusRowManager.onKeyboardFocusRowSwitch(/* forward= */ true);
             return true;
         } else if (id == R.id.switch_keyboard_focus_row_reverse) {
@@ -3480,6 +3600,22 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     /** Returns the {@link TabSearchOverlayCoordinator} for testing. */
     public @Nullable TabSearchOverlayCoordinator getTabSearchOverlayCoordinatorForTesting() {
         return mTabSearchOverlayCoordinator;
+    }
+
+    @Nullable InAppUpdateController getInAppUpdateControllerForTesting() {
+        return mInAppUpdateController;
+    }
+
+    void setInAppUpdateControllerForTesting(@Nullable InAppUpdateController controller) {
+        mInAppUpdateController = controller;
+    }
+
+    @Nullable ActivityResultWithNativeObserver getActivityResultObserverForTesting() {
+        return mInAppUpdateActivityResultObserver;
+    }
+
+    @Nullable PauseResumeWithNativeObserver getResumeObserverForTesting() {
+        return mInAppUpdateResumeObserver;
     }
 
     void setActivityForTesting(AppCompatActivity activity) {

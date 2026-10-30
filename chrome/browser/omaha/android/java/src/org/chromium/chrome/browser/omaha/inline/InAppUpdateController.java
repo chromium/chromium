@@ -80,18 +80,12 @@ import java.util.function.Supplier;
  * Core.
  *
  * <p>See {@code crbug.com/553918188} for full design specifications and state machine details.
+ *
+ * <p>Note: This class is non-final to allow Mockito mocking in Robolectric unit tests without
+ * requiring bytecode manipulation.
  */
 @NullMarked
-public final class InAppUpdateController {
-    /** Interface for Activities that host and manage an {@link InAppUpdateController}. */
-    public interface InAppUpdateManageable {
-        /**
-         * Returns the {@link InAppUpdateController} for this Activity, or null if the feature is
-         * disabled.
-         */
-        @Nullable InAppUpdateController getInAppUpdateController();
-    }
-
+public class InAppUpdateController {
     // Unified logcat tag matching InAppUpdatePolicy for end-to-end tracing during prototype
     // rollout.
     // TODO(crbug.com/553918188): Remove logging once in-app update flow stabilizes.
@@ -99,8 +93,9 @@ public final class InAppUpdateController {
 
     /**
      * Request code passed to Play Core's {@link AppUpdateManager#startUpdateFlowForResult}. The
-     * host Activity intercepts this code in its activity result pipeline and forwards the result
-     * code to {@link #handleActivityResult(int, int)}.
+     * owning {@link TabbedRootUiCoordinator} observes this code via an {@link
+     * ActivityResultWithNativeObserver} and forwards the result code to {@link
+     * #handleActivityResult(int, int)}.
      */
     public static final int REQUEST_CODE_IN_APP_UPDATE = 9876;
 
@@ -690,7 +685,8 @@ public final class InAppUpdateController {
     /**
      * Handles the outcome of the Google Play in-app update consent dialog.
      *
-     * <p>Called by the host Activity when {@code requestCode == REQUEST_CODE_IN_APP_UPDATE}.
+     * <p>Called by the owning {@link TabbedRootUiCoordinator}'s {@link
+     * ActivityResultWithNativeObserver} when {@code requestCode == REQUEST_CODE_IN_APP_UPDATE}.
      *
      * <ul>
      *   <li>{@link Activity#RESULT_CANCELED}: User dismissed the Play consent dialog without

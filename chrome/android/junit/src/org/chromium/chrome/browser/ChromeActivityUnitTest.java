@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -28,8 +27,6 @@ import android.view.ViewGroup;
 import android.window.OnBackInvokedDispatcher;
 
 import androidx.annotation.Nullable;
-
-import com.google.android.play.core.appupdate.AppUpdateManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -70,7 +67,6 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureController;
-import org.chromium.chrome.browser.omaha.inline.InAppUpdateController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
@@ -244,16 +240,6 @@ public class ChromeActivityUnitTest {
         protected void onPreCreate() {
             // Override the method in test so it can be accessible in test body.
             super.onPreCreate();
-        }
-
-        public void performDestroyForTesting() {
-            try {
-                super.onDestroy();
-            } catch (Exception ignored) {
-                // super.onDestroy() performs extensive activity teardown requiring lifecycle
-                // initialization not set up in this test. InAppUpdateController teardown occurs
-                // at the very start of onDestroy().
-            }
         }
     }
 
@@ -691,48 +677,5 @@ public class ChromeActivityUnitTest {
 
         verify(mTabModel).setIndex(1, TabSelectionType.FROM_USER);
         assertEquals(1, userActionTester.getActionCount("MobileMenuSelectTabFromGroup"));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void testInAppUpdateController_lazyInitAndNullSnackbarSupplier() {
-        TestChromeActivity chromeActivity = new TestChromeActivity();
-        InAppUpdateController controller = chromeActivity.getInAppUpdateController();
-        assertNotNull(controller);
-        assertEquals(controller, chromeActivity.getInAppUpdateController());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void testInAppUpdateController_disabledWhenFeatureOff() {
-        TestChromeActivity chromeActivity = new TestChromeActivity();
-        assertNull(chromeActivity.getInAppUpdateController());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void testInAppUpdateController_onActivityResultWithNative() {
-        InAppUpdateController.setAppUpdateManagerForTesting(Mockito.mock(AppUpdateManager.class));
-        TestChromeActivity chromeActivity = new TestChromeActivity();
-        assertTrue(
-                chromeActivity.onActivityResultWithNative(
-                        InAppUpdateController.REQUEST_CODE_IN_APP_UPDATE,
-                        Activity.RESULT_OK,
-                        null));
-        assertFalse(chromeActivity.onActivityResultWithNative(99999, Activity.RESULT_OK, null));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.IN_APP_UPDATE_FLOW)
-    public void testInAppUpdateController_onDestroyTeardown() {
-        TestChromeActivity chromeActivity = new TestChromeActivity();
-        InAppUpdateController controller1 = chromeActivity.getInAppUpdateController();
-        assertNotNull(controller1);
-
-        chromeActivity.performDestroyForTesting();
-
-        InAppUpdateController controller2 = chromeActivity.getInAppUpdateController();
-        assertNotNull(controller2);
-        Assert.assertNotSame(controller1, controller2);
     }
 }
