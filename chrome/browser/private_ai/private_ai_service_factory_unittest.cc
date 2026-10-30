@@ -56,6 +56,13 @@ TEST_F(PrivateAiServiceFactoryTest, ServiceCreationFailsForIncognito) {
   EXPECT_FALSE(PrivateAiServiceFactory::GetForProfile(otr_profile));
 }
 
+TEST_F(PrivateAiServiceFactoryTest, ServiceCreationFailsForGuest) {
+  TestingProfile::Builder guest_profile_builder;
+  guest_profile_builder.SetGuestSession();
+  std::unique_ptr<TestingProfile> guest_profile = guest_profile_builder.Build();
+  EXPECT_FALSE(PrivateAiServiceFactory::GetForProfile(guest_profile.get()));
+}
+
 class PrivateAiServiceFactoryFeatureDisabledTest
     : public PrivateAiServiceFactoryTest {
  public:
