@@ -4411,7 +4411,6 @@ crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/tall-
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/transform-017.html [ Failure ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/transform-024-print.html [ Failure ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-multicol/crashtests/interleaved-bfc-crash.html [ Crash Pass ]
-crbug.com/543941118 virtual/fragmented-oof-in-cb/external/wpt/css/css-multicol/crashtests/nested-multicol-spanner-reframe.html [ Crash Timeout ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-page/fixedpos-003-print.html [ Failure ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-page/fixedpos-005-print.html [ Failure ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-page/fixedpos-007-print.html [ Failure ]

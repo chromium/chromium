@@ -37,10 +37,17 @@ class CORE_EXPORT TableChildIterator {
           wtf_size_t section_index)
         : node(node), token(token), section_index(section_index) {}
 
+    Entry(BlockNode node, const BlockBreakToken* token)
+        : Entry(node, token, 0u) {
+      DCHECK(token);
+      DCHECK(node.IsOutOfFlowPositioned());
+    }
+
     const BlockNode GetNode() const { return node; }
     const BlockBreakToken* GetBreakToken() const { return token; }
     wtf_size_t GetSectionIndex() const {
       DCHECK(!node.IsTableCaption());
+      DCHECK(!node.IsOutOfFlowPositioned());
       return section_index;
     }
     explicit operator bool() const { return !!node; }

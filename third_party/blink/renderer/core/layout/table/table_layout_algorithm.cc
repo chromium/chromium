@@ -1199,6 +1199,17 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
   // regenerate them (block fragmentation).
   for (auto entry = child_iterator.NextChild();
        BlockNode child = entry.GetNode(); entry = child_iterator.NextChild()) {
+    const BlockBreakToken* child_break_token = entry.GetBreakToken();
+    if (child.IsOutOfFlowPositioned()) {
+      DCHECK(child_break_token);
+      // Resumed OOFs are found by the iterator, but they are not direct table
+      // children. All we have to do now is making sure that it gets handled by
+      // OOF layout after regular in-flow layout, and carry on with our in-flow
+      // business.
+      container_builder_.AddOutOfFlowChildCandidate(
+          child, LogicalStaticPosition(), child_break_token);
+      continue;
+    }
     DCHECK(child.IsTableCaption() || child.IsTableSection());
 
     if (early_break_ &&
@@ -1213,7 +1224,6 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
       break;
     }
 
-    const BlockBreakToken* child_break_token = entry.GetBreakToken();
     FragmentationLayoutInput fragmentation =
         GetFragmentationLayoutInputForChild(child, child_break_token);
     const LayoutResult* child_result;

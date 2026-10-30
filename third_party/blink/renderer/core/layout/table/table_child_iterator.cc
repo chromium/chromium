@@ -57,6 +57,13 @@ TableChildIterator::Entry TableChildIterator::NextChild() {
           To<BlockBreakToken>(child_break_tokens[child_token_idx_++].Get());
       current_child = current_child_break_token->InputNode();
 
+      if (current_child.IsOutOfFlowPositioned()) {
+        // This is a resumed OOF. We have already advanced to the next break
+        // token. Do not advance to the next in-flow child of the table, since
+        // we haven't processed it yet.
+        return Entry(current_child, current_child_break_token);
+      }
+
       // Normally (for non-tables), when we're out of break tokens, we can
       // just proceed to the next sibling node, but we can't do this for
       // tables, since the captions and sections get reordered as: top
