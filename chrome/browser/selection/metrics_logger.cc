@@ -7,6 +7,8 @@
 #include <string_view>
 
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/selection/suggestion.h"
+#include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 
 namespace selection {
 
@@ -64,6 +66,11 @@ void MetricsLogger::RecordSpatialSelectionCompleted() {
 
 void MetricsLogger::RecordSuggestionAccepted(const Suggestion& suggestion) {
   ++suggestion_acceptances_;
+  base::UmaHistogramEnumeration(
+      "SmartSelection.Suggestions.AcceptedSuggestionType",
+      suggestion.GetToolId(),
+      static_cast<Suggestion::ToolId>(
+          optimization_guide::proto::SmartSelectionToolId_ARRAYSIZE));
 }
 
 void MetricsLogger::RecordPromptSubmitted() {

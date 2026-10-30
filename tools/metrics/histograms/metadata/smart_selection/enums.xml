@@ -68,6 +68,14 @@ found in the LICENSE file.
 
 <!-- LINT.ThenChange(//chrome/browser/selection/metrics_logger.h:SubmissionOutcome) -->
 
+<enum name="SmartSelectionToolId">
+  <int value="0" label="Unspecified tool"/>
+  <int value="1" label="Gemini in Chrome"/>
+  <int value="2" label="Google Lens"/>
+  <int value="3" label="Google Search"/>
+  <int value="4" label="Quick Answers"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

@@ -11,10 +11,14 @@
 #include "chrome/browser/selection/mojom/action.mojom.h"
 #include "chrome/browser/selection/suggestion.h"
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace selection {
 namespace {
+
+using ::base::Bucket;
+using ::base::BucketsAre;
 
 class FakeSuggestion : public Suggestion {
  public:
@@ -154,6 +158,45 @@ TEST(MetricsLoggerTest, SubmissionOutcomes) {
                                         SubmissionOutcome::kAbandonedOrError,
                                         1);
   }
+}
+
+TEST(MetricsLoggerTest, RecordSuggestionAcceptedLogsToolType) {
+  base::HistogramTester histogram_tester;
+  MetricsLogger logger(EntryPoint::kContextMenuText, "text/html",
+                       /*has_preselected_region=*/true);
+
+  const FakeSuggestion gemini(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  const FakeSuggestion lens(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GOOGLE_LENS);
+  const FakeSuggestion search(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GOOGLE_SEARCH);
+  const FakeSuggestion qa(
+      optimization_guide::proto::SMART_SELECTION_TOOL_QUICK_ANSWERS);
+  const FakeSuggestion unspecified(
+      optimization_guide::proto::SMART_SELECTION_TOOL_UNSPECIFIED);
+
+  logger.RecordSuggestionAccepted(gemini);
+  logger.RecordSuggestionAccepted(lens);
+  logger.RecordSuggestionAccepted(search);
+  logger.RecordSuggestionAccepted(qa);
+  logger.RecordSuggestionAccepted(unspecified);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "SmartSelection.Suggestions.AcceptedSuggestionType"),
+      BucketsAre(
+          Bucket(optimization_guide::proto::SMART_SELECTION_TOOL_UNSPECIFIED,
+                 1),
+          Bucket(
+              optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME,
+              1),
+          Bucket(optimization_guide::proto::SMART_SELECTION_TOOL_GOOGLE_LENS,
+                 1),
+          Bucket(optimization_guide::proto::SMART_SELECTION_TOOL_GOOGLE_SEARCH,
+                 1),
+          Bucket(optimization_guide::proto::SMART_SELECTION_TOOL_QUICK_ANSWERS,
+                 1)));
 }
 
 }  // namespace

@@ -65,6 +65,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SmartSelection.Suggestions.AcceptedSuggestionType"
+    enum="SmartSelectionToolId" expires_after="2027-04-14">
+  <owner>schwering@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <summary>
+    Records the tool type of a suggestion chip when it is accepted (executed) by
+    the user.
+  </summary>
+</histogram>
+
 <histogram name="SmartSelection.Suggestions.Latency.{Stage}" units="ms"
     expires_after="2027-04-14">
   <owner>schwering@google.com</owner>
