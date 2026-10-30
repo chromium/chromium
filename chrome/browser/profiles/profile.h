@@ -540,6 +540,10 @@ class Profile : public content::BrowserContext {
   void NotifyOffTheRecordProfileCreated(Profile* off_the_record);
   void NotifyProfileInitializationComplete();
 
+  // Posts a `BEST_EFFORT` task via `AfterStartupTaskUtils` to create the
+  // `KeyedService`s that opted into post-startup creation for this profile.
+  void ScheduleCreateServicesAfterStartup();
+
   // Returns whether the user has signed in this profile to an account.
   virtual bool IsSignedIn() = 0;
 

@@ -70,6 +70,11 @@ bool AutocompleteScoringModelServiceFactory::
   return !features::IsLazyOptimizationGuideModelsEnabled();
 }
 
+bool AutocompleteScoringModelServiceFactory::ServiceIsCreatedAfterStartup()
+    const {
+  return features::IsLazyOptimizationGuideModelsEnabled();
+}
+
 bool AutocompleteScoringModelServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }

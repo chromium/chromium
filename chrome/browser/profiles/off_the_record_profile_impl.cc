@@ -272,6 +272,11 @@ void OffTheRecordProfileImpl::Init() {
     GetPrefs()->SetBoolean(chromeos::prefs::kCaptivePortalSignin, true);
   }
 #endif
+
+  // Create the `KeyedService`s that opted into post-startup creation. Most OTR
+  // profiles are created after startup, in which case this runs shortly after
+  // the current task.
+  ScheduleCreateServicesAfterStartup();
 }
 
 OffTheRecordProfileImpl::~OffTheRecordProfileImpl() {

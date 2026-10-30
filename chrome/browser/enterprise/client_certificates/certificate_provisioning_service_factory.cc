@@ -77,17 +77,21 @@ CertificateProvisioningServiceFactory::
 
 bool CertificateProvisioningServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
+  return !ServiceIsCreatedAfterStartup();
+}
+
+bool CertificateProvisioningServiceFactory::ServiceIsCreatedAfterStartup()
+    const {
   // The service is needed early only to start provisioning for managed
   // profiles. Creating it with the context forces the default
-  // StoragePartition and the LevelDB certificate store to be initialized
+  // `StoragePartition` and the LevelDB certificate store to be initialized
   // during profile creation, which is on the startup critical path, so defer
-  // it until startup is complete (scheduled in ProfileImpl::DoFinalInit).
-  // Consumers (e.g. the client cert store) still create it on demand if they
-  // run first.
-  return !(
-      base::FeatureList::IsEnabled(
-          ::features::kLazyKeyedServiceInstantiation) &&
-      ::features::kLazyKeyedServiceInstantiationCertificateProvisioning.Get());
+  // it until startup is complete. Consumers (e.g. the client cert store) still
+  // create it on demand if they run first.
+  return base::FeatureList::IsEnabled(
+             ::features::kLazyKeyedServiceInstantiation) &&
+         ::features::kLazyKeyedServiceInstantiationCertificateProvisioning
+             .Get();
 }
 
 bool CertificateProvisioningServiceFactory::ServiceIsNULLWhileTesting() const {

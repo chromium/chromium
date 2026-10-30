@@ -70,6 +70,10 @@ bool OnDeviceTailModelServiceFactory::ServiceIsCreatedWithBrowserContext()
   return !features::IsLazyOptimizationGuideModelsEnabled();
 }
 
+bool OnDeviceTailModelServiceFactory::ServiceIsCreatedAfterStartup() const {
+  return features::IsLazyOptimizationGuideModelsEnabled();
+}
+
 bool OnDeviceTailModelServiceFactory::ServiceIsNULLWhileTesting() const {
   return true;
 }

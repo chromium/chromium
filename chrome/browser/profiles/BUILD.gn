@@ -79,7 +79,6 @@ source_set("misc") {
     "//chrome/browser:startup_data",
     "//chrome/browser/accessibility",
     "//chrome/browser/app_mode",
-    "//chrome/browser/autocomplete",
     "//chrome/browser/background",
     "//chrome/browser/background_fetch",
     "//chrome/browser/background_sync",
@@ -444,6 +443,7 @@ source_set("profile") {
   # Cannot depend on //chrome/browser:browser.
   deps = [
     "//build:chromeos_buildflags",
+    "//chrome/browser:after_startup_task_utils",
     "//chrome/browser/browsing_data:constants",
     "//chrome/common:buildflags",
     "//chrome/common:constants",

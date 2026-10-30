@@ -25,7 +25,9 @@ class CertificateProvisioningServiceFactory
   static CertificateProvisioningService* GetForProfile(Profile* profile);
 
  protected:
+  // BrowserContextKeyedServiceFactory:
   bool ServiceIsCreatedWithBrowserContext() const override;
+  bool ServiceIsCreatedAfterStartup() const override;
   bool ServiceIsNULLWhileTesting() const override;
 
  private:

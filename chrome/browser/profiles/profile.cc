@@ -12,18 +12,21 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/task_traits.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/profiles/profile_selections.h"
@@ -551,6 +554,21 @@ void Profile::NotifyProfileInitializationComplete() {
   for (auto& observer : observers_) {
     observer.OnProfileInitializationComplete(this);
   }
+}
+
+void Profile::ScheduleCreateServicesAfterStartup() {
+  AfterStartupTaskUtils::PostTask(
+      FROM_HERE,
+      content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT}),
+      base::BindOnce(
+          [](base::WeakPtr<Profile> profile) {
+            if (!profile || profile->ShutdownStarted()) {
+              return;
+            }
+            BrowserContextDependencyManager::GetInstance()
+                ->CreateBrowserContextServicesAfterStartup(profile.get());
+          },
+          GetWeakPtr()));
 }
 
 Profile* Profile::GetPrimaryOTRProfile(bool create_if_needed) {

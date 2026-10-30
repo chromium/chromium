@@ -111,3 +111,8 @@ bool PredictionModelHandlerProviderFactory::ServiceIsCreatedWithBrowserContext()
     const {
   return !features::IsLazyOptimizationGuideModelsEnabled();
 }
+
+bool PredictionModelHandlerProviderFactory::ServiceIsCreatedAfterStartup()
+    const {
+  return features::IsLazyOptimizationGuideModelsEnabled();
+}

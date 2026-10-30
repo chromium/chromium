@@ -27,8 +27,6 @@ class PredictionModelHandlerProviderFactory
   static permissions::PredictionModelHandlerProvider* GetForBrowserContext(
       content::BrowserContext* context);
 
-  bool ServiceIsCreatedWithBrowserContext() const override;
-
  private:
   PredictionModelHandlerProviderFactory();
   ~PredictionModelHandlerProviderFactory() override;
@@ -37,6 +35,8 @@ class PredictionModelHandlerProviderFactory
   // BrowserContextKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
+  bool ServiceIsCreatedWithBrowserContext() const override;
+  bool ServiceIsCreatedAfterStartup() const override;
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_PREDICTION_SERVICE_PREDICTION_MODEL_HANDLER_PROVIDER_FACTORY_H_

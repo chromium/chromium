@@ -45,6 +45,7 @@ class OnDeviceTailModelServiceFactory : public ProfileKeyedServiceFactory {
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
+  bool ServiceIsCreatedAfterStartup() const override;
   bool ServiceIsNULLWhileTesting() const override;
 };
 

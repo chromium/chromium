@@ -41,8 +41,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/after_startup_task_utils.h"
-#include "chrome/browser/autocomplete/autocomplete_scoring_model_service_factory.h"
-#include "chrome/browser/autocomplete/on_device_tail_model_service_factory.h"
 #include "chrome/browser/background/background_contents_service_factory.h"
 #include "chrome/browser/background_fetch/background_fetch_delegate_factory.h"
 #include "chrome/browser/background_fetch/background_fetch_delegate_impl.h"
@@ -62,7 +60,6 @@
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_manager_utils.h"
-#include "chrome/browser/enterprise/client_certificates/certificate_provisioning_service_factory.h"
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router_factory.h"
 #endif
@@ -77,7 +74,6 @@
 #include "chrome/browser/password_manager/factories/account_password_store_factory.h"
 #include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
-#include "chrome/browser/permissions/prediction_service/prediction_model_handler_provider_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
@@ -152,7 +148,6 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/metrics/metrics_service.h"
-#include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/payments/core/payment_request_metrics.h"
 #include "components/permissions/permission_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
@@ -942,27 +937,8 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  if (features::IsLazyOptimizationGuideModelsEnabled() && IsRegularProfile()) {
-    // Warm up Optimization Guide model services after startup so that model
-    // observers register and downloads start soon after startup, without
-    // blocking profile creation. Guest and OTR profiles skip this warmup on
-    // purpose so these services are created on first use there.
-    AfterStartupTaskUtils::PostTask(
-        FROM_HERE, content::GetUIThreadTaskRunner({}),
-        base::BindOnce(
-            [](base::WeakPtr<Profile> profile) {
-              if (!profile || profile->ShutdownStarted()) {
-                return;
-              }
-              AutocompleteScoringModelServiceFactory::GetForProfile(
-                  profile.get());
-              OnDeviceTailModelServiceFactory::GetForProfile(profile.get());
-              PredictionModelHandlerProviderFactory::GetForBrowserContext(
-                  profile.get());
-            },
-            GetWeakPtr()));
-  }
-
+  // TODO(crbug.com/527272238): Migrate these factories to
+  // `ServiceIsCreatedAfterStartup()`.
   if (features::IsLazyAfterStartupKeyedServicesEnabled() &&
       IsRegularProfile()) {
     AfterStartupTaskUtils::PostTask(
@@ -985,27 +961,6 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
             GetWeakPtr()));
   }
 
-  if (base::FeatureList::IsEnabled(features::kLazyKeyedServiceInstantiation) &&
-      features::kLazyKeyedServiceInstantiationCertificateProvisioning.Get() &&
-      IsRegularProfile()) {
-    // CertificateProvisioningService only needs to start background cert
-    // provisioning for managed profiles, while creating it synchronously during
-    // profile init forces the default StoragePartition and LevelDB
-    // CertificateStore onto the startup critical path.
-    AfterStartupTaskUtils::PostTask(
-        FROM_HERE,
-        content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT}),
-        base::BindOnce(
-            [](base::WeakPtr<Profile> profile) {
-              if (!profile || profile->ShutdownStarted()) {
-                return;
-              }
-              client_certificates::CertificateProvisioningServiceFactory::
-                  GetForProfile(profile.get());
-            },
-            GetWeakPtr()));
-  }
-
   // The announcement notification  service might not be available for some
   // irregular profiles, like the System Profile.
   if (AnnouncementNotificationService* announcement_notification =
@@ -1019,6 +974,12 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
   // OriginTrialsFactory::ServiceIsCreatedWithBrowserContext() to return true)
   // as it depends on the default StoragePartition being initialized.
   GetOriginTrialsControllerDelegate();
+
+  // Create the `KeyedService`s that opted into post-startup creation once
+  // browser startup is complete, so that they stay off the startup critical
+  // path. This runs after profile initialization so that those services
+  // observe a fully initialized profile.
+  ScheduleCreateServicesAfterStartup();
 
   // third-party cookie deprecation must be created with the profile, but after
   // the initialization of the OriginTrialsControllerDelegate, as it depends on
