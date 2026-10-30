@@ -76,6 +76,9 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     // https://developer.android.com/reference/android/test/InstrumentationTestRunner.html#REPORT_VALUE_ID
     private static final int STATUS_CODE_TEST_DURATION = 1337;
     private static final String DURATION_BUNDLE_ID = "duration_ms";
+    private static final int STATUS_CODE_CLASS_DURATION = 1339;
+    private static final String BEFORE_CLASS_DURATION_BUNDLE_ID = "before_class_duration_ms";
+    private static final String AFTER_CLASS_DURATION_BUNDLE_ID = "after_class_duration_ms";
 
     private static List<ClassCleanupHook> sClassCleanupHooks;
     private static List<AfterCleanupCheck> sAfterCleanupChecks;
@@ -207,6 +210,8 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     }
 
     protected final RestrictionSkipCheck mRestrictionSkipCheck = new RestrictionSkipCheck();
+    private long mClassStartTimeMs;
+    private long mLastTestEndTimeMs;
     private long mTestStartTimeMs;
     private String mFailedBatchTestName;
     private JniTestInstancesSnapshot mJniZeroSnapshot;
@@ -424,6 +429,8 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
+                mClassStartTimeMs = SystemClock.uptimeMillis();
+                mLastTestEndTimeMs = 0;
                 Class<?> testClass = getTestClass().getJavaClass();
                 try {
                     onBeforeTestClass();
@@ -435,22 +442,54 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
                 }
                 Throwable exception = null;
                 try {
-                    innerStatement.evaluate();
-                } catch (Throwable t) {
-                    exception = t;
-                }
-                try {
-                    onAfterTestClass(exception == null);
-                } catch (Throwable inner) {
-                    if (exception != null) {
-                        Log.e(TAG, "Unexpected exception in onAfterTestClass()", inner);
-                        exception.addSuppressed(inner);
-                    } else {
-                        exception = inner;
+                    try {
+                        innerStatement.evaluate();
+                    } catch (Throwable t) {
+                        exception = t;
+                    }
+                    try {
+                        onAfterTestClass(exception == null);
+                    } catch (Throwable inner) {
+                        if (exception != null) {
+                            Log.e(TAG, "Unexpected exception in onAfterTestClass()", inner);
+                            exception.addSuppressed(inner);
+                        } else {
+                            exception = inner;
+                        }
+                    }
+                } finally {
+                    if (mLastTestEndTimeMs > 0) {
+                        long afterClassDurationMs = SystemClock.uptimeMillis() - mLastTestEndTimeMs;
+                        Bundle b = new Bundle();
+                        b.putLong(AFTER_CLASS_DURATION_BUNDLE_ID, afterClassDurationMs);
+                        InstrumentationRegistry.getInstrumentation()
+                                .sendStatus(STATUS_CODE_CLASS_DURATION, b);
                     }
                 }
                 if (exception != null) {
                     throw new AfterClassException(testClass, isBatchedTest(testClass), exception);
+                }
+            }
+        };
+    }
+
+    @Override
+    protected Statement childrenInvoker(RunNotifier notifier) {
+        Statement inner = super.childrenInvoker(notifier);
+        return new Statement() {
+            @Override
+            public void evaluate() throws Throwable {
+                if (mClassStartTimeMs > 0) {
+                    long beforeClassDurationMs = SystemClock.uptimeMillis() - mClassStartTimeMs;
+                    Bundle b = new Bundle();
+                    b.putLong(BEFORE_CLASS_DURATION_BUNDLE_ID, beforeClassDurationMs);
+                    InstrumentationRegistry.getInstrumentation()
+                            .sendStatus(STATUS_CODE_CLASS_DURATION, b);
+                }
+                try {
+                    inner.evaluate();
+                } finally {
+                    mLastTestEndTimeMs = SystemClock.uptimeMillis();
                 }
             }
         };

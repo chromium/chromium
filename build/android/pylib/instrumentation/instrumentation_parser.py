@@ -27,6 +27,8 @@ STATUS_CODE_TEST_DURATION = 1337
 # LifetimeAssert).
 STATUS_CODE_BATCH_FAILURE = 1338
 
+STATUS_CODE_CLASS_DURATION = 1339
+
 # http://developer.android.com/reference/android/app/Activity.html
 RESULT_CODE_OK = -1
 RESULT_CODE_CANCELED = 0

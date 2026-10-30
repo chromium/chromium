@@ -71,6 +71,8 @@ _BUNDLE_STACK_ID = 'stack'
 
 # The ID of the bundle value Chrome uses to report the test duration.
 _BUNDLE_DURATION_ID = 'duration_ms'
+_BUNDLE_BEFORE_CLASS_DURATION_ID = 'before_class_duration_ms'
+_BUNDLE_AFTER_CLASS_DURATION_ID = 'after_class_duration_ms'
 
 # The following error messages are too general to be useful in failure
 # clustering. The runner doesn't report failure reason when such failure
@@ -142,7 +144,14 @@ def GenerateTestResults(
             results.append(result)
 
     current_result = None
+    last_executed_result = None
     cumulative_duration = 0
+    pending_before_class_duration = 0
+    current_reported_duration = False
+    has_class_durations = any(
+        code == instrumentation_parser.STATUS_CODE_CLASS_DURATION
+        for code, _ in statuses
+    )
 
     for status_code, bundle in statuses:
         # If the last test was a failure already, don't override that failure with
@@ -155,15 +164,41 @@ def GenerateTestResults(
             _MaybeSetLog(bundle, current_result, symbolizer, device_abi)
             continue
 
-        if status_code == instrumentation_parser.STATUS_CODE_TEST_DURATION:
-            # For the first result, duration will be set below to the difference
-            # between the reported and actual durations to account for overhead like
-            # starting instrumentation.
-            if results:
-                current_duration = int(
-                    bundle.get(_BUNDLE_DURATION_ID, duration_ms)
+        if status_code == instrumentation_parser.STATUS_CODE_CLASS_DURATION:
+            if _BUNDLE_BEFORE_CLASS_DURATION_ID in bundle:
+                pending_before_class_duration += int(
+                    bundle[_BUNDLE_BEFORE_CLASS_DURATION_ID]
                 )
-                current_result.SetDuration(current_duration)
+                last_executed_result = None
+            if _BUNDLE_AFTER_CLASS_DURATION_ID in bundle:
+                after_duration = int(bundle[_BUNDLE_AFTER_CLASS_DURATION_ID])
+                if last_executed_result:
+                    last_executed_result.SetDuration(
+                        last_executed_result.GetDuration() + after_duration
+                    )
+                    cumulative_duration += after_duration
+                pending_before_class_duration = 0
+                last_executed_result = None
+            continue
+
+        if status_code == instrumentation_parser.STATUS_CODE_TEST_DURATION:
+            current_duration = int(bundle.get(_BUNDLE_DURATION_ID, duration_ms))
+            current_reported_duration = True
+            if current_result:
+                last_executed_result = current_result
+            if has_class_durations:
+                if pending_before_class_duration:
+                    current_duration += pending_before_class_duration
+                    pending_before_class_duration = 0
+                if current_result:
+                    current_result.SetDuration(current_duration)
+                cumulative_duration += current_duration
+            elif results:
+                # For the first result, duration will be set below to the
+                # difference between the reported and actual durations to
+                # account for overhead like starting instrumentation.
+                if current_result:
+                    current_result.SetDuration(current_duration)
                 cumulative_duration += current_duration
             continue
 
@@ -177,8 +212,11 @@ def GenerateTestResults(
         if status_code == instrumentation_parser.STATUS_CODE_START:
             if current_result:
                 add_result(current_result)
+            current_reported_duration = False
             current_result = test_result.InstrumentationTestResult(
-                test_name, base_test_result.ResultType.UNKNOWN, duration_ms
+                test_name,
+                base_test_result.ResultType.UNKNOWN,
+                0 if has_class_durations else duration_ms,
             )
         else:
             if status_code == instrumentation_parser.STATUS_CODE_OK:
@@ -189,6 +227,7 @@ def GenerateTestResults(
                     current_result.SetType(base_test_result.ResultType.PASS)
             elif status_code == instrumentation_parser.STATUS_CODE_SKIP:
                 current_result.SetType(base_test_result.ResultType.SKIP)
+                current_result.SetDuration(0)
             elif (
                 status_code
                 == instrumentation_parser.STATUS_CODE_ASSUMPTION_FAILURE
@@ -217,13 +256,26 @@ def GenerateTestResults(
 
         add_result(current_result)
 
-    if results:
+    if not has_class_durations and results:
         logging.info(
             'Adding cumulative overhead to test %s: %dms',
             results[0].GetName(),
             duration_ms - cumulative_duration,
         )
         results[0].SetDuration(duration_ms - cumulative_duration)
+    elif (
+        has_class_durations
+        and current_result
+        and not current_reported_duration
+        and current_result.GetType() != base_test_result.ResultType.SKIP
+    ):
+        current_result.SetDuration(max(duration_ms - cumulative_duration, 0))
+    elif results and cumulative_duration > 0:
+        logging.info(
+            'Unattributed instrumentation overhead for %d test(s): %dms',
+            len(results),
+            max(duration_ms - cumulative_duration, 0),
+        )
 
     # Copy failures from @BeforeClass / @AfterClass into all tests that are
     # marked as passing.
@@ -800,8 +852,7 @@ class InstrumentationTestInstance(test_instance.TestInstance):
             )
 
         for x in set(
-            args.additional_apks
-            + args.forced_queryable_additional_apks
+            args.additional_apks + args.forced_queryable_additional_apks
         ):
             if not os.path.exists(x):
                 error_func('Unable to find additional APK: %s' % x)

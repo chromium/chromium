@@ -10,6 +10,7 @@ import tempfile
 import unittest
 
 from pylib.base import base_test_result
+from pylib.instrumentation import instrumentation_parser
 from pylib.instrumentation import instrumentation_test_instance
 
 import mock
@@ -955,6 +956,509 @@ class InstrumentationTestInstanceTest(unittest.TestCase):
         )
         self.assertEqual(1, len(results))
         self.assertEqual(base_test_result.ResultType.PASS, results[0].GetType())
+
+    def testGenerateTestResults_singleTestWithClassDurations(self):
+        statuses = [
+            (
+                instrumentation_parser.STATUS_CODE_CLASS_DURATION,
+                {
+                    'before_class_duration_ms': 30,
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_START,
+                {
+                    'class': 'test.package.TestClass',
+                    'test': 'testMethod',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_TEST_DURATION,
+                {
+                    'duration_ms': 50,
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_OK,
+                {
+                    'class': 'test.package.TestClass',
+                    'test': 'testMethod',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_CLASS_DURATION,
+                {
+                    'after_class_duration_ms': 20,
+                },
+            ),
+        ]
+        results = instrumentation_test_instance.GenerateTestResults(
+            None, None, statuses, 5000, None, None
+        )
+        self.assertEqual(1, len(results))
+        self.assertEqual(base_test_result.ResultType.PASS, results[0].GetType())
+        self.assertEqual(100, results[0].GetDuration())
+
+    def testGenerateTestResults_batchedTestsWithClassDurations(self):
+        statuses = [
+            (
+                instrumentation_parser.STATUS_CODE_CLASS_DURATION,
+                {
+                    'before_class_duration_ms': 30,
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_START,
+                {
+                    'class': 'test.package.TestClass',
+                    'test': 'testMethod1',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_TEST_DURATION,
+                {
+                    'duration_ms': 100,
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_OK,
+                {
+                    'class': 'test.package.TestClass',
+                    'test': 'testMethod1',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_START,
+                {
+                    'class': 'test.package.TestClass',
+                    'test': 'testMethod2',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_TEST_DURATION,
+                {
+                    'duration_ms': 200,
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_OK,
+                {
+                    'class': 'test.package.TestClass',
+                    'test': 'testMethod2',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_CLASS_DURATION,
+                {
+                    'after_class_duration_ms': 40,
+                },
+            ),
+        ]
+        results = instrumentation_test_instance.GenerateTestResults(
+            None, None, statuses, 10000, None, None
+        )
+        self.assertEqual(2, len(results))
+        self.assertEqual(base_test_result.ResultType.PASS, results[0].GetType())
+        self.assertEqual(base_test_result.ResultType.PASS, results[1].GetType())
+        self.assertEqual(130, results[0].GetDuration())
+        self.assertEqual(240, results[1].GetDuration())
+
+    def testGenerateTestResults_multiClassBatchWithClassDurations(self):
+        statuses = [
+            (
+                instrumentation_parser.STATUS_CODE_CLASS_DURATION,
+                {
+                    'before_class_duration_ms': 25,
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_START,
+                {
+                    'class': 'test.package.TestClassA',
+                    'test': 'testMethodA',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_TEST_DURATION,
+                {
+                    'duration_ms': 50,
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_OK,
+                {
+                    'class': 'test.package.TestClassA',
+                    'test': 'testMethodA',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_CLASS_DURATION,
+                {
+                    'after_class_duration_ms': 15,
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_CLASS_DURATION,
+                {
+                    'before_class_duration_ms': 35,
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_START,
+                {
+                    'class': 'test.package.TestClassB',
+                    'test': 'testMethodB',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_TEST_DURATION,
+                {
+                    'duration_ms': 70,
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_OK,
+                {
+                    'class': 'test.package.TestClassB',
+                    'test': 'testMethodB',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_CLASS_DURATION,
+                {
+                    'after_class_duration_ms': 20,
+                },
+            ),
+        ]
+        results = instrumentation_test_instance.GenerateTestResults(
+            None, None, statuses, 10000, None, None
+        )
+        self.assertEqual(2, len(results))
+        self.assertEqual(base_test_result.ResultType.PASS, results[0].GetType())
+        self.assertEqual(base_test_result.ResultType.PASS, results[1].GetType())
+        self.assertEqual(90, results[0].GetDuration())
+        self.assertEqual(125, results[1].GetDuration())
+
+    def testGenerateTestResults_trailingSkippedTestWithClassDurations(self):
+        statuses = [
+            (
+                instrumentation_parser.STATUS_CODE_CLASS_DURATION,
+                {
+                    'before_class_duration_ms': '100',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_START,
+                {
+                    'class': 'test.package.TestClass',
+                    'test': 'testMethod1',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_TEST_DURATION,
+                {
+                    'duration_ms': '50',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_OK,
+                {
+                    'class': 'test.package.TestClass',
+                    'test': 'testMethod1',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_START,
+                {
+                    'class': 'test.package.TestClass',
+                    'test': 'testMethod2',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_SKIP,
+                {
+                    'class': 'test.package.TestClass',
+                    'test': 'testMethod2',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_CLASS_DURATION,
+                {
+                    'after_class_duration_ms': '200',
+                },
+            ),
+        ]
+        results = instrumentation_test_instance.GenerateTestResults(
+            None, None, statuses, 10000, None, None
+        )
+        self.assertEqual(2, len(results))
+        self.assertEqual(base_test_result.ResultType.PASS, results[0].GetType())
+        self.assertEqual(base_test_result.ResultType.SKIP, results[1].GetType())
+        self.assertEqual(350, results[0].GetDuration())
+        self.assertEqual(0, results[1].GetDuration())
+
+    def testGenerateTestResults_allSkippedClassInMultiClassBatch(self):
+        statuses = [
+            (
+                instrumentation_parser.STATUS_CODE_CLASS_DURATION,
+                {
+                    'before_class_duration_ms': '120',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_START,
+                {
+                    'class': 'test.package.TestClassA',
+                    'test': 'testMethod1',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_SKIP,
+                {
+                    'class': 'test.package.TestClassA',
+                    'test': 'testMethod1',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_CLASS_DURATION,
+                {
+                    'after_class_duration_ms': '80',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_CLASS_DURATION,
+                {
+                    'before_class_duration_ms': '50',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_START,
+                {
+                    'class': 'test.package.TestClassB',
+                    'test': 'testMethod2',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_TEST_DURATION,
+                {
+                    'duration_ms': '30',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_OK,
+                {
+                    'class': 'test.package.TestClassB',
+                    'test': 'testMethod2',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_CLASS_DURATION,
+                {
+                    'after_class_duration_ms': '40',
+                },
+            ),
+        ]
+        results = instrumentation_test_instance.GenerateTestResults(
+            None, None, statuses, 10000, None, None
+        )
+        self.assertEqual(2, len(results))
+        self.assertEqual(base_test_result.ResultType.SKIP, results[0].GetType())
+        self.assertEqual(base_test_result.ResultType.PASS, results[1].GetType())
+        self.assertEqual(0, results[0].GetDuration())
+        self.assertEqual(120, results[1].GetDuration())
+
+    def testGenerateTestResults_crashMidBatchWithClassDurations(self):
+        statuses = [
+            (
+                instrumentation_parser.STATUS_CODE_CLASS_DURATION,
+                {
+                    'before_class_duration_ms': '100',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_START,
+                {
+                    'class': 'test.package.TestClass',
+                    'test': 'testMethod1',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_TEST_DURATION,
+                {
+                    'duration_ms': '50',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_OK,
+                {
+                    'class': 'test.package.TestClass',
+                    'test': 'testMethod1',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_START,
+                {
+                    'class': 'test.package.TestClass',
+                    'test': 'testMethod2',
+                },
+            ),
+        ]
+        results = instrumentation_test_instance.GenerateTestResults(
+            None, {}, statuses, 2000, None, None
+        )
+        self.assertEqual(2, len(results))
+        self.assertEqual(base_test_result.ResultType.PASS, results[0].GetType())
+        self.assertEqual(
+            base_test_result.ResultType.UNKNOWN, results[1].GetType()
+        )
+        self.assertEqual(150, results[0].GetDuration())
+        self.assertEqual(1850, results[1].GetDuration())
+
+    def testGenerateTestResults_firstClassWithoutClassDurationsInMixedBatch(
+        self,
+    ):
+        statuses = [
+            (
+                instrumentation_parser.STATUS_CODE_START,
+                {
+                    'class': 'test.package.TestClassA',
+                    'test': 'testMethod1',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_TEST_DURATION,
+                {
+                    'duration_ms': '40',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_OK,
+                {
+                    'class': 'test.package.TestClassA',
+                    'test': 'testMethod1',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_CLASS_DURATION,
+                {
+                    'before_class_duration_ms': '70',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_START,
+                {
+                    'class': 'test.package.TestClassB',
+                    'test': 'testMethod2',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_SKIP,
+                {
+                    'class': 'test.package.TestClassB',
+                    'test': 'testMethod2',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_CLASS_DURATION,
+                {
+                    'after_class_duration_ms': '90',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_CLASS_DURATION,
+                {
+                    'before_class_duration_ms': '60',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_START,
+                {
+                    'class': 'test.package.TestClassC',
+                    'test': 'testMethod3',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_TEST_DURATION,
+                {
+                    'duration_ms': '30',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_OK,
+                {
+                    'class': 'test.package.TestClassC',
+                    'test': 'testMethod3',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_CLASS_DURATION,
+                {
+                    'after_class_duration_ms': '50',
+                },
+            ),
+        ]
+        results = instrumentation_test_instance.GenerateTestResults(
+            None, None, statuses, 500, None, None
+        )
+        self.assertEqual(3, len(results))
+        self.assertEqual(base_test_result.ResultType.PASS, results[0].GetType())
+        self.assertEqual(base_test_result.ResultType.SKIP, results[1].GetType())
+        self.assertEqual(base_test_result.ResultType.PASS, results[2].GetType())
+        self.assertEqual(40, results[0].GetDuration())
+        self.assertEqual(0, results[1].GetDuration())
+        self.assertEqual(140, results[2].GetDuration())
+
+    def testGenerateTestResults_legacyFallbackWithoutClassDuration(self):
+        statuses = [
+            (
+                instrumentation_parser.STATUS_CODE_START,
+                {
+                    'class': 'test.package.TestClass',
+                    'test': 'testMethod1',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_OK,
+                {
+                    'class': 'test.package.TestClass',
+                    'test': 'testMethod1',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_TEST_DURATION,
+                {
+                    'duration_ms': 100,
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_START,
+                {
+                    'class': 'test.package.TestClass',
+                    'test': 'testMethod2',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_OK,
+                {
+                    'class': 'test.package.TestClass',
+                    'test': 'testMethod2',
+                },
+            ),
+            (
+                instrumentation_parser.STATUS_CODE_TEST_DURATION,
+                {
+                    'duration_ms': 200,
+                },
+            ),
+        ]
+        results = instrumentation_test_instance.GenerateTestResults(
+            None, None, statuses, 10000, None, None
+        )
+        self.assertEqual(2, len(results))
+        self.assertEqual(base_test_result.ResultType.PASS, results[0].GetType())
+        self.assertEqual(base_test_result.ResultType.PASS, results[1].GetType())
+        self.assertEqual(9800, results[0].GetDuration())
+        self.assertEqual(200, results[1].GetDuration())
 
     def testGenerateTestResults_testFailed(self):
         statuses = [
