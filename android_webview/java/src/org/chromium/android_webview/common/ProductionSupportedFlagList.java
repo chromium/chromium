@@ -244,6 +244,10 @@ public final class ProductionSupportedFlagList {
                 "Enables retrieval of the emoji font through GMS Core "
                         + "improving emoji glyph coverage."),
         Flag.baseFeature(
+                BlinkFeatures.GMS_CORE_EMOJI_COMPAT_NONE,
+                "Appends compat=none to the GMS Core emoji font query to allow serving the 3D"
+                        + " system emoji font."),
+        Flag.baseFeature(
                 BlinkFeatures.HIT_TEST_BORDER_RADIUS_FOR_STACKING_CONTEXT,
                 "Hit testing should respect border-radius clips when creating a stacking context."),
         Flag.baseFeature(

@@ -28,6 +28,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &blink::features::kAndroidKeyboardContextMenu,
     &blink::features::kAndroidSpellcheckFullApiBlink,
     &blink::features::kDevicePosture,
+    &blink::features::kGMSCoreEmojiCompatNone,
     &blink::features::kInputCursorAnchorInfoMigration,
     &blink::features::kViewportSegments,
     &blink::features::kWebHID,

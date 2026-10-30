@@ -23,9 +23,11 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.blink.mojom.AndroidFontLookup;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content.R;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.mojo.bindings.ExecutorFactory;
 import org.chromium.mojo.system.Core;
 import org.chromium.mojo.system.MojoException;
@@ -300,7 +302,11 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
         map.put(GOOGLE_SANS_TEXT_REGULAR, createFontQuery("Google Sans Text", 400));
         map.put(GOOGLE_SANS_TEXT_MEDIUM, createFontQuery("Google Sans Text", 500));
         map.put(GOOGLE_SANS_TEXT_BOLD, createFontQuery("Google Sans Text", 700));
-        map.put(NOTO_COLOR_EMOJI_COMPAT, createFontQuery("Noto Color Emoji Compat", 400));
+        String emojiQuery = createFontQuery("Noto Color Emoji Compat", 400);
+        if (ContentFeatureMap.isEnabled(BlinkFeatures.GMS_CORE_EMOJI_COMPAT_NONE)) {
+            emojiQuery += "&compat=none";
+        }
+        map.put(NOTO_COLOR_EMOJI_COMPAT, emojiQuery);
         map.put(GOOGLE_SANS_FLEX, createFontQuery("Google Sans Flex", 400));
         return map;
     }

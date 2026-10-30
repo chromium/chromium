@@ -804,6 +804,10 @@ BASE_FEATURE(kGlobalPrivacyControlAlwaysSample,
 
 BASE_FEATURE(kGMSCoreEmoji, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Appends "&compat=none" to the GMS Core "Noto Color Emoji Compat" font query
+// so GMS Core can serve the plain 3D system emoji font when available.
+BASE_FEATURE(kGMSCoreEmojiCompatNone, base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE_PARAM(std::string,
                    kHTMLParserYieldEventNameForPause,
                    &kHTMLParserYieldByUserTiming,
