@@ -47,6 +47,8 @@ blink_core_sources_html = [
   "canvas/canvas_paint_event.h",
   "canvas/predefined_color_space.cc",
   "canvas/predefined_color_space.h",
+  "canvas/shaped_text.cc",
+  "canvas/shaped_text.h",
   "canvas/text_metrics.cc",
   "canvas/text_metrics.h",
   "canvas/text_cluster.cc",
