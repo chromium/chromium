@@ -17,7 +17,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/map_util.h"
-#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/functional/bind.h"
@@ -350,7 +349,7 @@ std::vector<std::string> WebAppPolicyManager::GetPolicyIds(
           ExternalInstallSource::kExternalPolicy);
   if (auto* install_urls = base::FindOrNull(installed_apps, app_id)) {
     CHECK(!install_urls->empty(), base::NotFatalUntil::M162);
-    base::Extend(policy_ids, base::ToVector(*install_urls, &GURL::spec));
+    base::Extend(policy_ids, *install_urls, &GURL::spec);
   }
 
   return policy_ids;
