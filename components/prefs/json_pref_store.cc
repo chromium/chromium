@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -324,8 +325,13 @@ void JsonPrefStore::CommitPendingWrite(
 }
 
 void JsonPrefStore::SchedulePendingLossyWrites() {
-  if (pending_lossy_write_)
-    writer_.ScheduleWrite(this);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (read_only_) {
+    return;
+  }
+  if (pending_lossy_write_) {
+    writer_.ScheduleWriteWithBackgroundDataSerializer(this);
+  }
 }
 
 void JsonPrefStore::ReportValueChanged(std::string_view key, uint32_t flags) {
@@ -338,16 +344,6 @@ void JsonPrefStore::ReportValueChanged(std::string_view key, uint32_t flags) {
                                    key);
 
   ScheduleWrite(flags);
-}
-
-void JsonPrefStore::PerformPreserializationTasks() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pending_lossy_write_ = false;
-  if (pref_filter_) {
-    OnWriteCallbackPair callbacks = pref_filter_->FilterSerializeData(prefs_);
-    if (!callbacks.first.is_null() || !callbacks.second.is_null())
-      RegisterOnNextWriteSynchronousCallbacks(std::move(callbacks));
-  }
 }
 
 void JsonPrefStore::RunOrScheduleNextSuccessfulWriteCallback(
@@ -485,14 +481,16 @@ JsonPrefStore::~JsonPrefStore() {
   CommitPendingWrite();
 }
 
-std::optional<std::string> JsonPrefStore::SerializeData() {
-  PerformPreserializationTasks();
-  return DoSerialize(prefs_, path_);
-}
-
 base::ImportantFileWriter::BackgroundDataProducerCallback
 JsonPrefStore::GetSerializedDataProducerForBackgroundSequence() {
-  PerformPreserializationTasks();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  pending_lossy_write_ = false;
+  if (pref_filter_) {
+    OnWriteCallbackPair callbacks = pref_filter_->FilterSerializeData(prefs_);
+    if (!callbacks.first.is_null() || !callbacks.second.is_null()) {
+      RegisterOnNextWriteSynchronousCallbacks(std::move(callbacks));
+    }
+  }
   return base::BindOnce(&DoSerialize, prefs_.Clone(), path_);
 }
 

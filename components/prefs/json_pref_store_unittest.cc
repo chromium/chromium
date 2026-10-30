@@ -622,7 +622,6 @@ class JsonPrefStoreLossyWriteTest : public JsonPrefStoreTest {
     return file_contents;
   }
 
- private:
   base::FilePath test_file_;
 };
 
@@ -719,6 +718,11 @@ TEST_P(JsonPrefStoreLossyWriteTest, ScheduleLossyWrite) {
   scoped_refptr<JsonPrefStore> pref_store = CreatePrefStore();
   ImportantFileWriter* file_writer = GetImportantFileWriter(pref_store.get());
 
+  // Calling SchedulePendingLossyWrites() with no pending lossy write is a
+  // no-op.
+  pref_store->SchedulePendingLossyWrites();
+  ASSERT_FALSE(file_writer->HasPendingWrite());
+
   // Set a lossy pref and check that it is not scheduled to be written.
   pref_store->SetValue("lossy", base::Value("lossy"),
                        WriteablePrefStore::LOSSY_PREF_WRITE_FLAG);
@@ -728,11 +732,69 @@ TEST_P(JsonPrefStoreLossyWriteTest, ScheduleLossyWrite) {
   pref_store->SchedulePendingLossyWrites();
   ASSERT_TRUE(file_writer->HasPendingWrite());
 
-  // Call CommitPendingWrite and check that the lossy pref is there with the
-  // last value set above.
-  pref_store->CommitPendingWrite(base::OnceClosure());
+  file_writer->DoScheduledWrite();
   ASSERT_FALSE(file_writer->HasPendingWrite());
-  ASSERT_EQ("{\"lossy\":\"lossy\"}", GetTestFileContents());
+  // Calling SchedulePendingLossyWrites() again after serialization must not
+  // arm another write because pending_lossy_write_ was reset to false.
+  pref_store->SchedulePendingLossyWrites();
+  EXPECT_FALSE(file_writer->HasPendingWrite());
+  EXPECT_EQ("{\"lossy\":\"lossy\"}", GetTestFileContents());
+}
+
+TEST_P(JsonPrefStoreLossyWriteTest,
+       DestroyWithPendingLossyWriteFlushesCleanly) {
+  // Destroy after SchedulePendingLossyWrites() while the write timer is
+  // armed (HasPendingWrite() == true). ~JsonPrefStore() must flush via
+  // CommitPendingWrite() before ~ImportantFileWriter() checks
+  // DCHECK(!HasPendingWrite()), and the background write must complete
+  // cleanly without touching the destroyed JsonPrefStore.
+  scoped_refptr<JsonPrefStore> pref_store = CreatePrefStore();
+  ImportantFileWriter* file_writer = GetImportantFileWriter(pref_store.get());
+
+  pref_store->SetValue("lossy", base::Value("scheduled_before_destroy"),
+                       WriteablePrefStore::LOSSY_PREF_WRITE_FLAG);
+  pref_store->SchedulePendingLossyWrites();
+  ASSERT_TRUE(file_writer->HasPendingWrite());
+  EXPECT_FALSE(base::PathExists(test_file_));
+
+  pref_store.reset();
+  EXPECT_EQ("{\"lossy\":\"scheduled_before_destroy\"}", GetTestFileContents());
+}
+
+// Tests that SchedulePendingLossyWrites() does not schedule a write if a lossy
+// pref was dirtied before an async read failed and marked the store read-only.
+TEST_P(JsonPrefStoreLossyWriteTest, SchedulePendingLossyWritesOnReadOnlyStore) {
+  // Lossy pref dirtied before an async ReadPrefsAsync() fails with
+  // PREF_READ_ERROR_JSON_TYPE and transitions read_only_ = true.
+  ASSERT_TRUE(base::WriteFile(test_file_, "\"not a dict\""));
+
+  scoped_refptr<JsonPrefStore> pref_store = CreatePrefStore();
+  ImportantFileWriter* file_writer = GetImportantFileWriter(pref_store.get());
+
+  pref_store->ReadPrefsAsync(nullptr);
+
+  // Dirty a lossy pref while read_only_ is still false, setting
+  // pending_lossy_write_ = true.
+  pref_store->SetValue("lossy", base::Value("lossy"),
+                       WriteablePrefStore::LOSSY_PREF_WRITE_FLAG);
+  EXPECT_FALSE(file_writer->HasPendingWrite());
+
+  // Complete the async read so PREF_READ_ERROR_JSON_TYPE transitions
+  // read_only_ = true.
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(pref_store->IsInitializationComplete());
+  ASSERT_TRUE(pref_store->ReadOnly());
+  ASSERT_EQ(PersistentPrefStore::PREF_READ_ERROR_JSON_TYPE,
+            pref_store->GetReadError());
+
+  // SchedulePendingLossyWrites() must not arm the writer timer once
+  // read_only_ is true, and destruction must not hit
+  // ~ImportantFileWriter() DCHECK(!HasPendingWrite()).
+  pref_store->SchedulePendingLossyWrites();
+  EXPECT_FALSE(file_writer->HasPendingWrite());
+
+  pref_store.reset();
+  EXPECT_EQ("\"not a dict\"", GetTestFileContents());
 }
 
 INSTANTIATE_TEST_SUITE_P(
