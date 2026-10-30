@@ -25,6 +25,10 @@ rust::Str SchemeHostPortHost(const SchemeHostPort& tuple) {
   return rust::Str(tuple.host());
 }
 
+bool SchemeHostPortEquals(const SchemeHostPort& a, const SchemeHostPort& b) {
+  return a == b;
+}
+
 std::unique_ptr<Origin> CloneOrigin(const Origin& origin) {
   return std::make_unique<Origin>(origin);
 }

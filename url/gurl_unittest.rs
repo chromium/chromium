@@ -99,3 +99,21 @@ fn test_origin_serialize() {
     let opaque_origin = create_origin_from_gurl(&create_gurl_from_str("data:text/plain,hello"));
     expect_eq!(opaque_origin.serialize(), "null");
 }
+
+#[gtest(OriginRustTest, SchemeHostPortEquality)]
+fn test_scheme_host_port_equality() {
+    let origin = create_origin_from_gurl(&create_gurl_from_str("https://example.com/a"));
+    let same_with_default_port =
+        create_origin_from_gurl(&create_gurl_from_str("https://example.com:443/b"));
+    let different_port =
+        create_origin_from_gurl(&create_gurl_from_str("https://example.com:8443/"));
+    let different_scheme = create_origin_from_gurl(&create_gurl_from_str("http://example.com/"));
+    let different_host = create_origin_from_gurl(&create_gurl_from_str("https://example.org/"));
+
+    let tuple = origin.get_tuple_or_precursor_tuple_if_opaque();
+    expect_true!(tuple == origin.get_tuple_or_precursor_tuple_if_opaque());
+    expect_true!(tuple == same_with_default_port.get_tuple_or_precursor_tuple_if_opaque());
+    expect_false!(tuple == different_port.get_tuple_or_precursor_tuple_if_opaque());
+    expect_false!(tuple == different_scheme.get_tuple_or_precursor_tuple_if_opaque());
+    expect_false!(tuple == different_host.get_tuple_or_precursor_tuple_if_opaque());
+}

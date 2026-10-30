@@ -23,6 +23,10 @@ rust::Str SchemeHostPortScheme(const SchemeHostPort& tuple);
 // Shim for FFI to call SchemeHostPort::host() and get a Rust `str`.
 rust::Str SchemeHostPortHost(const SchemeHostPort& tuple);
 
+// Shim for FFI to compare two SchemeHostPorts for equality, since CXX does not
+// support calling C++ operators directly.
+bool SchemeHostPortEquals(const SchemeHostPort& a, const SchemeHostPort& b);
+
 // Shim to clone an origin (since Rust cannot clone opaque C++ types).
 std::unique_ptr<Origin> CloneOrigin(const Origin& origin);
 

@@ -45,6 +45,12 @@ pub mod ffi {
 
         fn port(self: &SchemeHostPort) -> u16;
 
+        // We use an FFI shim for equality since CXX does not currently support
+        // calling C++ operators directly.
+        #[namespace = "url"]
+        #[rust_name = "scheme_host_port_equals"]
+        fn SchemeHostPortEquals(a: &SchemeHostPort, b: &SchemeHostPort) -> bool;
+
         #[namespace = "url"]
         #[rust_name = "clone_origin"]
         fn CloneOrigin(origin: &Origin) -> UniquePtr<Origin>;
@@ -70,6 +76,15 @@ impl ffi::SchemeHostPort {
         ffi::host(self)
     }
 }
+
+// Since Rust is only aware of the interface and is unaware of the inner
+// workings of url::SchemeHostPort, it needs to defer to C++ to check equality.
+impl PartialEq for ffi::SchemeHostPort {
+    fn eq(&self, other: &Self) -> bool {
+        ffi::scheme_host_port_equals(self, other)
+    }
+}
+impl Eq for ffi::SchemeHostPort {}
 
 impl ffi::Origin {
     pub fn scheme(&self) -> &str {
