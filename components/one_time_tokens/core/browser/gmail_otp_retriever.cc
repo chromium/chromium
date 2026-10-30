@@ -67,11 +67,11 @@ std::unique_ptr<GmailOtpRetriever> GmailOtpRetriever::CreateAndStart(
     std::unique_ptr<affiliations::DomainRelationChecker>
         domain_relation_checker,
     const url::Origin& otp_frame_origin,
-    bool is_login_flow,
+    bool allow_psl_matching,
     ResultCallback callback) {
   auto retriever = base::WrapUnique(new GmailOtpRetriever(
       backend, std::move(domain_relation_checker), otp_frame_origin,
-      is_login_flow, std::move(callback)));
+      allow_psl_matching, std::move(callback)));
   retriever->Start();
   return retriever;
 }
@@ -81,11 +81,11 @@ GmailOtpRetriever::GmailOtpRetriever(
     std::unique_ptr<affiliations::DomainRelationChecker>
         domain_relation_checker,
     const url::Origin& otp_frame_origin,
-    bool is_login_flow,
+    bool allow_psl_matching,
     ResultCallback callback)
     : gmail_otp_backend_(backend),
       otp_frame_origin_(otp_frame_origin),
-      is_login_flow_(is_login_flow),
+      allow_psl_matching_(allow_psl_matching),
       sender_domain_matcher_(std::move(domain_relation_checker),
                              otp_frame_origin),
       retrieve_otp_callback_(std::move(callback)) {}
@@ -196,14 +196,11 @@ bool GmailOtpRetriever::IsMatchTypeAllowed(
       return true;
     case GmailOtpSenderDomainMatchType::kPsl:
     case GmailOtpSenderDomainMatchType::kGroupedAndPsl:
-      // PSL matches are allowed for login flows because the user already
-      // expressed the intention to fill the target frame, by approving the
-      // login flow.
-      if (is_login_flow_) {
+      if (allow_psl_matching_) {
         LOG_OTT(gmail_otp_backend_->GetLogSink())
-            << "GmailOtpRetriever PSL match during login flow";
+            << "GmailOtpRetriever PSL match";
       }
-      return is_login_flow_;
+      return allow_psl_matching_;
     case GmailOtpSenderDomainMatchType::kUnknown:
     case GmailOtpSenderDomainMatchType::kNoMatch:
     case GmailOtpSenderDomainMatchType::kGrouped:
@@ -226,7 +223,8 @@ void GmailOtpRetriever::OnCachedTokenMatchChecked(
   bool allowed = IsMatchTypeAllowed(match_type);
   LOG_OTT(gmail_otp_backend_->GetLogSink())
       << "GmailOtpRetriever cached token match checked: allowed=" << allowed
-      << ", match_type=" << match_type << ", is_login_flow=" << is_login_flow_;
+      << ", match_type=" << match_type
+      << ", allow_psl_matching=" << allow_psl_matching_;
   if (allowed) {
     RecordSenderDomainMatchAcceptedMatchType(match_type, /*is_cached=*/true);
     const OneTimeToken& matched_token = cached_tokens.at(index);
@@ -302,7 +300,8 @@ void GmailOtpRetriever::OnReceivedTokenMatchChecked(
   bool allowed = IsMatchTypeAllowed(match_type);
   LOG_OTT(gmail_otp_backend_->GetLogSink())
       << "GmailOtpRetriever received token match checked: allowed=" << allowed
-      << ", match_type=" << match_type << ", is_login_flow=" << is_login_flow_;
+      << ", match_type=" << match_type
+      << ", allow_psl_matching=" << allow_psl_matching_;
   if (allowed) {
     RecordSenderDomainMatchAcceptedMatchType(match_type, /*is_cached=*/false);
     if (!best_candidate_.has_value() ||

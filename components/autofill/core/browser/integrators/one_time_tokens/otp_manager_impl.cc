@@ -205,11 +205,9 @@ void OtpManagerImpl::MaybeRetrieveGmailOtp() {
         *affiliation_service);
     const url::Origin frame_origin =
         owner_->client().GetLastCommittedPrimaryMainFrameOrigin();
-    // TODO(crbug.com/571474857): Clarify security requirements for login flow
-    // classification in non-agentic OTP autofill.
     gmail_otp_retriever_ = one_time_tokens::GmailOtpRetriever::CreateAndStart(
         *gmail_otp_backend, std::move(checker), frame_origin,
-        /*is_login_flow=*/false,
+        /*allow_psl_matching=*/true,
         base::BindOnce(&OtpManagerImpl::OnGmailOtpRetrieved,
                        weak_ptr_factory_.GetWeakPtr()));
   }
@@ -377,11 +375,9 @@ void OtpManagerImpl::OnTickleReceived() {
       target_field->origin().opaque()
           ? owner_->client().GetLastCommittedPrimaryMainFrameOrigin()
           : target_field->origin();
-  // TODO(crbug.com/571474857): Clarify security requirements for login flow
-  // classification in non-agentic OTP autofill.
   gmail_otp_retriever_ = one_time_tokens::GmailOtpRetriever::CreateAndStart(
       *gmail_otp_backend, std::move(checker), frame_origin,
-      /*is_login_flow=*/false,
+      /*allow_psl_matching=*/true,
       base::BindOnce(&OtpManagerImpl::OnGmailOtpRetrieved,
                      weak_ptr_factory_.GetWeakPtr()));
 }

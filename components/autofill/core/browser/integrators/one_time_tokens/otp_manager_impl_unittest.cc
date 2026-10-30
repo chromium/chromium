@@ -17,6 +17,7 @@
 #include "base/test/test_future.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
@@ -3638,6 +3639,43 @@ TEST_F(
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return test_api(otp_manager).gmail_otp_retriever() == nullptr;
   }));
+
+  autofill_client().set_affiliation_service(nullptr);
+}
+
+// Tests that `MaybeRetrieveGmailOtp` enables PSL matching and accepts a
+// PSL-matched sender domain.
+TEST_F(OtpManagerImplTest,
+       MaybeRetrieveGmailOtp_AcceptsPslMatchedSenderDomain) {
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), true);
+  SetUpOtpFieldDetector();
+  affiliations::FakeAffiliationService affiliation_service;
+  autofill_client().set_affiliation_service(&affiliation_service);
+  auto backend = std::make_unique<one_time_tokens::FakeGmailOtpBackend>();
+  one_time_tokens::FakeGmailOtpBackend* backend_ptr = backend.get();
+  autofill_client().set_gmail_otp_backend(std::move(backend));
+
+  OtpManagerImpl otp_manager(autofill_manager(), &sms_otp_service_);
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
+
+  EXPECT_CALL(otp_phish_guard_delegate(),
+              StartOtpPhishGuardCheck(form->field(0)->host_frame(), _))
+      .WillOnce(RunOnceCallback<1>(/*is_phishing=*/false));
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
+  otp_manager.GetOtpSuggestions(*form, *form->field(0), future.GetCallback());
+
+  backend_ptr->ProcessCallbacks(one_time_tokens::OneTimeToken(
+      one_time_tokens::OneTimeTokenType::kGmail, "654321",
+      base::TimeTicks::Now(), "otp@mail.example.test"));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return test_api(otp_manager).gmail_otp_retriever() == nullptr;
+  }));
+  EXPECT_THAT(future.Get(),
+              ElementsAre(AllOf(
+                  Property(&one_time_tokens::OneTimeToken::value, "654321"),
+                  Property(&one_time_tokens::OneTimeToken::sender_address,
+                           Optional(std::string("otp@mail.example.test"))))));
 
   autofill_client().set_affiliation_service(nullptr);
 }

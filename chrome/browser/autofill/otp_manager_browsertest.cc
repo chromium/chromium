@@ -369,16 +369,21 @@ IN_PROC_BROWSER_TEST_F(OtpManagerGmailOtpBrowserTest,
               ElementsAre(ElementsAre(Suggestion::Text(u"otp@example.test"))));
 }
 
-// Tests that a Gmail OTP from a sender domain sharing the same eTLD+1 via the
-// Public Suffix List (e.g., `otp@mail.example.test` on `https://example.test`)
-// is rejected and not suggested when PSL matching is disabled.
+// Tests that a Gmail OTP from a sender domain matching the page's origin via
+// the Public Suffix List (e.g., `otp@mail.example.test` on
+// `https://example.test`) is accepted and suggested by Autofill.
 IN_PROC_BROWSER_TEST_F(OtpManagerGmailOtpBrowserTest,
                        GmailOtpSenderDomainMatch_PslMatch) {
   NavigateAndRequestGmailOtpSuggestions("otp@mail.example.test");
 
   const std::vector<Suggestion>& suggestions =
       autofill_manager().external_delegate().suggestions();
-  EXPECT_TRUE(suggestions.empty());
+  ASSERT_FALSE(suggestions.empty());
+  EXPECT_EQ(suggestions[0].type, SuggestionType::kGmailOneTimePasswordEntry);
+  EXPECT_EQ(suggestions[0].main_text.value, u"123456");
+  EXPECT_THAT(
+      suggestions[0].labels,
+      ElementsAre(ElementsAre(Suggestion::Text(u"otp@mail.example.test"))));
 }
 
 // Tests that a Gmail OTP from an unrelated sender domain (e.g.,

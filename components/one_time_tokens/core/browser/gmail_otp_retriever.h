@@ -67,13 +67,16 @@ class GmailOtpRetriever {
       base::expected<Result, OneTimeTokenRetrievalError>)>;
 
   // Creates a `GmailOtpRetriever` instance and immediately starts the retrieval
-  // and domain matching flow.
+  // and domain matching flow. When `allow_psl_matching` is true, tokens whose
+  // sender domain matches `otp_frame_origin` via the Public Suffix List
+  // (`kPsl` or `kGroupedAndPsl`) are accepted in addition to exact, `www.`
+  // subdomain, and affiliated matches.
   static std::unique_ptr<GmailOtpRetriever> CreateAndStart(
       GmailOtpBackend& backend,
       std::unique_ptr<affiliations::DomainRelationChecker>
           domain_relation_checker,
       const url::Origin& otp_frame_origin,
-      bool is_login_flow,
+      bool allow_psl_matching,
       ResultCallback callback);
 
   ~GmailOtpRetriever();
@@ -91,7 +94,7 @@ class GmailOtpRetriever {
                     std::unique_ptr<affiliations::DomainRelationChecker>
                         domain_relation_checker,
                     const url::Origin& otp_frame_origin,
-                    bool is_login_flow,
+                    bool allow_psl_matching,
                     ResultCallback callback);
 
   void Start();
@@ -118,7 +121,7 @@ class GmailOtpRetriever {
 
   const raw_ref<GmailOtpBackend> gmail_otp_backend_;
   const url::Origin otp_frame_origin_;
-  const bool is_login_flow_;
+  const bool allow_psl_matching_;
   // Answers all sender domain checks of this retrieval.
   GmailOtpSenderDomainMatcher sender_domain_matcher_;
   size_t pending_sender_domain_checks_ = 0;
