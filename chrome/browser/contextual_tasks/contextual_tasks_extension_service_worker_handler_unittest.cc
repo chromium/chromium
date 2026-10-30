@@ -33,7 +33,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
-#include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "third_party/lens_server_proto/search_communication.pb.h"
 #include "url/gurl.h"
 
@@ -127,8 +126,8 @@ TEST_F(ContextualTasksExtensionServiceWorkerHandlerTest,
   base::test::TestFuture<mojo_base::ProtoWrapper> handshake_future;
   handler_->GetHandshakeMessage(document_id, handshake_future.GetCallback());
   mojo_base::ProtoWrapper handshake_wrapper = handshake_future.Take();
-  std::optional<lens::ClientToAimMessage> returned_handshake =
-      handshake_wrapper.As<lens::ClientToAimMessage>();
+  std::optional<lens::ClientToSearchMessage> returned_handshake =
+      handshake_wrapper.As<lens::ClientToSearchMessage>();
   ASSERT_TRUE(returned_handshake.has_value());
   EXPECT_TRUE(returned_handshake->has_handshake_ping());
 
@@ -138,12 +137,12 @@ TEST_F(ContextualTasksExtensionServiceWorkerHandlerTest,
               testing::AllOf(testing::HasSubstr("HandshakePing"),
                              testing::HasSubstr(document_id)));
   EXPECT_EQ(log_observer.entries()[0].proto_type,
-            "lens.chrome.ClientToAimMessage");
+            "lens.chrome.ClientToSearchMessage");
   ASSERT_TRUE(log_observer.entries()[0].proto_base64.has_value());
   std::string decoded_handshake;
   ASSERT_TRUE(base::Base64Decode(*log_observer.entries()[0].proto_base64,
                                  &decoded_handshake));
-  lens::ClientToAimMessage parsed_handshake;
+  lens::ClientToSearchMessage parsed_handshake;
   ASSERT_TRUE(parsed_handshake.ParseFromString(decoded_handshake));
   EXPECT_TRUE(parsed_handshake.has_handshake_ping());
 
@@ -489,6 +488,45 @@ TEST_F(ContextualTasksExtensionServiceWorkerHandlerTest,
                   .empty());
 
   process_manager->StopTrackingServiceWorkerRunningInstance(worker_id);
+}
+
+TEST_F(ContextualTasksExtensionServiceWorkerHandlerTest,
+       HandshakeCapabilitiesReflectTabSharingEligibility) {
+  const std::string document_id = GetMainFrameDocumentId();
+
+  // When `CanShareTabContext()` is false (no eligibility forced or `AimService`
+  // configured), `TABS` is omitted and `LENS` is included.
+  {
+    base::test::TestFuture<mojo_base::ProtoWrapper> handshake_future;
+    handler_->GetHandshakeMessage(document_id, handshake_future.GetCallback());
+    mojo_base::ProtoWrapper handshake_wrapper = handshake_future.Take();
+    std::optional<lens::ClientToSearchMessage> handshake =
+        handshake_wrapper.As<lens::ClientToSearchMessage>();
+    ASSERT_TRUE(handshake.has_value());
+    ASSERT_TRUE(handshake->has_handshake_ping());
+    EXPECT_THAT(
+        handshake->handshake_ping().capabilities(),
+        testing::ElementsAre(lens::ClientToSearchMessage::HandshakePing::LENS));
+  }
+
+  // When `CanShareTabContext()` is true, both `TABS` and `LENS` are included.
+  {
+    base::test::ScopedFeatureList force_eligibility;
+    force_eligibility.InitAndEnableFeature(
+        kContextualTasksForceEntryPointEligibility);
+
+    base::test::TestFuture<mojo_base::ProtoWrapper> handshake_future;
+    handler_->GetHandshakeMessage(document_id, handshake_future.GetCallback());
+    mojo_base::ProtoWrapper handshake_wrapper = handshake_future.Take();
+    std::optional<lens::ClientToSearchMessage> handshake =
+        handshake_wrapper.As<lens::ClientToSearchMessage>();
+    ASSERT_TRUE(handshake.has_value());
+    ASSERT_TRUE(handshake->has_handshake_ping());
+    EXPECT_THAT(
+        handshake->handshake_ping().capabilities(),
+        testing::ElementsAre(lens::ClientToSearchMessage::HandshakePing::TABS,
+                             lens::ClientToSearchMessage::HandshakePing::LENS));
+  }
 }
 
 }  // namespace

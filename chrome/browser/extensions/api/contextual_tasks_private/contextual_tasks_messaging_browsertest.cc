@@ -817,7 +817,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionMessagingTest,
   };
 
   EXPECT_TRUE(has_log("PostServiceWorkerMessage", "HandshakePing",
-                      "lens.chrome.ClientToAimMessage"));
+                      "lens.chrome.ClientToSearchMessage"));
   EXPECT_TRUE(has_log("OnServiceWorkerMessage", "HandshakeResponse",
                       "lens.chrome.SearchToClientMessage"));
   EXPECT_TRUE(has_log("PostServiceWorkerMessage", "InjectChromeInput",

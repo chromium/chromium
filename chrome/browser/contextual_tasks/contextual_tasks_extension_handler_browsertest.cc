@@ -4969,7 +4969,7 @@ IN_PROC_BROWSER_TEST_F(
   base::test::TestFuture<mojo_base::ProtoWrapper> handshake_future;
   sw_handler->GetHandshakeMessage(doc_id, handshake_future.GetCallback());
   mojo_base::ProtoWrapper handshake_wrapper = handshake_future.Take();
-  auto ping_msg = handshake_wrapper.As<lens::ClientToAimMessage>();
+  auto ping_msg = handshake_wrapper.As<lens::ClientToSearchMessage>();
   ASSERT_TRUE(ping_msg.has_value());
   EXPECT_TRUE(ping_msg->has_handshake_ping());
   EXPECT_TRUE(user_data->IsServiceWorkerPortConnected());
@@ -5065,7 +5065,7 @@ IN_PROC_BROWSER_TEST_F(
     base::test::TestFuture<mojo_base::ProtoWrapper> handshake_future;
     sw_handler->GetHandshakeMessage(bad_doc_id, handshake_future.GetCallback());
     mojo_base::ProtoWrapper handshake_wrapper = handshake_future.Take();
-    auto ping_msg = handshake_wrapper.As<lens::ClientToAimMessage>();
+    auto ping_msg = handshake_wrapper.As<lens::ClientToSearchMessage>();
     ASSERT_TRUE(ping_msg.has_value());
     EXPECT_FALSE(ping_msg->has_handshake_ping());
     EXPECT_FALSE(user_data->IsServiceWorkerPortConnected());

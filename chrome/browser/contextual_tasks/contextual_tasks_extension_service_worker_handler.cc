@@ -24,7 +24,6 @@
 #include "extensions/browser/service_worker/service_worker_keepalive.h"
 #include "extensions/common/constants.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
-#include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "third_party/lens_server_proto/search_communication.pb.h"
 
 namespace contextual_tasks {
@@ -152,7 +151,7 @@ void ContextualTasksExtensionServiceWorkerHandler::GetHandshakeMessage(
         << "HandshakePing rejected: feature disabled (document_id="
         << document_id.value_or("") << ")";
     std::move(callback).Run(
-        mojo_base::ProtoWrapper(lens::ClientToAimMessage()));
+        mojo_base::ProtoWrapper(lens::ClientToSearchMessage()));
     return;
   }
 
@@ -162,7 +161,7 @@ void ContextualTasksExtensionServiceWorkerHandler::GetHandshakeMessage(
     RecordExtensionHandshakeStatus(
         ExtensionHandshakeStatus::kInvalidDocumentId);
     std::move(callback).Run(
-        mojo_base::ProtoWrapper(lens::ClientToAimMessage()));
+        mojo_base::ProtoWrapper(lens::ClientToSearchMessage()));
     return;
   }
 
@@ -175,7 +174,7 @@ void ContextualTasksExtensionServiceWorkerHandler::GetHandshakeMessage(
     RecordExtensionHandshakeStatus(
         ExtensionHandshakeStatus::kInvalidDocumentId);
     std::move(callback).Run(
-        mojo_base::ProtoWrapper(lens::ClientToAimMessage()));
+        mojo_base::ProtoWrapper(lens::ClientToSearchMessage()));
     return;
   }
 
@@ -188,7 +187,7 @@ void ContextualTasksExtensionServiceWorkerHandler::GetHandshakeMessage(
     RecordExtensionHandshakeStatus(
         ExtensionHandshakeStatus::kInvalidDocumentId);
     std::move(callback).Run(
-        mojo_base::ProtoWrapper(lens::ClientToAimMessage()));
+        mojo_base::ProtoWrapper(lens::ClientToSearchMessage()));
     return;
   }
 
@@ -201,9 +200,10 @@ void ContextualTasksExtensionServiceWorkerHandler::GetHandshakeMessage(
           &ContextualTasksExtensionServiceWorkerHandler::DispatchSearchMessage,
           weak_ptr_factory_.GetWeakPtr(), *document_id));
 
-  lens::ClientToAimMessage handshake_message = GetHandshakeMessageProto();
+  lens::ClientToSearchMessage handshake_message =
+      GetSearchHandshakeMessageProto(&profile_.get());
   OMNIBOX_LOG_WITH_PROTO(kPostServiceWorkerMessageTag, handshake_message,
-                         std::string("lens.chrome.ClientToAimMessage"))
+                         std::string("lens.chrome.ClientToSearchMessage"))
       << "HandshakePing (document_id=" << *document_id << ")";
   std::move(callback).Run(
       mojo_base::ProtoWrapper(std::move(handshake_message)));

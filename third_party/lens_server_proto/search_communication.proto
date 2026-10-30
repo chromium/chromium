@@ -15,7 +15,18 @@ import "lens_overlay_visual_search_interaction_data.proto";
 // Top-level envelope for messages from Extension Iframes to Search Web.
 message ClientToSearchMessage {
   // Handshake ping sent by an extension frame to initiate communication.
-  message HandshakePing {}
+  message HandshakePing {
+    enum Capability {
+      CAPABILITY_UNSPECIFIED = 0;
+      // The client supports tabs integration (e.g. tabs picker).
+      TABS = 1;
+      // The client supports Lens features (e.g. Lens button, Lens chip).
+      LENS = 2;
+    }
+
+    // List of capabilities supported by the client.
+    repeated Capability capabilities = 1;
+  }
 
   // Instructs Search Web to mount or unmount a Chrome input into the searchbox.
   message InjectChromeInput {

@@ -315,7 +315,7 @@ interface ExtensionPageHandler {
   //
   // Returns:
   // - `message`: A ProtoWrapper containing the serialized
-  //   `lens.ClientToAimMessage` which wraps the `HandshakePing`.
+  //   `lens.ClientToSearchMessage` which wraps the `HandshakePing`.
   GetHandshakeMessage(string? document_id)
       => (mojo_base.mojom.ProtoWrapper message);
 
