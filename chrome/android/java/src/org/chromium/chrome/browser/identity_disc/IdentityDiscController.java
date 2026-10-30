@@ -275,6 +275,12 @@ public class IdentityDiscController
                             mContext,
                             identityManager,
                             subscriptionEligibilityService,
+                            // TODO(crbug.com/578866423): Pass the SyncService and let the
+                            // cache handle the error badge too.
+                            // No SyncService: on an identity error,
+                            // maybeUpdateIdentityErrorAndBadge() sets a badge on the avatar,
+                            // and the cache never draws the ring on a badged avatar.
+                            /* syncService= */ null,
                             aiTierImageSizePx,
                             aiTierRingThicknessPx);
         } else {

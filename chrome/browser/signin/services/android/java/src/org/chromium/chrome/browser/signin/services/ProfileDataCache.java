@@ -43,6 +43,8 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityManager.RefreshTokensLoadingState;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
+import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserActionableError;
 import org.chromium.google_apis.gaia.CoreAccountId;
 
 import java.util.ArrayList;
@@ -58,7 +60,9 @@ import java.util.Objects;
 @MainThread
 @NullMarked
 public class ProfileDataCache
-        implements IdentityManager.Observer, SubscriptionEligibilityService.Observer {
+        implements IdentityManager.Observer,
+                SubscriptionEligibilityService.Observer,
+                SyncService.SyncStateChangedListener {
     /** Observer to get notifications about changes in profile data. */
     public interface Observer {
 
@@ -98,9 +102,12 @@ public class ProfileDataCache
     private Promise<List<DisplayableProfileData>> mAccountsPromise = new Promise<>();
     private final boolean mAiTierRingEnabled;
     private final @Nullable SubscriptionEligibilityService mSubscriptionEligibilityService;
+    private final @Nullable SyncService mSyncService;
     private final @Px int mRingThicknessPx;
     private final @Nullable SubscriptionTierBrandingDelegate mBrandingDelegate;
     private @Nullable Drawable mAccountCirclePlaceholderImage;
+    // Whether the primary account has an identity error.
+    private boolean mHasIdentityError;
 
     @VisibleForTesting
     ProfileDataCache(
@@ -108,11 +115,14 @@ public class ProfileDataCache
             AccountManagerFacade accountManagerFacade,
             IdentityManager identityManager,
             @Nullable SubscriptionEligibilityService subscriptionEligibilityService,
+            @Nullable SyncService syncService,
             @Px int imageSize,
             @Px int ringThicknessPx,
             boolean aiTierRingEnabled,
             @Nullable SubscriptionTierBrandingDelegate brandingDelegate) {
         assert identityManager != null;
+        assert syncService == null || aiTierRingEnabled
+                : "Only caches with the AI tier ring track identity errors";
         mContext = context;
         mAccountManagerFacade = accountManagerFacade;
         mIdentityManager = identityManager;
@@ -128,6 +138,7 @@ public class ProfileDataCache
         mAiTierRingEnabled = aiTierRingEnabled;
         mBrandingDelegate = brandingDelegate;
         mSubscriptionEligibilityService = subscriptionEligibilityService;
+        mSyncService = syncService;
 
         if (mAiTierRingEnabled) {
             int ringSpacingPx =
@@ -140,6 +151,8 @@ public class ProfileDataCache
         }
 
         mPlaceholderImage = getScaledPlaceholderImage(context, mAvatarSize);
+        // The cache is still empty, so this only sets mHasIdentityError.
+        refreshIdentityError();
         updateCache();
     }
 
@@ -147,6 +160,9 @@ public class ProfileDataCache
      * @param context Context of the application to extract resources from.
      * @param identityManager IdentityManager to use.
      * @param subscriptionEligibilityService SubscriptionEligibilityService to observe.
+     * @param syncService Used to hide the AI tier ring while there is an identity error, see {@link
+     *     #hasIdentityError()}. Null for screens that set an error badge themselves: the ring is
+     *     never drawn on a badged avatar.
      * @param imageSize Size of the image.
      * @param ringThicknessPx The thickness of the AI tier ring in pixels.
      * @return A {@link ProfileDataCache} object configured to draw the AI tier ring. Note that the
@@ -157,6 +173,7 @@ public class ProfileDataCache
             Context context,
             IdentityManager identityManager,
             SubscriptionEligibilityService subscriptionEligibilityService,
+            @Nullable SyncService syncService,
             @Px int imageSize,
             @Px int ringThicknessPx) {
         SubscriptionTierBrandingDelegate brandingDelegate =
@@ -166,6 +183,7 @@ public class ProfileDataCache
                 AccountManagerFacadeProvider.getInstance(),
                 identityManager,
                 subscriptionEligibilityService,
+                syncService,
                 imageSize,
                 ringThicknessPx,
                 /* aiTierRingEnabled= */ true,
@@ -184,6 +202,7 @@ public class ProfileDataCache
                 AccountManagerFacadeProvider.getInstance(),
                 identityManager,
                 /* subscriptionEligibilityService= */ null,
+                /* syncService= */ null,
                 context.getResources().getDimensionPixelSize(R.dimen.user_picture_size),
                 /* ringThicknessPx= */ 0,
                 /* aiTierRingEnabled= */ false,
@@ -202,6 +221,7 @@ public class ProfileDataCache
                 AccountManagerFacadeProvider.getInstance(),
                 identityManager,
                 /* subscriptionEligibilityService= */ null,
+                /* syncService= */ null,
                 context.getResources().getDimensionPixelSize(imageSizeResId),
                 /* ringThicknessPx= */ 0,
                 /* aiTierRingEnabled= */ false,
@@ -267,6 +287,8 @@ public class ProfileDataCache
      * @return The {@link DisplayableProfileData} for the given account ID.
      */
     public DisplayableProfileData getById(CoreAccountId accountId) {
+        // The error is only observed while the cache has observers, so it may be out of date.
+        if (mObservers.isEmpty()) refreshIdentityError();
         if (!mAccountsCache.containsKey(accountId)) {
             updateCache();
         }
@@ -304,6 +326,22 @@ public class ProfileDataCache
         if (accountInfo != null) updateCache(accountInfo);
     }
 
+    /**
+     * Returns whether there is an identity error, i.e. whether the {@link SyncService} passed to
+     * {@link #createWithAiTierRing} reported a user-actionable error. The AI tier ring isn't drawn
+     * while there is one. When it changes, the primary account's profile data is rebuilt and
+     * observers get {@link Observer#onProfileDataUpdated} for it.
+     *
+     * <p>Must only be called on caches created with {@link #createWithAiTierRing}. Without a
+     * SyncService, e.g. when sync isn't allowed, there is no error to track and this returns false.
+     */
+    public boolean hasIdentityError() {
+        assert mAiTierRingEnabled : "Caches without the AI tier ring don't track identity errors";
+        // The error is only observed while the cache has observers, so it may be out of date.
+        if (mObservers.isEmpty()) refreshIdentityError();
+        return mHasIdentityError;
+    }
+
     public @Nullable BadgeConfig getBadgeConfigForTesting(CoreAccountId accountId) {
         return mPerAccountBadgeConfig.get(accountId);
     }
@@ -327,7 +365,13 @@ public class ProfileDataCache
         if (mAiTierRingEnabled && mSubscriptionEligibilityService != null) {
             mSubscriptionEligibilityService.addObserver(this);
         }
+        if (mSyncService != null) {
+            mSyncService.addSyncStateChangedListener(this);
+        }
         mObservers.addObserver(observer);
+        // The error isn't observed without observers, so it may have changed. This is checked after
+        // adding the observer, so that the observer is notified of the change.
+        refreshIdentityError();
         if (SigninFeatureMap.isEnabled(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
                 && !mAccountsPromise.isFulfilled()) {
             updateCache();
@@ -344,6 +388,9 @@ public class ProfileDataCache
             mIdentityManager.removeObserver(this);
             if (mAiTierRingEnabled && mSubscriptionEligibilityService != null) {
                 mSubscriptionEligibilityService.removeObserver(this);
+            }
+            if (mSyncService != null) {
+                mSyncService.removeSyncStateChangedListener(this);
             }
             if (SigninFeatureMap.isEnabled(
                     SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)) {
@@ -398,6 +445,12 @@ public class ProfileDataCache
             if (!mAccountsCache.containsKey(accountInfo.getId())) return;
         }
         updateCache(accountInfo);
+    }
+
+    /** Implements {@link SyncService.SyncStateChangedListener}. */
+    @Override
+    public void syncStateChanged() {
+        refreshIdentityError();
     }
 
     /** Checks if the cache contains profile data for the given account ID. */
@@ -558,7 +611,28 @@ public class ProfileDataCache
         AccountInfo primaryAccount = mIdentityManager.getPrimaryAccountInfo();
         boolean isPrimary =
                 primaryAccount != null && primaryAccount.getId().equals(accountInfo.getId());
-        return isPrimary && mSubscriptionEligibilityService.getAiSubscriptionTier() > 0;
+        // Identity errors take precedence over the ring.
+        return isPrimary
+                && mSubscriptionEligibilityService.getAiSubscriptionTier() > 0
+                && !mHasIdentityError;
+    }
+
+    /**
+     * Updates {@link #hasIdentityError()}. If it changed, rebuilds the profile data of the primary
+     * account, the only one that can have the AI tier ring, and notifies the observers.
+     */
+    private void refreshIdentityError() {
+        boolean hasIdentityError =
+                mSyncService != null
+                        && mSyncService.getUserActionableError() != UserActionableError.NONE;
+        if (hasIdentityError == mHasIdentityError) return;
+        mHasIdentityError = hasIdentityError;
+
+        // Profile data that isn't cached yet uses the new value once it's built.
+        AccountInfo primaryAccount = mIdentityManager.getPrimaryAccountInfo();
+        if (primaryAccount == null || !mAccountsCache.containsKey(primaryAccount.getId())) return;
+        var accountInfo = findAccountInfo(primaryAccount.getId());
+        if (accountInfo != null) updateCache(accountInfo);
     }
 
     private void fireOnAccountsUpdated(List<DisplayableProfileData> accounts) {

@@ -99,6 +99,7 @@ android_library("unit_device_javatests") {
     "//components/browser_ui/util/android:java",
     "//components/signin/public/android:java",
     "//components/signin/public/android:signin_java_test_support",
+    "//components/sync/android:sync_java",
     "//content/public/test/android:content_java_test_support",
     "//google_apis/gaia/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
