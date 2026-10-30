@@ -7,9 +7,12 @@
 #include <algorithm>
 #include <array>
 
-#include "base/compiler_specific.h"
+#include "base/check.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/raw_span.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/base/test_helpers.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
@@ -175,21 +178,22 @@ void FillPlane(base::span<T> data,
 //       -i expected_PIXEL_FORMAT_I444_64x64.bin expected.png
 //
 [[maybe_unused]] void DumpFrame(const VideoFrame& frame, const char* prefix) {
-  FILE* f =
-      fopen(base::StringPrintf("/tmp/%s_%s_%s.bin", prefix,
-                               VideoPixelFormatToString(frame.format()).c_str(),
-                               frame.visible_rect().size().ToString().c_str())
-                .c_str(),
-            "wc");
+  base::File file(
+      base::FilePath::FromASCII(base::StringPrintf(
+          "/tmp/%s_%s_%s.bin", prefix, VideoPixelFormatToString(frame.format()),
+          frame.visible_rect().size().ToString())),
+      base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+  CHECK(file.IsValid()) << base::File::ErrorToString(file.error_details());
   for (size_t i = 0; i < VideoFrame::NumPlanes(frame.format()); ++i) {
-    auto plane_size =
-        VideoFrame::PlaneSize(frame.format(), i, frame.visible_rect().size());
-    for (int y = 0; y < plane_size.height(); ++y) {
-      UNSAFE_TODO(fwrite(frame.visible_data(i) + y * frame.stride(i), 1,
-                         plane_size.width(), f));
+    const auto plane_data = frame.GetVisiblePlaneData(i);
+    const auto row_bytes =
+        base::checked_cast<size_t>(frame.GetVisibleRowBytes(i));
+    const auto rows = base::checked_cast<size_t>(frame.GetVisibleRows(i));
+    for (size_t y = 0; y < rows; ++y) {
+      CHECK(file.WriteAtCurrentPosAndCheck(
+          plane_data.subspan(y * frame.stride(i), row_bytes)));
     }
   }
-  fclose(f);
 }
 
 uint16_t ReadVisibleSample(const VideoFrame& frame,
