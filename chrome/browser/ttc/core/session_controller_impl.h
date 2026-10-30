@@ -74,6 +74,7 @@ class SessionControllerImpl : public SessionController,
   void OnInputTranscription(const std::string& text) override;
   void OnOutputTranscription(const std::string& text) override;
   void OnModelAudioEnvelopeReady(const AudioEnvelope& envelope) override;
+  void OnSpeakerChanged(Speaker speaker) override;
 
   // SessionViewDelegate implementation:
   BrowserWindowInterface* GetBrowserWindowInterface() override;

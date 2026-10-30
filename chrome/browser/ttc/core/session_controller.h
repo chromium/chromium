@@ -88,7 +88,7 @@ class SessionController {
   // changes. `audio_level` is normalized to the [0, 1] range.
   virtual void UserAudioLevelUpdate(float audio_level) = 0;
 
-  // Called by Conversation to notify about model turn lifecycle and
+  // Called by `Conversation` to notify about model turn lifecycle and
   // transcripts.
   virtual void OnModelTurnStarted() = 0;
   virtual void OnModelTurnComplete() = 0;
@@ -99,6 +99,10 @@ class SessionController {
   virtual void OnInputTranscription(const std::string& text) = 0;
   virtual void OnOutputTranscription(const std::string& text) = 0;
   virtual void OnModelAudioEnvelopeReady(const AudioEnvelope& envelope) = 0;
+
+  // Called by `Conversation` when the party currently speaking in the
+  // conversation changes.
+  virtual void OnSpeakerChanged(Speaker speaker) = 0;
 };
 
 }  // namespace ttc

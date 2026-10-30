@@ -262,6 +262,8 @@ void SessionControllerImpl::NotifyTranscriptsUpdated() {
       transcript_tracker_.model_transcript());
 }
 
+void SessionControllerImpl::OnSpeakerChanged(Speaker speaker) {}
+
 bool SessionControllerImpl::SetMicMuted(bool muted) {
   // Capture only starts once the session is live.
   if (session_lifecycle_ != SessionLifecycle::kLive ||

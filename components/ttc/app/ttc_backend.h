@@ -15,6 +15,7 @@
 #include "base/values.h"
 #include "components/ttc/app/public/error_codes.h"
 #include "components/ttc/app/public/tool_types.h"
+#include "components/ttc/app/public/turn_state_update.h"
 #include "url/gurl.h"
 
 namespace optimization_guide::proto {
@@ -55,6 +56,9 @@ class TtcBackend {
     virtual void OnGenerationStateChanged(bool started,
                                           bool completed,
                                           bool interrupted) = 0;
+    virtual void OnModelTurnStateUpdate(ModelTurnStateUpdate update,
+                                        int64_t generation_id) = 0;
+    virtual void OnUserTurnStateUpdate(UserTurnStateUpdate update) = 0;
     virtual void OnToolCall(const ToolRequest& tool_request,
                             ToolResponseCallback response_callback) = 0;
     virtual void OnJournalEvent(const ServerJournalEvent& journal_event) = 0;

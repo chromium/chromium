@@ -100,6 +100,15 @@ class DebugSink {
   struct GoAway {
     int64_t time_left_ms = 0;
   };
+  // The server's `ModelTurnStateUpdate`, with the name of its state.
+  struct ModelTurnState {
+    std::string state;
+    int64_t generation_id = 0;
+  };
+  // The server's `UserTurnStateUpdate`, with the name of its state.
+  struct UserTurnState {
+    std::string state;
+  };
   // A frame of a type this client doesn't know.
   struct UnknownFrame {};
   using ServerFrame = std::variant<SessionStatus,
@@ -111,6 +120,8 @@ class DebugSink {
                                    ServerError,
                                    GoAway,
                                    ServerJournalEvent,
+                                   ModelTurnState,
+                                   UserTurnState,
                                    UnknownFrame>;
 
   virtual ~DebugSink() = default;

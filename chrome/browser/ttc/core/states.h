@@ -42,6 +42,16 @@ enum class UiState {
 
 std::ostream& operator<<(std::ostream& os, UiState state);
 
+// The party currently speaking in a TTC conversation.
+enum class Speaker {
+  // Neither the user nor the model is currently speaking.
+  kIdle,
+  // The user is taking their turn (e.g. speaking).
+  kUser,
+  // The model is taking its turn (e.g. generating or playing back a response).
+  kModel,
+};
+
 }  // namespace ttc
 
 #endif  // CHROME_BROWSER_TTC_CORE_STATES_H_

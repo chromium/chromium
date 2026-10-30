@@ -44,6 +44,8 @@ source_set("impl") {
     "conversation_impl.cc",
     "conversation_impl.h",
     "make_conversation.cc",
+    "speaker_tracker.cc",
+    "speaker_tracker.h",
   ]
   public_deps = [ "//components/ttc/app:impl" ]
   deps = [
@@ -131,6 +133,7 @@ if (!is_android) {
     sources = [
       "audio_controller_browsertest.cc",
       "protocol_browsertest.cc",
+      "speaker_state_browsertest.cc",
     ]
     deps = [
       ":app",

@@ -85,6 +85,9 @@ class AiOverlayDialogPageHandler : public ai_overlay_dialog::mojom::PageHandler,
   void OnGenerationStateChanged(bool started,
                                 bool completed,
                                 bool interrupted) override;
+  void OnModelTurnStateUpdate(ModelTurnStateUpdate update,
+                              int64_t generation_id) override;
+  void OnUserTurnStateUpdate(UserTurnStateUpdate update) override;
   void OnToolCall(const ToolRequest& tool_request,
                   ToolResponseCallback response_callback) override;
   void OnJournalEvent(const ServerJournalEvent& journal_event) override;

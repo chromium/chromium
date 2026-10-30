@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/ttc/app/public/audio_controller.h"
 #include "chrome/browser/ttc/core/session_controller.h"
@@ -23,7 +24,9 @@ ConversationImpl::ConversationImpl(
     SessionController& session_controller)
     : backend_(std::move(backend)),
       audio_controller_(std::move(audio_controller)),
-      session_controller_(session_controller) {
+      session_controller_(session_controller),
+      speaker_tracker_(base::BindRepeating(&ConversationImpl::OnSpeakerChanged,
+                                           base::Unretained(this))) {
   CHECK(backend_);
   CHECK(audio_controller_);
   backend_->BindConversation(*this);
@@ -160,6 +163,19 @@ void ConversationImpl::OnGenerationStateChanged(bool started,
   if (completed) {
     session_controller_->OnModelTurnComplete();
   }
+}
+
+void ConversationImpl::OnModelTurnStateUpdate(ModelTurnStateUpdate update,
+                                              int64_t generation_id) {
+  speaker_tracker_.OnModelTurnStateUpdate(update, generation_id);
+}
+
+void ConversationImpl::OnUserTurnStateUpdate(UserTurnStateUpdate update) {
+  speaker_tracker_.OnUserTurnStateUpdate(update);
+}
+
+void ConversationImpl::OnSpeakerChanged() {
+  session_controller_->OnSpeakerChanged(speaker_tracker_.speaker());
 }
 
 void ConversationImpl::OnToolCall(const ToolRequest& tool_request,

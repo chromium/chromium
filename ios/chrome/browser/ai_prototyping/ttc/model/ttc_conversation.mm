@@ -340,6 +340,15 @@ void TtcConversation::OnGenerationStateChanged(bool started,
   }
 }
 
+void TtcConversation::OnModelTurnStateUpdate(ttc::ModelTurnStateUpdate update,
+                                             int64_t generation_id) {
+  // No-op. Need to be hooked up.
+}
+
+void TtcConversation::OnUserTurnStateUpdate(ttc::UserTurnStateUpdate update) {
+  // No-op. Need to be hooked up.
+}
+
 void TtcConversation::OnTranscriptions(
     const std::string& input_transcription,
     const std::string& output_transcription) {

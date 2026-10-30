@@ -770,6 +770,13 @@ void AiOverlayDialogPageHandler::OnGenerationStateChanged(bool started,
   }
 }
 
+void AiOverlayDialogPageHandler::OnModelTurnStateUpdate(
+    ModelTurnStateUpdate update,
+    int64_t generation_id) {}
+
+void AiOverlayDialogPageHandler::OnUserTurnStateUpdate(
+    UserTurnStateUpdate update) {}
+
 void AiOverlayDialogPageHandler::OnToolCall(
     const ToolRequest& tool_request,
     ToolResponseCallback response_callback) {

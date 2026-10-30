@@ -150,6 +150,36 @@ ServerJournalEvent ToServerJournalEvent(
   return event;
 }
 
+std::optional<ModelTurnStateUpdate> ToModelTurnStateUpdate(
+    optimization_guide::proto::ModelTurnStateUpdate_State state) {
+  switch (state) {
+    case optimization_guide::proto::ModelTurnStateUpdate::TURN_STARTED:
+      return ModelTurnStateUpdate::kTurnStarted;
+    case optimization_guide::proto::ModelTurnStateUpdate::GENERATION_COMPLETED:
+      return ModelTurnStateUpdate::kGenerationCompleted;
+    case optimization_guide::proto::ModelTurnStateUpdate::INTERRUPTED:
+      return ModelTurnStateUpdate::kInterrupted;
+    case optimization_guide::proto::ModelTurnStateUpdate::TURN_COMPLETED:
+      return ModelTurnStateUpdate::kTurnCompleted;
+    case optimization_guide::proto::ModelTurnStateUpdate::STATE_UNSPECIFIED:
+    default:
+      return std::nullopt;
+  }
+}
+
+std::optional<UserTurnStateUpdate> ToUserTurnStateUpdate(
+    optimization_guide::proto::UserTurnStateUpdate_State state) {
+  switch (state) {
+    case optimization_guide::proto::UserTurnStateUpdate::TURN_STARTED:
+      return UserTurnStateUpdate::kTurnStarted;
+    case optimization_guide::proto::UserTurnStateUpdate::TURN_COMPLETED:
+      return UserTurnStateUpdate::kTurnCompleted;
+    case optimization_guide::proto::UserTurnStateUpdate::STATE_UNSPECIFIED:
+    default:
+      return std::nullopt;
+  }
+}
+
 }  // namespace
 
 TtcMesClient::TtcMesClient(
@@ -322,6 +352,21 @@ void TtcMesClient::HandleServerFrame(
     observer_->OnGenerationStateChanged(/*started=*/false,
                                         /*completed=*/true,
                                         /*interrupted=*/false);
+  }
+
+  if (frame.has_model_turn_state_update()) {
+    const auto& update = frame.model_turn_state_update();
+    if (std::optional<ModelTurnStateUpdate> state =
+            ToModelTurnStateUpdate(update.state())) {
+      observer_->OnModelTurnStateUpdate(*state, update.generation_id());
+    }
+  }
+
+  if (frame.has_user_turn_state_update()) {
+    if (std::optional<UserTurnStateUpdate> state =
+            ToUserTurnStateUpdate(frame.user_turn_state_update().state())) {
+      observer_->OnUserTurnStateUpdate(*state);
+    }
   }
 
   if (frame.has_tool_call()) {
@@ -611,6 +656,23 @@ void TtcMesClient::ReportServerFrameToDebugSink(
     case Frame::kJournalEvent:
       debug_sink_->OnServerFrame(ToServerJournalEvent(frame.journal_event()));
       break;
+    case Frame::kModelTurnStateUpdate: {
+      const auto& update = frame.model_turn_state_update();
+      debug_sink_->OnServerFrame(DebugSink::ModelTurnState{
+          .state = EnumToString(
+              update.state(),
+              &optimization_guide::proto::ModelTurnStateUpdate_State_Name),
+          .generation_id = update.generation_id(),
+      });
+      break;
+    }
+    case Frame::kUserTurnStateUpdate:
+      debug_sink_->OnServerFrame(DebugSink::UserTurnState{
+          .state = EnumToString(
+              frame.user_turn_state_update().state(),
+              &optimization_guide::proto::UserTurnStateUpdate_State_Name),
+      });
+      break;
     case Frame::FRAME_NOT_SET:
       // Also how a frame type this client doesn't know arrives: as an unknown
       // field.
@@ -778,6 +840,25 @@ void TtcMesClient::LogServerFrame(
     case optimization_guide::proto::TtcServerFrame::kJournalEvent:
       // Don't log as it's redundant
       return;
+    case optimization_guide::proto::TtcServerFrame::kModelTurnStateUpdate: {
+      event_name = "ModelTurnStateUpdate";
+      const auto& update = frame.model_turn_state_update();
+      details
+          .Add("state",
+               EnumToString(
+                   update.state(),
+                   &optimization_guide::proto::ModelTurnStateUpdate_State_Name))
+          .Add("generation_id", update.generation_id());
+      break;
+    }
+    case optimization_guide::proto::TtcServerFrame::kUserTurnStateUpdate:
+      event_name = "UserTurnStateUpdate";
+      details.Add(
+          "state",
+          EnumToString(
+              frame.user_turn_state_update().state(),
+              &optimization_guide::proto::UserTurnStateUpdate_State_Name));
+      break;
     case optimization_guide::proto::TtcServerFrame::FRAME_NOT_SET:
       break;
     default:

@@ -135,6 +135,9 @@ class TtcConversation : public ttc::TtcBackend::Observer {
   void OnGenerationStateChanged(bool started,
                                 bool completed,
                                 bool interrupted) override;
+  void OnModelTurnStateUpdate(ttc::ModelTurnStateUpdate update,
+                              int64_t generation_id) override;
+  void OnUserTurnStateUpdate(ttc::UserTurnStateUpdate update) override;
   void OnToolCall(const ttc::ToolRequest& tool_request,
                   ttc::ToolResponseCallback response_callback) override;
   void OnJournalEvent(const ttc::ServerJournalEvent& journal_event) override;

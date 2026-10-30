@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <variant>
 #include <vector>
 
@@ -51,6 +52,13 @@ class FakeObserver : public TtcBackend::Observer {
   void OnGenerationStateChanged(bool started,
                                 bool completed,
                                 bool interrupted) override {}
+  void OnModelTurnStateUpdate(ModelTurnStateUpdate update,
+                              int64_t generation_id) override {
+    model_turn_state_updates_.emplace_back(update, generation_id);
+  }
+  void OnUserTurnStateUpdate(UserTurnStateUpdate update) override {
+    user_turn_state_updates_.push_back(update);
+  }
   void OnToolCall(const ToolRequest& tool_request,
                   ToolResponseCallback response_callback) override {
     last_tool_call_id_ = tool_request.call_id;
@@ -66,6 +74,13 @@ class FakeObserver : public TtcBackend::Observer {
   ToolResponseCallback TakeToolResponseCallback() {
     return std::move(tool_response_callback_);
   }
+  const std::vector<std::pair<ModelTurnStateUpdate, int64_t>>&
+  model_turn_state_updates() const {
+    return model_turn_state_updates_;
+  }
+  const std::vector<UserTurnStateUpdate>& user_turn_state_updates() const {
+    return user_turn_state_updates_;
+  }
 
  private:
   std::string last_tool_call_id_;
@@ -74,6 +89,9 @@ class FakeObserver : public TtcBackend::Observer {
   std::vector<int16_t> last_samples_;
   int64_t last_sequence_number_ = -1;
   std::optional<ErrorCode> last_error_;
+  std::vector<std::pair<ModelTurnStateUpdate, int64_t>>
+      model_turn_state_updates_;
+  std::vector<UserTurnStateUpdate> user_turn_state_updates_;
 };
 
 // Stands in for a live MES session so that Connect() succeeds without any
@@ -183,6 +201,10 @@ class FakeDebugSink : public DebugSink {
                 base::StrAppend(&journal, {"|", detail.key, "=", detail.value});
               }
             },
+            [&](const ModelTurnState&) {
+              frames.push_back("model_turn_state");
+            },
+            [&](const UserTurnState&) { frames.push_back("user_turn_state"); },
             [&](const UnknownFrame&) { frames.push_back("unknown"); },
         },
         frame);
@@ -234,6 +256,23 @@ optimization_guide::proto::TtcServerFrame MakeServerErrorFrame(
     optimization_guide::proto::ServerErrorNotification::ErrorCode code) {
   optimization_guide::proto::TtcServerFrame frame;
   frame.mutable_server_error()->set_error_code(code);
+  return frame;
+}
+
+optimization_guide::proto::TtcServerFrame MakeModelTurnStateFrame(
+    optimization_guide::proto::ModelTurnStateUpdate::State state,
+    int64_t generation_id) {
+  optimization_guide::proto::TtcServerFrame frame;
+  auto* update = frame.mutable_model_turn_state_update();
+  update->set_state(state);
+  update->set_generation_id(generation_id);
+  return frame;
+}
+
+optimization_guide::proto::TtcServerFrame MakeUserTurnStateFrame(
+    optimization_guide::proto::UserTurnStateUpdate::State state) {
+  optimization_guide::proto::TtcServerFrame frame;
+  frame.mutable_user_turn_state_update()->set_state(state);
   return frame;
 }
 
@@ -297,6 +336,48 @@ TEST_F(TtcMesClientTest, ForwardsServerError) {
                                ERROR_CODE_RATE_LIMITED));
 
   EXPECT_EQ(observer_.last_error(), ErrorCode::kRateLimited);
+}
+
+TEST_F(TtcMesClientTest, ForwardsModelTurnStateUpdates) {
+  using Proto = optimization_guide::proto::ModelTurnStateUpdate;
+  client().HandleServerFrame(MakeModelTurnStateFrame(Proto::TURN_STARTED, 1));
+  client().HandleServerFrame(
+      MakeModelTurnStateFrame(Proto::GENERATION_COMPLETED, 1));
+  client().HandleServerFrame(MakeModelTurnStateFrame(Proto::TURN_COMPLETED, 1));
+  client().HandleServerFrame(MakeModelTurnStateFrame(Proto::TURN_STARTED, 2));
+  client().HandleServerFrame(MakeModelTurnStateFrame(Proto::INTERRUPTED, 2));
+  client().HandleServerFrame(MakeModelTurnStateFrame(Proto::TURN_COMPLETED, 2));
+
+  EXPECT_THAT(observer_.model_turn_state_updates(),
+              testing::ElementsAre(
+                  testing::Pair(ModelTurnStateUpdate::kTurnStarted, 1),
+                  testing::Pair(ModelTurnStateUpdate::kGenerationCompleted, 1),
+                  testing::Pair(ModelTurnStateUpdate::kTurnCompleted, 1),
+                  testing::Pair(ModelTurnStateUpdate::kTurnStarted, 2),
+                  testing::Pair(ModelTurnStateUpdate::kInterrupted, 2),
+                  testing::Pair(ModelTurnStateUpdate::kTurnCompleted, 2)));
+  EXPECT_TRUE(observer_.user_turn_state_updates().empty());
+}
+
+TEST_F(TtcMesClientTest, ForwardsUserTurnStateUpdates) {
+  using Proto = optimization_guide::proto::UserTurnStateUpdate;
+  client().HandleServerFrame(MakeUserTurnStateFrame(Proto::TURN_STARTED));
+  client().HandleServerFrame(MakeUserTurnStateFrame(Proto::TURN_COMPLETED));
+
+  EXPECT_THAT(observer_.user_turn_state_updates(),
+              testing::ElementsAre(UserTurnStateUpdate::kTurnStarted,
+                                   UserTurnStateUpdate::kTurnCompleted));
+  EXPECT_TRUE(observer_.model_turn_state_updates().empty());
+}
+
+TEST_F(TtcMesClientTest, IgnoresUnspecifiedTurnStateUpdates) {
+  client().HandleServerFrame(MakeModelTurnStateFrame(
+      optimization_guide::proto::ModelTurnStateUpdate::STATE_UNSPECIFIED, 1));
+  client().HandleServerFrame(MakeUserTurnStateFrame(
+      optimization_guide::proto::UserTurnStateUpdate::STATE_UNSPECIFIED));
+
+  EXPECT_TRUE(observer_.model_turn_state_updates().empty());
+  EXPECT_TRUE(observer_.user_turn_state_updates().empty());
 }
 
 // Server error codes are open enum values, so they may be outside of the range

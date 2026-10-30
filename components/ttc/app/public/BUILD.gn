@@ -12,6 +12,7 @@ source_set("public") {
     "server_journal_event.h",
     "session_journal.h",
     "tool_types.h",
+    "turn_state_update.h",
   ]
   sources = [
     "error_codes.cc",
