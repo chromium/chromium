@@ -1,6 +1,7 @@
 file://chrome/browser/safe_browsing/OWNERS
 
+per-file PasswordProtectionBroadcastReceiver.java=file://components/safe_browsing/content/browser/password_protection/OWNERS
+per-file SafeBrowsingPasswordReuseDialogBridge.java=file://components/safe_browsing/content/browser/password_protection/OWNERS
 per-file SafeBrowsingSettingsNavigation.java=jacastro@chromium.org
-
 per-file SafeBrowsingSuspiciousSiteDialogBridge.java=awado@google.com
 per-file SafeBrowsingSuspiciousSiteDialogBridge.java=richche@google.com

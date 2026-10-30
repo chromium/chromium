@@ -2,3 +2,4 @@ per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
 
 file://components/safe_browsing/OWNERS
+file://components/safe_browsing/content/browser/password_protection/OWNERS
