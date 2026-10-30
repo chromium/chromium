@@ -285,11 +285,10 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
   // Set up the profile for an account. This can be used to set up the profile
   // again with the new account when switching between accounts.
   void SetUpProfileForTesting(
-      const std::string& name,
       const AccountId& account_id,
       user_manager::UserType user_type = user_manager::UserType::kRegular) {
     AddAndLoginUser(account_id, user_type);
-    AddProfile(name, account_id, user_type);
+    AddProfile(account_id, user_type);
 
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_));
@@ -382,8 +381,7 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
   }
 
  private:
-  void AddProfile(const std::string& name,
-                  const AccountId& account_id,
+  void AddProfile(const AccountId& account_id,
                   user_manager::UserType user_type) {
     // Associates the Profile with `account_id` so that BrowserContextHelper can
     // map between the two.
@@ -393,7 +391,10 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
       profile_ = profile_manager_->CreateGuestProfile();
       return;
     }
-    profile_ = profile_manager_->CreateTestingProfile(name);
+    // Use the email as the profile name, so that the Profile is created at the
+    // path for the User, as same as production.
+    profile_ =
+        profile_manager_->CreateTestingProfile(account_id.GetUserEmail());
     if (user_type == user_manager::UserType::kChild) {
       profile_->SetIsSupervisedProfile();
     }
@@ -425,7 +426,7 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
 };
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest, TextSearchReturnsThumbnails) {
-  SetUpProfileForTesting(kFakeTestEmail, kTestAccountId);
+  SetUpProfileForTesting(kTestAccountId);
   base::test::TestFuture<
       std::optional<
           std::vector<ash::personalization_app::mojom::SeaPenThumbnailPtr>>,
@@ -448,7 +449,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, TextSearchReturnsThumbnails) {
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
        TemplateSearchReturnsThumbnails) {
-  SetUpProfileForTesting(kFakeTestEmail, kTestAccountId);
+  SetUpProfileForTesting(kTestAccountId);
   base::test::TestFuture<
       std::optional<
           std::vector<ash::personalization_app::mojom::SeaPenThumbnailPtr>>,
@@ -479,7 +480,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest, TextSearchReturnsErrors) {
-  SetUpProfileForTesting(kFakeTestEmail, kTestAccountId);
+  SetUpProfileForTesting(kTestAccountId);
   base::test::TestFuture<
       std::optional<
           std::vector<ash::personalization_app::mojom::SeaPenThumbnailPtr>>,
@@ -495,7 +496,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, TextSearchReturnsErrors) {
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest, MaxLengthQuery) {
-  SetUpProfileForTesting(kFakeTestEmail, kTestAccountId);
+  SetUpProfileForTesting(kTestAccountId);
   // "\uFFFF" is picked because `.size()` differs by a factor of three
   // between UTF-8 (C++ std::string) and UTF-16 (javascript string).
   std::string long_unicode_string =
@@ -522,7 +523,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, MaxLengthQuery) {
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest, QueryLengthExceeded) {
-  SetUpProfileForTesting(kFakeTestEmail, kTestAccountId);
+  SetUpProfileForTesting(kTestAccountId);
   std::string max_length_unicode_string =
       RepeatToSize("\uFFFF", mojom::kMaximumGetSeaPenThumbnailsTextBytes);
   mojom::SeaPenQueryPtr bad_long_query =
@@ -543,7 +544,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, QueryLengthExceeded) {
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
        SelectThumbnailSetsSeaPenWallpaper) {
-  SetUpProfileForTesting(kFakeTestEmail, kTestAccountId);
+  SetUpProfileForTesting(kTestAccountId);
 
   auto query = mojom::SeaPenQuery::NewTextQuery("search_query");
 
@@ -582,7 +583,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
 TEST_F(PersonalizationAppSeaPenProviderImplTest, SelectThumbnailCallsObserver) {
   constexpr uint32_t kIdToSelect = 963;
 
-  SetUpProfileForTesting(kFakeTestEmail, kTestAccountId);
+  SetUpProfileForTesting(kTestAccountId);
   test_wallpaper_controller()->SetCurrentUser(kTestAccountId);
 
   // Set some other wallpaper type.
@@ -646,7 +647,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
       manta::MantaStatusCode>
       search_wallpaper_future;
 
-  SetUpProfileForTesting(kFakeTestEmail, kTestAccountId);
+  SetUpProfileForTesting(kTestAccountId);
   test_wallpaper_controller()->SetCurrentUser(kTestAccountId);
 
   auto query = mojom::SeaPenQuery::NewTextQuery("search_query");
@@ -705,7 +706,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
       manta::MantaStatusCode>
       search_wallpaper_future;
 
-  SetUpProfileForTesting(kFakeTestEmail, kTestAccountId);
+  SetUpProfileForTesting(kTestAccountId);
   test_wallpaper_controller()->SetCurrentUser(kTestAccountId);
 
   auto query = mojom::SeaPenQuery::NewTextQuery("search_query");
@@ -757,7 +758,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, GetRecentSeaPenImageIds) {
   ASSERT_TRUE(user_session_test_environment()->AddRegularUser(kTestAccountId));
   ASSERT_TRUE(user_session_test_environment()->AddRegularUser(kTestAccountId2));
 
-  SetUpProfileForTesting(kFakeTestEmail, kTestAccountId);
+  SetUpProfileForTesting(kTestAccountId);
 
   // Create two images in the Sea Pen directory for the 1st user, then get the
   // list of the recent images.
@@ -772,7 +773,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, GetRecentSeaPenImageIds) {
               testing::UnorderedElementsAre(kSeaPenId1, kSeaPenId2));
 
   // Log in the second user, get the list of recent images.
-  SetUpProfileForTesting(kFakeTestEmail2, kTestAccountId2);
+  SetUpProfileForTesting(kTestAccountId2);
 
   sea_pen_provider_remote()->GetRecentSeaPenImageIds(
       recent_images_future.GetCallback());
@@ -793,7 +794,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
        SelectThumbnailSendsFreeTextQuery) {
   auto time_override = CreateScopedTimeNowOverride();
 
-  SetUpProfileForTesting(kFakeTestEmail, kTestAccountId);
+  SetUpProfileForTesting(kTestAccountId);
 
   mojom::SeaPenQueryPtr search_query =
       mojom::SeaPenQuery::NewTextQuery("user search query text");
@@ -834,7 +835,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
        SelectThumbnailSendsTemplateQuery) {
   auto time_override = CreateScopedTimeNowOverride();
 
-  SetUpProfileForTesting(kFakeTestEmail, kTestAccountId);
+  SetUpProfileForTesting(kTestAccountId);
 
   const base::flat_map<mojom::SeaPenTemplateChip, mojom::SeaPenTemplateOption>
       chosen_options = {
@@ -887,7 +888,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
        GetRecentSeaPenImageThumbnailWithValidMetadata) {
   const auto time_override = CreateScopedTimeNowOverride();
-  SetUpProfileForTesting(kFakeTestEmail, kTestAccountId);
+  SetUpProfileForTesting(kTestAccountId);
   const base::test::ScopedRestoreICUDefaultLocale locale("en_US");
   const base::test::ScopedRestoreDefaultTimezone la_time("America/Los_Angeles");
 
@@ -916,7 +917,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
        GetRecentSeaPenImageThumbnailWithInvalidFilePath) {
-  SetUpProfileForTesting(kFakeTestEmail, kTestAccountId);
+  SetUpProfileForTesting(kTestAccountId);
 
   CreateSeaPenFilesForTesting(kTestAccountId, {kSeaPenId1});
 
@@ -940,7 +941,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
        GetRecentSeaPenImageThumbnailWithDecodingFailure) {
-  SetUpProfileForTesting(kFakeTestEmail, kTestAccountId);
+  SetUpProfileForTesting(kTestAccountId);
 
   CreateSeaPenFilesForTesting(kTestAccountId, {kSeaPenId1});
   {
@@ -972,7 +973,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest, DeleteRecentSeaPenImage) {
-  SetUpProfileForTesting(kFakeTestEmail, kTestAccountId);
+  SetUpProfileForTesting(kTestAccountId);
   test_wallpaper_controller()->ClearCounts();
   CreateSeaPenFilesForTesting(kTestAccountId, {kSeaPenId1, kSeaPenId2});
 
@@ -1019,7 +1020,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest, DeleteRecentSeaPenImage) {
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
        ShouldShowSeaPenIntroductionDialog) {
-  SetUpProfileForTesting(kFakeTestEmail, kTestAccountId);
+  SetUpProfileForTesting(kTestAccountId);
   test_wallpaper_controller()->ClearCounts();
 
   base::test::TestFuture<bool> should_show_dialog_future;
@@ -1038,7 +1039,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
        ShouldShowSeaPenFreeformIntroductionDialog) {
-  SetUpProfileForTesting(kFakeTestEmail, kTestAccountId);
+  SetUpProfileForTesting(kTestAccountId);
   test_wallpaper_controller()->ClearCounts();
 
   base::test::TestFuture<bool> should_show_dialog_future;
@@ -1056,31 +1057,30 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest, IsEligibleForSeaPen_Guest) {
-  SetUpProfileForTesting("guest", user_manager::GuestAccountId(),
+  SetUpProfileForTesting(user_manager::GuestAccountId(),
                          user_manager::UserType::kGuest);
   ASSERT_FALSE(sea_pen_provider()->IsEligibleForSeaPen());
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest, IsEligibleForSeaPen_Child) {
-  SetUpProfileForTesting("child", kTestAccountId,
-                         user_manager::UserType::kChild);
+  SetUpProfileForTesting(kTestAccountId, user_manager::UserType::kChild);
   ASSERT_FALSE(sea_pen_provider()->IsEligibleForSeaPen());
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest, IsEligibleForSeaPen_Managed) {
-  SetUpProfileForTesting(kFakeTestEmail, kTestAccountId);
+  SetUpProfileForTesting(kTestAccountId);
   profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
   ASSERT_FALSE(sea_pen_provider()->IsEligibleForSeaPen());
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest, IsEligibleForSeaPen_Regular) {
-  SetUpProfileForTesting(kFakeTestEmail2, kTestAccountId2);
+  SetUpProfileForTesting(kTestAccountId2);
   ASSERT_TRUE(sea_pen_provider()->IsEligibleForSeaPen());
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
        IsManagedSeaPenFeedbackEnabledGoogler) {
-  SetUpProfileForTesting(kGooglerEmail, kGooglerAccountId);
+  SetUpProfileForTesting(kGooglerAccountId);
   profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
   profile()->GetPrefs()->SetInteger(
       ash::prefs::kGenAIWallpaperSettings,
@@ -1091,7 +1091,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
        IsManagedSeaPenFeedbackEnabledPublicAccountDemoMode) {
-  SetUpProfileForTesting(kDemoModeEmail, GetDemoModeAccountId(),
+  SetUpProfileForTesting(GetDemoModeAccountId(),
                          user_manager::UserType::kPublicAccount);
   profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
   profile()->GetPrefs()->SetInteger(
@@ -1115,13 +1115,13 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
        IsManagedSeaPenFeedbackEnabledRegular) {
-  SetUpProfileForTesting(kFakeTestEmail2, kTestAccountId2);
+  SetUpProfileForTesting(kTestAccountId2);
   ASSERT_TRUE(sea_pen_provider()->IsManagedSeaPenFeedbackEnabled());
 }
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
        IsManagedSeaPenFeedbackEnabledAllowedManaged) {
-  SetUpProfileForTesting(kFakeTestEmail, kTestAccountId);
+  SetUpProfileForTesting(kTestAccountId);
   profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
   profile()->GetPrefs()->SetInteger(
       ash::prefs::kGenAIWallpaperSettings,
@@ -1131,7 +1131,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
        IsManagedSeaPenFeedbackEnabledAllowedWithoutLoggingManaged) {
-  SetUpProfileForTesting(kFakeTestEmail, kTestAccountId);
+  SetUpProfileForTesting(kTestAccountId);
   profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
   profile()->GetPrefs()->SetInteger(
       ash::prefs::kGenAIWallpaperSettings,
@@ -1141,7 +1141,7 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
 
 TEST_F(PersonalizationAppSeaPenProviderImplTest,
        IsManagedSeaPenFeedbackEnabledDisabledManaged) {
-  SetUpProfileForTesting(kFakeTestEmail, kTestAccountId);
+  SetUpProfileForTesting(kTestAccountId);
   profile()->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
   profile()->GetPrefs()->SetInteger(
       ash::prefs::kGenAIWallpaperSettings,

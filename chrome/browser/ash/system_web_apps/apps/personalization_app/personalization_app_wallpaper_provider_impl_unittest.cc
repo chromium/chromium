@@ -49,7 +49,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/signin/fake_identity_manager_provider.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
@@ -209,8 +208,7 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
     ash::ScopedAccountIdAnnotator annotator(profile_manager_.profile_manager(),
                                             kTestAccountId);
     profile_ = profile_manager_.CreateTestingProfile(
-        BrowserContextHelper::GetUserBrowserContextDirName(
-            user->username_hash()));
+        std::string(kTestAccountId.GetUserEmail()));
 
     // The Google Photos fetchers resolve their IdentityManager by AccountId
     // through ash::IdentityManagerProvider.
