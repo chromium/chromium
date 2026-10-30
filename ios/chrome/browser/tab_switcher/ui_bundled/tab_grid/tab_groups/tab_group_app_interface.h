@@ -41,16 +41,17 @@
 // Returns the URL of the activity logs.
 + (NSString*)activityLogsURL;
 
-// Updates the Shared tab groups' managed account policy status.
+// Updates the Shared tab groups' managed account policy status to
+// `managedAccountPolicyEnabled`.
 + (void)setSharedTabGroupsManagedAccountPolicyEnabled:
     (BOOL)managedAccountPolicyEnabled;
 
-// Whether the Shared Tab Groups feature is enabled and a user can join to an
-// existing shared group.
+// Returns whether the Shared Tab Groups feature is enabled and a user can join
+// an existing shared group.
 + (BOOL)isAllowedToJoinTabGroups;
 
-// Whether the Shared Tab Groups feature is enabled and a user can create a new
-// shared group.
+// Returns whether the Shared Tab Groups feature is enabled and a user can
+// create a new shared group.
 + (BOOL)isAllowedToShareTabGroups;
 
 // Triggers `showTabGroupCreationWithoutTabs` twice to check that it handles

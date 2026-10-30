@@ -11,8 +11,8 @@
 @interface LensOverlayAppInterface : NSObject
 
 // Presents the Lens View Finder via `LensCommands` in the window with the given
-// number and waits until its view is added to the window hierarchy. Returns YES
-// on success.
+// `windowNumber` and waits until its view is added to the window hierarchy.
+// Returns YES on success.
 + (BOOL)presentLensViewFinderInWindowWithNumber:(int)windowNumber [[nodiscard]];
 
 @end

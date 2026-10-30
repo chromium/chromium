@@ -15,7 +15,8 @@
 // server used by tests.
 @interface DistantTabsAppInterface : NSObject
 
-// Adds a session with the given lis of `tabs`.
+// Adds a session named `sessionName` with `modifiedTimeDelta` and the given
+// list of `tabs` to the fake sync server.
 + (void)addSessionToFakeSyncServer:(NSString*)sessionName
                  modifiedTimeDelta:(base::TimeDelta)modifiedTimeDelta
                               tabs:(NSArray<FakeDistantTab*>*)tabs;

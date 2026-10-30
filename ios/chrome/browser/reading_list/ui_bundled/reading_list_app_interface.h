@@ -13,18 +13,20 @@
 // the app binary and can be called from either app or test code.
 @interface ReadingListAppInterface : NSObject
 
-// Removes all entries in the ReadingListModel.
+// Removes all entries in the ReadingListModel. Returns nil on success, or an
+// NSError on failure.
 + (NSError*)clearEntries [[nodiscard]];
 
-// Adds an entry in the ReadingListModel.
+// Adds an entry with `url`, `title`, and `read` status in the ReadingListModel.
+// Returns nil on success, or an NSError on failure.
 + (NSError*)addEntryWithURL:(NSURL*)url
                       title:(NSString*)title
                        read:(BOOL)read [[nodiscard]];
 
-// The number of read entries in the ReadingListModel.
+// Returns the number of read entries in the ReadingListModel.
 + (NSInteger)readEntriesCount;
 
-// The number of unread entries in the ReadingListModel.
+// Returns the number of unread entries in the ReadingListModel.
 + (NSInteger)unreadEntriesCount;
 
 // Simulate that the current connection is WiFI.

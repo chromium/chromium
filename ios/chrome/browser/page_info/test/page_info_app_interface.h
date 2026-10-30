@@ -10,8 +10,8 @@
 // App Interface to interact with Page Info.
 @interface PageInfoAppInterface : NSObject
 
-// Adds an AboutThisSite hint to the OptimizationGuide of the original
-// Profile.
+// Adds an AboutThisSite hint for `url` with `description` and
+// `aboutThisSiteURL` to the OptimizationGuide of the original Profile.
 + (void)addAboutThisSiteHintForURL:(NSString*)url
                        description:(NSString*)description
                   aboutThisSiteURL:(NSString*)aboutThisSiteURL;

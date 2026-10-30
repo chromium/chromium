@@ -11,10 +11,9 @@
 // App interface for testing SnackbarView.
 @interface SnackbarViewTestAppInterface : NSObject
 
-// Presents a snackbar for testing with the specified properties.
-// Unused properties can be nil.
-// Presents a snackbar for testing with the specified properties.
-// Unused properties can be nil.
+// Presents a snackbar for testing with `title`, `subtitle`,
+// `secondarySubtitle`, `buttonText`, `hasLeadingAccessory`, and
+// `hasTrailingAccessory`. Unused properties can be nil.
 + (void)showSnackbarWithTitle:(NSString*)title
                      subtitle:(NSString*)subtitle
             secondarySubtitle:(NSString*)secondarySubtitle
@@ -22,7 +21,7 @@
           hasLeadingAccessory:(BOOL)hasLeadingAccessory
          hasTrailingAccessory:(BOOL)hasTrailingAccessory;
 
-// Presents a snackbar for testing with the specified title after dismissing
+// Presents a snackbar for testing with the specified `title` after dismissing
 // the keyboard.
 + (void)showSnackbarMessageAfterDismissingKeyboardWithTitle:(NSString*)title;
 

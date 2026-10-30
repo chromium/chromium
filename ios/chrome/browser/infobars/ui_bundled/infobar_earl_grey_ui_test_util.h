@@ -10,6 +10,7 @@
 // Test methods that perform sign in actions on Chrome UI.
 @interface InfobarEarlGreyUI : NSObject
 
+// Waits until the infobar banner visibility matches `shouldShow` or times out.
 + (void)waitUntilInfobarBannerVisibleOrTimeout:(BOOL)shouldShow;
 
 @end

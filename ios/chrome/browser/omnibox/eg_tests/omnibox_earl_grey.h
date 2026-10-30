@@ -33,11 +33,11 @@ class EmbeddedTestServer;
 - (void)openPage:(omnibox::Page)page
       testServer:(net::test_server::EmbeddedTestServer*)testServer;
 
-/// Populates history by navigating to `numberOfPages` pages.
+/// Populates history by navigating to `numberOfPages` pages on `testServer`.
 - (void)populateHistory:(net::test_server::EmbeddedTestServer*)testServer
           numberOfPages:(NSUInteger)numberOfPages;
 
-/// Add `shortcutCount`.
+/// Adds `shortcutCount` shortcuts pointing to `testServer`.
 // List of shortcuts <input> -> <URL>:
 // - <omnibox::PageTitle(1)> -> <omnibox::PageURL(1)>
 // - ...

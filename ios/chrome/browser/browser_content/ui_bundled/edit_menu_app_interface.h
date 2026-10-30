@@ -34,13 +34,19 @@
 + (id<GREYMatcher>)contextMenuActionWithAccessibilityLabel:
     (NSString*)accessibilityLabel;
 
-// Some individual matchers for specific actions
+// Returns a matcher for the Link to Text button in the Edit Menu.
 + (id<GREYMatcher>)editMenuLinkToTextButtonMatcher;
+
+// Returns a matcher for the Copy button in the Edit Menu.
 + (id<GREYMatcher>)editMenuCopyButtonMatcher;
+
+// Returns a matcher for the Cut button in the Edit Menu.
 + (id<GREYMatcher>)editMenuCutButtonMatcher;
+
+// Returns a matcher for the Paste button in the Edit Menu.
 + (id<GREYMatcher>)editMenuPasteButtonMatcher;
 
-// Retrieve the accessibility IDs of menu items visible on screen.
+// Returns the accessibility IDs of menu items visible on screen.
 + (NSArray<NSString*>*)editMenuActions;
 
 @end

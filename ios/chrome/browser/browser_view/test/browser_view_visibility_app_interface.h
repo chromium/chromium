@@ -13,10 +13,13 @@ enum class BrowserViewVisibilityState;
 /// including a browser visibility state observer.
 @interface BrowserViewVisibilityAppInterface : NSObject
 
+// Starts observing browser view visibility state changes.
 + (void)startObservingBrowserViewVisibilityState;
 
+// Stops observing browser view visibility state changes.
 + (void)stopObservingBrowserViewVisibilityState;
 
+// Returns the current browser view visibility state.
 + (BrowserViewVisibilityState)currentState;
 
 @end

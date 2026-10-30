@@ -20,19 +20,21 @@
 // by insertion order (first in, highest relevance).
 #pragma mark - Adding suggestions
 
-/// Adds an URL shortcut match to the suggestions. Note that match relevance is
-/// determined by insertion order (first in, highest relevance).
+/// Adds a URL shortcut match with `shortcutText` and `URLString` to the
+/// suggestions for `context`. Note that match relevance is determined by
+/// insertion order (first in, highest relevance).
 + (void)addURLShortcutMatch:(NSString*)shortcutText
        destinationURLString:(NSString*)URLString
                     context:(OmniboxPresentationContext)context;
 
-/// Adds a search suggestion with `searchText`.  Note that match relevance is
-/// determined by insertion order (first in, highest relevance).
+/// Adds a search suggestion with `query` for `context`. Note that match
+/// relevance is determined by insertion order (first in, highest relevance).
 + (void)addSearchSuggestion:(NSString*)query
                     context:(OmniboxPresentationContext)context;
 
-/// Adds a URL suggestion with title and destination URL.  Note that match
-/// relevance is determined by insertion order (first in, highest relevance).
+/// Adds a URL suggestion with `title` and destination `URLString` for
+/// `context`. Note that match relevance is determined by insertion order (first
+/// in, highest relevance).
 + (void)addHistoryURLSuggestion:(NSString*)title
            destinationURLString:(NSString*)URLString
                         context:(OmniboxPresentationContext)context;

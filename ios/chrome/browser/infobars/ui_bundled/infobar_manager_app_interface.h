@@ -13,10 +13,11 @@
 @interface InfobarManagerAppInterface : NSObject
 
 // Verifies that there are `totalInfobars` in the InfobarManager of the current
-// active WebState.
+// active WebState. Returns YES if the count matches.
 + (BOOL)verifyInfobarCount:(NSInteger)totalInfobars;
 
-// Adds a TestInfoBar with `message` to the current active WebState.
+// Adds a TestInfoBar with `message` to the current active WebState. Returns YES
+// if the infobar was added.
 + (BOOL)addTestInfoBarToCurrentTabWithMessage:(NSString*)message;
 
 @end

@@ -15,7 +15,7 @@
 // Rewrite google URLs to localhost so they can be loaded by the test server.
 + (void)rewriteGoogleURLToLocalhost;
 
-// Forces a variation to be used on the current HTTP header provider. Returns
+// Forces `variationID` to be used on the current HTTP header provider. Returns
 // YES if the forcing was successful.
 + (BOOL)forceVariationID:(int)variationID;
 
@@ -39,7 +39,8 @@
 // Returns the number of suggestions in the shortcuts database.
 + (NSInteger)numberOfShortcutsInDatabase;
 
-/// Asserts the omnibox text field `shouldHaveAutocompleteText`.
+/// Returns a GREYAssertion asserting that the omnibox text field displays
+/// inline autocomplete text according to `shouldHaveAutocompleteText`.
 + (id<GREYAssertion>)displaysInlineAutocompleteText:
     (BOOL)shouldHaveAutocompleteText;
 

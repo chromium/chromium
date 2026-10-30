@@ -10,7 +10,7 @@
 // The app interface for handoff tests.
 @interface HandoffManagerAppInterface : NSObject
 
-// Current user activity web page url from the handoff manager.
+// Returns the current user activity web page URL from the handoff manager.
 + (NSURL*)currentUserActivityWebPageURL;
 
 @end
