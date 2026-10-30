@@ -17,6 +17,10 @@
 #include "components/memory_pressure/system_memory_pressure_evaluator_mac.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "components/memory_pressure/free_memory_pressure_evaluator.h"
+#endif
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "components/memory_pressure/threshold_memory_pressure_evaluator.h"
 #endif
@@ -38,8 +42,11 @@ SystemMemoryPressureEvaluator::CreateDefaultSystemEvaluator(
   // evaluator replaces it, it runs as a shadow evaluator with no voter.
   bool os_signal_replaced = false;
 #if BUILDFLAG(IS_MAC)
-  os_signal_replaced = base::FeatureList::IsEnabled(
-      memory_pressure::features::kMacAvailableMemoryPressureEvaluator);
+  os_signal_replaced =
+      base::FeatureList::IsEnabled(
+          memory_pressure::features::kMacAvailableMemoryPressureEvaluator) ||
+      base::FeatureList::IsEnabled(
+          memory_pressure::features::kMacFreeMemoryPressureEvaluator);
 #endif
   return std::make_unique<memory_pressure::mac::SystemMemoryPressureEvaluator>(
       os_signal_replaced ? nullptr : monitor->CreateVoter());
@@ -72,6 +79,12 @@ SystemMemoryPressureEvaluator::CreateDefaultAuxiliaryEvaluators(
           memory_pressure::features::kMacAvailableMemoryPressureEvaluator)) {
     evaluators.push_back(
         ThresholdMemoryPressureEvaluator::CreateWithMacFeatureParams(
+            monitor->CreateVoter()));
+  }
+  if (base::FeatureList::IsEnabled(
+          memory_pressure::features::kMacFreeMemoryPressureEvaluator)) {
+    evaluators.push_back(
+        FreeMemoryPressureEvaluator::CreateWithMacFeatureParams(
             monitor->CreateVoter()));
   }
 #endif

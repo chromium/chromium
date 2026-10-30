@@ -32,6 +32,13 @@ source_set("memory_pressure") {
     ]
   }
 
+  if (is_mac) {
+    sources += [
+      "free_memory_pressure_evaluator.cc",
+      "free_memory_pressure_evaluator.h",
+    ]
+  }
+
   if (is_fuchsia) {
     deps += [
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.memorypressure:fuchsia.memorypressure_hlcpp",
@@ -67,6 +74,7 @@ source_set("unit_tests") {
   if (is_mac) {
     sources += [
       "disk_space_memory_pressure_evaluator_mac_unittest.cc",
+      "free_memory_pressure_evaluator_unittest.cc",
       "system_memory_pressure_evaluator_mac_unittest.cc",
     ]
   }

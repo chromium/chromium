@@ -93,6 +93,10 @@ AvailableMemoryMonitor::ComputeAvailableMemory() {
   MemorySample sample;
   sample.available_physical_bytes = info.GetAvailablePhysicalMemory();
 
+#if BUILDFLAG(IS_APPLE)
+  sample.free_physical_bytes = info.free;
+#endif
+
 #if BUILDFLAG(IS_WIN)
   // On Windows, GetSystemMemoryInfo maps ullAvailPageFile to swap_free
   // and ullTotalPageFile to swap_total.

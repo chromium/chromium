@@ -32,6 +32,12 @@ class BASE_EXPORT AvailableMemoryMonitor {
     base::TimeTicks timestamp;
     base::ByteSize available_physical_bytes;
 
+#if BUILDFLAG(IS_APPLE)
+    // Strictly unallocated free physical memory (free_count -
+    // speculative_count).
+    base::ByteSize free_physical_bytes;
+#endif
+
 #if BUILDFLAG(IS_WIN)
     // The following commit metrics are retrieved via the Windows MEMORYSTATUSEX
     // API. For details on the underlying fields, see:
