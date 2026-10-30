@@ -71,6 +71,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
     private final ImmutableWeakReference<View> mRootViewReference;
     private final ImmutableWeakReference<Context> mContextReference;
     // Insets to be added to the current safe area.
+    private int mTopInsetsForEdgeToEdge;
     private int mBottomInsetsForEdgeToEdge;
     private final Rect mDisplayCutoutRect;
 
@@ -700,6 +701,7 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
                         Math.max(0, mDisplayCutoutRect.top - extraInsets.top),
                         Math.max(0, mDisplayCutoutRect.right - extraInsets.right),
                         Math.max(0, mDisplayCutoutRect.bottom - extraInsets.bottom));
+        newSafeArea.top += mTopInsetsForEdgeToEdge;
         newSafeArea.bottom += mBottomInsetsForEdgeToEdge;
         // If the safe area has not changed then we should stop now.
         if (newSafeArea.equals(mCurrentSafeArea)) {
@@ -745,6 +747,16 @@ public class InsetObserver implements OnApplyWindowInsetsListener {
                     displayCutout.getSafeInsetBottom());
         }
         mDisplayCutoutRect.set(rect);
+        updateCurrentSafeArea();
+    }
+
+    /**
+     * @param topInset The top system insets tracked in edge to edge.
+     */
+    public void updateTopInsetForEdgeToEdge(int topInset) {
+        if (mTopInsetsForEdgeToEdge == topInset) return;
+
+        mTopInsetsForEdgeToEdge = topInset;
         updateCurrentSafeArea();
     }
 

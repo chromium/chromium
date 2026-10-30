@@ -101,14 +101,19 @@ public class InsetObserverTest {
 
     private static final Rect CUTOUT_WITH_PARTIAL_SYSTEM_INSET_RECT = new Rect(1, 0, 1, 0);
 
-    /* Extra bottom inset that will be applied when e2e is enabled. */
+    /* Extra top and bottom insets that will be applied when e2e is enabled. */
+    private static final int EDGE_TO_EDGE_TOP_INSET = 2;
     private static final int EDGE_TO_EDGE_BOTTOM_INSET = 2;
 
     /** The rect values if the display cutout is present in edge-to-edge mode. */
     private static final Rect E2E_DISPLAY_CUTOUT_RECT = new Rect(1, 1, 1, 3);
 
+    private static final Rect E2E_TOP_DISPLAY_CUTOUT_RECT = new Rect(1, 3, 1, 1);
+
     /** The rect values if there is no cutout. */
     private static final Rect E2E_NO_CUTOUT_RECT = new Rect(0, 0, 0, 2);
+
+    private static final Rect E2E_TOP_NO_CUTOUT_RECT = new Rect(0, 2, 0, 0);
 
     private static final Insets SYSTEM_BAR_INSETS = Insets.of(1, 1, 1, 1);
     private static final Insets SYSTEM_BAR_INSETS_PARTIAL = Insets.of(0, 1, 0, 1);
@@ -424,6 +429,51 @@ public class InsetObserverTest {
     public void addEdgeToEdgeBottomInset_NoBottomInset() {
         setCutout(true);
         mInsetObserver.updateBottomInsetForEdgeToEdge(0);
+        mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
+        verify(mObserver, never()).onSafeAreaChanged(any());
+    }
+
+    @Test
+    @RequiresApi(Build.VERSION_CODES.P)
+    public void addEdgeToEdgeTopInset() {
+        setCutout(true);
+        mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
+        mInsetObserver.updateTopInsetForEdgeToEdge(EDGE_TO_EDGE_TOP_INSET);
+        verify(mObserver).onSafeAreaChanged(E2E_TOP_NO_CUTOUT_RECT);
+        reset(mObserver);
+
+        mInsetObserver.updateTopInsetForEdgeToEdge(0);
+        verify(mObserver).onSafeAreaChanged(NO_CUTOUT_RECT);
+        reset(mObserver);
+
+        mInsetObserver.updateTopInsetForEdgeToEdge(EDGE_TO_EDGE_TOP_INSET);
+        verify(mObserver).onSafeAreaChanged(E2E_TOP_NO_CUTOUT_RECT);
+    }
+
+    @Test
+    @RequiresApi(Build.VERSION_CODES.P)
+    public void addEdgeToEdgeTopInset_NoSystemBars() {
+        setCutout(true);
+        doReturn(Insets.NONE).when(mInsets).getInsets(WindowInsetsCompat.Type.systemBars());
+        mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
+        mInsetObserver.updateTopInsetForEdgeToEdge(EDGE_TO_EDGE_TOP_INSET);
+        verify(mObserver).onSafeAreaChanged(E2E_TOP_DISPLAY_CUTOUT_RECT);
+    }
+
+    @Test
+    @RequiresApi(Build.VERSION_CODES.P)
+    public void addEdgeToEdgeTopInset_NoCutout() {
+        setCutout(false);
+        mInsetObserver.updateTopInsetForEdgeToEdge(EDGE_TO_EDGE_TOP_INSET);
+        mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
+        verify(mObserver).onSafeAreaChanged(E2E_TOP_NO_CUTOUT_RECT);
+    }
+
+    @Test
+    @RequiresApi(Build.VERSION_CODES.P)
+    public void addEdgeToEdgeTopInset_NoTopInset() {
+        setCutout(true);
+        mInsetObserver.updateTopInsetForEdgeToEdge(0);
         mInsetObserver.onApplyWindowInsets(mContentView, mInsets);
         verify(mObserver, never()).onSafeAreaChanged(any());
     }

@@ -1465,7 +1465,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    public void pushSafeAreaInsetUpdate_notDrawingToEdge() {
+    public void pushSafeAreaInsetUpdate_notDrawingToBottomEdge() {
         mEdgeToEdgeControllerImpl.setIsDrawingToBottomEdgeForTesting(false);
         doReturn(false).when(mFullscreenManager).getPersistentFullscreenMode();
         mEdgeToEdgeControllerImpl.onBottomControlsHeightChanged(0, 0);
@@ -1473,7 +1473,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    public void pushSafeAreaInsetUpdate_drawingToEdgeInFullscreen() {
+    public void pushSafeAreaInsetUpdate_drawingToBottomEdgeInFullscreen() {
         mEdgeToEdgeControllerImpl.setIsDrawingToBottomEdgeForTesting(true);
         doReturn(true).when(mFullscreenManager).getPersistentFullscreenMode();
         mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
@@ -1482,7 +1482,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    public void pushSafeAreaInsetUpdate_drawingToEdgeNoPadding() {
+    public void pushSafeAreaInsetUpdate_drawingToBottomEdgeNoPadding() {
         mEdgeToEdgeControllerImpl.setIsDrawingToBottomEdgeForTesting(true);
         doReturn(false).when(mFullscreenManager).getPersistentFullscreenMode();
         mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
@@ -1491,7 +1491,7 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    public void pushSafeAreaInsetUpdate_drawingToEdgeWithKeyboardPadding() {
+    public void pushSafeAreaInsetUpdate_drawingToBottomEdgeWithKeyboardPadding() {
         mEdgeToEdgeControllerImpl.setIsDrawingToBottomEdgeForTesting(true);
         doReturn(false).when(mFullscreenManager).getPersistentFullscreenMode();
         mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
@@ -1500,6 +1500,60 @@ public class EdgeToEdgeControllerTest {
         mEdgeToEdgeControllerImpl.onBottomControlsHeightChanged(0, 0);
 
         assertBottomInsetForSafeArea(0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void pushSafeAreaInsetUpdate_notDrawingToTopEdge() {
+        mEdgeToEdgeControllerImpl.setConsumeTopInsetForTesting(false);
+        doReturn(false).when(mFullscreenManager).getPersistentFullscreenMode();
+        mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
+        mEdgeToEdgeControllerImpl.onBottomControlsHeightChanged(0, 0);
+        assertTopInsetForSafeArea(0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void pushSafeAreaInsetUpdate_drawingToTopEdgeNoPadding() {
+        mEdgeToEdgeControllerImpl.setConsumeTopInsetForTesting(true);
+        doReturn(false).when(mFullscreenManager).getPersistentFullscreenMode();
+        mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
+        mEdgeToEdgeControllerImpl.onBottomControlsHeightChanged(0, 0);
+        assertTopInsetForSafeArea(TOP_INSET);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void pushSafeAreaInsetUpdate_drawingToTopEdgeInFullscreen() {
+        mEdgeToEdgeControllerImpl.setConsumeTopInsetForTesting(true);
+        doReturn(true).when(mFullscreenManager).getPersistentFullscreenMode();
+        mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
+        mEdgeToEdgeControllerImpl.onBottomControlsHeightChanged(0, 0);
+        assertTopInsetForSafeArea(0);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void pushSafeAreaInsetUpdate_topEdgeViewportFitChangedAndStatusIndicator() {
+        ChromeFeatureList.sEdgeToEdgeTopInsetEnableTopEdgeToEdge.setForTesting(true);
+        doReturn(false).when(mFullscreenManager).getPersistentFullscreenMode();
+        when(mTab.isNativePage()).thenReturn(false);
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        mEdgeToEdgeControllerImpl.onTabSwitched(mTab);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
+        assertTopInsetForSafeArea(0);
+
+        clearInvocations(mInsetObserver);
+        mEdgeToEdgeControllerImpl.getWebContentsObserver().viewportFitChanged(ViewportFit.COVER);
+        assertTopInsetForSafeArea(TOP_INSET);
+
+        clearInvocations(mInsetObserver);
+        mEdgeToEdgeControllerImpl.setStatusIndicatorVisible(true);
+        assertTopInsetForSafeArea(0);
+
+        clearInvocations(mInsetObserver);
+        mEdgeToEdgeControllerImpl.setStatusIndicatorVisible(false);
+        assertTopInsetForSafeArea(TOP_INSET);
     }
 
     void assertToEdgeExpectations() {
@@ -1538,6 +1592,12 @@ public class EdgeToEdgeControllerTest {
                 "Bottom insets for safe area does not match.",
                 bottomInset,
                 (int) captor.getValue());
+    }
+
+    void assertTopInsetForSafeArea(int topInset) {
+        ArgumentCaptor<Integer> captor = ArgumentCaptor.forClass(Integer.class);
+        verify(mInsetObserver, atLeastOnce()).updateTopInsetForEdgeToEdge(captor.capture());
+        assertEquals("Top insets for safe area does not match.", topInset, (int) captor.getValue());
     }
 
     // --- Top Edge-to-Edge Migrated Tests (from TopInsetCoordinatorUnitTest) ---

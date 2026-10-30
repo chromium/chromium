@@ -199,6 +199,14 @@ class BrowserControlsTest
     GetWebView()->GetPage()->SetMaxSafeAreaInsets(frame, insets);
   }
 
+  String ResolveSafeAreaInsetsTop() {
+    return ResolveSafeAreaInsetsTop(GetFrame());
+  }
+
+  String ResolveSafeAreaInsetsTop(LocalFrame* frame) {
+    return ResolveEnvVar(frame, "safe-area-inset-top");
+  }
+
   String ResolveSafeAreaInsetsBottom() {
     return ResolveSafeAreaInsetsBottom(GetFrame());
   }
@@ -408,15 +416,46 @@ TEST_F(BrowserControlsTest, MAYBE(DynamicSafeAreaInsetBottomScrollDown)) {
   EXPECT_EQ("30px", ResolveSafeAreaInsetsBottom());
 }
 
+TEST_F(BrowserControlsTest, MAYBE(DynamicSafeAreaInsetTopScrollDown)) {
+  WebViewImpl* web_view = Initialize();
+  web_view->GetSettings()->SetDynamicSafeAreaInsetsEnabled(true);
+  SetMaxSafeAreaInsets(GetFrame(), gfx::Insets().set_top(30));
+
+  // Initialize top browser controls to be shown.
+  web_view->ResizeWithBrowserControls(web_view->MainFrameViewWidget()->Size(),
+                                      50.f, 0, true);
+  web_view->GetBrowserControls().SetShownRatio(1.0, 0.0);
+  CompositeForTest();
+  // Top insets should be 0, as browser control is presented and it's taller
+  // than the top of the insets.
+  EXPECT_EQ("0px", ResolveSafeAreaInsetsTop());
+
+  // Scroll down partially to hide top controls.
+  VerticalScroll(-40.0f);
+
+  // shown_ratio (0.2) = 1 - scroll_offset(40) / top_controls_height(50)
+  // inset.top (20) = safe_area_insets.top(30) -
+  //                  top_controls_height(50) * shown_ratio (0.2)
+  EXPECT_FLOAT_EQ(0.2f, web_view->GetBrowserControls().TopShownRatio());
+  EXPECT_EQ("20px", ResolveSafeAreaInsetsTop());
+
+  // Browser controls should become completely hidden.
+  VerticalScroll(-40.0f);
+
+  EXPECT_FLOAT_EQ(0.f, web_view->GetBrowserControls().TopShownRatio());
+  EXPECT_EQ("30px", ResolveSafeAreaInsetsTop());
+}
+
 TEST_F(BrowserControlsTest, SafeAreaInsetAccountsForBrowserZoom) {
   WebViewImpl* web_view = Initialize();
   web_view->GetSettings()->SetDynamicSafeAreaInsetsEnabled(true);
   web_view->MainFrameViewWidget()->SetZoomLevel(ZoomFactorToZoomLevel(1.6));
-  SetMaxSafeAreaInsets(GetFrame(), gfx::Insets().set_bottom(30));
+  SetMaxSafeAreaInsets(GetFrame(), gfx::Insets().set_top(30).set_bottom(30));
 
   web_view->ResizeWithBrowserControls(web_view->MainFrameViewWidget()->Size(),
-                                      0, 50.f, true);
+                                      50.f, 50.f, true);
   CompositeForTest();
+  EXPECT_EQ("18.75px", ResolveSafeAreaInsetsTop());
   EXPECT_EQ("18.75px", ResolveSafeAreaInsetsBottom());
 }
 
@@ -425,11 +464,12 @@ TEST_F(BrowserControlsTest, SafeAreaInsetAccountsForDSF) {
   web_view->GetSettings()->SetDynamicSafeAreaInsetsEnabled(true);
   web_view->MainFrameViewWidget()->SetDeviceScaleFactorForTesting(2.5);
   web_view->MainFrameViewWidget()->SetZoomLevel(ZoomFactorToZoomLevel(2.0));
-  SetMaxSafeAreaInsets(GetFrame(), gfx::Insets().set_bottom(30));
+  SetMaxSafeAreaInsets(GetFrame(), gfx::Insets().set_top(30).set_bottom(30));
 
   web_view->ResizeWithBrowserControls(web_view->MainFrameViewWidget()->Size(),
-                                      0, 50.f, true);
+                                      50.f, 50.f, true);
   CompositeForTest();
+  EXPECT_EQ("15px", ResolveSafeAreaInsetsTop());
   EXPECT_EQ("15px", ResolveSafeAreaInsetsBottom());
 }
 
@@ -530,6 +570,37 @@ TEST_F(BrowserControlsTest, MAYBE(DynamicSafeAreaInsetBottomScrollUp)) {
   //                     bottom_controls_height(50) * shown_ratio (0.8))
   EXPECT_FLOAT_EQ(0.8f, web_view->GetBrowserControls().BottomShownRatio());
   EXPECT_EQ("0px", ResolveSafeAreaInsetsBottom());
+}
+
+TEST_F(BrowserControlsTest, MAYBE(DynamicSafeAreaInsetTopScrollUp)) {
+  WebViewImpl* web_view = Initialize();
+  web_view->GetSettings()->SetDynamicSafeAreaInsetsEnabled(true);
+  SetMaxSafeAreaInsets(GetFrame(), gfx::Insets().set_top(30));
+
+  // Initialize top browser controls to be hidden.
+  web_view->ResizeWithBrowserControls(web_view->MainFrameViewWidget()->Size(),
+                                      50.f, 0, true);
+  web_view->GetBrowserControls().SetShownRatio(0, 0);
+  CompositeForTest();
+
+  // Top insets should be 30, as browser control is fully hidden.
+  EXPECT_EQ("30px", ResolveSafeAreaInsetsTop());
+
+  VerticalScroll(20.0f);
+
+  // shown_ratio (0.4) = scroll_offset(20) / top_controls_height(50)
+  // inset.top (10) = safe_area_insets.top(30) -
+  //                  top_controls_height(50) * shown_ratio (0.4)
+  EXPECT_FLOAT_EQ(0.4f, web_view->GetBrowserControls().TopShownRatio());
+  EXPECT_EQ("10px", ResolveSafeAreaInsetsTop());
+
+  VerticalScroll(20.0f);
+
+  // shown_ratio (0.8) = scroll_offset(40) / top_controls_height(50)
+  // inset.top (0) = max(0, safe_area_insets.top(30) -
+  //                 top_controls_height(50) * shown_ratio (0.8))
+  EXPECT_FLOAT_EQ(0.8f, web_view->GetBrowserControls().TopShownRatio());
+  EXPECT_EQ("0px", ResolveSafeAreaInsetsTop());
 }
 
 // Scrolling up after previous scroll downs should cause browser controls to be
@@ -867,21 +938,23 @@ TEST_F(BrowserControlsTest,
        MAYBE(SetMaxSafeAreaInsetWithDynamicSafeAreaInsets)) {
   WebViewImpl* web_view = Initialize();
   web_view->GetSettings()->SetDynamicSafeAreaInsetsEnabled(true);
-  SetMaxSafeAreaInsets(GetFrame(), gfx::Insets().set_bottom(30));
+  SetMaxSafeAreaInsets(GetFrame(), gfx::Insets().set_top(30).set_bottom(30));
 
   // initialize browser controls to be shown.
-  web_view->GetBrowserControls().SetShownRatio(0.0, 1);
+  web_view->GetBrowserControls().SetShownRatio(1, 1);
   web_view->ResizeWithBrowserControls(web_view->MainFrameViewWidget()->Size(),
-                                      0, 50.f, true);
+                                      50.f, 50.f, true);
   CompositeForTest();
-  // Bottom insets should be 0, as browser control is presented and it's taller
-  // than the bottom of the insets.
+  // Top and bottom insets should be 0, as browser controls are presented and
+  // taller than the insets.
+  EXPECT_EQ("0px", ResolveSafeAreaInsetsTop());
   EXPECT_EQ("0px", ResolveSafeAreaInsetsBottom());
 
   // Simulate setting a new max safe area inset (e.g. screen rotation).
-  SetMaxSafeAreaInsets(GetFrame(), gfx::Insets().set_bottom(60));
+  SetMaxSafeAreaInsets(GetFrame(), gfx::Insets().set_top(60).set_bottom(60));
 
   // New safe area 10px = 60px - 50px.
+  EXPECT_EQ("10px", ResolveSafeAreaInsetsTop(GetFrame()));
   EXPECT_EQ("10px", ResolveSafeAreaInsetsBottom(GetFrame()));
 }
 
@@ -954,32 +1027,37 @@ TEST_F(BrowserControlsTest, MAYBE(SafeAreaMaxInsetVars)) {
   WebViewImpl* web_view = Initialize();
   web_view->GetSettings()->SetDynamicSafeAreaInsetsEnabled(true);
   gfx::Size widget_size = web_view->MainFrameViewWidget()->Size();
-  SetMaxSafeAreaInsets(GetFrame(), gfx::Insets().set_bottom(30));
+  SetMaxSafeAreaInsets(GetFrame(), gfx::Insets().set_top(30).set_bottom(30));
 
-  // Initialize with bottom controls shown.
-  web_view->GetBrowserControls().SetShownRatio(0, 1);
-  web_view->ResizeWithBrowserControls(widget_size, 0, 50.f, true);
+  // Initialize with top and bottom controls shown.
+  web_view->GetBrowserControls().SetShownRatio(1, 1);
+  web_view->ResizeWithBrowserControls(widget_size, 50.f, 50.f, true);
   CompositeForTest();
 
+  EXPECT_EQ("0px", ResolveSafeAreaInsetsTop());
+  EXPECT_EQ("30px", ResolveEnvVar("safe-area-max-inset-top"));
   EXPECT_EQ("0px", ResolveSafeAreaInsetsBottom());
   EXPECT_EQ("30px", ResolveEnvVar("safe-area-max-inset-bottom"));
 
-  // Scroll to hide bottom controls.
+  // Scroll to hide top and bottom controls.
   VerticalScroll(-40.0f);
   FinishAnimation();
-  web_view->ResizeWithBrowserControls(widget_size, 0, 50.f, false);
+  web_view->ResizeWithBrowserControls(widget_size, 50.f, 50.f, false);
   UpdateAllLifecyclePhases();
 
-  // safe-area-max-inset-bottom should stay the same.
+  // safe-area-max-inset-top and safe-area-max-inset-bottom should stay the
+  // same.
+  EXPECT_EQ("30px", ResolveSafeAreaInsetsTop());
+  EXPECT_EQ("30px", ResolveEnvVar("safe-area-max-inset-top"));
   EXPECT_EQ("30px", ResolveSafeAreaInsetsBottom());
   EXPECT_EQ("30px", ResolveEnvVar("safe-area-max-inset-bottom"));
 
   // Simulate setting a new max safe area inset (e.g. screen rotation).
-  SetMaxSafeAreaInsets(GetFrame(), gfx::Insets().set_bottom(60));
+  SetMaxSafeAreaInsets(GetFrame(), gfx::Insets().set_top(60).set_bottom(60));
+  EXPECT_EQ("60px", ResolveEnvVar("safe-area-max-inset-top"));
   EXPECT_EQ("60px", ResolveEnvVar("safe-area-max-inset-bottom"));
 
   // Other safe-area-max-inset-* vars are 0.
-  EXPECT_EQ("0px", ResolveEnvVar("safe-area-max-inset-top"));
   EXPECT_EQ("0px", ResolveEnvVar("safe-area-max-inset-left"));
   EXPECT_EQ("0px", ResolveEnvVar("safe-area-max-inset-right"));
 }

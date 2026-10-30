@@ -407,6 +407,7 @@ public class EdgeToEdgeControllerImpl
         boolean changedTopEdge = wasDrawingToTopEdge != isDrawingToTopEdge();
         if (changedTopEdge) {
             adjustEdgePaddings();
+            pushSafeAreaInsetUpdate();
         }
         boolean wasDrawingFullTopEdgeToEdge = mIsDrawingFullTopEdgeToEdge;
         mIsDrawingFullTopEdgeToEdge = tabShouldDrawFullTopEdgeToEdge();
@@ -992,14 +993,17 @@ public class EdgeToEdgeControllerImpl
 
         // When the content view is padded (e.g. when keyboard is showing), we should not count the
         // padding as part of the bottom safe area.
-        int safeAreaInsets = Math.max(mSystemInsets.bottom - mAppliedContentViewPadding.bottom, 0);
+        int bottomSafeAreaInsets =
+                Math.max(mSystemInsets.bottom - mAppliedContentViewPadding.bottom, 0);
 
-        int bottomInsetOnSafeArea = hasBottomSafeArea ? safeAreaInsets : 0;
+        int bottomInsetOnSafeArea = hasBottomSafeArea ? bottomSafeAreaInsets : 0;
         mInsetObserver.updateBottomInsetForEdgeToEdge(bottomInsetOnSafeArea);
 
-        // TODO(crbug.com/498302496): When top edge-to-edge expands to web pages, push top safe area
-        // insets to InsetObserver (e.g. updateTopInsetForEdgeToEdge) for Blink CSS
-        // env(safe-area-inset-top).
+        boolean hasTopSafeArea =
+                (isDrawingToTopEdge() && !mFullscreenManager.getPersistentFullscreenMode());
+        int topSafeAreaInsets = Math.max(mSystemInsets.top - mAppliedContentViewPadding.top, 0);
+        int topInsetOnSafeArea = hasTopSafeArea ? topSafeAreaInsets : 0;
+        mInsetObserver.updateTopInsetForEdgeToEdge(topInsetOnSafeArea);
     }
 
     @SuppressWarnings("NullAway")
