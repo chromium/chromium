@@ -10,7 +10,7 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
@@ -167,8 +167,8 @@ static void OnMulticastReadCompleted(base::OnceClosure quit_run_loop,
                                      const std::string& ip,
                                      uint16_t port) {
   EXPECT_EQ(kTestMessageLength, count);
-  UNSAFE_TODO(EXPECT_EQ(
-      0, strncmp(io_buffer->data(), kTestMessage, kTestMessageLength)));
+  EXPECT_EQ(io_buffer->first(kTestMessageLength),
+            base::as_byte_span(kTestMessage));
   *packet_received = true;
   std::move(quit_run_loop).Run();
 }
