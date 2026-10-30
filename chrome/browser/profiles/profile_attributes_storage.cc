@@ -572,13 +572,19 @@ void ProfileAttributesStorage::UpdateProfilesOrderPref(
     return;
   }
 
-  ScopedListPrefUpdate update(prefs_, prefs::kProfilesOrder);
-  base::ListValue& profile_keys_order = update.Get();
+  {
+    ScopedListPrefUpdate update(prefs_, prefs::kProfilesOrder);
+    base::ListValue& profile_keys_order = update.Get();
 
-  // Apply the shift by rotating the element based on the indices.
-  // Element at `from_index` will be placed at `to_index` and the rest will
-  // shift left or right based on the index comparison.
-  Rotate(profile_keys_order, from_index, to_index);
+    // Apply the shift by rotating the element based on the indices.
+    // Element at `from_index` will be placed at `to_index` and the rest will
+    // shift left or right based on the index comparison.
+    Rotate(profile_keys_order, from_index, to_index);
+  }
+
+  for (auto& observer : observer_list_) {
+    observer.OnProfilesOrderChanged();
+  }
 
   base::UmaHistogramEnumeration("Profile.ProfilesOrderChanged", update_type);
 }

@@ -60,6 +60,7 @@ class ProfileAttributesStorageObserver {
   virtual void OnProfileAiSubscriptionTierUpdated(
       const base::FilePath& profile_path,
       int tier) {}
+  virtual void OnProfilesOrderChanged() {}
 
  protected:
   ProfileAttributesStorageObserver() = default;

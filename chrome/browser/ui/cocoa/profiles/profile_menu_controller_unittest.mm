@@ -5,6 +5,7 @@
 #import "chrome/browser/ui/cocoa/profiles/profile_menu_controller.h"
 
 #include "base/strings/sys_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -17,6 +18,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest_mac.h"
@@ -313,4 +315,43 @@ TEST_F(ProfileMenuControllerTest, AddProfileDisabled) {
 
   item = [menu itemAtIndex:count - 1];
   EXPECT_EQ(@selector(editProfile:), item.action);
+}
+
+TEST_F(ProfileMenuControllerTest, ProfilesOrderChanged) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kProfilesReordering};
+
+  profile_manager()
+      ->profile_attributes_storage()
+      ->GetProfileAttributesWithPath(profile()->GetPath())
+      ->SetLocalProfileName(u"Profile 1", false);
+
+  TestingProfileManager* manager = profile_manager();
+  manager->CreateTestingProfile("Profile 2");
+  manager->CreateTestingProfile("Profile 3");
+
+  NSMenu* menu = controller().menu;
+  ASSERT_EQ(7, menu.numberOfItems);
+  EXPECT_NSEQ(@"Profile 1", [menu itemAtIndex:0].title);
+  EXPECT_NSEQ(@"Profile 2", [menu itemAtIndex:1].title);
+  EXPECT_NSEQ(@"Profile 3", [menu itemAtIndex:2].title);
+
+  profile_manager()->profile_attributes_storage()->UpdateProfilesOrderPref(
+      0, 2, ProfileOrderUpdateType::kDragAndDrop);
+
+  // Top navigation "Profiles" menu directly reflects the updated order.
+  ASSERT_EQ(7, menu.numberOfItems);
+  EXPECT_NSEQ(@"Profile 2", [menu itemAtIndex:0].title);
+  EXPECT_NSEQ(@"Profile 3", [menu itemAtIndex:1].title);
+  EXPECT_NSEQ(@"Profile 1", [menu itemAtIndex:2].title);
+
+  // Dock context menu also reflects the updated order.
+  NSMenu* dock_menu = [[NSMenu alloc] initWithTitle:@""];
+  EXPECT_TRUE([controller() insertItemsIntoMenu:dock_menu
+                                       atOffset:0
+                                       fromDock:YES]);
+  ASSERT_EQ(4, dock_menu.numberOfItems);
+  EXPECT_NSEQ(@"Profile 2", [dock_menu itemAtIndex:1].title);
+  EXPECT_NSEQ(@"Profile 3", [dock_menu itemAtIndex:2].title);
+  EXPECT_NSEQ(@"Profile 1", [dock_menu itemAtIndex:3].title);
 }

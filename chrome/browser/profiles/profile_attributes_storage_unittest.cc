@@ -171,6 +171,7 @@ class ProfileAttributesTestObserver
                void(const base::FilePath& profile_path));
   MOCK_METHOD2(OnProfileAiSubscriptionTierUpdated,
                void(const base::FilePath& profile_path, int tier));
+  MOCK_METHOD0(OnProfilesOrderChanged, void());
 };
 
 size_t GetDefaultAvatarIconResourceIDAtIndex(int index) {
@@ -232,6 +233,7 @@ class ProfileAttributesStorageTest : public testing::Test {
         .Times(0);
     EXPECT_CALL(observer_, OnProfileManagementIdChanged(_)).Times(0);
     EXPECT_CALL(observer_, OnProfileIsGlicEligibleChanged(_)).Times(0);
+    EXPECT_CALL(observer_, OnProfilesOrderChanged()).Times(0);
   }
 
   void EnableObserver() { scoped_observation_.Observe(storage()); }
@@ -2232,6 +2234,7 @@ TEST_F(ProfileAttributesStorageTest, UpdateProfilesOrderPref) {
   AddSimpleTestingProfileWithName(u"C");
   AddSimpleTestingProfileWithName(u"D");
 
+  EnableObserver();
   base::HistogramTester histogram_tester;
 
   {
@@ -2243,8 +2246,10 @@ TEST_F(ProfileAttributesStorageTest, UpdateProfilesOrderPref) {
   }
 
   {
+    EXPECT_CALL(observer(), OnProfilesOrderChanged()).Times(1);
     storage()->UpdateProfilesOrderPref(0, 1,
                                        ProfileOrderUpdateType::kDragAndDrop);
+    VerifyAndResetCallExpectations();
     std::vector<std::string> expected_keys{"B", "A", "C", "D"};
     EXPECT_EQ(
         EntriesToKeys(storage()->GetAllProfilesAttributesSortedForDisplay()),
@@ -2256,8 +2261,10 @@ TEST_F(ProfileAttributesStorageTest, UpdateProfilesOrderPref) {
   }
 
   {
+    EXPECT_CALL(observer(), OnProfilesOrderChanged()).Times(1);
     storage()->UpdateProfilesOrderPref(
         3, 0, ProfileOrderUpdateType::kContextMenuButton);
+    VerifyAndResetCallExpectations();
     std::vector<std::string> expected_keys{"D", "B", "A", "C"};
     EXPECT_EQ(
         EntriesToKeys(storage()->GetAllProfilesAttributesSortedForDisplay()),
@@ -2317,6 +2324,7 @@ TEST_F(ProfileAttributesStorageTest, UpdateProfilesOrderPrefSameIndex) {
   AddSimpleTestingProfileWithName(u"B");
   AddSimpleTestingProfileWithName(u"C");
 
+  EnableObserver();
   base::HistogramTester histogram_tester;
 
   std::vector<std::string> initial_keys_order{"A", "B", "C"};

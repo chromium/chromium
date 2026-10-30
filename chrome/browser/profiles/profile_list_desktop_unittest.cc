@@ -10,6 +10,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/avatar_menu_observer.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -21,6 +22,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -284,6 +286,34 @@ TEST_F(ProfileListDesktopTest, ChangeOnNotify) {
   const AvatarMenu::Item& item3 = menu->GetItemAt(2u);
   EXPECT_EQ(2u, item3.menu_index);
   EXPECT_EQ(u"Test 3", item3.name);
+}
+
+TEST_F(ProfileListDesktopTest, ProfilesOrderChanged) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kProfilesReordering};
+
+  CreateTestingProfile("Alpha");
+  CreateTestingProfile("Beta");
+  CreateTestingProfile("Gamma");
+
+  AvatarMenu* menu = GetAvatarMenu();
+  EXPECT_EQ(0, change_count());
+  ASSERT_EQ(3u, menu->GetNumberOfItems());
+  EXPECT_EQ(u"Alpha", menu->GetItemAt(0u).name);
+  EXPECT_EQ(u"Beta", menu->GetItemAt(1u).name);
+  EXPECT_EQ(u"Gamma", menu->GetItemAt(2u).name);
+
+  manager()->profile_attributes_storage()->UpdateProfilesOrderPref(
+      0, 2, ProfileOrderUpdateType::kDragAndDrop);
+  EXPECT_EQ(1, change_count());
+
+  ASSERT_EQ(3u, menu->GetNumberOfItems());
+  EXPECT_EQ(0u, menu->GetItemAt(0u).menu_index);
+  EXPECT_EQ(u"Beta", menu->GetItemAt(0u).name);
+  EXPECT_EQ(1u, menu->GetItemAt(1u).menu_index);
+  EXPECT_EQ(u"Gamma", menu->GetItemAt(1u).name);
+  EXPECT_EQ(2u, menu->GetItemAt(2u).menu_index);
+  EXPECT_EQ(u"Alpha", menu->GetItemAt(2u).name);
 }
 
 }  // namespace

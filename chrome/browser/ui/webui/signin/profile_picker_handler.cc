@@ -762,7 +762,6 @@ void ProfilePickerHandler::HandleUpdateProfileOrder(
   CHECK_LE(update_type,
            static_cast<int>(ProfilePickerOrderUpdateType::kMaxValue));
 
-  UpdateProfilesOrderInternal(from_index, to_index);
   g_browser_process->profile_manager()
       ->GetProfileAttributesStorage()
       .UpdateProfilesOrderPref(
@@ -885,37 +884,6 @@ void ProfilePickerHandler::SetProfilesOrder(
   for (const ProfileAttributesEntry* entry : entries) {
     profiles_order_[entry->GetPath()] = index++;
   }
-  CHECK(IsProfilesOrderValid());
-}
-
-void ProfilePickerHandler::UpdateProfilesOrderInternal(size_t from_index,
-                                                       size_t to_index) {
-  if (from_index == to_index) {
-    return;
-  }
-
-  CHECK_LT(from_index, profiles_order_.size());
-  CHECK_LT(to_index, profiles_order_.size());
-
-  // `from_index` and `to_index` are the initial and final indices of the
-  // profile being moved. Other profiles in between the range `[from_index,
-  // to_index]` will be shifted by 1 spot based on the direction of the move:
-  // - If `from_index < to_index`, indices in `(from_index, to_index]` are
-  //   shifted left (`--index`).
-  // - If `from_index > to_index`, indices in `[to_index, from_index)` are
-  //   shifted right (`++index`).
-  for (auto& [path, index] : profiles_order_) {
-    if (index == from_index) {
-      index = to_index;
-    } else if (from_index < to_index &&
-               (from_index < index && index <= to_index)) {
-      --index;
-    } else if (from_index > to_index &&
-               (to_index <= index && index < from_index)) {
-      ++index;
-    }
-  }
-
   CHECK(IsProfilesOrderValid());
 }
 
@@ -1122,6 +1090,13 @@ void ProfilePickerHandler::OnProfileIsGlicEligibleChanged(
 void ProfilePickerHandler::OnProfileAiSubscriptionTierUpdated(
     const base::FilePath& profile_path,
     int tier) {
+  PushProfilesList();
+}
+
+void ProfilePickerHandler::OnProfilesOrderChanged() {
+  // Reset `profiles_order_` so that `GetProfilesAttributesForDisplay()`
+  // recomputes the order from `ProfileAttributesStorage`.
+  profiles_order_.clear();
   PushProfilesList();
 }
 

@@ -151,6 +151,7 @@ class AvatarMenu : public ProfileAttributesStorage::Observer {
   void OnProfileSigninRequiredChanged(
       const base::FilePath& profile_path) override;
   void OnProfileIsOmittedChanged(const base::FilePath& profile_path) override;
+  void OnProfilesOrderChanged() override;
 
   // Rebuilds the menu and notifies any observers that an update occurred.
   void Update();

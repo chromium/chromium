@@ -263,6 +263,10 @@ void AvatarMenu::OnProfileIsOmittedChanged(const base::FilePath& profile_path) {
   Update();
 }
 
+void AvatarMenu::OnProfilesOrderChanged() {
+  Update();
+}
+
 void AvatarMenu::Update() {
   RebuildMenu();
   if (observer_) {

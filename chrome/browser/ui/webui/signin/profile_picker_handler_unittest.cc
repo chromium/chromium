@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -25,6 +26,7 @@
 #include "chrome/test/base/profile_waiter.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
@@ -420,6 +422,8 @@ TEST_F(SupervisedProfilePickerHandlerTest,
 }
 
 TEST_F(ProfilePickerHandlerTest, UpdateProfileOrder) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kProfilesReordering};
   ProfileAttributesEntry* profile_a = CreateTestingProfile("A");
   ProfileAttributesEntry* profile_b = CreateTestingProfile("B");
   ProfileAttributesEntry* profile_c = CreateTestingProfile("C");
@@ -450,6 +454,8 @@ TEST_F(ProfilePickerHandlerTest, UpdateProfileOrder) {
     EXPECT_EQ(storage->GetAllProfilesAttributesSortedForDisplay(),
               expected_profile_order);
     EXPECT_EQ(GetProfilesAttributesForDisplay(), expected_profile_order);
+    VerifyProfileListWasPushed(expected_profile_order);
+    web_ui()->ClearTrackedCalls();
     histogram_tester.ExpectBucketCount("Profile.ProfilesOrderChanged",
                                        ProfileOrderUpdateType::kDragAndDrop,
                                        1u);
@@ -469,6 +475,8 @@ TEST_F(ProfilePickerHandlerTest, UpdateProfileOrder) {
     EXPECT_EQ(storage->GetAllProfilesAttributesSortedForDisplay(),
               expected_profile_order);
     EXPECT_EQ(GetProfilesAttributesForDisplay(), expected_profile_order);
+    VerifyProfileListWasPushed(expected_profile_order);
+    web_ui()->ClearTrackedCalls();
     histogram_tester.ExpectBucketCount(
         "Profile.ProfilesOrderChanged",
         ProfileOrderUpdateType::kContextMenuButton, 1u);
@@ -477,6 +485,8 @@ TEST_F(ProfilePickerHandlerTest, UpdateProfileOrder) {
 }
 
 TEST_F(ProfilePickerHandlerTest, UpdateProfileOrderAndRename) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kProfilesReordering};
   ProfileAttributesEntry* profile_a = CreateTestingProfile("A");
   ProfileAttributesEntry* profile_b = CreateTestingProfile("B");
   ProfileAttributesEntry* profile_c = CreateTestingProfile("C");
@@ -493,6 +503,8 @@ TEST_F(ProfilePickerHandlerTest, UpdateProfileOrderAndRename) {
     args.Append(2);  // `to_index`
     args.Append(static_cast<int>(ProfilePickerOrderUpdateType::kDragAndDrop));
     web_ui()->HandleReceivedMessage("updateProfileOrder", args);
+    VerifyProfileListWasPushed({profile_b, profile_c, profile_a, profile_d});
+    web_ui()->ClearTrackedCalls();
   }
 
   // Rename `profile_a` and verify that the updated profile order is preserved
@@ -509,11 +521,35 @@ TEST_F(ProfilePickerHandlerTest, UpdateProfileOrderAndRename) {
     args.Append(
         static_cast<int>(ProfilePickerOrderUpdateType::kContextMenuButton));
     web_ui()->HandleReceivedMessage("updateProfileOrder", args);
+    VerifyProfileListWasPushed({profile_b, profile_a, profile_c, profile_d});
+    web_ui()->ClearTrackedCalls();
   }
 
   // Rename `profile_a` again and verify the new order is preserved.
   profile_a->SetLocalProfileName(u"Y", false);
   VerifyProfileListWasPushed({profile_b, profile_a, profile_c, profile_d});
+  web_ui()->ClearTrackedCalls();
+}
+
+TEST_F(ProfilePickerHandlerTest, ProfilesOrderChangedExternally) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kProfilesReordering};
+  ProfileAttributesEntry* profile_a = CreateTestingProfile("A");
+  ProfileAttributesEntry* profile_b = CreateTestingProfile("B");
+  ProfileAttributesEntry* profile_c = CreateTestingProfile("C");
+  ProfileAttributesEntry* profile_d = CreateTestingProfile("D");
+
+  InitializeMainViewAndVerifyProfileList(
+      {profile_a, profile_b, profile_c, profile_d});
+  web_ui()->ClearTrackedCalls();
+
+  ProfileAttributesStorage* storage =
+      profile_manager()->profile_attributes_storage();
+
+  // Updating the profile order directly in storage should notify the handler
+  // and push the updated profile list to the WebUI.
+  storage->UpdateProfilesOrderPref(0, 2, ProfileOrderUpdateType::kDragAndDrop);
+  VerifyProfileListWasPushed({profile_b, profile_c, profile_a, profile_d});
   web_ui()->ClearTrackedCalls();
 }
 
