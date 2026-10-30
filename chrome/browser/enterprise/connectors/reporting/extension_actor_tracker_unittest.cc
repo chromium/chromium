@@ -145,6 +145,55 @@ TEST_F(ExtensionActorTrackerTest, DidFinishNavigationClearsCrossDocumentOnly) {
             ExtensionActorTracker::GetActiveActor(web_contents()));
 }
 
+TEST_F(ExtensionActorTrackerTest, BrowserInitiatedNavigationClearsActor) {
+  ExtensionActorTracker::SetActiveActor(web_contents(), "extension_alpha",
+                                        "Runtime.evaluate");
+
+  // A URL typed in the omnibox is user input that never reaches the page.
+  NiceMock<content::MockNavigationHandle> typed_nav(web_contents());
+  typed_nav.set_is_in_primary_main_frame(true);
+  typed_nav.set_is_renderer_initiated(false);
+  typed_nav.set_page_transition(ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
+  tracker()->DidStartNavigation(&typed_nav);
+  EXPECT_EQ(std::nullopt,
+            ExtensionActorTracker::GetActiveActor(web_contents()));
+}
+
+TEST_F(ExtensionActorTrackerTest, ExtensionNavigationStartKeepsActor) {
+  ExtensionActorTracker::SetActiveActor(web_contents(), "extension_alpha",
+                                        "Runtime.evaluate");
+
+  // Renderer-initiated, e.g. `location.href` set by `Runtime.evaluate`.
+  NiceMock<content::MockNavigationHandle> renderer_nav(web_contents());
+  renderer_nav.set_is_in_primary_main_frame(true);
+  renderer_nav.set_is_renderer_initiated(true);
+  tracker()->DidStartNavigation(&renderer_nav);
+  EXPECT_EQ("extension_alpha",
+            ExtensionActorTracker::GetActiveActor(web_contents()));
+
+  // Browser-initiated by an extension API.
+  NiceMock<content::MockNavigationHandle> api_nav(web_contents());
+  api_nav.set_is_in_primary_main_frame(true);
+  api_nav.set_is_renderer_initiated(false);
+  api_nav.set_page_transition(ui::PageTransitionFromInt(
+      ui::PAGE_TRANSITION_LINK | ui::PAGE_TRANSITION_FROM_API));
+  tracker()->DidStartNavigation(&api_nav);
+  EXPECT_EQ("extension_alpha",
+            ExtensionActorTracker::GetActiveActor(web_contents()));
+
+  // `Page.reload` is browser-initiated without `PAGE_TRANSITION_FROM_API`.
+  ExtensionActorTracker::SetActiveActor(web_contents(), "extension_alpha",
+                                        "Page.reload");
+  NiceMock<content::MockNavigationHandle> reload_nav(web_contents());
+  reload_nav.set_is_in_primary_main_frame(true);
+  reload_nav.set_is_renderer_initiated(false);
+  reload_nav.set_page_transition(ui::PAGE_TRANSITION_RELOAD);
+  tracker()->DidStartNavigation(&reload_nav);
+  EXPECT_EQ("extension_alpha",
+            ExtensionActorTracker::GetActiveActor(web_contents()));
+}
+
 TEST_F(ExtensionActorTrackerTest, AboutBlankDoesNotConsumeInitialNavigation) {
   ExtensionActorTracker::SetActiveActor(web_contents(), "extension_alpha",
                                         "tabs.create");

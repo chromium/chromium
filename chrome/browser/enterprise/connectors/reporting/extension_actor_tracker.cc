@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "components/enterprise/connectors/core/features.h"
@@ -16,6 +17,7 @@
 #include "extensions/common/constants.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -111,6 +113,22 @@ std::optional<extensions::ExtensionId> ExtensionActorTracker::GetActiveActor(
   }
   auto* tracker = FromWebContents(web_contents);
   return tracker ? tracker->active_actor_id_ : std::nullopt;
+}
+
+void ExtensionActorTracker::DidStartNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // Browser-initiated navigations not started by an extension (e.g. from the
+  // omnibox or bookmarks) are user input that `DidGetUserInteraction()` misses.
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      navigation_handle->IsRendererInitiated() || is_initial_navigation_ ||
+      (navigation_handle->GetPageTransition() & ui::PAGE_TRANSITION_FROM_API)) {
+    return;
+  }
+  if (active_actor_id_) {
+    DVLOG(1) << "Browser-initiated navigation cleared extension actor "
+             << *active_actor_id_;
+  }
+  active_actor_id_.reset();
 }
 
 void ExtensionActorTracker::DidFinishNavigation(
