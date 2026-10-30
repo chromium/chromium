@@ -38,8 +38,8 @@ features:
   per_profile: true
   user_only: true
 
-future_on:
-- chrome.*
+supported_on:
+- chrome.*:159-
 owners:
 - hmare@google.com
 - file://components/enterprise/browser/reporting/OWNERS
