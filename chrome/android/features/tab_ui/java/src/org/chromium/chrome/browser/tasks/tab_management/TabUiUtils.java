@@ -39,7 +39,6 @@ import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
-import org.chromium.components.tab_group_sync.SavedTabGroupTab;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -426,21 +425,6 @@ public class TabUiUtils {
     public static boolean isDataSharingFunctionalityEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
                 || ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_JOIN_ONLY);
-    }
-
-    /**
-     * Returns the last updated timestamp for the {@link SavedTabGroup}, determined from the last
-     * updated time on each {@link SavedTabGroupTab} within the group.
-     *
-     * @param savedTabGroup The saved tab group to retrieve the last updated timestamp for.
-     */
-    public static long getGroupLastUpdatedTimestamp(SavedTabGroup savedTabGroup) {
-        long timestamp = 0;
-        for (SavedTabGroupTab savedTab : savedTabGroup.savedTabs) {
-            // TODO(crbug.com/432292097): Use navigation time from native when available.
-            timestamp = Math.max(timestamp, savedTab.updateTimeMs);
-        }
-        return timestamp;
     }
 
     /**

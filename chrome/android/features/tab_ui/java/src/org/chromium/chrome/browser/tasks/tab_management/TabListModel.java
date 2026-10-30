@@ -118,22 +118,6 @@ public class TabListModel extends ModelList {
         return TabModel.INVALID_TAB_INDEX;
     }
 
-    /**
-     * Lookup a {@link PropertyModel} for the tab by its ID.
-     *
-     * @param tabId The tab ID to search for.
-     * @return The property model in the model list or null.
-     */
-    public @Nullable PropertyModel getModelFromTabId(int tabId) {
-        for (int i = 0; i < size(); i++) {
-            PropertyModel model = get(i).model;
-            // This intentionally skips TAB_GROUP cards because this method is meant
-            // to find the model of a specific tab, not a group header.
-            if (model.get(CARD_TYPE) == TAB && model.get(TAB_ID) == tabId) return model;
-        }
-        return null;
-    }
-
     /** Returns the property model of the first tab card or null if one does not exist. */
     public @Nullable PropertyModel getFirstTabPropertyModel() {
         for (int i = 0; i < size(); i++) {
@@ -282,19 +266,6 @@ public class TabListModel extends ModelList {
      */
     public int getTabIndexBefore(int index) {
         for (int i = index - 1; i >= 0; i--) {
-            if (TabProperties.isTabOrTabGroup(get(i).model)) return i;
-        }
-        return TabModel.INVALID_TAB_INDEX;
-    }
-
-    /**
-     * Get the index of the first tab after the given index in TabListModel.
-     *
-     * @param index The given index in TabListModel.
-     * @return The index of the tab after the given index in TabListModel.
-     */
-    public int getTabIndexAfter(int index) {
-        for (int i = index + 1; i < size(); i++) {
             if (TabProperties.isTabOrTabGroup(get(i).model)) return i;
         }
         return TabModel.INVALID_TAB_INDEX;

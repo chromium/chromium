@@ -3862,15 +3862,6 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void testGetTabIndexAfter() {
-        initAndAssertAllProperties();
-        addSpecialItem(1, UiType.PRICE_MESSAGE, PRICE_MESSAGE);
-        assertThat(mModelList.lastIndexForMessageItemFromType(PRICE_MESSAGE), equalTo(1));
-        assertThat(mModelList.getTabIndexAfter(0), equalTo(2));
-        assertThat(mModelList.getTabIndexAfter(2), equalTo(TabModel.INVALID_TAB_INDEX));
-    }
-
-    @Test
     public void testListObserver_OnItemRangeInserted() {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
         setPriceTrackingEnabledForTesting(true);
