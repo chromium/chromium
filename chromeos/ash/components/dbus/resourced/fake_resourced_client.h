@@ -81,9 +81,6 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
   void WaitForServiceToBeAvailable(
       dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) override;
 
-  void AddArcContainerObserver(ArcContainerObserver* observer) override;
-  void RemoveArcContainerObserver(ArcContainerObserver* observer) override;
-
   // Unblock registered WaitForServiceToBeAvailable() calls.
   //
   // Return `true` if at least 1 WaitForServiceToBeAvailable() has been
@@ -134,7 +131,6 @@ class COMPONENT_EXPORT(RESOURCED) FakeResourcedClient : public ResourcedClient {
   base::TimeDelta set_thread_state_delay_;
 
   base::ObserverList<Observer> observers_;
-  base::ObserverList<ArcContainerObserver> arc_container_observers_;
 };
 
 }  // namespace ash

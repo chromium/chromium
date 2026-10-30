@@ -49,14 +49,6 @@ class ResourcedClientImpl : public ResourcedClient {
                             weak_factory_.GetWeakPtr()),
         base::BindOnce(&ResourcedClientImpl::MemoryPressureConnected,
                        weak_factory_.GetWeakPtr()));
-    proxy_->ConnectToSignal(
-        resource_manager::kResourceManagerInterface,
-        resource_manager::kMemoryPressureArcContainer,
-        base::BindRepeating(
-            &ResourcedClientImpl::MemoryPressureArcContainerReceived,
-            weak_factory_.GetWeakPtr()),
-        base::BindOnce(&ResourcedClientImpl::MemoryPressureConnected,
-                       weak_factory_.GetWeakPtr()));
   }
 
   // ResourcedClient interface.
@@ -82,10 +74,6 @@ class ResourcedClientImpl : public ResourcedClient {
 
   void RemoveObserver(Observer* observer) override;
 
-  void AddArcContainerObserver(ArcContainerObserver* observer) override;
-
-  void RemoveArcContainerObserver(ArcContainerObserver* observer) override;
-
   void WaitForServiceToBeAvailable(
       dbus::ObjectProxy::WaitForServiceToBeAvailableCallback callback) override;
 
@@ -100,8 +88,6 @@ class ResourcedClientImpl : public ResourcedClient {
   void MemoryPressureConnected(const std::string& interface_name,
                                const std::string& signal_name,
                                bool success);
-
-  void MemoryPressureArcContainerReceived(dbus::Signal* signal);
 
   void HandleSetProcessStateResponse(base::ProcessId process_id,
                                      SetQoSStateCallback callback,
@@ -123,9 +109,6 @@ class ResourcedClientImpl : public ResourcedClient {
 
   // A list of observers that are listening on state changes, etc.
   base::ObserverList<Observer> observers_;
-
-  // A list of observers listening for ARC container memory pressure signals.
-  base::ObserverList<ArcContainerObserver> arc_container_observers_;
 
   base::WeakPtrFactory<ResourcedClientImpl> weak_factory_{this};
 };
@@ -195,52 +178,6 @@ void ResourcedClientImpl::MemoryPressureReceived(dbus::Signal* signal) {
 
   for (auto& observer : observers_) {
     observer.OnMemoryPressure(pressure_level, reclaim_target);
-  }
-}
-
-void ResourcedClientImpl::MemoryPressureArcContainerReceived(
-    dbus::Signal* signal) {
-  dbus::MessageReader signal_reader(signal);
-
-  uint8_t pressure_level_byte;
-  PressureLevelArcContainer pressure_level;
-  uint64_t reclaim_target_kb;
-
-  if (!signal_reader.PopByte(&pressure_level_byte) ||
-      !signal_reader.PopUint64(&reclaim_target_kb)) {
-    LOG(ERROR) << "Error reading signal from resourced: " << signal->ToString();
-    return;
-  }
-  switch (static_cast<resource_manager::PressureLevelArcContainer>(
-      pressure_level_byte)) {
-    case resource_manager::PressureLevelArcContainer::NONE:
-      pressure_level = PressureLevelArcContainer::kNone;
-      break;
-
-    case resource_manager::PressureLevelArcContainer::CACHED:
-      pressure_level = PressureLevelArcContainer::kCached;
-      break;
-
-    case resource_manager::PressureLevelArcContainer::PERCEPTIBLE:
-      pressure_level = PressureLevelArcContainer::kPerceptible;
-      break;
-
-    case resource_manager::PressureLevelArcContainer::FOREGROUND:
-      pressure_level = PressureLevelArcContainer::kForeground;
-      break;
-
-    default:
-      LOG(ERROR) << "Unknown memory pressure level: " << pressure_level_byte;
-      return;
-  }
-
-  if (base::KiB(reclaim_target_kb) > total_memory_) {
-    LOG(ERROR) << "reclaim_target_kb is too large: " << reclaim_target_kb;
-    return;
-  }
-
-  for (auto& observer : arc_container_observers_) {
-    observer.OnMemoryPressure(pressure_level, reclaim_target_kb);
   }
 }
 
@@ -392,16 +329,6 @@ void ResourcedClientImpl::AddObserver(Observer* observer) {
 
 void ResourcedClientImpl::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
-}
-
-void ResourcedClientImpl::AddArcContainerObserver(
-    ArcContainerObserver* observer) {
-  arc_container_observers_.AddObserver(observer);
-}
-
-void ResourcedClientImpl::RemoveArcContainerObserver(
-    ArcContainerObserver* observer) {
-  arc_container_observers_.RemoveObserver(observer);
 }
 
 void ResourcedClientImpl::WaitForServiceToBeAvailable(

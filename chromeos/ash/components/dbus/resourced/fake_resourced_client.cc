@@ -111,14 +111,4 @@ void FakeResourcedClient::DelaySetThreadStateResult(base::TimeDelta delay) {
   set_thread_state_delay_ = delay;
 }
 
-void FakeResourcedClient::AddArcContainerObserver(
-    ArcContainerObserver* observer) {
-  arc_container_observers_.AddObserver(observer);
-}
-
-void FakeResourcedClient::RemoveArcContainerObserver(
-    ArcContainerObserver* observer) {
-  arc_container_observers_.RemoveObserver(observer);
-}
-
 }  // namespace ash

@@ -61,26 +61,6 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
     ARC = 2,
   };
 
-  enum class PressureLevelArcContainer {
-    // There is enough memory to use.
-    kNone = 0,
-    // ARC container is advised to kill cached apps to free memory.
-    kCached = 1,
-    // ARC container is advised to kill perceptible apps to free memory.
-    kPerceptible = 2,
-    // ARC container is advised to kill foreground apps to free memory.
-    kForeground = 3,
-  };
-
-  // Observer class for ARC container memory pressure signal.
-  class ArcContainerObserver : public base::CheckedObserver {
-   public:
-    ~ArcContainerObserver() override = default;
-
-    virtual void OnMemoryPressure(PressureLevelArcContainer level,
-                                  uint64_t reclaim_target_kb) = 0;
-  };
-
   ResourcedClient(const ResourcedClient&) = delete;
   ResourcedClient& operator=(const ResourcedClient&) = delete;
 
@@ -156,10 +136,6 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
 
   // Removes an observer from observer list.
   virtual void RemoveObserver(Observer* observer) = 0;
-
-  virtual void AddArcContainerObserver(ArcContainerObserver* observer) = 0;
-
-  virtual void RemoveArcContainerObserver(ArcContainerObserver* observer) = 0;
 
   // Registers |callback| to run when the ResourceManager service becomes
   // available. If the service is already available, or if connecting to the
