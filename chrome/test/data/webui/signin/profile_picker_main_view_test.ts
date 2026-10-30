@@ -506,6 +506,11 @@ suite('ProfilePickerProfilesReorderingTest', function() {
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     mainViewElement = document.createElement('profile-picker-main-view');
+    // Disable pointer events so that an OS mouse cursor sitting over a
+    // profile card's `#nameInput` in the test window does not trigger
+    // `pointerenter` (which dispatches `toggle-drag` with `{toggle: false}`
+    // and prevents synthetic drag events from starting).
+    mainViewElement.style.pointerEvents = 'none';
     document.body.appendChild(mainViewElement);
   });
 
