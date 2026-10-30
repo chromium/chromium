@@ -77,7 +77,7 @@ class ASH_EXPORT WindowMirrorView : public views::View,
   raw_ptr<aura::Window> source_;
 
   // The window which contains this mirror view.
-  raw_ptr<aura::Window, DanglingUntriaged> target_ = nullptr;
+  raw_ptr<aura::Window> target_ = nullptr;
 
   // Retains ownership of the mirror layer tree. This is lazily initialized
   // the first time the view becomes visible.

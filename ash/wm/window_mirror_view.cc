@@ -107,6 +107,9 @@ WindowMirrorView::~WindowMirrorView() {
     DCHECK(source_->layer());
     source_->RemoveObserver(this);
   }
+  if (target_) {
+    target_->RemoveObserver(this);
+  }
 }
 
 void WindowMirrorView::RecreateMirrorLayers() {
@@ -132,9 +135,14 @@ std::unique_ptr<ui::Layer> WindowMirrorView::RecreateLayer() {
 }
 
 void WindowMirrorView::OnWindowDestroying(aura::Window* window) {
-  CHECK_EQ(source_, window);
-  source_->RemoveObserver(this);
-  source_ = nullptr;
+  if (source_ == window) {
+    source_->RemoveObserver(this);
+    source_ = nullptr;
+  }
+  if (target_ == window) {
+    target_->RemoveObserver(this);
+    target_ = nullptr;
+  }
 }
 
 gfx::Size WindowMirrorView::CalculatePreferredSize(
@@ -185,6 +193,7 @@ void WindowMirrorView::AddedToWidget() {
   // Set and insert the new target window associated with this mirror view.
   target_ = GetWidget()->GetNativeWindow();
   target_->TrackOcclusionState();
+  target_->AddObserver(this);
 
   if (source_) {
     // Force the occlusion tracker to treat the source as visible.
@@ -197,7 +206,10 @@ void WindowMirrorView::AddedToWidget() {
 }
 
 void WindowMirrorView::RemovedFromWidget() {
-  target_ = nullptr;
+  if (target_) {
+    target_->RemoveObserver(this);
+    target_ = nullptr;
+  }
 }
 
 ui::Layer* WindowMirrorView::GetMirrorLayerForTesting() {
