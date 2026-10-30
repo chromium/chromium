@@ -16,7 +16,6 @@
 #include "components/skills/features.h"
 #include "components/skills/public/skill.h"
 #include "components/skills/public/skills_service.h"
-#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -117,12 +116,7 @@ class TwoClientSkillsSyncTest
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   TwoClientSkillsSyncTest() : SyncTest(TWO_CLIENT) {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kSkillsEnabled};
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-    feature_overrides_.InitWithFeatures(enabled_features, {});
+    feature_overrides_.InitAndEnableFeature(features::kSkillsEnabled);
   }
   ~TwoClientSkillsSyncTest() override = default;
 

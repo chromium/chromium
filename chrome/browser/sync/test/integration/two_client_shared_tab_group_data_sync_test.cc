@@ -33,12 +33,8 @@ class TwoClientSharedTabGroupDataSyncTest
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
   TwoClientSharedTabGroupDataSyncTest() : SyncTest(TWO_CLIENT) {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        data_sharing::features::kDataSharingFeature};
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-    feature_overrides_.InitWithFeatures(enabled_features, {});
+    feature_overrides_.InitAndEnableFeature(
+        data_sharing::features::kDataSharingFeature);
   }
 
   ~TwoClientSharedTabGroupDataSyncTest() override = default;

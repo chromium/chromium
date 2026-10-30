@@ -8,7 +8,6 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/engine/loopback_server/persistent_tombstone_entity.h"
 #include "content/public/test/browser_test.h"
 
@@ -26,13 +25,7 @@ class TwoClientWalletCredentialSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  TwoClientWalletCredentialSyncTest() : SyncTest(TWO_CLIENT) {
-    std::vector<base::test::FeatureRef> enabled_features;
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-    features_.InitWithFeatures(enabled_features, {});
-  }
+  TwoClientWalletCredentialSyncTest() : SyncTest(TWO_CLIENT) {}
 
   TwoClientWalletCredentialSyncTest(const TwoClientWalletCredentialSyncTest&) =
       delete;
@@ -77,9 +70,6 @@ class TwoClientWalletCredentialSyncTest
                ? wallet_helper::StoreType::kAccountStore
                : wallet_helper::StoreType::kProfileStore;
   }
-
- private:
-  base::test::ScopedFeatureList features_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,

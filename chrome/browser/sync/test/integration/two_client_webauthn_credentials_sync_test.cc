@@ -26,20 +26,12 @@ class TwoClientWebAuthnCredentialsSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  TwoClientWebAuthnCredentialsSyncTest() : SyncTest(TWO_CLIENT) {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-  }
+  TwoClientWebAuthnCredentialsSyncTest() : SyncTest(TWO_CLIENT) {}
   ~TwoClientWebAuthnCredentialsSyncTest() override = default;
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
     return GetParam();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,
