@@ -30,8 +30,8 @@ class DocumentModulatorImpl final : public ModulatorImplBase {
 
   // https://html.spec.whatwg.org/C#add-module-to-resolved-module-set
   void AddModuleToResolvedModuleSet(
-      std::optional<AtomicString> referring_script_url,
-      AtomicString specifier) override;
+      const AtomicString& referring_script_url,
+      const AtomicString& specifier) override;
 
  private:
   // Implements ModulatorImplBase.

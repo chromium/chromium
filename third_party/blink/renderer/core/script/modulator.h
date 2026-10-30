@@ -244,8 +244,8 @@ class CORE_EXPORT Modulator : public GarbageCollected<Modulator>,
   virtual void ProduceCacheModuleTreeTopLevel(ModuleScript*) = 0;
 
   // https://html.spec.whatwg.org/C#add-module-to-resolved-module-set
-  virtual void AddModuleToResolvedModuleSet(std::optional<AtomicString>,
-                                            AtomicString) {
+  virtual void AddModuleToResolvedModuleSet(const AtomicString&,
+                                            const AtomicString&) {
     // 2. If global does not implement Window, then return.
   }
 

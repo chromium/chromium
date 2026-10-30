@@ -56,8 +56,8 @@ void DocumentModulatorImpl::MergeExistingAndNewImportMaps(
 
 // https://html.spec.whatwg.org/C#add-module-to-resolved-module-set
 void DocumentModulatorImpl::AddModuleToResolvedModuleSet(
-    std::optional<AtomicString> referring_script_url,
-    AtomicString specifier) {
+    const AtomicString& referring_script_url,
+    const AtomicString& specifier) {
   // 1. Let global be settingsObject's global object.
 
   // 2. If global does not implement Window, then return.
@@ -78,14 +78,14 @@ void DocumentModulatorImpl::AddModuleToResolvedModuleSet(
     toplevel_resolved_module_set_.insert(specifier_prefix);
   }
 
-  if (!referring_script_url || referring_script_url->empty()) {
+  if (referring_script_url.empty()) {
     return;
   }
   Vector<AtomicString> referring_script_prefixes =
-      FindUrlPrefixes(referring_script_url.value());
+      FindUrlPrefixes(referring_script_url);
   // A scope key may match the referring script URL exactly (with no trailing
   // '/'), so include the full URL in addition to its '/'-terminated prefixes.
-  referring_script_prefixes.push_back(referring_script_url.value());
+  referring_script_prefixes.push_back(referring_script_url);
   for (const auto& referring_script_prefix : referring_script_prefixes) {
     const auto& current_set_it =
         scoped_resolved_module_map_.find(referring_script_prefix);
