@@ -10,6 +10,8 @@
 #include <stack>
 #include <utility>
 
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+
 namespace caspian {
 
 namespace {
@@ -63,7 +65,7 @@ void TreeBuilder::Build(std::unique_ptr<BaseLens> lens,
   root_->id_path = GroupedPath{"", ""};
   _parents[root_->id_path] = root_.get();
 
-  std::unordered_map<GroupedPath, std::vector<const BaseSymbol*>>
+  absl::flat_hash_map<GroupedPath, std::vector<const BaseSymbol*>>
       symbols_by_grouped_path;
   for (const BaseSymbol* sym : symbols_) {
     const char* path = sym->GroupingPath();
@@ -163,7 +165,7 @@ Json::Value TreeBuilder::GetAncestryById(uint32_t id) {
   return v;
 }
 
-void TreeBuilder::AddFileEntry(GroupedPath grouped_path,
+void TreeBuilder::AddFileEntry(const GroupedPath& grouped_path,
                                const std::vector<const BaseSymbol*>& symbols) {
   // Creates a single file node with a child for each symbol in that file.
 
@@ -203,17 +205,17 @@ void TreeBuilder::AddFileEntry(GroupedPath grouped_path,
     return;
   }
 
-  TreeNode* file_node = _parents[grouped_path];
-  if (file_node == nullptr || grouped_path.path.empty()) {
+  auto [file_node_it, inserted] = _parents.try_emplace(grouped_path);
+  TreeNode* file_node = file_node_it->second;
+  if (inserted || file_node == nullptr || grouped_path.path.empty()) {
     file_node = tree_node_factory_.Make(ArtifactType::kFile);
     file_node->id_path = grouped_path;
     file_node->short_name_index =
         file_node->id_path.size() - file_node->id_path.ShortName(sep_).size();
-    _parents[file_node->id_path] = file_node;
+    file_node_it->second = file_node;
     file_node->node_stats = node_stats;
-    auto it = source_to_diff_status_.find(grouped_path.path);
-    std::string p(grouped_path.path);
-    if (it != source_to_diff_status_.end()) {
+    if (auto it = source_to_diff_status_.find(grouped_path.path);
+        it != source_to_diff_status_.end()) {
       file_node->node_stats.imposed_diff_status = it->second;
     }
   }
@@ -233,13 +235,15 @@ void TreeBuilder::AddFileEntry(GroupedPath grouped_path,
 TreeNode* TreeBuilder::GetOrMakeParentNode(TreeNode* child_node) {
   GroupedPath parent_path = child_node->id_path.Parent(sep_);
 
-  TreeNode*& parent = _parents[parent_path];
-  if (parent == nullptr) {
+  auto [it, inserted] = _parents.try_emplace(parent_path);
+  TreeNode* parent = it->second;
+  if (inserted || parent == nullptr) {
     parent =
         tree_node_factory_.Make(ArtifactTypeFromChild(child_node->id_path));
     parent->id_path = parent_path;
     parent->short_name_index =
         parent->id_path.size() - parent->id_path.ShortName(sep_).size();
+    it->second = parent;
   }
   if (child_node->parent != parent) {
     AttachToParent(child_node, parent);
@@ -300,7 +304,8 @@ TreeNode* TreeBuilder::FindNodeById(int32_t id) {
   return nullptr;
 }
 
-ArtifactType TreeBuilder::ArtifactTypeFromChild(GroupedPath child_path) const {
+ArtifactType TreeBuilder::ArtifactTypeFromChild(
+    const GroupedPath& child_path) const {
   // When grouping by component, id paths use '>' separators for components and
   // '/' separators for the file tree - e.g. Blink>third_party/blink/common...
   // We know that Blink is a component because its children have the form
@@ -361,7 +366,8 @@ void TreeBuilder::JoinDexMethodClasses(TreeNode* node) {
         short_name_index += dot_idx + 1;
       }
 
-      TreeNode*& class_node = java_class_containers[class_id_path];
+      auto [it, inserted] = java_class_containers.try_emplace(class_id_path);
+      TreeNode*& class_node = it->second;
       if (class_node == nullptr) {
         // We have to construct the class node id_path, because parent nodes
         // need to have an id_path that describes how to reach them from root.

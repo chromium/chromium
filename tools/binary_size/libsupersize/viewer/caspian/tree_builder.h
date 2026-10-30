@@ -10,9 +10,9 @@
 #include <memory>
 #include <string>
 #include <string_view>
-#include <unordered_map>
 #include <vector>
 
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "tools/binary_size/libsupersize/viewer/caspian/lens.h"
 #include "tools/binary_size/libsupersize/viewer/caspian/model.h"
 
@@ -33,7 +33,7 @@ class TreeBuilder {
   Json::Value GetAncestryById(uint32_t id);
 
  private:
-  void AddFileEntry(GroupedPath source_path,
+  void AddFileEntry(const GroupedPath& source_path,
                     const std::vector<const BaseSymbol*>& symbols);
 
   TreeNode* GetOrMakeParentNode(TreeNode* child_node);
@@ -42,7 +42,7 @@ class TreeBuilder {
 
   TreeNode* FindNodeById(int32_t id);
 
-  ArtifactType ArtifactTypeFromChild(GroupedPath child_path) const;
+  ArtifactType ArtifactTypeFromChild(const GroupedPath& child_path) const;
 
   bool ShouldIncludeSymbol(const GroupedPath& id_path,
                            const BaseSymbol& symbol) const;
@@ -55,7 +55,7 @@ class TreeBuilder {
   bool diff_mode_;
   TreeNodeFactory tree_node_factory_;
   std::unique_ptr<TreeNode> root_;
-  std::unordered_map<GroupedPath, TreeNode*> _parents;
+  absl::flat_hash_map<GroupedPath, TreeNode*> _parents;
 
   // Contained TreeNode hold lightweight string_views to fields in SizeInfo.
   // If grouping by component, this isn't possible: TreeNode id_paths are not
@@ -71,7 +71,7 @@ class TreeBuilder {
   char sep_;
   std::vector<FilterFunc> filters_;
   std::vector<const BaseSymbol*> symbols_;
-  std::unordered_map<std::string_view, DiffStatus> source_to_diff_status_;
+  absl::flat_hash_map<std::string_view, DiffStatus> source_to_diff_status_;
 };  // TreeBuilder
 }  // namespace caspian
 #endif  // TOOLS_BINARY_SIZE_LIBSUPERSIZE_VIEWER_CASPIAN_TREE_BUILDER_H_

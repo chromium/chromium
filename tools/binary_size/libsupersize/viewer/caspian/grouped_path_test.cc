@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/hash/hash_testing.h"
 #include "tools/binary_size/libsupersize/viewer/caspian/model.h"
 
 namespace caspian {
@@ -90,6 +91,20 @@ TEST(PathTest, TestShortname) {
   EXPECT_EQ("Bar", (GroupedPath{"Blink>Foo", "Bar"}).ShortName('>'));
   EXPECT_EQ("c", (GroupedPath{"a", "b/c"}).ShortName('>'));
   EXPECT_EQ("c", (GroupedPath{"a", "b/c"}).ShortName('>'));
+}
+
+TEST(PathTest, TestAbslHashValue) {
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly({
+      GroupedPath{"", ""},
+      GroupedPath{"", ""},
+      GroupedPath{"a", ""},
+      GroupedPath{"", "a"},
+      GroupedPath{"a", "a"},
+      GroupedPath{"a", "b"},
+      GroupedPath{"b", "a"},
+      GroupedPath{"Blink>Foo", "foo/bar.cc"},
+      GroupedPath{"Blink>Foo", "foo/bar.cc"},
+  }));
 }
 
 }  // namespace caspian

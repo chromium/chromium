@@ -31,7 +31,10 @@ source_set("caspian-lib") {
     "//third_party/zlib",
     "//third_party/zlib/google:compression_utils_portable",
   ]
-  public_deps = [ "//third_party/jsoncpp" ]
+  public_deps = [
+    "//third_party/abseil-cpp:absl",
+    "//third_party/jsoncpp",
+  ]
   configs -= [ "//build/config/compiler:default_optimization" ]
   configs += [ "//build/config/compiler:optimize_speed" ]
 }
@@ -47,8 +50,10 @@ test("caspian_unittests") {
   deps = [
     ":caspian-lib",
     "//base",
+    "//testing/gmock",
     "//testing/gtest",
     "//testing/gtest:gtest_main",
+    "//third_party/abseil-cpp:test_support",
     "//third_party/re2",
   ]
 }

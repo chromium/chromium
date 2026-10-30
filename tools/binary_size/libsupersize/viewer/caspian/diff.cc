@@ -11,15 +11,15 @@
 #include <list>
 #include <string>
 #include <string_view>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace {
 struct SymbolMatchIndex {
-  SymbolMatchIndex() {}
+  SymbolMatchIndex() = default;
   SymbolMatchIndex(caspian::SectionId id,
                    std::string_view container_name,
                    std::string_view name,
@@ -42,30 +42,20 @@ struct SymbolMatchIndex {
            size_without_padding == other.size_without_padding;
   }
 
+  template <typename H>
+  friend H AbslHashValue(H h, const SymbolMatchIndex& k) {
+    return H::combine(std::move(h), k.id, k.container_name, k.name, k.path,
+                      k.size_without_padding);
+  }
+
   bool nonempty = false;
-  caspian::SectionId id;
+  caspian::SectionId id = caspian::SectionId::kNone;
   std::string_view container_name;
   std::string_view name;
   std::string_view path;
-  int size_without_padding;
+  int size_without_padding = 0;
 };
-}  // namespace
 
-namespace std {
-template <>
-struct hash<SymbolMatchIndex> {
-  static constexpr size_t kPrime1 = 105929;
-  static constexpr size_t kPrime2 = 8543;
-  size_t operator()(const SymbolMatchIndex& k) const {
-    return ((kPrime1 * static_cast<size_t>(k.id)) ^
-            hash<string_view>()(k.container_name) ^
-            hash<string_view>()(k.name) ^ hash<string_view>()(k.path) ^
-            (kPrime2 * k.size_without_padding));
-  }
-};
-}  // namespace std
-
-namespace {
 // Copied from /base/stl_util.h
 template <class T, class Allocator, class Value>
 void Erase(std::vector<T, Allocator>& container, const Value& value) {
@@ -82,11 +72,11 @@ int MatchSymbols(
     std::vector<caspian::DeltaSymbol>* delta_symbols,
     std::vector<const caspian::Symbol*>* unmatched_before,
     std::vector<const caspian::Symbol*>* unmatched_after,
-    std::unordered_map<caspian::SectionId, float>* padding_by_section_name,
+    absl::flat_hash_map<caspian::SectionId, float>* padding_by_section_name,
     bool is_sparse) {
   int n_matched_symbols = 0;
-  std::unordered_map<SymbolMatchIndex,
-                     std::list<std::reference_wrapper<const caspian::Symbol*>>>
+  absl::flat_hash_map<SymbolMatchIndex,
+                      std::list<std::reference_wrapper<const caspian::Symbol*>>>
       before_symbols_by_key;
   for (const caspian::Symbol*& before_sym : *unmatched_before) {
     SymbolMatchIndex key = key_func(*before_sym);
@@ -98,7 +88,7 @@ int MatchSymbols(
   for (const caspian::Symbol*& after_sym : *unmatched_after) {
     SymbolMatchIndex key = key_func(*after_sym);
     if (key) {
-      const auto& found = before_symbols_by_key.find(key);
+      auto found = before_symbols_by_key.find(key);
       if (found != before_symbols_by_key.end() && found->second.size()) {
         const caspian::Symbol*& before_sym = found->second.front().get();
         found->second.pop_front();
@@ -216,11 +206,13 @@ DeltaSizeInfo Diff(const SizeInfo* before,
   bool is_sparse = before->IsSparse() && after->IsSparse();
 
   std::vector<const Symbol*> unmatched_before;
+  unmatched_before.reserve(before->raw_symbols.size());
   for (const Symbol& sym : before->raw_symbols) {
     unmatched_before.push_back(&sym);
   }
 
   std::vector<const Symbol*> unmatched_after;
+  unmatched_after.reserve(after->raw_symbols.size());
   for (const Symbol& sym : after->raw_symbols) {
     unmatched_after.push_back(&sym);
   }
@@ -233,7 +225,7 @@ DeltaSizeInfo Diff(const SizeInfo* before,
       helper.SectionAndFullNameAndPathAndSize(),
       helper.SectionAndFullNameAndPath(), helper.SectionAndNameAndPath(),
       helper.SectionAndFullName()};
-  std::unordered_map<SectionId, float> padding_by_section_name;
+  absl::flat_hash_map<SectionId, float> padding_by_section_name;
   for (const auto& key_function : key_funcs) {
     int n_matched_symbols =
         MatchSymbols(key_function, &ret.delta_symbols, &unmatched_before,

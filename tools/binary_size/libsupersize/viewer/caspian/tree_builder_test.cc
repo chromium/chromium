@@ -179,4 +179,22 @@ TEST(TreeBuilderTest, TestJoinDexMethodClassesStringLiteral) {
   EXPECT_EQ(0u, string_literal_symbol["children"].size());
 }
 
+TEST(TreeBuilderTest, TestManyPathsRehash) {
+  std::unique_ptr<SizeInfo> size_info = MakeSizeInfo();
+  std::deque<std::string> paths;
+  for (int i = 0; i < 200; ++i) {
+    paths.push_back("dir_" + base::NumberToString(i) + "/sub_" +
+                    base::NumberToString(i) + "/File" +
+                    base::NumberToString(i) + ".java");
+    MakeSymbol(size_info.get(), SectionId::kDex, 10 + i, paths.back().c_str(),
+               "Comp>Sub", "org.chromium.Cls#method(int): void");
+  }
+
+  TreeBuilder builder(size_info.get());
+  FilterList filters;
+  builder.Build(std::make_unique<ComponentLens>(), '>', false, filters);
+  CheckAllTreeNodesFindable(builder, builder.Open(""));
+  EXPECT_EQ(200u, builder.Open("Comp>Sub")["children"].size());
+}
+
 }  // namespace caspian

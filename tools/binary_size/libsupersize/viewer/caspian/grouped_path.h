@@ -7,10 +7,10 @@
 
 #include <stddef.h>
 
-#include <functional>
 #include <ostream>
 #include <string>
 #include <string_view>
+#include <utility>
 
 namespace caspian {
 struct GroupedPath {
@@ -39,6 +39,11 @@ struct GroupedPath {
 
   bool operator<(const GroupedPath& other) const;
 
+  template <typename H>
+  friend H AbslHashValue(H h, const GroupedPath& grouped_path) {
+    return H::combine(std::move(h), grouped_path.group, grouped_path.path);
+  }
+
   std::string_view group;
   std::string_view path;
 };
@@ -47,14 +52,4 @@ std::ostream& operator<<(std::ostream& os, const GroupedPath& path);
 
 }  // namespace caspian
 
-namespace std {
-template <>
-struct hash<caspian::GroupedPath> {
-  std::size_t operator()(
-      const caspian::GroupedPath& grouped_path) const noexcept {
-    return std::hash<std::string_view>{}(grouped_path.group) ^
-           std::hash<std::string_view>{}(grouped_path.path);
-  }
-};
-}  // namespace std
 #endif  // TOOLS_BINARY_SIZE_LIBSUPERSIZE_VIEWER_CASPIAN_GROUPED_PATH_H_

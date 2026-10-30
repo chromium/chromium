@@ -380,5 +380,31 @@ TEST_F(DiffTest, TestAliasesCount) {
   EXPECT_EQ(3, checked_symbols);
 }
 
+TEST_F(DiffTest, TestManySymbolsRehash) {
+  for (int i = 0; i < 200; ++i) {
+    SectionId section = (i % 2 == 0) ? SectionId::kText : SectionId::kRoData;
+    std::string name = "Sym_" + base::NumberToString(i);
+    Symbol s1 = MakeSymbol(section, 100 + i, "path/a.o", name);
+    s1.padding_ = 4;
+    s1.container_ = &size_info1_->containers[0];
+    size_info1_->owned_strings.push_back(name);
+    s1.full_name_ = size_info1_->owned_strings.back();
+    s1.template_name_ = s1.full_name_;
+    s1.name_ = s1.full_name_;
+    size_info1_->raw_symbols.push_back(s1);
+
+    Symbol s2 = s1;
+    s2.size_ += 8;
+    s2.padding_ = 8;
+    s2.container_ = &size_info2_->containers[0];
+    size_info2_->raw_symbols.push_back(s2);
+  }
+
+  DeltaSizeInfo diff = Diff(size_info1_.get(), size_info2_.get(),
+                            &removed_sources_, &added_sources_);
+  EXPECT_EQ(800, SumOfSymbolPadding(diff));
+  EXPECT_EQ(1600, SumOfSymbolSizes(diff));
+}
+
 }  // namespace
 }  // namespace caspian
