@@ -37,34 +37,29 @@ public class BackForwardTransitionAnimationManagerImpl
 
     @Override
     public void onGestureStarted(
-            float progress,
-            @BackGestureEventSwipeEdge int edge,
-            boolean forward,
-            boolean isGestureMode) {
+            float progress, @BackGestureEventSwipeEdge int edge, boolean forward) {
         if (mNativePtr == 0) return;
         BackForwardTransitionAnimationManagerImplJni.get()
-                .onGestureStarted(mNativePtr, progress, edge, forward, isGestureMode);
+                .onGestureStarted(mNativePtr, progress, edge, forward);
     }
 
     @Override
-    public void onGestureProgressed(float progress, boolean isGestureMode) {
+    public void onGestureProgressed(float progress) {
         if (mNativePtr == 0) return;
         BackForwardTransitionAnimationManagerImplJni.get()
-                .onGestureProgressed(mNativePtr, progress, isGestureMode);
+                .onGestureProgressed(mNativePtr, progress);
     }
 
     @Override
-    public void onGestureCancelled(boolean isGestureMode) {
+    public void onGestureCancelled() {
         if (mNativePtr == 0) return;
-        BackForwardTransitionAnimationManagerImplJni.get()
-                .onGestureCancelled(mNativePtr, isGestureMode);
+        BackForwardTransitionAnimationManagerImplJni.get().onGestureCancelled(mNativePtr);
     }
 
     @Override
-    public void onGestureInvoked(boolean isGestureMode) {
+    public void onGestureInvoked() {
         if (mNativePtr == 0) return;
-        BackForwardTransitionAnimationManagerImplJni.get()
-                .onGestureInvoked(mNativePtr, isGestureMode);
+        BackForwardTransitionAnimationManagerImplJni.get().onGestureInvoked(mNativePtr);
     }
 
     @Override
@@ -100,19 +95,14 @@ public class BackForwardTransitionAnimationManagerImpl
                 long nativeBackForwardTransitionAnimationManagerAndroid,
                 float progress,
                 @JniType("ui::BackGestureEventSwipeEdge") @BackGestureEventSwipeEdge int edge,
-                boolean forward,
-                boolean isGestureMode);
+                boolean forward);
 
         void onGestureProgressed(
-                long nativeBackForwardTransitionAnimationManagerAndroid,
-                float progress,
-                boolean isGestureMode);
+                long nativeBackForwardTransitionAnimationManagerAndroid, float progress);
 
-        void onGestureCancelled(
-                long nativeBackForwardTransitionAnimationManagerAndroid, boolean isGestureMode);
+        void onGestureCancelled(long nativeBackForwardTransitionAnimationManagerAndroid);
 
-        void onGestureInvoked(
-                long nativeBackForwardTransitionAnimationManagerAndroid, boolean isGestureMode);
+        void onGestureInvoked(long nativeBackForwardTransitionAnimationManagerAndroid);
 
         void onContentForNavigationEntryShown(
                 long nativeBackForwardTransitionAnimationManagerAndroid);

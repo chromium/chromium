@@ -1130,7 +1130,7 @@ public class NavigationTransitionsTest {
                     // End the native gesture behind the driver's back. The native handler
                     // is a per-tab singleton shared with ToolbarManager.OnBackPressHandler,
                     // so the driver cannot assume it still owns the native state.
-                    nativeHandler.onBackCancelled(false);
+                    nativeHandler.onBackCancelled();
 
                     // The next progress event has to hand the gesture back.
                     handler.pull(10.f, 0.f);
@@ -1186,7 +1186,7 @@ public class NavigationTransitionsTest {
                     // entry: starting a gesture without one is the very contract violation
                     // this CL stops committing, and the animation manager CHECKs it once
                     // crrev.com/c/8166180 restores the CHECKs.
-                    nativeHandler.onBackStarted(0.f, BackGestureEventSwipeEdge.RIGHT, false, false);
+                    nativeHandler.onBackStarted(0.f, BackGestureEventSwipeEdge.RIGHT, false);
 
                     // The next progress event from the original LEFT edge has an edge mismatch and
                     // must be handed back to the driver.
@@ -1198,7 +1198,7 @@ public class NavigationTransitionsTest {
 
                     // End the other owner's live gesture so that the release below navigates
                     // on a clean animation-manager state.
-                    nativeHandler.onBackCancelled(false);
+                    nativeHandler.onBackCancelled();
 
                     handler.release(OverscrollActivationStatus.FORCE_ACTIVATION);
                 });

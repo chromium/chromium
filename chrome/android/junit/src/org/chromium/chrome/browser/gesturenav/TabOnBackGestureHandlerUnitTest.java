@@ -51,7 +51,7 @@ public class TabOnBackGestureHandlerUnitTest {
     }
 
     private void start() {
-        mHandler.onBackStarted(0.2f, BackGestureEventSwipeEdge.LEFT, false, true);
+        mHandler.onBackStarted(0.2f, BackGestureEventSwipeEdge.LEFT, false);
         clearInvocations(mManager);
     }
 
@@ -62,42 +62,42 @@ public class TabOnBackGestureHandlerUnitTest {
 
     @Test
     public void progressWithoutStartReturnsControl() {
-        assertFalse(mHandler.onBackProgressed(0.5f, BackGestureEventSwipeEdge.LEFT, false, true));
-        mHandler.onBackInvoked(true);
-        mHandler.onBackCancelled(true);
+        assertFalse(mHandler.onBackProgressed(0.5f, BackGestureEventSwipeEdge.LEFT, false));
+        mHandler.onBackInvoked();
+        mHandler.onBackCancelled();
         verifyNoInteractions(mManager);
     }
 
     @Test
     public void matchingGestureInvokesOnlyOnce() {
         start();
-        assertTrue(mHandler.onBackProgressed(0.5f, BackGestureEventSwipeEdge.LEFT, false, true));
-        mHandler.onBackInvoked(true);
-        mHandler.onBackInvoked(true);
-        verify(mManager).onGestureProgressed(0.5f, true);
-        verify(mManager).onGestureInvoked(true);
+        assertTrue(mHandler.onBackProgressed(0.5f, BackGestureEventSwipeEdge.LEFT, false));
+        mHandler.onBackInvoked();
+        mHandler.onBackInvoked();
+        verify(mManager).onGestureProgressed(0.5f);
+        verify(mManager).onGestureInvoked();
         verifyNoMoreInteractions(mManager);
     }
 
     @Test
     public void edgeMismatchPreservesOriginalGesture() {
         start();
-        assertFalse(mHandler.onBackProgressed(0.5f, BackGestureEventSwipeEdge.RIGHT, true, true));
+        assertFalse(mHandler.onBackProgressed(0.5f, BackGestureEventSwipeEdge.RIGHT, true));
         verifyNoInteractions(mManager);
-        assertTrue(mHandler.onBackProgressed(0.6f, BackGestureEventSwipeEdge.LEFT, false, true));
-        mHandler.onBackCancelled(true);
-        verify(mManager).onGestureProgressed(0.6f, true);
-        verify(mManager).onGestureCancelled(true);
+        assertTrue(mHandler.onBackProgressed(0.6f, BackGestureEventSwipeEdge.LEFT, false));
+        mHandler.onBackCancelled();
+        verify(mManager).onGestureProgressed(0.6f);
+        verify(mManager).onGestureCancelled();
         verifyNoMoreInteractions(mManager);
     }
 
     @Test
     public void secondStartCancelsBeforeStarting() {
         start();
-        mHandler.onBackStarted(0.3f, BackGestureEventSwipeEdge.RIGHT, true, false);
+        mHandler.onBackStarted(0.3f, BackGestureEventSwipeEdge.RIGHT, true);
         var order = inOrder(mManager);
-        order.verify(mManager).onGestureCancelled(false);
-        order.verify(mManager).onGestureStarted(0.3f, BackGestureEventSwipeEdge.RIGHT, true, false);
+        order.verify(mManager).onGestureCancelled();
+        order.verify(mManager).onGestureStarted(0.3f, BackGestureEventSwipeEdge.RIGHT, true);
     }
 
     @Test
@@ -108,9 +108,9 @@ public class TabOnBackGestureHandlerUnitTest {
                 mock(BackForwardTransitionAnimationManager.class);
         when(replacement.getBackForwardTransitionAnimationManager()).thenReturn(replacementManager);
         when(mTab.getWebContents()).thenReturn(replacement);
-        assertFalse(mHandler.onBackProgressed(0.5f, BackGestureEventSwipeEdge.LEFT, false, true));
-        mHandler.onBackInvoked(true);
-        mHandler.onBackCancelled(true);
+        assertFalse(mHandler.onBackProgressed(0.5f, BackGestureEventSwipeEdge.LEFT, false));
+        mHandler.onBackInvoked();
+        mHandler.onBackCancelled();
         mHandler.destroy();
         verifyNoInteractions(mManager, replacementManager);
     }
@@ -119,8 +119,8 @@ public class TabOnBackGestureHandlerUnitTest {
     public void destroyedWebContentsGetsNoGestureEvents() {
         start();
         when(mWebContents.isDestroyed()).thenReturn(true);
-        assertFalse(mHandler.onBackProgressed(0.5f, BackGestureEventSwipeEdge.LEFT, false, true));
-        mHandler.onBackCancelled(true);
+        assertFalse(mHandler.onBackProgressed(0.5f, BackGestureEventSwipeEdge.LEFT, false));
+        mHandler.onBackCancelled();
         verifyNoInteractions(mManager);
     }
 
@@ -130,8 +130,8 @@ public class TabOnBackGestureHandlerUnitTest {
         var replacementManager = mock(BackForwardTransitionAnimationManager.class);
         when(mWebContents.getBackForwardTransitionAnimationManager())
                 .thenReturn(replacementManager);
-        assertFalse(mHandler.onBackProgressed(0.5f, BackGestureEventSwipeEdge.LEFT, false, true));
-        mHandler.onBackInvoked(true);
+        assertFalse(mHandler.onBackProgressed(0.5f, BackGestureEventSwipeEdge.LEFT, false));
+        mHandler.onBackInvoked();
         verifyNoInteractions(mManager, replacementManager);
     }
 
@@ -142,12 +142,12 @@ public class TabOnBackGestureHandlerUnitTest {
         // TabImpl destroys its UserDataHost before releasing or destroying its WebContents.
         mUserDataHost.destroy();
         mHandler.destroy();
-        mHandler.onBackStarted(0.2f, BackGestureEventSwipeEdge.LEFT, false, true);
-        assertFalse(mHandler.onBackProgressed(0.5f, BackGestureEventSwipeEdge.LEFT, false, true));
-        mHandler.onBackInvoked(true);
-        mHandler.onBackCancelled(true);
+        mHandler.onBackStarted(0.2f, BackGestureEventSwipeEdge.LEFT, false);
+        assertFalse(mHandler.onBackProgressed(0.5f, BackGestureEventSwipeEdge.LEFT, false));
+        mHandler.onBackInvoked();
+        mHandler.onBackCancelled();
         verify(mManager).getCurrentAnimationStage();
-        verify(mManager).onGestureCancelled(true);
+        verify(mManager).onGestureCancelled();
         verifyNoMoreInteractions(mManager);
     }
 

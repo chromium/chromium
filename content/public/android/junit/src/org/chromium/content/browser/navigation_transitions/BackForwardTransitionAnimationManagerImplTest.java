@@ -43,10 +43,10 @@ public class BackForwardTransitionAnimationManagerImplTest {
     @Test
     public void nativeDestructionInvalidatesRetainedJavaPeer() {
         ReflectionHelpers.callInstanceMethod(mManager, "destroy");
-        mManager.onGestureStarted(0.2f, BackGestureEventSwipeEdge.LEFT, false, true);
-        mManager.onGestureProgressed(0.5f, true);
-        mManager.onGestureCancelled(true);
-        mManager.onGestureInvoked(true);
+        mManager.onGestureStarted(0.2f, BackGestureEventSwipeEdge.LEFT, false);
+        mManager.onGestureProgressed(0.5f);
+        mManager.onGestureCancelled();
+        mManager.onGestureInvoked();
         mManager.onContentForNavigationEntryShown();
         assertEquals(AnimationStage.NONE, mManager.getCurrentAnimationStage());
         verifyNoInteractions(mNative);
@@ -60,7 +60,7 @@ public class BackForwardTransitionAnimationManagerImplTest {
                         BackForwardTransitionAnimationManagerImpl.class,
                         "create",
                         ClassParameter.from(long.class, 456L));
-        replacement.onGestureStarted(0.2f, BackGestureEventSwipeEdge.LEFT, false, true);
-        verify(mNative).onGestureStarted(456L, 0.2f, BackGestureEventSwipeEdge.LEFT, false, true);
+        replacement.onGestureStarted(0.2f, BackGestureEventSwipeEdge.LEFT, false);
+        verify(mNative).onGestureStarted(456L, 0.2f, BackGestureEventSwipeEdge.LEFT, false);
     }
 }

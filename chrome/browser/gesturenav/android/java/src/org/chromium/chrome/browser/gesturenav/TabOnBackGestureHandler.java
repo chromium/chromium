@@ -33,7 +33,6 @@ public class TabOnBackGestureHandler implements UserData {
 
     private final Tab mTab;
     private boolean mDestroyed;
-    private boolean mIsGestureMode;
     private @BackGestureEventSwipeEdge int mStartedEdge;
     private @Nullable WebContents mGesturedWebContents;
     private @Nullable BackForwardTransitionAnimationManager mGestureManager;
@@ -43,12 +42,9 @@ public class TabOnBackGestureHandler implements UserData {
     }
 
     public void onBackStarted(
-            float progress,
-            @BackGestureEventSwipeEdge int edge,
-            boolean forward,
-            boolean isGestureMode) {
+            float progress, @BackGestureEventSwipeEdge int edge, boolean forward) {
         if (mDestroyed) return;
-        if (mGestureManager != null) onBackCancelled(isGestureMode);
+        if (mGestureManager != null) onBackCancelled();
 
         WebContents webContents = mTab.getWebContents();
         assert webContents != null && !webContents.isDestroyed();
@@ -57,11 +53,10 @@ public class TabOnBackGestureHandler implements UserData {
         assert manager != null;
         if (manager == null) return;
 
-        mIsGestureMode = isGestureMode;
         mStartedEdge = edge;
         mGesturedWebContents = webContents;
         mGestureManager = manager;
-        manager.onGestureStarted(progress, edge, forward, isGestureMode);
+        manager.onGestureStarted(progress, edge, forward);
     }
 
     /**
@@ -71,26 +66,23 @@ public class TabOnBackGestureHandler implements UserData {
      * edge mismatch it may still be driving a newer gesture for another owner.
      */
     public boolean onBackProgressed(
-            float progress,
-            @BackGestureEventSwipeEdge int edge,
-            boolean forward,
-            boolean isGestureMode) {
+            float progress, @BackGestureEventSwipeEdge int edge, boolean forward) {
         var manager = mGestureManager;
         if (mDestroyed || manager == null || mStartedEdge != edge || !isCurrentGesture()) {
             // Do not cancel another owner's gesture or restart from an unchecked direction.
             // Return control to the caller so that it can handle navigation. crbug.com/530682179.
             return false;
         }
-        manager.onGestureProgressed(progress, isGestureMode);
+        manager.onGestureProgressed(progress);
         return true;
     }
 
-    public void onBackCancelled(boolean isGestureMode) {
-        finishGesture(/* invoke= */ false, isGestureMode);
+    public void onBackCancelled() {
+        finishGesture(/* invoke= */ false);
     }
 
-    public void onBackInvoked(boolean isGestureMode) {
-        finishGesture(/* invoke= */ true, isGestureMode);
+    public void onBackInvoked() {
+        finishGesture(/* invoke= */ true);
     }
 
     private boolean isCurrentGesture() {
@@ -101,7 +93,7 @@ public class TabOnBackGestureHandler implements UserData {
                 && webContents.getBackForwardTransitionAnimationManager() == mGestureManager;
     }
 
-    private void finishGesture(boolean invoke, boolean isGestureMode) {
+    private void finishGesture(boolean invoke) {
         var manager = mGestureManager;
         boolean isCurrentGesture = isCurrentGesture();
         mGestureManager = null;
@@ -109,9 +101,9 @@ public class TabOnBackGestureHandler implements UserData {
         if (mDestroyed || manager == null || !isCurrentGesture) return;
         // Never send a terminal event to a WebContents that did not receive the start event.
         if (invoke) {
-            manager.onGestureInvoked(isGestureMode);
+            manager.onGestureInvoked();
         } else {
-            manager.onGestureCancelled(isGestureMode);
+            manager.onGestureCancelled();
         }
     }
 
@@ -128,7 +120,7 @@ public class TabOnBackGestureHandler implements UserData {
         if (manager != null
                 && isCurrentGesture()
                 && manager.getCurrentAnimationStage() != AnimationStage.NONE) {
-            onBackCancelled(mIsGestureMode);
+            onBackCancelled();
         }
         mGestureManager = null;
         mGesturedWebContents = null;

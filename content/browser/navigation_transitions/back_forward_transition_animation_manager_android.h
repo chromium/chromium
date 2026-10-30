@@ -49,17 +49,13 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject(JNIEnv* env);
 
-  // JNI adapters preserve gesture-mode crash diagnostics and validate Android
-  // input before calling the native interface, which is also used by C++
-  // callers.
+  // JNI adapters validate and convert Android input before calling the native
+  // interface, which is also used by C++ callers.
   void OnGestureStarted(JNIEnv* env,
                         float progress,
                         ui::BackGestureEventSwipeEdge edge,
-                        bool forward,
-                        bool is_gesture_mode);
-  void OnGestureProgressed(JNIEnv* env, float progress, bool is_gesture_mode);
-  void OnGestureCancelled(JNIEnv* env, bool is_gesture_mode);
-  void OnGestureInvoked(JNIEnv* env, bool is_gesture_mode);
+                        bool forward);
+  void OnGestureProgressed(JNIEnv* env, float progress);
 
   // `BackForwardTransitionAnimationManager`:
   void OnGestureStarted(const ui::BackGestureEvent& gesture,

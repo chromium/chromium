@@ -130,10 +130,10 @@ public class WebContentsTest {
                     var nativeMock = mock(BackForwardTransitionAnimationManagerImpl.Natives.class);
                     BackForwardTransitionAnimationManagerImplJni.setInstanceForTesting(nativeMock);
                     try {
-                        manager.onGestureStarted(0.2f, BackGestureEventSwipeEdge.LEFT, false, true);
-                        manager.onGestureProgressed(0.5f, true);
-                        manager.onGestureCancelled(true);
-                        manager.onGestureInvoked(true);
+                        manager.onGestureStarted(0.2f, BackGestureEventSwipeEdge.LEFT, false);
+                        manager.onGestureProgressed(0.5f);
+                        manager.onGestureCancelled();
+                        manager.onGestureInvoked();
                         manager.onContentForNavigationEntryShown();
                         Assert.assertEquals(
                                 AnimationStage.NONE, manager.getCurrentAnimationStage());

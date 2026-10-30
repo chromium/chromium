@@ -33,22 +33,18 @@ public interface BackForwardTransitionAnimationManager {
 
     /**
      * Starts a history navigation gesture. The caller must check that a destination entry exists in
-     * the requested direction. The gesture mode argument is recorded for crash diagnostics.
+     * the requested direction.
      */
-    void onGestureStarted(
-            float progress,
-            @BackGestureEventSwipeEdge int edge,
-            boolean forward,
-            boolean isGestureMode);
+    void onGestureStarted(float progress, @BackGestureEventSwipeEdge int edge, boolean forward);
 
     /** Updates the gesture progress, clamping incorrect values supplied by the OS to [0, 1]. */
-    void onGestureProgressed(float progress, boolean isGestureMode);
+    void onGestureProgressed(float progress);
 
     /** Ends the gesture without navigating. */
-    void onGestureCancelled(boolean isGestureMode);
+    void onGestureCancelled();
 
     /** Ends the gesture and starts the history navigation requested at gesture start. */
-    void onGestureInvoked(boolean isGestureMode);
+    void onGestureInvoked();
 
     /**
      * Notifies that the embedder has rendered the content for the committed navigation entry at its

@@ -614,7 +614,7 @@ public class ToolbarManager
 
             if (mHandler != null) {
                 assert mIsGestureMode : "Must be in gesture mode if transition handler is alive";
-                mHandler.onBackInvoked(mIsGestureMode);
+                mHandler.onBackInvoked();
             } else {
                 res = ToolbarManager.this.handleBackPress();
             }
@@ -639,7 +639,7 @@ public class ToolbarManager
                         mHandler != null, PredictiveGestureNavPhase.CANCELLED);
             }
             if (mHandler != null) {
-                mHandler.onBackCancelled(mIsGestureMode);
+                mHandler.onBackCancelled();
             }
             mBackGestureInProgress = false;
             mIsGestureMode = false;
@@ -671,8 +671,7 @@ public class ToolbarManager
                     backEvent.getSwipeEdge() == BackEventCompat.EDGE_LEFT
                             ? BackGestureEventSwipeEdge.LEFT
                             : BackGestureEventSwipeEdge.RIGHT,
-                    isForward(),
-                    mIsGestureMode)) {
+                    isForward())) {
                 // The gesture is ours again, so handleBackPress() must fall back to the
                 // regular back handling instead of waiting for a transition.
                 mHandler = null;
@@ -725,8 +724,7 @@ public class ToolbarManager
                         backEvent.getSwipeEdge() == BackEventCompat.EDGE_LEFT
                                 ? BackGestureEventSwipeEdge.LEFT
                                 : BackGestureEventSwipeEdge.RIGHT,
-                        isForward(),
-                        mIsGestureMode);
+                        isForward());
             }
             if (mIsGestureMode) {
                 BackPressMetrics.recordPredictiveGestureNav(

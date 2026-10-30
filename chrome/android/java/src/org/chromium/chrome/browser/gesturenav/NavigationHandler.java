@@ -368,8 +368,7 @@ class NavigationHandler implements TouchEventObserver {
                                 mTab, BrowserControlsState.SHOWN, /* animate= */ true);
                     }
                     mTabOnBackGestureHandler = TabOnBackGestureHandler.from(mTab);
-                    mTabOnBackGestureHandler.onBackStarted(
-                            getProgress(), mInitiatingEdge, forward, false);
+                    mTabOnBackGestureHandler.onBackStarted(getProgress(), mInitiatingEdge, forward);
                 }
                 BackPressMetrics.recordNavStatusOnGestureStart(
                         assumeNonNull(mTab.getWebContents())
@@ -515,9 +514,9 @@ class NavigationHandler implements TouchEventObserver {
         mState = GestureState.NONE;
         if (mTabOnBackGestureHandler != null) {
             if (allowNav && mWillNavigateSupplier.get()) {
-                mTabOnBackGestureHandler.onBackInvoked(false);
+                mTabOnBackGestureHandler.onBackInvoked();
             } else {
-                mTabOnBackGestureHandler.onBackCancelled(false);
+                mTabOnBackGestureHandler.onBackCancelled();
             }
             mTabOnBackGestureHandler = null;
         }
@@ -534,7 +533,7 @@ class NavigationHandler implements TouchEventObserver {
         }
         if (mTabOnBackGestureHandler != null
                 && !mTabOnBackGestureHandler.onBackProgressed(
-                        getProgress(), mInitiatingEdge, isForward(), false)) {
+                        getProgress(), mInitiatingEdge, isForward())) {
             // The gesture is ours again, so navigate() must stop deferring to native.
             mTabOnBackGestureHandler = null;
         }

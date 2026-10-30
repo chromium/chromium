@@ -9,7 +9,6 @@
 #include <algorithm>
 
 #include "base/android/callback_android.h"
-#include "base/debug/crash_logging.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "content/browser/navigation_transitions/back_forward_transition_animator.h"
@@ -343,9 +342,7 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
     JNIEnv* env,
     float progress,
     ui::BackGestureEventSwipeEdge edge,
-    bool forward,
-    bool is_gesture_mode) {
-  SCOPED_CRASH_KEY_BOOL("OnBackStarted", "gesture mode", is_gesture_mode);
+    bool forward) {
   auto* window =
       web_contents_view_android()->GetNativeView()->GetWindowAndroid();
   CHECK(window);
@@ -357,24 +354,8 @@ void BackForwardTransitionAnimationManagerAndroid::OnGestureStarted(
 
 void BackForwardTransitionAnimationManagerAndroid::OnGestureProgressed(
     JNIEnv* env,
-    float progress,
-    bool is_gesture_mode) {
-  SCOPED_CRASH_KEY_BOOL("OnBackProgressed", "gesture mode", is_gesture_mode);
+    float progress) {
   OnGestureProgressed(ui::BackGestureEvent(std::clamp(progress, 0.f, 1.f)));
-}
-
-void BackForwardTransitionAnimationManagerAndroid::OnGestureCancelled(
-    JNIEnv* env,
-    bool is_gesture_mode) {
-  SCOPED_CRASH_KEY_BOOL("OnBackCancelled", "gesture mode", is_gesture_mode);
-  OnGestureCancelled();
-}
-
-void BackForwardTransitionAnimationManagerAndroid::OnGestureInvoked(
-    JNIEnv* env,
-    bool is_gesture_mode) {
-  SCOPED_CRASH_KEY_BOOL("OnBackInvoked", "gesture mode", is_gesture_mode);
-  OnGestureInvoked();
 }
 
 static bool
