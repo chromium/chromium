@@ -279,13 +279,15 @@ cq_build_perf_builder(
         "enable_missing_deps_check": False,
     },
     # Link locally on 384 vCPUs + NVMe RAID-0 instead of downloading linked
-    # binaries back from CAS, and race local compilation against RBE.
+    # binaries back from CAS.
     siso_configs = ["builder"],
+    # Enable fast-local as linux-build-perf-developer does while Siso racing
+    # can drop inputs on context cancellation (https://crbug.com/579630786).
+    siso_disable_batch_mode = True,
     # On 384 vCPUs siso exhausts the Cloud Trace write quota within minutes,
     # and the backed-up exporter then blocks every clog call behind its
     # bundler mutex, which stalls the build (http://b/575633282).
     siso_enable_cloud_trace = False,
-    siso_experiments = ["no-fallback", "racing"],
     siso_profile_mode = "local",
 )
 
