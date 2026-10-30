@@ -429,6 +429,8 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   lens::LensOverlayRequestId req_id;
   req_id.set_context_id(101);
   file_info.request_id = req_id;
+  file_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
   std::vector<contextual_search::FileInfo> uploaded_files = {file_info};
   ON_CALL(*mock_handle, GetUploadedContextFileInfos())
       .WillByDefault(testing::ReturnPointee(&uploaded_files));
@@ -477,6 +479,8 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   lens::LensOverlayRequestId req1;
   req1.set_context_id(101);
   file1.request_id = req1;
+  file1.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
   file1.input_data = std::make_unique<lens::ContextualInputData>();
   file1.input_data->upload_type = lens::LensOverlayContextualInputUploadType::
       CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
@@ -517,6 +521,8 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   lens::LensOverlayRequestId req2;
   req2.set_context_id(202);
   file2.request_id = req2;
+  file2.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
   uploaded_files.push_back(file2);
 
   user_data->OnTabContextUploadStarted(token2);
@@ -597,6 +603,8 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   lens::LensOverlayRequestId req_id;
   req_id.set_context_id(303);
   implicit_file.request_id = req_id;
+  implicit_file.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
 
   std::vector<contextual_search::FileInfo> uploaded_files = {implicit_file};
   ON_CALL(*mock_handle, GetUploadedContextFileInfos())
@@ -652,6 +660,8 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   lens::LensOverlayRequestId req_id;
   req_id.set_context_id(404);
   file_info.request_id = req_id;
+  file_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
   std::vector<contextual_search::FileInfo> uploaded_files = {file_info};
   ON_CALL(*mock_handle, GetUploadedContextFileInfos())
       .WillByDefault(testing::ReturnPointee(&uploaded_files));
@@ -776,6 +786,8 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   auto mock_handle = std::make_unique<testing::NiceMock<
       contextual_search::MockContextualSearchSessionHandle>>();
   auto* session_handle_ptr = mock_handle.get();
+  ON_CALL(*session_handle_ptr, search_session_id())
+      .WillByDefault(testing::Return("mock_session_id"));
 
   auto token1 = base::UnguessableToken::Create();
   auto token2 = base::UnguessableToken::Create();
@@ -800,6 +812,8 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   lens::LensOverlayRequestId req1;
   req1.set_context_id(101);
   file1.request_id = req1;
+  file1.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
   file1.input_data = std::make_unique<lens::ContextualInputData>();
   file1.input_data->upload_type = lens::LensOverlayContextualInputUploadType::
       CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
@@ -809,6 +823,8 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   lens::LensOverlayRequestId req2;
   req2.set_context_id(202);
   file2.request_id = req2;
+  file2.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
 
   contextual_search::FileInfo file3_implicit;
   file3_implicit.file_token = token3;
@@ -816,6 +832,8 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
   lens::LensOverlayRequestId req3;
   req3.set_context_id(303);
   file3_implicit.request_id = req3;
+  file3_implicit.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
   file3_implicit.input_data = std::make_unique<lens::ContextualInputData>();
   file3_implicit.input_data->is_implicit_upload = true;
   file3_implicit.input_data->upload_type =
@@ -1468,6 +1486,100 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
       const_user_data->tab_handle_to_session_id();
   ASSERT_EQ(mappings.size(), 1u);
   EXPECT_EQ(mappings.at(42), 99);
+}
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       AppendTabContextsToOnSubmitQueryResponse_ExcludesInvalidUploads) {
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* session_handle_ptr = session_handle.get();
+  ON_CALL(*session_handle_ptr, search_session_id())
+      .WillByDefault(testing::Return("mock_session_id"));
+
+  auto token1 = base::UnguessableToken::Create();  // superseded
+  auto token2 = base::UnguessableToken::Create();  // failed
+  auto token3 = base::UnguessableToken::Create();  // expired
+  auto token4 = base::UnguessableToken::Create();  // un-uploaded
+  auto token5 = base::UnguessableToken::Create();  // valid
+
+  session_handle_ptr->GetUploadedContextTokensForTesting() = {
+      token1, token2, token3, token4, token5};
+
+  session_handle_ptr->AttachTabPendingUpload(
+      token1, 1, GURL("https://example.com/1"), "Tab 1");
+  session_handle_ptr->AttachTabPendingUpload(
+      token2, 2, GURL("https://example.com/2"), "Tab 2");
+  session_handle_ptr->AttachTabPendingUpload(
+      token3, 3, GURL("https://example.com/3"), "Tab 3");
+  session_handle_ptr->AttachTabPendingUpload(
+      token4, 4, GURL("https://example.com/4"), "Tab 4");
+  session_handle_ptr->AttachTabPendingUpload(
+      token5, 5, GURL("https://example.com/5"), "Tab 5");
+
+  contextual_search::FileInfo file1;
+  file1.file_token = token1;
+  lens::LensOverlayRequestId req1;
+  req1.set_context_id(101);
+  file1.request_id = req1;
+  file1.is_superceded = true;
+  file1.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  file1.input_data = std::make_unique<lens::ContextualInputData>();
+  file1.input_data->upload_type = lens::LensOverlayContextualInputUploadType::
+      CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
+
+  contextual_search::FileInfo file2;
+  file2.file_token = token2;
+  lens::LensOverlayRequestId req2;
+  req2.set_context_id(102);
+  file2.request_id = req2;
+  file2.upload_status = contextual_search::ContextUploadStatus::kUploadFailed;
+
+  contextual_search::FileInfo file3;
+  file3.file_token = token3;
+  lens::LensOverlayRequestId req3;
+  req3.set_context_id(103);
+  file3.request_id = req3;
+  file3.upload_status = contextual_search::ContextUploadStatus::kUploadExpired;
+
+  contextual_search::FileInfo file4;
+  file4.file_token = token4;
+  lens::LensOverlayRequestId req4;
+  req4.set_context_id(104);
+  file4.request_id = req4;
+  file4.upload_status = contextual_search::ContextUploadStatus::kNotUploaded;
+
+  contextual_search::FileInfo file5;
+  file5.file_token = token5;
+  lens::LensOverlayRequestId req5;
+  req5.set_context_id(105);
+  file5.request_id = req5;
+  file5.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  file5.input_data = std::make_unique<lens::ContextualInputData>();
+  file5.input_data->upload_type = lens::LensOverlayContextualInputUploadType::
+      CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT;
+
+  std::vector<contextual_search::FileInfo> uploaded_files = {
+      file1, file2, file3, file4, file5};
+  ON_CALL(*session_handle_ptr, GetUploadedContextFileInfos())
+      .WillByDefault(testing::ReturnPointee(&uploaded_files));
+
+  auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
+      web_contents_);
+  helper->SetTaskSession(std::nullopt, std::move(session_handle), nullptr);
+
+  lens::ClientToSearchMessage response_message;
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  user_data->AppendTabContextsToOnSubmitQueryResponseForTesting(
+      &response_message, session_handle_ptr, std::nullopt);
+
+  ASSERT_TRUE(response_message.has_on_submit_query_response());
+  const auto& response = response_message.on_submit_query_response();
+  ASSERT_EQ(response.added_contexts_size(), 1);
+  EXPECT_EQ(response.added_contexts(0).request_id().context_id(), 105);
 }
 
 }  // namespace contextual_tasks

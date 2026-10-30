@@ -340,19 +340,6 @@ void CreateFileUploadRequestProtoWithPayloadAndContinue(
   std::move(callback).Run(request, /*error_type=*/std::nullopt);
 }
 
-// Returns true if the context upload status is valid to include in the
-// multimodal request.
-bool IsValidContextUploadStatusForMultimodalRequest(
-    contextual_search::ContextUploadStatus upload_status) {
-  return upload_status == contextual_search::ContextUploadStatus::kProcessing ||
-         upload_status == contextual_search::ContextUploadStatus::
-                              kProcessingSuggestSignalsReady ||
-         upload_status ==
-             contextual_search::ContextUploadStatus::kUploadStarted ||
-         upload_status ==
-             contextual_search::ContextUploadStatus::kUploadSuccessful;
-}
-
 // Returns true if the request id corresponds to an image upload.
 bool RequestIdHasImage(const lens::LensOverlayRequestId& request_id) {
   lens::LensOverlayRequestId::MediaType media_type = request_id.media_type();

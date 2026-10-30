@@ -57,6 +57,11 @@ enum class ContextUploadStatus {
 // Returns true if the upload status is considered terminal.
 bool IsTerminalContextStatus(ContextUploadStatus status);
 
+// Returns true if the context upload status is valid to include in the
+// multimodal request.
+bool IsValidContextUploadStatusForMultimodalRequest(
+    ContextUploadStatus upload_status);
+
 // LINT.IfChange(ContextUploadErrorType)
 // For upload error notifications and metrics.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.contextual_search

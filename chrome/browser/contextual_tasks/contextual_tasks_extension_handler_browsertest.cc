@@ -244,8 +244,12 @@ class ContextualTasksExtensionHandlerBrowserTestBase
     lens::LensOverlayRequestId request_id;
     request_id.set_context_id(12345);
     file_info.request_id = request_id;
+    file_info.upload_status =
+        contextual_search::ContextUploadStatus::kUploadSuccessful;
     std::vector<contextual_search::FileInfo> file_infos = {file_info};
 
+    ON_CALL(*mock_session_handle_, search_session_id())
+        .WillByDefault(Return("mock_session_id"));
     ON_CALL(*mock_session_handle_, CreateContextToken())
         .WillByDefault([this]() {
           auto token = base::UnguessableToken::Create();
@@ -440,6 +444,8 @@ class ContextualTasksExtensionHandlerBrowserTestBase
 
   void AllowSessionTokenCreation() {
     auto* session = mock_session_handle_.get();
+    ON_CALL(*mock_session_handle_, search_session_id())
+        .WillByDefault(Return("mock_session_id"));
     ON_CALL(*mock_session_handle_, CreateContextToken())
         .WillByDefault([session]() {
           auto token = base::UnguessableToken::Create();
@@ -1155,6 +1161,8 @@ class ContextualTasksExtensionHandlerContextualizerBrowserTest
             contextual_search::FileInfo& info = infos.emplace_back();
             info.file_token = token;
             info.request_id = lens::LensOverlayRequestId();
+            info.upload_status =
+                contextual_search::ContextUploadStatus::kUploadSuccessful;
             info.input_data = std::make_unique<lens::ContextualInputData>();
             info.input_data->upload_type = upload_type;
           }
@@ -1830,6 +1838,8 @@ IN_PROC_BROWSER_TEST_F(
   req_id.set_context_id(888);
   req_id.set_image_sequence_id(1);
   file_info.request_id = req_id;
+  file_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
   file_info.input_data = std::make_unique<lens::ContextualInputData>();
   file_info.input_data->upload_type =
       lens::LensOverlayContextualInputUploadType::
@@ -1948,6 +1958,8 @@ IN_PROC_BROWSER_TEST_F(
   req_id.set_context_id(888);
   req_id.set_image_sequence_id(1);
   file_info.request_id = req_id;
+  file_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
   file_info.input_data = std::make_unique<lens::ContextualInputData>();
   file_info.input_data->upload_type =
       lens::LensOverlayContextualInputUploadType::
@@ -2043,6 +2055,8 @@ IN_PROC_BROWSER_TEST_F(
   lens::LensOverlayRequestId unrelated_req_id;
   unrelated_req_id.set_uuid(111);
   unrelated_file.request_id = unrelated_req_id;
+  unrelated_file.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
 
   base::UnguessableToken overlay_token = base::UnguessableToken::Create();
   EXPECT_CALL(*mock_lens_controller_->mock_router(),
@@ -2061,6 +2075,8 @@ IN_PROC_BROWSER_TEST_F(
   page_req_id.set_media_type(
       lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE_AND_IMAGE);
   overlay_file_info.request_id = page_req_id;
+  overlay_file_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
 
   lens::LensOverlayRequestId viewport_req_id;
   viewport_req_id.set_uuid(1000);
@@ -2195,6 +2211,8 @@ IN_PROC_BROWSER_TEST_F(
   page_req_id.set_context_id(888);
   page_req_id.set_media_type(lens::LensOverlayRequestId::MEDIA_TYPE_WEBPAGE);
   overlay_file_info.request_id = page_req_id;
+  overlay_file_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
 
   lens::LensOverlayRequestId viewport_req_id;
   viewport_req_id.set_uuid(501);
@@ -2285,6 +2303,8 @@ IN_PROC_BROWSER_TEST_F(
   lens::LensOverlayRequestId req_id;
   req_id.set_uuid(42);
   file_info.request_id = req_id;
+  file_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
   file_info.input_data = std::make_unique<lens::ContextualInputData>();
   file_info.input_data->upload_type =
       lens::LensOverlayContextualInputUploadType::
@@ -2410,6 +2430,8 @@ IN_PROC_BROWSER_TEST_F(
   lens::LensOverlayRequestId req_id;
   req_id.set_uuid(42);
   file_info.request_id = req_id;
+  file_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
   file_info.input_data = std::make_unique<lens::ContextualInputData>();
   file_info.input_data->upload_type =
       lens::LensOverlayContextualInputUploadType::
@@ -2470,6 +2492,8 @@ IN_PROC_BROWSER_TEST_F(
   lens::LensOverlayRequestId req_id;
   req_id.set_uuid(42);
   file_info.request_id = req_id;
+  file_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
   file_info.input_data = std::make_unique<lens::ContextualInputData>();
   file_info.input_data->upload_type =
       lens::LensOverlayContextualInputUploadType::
@@ -2960,6 +2984,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
   lens::LensOverlayRequestId req_id;
   req_id.set_context_id(999);
   file_info.request_id = req_id;
+  file_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  file_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
   file_info.input_data = std::make_unique<lens::ContextualInputData>();
   file_info.input_data->upload_type =
       lens::LensOverlayContextualInputUploadType::
@@ -3097,6 +3125,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
   lens::LensOverlayRequestId req_id;
   req_id.set_context_id(999);
   file_info.request_id = req_id;
+  file_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
   ON_CALL(*mock_session_handle_, GetUploadedContextFileInfos())
       .WillByDefault(
           Return(std::vector<contextual_search::FileInfo>{file_info}));
@@ -3157,6 +3187,8 @@ IN_PROC_BROWSER_TEST_F(
   lens::LensOverlayRequestId req_id;
   req_id.set_uuid(4242);
   file_info.request_id = req_id;
+  file_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
   AttachActiveTab(file_info.file_token);
   ON_CALL(*mock_session_handle_, GetUploadedContextFileInfos())
       .WillByDefault(
@@ -3756,6 +3788,8 @@ class ContextualTasksExtensionHandlerTabDeselectionBrowserTest
     persisted_file_info_.tab_session_id = session_id;
     persisted_file_info_.tab_url = web_contents_->GetLastCommittedURL();
     persisted_file_info_.request_id = request_id;
+    persisted_file_info_.upload_status =
+        contextual_search::ContextUploadStatus::kUploadSuccessful;
     ON_CALL(*mock_controller_, GetFileInfo(token))
         .WillByDefault(Return(&persisted_file_info_));
     mock_session_handle_->SetPersistedTabs({{session_id, {token, request_id}}});
@@ -3849,6 +3883,8 @@ IN_PROC_BROWSER_TEST_F(
   file_info.file_token = token;
   file_info.tab_session_id = session_id;
   file_info.request_id = request_id;
+  file_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
   ON_CALL(*mock_controller_, GetFileInfo(token))
       .WillByDefault(Return(&file_info));
   mock_session_handle_->SetPersistedTabs({{session_id, {token, request_id}}});
@@ -3957,6 +3993,8 @@ IN_PROC_BROWSER_TEST_F(
   lens::LensOverlayRequestId req_id;
   req_id.set_context_id(2);
   submitted_file.request_id = req_id;
+  submitted_file.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
   EXPECT_CALL(*mock_session_handle_, GetSubmittedContextFileInfos())
       .WillOnce(
           Return(std::vector<contextual_search::FileInfo>{submitted_file}))
@@ -4012,6 +4050,8 @@ IN_PROC_BROWSER_TEST_F(
   lens::LensOverlayRequestId req_id;
   req_id.set_context_id(101);
   submitted_file.request_id = req_id;
+  submitted_file.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
   EXPECT_CALL(*mock_session_handle_, GetSubmittedContextFileInfos())
       .WillRepeatedly(
           Return(std::vector<contextual_search::FileInfo>{submitted_file}));
@@ -4201,6 +4241,8 @@ IN_PROC_BROWSER_TEST_F(
   lens::LensOverlayRequestId req_id;
   req_id.set_context_id(101);
   submitted_file.request_id = req_id;
+  submitted_file.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
   EXPECT_CALL(*mock_session_handle_, GetSubmittedContextFileInfos())
       .WillOnce(
           Return(std::vector<contextual_search::FileInfo>{submitted_file}));
@@ -4400,6 +4442,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
   lens::LensOverlayRequestId req_id;
   req_id.set_context_id(777);
   file_info.request_id = req_id;
+  file_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
   file_info.input_data = std::make_unique<lens::ContextualInputData>();
   file_info.input_data->upload_type =
       lens::LensOverlayContextualInputUploadType::
@@ -4508,6 +4552,8 @@ IN_PROC_BROWSER_TEST_F(
   lens::LensOverlayRequestId req_id;
   req_id.set_context_id(999);
   file_info.request_id = req_id;
+  file_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
   ON_CALL(*mock_session_handle_, GetUploadedContextFileInfos())
       .WillByDefault(
           Return(std::vector<contextual_search::FileInfo>{file_info}));
@@ -5370,6 +5416,8 @@ IN_PROC_BROWSER_TEST_F(
   lens::LensOverlayRequestId req_id1;
   req_id1.set_context_id(999);
   file_info1.request_id = req_id1;
+  file_info1.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
   ON_CALL(*mock_session_handle_, GetUploadedContextFileInfos())
       .WillByDefault(
           Return(std::vector<contextual_search::FileInfo>{file_info1}));
@@ -5475,6 +5523,8 @@ IN_PROC_BROWSER_TEST_F(
   lens::LensOverlayRequestId req_id2;
   req_id2.set_context_id(1000);
   file_info2.request_id = req_id2;
+  file_info2.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
   ON_CALL(*mock_session_handle_, GetUploadedContextFileInfos())
       .WillByDefault(
           Return(std::vector<contextual_search::FileInfo>{file_info2}));
@@ -5575,6 +5625,8 @@ IN_PROC_BROWSER_TEST_F(
   lens::LensOverlayRequestId req_id;
   req_id.set_context_id(888);
   file_info.request_id = req_id;
+  file_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
 
   ON_CALL(*mock_session_handle_, GetUploadedContextFileInfos())
       .WillByDefault(
@@ -5816,6 +5868,8 @@ IN_PROC_BROWSER_TEST_F(
   submitted_file_info.tab_url = GURL("https://www.google.com/restored_page");
   submitted_file_info.tab_title = "Restored Page";
   submitted_file_info.request_id = req_id;
+  submitted_file_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
   ON_CALL(*mock_session_handle_, GetSubmittedContextFileInfos())
       .WillByDefault(Return(
           std::vector<contextual_search::FileInfo>{submitted_file_info}));
@@ -6315,6 +6369,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
   lens::LensOverlayRequestId req_id;
   req_id.set_context_id(555);
   persisted_file_info.request_id = req_id;
+  persisted_file_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
   ON_CALL(*mock_controller_, GetFileInfo(token))
       .WillByDefault(Return(&persisted_file_info));
 
@@ -6417,6 +6473,8 @@ IN_PROC_BROWSER_TEST_F(
   lens::LensOverlayRequestId req_id1;
   req_id1.set_uuid(1001);
   file_info1.request_id = req_id1;
+  file_info1.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
 
   contextual_search::FileInfo file_info2;
   file_info2.file_token = token2;
@@ -6425,6 +6483,8 @@ IN_PROC_BROWSER_TEST_F(
   lens::LensOverlayRequestId req_id2;
   req_id2.set_uuid(1002);
   file_info2.request_id = req_id2;
+  file_info2.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
 
   ON_CALL(*mock_controller_, GetFileInfo(token1))
       .WillByDefault(Return(&file_info1));

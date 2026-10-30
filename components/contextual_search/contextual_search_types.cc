@@ -16,6 +16,14 @@ bool IsTerminalContextStatus(ContextUploadStatus status) {
          status == ContextUploadStatus::kUploadReplaced;
 }
 
+bool IsValidContextUploadStatusForMultimodalRequest(
+    ContextUploadStatus upload_status) {
+  return upload_status == ContextUploadStatus::kProcessing ||
+         upload_status == ContextUploadStatus::kProcessingSuggestSignalsReady ||
+         upload_status == ContextUploadStatus::kUploadStarted ||
+         upload_status == ContextUploadStatus::kUploadSuccessful;
+}
+
 FileInfo::FileInfo() = default;
 FileInfo::FileInfo(const FileInfo& other) {
   *this = other;
