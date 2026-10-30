@@ -10,6 +10,7 @@
 #include <array>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/public/c/system/core.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -215,8 +216,12 @@ TEST(CoreAPITest, BasicDataPipe) {
             MojoBeginWriteData(hp, nullptr, &write_pointer, &buffer_size));
   static const char kWorld[] = "world";
   ASSERT_GE(buffer_size, sizeof(kWorld));
+  // SAFETY: On success, MojoBeginWriteData() returns in `write_pointer` a
+  // buffer that is valid for writing `buffer_size` bytes.
+  base::span<char> write_span = UNSAFE_BUFFERS(
+      base::span(static_cast<char*>(write_pointer), buffer_size));
   // Include the terminating null.
-  UNSAFE_TODO(memcpy(write_pointer, kWorld, sizeof(kWorld)));
+  write_span.copy_prefix_from(base::span_with_nul_from_cstring(kWorld));
   EXPECT_EQ(
       MOJO_RESULT_OK,
       MojoEndWriteData(hp, static_cast<uint32_t>(sizeof(kWorld)), nullptr));
@@ -250,7 +255,11 @@ TEST(CoreAPITest, BasicDataPipe) {
     }
     ASSERT_EQ(result, MOJO_RESULT_OK);
     ASSERT_LE(buffer_size, buffer.size() - 1);
-    UNSAFE_TODO(memcpy(&buffer[read_offset], read_pointer, buffer_size));
+    // SAFETY: On success, MojoBeginReadData() returns in `read_pointer` a
+    // buffer that is valid for reading `buffer_size` bytes.
+    base::span<const char> read_span = UNSAFE_BUFFERS(
+        base::span(static_cast<const char*>(read_pointer), buffer_size));
+    base::span(buffer).subspan(read_offset).copy_prefix_from(read_span);
     EXPECT_EQ(MOJO_RESULT_OK, MojoEndReadData(hc, buffer_size, nullptr));
     read_offset += buffer_size;
   }
@@ -289,7 +298,11 @@ TEST(CoreAPITest, BasicSharedBuffer) {
   void* pointer = nullptr;
   EXPECT_EQ(MOJO_RESULT_OK, MojoMapBuffer(h0, 0, 100, nullptr, &pointer));
   ASSERT_TRUE(pointer);
-  UNSAFE_TODO(static_cast<char*>(pointer)[50]) = 'x';
+  // SAFETY: On success, MojoMapBuffer() returns in `pointer` a mapping of the
+  // requested 100 bytes.
+  base::span<char> full_mapping =
+      UNSAFE_BUFFERS(base::span(static_cast<char*>(pointer), 100u));
+  full_mapping[50] = 'x';
 
   // Duplicate |h0| to |h1|.
   MojoHandle h1 = MOJO_HANDLE_INVALID;
@@ -300,7 +313,7 @@ TEST(CoreAPITest, BasicSharedBuffer) {
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h0));
 
   // The mapping should still be good.
-  UNSAFE_TODO(static_cast<char*>(pointer)[51]) = 'y';
+  full_mapping[51] = 'y';
 
   // Unmap it.
   EXPECT_EQ(MOJO_RESULT_OK, MojoUnmapBuffer(pointer));
@@ -309,10 +322,14 @@ TEST(CoreAPITest, BasicSharedBuffer) {
   pointer = nullptr;
   EXPECT_EQ(MOJO_RESULT_OK, MojoMapBuffer(h1, 50, 50, nullptr, &pointer));
   ASSERT_TRUE(pointer);
+  // SAFETY: On success, MojoMapBuffer() returns in `pointer` a mapping of the
+  // requested 50 bytes.
+  base::span<const char> half_mapping =
+      UNSAFE_BUFFERS(base::span(static_cast<const char*>(pointer), 50u));
 
   // It should have what we wrote.
-  EXPECT_EQ('x', static_cast<char*>(pointer)[0]);
-  UNSAFE_TODO(EXPECT_EQ('y', static_cast<char*>(pointer)[1]));
+  EXPECT_EQ('x', half_mapping[0]);
+  EXPECT_EQ('y', half_mapping[1]);
 
   // Unmap it.
   EXPECT_EQ(MOJO_RESULT_OK, MojoUnmapBuffer(pointer));
