@@ -157,19 +157,10 @@ bool ContextualTasksEphemeralButtonMenuModel::IsCommandIdVisible(
 void ContextualTasksEphemeralButtonMenuModel::ExecuteCommand(int command_id,
                                                              int event_flags) {
   if (command_id == kCommandRemoveForCurrentTask) {
-    auto* const controller = ContextualTasksEphemeralButtonController::From(
-        browser_window_interface_);
-    if (!controller) {
-      return;
+    if (auto* const controller = ContextualTasksEphemeralButtonController::From(
+            browser_window_interface_)) {
+      controller->RemoveEphemeralButtonForCurrentTask();
     }
-    base::RecordAction(base::UserMetricsAction(
-        "ContextualTasks.EphemeralToolbarButton.UserAction."
-        "RemoveByContextMenu"));
-    base::UmaHistogramBoolean(
-        "ContextualTasks.EphemeralToolbarButton.UserAction."
-        "RemoveByContextMenu",
-        true);
-    controller->RemoveEphemeralButtonForCurrentTask();
     return;
   }
   if (std::optional<size_t> index = GetPinnedActionMenuIndexForCommand(

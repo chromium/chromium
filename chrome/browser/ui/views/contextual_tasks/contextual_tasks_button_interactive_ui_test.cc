@@ -2705,7 +2705,26 @@ IN_PROC_BROWSER_TEST_F(
       WaitForShow(kPinnedActionToolbarUnpinElementId),
       WaitForShow(kPinnedActionToolbarCustomizeElementId),
       EnsureNotPresent(
-          ContextualTasksEphemeralButtonMenuModel::kRemoveForTaskMenuItem));
+          ContextualTasksEphemeralButtonMenuModel::kRemoveForTaskMenuItem),
+      SelectMenuItem(kPinnedActionToolbarCustomizeElementId),
+      WaitForHide(kPinnedActionToolbarUnpinElementId), Do([&]() {
+        base::UserActionTester user_action_tester;
+        base::HistogramTester histogram_tester;
+        actions::ActionItem* const close_action =
+            actions::ActionManager::Get().FindAction(
+                kActionContextualTasksCloseSidePanel,
+                BrowserActions::From(browser())->root_action_item());
+        ASSERT_NE(close_action, nullptr);
+        close_action->SetEnabled(true);
+        close_action->InvokeAction();
+        EXPECT_EQ(1, user_action_tester.GetActionCount(
+                         "ContextualTasks.EphemeralToolbarButton.UserAction."
+                         "RemoveByContextMenu"));
+        histogram_tester.ExpectUniqueSample(
+            "ContextualTasks.EphemeralToolbarButton.UserAction."
+            "RemoveByContextMenu",
+            true, 1);
+      }));
 }
 
 IN_PROC_BROWSER_TEST_F(
