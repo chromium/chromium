@@ -94,18 +94,13 @@ void ScriptAncestryTracker::WillExecuteScript(
 
   OnScriptRegistered(execution_context, script_id, url, marked_script_id);
 
-  if (!bottom_most_script_.has_value() && IsMarkedScript(script_id)) {
-    bottom_most_script_ = script_id;
-  }
+  MaybeSetBottomMostScript(execution_context, script_id);
 }
 
 void ScriptAncestryTracker::DidExecuteScript(V8ScriptId script_id) {
   running_sync_tasks_--;
 
-  if (bottom_most_script_.has_value() &&
-      bottom_most_script_.value() == script_id) {
-    bottom_most_script_.reset();
-  }
+  MaybeResetBottomMostScript();
 
   if (running_sync_tasks_ == 0) {
     monkey_patch_calls_in_scope_.clear();
@@ -143,9 +138,7 @@ void ScriptAncestryTracker::WillCallFunction(
     return;
   }
 
-  if (!bottom_most_script_.has_value() && IsMarkedScript(script_id)) {
-    bottom_most_script_ = script_id;
-  }
+  MaybeSetBottomMostScript(execution_context, script_id);
 }
 
 void ScriptAncestryTracker::DidCallFunction(V8ScriptId script_id,
@@ -155,10 +148,7 @@ void ScriptAncestryTracker::DidCallFunction(V8ScriptId script_id,
   if (is_nested) {
     return;
   }
-  if (bottom_most_script_.has_value() &&
-      bottom_most_script_.value() == script_id) {
-    bottom_most_script_.reset();
-  }
+  MaybeResetBottomMostScript();
 
   if (running_sync_tasks_ == 0) {
     monkey_patch_calls_in_scope_.clear();
@@ -408,6 +398,7 @@ void ScriptAncestryTracker::Shutdown() {
   script_metadata_.clear();
   async_script_stack_.clear();
   bottom_most_script_.reset();
+  bottom_most_script_depth_ = 0;
   monkey_patch_calls_in_scope_.clear();
   if (monitor_) {
     monitor_->RemoveObserver(this);
@@ -488,6 +479,25 @@ ScriptAncestryTracker::FindMonkeyPatchCaller(
   }
 
   return result;
+}
+
+void ScriptAncestryTracker::MaybeSetBottomMostScript(
+    ExecutionContext& execution_context,
+    V8ScriptId script_id) {
+  if (!bottom_most_script_.has_value() && IsMarkedScript(script_id)) {
+    bottom_most_script_ = script_id;
+    bottom_most_script_depth_ = running_sync_tasks_;
+    OnBottomMostScriptStarted(execution_context);
+  }
+}
+
+void ScriptAncestryTracker::MaybeResetBottomMostScript() {
+  if (bottom_most_script_.has_value() &&
+      running_sync_tasks_ < bottom_most_script_depth_) {
+    OnBottomMostScriptFinished();
+    bottom_most_script_.reset();
+    bottom_most_script_depth_ = 0;
+  }
 }
 
 bool ScriptAncestryTracker::WasApiCalledByNonAttributedScript(

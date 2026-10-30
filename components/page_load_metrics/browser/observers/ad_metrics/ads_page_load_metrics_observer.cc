@@ -424,7 +424,8 @@ void AdsPageLoadMetricsObserver::OnCpuTimingUpdate(
   FrameTreeData* ancestor_data =
       FindFrameData(subframe_rfh->GetFrameTreeNodeId());
   aggregate_frame_data_->UpdateCpuUsage(current_time, timing.task_time,
-                                        ancestor_data);
+                                        timing.ad_task_time,
+                                        ancestor_data != nullptr);
   if (ancestor_data) {
     ancestor_data->UpdateCpuUsage(current_time, timing.task_time);
     MaybeTriggerHeavyAdIntervention(subframe_rfh, ancestor_data);
@@ -1004,6 +1005,9 @@ void AdsPageLoadMetricsObserver::RecordPageResourceTotalHistograms(
   // Record cpu metrics for the page.
   builder.SetAdCpuTime(
       aggregate_frame_data_->total_ad_cpu_usage().InMilliseconds());
+  builder.SetNonAdFrameAdCpuTimeMs(
+      ukm::GetExponentialBucketMinForFineUserTiming(
+          aggregate_frame_data_->non_ad_frame_ad_cpu_usage().InMilliseconds()));
   builder.Record(ukm_recorder->Get());
 }
 
@@ -1034,10 +1038,14 @@ void AdsPageLoadMetricsObserver::RecordHistograms(ukm::SourceId source_id) {
 }
 
 void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForCpuUsage() {
-  // If the page has an ad with the relevant visibility and non-zero bytes.
-  if (aggregate_frame_data_
+  bool has_ad_frames =
+      aggregate_frame_data_
           ->get_ad_data_by_visibility(FrameVisibility::kAnyVisibility)
-          .frames == 0) {
+          .frames > 0;
+  bool has_non_ad_frame_ad_cpu =
+      !aggregate_frame_data_->non_ad_frame_ad_cpu_usage().is_zero();
+
+  if (!has_ad_frames && !has_non_ad_frame_ad_cpu) {
     return;
   }
 
@@ -1045,16 +1053,26 @@ void AdsPageLoadMetricsObserver::RecordAggregateHistogramsForCpuUsage() {
   // numbers do not change for different visibility types.
   FrameVisibility visibility = FrameVisibility::kAnyVisibility;
 
+  ADS_HISTOGRAM("Cpu.NonAdFrames.Aggregate.AdScripts.TotalUsage",
+                PAGE_LOAD_HISTOGRAM, visibility,
+                aggregate_frame_data_->non_ad_frame_ad_cpu_usage());
+  ADS_HISTOGRAM("Cpu.FullPage.TotalAdsUsage", PAGE_LOAD_HISTOGRAM, visibility,
+                aggregate_frame_data_->total_ad_cpu_usage());
+
+  if (!has_ad_frames) {
+    return;
+  }
+
   // Record the aggregate data, which is never considered activated.
   // TODO(crbug.com/40141881): Does it make sense to include an aggregate peak
   // windowed percent?  Obviously this would be a max of maxes, but might be
   // useful to have that for comparisons as well.
   ADS_HISTOGRAM("Cpu.AdFrames.Aggregate.TotalUsage2", PAGE_LOAD_HISTOGRAM,
-                visibility, aggregate_frame_data_->total_ad_cpu_usage());
+                visibility, aggregate_frame_data_->total_ad_frame_cpu_usage());
   ADS_HISTOGRAM("Cpu.NonAdFrames.Aggregate.TotalUsage2", PAGE_LOAD_HISTOGRAM,
                 visibility,
                 aggregate_frame_data_->total_cpu_usage() -
-                    aggregate_frame_data_->total_ad_cpu_usage());
+                    aggregate_frame_data_->total_ad_frame_cpu_usage());
   ADS_HISTOGRAM("Cpu.NonAdFrames.Aggregate.PeakWindowedPercent2",
                 base::UmaHistogramPercentage, visibility,
                 aggregate_frame_data_->peak_windowed_non_ad_cpu_percent());

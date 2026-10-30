@@ -223,7 +223,8 @@ class CONTENT_EXPORT RenderFrameObserver {
 
   // Notifications when a cpu timing update becomes available, when a frame
   // has performed at least 100ms of tasks.
-  virtual void DidChangeCpuTiming(base::TimeDelta time) {}
+  virtual void DidChangeCpuTiming(base::TimeDelta time,
+                                  base::TimeDelta ad_time) {}
 
   // Notification when the renderer uses a particular code path during a page
   // load. This is used for metrics collection.

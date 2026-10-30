@@ -15,11 +15,15 @@ AggregateFrameData::~AggregateFrameData() = default;
 
 void AggregateFrameData::UpdateCpuUsage(base::TimeTicks update_time,
                                         base::TimeDelta update,
+                                        base::TimeDelta ad_update,
                                         bool is_ad) {
   // Update the overall usage for all of the relevant buckets.
   cpu_usage_ += update;
   if (is_ad) {
     live_ad_cpu_usage_ += update;
+  } else {
+    live_ad_cpu_usage_ += ad_update;
+    non_ad_frame_ad_cpu_usage_ += ad_update;
   }
 
   // Update the peak usage.

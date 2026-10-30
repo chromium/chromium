@@ -2964,8 +2964,19 @@ void LocalFrame::ResumeSubresourceLoading() {
   pause_handle_receivers_.Clear();
 }
 
+void LocalFrame::AddAdTaskTime(base::TimeDelta time) {
+  unreported_ad_task_time_ += time;
+}
+
 void LocalFrame::UpdateTaskTime(base::TimeDelta time) {
-  Client()->DidChangeCpuTiming(time);
+  // Note: `ad_time` can occasionally exceed `time` in non-ad frames because
+  // `AdTracker` measures all ad script execution in the frame (including tasks
+  // on queues without a `FrameScheduler`, such as the shared main-thread input
+  // queue), whereas `time` only includes tasks attributed to the frame's
+  // `FrameScheduler`.
+  base::TimeDelta ad_time =
+      std::exchange(unreported_ad_task_time_, base::TimeDelta());
+  Client()->DidChangeCpuTiming(time, IsAdFrame() ? time : ad_time);
 }
 
 void LocalFrame::UpdateBackForwardCacheDisablingFeatures(

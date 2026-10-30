@@ -95,10 +95,23 @@ chromium-metrics-reviews@google.com.
                of the page. This is measured as percentage of a cpu core used
                and capped at 100% for multicore systems. This is measured
                whether a frame is in the foreground or not."/>
+  <variant name=".FullPage.TotalAdsUsage"
+      summary="The total CPU usage across all ad frames and ad scripts in
+               non-ad frames on a page in its lifetime. Recorded whenever the
+               page has at least one ad frame or non-zero ad script CPU usage
+               in non-ad frames. This is measured in milliseconds. This is
+               measured whether a frame is in the foreground or not."/>
   <variant name=".FullPage.TotalUsage2"
       summary="The total load of the page across its lifetime. This is
                measured in milliseconds and capped at 10 minutes. This is
                measured whether a frame is in the foreground or not."/>
+  <variant name=".NonAdFrames.Aggregate.AdScripts.TotalUsage"
+      summary="The total CPU usage of ad scripts executing in non-ad frames
+               (including the main frame) across its lifetime. Recorded
+               whenever the page has at least one ad frame or non-zero ad
+               script CPU usage in non-ad frames. This is measured in
+               milliseconds. This is measured whether a frame is in the
+               foreground or not."/>
   <variant name=".NonAdFrames.Aggregate.PeakWindowedPercent2"
       summary="The peak load over all 30 second windows during the lifetime
                of the page of all non-ad frame activity including that of the
@@ -1534,15 +1547,18 @@ chromium-metrics-reviews@google.com.
   <owner>jkarlin@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
-    Only recorded if the page has at least one identified ad frame. Recorded in
-    PageLoadMetrics when the page is destroyed. Cpu measures the wall time of
-    tasks attributable to a frame as reported by the MainThreadTaskScheduler as
-    well as time spent servicing scripted animations by each document (not
-    attributable by the MainThreadTaskScheduler). An ad frame consists of the
-    identified ad frame and all of its children (which may also be ads, but are
-    counted as part of the ancestor ad frame). Includes resources that did not
-    finish loading. Does not consider time while a page is backgrounded.
-    Includes all ad iframes. {AdsPageLoadAllCpuType}
+    Recorded if the page has at least one identified ad frame (or, for
+    .FullPage.TotalAdsUsage and .NonAdFrames.Aggregate.AdScripts.TotalUsage, if
+    the page has at least one ad frame or non-zero ad script CPU usage in non-ad
+    frames). Recorded in PageLoadMetrics when the page is destroyed. Cpu
+    measures the wall time of tasks attributable to a frame as reported by the
+    MainThreadTaskScheduler as well as time spent servicing scripted animations
+    by each document (not attributable by the MainThreadTaskScheduler), and for
+    ad script variants, the wall time spent executing ad scripts in non-ad
+    frames. An ad frame consists of the identified ad frame and all of its
+    children (which may also be ads, but are counted as part of the ancestor ad
+    frame). Includes resources that did not finish loading. Includes all ad
+    iframes. {AdsPageLoadAllCpuType}
 
     Warning: This metric expired around 04/2022 and was unexpired 07/2023. Data
     may be missing.

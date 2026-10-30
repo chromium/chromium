@@ -102,7 +102,8 @@ class UmaPageLoadMetricsObserverTest
 
   void OnCpuTimingUpdate(RenderFrameHost* render_frame_host,
                          base::TimeDelta cpu_time_spent) {
-    page_load_metrics::mojom::CpuTiming cpu_timing(cpu_time_spent);
+    page_load_metrics::mojom::CpuTiming cpu_timing(cpu_time_spent,
+                                                   base::TimeDelta());
     tester()->SimulateCpuTimingUpdate(cpu_timing, render_frame_host);
   }
 

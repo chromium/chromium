@@ -114,7 +114,7 @@ class PageTimingMetricsSender {
   void SendLatest();
 
   // Updates the PageLoadMetrics::CpuTiming data and starts the send timer.
-  void UpdateCpuTiming(base::TimeDelta task_time);
+  void UpdateCpuTiming(base::TimeDelta task_time, base::TimeDelta ad_task_time);
 
   void UpdateResourceMetadata(int resource_id, bool is_main_frame_resource);
 

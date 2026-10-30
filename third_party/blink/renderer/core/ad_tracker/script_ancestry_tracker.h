@@ -177,6 +177,11 @@ class CORE_EXPORT ScriptAncestryTracker
       const String& url,
       std::optional<V8ScriptId> marked_script_id) = 0;
 
+  // Called when the bottom-most marked script on the synchronous call stack
+  // starts or finishes executing.
+  virtual void OnBottomMostScriptStarted(ExecutionContext& execution_context) {}
+  virtual void OnBottomMostScriptFinished() {}
+
   // Explicitly registers a script (like inline attribute event handlers) that
   // is compiled dynamically rather than run as a standalone script.
   void RegisterScript(V8ScriptId script_id,
@@ -217,6 +222,10 @@ class CORE_EXPORT ScriptAncestryTracker
                                          MonkeyPatchableApi api,
                                          LazyStackTrace& stack_trace) const;
 
+  void MaybeSetBottomMostScript(ExecutionContext& execution_context,
+                                V8ScriptId script_id);
+  void MaybeResetBottomMostScript();
+
   // The local root frame of the frame tree monitored by this tracker.
   Member<LocalFrame> local_root_;
 
@@ -226,6 +235,12 @@ class CORE_EXPORT ScriptAncestryTracker
 
   // Indicates the bottom-most synchronous script on the current call stack.
   std::optional<V8ScriptId> bottom_most_script_;
+
+  // The synchronous task depth at which `bottom_most_script_` was set. Used
+  // instead of comparing `V8ScriptId` on exit so that re-entrant execution of
+  // a script with the same `V8ScriptId` (e.g. hitting V8's compilation cache)
+  // does not prematurely reset `bottom_most_script_`.
+  int bottom_most_script_depth_ = 0;
 
   // Simulates the active asynchronous execution stack by pushing and popping
   // initiating marked script IDs as asynchronous/event-driven tasks start and

@@ -628,6 +628,14 @@ struct FrameRenderDataUpdate {
 struct CpuTiming {
   // Time spent in tasks measured in wall time.
   mojo_base.mojom.TimeDelta task_time;
+  // Time spent executing ad work in this frame (for ad frames, equals
+  // `task_time`; for non-ad frames, time spent executing ad scripts). Note
+  // that in non-ad frames `ad_task_time` can occasionally exceed `task_time`
+  // because `AdTracker` measures all ad script execution in the frame
+  // (including tasks on queues without a `FrameScheduler`, such as the shared
+  // main-thread input queue), whereas `task_time` only includes tasks
+  // attributed to the frame's `FrameScheduler`.
+  mojo_base.mojom.TimeDelta ad_task_time;
 };
 
 // The latency and the type of a user interaction.

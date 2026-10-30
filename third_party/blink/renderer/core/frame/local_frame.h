@@ -413,6 +413,14 @@ class CORE_EXPORT LocalFrame final
   [[nodiscard]] base::CallbackListSubscription RequestNetworkIdleCallback(
       base::OnceClosure callback);
 
+  void AddAdTaskTime(base::TimeDelta time);
+  base::TimeDelta UnreportedAdTaskTime() const {
+    return unreported_ad_task_time_;
+  }
+  void SetUnreportedAdTaskTime(base::TimeDelta time) {
+    unreported_ad_task_time_ = time;
+  }
+
   // =========================================================================
   // All public functions below this point are candidates to move out of
   // LocalFrame into another class.
@@ -1277,6 +1285,10 @@ class CORE_EXPORT LocalFrame final
   // when the frame or any of its ancestors is not rendered (e.g. display:none,
   // visibility:hidden, or zero-area layout on the iframe element).
   std::optional<bool> is_hidden_for_media_playback_;
+
+  // CPU (wall) time spent executing ad scripts in this frame that has not yet
+  // been reported via DidChangeCpuTiming.
+  base::TimeDelta unreported_ad_task_time_;
 };
 
 inline FrameLoader& LocalFrame::Loader() const {

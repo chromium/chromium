@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "base/gtest_prod_util.h"
+#include "base/time/time.h"
 #include "components/subresource_filter/core/common/scoped_rule.h"
 #include "third_party/blink/renderer/core/ad_tracker/ad_script_identifier.h"
 #include "third_party/blink/renderer/core/ad_tracker/monkey_patchable_api.h"
@@ -137,6 +138,8 @@ class CORE_EXPORT AdTracker : public ScriptAncestryTracker {
 
  protected:
   bool HasMarkedFrames() const override;
+  void OnBottomMostScriptStarted(ExecutionContext& execution_context) override;
+  void OnBottomMostScriptFinished() override;
 
  private:
   friend class FrameFetchContextSubresourceFilterTest;
@@ -149,6 +152,13 @@ class CORE_EXPORT AdTracker : public ScriptAncestryTracker {
   HeapHashMap<WeakMember<ExecutionContext>, KnownAdScriptsAndProvenance>
       context_known_ad_scripts_;
   HashMap<V8ScriptId, AdProvenance> ad_scripts_;
+
+  // The entry timestamp of the bottom-most ad script executing in a non-ad
+  // frame.
+  base::TimeTicks bottom_most_script_start_time_;
+
+  // The non-ad frame in which the bottom-most ad script is executing.
+  WeakMember<LocalFrame> bottom_most_script_frame_;
 };
 
 }  // namespace blink

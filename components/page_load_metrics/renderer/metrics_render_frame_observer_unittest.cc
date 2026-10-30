@@ -145,9 +145,36 @@ TEST_F(MetricsRenderFrameObserverTest, SingleCpuMetric) {
   observer_.DidCommitProvisionalLoad(ui::PAGE_TRANSITION_LINK);
 
   // Send cpu timing updates and verify the expected result.
-  observer_.DidChangeCpuTiming(base::Milliseconds(110));
-  observer_.DidChangeCpuTiming(base::Milliseconds(50));
+  observer_.DidChangeCpuTiming(base::Milliseconds(110), base::TimeDelta());
+  observer_.DidChangeCpuTiming(base::Milliseconds(50), base::TimeDelta());
   validator_.ExpectCpuTiming(base::Milliseconds(160));
+  observer_.GetMockTimer()->Fire();
+}
+
+TEST_F(MetricsRenderFrameObserverTest, SingleCpuMetricWithAdTime) {
+  base::Time nav_start = base::Time::FromSecondsSinceUnixEpoch(42);
+
+  mojom::PageLoadTiming timing;
+  page_load_metrics::InitPageLoadTimingForTest(&timing);
+  timing.navigation_start = nav_start;
+  observer_.SetFakePageLoadTiming(timing);
+  validator_.ExpectPageLoadTiming(timing);
+  observer_.DidStartNavigation(GURL(), std::nullopt);
+  observer_.ReadyToCommitNavigation(nullptr);
+  observer_.DidCommitProvisionalLoad(ui::PAGE_TRANSITION_LINK);
+
+  // Send cpu timing updates with ad time and verify the expected result.
+  observer_.DidChangeCpuTiming(base::Milliseconds(110), base::Milliseconds(40));
+  observer_.DidChangeCpuTiming(base::Milliseconds(50), base::Milliseconds(20));
+  validator_.ExpectCpuTiming(base::Milliseconds(160), base::Milliseconds(60));
+  observer_.GetMockTimer()->Fire();
+
+  // Verify that ad_task_time and task_time are properly reset after sending,
+  // and subsequent timing updates are not accumulated on top of the previous
+  // batch.
+  validator_.ExpectPageLoadTiming(timing);
+  observer_.DidChangeCpuTiming(base::Milliseconds(70), base::Milliseconds(30));
+  validator_.ExpectCpuTiming(base::Milliseconds(70), base::Milliseconds(30));
   observer_.GetMockTimer()->Fire();
 }
 

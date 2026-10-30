@@ -871,9 +871,10 @@ void LocalFrameClientImpl::DidObserveUserInteraction(
   }
 }
 
-void LocalFrameClientImpl::DidChangeCpuTiming(base::TimeDelta time) {
+void LocalFrameClientImpl::DidChangeCpuTiming(base::TimeDelta time,
+                                              base::TimeDelta ad_time) {
   if (web_frame_->Client()) {
-    web_frame_->Client()->DidChangeCpuTiming(time);
+    web_frame_->Client()->DidChangeCpuTiming(time, ad_time);
   }
 }
 

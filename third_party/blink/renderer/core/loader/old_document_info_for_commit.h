@@ -32,6 +32,9 @@ struct OldDocumentInfoForCommit : GarbageCollected<OldDocumentInfoForCommit> {
   // The `unreported_task_time` accumulated by the FrameSchedulerImpl, which
   // needs to be carried over in case of subframe navigations.
   base::TimeDelta frame_scheduler_unreported_task_time;
+  // The `unreported_ad_task_time` accumulated on LocalFrame, carried over on
+  // subframe navigations.
+  base::TimeDelta unreported_ad_task_time;
   // Whether the previous LocalFrame is the focused frame or not.
   bool was_focused_frame = false;
   // The overlay color used by the previous LocalFrame, if it has an overlay.

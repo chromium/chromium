@@ -599,7 +599,8 @@ class CONTENT_EXPORT RenderFrameImpl
       base::TimeTicks max_event_end,
       uint64_t interaction_offset,
       uint64_t performance_timeline_navigation_id) override;
-  void DidChangeCpuTiming(base::TimeDelta time) override;
+  void DidChangeCpuTiming(base::TimeDelta time,
+                          base::TimeDelta ad_time) override;
   void DidObserveLoadingBehavior(blink::LoadingBehaviorFlag behavior) override;
   void DidObserveJavaScriptFrameworks(
       const blink::JavaScriptFrameworkDetectionResult&) override;

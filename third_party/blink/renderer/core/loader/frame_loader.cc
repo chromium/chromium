@@ -442,6 +442,7 @@ void FrameLoader::DispatchUnloadEventAndFillOldDocumentInfoIfNeeded(
   frame_->GetDocument()->DispatchUnloadEvents(
       &old_document_info->unload_timing_info,
       will_commit_new_document_in_this_frame);
+  old_document_info->unreported_ad_task_time = frame_->UnreportedAdTaskTime();
   old_document_info->total_lifecycle_events_processing_time_on_commit =
       std::max(
           old_document_info->total_lifecycle_events_processing_time_on_commit,

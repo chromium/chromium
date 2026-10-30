@@ -2385,11 +2385,19 @@ void DocumentLoader::DidCommitNavigation() {
   // same frame.
   base::TimeDelta previous_document_unreported_task_time =
       frame_->GetFrameScheduler()->UnreportedTaskTime();
+  base::TimeDelta previous_document_unreported_ad_task_time =
+      frame_->UnreportedAdTaskTime();
   if (OldDocumentInfoForCommit* old_document_info =
           ScopedOldDocumentInfoForCommitCapturer::CurrentInfo()) {
     previous_document_unreported_task_time =
         old_document_info->frame_scheduler_unreported_task_time;
+    previous_document_unreported_ad_task_time =
+        old_document_info->unreported_ad_task_time;
   }
+  frame_->SetUnreportedAdTaskTime(
+      frame_->IsOutermostMainFrame()
+          ? base::TimeDelta()
+          : previous_document_unreported_ad_task_time);
   WebHistoryCommitType commit_type = LoadTypeToCommitType(load_type_);
   frame_->GetFrameScheduler()->DidCommitProvisionalLoad(
       commit_type == kWebHistoryInertCommit,

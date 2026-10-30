@@ -169,7 +169,8 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
       base::TimeTicks max_event_end,
       PerformanceTimelineEntryIdInfo interaction_id,
       PerformanceTimelineEntryIdInfo navigation_id) override;
-  void DidChangeCpuTiming(base::TimeDelta) override;
+  void DidChangeCpuTiming(base::TimeDelta time,
+                          base::TimeDelta ad_time) override;
   void DidObserveLoadingBehavior(LoadingBehaviorFlag) override;
   void DidObserveJavaScriptFrameworks(
       const JavaScriptFrameworkDetectionResult&) override;

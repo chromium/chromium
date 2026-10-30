@@ -5132,4 +5132,73 @@ TEST_F(AdTrackerSimTest, FormSubmissionTriggeredByVanillaScript_IsNotAd) {
   dest_resource.Complete("<body></body>");
 }
 
+TEST_F(AdTrackerSimTest, AdScriptExecutionAccumulatesAdTaskTime) {
+  LocalFrame* frame = GetDocument().GetFrame();
+  WebFrameClient().reset_cpu_timing();
+  EXPECT_EQ(WebFrameClient().total_ad_cpu_time(), base::TimeDelta());
+
+  const char kAdUrl[] = "https://example.com/ad_script.js";
+  SimSubresourceRequest ad_script(kAdUrl, "text/javascript");
+  main_resource_->Complete(
+      "<body><script src=\"ad_script.js\"></script></body>");
+  test::RunPendingTasks();
+
+  ad_script.Complete("console.log('ad');");
+  test::RunPendingTasks();
+
+  EXPECT_TRUE(IsKnownAdScript(GetDocument().GetExecutionContext(), kAdUrl));
+
+  // Trigger UpdateTaskTime by adding task time to the frame scheduler.
+  frame->GetFrameScheduler()->AddTaskTime(base::Milliseconds(100));
+  base::TimeDelta ad_time = WebFrameClient().total_ad_cpu_time();
+  EXPECT_GT(ad_time, base::TimeDelta());
+
+  // Verify that UpdateTaskTime cleared `unreported_ad_task_time_` so a
+  // subsequent flush with no new ad script execution reports zero ad time.
+  WebFrameClient().reset_cpu_timing();
+  frame->GetFrameScheduler()->AddTaskTime(base::Milliseconds(100));
+  EXPECT_EQ(WebFrameClient().total_ad_cpu_time(), base::TimeDelta());
+}
+
+TEST_F(AdTrackerSimTest, VanillaScriptDoesNotAccumulateAdTaskTime) {
+  LocalFrame* frame = GetDocument().GetFrame();
+  WebFrameClient().reset_cpu_timing();
+
+  const char kVanillaUrl[] = "https://example.com/vanilla_script.js";
+  SimSubresourceRequest vanilla_script(kVanillaUrl, "text/javascript");
+  main_resource_->Complete(
+      "<body><script src=\"vanilla_script.js\"></script></body>");
+  test::RunPendingTasks();
+
+  vanilla_script.Complete("console.log('vanilla');");
+  test::RunPendingTasks();
+
+  EXPECT_FALSE(
+      IsKnownAdScript(GetDocument().GetExecutionContext(), kVanillaUrl));
+
+  frame->GetFrameScheduler()->AddTaskTime(base::Milliseconds(100));
+  EXPECT_EQ(WebFrameClient().total_ad_cpu_time(), base::TimeDelta());
+}
+
+TEST_F(AdTrackerSimTest, AdFrameReportsFullTaskTimeAsAdTaskTime) {
+  main_resource_->Complete("<body><iframe></iframe></body>");
+  test::RunPendingTasks();
+
+  LocalFrame* child_frame =
+      To<LocalFrame>(GetDocument().GetFrame()->Tree().FirstChild());
+  ASSERT_TRUE(child_frame);
+
+  SetIsAdFrame(child_frame);
+  ASSERT_TRUE(child_frame->IsAdFrame());
+
+  frame_test_helpers::TestWebFrameClient* child_client =
+      static_cast<frame_test_helpers::TestWebFrameClient*>(
+          WebLocalFrameImpl::FromFrame(child_frame)->Client());
+  child_client->reset_cpu_timing();
+
+  child_frame->GetFrameScheduler()->AddTaskTime(base::Milliseconds(100));
+  EXPECT_EQ(child_client->total_ad_cpu_time(), child_client->total_cpu_time());
+  EXPECT_GE(child_client->total_ad_cpu_time(), base::Milliseconds(100));
+}
+
 }  // namespace blink

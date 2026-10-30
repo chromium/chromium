@@ -4823,9 +4823,10 @@ void RenderFrameImpl::DidObserveUserInteraction(
   }
 }
 
-void RenderFrameImpl::DidChangeCpuTiming(base::TimeDelta time) {
+void RenderFrameImpl::DidChangeCpuTiming(base::TimeDelta time,
+                                         base::TimeDelta ad_time) {
   for (auto& observer : observers_) {
-    observer.DidChangeCpuTiming(time);
+    observer.DidChangeCpuTiming(time, ad_time);
   }
 }
 

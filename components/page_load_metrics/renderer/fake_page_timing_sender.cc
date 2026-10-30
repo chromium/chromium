@@ -55,9 +55,10 @@ void FakePageTimingSender::PageTimingValidator::ExpectPageLoadTiming(
 }
 
 void FakePageTimingSender::PageTimingValidator::ExpectCpuTiming(
-    const base::TimeDelta& timing) {
+    const base::TimeDelta& timing,
+    const base::TimeDelta& ad_timing) {
   VerifyExpectedCpuTimings();
-  expected_cpu_timings_.push_back(mojom::CpuTiming(timing).Clone());
+  expected_cpu_timings_.push_back(mojom::CpuTiming(timing, ad_timing).Clone());
 }
 
 void FakePageTimingSender::PageTimingValidator::VerifyExpectedTimings() const {
@@ -159,8 +160,11 @@ void FakePageTimingSender::PageTimingValidator::VerifyExpectedCpuTimings()
   ASSERT_EQ(actual_cpu_timings_.size(), expected_cpu_timings_.size());
   for (size_t i = 0; i < actual_cpu_timings_.size(); ++i) {
     if (actual_cpu_timings_.at(i)->task_time ==
-        expected_cpu_timings_.at(i)->task_time)
+            expected_cpu_timings_.at(i)->task_time &&
+        actual_cpu_timings_.at(i)->ad_task_time ==
+            expected_cpu_timings_.at(i)->ad_task_time) {
       continue;
+    }
     ADD_FAILURE() << "Actual cpu timing != expected cpu timing at index " << i;
   }
 }

@@ -38,6 +38,7 @@ class AggregateFrameData {
   // Updates the cpu usage for the page, given whether update is for an ad.
   void UpdateCpuUsage(base::TimeTicks update_time,
                       base::TimeDelta update,
+                      base::TimeDelta ad_update,
                       bool is_ad);
 
   // Called for each new ad frame FCP calculation, this method keeps track of
@@ -84,12 +85,18 @@ class AggregateFrameData {
     ad_data_[static_cast<size_t>(visibility)].frames += frames;
   }
 
-  // Updates the total ad cpu usage for the page.
+  // Updates the total ad-frame cpu usage for the page.
   void update_ad_cpu_usage(base::TimeDelta usage) { ad_cpu_usage_ += usage; }
 
   // Get the total cpu usage of this page.
   base::TimeDelta total_cpu_usage() const { return cpu_usage_; }
-  base::TimeDelta total_ad_cpu_usage() const { return ad_cpu_usage_; }
+  base::TimeDelta total_ad_frame_cpu_usage() const { return ad_cpu_usage_; }
+  base::TimeDelta non_ad_frame_ad_cpu_usage() const {
+    return non_ad_frame_ad_cpu_usage_;
+  }
+  base::TimeDelta total_ad_cpu_usage() const {
+    return ad_cpu_usage_ + non_ad_frame_ad_cpu_usage_;
+  }
   base::TimeDelta live_ad_cpu_usage() const { return live_ad_cpu_usage_; }
 
   // Accessor for the total resource data of the page.
@@ -107,13 +114,18 @@ class AggregateFrameData {
   // The overall cpu usage for this page.
   base::TimeDelta cpu_usage_;
 
-  // The total ad cpu usage, updated in batches when frames are destroyed or
-  // when the page load ends. This is the canonical metric for UMA.
+  // The total ad-frame cpu usage, updated in batches when frames are destroyed
+  // or when the page load ends. Aggregate ad-attributed cpu usage (including ad
+  // scripts in non-ad frames) is calculated via `total_ad_cpu_usage()`.
   base::TimeDelta ad_cpu_usage_;
 
-  // The total ad cpu usage, updated continuously as CPU timing updates arrive.
-  // Useful for live metrics reporting (e.g. DevTools). Conceptually, this will
-  // eventually match `ad_cpu_usage_`.
+  // The total ad cpu usage spent executing ad scripts in non-ad frames.
+  base::TimeDelta non_ad_frame_ad_cpu_usage_;
+
+  // The total ad cpu usage (both ad frames and ad scripts in non-ad frames),
+  // updated continuously as CPU timing updates arrive. Useful for live metrics
+  // reporting (e.g. DevTools). Conceptually, this will eventually match
+  // `total_ad_cpu_usage()`.
   base::TimeDelta live_ad_cpu_usage_;
 
   // The resource data for this page.

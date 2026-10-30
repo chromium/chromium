@@ -628,7 +628,8 @@ class BLINK_EXPORT WebLocalFrameClient {
 
   // A cpu task or tasks completed.  Triggered when at least 100ms of wall time
   // was spent in tasks on the frame.
-  virtual void DidChangeCpuTiming(base::TimeDelta time) {}
+  virtual void DidChangeCpuTiming(base::TimeDelta time,
+                                  base::TimeDelta ad_time) {}
 
   // UseCounter ----------------------------------------------------------
   // Blink exhibited a certain loading behavior that the browser process will

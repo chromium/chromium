@@ -234,7 +234,8 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       PerformanceTimelineEntryIdInfo navigation_id) {}
 
   // Will be called when |CpuTiming| events are updated
-  virtual void DidChangeCpuTiming(base::TimeDelta time) {}
+  virtual void DidChangeCpuTiming(base::TimeDelta time,
+                                  base::TimeDelta ad_time) {}
 
   // Will be called when a particular loading code path has been used. This
   // propogates renderer loading behavior to the browser process for histograms.

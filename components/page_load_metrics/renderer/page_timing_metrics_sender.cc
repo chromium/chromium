@@ -354,8 +354,10 @@ void PageTimingMetricsSender::SendLatest() {
   SendNow();
 }
 
-void PageTimingMetricsSender::UpdateCpuTiming(base::TimeDelta task_time) {
+void PageTimingMetricsSender::UpdateCpuTiming(base::TimeDelta task_time,
+                                              base::TimeDelta ad_task_time) {
   last_cpu_timing_->task_time += task_time;
+  last_cpu_timing_->ad_task_time += ad_task_time;
   EnsureSendTimer();
 }
 
@@ -410,6 +412,7 @@ void PageTimingMetricsSender::SendNow() {
   metadata_->main_frame_viewport_rect.reset();
   metadata_->main_frame_ad_rects.clear();
   last_cpu_timing_->task_time = base::TimeDelta();
+  last_cpu_timing_->ad_task_time = base::TimeDelta();
   modified_resources_.clear();
   render_data_.new_layout_shifts.clear();
   soft_navigation_metrics_.clear();

@@ -522,8 +522,9 @@ class AdsPageLoadMetricsObserverTest
   }
 
   void OnCpuTimingUpdate(RenderFrameHost* render_frame_host,
-                         base::TimeDelta cpu_time_spent) {
-    mojom::CpuTiming cpu_timing(cpu_time_spent);
+                         base::TimeDelta cpu_time_spent,
+                         base::TimeDelta ad_time_spent = base::TimeDelta()) {
+    mojom::CpuTiming cpu_timing(cpu_time_spent, ad_time_spent);
     tester_->SimulateCpuTimingUpdate(cpu_timing, render_frame_host);
   }
 
@@ -2127,6 +2128,137 @@ TEST_P(AdsPageLoadMetricsObserverTest, TestCpuTimingMetricsOnActivation) {
       1000);
 }
 
+TEST_P(AdsPageLoadMetricsObserverTest,
+       TestCpuTimingMetricsWithAdFramesAndNonAdFrameAdScripts) {
+  OverrideWithMockClock();
+  RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
+  RenderFrameHost* non_ad_frame =
+      CreateAndNavigateSubFrame(kNonAdUrl, main_frame);
+  RenderFrameHost* ad_frame = CreateAndNavigateSubFrame(kAdUrl, main_frame);
+
+  // Add some data to the ad frame so it gets reported.
+  ResourceDataUpdate(ad_frame, ResourceCached::kNotCached, base::KiB(10),
+                     /*mime_type=*/"", /*is_ad_resource=*/true);
+
+  // Ad frame performs CPU work.
+  OnCpuTimingUpdate(ad_frame, base::Milliseconds(500));
+
+  // Non-ad subframe performs CPU work, including ad script time.
+  OnCpuTimingUpdate(non_ad_frame, base::Milliseconds(300),
+                    base::Milliseconds(100));
+
+  // Main frame performs CPU work, including ad script time.
+  OnCpuTimingUpdate(main_frame, base::Milliseconds(600),
+                    base::Milliseconds(200));
+
+  // Navigate away to record histograms and UKM.
+  AdvancePageDuration(base::Milliseconds(4000));
+  NavigateFrame(kNonAdUrl, main_frame);
+
+  // Verify UKM AdPageLoad.
+  auto entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::AdPageLoad::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  // Total ad CPU time: 500 (ad frame) + 100 (non-ad subframe) + 200 (main
+  // frame) = 800ms
+  EXPECT_EQ(800,
+            *test_ukm_recorder().GetEntryMetric(
+                entries.front(), ukm::builders::AdPageLoad::kAdCpuTimeName));
+  // Non-ad frame ad CPU time: 100 + 200 = 300ms
+  EXPECT_EQ(ukm::GetExponentialBucketMinForFineUserTiming(300),
+            *test_ukm_recorder().GetEntryMetric(
+                entries.front(),
+                ukm::builders::AdPageLoad::kNonAdFrameAdCpuTimeMsName));
+
+  // Verify new UMA histograms.
+  histogram_tester().ExpectUniqueSample(
+      SuffixedHistogram("Cpu.NonAdFrames.Aggregate.AdScripts.TotalUsage"), 300,
+      1);
+  histogram_tester().ExpectUniqueSample(
+      SuffixedHistogram("Cpu.FullPage.TotalAdsUsage"), 800, 1);
+
+  // Verify existing frame-based UMA histograms maintain frame-based semantics.
+  histogram_tester().ExpectUniqueSample(
+      SuffixedHistogram("Cpu.AdFrames.Aggregate.TotalUsage2"), 500, 1);
+  histogram_tester().ExpectUniqueSample(
+      SuffixedHistogram("Cpu.NonAdFrames.Aggregate.TotalUsage2"), 300 + 600, 1);
+  histogram_tester().ExpectUniqueSample(
+      SuffixedHistogram("Cpu.FullPage.TotalUsage2"), 500 + 300 + 600, 1);
+}
+
+TEST_P(AdsPageLoadMetricsObserverTest,
+       TestCpuTimingMetricsWithNonAdFrameAdScriptsOnly_NoAdFrames) {
+  OverrideWithMockClock();
+  RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
+
+  // Load an ad resource in the main frame so AdPageLoad UKM is recorded.
+  ResourceDataUpdate(main_frame, ResourceCached::kNotCached, base::KiB(10),
+                     /*mime_type=*/"", /*is_ad_resource=*/true);
+
+  // Main frame performs CPU work with ad script time (no ad frames exist on
+  // page).
+  OnCpuTimingUpdate(main_frame, base::Milliseconds(500),
+                    base::Milliseconds(250));
+
+  // Navigate away to record histograms and UKM.
+  AdvancePageDuration(base::Milliseconds(4000));
+  NavigateFrame(kNonAdUrl, main_frame);
+
+  // Verify UKM AdPageLoad.
+  auto entries = test_ukm_recorder().GetEntriesByName(
+      ukm::builders::AdPageLoad::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  // Total ad CPU time = 250ms (only from non-ad frame ad scripts).
+  EXPECT_EQ(250,
+            *test_ukm_recorder().GetEntryMetric(
+                entries.front(), ukm::builders::AdPageLoad::kAdCpuTimeName));
+  EXPECT_EQ(ukm::GetExponentialBucketMinForFineUserTiming(250),
+            *test_ukm_recorder().GetEntryMetric(
+                entries.front(),
+                ukm::builders::AdPageLoad::kNonAdFrameAdCpuTimeMsName));
+
+  // Verify new UMA histograms recorded even without ad frames.
+  histogram_tester().ExpectUniqueSample(
+      SuffixedHistogram("Cpu.NonAdFrames.Aggregate.AdScripts.TotalUsage"), 250,
+      1);
+  histogram_tester().ExpectUniqueSample(
+      SuffixedHistogram("Cpu.FullPage.TotalAdsUsage"), 250, 1);
+
+  // Existing frame-based aggregate histograms require frames > 0, so should not
+  // be recorded.
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram("Cpu.AdFrames.Aggregate.TotalUsage2"), 0);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram("Cpu.NonAdFrames.Aggregate.TotalUsage2"), 0);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram("Cpu.FullPage.TotalUsage2"), 0);
+}
+
+TEST_P(AdsPageLoadMetricsObserverTest,
+       TestCpuTimingMetricsWithNoAdFramesAndNoAdScripts_HistogramsNotRecorded) {
+  OverrideWithMockClock();
+  RenderFrameHost* main_frame = NavigateMainFrame(kNonAdUrl);
+
+  // Main frame performs CPU work with no ad script time.
+  OnCpuTimingUpdate(main_frame, base::Milliseconds(500));
+
+  // Navigate away.
+  AdvancePageDuration(base::Milliseconds(4000));
+  NavigateFrame(kNonAdUrl, main_frame);
+
+  // Neither new nor old ad CPU histograms should be recorded.
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram("Cpu.NonAdFrames.Aggregate.AdScripts.TotalUsage"), 0);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram("Cpu.FullPage.TotalAdsUsage"), 0);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram("Cpu.AdFrames.Aggregate.TotalUsage2"), 0);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram("Cpu.NonAdFrames.Aggregate.TotalUsage2"), 0);
+  histogram_tester().ExpectTotalCount(
+      SuffixedHistogram("Cpu.FullPage.TotalUsage2"), 0);
+}
+
 // Tests that creative origin status is computed as intended, i.e. as the origin
 // status of the frame in the ad frame tree that has its first contentful paint
 // occur first.
@@ -2499,7 +2631,8 @@ TEST_P(AdsPageLoadMetricsObserverTest,
 
   // Also simulate CPU timing update targeting pending_commit_rfh.
   mojom::CpuTiming cpu_timing(
-      base::Milliseconds(heavy_ad_thresholds::kMaxCpuTime + 1));
+      base::Milliseconds(heavy_ad_thresholds::kMaxCpuTime + 1),
+      base::TimeDelta());
   tester()->SimulateCpuTimingUpdate(cpu_timing, pending_commit_rfh);
 
   // Verify that the pending-commit RFH IPCs were ignored: no intervention fired

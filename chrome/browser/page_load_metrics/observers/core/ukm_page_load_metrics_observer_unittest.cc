@@ -1776,7 +1776,8 @@ TEST_F(UkmPageLoadMetricsObserverTest, CpuTimeMetrics) {
   NavigateAndCommit(GURL(kTestUrl1));
 
   // Simulate some CPU usage.
-  page_load_metrics::mojom::CpuTiming cpu_timing(base::Milliseconds(500));
+  page_load_metrics::mojom::CpuTiming cpu_timing(base::Milliseconds(500),
+                                                 base::TimeDelta());
   tester()->SimulateCpuTimingUpdate(cpu_timing);
 
   // Simulate closing the tab.

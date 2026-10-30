@@ -57,7 +57,8 @@ class FakePageTimingSender : public PageTimingSender {
 
     // CpuTimings that are expected to be sent through SendTiming() should be
     // passed to ExpectCpuTiming.
-    void ExpectCpuTiming(const base::TimeDelta& timing);
+    void ExpectCpuTiming(const base::TimeDelta& timing,
+                         const base::TimeDelta& ad_timing = base::TimeDelta());
 
     // Forces verification that actual timings sent through SendTiming() match
     // expected timings provided via ExpectPageLoadTiming.

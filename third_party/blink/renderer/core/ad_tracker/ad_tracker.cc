@@ -247,6 +247,8 @@ std::optional<AdScriptIdentifier> AdTracker::GetCreationAdScript(
 
 void AdTracker::Shutdown() {
   ScriptAncestryTracker::Shutdown();
+  bottom_most_script_start_time_ = base::TimeTicks();
+  bottom_most_script_frame_ = nullptr;
 }
 
 bool AdTracker::IsMarkedScript(V8ScriptId script_id) const {
@@ -262,6 +264,25 @@ bool AdTracker::HasMarkedFrames() const {
   return InstanceCounters::CounterValue(InstanceCounters::kAdSubframeCounter) >
              0 ||
          ScriptAncestryTracker::HasMarkedFrames();
+}
+
+void AdTracker::OnBottomMostScriptStarted(ExecutionContext& execution_context) {
+  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
+    LocalFrame* frame = window->GetFrame();
+    if (!frame->IsAdFrame()) {
+      bottom_most_script_frame_ = frame;
+      bottom_most_script_start_time_ = base::TimeTicks::Now();
+    }
+  }
+}
+
+void AdTracker::OnBottomMostScriptFinished() {
+  if (bottom_most_script_frame_) {
+    bottom_most_script_frame_->AddAdTaskTime(base::TimeTicks::Now() -
+                                             bottom_most_script_start_time_);
+    bottom_most_script_start_time_ = base::TimeTicks();
+    bottom_most_script_frame_ = nullptr;
+  }
 }
 
 void AdTracker::OnScriptRegistered(ExecutionContext& execution_context,
@@ -298,6 +319,7 @@ void AdTracker::OnScriptRegistered(ExecutionContext& execution_context,
 void AdTracker::Trace(Visitor* visitor) const {
   ScriptAncestryTracker::Trace(visitor);
   visitor->Trace(context_known_ad_scripts_);
+  visitor->Trace(bottom_most_script_frame_);
 }
 
 }  // namespace blink
