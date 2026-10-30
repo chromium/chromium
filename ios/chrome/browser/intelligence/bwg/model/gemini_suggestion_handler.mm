@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_suggestion_handler.h"
 
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/web_state.h"
@@ -26,7 +27,12 @@
 
 - (void)fetchZeroStateSuggestions:
     (void (^)(NSArray<NSString*>* suggestions))completion {
-  web::WebState* webState = _webStateList->GetActiveWebState();
+  if (!completion) {
+    return;
+  }
+
+  web::WebState* webState =
+      _webStateList ? _webStateList->GetActiveWebState() : nullptr;
   if (!webState) {
     completion(nil);
     return;
@@ -38,10 +44,7 @@
     return;
   }
 
-  tabHelper->FetchZeroStateSuggestionsAsStrings(
-      base::BindOnce(^(NSArray<NSString*>* suggestions) {
-        completion(suggestions);
-      }));
+  tabHelper->FetchZeroStateSuggestionsAsStrings(base::BindOnce(completion));
 }
 
 @end

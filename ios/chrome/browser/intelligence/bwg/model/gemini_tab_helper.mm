@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 
+#import "base/check_is_test.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/weak_ptr.h"
@@ -111,6 +112,10 @@ NSArray<NSString*>* ConvertZeroStateSuggestionsToStrings(
 
 }  // namespace
 
+GeminiTabHelper::GeminiTabHelper() {
+  CHECK_IS_TEST();
+}
+
 GeminiTabHelper::GeminiTabHelper(web::WebState* web_state)
     : web_state_(web_state) {
   ProfileIOS* profile =
@@ -130,10 +135,8 @@ GeminiTabHelper::~GeminiTabHelper() {
   for (auto& observer : observers_) {
     observer.OnGeminiTabHelperDestroyed(this);
   }
-  if (web_state_) {
-    web_state_->RemoveObserver(this);
-    web_state_ = nullptr;
-  }
+  web_state_observation_.Reset();
+  web_state_ = nullptr;
   optimization_guide_decider_ = nullptr;
 }
 

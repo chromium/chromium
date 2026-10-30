@@ -18,8 +18,6 @@
 #import "mojo/public/cpp/bindings/remote.h"
 #import "url/gurl.h"
 
-class GeminiSuggestionHandlerTest;
-
 // Object representing a Gemini suggestion.
 @interface ZeroStateSuggestion : NSObject
 
@@ -65,7 +63,6 @@ class ZeroStateSuggestionsService {
 
  private:
   // Adding test classes as friend to facilitate setting state.
-  friend class ::GeminiSuggestionHandlerTest;
   friend class ZeroStateSuggestionsServiceTest;
 
   // Parses the response of a zero-state suggestions execution.
