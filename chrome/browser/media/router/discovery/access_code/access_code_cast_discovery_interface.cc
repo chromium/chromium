@@ -68,6 +68,7 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         data:
           "The transmitted information is a sanitized pin."
         destination: GOOGLE_OWNED_SERVICE
+        api_service_name: "castedumessaging-pa.googleapis.com"
       }
         policy {
           cookies_allowed: NO
