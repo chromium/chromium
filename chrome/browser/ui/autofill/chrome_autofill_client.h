@@ -85,6 +85,7 @@ class TouchToFillAutofillController;
 class ActorAutofillManager;
 class AutofillAiPersonalContextAccessManager;
 class AutofillOptimizationGuideDecider;
+class CustomFormControlScriptRunner;
 class EmailVerificationController;
 class EmailVerifierDelegate;
 class FormFieldData;
@@ -505,6 +506,10 @@ class ChromeAutofillClient : public ContentAutofillClient {
   std::unique_ptr<EmailVerificationController> email_verification_controller_;
   std::unique_ptr<EmailVerifierDelegate> email_verifier_delegate_;
   std::unique_ptr<ChromeOtpPhishGuardDelegate> otp_phish_guard_delegate_;
+  // Only exists on desktop, if the browser has a
+  // `CustomFormControlScriptIndex`.
+  std::unique_ptr<CustomFormControlScriptRunner>
+      custom_form_control_script_runner_;
 
   // Removes the subscription when the `ChromeAutofillClient` is destroyed.
   base::CallbackListSubscription actor_task_state_changed_subscription_;

@@ -110,6 +110,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/content/browser/content_identity_credential_delegate.h"
+#include "components/autofill/content/browser/integrators/custom_form_controls/custom_form_control_script_runner.h"
 #include "components/autofill/content/browser/integrators/email_verifier/email_verifier_delegate.h"
 #include "components/autofill/core/browser/actor/actor_autofill_manager.h"
 #include "components/autofill/core/browser/at_memory/at_memory_enablement_util.h"
@@ -245,6 +246,7 @@
 #include "chrome/browser/ui/views/autofill/autofill_ai/entity_suppression_dialog_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
+#include "components/autofill/content/browser/integrators/custom_form_controls/custom_form_control_script_index.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"  // nogncheck
 
@@ -1371,6 +1373,16 @@ ChromeAutofillClient::ChromeAutofillClient(content::WebContents* web_contents)
         this, HistoryServiceFactory::GetForProfile(
                   GetProfile(), ServiceAccessType::EXPLICIT_ACCESS));
   }
+#if !BUILDFLAG(IS_ANDROID)
+  // The index only exists if `features::kAutofillCustomFormControlScripts` is
+  // enabled and a script directory is set.
+  if (const CustomFormControlScriptIndex* index =
+          g_browser_process->GetFeatures()
+              ->custom_form_control_script_index()) {
+    custom_form_control_script_runner_ =
+        std::make_unique<CustomFormControlScriptRunner>(*this, index);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kAutofillAiWithDataSchema)) {
     autofill_ai_save_update_entity_flow_manager_ =
