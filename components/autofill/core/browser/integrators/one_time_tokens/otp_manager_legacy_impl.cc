@@ -280,7 +280,8 @@ void OtpManagerLegacyImpl::MaybeShowOtpSuggestionsForSms(
     OneTimeTokensPhishGuardVerdict verdict) {
   LOG_AF(owner_->client().GetCurrentLogManager())
       << LoggingScope::kOneTimeTokens
-      << "PhishGuard check completed with verdict: " << verdict;
+      << "PhishGuard check completed with verdict: "
+      << OneTimeTokensPhishGuardVerdictToStringView(verdict);
 
   base::UmaHistogramEnumeration("Autofill.OneTimeTokens.PhishGuard.Verdict",
                                 verdict);

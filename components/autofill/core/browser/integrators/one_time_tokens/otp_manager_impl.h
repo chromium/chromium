@@ -17,6 +17,7 @@
 #include "base/types/expected.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_manager.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/otp_types.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_retriever.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
@@ -32,18 +33,6 @@ class AutofillField;
 class BrowserAutofillManager;
 class FormFieldData;
 class FormStructure;
-class LogBuffer;
-
-// Used for histograms. Do not reorder.
-enum class OneTimeTokensPhishGuardVerdict {
-  kUnknown = 0,
-  kPhishing = 1,
-  kNotPhishing = 2,
-  kMaxValue = kNotPhishing,
-};
-
-LogBuffer& operator<<(LogBuffer& buffer,
-                      OneTimeTokensPhishGuardVerdict verdict);
 
 // This class triggers the fetching of SMS OTPs from the `SmsOtpService`
 // and of Gmail OTPs from the `GmailOtpBackend` as soon as

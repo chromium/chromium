@@ -539,7 +539,8 @@ void OtpManagerImpl::MaybeShowOtpSuggestionsForSms(
     OneTimeTokensPhishGuardVerdict verdict) {
   LOG_AF(owner_->client().GetCurrentLogManager())
       << LoggingScope::kOneTimeTokens
-      << "PhishGuard check completed with verdict: " << verdict;
+      << "PhishGuard check completed with verdict: "
+      << OneTimeTokensPhishGuardVerdictToStringView(verdict);
 
   base::UmaHistogramEnumeration("Autofill.OneTimeTokens.PhishGuard.Verdict",
                                 verdict);
@@ -590,7 +591,8 @@ void OtpManagerImpl::MaybeShowOtpSuggestionsForGmail(
     OneTimeTokensPhishGuardVerdict verdict) {
   LOG_AF(owner_->client().GetCurrentLogManager())
       << LoggingScope::kOneTimeTokens
-      << "PhishGuard check completed with verdict: " << verdict;
+      << "PhishGuard check completed with verdict: "
+      << OneTimeTokensPhishGuardVerdictToStringView(verdict);
 
   base::UmaHistogramEnumeration("Autofill.OneTimeTokens.PhishGuard.Verdict",
                                 verdict);
@@ -750,19 +752,6 @@ std::optional<OneTimeToken> OtpManagerImpl::SelectMostRecentToken() const {
     return std::nullopt;
   }
   return last_retrieved_gmail_otp_;
-}
-
-LogBuffer& operator<<(LogBuffer& buffer,
-                      OneTimeTokensPhishGuardVerdict verdict) {
-  switch (verdict) {
-    case OneTimeTokensPhishGuardVerdict::kUnknown:
-      return buffer << "kUnknown";
-    case OneTimeTokensPhishGuardVerdict::kPhishing:
-      return buffer << "kPhishing";
-    case OneTimeTokensPhishGuardVerdict::kNotPhishing:
-      return buffer << "kNotPhishing";
-  }
-  NOTREACHED();
 }
 
 }  // namespace autofill
