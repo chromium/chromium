@@ -146,11 +146,9 @@ if (is_android) {
   }
 }
 
-# This target no longer has any sources of its own; it only aggregates
-# dependencies. It must be a source_set (not a static_library) because an empty
-# static_library produces an empty archive, which the Windows librarian
-# (lld-link /lib) rejects with "lib failed".
-source_set("test_support") {
+# This target no longer has any sources of its own; it is a pure aggregator
+# of public_deps for consumers that have not yet been migrated to direct deps.
+group("test_support") {
   testonly = true
   public_deps = [
     "//chrome/browser/notifications:test_support",
@@ -319,7 +317,6 @@ source_set("test_support") {
     "//ui/gl",
   ]
 
-  data = []
   data_deps = []
 
   if (enable_pdf) {
@@ -403,7 +400,6 @@ source_set("test_support") {
       "//components/crash/core/app",
       "//third_party/wtl",
     ]
-    libs = [ "runtimeobject.lib" ]
   }
 
   if (is_chromeos) {
@@ -489,10 +485,6 @@ source_set("test_support") {
   if (enable_offline_pages) {
     public_deps += [ "//components/offline_pages/core:test_support" ]
   }
-
-  # All test_support sources have been migrated into per-feature
-  # targets. Do not add new sources to //chrome/test:test_support.
-  sources = []
 }
 
 if (is_android) {
@@ -3610,11 +3602,9 @@ static_library("test_support_unit") {
 }
 
 if (!is_android) {
-  # This target no longer has any sources of its own; it only aggregates
-  # dependencies. It must be a source_set (not a static_library) because an
-  # empty static_library produces an empty archive, which the Windows librarian
-  # (lld-link /lib) rejects with "lib failed".
-  source_set("test_support_ui") {
+  # This target no longer has any sources of its own; it is a pure aggregator
+  # of public_deps for consumers that have not yet been migrated to direct deps.
+  group("test_support_ui") {
     testonly = true
 
     public_deps = [
@@ -3699,10 +3689,6 @@ if (!is_android) {
     if (enable_dice_support) {
       public_deps += [ "//chrome/browser/ui/profiles" ]
     }
-
-    # All test_support_ui sources have been migrated into per-feature
-    # targets. Do not add new sources to //chrome/test:test_support_ui.
-    sources = []
   }
 
   if (is_chromeos) {

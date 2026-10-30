@@ -199,6 +199,7 @@ if (is_win) {
       "//base/test:test_support",
       "//testing/gtest",
     ]
+    libs = [ "runtimeobject.lib" ]
   }
 }
 
