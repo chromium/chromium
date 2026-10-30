@@ -246,15 +246,29 @@ class FakeV4L2Impl::OpenedDevice {
     return kSuccessReturnValue;
   }
 
-  int s_fmt(v4l2_format* format) {
-    if (format->type != V4L2_BUF_TYPE_VIDEO_CAPTURE ||
-        format->fmt.pix.width > kMaxWidth ||
-        format->fmt.pix.height > kMaxHeight || format->fmt.pix.width == 0 ||
-        format->fmt.pix.height == 0 || format->fmt.pix.width % 2 == 1 ||
-        format->fmt.pix.height % 2 == 1) {
+  // Adjusts |format| to one the device supports. VIDIOC_TRY_FMT and
+  // VIDIOC_S_FMT both use it, as they must return the same format for the
+  // same request.
+  int AdjustFormat(v4l2_format* format) {
+    if (format->type != V4L2_BUF_TYPE_VIDEO_CAPTURE) {
       return Error(EINVAL);
     }
     v4l2_pix_format& pix_format = format->fmt.pix;
+    if (config_.stepwise_frame_sizes) {
+      // Like a driver with a scaler: clamp to the range, then round down to
+      // the step grid.
+      const v4l2_frmsize_stepwise& s = *config_.stepwise_frame_sizes;
+      pix_format.width = std::clamp(pix_format.width, s.min_width, s.max_width);
+      pix_format.height =
+          std::clamp(pix_format.height, s.min_height, s.max_height);
+      pix_format.width -= (pix_format.width - s.min_width) % s.step_width;
+      pix_format.height -= (pix_format.height - s.min_height) % s.step_height;
+    } else if (pix_format.width > kMaxWidth || pix_format.height > kMaxHeight ||
+               pix_format.width == 0 || pix_format.height == 0 ||
+               pix_format.width % 2 == 1 || pix_format.height % 2 == 1) {
+      return Error(EINVAL);
+    }
+    pix_format.height -= pix_format.height % config_.height_alignment;
     // We only support YUV420 output for now. Tell this to the client by
     // overwriting whatever format it requested.
     pix_format.pixelformat = config_.v4l2_pixel_format;
@@ -267,7 +281,14 @@ class FakeV4L2Impl::OpenedDevice {
     // Arbitrary colorspace
     pix_format.colorspace = V4L2_COLORSPACE_REC709;
     pix_format.priv = 0;
-    selected_format_ = pix_format;
+    return kSuccessReturnValue;
+  }
+
+  int s_fmt(v4l2_format* format) {
+    if (AdjustFormat(format) != kSuccessReturnValue) {
+      return kErrorReturnValue;
+    }
+    selected_format_ = format->fmt.pix;
     return kSuccessReturnValue;
   }
 
@@ -422,9 +443,41 @@ class FakeV4L2Impl::OpenedDevice {
     return kSuccessReturnValue;
   }
 
+  int try_fmt(v4l2_format* format) {
+    if (!config_.try_fmt_supported) {
+      return Error(ENOTTY);
+    }
+    return AdjustFormat(format);
+  }
+
+  int g_fmt(v4l2_format* format) {
+    if (format->type != V4L2_BUF_TYPE_VIDEO_CAPTURE) {
+      return Error(EINVAL);
+    }
+    format->fmt.pix = selected_format_;
+    return kSuccessReturnValue;
+  }
+
+  int g_selection(v4l2_selection* selection) {
+    if (selection->type != V4L2_BUF_TYPE_VIDEO_CAPTURE ||
+        selection->target != V4L2_SEL_TGT_CROP_BOUNDS || !config_.crop_bounds) {
+      return Error(EINVAL);
+    }
+    selection->r = {0, 0, static_cast<uint32_t>(config_.crop_bounds->width()),
+                    static_cast<uint32_t>(config_.crop_bounds->height())};
+    return kSuccessReturnValue;
+  }
+
   int enum_framesizes(v4l2_frmsizeenum* frame_size) {
-    if (frame_size->index > 0)
+    if (frame_size->index > 0) {
       return kErrorReturnValue;
+    }
+
+    if (config_.stepwise_frame_sizes) {
+      frame_size->type = config_.frame_size_type;
+      frame_size->stepwise = *config_.stepwise_frame_sizes;
+      return kSuccessReturnValue;
+    }
 
     frame_size->type = V4L2_FRMSIZE_TYPE_DISCRETE;
     frame_size->discrete.width = kDefaultWidth;
@@ -587,6 +640,13 @@ int FakeV4L2Impl::ioctl(int fd, int request, void* argp) {
           reinterpret_cast<v4l2_ext_controls*>(argp));
     case VIDIOC_QUERYCTRL:
       return opened_device->queryctrl(reinterpret_cast<v4l2_queryctrl*>(argp));
+    case VIDIOC_TRY_FMT:
+      return opened_device->try_fmt(reinterpret_cast<v4l2_format*>(argp));
+    case VIDIOC_G_FMT:
+      return opened_device->g_fmt(reinterpret_cast<v4l2_format*>(argp));
+    case VIDIOC_G_SELECTION:
+      return opened_device->g_selection(
+          reinterpret_cast<v4l2_selection*>(argp));
     case VIDIOC_S_FMT:
       return opened_device->s_fmt(reinterpret_cast<v4l2_format*>(argp));
     case VIDIOC_G_PARM:
@@ -642,8 +702,6 @@ int FakeV4L2Impl::ioctl(int fd, int request, void* argp) {
     case VIDIOC_TRY_EXT_CTRLS:
     case VIDIOC_G_FBUF:
     case VIDIOC_S_FBUF:
-    case VIDIOC_G_FMT:
-    case VIDIOC_TRY_FMT:
     case VIDIOC_G_FREQUENCY:
     case VIDIOC_S_FREQUENCY:
     case VIDIOC_G_INPUT:
@@ -670,7 +728,6 @@ int FakeV4L2Impl::ioctl(int fd, int request, void* argp) {
     case VIDIOC_G_DV_TIMINGS:
     case VIDIOC_CREATE_BUFS:
     case VIDIOC_PREPARE_BUF:
-    case VIDIOC_G_SELECTION:
     case VIDIOC_S_SELECTION:
     case VIDIOC_DECODER_CMD:
     case VIDIOC_TRY_DECODER_CMD:

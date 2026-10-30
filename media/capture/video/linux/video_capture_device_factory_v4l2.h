@@ -7,14 +7,16 @@
 #ifndef MEDIA_CAPTURE_VIDEO_LINUX_VIDEO_CAPTURE_DEVICE_FACTORY_V4L2_H_
 #define MEDIA_CAPTURE_VIDEO_LINUX_VIDEO_CAPTURE_DEVICE_FACTORY_V4L2_H_
 
-#include "media/capture/video/video_capture_device_factory.h"
-
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/task/single_thread_task_runner.h"
+#include "media/capture/video/video_capture_device_factory.h"
 #include "media/capture/video_capture_types.h"
+#include "ui/gfx/geometry/size.h"
+
+struct v4l2_frmsize_stepwise;
 
 namespace media {
 
@@ -61,6 +63,15 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryV4L2
                                       uint32_t fourcc,
                                       uint32_t width,
                                       uint32_t height);
+  // Whether the driver accepts |size| for |fourcc| without changing it; true
+  // if the driver does not implement VIDIOC_TRY_FMT, which is optional.
+  bool DriverAcceptsFrameSize(int fd, uint32_t fourcc, const gfx::Size& size);
+  // Returns the frame sizes to list for a stepwise or continuous frame size
+  // range, each one accepted unchanged by the driver for |fourcc|.
+  std::vector<gfx::Size> GetStepwiseFrameSizes(
+      int fd,
+      uint32_t fourcc,
+      const v4l2_frmsize_stepwise& stepwise);
   void GetSupportedFormatsForV4L2BufferType(
       int fd,
       VideoCaptureFormats* supported_formats);

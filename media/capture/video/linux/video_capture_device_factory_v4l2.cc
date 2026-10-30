@@ -10,6 +10,7 @@
 #include <sys/ioctl.h>
 
 #include <algorithm>
+#include <functional>
 #include <string_view>
 #include <utility>
 
@@ -53,6 +54,27 @@ const char kVidPathTemplate[] = "/sys/class/video4linux/%s/device/../idVendor";
 const char kPidPathTemplate[] = "/sys/class/video4linux/%s/device/../idProduct";
 const char kInterfacePathTemplate[] =
     "/sys/class/video4linux/%s/device/interface";
+
+// Common sizes tried inside a stepwise or continuous frame size range.
+constexpr gfx::Size kCommonFrameSizes[] = {
+    {3840, 2160}, {2560, 1440}, {1920, 1080}, {1600, 1200}, {1280, 960},
+    {1280, 720},  {1024, 768},  {800, 600},   {640, 480},   {640, 360},
+    {352, 288},   {320, 240},   {320, 180},   {160, 120}};
+
+bool IsInStepwiseRange(const v4l2_frmsize_stepwise& stepwise,
+                       const gfx::Size& size) {
+  const uint32_t width = size.width();
+  const uint32_t height = size.height();
+  if (width < stepwise.min_width || width > stepwise.max_width ||
+      height < stepwise.min_height || height > stepwise.max_height) {
+    return false;
+  }
+  // A continuous range has a step of 1.
+  const uint32_t step_width = std::max(stepwise.step_width, 1u);
+  const uint32_t step_height = std::max(stepwise.step_height, 1u);
+  return (width - stepwise.min_width) % step_width == 0 &&
+         (height - stepwise.min_height) % step_height == 0;
+}
 
 bool ReadIdFile(const std::string& path, std::string* id) {
   std::string content;
@@ -297,6 +319,75 @@ std::vector<float> VideoCaptureDeviceFactoryV4L2::GetFrameRateList(
   return frame_rates;
 }
 
+bool VideoCaptureDeviceFactoryV4L2::DriverAcceptsFrameSize(
+    int fd,
+    uint32_t fourcc,
+    const gfx::Size& size) {
+  v4l2_format format = {};
+  format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  format.fmt.pix.pixelformat = fourcc;
+  format.fmt.pix.width = size.width();
+  format.fmt.pix.height = size.height();
+  format.fmt.pix.field = V4L2_FIELD_ANY;
+  if (DoIoctl(fd, VIDIOC_TRY_FMT, &format) < 0) {
+    // VIDIOC_TRY_FMT is optional; a driver without it cannot be asked, so the
+    // size is taken as it is.
+    return errno == ENOTTY;
+  }
+  return format.fmt.pix.pixelformat == fourcc &&
+         format.fmt.pix.width == static_cast<uint32_t>(size.width()) &&
+         format.fmt.pix.height == static_cast<uint32_t>(size.height());
+}
+
+std::vector<gfx::Size> VideoCaptureDeviceFactoryV4L2::GetStepwiseFrameSizes(
+    int fd,
+    uint32_t fourcc,
+    const v4l2_frmsize_stepwise& stepwise) {
+  std::vector<gfx::Size> candidates;
+#if defined(V4L2_SEL_TGT_CROP_BOUNDS)
+  // The crop bounds, if the driver reports them.
+  v4l2_selection bounds = {};
+  bounds.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  bounds.target = V4L2_SEL_TGT_CROP_BOUNDS;
+  if (DoIoctl(fd, VIDIOC_G_SELECTION, &bounds) == 0) {
+    candidates.emplace_back(bounds.r.width, bounds.r.height);
+  }
+#endif
+  // The size the driver currently produces.
+  v4l2_format current = {};
+  current.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+  if (DoIoctl(fd, VIDIOC_G_FMT, &current) == 0) {
+    candidates.emplace_back(current.fmt.pix.width, current.fmt.pix.height);
+  }
+  candidates.emplace_back(stepwise.max_width, stepwise.max_height);
+  candidates.insert(candidates.end(), std::begin(kCommonFrameSizes),
+                    std::end(kCommonFrameSizes));
+  // Sort largest first and drop duplicates, so that the loop below checks
+  // each candidate once.
+  std::ranges::sort(candidates, std::ranges::greater(),
+                    [](const gfx::Size& size) {
+                      return std::pair(size.width(), size.height());
+                    });
+  const auto duplicates = std::ranges::unique(candidates);
+  candidates.erase(duplicates.begin(), duplicates.end());
+
+  std::vector<gfx::Size> sizes;
+  for (const gfx::Size& size : candidates) {
+    if (IsInStepwiseRange(stepwise, size) &&
+        DriverAcceptsFrameSize(fd, fourcc, size)) {
+      sizes.push_back(size);
+    }
+  }
+  // None of the sizes above lies on the range's grid, e.g. one starting at an
+  // odd width whose maximum is off the grid: fall back to the minimum, which
+  // always lies on it.
+  const gfx::Size minimum(stepwise.min_width, stepwise.min_height);
+  if (sizes.empty() && DriverAcceptsFrameSize(fd, fourcc, minimum)) {
+    sizes.push_back(minimum);
+  }
+  return sizes;
+}
+
 void VideoCaptureDeviceFactoryV4L2::GetSupportedFormatsForV4L2BufferType(
     int fd,
     VideoCaptureFormats* supported_formats) {
@@ -316,23 +407,29 @@ void VideoCaptureDeviceFactoryV4L2::GetSupportedFormatsForV4L2BufferType(
     frame_size.pixel_format = v4l2_format.pixelformat;
     for (; DoIoctl(fd, VIDIOC_ENUM_FRAMESIZES, &frame_size) == 0;
          ++frame_size.index) {
+      std::vector<gfx::Size> frame_sizes;
       if (frame_size.type == V4L2_FRMSIZE_TYPE_DISCRETE) {
-        supported_format.frame_size.SetSize(frame_size.discrete.width,
-                                            frame_size.discrete.height);
+        frame_sizes.emplace_back(frame_size.discrete.width,
+                                 frame_size.discrete.height);
       } else if (frame_size.type == V4L2_FRMSIZE_TYPE_STEPWISE ||
                  frame_size.type == V4L2_FRMSIZE_TYPE_CONTINUOUS) {
-        // TODO(mcasas): see http://crbug.com/249953, support these devices.
-        NOTIMPLEMENTED_LOG_ONCE();
-        continue;
+        frame_sizes = GetStepwiseFrameSizes(fd, v4l2_format.pixelformat,
+                                            frame_size.stepwise);
       }
 
-      const std::vector<float> frame_rates = GetFrameRateList(
-          fd, v4l2_format.pixelformat, frame_size.discrete.width,
-          frame_size.discrete.height);
-      for (const auto& frame_rate : frame_rates) {
-        supported_format.frame_rate = frame_rate;
-        supported_formats->push_back(supported_format);
-        DVLOG(1) << VideoCaptureFormat::ToString(supported_format);
+      for (const gfx::Size& size : frame_sizes) {
+        supported_format.frame_size = size;
+        const std::vector<float> frame_rates = GetFrameRateList(
+            fd, v4l2_format.pixelformat, size.width(), size.height());
+        for (const auto& frame_rate : frame_rates) {
+          supported_format.frame_rate = frame_rate;
+          supported_formats->push_back(supported_format);
+          DVLOG(1) << VideoCaptureFormat::ToString(supported_format);
+        }
+      }
+      // Only index 0 is valid for a stepwise or continuous range.
+      if (frame_size.type != V4L2_FRMSIZE_TYPE_DISCRETE) {
+        break;
       }
     }
   }
