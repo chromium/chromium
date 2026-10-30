@@ -391,7 +391,7 @@ void OmniboxEverywhereUIManager::ShowForProfile(Profile* profile,
     return;
   }
 
-  if (widget_) {
+  if (widget_ || (contents_wrapper_ && profile_ != profile)) {
     // If a different profile is present, clean up first.
     DestroyWidgetAndWebContents();
   }
@@ -726,8 +726,11 @@ void OmniboxEverywhereUIManager::OnMostVisitedPrefChanged() {
     return;
   }
   // Clean up the widget when the pref changes so there is not flicker when the
-  // omnibox is re-invoked.
-  DestroyWidgetAndWebContents();
+  // omnibox is re-invoked, while keeping the WebContents alive in case a Mojo
+  // handler on `contents_wrapper_` (such as `MostVisitedHandler`) is on the
+  // call stack.
+  DestroyWidget();
+  ReleaseKeepAlives();
 }
 
 // TODO(crbug.com/558851707): Move impression recording to the FRE WebUI

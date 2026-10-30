@@ -3114,6 +3114,65 @@ TEST_F(OmniboxEverywhereUIManagerTest,
   ui_manager->Shutdown();
 }
 
+// Regression test for crbug.com/579037685: changing a most-visited or shortcuts
+// preference while hidden can run synchronously inside a Mojo call on the
+// popup's WebContents (such as `MostVisitedHandler`), so it must destroy only
+// the widget while keeping `contents_wrapper_` alive.
+TEST_F(OmniboxEverywhereUIManagerTest,
+       MostVisitedPrefChangeWhenHiddenDestroysWidgetButKeepsContents) {
+  TestingProfile other_profile;
+  auto ui_manager = CreateUIManager();
+
+  ui_manager->ShowForProfile(&profile_, GetContext());
+  ASSERT_TRUE(ui_manager->widget());
+  ASSERT_TRUE(ui_manager->contents_wrapper_for_testing());
+  ASSERT_TRUE(ui_manager->web_contents());
+  base::WeakPtr<content::WebContents> first_profile_web_contents =
+      ui_manager->web_contents()->GetWeakPtr();
+
+  {
+    WebUIContentsWrapper* contents_wrapper =
+        ui_manager->contents_wrapper_for_testing();
+    content::WebContents* web_contents = ui_manager->web_contents();
+
+    ui_manager->Close();
+    ASSERT_TRUE(ui_manager->widget());
+    EXPECT_FALSE(ui_manager->widget()->IsVisible());
+
+    profile_.GetPrefs()->SetInteger(
+        omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts,
+        std::to_underlying(
+            omnibox_everywhere::prefs::ShowShortcutsPrefValue::kDisabled));
+
+    EXPECT_FALSE(ui_manager->widget());
+    EXPECT_EQ(ui_manager->contents_wrapper_for_testing(), contents_wrapper);
+    EXPECT_EQ(ui_manager->web_contents(), web_contents);
+
+    // Re-showing for the same profile wraps a fresh widget around the existing
+    // WebContents.
+    ui_manager->ShowForProfile(&profile_, GetContext());
+    ASSERT_TRUE(ui_manager->widget());
+    EXPECT_EQ(ui_manager->web_contents(), web_contents);
+  }
+
+  // Destroying only the widget and then switching to a different profile must
+  // still replace the first profile's WebContents.
+  ui_manager->Close();
+  profile_.GetPrefs()->SetInteger(
+      omnibox_everywhere::prefs::kOmniboxEverywhereShowShortcuts,
+      std::to_underlying(
+          omnibox_everywhere::prefs::ShowShortcutsPrefValue::kEnabled));
+  ASSERT_FALSE(ui_manager->widget());
+  ASSERT_TRUE(first_profile_web_contents);
+
+  ui_manager->ShowForProfile(&other_profile, GetContext());
+  EXPECT_FALSE(first_profile_web_contents);
+  ASSERT_TRUE(ui_manager->web_contents());
+  EXPECT_EQ(ui_manager->web_contents()->GetBrowserContext(), &other_profile);
+
+  ui_manager->Shutdown();
+}
+
 TEST_F(OmniboxEverywhereUIManagerTest,
        CleanUpWidgetOnCustomLinksListPrefChangeWhenHidden) {
   auto ui_manager = CreateUIManager();

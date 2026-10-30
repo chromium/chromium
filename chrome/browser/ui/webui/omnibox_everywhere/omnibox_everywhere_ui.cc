@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/search/most_visited_metrics_logger.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_popup_file_selector.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
 #include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
@@ -627,6 +628,14 @@ bool OmniboxEverywhereUI::CancelChromeDefaultPicker() {
 void OmniboxEverywhereUI::BindInterface(
     mojo::PendingReceiver<omnibox_everywhere_debug::mojom::PageHandlerFactory>
         receiver) {
+  // The debug page is only meant to be opened in a browser tab, never inside
+  // the floating Omnibox Everywhere popup's WebContents.
+  if (!omnibox::IsOmniboxEverywhereEnabled(profile_) ||
+      !web_ui()->GetWebContents() ||
+      !BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+          web_ui()->GetWebContents())) {
+    return;
+  }
   if (debug_page_factory_receiver_.is_bound()) {
     debug_page_factory_receiver_.reset();
   }

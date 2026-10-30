@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_OMNIBOX_EVERYWHERE_DEBUG_OMNIBOX_EVERYWHERE_DEBUG_PAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_OMNIBOX_EVERYWHERE_DEBUG_OMNIBOX_EVERYWHERE_DEBUG_PAGE_HANDLER_H_
 
+#include <memory>
+#include <string>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/debug/omnibox_everywhere_debug.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -65,6 +68,7 @@ class OmniboxEverywhereDebugPageHandler : public mojom::PageHandler {
  private:
   void OnPrefChanged(const std::string& pref_name);
 
+  raw_ptr<content::WebUI> web_ui_;
   raw_ptr<Profile> profile_;
   mojo::Remote<mojom::Page> page_;
   mojo::Receiver<mojom::PageHandler> receiver_;

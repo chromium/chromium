@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_everywhere_service_factory.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/composebox_everywhere_handler.h"
+#include "chrome/browser/ui/webui/omnibox_everywhere/debug/omnibox_everywhere_debug.mojom.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/mojom/omnibox_everywhere.mojom.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_page_handler.h"
 #include "chrome/browser/ui/webui/omnibox_everywhere/omnibox_everywhere_ui.h"
@@ -41,6 +43,8 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/test/test_web_ui.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/url_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -652,6 +656,25 @@ TEST_F(OmniboxEverywhereHandlerTest,
   EXPECT_FALSE(
       omnibox_everywhere::prefs::IsOmniboxEverywhereShortcutsVisible(
           profile()));
+}
+
+// Regression test for crbug.com/579037685: `OmniboxEverywhereUI::BindInterface`
+// must reject `omnibox_everywhere_debug::mojom::PageHandlerFactory` bindings
+// when hosted in a standalone non-tab WebContents (such as the floating popup).
+TEST_F(OmniboxEverywhereHandlerTest,
+       BindDebugPageHandlerFactoryRejectedForNonTabWebContents) {
+  OmniboxEverywhereUI ui(&web_ui_);
+  mojo::Remote<omnibox_everywhere_debug::mojom::PageHandlerFactory>
+      factory_remote;
+  mojo::PendingReceiver<omnibox_everywhere_debug::mojom::PageHandlerFactory>
+      factory_receiver = factory_remote.BindNewPipeAndPassReceiver();
+  base::RunLoop disconnect_loop;
+  factory_remote.set_disconnect_handler(disconnect_loop.QuitClosure());
+
+  ui.BindInterface(std::move(factory_receiver));
+  disconnect_loop.Run();
+
+  EXPECT_FALSE(factory_remote.is_connected());
 }
 
 TEST_F(OmniboxEverywhereHandlerTest, CalculateContextMenuAnchorPoint_LTR) {
