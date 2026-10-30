@@ -9,7 +9,7 @@ specific_include_rules = {
   "browser_frame_view_chromeos_browsertest\\.cc": [
     "+ash/multi_user/multi_user_window_manager.h",
   ],
-  "browser_native_widget_ash\\.*": [
+  "browser_native_widget_ash\\..*": [
     "+ash",
     "+components/app_restore",
   ],
@@ -17,11 +17,11 @@ specific_include_rules = {
   "browser_view\\.cc": [
     "+ash/wm/window_properties.h",
   ],
-  "dbus_appmenu\\.*": [
+  "dbus_appmenu.*": [
     "+dbus",
   ],
   # Parts of this class use Ash, but only when run in classic Ash mode.
-  "picture_in_picture_browser_frame_view\\.*": [
+  "picture_in_picture_browser_frame_view.*": [
     "+ash",
   ],
   "top_controls_slide_controller_chromeos_browsertest\\.cc": [

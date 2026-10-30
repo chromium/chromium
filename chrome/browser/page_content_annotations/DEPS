@@ -3,11 +3,11 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "multi_source_page_context_fetcher\\.*": [
+  "multi_source_page_context_fetcher\\..*": [
     "+components/paint_preview/common",
     "+pdf/mojom",
   ],
-  "page_content_annotations_service_browsertest\.cc": [
+  "page_content_annotations_service_browsertest\\.cc": [
     "+pdf/mojom",
   ],
 }

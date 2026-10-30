@@ -24,7 +24,7 @@ specific_include_rules = {
     "+ui/message_center",
   ],
 
-  "test_util\\.*": [
+  "test_util\\..*": [
     "+chrome/browser/ui/ash",
     "+chrome/browser/ui/browser_commands.h",
     "+chrome/browser/ui/browser_web_contents_delegate/browser_web_contents_delegate.h",
