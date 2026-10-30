@@ -701,12 +701,6 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
 // If enabled, ignore Strict-Transport-Security for [*.]localhost hosts.
 NET_EXPORT BASE_DECLARE_FEATURE(kIgnoreHSTSForLocalhost);
 
-// If enabled, URLRequests for http, https, ws, and wss URLs whose hostnames are
-// not valid DNS names (per IsCanonicalizedHostCompliant()) fail with
-// ERR_INVALID_URL. Without this, such requests may still be sent through a
-// proxy, bypassing HSTS, which can't be applied to such hosts.
-NET_EXPORT BASE_DECLARE_FEATURE(kRejectNonCompliantHttpHosts);
-
 // If enabled, main frame navigation resources will be prioritized in Simple
 // Cache and SQL Cache. So they will be less likely to be evicted.
 NET_EXPORT BASE_DECLARE_FEATURE(kSimpleCachePrioritizedCaching);

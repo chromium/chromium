@@ -388,78 +388,6 @@ TEST_F(URLRequestHttpJobWithProxyTest, TestSuccessfulWithOneProxy) {
   EXPECT_EQ(base::ByteSize(0), request->GetTotalReceivedBytes());
 }
 
-// Tests that requests to hostnames that are not valid DNS names are rejected
-// before being sent to an HTTP proxy. Such requests would fail at the DNS layer
-// without a proxy, but a proxy could otherwise be sent them in cleartext,
-// bypassing HSTS.
-TEST_F(URLRequestHttpJobWithProxyTest, NonCompliantHostNotSentToProxy) {
-  const ProxyChain proxy_chain =
-      ProxyUriToProxyChain("http://origin.net:80", ProxyServer::SCHEME_HTTP);
-  URLRequestHttpJobWithProxy http_job_with_proxy(
-      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
-          ProxyServerToPacResultElement(proxy_chain.First()),
-          TRAFFIC_ANNOTATION_FOR_TESTS));
-
-  // No socket data is added, so the test would crash if a connection to the
-  // proxy were attempted.
-  for (const char* url : {"http://a!b.test/", "https://a!b.test/"}) {
-    SCOPED_TRACE(url);
-    TestDelegate delegate;
-    std::unique_ptr<URLRequest> request =
-        http_job_with_proxy.context_->CreateRequest(
-            GURL(url), DEFAULT_PRIORITY, &delegate,
-            TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
-
-    request->Start();
-    delegate.RunUntilComplete();
-
-    EXPECT_THAT(delegate.request_status(), IsError(ERR_INVALID_URL));
-    EXPECT_EQ(base::ByteSize(0), request->GetTotalSentBytes());
-  }
-}
-
-// Same as above, but with kRejectNonCompliantHttpHosts disabled, in which case
-// the request is sent to the proxy.
-TEST_F(URLRequestHttpJobWithProxyTest,
-       NonCompliantHostSentToProxyWithFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kRejectNonCompliantHttpHosts);
-
-  const std::string_view kProxyGetMockWrite =
-      "GET http://a!b.test/ HTTP/1.1\r\n"
-      "Host: a!b.test\r\n"
-      "Proxy-Connection: keep-alive\r\n"
-      "User-Agent: \r\n"
-      "Accept-Encoding: gzip, deflate\r\n"
-      "Accept-Language: en-us,fr\r\n\r\n";
-
-  const ProxyChain proxy_chain =
-      ProxyUriToProxyChain("http://origin.net:80", ProxyServer::SCHEME_HTTP);
-
-  MockWrite writes[] = {MockWrite(kProxyGetMockWrite)};
-  MockRead reads[] = {MockRead(SYNCHRONOUS, ERR_CONNECTION_RESET)};
-  StaticSocketDataProvider socket_data(reads, writes);
-
-  URLRequestHttpJobWithProxy http_job_with_proxy(
-      ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
-          ProxyServerToPacResultElement(proxy_chain.First()),
-          TRAFFIC_ANNOTATION_FOR_TESTS));
-  http_job_with_proxy.socket_factory_.AddSocketDataProvider(&socket_data);
-
-  TestDelegate delegate;
-  std::unique_ptr<URLRequest> request =
-      http_job_with_proxy.context_->CreateRequest(
-          GURL("http://a!b.test/"), DEFAULT_PRIORITY, &delegate,
-          TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
-
-  request->Start();
-  delegate.RunUntilComplete();
-
-  EXPECT_THAT(delegate.request_status(), IsError(ERR_CONNECTION_RESET));
-  EXPECT_EQ(proxy_chain, request->proxy_chain());
-  EXPECT_EQ(CountWriteByteSize(writes), request->GetTotalSentBytes());
-}
-
 // Tests that when two proxy chains are in use and the connection to a proxy
 // server in the first proxy chain fails, the proxy chain is set correctly on
 // the URLRequest.
@@ -814,39 +742,6 @@ TEST_F(URLRequestHttpJobWithMockSocketsTest,
   // Should not include the redirect.
   EXPECT_EQ(CountWriteByteSize(final_writes), request->GetTotalSentBytes());
   EXPECT_EQ(CountReadByteSize(final_reads), request->GetTotalReceivedBytes());
-}
-
-// Tests that redirects to invalid hostnames fail with ERR_INVALID_URL.
-TEST_F(URLRequestHttpJobWithMockSocketsTest, RedirectToNonCompliantHost) {
-  MockWrite redirect_writes[] = {
-      MockWrite("GET / HTTP/1.1\r\n"
-                "Host: www.redirect.com\r\n"
-                "Connection: keep-alive\r\n"
-                "User-Agent: \r\n"
-                "Accept-Encoding: gzip, deflate\r\n"
-                "Accept-Language: en-us,fr\r\n\r\n")};
-
-  MockRead redirect_reads[] = {
-      MockRead("HTTP/1.1 302 Found\r\n"
-               "Location: http://a!b.test/\r\n\r\n"),
-  };
-  StaticSocketDataProvider redirect_socket_data(redirect_reads,
-                                                redirect_writes);
-  socket_factory_.AddSocketDataProvider(&redirect_socket_data);
-  // No more socket data is added, so the test would crash if another
-  // connection were attempted.
-
-  TestDelegate delegate;
-  std::unique_ptr<URLRequest> request = context_->CreateRequest(
-      GURL("http://www.redirect.com"), DEFAULT_PRIORITY, &delegate,
-      TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
-
-  request->Start();
-  delegate.RunUntilComplete();
-
-  EXPECT_EQ(1, delegate.received_redirect_count());
-  EXPECT_EQ(GURL("http://a!b.test/"), request->url());
-  EXPECT_THAT(delegate.request_status(), IsError(ERR_INVALID_URL));
 }
 
 TEST_F(URLRequestHttpJobWithMockSocketsTest,
@@ -1410,79 +1305,6 @@ TEST_F(URLRequestHttpJobTest, HSTSInternalRedirectTest) {
           EXPECT_EQ(GURL(test.url), r->url());
         }
       }
-    }
-  }
-}
-
-// Tests that requests to hosts that IsCanonicalizedHostCompliant() rejects fail
-// with ERR_INVALID_URL without creating a transaction, and that valid hosts and
-// IP literals are not affected.
-TEST_F(URLRequestHttpJobTest, NonCompliantHosts) {
-  // Ensure HSTS applies to subresource requests.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kHstsTopLevelNavigationsOnly);
-
-  // TransportSecurityState can't canonicalize invalid hostnames, so
-  // includeSubdomains entries don't apply to them. Without the host check, the
-  // invalid subdomains of example.test below would not be upgraded.
-  context_->transport_security_state()->AddHSTS(
-      "example.test", base::Time::Now() + base::Seconds(10),
-      /*include_subdomains=*/true);
-
-  const std::string kLabel63(63, 'a');
-  const struct {
-    std::string url;
-    bool expect_rejected;
-    bool expect_hsts_redirect = false;
-    bool is_for_websockets = false;
-  } kTestCases[] = {
-      {"http://a!b.example.test/", true},
-      {"https://a!b.example.test/", true},
-      {"http://a$b.test/", true},
-      {"http://a..b.test/", true},
-      {"http://foo.-bar/", true},
-      {"http://" + kLabel63 + "a.example.test/", true},
-      // Total hostname length of 255.
-      {"http://" + kLabel63 + "." + kLabel63 + "." + kLabel63 + "." + kLabel63 +
-           "/",
-       true},
-#if BUILDFLAG(ENABLE_WEBSOCKETS)
-      {"ws://a!b.example.test/", true, /*expect_hsts_redirect=*/false,
-       /*is_for_websockets=*/true},
-#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
-
-      // Positive control for HSTS being applied.
-      {"http://valid.example.test/", false, /*expect_hsts_redirect=*/true},
-      {"http://" + kLabel63 + ".test/", false},
-      {"http://under_score.test/", false},
-      {"http://trailing-dot.test./", false},
-      {"http://127.0.0.1/", false},
-      {"http://[::1]/", false},
-  };
-
-  for (const auto& test : kTestCases) {
-    SCOPED_TRACE(test.url);
-    GURL url(test.url);
-    ASSERT_TRUE(url.is_valid());
-
-    int initial_transaction_count = network_layer().transaction_count();
-    TestDelegate d;
-    std::unique_ptr<URLRequest> r(context_->CreateRequest(
-        url, DEFAULT_PRIORITY, &d, TRAFFIC_ANNOTATION_FOR_TESTS,
-        net::handles::kInvalidNetworkHandle, test.is_for_websockets));
-    r->Start();
-    d.RunUntilComplete();
-
-    if (test.expect_rejected) {
-      EXPECT_THAT(d.request_status(), IsError(ERR_INVALID_URL));
-      EXPECT_EQ(0, d.received_redirect_count());
-      EXPECT_EQ(initial_transaction_count, network_layer().transaction_count());
-    } else {
-      EXPECT_EQ(test.expect_hsts_redirect ? 1 : 0, d.received_redirect_count());
-      // The HSTS redirect itself doesn't create a transaction, so there should
-      // be one transaction in either case.
-      EXPECT_EQ(initial_transaction_count + 1,
-                network_layer().transaction_count());
     }
   }
 }
@@ -2773,9 +2595,6 @@ TEST_F(URLRequestHttpJobWithCheckClearTextPermittedTest,
     bool should_block;
     int expected_per_host_call_count;
     int expected_default_call_count;
-    // Whether kRejectNonCompliantHttpHosts rejects the URL before the cleartext
-    // policy is checked.
-    bool is_non_compliant_host = false;
   } kTestCases[] = {
       {"http://unblocked.test/", true, false, 1, 0},
       {"https://unblocked.test/", true, false, 0, 0},
@@ -2785,62 +2604,38 @@ TEST_F(URLRequestHttpJobWithCheckClearTextPermittedTest,
       // IllegalArgumentException (because the hostname is invalid),
       // the default configuration should be applied, and the
       // exception should not cause a JNI error.
-      {"http://./", false, true, 1, 1, /*is_non_compliant_host=*/true},
-      {"http://./", true, false, 1, 1, /*is_non_compliant_host=*/true},
+      {"http://./", false, true, 1, 1},
+      {"http://./", true, false, 1, 1},
       // Even if the host name would be considered invalid, https
       // schemes should not trigger cleartext policy checks.
-      {"https://./", false, false, 0, 0, /*is_non_compliant_host=*/true},
+      {"https://./", false, false, 0, 0},
   };
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  for (bool reject_non_compliant_hosts : {false, true}) {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitWithFeatureState(features::kRejectNonCompliantHttpHosts,
-                                      reject_non_compliant_hosts);
-    for (const TestCase& test : kTestCases) {
-      SCOPED_TRACE(
-          testing::Message()
-          << test.url << ", cleartext_permitted=" << test.cleartext_permitted
-          << ", reject_non_compliant_hosts=" << reject_non_compliant_hosts);
-      Java_AndroidNetworkLibraryTestUtil_setUpSecurityPolicyForTesting(
-          env, test.cleartext_permitted);
+  for (const TestCase& test : kTestCases) {
+    Java_AndroidNetworkLibraryTestUtil_setUpSecurityPolicyForTesting(
+        env, test.cleartext_permitted);
 
-      TestDelegate delegate;
-      std::unique_ptr<URLRequest> request = context_->CreateRequest(
-          GURL(test.url), DEFAULT_PRIORITY, &delegate,
-          TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
-      request->Start();
-      delegate.RunUntilComplete();
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> request = context_->CreateRequest(
+        GURL(test.url), DEFAULT_PRIORITY, &delegate,
+        TRAFFIC_ANNOTATION_FOR_TESTS, net::handles::kInvalidNetworkHandle);
+    request->Start();
+    delegate.RunUntilComplete();
 
-      if (reject_non_compliant_hosts && test.is_non_compliant_host) {
-        // The request should be rejected before the cleartext policy is
-        // consulted.
-        EXPECT_THAT(delegate.request_status(), IsError(ERR_INVALID_URL));
-        EXPECT_EQ(
-            Java_AndroidNetworkLibraryTestUtil_getPerHostCleartextCheckCount(
-                env),
-            0);
-        EXPECT_EQ(
-            Java_AndroidNetworkLibraryTestUtil_getDefaultCleartextCheckCount(
-                env),
-            0);
-        continue;
-      }
-
-      if (test.should_block) {
-        EXPECT_THAT(delegate.request_status(),
-                    IsError(ERR_CLEARTEXT_NOT_PERMITTED));
-      } else {
-        // Should fail since there's no test server running
-        EXPECT_THAT(delegate.request_status(), IsError(ERR_FAILED));
-      }
-      EXPECT_EQ(
-          Java_AndroidNetworkLibraryTestUtil_getPerHostCleartextCheckCount(env),
-          test.expected_per_host_call_count);
-      EXPECT_EQ(
-          Java_AndroidNetworkLibraryTestUtil_getDefaultCleartextCheckCount(env),
-          test.expected_default_call_count);
+    if (test.should_block) {
+      EXPECT_THAT(delegate.request_status(),
+                  IsError(ERR_CLEARTEXT_NOT_PERMITTED));
+    } else {
+      // Should fail since there's no test server running
+      EXPECT_THAT(delegate.request_status(), IsError(ERR_FAILED));
     }
+    EXPECT_EQ(
+        Java_AndroidNetworkLibraryTestUtil_getPerHostCleartextCheckCount(env),
+        test.expected_per_host_call_count);
+    EXPECT_EQ(
+        Java_AndroidNetworkLibraryTestUtil_getDefaultCleartextCheckCount(env),
+        test.expected_default_call_count);
   }
 }
 #endif

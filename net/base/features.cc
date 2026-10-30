@@ -681,8 +681,6 @@ BASE_FEATURE_PARAM(bool,
 
 BASE_FEATURE(kIgnoreHSTSForLocalhost, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRejectNonCompliantHttpHosts, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSimpleCachePrioritizedCaching, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<int>
