@@ -289,6 +289,10 @@ class MockToolbarPage : public contextual_tasks_toolbar::mojom::Page {
   ~MockToolbarPage() override = default;
 
   MOCK_METHOD(void, OnSidePanelPinStateChanged, (bool is_pinned), (override));
+  MOCK_METHOD(void,
+              OnPinButtonEligibilityChanged,
+              (bool is_eligible),
+              (override));
   MOCK_METHOD(void, OnAiPageStatusChanged, (bool is_ai_page), (override));
   MOCK_METHOD(
       void,
@@ -3409,6 +3413,61 @@ TEST_F(ContextualTasksUiTest,
   actions::ActionIdMap::ResetMapsForTesting();
 }
 
+TEST_F(ContextualTasksUiTest,
+       OnPinButtonEligibilityChanged_WhenEligibilityLostWhileOpen) {
+  InitializeActionIdStringMapping();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{kContextualTasksSidePanelRearchitecture,
+                            contextual_tasks::
+                                kEnableContextualTasksPinButtonInToolbar},
+      /*disabled_features=*/{});
+
+  FakeContextualTasksEligibilityManager eligibility_manager;
+  ON_CALL(*service_for_nav_, GetEligibilityManager())
+      .WillByDefault(Return(&eligibility_manager));
+
+  ContextualTasksUIConfig config;
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  std::unique_ptr<content::WebUIController> controller =
+      config.CreateWebUIController(&web_ui, GURL("chrome://contextual-tasks"));
+  ASSERT_TRUE(controller);
+  auto* ui = controller->GetAs<ContextualTasksUIPostRearchitecture>();
+  ASSERT_NE(ui, nullptr);
+
+  testing::NiceMock<MockToolbarPage> mock_page;
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandler> handler_remote;
+
+  // The user is pin-eligible when the toolbar binds.
+  base::RunLoop bind_run_loop;
+  EXPECT_CALL(mock_page, OnPinButtonEligibilityChanged(true))
+      .WillOnce(base::test::RunClosure(bind_run_loop.QuitClosure()));
+  ui->CreatePageHandler(mock_page.BindAndGetRemote(),
+                        handler_remote.BindNewPipeAndPassReceiver());
+  bind_run_loop.Run();
+
+  // Losing Contextual Tasks eligibility while the side panel is open must tell
+  // the WebUI to hide the pin/unpin item (and report it as unpinned).
+  base::RunLoop ineligible_run_loop;
+  EXPECT_CALL(mock_page, OnPinButtonEligibilityChanged(false))
+      .WillOnce(base::test::RunClosure(ineligible_run_loop.QuitClosure()));
+  EXPECT_CALL(mock_page, OnSidePanelPinStateChanged(false))
+      .Times(testing::AtLeast(1));
+  eligibility_manager.SetIsEligible(false);
+  ineligible_run_loop.Run();
+
+  // Regaining eligibility shows the item again.
+  base::RunLoop eligible_run_loop;
+  EXPECT_CALL(mock_page, OnPinButtonEligibilityChanged(true))
+      .WillOnce(base::test::RunClosure(eligible_run_loop.QuitClosure()));
+  eligibility_manager.SetIsEligible(true);
+  eligible_run_loop.Run();
+
+  controller.reset();
+  actions::ActionIdMap::ResetMapsForTesting();
+}
+
 TEST_F(ContextualTasksUiTest, OnSidePanelPinStateChanged_FeatureDisabled) {
   InitializeActionIdStringMapping();
   base::test::ScopedFeatureList scoped_feature_list;
@@ -3432,6 +3491,9 @@ TEST_F(ContextualTasksUiTest, OnSidePanelPinStateChanged_FeatureDisabled) {
   testing::StrictMock<MockToolbarPage> mock_page;
   EXPECT_CALL(mock_page, SetProfileAvatarUrl(_)).Times(testing::AnyNumber());
   EXPECT_CALL(mock_page, SetAccountInfo(_, _)).Times(testing::AnyNumber());
+  // The initial (ineligible) pin button eligibility is pushed on bind.
+  EXPECT_CALL(mock_page, OnPinButtonEligibilityChanged(false))
+      .Times(testing::AnyNumber());
   mojo::Remote<contextual_tasks_toolbar::mojom::PageHandler> handler_remote;
   ui->CreatePageHandler(mock_page.BindAndGetRemote(),
                         handler_remote.BindNewPipeAndPassReceiver());
@@ -3449,6 +3511,8 @@ TEST_F(ContextualTasksUiTest, OnSidePanelPinStateChanged_FeatureDisabled) {
   EXPECT_CALL(legacy_mock_page, SetProfileAvatarUrl(_))
       .Times(testing::AnyNumber());
   EXPECT_CALL(legacy_mock_page, SetAccountInfo(_, _))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(legacy_mock_page, OnPinButtonEligibilityChanged(false))
       .Times(testing::AnyNumber());
   mojo::Remote<contextual_tasks_toolbar::mojom::PageHandler>
       legacy_handler_remote;

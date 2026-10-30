@@ -596,9 +596,12 @@ base::DictValue ContextualTasksUI::GetContextualTasksLoadTimeData(
       contextual_tasks::EntryPointEligibilityManager::IsPinningEligible(
           profile);
   dict.Set("enablePinButton", is_pinning_eligible);
+  // Intentionally not gated on pinning eligibility: eligibility can change
+  // while the page is open and is pushed separately via
+  // `OnPinButtonEligibilityChanged()`, which the WebUI already combines with
+  // this flag.
   dict.Set("enablePinButtonOnSrp",
-           is_pinning_eligible &&
-               contextual_tasks::IsContextualTasksPinButtonOnSrpEnabled());
+           contextual_tasks::IsContextualTasksPinButtonOnSrpEnabled());
   dict.Set("isSidePanelPinned",
            is_pinning_eligible &&
                contextual_tasks::GetEffectivePinState(profile));
