@@ -6,6 +6,7 @@ package org.chromium.components.webauthn.cred_man;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -47,6 +48,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.TriState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.blink.mojom.Authenticator.GetCredential_Response;
 import org.chromium.blink.mojom.Authenticator.MakeCredential_Response;
 import org.chromium.blink.mojom.AuthenticatorStatus;
@@ -56,6 +58,7 @@ import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.components.password_manager.BrowserAssistedLoginType;
+import org.chromium.components.webauthn.AndroidApiCallMetrics.ApiCallEvent;
 import org.chromium.components.webauthn.AuthenticationContextProvider;
 import org.chromium.components.webauthn.Barrier;
 import org.chromium.components.webauthn.Fido2ApiTestHelper;
@@ -91,6 +94,13 @@ import org.chromium.ui.test.util.MockitoHelper;
         })
 @DisableFeatures({WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_FOR_DEV})
 public class CredManHelperRobolectricTest {
+    private static final String CREATE_HISTOGRAM =
+            CredManMetricsHelper.CRED_MAN_CREATE_CREDENTIAL_HISTOGRAM;
+    private static final String GET_HISTOGRAM =
+            CredManMetricsHelper.CRED_MAN_GET_CREDENTIAL_HISTOGRAM;
+    private static final String PREPARE_HISTOGRAM =
+            CredManMetricsHelper.CRED_MAN_PREPARE_GET_CREDENTIAL_HISTOGRAM;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private CredManHelper mCredManHelper;
     private PublicKeyCredentialCreationOptions mCreationOptions;
@@ -194,6 +204,7 @@ public class CredManHelperRobolectricTest {
 
     @Test
     public void testStartMakeRequest_default_success() {
+        HistogramWatcher watcher = expectApiCall(CREATE_HISTOGRAM, ApiCallEvent.SUCCEEDED);
         mRequestCallback =
                 WebauthnRequestCallback.forMakeCredential(mMakeCredentialResponseCallback, null);
         when(mAuthenticationContextProviderMock.getRequestCallback()).thenReturn(mRequestCallback);
@@ -220,6 +231,7 @@ public class CredManHelperRobolectricTest {
 
         verify(mMetricsHelper, times(1))
                 .recordCredManCreateRequestHistogram(CredManCreateRequestEnum.SUCCESS);
+        watcher.assertExpected();
     }
 
     @Test
@@ -251,6 +263,7 @@ public class CredManHelperRobolectricTest {
 
     @Test
     public void testStartMakeRequest_userCancel_notAllowedError() {
+        HistogramWatcher watcher = expectApiCall(CREATE_HISTOGRAM, ApiCallEvent.CANCELLED);
         mRequestCallback =
                 WebauthnRequestCallback.forMakeCredential(mMakeCredentialResponseCallback, null);
         when(mAuthenticationContextProviderMock.getRequestCallback()).thenReturn(mRequestCallback);
@@ -273,6 +286,7 @@ public class CredManHelperRobolectricTest {
                 .call(eq(AuthenticatorStatus.NOT_ALLOWED_ERROR), any(), any());
         verify(mMetricsHelper, times(1))
                 .recordCredManCreateRequestHistogram(CredManCreateRequestEnum.CANCELLED);
+        watcher.assertExpected();
     }
 
     @Test
@@ -304,6 +318,7 @@ public class CredManHelperRobolectricTest {
 
     @Test
     public void testStartMakeRequest_unknownError_unknownError() {
+        HistogramWatcher watcher = expectApiCall(CREATE_HISTOGRAM, ApiCallEvent.FAILED);
         mRequestCallback =
                 WebauthnRequestCallback.forMakeCredential(mMakeCredentialResponseCallback, null);
         when(mAuthenticationContextProviderMock.getRequestCallback()).thenReturn(mRequestCallback);
@@ -326,10 +341,12 @@ public class CredManHelperRobolectricTest {
                 .call(eq(AuthenticatorStatus.UNKNOWN_ERROR), any(), any());
         verify(mMetricsHelper, times(1))
                 .recordCredManCreateRequestHistogram(CredManCreateRequestEnum.FAILURE);
+        watcher.assertExpected();
     }
 
     @Test
     public void testStartGetRequest_default_success() {
+        HistogramWatcher watcher = expectApiCall(GET_HISTOGRAM, ApiCallEvent.SUCCEEDED);
         mRequestCallback =
                 WebauthnRequestCallback.forGetCredential(mGetCredentialResponseCallback, null);
         when(mAuthenticationContextProviderMock.getRequestCallback()).thenReturn(mRequestCallback);
@@ -358,6 +375,7 @@ public class CredManHelperRobolectricTest {
                 .reportGetCredentialMetrics(eq(CredManGetRequestEnum.SENT_REQUEST), anyInt());
         verify(mMetricsHelper, times(1))
                 .reportGetCredentialMetrics(eq(CredManGetRequestEnum.SUCCESS_PASSKEY), anyInt());
+        watcher.assertExpected();
     }
 
     @Test
@@ -413,6 +431,7 @@ public class CredManHelperRobolectricTest {
 
     @Test
     public void testStartGetRequest_noCredentials_errorHandlerCalledIfNoFallbackSet() {
+        HistogramWatcher watcher = expectApiCall(GET_HISTOGRAM, ApiCallEvent.FAILED);
         mRequestCallback =
                 WebauthnRequestCallback.forGetCredential(mGetCredentialResponseCallback, null);
         when(mAuthenticationContextProviderMock.getRequestCallback()).thenReturn(mRequestCallback);
@@ -432,10 +451,12 @@ public class CredManHelperRobolectricTest {
         shadowCredentialManager.getGetCredentialCallback().onError(exception);
         verify(mGetCredentialResponseCallback).call(any());
         verify(mBrowserBridge, times(1)).cleanupRequest(any());
+        watcher.assertExpected();
     }
 
     @Test
     public void testStartGetRequest_userCancel_notAllowedError() {
+        HistogramWatcher watcher = expectApiCall(GET_HISTOGRAM, ApiCallEvent.CANCELLED);
         mRequestCallback =
                 WebauthnRequestCallback.forGetCredential(mGetCredentialResponseCallback, null);
         when(mAuthenticationContextProviderMock.getRequestCallback()).thenReturn(mRequestCallback);
@@ -459,10 +480,12 @@ public class CredManHelperRobolectricTest {
         verify(mBrowserBridge, times(1)).cleanupRequest(any());
         verify(mMetricsHelper, times(1))
                 .reportGetCredentialMetrics(eq(CredManGetRequestEnum.CANCELLED), anyInt());
+        watcher.assertExpected();
     }
 
     @Test
     public void testStartGetRequest_unknownError_unknownError() {
+        HistogramWatcher watcher = expectApiCall(GET_HISTOGRAM, ApiCallEvent.FAILED);
         mRequestCallback =
                 WebauthnRequestCallback.forGetCredential(mGetCredentialResponseCallback, null);
         when(mAuthenticationContextProviderMock.getRequestCallback()).thenReturn(mRequestCallback);
@@ -486,10 +509,12 @@ public class CredManHelperRobolectricTest {
         verify(mBrowserBridge, times(1)).cleanupRequest(any());
         verify(mMetricsHelper, times(1))
                 .reportGetCredentialMetrics(eq(CredManGetRequestEnum.FAILURE), anyInt());
+        watcher.assertExpected();
     }
 
     @Test
     public void testStartPrefetchRequest_default_success() {
+        HistogramWatcher watcher = expectApiCall(PREPARE_HISTOGRAM, ApiCallEvent.SUCCEEDED);
         mRequestOptions.mediation = Mediation.CONDITIONAL;
         mRequestCallback =
                 WebauthnRequestCallback.forGetCredential(mGetCredentialResponseCallback, null);
@@ -530,10 +555,12 @@ public class CredManHelperRobolectricTest {
         verify(mMetricsHelper, times(1))
                 .recordCredmanPrepareRequestHistogram(
                         eq(CredManPrepareRequestEnum.SUCCESS_HAS_RESULTS));
+        watcher.assertExpected();
     }
 
     @Test
     public void testStartPrefetchRequest_unknownError_unknownError() {
+        HistogramWatcher watcher = expectApiCall(PREPARE_HISTOGRAM, ApiCallEvent.FAILED);
         mRequestOptions.mediation = Mediation.CONDITIONAL;
         mRequestCallback =
                 WebauthnRequestCallback.forGetCredential(mGetCredentialResponseCallback, null);
@@ -562,6 +589,7 @@ public class CredManHelperRobolectricTest {
                 .recordCredmanPrepareRequestHistogram(eq(CredManPrepareRequestEnum.FAILURE));
         verify(mMetricsHelper, times(0))
                 .recordCredmanPrepareRequestDuration(anyLong(), anyBoolean());
+        watcher.assertExpected();
     }
 
     @Test
@@ -831,6 +859,7 @@ public class CredManHelperRobolectricTest {
 
     @Test
     public void testImmediateMediation_userSelectsPassword_canHavePasswordResponse() {
+        HistogramWatcher watcher = expectApiCall(GET_HISTOGRAM, ApiCallEvent.SUCCEEDED);
         mRequestOptions.mediation = Mediation.IMMEDIATE;
         mRequestCallback =
                 WebauthnRequestCallback.forGetCredential(mGetCredentialResponseCallback, null);
@@ -867,10 +896,12 @@ public class CredManHelperRobolectricTest {
                 .isEqualTo(username);
         assertThat(mojoStringToJavaString(responseCaptor.getValue().getPasswordResponse().password))
                 .isEqualTo(password);
+        watcher.assertExpected();
     }
 
     @Test
     public void testImmediateGetCredential_timeout_notAllowed() {
+        HistogramWatcher watcher = expectApiCall(PREPARE_HISTOGRAM, ApiCallEvent.SUCCEEDED);
         mRequestOptions.mediation = Mediation.IMMEDIATE;
         mRequestCallback =
                 WebauthnRequestCallback.forGetCredential(mGetCredentialResponseCallback, null);
@@ -904,6 +935,117 @@ public class CredManHelperRobolectricTest {
         verify(mBrowserBridge, times(1)).cleanupCredManRequest(any());
         verify(mBrowserBridge, never()).onCredManUiClosed(any(), anyBoolean());
         verify(mMetricsHelper, never()).reportGetCredentialMetrics(anyInt(), anyInt());
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testApiCallMetrics_unresolvedCalls_recordOnlyStarted() {
+        mRequestCallback =
+                WebauthnRequestCallback.forGetCredential(mGetCredentialResponseCallback, null);
+        when(mAuthenticationContextProviderMock.getRequestCallback()).thenReturn(mRequestCallback);
+        mRequestOptions.mediation = Mediation.IMMEDIATE;
+
+        // Platform calls that never call back stay as a bare STARTED, including a prefetch that
+        // Chrome stops waiting for when the immediate mediation timer fires.
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(CREATE_HISTOGRAM, ApiCallEvent.STARTED)
+                        .expectIntRecord(GET_HISTOGRAM, ApiCallEvent.STARTED)
+                        .expectIntRecord(PREPARE_HISTOGRAM, ApiCallEvent.STARTED)
+                        .build()) {
+            startMakeRequest();
+            startGetRequest();
+            startPrefetchRequest();
+            mCredManHelper.cancelGetAssertion(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+        }
+    }
+
+    @Test
+    public void testApiCallMetrics_synchronousPlatformException_recordsFailed() {
+        mRequestCallback =
+                WebauthnRequestCallback.forGetCredential(mGetCredentialResponseCallback, null);
+        when(mAuthenticationContextProviderMock.getRequestCallback()).thenReturn(mRequestCallback);
+        ShadowCredentialManager shadowCredentialManager = Shadow.extract(mCredentialManager);
+        shadowCredentialManager.setExceptionToThrow(new SecurityException("Message"));
+
+        try (HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                CREATE_HISTOGRAM, ApiCallEvent.STARTED, ApiCallEvent.FAILED)
+                        .expectIntRecords(GET_HISTOGRAM, ApiCallEvent.STARTED, ApiCallEvent.FAILED)
+                        .expectIntRecords(
+                                PREPARE_HISTOGRAM, ApiCallEvent.STARTED, ApiCallEvent.FAILED)
+                        .build()) {
+            assertThrows(SecurityException.class, this::startMakeRequest);
+            assertThrows(SecurityException.class, this::startGetRequest);
+            assertThrows(SecurityException.class, this::startPrefetchRequest);
+        }
+    }
+
+    @Test
+    public void testApiCallMetrics_prefetchCallbackWhileCancelPending_recordsCancelled() {
+        mRequestOptions.mediation = Mediation.CONDITIONAL;
+        ShadowCredentialManager shadowCredentialManager = Shadow.extract(mCredentialManager);
+
+        HistogramWatcher watcher = expectApiCall(PREPARE_HISTOGRAM, ApiCallEvent.CANCELLED);
+        startPrefetchRequest();
+        mCredManHelper.cancelGetAssertion(AuthenticatorStatus.ABORT_ERROR);
+        shadowCredentialManager
+                .getPrepareGetCredentialCallback()
+                .onError(
+                        new GetCredentialException(GetCredentialException.TYPE_UNKNOWN, "Message"));
+        watcher.assertExpected();
+
+        // The Barrier is notified exactly as before the metrics were added.
+        verify(mBarrier, times(1)).onCredManCancelled(AuthenticatorStatus.ABORT_ERROR);
+        verify(mBarrier, times(1)).onCredManFailed(AuthenticatorStatus.UNKNOWN_ERROR);
+    }
+
+    @Test
+    public void testApiCallMetrics_duplicateCallbacks_recordOneOutcome() {
+        ShadowCredentialManager shadowCredentialManager = Shadow.extract(mCredentialManager);
+
+        HistogramWatcher watcher = expectApiCall(GET_HISTOGRAM, ApiCallEvent.CANCELLED);
+        startGetRequest();
+        var callback = shadowCredentialManager.getGetCredentialCallback();
+        callback.onError(
+                new GetCredentialException(GetCredentialException.TYPE_USER_CANCELED, "Message"));
+        callback.onError(
+                new GetCredentialException(GetCredentialException.TYPE_UNKNOWN, "Message"));
+        watcher.assertExpected();
+    }
+
+    /** Expects exactly one STARTED and one {@code terminalEvent} sample in {@code histogram}. */
+    private static HistogramWatcher expectApiCall(
+            String histogram, @ApiCallEvent int terminalEvent) {
+        return HistogramWatcher.newBuilder()
+                .expectIntRecords(histogram, ApiCallEvent.STARTED, terminalEvent)
+                .build();
+    }
+
+    private void startMakeRequest() {
+        mCredManHelper.startMakeRequest(
+                mCreationOptions, mOriginString, /* clientDataJson= */ null, mClientDataHash);
+    }
+
+    private void startGetRequest() {
+        mCredManHelper.startGetRequest(
+                mRequestOptions,
+                mOriginString,
+                /* clientDataJson= */ null,
+                mClientDataHash,
+                /* ignoreGpm= */ false);
+    }
+
+    private void startPrefetchRequest() {
+        mCredManHelper.startPrefetchRequest(
+                mRequestOptions,
+                mOriginString,
+                /* clientDataJson= */ null,
+                mClientDataHash,
+                mBarrier,
+                /* stopImmediateTimer= */ null,
+                /* ignoreGpm= */ false);
     }
 
     private Credential createPasskeyCredential() {

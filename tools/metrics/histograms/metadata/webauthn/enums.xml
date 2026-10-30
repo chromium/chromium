@@ -377,6 +377,34 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//device/fido/u2f_sign_operation.cc:U2fSignOperationResult) -->
 
+<!-- LINT.IfChange(WebAuthenticationAndroidApiCallEvent) -->
+
+<enum name="WebAuthenticationAndroidApiCallEvent">
+  <int value="0" label="Started">
+    The Android platform or GMSCore API call (or PendingIntent session) was
+    initiated.
+  </int>
+  <int value="1" label="Succeeded">
+    The Android platform or GMSCore API call (or PendingIntent session)
+    completed successfully.
+  </int>
+  <int value="2" label="Cancelled">
+    The Android platform or GMSCore API call (or PendingIntent session) was
+    cancelled by the user, returned a CANCELED status, or reported a result
+    after Chrome had already cancelled the pending WebAuthn request.
+  </int>
+  <int value="3" label="TimedOut">
+    The Android platform or GMSCore API call (or PendingIntent session) timed
+    out (e.g. GMSCore CommonStatusCodes.TIMEOUT or Fido2Api.TIMEOUT_ERR).
+  </int>
+  <int value="4" label="Failed">
+    The Android platform or GMSCore API call (or PendingIntent session) failed
+    with an error other than cancellation or timeout.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//components/webauthn/android/java/src/org/chromium/components/webauthn/AndroidApiCallMetrics.java:ApiCallEvent) -->
+
 <enum name="WebAuthenticationCableV2TunnelEvent">
   <int value="0"
       label="Tunnel attempt started for QR- or extension-based connection"/>

@@ -39,6 +39,32 @@ chromium-metrics-reviews@google.com.
       summary="recovery_key_store/wrap_pin_and_secret"/>
 </variants>
 
+<histogram name="WebAuthentication.Android.CredManApiCall.{Operation}"
+    enum="WebAuthenticationAndroidApiCallEvent" expires_after="2027-11-01">
+  <owner>derinel@google.com</owner>
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the lifecycle (Started and terminal outcome: Succeeded, Cancelled,
+    TimedOut, or Failed) of {Operation} on Android. Comparing Started against
+    the sum of terminal outcomes surfaces silent hangs or wedged calls.
+    CredentialManager calls never record TimedOut. If Chrome cancels the
+    WebAuthn request (including the immediate mediation timeout) while a call is
+    pending, Cancelled is recorded only once the platform reports back, so a
+    call that never completes remains Started only. GetCredential
+    TYPE_NO_CREDENTIAL errors are recorded as Failed. Succeeded means the
+    platform returned a result, even if Chrome later fails to process it.
+  </summary>
+  <token key="Operation">
+    <variant name="CreateCredential"
+        summary="Android CredentialManager.createCredential calls"/>
+    <variant name="GetCredential"
+        summary="Android CredentialManager.getCredential calls"/>
+    <variant name="PrepareGetCredential"
+        summary="Android CredentialManager.prepareGetCredential calls"/>
+  </token>
+</histogram>
+
 <histogram name="WebAuthentication.Android.CredManAvailability" enum="Boolean"
     expires_after="2027-11-01">
   <owner>derinel@google.com</owner>

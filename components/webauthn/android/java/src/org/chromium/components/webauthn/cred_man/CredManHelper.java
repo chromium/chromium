@@ -39,6 +39,9 @@ import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.password_manager.BrowserAssistedLoginType;
+import org.chromium.components.webauthn.AndroidApiCallMetrics;
+import org.chromium.components.webauthn.AndroidApiCallMetrics.ApiCallEvent;
+import org.chromium.components.webauthn.AndroidApiCallMetrics.DeferredOneShotRecorder;
 import org.chromium.components.webauthn.AuthenticationContextProvider;
 import org.chromium.components.webauthn.Barrier;
 import org.chromium.components.webauthn.CredManSupport;
@@ -123,6 +126,9 @@ public class CredManHelper {
             callback.addCompletionCallback(this::cleanupRequest);
         }
 
+        final DeferredOneShotRecorder apiCallRecorder =
+                AndroidApiCallMetrics.deferredCall(
+                        CredManMetricsHelper.CRED_MAN_CREATE_CREDENTIAL_HISTOGRAM);
         OutcomeReceiver<CreateCredentialResponse, CreateCredentialException> receiver =
                 new OutcomeReceiver<>() {
                     @Override
@@ -135,6 +141,10 @@ public class CredManHelper {
                                         + " ("
                                         + exception.getMessage()
                                         + ")");
+                        apiCallRecorder.finish(
+                                errorType.equals(CreateCredentialException.TYPE_USER_CANCELED)
+                                        ? ApiCallEvent.CANCELLED
+                                        : ApiCallEvent.FAILED);
                         WebauthnRequestCallback callback =
                                 mAuthenticationContextProvider.getRequestCallback();
                         if (callback == null) {
@@ -190,6 +200,7 @@ public class CredManHelper {
                     @Override
                     public void onResult(CreateCredentialResponse createCredentialResponse) {
                         log(TAG, "startMakeRequest.onResult");
+                        apiCallRecorder.finish(ApiCallEvent.SUCCEEDED);
                         Bundle data = createCredentialResponse.getData();
                         MakeCredentialAuthenticatorResponse response =
                                 parseCreateCredentialResponseData(data);
@@ -242,7 +253,10 @@ public class CredManHelper {
         assumeNonNull(context);
         final CredentialManager manager =
                 (CredentialManager) context.getSystemService(Context.CREDENTIAL_SERVICE);
-        manager.createCredential(context, request, null, context.getMainExecutor(), receiver);
+        apiCallRecorder.dispatch(
+                () ->
+                        manager.createCredential(
+                                context, request, null, context.getMainExecutor(), receiver));
         mMetricsHelper.recordCredManCreateRequestHistogram(CredManCreateRequestEnum.SENT_REQUEST);
         return AuthenticatorStatus.SUCCESS;
     }
@@ -270,12 +284,17 @@ public class CredManHelper {
         final Barrier localBarrier = barrier;
         final WebauthnBrowserBridge localBridge = assumeNonNull(mBridgeProvider.getBridge());
 
+        final DeferredOneShotRecorder prefetchRecorder =
+                AndroidApiCallMetrics.deferredCall(
+                        CredManMetricsHelper.CRED_MAN_PREPARE_GET_CREDENTIAL_HISTOGRAM);
         RenderFrameHost frameHost = mAuthenticationContextProvider.getRenderFrameHost();
         OutcomeReceiver<PrepareGetCredentialResponse, GetCredentialException> receiver =
                 new OutcomeReceiver<>() {
                     @Override
                     public void onError(GetCredentialException e) {
                         assert mCancellableUiState != CancellableUiState.WAITING_FOR_SELECTION;
+                        boolean wasCancelPending =
+                                mCancellableUiState == CancellableUiState.CANCEL_PENDING;
                         // prepareGetCredential uses getCredentialException, but it cannot be user
                         // cancelled so all errors map to UNKNOWN_ERROR.
                         logError(
@@ -290,6 +309,8 @@ public class CredManHelper {
                                     StopImmediateTimerBehavior.DO_NOT_RECORD_METRIC);
                         }
                         mCancellableUiState = CancellableUiState.NONE;
+                        prefetchRecorder.finish(
+                                wasCancelPending ? ApiCallEvent.CANCELLED : ApiCallEvent.FAILED);
                         localBarrier.onCredManFailed(AuthenticatorStatus.UNKNOWN_ERROR);
                         mMetricsHelper.recordCredmanPrepareRequestHistogram(
                                 CredManPrepareRequestEnum.FAILURE);
@@ -303,8 +324,10 @@ public class CredManHelper {
                             // The request was completed synchronously when the cancellation was
                             // received.
                             mCancellableUiState = CancellableUiState.NONE;
+                            prefetchRecorder.finish(ApiCallEvent.CANCELLED);
                             return;
                         }
+                        prefetchRecorder.finish(ApiCallEvent.SUCCEEDED);
                         if (mCancellableUiState != CancellableUiState.WAITING_FOR_CREDENTIAL_LIST) {
                             logError(
                                     TAG,
@@ -441,8 +464,10 @@ public class CredManHelper {
         assumeNonNull(context);
         final CredentialManager manager =
                 (CredentialManager) context.getSystemService(Context.CREDENTIAL_SERVICE);
-        manager.prepareGetCredential(
-                getCredentialRequest, null, context.getMainExecutor(), receiver);
+        prefetchRecorder.dispatch(
+                () ->
+                        manager.prepareGetCredential(
+                                getCredentialRequest, null, context.getMainExecutor(), receiver));
         mMetricsHelper.recordCredmanPrepareRequestHistogram(CredManPrepareRequestEnum.SENT_REQUEST);
     }
 
@@ -467,6 +492,9 @@ public class CredManHelper {
             callback.addCompletionCallback(this::cleanupRequest);
         }
 
+        final DeferredOneShotRecorder apiCallRecorder =
+                AndroidApiCallMetrics.deferredCall(
+                        CredManMetricsHelper.CRED_MAN_GET_CREDENTIAL_HISTOGRAM);
         // The Android 14 APIs have to be called via reflection until Chromium
         // builds with the Android 14 SDK by default.
         OutcomeReceiver<GetCredentialResponse, GetCredentialException> receiver =
@@ -484,8 +512,13 @@ public class CredManHelper {
                         notifyBrowserOnCredManClosed(false);
                         if (mCancellableUiState == CancellableUiState.CANCEL_PENDING) {
                             mCancellableUiState = CancellableUiState.NONE;
+                            apiCallRecorder.finish(ApiCallEvent.CANCELLED);
                             return;
                         }
+                        apiCallRecorder.finish(
+                                errorType.equals(GetCredentialException.TYPE_USER_CANCELED)
+                                        ? ApiCallEvent.CANCELLED
+                                        : ApiCallEvent.FAILED);
                         WebauthnRequestCallback callback =
                                 mAuthenticationContextProvider.getRequestCallback();
                         if (callback == null) {
@@ -566,8 +599,10 @@ public class CredManHelper {
                             if (localBridge != null && localBridge.isInitialized()) {
                                 localBridge.cleanupCredManRequest(frameHost);
                             }
+                            apiCallRecorder.finish(ApiCallEvent.CANCELLED);
                             return;
                         }
+                        apiCallRecorder.finish(ApiCallEvent.SUCCEEDED);
                         Bundle data = getCredentialResponse.getCredential().getData();
                         String type = getCredentialResponse.getCredential().getType();
 
@@ -732,8 +767,14 @@ public class CredManHelper {
         assumeNonNull(context);
         final CredentialManager manager =
                 (CredentialManager) context.getSystemService(Context.CREDENTIAL_SERVICE);
-        manager.getCredential(
-                context, getCredentialRequest, null, context.getMainExecutor(), receiver);
+        apiCallRecorder.dispatch(
+                () ->
+                        manager.getCredential(
+                                context,
+                                getCredentialRequest,
+                                null,
+                                context.getMainExecutor(),
+                                receiver));
         mMetricsHelper.reportGetCredentialMetrics(
                 CredManGetRequestEnum.SENT_REQUEST, mCancellableUiState);
         return AuthenticatorStatus.SUCCESS;

@@ -16,6 +16,13 @@ import org.chromium.components.webauthn.Fido2CredentialRequest.CancellableUiStat
  */
 @NullMarked
 public class CredManMetricsHelper {
+    public static final String CRED_MAN_CREATE_CREDENTIAL_HISTOGRAM =
+            "WebAuthentication.Android.CredManApiCall.CreateCredential";
+    public static final String CRED_MAN_GET_CREDENTIAL_HISTOGRAM =
+            "WebAuthentication.Android.CredManApiCall.GetCredential";
+    public static final String CRED_MAN_PREPARE_GET_CREDENTIAL_HISTOGRAM =
+            "WebAuthentication.Android.CredManApiCall.PrepareGetCredential";
+
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     @IntDef({

@@ -31,6 +31,7 @@ public class ShadowCredentialManager {
     private OutcomeReceiver<GetCredentialResponse, GetCredentialException> mGetCredentialCallback;
     private OutcomeReceiver<PrepareGetCredentialResponse, GetCredentialException>
             mPrepareGetCredentialCallback;
+    private RuntimeException mExceptionToThrow;
 
     @Implementation
     protected void __constructor__() {}
@@ -42,6 +43,7 @@ public class ShadowCredentialManager {
             CancellationSignal cancellationSignal,
             Executor executor,
             OutcomeReceiver<CreateCredentialResponse, CreateCredentialException> callback) {
+        throwIfRequested();
         mCreateCredentialCallback = callback;
         mCreateCredentialRequest = request;
     }
@@ -53,6 +55,7 @@ public class ShadowCredentialManager {
             CancellationSignal cancellationSignal,
             Executor executor,
             OutcomeReceiver<GetCredentialResponse, GetCredentialException> callback) {
+        throwIfRequested();
         mGetCredentialRequest = request;
         mGetCredentialCallback = callback;
     }
@@ -63,8 +66,20 @@ public class ShadowCredentialManager {
             CancellationSignal cancellationSignal,
             Executor executor,
             OutcomeReceiver<PrepareGetCredentialResponse, GetCredentialException> callback) {
+        throwIfRequested();
         mGetCredentialRequest = request;
         mPrepareGetCredentialCallback = callback;
+    }
+
+    /** Makes every subsequent CredentialManager call throw {@code exception} synchronously. */
+    protected void setExceptionToThrow(RuntimeException exception) {
+        mExceptionToThrow = exception;
+    }
+
+    private void throwIfRequested() {
+        if (mExceptionToThrow != null) {
+            throw mExceptionToThrow;
+        }
     }
 
     protected CreateCredentialRequest getCreateCredentialRequest() {

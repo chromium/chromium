@@ -33,6 +33,7 @@ android_library("java") {
     ":jni_headers",
   ]
   sources = [
+    "java/src/org/chromium/components/webauthn/AndroidApiCallMetrics.java",
     "java/src/org/chromium/components/webauthn/AuthenticationContextProvider.java",
     "java/src/org/chromium/components/webauthn/AuthenticatorConstants.java",
     "java/src/org/chromium/components/webauthn/AuthenticatorErrorResponseCallback.java",
