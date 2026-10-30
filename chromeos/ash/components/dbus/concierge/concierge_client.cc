@@ -15,6 +15,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"

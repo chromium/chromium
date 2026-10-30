@@ -43,6 +43,7 @@ static_library("instance_throttle") {
     "//chromeos/ash/components/audio",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/concierge:concierge_proto",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/throttle",
     "//chromeos/ash/experiences/arc",

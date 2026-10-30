@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/smb_client/smb_service.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "chromeos/ash/components/smbfs/smbfs_mounter.h"

@@ -39,6 +39,7 @@ static_library("usb") {
     "//chrome/browser/ui/webui/ash/settings/pages/crostini",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/concierge:concierge_proto",
     "//chromeos/ash/experiences/settings_ui",
     "//chromeos/constants",
     "//components/vector_icons",

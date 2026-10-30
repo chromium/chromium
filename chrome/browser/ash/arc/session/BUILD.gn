@@ -140,6 +140,7 @@ static_library("session") {
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/arc",
     "//chromeos/ash/components/dbus/concierge",
+    "//chromeos/ash/components/dbus/concierge:concierge_proto",
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/spaced",

@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/performance/pref_names.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 
 namespace ash {
 

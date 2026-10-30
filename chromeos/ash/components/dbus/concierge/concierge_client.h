@@ -5,14 +5,70 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_DBUS_CONCIERGE_CONCIERGE_CLIENT_H_
 #define CHROMEOS_ASH_COMPONENTS_DBUS_CONCIERGE_CONCIERGE_CLIENT_H_
 
+#include <vector>
+
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation_traits.h"
-#include "chromeos/ash/components/dbus/vm_concierge/concierge_service.pb.h"
 #include "chromeos/dbus/common/dbus_callback.h"
 #include "chromeos/dbus/common/dbus_client.h"
 #include "dbus/object_proxy.h"
+
+namespace vm_tools::concierge {
+class AggressiveBalloonRequest;
+class ArcVmCompleteBootRequest;
+class ArcVmCompleteBootResponse;
+class AttachUsbDeviceRequest;
+class AttachUsbDeviceResponse;
+class CancelDiskImageRequest;
+class CreateDiskImageRequest;
+class CreateDiskImageResponse;
+class DestroyDiskImageRequest;
+class DestroyDiskImageResponse;
+class DetachUsbDeviceRequest;
+class DiskImageStatusRequest;
+class DiskImageStatusResponse;
+class ExportDiskImageRequest;
+class ExportDiskImageResponse;
+class GetBaguetteImageUrlResponse;
+class GetVmEnterpriseReportingInfoRequest;
+class GetVmEnterpriseReportingInfoResponse;
+class GetVmInfoRequest;
+class GetVmInfoResponse;
+class GetVmLaunchAllowedRequest;
+class GetVmLaunchAllowedResponse;
+class ImportDiskImageRequest;
+class ImportDiskImageResponse;
+class InstallPflashRequest;
+class ListVmDisksRequest;
+class ListVmDisksResponse;
+class ListVmsRequest;
+class ListVmsResponse;
+class ModifyFakePowerConfigRequest;
+class MuteVmAudioRequest;
+class ReclaimVmMemoryRequest;
+class ReclaimVmMemoryResponse;
+class ResizeDiskImageRequest;
+class ResizeDiskImageResponse;
+class ResumeVmRequest;
+class SetUpVmUserRequest;
+class SetUpVmUserResponse;
+class SetVmCpuRestrictionRequest;
+class SetVmCpuRestrictionResponse;
+class StartArcVmRequest;
+class StartVmRequest;
+class StartVmResponse;
+class StopVmRequest;
+class SuccessFailureResponse;
+class SuspendVmRequest;
+class SwapVmRequest;
+class VmInstallStateSignal;
+class VmStartedSignal;
+class VmStoppedSignal;
+class VmStoppingSignal;
+class VmSwappingSignal;
+}  // namespace vm_tools::concierge
 
 namespace ash {
 
