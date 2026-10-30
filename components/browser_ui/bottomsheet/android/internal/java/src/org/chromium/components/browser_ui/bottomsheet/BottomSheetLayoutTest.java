@@ -17,6 +17,7 @@ import static org.robolectric.Robolectric.buildActivity;
 import static org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.MAX_HEIGHT_RATIO;
 
 import android.app.Activity;
+import android.graphics.Rect;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -36,6 +37,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -1293,6 +1295,335 @@ public class BottomSheetLayoutTest {
         insideNearLeftEvent.recycle();
         outsideLeftEvent.recycle();
         outsideRightEvent.recycle();
+    }
+
+    /**
+     * Tests large form factor desktop popup layout mode with zero caller margin and dynamic
+     * container height bounds.
+     */
+    @Test
+    public void testLargeFormFactor_DesktopPopupZeroCallerMarginAndContainerHeight() {
+        int desktopMargin =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.bottom_sheet_desktop_bottom_margin);
+        int lffWidth =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.bottom_sheet_large_form_factor_width);
+
+        mE2eBottomInsetDp = 24;
+        BottomSheetCoordinator sheet =
+                buildCoordinator(
+                        /* isLargeFormFactor= */ true, /* alwaysFullWidth= */ false, 1400, 1000);
+        assertEquals(0, sheet.getContainerBottomMargin());
+        assertEquals(0, ((MarginLayoutParams) mSheetContainer.getLayoutParams()).bottomMargin);
+        assertEquals(24, sheet.getEdgeToEdgeBottomInset());
+
+        TestSheetContent popupContent = new TestSheetContent(mActivity);
+        popupContent.mSupportsLargeFormFactor = true;
+        popupContent.mHasCustomScrimLifecycle = true;
+
+        sheet.showContent(popupContent);
+        sheet.setSheetState(SheetState.FULL, /* animate= */ false);
+        layoutOuterRoot(1400, 1000);
+        sheet.setSheetState(SheetState.FULL, /* animate= */ false);
+
+        assertEquals(SheetLayoutMode.DESKTOP_POPUP, sheet.getView().getSheetLayoutMode());
+        assertTrue(sheet.isLargeFormFactorUiEnabled());
+        assertEquals(desktopMargin, sheet.getContainerBottomMargin());
+        assertEquals(
+                desktopMargin,
+                ((MarginLayoutParams) mSheetContainer.getLayoutParams()).bottomMargin);
+        assertEquals(1000 - desktopMargin, mSheetContainer.getHeight());
+        assertEquals(0, sheet.getEdgeToEdgeBottomInset());
+        assertEquals(1000 - 2 * desktopMargin, sheet.getMaxSheetHeight());
+        assertEquals(lffWidth, sheet.getMaxSheetWidth());
+
+        // Dynamic container height change updates max sheet height.
+        layoutOuterRoot(1400, 800);
+        assertEquals(800 - desktopMargin, mSheetContainer.getHeight());
+        assertEquals(800 - 2 * desktopMargin, sheet.getMaxSheetHeight());
+
+        // Transition to non-LFF content restores caller margin of 0.
+        TestSheetContent standardContent = new TestSheetContent(mActivity);
+        standardContent.mSupportsLargeFormFactor = false;
+        sheet.showContent(standardContent);
+        sheet.setSheetState(SheetState.FULL, /* animate= */ false);
+        layoutOuterRoot(1400, 800);
+        sheet.setSheetState(SheetState.FULL, /* animate= */ false);
+
+        assertEquals(0, sheet.getContainerBottomMargin());
+        assertEquals(0, ((MarginLayoutParams) mSheetContainer.getLayoutParams()).bottomMargin);
+        assertEquals(800, mSheetContainer.getHeight());
+        assertEquals(800, sheet.getMaxSheetHeight());
+    }
+
+    /**
+     * Tests display density scaling, partial keyboard deductions, and dynamic edge-to-edge supplier
+     * updates.
+     */
+    @Test
+    @Config(qualifiers = "xxhdpi")
+    public void testHighDensityDisplay_EdgeToEdgeScalingPartialKeyboardAndDynamicUpdate() {
+        float density = mActivity.getResources().getDisplayMetrics().density;
+        assertEquals(3.0f, density, MathUtils.EPSILON);
+
+        mE2eBottomInsetDp = 24;
+        int expectedE2ePx = Math.round(24 * density);
+
+        BottomSheetCoordinator sheet =
+                buildCoordinator(
+                        /* isLargeFormFactor= */ false, /* alwaysFullWidth= */ false, 1080, 2000);
+        View contentContainer = sheet.getView().findViewById(R.id.bottom_sheet_content);
+        TestSheetContent content = new TestSheetContent(mActivity);
+        sheet.showContent(content);
+        sheet.setSheetState(SheetState.HALF, /* animate= */ false);
+        layoutOuterRoot(1080, 2000);
+
+        assertEquals(expectedE2ePx, sheet.getEdgeToEdgeBottomInset());
+        assertEquals(expectedE2ePx, sheet.getContentBottomPadding());
+        assertEquals(expectedE2ePx, contentContainer.getPaddingBottom());
+        assertEquals(1000f - expectedE2ePx, sheet.getView().getTranslationY(), MathUtils.EPSILON);
+
+        // Partial keyboard deduction: when keyboard inset < e2e inset.
+        mKeyboardInsetSupplier.set(20);
+        layoutOuterRoot(1080, 2000);
+        sheet.setSheetState(SheetState.HALF, /* animate= */ false);
+        assertEquals(expectedE2ePx - 20, sheet.getEdgeToEdgeBottomInset());
+        assertEquals(expectedE2ePx - 20, sheet.getContentBottomPadding());
+        assertEquals(expectedE2ePx - 20, contentContainer.getPaddingBottom());
+        assertEquals(
+                1000f - (expectedE2ePx - 20), sheet.getView().getTranslationY(), MathUtils.EPSILON);
+
+        // Full keyboard deduction: when keyboard inset >= e2e inset.
+        mKeyboardInsetSupplier.set(100);
+        layoutOuterRoot(1080, 2000);
+        sheet.setSheetState(SheetState.HALF, /* animate= */ false);
+        assertEquals(0, sheet.getEdgeToEdgeBottomInset());
+        assertEquals(0, sheet.getContentBottomPadding());
+        assertEquals(0, contentContainer.getPaddingBottom());
+        assertEquals(1000f, sheet.getView().getTranslationY(), MathUtils.EPSILON);
+
+        // Keyboard dismissed.
+        mKeyboardInsetSupplier.set(0);
+        layoutOuterRoot(1080, 2000);
+        sheet.setSheetState(SheetState.HALF, /* animate= */ false);
+        assertEquals(expectedE2ePx, sheet.getEdgeToEdgeBottomInset());
+        assertEquals(expectedE2ePx, sheet.getContentBottomPadding());
+        assertEquals(expectedE2ePx, contentContainer.getPaddingBottom());
+        assertEquals(1000f - expectedE2ePx, sheet.getView().getTranslationY(), MathUtils.EPSILON);
+
+        // Dynamic edge-to-edge supplier update without recreating coordinator.
+        mE2eBottomInsetDp = 32;
+        int updatedExpectedE2ePx = Math.round(32 * density);
+        layoutOuterRoot(1080, 2000);
+        sheet.setSheetState(SheetState.HALF, /* animate= */ false);
+        assertEquals(updatedExpectedE2ePx, sheet.getEdgeToEdgeBottomInset());
+        assertEquals(updatedExpectedE2ePx, sheet.getContentBottomPadding());
+        assertEquals(updatedExpectedE2ePx, contentContainer.getPaddingBottom());
+        assertEquals(
+                1000f - updatedExpectedE2ePx, sheet.getView().getTranslationY(), MathUtils.EPSILON);
+    }
+
+    /**
+     * Tests WindowInsetsCompat and display frame fallback handling with edge-to-edge and keyboard
+     * insets for sheets covering bottom controls.
+     */
+    @Test
+    public void testViewportInsets_ResizeContentCoversBottomControlsAndDisplayFrameFallback() {
+        mE2eBottomInsetDp = 24;
+
+        BottomSheetCoordinator sheet =
+                buildCoordinator(
+                        /* isLargeFormFactor= */ false, /* alwaysFullWidth= */ false, 1080, 2000);
+        TouchRestrictingFrameLayout contentContainer =
+                sheet.getView().findViewById(R.id.bottom_sheet_content);
+
+        // a) coversBottomControls == true on RESIZE_CONTENT with WindowInsetsCompat.
+        TestSheetContent resizeCoverContent = new TestSheetContent(mActivity);
+        resizeCoverContent.mFullRatio = HeightMode.RESIZE_CONTENT;
+        resizeCoverContent.mMaxResizeContentHeightRatio = 1.0f;
+        resizeCoverContent.mHalfRatio = 0.5f;
+        resizeCoverContent.mPeekHeight = 200;
+        resizeCoverContent.mCoversBottomControls = true;
+
+        WindowInsetsCompat insetsWithBars =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.statusBars(), Insets.of(0, 30, 0, 0))
+                        .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.of(0, 0, 0, 80))
+                        .setInsets(WindowInsetsCompat.Type.ime(), Insets.NONE)
+                        .build();
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insetsWithBars);
+
+        sheet.showContent(resizeCoverContent);
+        sheet.setSheetState(SheetState.FULL, /* animate= */ false);
+
+        assertEquals(24, sheet.getEdgeToEdgeBottomInset());
+        assertEquals(0, sheet.getContentBottomPadding());
+        assertEquals(new Rect(0, 30, 1080, 2000), sheet.getVisibleViewportRectForTesting());
+        assertEquals(1970, contentContainer.getLayoutParams().height);
+
+        // IME appears with bottom = 360px.
+        WindowInsetsCompat imeInsets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.statusBars(), Insets.of(0, 30, 0, 0))
+                        .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.of(0, 0, 0, 80))
+                        .setInsets(WindowInsetsCompat.Type.ime(), Insets.of(0, 0, 0, 360))
+                        .build();
+        mKeyboardInsetSupplier.set(360);
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(imeInsets);
+        sheet.setSheetState(SheetState.FULL, /* animate= */ false);
+
+        assertEquals(new Rect(0, 30, 1080, 1640), sheet.getVisibleViewportRectForTesting());
+        assertEquals(1610, contentContainer.getLayoutParams().height);
+        mKeyboardInsetSupplier.set(0);
+
+        // b) coversBottomControls == false on RESIZE_CONTENT with e2eBottomInset (90px) >
+        // systemBars bottom (40px).
+        mE2eBottomInsetDp = 90;
+        WindowInsetsCompat insetsWithBarsOnly =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.of(0, 0, 0, 40))
+                        .setInsets(WindowInsetsCompat.Type.ime(), Insets.NONE)
+                        .build();
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insetsWithBarsOnly);
+
+        TestSheetContent nonCoverResizeContent = new TestSheetContent(mActivity);
+        nonCoverResizeContent.mFullRatio = HeightMode.RESIZE_CONTENT;
+        nonCoverResizeContent.mMaxResizeContentHeightRatio = 1.0f;
+        nonCoverResizeContent.mCoversBottomControls = false;
+
+        sheet.showContent(nonCoverResizeContent);
+        sheet.setSheetState(SheetState.FULL, /* animate= */ false);
+
+        assertEquals(new Rect(0, 0, 1080, 1910), sheet.getVisibleViewportRectForTesting());
+        assertEquals(1910, contentContainer.getLayoutParams().height);
+
+        // c) Display frame fallback when WindowInsetsCompat is null.
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(null);
+        mE2eBottomInsetDp = 48;
+
+        Rect displayFrame = new Rect();
+        mActivity.getWindow().getDecorView().getWindowVisibleDisplayFrame(displayFrame);
+        layoutOuterRoot(displayFrame.width(), displayFrame.height());
+
+        // Test standard content: verifies padding on coordinator and view hierarchy.
+        TestSheetContent standardCoverContent = new TestSheetContent(mActivity);
+        standardCoverContent.mCoversBottomControls = true;
+        standardCoverContent.mPeekHeight = 200;
+        sheet.showContent(standardCoverContent);
+        sheet.setSheetState(SheetState.FULL, /* animate= */ false);
+
+        assertEquals(displayFrame, sheet.getVisibleViewportRectForTesting());
+        assertEquals(0, sheet.getContentBottomPadding());
+        assertEquals(0, contentContainer.getPaddingBottom());
+
+        TestSheetContent standardNonCoverContent = new TestSheetContent(mActivity);
+        standardNonCoverContent.mCoversBottomControls = false;
+        sheet.showContent(standardNonCoverContent);
+        sheet.setSheetState(SheetState.FULL, /* animate= */ false);
+
+        assertEquals(
+                new Rect(
+                        displayFrame.left,
+                        displayFrame.top,
+                        displayFrame.right,
+                        displayFrame.bottom - 48),
+                sheet.getVisibleViewportRectForTesting());
+        assertEquals(48, sheet.getContentBottomPadding());
+        assertEquals(48, contentContainer.getPaddingBottom());
+
+        // Test RESIZE_CONTENT: verifies container height clamping on bound view hierarchy.
+        TestSheetContent fallbackResizeCover = new TestSheetContent(mActivity);
+        fallbackResizeCover.mFullRatio = HeightMode.RESIZE_CONTENT;
+        fallbackResizeCover.mMaxResizeContentHeightRatio = 1.0f;
+        fallbackResizeCover.mCoversBottomControls = true;
+        fallbackResizeCover.mPeekHeight = 200;
+        sheet.showContent(fallbackResizeCover);
+        sheet.setSheetState(SheetState.FULL, /* animate= */ false);
+
+        assertEquals(displayFrame.height(), contentContainer.getLayoutParams().height);
+        assertEquals(0, contentContainer.getPaddingBottom());
+
+        TestSheetContent fallbackResizeNonCover = new TestSheetContent(mActivity);
+        fallbackResizeNonCover.mFullRatio = HeightMode.RESIZE_CONTENT;
+        fallbackResizeNonCover.mMaxResizeContentHeightRatio = 1.0f;
+        fallbackResizeNonCover.mCoversBottomControls = false;
+        sheet.showContent(fallbackResizeNonCover);
+        sheet.setSheetState(SheetState.FULL, /* animate= */ false);
+
+        assertEquals(displayFrame.height() - 48, contentContainer.getLayoutParams().height);
+        assertEquals(0, contentContainer.getPaddingBottom());
+    }
+
+    /**
+     * Tests horizontal gesture movement bounds with left viewport insets, hiding state, and browser
+     * controls offsets.
+     */
+    @Test
+    public void testShouldGestureMoveSheet_LeftViewportInsetHidingAndBrowserControlsOffset() {
+        BottomSheetCoordinator sheet =
+                buildCoordinator(
+                        /* isLargeFormFactor= */ false, /* alwaysFullWidth= */ false, 1400, 1000);
+        TestSheetContent content = new TestSheetContent(mActivity);
+        content.mHideOnScroll = true;
+        content.mPeekHeight = 200;
+        sheet.showContent(content);
+        sheet.setSheetState(SheetState.PEEK, /* animate= */ false);
+
+        // Apply left viewport inset (e.g. landscape cutout).
+        WindowInsetsCompat leftInsets =
+                new WindowInsetsCompat.Builder()
+                        .setInsets(WindowInsetsCompat.Type.systemBars(), Insets.of(60, 0, 0, 0))
+                        .build();
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(leftInsets);
+        sheet.setSheetState(SheetState.PEEK, /* animate= */ false);
+
+        MotionEvent outsideLeftEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 30f, 500f, 0);
+        assertFalse(sheet.shouldGestureMoveSheet(outsideLeftEvent, outsideLeftEvent));
+
+        MotionEvent insideEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 200f, 500f, 0);
+        assertTrue(sheet.shouldGestureMoveSheet(insideEvent, insideEvent));
+
+        // Shifted right boundary: endX = startX (60) + mContainerWidth (1400) = 1460.
+        // Coordinate 1420f is inside (proving leftInsets shifted endX past 1400f), while 1470f is
+        // outside.
+        MotionEvent shiftedInsideRightEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 1420f, 500f, 0);
+        assertTrue(sheet.shouldGestureMoveSheet(shiftedInsideRightEvent, shiftedInsideRightEvent));
+
+        MotionEvent shiftedOutsideRightEvent =
+                MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 1470f, 500f, 0);
+        assertFalse(
+                sheet.shouldGestureMoveSheet(shiftedOutsideRightEvent, shiftedOutsideRightEvent));
+
+        // When animating to HIDDEN, isHiding() becomes true and rejects gestures before settle
+        // completes.
+        sheet.setSheetState(SheetState.HIDDEN, /* animate= */ true);
+        assertTrue(sheet.isHiding());
+        assertFalse(sheet.shouldGestureMoveSheet(insideEvent, insideEvent));
+        sheet.endAnimationsForTesting();
+
+        // Restore to PEEK to verify browser controls offset behavior.
+        sheet.setSheetState(SheetState.PEEK, /* animate= */ false);
+        sheet.setBrowserControlsHiddenRatio(0.5f);
+        assertFalse(sheet.shouldGestureMoveSheet(insideEvent, insideEvent));
+
+        sheet.setBrowserControlsHiddenRatio(0.0f);
+        assertTrue(sheet.shouldGestureMoveSheet(insideEvent, insideEvent));
+
+        // When sheet is open (FULL state), horizontal bounds restriction is bypassed.
+        sheet.setSheetState(SheetState.FULL, /* animate= */ false);
+        assertTrue(sheet.shouldGestureMoveSheet(outsideLeftEvent, outsideLeftEvent));
+        assertTrue(
+                sheet.shouldGestureMoveSheet(shiftedOutsideRightEvent, shiftedOutsideRightEvent));
+
+        outsideLeftEvent.recycle();
+        insideEvent.recycle();
+        shiftedInsideRightEvent.recycle();
+        shiftedOutsideRightEvent.recycle();
     }
 
     private void layoutOuterRoot(int width, int height) {
