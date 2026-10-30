@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -28,6 +29,7 @@
 #include "remoting/host/input_monitor/local_input_monitor.h"
 #include "remoting/host/win/core_resource.h"
 #include "remoting/host/win/host_window_win_util.h"
+#include "remoting/host/win/input_extra_info.h"
 
 namespace remoting {
 
@@ -62,14 +64,24 @@ bool RegisterPrivacyOverlayClass(WNDPROC wnd_proc) {
 
 // Implements the Windows "Light Curtain" Privacy Overlay (`HostWindow`).
 //
-// Creates one topmost, unactivated popup window per active monitor. Each
-// backdrop is permanently click-through (`WS_EX_LAYERED | WS_EX_TRANSPARENT`)
-// and excluded from desktop capture (`WDA_EXCLUDEFROMCAPTURE`). The local
-// physical monitors display the branded Google Blue privacy screen (localized
-// product name + localized sharing message), while WebRTC/DXGI desktop
-// capture sees right through the overlay to the underlying desktop
-// applications, and remote mouse/touch inputs pass straight through without
-// obstruction.
+// Architecture:
+// 1. Per-Monitor Backdrop Windows (`backdrop_hwnds_`):
+//    One topmost, unactivated popup window per active monitor. Each backdrop is
+//    permanently click-through (`WS_EX_LAYERED | WS_EX_TRANSPARENT`) and
+//    excluded from desktop capture (`WDA_EXCLUDEFROMCAPTURE`). The local
+//    physical monitors display the branded Google Blue privacy screen
+//    (localized product name + localized sharing message), while WebRTC/DXGI
+//    desktop capture sees right through the overlay to the underlying desktop
+//    applications, and remote mouse/touch inputs pass straight through without
+//    obstruction.
+// 2. Floating Disconnect Button Dialog (`hwnd_`):
+//    A single topmost dialog created from the localized `IDD_DISCONNECT`
+//    resource with only the "Stop Sharing" button (`IDC_DISCONNECT`) visible.
+//    In its idle state, `hwnd_` is hidden and click-through
+//    (`WS_EX_TRANSPARENT`, alpha = 0) so remote clicks at the button's screen
+//    coordinates cannot accidentally disconnect the session. As
+//    defense-in-depth, any `WM_COMMAND(IDC_DISCONNECT)` message tagged with
+//    `kCrdInputExtraInfo` (synthesized by CRD's input injector) is ignored.
 class PrivacyOverlayWin : public DisconnectWindowBase {
  public:
   explicit PrivacyOverlayWin(
@@ -102,11 +114,21 @@ class PrivacyOverlayWin : public DisconnectWindowBase {
     base::win::ScopedGDIObject<HFONT> body_font;
   };
 
-  // Initializes the localized strings and per-monitor privacy overlay backdrop
-  // windows.
+  // Dialog procedure for the floating Disconnect button dialog (`hwnd_`).
+  static INT_PTR CALLBACK DialogProc(HWND hwnd,
+                                     UINT message,
+                                     WPARAM wparam,
+                                     LPARAM lparam);
+
+  // Handles Win32 messages dispatched to the Disconnect button dialog.
+  BOOL OnDialogMessage(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam);
+
+  // Creates the Disconnect button dialog, registers the Ctrl+Alt+Esc hotkey,
+  // and initializes the per-monitor privacy overlay backdrop windows.
   bool BeginOverlay();
 
-  // Destroys all backdrop windows and releases cached GDI resources.
+  // Destroys all backdrop and button windows, unregisters the disconnect
+  // hotkey, and releases cached GDI resources.
   void EndOverlay();
 
   // Returns the cached backdrop fonts and icon for `dpi`, creating and
@@ -116,6 +138,10 @@ class PrivacyOverlayWin : public DisconnectWindowBase {
   // Recreates or resizes per-monitor privacy overlay backdrop windows across
   // all active physical displays.
   bool UpdateBackdrops();
+
+  // Hides and restores click-through (`WS_EX_TRANSPARENT`) on the Disconnect
+  // button window.
+  void DeactivateDisconnectButton();
 
   // Renders the privacy overlay backdrop content (icon, localized product
   // title, and localized sharing message) into `hdc` using an offscreen double
@@ -128,18 +154,25 @@ class PrivacyOverlayWin : public DisconnectWindowBase {
                                           WPARAM wparam,
                                           LPARAM lparam);
 
-  // Retained for subsequent CLs that hook local input monitoring.
+  // Retained for subsequent CL that hooks local input monitoring.
   std::unique_ptr<LocalInputMonitor> local_input_monitor_;
 
-  // Re-entrancy guard preventing `EndOverlay()` from running more than once.
+  // Re-entrancy guard preventing `EndOverlay()` from running twice when
+  // `DestroyWindow()` synchronously dispatches `WM_DESTROY`.
   bool is_ending_ = false;
 
-  // True if the localized strings or process UI language use a right-to-left
-  // (RTL) reading layout.
+  // True if the localized dialog resource or process UI language uses a
+  // right-to-left (RTL) reading layout.
   bool is_rtl_ = false;
+
+  // The floating Disconnect button dialog created from `IDD_DISCONNECT`.
+  HWND hwnd_ = nullptr;
 
   // Topmost click-through backdrop popup windows, one per active display.
   std::vector<HWND> backdrop_hwnds_;
+
+  // True if the Ctrl+Alt+Esc hotkey is currently registered to `hwnd_`.
+  bool hotkey_registered_ = false;
 
   // Cached solid brush for the branded Google Blue background.
   base::win::ScopedGDIObject<HBRUSH> google_blue_brush_;
@@ -148,7 +181,8 @@ class PrivacyOverlayWin : public DisconnectWindowBase {
   // GDI object thrashing on mixed-DPI multi-monitor hosts.
   base::flat_map<UINT, BackdropDpiResources> backdrop_dpi_cache_;
 
-  // Localized strings loaded from the embedded Windows resource table.
+  // Localized strings loaded from the embedded Windows resource table and
+  // `IDD_DISCONNECT` dialog template.
   std::wstring product_name_text_;
   std::wstring sharing_with_text_;
 };
@@ -183,8 +217,85 @@ void PrivacyOverlayWin::Start(
   }
 }
 
+INT_PTR CALLBACK PrivacyOverlayWin::DialogProc(HWND hwnd,
+                                               UINT message,
+                                               WPARAM wparam,
+                                               LPARAM lparam) {
+  LONG_PTR self = 0;
+  if (message == WM_INITDIALOG) {
+    self = lparam;
+
+    // Store `this` in the dialog window's user data slot. Do not call
+    // `DestroyWindow(hwnd)` synchronously inside `WM_INITDIALOG` while
+    // `CreateDialogParam()` is mid-initialization; `BeginOverlay()` verifies
+    // `DWLP_USER` after `CreateDialogParam()` returns.
+    SetLastError(ERROR_SUCCESS);
+    LONG_PTR result = SetWindowLongPtr(hwnd, DWLP_USER, self);
+    if (result == 0 && GetLastError() != ERROR_SUCCESS) {
+      return FALSE;
+    }
+  } else {
+    self = GetWindowLongPtr(hwnd, DWLP_USER);
+  }
+
+  if (self) {
+    return reinterpret_cast<PrivacyOverlayWin*>(self)->OnDialogMessage(
+        hwnd, message, wparam, lparam);
+  }
+  return FALSE;
+}
+
+BOOL PrivacyOverlayWin::OnDialogMessage(HWND hwnd,
+                                        UINT message,
+                                        WPARAM wparam,
+                                        LPARAM lparam) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  switch (message) {
+    // Ignore close messages so external callers or Alt+F4 cannot dismiss the
+    // Disconnect button without ending the session.
+    case WM_CLOSE:
+      return TRUE;
+
+    // Handle Disconnect button clicks.
+    case WM_COMMAND:
+      if (LOWORD(wparam) == IDC_DISCONNECT && HIWORD(wparam) == BN_CLICKED) {
+        // Defense-in-depth: ignore clicks synthesized by CRD remote input
+        // injection if local and remote clicks race while the button is active.
+        if (static_cast<uint32_t>(GetMessageExtraInfo()) ==
+            kCrdInputExtraInfo) {
+          return TRUE;
+        }
+        EndOverlay();
+        DisconnectSession("Disconnect window closed.");
+        return TRUE;
+      }
+      return FALSE;
+
+    // Ensure we don't try to use the HWND anymore and tear down the session if
+    // the dialog window is destroyed externally.
+    case WM_DESTROY:
+      SetWindowLongPtr(hwnd, DWLP_USER, 0);
+      hwnd_ = nullptr;
+      EndOverlay();
+      DisconnectSession("Disconnect window closed.");
+      return TRUE;
+
+    // Handle the Ctrl+Alt+Esc disconnect hot-key.
+    case WM_HOTKEY:
+      if (static_cast<int>(wparam) == kDisconnectHotkeyId) {
+        EndOverlay();
+        DisconnectSession("Disconnect window closed.");
+        return TRUE;
+      }
+      return FALSE;
+  }
+  return FALSE;
+}
+
 bool PrivacyOverlayWin::BeginOverlay() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!hwnd_);
 
   if (!RegisterPrivacyOverlayClass(&BackdropWndProc)) {
     return false;
@@ -196,17 +307,102 @@ bool PrivacyOverlayWin::BeginOverlay() {
     return false;
   }
 
-  is_rtl_ =
-      base::i18n::IsRTL() || base::i18n::StringContainsStrongRTLChars(
-                                 base::AsStringPiece16(product_name_text_));
+  hwnd_ =
+      CreateDialogParam(CURRENT_MODULE(), MAKEINTRESOURCE(IDD_DISCONNECT),
+                        nullptr, DialogProc, reinterpret_cast<LPARAM>(this));
+  if (!hwnd_) {
+    PLOG(ERROR) << "Failed to create IDD_DISCONNECT dialog for Privacy Overlay";
+    return false;
+  }
 
+  // Verify that `DialogProc` succeeded in storing `this` in `DWLP_USER` during
+  // `WM_INITDIALOG`.
+  if (GetWindowLongPtr(hwnd_, DWLP_USER) != reinterpret_cast<LONG_PTR>(this)) {
+    return false;
+  }
+
+  // Exclude the Disconnect button dialog from screen capture immediately before
+  // it is ever shown so remote viewers never see it.
+  if (!ApplyCaptureExclusion(hwnd_)) {
+    return false;
+  }
+
+  HWND hwnd_button = GetDlgItem(hwnd_, IDC_DISCONNECT);
+  HWND hwnd_message = GetDlgItem(hwnd_, IDC_DISCONNECT_SHARINGWITH);
+  HWND hwnd_toggle_button = GetDlgItem(hwnd_, IDC_TOGGLE_ALIGNMENT);
+  if (!hwnd_button || !hwnd_message) {
+    return false;
+  }
+
+  std::wstring message_text;
+  if (!GetWindowTextString(hwnd_message, &message_text)) {
+    return false;
+  }
+
+  // Detect whether the localized dialog resource, message text, or process UI
+  // language uses a right-to-left (RTL) reading layout.
+  LONG_PTR ex_style = GetWindowLongPtr(hwnd_, GWL_EXSTYLE);
+  is_rtl_ = (ex_style & (WS_EX_LAYOUTRTL | WS_EX_RTLREADING)) != 0 ||
+            base::i18n::IsRTL() ||
+            base::i18n::StringContainsStrongRTLChars(
+                base::AsStringPiece16(message_text));
+
+  // Configure extended styles for the Disconnect button window:
+  // - Strip `WS_EX_LAYOUTRTL` so GDI coordinates are not mirrored.
+  // - `WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE`: stays above
+  //   desktop windows without stealing focus and is never cloaked across
+  //   virtual desktops (Win+Ctrl+D).
+  // - `WS_EX_LAYERED | WS_EX_TRANSPARENT`: starts in the idle click-through
+  //   state with alpha = 0 so remote clicks pass straight through.
+  ex_style &= ~(WS_EX_APPWINDOW | WS_EX_LAYOUTRTL);
+  ex_style |= WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_LAYERED |
+              WS_EX_TRANSPARENT | WS_EX_NOACTIVATE;
+  if (is_rtl_) {
+    ex_style |= WS_EX_RTLREADING;
+    LONG_PTR btn_ex_style = GetWindowLongPtr(hwnd_button, GWL_EXSTYLE);
+    SetWindowLongPtr(hwnd_button, GWL_EXSTYLE, btn_ex_style | WS_EX_RTLREADING);
+  }
+  SetWindowLongPtr(hwnd_, GWL_EXSTYLE, ex_style);
+  SetLayeredWindowAttributes(hwnd_, 0, 0, LWA_ALPHA);
+
+  if (!hotkey_registered_ && RegisterHotKey(hwnd_, kDisconnectHotkeyId,
+                                            MOD_ALT | MOD_CONTROL, VK_ESCAPE)) {
+    hotkey_registered_ = true;
+  }
+
+  // Wrap the formatted client email in explicit LTR directional formatting
+  // marks (LRE/PDF) when rendering in an RTL context so neutral characters
+  // (such as a leading ellipsis or `@`) are not reordered by the BiDi
+  // algorithm.
   std::u16string email_for_display = formatted_email();
   if (is_rtl_) {
     base::i18n::WrapStringWithLTRFormatting(&email_for_display);
   }
-  sharing_with_text_ = base::AsWString(email_for_display);
+  sharing_with_text_ = base::AsWString(base::ReplaceStringPlaceholders(
+      base::AsString16(message_text), email_for_display, nullptr));
+  if (sharing_with_text_.empty()) {
+    return false;
+  }
 
-  return UpdateBackdrops();
+  // Write the formatted text back to the control and dialog window caption so
+  // screen readers have full accessible context.
+  SetWindowTextW(hwnd_message, sharing_with_text_.c_str());
+  SetWindowTextW(hwnd_, product_name_text_.c_str());
+
+  // Hide the alignment toggle and sharing text controls inside the button
+  // dialog so only the Stop Sharing button is presented in the floating button
+  // window.
+  if (hwnd_toggle_button) {
+    ShowWindow(hwnd_toggle_button, SW_HIDE);
+  }
+  ShowWindow(hwnd_message, SW_HIDE);
+
+  if (!UpdateBackdrops()) {
+    return false;
+  }
+
+  DeactivateDisconnectButton();
+  return true;
 }
 
 void PrivacyOverlayWin::EndOverlay() {
@@ -217,6 +413,11 @@ void PrivacyOverlayWin::EndOverlay() {
   }
   is_ending_ = true;
 
+  if (hotkey_registered_ && hwnd_) {
+    UnregisterHotKey(hwnd_, kDisconnectHotkeyId);
+    hotkey_registered_ = false;
+  }
+
   std::vector<HWND> backdrop_hwnds = std::exchange(backdrop_hwnds_, {});
   for (HWND backdrop_hwnd : backdrop_hwnds) {
     if (backdrop_hwnd && IsWindow(backdrop_hwnd)) {
@@ -226,6 +427,12 @@ void PrivacyOverlayWin::EndOverlay() {
   }
 
   backdrop_dpi_cache_.clear();
+
+  if (hwnd_) {
+    HWND hwnd = std::exchange(hwnd_, nullptr);
+    SetWindowLongPtr(hwnd, DWLP_USER, 0);
+    DestroyWindow(hwnd);
+  }
 }
 
 const PrivacyOverlayWin::BackdropDpiResources&
@@ -280,6 +487,10 @@ bool PrivacyOverlayWin::UpdateBackdrops() {
     ex_style |= WS_EX_RTLREADING;
   }
 
+  // Set the accessible window title of each backdrop directly to the localized
+  // sharing message (without hardcoded ASCII concatenation separators that can
+  // scramble BiDi ordering) so screen readers can announce who the desktop is
+  // shared with.
   const std::wstring& backdrop_title =
       !sharing_with_text_.empty() ? sharing_with_text_ : product_name_text_;
 
@@ -326,7 +537,29 @@ bool PrivacyOverlayWin::UpdateBackdrops() {
     }
   }
 
+  // Raising `backdrop_hwnds_` with `HWND_TOPMOST` places them at the top of the
+  // topmost Z-order band. Re-assert `HWND_TOPMOST` on `hwnd_` so the Disconnect
+  // button dialog always remains above all backdrop windows.
+  if (hwnd_ && IsWindow(hwnd_)) {
+    SetWindowPos(hwnd_, HWND_TOPMOST, 0, 0, 0, 0,
+                 SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+  }
+
   return true;
+}
+
+void PrivacyOverlayWin::DeactivateDisconnectButton() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!hwnd_) {
+    return;
+  }
+
+  LONG_PTR ex_style = GetWindowLongPtr(hwnd_, GWL_EXSTYLE);
+  ex_style |= WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_LAYERED |
+              WS_EX_TRANSPARENT | WS_EX_NOACTIVATE;
+  SetWindowLongPtr(hwnd_, GWL_EXSTYLE, ex_style);
+  SetLayeredWindowAttributes(hwnd_, 0, 0, LWA_ALPHA);
+  ShowWindow(hwnd_, SW_HIDE);
 }
 
 void PrivacyOverlayWin::PaintBackdrop(HWND hwnd, HDC hdc) {
