@@ -13,7 +13,7 @@
 #include "remoting/protocol/test_event_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/events/event.h"
+#include "ui/events/types/event_type.h"
 
 using ::testing::_;
 using ::testing::ExpectationSet;
