@@ -80,17 +80,14 @@ component("features") {
   public_deps = [
     "//base",
     "//components/optimization_guide/public/mojom",
+    "//url",
   ]
   deps = [
     "//components/optimization_guide:machine_learning_tflite_buildflags",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/optimization_guide/public/mojom:mojom_shared_cpp_sources",
     "//components/prefs",
-    "//components/variations",
     "//google_apis",
-    "//net",
-    "//third_party/metrics_proto",
-    "//ui/base",
   ]
   if (is_android) {
     deps += [ "//components/version_info/android:channel_getter" ]

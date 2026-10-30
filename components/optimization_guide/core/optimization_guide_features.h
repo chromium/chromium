@@ -40,7 +40,6 @@
 #include "build/build_config.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
-#include "net/nqe/effective_connection_type.h"
 #include "url/gurl.h"
 
 namespace optimization_guide {

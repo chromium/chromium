@@ -25,11 +25,8 @@
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/core/feature_registry/mqls_feature_registry.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
-#include "components/variations/hashing.h"
-#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/google_api_keys.h"
-#include "net/base/url_util.h"
-#include "ui/base/l10n/l10n_util.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/version_info/android/channel_getter.h"
