@@ -6,6 +6,8 @@ source_set("remote_actor") {
   sources = [
     "ios_chrome_remote_actor_credential_sharing_service_factory.h",
     "ios_chrome_remote_actor_credential_sharing_service_factory.mm",
+    "remote_actor_credential_sharing_delegate_bridge.h",
+    "remote_actor_credential_sharing_delegate_bridge.mm",
     "remote_actor_keychain_util.h",
     "remote_actor_keychain_util.mm",
     "remote_actor_payload_parser.h",
@@ -19,11 +21,13 @@ source_set("remote_actor") {
   ]
   deps = [
     "//components/keyed_service/core",
+    "//components/password_manager/core/browser:password_form",
     "//components/password_manager/core/common",
     "//crypto",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
     "//services/network/public/cpp",
+    "//url",
   ]
   frameworks = [
     "Foundation.framework",
@@ -33,14 +37,20 @@ source_set("remote_actor") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "remote_actor_payload_parser_unittest.mm" ]
+  sources = [
+    "remote_actor_credential_sharing_delegate_bridge_unittest.mm",
+    "remote_actor_payload_parser_unittest.mm",
+  ]
   deps = [
     ":remote_actor",
     "//base",
     "//base/test:test_support",
+    "//components/password_manager/core/browser:password_form",
+    "//components/password_manager/core/browser/remote_actor",
     "//crypto",
     "//ios/chrome/browser/passwords/model/remote_actor/proto",
     "//testing/gtest",
+    "//url",
   ]
   frameworks = [
     "Foundation.framework",
