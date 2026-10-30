@@ -6981,11 +6981,6 @@
     "expiry_milestone": 165
   },
   {
-    "name": "management-promotion-banner-flag",
-    "owners": ["austinzzr@google.com"],
-    "expiry_milestone": 141
-  },
-  {
     "name": "mark-all-credentials-as-leaked",
     "owners": [
       "atsvirchkova@google.com",

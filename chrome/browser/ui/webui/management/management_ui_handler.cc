@@ -35,7 +35,6 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/management/management_ui_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -797,11 +796,8 @@ void ManagementUIHandler::HandleShouldShowPromotion(
   bool dismissed_banner_pref = profile->GetPrefs()->GetBoolean(
       policy::policy_prefs::kHasDismissedManagementPagePromotionBanner);
 
-  bool feature_enabled =
-      base::FeatureList::IsEnabled(features::kEnableManagementPromotionBanner);
-
   promotion_eligibility_checker_ = policy::CreatePromotionEligibilityChecker(
-      profile, dismissed_banner_pref, feature_enabled);
+      profile, dismissed_banner_pref, /*feature_enabled=*/true);
   if (!promotion_eligibility_checker_) {
     OnPromotionEligibilityFetched(
         callback_id,

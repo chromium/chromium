@@ -19,7 +19,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -34,7 +33,6 @@
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/management/management_ui.h"
 #include "chrome/browser/ui/webui/management/management_ui_handler.h"
 #include "chrome/common/url_constants.h"
@@ -141,9 +139,7 @@ class ScopedLocaleSetter {
   std::string locale_;
 };
 
-class ManagementUIManagedStatusTest
-    : public PlatformBrowserTest,
-      public ::testing::WithParamInterface<bool> {
+class ManagementUIManagedStatusTest : public PlatformBrowserTest {
  public:
   ManagementUIManagedStatusTest()
       : embedded_test_server_(net::EmbeddedTestServer::TYPE_HTTP) {
@@ -159,16 +155,12 @@ class ManagementUIManagedStatusTest
             base::Unretained(this))));
     embedded_test_server_.RegisterRequestHandler(base::BindRepeating(
         &FakeGaia::HandleRequest, base::Unretained(&fake_gaia_)));
-    scoped_feature_list_.InitWithFeatureState(
-        features::kEnableManagementPromotionBanner, GetParam());
   }
   ManagementUIManagedStatusTest(const ManagementUIManagedStatusTest&) = delete;
   ManagementUIManagedStatusTest& operator=(
       const ManagementUIManagedStatusTest&) = delete;
 
   ~ManagementUIManagedStatusTest() override = default;
-
-  bool is_feature_enabled() { return GetParam(); }
 
   void SetUp() override {
     ASSERT_TRUE(embedded_test_server_.InitializeAndListen());
@@ -315,12 +307,11 @@ class ManagementUIManagedStatusTest
     ASSERT_EQ(handlers->size(), 1u);
     auto* handler = static_cast<ManagementUIHandler*>(handlers[0][0].get());
 
-    // Only wait if the feature is enabled AND locale is en-US AND not dismissed
+    // Only wait if locale is en-US AND not dismissed
     const bool is_dismissed = browser()->GetProfile()->GetPrefs()->GetBoolean(
         policy::policy_prefs::kHasDismissedPolicyPagePromotionBanner);
 
-    if (is_feature_enabled() &&
-        g_browser_process->GetApplicationLocale() == kValidLocale &&
+    if (g_browser_process->GetApplicationLocale() == kValidLocale &&
         !is_dismissed && !handler->HasPromotionBeenChecked()) {
       // Check if the promotion has already been checked before waiting for the
       // observer to avoid racing condition
@@ -332,13 +323,12 @@ class ManagementUIManagedStatusTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer embedded_test_server_;
   std::unique_ptr<policy::EmbeddedPolicyTestServer> policy_server_;
   FakeGaia fake_gaia_;
 };
 
-IN_PROC_BROWSER_TEST_P(ManagementUIManagedStatusTest,
+IN_PROC_BROWSER_TEST_F(ManagementUIManagedStatusTest,
                        HandleGetShowPromotionTestShown) {
   ScopedLocaleSetter locale_setter(kValidLocale);
 
@@ -350,14 +340,10 @@ IN_PROC_BROWSER_TEST_P(ManagementUIManagedStatusTest,
   auto result = EvalJs(browser()->GetTabStripModel()->GetActiveWebContents(),
                        kPromotionBannerVisibilityJavaScript)
                     .ExtractString();
-  if (is_feature_enabled()) {
-    EXPECT_EQ(result, kBannerVisible);
-  } else {
-    EXPECT_EQ(result, kBannerHidden);
-  }
+  EXPECT_EQ(result, kBannerVisible);
 }
 
-IN_PROC_BROWSER_TEST_P(ManagementUIManagedStatusTest,
+IN_PROC_BROWSER_TEST_F(ManagementUIManagedStatusTest,
                        HandleGetShowPromotionDismisseddHidden) {
   ScopedLocaleSetter locale_setter(kValidLocale);
 
@@ -374,7 +360,7 @@ IN_PROC_BROWSER_TEST_P(ManagementUIManagedStatusTest,
   EXPECT_EQ(result, kBannerHidden);
 }
 
-IN_PROC_BROWSER_TEST_P(ManagementUIManagedStatusTest,
+IN_PROC_BROWSER_TEST_F(ManagementUIManagedStatusTest,
                        HandleSetBannerDismissedHidden) {
   ScopedLocaleSetter locale_setter(kValidLocale);
 
@@ -393,7 +379,7 @@ IN_PROC_BROWSER_TEST_P(ManagementUIManagedStatusTest,
   EXPECT_EQ(result, kBannerHidden);
 }
 
-IN_PROC_BROWSER_TEST_P(ManagementUIManagedStatusTest,
+IN_PROC_BROWSER_TEST_F(ManagementUIManagedStatusTest,
                        HandleLocaleNotEnUSHidden) {
   ScopedLocaleSetter locale_setter(kInvalidLocale);
 
@@ -410,7 +396,7 @@ IN_PROC_BROWSER_TEST_P(ManagementUIManagedStatusTest,
   EXPECT_EQ(result, kBannerHidden);
 }
 
-IN_PROC_BROWSER_TEST_P(ManagementUIManagedStatusTest,
+IN_PROC_BROWSER_TEST_F(ManagementUIManagedStatusTest,
                        HistogramRecordedWhenBannerDisplayed) {
   ScopedLocaleSetter locale_setter(kValidLocale);
 
@@ -422,12 +408,11 @@ IN_PROC_BROWSER_TEST_P(ManagementUIManagedStatusTest,
       browser(), GURL(chrome::kChromeUIManagementURL)));
   SetupAndListenForPromotion();
 
-  const bool expected_bucket = is_feature_enabled() ? true : false;
   histogram_tester.ExpectBucketCount(
-      "Enterprise.ManagementPromotionBannerDisplayed", expected_bucket, 1);
+      "Enterprise.ManagementPromotionBannerDisplayed", true, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(ManagementUIManagedStatusTest, PageLoadedInGuestMode) {
+IN_PROC_BROWSER_TEST_F(ManagementUIManagedStatusTest, PageLoadedInGuestMode) {
   BrowserWindowInterface* policy_browser = OpenURLOffTheRecord(
       browser()->GetProfile(), GURL(chrome::kChromeUIManagementURL));
   ASSERT_TRUE(policy_browser);
@@ -443,7 +428,3 @@ IN_PROC_BROWSER_TEST_P(ManagementUIManagedStatusTest, PageLoadedInGuestMode) {
           .ExtractString();
   EXPECT_EQ(result, kBannerHidden);
 }
-
-INSTANTIATE_TEST_SUITE_P(PolicyManagedUITestInstance,
-                         ManagementUIManagedStatusTest,
-                         ::testing::Values(false, true));

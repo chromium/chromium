@@ -302,9 +302,6 @@ BASE_DECLARE_FEATURE(kMacDeferInputContextUntilFirstPaint);
 // applications section.
 BASE_DECLARE_FEATURE(kPageSpecificDataDialogRelatedInstalledAppsSection);
 
-// Feature for the promotion banner on the top of chrome://management page
-BASE_DECLARE_FEATURE(kEnableManagementPromotionBanner);
-
 // Gates the optimization to cache LocationBarView in
 // LensOverlayHomeworkPageActionController.
 BASE_DECLARE_FEATURE(kLensOverlayHomeworkPageActionFocusOptimization);
