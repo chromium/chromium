@@ -21,7 +21,8 @@ ThemeTrackingImageView::ThemeTrackingImageView(
     : light_image_model_(light_image_model),
       dark_image_model_(dark_image_model),
       background_color_(background_color) {
-  DCHECK_EQ(light_image_model_.Size(), dark_image_model_.Size());
+  CHECK_EQ(light_image_model_.Size(), dark_image_model_.Size(),
+           base::NotFatalUntil::M163);
   SetImage(light_image_model_);
 }
 
@@ -32,7 +33,8 @@ ThemeTrackingImageView::ThemeTrackingImageView(
     : light_image_model_(ui::ImageModel::FromImageSkia(light_image)),
       dark_image_model_(ui::ImageModel::FromImageSkia(dark_image)),
       background_color_(background_color) {
-  DCHECK_EQ(light_image_model_.Size(), dark_image_model_.Size());
+  CHECK_EQ(light_image_model_.Size(), dark_image_model_.Size(),
+           base::NotFatalUntil::M163);
   SetImage(light_image_model_);
 }
 

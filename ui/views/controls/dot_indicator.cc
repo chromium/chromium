@@ -51,7 +51,7 @@ DotIndicator::DotIndicator() {
 void DotIndicator::OnPaint(gfx::Canvas* canvas) {
   canvas->SaveLayerAlpha(SK_AlphaOPAQUE);
 
-  DCHECK_EQ(width(), height());
+  CHECK_EQ(width(), height(), base::NotFatalUntil::M163);
   float radius = width() / 2.0f;
   const float scale = canvas->UndoDeviceScaleFactor();
   const int kStrokeWidthPx = 1;

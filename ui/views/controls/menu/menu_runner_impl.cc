@@ -182,8 +182,9 @@ void MenuRunnerImpl::RunMenuAt(
     owns_controller_ = true;
     controller->SetMenuRoundedCorners(corners);
   }
-  DCHECK((run_types & MenuRunner::COMBOBOX) == 0 ||
-         (run_types & MenuRunner::EDITABLE_COMBOBOX) == 0);
+  CHECK((run_types & MenuRunner::COMBOBOX) == 0 ||
+            (run_types & MenuRunner::EDITABLE_COMBOBOX) == 0,
+        base::NotFatalUntil::M163);
   using ComboboxType = MenuController::ComboboxType;
   if (run_types & MenuRunner::COMBOBOX) {
     controller->set_combobox_type(ComboboxType::kReadonly);

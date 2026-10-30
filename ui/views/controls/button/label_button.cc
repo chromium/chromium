@@ -254,7 +254,7 @@ void LabelButton::SetElideBehavior(gfx::ElideBehavior elide_behavior) {
 }
 
 void LabelButton::SetHorizontalAlignment(gfx::HorizontalAlignment alignment) {
-  DCHECK_NE(gfx::ALIGN_TO_HEAD, alignment);
+  CHECK_NE(gfx::ALIGN_TO_HEAD, alignment, base::NotFatalUntil::M163);
   if (GetHorizontalAlignment() == alignment) {
     return;
   }
@@ -458,7 +458,8 @@ ProposedLayout LabelButton::CalculateProposedLayout(
   gfx::Point image_origin = image_area.origin();
   if (label_->GetMultiLine() && !image_centered_) {
     // This code assumes the text is vertically centered.
-    DCHECK_EQ(gfx::ALIGN_MIDDLE, label_->GetVerticalAlignment());
+    CHECK_EQ(gfx::ALIGN_MIDDLE, label_->GetVerticalAlignment(),
+             base::NotFatalUntil::M163);
     int label_height = label_->GetHeightForWidth(label_size.width());
     int first_line_y =
         label_area.y() + (label_area.height() - label_height) / 2;
@@ -592,8 +593,8 @@ void LabelButton::GetExtraParams(ui::NativeTheme::ExtraParams* params) const {
 PropertyEffects LabelButton::UpdateStyleToIndicateDefaultStatus() {
   // Check that a subclass hasn't replaced the Label font. These buttons may
   // never be given default status.
-  DCHECK_EQ(cached_normal_font_list_.GetFontSize(),
-            label()->font_list().GetFontSize());
+  CHECK_EQ(cached_normal_font_list_.GetFontSize(),
+           label()->font_list().GetFontSize(), base::NotFatalUntil::M163);
   // TODO(tapted): This should use TypographyProvider::Get().GetFont(), but this
   // part can just be deleted when default buttons no longer go bold. Colors
   // will need updating still.

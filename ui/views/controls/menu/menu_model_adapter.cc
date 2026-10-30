@@ -50,7 +50,7 @@ void MenuModelAdapter::DetachFromMenuModel() {
 }
 
 void MenuModelAdapter::BuildMenu(MenuItemView* menu) {
-  DCHECK(menu);
+  CHECK(menu, base::NotFatalUntil::M163);
 
   // Rebuilding a showing menu inserts items into a live view hierarchy, which
   // can synchronously notify observers such as assistive technology. Those

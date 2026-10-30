@@ -129,9 +129,9 @@ gfx::FontList StyledLabel::GetFontList(const RangeStyleInfo& style_info) const {
 
 void StyledLabel::AddStyleRange(const gfx::Range& range,
                                 const RangeStyleInfo& style_info) {
-  DCHECK(!range.is_reversed());
-  DCHECK(!range.is_empty());
-  DCHECK(gfx::Range(0, text_.size()).Contains(range));
+  CHECK(!range.is_reversed(), base::NotFatalUntil::M163);
+  CHECK(!range.is_empty(), base::NotFatalUntil::M163);
+  CHECK(gfx::Range(0, text_.size()).Contains(range), base::NotFatalUntil::M163);
 
   // Insert the new range in sorted order.
   StyleRanges new_range;
@@ -143,7 +143,7 @@ void StyledLabel::AddStyleRange(const gfx::Range& range,
 }
 
 void StyledLabel::AddCustomView(std::unique_ptr<View> custom_view) {
-  DCHECK(!custom_view->owned_by_client());
+  CHECK(!custom_view->owned_by_client(), base::NotFatalUntil::M163);
   custom_view->SetProperty(kStyledLabelCustomViewKey, true);
   custom_views_.push_back(std::move(custom_view));
 }
@@ -261,7 +261,7 @@ const StyledLabel::LayoutSizeInfo& StyledLabel::GetLayoutSizeInfoForWidth(
 }
 
 void StyledLabel::SizeToFit(int fixed_width) {
-  DCHECK_LE(0, fixed_width);
+  CHECK_LE(0, fixed_width, base::NotFatalUntil::M163);
   fixed_width_ = fixed_width;
   gfx::Size size = CalculatePreferredSize(
       SizeBounds(fixed_width_ == 0 ? SizeBound() : SizeBound(width()), {}));
@@ -322,7 +322,7 @@ void StyledLabel::PreferredSizeChanged() {
 
 // TODO(wutao): support gfx::ALIGN_TO_HEAD alignment.
 void StyledLabel::SetHorizontalAlignment(gfx::HorizontalAlignment alignment) {
-  DCHECK_NE(gfx::ALIGN_TO_HEAD, alignment);
+  CHECK_NE(gfx::ALIGN_TO_HEAD, alignment, base::NotFatalUntil::M163);
   alignment = gfx::MaybeFlipForRTL(alignment);
 
   if (horizontal_alignment_ == alignment) {
@@ -437,7 +437,8 @@ void StyledLabel::CalculateLayout(int width) const {
           // should only occur if there is insufficient vertical space
           // remaining. ElideRectangleText() always adds a single character,
           // even if there is no room horizontally.
-          DCHECK_NE(0, elide_result & gfx::INSUFFICIENT_SPACE_VERTICAL);
+          CHECK_NE(0, elide_result & gfx::INSUFFICIENT_SPACE_VERTICAL,
+                   base::NotFatalUntil::M163);
           // There's no way to continue processing; clear |remaining_string| so
           // the outer loop will terminate after this iteration completes.
           remaining_string.clear();
@@ -477,9 +478,10 @@ void StyledLabel::CalculateLayout(int width) const {
         if (style_info.custom_view) {
           custom_view = style_info.custom_view;
           // Custom views must be marked as such.
-          DCHECK(custom_view->GetProperty(kStyledLabelCustomViewKey));
+          CHECK(custom_view->GetProperty(kStyledLabelCustomViewKey),
+                base::NotFatalUntil::M163);
           // Do not allow wrap in custom view.
-          DCHECK_EQ(position, range.start());
+          CHECK_EQ(position, range.start(), base::NotFatalUntil::M163);
           chunk = remaining_string.substr(0, range.end() - position);
         } else {
           chunk = substrings[0];
@@ -575,7 +577,7 @@ std::unique_ptr<Label> StyledLabel::CreateLabel(
   std::unique_ptr<Label> result;
   if (IsLinkTextStyle(style_info.text_style)) {
     // Nothing should (and nothing does) use a custom font for links.
-    DCHECK(!style_info.custom_font);
+    CHECK(!style_info.custom_font, base::NotFatalUntil::M163);
 
     // Note this ignores |default_text_style_|, in favor of `style::STYLE_LINK`.
     auto link = std::make_unique<LinkFragment>(
@@ -638,7 +640,8 @@ void StyledLabel::UpdateLabelBackgroundColor() {
         displayed_on_background_color_) {
       // TODO(kylixrd): Should updating the label background color even be
       // allowed if there are custom views?
-      DCHECK(IsViewClass<Label>(child) || IsViewClass<LinkFragment>(child));
+      CHECK(IsViewClass<Label>(child) || IsViewClass<LinkFragment>(child),
+            base::NotFatalUntil::M163);
       static_cast<Label*>(child)->SetBackgroundColor(
           *displayed_on_background_color_);
     }
@@ -686,8 +689,8 @@ void StyledLabel::RecreateChildViews() {
     // moved to |custom_views_|.
     RemoveOrDeleteAllChildViews();
 
-    DCHECK_EQ(layout_size_info_.line_sizes.size(),
-              layout_views_->views_per_line.size());
+    CHECK_EQ(layout_size_info_.line_sizes.size(),
+             layout_views_->views_per_line.size(), base::NotFatalUntil::M163);
     int line_y = GetInsets().top();
     auto next_owned_view = layout_views_->owned_views.begin();
     for (size_t line = 0; line < layout_views_->views_per_line.size(); ++line) {
@@ -708,19 +711,21 @@ void StyledLabel::RecreateChildViews() {
         if (view->GetProperty(kStyledLabelCustomViewKey)) {
           auto custom_view = std::ranges::find(custom_views_, view,
                                                &std::unique_ptr<View>::get);
-          DCHECK(custom_view != custom_views_.end());
+          CHECK(custom_view != custom_views_.end(), base::NotFatalUntil::M163);
           AddChildView(std::move(*custom_view));
           custom_views_.erase(custom_view);
         } else {
-          DCHECK(next_owned_view != layout_views_->owned_views.end());
-          DCHECK(view == next_owned_view->get());
+          CHECK(next_owned_view != layout_views_->owned_views.end(),
+                base::NotFatalUntil::M163);
+          CHECK(view == next_owned_view->get(), base::NotFatalUntil::M163);
           AddChildView(std::move(*next_owned_view));
           ++next_owned_view;
         }
       }
       line_y += line_size.height();
     }
-    DCHECK(next_owned_view == layout_views_->owned_views.end());
+    CHECK(next_owned_view == layout_views_->owned_views.end(),
+          base::NotFatalUntil::M163);
 
     layout_views_.reset();
   } else if (horizontal_alignment_ != gfx::ALIGN_LEFT) {
@@ -731,7 +736,9 @@ void StyledLabel::RecreateChildViews() {
     int line_bottom = GetInsets().top();
     auto i = children().begin();
     for (const auto& line_size : layout_size_info_.line_sizes) {
-      DCHECK(i != children().end());  // Should not have an empty trailing line.
+      CHECK(i != children().end(),
+            base::NotFatalUntil::M163);  // Should not have an empty trailing
+                                         // line.
       int x = StartX(width() - line_size.width());
       line_bottom += line_size.height();
       for (; (i != children().end()) && ((*i)->y() < line_bottom); ++i) {
@@ -739,7 +746,8 @@ void StyledLabel::RecreateChildViews() {
         x += (*i)->GetPreferredSize(SizeBounds(line_size)).width();
       }
     }
-    DCHECK(i == children().end());  // Should not be short any lines.
+    CHECK(i == children().end(),
+          base::NotFatalUntil::M163);  // Should not be short any lines.
   }
 }
 

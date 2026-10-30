@@ -74,8 +74,8 @@ void MenuRunnerImplCocoa::RunMenuAt(
     gfx::NativeView native_view_for_gestures,
     std::optional<gfx::RoundedCornersF> corners,
     std::optional<std::string> show_menu_host_duration_histogram) {
-  DCHECK(!IsRunning());
-  DCHECK(parent);
+  CHECK(!IsRunning(), base::NotFatalUntil::M163);
+  CHECK(parent, base::NotFatalUntil::M163);
   CHECK(run_types & MenuRunner::CONTEXT_MENU);
 
   menu_delegate_ = [[MenuControllerCocoaDelegateImpl alloc]

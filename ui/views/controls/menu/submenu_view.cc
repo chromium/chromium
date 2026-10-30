@@ -383,39 +383,39 @@ void SubmenuView::PaintChildren(const PaintInfo& paint_info) {
 bool SubmenuView::GetDropFormats(
     int* formats,
     std::set<ui::ClipboardFormatType>* format_types) {
-  DCHECK(parent_menu_item_->GetMenuController());
+  CHECK(parent_menu_item_->GetMenuController(), base::NotFatalUntil::M163);
   return parent_menu_item_->GetMenuController()->GetDropFormats(this, formats,
                                                                 format_types);
 }
 
 bool SubmenuView::AreDropTypesRequired() {
-  DCHECK(parent_menu_item_->GetMenuController());
+  CHECK(parent_menu_item_->GetMenuController(), base::NotFatalUntil::M163);
   return parent_menu_item_->GetMenuController()->AreDropTypesRequired(this);
 }
 
 bool SubmenuView::CanDrop(const OSExchangeData& data) {
-  DCHECK(parent_menu_item_->GetMenuController());
+  CHECK(parent_menu_item_->GetMenuController(), base::NotFatalUntil::M163);
   return parent_menu_item_->GetMenuController()->CanDrop(this, data);
 }
 
 void SubmenuView::OnDragEntered(const ui::DropTargetEvent& event) {
-  DCHECK(parent_menu_item_->GetMenuController());
+  CHECK(parent_menu_item_->GetMenuController(), base::NotFatalUntil::M163);
   parent_menu_item_->GetMenuController()->OnDragEntered(this, event);
 }
 
 int SubmenuView::OnDragUpdated(const ui::DropTargetEvent& event) {
-  DCHECK(parent_menu_item_->GetMenuController());
+  CHECK(parent_menu_item_->GetMenuController(), base::NotFatalUntil::M163);
   return parent_menu_item_->GetMenuController()->OnDragUpdated(this, event);
 }
 
 void SubmenuView::OnDragExited() {
-  DCHECK(parent_menu_item_->GetMenuController());
+  CHECK(parent_menu_item_->GetMenuController(), base::NotFatalUntil::M163);
   parent_menu_item_->GetMenuController()->OnDragExited(this);
 }
 
 views::View::DropCallback SubmenuView::GetDropCallback(
     const ui::DropTargetEvent& event) {
-  DCHECK(parent_menu_item_->GetMenuController());
+  CHECK(parent_menu_item_->GetMenuController(), base::NotFatalUntil::M163);
   drop_item_ = nullptr;
   return parent_menu_item_->GetMenuController()->GetDropCallback(this, event);
 }
@@ -794,7 +794,8 @@ void SubmenuView::SchedulePaintForDropIndicator(
 gfx::Rect SubmenuView::CalculateDropIndicatorBounds(
     MenuItemView* item,
     MenuDelegate::DropPosition position) {
-  DCHECK(position != MenuDelegate::DropPosition::kNone);
+  CHECK(position != MenuDelegate::DropPosition::kNone,
+        base::NotFatalUntil::M163);
   gfx::Rect item_bounds = item->bounds();
   switch (position) {
     case MenuDelegate::DropPosition::kBefore:

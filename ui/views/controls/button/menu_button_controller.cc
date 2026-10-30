@@ -245,7 +245,7 @@ bool MenuButtonController::Activate(const ui::Event* event) {
     static_cast<internal::RootView*>(button()->GetWidget()->GetRootView())
         ->SetMouseAndGestureHandler(nullptr);
 
-    DCHECK(increment_pressed_lock_called_ == nullptr);
+    CHECK(increment_pressed_lock_called_ == nullptr, base::NotFatalUntil::M163);
     // Observe if IncrementPressedLocked() was called so we can trigger the
     // correct ink drop animations.
     bool increment_pressed_lock_called = false;
@@ -366,7 +366,7 @@ void MenuButtonController::IncrementPressedLocked(
 
 void MenuButtonController::DecrementPressedLocked() {
   --pressed_lock_count_;
-  DCHECK_GE(pressed_lock_count_, 0);
+  CHECK_GE(pressed_lock_count_, 0, base::NotFatalUntil::M163);
 
   // If this was the last lock, manually reset state to the desired state.
   if (pressed_lock_count_ == 0) {

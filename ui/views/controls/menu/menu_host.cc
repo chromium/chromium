@@ -81,8 +81,9 @@ class PreMenuEventDispatchHandler : public ui::EventHandler,
 
   // aura::WindowObserver overrides.
   void OnWindowDestroying(aura::Window* window) override {
-    DCHECK(window_observation_.IsObserving());
-    DCHECK_EQ(window_observation_.GetSource(), window);
+    CHECK(window_observation_.IsObserving(), base::NotFatalUntil::M163);
+    CHECK_EQ(window_observation_.GetSource(), window,
+             base::NotFatalUntil::M163);
     StopObserving();
   }
 
@@ -215,7 +216,7 @@ void MenuHost::InitMenuHost(const InitParams& init_params) {
           menu_controller, submenu_, GetNativeView());
 #endif
 
-  DCHECK(!GetOwner());
+  CHECK(!GetOwner(), base::NotFatalUntil::M163);
   if (init_params.parent) {
     owner_observation_.Observe(init_params.parent);
     if (FocusManager* owner_focus_manager =
@@ -397,7 +398,7 @@ void MenuHost::OnOwnerClosing() {
 void MenuHost::OnDragDropWillStart() {
   MenuController* menu_controller =
       submenu_->GetMenuItem()->GetMenuController();
-  DCHECK(menu_controller);
+  CHECK(menu_controller, base::NotFatalUntil::M163);
   menu_controller->OnDragDropWillStart();
 }
 void MenuHost::OnDragDropCompleted() {
@@ -448,7 +449,7 @@ gfx::Insets MenuHost::GetCustomInsetsInDIP() const {
 }
 
 void MenuHost::OnWidgetDestroying(Widget* widget) {
-  DCHECK_EQ(GetOwner(), widget);
+  CHECK_EQ(GetOwner(), widget, base::NotFatalUntil::M163);
   ClearFocusForOwner();
   owner_focus_change_listener_.reset();
   owner_observation_.Reset();

@@ -171,7 +171,8 @@ base::TimeDelta GetPasswordRevealDuration(const ui::KeyEvent& event) {
   if (from_vk) {
     std::vector<uint8_t> fromVKPropertyArray =
         properties->find(ui::kPropertyFromVK)->second;
-    DCHECK_GT(fromVKPropertyArray.size(), ui::kPropertyFromVKIsMirroringIndex);
+    CHECK_GT(fromVKPropertyArray.size(), ui::kPropertyFromVKIsMirroringIndex,
+             base::NotFatalUntil::M163);
     uint8_t is_mirroring =
         fromVKPropertyArray[ui::kPropertyFromVKIsMirroringIndex];
     if (!is_mirroring) {
@@ -287,7 +288,8 @@ Textfield::~Textfield() {
 
   if (GetInputMethod()) {
     // The textfield should have been blurred before destroy.
-    DCHECK(this != GetInputMethod()->GetTextInputClient());
+    CHECK(this != GetInputMethod()->GetTextInputClient(),
+          base::NotFatalUntil::M163);
   }
 }
 
@@ -538,12 +540,12 @@ void Textfield::SetFontList(const gfx::FontList& font_list) {
 }
 
 void Textfield::SetDefaultWidthInChars(int default_width) {
-  DCHECK_GE(default_width, 0);
+  CHECK_GE(default_width, 0, base::NotFatalUntil::M163);
   default_width_in_chars_ = default_width;
 }
 
 void Textfield::SetMinimumWidthInChars(int minimum_width) {
-  DCHECK_GE(minimum_width, -1);
+  CHECK_GE(minimum_width, -1, base::NotFatalUntil::M163);
   minimum_width_in_chars_ = minimum_width;
 }
 
@@ -729,7 +731,8 @@ int Textfield::GetBaseline() const {
 
 gfx::Size Textfield::CalculatePreferredSize(
     const SizeBounds& available_size) const {
-  DCHECK_GE(default_width_in_chars_, minimum_width_in_chars_);
+  CHECK_GE(default_width_in_chars_, minimum_width_in_chars_,
+           base::NotFatalUntil::M163);
   return gfx::Size(
       CharsToDips(default_width_in_chars_),
       LayoutProvider::GetControlHeightForFont(style::CONTEXT_TEXTFIELD,
@@ -737,7 +740,8 @@ gfx::Size Textfield::CalculatePreferredSize(
 }
 
 gfx::Size Textfield::GetMinimumSize() const {
-  DCHECK_LE(minimum_width_in_chars_, default_width_in_chars_);
+  CHECK_LE(minimum_width_in_chars_, default_width_in_chars_,
+           base::NotFatalUntil::M163);
   gfx::Size minimum_size = View::GetMinimumSize();
   if (minimum_width_in_chars_ >= 0) {
     minimum_size.set_width(CharsToDips(minimum_width_in_chars_));
@@ -1064,7 +1068,7 @@ bool Textfield::CanDrop(const OSExchangeData& data) {
 }
 
 int Textfield::OnDragUpdated(const ui::DropTargetEvent& event) {
-  DCHECK(CanDrop(event.data()));
+  CHECK(CanDrop(event.data()), base::NotFatalUntil::M163);
   gfx::RenderText* render_text = GetRenderText();
   const gfx::Range& selection = render_text->selection();
   drop_cursor_position_ = render_text->FindCursorPosition(event.location());
@@ -1098,7 +1102,7 @@ void Textfield::OnDragExited() {
 
 views::View::DropCallback Textfield::GetDropCallback(
     const ui::DropTargetEvent& event) {
-  DCHECK(CanDrop(event.data()));
+  CHECK(CanDrop(event.data()), base::NotFatalUntil::M163);
 
   drop_cursor_visible_ = false;
 
@@ -1109,8 +1113,9 @@ views::View::DropCallback Textfield::GetDropCallback(
     }
   }
 
-  DCHECK(!initiating_drag_ ||
-         !GetRenderText()->IsPointInSelection(event.location()));
+  CHECK(!initiating_drag_ ||
+            !GetRenderText()->IsPointInSelection(event.location()),
+        base::NotFatalUntil::M163);
 
   return base::BindOnce(&Textfield::DropDraggedText,
                         drop_weak_ptr_factory_.GetWeakPtr());
@@ -1153,8 +1158,9 @@ void Textfield::UpdateAccessibleTextOffsetsIfNeeded() {
 }
 
 void Textfield::RefreshAccessibleTextOffsets() {
-  DCHECK(::ui::AXPlatform::GetInstance().IsUiaProviderEnabled());
-  DCHECK(GetViewAccessibility().is_initialized());
+  CHECK(::ui::AXPlatform::GetInstance().IsUiaProviderEnabled(),
+        base::NotFatalUntil::M163);
+  CHECK(GetViewAccessibility().is_initialized(), base::NotFatalUntil::M163);
   // TODO(crbug.com/40933356): Add support for multiline textfields.
   if (GetRenderText()->multiline()) {
     return;
@@ -1171,7 +1177,8 @@ void Textfield::RefreshAccessibleTextOffsets() {
 
 bool Textfield::HandleAccessibleAction(const ui::AXActionData& action_data) {
   if (action_data.action == ax::mojom::Action::kSetSelection) {
-    DCHECK_EQ(action_data.anchor_node_id, action_data.focus_node_id);
+    CHECK_EQ(action_data.anchor_node_id, action_data.focus_node_id,
+             base::NotFatalUntil::M163);
     const gfx::Range range(static_cast<size_t>(action_data.anchor_offset),
                            static_cast<size_t>(action_data.focus_offset));
     return SetEditableSelectionRange(range);
@@ -1517,8 +1524,8 @@ void Textfield::MoveRangeSelectionExtent(const gfx::Point& extent) {
     // Move the selection end to the nearest word boundary.
     const gfx::Range nearest_word_boundaries =
         render_text->ExpandRangeToWordBoundary(gfx::Range(end));
-    DCHECK_GE(end, nearest_word_boundaries.start());
-    DCHECK_LE(end, nearest_word_boundaries.end());
+    CHECK_GE(end, nearest_word_boundaries.start(), base::NotFatalUntil::M163);
+    CHECK_LE(end, nearest_word_boundaries.end(), base::NotFatalUntil::M163);
     end = end - nearest_word_boundaries.start() <
                   nearest_word_boundaries.end() - end
               ? nearest_word_boundaries.start()
@@ -1822,7 +1829,7 @@ void Textfield::InsertChar(const ui::KeyEvent& event) {
     base::TimeDelta duration = GetPasswordRevealDuration(event);
     if (!duration.is_zero()) {
       const size_t change_offset = model_->GetCursorPosition();
-      DCHECK_GT(change_offset, 0u);
+      CHECK_GT(change_offset, 0u, base::NotFatalUntil::M163);
       RevealPasswordChar(change_offset - 1, duration);
     }
   }
@@ -1884,13 +1891,13 @@ std::optional<size_t> Textfield::GetProximateCharacterIndexFromPoint(
 
 bool Textfield::GetCompositionCharacterBounds(size_t index,
                                               gfx::Rect* rect) const {
-  DCHECK(rect);
+  CHECK(rect, base::NotFatalUntil::M163);
   if (!HasCompositionText()) {
     return false;
   }
   gfx::Range composition_range;
   model_->GetCompositionTextRange(&composition_range);
-  DCHECK(!composition_range.is_empty());
+  CHECK(!composition_range.is_empty(), base::NotFatalUntil::M163);
 
   size_t text_index = composition_range.start() + index;
   if (composition_range.end() <= text_index) {
@@ -1988,7 +1995,7 @@ void Textfield::OnInputMethodChanged() {}
 
 bool Textfield::ChangeTextDirectionAndLayoutAlignment(
     base::i18n::TextDirection direction) {
-  DCHECK_NE(direction, base::i18n::UNKNOWN_DIRECTION);
+  CHECK_NE(direction, base::i18n::UNKNOWN_DIRECTION, base::NotFatalUntil::M163);
   // Restore text directionality mode when the indicated direction matches the
   // current forced mode; otherwise, force the mode indicated. This helps users
   // manage BiDi text layout without getting stuck in forced LTR or RTL modes.
@@ -2139,7 +2146,8 @@ bool Textfield::IsTextEditCommandEnabled(ui::TextEditCommand command) const {
 }
 
 void Textfield::SetTextEditCommandForNextKeyEvent(ui::TextEditCommand command) {
-  DCHECK_EQ(ui::TextEditCommand::INVALID_COMMAND, scheduled_text_edit_command_);
+  CHECK_EQ(ui::TextEditCommand::INVALID_COMMAND, scheduled_text_edit_command_,
+           base::NotFatalUntil::M163);
   scheduled_text_edit_command_ = command;
 }
 
@@ -2166,7 +2174,7 @@ bool Textfield::SetCompositionFromExistingText(
     const gfx::Range& range,
     const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) {
   // TODO(crbug.com/41452689): Support custom text spans.
-  DCHECK(!model_->HasCompositionText());
+  CHECK(!model_->HasCompositionText(), base::NotFatalUntil::M163);
   OnBeforeUserAction();
   model_->SetCompositionFromExistingText(range);
   SchedulePaint();
@@ -2796,7 +2804,7 @@ void Textfield::OnAfterPointerAction(bool text_changed,
 
 void Textfield::PasteSelectionClipboard(
     base::OnceCallback<void(bool)> callback) {
-  DCHECK(!GetReadOnly());
+  CHECK(!GetReadOnly(), base::NotFatalUntil::M163);
   ui::Clipboard::GetForCurrentThread()->ReadText(
       ui::ClipboardBuffer::kSelection, /*data_dst=*/std::nullopt,
       base::BindOnce(&Textfield::OnTextReadForPasteSelectionClipboard,
@@ -3073,7 +3081,7 @@ void Textfield::OnCaretBoundsChanged() {
 }
 
 void Textfield::OnBeforeUserAction() {
-  DCHECK(!performing_user_action_);
+  CHECK(!performing_user_action_, base::NotFatalUntil::M163);
   performing_user_action_ = true;
   if (controller_) {
     controller_->OnBeforeUserAction(this);
@@ -3084,7 +3092,7 @@ void Textfield::OnAfterUserAction() {
   if (controller_) {
     controller_->OnAfterUserAction(this);
   }
-  DCHECK(performing_user_action_);
+  CHECK(performing_user_action_, base::NotFatalUntil::M163);
   performing_user_action_ = false;
 }
 
@@ -3291,7 +3299,7 @@ bool Textfield::ShouldBlinkCursor() const {
 }
 
 void Textfield::StartBlinkingCursor() {
-  DCHECK(ShouldBlinkCursor());
+  CHECK(ShouldBlinkCursor(), base::NotFatalUntil::M163);
   cursor_blink_timer_.Start(
       FROM_HERE,
       ui::NativeTheme::GetInstanceForNativeUi()->caret_blink_interval(), this,
@@ -3303,7 +3311,7 @@ void Textfield::StopBlinkingCursor() {
 }
 
 void Textfield::OnCursorBlinkTimerFired() {
-  DCHECK(ShouldBlinkCursor());
+  CHECK(ShouldBlinkCursor(), base::NotFatalUntil::M163);
   // TODO(crbug.com/40820702): The cursor position is not updated appropriately
   // when locale changes from a left-to-right script to a right-to-left script.
   // Thus the cursor is displayed at a wrong position immediately after the
@@ -3359,7 +3367,7 @@ void Textfield::DropDraggedText(
     const ui::DropTargetEvent& event,
     ui::mojom::DragOperation& output_drag_op,
     std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner) {
-  DCHECK(CanDrop(event.data()));
+  CHECK(CanDrop(event.data()), base::NotFatalUntil::M163);
 
   gfx::RenderText* render_text = GetRenderText();
 
@@ -3516,7 +3524,8 @@ bool Textfield::HandleGestureForSelectionDragging(ui::GestureEvent* event) {
 }
 
 bool Textfield::StartSelectionDragging(const ui::GestureEvent& event) {
-  DCHECK_EQ(event.type(), ui::EventType::kGestureScrollBegin);
+  CHECK_EQ(event.type(), ui::EventType::kGestureScrollBegin,
+           base::NotFatalUntil::M163);
 
   const float delta_x = event.details().scroll_x_hint();
   const float delta_y = event.details().scroll_y_hint();

@@ -158,7 +158,7 @@ const gfx::ShadowValues& GetShadowValues(
 
   gfx::ShadowValues shadows;
   if (elevation.has_value()) {
-    DCHECK_GE(elevation.value(), 0);
+    CHECK_GE(elevation.value(), 0, base::NotFatalUntil::M163);
     auto shadow_colors_map =
         ShadowElevationToColorsMap(shadow_type, color_provider);
     const auto iter = shadow_colors_map.find(elevation.value());
@@ -275,7 +275,7 @@ bool IsExplicitNoShadow(BubbleBorder::Shadow shadow) {
 
 BubbleBorder::BubbleBorder(Arrow arrow, Shadow shadow)
     : arrow_(arrow), shadow_(shadow) {
-  DCHECK_LT(shadow_, SHADOW_COUNT);
+  CHECK_LT(shadow_, SHADOW_COUNT, base::NotFatalUntil::M163);
   set_color(ui::kColorDialogBackground);
 }
 
@@ -327,7 +327,7 @@ gfx::Rect BubbleBorder::GetBounds(const gfx::Rect& anchor_rect,
   const gfx::Insets shadow_insets = insets - border_insets;
   // TODO(dfried): Collapse border into visible arrow where applicable.
   contents_bounds.Inset(-border_insets);
-  DCHECK(!avoid_shadow_overlap_ || !visible_arrow_);
+  CHECK(!avoid_shadow_overlap_ || !visible_arrow_, base::NotFatalUntil::M163);
 
   // If |avoid_shadow_overlap_| is true, the shadow part of the inset is also
   // applied now, to ensure that the shadow itself doesn't overlap the anchor.
@@ -346,8 +346,9 @@ gfx::Rect BubbleBorder::GetBounds(const gfx::Rect& anchor_rect,
 
   // With NO_SHADOW, there should be further insets, but the same logic is
   // used to position the bubble origin according to |anchor_rect|.
-  DCHECK(!IsExplicitNoShadow(shadow_) || insets_.has_value() ||
-         shadow_insets.IsEmpty() || visible_arrow_);
+  CHECK(!IsExplicitNoShadow(shadow_) || insets_.has_value() ||
+            shadow_insets.IsEmpty() || visible_arrow_,
+        base::NotFatalUntil::M163);
   if (!avoid_shadow_overlap_) {
     contents_bounds.Inset(-shadow_insets);
   }
@@ -468,7 +469,7 @@ void BubbleBorder::AdjustBoundsToFitAvailableBounds(
 gfx::Vector2d BubbleBorder::GetContentsBoundsOffsetToPlaceVisibleArrow(
     BubbleBorder::Arrow arrow,
     bool include_gap) {
-  DCHECK(has_arrow(arrow));
+  CHECK(has_arrow(arrow), base::NotFatalUntil::M163);
 
   const gfx::Insets visible_arrow_insets =
       GetVisibleArrowInsets(arrow, include_gap);
@@ -507,7 +508,8 @@ void BubbleBorder::DrawBorderAndShadow(
 
 gfx::Insets BubbleBorder::GetInsets() const {
   // Visible arrow is not compatible with OS-drawn shadow or with manual insets.
-  DCHECK((!insets_ && !IsExplicitNoShadow(shadow_)) || !visible_arrow_);
+  CHECK((!insets_ && !IsExplicitNoShadow(shadow_)) || !visible_arrow_,
+        base::NotFatalUntil::M163);
   if (insets_.has_value()) {
     return insets_.value();
   }
@@ -557,7 +559,8 @@ bool BubbleBorder::AddArrowToBubbleCornerAndPointTowardsAnchor(
     gfx::Rect& popup_bounds,
     int popup_min_y) {
   // This function should only be called for a visible arrow.
-  DCHECK(arrow_ != Arrow::NONE && arrow_ != Arrow::FLOAT);
+  CHECK(arrow_ != Arrow::NONE && arrow_ != Arrow::FLOAT,
+        base::NotFatalUntil::M163);
   CHECK_GE(popup_bounds.y(), popup_min_y);
 
   // The total size of the arrow in its normal direction.

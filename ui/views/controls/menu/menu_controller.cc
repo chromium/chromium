@@ -399,7 +399,7 @@ View* GetInitialFocusableView(View* start, bool forward) {
 // Returns the next view after |start_at| that is focusable. Returns null if
 // there are no focusable children of |ancestor| after |start_at|.
 View* GetNextFocusableView(View* ancestor, View* start_at, bool forward) {
-  DCHECK(ancestor->Contains(start_at));
+  CHECK(ancestor->Contains(start_at), base::NotFatalUntil::M163);
   View* parent = start_at;
   do {
     View* new_parent = parent->parent();
@@ -428,7 +428,7 @@ static void RepostEventImpl(const ui::LocatedEvent* event,
   if (!event->IsMouseEvent() && !event->IsTouchEvent()) {
     // TODO(rbyers): Gesture event repost is tricky to get right
     // crbug.com/170987.
-    DCHECK(event->IsGestureEvent());
+    CHECK(event->IsGestureEvent(), base::NotFatalUntil::M163);
     return;
   }
 
@@ -797,7 +797,7 @@ void MenuController::Run(Widget* parent,
   // menus on top of normal menus.
   if (showing_) {
     // Nesting (context menus) is not used for drag and drop.
-    DCHECK(!for_drop_);
+    CHECK(!for_drop_, base::NotFatalUntil::M163);
 
     state_.hot_button = hot_button_;
     hot_button_ = nullptr;
@@ -805,7 +805,7 @@ void MenuController::Run(Widget* parent,
     menu_stack_.emplace_back(state_, std::move(pressed_lock_));
 
     // The context menu should be owned by the same parent.
-    DCHECK_EQ(owner_, parent);
+    CHECK_EQ(owner_, parent, base::NotFatalUntil::M163);
   } else {
     if (owner_) {
       CHECK_EQ(owner_, parent);
@@ -935,7 +935,7 @@ void MenuController::Cancel(ExitType type, bool disable_animation) {
   if (for_drop_) {
     // If we didn't block the caller we need to notify the menu, which
     // triggers deleting us.
-    DCHECK(selected);
+    CHECK(selected, base::NotFatalUntil::M163);
     SetShowing(false);
     delegate()->OnMenuClosed(internal::MenuControllerDelegate::NOTIFY_DELEGATE,
                              selected->GetRootMenuItem(), accept_event_flags_);
@@ -985,7 +985,7 @@ bool MenuController::IsContextMenu() const {
 }
 
 void MenuController::SelectItemAndOpenSubmenu(MenuItemView* item) {
-  DCHECK(item);
+  CHECK(item, base::NotFatalUntil::M163);
   ScopedDeletionGuard guard(AsWeakPtr());
   SetSelection(item, SELECTION_OPEN_SUBMENU | SELECTION_UPDATE_IMMEDIATELY);
 
@@ -1008,7 +1008,8 @@ bool MenuController::OnMousePressed(SubmenuView* source,
   ScopedDeletionGuard guard(AsWeakPtr());
   // We should either have no current_mouse_event_target_, or should have a
   // pressed state stored.
-  DCHECK(!current_mouse_event_target_ || current_mouse_pressed_state_);
+  CHECK(!current_mouse_event_target_ || current_mouse_pressed_state_,
+        base::NotFatalUntil::M163);
 
 #if BUILDFLAG(IS_MAC)
   // Mac: If the app is inactive, the first click activates the app and keys a
@@ -1176,7 +1177,7 @@ void MenuController::OnMouseReleased(SubmenuView* source,
     return;
   }
 
-  DCHECK(state_.item);
+  CHECK(state_.item, base::NotFatalUntil::M163);
   possible_drag_ = false;
   MenuPart part = GetMenuPart(source, event.location());
   if (event.IsRightMouseButton() && part.type == MenuPartType::kMenuItem) {
@@ -1567,10 +1568,10 @@ views::View::DropCallback MenuController::GetDropCallback(
     const ui::DropTargetEvent& event) {
   MenuItemView* drop_target =
       static_cast<MenuItemView*>(drop_target_tracker_.view());
-  DCHECK(drop_target);
+  CHECK(drop_target, base::NotFatalUntil::M163);
 
   MenuItemView* item = state_.item;
-  DCHECK(item);
+  CHECK(item, base::NotFatalUntil::M163);
 
   // If over an empty menu item, drop occurs on the parent.
   if (IsViewClass<EmptyMenuMenuItem>(drop_target)) {
@@ -1619,13 +1620,13 @@ void MenuController::OnDragExitedScrollButton(SubmenuView* source) {
 }
 
 void MenuController::OnDragDropWillStart() {
-  DCHECK(!drag_in_progress_);
+  CHECK(!drag_in_progress_, base::NotFatalUntil::M163);
   drag_in_progress_ = true;
 }
 
 void MenuController::OnDragDropCompleted(bool should_close) {
   ScopedDeletionGuard guard(AsWeakPtr());
-  DCHECK(drag_in_progress_);
+  CHECK(drag_in_progress_, base::NotFatalUntil::M163);
   drag_in_progress_ = false;
   // During a drag, mouse events are processed directly by the widget, and not
   // sent to the MenuController. At drag completion, reset pressed state and
@@ -1785,7 +1786,7 @@ void MenuController::OnWidgetDestroying(Widget* widget) {
   // Track stack depth to defer controller destruction if ExitMenu() leads
   // to releasing the runner or destroying the controller.
   ScopedDeletionGuard guard(AsWeakPtr());
-  DCHECK_EQ(owner_, widget);
+  CHECK_EQ(owner_, widget, base::NotFatalUntil::M163);
   ClearOwner();
   native_view_for_gestures_ = gfx::NativeView();
 
@@ -1864,7 +1865,7 @@ void MenuController::OnMenuItemDestroying(MenuItemView* menu_item) {
 }
 
 void MenuController::AnimationProgressed(const gfx::Animation* animation) {
-  DCHECK_EQ(animation, &alert_animation_);
+  CHECK_EQ(animation, &alert_animation_, base::NotFatalUntil::M163);
 
   // Schedule paints at each alerted menu item. The menu items pull the
   // animation's current value in their OnPaint methods.
@@ -1969,7 +1970,8 @@ void MenuController::SetSelection(MenuItemView* menu_item,
         (selection_types & SELECTION_OPEN_SUBMENU) != 0);
   }
 
-  DCHECK(menu_item || (selection_types & SELECTION_EXIT) != 0);
+  CHECK(menu_item || (selection_types & SELECTION_EXIT) != 0,
+        base::NotFatalUntil::M163);
 
   pending_state_.item = menu_item;
   pending_state_.submenu_open = (selection_types & SELECTION_OPEN_SUBMENU) != 0;
@@ -2017,7 +2019,7 @@ void MenuController::SetSelectionOnPointerDown(SubmenuView* source,
     return;
   }
 
-  DCHECK(!active_mouse_view_tracker_->view());
+  CHECK(!active_mouse_view_tracker_->view(), base::NotFatalUntil::M163);
 
   MenuPart part = GetMenuPart(source, event->location());
   if (part.is_scroll() || part.type == MenuPartType::kScrollBar) {
@@ -2077,7 +2079,7 @@ void MenuController::StartDrag(SubmenuView* source_raw,
   // `source` is dangling is expected.
   raw_ptr<SubmenuView, DisableDanglingPtrDetection> source(source_raw);
   MenuItemView* item = state_.item;
-  DCHECK(item);
+  CHECK(item, base::NotFatalUntil::M163);
   // Points are in the coordinates of the submenu, need to map to that of
   // the selected item. Additionally source may not be the parent of
   // the selected item, so need to map to screen first then to item.
@@ -2114,7 +2116,7 @@ void MenuController::StartDrag(SubmenuView* source_raw,
 }
 
 bool MenuController::OnKeyPressed(const ui::KeyEvent& event) {
-  DCHECK_EQ(event.type(), ui::EventType::kKeyPressed);
+  CHECK_EQ(event.type(), ui::EventType::kKeyPressed, base::NotFatalUntil::M163);
 
   // Do not process while performing drag-and-drop.
   if (for_drop_) {
@@ -2369,7 +2371,7 @@ MenuController::MenuController(bool for_drop,
 
 MenuController::~MenuController() {
   CHECK_EQ(stack_depth_, 0);
-  DCHECK(!showing_);
+  CHECK(!showing_, base::NotFatalUntil::M163);
   state_ = State();
   pending_state_ = State();
   hot_button_ = nullptr;
@@ -2497,7 +2499,7 @@ void MenuController::Accept(MenuItemView* item, int event_flags) {
 }
 
 void MenuController::ReallyAccept() {
-  DCHECK(!for_drop_);
+  CHECK(!for_drop_, base::NotFatalUntil::M163);
 #if BUILDFLAG(IS_MAC)
   // Reset the closure animation since it's now finished - this also unblocks
   // input events for the menu.
@@ -2559,7 +2561,7 @@ bool MenuController::ShowSiblingMenu(SubmenuView* source,
   did_capture_ = false;
 
   // It is currently not possible to show a submenu recursively in a bubble.
-  DCHECK(!MenuItemView::IsBubble(anchor));
+  CHECK(!MenuItemView::IsBubble(anchor), base::NotFatalUntil::M163);
   UpdateInitialLocation(button->GetBoundsInScreen(), anchor, state_.menu_type);
   alt_menu->PrepareForRun(
       has_mnemonics, source->GetMenuItem()->GetRootMenuItem()->show_mnemonics_);
@@ -2776,7 +2778,7 @@ void MenuController::CommitPendingSelection() {
 }
 
 void MenuController::CloseMenu(MenuItemView* item) {
-  DCHECK(item);
+  CHECK(item, base::NotFatalUntil::M163);
   if (!item->HasSubmenu()) {
     return;
   }
@@ -2789,7 +2791,7 @@ void MenuController::CloseMenu(MenuItemView* item) {
 }
 
 void MenuController::OpenMenu(MenuItemView* item) {
-  DCHECK(item);
+  CHECK(item, base::NotFatalUntil::M163);
   if (item->GetSubmenu()->IsShowing()) {
     return;
   }
@@ -2847,7 +2849,7 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
       params.context = item->GetWidget();
       // (crbug.com/1414232) The item to be open is a submenu. Make sure
       // params.context is set.
-      DCHECK(params.context);
+      CHECK(params.context, base::NotFatalUntil::M163);
     } else if (IsContextMenu()) {
       if (!menu_stack_.empty()) {
         auto* last_menu_item = menu_stack_.back().first.item.get();
@@ -2916,9 +2918,9 @@ void MenuController::OpenMenuImpl(MenuItemView* item, bool show) {
 
 void MenuController::MenuChildrenChanged(MenuItemView* item) {
   ScopedDeletionGuard guard(AsWeakPtr());
-  DCHECK(item);
+  CHECK(item, base::NotFatalUntil::M163);
   // Menu shouldn't be updated during drag operation.
-  DCHECK(!active_mouse_view_tracker_->view());
+  CHECK(!active_mouse_view_tracker_->view(), base::NotFatalUntil::M163);
 
   // If needed, refresh the AX index assignments.
   if (item->GetProperty(kOrderedMenuChildren)) {
@@ -2955,9 +2957,9 @@ void MenuController::BuildPathsAndCalculateDiff(
     std::vector<MenuItemView*>* old_path,
     std::vector<MenuItemView*>* new_path,
     size_t* first_diff_at) {
-  DCHECK(old_path);
-  DCHECK(new_path);
-  DCHECK(first_diff_at);
+  CHECK(old_path, base::NotFatalUntil::M163);
+  CHECK(new_path, base::NotFatalUntil::M163);
+  CHECK(first_diff_at, base::NotFatalUntil::M163);
   BuildMenuItemPath(old_item, old_path);
   BuildMenuItemPath(new_item, new_path);
 
@@ -3000,11 +3002,11 @@ gfx::Rect MenuController::CalculateMenuBounds(
     MenuOpenDirection preferred_open_direction,
     MenuOpenDirection* resulting_direction,
     ui::OwnedWindowAnchor* anchor) {
-  DCHECK(item);
-  DCHECK(anchor);
+  CHECK(item, base::NotFatalUntil::M163);
+  CHECK(anchor, base::NotFatalUntil::M163);
 
   SubmenuView* submenu = item->GetSubmenu();
-  DCHECK(submenu);
+  CHECK(submenu, base::NotFatalUntil::M163);
 
   // For the first menu, anchor_rect is initial bounds. Otherwise, it is the top
   // of the highlight (or anchor view) of the menu item that spawned this menu.
@@ -3181,8 +3183,8 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
     MenuOpenDirection preferred_open_direction,
     MenuOpenDirection* resulting_direction,
     ui::OwnedWindowAnchor* anchor) {
-  DCHECK(item);
-  DCHECK(anchor);
+  CHECK(item, base::NotFatalUntil::M163);
+  CHECK(anchor, base::NotFatalUntil::M163);
 
   // For the first menu, anchor_rect is initial bounds. Otherwise, it is the top
   // of the highlight (or anchor view) of the menu item that spawned this menu.
@@ -3247,8 +3249,8 @@ gfx::Rect MenuController::CalculateBubbleMenuBounds(
         }
       }
       // The menu should always have a non-empty available area.
-      DCHECK_GE(max_width, kBubbleTipSizeLeftRight);
-      DCHECK_GE(max_height, kBubbleTipSizeTopBottom);
+      CHECK_GE(max_width, kBubbleTipSizeLeftRight, base::NotFatalUntil::M163);
+      CHECK_GE(max_height, kBubbleTipSizeTopBottom, base::NotFatalUntil::M163);
       menu_size.SetToMin(gfx::Size(max_width, max_height));
     }
 
@@ -3457,7 +3459,7 @@ void MenuController::IncrementSelection(
     SelectionIncrementDirectionType direction) {
   ScopedDeletionGuard guard(AsWeakPtr());
   MenuItemView* item = pending_state_.item;
-  DCHECK(item);
+  CHECK(item, base::NotFatalUntil::M163);
   if (pending_state_.submenu_open && item->SubmenuIsShowing()) {
     // A menu is selected and open, but none of its children are selected,
     // select the first menu item that is visible and enabled.
@@ -3477,7 +3479,7 @@ void MenuController::IncrementSelection(
   if (!item->children().empty()) {
     Button* button = GetFirstHotTrackedView(item);
     if (button) {
-      DCHECK_EQ(hot_button_, button);
+      CHECK_EQ(hot_button_, button, base::NotFatalUntil::M163);
     }
     bool direction_is_down = direction == INCREMENT_SELECTION_DOWN;
     View* to_make_hot =
@@ -3543,7 +3545,7 @@ void MenuController::SetSelectionIndices(MenuItemView* parent) {
 void MenuController::MoveSelectionToFirstOrLastItem(
     SelectionIncrementDirectionType direction) {
   MenuItemView* item = pending_state_.item;
-  DCHECK(item);
+  CHECK(item, base::NotFatalUntil::M163);
   MenuItemView* submenu = nullptr;
 
   if (pending_state_.submenu_open && item->SubmenuIsShowing()) {
@@ -3622,7 +3624,7 @@ void MenuController::OpenSubmenuChangeSelectionIfCan() {
 void MenuController::CloseSubmenu() {
   ScopedDeletionGuard guard(AsWeakPtr());
   MenuItemView* item = state_.item;
-  DCHECK(item);
+  CHECK(item, base::NotFatalUntil::M163);
   if (!item->GetParentMenuItem()) {
     return;
   }
@@ -3653,7 +3655,7 @@ MenuController::SelectByCharDetails MenuController::FindChildForMnemonic(
     char16_t key,
     bool (*match_function)(MenuItemView* menu, char16_t mnemonic)) {
   SubmenuView* submenu = parent->GetSubmenu();
-  DCHECK(submenu);
+  CHECK(submenu, base::NotFatalUntil::M163);
   SelectByCharDetails details;
 
   auto record_candidate = [&](SelectByCharDetails::Match candidate,
@@ -3710,10 +3712,10 @@ void MenuController::AcceptOrSelect(MenuItemView* parent,
                                     const SelectByCharDetails& details) {
   ScopedDeletionGuard guard(AsWeakPtr());
   // This should only be invoked if there is a match.
-  DCHECK(details.first_match.has_value());
-  DCHECK(parent->HasSubmenu());
+  CHECK(details.first_match.has_value(), base::NotFatalUntil::M163);
+  CHECK(parent->HasSubmenu(), base::NotFatalUntil::M163);
   SubmenuView* submenu = parent->GetSubmenu();
-  DCHECK(submenu);
+  CHECK(submenu, base::NotFatalUntil::M163);
   if (!details.has_multiple) {
     // There's only one match, activate it (or open if it has a submenu).
     const SelectByCharDetails::Match match = details.first_match.value();
@@ -3764,9 +3766,9 @@ void MenuController::SelectByChar(char16_t character) {
   if (!item->SubmenuIsShowing()) {
     item = item->GetParentMenuItem();
   }
-  DCHECK(item);
-  DCHECK(item->HasSubmenu());
-  DCHECK(item->GetSubmenu());
+  CHECK(item, base::NotFatalUntil::M163);
+  CHECK(item->HasSubmenu(), base::NotFatalUntil::M163);
+  CHECK(item->GetSubmenu(), base::NotFatalUntil::M163);
 
   if (!item) {
     return;
@@ -3823,7 +3825,7 @@ void MenuController::RepostEventAndCancel(SubmenuView* source,
       // We some times get an event after closing all the menus. Ignore it. Make
       // sure the menu is in fact not visible. If the menu is visible, then
       // we're in a bad state where we think the menu isn't visible but it is.
-      DCHECK(!source->GetWidget()->IsVisible());
+      CHECK(!source->GetWidget()->IsVisible(), base::NotFatalUntil::M163);
     }
 
     // Reposting the event may have deleted this, if so exit.
@@ -4063,7 +4065,7 @@ raw_ptr<MenuItemView> MenuController::ExitTopMostMenu() {
   std::unique_ptr<MenuButtonController::PressedLock> nested_pressed_lock;
   bool nested_menu = !menu_stack_.empty();
   if (nested_menu) {
-    DCHECK(!menu_stack_.empty());
+    CHECK(!menu_stack_.empty(), base::NotFatalUntil::M163);
     // We're running from within a menu, restore the previous state.
     // The menus are already showing, so we don't have to show them.
     state_ = menu_stack_.back().first;
@@ -4190,7 +4192,7 @@ void MenuController::SetNextHotTrackedView(
     return;
   }
   const auto i = std::ranges::find(menu_items, item);
-  DCHECK(i != menu_items.cend());
+  CHECK(i != menu_items.cend(), base::NotFatalUntil::M163);
   auto index = static_cast<size_t>(std::distance(menu_items.cbegin(), i));
 
   // Loop through the menu items in the desired direction.  Assume we can wrap

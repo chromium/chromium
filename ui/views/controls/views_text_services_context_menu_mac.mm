@@ -145,7 +145,7 @@ bool ViewsTextServicesContextMenuMac::IsTextDirectionChecked(
 
 void ViewsTextServicesContextMenuMac::UpdateTextDirection(
     base::i18n::TextDirection direction) {
-  DCHECK(IsTextDirectionEnabled(direction));
+  CHECK(IsTextDirectionEnabled(direction), base::NotFatalUntil::M163);
   client()->ChangeTextDirectionAndLayoutAlignment(direction);
 }
 

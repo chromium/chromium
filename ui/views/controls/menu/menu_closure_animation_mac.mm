@@ -34,7 +34,7 @@ SubmenuView* MenuClosureAnimationMac::menu() {
 }
 
 void MenuClosureAnimationMac::Start() {
-  DCHECK_EQ(step_, AnimationStep::kStart);
+  CHECK_EQ(step_, AnimationStep::kStart, base::NotFatalUntil::M163);
   if (g_disable_animations_for_testing) {
     // Even when disabling animations, simulate the fact that the eventual
     // accept callback will happen after a runloop cycle by skipping to the end

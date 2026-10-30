@@ -265,10 +265,11 @@ gfx::Insets MdTextButton::CalculateDefaultPadding() const {
       label()->GetTextContext(), style::STYLE_PRIMARY, label()->font_list());
 
   int label_height = label()->GetPreferredSize({}).height();
-  DCHECK_GE(target_height, label_height);
+  CHECK_GE(target_height, label_height, base::NotFatalUntil::M163);
   int top_padding = (target_height - label_height) / 2;
   int bottom_padding = (target_height - label_height + 1) / 2;
-  DCHECK_EQ(target_height, label_height + top_padding + bottom_padding);
+  CHECK_EQ(target_height, label_height + top_padding + bottom_padding,
+           base::NotFatalUntil::M163);
 
   // TODO(estade): can we get rid of the platform style border hoopla if
   // we apply the MD treatment to all buttons, even GTK buttons?

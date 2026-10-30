@@ -79,7 +79,7 @@ views::ProposedLayout MdTextButtonWithSpinner::CalculateProposedLayout(
       break;
     }
   }
-  DCHECK(label_layout);
+  CHECK(label_layout, base::NotFatalUntil::M163);
 
   const int button_content_width =
       layouts.host_size.width() - GetInsets().left() - GetInsets().right();
@@ -118,7 +118,7 @@ views::ProposedLayout MdTextButtonWithSpinner::CalculateProposedLayout(
   // Account for different horizontal alignments.
   int combo_start_x;
   auto horizontal_alignment = GetHorizontalAlignment();
-  DCHECK_NE(gfx::ALIGN_TO_HEAD, horizontal_alignment);
+  CHECK_NE(gfx::ALIGN_TO_HEAD, horizontal_alignment, base::NotFatalUntil::M163);
   switch (horizontal_alignment) {
     case gfx::HorizontalAlignment::ALIGN_LEFT:
       combo_start_x = GetInsets().left();

@@ -211,7 +211,7 @@ bool MessageBoxView::IsCheckBoxSelected() {
 }
 
 void MessageBoxView::SetCheckBoxLabel(const std::u16string& label) {
-  DCHECK(checkbox_);
+  CHECK(checkbox_, base::NotFatalUntil::M163);
   if (checkbox_->GetVisible() && checkbox_->GetText() == label) {
     return;
   }
@@ -231,9 +231,9 @@ void MessageBoxView::SetCheckBoxSelected(bool selected) {
 
 void MessageBoxView::SetLink(const std::u16string& text,
                              Link::ClickedCallback callback) {
-  DCHECK(!text.empty());
-  DCHECK(!callback.is_null());
-  DCHECK(link_);
+  CHECK(!text.empty(), base::NotFatalUntil::M163);
+  CHECK(!callback.is_null(), base::NotFatalUntil::M163);
+  CHECK(link_, base::NotFatalUntil::M163);
 
   link_->SetCallback(std::move(callback));
   if (link_->GetVisible() && link_->GetText() == text) {
@@ -263,7 +263,7 @@ void MessageBoxView::SetMessageWidth(int width) {
 }
 
 void MessageBoxView::SetPromptField(const std::u16string& default_prompt) {
-  DCHECK(prompt_field_);
+  CHECK(prompt_field_, base::NotFatalUntil::M163);
   if (prompt_field_->GetVisible() &&
       prompt_field_->GetText() == default_prompt) {
     return;
@@ -298,8 +298,8 @@ void MessageBoxView::ViewHierarchyChanged(
 
 bool MessageBoxView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   // We only accept Ctrl-C.
-  DCHECK_EQ(accelerator.key_code(), 'C');
-  DCHECK(accelerator.IsCtrlDown());
+  CHECK_EQ(accelerator.key_code(), 'C', base::NotFatalUntil::M163);
+  CHECK(accelerator.IsCtrlDown(), base::NotFatalUntil::M163);
 
   // We must not intercept Ctrl-C when we have a text box and it's focused.
   if (prompt_field_ && prompt_field_->HasFocus()) {

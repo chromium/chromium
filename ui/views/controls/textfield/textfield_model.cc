@@ -448,7 +448,8 @@ void TextfieldModel::Append(std::u16string new_text) {
 
 bool TextfieldModel::Delete(bool add_to_kill_buffer) {
   // |add_to_kill_buffer| should never be true for an obscured textfield.
-  DCHECK(!add_to_kill_buffer || !render_text_->obscured());
+  CHECK(!add_to_kill_buffer || !render_text_->obscured(),
+        base::NotFatalUntil::M163);
 
   if (HasCompositionText()) {
     // No undo/redo for composition text.
@@ -479,7 +480,8 @@ bool TextfieldModel::Delete(bool add_to_kill_buffer) {
 
 bool TextfieldModel::Backspace(bool add_to_kill_buffer) {
   // |add_to_kill_buffer| should never be true for an obscured textfield.
-  DCHECK(!add_to_kill_buffer || !render_text_->obscured());
+  CHECK(!add_to_kill_buffer || !render_text_->obscured(),
+        base::NotFatalUntil::M163);
 
   if (HasCompositionText()) {
     // No undo/redo for composition text.
@@ -603,7 +605,7 @@ bool TextfieldModel::Undo() {
   if (!CanUndo()) {
     return false;
   }
-  DCHECK(!HasCompositionText());
+  CHECK(!HasCompositionText(), base::NotFatalUntil::M163);
   if (HasCompositionText()) {
     CancelCompositionText();
   }
@@ -625,7 +627,7 @@ bool TextfieldModel::Redo() {
   if (!CanRedo()) {
     return false;
   }
-  DCHECK(!HasCompositionText());
+  CHECK(!HasCompositionText(), base::NotFatalUntil::M163);
   if (HasCompositionText()) {
     CancelCompositionText();
   }
@@ -720,7 +722,7 @@ bool TextfieldModel::Transpose() {
 
   // At the end of the line, the last two characters should be transposed.
   if (cur == text().length()) {
-    DCHECK_EQ(cur, next);
+    CHECK_EQ(cur, next, base::NotFatalUntil::M163);
     cur = prev;
     prev = render_text_->IndexOfAdjacentGrapheme(prev, gfx::CURSOR_BACKWARD);
   }
@@ -758,8 +760,8 @@ bool TextfieldModel::HasSelection(bool primary_only) const {
 }
 
 void TextfieldModel::DeleteSelection() {
-  DCHECK(!HasCompositionText());
-  DCHECK(HasSelection());
+  CHECK(!HasCompositionText(), base::NotFatalUntil::M163);
+  CHECK(HasSelection(), base::NotFatalUntil::M163);
   ExecuteAndRecordDelete(render_text_->GetAllSelections(), false);
 }
 
@@ -839,7 +841,7 @@ void TextfieldModel::SetCompositionFromExistingText(const gfx::Range& range) {
 }
 
 size_t TextfieldModel::ConfirmCompositionText() {
-  DCHECK(HasCompositionText());
+  CHECK(HasCompositionText(), base::NotFatalUntil::M163);
   size_t composition_length = composition_range_.length();
   // TODO(oshima): current behavior on ChromeOS is a bit weird and not
   // sure exactly how this should work. Find out and fix if necessary.
@@ -855,7 +857,7 @@ size_t TextfieldModel::ConfirmCompositionText() {
 }
 
 void TextfieldModel::CancelCompositionText() {
-  DCHECK(HasCompositionText());
+  CHECK(HasCompositionText(), base::NotFatalUntil::M163);
   gfx::Range range = composition_range_;
   ClearComposition();
   SetRenderTextText(
@@ -1018,7 +1020,7 @@ void TextfieldModel::AddOrMergeEditHistory(
   if (current_edit_ == edit_history_.end()) {
     // If there is no redoable edit, this is the 1st edit because RedoHistory
     // has been already deleted.
-    DCHECK_EQ(1u, edit_history_.size());
+    CHECK_EQ(1u, edit_history_.size(), base::NotFatalUntil::M163);
     current_edit_ = edit_history_.begin();
   } else {
     ++current_edit_;
@@ -1031,7 +1033,8 @@ void TextfieldModel::ModifyText(
     const std::vector<size_t>& insertion_positions,
     const gfx::Range& primary_selection,
     const std::vector<gfx::Range>& secondary_selections) {
-  DCHECK_EQ(insertion_texts.size(), insertion_positions.size());
+  CHECK_EQ(insertion_texts.size(), insertion_positions.size(),
+           base::NotFatalUntil::M163);
   std::u16string old_text(text());
   ClearComposition();
 

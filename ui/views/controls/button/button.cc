@@ -469,7 +469,7 @@ gfx::Point Button::GetMenuPosition() const {
     menu_position += kMenuOffset;
   }
 
-  DCHECK(GetWidget());
+  CHECK(GetWidget(), base::NotFatalUntil::M163);
   const int max_x_coordinate =
       GetWidget()->GetWorkAreaBoundsInScreen().right() - 1;
   if (max_x_coordinate && max_x_coordinate <= menu_position.x()) {

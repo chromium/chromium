@@ -249,7 +249,7 @@ SkColor Checkbox::GetIconImageColor(int icon_state) const {
 }
 
 SkColor Checkbox::GetIconCheckColor(int icon_state) const {
-  DCHECK(GetChecked());
+  CHECK(GetChecked(), base::NotFatalUntil::M163);
 
   // Use the overridden checked icon image color instead if set.
   if (checked_icon_image_color_.has_value()) {
