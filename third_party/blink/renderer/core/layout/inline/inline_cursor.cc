@@ -1430,6 +1430,15 @@ void InlineCursor::MoveTo(const LayoutObject& layout_object) {
   DCHECK_EQ(is_descendants_cursor, IsDescendantsCursor());
   if (root_block_flow_) {
     DCHECK(!is_descendants_cursor);
+    if ((item_index < fragment_items_->SizeOfEarlierFragments() ||
+         fragment_index_ > max_fragment_index_) &&
+        RuntimeEnabledFeatures::
+            InlineCursorMoveToEarlierFragmentainerEnabled()) {
+      MoveToFirstIncludingFragmentainer();
+      if (!Current()) {
+        return;
+      }
+    }
     while (item_index >= fragment_items_->EndItemIndex()) {
       MoveToNextFragmentainer();
       if (!Current())

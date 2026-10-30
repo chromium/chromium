@@ -1341,12 +1341,13 @@ TEST_F(InlineCursorBlockFragmentationTest, MoveToLayoutObject) {
     cursor.MoveTo(*text1);
     EXPECT_THAT(LayoutObjectToDebugStringList(cursor),
                 ElementsAre("1111", "22"));
-  }
-  {
-    InlineCursor cursor;
     cursor.MoveTo(*text2);
     EXPECT_THAT(LayoutObjectToDebugStringList(cursor),
                 ElementsAre("33", "4444"));
+    // Move back to an earlier fragmentainer using the same cursor.
+    cursor.MoveTo(*text1);
+    EXPECT_THAT(LayoutObjectToDebugStringList(cursor),
+                ElementsAre("1111", "22"));
   }
   // |MoveTo| can find no fragments for culled inline.
   {
@@ -1448,6 +1449,25 @@ TEST_F(InlineCursorBlockFragmentationTest, MoveToLayoutObject) {
   TestFragment1(InlineCursor(*fragments[0], *fragments[0]->Items()));
   TestFragment2(InlineCursor(*fragments[1], *fragments[1]->Items()));
   TestFragment3(InlineCursor(*fragments[2], *fragments[2]->Items()));
+}
+
+// crbug.com/576888320
+TEST_F(InlineCursorBlockFragmentationTest, CulledInlineBlockInInlineOverflow) {
+  SetBodyInnerHTML(R"HTML(
+    <div style="height:100px; columns:2">
+      <q id="q">
+        <span>
+          <div style="font-size:80px; height:80px">a<br>b</div>
+        </span>
+      </q>
+    </div>
+  )HTML");
+  const LayoutObject* q = GetLayoutObjectByElementId("q");
+  InlineCursor cursor;
+  cursor.MoveToIncludingCulledInline(*q);
+  for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
+  }
+  // Pass if no crashes.
 }
 
 TEST_F(InlineCursorTest, CulledInlineWithNonIFCChild) {

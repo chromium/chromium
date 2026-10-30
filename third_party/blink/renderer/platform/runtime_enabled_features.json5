@@ -3999,6 +3999,11 @@
       status: "stable",
     },
     {
+      // crbug.com/576888320
+      name: "InlineCursorMoveToEarlierFragmentainer",
+      status: "stable",
+    },
+    {
       name: "InlineCursorSkipNonIfc",
       status: "stable",
     },
