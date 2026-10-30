@@ -13,6 +13,7 @@ namespace glic {
 BASE_DECLARE_FEATURE(kContextualCueing);
 BASE_DECLARE_FEATURE(kGlicZeroStateSuggestions);
 BASE_DECLARE_FEATURE(kEnableAutoOpenGlicSidePanel);
+BASE_DECLARE_FEATURE(kGlicBrowsingHistoryZeroStateSuggestions);
 
 // Whether contextual cueing is enabled.
 //
@@ -101,6 +102,27 @@ extern const base::FeatureParam<int> kMaxPinnedPagesForTriggeringSuggestions;
 
 // Timeout before giving up on getting context from a page.
 extern const base::FeatureParam<base::TimeDelta> kZSSPageContextTimeout;
+
+// Params for `kGlicBrowsingHistoryZeroStateSuggestions`
+// (browsing-history-based ZSS).
+
+// The maximum number of recent pages to send to the model for
+// browsing-history-based ZSS.
+extern const base::FeatureParam<int> kMaxRecentPages;
+
+// The maximum lookback window for considering a page as recent for
+// browsing-history-based ZSS.
+extern const base::FeatureParam<base::TimeDelta> kMaxRecentDuration;
+
+// Source for gathering recent pages to ground zero state suggestions.
+enum class RecentPagesSource {
+  // Queries the user's local navigation history (including closed tabs and
+  // earlier navigations within open tabs) within the configured time window.
+  kAllRecentVisits,
+  // Only gathers URLs from tabs currently open in the active browser window.
+  kOpenTabsOnly,
+};
+extern const base::FeatureParam<RecentPagesSource> kRecentPagesSource;
 
 }  // namespace glic
 
