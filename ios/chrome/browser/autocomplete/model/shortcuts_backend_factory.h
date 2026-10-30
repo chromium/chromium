@@ -22,12 +22,12 @@ class ShortcutsBackendFactory final
   explicit ShortcutsBackendFactory(PassKey key);
 
   // Returns the default factory, useful in tests where it's null by default.
-  static TestingFactory GetDefaultFactory();
+  static TestingFactoryByRef GetDefaultFactory();
 
  private:
   // RefcountedProfileKeyedServiceFactoryIOS implementation.
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
-      ProfileIOS* profile) const final;
+      ProfileIOS& profile) const final;
 };
 
 }  // namespace ios

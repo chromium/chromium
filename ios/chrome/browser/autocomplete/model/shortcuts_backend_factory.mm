@@ -19,25 +19,25 @@
 namespace ios {
 namespace {
 
-scoped_refptr<ShortcutsBackend> CreateShortcutsBackend(ProfileIOS* profile,
+scoped_refptr<ShortcutsBackend> CreateShortcutsBackend(ProfileIOS& profile,
                                                        bool suppress_db) {
   scoped_refptr<ShortcutsBackend> shortcuts_backend(new ShortcutsBackend(
       ios::TemplateURLServiceFactory::GetForProfile(profile),
       std::make_unique<ios::UIThreadSearchTermsData>(),
       ios::HistoryServiceFactory::GetForProfile(profile),
-      profile->GetStatePath().Append(kShortcutsDatabaseName), suppress_db));
+      profile.GetStatePath().Append(kShortcutsDatabaseName), suppress_db));
   return shortcuts_backend->Init() ? shortcuts_backend : nullptr;
 }
 
 scoped_refptr<RefcountedKeyedService> BuildShortcutsBackend(
-    ProfileIOS* profile) {
+    ProfileIOS& profile) {
   return CreateShortcutsBackend(profile, /*suppress_db=*/false);
 }
 
 }  // namespace
 
 // static
-ShortcutsBackendFactory::TestingFactory
+ShortcutsBackendFactory::TestingFactoryByRef
 ShortcutsBackendFactory::GetDefaultFactory() {
   return base::BindOnce(&BuildShortcutsBackend);
 }
@@ -52,7 +52,7 @@ ShortcutsBackendFactory::ShortcutsBackendFactory(PassKey key)
 }
 
 scoped_refptr<RefcountedKeyedService>
-ShortcutsBackendFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
+ShortcutsBackendFactory::BuildServiceInstanceFor(ProfileIOS& profile) const {
   return BuildShortcutsBackend(profile);
 }
 
