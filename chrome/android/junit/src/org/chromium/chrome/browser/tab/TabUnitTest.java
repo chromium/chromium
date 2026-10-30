@@ -79,6 +79,8 @@ import org.chromium.components.autofill.AutofillProviderJni;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
+import org.chromium.components.prefs.PrefChangeRegistrar;
+import org.chromium.components.prefs.PrefChangeRegistrarJni;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.components.security_state.SecurityStateModel;
@@ -126,6 +128,7 @@ public class TabUnitTest {
     @Mock private SecurityStateModel.Natives mSecurityStateModelNatives;
     @Mock private SelectionPopupControllerImpl mSelectionPopupController;
     @Mock private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
+    @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJniMock;
 
     private final SettableLookAheadObservableSupplier<Tab> mTabSupplier =
             new SettableLookAheadObservableSupplier<>();
@@ -146,6 +149,7 @@ public class TabUnitTest {
         SecurityStateModelJni.setInstanceForTesting(mSecurityStateModelNatives);
         AutofillProviderJni.setInstanceForTesting(mAutofillProviderNatives);
         WebsitePreferenceBridgeJni.setInstanceForTesting(mWebsitePreferenceBridgeJniMock);
+        PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJniMock);
         TabImplJni.setInstanceForTesting(mNativeMock);
         when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefs);
         when(mWebContents.getOrSetUserData(eq(SelectionPopupControllerImpl.class), any()))
@@ -1137,6 +1141,33 @@ public class TabUnitTest {
                 };
 
         assertNull(tab.getPrefChangeRegistrarForTesting());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_AUTOFILL_PREF_OBSERVER)
+    public void testAutofillPrefObserver_frozenTab_defersRegistrarUntilWebContentsReady() {
+        when(mProfile.isNativeInitialized()).thenReturn(true);
+
+        TabImpl tab =
+                new TabImpl(TAB1_ID, mProfile, TabLaunchType.FROM_RESTORE) {
+                    @Override
+                    public boolean isInitialized() {
+                        return true;
+                    }
+                };
+        assertNull(tab.getWebContents());
+
+        tab.updateWindowAndroid(mWindowAndroid);
+        assertNull(tab.getPrefChangeRegistrarForTesting());
+        verify(mPrefChangeRegistrarJniMock, never()).init(any(), any());
+        verify(mPrefChangeRegistrarJniMock, never()).add(anyLong(), any());
+
+        tab.setWebContentsForTesting(mWebContents);
+        tab.initAutofillPrefObserver();
+        assertNotNull(tab.getPrefChangeRegistrarForTesting());
+        verify(mPrefChangeRegistrarJniMock).init(any(), eq(mPrefs));
+        verify(mPrefChangeRegistrarJniMock)
+                .add(anyLong(), eq(TabImpl.AUTOFILL_PREF_USES_VIRTUAL_STRUCTURE));
     }
 
     @Test

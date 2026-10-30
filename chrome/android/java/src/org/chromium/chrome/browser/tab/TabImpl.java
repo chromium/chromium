@@ -2953,14 +2953,18 @@ class TabImpl implements Tab, TabInternal {
     }
 
     /**
-     * Initializes the {@link PrefChangeRegistrar} to observe changes to autofill preferences once
-     * the native {@link PrefService} is ready for this tab's profile.
+     * Initializes the {@link PrefChangeRegistrar} to observe changes to autofill preferences once a
+     * {@link WebContents} is attached and the native {@link PrefService} is ready for this tab's
+     * profile.
      */
-    private void initAutofillPrefObserver() {
+    @VisibleForTesting
+    void initAutofillPrefObserver() {
         if (!ChromeFeatureList.sAndroidAutofillPrefObserver.isEnabled()) {
             return;
         }
-        if (mPrefChangeRegistrar != null || !mProfile.isNativeInitialized()) {
+        if (getWebContents() == null
+                || mPrefChangeRegistrar != null
+                || !mProfile.isNativeInitialized()) {
             return;
         }
         @Nullable PrefService prefs = UserPrefs.get(mProfile);
