@@ -296,6 +296,13 @@ function isHidden(e) { return !!(e && e.hidden); }
   // WebContents inside <webview> lack critical extensions observers. We
   // manually attach them here to enable IPC bindings and navigation success.
   void OnWebContentsCreated(content::WebContents* web_contents) {
+    // Contexts without keyed services, e.g. TopChromeWebUIProfile, have no
+    // extension system.
+    if (BrowserContextDependencyManager::GetInstance()
+            ->AreBrowserContextServicesDisabledByDefault(
+                web_contents->GetBrowserContext())) {
+      return;
+    }
     extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
         web_contents);
     extensions::TabHelper::CreateForWebContents(web_contents);
