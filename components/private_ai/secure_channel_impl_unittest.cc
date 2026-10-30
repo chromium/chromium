@@ -334,9 +334,9 @@ TEST_F(SecureChannelImplTest, ChannelClosedIsReported) {
 
   base::test::TestFuture<base::expected<Response, StatusCode>> future;
   CreateSecureChannel(future.GetRepeatingCallback());
-  EXPECT_FALSE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
+  EXPECT_FALSE(secure_channel_->Write(StringToBytes("secret request")));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), StatusCode::kAttestationFailed);
 }
@@ -360,9 +360,9 @@ TEST_F(SecureChannelImplTest, AttestationErrorFailsWrite) {
 
   base::test::TestFuture<base::expected<Response, StatusCode>> future;
   CreateSecureChannel(future.GetRepeatingCallback());
-  EXPECT_FALSE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
+  EXPECT_FALSE(secure_channel_->Write(StringToBytes("secret request")));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), StatusCode::kAttestationFailed);
 
@@ -406,9 +406,9 @@ TEST_F(SecureChannelImplTest, AttestationEvidenceConversionFails) {
 
   base::test::TestFuture<base::expected<Response, StatusCode>> future;
   CreateSecureChannel(future.GetRepeatingCallback());
-  EXPECT_FALSE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
+  EXPECT_FALSE(secure_channel_->Write(StringToBytes("secret request")));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), StatusCode::kAttestationFailed);
 
@@ -647,9 +647,9 @@ TEST_F(SecureChannelImplTest, GetAttestationRequestFails) {
 
   base::test::TestFuture<base::expected<Response, StatusCode>> future;
   CreateSecureChannel(future.GetRepeatingCallback());
-  EXPECT_FALSE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
+  EXPECT_FALSE(secure_channel_->Write(StringToBytes("secret request")));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), StatusCode::kAttestationFailed);
 
@@ -685,9 +685,9 @@ TEST_F(SecureChannelImplTest, AttestationResponseMissingFails) {
 
   base::test::TestFuture<base::expected<Response, StatusCode>> future;
   CreateSecureChannel(future.GetRepeatingCallback());
-  EXPECT_FALSE(secure_channel_->Write(StringToBytes("secret request")));
 
   const auto& result = future.Get();
+  EXPECT_FALSE(secure_channel_->Write(StringToBytes("secret request")));
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), StatusCode::kAttestationFailed);
 }
@@ -878,9 +878,10 @@ TEST_F(SecureChannelImplTest, WriteInClosedState) {
   base::test::TestFuture<base::expected<Response, StatusCode>> future;
   CreateSecureChannel(future.GetRepeatingCallback());
 
+  EXPECT_FALSE(future.Get().has_value());
+
   // Write fail immediately when channel is closed.
   EXPECT_FALSE(secure_channel_->Write(StringToBytes("secret request")));
-  EXPECT_FALSE(future.Get().has_value());
 }
 
 // Tests that attestation verification is skipped if the feature is disabled.

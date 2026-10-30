@@ -84,7 +84,9 @@ SecureChannelImpl::SecureChannelImpl(
   transport_->SetResponseCallback(base::BindRepeating(
       &SecureChannelImpl::OnResponseReceived, weak_factory_.GetWeakPtr()));
 
-  StartSessionEstablishment();
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&SecureChannelImpl::StartSessionEstablishment,
+                                weak_factory_.GetWeakPtr()));
 }
 
 SecureChannelImpl::~SecureChannelImpl() {
