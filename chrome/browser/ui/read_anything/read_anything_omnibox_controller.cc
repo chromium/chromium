@@ -110,14 +110,15 @@ void ReadAnythingOmniboxController::Activate(
 void ReadAnythingOmniboxController::OnReadingModePresenterChanged() {
   auto* read_anything_controller = ReadAnythingController::From(tab_);
   CHECK(read_anything_controller);
-  // If Reading mode was just closed by the user, show the omnibox entrypoint.
+  // If Reading mode was just closed by the user, re-show the omnibox entrypoint
+  // without the IPH.
   if (read_anything_controller->GetPresentationState() ==
           ReadAnythingController::PresentationState::kInactive &&
-      last_close_reason_.has_value() &&
       last_close_reason_ == ReadAnythingCloseReason::kClosedByUser) {
     read_anything::ReadAnythingEntryPointController::UpdatePageActionVisibility(
         /*should_show_page_action=*/true, tab_);
   }
+  last_close_reason_.reset();
 }
 
 void ReadAnythingOmniboxController::OnDestroyed() {

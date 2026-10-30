@@ -381,12 +381,12 @@ void ReadAnythingEntryPointController::UpdatePageActionVisibility(
       page_action_controller->ShowSuggestionChip(
           kActionSidePanelShowReadAnything);
     }
-    user_education::FeaturePromoParams params(
-        feature_engagement::kIPHReadingModePageActionLabelFeature);
     if (show_promo_callback) {
+      user_education::FeaturePromoParams params(
+          feature_engagement::kIPHReadingModePageActionLabelFeature);
       params.show_promo_result_callback = std::move(show_promo_callback);
+      user_ed->MaybeShowFeaturePromo(std::move(params));
     }
-    user_ed->MaybeShowFeaturePromo(std::move(params));
     return;
   }
 

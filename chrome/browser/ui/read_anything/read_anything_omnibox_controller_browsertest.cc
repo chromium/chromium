@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
@@ -705,6 +706,30 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerBrowserTest,
       browser(), ReadAnythingOpenTrigger::kOmniboxChip);
 
   ExpectPageActionStateImmediate(true);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerBrowserTest,
+                       DeactivateByUser_DoesNotShowIph) {
+  RegisterPageActionObserver();
+  NavigateToDistillablePage();
+  WaitForPageActionShowing(true);
+  auto* const user_ed = BrowserUserEducationInterface::From(browser());
+  ReadAnythingEntryPointController::ShowUI(
+      browser(), ReadAnythingOpenTrigger::kReadAnythingContextMenu,
+      ReadAnythingEntryPointController::Presentation::kPreferred);
+  VerifyUIState();
+  WaitForPageActionShowing(false);
+  EXPECT_FALSE(user_ed->IsFeaturePromoActive(
+      feature_engagement::kIPHReadingModePageActionLabelFeature));
+
+  ReadAnythingEntryPointController::ToggleUI(
+      browser(), ReadAnythingOpenTrigger::kReadAnythingContextMenu);
+
+  ExpectPageActionStateImmediate(true);
+  EXPECT_FALSE(user_ed->IsFeaturePromoQueued(
+      feature_engagement::kIPHReadingModePageActionLabelFeature));
+  EXPECT_FALSE(user_ed->IsFeaturePromoActive(
+      feature_engagement::kIPHReadingModePageActionLabelFeature));
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxControllerBrowserTest,

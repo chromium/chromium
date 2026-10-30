@@ -51,8 +51,8 @@ class ReadAnythingEntryPointController {
   static void CloseUI(BrowserWindowInterface* bwi,
                       ReadAnythingCloseReason reason);
 
-  // Shows or hides the omnibox entry point and the IPH for it.
-  // show_promo_callback is called with the result of whether the IPH was shown.
+  // Shows or hides the omnibox entry point. When showing, also tries to show
+  // the IPH if show_promo_callback is set, then runs it with the IPH result.
   static void UpdatePageActionVisibility(
       bool should_show_page_action,
       tabs::TabInterface* tab,
