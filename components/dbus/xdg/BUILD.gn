@@ -5,6 +5,8 @@
 source_set("xdg") {
   visibility = [ "//components/dbus/*" ]
   sources = [
+    "background_portal.cc",
+    "background_portal.h",
     "file_transfer_portal.cc",
     "file_transfer_portal.h",
     "portal.cc",
@@ -38,6 +40,7 @@ source_set("unit_tests") {
   testonly = true
   visibility = [ "//components/dbus:unit_tests" ]
   sources = [
+    "background_portal_unittest.cc",
     "file_transfer_portal_unittest.cc",
     "portal_unittest.cc",
     "request_unittest.cc",

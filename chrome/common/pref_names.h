@@ -2422,6 +2422,14 @@ inline constexpr char kNotifyWhenAppsKeepChromeAlive[] =
 // Set to true if background mode is enabled on this browser.
 inline constexpr char kBackgroundModeEnabled[] = "background_mode.enabled";
 
+#if BUILDFLAG(IS_LINUX)
+// Set to true while the XDG Background portal has autostart enabled for the
+// browser, so that a stale autostart entry can be removed on the next startup
+// if there are no longer any background apps.
+inline constexpr char kBackgroundModePortalAutostartGranted[] =
+    "background_mode.portal_autostart_granted";
+#endif
+
 // Set to true if hardware acceleration mode is enabled on this browser.
 inline constexpr char kHardwareAccelerationModeEnabled[] =
     "hardware_acceleration_mode.enabled";

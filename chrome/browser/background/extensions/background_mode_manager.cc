@@ -79,6 +79,12 @@
 #include "chrome/browser/win/app_icon.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "base/nix/xdg_util.h"
+#include "chrome/browser/shell_integration_linux.h"
+#include "components/dbus/xdg/background_portal.h"
+#endif
+
 using base::UserMetricsAction;
 using extensions::Extension;
 
@@ -352,6 +358,10 @@ BackgroundModeManager::~BackgroundModeManager() {
 // static
 void BackgroundModeManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kBackgroundModeEnabled, true);
+#if BUILDFLAG(IS_LINUX)
+  registry->RegisterBooleanPref(prefs::kBackgroundModePortalAutostartGranted,
+                                false);
+#endif
 }
 
 void BackgroundModeManager::RegisterProfile(Profile* profile) {
@@ -475,6 +485,9 @@ void BackgroundModeManager::OnExtensionsReady(Profile* profile) {
   // never called).
   startup_launch_client_.SetLaunchOnStartup(ShouldLaunchOnStartup());
 #endif
+#if BUILDFLAG(IS_LINUX)
+  MaybeClearStalePortalAutostart();
+#endif
 
   auto* extension_service =
       extensions::ExtensionSystem::Get(profile)->extension_service();
@@ -495,6 +508,9 @@ void BackgroundModeManager::OnBackgroundModeEnabledPrefChanged() {
   } else {
     DisableBackgroundMode();
   }
+#if BUILDFLAG(IS_LINUX)
+  SynchronizeBackgroundPortalState();
+#endif
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -558,6 +574,10 @@ void BackgroundModeManager::OnProfileWillBeRemoved(
   // Profiles that are merely destroyed (e.g. during shutdown) still have their
   // background apps installed.
   startup_launch_client_.SetLaunchOnStartup(ShouldLaunchOnStartup());
+#endif
+#if BUILDFLAG(IS_LINUX)
+  // As above, only update the portal's autostart state on profile deletion.
+  SynchronizeBackgroundPortalState();
 #endif
 }
 
@@ -711,6 +731,10 @@ void BackgroundModeManager::StartBackgroundMode() {
   in_background_mode_ = true;
 
   UpdateKeepAliveAndTrayIcon();
+
+#if BUILDFLAG(IS_LINUX)
+  SynchronizeBackgroundPortalState();
+#endif
 }
 
 void BackgroundModeManager::EndBackgroundMode() {
@@ -718,6 +742,9 @@ void BackgroundModeManager::EndBackgroundMode() {
     return;
   }
   in_background_mode_ = false;
+#if BUILDFLAG(IS_LINUX)
+  portal_status_set_ = false;
+#endif
 
   UpdateKeepAliveAndTrayIcon();
 }
@@ -815,6 +842,9 @@ void BackgroundModeManager::OnClientsChanged(
       OnBackgroundClientInstalled(name);
     }
   }
+#if BUILDFLAG(IS_LINUX)
+  SynchronizeBackgroundPortalState();
+#endif
 }
 
 bool BackgroundModeManager::HasPersistentBackgroundClient() const {
@@ -843,6 +873,11 @@ bool BackgroundModeManager::HasPersistentBackgroundClientForProfile(
 }
 
 bool BackgroundModeManager::ShouldBeInBackgroundMode() const {
+#if BUILDFLAG(IS_LINUX)
+  if (portal_denied_) {
+    return false;
+  }
+#endif
   return IsBackgroundModePrefEnabled() &&
          (HasAnyBackgroundClient() || keep_alive_for_test_);
 }
@@ -1063,3 +1098,161 @@ bool BackgroundModeManager::IsBackgroundModePrefEnabled() const {
   CHECK(service, base::NotFatalUntil::M161);
   return service->GetBoolean(prefs::kBackgroundModeEnabled);
 }
+
+#if BUILDFLAG(IS_LINUX)
+void BackgroundModeManager::SetBackgroundPortalClientForTesting(
+    std::unique_ptr<dbus_xdg::BackgroundPortalClient> portal_client) {
+  background_portal_client_ = std::move(portal_client);
+}
+
+void BackgroundModeManager::SynchronizeBackgroundPortalState() {
+  // The Background portal is only needed inside an app sandbox; host installs
+  // do not need portal permission to stay alive without open windows.
+  if (base::nix::GetAppSandbox() == base::nix::AppSandbox::kNone) {
+    return;
+  }
+
+  // If the user/portal denied or cancelled permission earlier in this session,
+  // do not re-request or re-prompt on extension events.
+  if (portal_denied_) {
+    return;
+  }
+
+  // Requesting background permission may show a permission dialog, so only
+  // make the first request once background mode is actually needed. After
+  // that, keep the portal in sync (e.g. to turn autostart off again).
+  if (!in_background_mode_ && !portal_request_made_) {
+    return;
+  }
+
+  const bool autostart = ShouldLaunchOnStartup();
+  if (last_requested_autostart_ == autostart) {
+    if (in_background_mode_ && !portal_status_set_ &&
+        !portal_request_in_flight_) {
+      SetBackgroundPortalStatus();
+    }
+    return;
+  }
+
+  RequestBackgroundFromPortal(autostart);
+}
+
+void BackgroundModeManager::MaybeClearStalePortalAutostart() {
+  if (base::nix::GetAppSandbox() == base::nix::AppSandbox::kNone) {
+    return;
+  }
+  if (in_background_mode_ || portal_request_made_ || portal_denied_) {
+    return;
+  }
+  // Autostart was enabled through the portal in an earlier session, but there
+  // are no background apps now (e.g. they were removed while the browser was
+  // not running). Background permission was already granted, so this doesn't
+  // show a dialog.
+  if (!g_browser_process->local_state()->GetBoolean(
+          prefs::kBackgroundModePortalAutostartGranted)) {
+    return;
+  }
+
+  // Wait until every registered profile has finished loading extensions and
+  // every profile marked as having background apps has been registered.
+  for (const auto& [profile, bmd] : background_mode_data_) {
+    if (!bmd->applications()->startup_done()) {
+      return;
+    }
+  }
+  if (IsBackgroundModePrefEnabled() && profile_storage_) {
+    for (ProfileAttributesEntry* entry :
+         profile_storage_->GetAllProfilesAttributes()) {
+      if (entry->GetBackgroundStatus() &&
+          !std::ranges::any_of(background_mode_data_, [&](const auto& pair) {
+            return pair.first->GetPath() == entry->GetPath();
+          })) {
+        return;
+      }
+    }
+  }
+
+  RequestBackgroundFromPortal(/*autostart=*/false);
+}
+
+void BackgroundModeManager::RequestBackgroundFromPortal(bool autostart) {
+  portal_request_made_ = true;
+  portal_request_in_flight_ = true;
+  last_requested_autostart_ = autostart;
+
+  if (!background_portal_client_) {
+    background_portal_client_ = std::make_unique<dbus_xdg::BackgroundPortal>();
+  }
+
+  dbus_xdg::BackgroundOptions options;
+  options.reason = l10n_util::GetStringUTF8(
+      IDS_STATUS_TRAY_KEEP_CHROME_RUNNING_IN_BACKGROUND);
+  options.autostart = autostart;
+  if (options.autostart) {
+    base::CommandLine command_line(
+        shell_integration_linux::internal::GetChromeExePath());
+    command_line.AppendSwitch(switches::kNoStartupWindow);
+    options.commandline = command_line.argv();
+  }
+
+  // TODO(crbug.com/396123456): Pass parent window handle when triggered from
+  // settings UI.
+  uint64_t current_generation = ++background_portal_request_generation_;
+
+  background_portal_client_->RequestBackground(
+      /*parent_window=*/"", options,
+      base::BindOnce(&BackgroundModeManager::OnBackgroundPortalResponse,
+                     weak_factory_.GetWeakPtr(), current_generation));
+}
+
+void BackgroundModeManager::SetBackgroundPortalStatus() {
+  if (!background_portal_client_) {
+    background_portal_client_ = std::make_unique<dbus_xdg::BackgroundPortal>();
+  }
+  portal_status_set_ = true;
+  std::string status_msg = l10n_util::GetStringUTF8(
+      IDS_STATUS_TRAY_KEEP_CHROME_RUNNING_IN_BACKGROUND);
+  background_portal_client_->SetStatus(status_msg, base::DoNothing());
+}
+
+void BackgroundModeManager::OnBackgroundPortalResponse(
+    uint64_t generation,
+    base::expected<dbus_xdg::BackgroundResult, dbus_xdg::ResponseError>
+        result) {
+  // Ignore stale callbacks from older requests.
+  if (generation != background_portal_request_generation_) {
+    return;
+  }
+  portal_request_in_flight_ = false;
+
+  const bool denied_or_cancelled =
+      result.has_value()
+          ? !result->background_allowed
+          : result.error() == dbus_xdg::ResponseError::kRequestCancelledByUser;
+  if (denied_or_cancelled) {
+    LOG(WARNING) << "XDG Background permission denied or cancelled by user";
+    portal_denied_ = true;
+    g_browser_process->local_state()->SetBoolean(
+        prefs::kBackgroundModePortalAutostartGranted, false);
+    EndBackgroundMode();
+    return;
+  }
+
+  // If the portal is unavailable or the call failed (including non-user
+  // cancellation), fall back to assuming background mode is allowed and allow
+  // later state changes to retry.
+  if (!result.has_value()) {
+    last_requested_autostart_.reset();
+    LOG(WARNING) << "Failed to request background portal permission: "
+                 << static_cast<int>(result.error());
+    return;
+  }
+
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kBackgroundModePortalAutostartGranted, result->autostart_enabled);
+
+  if (in_background_mode_ && !portal_status_set_) {
+    SetBackgroundPortalStatus();
+  }
+}
+#endif

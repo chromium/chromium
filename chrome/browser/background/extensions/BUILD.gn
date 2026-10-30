@@ -95,6 +95,13 @@ source_set("impl") {
       "//chrome/browser/win",
     ]
   }
+
+  if (is_linux) {
+    deps += [
+      "//chrome/browser:shell_integration_linux",
+      "//components/dbus",
+    ]
+  }
 }
 
 source_set("unit_tests") {
@@ -125,5 +132,9 @@ source_set("unit_tests") {
 
   if (is_win) {
     deps += [ "//chrome/browser/startup" ]
+  }
+
+  if (is_linux) {
+    deps += [ "//components/dbus" ]
   }
 }

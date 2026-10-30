@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <vector>
 
@@ -31,6 +32,16 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/startup/startup_launch_manager.h"
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+#include "base/types/expected.h"
+
+namespace dbus_xdg {
+class BackgroundPortalClient;
+struct BackgroundResult;
+enum class ResponseError;
+}  // namespace dbus_xdg
 #endif
 
 class BrowserWindowInterface;
@@ -125,6 +136,12 @@ class BackgroundModeManager : public BrowserCollectionObserver,
     return client_installed_notifications_;
   }
 
+#if BUILDFLAG(IS_LINUX)
+  // Allows injecting a fake portal client in tests.
+  void SetBackgroundPortalClientForTesting(
+      std::unique_ptr<dbus_xdg::BackgroundPortalClient> portal_client);
+#endif
+
  private:
   friend class AppBackgroundPageApiTest;
   friend class BackgroundModeManagerTest;
@@ -148,6 +165,8 @@ class BackgroundModeManager : public BrowserCollectionObserver,
   FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerTest,
                            ProfileAttributesStorageObserver);
   FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerTest, DeleteBackgroundProfile);
+  FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerTest,
+                           LinuxPortalSyncOnProfileDeletion);
   FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerTest,
                            ProfileDestructionKeepsLaunchOnStartupRegistration);
   FRIEND_TEST_ALL_PREFIXES(BackgroundModeManagerTest,
@@ -467,6 +486,57 @@ class BackgroundModeManager : public BrowserCollectionObserver,
 
   // Set to true when background mode is suspended.
   bool background_mode_suspended_ = false;
+
+#if BUILDFLAG(IS_LINUX)
+  // Synchronizes background permission and autostart configuration with
+  // xdg-desktop-portal on Linux when in a sandboxed environment. Does nothing
+  // until background mode has been entered once in this session.
+  void SynchronizeBackgroundPortalState();
+
+  // Called once extensions are ready. Turns off autostart through the portal
+  // if it was enabled in an earlier session but background mode isn't needed
+  // any more.
+  void MaybeClearStalePortalAutostart();
+
+  // Sends a RequestBackground call to the portal for `autostart`.
+  void RequestBackgroundFromPortal(bool autostart);
+
+  // Sets the portal background status message for the active background mode
+  // session.
+  void SetBackgroundPortalStatus();
+
+  // Handles response from BackgroundPortalClient::RequestBackground.
+  void OnBackgroundPortalResponse(
+      uint64_t generation,
+      base::expected<dbus_xdg::BackgroundResult, dbus_xdg::ResponseError>
+          result);
+
+  // Monotonically increasing generation ID to ignore stale DBus portal
+  // callbacks.
+  uint64_t background_portal_request_generation_ = 0;
+
+  // Set to true if the portal denied background permission or the user
+  // cancelled the permission prompt.
+  bool portal_denied_ = false;
+
+  // Set to true once a RequestBackground call was made in this session.
+  bool portal_request_made_ = false;
+
+  // Set to true while the latest RequestBackground call has not yet completed.
+  bool portal_request_in_flight_ = false;
+
+  // Set to true once SetStatus() has been called for the current active
+  // background mode session; reset when background mode ends.
+  bool portal_status_set_ = false;
+
+  // Most recent `autostart` value requested from the portal, used to skip
+  // redundant RequestBackground calls. Reset on error so retries can succeed.
+  std::optional<bool> last_requested_autostart_;
+
+  // Client used to communicate with the org.freedesktop.portal.Background D-Bus
+  // service.
+  std::unique_ptr<dbus_xdg::BackgroundPortalClient> background_portal_client_;
+#endif
 
   base::WeakPtrFactory<BackgroundModeManager> weak_factory_{this};
 };

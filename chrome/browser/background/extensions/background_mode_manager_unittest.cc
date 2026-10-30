@@ -63,6 +63,12 @@
 #include "chrome/browser/startup/startup_launch_manager.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "base/nix/xdg_util.h"
+#include "base/scoped_environment_variable_override.h"
+#include "components/dbus/xdg/background_portal.h"
+#endif
+
 using auto_launch_util::StartupLaunchMode;
 using extensions::mojom::ManifestLocation;
 using testing::_;
@@ -1303,3 +1309,504 @@ TEST_F(BackgroundModeManagerTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(keep_alive_registry->IsKeepingAlive());
 }
+
+#if BUILDFLAG(IS_LINUX)
+namespace {
+
+class FakeBackgroundPortalClient : public dbus_xdg::BackgroundPortalClient {
+ public:
+  FakeBackgroundPortalClient() = default;
+  ~FakeBackgroundPortalClient() override = default;
+
+  void RequestBackground(const std::string& parent_window,
+                         const dbus_xdg::BackgroundOptions& options,
+                         dbus_xdg::BackgroundResultCallback callback) override {
+    request_count_++;
+    last_options_ = options;
+    pending_callback_ = std::move(callback);
+  }
+
+  void SetStatus(const std::string& message,
+                 dbus_xdg::SetStatusCallback callback) override {
+    status_count_++;
+    last_status_message_ = message;
+    if (callback) {
+      std::move(callback).Run(true);
+    }
+  }
+
+  void RespondToRequest(base::expected<dbus_xdg::BackgroundResult,
+                                       dbus_xdg::ResponseError> result) {
+    if (pending_callback_) {
+      std::move(pending_callback_).Run(result);
+    }
+  }
+
+  int request_count() const { return request_count_; }
+  int status_count() const { return status_count_; }
+  const dbus_xdg::BackgroundOptions& last_options() const {
+    return last_options_;
+  }
+  const std::string& last_status_message() const {
+    return last_status_message_;
+  }
+
+ private:
+  int request_count_ = 0;
+  int status_count_ = 0;
+  dbus_xdg::BackgroundOptions last_options_;
+  std::string last_status_message_;
+  dbus_xdg::BackgroundResultCallback pending_callback_;
+};
+
+// Signals that extensions are ready for `profile`, which runs
+// BackgroundModeManager::OnExtensionsReady().
+void MakeExtensionsReady(Profile* profile) {
+  auto* extension_system = static_cast<extensions::TestExtensionSystem*>(
+      extensions::ExtensionSystem::Get(profile));
+  extension_system->CreateExtensionService(
+      base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
+  extension_system->SetReady();
+  // BackgroundModeManager::OnExtensionsReady() was posted to ready() first, so
+  // it runs before this quit closure.
+  base::RunLoop run_loop;
+  extension_system->ready().Post(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+}
+
+}  // namespace
+
+TEST_F(BackgroundModeManagerTest, LinuxPortalSyncOnProfileDeletion) {
+  base::nix::ScopedAppSandboxOverrideForTesting sandbox(
+      base::nix::AppSandbox::kFlatpak);
+  auto fake_portal = std::make_unique<FakeBackgroundPortalClient>();
+  auto* raw_fake_portal = fake_portal.get();
+
+  AdvancedTestBackgroundModeManager manager(
+      *command_line_, profile_manager_->profile_attributes_storage(), true);
+  manager.SetBackgroundPortalClientForTesting(std::move(fake_portal));
+  manager.RegisterProfile(profile_);
+
+  int requests_after_register = raw_fake_portal->request_count();
+
+  manager.SetBackgroundClientCountForProfile(profile_, 1);
+  manager.OnApplicationListChanged(profile_);
+  EXPECT_EQ(raw_fake_portal->request_count(), requests_after_register + 1);
+  EXPECT_TRUE(raw_fake_portal->last_options().autostart);
+
+  int requests_before_removal = raw_fake_portal->request_count();
+
+  // Deleting the profile should sync the portal state and turn off autostart.
+  manager.SetBackgroundClientCountForProfile(profile_, 0);
+  manager.OnProfileWillBeRemoved(profile_->GetPath());
+  EXPECT_EQ(raw_fake_portal->request_count(), requests_before_removal + 1);
+  EXPECT_FALSE(raw_fake_portal->last_options().autostart);
+}
+
+// Destroying a profile (e.g. during shutdown) should not turn off autostart
+// through the portal, since its background apps are still installed.
+TEST_F(BackgroundModeManagerTest, LinuxPortalNoSyncOnProfileDestruction) {
+  base::nix::ScopedAppSandboxOverrideForTesting sandbox(
+      base::nix::AppSandbox::kFlatpak);
+  auto fake_portal = std::make_unique<FakeBackgroundPortalClient>();
+  auto* raw_fake_portal = fake_portal.get();
+
+  AdvancedTestBackgroundModeManager manager(
+      *command_line_, profile_manager_->profile_attributes_storage(), true);
+  manager.SetBackgroundPortalClientForTesting(std::move(fake_portal));
+  manager.RegisterProfile(profile_);
+
+  manager.SetBackgroundClientCountForProfile(profile_, 1);
+  manager.OnApplicationListChanged(profile_);
+  int requests_before_unregister = raw_fake_portal->request_count();
+
+  // Mimic BackgroundModeData::OnProfileWillBeDestroyed().
+  manager.SetBackgroundClientCountForProfile(profile_, 0);
+  EXPECT_TRUE(manager.UnregisterProfile(profile_));
+  EXPECT_EQ(raw_fake_portal->request_count(), requests_before_unregister);
+}
+
+TEST_F(BackgroundModeManagerTest, LinuxPortalNotUsedOutsideSandbox) {
+  base::nix::ScopedAppSandboxOverrideForTesting sandbox(
+      base::nix::AppSandbox::kNone);
+  auto fake_portal = std::make_unique<FakeBackgroundPortalClient>();
+  auto* raw_fake_portal = fake_portal.get();
+
+  AdvancedTestBackgroundModeManager manager(
+      *command_line_, profile_manager_->profile_attributes_storage(), true);
+  manager.SetBackgroundPortalClientForTesting(std::move(fake_portal));
+  manager.RegisterProfile(profile_);
+
+  manager.SetBackgroundClientCountForProfile(profile_, 1);
+  manager.OnApplicationListChanged(profile_);
+  EXPECT_EQ(raw_fake_portal->request_count(), 0);
+}
+
+TEST_F(BackgroundModeManagerTest, LinuxPortalExplicitDenialIsStable) {
+  base::nix::ScopedAppSandboxOverrideForTesting sandbox(
+      base::nix::AppSandbox::kFlatpak);
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetBoolean(prefs::kBackgroundModePortalAutostartGranted, true);
+  auto fake_portal = std::make_unique<FakeBackgroundPortalClient>();
+  auto* raw_fake_portal = fake_portal.get();
+
+  AdvancedTestBackgroundModeManager manager(
+      *command_line_, profile_manager_->profile_attributes_storage(), true);
+  manager.SetBackgroundPortalClientForTesting(std::move(fake_portal));
+  manager.RegisterProfile(profile_);
+
+  manager.SetBackgroundClientCountForProfile(profile_, 1);
+  manager.OnApplicationListChanged(profile_);
+  AssertBackgroundModeActive(manager);
+
+  // Simulate explicit portal denial.
+  dbus_xdg::BackgroundResult result;
+  result.background_allowed = false;
+  raw_fake_portal->RespondToRequest(result);
+  EXPECT_FALSE(manager.IsBackgroundModeActive());
+  AssertBackgroundModeInactive(manager);
+  EXPECT_FALSE(
+      local_state->GetBoolean(prefs::kBackgroundModePortalAutostartGranted));
+
+  int requests_at_denial = raw_fake_portal->request_count();
+
+  // Subsequent client or pref changes should neither re-enter background mode
+  // nor re-trigger portal requests.
+  manager.OnApplicationListChanged(profile_);
+  manager.SetEnabled(false);
+  manager.SetEnabled(true);
+  EXPECT_EQ(raw_fake_portal->request_count(), requests_at_denial);
+  EXPECT_FALSE(manager.IsBackgroundModeActive());
+  AssertBackgroundModeInactive(manager);
+}
+
+TEST_F(BackgroundModeManagerTest, LinuxPortalUserCancellationTreatedAsDenial) {
+  base::nix::ScopedAppSandboxOverrideForTesting sandbox(
+      base::nix::AppSandbox::kFlatpak);
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetBoolean(prefs::kBackgroundModePortalAutostartGranted, true);
+  auto fake_portal = std::make_unique<FakeBackgroundPortalClient>();
+  auto* raw_fake_portal = fake_portal.get();
+
+  AdvancedTestBackgroundModeManager manager(
+      *command_line_, profile_manager_->profile_attributes_storage(), true);
+  manager.SetBackgroundPortalClientForTesting(std::move(fake_portal));
+  manager.RegisterProfile(profile_);
+
+  manager.SetBackgroundClientCountForProfile(profile_, 1);
+  manager.OnApplicationListChanged(profile_);
+  AssertBackgroundModeActive(manager);
+
+  // User dismissal/cancellation of the portal prompt
+  // (`kRequestCancelledByUser`) should end background mode and prevent
+  // subsequent re-prompts.
+  raw_fake_portal->RespondToRequest(
+      base::unexpected(dbus_xdg::ResponseError::kRequestCancelledByUser));
+  EXPECT_FALSE(manager.IsBackgroundModeActive());
+  AssertBackgroundModeInactive(manager);
+  EXPECT_FALSE(
+      local_state->GetBoolean(prefs::kBackgroundModePortalAutostartGranted));
+
+  int requests_at_cancellation = raw_fake_portal->request_count();
+  manager.OnApplicationListChanged(profile_);
+  manager.SetEnabled(false);
+  manager.SetEnabled(true);
+  EXPECT_EQ(raw_fake_portal->request_count(), requests_at_cancellation);
+  EXPECT_FALSE(manager.IsBackgroundModeActive());
+  AssertBackgroundModeInactive(manager);
+}
+
+TEST_F(BackgroundModeManagerTest, LinuxPortalNoRequestOutsideBackgroundMode) {
+  base::nix::ScopedAppSandboxOverrideForTesting sandbox(
+      base::nix::AppSandbox::kFlatpak);
+  auto fake_portal = std::make_unique<FakeBackgroundPortalClient>();
+  auto* raw_fake_portal = fake_portal.get();
+
+  AdvancedTestBackgroundModeManager manager(
+      *command_line_, profile_manager_->profile_attributes_storage(), true);
+  manager.SetBackgroundPortalClientForTesting(std::move(fake_portal));
+  manager.RegisterProfile(profile_);
+
+  // Without background apps, neither client changes nor pref changes should
+  // contact the portal, which could show a permission dialog.
+  manager.SetBackgroundClientCountForProfile(profile_, 0);
+  manager.OnApplicationListChanged(profile_);
+  manager.SetEnabled(false);
+  manager.SetEnabled(true);
+  EXPECT_EQ(raw_fake_portal->request_count(), 0);
+}
+
+TEST_F(BackgroundModeManagerTest, LinuxPortalRequestOnEnteringBackgroundMode) {
+  base::nix::ScopedAppSandboxOverrideForTesting sandbox(
+      base::nix::AppSandbox::kFlatpak);
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetBoolean(prefs::kBackgroundModePortalAutostartGranted, false);
+  auto fake_portal = std::make_unique<FakeBackgroundPortalClient>();
+  auto* raw_fake_portal = fake_portal.get();
+
+  AdvancedTestBackgroundModeManager manager(
+      *command_line_, profile_manager_->profile_attributes_storage(), true);
+  manager.SetBackgroundPortalClientForTesting(std::move(fake_portal));
+  manager.RegisterProfile(profile_);
+
+  manager.SetBackgroundClientCountForProfile(profile_, 1);
+  manager.OnApplicationListChanged(profile_);
+  EXPECT_EQ(raw_fake_portal->request_count(), 1);
+  EXPECT_TRUE(raw_fake_portal->last_options().autostart);
+
+  dbus_xdg::BackgroundResult granted;
+  granted.background_allowed = true;
+  granted.autostart_enabled = true;
+  raw_fake_portal->RespondToRequest(granted);
+  EXPECT_TRUE(
+      local_state->GetBoolean(prefs::kBackgroundModePortalAutostartGranted));
+
+  // Removing the last background app leaves background mode, but the portal
+  // should still be told to turn autostart off.
+  int requests_before_removal = raw_fake_portal->request_count();
+  manager.SetBackgroundClientCountForProfile(profile_, 0);
+  manager.OnApplicationListChanged(profile_);
+  EXPECT_EQ(raw_fake_portal->request_count(), requests_before_removal + 1);
+  EXPECT_FALSE(raw_fake_portal->last_options().autostart);
+
+  dbus_xdg::BackgroundResult revoked;
+  revoked.background_allowed = true;
+  revoked.autostart_enabled = false;
+  raw_fake_portal->RespondToRequest(revoked);
+  EXPECT_FALSE(
+      local_state->GetBoolean(prefs::kBackgroundModePortalAutostartGranted));
+  EXPECT_EQ(raw_fake_portal->status_count(), 1);
+}
+
+TEST_F(BackgroundModeManagerTest,
+       LinuxPortalSkipsRedundantRequestsAndRetriesAfterError) {
+  base::nix::ScopedAppSandboxOverrideForTesting sandbox(
+      base::nix::AppSandbox::kFlatpak);
+  auto fake_portal = std::make_unique<FakeBackgroundPortalClient>();
+  auto* raw_fake_portal = fake_portal.get();
+
+  AdvancedTestBackgroundModeManager manager(
+      *command_line_, profile_manager_->profile_attributes_storage(), true);
+  manager.SetBackgroundPortalClientForTesting(std::move(fake_portal));
+  manager.RegisterProfile(profile_);
+
+  manager.SetBackgroundClientCountForProfile(profile_, 1);
+  manager.OnApplicationListChanged(profile_);
+  EXPECT_EQ(raw_fake_portal->request_count(), 1);
+  EXPECT_TRUE(raw_fake_portal->last_options().autostart);
+
+  // Adding another persistent background app leaves ShouldLaunchOnStartup()
+  // unchanged and must not re-send RequestBackground.
+  manager.SetBackgroundClientCountForProfile(profile_, 2);
+  manager.OnApplicationListChanged(profile_);
+  EXPECT_EQ(raw_fake_portal->request_count(), 1);
+
+  // If the portal request fails (or ends due to non-user cancellation),
+  // background mode remains active and a subsequent state sync retries.
+  raw_fake_portal->RespondToRequest(
+      base::unexpected(dbus_xdg::ResponseError::kMethodCallFailed));
+  AssertBackgroundModeActive(manager);
+  manager.OnApplicationListChanged(profile_);
+  EXPECT_EQ(raw_fake_portal->request_count(), 2);
+  EXPECT_TRUE(raw_fake_portal->last_options().autostart);
+
+  raw_fake_portal->RespondToRequest(
+      base::unexpected(dbus_xdg::ResponseError::kRequestCancelledOther));
+  AssertBackgroundModeActive(manager);
+  manager.OnApplicationListChanged(profile_);
+  EXPECT_EQ(raw_fake_portal->request_count(), 3);
+  EXPECT_TRUE(raw_fake_portal->last_options().autostart);
+}
+
+TEST_F(BackgroundModeManagerTest, LinuxPortalCommandLineUsesChromeWrapper) {
+  base::nix::ScopedAppSandboxOverrideForTesting sandbox(
+      base::nix::AppSandbox::kFlatpak);
+  base::ScopedEnvironmentVariableOverride wrapper_env("CHROME_WRAPPER",
+                                                      "/app/bin/chrome");
+  auto fake_portal = std::make_unique<FakeBackgroundPortalClient>();
+  auto* raw_fake_portal = fake_portal.get();
+
+  AdvancedTestBackgroundModeManager manager(
+      *command_line_, profile_manager_->profile_attributes_storage(), true);
+  manager.SetBackgroundPortalClientForTesting(std::move(fake_portal));
+  manager.RegisterProfile(profile_);
+
+  manager.SetBackgroundClientCountForProfile(profile_, 1);
+  manager.OnApplicationListChanged(profile_);
+  ASSERT_EQ(raw_fake_portal->request_count(), 1);
+  EXPECT_THAT(
+      raw_fake_portal->last_options().commandline,
+      testing::ElementsAre("/app/bin/chrome",
+                           std::string("--") + switches::kNoStartupWindow));
+}
+
+TEST_F(BackgroundModeManagerTest, LinuxPortalStartupCleanupOfStaleAutostart) {
+  base::nix::ScopedAppSandboxOverrideForTesting sandbox(
+      base::nix::AppSandbox::kFlatpak);
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetBoolean(prefs::kBackgroundModePortalAutostartGranted, true);
+  auto fake_portal = std::make_unique<FakeBackgroundPortalClient>();
+  auto* raw_fake_portal = fake_portal.get();
+
+  AdvancedTestBackgroundModeManager manager(
+      *command_line_, profile_manager_->profile_attributes_storage(), true);
+  manager.SetBackgroundPortalClientForTesting(std::move(fake_portal));
+  manager.SetBackgroundClientCountForProfile(profile_, 0);
+  manager.RegisterProfile(profile_);
+
+  MakeExtensionsReady(profile_);
+  EXPECT_EQ(raw_fake_portal->request_count(), 1);
+  EXPECT_FALSE(raw_fake_portal->last_options().autostart);
+
+  dbus_xdg::BackgroundResult revoked;
+  revoked.background_allowed = true;
+  revoked.autostart_enabled = false;
+  raw_fake_portal->RespondToRequest(revoked);
+  EXPECT_FALSE(
+      local_state->GetBoolean(prefs::kBackgroundModePortalAutostartGranted));
+  EXPECT_EQ(raw_fake_portal->status_count(), 0);
+}
+
+TEST_F(BackgroundModeManagerTest,
+       LinuxPortalSetsStatusAfterStartupAutostartCleanup) {
+  base::nix::ScopedAppSandboxOverrideForTesting sandbox(
+      base::nix::AppSandbox::kFlatpak);
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kBackgroundModePortalAutostartGranted, true);
+  auto fake_portal = std::make_unique<FakeBackgroundPortalClient>();
+  auto* raw_fake_portal = fake_portal.get();
+
+  AdvancedTestBackgroundModeManager manager(
+      *command_line_, profile_manager_->profile_attributes_storage(), true);
+  manager.SetBackgroundPortalClientForTesting(std::move(fake_portal));
+  manager.SetBackgroundClientCountForProfile(profile_, 0);
+  manager.RegisterProfile(profile_);
+
+  // Startup cleanup requests `autostart = false` while not in background mode,
+  // so `SetStatus()` is not called yet.
+  MakeExtensionsReady(profile_);
+  ASSERT_EQ(raw_fake_portal->request_count(), 1);
+  EXPECT_FALSE(raw_fake_portal->last_options().autostart);
+
+  dbus_xdg::BackgroundResult granted;
+  granted.background_allowed = true;
+  granted.autostart_enabled = false;
+  raw_fake_portal->RespondToRequest(granted);
+  EXPECT_EQ(raw_fake_portal->status_count(), 0);
+
+  // Entering background mode for a non-persistent client keeps `autostart` at
+  // `false` (skipping a redundant `RequestBackground` call), and must still
+  // call `SetStatus()` once for the active background session.
+  manager.SetBackgroundClientCountForProfile(profile_, 1);
+  manager.SetPersistentBackgroundClientCountForProfile(profile_, 0);
+  manager.OnApplicationListChanged(profile_);
+  EXPECT_EQ(raw_fake_portal->request_count(), 1);
+  EXPECT_EQ(raw_fake_portal->status_count(), 1);
+  EXPECT_FALSE(raw_fake_portal->last_status_message().empty());
+
+  // Subsequent non-persistent client changes within the same active background
+  // session should not repeat `SetStatus()`.
+  manager.SetBackgroundClientCountForProfile(profile_, 2);
+  manager.SetPersistentBackgroundClientCountForProfile(profile_, 0);
+  manager.OnApplicationListChanged(profile_);
+  EXPECT_EQ(raw_fake_portal->request_count(), 1);
+  EXPECT_EQ(raw_fake_portal->status_count(), 1);
+
+  // Leaving and re-entering background mode sets status again for the new
+  // active background session.
+  manager.SetBackgroundClientCountForProfile(profile_, 0);
+  manager.OnApplicationListChanged(profile_);
+  manager.SetBackgroundClientCountForProfile(profile_, 1);
+  manager.SetPersistentBackgroundClientCountForProfile(profile_, 0);
+  manager.OnApplicationListChanged(profile_);
+  EXPECT_EQ(raw_fake_portal->request_count(), 1);
+  EXPECT_EQ(raw_fake_portal->status_count(), 2);
+}
+
+TEST_F(BackgroundModeManagerTest,
+       LinuxPortalMultiProfileWaitsForRegisteredProfilesReady) {
+  base::nix::ScopedAppSandboxOverrideForTesting sandbox(
+      base::nix::AppSandbox::kFlatpak);
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kBackgroundModePortalAutostartGranted, true);
+  TestingProfile* profile2 = profile_manager_->CreateTestingProfile("p2");
+
+  auto fake_portal = std::make_unique<FakeBackgroundPortalClient>();
+  auto* raw_fake_portal = fake_portal.get();
+
+  AdvancedTestBackgroundModeManager manager(
+      *command_line_, profile_manager_->profile_attributes_storage(), true);
+  manager.SetBackgroundPortalClientForTesting(std::move(fake_portal));
+  manager.SetBackgroundClientCountForProfile(profile_, 0);
+  manager.SetBackgroundClientCountForProfile(profile2, 1);
+  manager.RegisterProfile(profile_);
+  manager.RegisterProfile(profile2);
+
+  // `profile_` has no background apps and becomes ready first, while
+  // `profile2` is still loading extensions. Autostart must not be cleared.
+  MakeExtensionsReady(profile_);
+  EXPECT_EQ(raw_fake_portal->request_count(), 0);
+
+  // `profile2` finishes loading its persistent background app and enters
+  // background mode with autostart enabled.
+  manager.OnApplicationListChanged(profile2);
+  MakeExtensionsReady(profile2);
+  EXPECT_EQ(raw_fake_portal->request_count(), 1);
+  EXPECT_TRUE(raw_fake_portal->last_options().autostart);
+}
+
+TEST_F(BackgroundModeManagerTest,
+       LinuxPortalMultiProfileWaitsForUnregisteredBackgroundProfile) {
+  base::nix::ScopedAppSandboxOverrideForTesting sandbox(
+      base::nix::AppSandbox::kFlatpak);
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kBackgroundModePortalAutostartGranted, true);
+  TestingProfile* profile2 = profile_manager_->CreateTestingProfile("p2");
+  ProfileAttributesEntry* entry2 =
+      profile_manager_->profile_attributes_storage()
+          ->GetProfileAttributesWithPath(profile2->GetPath());
+  ASSERT_TRUE(entry2);
+  entry2->SetBackgroundStatus(true);
+
+  auto fake_portal = std::make_unique<FakeBackgroundPortalClient>();
+  auto* raw_fake_portal = fake_portal.get();
+
+  AdvancedTestBackgroundModeManager manager(
+      *command_line_, profile_manager_->profile_attributes_storage(), true);
+  manager.SetBackgroundPortalClientForTesting(std::move(fake_portal));
+  manager.SetBackgroundClientCountForProfile(profile_, 0);
+  manager.SetBackgroundClientCountForProfile(profile2, 0);
+  manager.RegisterProfile(profile_);
+
+  // `profile2` is marked as having background apps in ProfileAttributesStorage
+  // and has not been registered yet, so `profile_` becoming ready must not
+  // clear autostart early.
+  MakeExtensionsReady(profile_);
+  EXPECT_EQ(raw_fake_portal->request_count(), 0);
+
+  // Once `profile2` is registered and ready (with its background app removed
+  // while the browser was closed), stale autostart is cleared.
+  manager.RegisterProfile(profile2);
+  MakeExtensionsReady(profile2);
+  EXPECT_EQ(raw_fake_portal->request_count(), 1);
+  EXPECT_FALSE(raw_fake_portal->last_options().autostart);
+}
+
+TEST_F(BackgroundModeManagerTest, LinuxPortalNoStartupRequestWithoutAutostart) {
+  base::nix::ScopedAppSandboxOverrideForTesting sandbox(
+      base::nix::AppSandbox::kFlatpak);
+  g_browser_process->local_state()->SetBoolean(
+      prefs::kBackgroundModePortalAutostartGranted, false);
+  auto fake_portal = std::make_unique<FakeBackgroundPortalClient>();
+  auto* raw_fake_portal = fake_portal.get();
+
+  AdvancedTestBackgroundModeManager manager(
+      *command_line_, profile_manager_->profile_attributes_storage(), true);
+  manager.SetBackgroundPortalClientForTesting(std::move(fake_portal));
+  manager.SetBackgroundClientCountForProfile(profile_, 0);
+  manager.RegisterProfile(profile_);
+
+  MakeExtensionsReady(profile_);
+  EXPECT_EQ(raw_fake_portal->request_count(), 0);
+}
+#endif
