@@ -924,6 +924,10 @@ int SpeechRecognitionManagerImpl::CreateSession(
     remote_engine_config.auth_token = config.auth_token;
     remote_engine_config.auth_scope = config.auth_scope;
     remote_engine_config.preamble = config.preamble;
+    if (delegate_) {
+      remote_engine_config.routing_params =
+          delegate_->GetRoutingParams(config.origin);
+    }
 
     std::unique_ptr<NetworkSpeechRecognitionEngineImpl> google_remote_engine =
         std::make_unique<NetworkSpeechRecognitionEngineImpl>(

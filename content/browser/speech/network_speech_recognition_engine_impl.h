@@ -12,6 +12,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
@@ -80,6 +81,9 @@ class CONTENT_EXPORT NetworkSpeechRecognitionEngineImpl
     std::string auth_token;
     std::string auth_scope;
     scoped_refptr<SpeechRecognitionSessionPreamble> preamble;
+    // Extra query parameters for the upstream request. They come from
+    // `SpeechRecognitionManagerDelegate::GetRoutingParams()`.
+    base::flat_map<std::string, std::string> routing_params;
   };
 
   // Duration of each audio packet.

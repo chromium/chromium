@@ -439,6 +439,7 @@ source_set("browser_sources") {
     "speech_recognition_audio_forwarder_config.h",
     "speech_recognition_event_listener.h",
     "speech_recognition_manager.h",
+    "speech_recognition_manager_delegate.cc",
     "speech_recognition_manager_delegate.h",
     "speech_recognition_session_config.cc",
     "speech_recognition_session_config.h",

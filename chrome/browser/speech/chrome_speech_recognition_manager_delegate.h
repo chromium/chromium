@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_SPEECH_CHROME_SPEECH_RECOGNITION_MANAGER_DELEGATE_H_
 #define CHROME_BROWSER_SPEECH_CHROME_SPEECH_RECOGNITION_MANAGER_DELEGATE_H_
 
+#include <string>
+
+#include "base/containers/flat_map.h"
 #include "content/public/browser/speech_recognition_event_listener.h"
 #include "content/public/browser/speech_recognition_manager_delegate.h"
 #include "content/public/browser/speech_recognition_session_config.h"
@@ -12,6 +15,10 @@
 namespace content {
 struct GlobalRenderFrameHostId;
 }  // namespace content
+
+namespace url {
+class Origin;
+}  // namespace url
 
 namespace speech {
 
@@ -58,6 +65,8 @@ class ChromeSpeechRecognitionManagerDelegate
       override;
   content::SpeechRecognitionEventListener* GetEventListener() override;
 #if !BUILDFLAG(IS_ANDROID)
+  base::flat_map<std::string, std::string> GetRoutingParams(
+      const url::Origin& origin) override;
   // This will bind to the Speech Recognition Service if available.
   void BindSpeechRecognitionContext(
       mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver,

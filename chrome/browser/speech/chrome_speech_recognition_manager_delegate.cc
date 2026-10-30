@@ -6,11 +6,14 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -24,6 +27,7 @@
 #include "extensions/buildflags/buildflags.h"
 #include "media/mojo/mojom/speech_recognition_error.mojom.h"
 #include "media/mojo/mojom/speech_recognition_result.mojom.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/extension_service.h"
@@ -133,6 +137,22 @@ ChromeSpeechRecognitionManagerDelegate::GetEventListener() {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+base::flat_map<std::string, std::string>
+ChromeSpeechRecognitionManagerDelegate::GetRoutingParams(
+    const url::Origin& origin) {
+  // The new NTP Realbox voice search UI uses continuous recognition, which
+  // the speech service otherwise routes to its dictation recognizer. These
+  // parameters ask it to treat the requests as voice search.
+  if (base::FeatureList::IsEnabled(omnibox::kVoiceSearchCoherenceSearchbox) &&
+      origin.IsSameOriginWith(chrome::ChromeUINewTabPageURLAsGURL())) {
+    return {
+        {"client", "chrome-ntp"},
+        {"condition", "search"},
+    };
+  }
+  return {};
+}
+
 void ChromeSpeechRecognitionManagerDelegate::BindSpeechRecognitionContext(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
         recognition_receiver,
