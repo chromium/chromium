@@ -377,6 +377,17 @@ TEST_P(CommandBufferProxyImplTest, DisconnectChannelDoesNotIssueSyncFlush) {
   proxy.reset();
 }
 
+TEST_P(CommandBufferProxyImplTest,
+       DisconnectChannelUsesAsyncDestroyWhenChannelShuttingDown) {
+  auto proxy = CreateAndInitializeProxy();
+  proxy->SetChannelShuttingDown();
+
+  EXPECT_CALL(mock_gpu_channel_, DestroyCommandBuffer(_)).Times(0);
+  EXPECT_CALL(mock_gpu_channel_, DestroyCommandBuffer(_, _)).Times(1);
+
+  proxy.reset();
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          CommandBufferProxyImplTest,
                          testing::Combine(testing::Values(false, true),

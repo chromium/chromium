@@ -39,6 +39,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/gpu_stream_constants.h"
 #include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/ipc/client/command_buffer_proxy_impl.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "media/base/media_switches.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -155,6 +156,14 @@ VizProcessTransportFactory::VizProcessTransportFactory(
 
 VizProcessTransportFactory::~VizProcessTransportFactory() {
   task_graph_runner_->Shutdown();
+  if (main_context_provider_ &&
+      main_context_provider_->GetCommandBufferProxy()) {
+    main_context_provider_->GetCommandBufferProxy()->SetChannelShuttingDown();
+  }
+  if (worker_context_provider_ &&
+      worker_context_provider_->GetCommandBufferProxy()) {
+    worker_context_provider_->GetCommandBufferProxy()->SetChannelShuttingDown();
+  }
 }
 
 void VizProcessTransportFactory::ConnectHostFrameSinkManager() {

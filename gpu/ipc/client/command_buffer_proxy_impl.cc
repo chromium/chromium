@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
@@ -932,13 +933,18 @@ void CommandBufferProxyImpl::DisconnectChannel() {
   if (!channel_ || disconnected_)
     return;
   disconnected_ = true;
-  // This used to be a call to VerifyFlush which is a synchronous call.
-  // We changed it to EnsureFlush because DestroyCommandBuffer below is
-  // synchronous and so EnsureFlush is enough.
+  // Flush any pending deferred requests on the channel before sending
+  // DestroyCommandBuffer (which is synchronous unless the channel is shutting
+  // down).
   channel_->EnsureFlush(UINT32_MAX);
 
-  mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync;
-  channel_->GetGpuChannel().DestroyCommandBuffer(route_id_);
+  if (is_channel_shutting_down_.load(std::memory_order_relaxed)) {
+    channel_->GetGpuChannel().DestroyCommandBuffer(route_id_,
+                                                   base::DoNothing());
+  } else {
+    mojo::SyncCallRestrictions::ScopedAllowSyncCall allow_sync;
+    channel_->GetGpuChannel().DestroyCommandBuffer(route_id_);
+  }
 
   // Copy the client pointer under the lock and invoke the callback outside the
   // lock to avoid deadlocks.

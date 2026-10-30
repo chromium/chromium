@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <atomic>
 #include <map>
 #include <memory>
 #include <string>
@@ -102,6 +103,12 @@ class GPU_IPC_CLIENT_EXPORT CommandBufferProxyImpl
   void OnDisconnect() LOCKS_EXCLUDED(shared_state_lock_);
 
   void ShutdownClientMessageFilter();
+
+  // Skips waiting for the synchronous DestroyCommandBuffer reply when the
+  // browser is shutting down and about to close the GPU channel.
+  void SetChannelShuttingDown() {
+    is_channel_shutting_down_.store(true, std::memory_order_relaxed);
+  }
 
   // CommandBuffer implementation:
   State GetLastState() LOCKS_EXCLUDED(shared_state_lock_) override;
@@ -281,6 +288,7 @@ class GPU_IPC_CLIENT_EXPORT CommandBufferProxyImpl
 
   scoped_refptr<GpuChannelHost> channel_;
   bool disconnected_ = false;
+  std::atomic<bool> is_channel_shutting_down_{false};
   const int channel_id_;
   const int32_t route_id_;
   const int32_t stream_id_;
