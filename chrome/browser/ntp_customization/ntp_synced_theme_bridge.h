@@ -41,6 +41,10 @@ class NtpSyncedThemeBridge {
   base::android::ScopedJavaLocalRef<jobject> GetCustomBackgroundInfo(
       JNIEnv* env);
 
+  // Delivers the theme stored in preferences to this bridge as if it had just
+  // arrived from sync.
+  void GetStoredContinuousThemeAndNotify(JNIEnv* env);
+
   // Sets the Chrome color ID on NtpAndroidCustomBackgroundService.
   void SetChromeColor(JNIEnv* env, int color_id);
 

@@ -118,6 +118,8 @@ public class NtpSyncedThemeManager implements NtpSyncedThemeBridge.Observer {
         // The singleton outlives a test, so detach it between tests. Otherwise the next test's
         // activity would skip the attach above and keep the previous test's bridge.
         ResettersForTesting.register(this::destroy);
+        // A theme synced before the bridge attached is only stored in native preferences.
+        mNtpSyncedThemeBridge.getStoredContinuousThemeAndNotify();
     }
 
     /**
@@ -203,6 +205,22 @@ public class NtpSyncedThemeManager implements NtpSyncedThemeBridge.Observer {
         if (info.isDailyRefreshEnabled) {
             // TODO(crbug.com/488439751): Synced theme collection daily refresh isn't supported
             // yet, so there is nothing to download.
+            return;
+        }
+
+        // Only used for the comparison below, so the image fields stay null. A non-null
+        // fileIdHash would have the constructor create the image directory on disk.
+        NtpBackgroundDataThemeCollection candidate =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID,
+                        info,
+                        /* backgroundImageInfo= */ null,
+                        /* bitmap= */ null,
+                        primaryColor,
+                        /* fileIdHash= */ null);
+        if (NtpCustomizationUtils.isSyncedBackgroundPersisted(candidate)) {
+            // E.g. the stored theme delivered when the bridge attaches at startup, or another
+            // device selecting the theme this device already uses.
             return;
         }
 

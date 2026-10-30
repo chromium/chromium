@@ -75,9 +75,6 @@ public class NtpSyncedThemeBridge {
      * @param observer The observer to receive synced theme changes.
      */
     public NtpSyncedThemeBridge(Profile profile, Observer observer) {
-        // Set the observer before calling native init(), since init attaches this bridge to
-        // NtpAndroidCustomBackgroundService, which may immediately notify this bridge of an
-        // already-existing synced background.
         mObserver = observer;
         mNativeNtpSyncedThemeBridge = NtpSyncedThemeBridgeJni.get().init(profile, this);
     }
@@ -95,6 +92,19 @@ public class NtpSyncedThemeBridge {
         if (mNativeNtpSyncedThemeBridge == null) return;
 
         NtpSyncedThemeBridgeJni.get().fetchNextThemeCollectionImage(mNativeNtpSyncedThemeBridge);
+    }
+
+    /**
+     * Delivers the theme stored in native preferences to the observer as if it had just arrived
+     * from sync. Sync doesn't re-emit a theme that is already stored, e.g. one delivered in a
+     * previous session or before this bridge was attached, so the observer requests it once after
+     * attaching. The observer drops a theme that this device already shows.
+     */
+    public void getStoredContinuousThemeAndNotify() {
+        if (mNativeNtpSyncedThemeBridge == null) return;
+
+        NtpSyncedThemeBridgeJni.get()
+                .getStoredContinuousThemeAndNotify(mNativeNtpSyncedThemeBridge);
     }
 
     /**
@@ -248,6 +258,8 @@ public class NtpSyncedThemeBridge {
 
         @Nullable SyncedBackgroundInfo getCustomBackgroundInfo(
                 JniPtr<NativeNtpSyncedThemeBridge> self);
+
+        void getStoredContinuousThemeAndNotify(JniPtr<NativeNtpSyncedThemeBridge> self);
 
         void setChromeColor(JniPtr<NativeNtpSyncedThemeBridge> self, int colorId);
 

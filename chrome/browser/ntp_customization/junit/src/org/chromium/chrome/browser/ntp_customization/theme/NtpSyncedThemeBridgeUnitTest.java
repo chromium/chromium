@@ -113,6 +113,22 @@ public class NtpSyncedThemeBridgeUnitTest {
     }
 
     @Test
+    public void testGetStoredContinuousThemeAndNotify() {
+        mNtpSyncedThemeBridge.getStoredContinuousThemeAndNotify();
+
+        verify(mNatives).getStoredContinuousThemeAndNotify(mNativeNtpSyncedThemeBridge);
+    }
+
+    @Test
+    public void testGetStoredContinuousThemeAndNotify_afterDestroy_isNoOp() {
+        mNtpSyncedThemeBridge.destroy();
+
+        mNtpSyncedThemeBridge.getStoredContinuousThemeAndNotify();
+
+        verify(mNatives, never()).getStoredContinuousThemeAndNotify(any());
+    }
+
+    @Test
     public void testObserverCallbacks() {
         NtpSyncedThemeBridge.Observer observer = mock(NtpSyncedThemeBridge.Observer.class);
         NtpSyncedThemeBridge bridge = new NtpSyncedThemeBridge(mProfile, observer);

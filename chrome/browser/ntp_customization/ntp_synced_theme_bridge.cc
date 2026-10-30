@@ -81,6 +81,14 @@ ScopedJavaLocalRef<jobject> NtpSyncedThemeBridge::GetCustomBackgroundInfo(
           background->custom_background_main_color.value_or(0)));
 }
 
+void NtpSyncedThemeBridge::GetStoredContinuousThemeAndNotify(JNIEnv* env) {
+  if (!ntp_custom_background_service_) {
+    return;
+  }
+
+  ntp_custom_background_service_->GetStoredContinuousThemeAndNotify();
+}
+
 void NtpSyncedThemeBridge::SetChromeColor(JNIEnv* env, int color_id) {
   if (!ntp_custom_background_service_) {
     return;

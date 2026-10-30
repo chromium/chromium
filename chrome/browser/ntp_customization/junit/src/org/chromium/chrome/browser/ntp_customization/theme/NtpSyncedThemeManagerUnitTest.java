@@ -217,6 +217,7 @@ public class NtpSyncedThemeManagerUnitTest {
         mNtpSyncedThemeManager.onFinishNativeInitialization(mProfile);
 
         verify(mNatives).init(eq(mProfile), any());
+        verify(mNatives).getStoredContinuousThemeAndNotify(mNativeNtpSyncedThemeBridge);
         verify(mNativeNtpSyncedThemeBridge, never()).destroy();
         verify(mImageFetcher, never()).destroy();
     }
@@ -230,6 +231,7 @@ public class NtpSyncedThemeManagerUnitTest {
         verify(mNativeNtpSyncedThemeBridge).destroy();
         verify(mImageFetcher).destroy();
         verify(mNatives).init(eq(mOtherProfile), any());
+        verify(mNatives, times(2)).getStoredContinuousThemeAndNotify(mNativeNtpSyncedThemeBridge);
 
         // Theme commits reach the new profile's bridge.
         NtpCustomizationConfigManager.getInstance()
@@ -594,6 +596,36 @@ public class NtpSyncedThemeManagerUnitTest {
     }
 
     @Test
+    public void testOnThemeCollectionImageAvailable_alreadyActive_notDownloaded() {
+        // The same theme collection image with the same color is persisted on this device.
+        NtpSyncedThemeBridge bridge = persistThemeCollectionAndGetBridge();
+
+        // E.g. the stored synced theme delivered when the bridge attaches at startup.
+        bridge.onThemeCollectionUpdated(/* isImageFromSync= */ true);
+
+        verify(mImageFetcher, never()).fetchImage(any(), any());
+        assertFalse(mNtpSyncedThemeManager.isContinuousSyncedImageDownloading());
+        verify(mConfigManagerSpy, never()).onSyncedThemeCollectionImageChanged(any(), any());
+    }
+
+    @Test
+    public void testSyncDownload_supersededBySyncOfActiveTheme() {
+        // A second synced theme arrives which this device already shows. The first download is
+        // superseded even though nothing new is downloaded.
+        verifySyncDownloadSuperseded(
+                bridge -> {
+                    CustomBackgroundInfo persistedInfo =
+                            stubNativeBackground(
+                                    JUnitTestGURLs.URL_2, /* isDailyRefreshEnabled= */ false);
+                    NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(THEME_COLLECTION);
+                    NtpCustomizationUtils.setCustomBackgroundInfoToSharedPreference(persistedInfo);
+                    bridge.onThemeCollectionUpdated(/* isImageFromSync= */ true);
+                });
+
+        verify(mImageFetcher).fetchImage(any(), any());
+    }
+
+    @Test
     public void testOnThemeCollectionImageAvailable_nullInfo_isNoOp() {
         NtpSyncedThemeBridge bridge = initSyncedThemeManagerAndGetBridge();
         when(mNatives.getCustomBackgroundInfo(any())).thenReturn(null);
@@ -792,5 +824,26 @@ public class NtpSyncedThemeManagerUnitTest {
     private static void completeDownload(Callback<Bitmap> callback) {
         callback.onResult(Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888));
         RobolectricUtil.runAllBackgroundAndUi();
+    }
+
+    /**
+     * Persists a static theme collection and makes native report the same image and color as the
+     * synced theme.
+     */
+    private NtpSyncedThemeBridge persistThemeCollectionAndGetBridge() {
+        int primaryColor = 0xFF112233;
+        CustomBackgroundInfo syncedInfo =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_1,
+                        TEST_COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        NtpCustomizationUtils.setNtpBackgroundTypeToSharedPreference(THEME_COLLECTION);
+        NtpCustomizationUtils.setCustomBackgroundInfoToSharedPreference(syncedInfo);
+        NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(primaryColor);
+        NtpSyncedThemeBridge bridge = initSyncedThemeManagerAndGetBridge();
+        when(mNatives.getCustomBackgroundInfo(any()))
+                .thenReturn(new SyncedBackgroundInfo(syncedInfo, primaryColor));
+        return bridge;
     }
 }

@@ -54,6 +54,12 @@ class NtpAndroidCustomBackgroundService
   void SetThemeCollectionBridge(NtpThemeCollectionBridge* bridge);
   void SetSyncedThemeBridge(NtpSyncedThemeBridge* bridge);
 
+  // Delivers the theme stored in preferences to the synced theme bridge as if
+  // it had just arrived from sync. Sync doesn't re-emit a theme that is
+  // already stored, e.g. one delivered in a previous session or before the
+  // bridge was attached, so the bridge calls this when it attaches.
+  void GetStoredContinuousThemeAndNotify();
+
   // Returns the DataTypeControllerDelegate for the THEMES_ANDROID sync data
   // type, or nullptr if sync is disabled.
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetSyncControllerDelegate();
@@ -137,12 +143,6 @@ class NtpAndroidCustomBackgroundService
   // has been reset to default from sync.
   void ApplyDefaultThemeFromSync();
 
-  // Re-delivers the theme collection currently stored in preferences to the
-  // synced theme bridge, as if it had just arrived from sync. Posted from
-  // SetSyncedThemeBridge() so that a theme that was synced before the bridge
-  // attached (e.g. in a previous session) still reaches Java.
-  void ReApplySyncedTheme();
-
   raw_ptr<NtpThemeCollectionBridge> theme_collection_bridge_ = nullptr;
   raw_ptr<NtpSyncedThemeBridge> synced_theme_bridge_ = nullptr;
 
@@ -157,11 +157,10 @@ class NtpAndroidCustomBackgroundService
       theme_sync_bridge_;
 
   // True only while ApplyThemeCollectionFromSync() writes the custom
-  // background dictionary and while ReApplySyncedTheme() runs, so that the
-  // resulting NotifyAboutBackgrounds() is routed to the synced theme bridge as
-  // a sync update. The Java callback runs synchronously within that write, so
-  // it must not re-enter this service with a local write, which would be
-  // misrouted as a sync update too.
+  // background dictionary, so that the resulting NotifyAboutBackgrounds() is
+  // routed to the synced theme bridge as a sync update. The Java callback runs
+  // synchronously within that write, so it must not re-enter this service with
+  // a local write, which would be misrouted as a sync update too.
   bool applying_sync_update_ = false;
 
   // True while updating the primary color in the background preference
