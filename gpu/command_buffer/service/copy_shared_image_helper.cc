@@ -168,7 +168,7 @@ bool CopyPixelsToTexture(
 
   gfx::Size source_size = source_shared_image->size();
   gfx::Rect source_rect(x, y, width, height);
-  if (!gfx::Rect(source_size).Contains(source_rect)) {
+  if (source_rect.IsEmpty() || !gfx::Rect(source_size).Contains(source_rect)) {
     return false;
   }
 
@@ -280,7 +280,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
 
   gfx::Size dest_size = dest_shared_image->size();
   gfx::Rect dest_rect(xoffset, yoffset, dst_width, dst_height);
-  if (!gfx::Rect(dest_size).Contains(dest_rect)) {
+  if (dest_rect.IsEmpty() || !gfx::Rect(dest_size).Contains(dest_rect)) {
     return base::unexpected(GLError(GL_INVALID_VALUE, "CopySharedImage",
                                     "destination texture bad dimensions."));
   }
@@ -401,7 +401,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
 
   gfx::Size source_size = source_shared_image->size();
   gfx::Rect source_rect(x, y, src_width, src_height);
-  if (!gfx::Rect(source_size).Contains(source_rect)) {
+  if (source_rect.IsEmpty() || !gfx::Rect(source_size).Contains(source_rect)) {
     return base::unexpected(GLError(GL_INVALID_VALUE, "CopySharedImage",
                                     "source texture bad dimensions."));
   }
@@ -576,7 +576,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImageToGLTexture(
 
   gfx::Size source_size = source_shared_image->size();
   gfx::Rect source_rect(src_x, src_y, width, height);
-  if (!gfx::Rect(source_size).Contains(source_rect)) {
+  if (source_rect.IsEmpty() || !gfx::Rect(source_size).Contains(source_rect)) {
     return base::unexpected<GLError>(GLError(GL_INVALID_VALUE,
                                              "CopySharedImageToGLTexture",
                                              "source texture bad dimensions."));
@@ -648,7 +648,7 @@ bool GraphiteImageReadPixels(GraphiteSharedContext* graphite_shared_context,
                              size_t row_bytes) {
   gfx::Rect src_rect(src_x, src_y, dst_info.width(), dst_info.height());
   gfx::Rect src_image_bounds(sk_image->width(), sk_image->height());
-  CHECK(src_image_bounds.Contains(src_rect));
+  CHECK(!src_rect.IsEmpty() && src_image_bounds.Contains(src_rect));
 
   CHECK(graphite_shared_context);
   ReadPixelsContext context;
@@ -735,7 +735,7 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
 
   gfx::Rect src_rect(src_x, src_y, dst_info.width(), dst_info.height());
   gfx::Rect src_image_bounds(sk_image->width(), sk_image->height());
-  if (!src_image_bounds.Contains(src_rect)) {
+  if (src_rect.IsEmpty() || !src_image_bounds.Contains(src_rect)) {
     source_scoped_access->ApplyBackendSurfaceEndState();
     shared_context_state_->SubmitIfNecessary(
         std::move(end_semaphores),
