@@ -95,9 +95,6 @@ enum class LayoutConstant {
 
   // The extra space before the LHS icon when the omnibox input is indented to
   // line up with the popup's suggestions.
-  // TODO(manukh): `LocationBarView::Layout()` still adds the
-  // `AdjustOmniboxIndent` offsets to this and `kLocationBarInputTextIndent`.
-  // Fold the offsets in here once that experiment settles on a permutation.
   kLocationBarInputIconIndent,
 
   // The extra space between the LHS icon and the text when the omnibox input is

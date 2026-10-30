@@ -107,7 +107,6 @@
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/input_state.h"
-#include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
@@ -797,28 +796,16 @@ void LocationBarView::Layout(PassKey) {
   //  - The popup is open, and it isn't the full WebUI popup.
   //  - The location icon view does *not* display a label.
   //  - The selected keyword view is *not* visible.
-  const bool should_indent = (ShouldUsePopupOpenAppearance() ||
-                              omnibox_feature_configs::AdjustOmniboxIndent()
-                                  .Get()
-                                  .indent_input_when_popup_closed) &&
+  const bool should_indent = ShouldUsePopupOpenAppearance() &&
                              !location_icon_view_->ShouldShowLabel() &&
                              !ShouldShowKeywordBubble();
   if (should_indent) {
     icon_left += GetLayoutConstant(LayoutConstant::kLocationBarInputIconIndent);
-    icon_left += omnibox_feature_configs::AdjustOmniboxIndent()
-                     .Get()
-                     .input_icon_indent_offset;
     text_left += GetLayoutConstant(LayoutConstant::kLocationBarInputTextIndent);
-    text_left += omnibox_feature_configs::AdjustOmniboxIndent()
-                     .Get()
-                     .input_text_indent_offset;
   } else if (ShouldShowKeywordBubble()) {
     // Otherwise, if in keyword mode, adjust indentation to align the icon and
     // the text with the suggestion icons & texts.
-    icon_left += 9; /*icon_indent_keyword_mode*/
-    icon_left += omnibox_feature_configs::AdjustOmniboxIndent()
-                     .Get()
-                     .input_icon_indent_offset;
+    icon_left += 9;  /*icon_indent_keyword_mode*/
     text_left += -9; /*text_indent_keyword_mode*/
   }
 

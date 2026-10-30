@@ -592,13 +592,7 @@ int OmniboxMatchCellView::GetImageIndent() const {
   // b) Entities, answers, and icons continue to be center-aligned.
   // c) Regardless of the state of those other features and their widths.
   // This applies to both touch-UI and non-touch-UI.
-  int indent = 16 + kUniformRowHeightIconSize / 2 - kImageBoundsWidth / 2;
-
-  indent += omnibox_feature_configs::AdjustOmniboxIndent()
-                .Get()
-                .match_icon_indent_offset;
-
-  return indent;
+  return 16 + kUniformRowHeightIconSize / 2 - kImageBoundsWidth / 2;
 }
 
 int OmniboxMatchCellView::GetTextIndent() const {
@@ -632,10 +626,6 @@ int OmniboxMatchCellView::GetTextIndent() const {
   // For normal matches, the gap between the left edge of this view and the
   // left edge of its favicon or answer image.
   int indent = 52;
-
-  indent += omnibox_feature_configs::AdjustOmniboxIndent()
-                .Get()
-                .match_text_indent_offset;
 
   if (layout_style_ == LayoutStyle::IPH_SUGGESTION) {
     // The IPH row left inset is +`kIphOffset` from other suggestions, so the

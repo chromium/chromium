@@ -3611,12 +3611,6 @@ inline constexpr char kAIMSuppressVerbatimMatchDescription[] =
     "When enabled, AI mode will remove verbatim suggestions from the "
     "suggestions list.";
 
-inline constexpr char kOmniboxAdjustIndentationName[] =
-    "Adjust Indentation for Omnibox Text and Suggestions";
-inline constexpr char kOmniboxAdjustIndentationDescription[] =
-    "Adjusts the indentation of the omnibox and the suggestions to eliminate "
-    "the visual shift when the popup opens.";
-
 inline constexpr char kOmniboxAllowAiModeMatchesName[] =
     "Omnibox Allow AI Mode Matches";
 inline constexpr char kOmniboxAllowAiModeMatchesDescription[] =
