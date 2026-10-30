@@ -209,6 +209,7 @@ source_set("unit_tests") {
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/tabs:test_support",
     "//ui/events:test_support",
+    "//ui/gfx:test_support",
   ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

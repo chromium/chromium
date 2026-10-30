@@ -16,6 +16,7 @@
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -215,6 +216,11 @@ class IconLabelBubbleView : public views::InkDropObserver,
 
   // Gets the color for displaying text and/or icons.
   virtual SkColor GetForegroundColor() const;
+
+  // Gets the text and icon color for the disabled visual state, which Mac
+  // also uses for inactive windows. Returns `std::nullopt` to keep the
+  // defaults.
+  virtual std::optional<ui::ColorVariant> GetDisabledForegroundColor() const;
 
   // Sets the label text and background colors.
   void UpdateLabelColors();

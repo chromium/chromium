@@ -906,6 +906,7 @@ void AppBrowserController::AddColorMixers(
       {ui::kColorSysStateDisabled}, {kColorToolbar})};
 #endif
   mixer[kColorToolbarButtonIconInactive] = {kColorToolbarButtonIconDisabled};
+  mixer[kColorOmniboxActionIconInactive] = {kColorToolbarButtonIconInactive};
 
   // App menu highlight colors in PWA window should be derived from the (active)
   // frame color, as that is what it is drawn on top of.

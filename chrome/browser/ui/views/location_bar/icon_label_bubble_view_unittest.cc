@@ -19,6 +19,7 @@
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/compositor/layer_textured.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
@@ -67,6 +68,7 @@ class TestIconLabelBubbleView : public IconLabelBubbleView {
   using IconLabelBubbleView::SetUpForInOutAnimation;
   using IconLabelBubbleView::UpdateAnimationProgress;
   using IconLabelBubbleView::UpdateBackground;
+  using IconLabelBubbleView::UpdateLabelColors;
 
   enum State {
     GROWING,
@@ -127,6 +129,10 @@ class TestIconLabelBubbleView : public IconLabelBubbleView {
     animation_step_closure_ = std::move(cb);
   }
 
+  void set_disabled_foreground_color(std::optional<ui::ColorVariant> color) {
+    disabled_foreground_color_ = std::move(color);
+  }
+
   void AnimationEnded(const gfx::Animation* animation) override {
     IconLabelBubbleView::AnimationEnded(animation);
     if (animation_ended_closure_) {
@@ -149,11 +155,16 @@ class TestIconLabelBubbleView : public IconLabelBubbleView {
     return true;
   }
 
+  std::optional<ui::ColorVariant> GetDisabledForegroundColor() const override {
+    return disabled_foreground_color_;
+  }
+
  private:
   std::unique_ptr<gfx::ScopedAnimationDurationScaleMode> zero_duration_mode_ =
       std::make_unique<gfx::ScopedAnimationDurationScaleMode>(
           gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   bool is_bubble_showing_ = false;
+  std::optional<ui::ColorVariant> disabled_foreground_color_;
   base::RepeatingClosure animation_ended_closure_;
   base::RepeatingClosure animation_step_closure_;
 };
@@ -650,6 +661,19 @@ TEST_F(IconLabelBubbleViewTest, LabelPaintsBackgroundAlways) {
   view()->AnimateIn(IDS_AUTOFILL_CARD_SAVED);
   EXPECT_TRUE(view()->IsLabelVisible());
   EXPECT_EQ(nullptr, view()->GetBackground());
+}
+
+TEST_F(IconLabelBubbleViewTest, DisabledTextColorResetsToDefault) {
+  view()->set_disabled_foreground_color(SK_ColorRED);
+  view()->UpdateLabelColors();
+  view()->SetEnabled(false);
+  EXPECT_EQ(view()->GetCurrentTextColor(), SK_ColorRED);
+
+  view()->set_disabled_foreground_color(std::nullopt);
+  view()->UpdateLabelColors();
+  EXPECT_EQ(
+      view()->GetCurrentTextColor(),
+      view()->GetColorProvider()->GetColor(ui::kColorLabelForegroundDisabled));
 }
 
 TEST_F(IconLabelBubbleViewTest, CollapsedSizing) {

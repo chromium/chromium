@@ -25,6 +25,7 @@
 #include "ui/actions/actions.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_variant.h"
 #include "ui/events/event.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/view.h"
@@ -162,6 +163,7 @@ class PageActionView : public IconLabelBubbleView,
   // IconLabelBubbleView:
   SkColor GetBackgroundColor() const override;
   SkColor GetForegroundColor() const override;
+  std::optional<ui::ColorVariant> GetDisabledForegroundColor() const override;
   bool PaintedOnSolidBackground() const override;
 
  private:

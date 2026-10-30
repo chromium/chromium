@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -22,6 +23,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
@@ -377,8 +379,15 @@ void IconLabelBubbleView::SetCustomBackgroundColorId(
   background_color_id_ = color_id;
 }
 
+std::optional<ui::ColorVariant>
+IconLabelBubbleView::GetDisabledForegroundColor() const {
+  return std::nullopt;
+}
+
 void IconLabelBubbleView::UpdateLabelColors() {
   SetEnabledTextColors(GetForegroundColor());
+  SetTextColor(STATE_DISABLED, GetDisabledForegroundColor().value_or(
+                                   ui::kColorLabelForegroundDisabled));
   label()->SetBackgroundColor(GetBackgroundColor());
 }
 

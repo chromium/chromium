@@ -475,6 +475,7 @@
   /* Omnibox colors. */ \
   E_CPONLY(kColorOmniboxActionIcon) \
   E_CPONLY(kColorOmniboxActionIconHover) \
+  E_CPONLY(kColorOmniboxActionIconInactive) \
   E_CPONLY(kColorOmniboxAnswerIconGM3Background) \
   E_CPONLY(kColorOmniboxAnswerIconGM3Foreground) \
   E_CPONLY(kColorOmniboxBubbleOutline) \
@@ -506,6 +507,7 @@
   E_CPONLY(kColorOmniboxIconBackgroundTonal) \
   E_CPONLY(kColorOmniboxIconForeground) \
   E_CPONLY(kColorOmniboxIconForegroundTonal) \
+  E_CPONLY(kColorOmniboxIconForegroundTonalInactive) \
   E_CPONLY(kColorOmniboxIconHover) \
   E_CPONLY(kColorOmniboxIconPressed) \
   E_CPONLY(kColorOmniboxIntentChipBackground) \

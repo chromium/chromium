@@ -47,6 +47,7 @@
 #include "ui/events/test/test_event.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/animation/ink_drop.h"
@@ -500,6 +501,63 @@ TEST_F(PageActionViewTest, ChipStateUpdatesForegroundColor) {
       page_action_view()->GetColorProvider()->GetColor(
           kColorOmniboxIconForegroundTonal);
   EXPECT_EQ(page_action_view()->GetCurrentTextColor(), expected_color);
+}
+
+// `SetEnabled(false)` paints the same visual state as an inactive Mac window.
+TEST_F(PageActionViewTest, ChipProvidesInactiveColors) {
+  const auto icon_image = ui::ImageModel::FromVectorIcon(
+      vector_icons::kBackArrowOldIcon, ui::kColorSysPrimary, view_icon_size());
+  EXPECT_CALL(*model(), GetImage()).WillRepeatedly(ReturnRef(icon_image));
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), GetText()).WillRepeatedly(ReturnRef(kTestText));
+  page_action_view()->OnPageActionModelChanged(*model());
+  ASSERT_TRUE(page_action_view()->IsChipVisible());
+
+  EXPECT_EQ(page_action_view()->GetImageModel(views::Button::STATE_DISABLED),
+            ui::ImageModel::FromVectorIcon(
+                vector_icons::kBackArrowOldIcon,
+                kColorOmniboxIconForegroundTonalInactive, view_icon_size()));
+  page_action_view()->SetEnabled(false);
+  EXPECT_EQ(page_action_view()->GetCurrentTextColor(),
+            page_action_view()->GetColorProvider()->GetColor(
+                kColorOmniboxIconForegroundTonalInactive));
+}
+
+// `SetEnabled(false)` paints the same visual state as an inactive Mac window.
+TEST_F(PageActionViewTest, IconProvidesInactiveColors) {
+  const auto icon_image = ui::ImageModel::FromVectorIcon(
+      vector_icons::kBackArrowOldIcon, ui::kColorSysPrimary, view_icon_size());
+  EXPECT_CALL(*model(), GetImage()).WillRepeatedly(ReturnRef(icon_image));
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  EXPECT_CALL(*model(), ShouldShowSuggestionChip())
+      .WillRepeatedly(Return(false));
+  page_action_view()->OnPageActionModelChanged(*model());
+  ASSERT_FALSE(page_action_view()->IsChipVisible());
+
+  EXPECT_EQ(page_action_view()->GetImageModel(views::Button::STATE_DISABLED),
+            ui::ImageModel::FromVectorIcon(vector_icons::kBackArrowOldIcon,
+                                           kColorOmniboxActionIconInactive,
+                                           view_icon_size()));
+  page_action_view()->SetEnabled(false);
+  EXPECT_EQ(page_action_view()->GetCurrentTextColor(),
+            page_action_view()->GetColorProvider()->GetColor(
+                kColorOmniboxActionIconInactive));
+}
+
+TEST_F(PageActionViewTest, NonVectorIconProvidesDisabledImage) {
+  const auto icon_image =
+      ui::ImageModel::FromImageSkia(gfx::test::CreateImageSkia(16));
+  EXPECT_CALL(*model(), GetImage()).WillRepeatedly(ReturnRef(icon_image));
+  EXPECT_CALL(*model(), GetVisible()).WillRepeatedly(Return(true));
+  page_action_view()->OnPageActionModelChanged(*model());
+
+  const std::optional<ui::ImageModel> disabled_image =
+      page_action_view()->GetImageModel(views::Button::STATE_DISABLED);
+  ASSERT_TRUE(disabled_image.has_value() && disabled_image->IsImage());
+  EXPECT_LT(SkColorGetA(disabled_image->GetImage().AsBitmap().getColor(0, 0)),
+            SK_AlphaOPAQUE);
 }
 
 TEST_F(PageActionViewTest, SuggestionText) {

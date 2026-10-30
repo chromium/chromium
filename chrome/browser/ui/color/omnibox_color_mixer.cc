@@ -66,10 +66,14 @@ void ApplyCR2023OmniboxIconColors(ui::ColorMixer& mixer,
                                   const ui::ColorProviderKey& key) {
   mixer[kColorOmniboxActionIcon] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorOmniboxActionIconHover] = {ui::kColorSysStateHoverOnSubtle};
+  mixer[kColorOmniboxActionIconInactive] = ui::GetResultingPaintColor(
+      {ui::kColorSysStateDisabled}, {kColorLocationBarBackground});
   mixer[kColorOmniboxIconBackground] = {ui::kColorSysBaseContainerElevated};
   mixer[kColorOmniboxIconBackgroundTonal] = {ui::kColorSysTonalContainer};
   mixer[kColorOmniboxIconForeground] = {ui::kColorSysOnSurface};
   mixer[kColorOmniboxIconForegroundTonal] = {ui::kColorSysOnTonalContainer};
+  mixer[kColorOmniboxIconForegroundTonalInactive] = ui::GetResultingPaintColor(
+      {ui::kColorSysStateDisabled}, {kColorOmniboxIconBackgroundTonal});
   mixer[kColorOmniboxIconHover] = {ui::kColorSysStateHoverDimBlendProtection};
   mixer[kColorOmniboxIconPressed] = {ui::kColorSysStateRippleNeutralOnSubtle};
 
@@ -484,6 +488,9 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
   mixer[kColorOmniboxIconForeground] = {
       ui::GetColorWithMaxContrast(kColorToolbar)};
   mixer[kColorOmniboxIconForegroundTonal] = {kColorOmniboxIconForeground};
+  mixer[kColorOmniboxIconForegroundTonalInactive] = ui::GetResultingPaintColor(
+      ui::SetAlpha(kColorOmniboxIconForegroundTonal, gfx::kGoogleGreyAlpha500),
+      kColorOmniboxIconBackgroundTonal);
 
   // PageInfo text colors.
   mixer[kColorPageInfoForeground] = {ui::kColorSysOnSurface};
@@ -495,6 +502,9 @@ void AddOmniboxColorMixer(ui::ColorProvider* provider,
   // in-code as they have different opacity requirements.
   mixer[kColorOmniboxActionIconHover] = {kColorOmniboxIconHover};
   mixer[kColorOmniboxActionIcon] = {kColorOmniboxResultsIcon};
+  mixer[kColorOmniboxActionIconInactive] = ui::GetResultingPaintColor(
+      ui::SetAlpha(kColorOmniboxActionIcon, gfx::kGoogleGreyAlpha500),
+      kColorLocationBarBackground);
   mixer[kColorOmniboxIconHover] = {
       ui::SetAlpha(kColorOmniboxText, std::ceil(0.10f * 255.0f))};
   mixer[kColorOmniboxIconPressed] = {

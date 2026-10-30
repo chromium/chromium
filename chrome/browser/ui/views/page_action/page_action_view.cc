@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 
 #include "base/callback_list.h"
@@ -31,6 +32,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/models/image_model_utils.h"
+#include "ui/color/color_variant.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -414,6 +417,8 @@ void PageActionView::UpdateIconImage() {
     std::optional<page_actions::PageActionAnimationParams> params =
         observation_.GetSource()->GetImageAnimationParameters();
     CHECK(params.has_value());
+    // Lottie animations (e.g. bookmark star) only play briefly on active user
+    // action, so inactive-window dimming is not needed here.
     AnimateImage(params.value(), icon_color);
   }
 
@@ -422,12 +427,22 @@ void PageActionView::UpdateIconImage() {
 
   // If image does not have a vector icon, set it directly.
   if (icon_image.IsVectorIcon()) {
-    SetImageModel(ui::ImageModel::FromVectorIcon(
-        *icon_image.GetVectorIcon().vector_icon(), icon_color,
-        drawing_icon_size));
+    const gfx::VectorIcon& vector_icon =
+        *icon_image.GetVectorIcon().vector_icon();
+    SetImageModel(ui::ImageModel::FromVectorIcon(vector_icon, icon_color,
+                                                 drawing_icon_size));
+    std::optional<ui::ImageModel> disabled_image;
+    if (const std::optional<ui::ColorVariant> disabled_color =
+            GetDisabledForegroundColor()) {
+      disabled_image = ui::ImageModel::FromVectorIcon(
+          vector_icon, *disabled_color, drawing_icon_size);
+    }
+    SetImageModel(STATE_DISABLED, disabled_image);
     image_container_view()->SetFlipCanvasOnPaintForRTLUI(true);
   } else {
     SetImageModel(icon_image);
+    SetImageModel(STATE_DISABLED,
+                  ui::GetDefaultDisabledIconFromImageModel(icon_image));
     // Non-vector icons (such as site favicons or PWA/app icons) should not be
     // mirrored in RTL layouts.
     image_container_view()->SetFlipCanvasOnPaintForRTLUI(false);
@@ -438,6 +453,8 @@ void PageActionView::UpdateIconImage() {
   }
 
   // Add trailing icon if it is set.
+  // Only AI Mode sets a trailing icon, and it hides when the omnibox loses
+  // focus, so `SetCrossfadeImage()` does not need a disabled-state variant.
   std::optional<ui::ImageModel> trailing_image_opt =
       observation_.GetSource()->GetTrailingImage();
   if (trailing_image_opt.has_value()) {
@@ -756,6 +773,14 @@ SkColor PageActionView::GetForegroundColor() const {
         *observation_.GetSource()->GetOverrideForegroundColorId());
   }
   return IconLabelBubbleView::GetForegroundColor();
+}
+
+std::optional<ui::ColorVariant> PageActionView::GetDisabledForegroundColor()
+    const {
+  // Color overrides are only used by AI Mode, which hides when the window
+  // loses focus and is never painted in the inactive state.
+  return PaintedOnSolidBackground() ? kColorOmniboxIconForegroundTonalInactive
+                                    : kColorOmniboxActionIconInactive;
 }
 
 bool PageActionView::PaintedOnSolidBackground() const {
