@@ -50,9 +50,21 @@ const LayoutResult* TableSectionLayoutAlgorithm::Layout() {
   BlockChildIterator child_iterator(Node().FirstChild(), GetBreakToken(),
                                     /* calculate_child_idx */ true);
   for (auto entry = child_iterator.NextChild();
-       BlockNode row = To<BlockNode>(entry.block_node);
+       BlockNode child = To<BlockNode>(entry.block_node);
        entry = child_iterator.NextChild()) {
-    const auto* row_break_token = To<BlockBreakToken>(entry.token);
+    const auto* child_break_token = To<BlockBreakToken>(entry.token);
+    if (child.IsOutOfFlowPositioned()) {
+      DCHECK(child_break_token);
+      // Resumed OOFs are found by the iterator directly under the table
+      // section, but they are obviously not rows. All we have to do here is
+      // making sure that it gets handled by OOF layout after regular in-flow
+      // layout, and carry on with our in-flow business.
+      container_builder_.AddOutOfFlowChildCandidate(
+          child, LogicalStaticPosition(), child_break_token);
+      continue;
+    }
+    DCHECK(child.IsTableRow());
+    BlockNode row = child;
     wtf_size_t row_index = start_row_index + *entry.index;
     DCHECK_LT(row_index, start_row_index + section.row_count);
     bool is_row_collapsed = table_data.rows[row_index].is_collapsed;
@@ -85,7 +97,7 @@ const LayoutResult* TableSectionLayoutAlgorithm::Layout() {
 
     ConstraintSpace row_space = row_space_builder.ToConstraintSpace();
     FragmentationLayoutInput fragmentation =
-        GetFragmentationLayoutInputForChild(row, row_break_token);
+        GetFragmentationLayoutInputForChild(row, child_break_token);
     const LayoutResult* row_result = row.Layout(row_space, fragmentation);
 
     if (constraint_space.HasBlockFragmentation()) {
@@ -123,7 +135,7 @@ const LayoutResult* TableSectionLayoutAlgorithm::Layout() {
     is_first_non_collapsed_row &= is_row_collapsed;
 
     if (table_data.has_collapsed_borders &&
-        (!row_break_token || !row_break_token->IsAtBlockEnd())) {
+        (!child_break_token || !child_break_token->IsAtBlockEnd())) {
       // Determine the start row-index for this section.
       if (row_offsets.size() == 1u)
         actual_start_row_index = row_index;

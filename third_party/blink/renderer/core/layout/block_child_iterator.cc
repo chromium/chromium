@@ -114,7 +114,8 @@ BlockChildIterator::Entry BlockChildIterator::NextChild(
         To<BlockBreakToken>(child_break_tokens[child_token_idx_++].Get());
     current_child = current_child_break_token->InputNode();
 
-    if (child_idx_) {
+    // Unless it's a resumed OOF, update child tracking, if enabled.
+    if (child_idx_ && !current_child.IsOutOfFlowPositioned()) {
       while (tracked_child_ != current_child) {
         tracked_child_ = tracked_child_.NextBlockSibling();
         (*child_idx_)++;
