@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.safety_promo.bottom_sheet;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
@@ -15,12 +18,15 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.safety_promo.R;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
 /** Unit tests for {@link SafetyPromoBottomSheetCoordinator}. */
@@ -29,8 +35,8 @@ public class SafetyPromoBottomSheetCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BottomSheetController mBottomSheetController;
-    @Mock private SafetyPromoBottomSheetContent mBottomSheetContent;
     @Mock private Runnable mOnDestroyRunnable;
+    @Captor private ArgumentCaptor<BottomSheetContent> mBottomSheetContentCaptor;
 
     private SafetyPromoBottomSheetCoordinator mCoordinator;
 
@@ -41,7 +47,6 @@ public class SafetyPromoBottomSheetCoordinatorUnitTest {
         mCoordinator =
                 new SafetyPromoBottomSheetCoordinator(
                         context, mBottomSheetController, mOnDestroyRunnable);
-        mCoordinator.setBottomSheetContentForTesting(mBottomSheetContent);
     }
 
     @Test
@@ -49,14 +54,46 @@ public class SafetyPromoBottomSheetCoordinatorUnitTest {
         mCoordinator.showBottomSheet();
 
         verify(mBottomSheetController)
-                .requestShowContent(eq(mBottomSheetContent), /* animate= */ eq(true));
+                .requestShowContent(mBottomSheetContentCaptor.capture(), /* animate= */ eq(true));
     }
 
     @Test
     public void testDismissBottomSheet() {
+        BottomSheetContent content = showBottomSheetAndGetContent();
+
         mCoordinator.dismissBottomSheet(/* animate= */ false);
 
+        verify(mBottomSheetController).hideContent(eq(content), /* animate= */ eq(false));
+    }
+
+    @Test
+    public void testGotItClick_dismissesBottomSheet() {
+        BottomSheetContent content = showBottomSheetAndGetContent();
+
+        content.getContentView()
+                .findViewById(R.id.safety_promo_bottom_sheet_got_it_button)
+                .performClick();
+
+        verify(mBottomSheetController).hideContent(eq(content), /* animate= */ eq(true));
+    }
+
+    @Test
+    public void testContentDestroy_runsOnDestroyAndClearsGotItListener() {
+        BottomSheetContent content = showBottomSheetAndGetContent();
+
+        content.destroy();
+
+        verify(mOnDestroyRunnable).run();
+        content.getContentView()
+                .findViewById(R.id.safety_promo_bottom_sheet_got_it_button)
+                .performClick();
+        verify(mBottomSheetController, never()).hideContent(any(), anyBoolean());
+    }
+
+    private BottomSheetContent showBottomSheetAndGetContent() {
+        mCoordinator.showBottomSheet();
         verify(mBottomSheetController)
-                .hideContent(eq(mBottomSheetContent), /* animate= */ eq(false));
+                .requestShowContent(mBottomSheetContentCaptor.capture(), /* animate= */ eq(true));
+        return mBottomSheetContentCaptor.getValue();
     }
 }

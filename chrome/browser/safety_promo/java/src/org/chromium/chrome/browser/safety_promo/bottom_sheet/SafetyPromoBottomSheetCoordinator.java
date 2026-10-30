@@ -4,13 +4,17 @@
 
 package org.chromium.chrome.browser.safety_promo.bottom_sheet;
 
+import static org.chromium.chrome.browser.safety_promo.bottom_sheet.SafetyPromoBottomSheetProperties.ON_GOT_IT_CLICKED;
+
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.safety_promo.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
  * Coordinator for the Safety Promo "Show me how" bottom sheet. A new coordinator is created each
@@ -19,7 +23,12 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 @NullMarked
 public class SafetyPromoBottomSheetCoordinator {
     private final BottomSheetController mBottomSheetController;
-    private SafetyPromoBottomSheetContent mBottomSheetContent;
+    private final Runnable mOnDestroy;
+    private final PropertyModel mModel;
+    private final PropertyModelChangeProcessor<
+                    PropertyModel, SafetyPromoBottomSheetView, PropertyKey>
+            mModelChangeProcessor;
+    private final SafetyPromoBottomSheetContent mBottomSheetContent;
 
     /**
      * @param context The {@link Context} used for inflating the sheet.
@@ -29,11 +38,21 @@ public class SafetyPromoBottomSheetCoordinator {
     public SafetyPromoBottomSheetCoordinator(
             Context context, BottomSheetController bottomSheetController, Runnable onDestroy) {
         mBottomSheetController = bottomSheetController;
+        mOnDestroy = onDestroy;
 
-        View view =
-                LayoutInflater.from(context)
-                        .inflate(R.layout.safety_promo_show_me_how_bottom_sheet, /* root= */ null);
-        mBottomSheetContent = new SafetyPromoBottomSheetContent(view, onDestroy);
+        SafetyPromoBottomSheetView view =
+                (SafetyPromoBottomSheetView)
+                        LayoutInflater.from(context)
+                                .inflate(
+                                        R.layout.safety_promo_show_me_how_bottom_sheet,
+                                        /* root= */ null);
+        mModel = new PropertyModel(SafetyPromoBottomSheetProperties.ALL_KEYS);
+        mModelChangeProcessor =
+                PropertyModelChangeProcessor.create(
+                        mModel, view, SafetyPromoBottomSheetViewBinder::bind);
+        mModel.set(ON_GOT_IT_CLICKED, _ -> dismissBottomSheet(/* animate= */ true));
+
+        mBottomSheetContent = new SafetyPromoBottomSheetContent(view, this::destroy);
     }
 
     /** Opens the "Show me how" bottom sheet. */
@@ -46,7 +65,10 @@ public class SafetyPromoBottomSheetCoordinator {
         mBottomSheetController.hideContent(mBottomSheetContent, animate);
     }
 
-    void setBottomSheetContentForTesting(SafetyPromoBottomSheetContent bottomSheetContent) {
-        mBottomSheetContent = bottomSheetContent;
+    /** Called when the controller destroys the sheet content. */
+    private void destroy() {
+        mModel.set(ON_GOT_IT_CLICKED, null);
+        mModelChangeProcessor.destroy();
+        mOnDestroy.run();
     }
 }

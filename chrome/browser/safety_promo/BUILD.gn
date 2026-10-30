@@ -19,6 +19,9 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/safety_promo/SafetyPromoPageIndicatorView.java",
     "java/src/org/chromium/chrome/browser/safety_promo/bottom_sheet/SafetyPromoBottomSheetContent.java",
     "java/src/org/chromium/chrome/browser/safety_promo/bottom_sheet/SafetyPromoBottomSheetCoordinator.java",
+    "java/src/org/chromium/chrome/browser/safety_promo/bottom_sheet/SafetyPromoBottomSheetProperties.java",
+    "java/src/org/chromium/chrome/browser/safety_promo/bottom_sheet/SafetyPromoBottomSheetView.java",
+    "java/src/org/chromium/chrome/browser/safety_promo/bottom_sheet/SafetyPromoBottomSheetViewBinder.java",
   ]
   deps = [
     ":java_resources",
@@ -81,6 +84,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/safety_promo/SafetyPromoPageIndicatorViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/safety_promo/bottom_sheet/SafetyPromoBottomSheetContentUnitTest.java",
     "junit/src/org/chromium/chrome/browser/safety_promo/bottom_sheet/SafetyPromoBottomSheetCoordinatorUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/safety_promo/bottom_sheet/SafetyPromoBottomSheetViewBinderUnitTest.java",
   ]
 
   deps = [
