@@ -24,6 +24,7 @@ class PackageFormat(enum.Enum):
     DEB = "deb"
     RPM = "rpm"
     FLATPAK = "flatpak"
+    SNAP = "snap"
 
 
 class StandardPermissions:
@@ -855,8 +856,9 @@ class InstallerConfig:
         # Host system integration files are only applicable to DEB and RPM
         # packages. Flatpak exports applications via standard Flatpak
         # directories (share/applications, share/metainfo, share/icons) staged
-        # separately.
-        if self.package_format == PackageFormat.FLATPAK:
+        # separately. Snap desktop integration is likewise staged separately
+        # and exported by snapd.
+        if self.package_format in (PackageFormat.FLATPAK, PackageFormat.SNAP):
             return artifacts
 
         # symlink for PACKAGE_ORIG
@@ -1032,7 +1034,10 @@ class Installer:
         install_dir = self.config.staging_dir / self.config.info_vars[
             "INSTALLDIR"
         ].lstrip("/")
-        if self.config.package_format == PackageFormat.FLATPAK:
+        if self.config.package_format in (
+            PackageFormat.FLATPAK,
+            PackageFormat.SNAP,
+        ):
             dirs = [install_dir]
         else:
             dirs = [

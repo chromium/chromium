@@ -30,6 +30,9 @@ declare_args() {
 
   # Enables building Flatpak package bundles (.flatpak).
   enable_flatpak = false
+
+  # Enable building snap packages
+  enable_snap_package = false
 }
 
 assert(is_linux)
@@ -670,6 +673,56 @@ template("linux_package") {
         deps = [ ":installer_deps" ]
       }
     }
+
+    if (enable_snap_package) {
+      snap_target_name = "${target_name}_snap"
+
+      action(snap_target_name) {
+        visibility = [ ":*" ]
+        script = "snap/build.py"
+
+        if (!is_chrome_branded) {
+          package = "chromium"
+        }
+        if (current_cpu == "x86") {
+          snap_arch = "i386"
+        } else if (current_cpu == "x64") {
+          snap_arch = "amd64"
+        } else if (current_cpu == "arm") {
+          snap_arch = "armhf"
+        } else if (current_cpu == "arm64") {
+          snap_arch = "arm64"
+        } else {
+          assert(false, "Linux installer not configured for this architecture.")
+        }
+
+        inputs = packaging_files + [
+                   "snap/chrome.launcher.in",
+                   "snap/snapcraft.yaml.in",
+                 ]
+        outputs = [ "$root_out_dir/${package}-${channel}_${chrome_version_full}_${snap_arch}.snap" ]
+
+        args = [
+          "-a",
+          snap_arch,
+          "-b",
+          build_timestamp,
+          "-c",
+          invoker.channel,
+          "-d",
+          branding_path_component,
+          "-o",
+          rebase_path(root_out_dir, root_build_dir),
+          "-t",
+          target_os,
+          "--use-static-angle=$use_static_angle",
+        ]
+        if (is_official_build) {
+          args += [ "-f" ]
+        }
+        deps = [ ":installer_deps" ]
+      }
+    }
   }
 
   group(target_name) {
@@ -678,6 +731,9 @@ template("linux_package") {
       deps += [ ":$rpm_target_name" ]
       if (enable_flatpak) {
         deps += [ ":$flatpak_target_name" ]
+      }
+      if (enable_snap_package) {
+        deps += [ ":$snap_target_name" ]
       }
     }
   }
