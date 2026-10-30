@@ -6,9 +6,12 @@
 #define COMPONENTS_USER_MANAGER_USER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -169,6 +172,20 @@ class USER_MANAGER_EXPORT User {
 
   // Returns empty string when home dir hasn't been mounted yet.
   const std::string& username_hash() const;
+
+  // Returns the path to the user's data directory, which is the same as the
+  // path of the Profile for this user. On device, it should be
+  // "/home/chronos/u-${username_hash}".
+  // Returns std::nullopt if `username_hash()` is not yet set, i.e., the
+  // user's home directory is not yet mounted.
+  std::optional<base::FilePath> GetPath() const;
+
+  // Returns the name (not the path) of the user's data directory for the
+  // given `username_hash`, i.e., "u-${username_hash}". As exceptions, the
+  // special `username_hash` values "user" and "test-user", which are used for
+  // stub users on non-ChromeOS-device environments, are returned as is.
+  // `username_hash` must not be empty.
+  static std::string GetDirName(std::string_view username_hash);
 
   // True if current user is logged in.
   bool is_logged_in() const;

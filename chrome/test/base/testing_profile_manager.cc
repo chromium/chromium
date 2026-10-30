@@ -31,6 +31,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_paths.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
@@ -363,6 +364,11 @@ void TestingProfileManager::SetUpInternal(
   }
   user_data_dir_override_ = std::make_unique<base::ScopedPathOverride>(
       chrome::DIR_USER_DATA, profiles_path_);
+#if BUILDFLAG(IS_CHROMEOS)
+  // ash::DIR_USER_DATA should be the same as chrome::DIR_USER_DATA.
+  ash_user_data_dir_override_ = std::make_unique<base::ScopedPathOverride>(
+      ash::DIR_USER_DATA, profiles_path_);
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   auto profile_manager_unique =
       profile_manager ? std::move(profile_manager)

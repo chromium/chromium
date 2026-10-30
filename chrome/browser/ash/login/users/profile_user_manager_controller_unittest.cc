@@ -71,6 +71,7 @@ TEST_F(ProfileUserManagerControllerTest, GetProfilePrefs) {
 
   EXPECT_TRUE(user->GetProfilePrefs());
   EXPECT_EQ(profile->GetPrefs(), user->GetProfilePrefs());
+  EXPECT_EQ(profile->GetPath(), user->GetPath());
 
   // Triggers ProfileUserManagerController::OnProfileWillBeDestroyed().
   testing_profile_manager().DeleteAllTestingProfiles();

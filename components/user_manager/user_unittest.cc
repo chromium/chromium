@@ -4,8 +4,19 @@
 
 #include "components/user_manager/user.h"
 
+#include <memory>
+#include <optional>
+
+#include "ash/constants/ash_paths.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/path_service.h"
+#include "base/test/gtest_util.h"
+#include "base/test/scoped_path_override.h"
+#include "base/test/task_environment.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -49,6 +60,59 @@ TEST(UserTest, DeviceLocalAccountAffiliation) {
 
   ScopedUser arcvm_kiosk_user(User::CreateKioskArcvmAppUser(account_id));
   EXPECT_TRUE(arcvm_kiosk_user.IsAffiliated());
+}
+
+TEST(UserTest, GetDirName) {
+  // Regular case.
+  EXPECT_EQ("u-abcde123456", User::GetDirName("abcde123456"));
+
+  // Special cases for stub users, which are used as is.
+  EXPECT_EQ("user", User::GetDirName("user"));
+  EXPECT_EQ("test-user", User::GetDirName("test-user"));
+}
+
+TEST(UserDeathTest, GetDirNameWithEmptyHash) {
+  EXPECT_CHECK_DEATH(User::GetDirName(""));
+}
+
+class UserGetPathTest : public testing::Test {
+ public:
+  void SetUp() override {
+    ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
+        local_state_.registry());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
+  }
+
+  void TearDown() override { user_session_test_environment_.reset(); }
+
+ protected:
+  ash::test::UserSessionTestEnvironment& user_session_test_environment() {
+    return *user_session_test_environment_;
+  }
+
+ private:
+  base::test::TaskEnvironment task_environment_;
+  base::ScopedPathOverride user_data_dir_override_{ash::DIR_USER_DATA};
+  TestingPrefServiceSimple local_state_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+};
+
+TEST_F(UserGetPathTest, GetPath) {
+  const AccountId account_id = AccountId::FromUserEmailGaiaId(kEmail, kGaiaId);
+  User* user = user_session_test_environment().AddRegularUser(account_id);
+  ASSERT_TRUE(user);
+
+  // username_hash is not yet set before the user's home directory is mounted.
+  ASSERT_TRUE(user->username_hash().empty());
+  EXPECT_EQ(std::nullopt, user->GetPath());
+
+  user_session_test_environment().LogIn(account_id);
+  ASSERT_FALSE(user->username_hash().empty());
+  EXPECT_EQ(base::PathService::CheckedGet(ash::DIR_USER_DATA)
+                .Append("u-" + user->username_hash()),
+            user->GetPath());
 }
 
 }  // namespace user_manager

@@ -188,6 +188,9 @@ class TestingProfileManager : public ProfileObserver {
   // by the path service instead of the profile manager. The override is scoped
   // with the help of this variable.
   std::unique_ptr<base::ScopedPathOverride> user_data_dir_override_;
+#if BUILDFLAG(IS_CHROMEOS)
+  std::unique_ptr<base::ScopedPathOverride> ash_user_data_dir_override_;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Weak reference to the browser process on which the ProfileManager is set.
   raw_ptr<TestingBrowserProcess> browser_process_;

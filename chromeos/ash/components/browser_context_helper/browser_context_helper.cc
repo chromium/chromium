@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/logging.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
@@ -24,6 +23,7 @@ namespace {
 // Chrome OS profile directories have custom prefix.
 // Profile path format: [user_data_dir]/u-[$hash]
 // Ex.: /home/chronos/u-0123456789
+// Must be kept in sync with user_manager::User::GetDirName().
 constexpr char kBrowserContextDirPrefix[] = "u-";
 
 bool g_enable_implicit_browser_context_creation = true;
@@ -171,10 +171,7 @@ user_manager::User* BrowserContextHelper::GetUserByBrowserContext(
 // static
 std::string BrowserContextHelper::GetUserBrowserContextDirName(
     std::string_view user_id_hash) {
-  CHECK(!user_id_hash.empty());
-  return ShouldAddBrowserContextDirPrefix(user_id_hash)
-             ? base::StrCat({kBrowserContextDirPrefix, user_id_hash})
-             : std::string(user_id_hash);
+  return user_manager::User::GetDirName(user_id_hash);
 }
 
 base::FilePath BrowserContextHelper::GetBrowserContextPathByUserIdHash(

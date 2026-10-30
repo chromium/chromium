@@ -7,11 +7,16 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 
+#include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/account_id/account_id.h"
@@ -22,6 +27,20 @@
 namespace user_manager {
 
 namespace {
+
+// User data directory name format: "u-${username_hash}".
+// Must be kept in sync with
+// BrowserContextHelper::GetUsernameHashFromBrowserContextDirName().
+constexpr char kUserDirPrefix[] = "u-";
+
+// Special username_hash values, used as the directory name as is, without
+// the prefix. Must be kept in sync with
+// BrowserContextHelper::kLegacyBrowserContextDirName and
+// BrowserContextHelper::kTestUserBrowserContextDirName, respectively.
+// These are used for stub users on non-ChromeOS-device environments, such as
+// linux-chromeos builds and tests.
+constexpr char kLegacyUserDirName[] = "user";
+constexpr char kTestUserDirName[] = "test-user";
 
 // Must be in sync with histogram enum UserTypeChanged in enums.xml.
 // The values must never be changed (only new ones can be added) as they
@@ -175,6 +194,24 @@ std::string User::display_email() const {
 
 const std::string& User::username_hash() const {
   return username_hash_;
+}
+
+std::optional<base::FilePath> User::GetPath() const {
+  if (username_hash_.empty()) {
+    return std::nullopt;
+  }
+
+  return base::PathService::CheckedGet(ash::DIR_USER_DATA)
+      .Append(GetDirName(username_hash_));
+}
+
+// static
+std::string User::GetDirName(std::string_view username_hash) {
+  CHECK(!username_hash.empty());
+  const bool add_prefix =
+      username_hash != kLegacyUserDirName && username_hash != kTestUserDirName;
+  return add_prefix ? base::StrCat({kUserDirPrefix, username_hash})
+                    : std::string(username_hash);
 }
 
 bool User::is_logged_in() const {

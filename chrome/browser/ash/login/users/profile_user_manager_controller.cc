@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
 
 #include "base/check.h"
+#include "base/check_is_test.h"
+#include "base/files/file_path.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/user_manager/user.h"
@@ -28,6 +30,19 @@ void ProfileUserManagerController::OnProfileAdded(Profile* profile) {
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user) {
     return;
+  }
+
+  // The Profile for the User should be placed at the User's path.
+  if (user->GetPath() != profile->GetPath()) {
+    // TODO(crbug.com/40225390): Some tests do not follow the production
+    // setup, e.g., they create Profiles at paths unrelated to username_hash,
+    // or they map Profiles to Users via test-only paths (such as
+    // ProfileHelper::SetProfileToUserForTestingEnabled() or
+    // --ignore-user-profile-mapping-for-tests). Fix them and make this CHECK
+    // unconditional.
+    CHECK_IS_TEST() << "User path: "
+                    << user->GetPath().value_or(base::FilePath())
+                    << ", Profile path: " << profile->GetPath();
   }
 
   // Guest users should use OTR profiles.

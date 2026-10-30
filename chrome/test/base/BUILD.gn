@@ -392,6 +392,7 @@ source_set("testing_profile_impl") {
   }
   if (is_chromeos) {
     deps += [
+      "//ash/constants",
       "//chrome/browser/ash/arc/session:service_launcher",
       "//chrome/browser/ash/login/users:test_support",
       "//chrome/browser/ash/net",
