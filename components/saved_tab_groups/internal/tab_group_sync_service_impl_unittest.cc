@@ -2826,40 +2826,6 @@ TEST_F(TabGroupSyncServiceImplTest, MetricsOnSignin) {
               IsEmpty());
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-// TODO(crbug.com/417950948): Remove this test once kSync is fully deprecated.
-TEST_F(TabGroupSyncServiceImplTest, MetricsOnSync) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
-
-  base::HistogramTester histograms;
-  identity_test_environment_.MakePrimaryAccountAvailable(
-      "account@gmail.com", signin::ConsentLevel::kSync);
-
-  // Turning on sync includes signing in, so both "OnSignin" and "OnSync"
-  // metrics should be recorded.
-  base::HistogramTester::CountsMap expected_signin_counts{
-      {"TabGroups.OnSignin.TotalTabGroupCount", 1},
-      {"TabGroups.OnSignin.OpenTabGroupCount", 1},
-      {"TabGroups.OnSignin.ClosedTabGroupCount", 1},
-      {"TabGroups.OnSignin.TotalTabGroupTabsCount", 1},
-      {"TabGroups.OnSignin.OpenTabGroupTabsCount", 1},
-      {"TabGroups.OnSignin.ClosedTabGroupTabsCount", 1}};
-  EXPECT_THAT(histograms.GetTotalCountsForPrefix("TabGroups.OnSignin."),
-              ContainerEq(expected_signin_counts));
-
-  base::HistogramTester::CountsMap expected_sync_counts{
-      {"TabGroups.OnSync.TotalTabGroupCount", 1},
-      {"TabGroups.OnSync.OpenTabGroupCount", 1},
-      {"TabGroups.OnSync.ClosedTabGroupCount", 1},
-      {"TabGroups.OnSync.TotalTabGroupTabsCount", 1},
-      {"TabGroups.OnSync.OpenTabGroupTabsCount", 1},
-      {"TabGroups.OnSync.ClosedTabGroupTabsCount", 1}};
-  EXPECT_THAT(histograms.GetTotalCountsForPrefix("TabGroups.OnSync."),
-              ContainerEq(expected_sync_counts));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 // Tests that after transitioning from a saved tab group to a shared tab group,
 // the shared tab group is the only tab group returned by GetAllGroups().
 TEST_F(TabGroupSyncServiceImplTest, ShouldReturnSharedTabGroupOnly) {

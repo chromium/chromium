@@ -171,17 +171,9 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
   base::SimpleTestClock clock_;
 };
 
-class DemographicMetricsProviderTest : public testing::TestWithParam<bool> {
+class DemographicMetricsProviderTest : public testing::Test {
  public:
-  DemographicMetricsProviderTest() {
-    if (GetParam()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-  }
+  DemographicMetricsProviderTest() = default;
 
   DemographicMetricsProviderTest(const DemographicMetricsProviderTest&) =
       delete;
@@ -189,12 +181,9 @@ class DemographicMetricsProviderTest : public testing::TestWithParam<bool> {
       const DemographicMetricsProviderTest&) = delete;
 
   ~DemographicMetricsProviderTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(DemographicMetricsProviderTest,
+TEST_F(DemographicMetricsProviderTest,
        ProvideSyncedUserNoisedBirthYearAndGender_FeatureEnabled) {
   base::HistogramTester histogram;
 
@@ -223,7 +212,7 @@ TEST_P(DemographicMetricsProviderTest,
                                UserDemographicsStatus::kSuccess, 1);
 }
 
-TEST_P(DemographicMetricsProviderTest,
+TEST_F(DemographicMetricsProviderTest,
        ProvideSyncedUserNoisedBirthYearAndGender_NoSyncService) {
   base::HistogramTester histogram;
 
@@ -245,7 +234,7 @@ TEST_P(DemographicMetricsProviderTest,
                                UserDemographicsStatus::kNoSyncService, 1);
 }
 
-TEST_P(DemographicMetricsProviderTest,
+TEST_F(DemographicMetricsProviderTest,
        ProvideSyncedUserNoisedBirthYearAndGender_SyncEnabledButPaused) {
   base::HistogramTester histogram;
 
@@ -267,9 +256,8 @@ TEST_P(DemographicMetricsProviderTest,
                                UserDemographicsStatus::kSyncNotEnabled, 1);
 }
 
-
 #if BUILDFLAG(IS_CHROMEOS)
-TEST_P(
+TEST_F(
     DemographicMetricsProviderTest,
     ProvideSyncedUserNoisedBirthYearAndGender_SyncFeatureDisabledOnChromeOsAshViaSyncDashboard) {
   base::HistogramTester histogram;
@@ -294,7 +282,7 @@ TEST_P(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-TEST_P(DemographicMetricsProviderTest,
+TEST_F(DemographicMetricsProviderTest,
        ProvideSyncedUserNoisedBirthYearAndGender_SyncNotEnabled) {
   base::HistogramTester histogram;
 
@@ -316,7 +304,7 @@ TEST_P(DemographicMetricsProviderTest,
                                UserDemographicsStatus::kSyncNotEnabled, 1);
 }
 
-TEST_P(DemographicMetricsProviderTest,
+TEST_F(DemographicMetricsProviderTest,
        ProvideSyncedUserNoisedBirthYearAndGender_FeatureDisabled) {
   // Disable demographics reporting feature.
   base::test::ScopedFeatureList local_feature;
@@ -342,7 +330,7 @@ TEST_P(DemographicMetricsProviderTest,
   histogram.ExpectTotalCount("UMA.UserDemographics.Status", 0);
 }
 
-TEST_P(DemographicMetricsProviderTest,
+TEST_F(DemographicMetricsProviderTest,
        ProvideSyncedUserNoisedBirthYearAndGender_NotExactlyOneProfile) {
   base::HistogramTester histogram;
 
@@ -376,7 +364,7 @@ TEST_P(DemographicMetricsProviderTest,
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
-TEST_P(DemographicMetricsProviderTest,
+TEST_F(DemographicMetricsProviderTest,
        ProvideSyncedUserNoisedBirthYearAndGender_NoUserDemographics) {
   base::HistogramTester histogram;
 
@@ -403,7 +391,7 @@ TEST_P(DemographicMetricsProviderTest,
       UserDemographicsStatus::kIneligibleDemographicsData, 1);
 }
 
-TEST_P(DemographicMetricsProviderTest,
+TEST_F(DemographicMetricsProviderTest,
        ProvideSyncedUserNoisedBirthYearAndGenderToUkmReport) {
   base::HistogramTester histogram;
 
@@ -428,7 +416,7 @@ TEST_P(DemographicMetricsProviderTest,
   EXPECT_EQ(kTestGender, report.user_demographics().gender());
 }
 
-TEST_P(DemographicMetricsProviderTest,
+TEST_F(DemographicMetricsProviderTest,
        ProvideSyncedUserNoisedBirthYearAndGender_PreferencesSyncNotSelected) {
   base::HistogramTester histogram;
 
@@ -458,8 +446,6 @@ TEST_P(DemographicMetricsProviderTest,
   histogram.ExpectUniqueSample("UMA.UserDemographics.Status",
                                UserDemographicsStatus::kSuccess, 1);
 }
-
-INSTANTIATE_TEST_SUITE_P(All, DemographicMetricsProviderTest, testing::Bool());
 
 }  // namespace
 }  // namespace metrics

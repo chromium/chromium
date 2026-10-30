@@ -23,7 +23,6 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -116,9 +115,6 @@ class AccountNameEmailStoreTest : public testing::Test {
     return identity_test_env_;
   }
   syncer::TestSyncService& sync_service() { return sync_service_; }
-
- protected:
-  base::test::ScopedFeatureList features_;
 
  private:
   base::test::TaskEnvironment task_environment_;
@@ -673,33 +669,6 @@ TEST_F(AccountNameEmailStoreTest,
   EXPECT_THAT(address_data_manager().GetProfiles(), IsEmpty());
 }
 #endif  // BUILDFLAG(IS_IOS)
-
-#if BUILDFLAG(IS_CHROMEOS)
-class AccountNameEmailStoreSyncTest : public AccountNameEmailStoreTest {
- public:
-  AccountNameEmailStoreSyncTest() {
-    features_.InitAndDisableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
-  }
-};
-
-// Tests that kAccountNameEmail profile exists only if sync-the-feature is
-// enabled.
-// TODO(crbug.com/40066949): Remove once kSync gets removed.
-TEST_F(AccountNameEmailStoreSyncTest, SyncTheFeatureState) {
-  sync_service().SetSignedIn(signin::ConsentLevel::kSignin);
-  sync_service().FireStateChanged();
-
-  CreatePrimaryAccount(kTestName1, kTestEmailAddress1);
-  EXPECT_THAT(address_data_manager().GetProfiles(), IsEmpty());
-
-  sync_service().SetSignedIn(signin::ConsentLevel::kSync);
-  sync_service().FireStateChanged();
-  EXPECT_THAT(address_data_manager().GetProfiles(),
-              ElementsAre(IsCorrectAccountNameEmail(
-                  base::UTF8ToUTF16(kTestName1),
-                  base::UTF8ToUTF16(kTestEmailAddress1))));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 struct NicknameTestCase {
   std::string account_name_with_nickname;

@@ -12,7 +12,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
@@ -25,7 +24,6 @@
 #include "components/browsing_data/core/pref_names.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/base/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/webdata/common/web_database_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -74,11 +72,7 @@ class BrowsingDataUtilsTest : public testing::Test {
   sync_preferences::TestingPrefServiceSyncable prefs_;
 };
 
-TEST_F(BrowsingDataUtilsTest,
-       AutofillCounterResultWithReplaceSyncPromosWithSignInPromosEnabled) {
-  base::test::ScopedFeatureList feature_list(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
+TEST_F(BrowsingDataUtilsTest, AutofillCounterResult) {
   autofill::TestPersonalDataManager test_personal_data_manager;
   AutofillCounter counter(&test_personal_data_manager,
                           base::MakeRefCounted<FakeWebDataService>(),

@@ -365,8 +365,7 @@ class MetricProviderSyncSettingsTest : public testing::Test {
             profile, base::BindRepeating(&TestingSyncFactoryFunction)));
     // TODO(crbug.com/474082262): Migrate these tests to cover signed-in users
     // without sync consent. For now, grant sync consent explicitly, since
-    // TestSyncService defaults to ConsentLevel::kSignin when
-    // kReplaceSyncPromosWithSignInPromos is enabled.
+    // TestSyncService defaults to ConsentLevel::kSignin.
     sync_service->SetSignedIn(signin::ConsentLevel::kSync);
     sync_service->SetInitialSyncFeatureSetupComplete(true);
     return sync_service;
