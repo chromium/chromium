@@ -741,11 +741,16 @@ public abstract class ContentUriUtils {
     public static @ContentUriOwner int resolveContentUriOwner(Uri uri) {
         try {
             String authority = uri.getAuthority();
-            // OpaqueUri returns a null authority even when its string form includes one, so the URI
-            // needs to be reparsed to be sure that the authority does not exist.
-            if (TextUtils.isEmpty(authority)) {
-                authority = Uri.parse(uri.toString()).getAuthority();
-                if (TextUtils.isEmpty(authority)) return ContentUriOwner.UNRESOLVED;
+            String reparsedAuthority = Uri.parse(uri.toString()).getAuthority();
+            if (TextUtils.isEmpty(authority) && TextUtils.isEmpty(reparsedAuthority)) {
+                return ContentUriOwner.UNRESOLVED;
+            }
+            // Callers may check the Uri object but then use only its string form. On Android Q, a
+            // Uri unparcelled from another app can have independent encoded and decoded
+            // authorities, and an OpaqueUri reports a null authority even when its string form
+            // includes one. Treat any mismatch as an attack and return the most restrictive owner.
+            if (TextUtils.isEmpty(authority) || !authority.equals(reparsedAuthority)) {
+                return ContentUriOwner.NON_EXPORTED_FROM_CURRENT_APP;
             }
 
             // Preserve existing behavior for user-qualified authorities: discard the user prefix
