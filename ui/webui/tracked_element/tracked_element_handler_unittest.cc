@@ -32,6 +32,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom.h"
 #include "ui/base/interaction/element_events.h"
 #include "ui/base/interaction/element_highlighter.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -1026,6 +1027,28 @@ TEST_F(TrackedElementHandlerTest, SubframeHandler) {
   const gfx::Rect bounds = webui_element->GetBoundsInWebContents();
   EXPECT_FALSE(bounds.IsEmpty());
   EXPECT_EQ(bounds.size(), gfx::ToRoundedRect(kElementBounds).size());
+
+  UNCALLED_MOCK_CALLBACK(ui::ElementTracker::Callback, bounds_changed);
+  auto subscription =
+      ui::ElementTracker::GetElementTracker()->AddCustomEventCallback(
+          kElementBoundsChangedEvent, element->context(), bounds_changed.Get());
+
+  // Viewport intersection updates for an unrelated subframe should not fire
+  // `kElementBoundsChangedEvent`.
+  content::RenderFrameHost* const other_subframe_rfh =
+      content::RenderFrameHostTester::For(main_rfh())
+          ->AppendChild("other_subframe");
+  ASSERT_TRUE(other_subframe_rfh);
+  test_handler->OnRemoteSubframeViewportIntersectionStateChanged(
+      other_subframe_rfh, blink::mojom::ViewportIntersectionState());
+
+  // Viewport intersection updates for the tracked subframe (e.g. when the
+  // outer document resizes and repositions the OOPIF) should fire
+  // `kElementBoundsChangedEvent`.
+  EXPECT_CALL_IN_SCOPE(bounds_changed, Run(element), {
+    test_handler->OnRemoteSubframeViewportIntersectionStateChanged(
+        subframe_rfh, blink::mojom::ViewportIntersectionState());
+  });
 }
 
 // TODO(crbug.com/40243115): add tests for element screen bounds. This requires

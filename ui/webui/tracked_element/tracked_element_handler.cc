@@ -116,13 +116,27 @@ void TrackedElementHandler::OnVisibilityChanged(
   UpdateAllEffectiveVisibilities();
 }
 
-void TrackedElementHandler::UpdateAllEffectiveVisibilities() {
+void TrackedElementHandler::OnRemoteSubframeViewportIntersectionStateChanged(
+    content::RenderFrameHost* rfh,
+    const blink::mojom::ViewportIntersectionState&
+        viewport_intersection_state) {
+  for (content::RenderFrameHost* frame = render_frame_host(); frame;
+       frame = frame->GetParentOrOuterDocument()) {
+    if (frame == rfh) {
+      UpdateAllEffectiveVisibilities(/*bounds_changed=*/true);
+      return;
+    }
+  }
+}
+
+void TrackedElementHandler::UpdateAllEffectiveVisibilities(
+    bool bounds_changed) {
   // This is complicated because it is possible that UpdateEffectiveVisibility
   // could invoke this class's destructor.
   auto weak_ptr = weak_ptr_factory_.GetWeakPtr();
   for (auto& [_, elements] : elements_) {
     for (auto& [_, element] : elements) {
-      element->UpdateEffectiveVisibility();
+      element->UpdateEffectiveVisibility(bounds_changed);
       if (!weak_ptr) {
         return;
       }

@@ -185,6 +185,10 @@ class TrackedElementHandler
 
   // content::WebContentsObserver:
   void OnVisibilityChanged(content::Visibility new_visibility) override;
+  void OnRemoteSubframeViewportIntersectionStateChanged(
+      content::RenderFrameHost* rfh,
+      const blink::mojom::ViewportIntersectionState&
+          viewport_intersection_state) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(TrackedElementHandlerTest, Interaction);
@@ -201,7 +205,7 @@ class TrackedElementHandler
                  tracked_element::mojom::TextEntryMode mode);
   bool Confirm(TrackedElementWebUI& element);
 
-  void UpdateAllEffectiveVisibilities();
+  void UpdateAllEffectiveVisibilities(bool bounds_changed = false);
   void RegisterIdentifier(ui::ElementIdentifier id);
   TrackedElementWebUI* GetElement(
       const tracked_element::mojom::TrackedElementIdentifierPtr& id,
