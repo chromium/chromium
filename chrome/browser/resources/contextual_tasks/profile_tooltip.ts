@@ -22,8 +22,6 @@ const TOOLTIP_VIEWPORT_MARGIN_PX = 8;
 
 /** Returns the "Google Account" header shown at the top of the tooltip. */
 function getGoogleAccountHeader(): string {
-  // TODO(crbug.com/578985445): `googleAccount` temporarily reuses an existing
-  // string; switch to a dedicated string.
   return loadTimeData.valueExists('googleAccount') ?
       loadTimeData.getString('googleAccount') :
       '';

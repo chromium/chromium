@@ -486,10 +486,7 @@ base::DictValue ContextualTasksUIBase::GetContextualTasksLoadTimeData(
       {"contextTooltip", IDS_CONTEXTUAL_TASKS_SIDE_PANEL_CONTEXT_TOOL_TIP},
       {"continueThread", IDS_CONTEXTUAL_TASKS_CONTINUE_THREAD_MESSAGE},
       {"feedback", IDS_LENS_SEND_FEEDBACK},
-      // TODO(crbug.com/578985445): Replace with a dedicated Contextual Tasks
-      // string. Reuses the translated password manager "Google Account" string
-      // to avoid adding a new string after the M158 string cutoff.
-      {"googleAccount", IDS_MANAGE_PASSWORDS_LINK},
+      {"googleAccount", IDS_CONTEXTUAL_TASKS_AVATAR_TOOLTIP_HEADER},
       {"help", IDS_CONTEXTUAL_TASKS_MENU_HELP},
       {"learnMore", IDS_LEARN_MORE},
       {"moreOptionsTooltip",

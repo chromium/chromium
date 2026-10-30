@@ -70,6 +70,9 @@
   <message name="IDS_CONTEXTUAL_TASKS_SIDE_PANEL_HISTORY_TOOL_TIP" desc="Tool tip text displayed on the history button on the side panel to show history threads.">
     AI Mode history
   </message>
+  <message name="IDS_CONTEXTUAL_TASKS_AVATAR_TOOLTIP_HEADER" desc="Header of the tooltip shown when hovering over the profile avatar in the side panel toolbar. The tooltip also shows the name and email of the Google Account the user is signed in to on the web.">
+    Google Account
+  </message>
   <message name="IDS_CONTEXTUAL_TASKS_SIDE_PANEL_CONTEXT_TOOL_TIP" desc="Tool tip text displayed on the context button on the side panel to show tabs and files context attached to the current thread.">
     Tabs and files
   </message>

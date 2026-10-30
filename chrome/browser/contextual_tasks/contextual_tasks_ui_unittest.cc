@@ -68,6 +68,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
@@ -82,6 +83,7 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 #include "ui/gfx/image/image.h"
@@ -5081,9 +5083,11 @@ TEST_F(ContextualTasksUiTest, ProfileIndicator_LoadTimeDataPopulated) {
       signed_out_dict.FindString("profileAvatarUrl");
   ASSERT_TRUE(avatar_url);
   EXPECT_EQ(*avatar_url, "");
-  // TODO(crbug.com/578985445): Check the dedicated string once it replaces
-  // IDS_MANAGE_PASSWORDS_LINK.
-  EXPECT_TRUE(signed_out_dict.FindString("googleAccount"));
+  const std::string* google_account =
+      signed_out_dict.FindString("googleAccount");
+  ASSERT_TRUE(google_account);
+  EXPECT_EQ(*google_account, l10n_util::GetStringUTF8(
+                                 IDS_CONTEXTUAL_TASKS_AVATAR_TOOLTIP_HEADER));
 
   // Web signed-in (Chrome signed-out) test.
   AccountInfo account_info =
