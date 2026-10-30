@@ -95,6 +95,22 @@ public class XrSceneCoreSessionManagerImplTest {
     public void testCreate() {
         assertNotNull(mManager);
         assertFalse(mManager.isXrFullSpaceMode());
+        assertEquals(mScene.getMainPanelEntity(), mScene.getKeyEntity());
+    }
+
+    @Test
+    public void testSetKeyEntity_OverridesAndRestoresMainPanelEntity() {
+        assertEquals(mScene.getMainPanelEntity(), mScene.getKeyEntity());
+
+        XrPanelEntityHolder customPanel = mManager.createPanelEntity(mView, "custom-panel");
+        mManager.setKeyEntity(customPanel);
+        assertEquals(customPanel.getEntity(), mScene.getKeyEntity());
+
+        mManager.setKeyEntity(null);
+        assertNull(mScene.getKeyEntity());
+
+        mManager.setKeyEntity(mManager.getMainPanelEntity());
+        assertEquals(mScene.getMainPanelEntity(), mScene.getKeyEntity());
     }
 
     @Test

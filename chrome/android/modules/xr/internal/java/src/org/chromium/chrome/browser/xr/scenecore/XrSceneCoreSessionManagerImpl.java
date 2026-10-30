@@ -93,7 +93,9 @@ public class XrSceneCoreSessionManagerImpl implements XrSceneCoreSessionManager 
         mActivity = activity;
         mXrSession = session;
         mHeadPoseTracker = new XrHeadPoseTracker(this, mHeadPoseSupplier::set);
-        mActivitySpace = getScene().getActivitySpace();
+        Scene scene = getScene();
+        scene.setKeyEntity(scene.getMainPanelEntity());
+        mActivitySpace = scene.getActivitySpace();
         mActivitySpace.addOnBoundsChangedListener(mBoundsChangedListener);
 
         boolean isXrFullSpaceMode =
