@@ -30,10 +30,13 @@
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/browser/service_process_host.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "sandbox/policy/switches.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/mojom/features.mojom-features.h"
 #include "services/webnn/public/mojom/webnn_compiler_context.mojom.h"
+#include "services/webnn/public/mojom/webnn_compiler_service.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_model_loader.mojom.h"
 #include "services/webnn/webnn_switches.h"
@@ -68,10 +71,6 @@ namespace {
 // relaunch is blocked.
 constexpr int kMaxCompilerCrashCount = 3;
 
-// How long to wait after the last compiler context disconnects before
-// shutting down the Compiler process.
-constexpr base::TimeDelta kCompilerIdleTimeout = base::Seconds(30);
-
 #if BUILDFLAG(IS_WIN)
 // Number of times each WebNN Compiler process has crashed, keyed by device.
 // Stop relaunching after too many crashes to avoid an infinite loop.
@@ -88,7 +87,7 @@ base::flat_map<webnn::EpDeviceInfo, int>& GetWebNNCompilerCrashCounts() {
 mojo::Remote<webnn::mojom::WebNNCompilerService> LaunchCompilerProcess(
     const base::FilePath& ep_library_path,
     const webnn::EpDeviceInfo& target_device) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
 
   ServiceProcessHost::Options options;
   options.WithDisplayName(base::StrCat(
@@ -132,7 +131,7 @@ mojo::Remote<webnn::mojom::WebNNCompilerService> LaunchCompilerProcess(
 int g_webnn_compiler_crash_count = 0;
 
 mojo::Remote<webnn::mojom::WebNNCompilerService> LaunchCompilerProcess() {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
 
   ServiceProcessHost::Options options;
   options.WithDisplayName("WebNN Compiler");
@@ -148,12 +147,194 @@ mojo::Remote<webnn::mojom::WebNNCompilerService> LaunchCompilerProcess() {
 
 #endif  // BUILDFLAG(IS_APPLE)
 }  // namespace
+
+// Manages the lifecycle of one Compiler process.
+class WebNNBrowserHostImpl::CompilerHostImpl
+    : public webnn::mojom::WebNNCompilerHost {
+ public:
+#if BUILDFLAG(IS_WIN)
+  // Launches a Compiler process for `target_device`. Returns nullptr if
+  // the process failed to launch.
+  static std::unique_ptr<CompilerHostImpl> Launch(
+      const base::FilePath& ep_library_path,
+      const webnn::EpDeviceInfo& target_device) {
+    mojo::Remote<webnn::mojom::WebNNCompilerService> remote =
+        LaunchCompilerProcess(ep_library_path, target_device);
+    if (!remote.is_bound()) {
+      LOG(ERROR) << "[WebNN] Compiler process failed to launch for ["
+                 << target_device.ToSwitchValue() << "].";
+      return nullptr;
+    }
+    VLOG(1) << "[WebNN] Launched Compiler process for ["
+            << target_device.ToSwitchValue()
+            << "] (library: " << ep_library_path << ").";
+    return std::make_unique<CompilerHostImpl>(
+        std::move(remote), target_device, base::PassKey<CompilerHostImpl>());
+  }
+
+  CompilerHostImpl(mojo::Remote<webnn::mojom::WebNNCompilerService> remote,
+                   const webnn::EpDeviceInfo& device_info,
+                   base::PassKey<CompilerHostImpl>)
+      : device_info_(device_info), remote_(std::move(remote)) {
+    remote_.set_disconnect_handler(
+        base::BindOnce(&CompilerHostImpl::OnCompilerProcessDisconnected,
+                       base::Unretained(this)));
+    remote_.set_idle_handler(
+        kCompilerIdleTimeout,
+        base::BindRepeating(&CompilerHostImpl::OnCompilerProcessIdle,
+                            base::Unretained(this)));
+  }
+#elif BUILDFLAG(IS_APPLE)
+  // Launches a Compiler process. Returns nullptr if the process failed to
+  // launch.
+  static std::unique_ptr<CompilerHostImpl> Launch() {
+    mojo::Remote<webnn::mojom::WebNNCompilerService> remote =
+        LaunchCompilerProcess();
+    if (!remote.is_bound()) {
+      LOG(ERROR) << "[WebNN] Compiler process failed to launch.";
+      return nullptr;
+    }
+    return std::make_unique<CompilerHostImpl>(
+        std::move(remote), base::PassKey<CompilerHostImpl>());
+  }
+
+  CompilerHostImpl(mojo::Remote<webnn::mojom::WebNNCompilerService> remote,
+                   base::PassKey<CompilerHostImpl>)
+      : remote_(std::move(remote)) {
+    remote_.set_disconnect_handler(
+        base::BindOnce(&CompilerHostImpl::OnCompilerProcessDisconnected,
+                       base::Unretained(this)));
+    remote_.set_idle_handler(
+        kCompilerIdleTimeout,
+        base::BindRepeating(&CompilerHostImpl::OnCompilerProcessIdle,
+                            base::Unretained(this)));
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
+  CompilerHostImpl(const CompilerHostImpl&) = delete;
+  CompilerHostImpl& operator=(const CompilerHostImpl&) = delete;
+  ~CompilerHostImpl() override = default;
+
+  bool is_bound() const { return remote_.is_bound(); }
+
+  using CreateCompilerContextCallback = base::OnceCallback<void(bool success)>;
+
+  void CreateWebNNCompilerContext(
+      webnn::mojom::CreateContextOptionsPtr context_options,
+      const webnn::ContextProperties& context_properties,
+      mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote,
+      mojo::PendingReceiver<webnn::mojom::WebNNCompilerContext>
+          compiler_context_receiver,
+      mojo::PendingReceiver<webnn::mojom::WebNNCompilerHost>
+          compiler_host_receiver,
+      CreateCompilerContextCallback callback) {
+    CHECK_CURRENTLY_ON(BrowserThread::UI);
+
+    remote_->CreateCompilerContext(
+        std::move(context_options), context_properties,
+        std::move(model_loader_remote), std::move(compiler_context_receiver),
+        base::BindOnce(&CompilerHostImpl::OnContextCreated,
+                       weak_factory_.GetWeakPtr(),
+                       std::move(compiler_host_receiver), std::move(callback)));
+  }
+
+ private:
+  // How long to wait after the last compiler context disconnects before
+  // shutting down the Compiler process.
+  static constexpr base::TimeDelta kCompilerIdleTimeout = base::Seconds(30);
+
+  void OnContextCreated(mojo::PendingReceiver<webnn::mojom::WebNNCompilerHost>
+                            compiler_host_receiver,
+                        CreateCompilerContextCallback callback,
+                        bool success) {
+    CHECK_CURRENTLY_ON(BrowserThread::UI);
+
+    if (success) {
+      compiler_host_receivers_.Add(this, std::move(compiler_host_receiver));
+    }
+    std::move(callback).Run(success);
+  }
+
+  // webnn::mojom::WebNNCompilerHost:
+  void Terminate() override {
+    CHECK_CURRENTLY_ON(BrowserThread::UI);
+
+    if (!remote_.is_bound()) {
+      // Nothing to do since the process is already gone.
+      return;
+    }
+#if BUILDFLAG(IS_WIN)
+    LOG(ERROR) << "[WebNN] Compiler process is terminated for ["
+               << device_info_.ToSwitchValue() << "].";
+#elif BUILDFLAG(IS_APPLE)
+    LOG(ERROR) << "[WebNN] Compiler process is terminated.";
+#endif
+    RecordCrash();
+    TearDown();
+  }
+
+  void OnCompilerProcessDisconnected() {
+    CHECK_CURRENTLY_ON(BrowserThread::UI);
+
+#if BUILDFLAG(IS_WIN)
+    LOG(ERROR) << "[WebNN] Compiler process disconnected unexpectedly for ["
+               << device_info_.ToSwitchValue() << "].";
+#elif BUILDFLAG(IS_APPLE)
+    LOG(ERROR) << "[WebNN] Compiler process disconnected unexpectedly.";
+#endif
+    RecordCrash();
+    TearDown();
+  }
+
+  void OnCompilerProcessIdle() {
+    CHECK_CURRENTLY_ON(BrowserThread::UI);
+
+    TearDown();
+  }
+
+  void RecordCrash() {
+    CHECK_CURRENTLY_ON(BrowserThread::UI);
+
+#if BUILDFLAG(IS_WIN)
+    int crash_count = ++GetWebNNCompilerCrashCounts()[device_info_];
+    base::UmaHistogramExactLinear(
+        base::StrCat({"WebNN.CompilerProcess.CrashCount.", device_info_.ep_name,
+                      ".",
+                      webnn::DeviceTypeToString(device_info_.device_type)}),
+        crash_count, kMaxCompilerCrashCount + 1);
+#elif BUILDFLAG(IS_APPLE)
+    int crash_count = ++g_webnn_compiler_crash_count;
+    base::UmaHistogramExactLinear("WebNN.CompilerProcess.CrashCount.CoreML",
+                                  crash_count, kMaxCompilerCrashCount + 1);
+#endif
+    LOG(ERROR) << "[WebNN] Compiler process crash count: " << crash_count;
+  }
+
+  void TearDown() {
+    CHECK_CURRENTLY_ON(BrowserThread::UI);
+
+    remote_.reset();
+    compiler_host_receivers_.Clear();
+  }
+
+#if BUILDFLAG(IS_WIN)
+  const webnn::EpDeviceInfo device_info_;
+#endif  // BUILDFLAG(IS_WIN)
+
+  // Remote to the Compiler process.
+  mojo::Remote<webnn::mojom::WebNNCompilerService> remote_;
+
+  // One receiver per GPU-side context currently using this Compiler process.
+  mojo::ReceiverSet<webnn::mojom::WebNNCompilerHost> compiler_host_receivers_;
+
+  base::WeakPtrFactory<CompilerHostImpl> weak_factory_{this};
+};
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 
 // static
 void WebNNBrowserHostImpl::Create(
     mojo::PendingReceiver<webnn::mojom::WebNNBrowserHost> receiver) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
   // The instance is owned by its receiver and deleted when it disconnects.
   mojo::MakeSelfOwnedReceiver(std::make_unique<WebNNBrowserHostImpl>(
                                   base::PassKey<WebNNBrowserHostImpl>()),
@@ -162,7 +343,7 @@ void WebNNBrowserHostImpl::Create(
 
 WebNNBrowserHostImpl::WebNNBrowserHostImpl(
     base::PassKey<WebNNBrowserHostImpl>) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
 WebNNBrowserHostImpl::~WebNNBrowserHostImpl() = default;
@@ -170,7 +351,7 @@ WebNNBrowserHostImpl::~WebNNBrowserHostImpl() = default;
 #if BUILDFLAG(IS_WIN)
 void WebNNBrowserHostImpl::EnsureExecutionProvidersReady(
     EnsureExecutionProvidersReadyCallback callback) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
   webnn::EnsureExecutionProvidersReady(std::move(callback));
 }
 #endif  // BUILDFLAG(IS_WIN)
@@ -185,8 +366,10 @@ void WebNNBrowserHostImpl::RequestCompilerContext(
     mojo::PendingReceiver<webnn::mojom::WebNNCompilerContext>
         compiler_context_receiver,
     mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote,
+    mojo::PendingReceiver<webnn::mojom::WebNNCompilerHost>
+        compiler_host_receiver,
     RequestCompilerContextCallback callback) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
       std::move(callback), /*success=*/false);
@@ -209,12 +392,12 @@ void WebNNBrowserHostImpl::RequestCompilerContext(
 
   // Create the context directly if the Compiler process for this device is
   // already running.
-  auto& compiler_remote = webnn_compiler_remotes_[target_device];
-  if (compiler_remote.is_bound()) {
-    compiler_remote->CreateCompilerContext(
+  auto host_it = webnn_compiler_hosts_.find(target_device);
+  if (host_it != webnn_compiler_hosts_.end() && host_it->second->is_bound()) {
+    host_it->second->CreateWebNNCompilerContext(
         std::move(context_options), context_properties,
         std::move(model_loader_remote), std::move(compiler_context_receiver),
-        std::move(wrapped_callback));
+        std::move(compiler_host_receiver), std::move(wrapped_callback));
     return;
   }
 
@@ -225,7 +408,8 @@ void WebNNBrowserHostImpl::RequestCompilerContext(
       &WebNNBrowserHostImpl::OnEpsResolvedForCompilerContext,
       weak_ptr_factory_.GetWeakPtr(), std::move(context_options),
       context_properties, target_device, std::move(compiler_context_receiver),
-      std::move(model_loader_remote), std::move(wrapped_callback)));
+      std::move(model_loader_remote), std::move(compiler_host_receiver),
+      std::move(wrapped_callback)));
 #elif BUILDFLAG(IS_APPLE)
   if (g_webnn_compiler_crash_count >= kMaxCompilerCrashCount ||
       !base::FeatureList::IsEnabled(
@@ -237,23 +421,17 @@ void WebNNBrowserHostImpl::RequestCompilerContext(
     return;
   }
 
-  if (!webnn_compiler_remote_.is_bound()) {
-    webnn_compiler_remote_ = LaunchCompilerProcess();
-    if (!webnn_compiler_remote_.is_bound()) {
-      LOG(ERROR) << "[WebNN] RequestCompilerContext() failed: "
-                    "WebNN Compiler process could not be launched.";
+  if (!webnn_compiler_host_ || !webnn_compiler_host_->is_bound()) {
+    webnn_compiler_host_ = CompilerHostImpl::Launch();
+    if (!webnn_compiler_host_) {
       return;
     }
-
-    webnn_compiler_remote_.set_disconnect_handler(base::BindOnce(
-        &WebNNBrowserHostImpl::OnDisconnected, base::Unretained(this)));
-    webnn_compiler_remote_.reset_on_idle_timeout(kCompilerIdleTimeout);
   }
 
-  webnn_compiler_remote_->CreateCompilerContext(
+  webnn_compiler_host_->CreateWebNNCompilerContext(
       std::move(context_options), context_properties,
       std::move(model_loader_remote), std::move(compiler_context_receiver),
-      std::move(wrapped_callback));
+      std::move(compiler_host_receiver), std::move(wrapped_callback));
 #endif
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
@@ -266,10 +444,23 @@ void WebNNBrowserHostImpl::OnEpsResolvedForCompilerContext(
     mojo::PendingReceiver<webnn::mojom::WebNNCompilerContext>
         compiler_context_receiver,
     mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote,
+    mojo::PendingReceiver<webnn::mojom::WebNNCompilerHost>
+        compiler_host_receiver,
     RequestCompilerContextCallback callback,
     base::flat_map<std::string, webnn::mojom::EpPackageInfoPtr>
         ep_package_info_map) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  auto it = GetWebNNCompilerCrashCounts().find(target_device);
+  const int crash_count =
+      it != GetWebNNCompilerCrashCounts().end() ? it->second : 0;
+  if (crash_count >= kMaxCompilerCrashCount) {
+    LOG(ERROR) << "[WebNN] RequestCompilerContext() failed: "
+                  "WebNN Compiler process has crashed too many "
+                  "times for ["
+               << target_device.ToSwitchValue() << "].";
+    return;
+  }
 
   const auto ep_it = ep_package_info_map.find(target_device.ep_name);
   if (ep_it == ep_package_info_map.end()) {
@@ -281,61 +472,23 @@ void WebNNBrowserHostImpl::OnEpsResolvedForCompilerContext(
   const base::FilePath& ep_library_path = ep_it->second->library_path;
 
   // Each EP device gets its own compiler process.
-  auto& compiler_remote = webnn_compiler_remotes_[target_device];
-  if (!compiler_remote.is_bound()) {
-    compiler_remote = LaunchCompilerProcess(ep_library_path, target_device);
-    if (!compiler_remote.is_bound()) {
-      LOG(ERROR) << "[WebNN] RequestCompilerContext() failed: "
-                    "WebNN Compiler process could not be launched for ["
-                 << target_device.ToSwitchValue() << "].";
+  auto& webnn_compiler_host = webnn_compiler_hosts_[target_device];
+  if (!webnn_compiler_host || !webnn_compiler_host->is_bound()) {
+    webnn_compiler_host =
+        CompilerHostImpl::Launch(ep_library_path, target_device);
+    if (!webnn_compiler_host) {
+      webnn_compiler_hosts_.erase(target_device);
       return;
     }
-    VLOG(1) << "[WebNN] Launched Compiler process for ["
-            << target_device.ToSwitchValue()
-            << "] (library: " << ep_library_path << ").";
-
-    compiler_remote.set_disconnect_handler(
-        base::BindOnce(&WebNNBrowserHostImpl::OnDisconnected,
-                       base::Unretained(this), target_device));
-    compiler_remote.set_idle_handler(
-        kCompilerIdleTimeout,
-        base::BindRepeating(&WebNNBrowserHostImpl::OnIdle,
-                            base::Unretained(this), target_device));
   }
 
   // Tell the Compiler process to create a per-context compiler state.
   // The CompilerContext receiver and ModelLoader remote are forwarded to the
   // Compiler process, completing the pipe connections.
-  compiler_remote->CreateCompilerContext(
+  webnn_compiler_host->CreateWebNNCompilerContext(
       std::move(context_options), context_properties,
       std::move(model_loader_remote), std::move(compiler_context_receiver),
-      std::move(callback));
-}
-
-void WebNNBrowserHostImpl::OnIdle(const webnn::EpDeviceInfo& device_info) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI);
-  auto it = webnn_compiler_remotes_.find(device_info);
-  CHECK(it != webnn_compiler_remotes_.end());
-  it->second.reset();
-}
-
-void WebNNBrowserHostImpl::OnDisconnected(
-    const webnn::EpDeviceInfo& device_info) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
-  auto it = webnn_compiler_remotes_.find(device_info);
-  CHECK(it != webnn_compiler_remotes_.end());
-  it->second.reset();
-
-  // Any disconnect is unexpected and treated as a crash.
-  int crash_count = ++GetWebNNCompilerCrashCounts()[device_info];
-  base::UmaHistogramExactLinear(
-      base::StrCat({"WebNN.CompilerProcess.CrashCount.", device_info.ep_name,
-                    ".", webnn::DeviceTypeToString(device_info.device_type)}),
-      crash_count, kMaxCompilerCrashCount + 1);
-
-  LOG(ERROR) << "[WebNN] Compiler process disconnected unexpectedly for ["
-             << device_info.ToSwitchValue() << "] (count: " << crash_count
-             << ").";
+      std::move(compiler_host_receiver), std::move(callback));
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -343,7 +496,7 @@ void WebNNBrowserHostImpl::OnDisconnected(
 // function here from `weights_file_provider.cc`.
 void WebNNBrowserHostImpl::CreateWeightsFile(
     CreateWeightsFileCallback callback) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
   webnn::CreateWeightsFile(std::move(callback));
 }
 
@@ -351,7 +504,7 @@ void WebNNBrowserHostImpl::CreateWeightsFile(
 void WebNNBrowserHostImpl::CopyCompiledModel(
     const base::FilePath& compiler_model_path,
     CopyCompiledModelCallback callback) {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
+  CHECK_CURRENTLY_ON(BrowserThread::UI);
 
   base::FilePath temp_dir;
   if (!base::GetTempDir(&temp_dir)) {
@@ -434,18 +587,6 @@ void WebNNBrowserHostImpl::CopyCompiledModel(
           },
           compiler_model_path, temp_dir),
       std::move(callback));
-}
-
-void WebNNBrowserHostImpl::OnDisconnected() {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
-  webnn_compiler_remote_.reset();
-
-  int crash_count = ++g_webnn_compiler_crash_count;
-  base::UmaHistogramExactLinear("WebNN.CompilerProcess.CrashCount.CoreML",
-                                crash_count, kMaxCompilerCrashCount + 1);
-
-  LOG(ERROR) << "[WebNN] Compiler process disconnected unexpectedly (count: "
-             << crash_count << ").";
 }
 #endif  // BUILDFLAG(IS_APPLE)
 

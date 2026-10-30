@@ -506,11 +506,17 @@ void WebNNContextProviderImpl::CreateWebNNContext(
         auto compiler_context_receiver =
             compiler_context_remote.InitWithNewPipeAndPassReceiver();
 
-        // Create ModelLoader pair: Compiler gets the remote (to send compiled
+        // Create ModelLoader pipe: Compiler gets the remote (to send compiled
         // models), GPU context gets the receiver (to load them).
         mojo::PendingRemote<mojom::WebNNModelLoader> model_loader_remote;
         auto model_loader_receiver =
             model_loader_remote.InitWithNewPipeAndPassReceiver();
+
+        // Create CompilerHost pipe: GPU context gets the remote, the browser
+        // gets the receiver.
+        mojo::PendingRemote<mojom::WebNNCompilerHost> compiler_host_remote;
+        auto compiler_host_receiver =
+            compiler_host_remote.InitWithNewPipeAndPassReceiver();
 
         auto reply = base::BindOnce(
             &WebNNContextProviderImpl::OnCoreMLCompilerContextRequested,
@@ -518,12 +524,13 @@ void WebNNContextProviderImpl::CreateWebNNContext(
             std::move(gpu_task_scheduler), owning_task_runner,
             std::move(callback), params.is_incognito, memory_tracker,
             sequence_id, command_buffer_id, std::move(compiler_context_remote),
-            std::move(model_loader_receiver));
+            std::move(model_loader_receiver), std::move(compiler_host_remote));
         webnn_browser_host_->RequestCompilerContext(
             std::move(options),
             coreml::ContextImplCoreml::GetContextProperties(),
             std::move(compiler_context_receiver),
-            std::move(model_loader_remote), std::move(reply));
+            std::move(model_loader_remote), std::move(compiler_host_receiver),
+            std::move(reply));
         return;
       }
 
@@ -537,7 +544,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
                          std::move(gpu_task_scheduler),
                          std::move(memory_tracker), owning_task_runner,
                          shared_image_manager_.get(), main_thread_task_runner_,
-                         /*model_loader_receiver=*/mojo::NullReceiver()),
+                         /*model_loader_receiver=*/mojo::NullReceiver(),
+                         /*compiler_host_remote=*/mojo::NullRemote()),
           base::BindOnce(&WebNNContextProviderImpl::OnCreateWebNNContextImpl,
                          AsWeakPtr(), std::move(callback), std::move(remote),
                          mojo::ScopedDataPipeProducerHandle(),
@@ -686,7 +694,8 @@ void WebNNContextProviderImpl::ReconnectCompilerContext(
 #endif  // BUILDFLAG(IS_WIN)
     mojo::PendingReceiver<mojom::WebNNCompilerContext>
         compiler_context_receiver,
-    mojo::PendingRemote<mojom::WebNNModelLoader> model_loader_remote) {
+    mojo::PendingRemote<mojom::WebNNModelLoader> model_loader_remote,
+    mojo::PendingReceiver<mojom::WebNNCompilerHost> compiler_host_receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
 
   // This is a reconnect for an already-created context, so it cannot fall back
@@ -697,7 +706,7 @@ void WebNNContextProviderImpl::ReconnectCompilerContext(
       target_device,
 #endif
       std::move(compiler_context_receiver), std::move(model_loader_remote),
-      base::BindOnce([](bool success) {
+      std::move(compiler_host_receiver), base::BindOnce([](bool success) {
         LOG_IF(ERROR, !success)
             << "[WebNN] Compiler context failed to reconnect.";
       }));
@@ -744,15 +753,24 @@ void WebNNContextProviderImpl::OnOrtEnvCreated(
             ort::ContextImplOrt::GetContextProperties(
                 ep_workarounds.resample2d_limit_to_nchw);
 
-        // Create the compiler context pipe (renderer->Compiler) and the
-        // model loader pipe (Compiler->GPU).
+        // Create CompilerContext pipe: Renderer gets the remote, Compiler
+        // process gets the receiver.
         mojo::PendingRemote<mojom::WebNNCompilerContext>
             compiler_context_remote;
         auto compiler_context_receiver =
             compiler_context_remote.InitWithNewPipeAndPassReceiver();
+
+        // Create ModelLoader pipe: Compiler gets the remote (to send compiled
+        // models), GPU context gets the receiver (to load them).
         mojo::PendingRemote<mojom::WebNNModelLoader> model_loader_remote;
         auto model_loader_receiver =
             model_loader_remote.InitWithNewPipeAndPassReceiver();
+
+        // Create CompilerHost pipe: GPU context gets the remote, the browser
+        // gets the receiver.
+        mojo::PendingRemote<mojom::WebNNCompilerHost> compiler_host_remote;
+        auto compiler_host_receiver =
+            compiler_host_remote.InitWithNewPipeAndPassReceiver();
 
         // Defer creating the dispatch context (which would consume the GPU
         // resources) until the compiler context confirms availability. If it is
@@ -765,12 +783,14 @@ void WebNNContextProviderImpl::OnOrtEnvCreated(
             std::move(callback), is_incognito, std::move(memory_tracker),
             std::move(env), *selected_device,
             std::move(compiler_context_remote),
-            std::move(model_loader_receiver), sequence_id, command_buffer_id);
+            std::move(model_loader_receiver), sequence_id, command_buffer_id,
+            std::move(compiler_host_remote));
 
         webnn_browser_host_->RequestCompilerContext(
             std::move(options), properties, *selected_device,
             std::move(compiler_context_receiver),
-            std::move(model_loader_remote), std::move(reply));
+            std::move(model_loader_remote), std::move(compiler_host_receiver),
+            std::move(reply));
         return;
       }
     } else {
@@ -830,6 +850,7 @@ void WebNNContextProviderImpl::OnCompilerContextRequested(
     mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver,
     gpu::SequenceId sequence_id,
     gpu::CommandBufferId command_buffer_id,
+    mojo::PendingRemote<mojom::WebNNCompilerHost> compiler_host_remote,
     bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
 
@@ -855,7 +876,8 @@ void WebNNContextProviderImpl::OnCompilerContextRequested(
   task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ort::DispatchContextImplOrt::Create, std::move(receiver),
-                     std::move(model_loader_receiver), AsWeakPtr(),
+                     std::move(model_loader_receiver),
+                     std::move(compiler_host_remote), AsWeakPtr(),
                      std::move(options), std::move(pipes.write_consumer),
                      std::move(pipes.read_producer), std::move(env),
                      std::move(gpu_task_scheduler), std::move(memory_tracker),
@@ -988,6 +1010,7 @@ void WebNNContextProviderImpl::OnCoreMLCompilerContextRequested(
     gpu::CommandBufferId command_buffer_id,
     mojo::PendingRemote<mojom::WebNNCompilerContext> compiler_context_remote,
     mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver,
+    mojo::PendingRemote<mojom::WebNNCompilerHost> compiler_host_remote,
     bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
 
@@ -1006,11 +1029,12 @@ void WebNNContextProviderImpl::OnCoreMLCompilerContextRequested(
 
   task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(
-          &coreml::ContextImplCoreml::Create, std::move(receiver), AsWeakPtr(),
-          std::move(options), std::move(gpu_task_scheduler),
-          std::move(memory_tracker), task_runner, shared_image_manager_.get(),
-          main_thread_task_runner_, std::move(model_loader_receiver)),
+      base::BindOnce(&coreml::ContextImplCoreml::Create, std::move(receiver),
+                     AsWeakPtr(), std::move(options),
+                     std::move(gpu_task_scheduler), std::move(memory_tracker),
+                     task_runner, shared_image_manager_.get(),
+                     main_thread_task_runner_, std::move(model_loader_receiver),
+                     std::move(compiler_host_remote)),
       base::BindOnce(&WebNNContextProviderImpl::OnCreateWebNNContextImpl,
                      AsWeakPtr(), std::move(callback), std::move(remote),
                      mojo::ScopedDataPipeProducerHandle(),

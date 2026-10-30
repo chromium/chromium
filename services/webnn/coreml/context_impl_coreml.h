@@ -7,6 +7,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/webnn/public/mojom/webnn_browser_host.mojom.h"
 #include "services/webnn/public/mojom/webnn_model_loader.mojom.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
@@ -34,7 +37,8 @@ class API_AVAILABLE(macos(14.4)) ContextImplCoreml final
       scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
       gpu::SharedImageManager* shared_image_manager,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-      mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver);
+      mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver,
+      mojo::PendingRemote<mojom::WebNNCompilerHost> compiler_host_remote);
 
   static ContextProperties GetContextProperties();
 
@@ -47,7 +51,8 @@ class API_AVAILABLE(macos(14.4)) ContextImplCoreml final
       scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
       gpu::SharedImageManager* shared_image_manager,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-      mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver);
+      mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver,
+      mojo::PendingRemote<mojom::WebNNCompilerHost> compiler_host_remote);
 
   ContextImplCoreml(const WebNNContextImpl&) = delete;
   ContextImplCoreml& operator=(const ContextImplCoreml&) = delete;
@@ -92,7 +97,13 @@ class API_AVAILABLE(macos(14.4)) ContextImplCoreml final
       LoadCompiledGraphCallback callback,
       const std::optional<base::FilePath>& gpu_model_path);
 
+  void OnCompilerHostDisconnected();
+
  private:
+  // Handle to the Compiler process. Used to terminate the Compiler process when
+  // needed.
+  mojo::Remote<mojom::WebNNCompilerHost> compiler_host_remote_;
+
   // Receiver end of the Compiler->GPU channel.
   mojo::Receiver<mojom::WebNNModelLoader> model_loader_receiver_{this};
 

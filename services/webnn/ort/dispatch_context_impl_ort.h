@@ -7,10 +7,14 @@
 
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/webnn/ort/context_impl_ort.h"
 #include "services/webnn/public/cpp/ep_device_info.h"
+#include "services/webnn/public/mojom/webnn_browser_host.mojom.h"
 #include "services/webnn/public/mojom/webnn_model_loader.mojom.h"
 
 namespace webnn::ort {
@@ -30,6 +34,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) DispatchContextImplOrt final
   static std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> Create(
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
       mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver,
+      mojo::PendingRemote<mojom::WebNNCompilerHost> compiler_host_remote,
       base::WeakPtr<WebNNContextProviderImpl> context_provider,
       mojom::CreateContextOptionsPtr options,
       mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
@@ -45,6 +50,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) DispatchContextImplOrt final
   DispatchContextImplOrt(
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
       mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver,
+      mojo::PendingRemote<mojom::WebNNCompilerHost> compiler_host_remote,
       base::WeakPtr<WebNNContextProviderImpl> context_provider,
       const EpWorkarounds& ep_workarounds,
       mojom::CreateContextOptionsPtr options,
@@ -77,10 +83,16 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) DispatchContextImplOrt final
   void LoadCompiledGraph(mojom::CompiledGraphPtr compiled_graph,
                          LoadCompiledGraphCallback callback) override;
 
+  void OnCompilerHostDisconnected();
+
   // The EP device that was selected for this DispatchContextImplOrt. Used to
   // reconnect when requesting a CompilerContext from the Compiler process for
   // the same EP device.
-  EpDeviceInfo target_device_;
+  const EpDeviceInfo target_device_;
+
+  // Handle to the Compiler process. Used to terminate the Compiler process when
+  // needed.
+  mojo::Remote<mojom::WebNNCompilerHost> compiler_host_remote_;
 
   // Receiver end of the Compiler->GPU channel.
   mojo::Receiver<mojom::WebNNModelLoader> model_loader_receiver_{this};

@@ -39,7 +39,8 @@ ContextImplCoreml::Create(
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
     gpu::SharedImageManager* shared_image_manager,
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-    mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver) {
+    mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver,
+    mojo::PendingRemote<mojom::WebNNCompilerHost> compiler_host_remote) {
   DCHECK(owning_task_runner->RunsTasksInCurrentSequence());
   auto task_runner = owning_task_runner;
   std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> context_impl(
@@ -47,7 +48,8 @@ ContextImplCoreml::Create(
           std::move(receiver), std::move(context_provider), std::move(options),
           std::move(gpu_task_scheduler), std::move(memory_tracker),
           std::move(owning_task_runner), shared_image_manager,
-          std::move(main_task_runner), std::move(model_loader_receiver)),
+          std::move(main_task_runner), std::move(model_loader_receiver),
+          std::move(compiler_host_remote)),
       OnTaskRunnerDeleter(std::move(task_runner)));
   return context_impl;
 }
@@ -66,7 +68,8 @@ ContextImplCoreml::ContextImplCoreml(
     scoped_refptr<base::SingleThreadTaskRunner> owning_task_runner,
     gpu::SharedImageManager* shared_image_manager,
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
-    mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver)
+    mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver,
+    mojo::PendingRemote<mojom::WebNNCompilerHost> compiler_host_remote)
     : WebNNContextImpl(std::move(receiver),
                        std::move(context_provider),
                        ContextBackendUma::kCoreML,
@@ -81,6 +84,12 @@ ContextImplCoreml::ContextImplCoreml(
                        std::move(main_task_runner)) {
   if (model_loader_receiver.is_valid()) {
     model_loader_receiver_.Bind(std::move(model_loader_receiver));
+  }
+  if (compiler_host_remote.is_valid()) {
+    compiler_host_remote_.Bind(std::move(compiler_host_remote));
+    compiler_host_remote_.set_disconnect_handler(
+        base::BindOnce(&ContextImplCoreml::OnCompilerHostDisconnected,
+                       base::Unretained(this)));
   }
 }
 
@@ -186,6 +195,9 @@ void ContextImplCoreml::OnCompiledModelCopied(
   std::ignore = compiled_model_dir.Set(gpu_model_path->DirName());
 
   // Load the copied model.
+  // TODO(crbug.com/564527316): Use `compiler_host_remote_->Terminate()` when
+  // loading the compiled model fails in a way that indicates the Compiler
+  // process is misbehaving.
   GraphImplCoreml::CreateAndLoadCompiledModel(
       *this, std::move(compiled_model_dir),
       std::move(compiled_graph->input_binding_names),
@@ -218,10 +230,16 @@ void ContextImplCoreml::RequestCompilerContext(
         compiler_context_receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Create the ModelLoader pipe pair on this thread (the owning thread where
-  // model_loader_receiver_ lives), avoiding cross-thread posting.
+  // Create the ModelLoader and CompilerHost pipes on this thread,
+  // avoiding cross-thread posting.
   model_loader_receiver_.reset();
   auto model_loader_remote = model_loader_receiver_.BindNewPipeAndPassRemote();
+
+  compiler_host_remote_.reset();
+  auto compiler_host_receiver =
+      compiler_host_remote_.BindNewPipeAndPassReceiver();
+  compiler_host_remote_.set_disconnect_handler(base::BindOnce(
+      &ContextImplCoreml::OnCompilerHostDisconnected, base::Unretained(this)));
 
   // Post to the main thread to reconnect via the context provider.
   main_task_runner()->PostTask(
@@ -232,7 +250,9 @@ void ContextImplCoreml::RequestCompilerContext(
              ContextProperties properties,
              mojo::PendingReceiver<mojom::WebNNCompilerContext>
                  compiler_context_receiver,
-             mojo::PendingRemote<mojom::WebNNModelLoader> model_loader_remote) {
+             mojo::PendingRemote<mojom::WebNNModelLoader> model_loader_remote,
+             mojo::PendingReceiver<mojom::WebNNCompilerHost>
+                 compiler_host_receiver) {
             if (!context_provider) {
               LOG(ERROR) << "[WebNN] RequestCompilerContext() failed: "
                             "WebNNContextProviderImpl is no longer available.";
@@ -241,11 +261,22 @@ void ContextImplCoreml::RequestCompilerContext(
             context_provider->ReconnectCompilerContext(
                 std::move(options), properties,
                 std::move(compiler_context_receiver),
-                std::move(model_loader_remote));
+                std::move(model_loader_remote),
+                std::move(compiler_host_receiver));
           },
           context_provider_, options_->Clone(), properties_,
-          std::move(compiler_context_receiver),
-          std::move(model_loader_remote)));
+          std::move(compiler_context_receiver), std::move(model_loader_remote),
+          std::move(compiler_host_receiver)));
+}
+
+void ContextImplCoreml::OnCompilerHostDisconnected() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Also close the ModelLoader pipe in case the (possibly compromised) Compiler
+  // process ignores the termination signal and keeps sending messages. A
+  // reconnect can re-establish both pipes.
+  model_loader_receiver_.reset();
+  compiler_host_remote_.reset();
 }
 
 }  // namespace webnn::coreml

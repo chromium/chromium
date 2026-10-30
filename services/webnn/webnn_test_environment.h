@@ -45,6 +45,8 @@ class FakeWebNNBrowserHostForTesting : public mojom::WebNNBrowserHost {
       mojo::PendingReceiver<webnn::mojom::WebNNCompilerContext>
           compiler_context_receiver,
       mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote,
+      mojo::PendingReceiver<webnn::mojom::WebNNCompilerHost>
+          compiler_host_receiver,
       RequestCompilerContextCallback callback) override;
 #endif
   void CreateWeightsFile(CreateWeightsFileCallback callback) override;

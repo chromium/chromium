@@ -21,6 +21,7 @@ std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter>
 DispatchContextImplOrt::Create(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver,
+    mojo::PendingRemote<mojom::WebNNCompilerHost> compiler_host_remote,
     base::WeakPtr<WebNNContextProviderImpl> context_provider,
     mojom::CreateContextOptionsPtr options,
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
@@ -43,8 +44,8 @@ DispatchContextImplOrt::Create(
 
   auto* dispatch_context = new DispatchContextImplOrt(
       std::move(receiver), std::move(model_loader_receiver),
-      std::move(context_provider), std::move(ep_workarounds),
-      std::move(options), std::move(session_options),
+      std::move(compiler_host_remote), std::move(context_provider),
+      std::move(ep_workarounds), std::move(options), std::move(session_options),
       std::move(write_tensor_consumer), std::move(read_tensor_producer),
       std::move(env), std::move(gpu_task_scheduler), std::move(memory_tracker),
       owning_task_runner, shared_image_manager, std::move(main_task_runner),
@@ -57,6 +58,7 @@ DispatchContextImplOrt::Create(
 DispatchContextImplOrt::DispatchContextImplOrt(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver,
+    mojo::PendingRemote<mojom::WebNNCompilerHost> compiler_host_remote,
     base::WeakPtr<WebNNContextProviderImpl> context_provider,
     const EpWorkarounds& ep_workarounds,
     mojom::CreateContextOptionsPtr options,
@@ -83,8 +85,12 @@ DispatchContextImplOrt::DispatchContextImplOrt(
                      std::move(owning_task_runner),
                      shared_image_manager,
                      std::move(main_task_runner)),
-      target_device_(std::move(target_device)) {
+      target_device_(std::move(target_device)),
+      compiler_host_remote_(std::move(compiler_host_remote)) {
   model_loader_receiver_.Bind(std::move(model_loader_receiver));
+  compiler_host_remote_.set_disconnect_handler(
+      base::BindOnce(&DispatchContextImplOrt::OnCompilerHostDisconnected,
+                     base::Unretained(this)));
 }
 
 DispatchContextImplOrt::~DispatchContextImplOrt() = default;
@@ -104,10 +110,17 @@ void DispatchContextImplOrt::RequestCompilerContext(
         compiler_context_receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Create the ModelLoader pipe pair on this thread (the owning thread where
-  // model_loader_receiver_ lives), avoiding cross-thread posting.
+  // Create the ModelLoader and CompilerHost pipes on this thread,
+  // avoiding cross-thread posting.
   model_loader_receiver_.reset();
   auto model_loader_remote = model_loader_receiver_.BindNewPipeAndPassRemote();
+
+  compiler_host_remote_.reset();
+  auto compiler_host_receiver =
+      compiler_host_remote_.BindNewPipeAndPassReceiver();
+  compiler_host_remote_.set_disconnect_handler(
+      base::BindOnce(&DispatchContextImplOrt::OnCompilerHostDisconnected,
+                     base::Unretained(this)));
 
   // Post to the main thread where `context_provider_` (a WeakPtr bound to the
   // main sequence) can be safely dereferenced.
@@ -119,7 +132,9 @@ void DispatchContextImplOrt::RequestCompilerContext(
              ContextProperties properties, EpDeviceInfo target_device,
              mojo::PendingReceiver<mojom::WebNNCompilerContext>
                  compiler_context_receiver,
-             mojo::PendingRemote<mojom::WebNNModelLoader> model_loader_remote) {
+             mojo::PendingRemote<mojom::WebNNModelLoader> model_loader_remote,
+             mojo::PendingReceiver<mojom::WebNNCompilerHost>
+                 compiler_host_receiver) {
             if (!context_provider) {
               // Drop the pipe endpoints — peer endpoints will observe a
               // disconnect.
@@ -130,23 +145,42 @@ void DispatchContextImplOrt::RequestCompilerContext(
             context_provider->ReconnectCompilerContext(
                 std::move(options), properties, std::move(target_device),
                 std::move(compiler_context_receiver),
-                std::move(model_loader_remote));
+                std::move(model_loader_remote),
+                std::move(compiler_host_receiver));
           },
           context_provider_, options_->Clone(), properties_, target_device_,
-          std::move(compiler_context_receiver),
-          std::move(model_loader_remote)));
+          std::move(compiler_context_receiver), std::move(model_loader_remote),
+          std::move(compiler_host_receiver)));
+}
+
+void DispatchContextImplOrt::OnCompilerHostDisconnected() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Also close the ModelLoader pipe in case the (possibly compromised) Compiler
+  // process ignores the termination signal and keeps sending messages. A
+  // reconnect can re-establish both pipes.
+  model_loader_receiver_.reset();
+  compiler_host_remote_.reset();
 }
 
 void DispatchContextImplOrt::LoadCompiledGraph(
     mojom::CompiledGraphPtr compiled_graph,
     LoadCompiledGraphCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   auto result = GraphImplOrt::CreateSessionFromCompiledGraph(
       *this, session_options(), env(),
       std::move(compiled_graph->compiled_model_data),
       std::move(compiled_graph->input_binding_names),
       std::move(compiled_graph->output_binding_names));
   if (!result.has_value()) {
-    std::move(callback).Run(base::unexpected(std::move(result.error())));
+    if (result.error().is_contract_violation) {
+      model_loader_receiver_.ReportBadMessage(result.error().error->message);
+      compiler_host_remote_->Terminate();
+    } else {
+      std::move(callback).Run(
+          base::unexpected(std::move(result.error().error)));
+    }
     return;
   }
 

@@ -157,7 +157,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
 #endif
       mojo::PendingReceiver<mojom::WebNNCompilerContext>
           compiler_context_receiver,
-      mojo::PendingRemote<mojom::WebNNModelLoader> model_loader_remote);
+      mojo::PendingRemote<mojom::WebNNModelLoader> model_loader_remote,
+      mojo::PendingReceiver<mojom::WebNNCompilerHost> compiler_host_receiver);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 
   static void SetBackendForTesting(BackendForTesting* backend_for_testing);
@@ -256,6 +257,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver,
       gpu::SequenceId sequence_id,
       gpu::CommandBufferId command_buffer_id,
+      mojo::PendingRemote<mojom::WebNNCompilerHost> compiler_host_remote,
       bool success);
 
   void OnDispatchContextCreated(
@@ -306,6 +308,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       gpu::CommandBufferId command_buffer_id,
       mojo::PendingRemote<mojom::WebNNCompilerContext> compiler_context_remote,
       mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver,
+      mojo::PendingRemote<mojom::WebNNCompilerHost> compiler_host_remote,
       bool success) API_AVAILABLE(macos(14.4));
 #endif  // BUILDFLAG(IS_APPLE)
 
