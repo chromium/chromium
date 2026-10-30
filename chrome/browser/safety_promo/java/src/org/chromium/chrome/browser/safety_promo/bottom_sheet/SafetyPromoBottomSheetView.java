@@ -8,6 +8,9 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -17,6 +20,7 @@ import org.chromium.ui.widget.ButtonCompat;
 /** View for the Safety Promo "Show me how" bottom sheet. */
 @NullMarked
 public class SafetyPromoBottomSheetView extends LinearLayout {
+    private TextView mTitleView;
     private ButtonCompat mGotItButton;
 
     public SafetyPromoBottomSheetView(Context context, @Nullable AttributeSet attrs) {
@@ -26,7 +30,13 @@ public class SafetyPromoBottomSheetView extends LinearLayout {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
+        mTitleView = findViewById(R.id.safety_promo_bottom_sheet_title);
         mGotItButton = findViewById(R.id.safety_promo_bottom_sheet_got_it_button);
+    }
+
+    /** Sets the title of the sheet. */
+    void setTitle(@StringRes int stringResId) {
+        mTitleView.setText(stringResId);
     }
 
     /** Sets the click listener of the "Got it" button. */

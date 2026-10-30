@@ -131,13 +131,16 @@ public class SafetyPromoCarouselCoordinator {
         return assumeNonNull(mUseLandscapeLayout ? mLandscapeView : mPortraitView);
     }
 
-    /** Creates and shows a new "Show me how" bottom sheet. */
+    /** Creates and shows a new "Show me how" bottom sheet for the active item. */
     private void showBottomSheet() {
         if (mBottomSheetCoordinator != null) return;
 
         mBottomSheetCoordinator =
                 new SafetyPromoBottomSheetCoordinator(
-                        mContext, mBottomSheetController, this::onBottomSheetDestroyed);
+                        mContext,
+                        mBottomSheetController,
+                        mMediator.getActiveItem(),
+                        this::onBottomSheetDestroyed);
         mBottomSheetCoordinator.showBottomSheet();
     }
 

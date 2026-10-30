@@ -59,6 +59,11 @@ class SafetyPromoCarouselMediator {
         mSelectedItemSupplier.removeObserver(mSelectedItemObserver);
     }
 
+    /** Returns the {@link SafetyPromoItem} of the active page. */
+    SafetyPromoItem getActiveItem() {
+        return mItems.get(mModel.get(ACTIVE_PAGE_INDEX));
+    }
+
     /**
      * Called when the carousel has settled on a page after the user scrolled it.
      *

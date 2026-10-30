@@ -3613,6 +3613,18 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_SAFETY_FRE_PROMO_SHOW_ME_HOW_BUTTON" desc="Text on the button to show the user how to configure safety settings from the Safety Promo screen of the First Run Experience.">
         Show me how
       </message>
+      <message name="IDS_SAFETY_FRE_PROMO_PASSWORD_MANAGER_BOTTOM_SHEET_TITLE" desc="Title of the bottom sheet that shows the user how to use Google Password Manager. Opened from the Show me how button on the Safety Promo Carousel screen of the First Run Experience.">
+        Save passwords in Chrome
+      </message>
+      <message name="IDS_SAFETY_FRE_PROMO_HISTORY_QUICK_DELETE_BOTTOM_SHEET_TITLE" desc="Title of the bottom sheet that shows the user how to quickly delete their browsing history. Opened from the Show me how button on the Safety Promo Carousel screen of the First Run Experience.">
+        Quickly delete browsing data
+      </message>
+      <message name="IDS_SAFETY_FRE_PROMO_ENHANCED_SAFE_BROWSING_BOTTOM_SHEET_TITLE" desc="Title of the bottom sheet that shows the user how to turn on Enhanced Safe Browsing. Opened from the Show me how button on the Safety Promo Carousel screen of the First Run Experience.">
+        Get Chrome’s strongest security
+      </message>
+      <message name="IDS_SAFETY_FRE_PROMO_INCOGNITO_BOTTOM_SHEET_TITLE" desc="Title of the bottom sheet that shows the user how to lock their Incognito tabs. Opened from the Show me how button on the Safety Promo Carousel screen of the First Run Experience.">
+        Secure your Incognito tabs
+      </message>
       <message name="IDS_LIGHTWEIGHT_FRE_ASSOCIATED_APP_TOS" desc="Message explaining that use of Chrome is governed by Chrome's terms of service.">
         <ph name="APP_NAME">%1$s<ex>Google Maps</ex></ph> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1">&lt;LINK1&gt;</ph>Google Terms of Service<ph name="END_LINK1">&lt;/LINK1&gt;</ph>, and the <ph name="BEGIN_LINK2">&lt;LINK2&gt;</ph>Google Chrome and ChromeOS Additional Terms of Service<ph name="END_LINK2">&lt;/LINK2&gt;</ph>.
       </message>

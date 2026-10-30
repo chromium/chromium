@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.safety_promo;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
 
 import static org.chromium.chrome.browser.safety_promo.SafetyPromoCarouselProperties.ACTIVE_PAGE_INDEX;
 import static org.chromium.chrome.browser.safety_promo.SafetyPromoCarouselProperties.PAGE_COUNT;
@@ -116,6 +117,7 @@ public class SafetyPromoCarouselMediatorUnitTest {
     }
 
     private void assertActivePage(SafetyPromoItem item) {
+        assertSame(item, mMediator.getActiveItem());
         assertEquals(TEST_ITEMS.indexOf(item), mModel.get(ACTIVE_PAGE_INDEX));
         assertEquals(item.carouselTitleResId, mModel.get(TITLE_RES_ID));
         assertEquals(item.carouselSubtitleResId, mModel.get(SUBTITLE_RES_ID));

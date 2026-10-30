@@ -4,11 +4,13 @@
 
 package org.chromium.chrome.browser.safety_promo.bottom_sheet;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -22,6 +24,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.safety_promo.R;
+import org.chromium.chrome.browser.safety_promo.SafetyPromoItem;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -47,10 +50,23 @@ public class SafetyPromoBottomSheetViewBinderUnitTest {
         PropertyModel model =
                 new PropertyModel.Builder(SafetyPromoBottomSheetProperties.ALL_KEYS)
                         .with(
+                                SafetyPromoBottomSheetProperties.TITLE_RES_ID,
+                                SafetyPromoItem.PASSWORD_MANAGER.bottomSheetTitleResId)
+                        .with(
                                 SafetyPromoBottomSheetProperties.ON_GOT_IT_CLICKED,
                                 mOnGotItClickListener)
                         .build();
         PropertyModelChangeProcessor.create(model, mView, SafetyPromoBottomSheetViewBinder::bind);
+    }
+
+    @Test
+    public void testTitle() {
+        TextView titleView = mView.findViewById(R.id.safety_promo_bottom_sheet_title);
+
+        assertEquals(
+                mView.getContext()
+                        .getString(SafetyPromoItem.PASSWORD_MANAGER.bottomSheetTitleResId),
+                titleView.getText().toString());
     }
 
     @Test

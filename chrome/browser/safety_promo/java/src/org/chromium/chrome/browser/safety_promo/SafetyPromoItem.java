@@ -19,7 +19,8 @@ public class SafetyPromoItem {
                     R.string.safety_fre_promo_password_manager_subtitle,
                     R.string.safety_fre_promo_password_manager_carousel_title,
                     R.string.safety_fre_promo_password_manager_carousel_subtitle,
-                    R.drawable.safety_promo_password_manager_carousel_illustration);
+                    R.drawable.safety_promo_password_manager_carousel_illustration,
+                    R.string.safety_fre_promo_password_manager_bottom_sheet_title);
 
     public static final SafetyPromoItem HISTORY_QUICK_DELETE =
             new SafetyPromoItem(
@@ -28,7 +29,8 @@ public class SafetyPromoItem {
                     R.string.safety_fre_promo_history_quick_delete_subtitle,
                     R.string.safety_fre_promo_history_quick_delete_carousel_title,
                     R.string.safety_fre_promo_history_quick_delete_carousel_subtitle,
-                    R.drawable.safety_promo_history_quick_delete_carousel_illustration);
+                    R.drawable.safety_promo_history_quick_delete_carousel_illustration,
+                    R.string.safety_fre_promo_history_quick_delete_bottom_sheet_title);
 
     public static final SafetyPromoItem ENHANCED_SAFE_BROWSING =
             new SafetyPromoItem(
@@ -37,7 +39,8 @@ public class SafetyPromoItem {
                     R.string.safety_fre_promo_enhanced_safe_browsing_subtitle,
                     R.string.safety_fre_promo_enhanced_safe_browsing_carousel_title,
                     R.string.safety_fre_promo_enhanced_safe_browsing_carousel_subtitle,
-                    R.drawable.safety_promo_enhanced_safe_browsing_carousel_illustration);
+                    R.drawable.safety_promo_enhanced_safe_browsing_carousel_illustration,
+                    R.string.safety_fre_promo_enhanced_safe_browsing_bottom_sheet_title);
 
     public static final SafetyPromoItem INCOGNITO =
             new SafetyPromoItem(
@@ -46,7 +49,8 @@ public class SafetyPromoItem {
                     R.string.safety_fre_promo_incognito_subtitle,
                     R.string.safety_fre_promo_incognito_carousel_title,
                     R.string.safety_fre_promo_incognito_carousel_subtitle,
-                    R.drawable.safety_promo_incognito_carousel_illustration);
+                    R.drawable.safety_promo_incognito_carousel_illustration,
+                    R.string.safety_fre_promo_incognito_bottom_sheet_title);
 
     public final @DrawableRes int cardIconResId;
     public final @StringRes int cardTitleResId;
@@ -56,18 +60,22 @@ public class SafetyPromoItem {
     public final @StringRes int carouselSubtitleResId;
     public final @DrawableRes int carouselIllustrationResId;
 
+    public final @StringRes int bottomSheetTitleResId;
+
     private SafetyPromoItem(
             @DrawableRes int cardIconResId,
             @StringRes int cardTitleResId,
             @StringRes int cardSubtitleResId,
             @StringRes int carouselTitleResId,
             @StringRes int carouselSubtitleResId,
-            @DrawableRes int carouselIllustrationResId) {
+            @DrawableRes int carouselIllustrationResId,
+            @StringRes int bottomSheetTitleResId) {
         this.cardIconResId = cardIconResId;
         this.cardTitleResId = cardTitleResId;
         this.cardSubtitleResId = cardSubtitleResId;
         this.carouselTitleResId = carouselTitleResId;
         this.carouselSubtitleResId = carouselSubtitleResId;
         this.carouselIllustrationResId = carouselIllustrationResId;
+        this.bottomSheetTitleResId = bottomSheetTitleResId;
     }
 }

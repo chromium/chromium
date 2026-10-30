@@ -37,8 +37,6 @@ found in the LICENSE file.
         android:paddingHorizontal=
             "@dimen/safety_fre_bottom_sheet_padding_horizontal">
 
-      <!-- TODO(crbug.com/534388538): Bind the title of the active carousel
-           item. -->
       <org.chromium.ui.widget.TextViewWithLeading
           android:id="@+id/safety_promo_bottom_sheet_title"
           android:layout_width="match_parent"

@@ -100,7 +100,8 @@ public class SafetyPromoCarouselCoordinatorUnitTest {
 
     @Test
     public void testShowMeHowClick_showsBottomSheet() {
-        createCoordinator(/* useLandscapeLayout= */ false, ObservableSuppliers.createNullable());
+        createCoordinatorWithRealMediator(
+                /* useLandscapeLayout= */ false, ObservableSuppliers.createNullable());
 
         mCoordinator.getView().findViewById(R.id.fre_show_me_how_button).performClick();
 
@@ -110,7 +111,8 @@ public class SafetyPromoCarouselCoordinatorUnitTest {
 
     @Test
     public void testShowMeHowDoubleClick_showsBottomSheetOnce() {
-        createCoordinator(/* useLandscapeLayout= */ false, ObservableSuppliers.createNullable());
+        createCoordinatorWithRealMediator(
+                /* useLandscapeLayout= */ false, ObservableSuppliers.createNullable());
         View showMeHowButton = mCoordinator.getView().findViewById(R.id.fre_show_me_how_button);
 
         showMeHowButton.performClick();
@@ -122,7 +124,8 @@ public class SafetyPromoCarouselCoordinatorUnitTest {
 
     @Test
     public void testShowMeHowClick_afterBottomSheetDestroyed_showsNewBottomSheet() {
-        createCoordinator(/* useLandscapeLayout= */ false, ObservableSuppliers.createNullable());
+        createCoordinatorWithRealMediator(
+                /* useLandscapeLayout= */ false, ObservableSuppliers.createNullable());
         View showMeHowButton = mCoordinator.getView().findViewById(R.id.fre_show_me_how_button);
 
         showMeHowButton.performClick();
@@ -138,6 +141,21 @@ public class SafetyPromoCarouselCoordinatorUnitTest {
     }
 
     @Test
+    public void testShowMeHowClick_showsActiveItemTitle() {
+        createCoordinatorWithRealMediator(
+                /* useLandscapeLayout= */ false,
+                ObservableSuppliers.createNullable(SafetyPromoItem.INCOGNITO));
+
+        BottomSheetContent content = showBottomSheet();
+
+        TextView titleView =
+                content.getContentView().findViewById(R.id.safety_promo_bottom_sheet_title);
+        assertEquals(
+                mContext.getString(SafetyPromoItem.INCOGNITO.bottomSheetTitleResId),
+                titleView.getText().toString());
+    }
+
+    @Test
     public void testDestroy() {
         createCoordinator(/* useLandscapeLayout= */ false, ObservableSuppliers.createNullable());
 
@@ -148,7 +166,8 @@ public class SafetyPromoCarouselCoordinatorUnitTest {
 
     @Test
     public void testDestroy_dismissesBottomSheet() {
-        createCoordinator(/* useLandscapeLayout= */ false, ObservableSuppliers.createNullable());
+        createCoordinatorWithRealMediator(
+                /* useLandscapeLayout= */ false, ObservableSuppliers.createNullable());
         BottomSheetContent content = showBottomSheet();
 
         mCoordinator.destroy();
@@ -158,7 +177,8 @@ public class SafetyPromoCarouselCoordinatorUnitTest {
 
     @Test
     public void testConfigurationChange_resourcesChanged_dismissesBottomSheet() {
-        createCoordinator(/* useLandscapeLayout= */ false, ObservableSuppliers.createNullable());
+        createCoordinatorWithRealMediator(
+                /* useLandscapeLayout= */ false, ObservableSuppliers.createNullable());
         BottomSheetContent content = showBottomSheet();
 
         changeResources(/* useLandscapeLayout= */ false);
@@ -168,7 +188,8 @@ public class SafetyPromoCarouselCoordinatorUnitTest {
 
     @Test
     public void testConfigurationChange_rotation_keepsBottomSheet() {
-        createCoordinator(/* useLandscapeLayout= */ false, ObservableSuppliers.createNullable());
+        createCoordinatorWithRealMediator(
+                /* useLandscapeLayout= */ false, ObservableSuppliers.createNullable());
         showBottomSheet();
 
         rotate(/* useLandscapeLayout= */ true);

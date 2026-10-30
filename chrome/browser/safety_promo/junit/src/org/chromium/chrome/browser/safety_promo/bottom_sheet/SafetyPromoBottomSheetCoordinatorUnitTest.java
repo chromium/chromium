@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.safety_promo.bottom_sheet;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
@@ -11,6 +12,8 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -26,6 +29,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.safety_promo.R;
+import org.chromium.chrome.browser.safety_promo.SafetyPromoItem;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
@@ -46,7 +50,20 @@ public class SafetyPromoBottomSheetCoordinatorUnitTest {
         context.setTheme(R.style.Theme_BrowserUI_DayNight);
         mCoordinator =
                 new SafetyPromoBottomSheetCoordinator(
-                        context, mBottomSheetController, mOnDestroyRunnable);
+                        context,
+                        mBottomSheetController,
+                        SafetyPromoItem.INCOGNITO,
+                        mOnDestroyRunnable);
+    }
+
+    @Test
+    public void testTitle_isItemBottomSheetTitle() {
+        View contentView = showBottomSheetAndGetContent().getContentView();
+
+        TextView titleView = contentView.findViewById(R.id.safety_promo_bottom_sheet_title);
+        assertEquals(
+                contentView.getContext().getString(SafetyPromoItem.INCOGNITO.bottomSheetTitleResId),
+                titleView.getText().toString());
     }
 
     @Test
