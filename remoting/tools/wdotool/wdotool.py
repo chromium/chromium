@@ -23,35 +23,41 @@ class DBusService:
     self.bus_name = bus_name
     self.interface = interface
 
-  def call(self,
-           path: str,
-           method: str,
-           signature: str = "",
-           params: List[Any] = []) -> Any:
-    return self.bus.call_blocking(self.bus_name, path, self.interface,
-                                  method, signature, params)
+  def call(
+    self, path: str, method: str, signature: str = "", params: List[Any] = []
+  ) -> Any:
+    return self.bus.call_blocking(
+      self.bus_name, path, self.interface, method, signature, params
+    )
 
   def get(self, path: str, namespace: str, property_name: str) -> Any:
-    return self.bus.call_blocking(self.bus_name, path,
-                                  "org.freedesktop.DBus.Properties", "Get",
-                                  "ss", [namespace, property_name],
+    return self.bus.call_blocking(
+      self.bus_name,
+      path,
+      "org.freedesktop.DBus.Properties",
+      "Get",
+      "ss",
+      [namespace, property_name],
     )
 
 
 class RemoteDesktop(DBusService):
   def __init__(self, bus: dbus.Bus) -> None:
-    super().__init__(bus, "org.gnome.Mutter.RemoteDesktop",
-                     "org.gnome.Mutter.RemoteDesktop")
+    super().__init__(
+      bus, "org.gnome.Mutter.RemoteDesktop", "org.gnome.Mutter.RemoteDesktop"
+    )
 
   def create_session(self) -> "RemoteDesktopSession":
-    path = self.call("/org/gnome/Mutter/RemoteDesktop", "CreateSession",
-                     "b", [True])
+    path = self.call(
+      "/org/gnome/Mutter/RemoteDesktop", "CreateSession", "b", [True]
+    )
     return RemoteDesktopSession(self.bus, path)
 
 
 class Startable(DBusService):
-  def __init__(self, bus: dbus.Bus, bus_name: str, path: str,
-               interface: str) -> None:
+  def __init__(
+    self, bus: dbus.Bus, bus_name: str, path: str, interface: str
+  ) -> None:
     super().__init__(bus, bus_name, interface)
     self.path = path
     self.started = False
@@ -60,7 +66,7 @@ class Startable(DBusService):
     if self.started:
       try:
         self.call(self.path, "Stop")
-      except:
+      except:  # noqa: E722
         pass
 
   def start(self) -> None:
@@ -70,13 +76,17 @@ class Startable(DBusService):
 
 class RemoteDesktopSession(Startable):
   def __init__(self, bus: dbus.Bus, path: str) -> None:
-    super().__init__(bus, "org.gnome.Mutter.RemoteDesktop", path,
-                     "org.gnome.Mutter.RemoteDesktop.Session",
+    super().__init__(
+      bus,
+      "org.gnome.Mutter.RemoteDesktop",
+      path,
+      "org.gnome.Mutter.RemoteDesktop.Session",
     )
 
   def id(self) -> str:
-    return self.get(self.path, "org.gnome.Mutter.RemoteDesktop.Session",
-                    "SessionId")
+    return self.get(
+      self.path, "org.gnome.Mutter.RemoteDesktop.Session", "SessionId"
+    )
 
   def connect_to_eis(self) -> Any:
     return self.call(self.path, "ConnectToEIS", "a{sv}", [{}])
@@ -84,20 +94,25 @@ class RemoteDesktopSession(Startable):
 
 class ScreenCast(DBusService):
   def __init__(self, bus: dbus.Bus) -> None:
-    super().__init__(bus, "org.gnome.Mutter.ScreenCast",
-                     "org.gnome.Mutter.ScreenCast")
+    super().__init__(
+      bus, "org.gnome.Mutter.ScreenCast", "org.gnome.Mutter.ScreenCast"
+    )
 
   def create_session(self, session_id: str) -> "ScreenCastSession":
-    path = self.call("/org/gnome/Mutter/ScreenCast", "CreateSession",
-                     "a{sv}", [{"remote-desktop-session-id": session_id}],
+    path = self.call(
+      "/org/gnome/Mutter/ScreenCast",
+      "CreateSession",
+      "a{sv}",
+      [{"remote-desktop-session-id": session_id}],
     )
     return ScreenCastSession(self.bus, path)
 
 
 class ScreenCastSession(DBusService):
   def __init__(self, bus: dbus.Bus, path: str) -> None:
-    super().__init__(bus, "org.gnome.Mutter.ScreenCast",
-                     "org.gnome.Mutter.ScreenCast.Session")
+    super().__init__(
+      bus, "org.gnome.Mutter.ScreenCast", "org.gnome.Mutter.ScreenCast.Session"
+    )
     self.path = path
 
   def record_monitor(self) -> "ScreenCastStream":
@@ -107,8 +122,11 @@ class ScreenCastSession(DBusService):
 
 class ScreenCastStream(Startable):
   def __init__(self, bus: dbus.Bus, path: str) -> None:
-    super().__init__(bus, "org.gnome.Mutter.ScreenCast", path,
-                     "org.gnome.Mutter.ScreenCast.Stream",
+    super().__init__(
+      bus,
+      "org.gnome.Mutter.ScreenCast",
+      path,
+      "org.gnome.Mutter.ScreenCast.Stream",
     )
 
 
@@ -137,8 +155,13 @@ class Devices:
     # invocations might not need them all, attempting to send input before
     # all have been received doesn't work reliably. Note that the script
     # might wait forever if some of these devices don't exist.
-    return (self.pointer_relative and self.pointer_absolute
-            and self.keyboard and self.scroll and self.button)
+    return (
+      self.pointer_relative
+      and self.pointer_absolute
+      and self.keyboard
+      and self.scroll
+      and self.button
+    )
 
 
 @dataclasses.dataclass
@@ -151,12 +174,12 @@ class IOLike:
 
 @dataclasses.dataclass
 class Options:
-  executors: list[Callable[[Devices],
-                           None]] = dataclasses.field(default_factory=list)
+  executors: list[Callable[[Devices], None]] = dataclasses.field(
+    default_factory=list
+  )
 
 
-def process_event(e: ei.Event, devices: Devices,
-                  options: Options) -> None:
+def process_event(e: ei.Event, devices: Devices, options: Options) -> None:
   # Protect access to event_type because the getter throws for unknown
   # events.
   try:
@@ -210,24 +233,26 @@ def connect_to_eis(fd: int, options: Options) -> None:
 
 # snegg doesn't expose the scroll functions on devices
 def scroll_discrete(device: ei.Device, y: int) -> None:
-  libei.device_scroll_discrete(device._cobject, 0, y)  # pylint: disable=protected-access
+  libei.device_scroll_discrete(device._cobject, 0, y)
   device.frame()
 
 
 def scroll_delta(device: ei.Device, y: int) -> None:
   # For a virtual device (which we're certainly dealing with in this script),
   # y is in dips. For a physical device, it would be mm.
-  libei.device_scroll_delta(device._cobject, 0, y)  # pylint: disable=protected-access
+  libei.device_scroll_delta(device._cobject, 0, y)
   device.frame()
 
 
 # Sleep for 1s per tick, up to the specified duration.
 class SleepAction(argparse.Action):
-  def __call__(self,
-               parser: argparse.ArgumentParser,
-               namespace: argparse.Namespace,
-               values: Any,
-               option: Optional[str] = None) -> None:
+  def __call__(
+    self,
+    parser: argparse.ArgumentParser,
+    namespace: argparse.Namespace,
+    values: Any,
+    option: Optional[str] = None,
+  ) -> None:
     self.duration = values[0]
     namespace.executors.append(lambda _: self.exec())
 
@@ -240,209 +265,244 @@ class SleepAction(argparse.Action):
 
 
 class ScrollDeltaAction(argparse.Action):
-  def __call__(self,
-               parser: argparse.ArgumentParser,
-               namespace: argparse.Namespace,
-               values: Any,
-               option: Optional[str] = None) -> None:
+  def __call__(
+    self,
+    parser: argparse.ArgumentParser,
+    namespace: argparse.Namespace,
+    values: Any,
+    option: Optional[str] = None,
+  ) -> None:
     namespace.executors.append(lambda d: scroll_delta(d.scroll, values[0]))
 
 
 class ScrollDiscreteAction(argparse.Action):
-  def __call__(self,
-               parser: argparse.ArgumentParser,
-               namespace: argparse.Namespace,
-               values: Any,
-               option: Optional[str] = None) -> None:
+  def __call__(
+    self,
+    parser: argparse.ArgumentParser,
+    namespace: argparse.Namespace,
+    values: Any,
+    option: Optional[str] = None,
+  ) -> None:
     namespace.executors.append(
-      lambda d: scroll_discrete(d.scroll, 120 * values[0]))
+      lambda d: scroll_discrete(d.scroll, 120 * values[0])
+    )
 
 
 class MoveToAction(argparse.Action):
-  def __call__(self,
-               parser: argparse.ArgumentParser,
-               namespace: argparse.Namespace,
-               values: Any,
-               option: Optional[str] = None) -> None:
+  def __call__(
+    self,
+    parser: argparse.ArgumentParser,
+    namespace: argparse.Namespace,
+    values: Any,
+    option: Optional[str] = None,
+  ) -> None:
     namespace.executors.append(
       lambda d: d.pointer_absolute.pointer_motion_absolute(
-          values[0], values[1]).frame())
+        values[0], values[1]
+      ).frame()
+    )
 
 
 class MoveByAction(argparse.Action):
-  def __call__(self,
-               parser: argparse.ArgumentParser,
-               namespace: argparse.Namespace,
-               values: Any,
-               option: Optional[str] = None) -> None:
-    namespace.executors.append(lambda d: d.pointer_relative.pointer_motion(
-        values[0], values[1]).frame())
+  def __call__(
+    self,
+    parser: argparse.ArgumentParser,
+    namespace: argparse.Namespace,
+    values: Any,
+    option: Optional[str] = None,
+  ) -> None:
+    namespace.executors.append(
+      lambda d: d.pointer_relative.pointer_motion(values[0], values[1]).frame()
+    )
 
 
 class ClickAction(argparse.Action):
-  def __call__(self,
-               parser: argparse.ArgumentParser,
-               namespace: argparse.Namespace,
-               value: Any,
-               option: Optional[str] = None) -> None:
+  def __call__(
+    self,
+    parser: argparse.ArgumentParser,
+    namespace: argparse.Namespace,
+    value: Any,
+    option: Optional[str] = None,
+  ) -> None:
     namespace.executors.append(
-      lambda d: d.button.button_button(value + BTN_LEFT, True).frame(
-      ).button_button(value + BTN_LEFT, False).frame())
+      lambda d: (
+        d.button.button_button(value + BTN_LEFT, True)
+        .frame()
+        .button_button(value + BTN_LEFT, False)
+        .frame()
+      )
+    )
 
 
 class MouseDownAction(argparse.Action):
-  def __call__(self,
-               parser: argparse.ArgumentParser,
-               namespace: argparse.Namespace,
-               value: Any,
-               option: Optional[str] = None) -> None:
+  def __call__(
+    self,
+    parser: argparse.ArgumentParser,
+    namespace: argparse.Namespace,
+    value: Any,
+    option: Optional[str] = None,
+  ) -> None:
     namespace.executors.append(
-      lambda d: d.button.button_button(value + BTN_LEFT, True).frame())
+      lambda d: d.button.button_button(value + BTN_LEFT, True).frame()
+    )
 
 
 class MouseUpAction(argparse.Action):
-  def __call__(self,
-               parser: argparse.ArgumentParser,
-               namespace: argparse.Namespace,
-               value: Any,
-               option: Optional[str] = None) -> None:
+  def __call__(
+    self,
+    parser: argparse.ArgumentParser,
+    namespace: argparse.Namespace,
+    value: Any,
+    option: Optional[str] = None,
+  ) -> None:
     namespace.executors.append(
-      lambda d: d.button.button_button(value + BTN_LEFT, False).frame())
+      lambda d: d.button.button_button(value + BTN_LEFT, False).frame()
+    )
 
 
 class TypeAction(argparse.Action):
-  def __call__(self,
-               parser: argparse.ArgumentParser,
-               namespace: argparse.Namespace,
-               values: Any,
-               option: Optional[str] = None) -> None:
+  def __call__(
+    self,
+    parser: argparse.ArgumentParser,
+    namespace: argparse.Namespace,
+    values: Any,
+    option: Optional[str] = None,
+  ) -> None:
     namespace.executors.append(lambda d: TypeAction.exec(d.keyboard, values))
 
   @staticmethod
   def exec(keyboard: ei.Device, values: List[int]) -> None:
     for value in values:
       keyboard.keyboard_key(value, True).frame().keyboard_key(
-          value, False).frame()
+        value, False
+      ).frame()
 
 
 class KeyDownAction(argparse.Action):
-  def __call__(self,
-               parser: argparse.ArgumentParser,
-               namespace: argparse.Namespace,
-               values: Any,
-               option: Optional[str] = None) -> None:
+  def __call__(
+    self,
+    parser: argparse.ArgumentParser,
+    namespace: argparse.Namespace,
+    values: Any,
+    option: Optional[str] = None,
+  ) -> None:
     namespace.executors.append(
-        lambda d: d.keyboard.keyboard_key(values[0], True).frame())
+      lambda d: d.keyboard.keyboard_key(values[0], True).frame()
+    )
 
 
 class KeyUpAction(argparse.Action):
-  def __call__(self,
-               parser: argparse.ArgumentParser,
-               namespace: argparse.Namespace,
-               values: Any,
-               option: Optional[str] = None) -> None:
+  def __call__(
+    self,
+    parser: argparse.ArgumentParser,
+    namespace: argparse.Namespace,
+    values: Any,
+    option: Optional[str] = None,
+  ) -> None:
     namespace.executors.append(
-        lambda d: d.keyboard.keyboard_key(values[0], False).frame())
+      lambda d: d.keyboard.keyboard_key(values[0], False).frame()
+    )
 
 
 if __name__ == "__main__":
   options = Options()
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      "-v", "--verbose",
-      action="store_true",
-      help="enable debug output",
+    "-v",
+    "--verbose",
+    action="store_true",
+    help="enable debug output",
   )
   parser.add_argument(
-      "--sleep",
-      action=SleepAction,
-      nargs=1,
-      type=float,
-      metavar="seconds",
-      help="sleep before executing the next command.",
+    "--sleep",
+    action=SleepAction,
+    nargs=1,
+    type=float,
+    metavar="seconds",
+    help="sleep before executing the next command.",
   )
   parser.add_argument(
-      "--scroll_delta",
-      action=ScrollDeltaAction,
-      nargs=1,
-      type=int,
-      metavar="px",
-      help="scroll in pixels down (+ve) or down (-ve)",
+    "--scroll_delta",
+    action=ScrollDeltaAction,
+    nargs=1,
+    type=int,
+    metavar="px",
+    help="scroll in pixels down (+ve) or down (-ve)",
   )
   parser.add_argument(
-      "--scroll_discrete",
-      action=ScrollDiscreteAction,
-      nargs=1,
-      type=int,
-      metavar="ticks",
-      help="scroll in ticks down (+ve) or down (-ve)",
+    "--scroll_discrete",
+    action=ScrollDiscreteAction,
+    nargs=1,
+    type=int,
+    metavar="ticks",
+    help="scroll in ticks down (+ve) or down (-ve)",
   )
   parser.add_argument(
-      "--click",
-      action=ClickAction,
-      nargs="?",
-      const=0,  # Left button
-      type=int,
-      metavar="button",
-      help="click the mouse (left button by default)",
+    "--click",
+    action=ClickAction,
+    nargs="?",
+    const=0,  # Left button
+    type=int,
+    metavar="button",
+    help="click the mouse (left button by default)",
   )
   parser.add_argument(
-      "--mouse_down",
-      action=MouseDownAction,
-      nargs="?",
-      const=0,  # Left button
-      type=int,
-      metavar="button",
-      help="press a mouse button (left button by default)",
+    "--mouse_down",
+    action=MouseDownAction,
+    nargs="?",
+    const=0,  # Left button
+    type=int,
+    metavar="button",
+    help="press a mouse button (left button by default)",
   )
   parser.add_argument(
-      "--mouse_up",
-      action=MouseUpAction,
-      nargs="?",
-      const=0,  # Left button
-      type=int,
-      metavar="button",
-      help="release a mouse button (left button by default)",
+    "--mouse_up",
+    action=MouseUpAction,
+    nargs="?",
+    const=0,  # Left button
+    type=int,
+    metavar="button",
+    help="release a mouse button (left button by default)",
   )
   parser.add_argument(
-      "--move_to",
-      action=MoveToAction,
-      nargs=2,
-      type=float,
-      metavar=("x", "y"),
-      help="move the mouse to a location",
+    "--move_to",
+    action=MoveToAction,
+    nargs=2,
+    type=float,
+    metavar=("x", "y"),
+    help="move the mouse to a location",
   )
   parser.add_argument(
-      "--move_by",
-      action=MoveByAction,
-      nargs=2,
-      type=float,
-      metavar=("dx", "dy"),
-      help="move the mouse by an amount",
+    "--move_by",
+    action=MoveByAction,
+    nargs=2,
+    type=float,
+    metavar=("dx", "dy"),
+    help="move the mouse by an amount",
   )
   parser.add_argument(
-      "--type",
-      action=TypeAction,
-      nargs="+",
-      type=int,
-      metavar="keycode",
-      help="type (press and release) a sequence of keys",
+    "--type",
+    action=TypeAction,
+    nargs="+",
+    type=int,
+    metavar="keycode",
+    help="type (press and release) a sequence of keys",
   )
   parser.add_argument(
-      "--key_down",
-      action=KeyDownAction,
-      nargs=1,
-      type=int,
-      metavar="keycode",
-      help="press a key",
+    "--key_down",
+    action=KeyDownAction,
+    nargs=1,
+    type=int,
+    metavar="keycode",
+    help="press a key",
   )
   parser.add_argument(
-      "--key_up",
-      action=KeyUpAction,
-      nargs=1,
-      type=int,
-      metavar="keycode",
-      help="release a key",
+    "--key_up",
+    action=KeyUpAction,
+    nargs=1,
+    type=int,
+    metavar="keycode",
+    help="release a key",
   )
   args = parser.parse_args(namespace=options)
 

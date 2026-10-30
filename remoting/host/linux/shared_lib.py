@@ -7,6 +7,7 @@
 # used by Chrome Remote Desktop Linux scripts.
 
 import sys
+
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
   print("This script requires Python version 3.5")
   sys.exit(1)
@@ -58,23 +59,23 @@ AUDIO_PIPE_ENV_VAR = "CHROME_REMOTE_DESKTOP_AUDIO_PIPE"
 # that must be unset when the session terminates so they do not interfere with
 # the multi-process host or subsequent local sessions.
 CRD_SYSTEMD_ENV_VARS_TO_IMPORT_AND_UNSET = [
-    AUDIO_PIPE_ENV_VAR,
-    "CHROME_CONFIG_HOME",
-    "CHROME_REMOTE_DESKTOP_SESSION",
-    "CHROME_USER_DATA_DIR",
-    "DISPLAY",
-    "GDK_BACKEND",
-    "LD_LIBRARY_PATH",
-    "PIPEWIRE_REMOTE",
-    "PULSE_CONFIG_PATH",
-    "PULSE_RUNTIME_PATH",
-    "PULSE_SINK",
-    "PULSE_STATE_PATH",
-    "SSH_AUTH_SOCK",
-    "WAYLAND_DISPLAY",
-    "XAUTHORITY",
-    "XDG_SEAT",
-    "XDG_SESSION_ID",
+  AUDIO_PIPE_ENV_VAR,
+  "CHROME_CONFIG_HOME",
+  "CHROME_REMOTE_DESKTOP_SESSION",
+  "CHROME_USER_DATA_DIR",
+  "DISPLAY",
+  "GDK_BACKEND",
+  "LD_LIBRARY_PATH",
+  "PIPEWIRE_REMOTE",
+  "PULSE_CONFIG_PATH",
+  "PULSE_RUNTIME_PATH",
+  "PULSE_SINK",
+  "PULSE_STATE_PATH",
+  "SSH_AUTH_SOCK",
+  "WAYLAND_DISPLAY",
+  "XAUTHORITY",
+  "XDG_SEAT",
+  "XDG_SESSION_ID",
 ]
 
 # Complete allowlist of environment variables to import into `systemd --user`.
@@ -110,14 +111,14 @@ CRD_SYSTEMD_ENV_VARS_TO_IMPORT_AND_UNSET = [
 # - `GDK_DEBUG`, `G_DEBUG`, `G_MESSAGES_DEBUG`, `WAYLAND_DEBUG`: Optional debug
 #   variables when `WaylandDesktop.debug` is enabled.
 CRD_SYSTEMD_ENV_VARS_TO_IMPORT = CRD_SYSTEMD_ENV_VARS_TO_IMPORT_AND_UNSET + [
-    "GDK_DEBUG",
-    "G_DEBUG",
-    "G_MESSAGES_DEBUG",
-    "PATH",
-    "WAYLAND_DEBUG",
-    "XDG_CURRENT_DESKTOP",
-    "XDG_SESSION_CLASS",
-    "XDG_SESSION_TYPE",
+  "GDK_DEBUG",
+  "G_DEBUG",
+  "G_MESSAGES_DEBUG",
+  "PATH",
+  "WAYLAND_DEBUG",
+  "XDG_CURRENT_DESKTOP",
+  "XDG_SESSION_CLASS",
+  "XDG_SESSION_TYPE",
 ]
 
 # Environment variables to unset from `systemd --user` when the session
@@ -130,7 +131,7 @@ CRD_SYSTEMD_ENV_VARS_TO_IMPORT = CRD_SYSTEMD_ENV_VARS_TO_IMPORT_AND_UNSET + [
 # - `SSH_CONNECTION`: If set, libpulse makes a blocking connection to
 #   `$DISPLAY`, which deadlocks gnome-shell against its own Xwayland on startup.
 CRD_SYSTEMD_ENV_VARS_TO_UNSET = CRD_SYSTEMD_ENV_VARS_TO_IMPORT_AND_UNSET + [
-    "SSH_CONNECTION",
+  "SSH_CONNECTION",
 ]
 
 # The amount of video RAM the dummy driver should claim to have, which limits
@@ -138,7 +139,7 @@ CRD_SYSTEMD_ENV_VARS_TO_UNSET = CRD_SYSTEMD_ENV_VARS_TO_IMPORT_AND_UNSET + [
 # 1048576 KiB = 1 GiB, which is the amount of video RAM needed to have a
 # 16384x16384 pixel frame buffer (the maximum size supported by VP8) with 32
 # bits per pixel.
-XORG_DUMMY_VIDEO_RAM = 1048576 # KiB
+XORG_DUMMY_VIDEO_RAM = 1048576  # KiB
 
 # By default, provide a maximum size that is large enough to support clients
 # with large or multiple monitors. This is a list of (width, height)
@@ -149,10 +150,11 @@ DEFAULT_SIZES = [(1600, 1200), (3840, 2560)]
 SCRIPT_PATH = os.path.abspath(sys.argv[0])
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
-if (os.path.basename(sys.argv[0]) == 'linux_me2me_host.py'):
+if os.path.basename(sys.argv[0]) == 'linux_me2me_host.py':
   # Needed for swarming/isolate tests.
-  HOST_BINARY_PATH = os.path.join(SCRIPT_DIR,
-                                  "../../../out/Release/remoting_me2me_host")
+  HOST_BINARY_PATH = os.path.join(
+    SCRIPT_DIR, "../../../out/Release/remoting_me2me_host"
+  )
 else:
   HOST_BINARY_PATH = os.path.join(SCRIPT_DIR, "chrome-remote-desktop-host")
 
@@ -192,7 +194,8 @@ HOST_OFFLINE_REASON_X_SERVER_RETRIES_EXCEEDED = "X_SERVER_RETRIES_EXCEEDED"
 
 # Host offline reason if the wayland server retry count is exceeded.
 HOST_OFFLINE_REASON_WAYLAND_SERVER_RETRIES_EXCEEDED = (
-  "WAYLAND_SERVER_RETRIES_EXCEEDED")
+  "WAYLAND_SERVER_RETRIES_EXCEEDED"
+)
 
 # Host offline reason if the X session retry count is exceeded.
 HOST_OFFLINE_REASON_SESSION_RETRIES_EXCEEDED = "SESSION_RETRIES_EXCEEDED"
@@ -206,67 +209,68 @@ RELAUNCH_EXIT_CODE = 41
 g_desktop = None
 g_host_hash = hashlib.md5(socket.gethostname().encode()).hexdigest()
 
+
 def gen_xorg_config():
   return (
-      # This causes X to load the default GLX module, even if a proprietary one
-      # is installed in a different directory.
-      'Section "Files"\n'
-      '  ModulePath "/usr/lib/xorg/modules"\n'
-      'EndSection\n'
-      '\n'
-      # Suppress device probing, which happens by default.
-      'Section "ServerFlags"\n'
-      '  Option "AutoAddDevices" "false"\n'
-      '  Option "AutoEnableDevices" "false"\n'
-      '  Option "DontVTSwitch" "true"\n'
-      '  Option "PciForceNone" "true"\n'
-      'EndSection\n'
-      '\n'
-      'Section "InputDevice"\n'
-      # The host looks for this name to check whether it's running in a virtual
-      # session
-      '  Identifier "Chrome Remote Desktop Input"\n'
-      # While the xorg.conf man page specifies that both of these options are
-      # deprecated synonyms for `Option "Floating" "false"`, it turns out that
-      # if both aren't specified, the Xorg server will automatically attempt to
-      # add additional devices.
-      '  Option "CoreKeyboard" "true"\n'
-      '  Option "CorePointer" "true"\n'
-      # The "void" driver is no longer available since Debian 11, but having an
-      # InputDevice section with an invalid driver will still prevent the Xorg
-      # server from using a fallback InputDevice setting. However, "Chrome
-      # Remote Desktop Input" will not appear in the device list if the driver
-      # is not available.
-      '  Driver "void"\n'
-      'EndSection\n'
-      '\n'
-      'Section "Device"\n'
-      '  Identifier "Chrome Remote Desktop Videocard"\n'
-      '  Driver "dummy"\n'
-      '  VideoRam {video_ram}\n'
-      'EndSection\n'
-      '\n'
-      'Section "Monitor"\n'
-      '  Identifier "Chrome Remote Desktop Monitor"\n'
-      'EndSection\n'
-      '\n'
-      'Section "Screen"\n'
-      '  Identifier "Chrome Remote Desktop Screen"\n'
-      '  Device "Chrome Remote Desktop Videocard"\n'
-      '  Monitor "Chrome Remote Desktop Monitor"\n'
-      '  DefaultDepth 24\n'
-      '  SubSection "Display"\n'
-      '    Viewport 0 0\n'
-      '    Depth 24\n'
-      '  EndSubSection\n'
-      'EndSection\n'
-      '\n'
-      'Section "ServerLayout"\n'
-      '  Identifier   "Chrome Remote Desktop Layout"\n'
-      '  Screen       "Chrome Remote Desktop Screen"\n'
-      '  InputDevice  "Chrome Remote Desktop Input"\n'
-      'EndSection\n'.format(
-          video_ram=XORG_DUMMY_VIDEO_RAM))
+    # This causes X to load the default GLX module, even if a proprietary one
+    # is installed in a different directory.
+    'Section "Files"\n'
+    '  ModulePath "/usr/lib/xorg/modules"\n'
+    'EndSection\n'
+    '\n'
+    # Suppress device probing, which happens by default.
+    'Section "ServerFlags"\n'
+    '  Option "AutoAddDevices" "false"\n'
+    '  Option "AutoEnableDevices" "false"\n'
+    '  Option "DontVTSwitch" "true"\n'
+    '  Option "PciForceNone" "true"\n'
+    'EndSection\n'
+    '\n'
+    'Section "InputDevice"\n'
+    # The host looks for this name to check whether it's running in a virtual
+    # session
+    '  Identifier "Chrome Remote Desktop Input"\n'
+    # While the xorg.conf man page specifies that both of these options are
+    # deprecated synonyms for `Option "Floating" "false"`, it turns out that
+    # if both aren't specified, the Xorg server will automatically attempt to
+    # add additional devices.
+    '  Option "CoreKeyboard" "true"\n'
+    '  Option "CorePointer" "true"\n'
+    # The "void" driver is no longer available since Debian 11, but having an
+    # InputDevice section with an invalid driver will still prevent the Xorg
+    # server from using a fallback InputDevice setting. However, "Chrome
+    # Remote Desktop Input" will not appear in the device list if the driver
+    # is not available.
+    '  Driver "void"\n'
+    'EndSection\n'
+    '\n'
+    'Section "Device"\n'
+    '  Identifier "Chrome Remote Desktop Videocard"\n'
+    '  Driver "dummy"\n'
+    '  VideoRam {video_ram}\n'
+    'EndSection\n'
+    '\n'
+    'Section "Monitor"\n'
+    '  Identifier "Chrome Remote Desktop Monitor"\n'
+    'EndSection\n'
+    '\n'
+    'Section "Screen"\n'
+    '  Identifier "Chrome Remote Desktop Screen"\n'
+    '  Device "Chrome Remote Desktop Videocard"\n'
+    '  Monitor "Chrome Remote Desktop Monitor"\n'
+    '  DefaultDepth 24\n'
+    '  SubSection "Display"\n'
+    '    Viewport 0 0\n'
+    '    Depth 24\n'
+    '  EndSubSection\n'
+    'EndSection\n'
+    '\n'
+    'Section "ServerLayout"\n'
+    '  Identifier   "Chrome Remote Desktop Layout"\n'
+    '  Screen       "Chrome Remote Desktop Screen"\n'
+    '  InputDevice  "Chrome Remote Desktop Input"\n'
+    'EndSection\n'.format(video_ram=XORG_DUMMY_VIDEO_RAM)
+  )
 
 
 def display_manager_is_gdm():
@@ -276,7 +280,7 @@ def display_manager_is_gdm():
       if file.read().strip() in [b'/usr/sbin/gdm', b'/usr/sbin/gdm3']:
         return True
     # Fall through to process checking even if the file doesn't contain gdm.
-  except:
+  except:  # noqa: E722
     # If we can't read the file, move on to checking the process list.
     pass
 
@@ -300,29 +304,40 @@ def get_pipewire_session_manager():
     return None
 
   try:
-    version_output = subprocess.check_output(["pipewire", "--version"],
-                                             universal_newlines=True)
+    version_output = subprocess.check_output(
+      ["pipewire", "--version"], universal_newlines=True
+    )
   except subprocess.CalledProcessError as e:
-    logging.warning("Failed to execute pipewire. Not enabling PipeWire audio"
-                    + " support: " + str(e))
+    logging.warning(
+      "Failed to execute pipewire. Not enabling PipeWire audio"
+      + " support: "
+      + str(e)
+    )
     return None
 
   match = re.search(r"pipewire (\S+)$", version_output, re.MULTILINE)
   if not match:
-    logging.warning("Failed to determine pipewire version. Not enabling"
-                    + " PipeWire audio support.")
+    logging.warning(
+      "Failed to determine pipewire version. Not enabling"
+      + " PipeWire audio support."
+    )
     return None
 
   try:
     pipewire_version = version.parse(match[1])
   except version.InvalidVersion as e:
-    logging.warning("Failed to parse pipewire version. Not enabling PipeWire"
-                    + " audio support: " + str(e))
+    logging.warning(
+      "Failed to parse pipewire version. Not enabling PipeWire"
+      + " audio support: "
+      + str(e)
+    )
     return None
 
   if pipewire_version < version.parse("0.3.53"):
-    logging.warning("Installed pipewire version is too old. Not enabling"
-                    + " PipeWire audio support.")
+    logging.warning(
+      "Installed pipewire version is too old. Not enabling"
+      + " PipeWire audio support."
+    )
     return None
 
   session_manager = None
@@ -332,8 +347,9 @@ def get_pipewire_session_manager():
       break
 
   if session_manager is None:
-    logging.warning("No session manager found. Not enabling PipeWire audio"
-                    + " support.")
+    logging.warning(
+      "No session manager found. Not enabling PipeWire audio" + " support."
+    )
     return None
 
   return session_manager
@@ -344,10 +360,11 @@ def get_wireplumber_version():
   version could not be obtained."""
 
   try:
-    version_output = subprocess.check_output(["wireplumber", "--version"],
-                                             universal_newlines=True)
+    version_output = subprocess.check_output(
+      ["wireplumber", "--version"], universal_newlines=True
+    )
   except subprocess.CalledProcessError as e:
-    logging.warning("Failed to execute wireplumber: "  + str(e))
+    logging.warning("Failed to execute wireplumber: " + str(e))
     return None
 
   match = re.search(r"wireplumber (\S+)$", version_output, re.MULTILINE)
@@ -369,8 +386,7 @@ def terminate_process(pid, name):
   falls back to SIGKILL if the process fails to exit after 10 seconds. |name|
   is used for logging. Throws psutil.NoSuchProcess if the pid doesn't exist."""
 
-  logging.info("Sending SIGTERM to %s proc (pid=%s)",
-               name, pid)
+  logging.info("Sending SIGTERM to %s proc (pid=%s)", name, pid)
   psutil_proc = psutil.Process(pid)
   try:
     psutil_proc.terminate()
@@ -379,15 +395,16 @@ def terminate_process(pid, name):
     # process refuses to die for some reason.
     psutil_proc.wait(timeout=10)
   except psutil.TimeoutExpired:
-    logging.error("Timed out - sending SIGKILL to %s proc (pid=%s)",
-                  name, pid)
+    logging.error("Timed out - sending SIGKILL to %s proc (pid=%s)", name, pid)
     try:
       psutil_proc.kill()
       psutil_proc.wait(timeout=10)
     except psutil.TimeoutExpired:
       logging.error(
-          "Timed out - process did not die after SIGKILL: %s proc (pid=%s)",
-          name, pid)
+        "Timed out - process did not die after SIGKILL: %s proc (pid=%s)",
+        name,
+        pid,
+      )
     except psutil.NoSuchProcess:
       # The process exited before or while sending SIGKILL, which is harmless.
       pass
@@ -405,14 +422,14 @@ def terminate_command_if_running(command_line):
 
   # This function should return the process with the --child-process flag if it
   # exists. If there's only a process without, it might be a legacy process.
-  non_child_process = None
+  non_child_process = None  # noqa: F841
 
   # Support new & old psutil API. This is the right way to check, according to
   # http://grodola.blogspot.com/2014/01/psutil-20-porting.html
   if psutil.version_info >= (2, 0):
-    psget = lambda x: x()
+    psget = lambda x: x()  # noqa: E731
   else:
-    psget = lambda x: x
+    psget = lambda x: x  # noqa: E731
 
   for process in psutil.process_iter():
     # Skip any processes that raise an exception, as processes may terminate
@@ -428,7 +445,7 @@ def terminate_command_if_running(command_line):
 
       # |cmdline| will be [python-interpreter, script-file, other arguments...]
       if psget(process.cmdline) == command_line:
-        terminate_process(process.pid, command_line[0]);
+        terminate_process(process.pid, command_line[0])
 
     except (psutil.NoSuchProcess, psutil.AccessDenied):
       continue
@@ -451,7 +468,7 @@ class SessionOutputFilterThread(threading.Thread):
     is_logging = True
     while True:
       try:
-        line = self.stream.readline();
+        line = self.stream.readline()
       except IOError as e:
         print("IOError when reading session output: ", e)
         return
@@ -468,15 +485,20 @@ class SessionOutputFilterThread(threading.Thread):
         print("Suppressing rest of the session output.", flush=True)
       else:
         # Pass stream bytes through as is instead of decoding and encoding.
-        sys.stdout.buffer.write(self.prefix.encode(sys.stdout.encoding) + line);
+        sys.stdout.buffer.write(self.prefix.encode(sys.stdout.encoding) + line)
         sys.stdout.flush()
 
 
 class Desktop(abc.ABC):
   """Manage a single virtual desktop"""
 
-  def __init__(self, host_delegate=None, server_inhibitor=None,
-               pipewire_inhibitor=None, session_inhibitor=None):
+  def __init__(
+    self,
+    host_delegate=None,
+    server_inhibitor=None,
+    pipewire_inhibitor=None,
+    session_inhibitor=None,
+  ):
     self.host_delegate = host_delegate
     self.server_proc = None
     self.pipewire_proc = None
@@ -490,7 +512,7 @@ class Desktop(abc.ABC):
     self.pipewire_inhibitor = pipewire_inhibitor
     self.session_inhibitor = session_inhibitor
 
-    self._init_child_env();
+    self._init_child_env()
 
     if self.server_inhibitor is None:
       self.server_inhibitor = RelaunchInhibitor("Display server")
@@ -502,9 +524,9 @@ class Desktop(abc.ABC):
     # session component fail. None indicates that the session component isn't
     # mandatory and its failure should not result in the host shutting down.
     self.inhibitors = {
-        self.server_inhibitor: HOST_OFFLINE_REASON_X_SERVER_RETRIES_EXCEEDED,
-        self.pipewire_inhibitor: None,
-        self.session_inhibitor: HOST_OFFLINE_REASON_SESSION_RETRIES_EXCEEDED,
+      self.server_inhibitor: HOST_OFFLINE_REASON_X_SERVER_RETRIES_EXCEEDED,
+      self.pipewire_inhibitor: None,
+      self.session_inhibitor: HOST_OFFLINE_REASON_SESSION_RETRIES_EXCEEDED,
     }
     if self.host_delegate is not None:
       self.inhibitors.update(self.host_delegate.inhibitors)
@@ -517,15 +539,23 @@ class Desktop(abc.ABC):
     # http://crbug.com/431672013.
     self.child_env = {}
     for key in [
-        # These values are set by the remoting-user-session binary when it
-        # launches this script.
-        "USER", "LOGNAME", "HOME", "SHELL", "PATH",
-        # These values are set by pam_systemd when this script is launched via
-        # systemd.
-        "XDG_SESSION_ID", "XDG_RUNTIME_DIR", "XDG_SESSION_CLASS", "XDG_SEAT",
-        # DBUS_SESSION_BUS_ADDRESS is needed by `gnome-session-binary` - see
-        # https://crbug.com/432108529 for more details.
-        "DBUS_SESSION_BUS_ADDRESS"]:
+      # These values are set by the remoting-user-session binary when it
+      # launches this script.
+      "USER",
+      "LOGNAME",
+      "HOME",
+      "SHELL",
+      "PATH",
+      # These values are set by pam_systemd when this script is launched via
+      # systemd.
+      "XDG_SESSION_ID",
+      "XDG_RUNTIME_DIR",
+      "XDG_SESSION_CLASS",
+      "XDG_SEAT",
+      # DBUS_SESSION_BUS_ADDRESS is needed by `gnome-session-binary` - see
+      # https://crbug.com/432108529 for more details.
+      "DBUS_SESSION_BUS_ADDRESS",
+    ]:
       if key in os.environ:
         self.child_env[key] = os.environ[key]
 
@@ -545,8 +575,9 @@ class Desktop(abc.ABC):
     # set up their profile again.
     chrome_profile = os.path.join(CONFIG_DIR, "chrome-profile")
     chrome_config_home = os.path.join(CONFIG_DIR, "chrome-config")
-    if (os.path.exists(chrome_profile)
-        and not os.path.exists(chrome_config_home)):
+    if os.path.exists(chrome_profile) and not os.path.exists(
+      chrome_config_home
+    ):
       self.child_env["CHROME_USER_DATA_DIR"] = chrome_profile
     elif os.path.exists(chrome_config_home):
       self.child_env["CHROME_CONFIG_HOME"] = chrome_config_home
@@ -554,11 +585,11 @@ class Desktop(abc.ABC):
     # Ensure that the software-rendering GL drivers are loaded by the desktop
     # session, instead of any hardware GL drivers installed on the system.
     library_path = (
-        "/usr/lib/mesa-diverted/%(arch)s-linux-gnu:"
-        "/usr/lib/%(arch)s-linux-gnu/mesa:"
-        "/usr/lib/%(arch)s-linux-gnu/dri:"
-        "/usr/lib/%(arch)s-linux-gnu/gallium-pipe" %
-        { "arch": platform.machine() })
+      "/usr/lib/mesa-diverted/%(arch)s-linux-gnu:"
+      "/usr/lib/%(arch)s-linux-gnu/mesa:"
+      "/usr/lib/%(arch)s-linux-gnu/dri:"
+      "/usr/lib/%(arch)s-linux-gnu/gallium-pipe" % {"arch": platform.machine()}
+    )
 
     if "LD_LIBRARY_PATH" in self.child_env:
       library_path += ":" + self.child_env["LD_LIBRARY_PATH"]
@@ -568,8 +599,8 @@ class Desktop(abc.ABC):
   def _setup_gnubby(self):
     # LINT.IfChange(ssh_auth_sock_name)
     self.ssh_auth_sockname = os.path.join(
-        xdg.BaseDirectory.get_runtime_dir(strict=False),
-        "crd_ssh_auth_sock")
+      xdg.BaseDirectory.get_runtime_dir(strict=False), "crd_ssh_auth_sock"
+    )
     # LINT.ThenChange(//remoting/base/security_key_socket_name.cc:ssh_auth_sock_name)
     self.child_env["SSH_AUTH_SOCK"] = self.ssh_auth_sockname
 
@@ -577,21 +608,23 @@ class Desktop(abc.ABC):
     """Imports session environment variables from child_env into the systemd
     user manager."""
     vars_to_import = [
-        var for var in CRD_SYSTEMD_ENV_VARS_TO_IMPORT if var in self.child_env
+      var for var in CRD_SYSTEMD_ENV_VARS_TO_IMPORT if var in self.child_env
     ]
     if not vars_to_import:
       return True
     try:
       subprocess.check_output(
-          ["systemctl", "--user", "import-environment"] + vars_to_import,
-          stderr=subprocess.STDOUT,
-          env=self.child_env,
-          text=True)
+        ["systemctl", "--user", "import-environment"] + vars_to_import,
+        stderr=subprocess.STDOUT,
+        env=self.child_env,
+        text=True,
+      )
       return True
     except subprocess.CalledProcessError as err:
-      logging.error("Unable to import env vars into systemd, "
-                    "returncode: %s, output: %s" % (err.returncode,
-                                                    err.output))
+      logging.error(
+        "Unable to import env vars into systemd, "
+        "returncode: %s, output: %s" % (err.returncode, err.output)
+      )
       return False
 
   def _launch_pipewire(self, instance_name, runtime_path, sink_name):
@@ -600,30 +633,49 @@ class Desktop(abc.ABC):
       return False
 
     try:
-      for config_file in ["pipewire.conf", "pipewire-pulse.conf",
-                          self.pipewire_session_manager + ".conf"]:
-        with open(os.path.join(SCRIPT_DIR, config_file + ".template"),
-                  "r") as infile, \
-             open(os.path.join(runtime_path, config_file), "w") as outfile:
+      for config_file in [
+        "pipewire.conf",
+        "pipewire-pulse.conf",
+        self.pipewire_session_manager + ".conf",
+      ]:
+        with (
+          open(
+            os.path.join(SCRIPT_DIR, config_file + ".template"), "r"
+          ) as infile,
+          open(os.path.join(runtime_path, config_file), "w") as outfile,
+        ):
           template = string.Template(infile.read())
-          outfile.write(template.substitute({
-              "instance_name": instance_name,
-              "runtime_path": runtime_path,
-              "sink_name": sink_name}))
+          outfile.write(
+            template.substitute(
+              {
+                "instance_name": instance_name,
+                "runtime_path": runtime_path,
+                "sink_name": sink_name,
+              }
+            )
+          )
 
       logging.info("Launching pipewire")
-      pipewire_cmd = ["pipewire", "-c",
-                      os.path.join(runtime_path, "pipewire.conf")]
+      pipewire_cmd = [
+        "pipewire",
+        "-c",
+        os.path.join(runtime_path, "pipewire.conf"),
+      ]
       # PulseAudio protocol support is built into PipeWire for the versions we
       # support. Invoking the pipewire binary directly instead of via the
       # pipewire-pulse symlink allows this to work even if the pipewire-pulse
       # package is not installed (e.g., if the user is still using PulseAudio
       # for local sessions).
-      pipewire_pulse_cmd = ["pipewire", "-c",
-                      os.path.join(runtime_path, "pipewire-pulse.conf")]
+      pipewire_pulse_cmd = [
+        "pipewire",
+        "-c",
+        os.path.join(runtime_path, "pipewire-pulse.conf"),
+      ]
       session_manager_cmd = [
-          self.pipewire_session_manager, "-c",
-          os.path.join(runtime_path, self.pipewire_session_manager + ".conf")]
+        self.pipewire_session_manager,
+        "-c",
+        os.path.join(runtime_path, self.pipewire_session_manager + ".conf"),
+      ]
 
       # The WirePlumber config template does not work with versions 0.5 or
       # later. Instead, launch it with the system config, and use the
@@ -636,34 +688,40 @@ class Desktop(abc.ABC):
           return False
         if wireplumber_version >= version.parse("0.5"):
           session_manager_cmd = [
-              self.pipewire_session_manager,
-              "--profile", "chrome-remote-desktop"]
+            self.pipewire_session_manager,
+            "--profile",
+            "chrome-remote-desktop",
+          ]
 
       # Terminate any stale processes before relaunching.
       for command in [pipewire_cmd, pipewire_pulse_cmd, session_manager_cmd]:
         terminate_command_if_running(command)
 
       self.pipewire_proc = subprocess.Popen(pipewire_cmd, env=self.child_env)
-      self.pipewire_pulse_proc = subprocess.Popen(pipewire_pulse_cmd,
-                                                  env=self.child_env)
+      self.pipewire_pulse_proc = subprocess.Popen(
+        pipewire_pulse_cmd, env=self.child_env
+      )
 
       # Directs native PipeWire clients to the correct instance.
       self.child_env["PIPEWIRE_REMOTE"] = instance_name
 
       # MEDIA_SESSION_CONFIG_DIR is needed to use an absolute path with
       # pipewire-media-session.
-      self.pipewire_session_manager_proc = subprocess.Popen(session_manager_cmd,
-          env={**self.child_env, "MEDIA_SESSION_CONFIG_DIR": "/"})
+      self.pipewire_session_manager_proc = subprocess.Popen(
+        session_manager_cmd,
+        env={**self.child_env, "MEDIA_SESSION_CONFIG_DIR": "/"},
+      )
 
       return True
     except (IOError, OSError) as e:
       logging.error("Failed to start PipeWire: " + str(e))
 
       # Clean up any processes that did start
-      for proc, name in [(self.pipewire_proc, "pipewire"),
-                         (self.pipewire_pulse_proc, "pipewire-pulse"),
-                         (self.pipewire_session_manager_proc,
-                          self.pipewire_session_manager)]:
+      for proc, name in [
+        (self.pipewire_proc, "pipewire"),
+        (self.pipewire_pulse_proc, "pipewire-pulse"),
+        (self.pipewire_session_manager_proc, self.pipewire_session_manager),
+      ]:
         if proc is not None:
           terminate_process(proc.pid, name)
       self.pipewire_proc = None
@@ -677,22 +735,26 @@ class Desktop(abc.ABC):
     # the script was run successfully or didn't exist, false if it failed.
     if os.path.exists(SYSTEM_PRE_SESSION_FILE_PATH):
       pre_session_command = bash_invocation_for_script(
-          SYSTEM_PRE_SESSION_FILE_PATH)
+        SYSTEM_PRE_SESSION_FILE_PATH
+      )
 
       logging.info("Running pre-session: %s" % pre_session_command)
       try:
-        proc = subprocess.run(pre_session_command,
-                              stdin=subprocess.DEVNULL,
-                              stdout=subprocess.PIPE,
-                              stderr=subprocess.STDOUT,
-                              timeout=PRE_SESSION_TIMEOUT_SECONDS,
-                              cwd=HOME_DIR,
-                              env=self.child_env,
-                              text=True,
-                              errors="replace")
+        proc = subprocess.run(
+          pre_session_command,
+          stdin=subprocess.DEVNULL,
+          stdout=subprocess.PIPE,
+          stderr=subprocess.STDOUT,
+          timeout=PRE_SESSION_TIMEOUT_SECONDS,
+          cwd=HOME_DIR,
+          env=self.child_env,
+          text=True,
+          errors="replace",
+        )
       except subprocess.TimeoutExpired as e:
-        logging.error("Pre-session timed out after %d seconds" %
-                      PRE_SESSION_TIMEOUT_SECONDS)
+        logging.error(
+          "Pre-session timed out after %d seconds" % PRE_SESSION_TIMEOUT_SECONDS
+        )
         if e.output:
           for line in e.output.splitlines():
             logging.info("Pre-session output: %s" % line)
@@ -720,16 +782,17 @@ class Desktop(abc.ABC):
     self._setup_gnubby()
     if not self._run_pre_session():
       logging.error("Pre-session failed. Tearing down.")
-      self.session_inhibitor.record_started(MINIMUM_PROCESS_LIFETIME,
-                                            backoff_time)
+      self.session_inhibitor.record_started(
+        MINIMUM_PROCESS_LIFETIME, backoff_time
+      )
       self.session_inhibitor.record_stopped(expected=False)
       return
     self._launch_server(server_args)
     self.launch_desktop_session()
-    self.server_inhibitor.record_started(MINIMUM_PROCESS_LIFETIME,
-                                         backoff_time)
-    self.session_inhibitor.record_started(MINIMUM_PROCESS_LIFETIME,
-                                          backoff_time)
+    self.server_inhibitor.record_started(MINIMUM_PROCESS_LIFETIME, backoff_time)
+    self.session_inhibitor.record_started(
+      MINIMUM_PROCESS_LIFETIME, backoff_time
+    )
 
   def cleanup(self):
     """Send SIGTERM to all procs and wait for them to exit. Will fallback to
@@ -737,12 +800,13 @@ class Desktop(abc.ABC):
     """
     if self.host_delegate is not None:
       self.host_delegate.cleanup()
-    for proc, name in [(self.session_proc, "session"),
-                       (self.pipewire_proc, "pipewire"),
-                       (self.pipewire_pulse_proc, "pipewire-pulse"),
-                       (self.pipewire_session_manager_proc,
-                        self.pipewire_session_manager),
-                       (self.server_proc, "display server")]:
+    for proc, name in [
+      (self.session_proc, "session"),
+      (self.pipewire_proc, "pipewire"),
+      (self.pipewire_pulse_proc, "pipewire-pulse"),
+      (self.pipewire_session_manager_proc, self.pipewire_session_manager),
+      (self.server_proc, "display server"),
+    ]:
       if proc is not None:
         terminate_process(proc.pid, name)
     self.server_proc = None
@@ -768,14 +832,18 @@ class Desktop(abc.ABC):
       self.pipewire_proc = None
       pipewire_process = True
 
-    if (self.pipewire_pulse_proc is not None
-        and pid == self.pipewire_pulse_proc.pid):
+    if (
+      self.pipewire_pulse_proc is not None
+      and pid == self.pipewire_pulse_proc.pid
+    ):
       logging.info("PipeWire-Pulse process terminated")
       self.pipewire_pulse_proc = None
       pipewire_process = True
 
-    if (self.pipewire_session_manager_proc is not None
-        and pid == self.pipewire_session_manager_proc.pid):
+    if (
+      self.pipewire_session_manager_proc is not None
+      and pid == self.pipewire_session_manager_proc.pid
+    ):
       logging.info(self.pipewire_session_manager + " process terminated")
       self.pipewire_session_manager_proc = None
       pipewire_process = True
@@ -783,10 +851,11 @@ class Desktop(abc.ABC):
     if pipewire_process:
       self.pipewire_inhibitor.record_stopped(expected=False)
       # Terminate other PipeWire-related processes to start fresh.
-      for proc, name in [(self.pipewire_proc, "pipewire"),
-                         (self.pipewire_pulse_proc, "pipewire-pulse"),
-                         (self.pipewire_session_manager_proc,
-                          self.pipewire_session_manager)]:
+      for proc, name in [
+        (self.pipewire_proc, "pipewire"),
+        (self.pipewire_pulse_proc, "pipewire-pulse"),
+        (self.pipewire_session_manager_proc, self.pipewire_session_manager),
+      ]:
         if proc is not None:
           terminate_process(proc.pid, name)
       self.pipewire_proc = None
@@ -840,7 +909,7 @@ class Desktop(abc.ABC):
         failure_count = self.aggregate_failure_count()
         tear_down = False
 
-        if (failure_count == 0):
+        if failure_count == 0:
           # Since the user's desktop is already gone at this point, there's no
           # state to lose and now is a good time to pick up any updates to this
           # script that might have been installed.
@@ -861,11 +930,14 @@ class Desktop(abc.ABC):
           continue
         if inhibitor.failures >= MAX_LAUNCH_FAILURES:
           if offline_reason is None:
-            logging.error("Too many launch failures of '%s', not retrying."
-                          % inhibitor.label)
+            logging.error(
+              "Too many launch failures of '%s', not retrying."
+              % inhibitor.label
+            )
           else:
-            logging.error("Too many launch failures of '%s', exiting."
-                          % inhibitor.label)
+            logging.error(
+              "Too many launch failures of '%s', exiting." % inhibitor.label
+            )
             if self.host_delegate is not None:
               self.host_delegate.report_offline_reason(self, offline_reason)
             sys.exit(1)
@@ -880,12 +952,15 @@ class Desktop(abc.ABC):
         # launching things in the wrong order due to differing relaunch times.
         logging.info("Waiting before relaunching")
       else:
-        if (self.pipewire_proc is None and self.pipewire_pulse_proc is None
-            and self.pipewire_session_manager_proc is None
-            and not self.pipewire_inhibitor.disabled
-            and self.pipewire_inhibitor.failures < MAX_LAUNCH_FAILURES):
+        if (
+          self.pipewire_proc is None
+          and self.pipewire_pulse_proc is None
+          and self.pipewire_session_manager_proc is None
+          and not self.pipewire_inhibitor.disabled
+          and self.pipewire_inhibitor.failures < MAX_LAUNCH_FAILURES
+        ):
           self.setup_audio(backoff_time)
-        if (self.server_proc is None and self.session_proc is None):
+        if self.server_proc is None and self.session_proc is None:
           self.launch_session(server_args, backoff_time)
         if self.host_delegate is not None:
           self.host_delegate.launch_processes(self, backoff_time)
@@ -910,10 +985,13 @@ class Desktop(abc.ABC):
     runtime_dirname = "crd_audio"
     pipewire_instance = runtime_dirname + "/pipewire"
     runtime_path = os.path.join(
-        xdg.BaseDirectory.get_runtime_dir(strict=False), runtime_dirname)
+      xdg.BaseDirectory.get_runtime_dir(strict=False), runtime_dirname
+    )
     if len(runtime_path) + len("/pipewire") >= 108:
-      logging.error("Audio will not be enabled because audio UNIX socket path" +
-                    " is too long.")
+      logging.error(
+        "Audio will not be enabled because audio UNIX socket path"
+        + " is too long."
+      )
       self.pipewire_inhibitor.disable()
       return
 
@@ -936,8 +1014,9 @@ class Desktop(abc.ABC):
 
     # Configure and launch PipeWire if supported on this system.
     if self._launch_pipewire(pipewire_instance, runtime_path, sink_name):
-      self.pipewire_inhibitor.record_started(MINIMUM_PROCESS_LIFETIME,
-                                             backoff_time)
+      self.pipewire_inhibitor.record_started(
+        MINIMUM_PROCESS_LIFETIME, backoff_time
+      )
       return
 
     self.pipewire_inhibitor.disable()
@@ -958,9 +1037,12 @@ class Desktop(abc.ABC):
       with open(os.path.join(runtime_path, "default.pa"), "w") as pulse_script:
         pulse_script.write("load-module module-native-protocol-unix\n")
         pulse_script.write(
-            ("load-module module-pipe-sink sink_name=%s file=\"%s\" " +
-             "rate=48000 channels=2 format=s16le\n") %
-            (sink_name, pipe_name))
+          (
+            "load-module module-pipe-sink sink_name=%s file=\"%s\" "
+            + "rate=48000 channels=2 format=s16le\n"
+          )
+          % (sink_name, pipe_name)
+        )
     except IOError as e:
       logging.error("Failed to write pulseaudio config: " + str(e))
 
@@ -988,7 +1070,6 @@ class WaylandSession(abc.ABC):
   def get_session_binary(self):
     """Returns the name of the binary to start the Wayland session."""
     pass
-
 
   @abc.abstractmethod
   def get_portal_services(self):
@@ -1051,9 +1132,10 @@ class KdeWaylandSession(WaylandSession):
     for process in psutil.process_iter():
       try:
         if process.name() in ['kwin_wayland', 'kwin_wayland_wrapper']:
-            terminate_process(process.pid, process.name())
+          terminate_process(process.pid, process.name())
       except (psutil.NoSuchProcess, psutil.AccessDenied):
         continue
+
 
 WAYLAND_SESSIONS = {
   GnomeWaylandSession.get_xdg_current_desktop(): GnomeWaylandSession,
@@ -1072,23 +1154,24 @@ class WaylandDesktop(Desktop):
     self.debug = False
     self._wayland_socket = None
     self._wayland_session = wayland_session
-    super(WaylandDesktop, self).__init__(
-        host_delegate=host_delegate)
-    self.inhibitors[self.server_inhibitor] \
-        = HOST_OFFLINE_REASON_WAYLAND_SERVER_RETRIES_EXCEEDED
+    super(WaylandDesktop, self).__init__(host_delegate=host_delegate)
+    self.inhibitors[self.server_inhibitor] = (
+      HOST_OFFLINE_REASON_WAYLAND_SERVER_RETRIES_EXCEEDED
+    )
     global g_desktop
-    assert(g_desktop is None)
+    assert g_desktop is None
     g_desktop = self
 
   def _init_child_env(self):
     super(WaylandDesktop, self)._init_child_env()
     self.child_env["XDG_SESSION_TYPE"] = "wayland"
-    self.child_env["XDG_CURRENT_DESKTOP"] = \
+    self.child_env["XDG_CURRENT_DESKTOP"] = (
       self._wayland_session.get_xdg_current_desktop()
+    )
 
     if self.debug:
       self.child_env["G_MESSAGES_DEBUG"] = "all"
-      self.child_env["GDK_DEBUG"]  = "all"
+      self.child_env["GDK_DEBUG"] = "all"
       self.child_env["G_DEBUG"] = "fatal-criticals"
       self.child_env["WAYLAND_DEBUG"] = "1"
 
@@ -1097,7 +1180,8 @@ class WaylandDesktop(Desktop):
     # Remove the display layout file, which will cause problems if it is applied
     # right after the session is launched. See: http://crbug.com/487749302
     display_layout_file = os.path.join(
-        CONFIG_DIR, "host#%s.display_layout.pb" % g_host_hash)
+      CONFIG_DIR, "host#%s.display_layout.pb" % g_host_hash
+    )
     try:
       os.remove(display_layout_file)
       logging.info("Existing display layout file deleted.")
@@ -1113,20 +1197,32 @@ class WaylandDesktop(Desktop):
     # Remove variables from the systemd environment that are known to cause
     # problems in the Wayland session if present - see
     # http://crbug.com/444255720.
-    subprocess.call(["systemctl", "--user", "unset-environment",
-                     "GDK_BACKEND", "SSH_CONNECTION"],
-                    stdout=subprocess.DEVNULL)
+    subprocess.call(
+      [
+        "systemctl",
+        "--user",
+        "unset-environment",
+        "GDK_BACKEND",
+        "SSH_CONNECTION",
+      ],
+      stdout=subprocess.DEVNULL,
+    )
     self._wayland_session.pre_session_launch()
-    self.server_proc = subprocess.Popen([session_binary],
-                                        stdout=subprocess.PIPE,
-                                        stderr=subprocess.STDOUT,
-                                        env=self.child_env)
+    self.server_proc = subprocess.Popen(
+      [session_binary],
+      stdout=subprocess.PIPE,
+      stderr=subprocess.STDOUT,
+      env=self.child_env,
+    )
 
     if not self.server_proc.pid:
       raise Exception("Could not start wayland session")
 
-    output_filter_thread = SessionOutputFilterThread(self.server_proc.stdout,
-        "Wayland server output: ", SERVER_OUTPUT_TIME_LIMIT_SECONDS)
+    output_filter_thread = SessionOutputFilterThread(
+      self.server_proc.stdout,
+      "Wayland server output: ",
+      SERVER_OUTPUT_TIME_LIMIT_SECONDS,
+    )
     output_filter_thread.start()
 
   def _fetch_wayland_socket_from_systemd(self):
@@ -1148,12 +1244,15 @@ class WaylandDesktop(Desktop):
       # start. This causes disconnection errors if a global connection is
       # re-used here.
       bus = dbus.SessionBus(private=True)
-      systemd_object = bus.get_object("org.freedesktop.systemd1",
-                                      "/org/freedesktop/systemd1")
-      systemd_properties = dbus.Interface(systemd_object,
-                                          "org.freedesktop.DBus.Properties")
+      systemd_object = bus.get_object(
+        "org.freedesktop.systemd1", "/org/freedesktop/systemd1"
+      )
+      systemd_properties = dbus.Interface(
+        systemd_object, "org.freedesktop.DBus.Properties"
+      )
       systemd_environment = systemd_properties.Get(
-        "org.freedesktop.systemd1.Manager", "Environment")
+        "org.freedesktop.systemd1.Manager", "Environment"
+      )
     except dbus.exceptions.DBusException:
       # D-Bus errors should be rare - include exception info for debugging.
       logging.error("Failed to get Wayland socket name", exc_info=True)
@@ -1166,7 +1265,7 @@ class WaylandDesktop(Desktop):
     wayland_env_prefix = wayland_display_env + "="
     for setting in systemd_environment:
       if setting.startswith(wayland_env_prefix):
-        self._wayland_socket = setting[len(wayland_env_prefix):]
+        self._wayland_socket = setting[len(wayland_env_prefix) :]
         self.child_env[wayland_display_env] = self._wayland_socket
         logging.info("Fetched Wayland socket name: %s" % self._wayland_socket)
         return True
@@ -1188,15 +1287,18 @@ class WaylandDesktop(Desktop):
 
       if self.check_server_responding():
         logging.info(
-            "Wayland compositor socket (%s) is active and responding in %s "
-            "seconds", self._wayland_socket,
-            time.time() - start_time)
+          "Wayland compositor socket (%s) is active and responding in %s "
+          "seconds",
+          self._wayland_socket,
+          time.time() - start_time,
+        )
         return True
       time.sleep(self.WL_SERVER_CHECK_DELAY_SECONDS)
     logging.error(
-        "Waited for Wayland compositor to become active and responding, "
-        "but it didn't happen in %s seconds",
-        self.WL_SERVER_CHECK_TIMEOUT_SECONDS)
+      "Waited for Wayland compositor to become active and responding, "
+      "but it didn't happen in %s seconds",
+      self.WL_SERVER_CHECK_TIMEOUT_SECONDS,
+    )
     return False
 
   def launch_desktop_session(self):
@@ -1209,21 +1311,30 @@ class WaylandDesktop(Desktop):
       logging.error("Aborting wayland session since compositor isn't running")
       sys.exit(RELAUNCH_EXIT_CODE)
 
-    logging.info("Wayland compositor is running, restarting the portal "
-                 "services now")
+    logging.info(
+      "Wayland compositor is running, restarting the portal services now"
+    )
     if not self._import_systemd_env_vars():
-      logging.error("Continuing without restarting Portal services - "
-                    "this may cause some unexpected problems.")
+      logging.error(
+        "Continuing without restarting Portal services - "
+        "this may cause some unexpected problems."
+      )
       return
 
     try:
-      portals = \
-        ["xdg-desktop-portal"] + self._wayland_session.get_portal_services()
-      subprocess.check_output(["systemctl", "--user", "restart"] + portals,
-                              stderr=subprocess.STDOUT, env=self.child_env)
+      portals = [
+        "xdg-desktop-portal"
+      ] + self._wayland_session.get_portal_services()
+      subprocess.check_output(
+        ["systemctl", "--user", "restart"] + portals,
+        stderr=subprocess.STDOUT,
+        env=self.child_env,
+      )
     except subprocess.CalledProcessError as err:
-      logging.error("Unable to restart portal services on the host, "
-                    "returncode: %s, output: %s" % (err.returncode, err.output))
+      logging.error(
+        "Unable to restart portal services on the host, "
+        "returncode: %s, output: %s" % (err.returncode, err.output)
+      )
       # For GNOME, the Portal services are not required, since the host process
       # uses the private GNOME APIs. For non-GNOME desktops, the Portal services
       # are needed, but a failure to restart them here is not necessarily fatal.
@@ -1275,8 +1386,7 @@ class XDesktop(Desktop):
   """Manage a single virtual X desktop"""
 
   def __init__(self, host_delegate=None):
-    super(XDesktop, self).__init__(
-        host_delegate=host_delegate)
+    super(XDesktop, self).__init__(host_delegate=host_delegate)
     self.sizes = self._get_desktop_sizes()
     self.xorg_conf = None
     self.server_supports_randr = False
@@ -1284,7 +1394,7 @@ class XDesktop(Desktop):
     self.ssh_auth_sockname = None
     self.use_xvfb = self.should_use_xvfb()
     global g_desktop
-    assert(g_desktop is None)
+    assert g_desktop is None
     g_desktop = self
 
   @staticmethod
@@ -1297,8 +1407,10 @@ class XDesktop(Desktop):
       size_components = size.split("x")
       if len(size_components) != 2:
         logging.error(
-            "Incorrect size format '%s', should be WIDTHxHEIGHT; using "
-            "default sizes", size)
+          "Incorrect size format '%s', should be WIDTHxHEIGHT; using "
+          "default sizes",
+          size,
+        )
         return list(DEFAULT_SIZES)
 
       try:
@@ -1311,8 +1423,9 @@ class XDesktop(Desktop):
           raise ValueError
       except ValueError:
         logging.error(
-            "Width and height should be 100 pixels or greater; using default "
-            "sizes")
+          "Width and height should be 100 pixels or greater; using default "
+          "sizes"
+        )
         return list(DEFAULT_SIZES)
 
       sizes.append((width, height))
@@ -1333,15 +1446,16 @@ class XDesktop(Desktop):
     # have to query the dpkg database.
     try:
       video_dummy_info = subprocess.check_output(
-          ['dpkg-query', '-s', 'xserver-xorg-video-dummy'])
-      match = re.search(
-          br'^Version: (\S+)$', video_dummy_info, re.MULTILINE)
+        ['dpkg-query', '-s', 'xserver-xorg-video-dummy']
+      )
+      match = re.search(rb'^Version: (\S+)$', video_dummy_info, re.MULTILINE)
       if not match:
         logging.error('Version line is not found')
         return True
       version = match[1]
       retcode = subprocess.call(
-          ['dpkg', '--compare-versions', version, 'ge', '1:0.4.0'])
+        ['dpkg', '--compare-versions', version, 'ge', '1:0.4.0']
+      )
       if retcode != 0:
         logging.info('xserver-xorg-video-dummy is not up-to-date')
         return True
@@ -1350,7 +1464,8 @@ class XDesktop(Desktop):
       return True
     except Exception as e:
       logging.warning(
-          'Failed to get xserver-xorg-video-dummy version: ' + str(e))
+        'Failed to get xserver-xorg-video-dummy version: ' + str(e)
+      )
 
     return False
 
@@ -1396,8 +1511,9 @@ class XDesktop(Desktop):
 
   def check_server_responding(self):
     """Checks if the X server is responding to connections."""
-    exit_code = subprocess.call("xdpyinfo", env=self.child_env,
-                                stdout=subprocess.DEVNULL)
+    exit_code = subprocess.call(
+      "xdpyinfo", env=self.child_env, stdout=subprocess.DEVNULL
+    )
     return exit_code == 0
 
   def _wait_for_x(self):
@@ -1417,20 +1533,32 @@ class XDesktop(Desktop):
     logging.info("Starting Xvfb on display :%d" % display)
     screen_option = "%dx%dx24" % (max_width, max_height)
     self.server_proc = subprocess.Popen(
-        ["Xvfb", ":%d" % display,
-         "-auth", x_auth_file,
-         "-nolisten", "tcp",
-         "-noreset",
-         "-screen", "0", screen_option
-        ] + extra_x_args, env=self._x_env())
+      [
+        "Xvfb",
+        ":%d" % display,
+        "-auth",
+        x_auth_file,
+        "-nolisten",
+        "tcp",
+        "-noreset",
+        "-screen",
+        "0",
+        screen_option,
+      ]
+      + extra_x_args,
+      env=self._x_env(),
+    )
     if not self.server_proc.pid:
       raise Exception("Could not start Xvfb.")
 
     self._wait_for_x()
 
-    exit_code = subprocess.call("xrandr", env=self.child_env,
-                                stdout=subprocess.DEVNULL,
-                                stderr=subprocess.DEVNULL)
+    exit_code = subprocess.call(
+      "xrandr",
+      env=self.child_env,
+      stdout=subprocess.DEVNULL,
+      stderr=subprocess.DEVNULL,
+    )
     if exit_code == 0:
       # RandR is supported
       self.server_supports_randr = True
@@ -1445,9 +1573,9 @@ class XDesktop(Desktop):
     self.randr_add_sizes = True
     self.xorg_conf = config_file.name
 
-    xorg_binary = "/usr/lib/xorg/Xorg";
+    xorg_binary = "/usr/lib/xorg/Xorg"
     if not os.access(xorg_binary, os.X_OK):
-      xorg_binary = "Xorg";
+      xorg_binary = "Xorg"
 
     logging.info("Starting %s on display :%d" % (xorg_binary, display))
     # We use the child environment so the Xorg server picks up the Mesa libGL
@@ -1456,19 +1584,30 @@ class XDesktop(Desktop):
     # Note: This prevents any environment variable the user has set from
     # affecting the Xorg server.
     self.server_proc = subprocess.Popen(
-        [xorg_binary, ":%d" % display,
-         "-auth", x_auth_file,
-         "-nolisten", "tcp",
-         "-noreset",
-         # Disable logging to a file and instead bump up the stderr verbosity
-         # so the equivalent information gets logged in our main log file.
-         "-logfile", "/dev/null",
-         "-verbose", "3",
-         "-configdir", config_dir,
-         # Pass a non-existent file, to prevent Xorg from reading the default
-         # config file: /etc/X11/xorg.conf
-         "-config", os.path.join(config_dir, "none")
-        ] + extra_x_args, env=self._x_env())
+      [
+        xorg_binary,
+        ":%d" % display,
+        "-auth",
+        x_auth_file,
+        "-nolisten",
+        "tcp",
+        "-noreset",
+        # Disable logging to a file and instead bump up the stderr verbosity
+        # so the equivalent information gets logged in our main log file.
+        "-logfile",
+        "/dev/null",
+        "-verbose",
+        "3",
+        "-configdir",
+        config_dir,
+        # Pass a non-existent file, to prevent Xorg from reading the default
+        # config file: /etc/X11/xorg.conf
+        "-config",
+        os.path.join(config_dir, "none"),
+      ]
+      + extra_x_args,
+      env=self._x_env(),
+    )
     if not self.server_proc.pid:
       raise Exception("Could not start Xorg.")
     self._wait_for_x()
@@ -1480,8 +1619,9 @@ class XDesktop(Desktop):
 
     # Run "xauth add" with |child_env| so that it modifies the same XAUTHORITY
     # file which will be used for the X session.
-    exit_code = subprocess.call("xauth add :%d . `mcookie`" % display,
-                                env=self.child_env, shell=True)
+    exit_code = subprocess.call(
+      "xauth add :%d . `mcookie`" % display, env=self.child_env, shell=True
+    )
     if exit_code != 0:
       raise Exception("xauth failed with code %d" % exit_code)
 
@@ -1489,8 +1629,10 @@ class XDesktop(Desktop):
     # Unity-2D, since it uses Metacity which fails to generate DAMAGE
     # notifications correctly. See crbug.com/166468.
     x_session = choose_x_session()
-    if (len(x_session) == 2 and
-        x_session[1] == "/usr/bin/gnome-session --session=ubuntu-2d"):
+    if (
+      len(x_session) == 2
+      and x_session[1] == "/usr/bin/gnome-session --session=ubuntu-2d"
+    ):
       extra_x_args.extend(["-extension", "Composite"])
 
     self.child_env["DISPLAY"] = ":%d" % display
@@ -1506,8 +1648,9 @@ class XDesktop(Desktop):
     # Reconfigure the X server to use "evdev" keymap rules.  The X server must
     # be started with -noreset otherwise it'll reset as soon as the command
     # completes, since there are no other X clients running yet.
-    exit_code = subprocess.call(["setxkbmap", "-rules", "evdev"],
-                                env=self.child_env)
+    exit_code = subprocess.call(
+      ["setxkbmap", "-rules", "evdev"], env=self.child_env
+    )
     if exit_code != 0:
       logging.error("Failed to set XKB to 'evdev'")
 
@@ -1523,15 +1666,16 @@ class XDesktop(Desktop):
         proc_num = subprocess.check_output("nproc", universal_newlines=True)
 
         # Keep the proc_num logic in sync with desktop_resizer_x11.cc
-        if (int(proc_num) > 16):
+        if int(proc_num) > 16:
           refresh_rates.append("120")
       except (ValueError, OSError, subprocess.CalledProcessError) as e:
         logging.error("Failed to retrieve processor count: " + str(e))
 
       output_names = (
-          ["screen"]
-          if self.use_xvfb
-          else ["DUMMY0","DUMMY1","DUMMY2","DUMMY3"])
+        ["screen"]
+        if self.use_xvfb
+        else ["DUMMY0", "DUMMY1", "DUMMY2", "DUMMY3"]
+      )
 
       for output_name in output_names:
         for refresh_rate in refresh_rates:
@@ -1540,13 +1684,33 @@ class XDesktop(Desktop):
             # refresh-rate will have a realistic value:
             # refresh rate = dot-clock / (vtotal * htotal).
             label = "%dx%d_%s" % (width, height, refresh_rate)
-            args = ["xrandr", "--newmode", label, refresh_rate, str(width), "0",
-                    "0", "1000", str(height), "0", "0", "1000"]
-            subprocess.call(args, env=self.child_env, stdout=subprocess.DEVNULL,
-                            stderr=subprocess.DEVNULL)
+            args = [
+              "xrandr",
+              "--newmode",
+              label,
+              refresh_rate,
+              str(width),
+              "0",
+              "0",
+              "1000",
+              str(height),
+              "0",
+              "0",
+              "1000",
+            ]
+            subprocess.call(
+              args,
+              env=self.child_env,
+              stdout=subprocess.DEVNULL,
+              stderr=subprocess.DEVNULL,
+            )
             args = ["xrandr", "--addmode", output_name, label]
-            subprocess.call(args, env=self.child_env, stdout=subprocess.DEVNULL,
-                            stderr=subprocess.DEVNULL)
+            subprocess.call(
+              args,
+              env=self.child_env,
+              stdout=subprocess.DEVNULL,
+              stderr=subprocess.DEVNULL,
+            )
 
     # Set the initial mode to the first size specified, otherwise the X server
     # would default to (max_width, max_height), which might not even be in the
@@ -1554,15 +1718,23 @@ class XDesktop(Desktop):
     initial_size = self.sizes[0]
     label = "%dx%d" % initial_size
     args = ["xrandr", "-s", label]
-    subprocess.call(args, env=self.child_env, stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL)
+    subprocess.call(
+      args,
+      env=self.child_env,
+      stdout=subprocess.DEVNULL,
+      stderr=subprocess.DEVNULL,
+    )
 
     # Set the physical size of the display so that the initial mode is running
     # at approximately 96 DPI, since some desktops require the DPI to be set
     # to something realistic.
     args = ["xrandr", "--dpi", "96"]
-    subprocess.call(args, env=self.child_env, stdout=subprocess.DEVNULL,
-                    stderr=subprocess.DEVNULL)
+    subprocess.call(
+      args,
+      env=self.child_env,
+      stdout=subprocess.DEVNULL,
+      stderr=subprocess.DEVNULL,
+    )
 
     if self.use_xvfb:
       # Monitor for any automatic resolution changes from the desktop
@@ -1571,13 +1743,21 @@ class XDesktop(Desktop):
       # desktop-environments would mistakenly set this as the preferred mode,
       # leading to a huge desktop with tiny text. With Xorg, the modes are
       # all reasonably sized, so the problem doesn't occur.
-      args = [SCRIPT_PATH, "--watch-resolution", str(initial_size[0]),
-              str(initial_size[1])]
+      args = [
+        SCRIPT_PATH,
+        "--watch-resolution",
+        str(initial_size[0]),
+        str(initial_size[1]),
+      ]
 
       # It is not necessary to wait() on the process here, as this script's main
       # loop will reap the exit-codes of all child processes.
-      subprocess.Popen(args, env=self.child_env, stdout=subprocess.DEVNULL,
-                       stderr=subprocess.DEVNULL)
+      subprocess.Popen(
+        args,
+        env=self.child_env,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+      )
 
   def launch_desktop_session(self):
     # Start desktop session.
@@ -1593,18 +1773,23 @@ class XDesktop(Desktop):
     self._import_systemd_env_vars()
 
     logging.info("Launching X session: %s" % xsession_command)
-    self.session_proc = subprocess.Popen(xsession_command,
-                                         stdin=subprocess.DEVNULL,
-                                         stdout=subprocess.PIPE,
-                                         stderr=subprocess.STDOUT,
-                                         cwd=HOME_DIR,
-                                         env=self.child_env)
+    self.session_proc = subprocess.Popen(
+      xsession_command,
+      stdin=subprocess.DEVNULL,
+      stdout=subprocess.PIPE,
+      stderr=subprocess.STDOUT,
+      cwd=HOME_DIR,
+      env=self.child_env,
+    )
 
     if not self.session_proc.pid:
       raise Exception("Could not start X session")
 
-    output_filter_thread = SessionOutputFilterThread(self.session_proc.stdout,
-        "Session output: ", SESSION_OUTPUT_TIME_LIMIT_SECONDS)
+    output_filter_thread = SessionOutputFilterThread(
+      self.session_proc.stdout,
+      "Session output: ",
+      SESSION_OUTPUT_TIME_LIMIT_SECONDS,
+    )
     output_filter_thread.start()
 
 
@@ -1632,9 +1817,7 @@ def choose_x_session():
     the first parameter of subprocess.Popen().  If a suitable session cannot
     be found, returns None.
   """
-  XSESSION_FILES = [
-    SESSION_FILE_PATH,
-    SYSTEM_SESSION_FILE_PATH ]
+  XSESSION_FILES = [SESSION_FILE_PATH, SYSTEM_SESSION_FILE_PATH]
   for startup_file in XSESSION_FILES:
     startup_file = os.path.expanduser(startup_file)
     if os.path.exists(startup_file):
@@ -1648,8 +1831,9 @@ def exec_self_via_login_shell():
   """Attempt to run the user's login shell and run this script under it. This
   will allow the user's ~/.profile or similar to be processed, which may set
   environment variables to configure Chrome Remote Desktop."""
-  args = [sys.argv[0], "--child-process"] + [arg for arg in sys.argv[1:]
-                                             if arg != "--new-session"]
+  args = [sys.argv[0], "--child-process"] + [
+    arg for arg in sys.argv[1:] if arg != "--new-session"
+  ]
   try:
     shell = os.getenv("SHELL")
 
@@ -1660,9 +1844,11 @@ def exec_self_via_login_shell():
       # First, ensure we can execute commands via the user's login shell. Some
       # users have an incorrect .profile or similar that breaks this.
       output = subprocess.check_output(
-          [shell_arg0], executable=shell,
-          input=b"exec echo CRD_SHELL_TEST_OUTPUT",
-          timeout=15)
+        [shell_arg0],
+        executable=shell,
+        input=b"exec echo CRD_SHELL_TEST_OUTPUT",
+        timeout=15,
+      )
 
       if b"CRD_SHELL_TEST_OUTPUT" in output:
         # subprocess doesn't support calling exec without fork, so we need to
@@ -1670,8 +1856,8 @@ def exec_self_via_login_shell():
         read_fd, write_fd = os.pipe()
         # The command line should easily fit in the 16KiB pipe buffer.
         os.write(
-            write_fd,
-            b"exec " + os.fsencode(" ".join(map(shlex.quote, args))))
+          write_fd, b"exec " + os.fsencode(" ".join(map(shlex.quote, args)))
+        )
         os.close(write_fd)
         os.dup2(read_fd, 0)
         os.close(read_fd)
@@ -1684,8 +1870,9 @@ def exec_self_via_login_shell():
     logging.warning(str(e))
 
   logging.warning(
-      "Failed to run via login shell; continuing without. Environment "
-      "variables set via ~/.profile or similar won't be processed.")
+    "Failed to run via login shell; continuing without. Environment "
+    "variables set via ~/.profile or similar won't be processed."
+  )
   os.execv(args[0], args)
 
 
@@ -1696,11 +1883,13 @@ def unset_crd_systemd_env_vars():
   # a (sub)process of gnome-session) will add them back, so we wait for a
   # second to allow the GNOME session to terminate cleanly.
   logging.info(
-      "Waiting for one second before unsetting systemd environment variables.")
+    "Waiting for one second before unsetting systemd environment variables."
+  )
   time.sleep(1)
   logging.info("Unsetting systemd user environment variables.")
-  subprocess.call(["systemctl", "--user", "unset-environment"] +
-                  CRD_SYSTEMD_ENV_VARS_TO_UNSET)
+  subprocess.call(
+    ["systemctl", "--user", "unset-environment"] + CRD_SYSTEMD_ENV_VARS_TO_UNSET
+  )
 
 
 def cleanup():
@@ -1868,10 +2057,12 @@ def watch_for_resolution_changes(initial_size):
   for _ in range(30):
     time.sleep(1)
 
-    xrandr_output = subprocess.Popen(["xrandr"],
-                                     stdout=subprocess.PIPE).communicate()[0]
-    match = re.search(br'current (\d+) x (\d+), maximum (\d+) x (\d+)',
-                      xrandr_output)
+    xrandr_output = subprocess.Popen(
+      ["xrandr"], stdout=subprocess.PIPE
+    ).communicate()[0]
+    match = re.search(
+      rb'current (\d+) x (\d+), maximum (\d+) x (\d+)', xrandr_output
+    )
 
     # No need to handle ValueError. If xrandr fails to give valid output,
     # there's no point in continuing to monitor.
@@ -1899,16 +2090,17 @@ def create_desktop(extra_start_host_args=None, host_delegate=None):
   if extra_start_host_args is None:
     extra_start_host_args = []
   is_wayland = (
-      USE_WAYLAND_ENV_VAR in os.environ or
-      '--enable-wayland' in extra_start_host_args)
+    USE_WAYLAND_ENV_VAR in os.environ
+    or '--enable-wayland' in extra_start_host_args
+  )
   if is_wayland:
     wayland_session_type = os.environ.get(USE_WAYLAND_ENV_VAR)
     # Use GNOME as the default Wayland session.
     wayland_session_class = (
-        WAYLAND_SESSIONS[wayland_session_type]
-        if wayland_session_type in WAYLAND_SESSIONS
-        else GnomeWaylandSession)
-    return WaylandDesktop(wayland_session_class(),
-                          host_delegate=host_delegate)
+      WAYLAND_SESSIONS[wayland_session_type]
+      if wayland_session_type in WAYLAND_SESSIONS
+      else GnomeWaylandSession
+    )
+    return WaylandDesktop(wayland_session_class(), host_delegate=host_delegate)
   else:
     return XDesktop(host_delegate=host_delegate)

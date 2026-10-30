@@ -10,6 +10,7 @@
 # process, running under an ordinary (non-root) user account.
 
 import sys
+
 if sys.version_info[0] != 3 or sys.version_info[1] < 5:
   print("This script requires Python version 3.5")
   sys.exit(1)
@@ -33,21 +34,21 @@ import time
 import psutil
 
 from shared_lib import (
-    CONFIG_DIR,
-    DEBIAN_XSESSION_PATH,
-    HOST_BINARY_PATH,
-    MINIMUM_PROCESS_LIFETIME,
-    RelaunchInhibitor,
-    SCRIPT_DIR,
-    SESSION_FILE_PATH,
-    SYSTEM_SESSION_FILE_PATH,
-    cleanup,
-    create_desktop,
-    display_manager_is_gdm,
-    exec_self_via_login_shell,
-    g_host_hash,
-    terminate_process,
-    watch_for_resolution_changes,
+  CONFIG_DIR,
+  DEBIAN_XSESSION_PATH,
+  HOST_BINARY_PATH,
+  MINIMUM_PROCESS_LIFETIME,
+  RelaunchInhibitor,
+  SCRIPT_DIR,
+  SESSION_FILE_PATH,
+  SYSTEM_SESSION_FILE_PATH,
+  cleanup,
+  create_desktop,
+  display_manager_is_gdm,
+  exec_self_via_login_shell,
+  g_host_hash,
+  terminate_process,
+  watch_for_resolution_changes,
 )
 
 # If this env var is defined, extra host params will be loaded from this env var
@@ -64,7 +65,7 @@ HOST_OFFLINE_REASON_HOST_RETRIES_EXCEEDED = "HOST_RETRIES_EXCEEDED"
 
 # Host offline reason if the crash-uploader retry count is exceeded.
 HOST_OFFLINE_REASON_CRASH_UPLOADER_RETRIES_EXCEEDED = (
-    "CRASH_UPLOADER_RETRIES_EXCEEDED"
+  "CRASH_UPLOADER_RETRIES_EXCEEDED"
 )
 
 # Number of processes/threads reserved for the Chrome Remote Desktop host
@@ -86,8 +87,11 @@ def reserve_host_process_limits():
   try:
     soft, hard = resource.getrlimit(resource.RLIMIT_NPROC)
     if soft != resource.RLIM_INFINITY:
-      new_soft = (soft + HOST_RESERVED_NPROC if hard == resource.RLIM_INFINITY
-                  else min(soft + HOST_RESERVED_NPROC, hard))
+      new_soft = (
+        soft + HOST_RESERVED_NPROC
+        if hard == resource.RLIM_INFINITY
+        else min(soft + HOST_RESERVED_NPROC, hard)
+      )
       if new_soft > soft:
         resource.setrlimit(resource.RLIMIT_NPROC, (new_soft, hard))
         saved_limits = (soft, hard)
@@ -106,8 +110,11 @@ def reserve_host_process_limits():
 def is_supported_platform():
   # Always assume that the system is supported if the config directory or
   # session file exist.
-  if (os.path.isdir(CONFIG_DIR) or os.path.isfile(SESSION_FILE_PATH) or
-      os.path.isfile(SYSTEM_SESSION_FILE_PATH)):
+  if (
+    os.path.isdir(CONFIG_DIR)
+    or os.path.isfile(SESSION_FILE_PATH)
+    or os.path.isfile(SYSTEM_SESSION_FILE_PATH)
+  ):
     return True
 
   # There's a bug in recent versions of GDM that will prevent a user from
@@ -230,8 +237,9 @@ class Authentication:
 class Host:
   """This manages the configuration and process lifecycle for a host."""
 
-  def __init__(self, host_config=None, extra_start_host_args=None,
-               host_inhibitor=None):
+  def __init__(
+    self, host_config=None, extra_start_host_args=None, host_inhibitor=None
+  ):
     self.host_id = None
     self.host_name = None
     self.host_secret_hash = None
@@ -245,7 +253,7 @@ class Host:
     self.crash_uploader_proc = None
     self.crash_uploader_inhibitor = None
     self.inhibitors = {
-        self.host_inhibitor: HOST_OFFLINE_REASON_HOST_RETRIES_EXCEEDED
+      self.host_inhibitor: HOST_OFFLINE_REASON_HOST_RETRIES_EXCEEDED
     }
 
   def copy_from(self, config):
@@ -270,7 +278,7 @@ class Host:
     self.crash_reporting_enabled = True
     self.crash_uploader_inhibitor = RelaunchInhibitor("Crash uploader")
     self.inhibitors[self.crash_uploader_inhibitor] = (
-        HOST_OFFLINE_REASON_CRASH_UPLOADER_RETRIES_EXCEEDED
+      HOST_OFFLINE_REASON_CRASH_UPLOADER_RETRIES_EXCEEDED
     )
 
   def launch_processes(self, desktop, backoff_time):
@@ -300,14 +308,16 @@ class Host:
 
     logging.info(args)
     with reserve_host_process_limits():
-      self.host_proc = subprocess.Popen(args, env=desktop.child_env,
-                                        stdin=subprocess.PIPE)
+      self.host_proc = subprocess.Popen(
+        args, env=desktop.child_env, stdin=subprocess.PIPE
+      )
     if not self.host_proc.pid:
       raise Exception("Could not start Chrome Remote Desktop host")
 
     try:
       self.host_proc.stdin.write(
-          json.dumps(self.host_config.data).encode('UTF-8'))
+        json.dumps(self.host_config.data).encode('UTF-8')
+      )
       self.host_proc.stdin.flush()
     except IOError as e:
       # This can occur in rare situations, for example, if the machine is
@@ -335,12 +345,15 @@ class Host:
     if not self.crash_uploader_proc.pid:
       raise Exception("Could not start crash-uploader")
 
-    self.crash_uploader_inhibitor.record_started(MINIMUM_PROCESS_LIFETIME,
-                                                 backoff_time)
+    self.crash_uploader_inhibitor.record_started(
+      MINIMUM_PROCESS_LIFETIME, backoff_time
+    )
 
   def cleanup(self):
-    for proc, name in [(self.host_proc, "host"),
-                       (self.crash_uploader_proc, "crash-uploader")]:
+    for proc, name in [
+      (self.host_proc, "host"),
+      (self.crash_uploader_proc, "crash-uploader"),
+    ]:
       if proc is not None:
         terminate_process(proc.pid, name)
     self.host_proc = None
@@ -351,8 +364,11 @@ class Host:
     is best effort, and requires a valid host config.
     """
     logging.info("Attempting to report offline reason: " + reason)
-    args = [HOST_BINARY_PATH, "--host-config=-",
-            "--report-offline-reason=" + reason]
+    args = [
+      HOST_BINARY_PATH,
+      "--host-config=-",
+      "--report-offline-reason=" + reason,
+    ]
     proc = subprocess.Popen(args, env=desktop.child_env, stdin=subprocess.PIPE)
     proc.communicate(json.dumps(self.host_config.data).encode('UTF-8'))
 
@@ -413,8 +429,10 @@ class Host:
         # Only tear down if the display server isn't responding.
         tear_down = True
 
-    if (self.crash_uploader_proc is not None and
-            pid == self.crash_uploader_proc.pid):
+    if (
+      self.crash_uploader_proc is not None
+      and pid == self.crash_uploader_proc.pid
+    ):
       logging.info("Crash uploader process terminated")
       self.crash_uploader_proc = None
       self.crash_uploader_inhibitor.record_stopped(expected=False)
@@ -437,6 +455,7 @@ def parse_config_arg(args):
   # do that.
   class ArgumentParserError(Exception):
     pass
+
   class ThrowingArgumentParser(argparse.ArgumentParser):
     def error(self, message):
       raise ArgumentParserError(message)
@@ -481,9 +500,9 @@ def get_daemon_proc(config_file, require_child_process=False):
   # Support new & old psutil API. This is the right way to check, according to
   # http://grodola.blogspot.com/2014/01/psutil-20-porting.html
   if psutil.version_info >= (2, 0):
-    psget = lambda x: x()
+    psget = lambda x: x()  # noqa: E731
   else:
-    psget = lambda x: x
+    psget = lambda x: x  # noqa: E731
 
   for process in psutil.process_iter():
     # Skip any processes that raise an exception, as processes may terminate
@@ -501,16 +520,19 @@ def get_daemon_proc(config_file, require_child_process=False):
       cmdline = psget(process.cmdline)
       if len(cmdline) < 2:
         continue
-      if (os.path.basename(cmdline[0]).startswith('python') and
-          os.path.basename(cmdline[1]) == os.path.basename(sys.argv[0]) and
-          "--start" in cmdline):
+      if (
+        os.path.basename(cmdline[0]).startswith('python')
+        and os.path.basename(cmdline[1]) == os.path.basename(sys.argv[0])
+        and "--start" in cmdline
+      ):
         process_config = parse_config_arg(cmdline[2:])[0]
 
         # Fall back to old behavior if there is no --config argument
         # TODO(rkjnsn): Consider removing this fallback once sufficient time
         # has passed.
-        if process_config == config_file or (process_config is None and
-                                             cmdline[1] == sys.argv[0]):
+        if process_config == config_file or (
+          process_config is None and cmdline[1] == sys.argv[0]
+        ):
           if "--child-process" in cmdline:
             return process
           else:
@@ -559,48 +581,94 @@ class SignalHandler:
 
 def setup_argument_parser():
   parser = argparse.ArgumentParser(
-      usage="Usage: %(prog)s [options] [ -- [ X server options ] ]",
-      epilog=EPILOG)
-  parser.add_argument("-f", "--foreground", dest="foreground", default=False,
-                      action="store_true",
-                      help="Don't run as a background daemon.")
-  parser.add_argument("--start", dest="start", default=False,
-                      action="store_true",
-                      help="Start the host.")
-  parser.add_argument("-k", "--stop", dest="stop", default=False,
-                      action="store_true",
-                      help="Stop the daemon currently running.")
-  parser.add_argument("--get-status", dest="get_status", default=False,
-                      action="store_true",
-                      help="Prints host status")
-  parser.add_argument("--check-running", dest="check_running",
-                      default=False, action="store_true",
-                      help="Return 0 if the daemon is running, or 1 otherwise.")
-  parser.add_argument("--config", dest="config", action="store",
-                      help="Use the specified configuration file.")
-  parser.add_argument("--reload", dest="reload", default=False,
-                      action="store_true",
-                      help="Signal currently running host to reload the "
-                      "config.")
-  parser.add_argument("--enable-and-start", dest="enable_and_start",
-                      default=False, action="store_true",
-                      help="Enable and start chrome-remote-desktop for the "
-                      "current user.")
+    usage="Usage: %(prog)s [options] [ -- [ X server options ] ]", epilog=EPILOG
+  )
+  parser.add_argument(
+    "-f",
+    "--foreground",
+    dest="foreground",
+    default=False,
+    action="store_true",
+    help="Don't run as a background daemon.",
+  )
+  parser.add_argument(
+    "--start",
+    dest="start",
+    default=False,
+    action="store_true",
+    help="Start the host.",
+  )
+  parser.add_argument(
+    "-k",
+    "--stop",
+    dest="stop",
+    default=False,
+    action="store_true",
+    help="Stop the daemon currently running.",
+  )
+  parser.add_argument(
+    "--get-status",
+    dest="get_status",
+    default=False,
+    action="store_true",
+    help="Prints host status",
+  )
+  parser.add_argument(
+    "--check-running",
+    dest="check_running",
+    default=False,
+    action="store_true",
+    help="Return 0 if the daemon is running, or 1 otherwise.",
+  )
+  parser.add_argument(
+    "--config",
+    dest="config",
+    action="store",
+    help="Use the specified configuration file.",
+  )
+  parser.add_argument(
+    "--reload",
+    dest="reload",
+    default=False,
+    action="store_true",
+    help="Signal currently running host to reload the config.",
+  )
+  parser.add_argument(
+    "--enable-and-start",
+    dest="enable_and_start",
+    default=False,
+    action="store_true",
+    help="Enable and start chrome-remote-desktop for the current user.",
+  )
   # This flag is used when running the script from a build directory, or by the
   # systemd unit. It indicates that the script should not attempt to start
   # itself via systemd.
-  parser.add_argument("--child-process", dest="child_process", default=False,
-                      action="store_true",
-                      help=argparse.SUPPRESS)
+  parser.add_argument(
+    "--child-process",
+    dest="child_process",
+    default=False,
+    action="store_true",
+    help=argparse.SUPPRESS,
+  )
   # The script is being run in a new PAM session. Don't daemonize so the parent
   # knows when to clean up the PAM session, and attempt to exec a login shell to
   # allow the user's ~/.profile or similar to run.
-  parser.add_argument("--new-session", dest="new_session", default=False,
-                      action="store_true",
-                      help=argparse.SUPPRESS)
-  parser.add_argument("--watch-resolution", dest="watch_resolution",
-                      type=int, nargs=2, default=False, action="store",
-                      help=argparse.SUPPRESS)
+  parser.add_argument(
+    "--new-session",
+    dest="new_session",
+    default=False,
+    action="store_true",
+    help=argparse.SUPPRESS,
+  )
+  parser.add_argument(
+    "--watch-resolution",
+    dest="watch_resolution",
+    type=int,
+    nargs=2,
+    default=False,
+    action="store",
+    help=argparse.SUPPRESS,
+  )
   parser.add_argument(dest="args", nargs="*", help=argparse.SUPPRESS)
   return parser
 
@@ -667,8 +735,9 @@ def main():
     # Additionally, some configurations can result in systemctl prompting the
     # user for their password multiple times, which can be confusing and
     # annoying. Running it as root avoids both issues.
-    return run_command_as_root(["systemctl", "enable", "--now",
-                                "chrome-remote-desktop@" + user])
+    return run_command_as_root(
+      ["systemctl", "enable", "--now", "chrome-remote-desktop@" + user]
+    )
 
   if options.watch_resolution:
     watch_for_resolution_changes(tuple(options.watch_resolution))
@@ -690,8 +759,9 @@ def main():
   if config_file != options.config:
     # --config was either not specified or isn't a canonical absolute path.
     # Replace it with the canonical path so get_daemon_proc can find us.
-    sys.argv = ([sys.argv[0], "--config=" + config_file] +
-                parse_config_arg(sys.argv[1:])[1])
+    sys.argv = [sys.argv[0], "--config=" + config_file] + parse_config_arg(
+      sys.argv[1:]
+    )[1]
     if options.child_process:
       os.execvp(sys.argv[0], sys.argv)
 
@@ -699,26 +769,29 @@ def main():
     exec_self_via_login_shell()
 
   if not options.child_process:
-    return run_command_as_root(["systemctl", "start",
-                                "chrome-remote-desktop@" + getpass.getuser()])
+    return run_command_as_root(
+      ["systemctl", "start", "chrome-remote-desktop@" + getpass.getuser()]
+    )
 
   logging.info("CRD service is starting")
   logging.info("Machine hostname: %s", socket.getfqdn())
   uptime = datetime.timedelta(
-      seconds=int(time.clock_gettime(time.CLOCK_BOOTTIME)))
+    seconds=int(time.clock_gettime(time.CLOCK_BOOTTIME))
+  )
   logging.info("Machine uptime: %s", uptime)
 
   if display_manager_is_gdm():
     # See https://gitlab.gnome.org/GNOME/gdm/-/issues/580 for details on the
     # bug.
     gdm_message = (
-        "WARNING: This system uses GDM. Some GDM versions have a bug that "
-        "prevents local login while Chrome Remote Desktop is running. If you "
-        "run into this issue, you can stop Chrome Remote Desktop by visiting "
-        "https://remotedesktop.google.com/access on another machine and "
-        "clicking the delete icon next to this machine. It may take up to five "
-        "minutes for the Chrome Remote Desktop to exit on this machine and for "
-        "local login to start working again.")
+      "WARNING: This system uses GDM. Some GDM versions have a bug that "
+      "prevents local login while Chrome Remote Desktop is running. If you "
+      "run into this issue, you can stop Chrome Remote Desktop by visiting "
+      "https://remotedesktop.google.com/access on another machine and "
+      "clicking the delete icon next to this machine. It may take up to five "
+      "minutes for the Chrome Remote Desktop to exit on this machine and for "
+      "local login to start working again."
+    )
     logging.warning(gdm_message)
     # Also log to syslog so the user has a higher change of discovering the
     # message if they go searching.
@@ -738,13 +811,15 @@ def main():
   extra_start_host_args = []
   if HOST_EXTRA_PARAMS_ENV_VAR in os.environ:
     extra_start_host_args = re.split(
-        r"\s+", os.environ[HOST_EXTRA_PARAMS_ENV_VAR].strip())
+      r"\s+", os.environ[HOST_EXTRA_PARAMS_ENV_VAR].strip()
+    )
 
   # Verify that the initial host configuration has the necessary fields.
   auth = Authentication()
   auth_config_valid = auth.copy_from(host_config)
-  host = Host(host_config=host_config,
-              extra_start_host_args=extra_start_host_args)
+  host = Host(
+    host_config=host_config, extra_start_host_args=extra_start_host_args
+  )
   host_config_valid = host.copy_from(host_config)
   if not host_config_valid or not auth_config_valid:
     logging.error("Failed to load host configuration.")
@@ -760,12 +835,14 @@ def main():
   if is_crash_reporting_enabled(host_config):
     host.enable_crash_reporting()
 
-  desktop = create_desktop(extra_start_host_args=extra_start_host_args,
-                           host_delegate=host)
+  desktop = create_desktop(
+    extra_start_host_args=extra_start_host_args, host_delegate=host
+  )
   desktop.run(options.args)
 
 
 if __name__ == "__main__":
-  logging.basicConfig(level=logging.DEBUG,
-                      format="%(asctime)s:%(levelname)s:%(message)s")
+  logging.basicConfig(
+    level=logging.DEBUG, format="%(asctime)s:%(levelname)s:%(message)s"
+  )
   sys.exit(main())

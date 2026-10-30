@@ -21,10 +21,10 @@ import syslog
 import time
 
 from shared_lib import (
-    XDesktop,
-    cleanup,
-    exec_self_via_login_shell,
-    watch_for_resolution_changes,
+  XDesktop,
+  cleanup,
+  exec_self_via_login_shell,
+  watch_for_resolution_changes,
 )
 
 # PAM service name used by chrome-remote-desktop-x11-session@.service.
@@ -48,17 +48,22 @@ def terminate_logind_session():
   try:
     bus = dbus.SystemBus()
     manager = dbus.Interface(
-        bus.get_object("org.freedesktop.login1", "/org/freedesktop/login1",
-                       introspect=False),
-        "org.freedesktop.login1.Manager")
+      bus.get_object(
+        "org.freedesktop.login1", "/org/freedesktop/login1", introspect=False
+      ),
+      "org.freedesktop.login1.Manager",
+    )
     session_path = manager.GetSessionByPID(
-        dbus.UInt32(os.getpid()), timeout=LOGIND_DBUS_TIMEOUT_SECONDS)
-    session_object = bus.get_object("org.freedesktop.login1", session_path,
-                                    introspect=False)
+      dbus.UInt32(os.getpid()), timeout=LOGIND_DBUS_TIMEOUT_SECONDS
+    )
+    session_object = bus.get_object(
+      "org.freedesktop.login1", session_path, introspect=False
+    )
     properties = session_object.GetAll(
-        "org.freedesktop.login1.Session",
-        dbus_interface=dbus.PROPERTIES_IFACE,
-        timeout=LOGIND_DBUS_TIMEOUT_SECONDS)
+      "org.freedesktop.login1.Session",
+      dbus_interface=dbus.PROPERTIES_IFACE,
+      timeout=LOGIND_DBUS_TIMEOUT_SECONDS,
+    )
     service = properties.get("Service")
     leader = properties.get("Leader")
     # Only terminate the session that the systemd unit created for this
@@ -66,8 +71,11 @@ def terminate_logind_session():
     # desktop session, leave that session alone.
     if service != CRD_PAM_SERVICE or leader != os.getpid():
       logging.info(
-          "Not terminating logind session %s with PAM service %s and leader "
-          "%s", session_path, service, leader)
+        "Not terminating logind session %s with PAM service %s and leader %s",
+        session_path,
+        service,
+        leader,
+      )
       return
 
     # Terminating the session also sends SIGTERM and SIGHUP to this process.
@@ -77,7 +85,8 @@ def terminate_logind_session():
     signal.signal(signal.SIGHUP, signal.SIG_IGN)
     logging.info("Terminating logind session %s", session_path)
     dbus.Interface(session_object, "org.freedesktop.login1.Session").Terminate(
-        timeout=LOGIND_DBUS_TIMEOUT_SECONDS)
+      timeout=LOGIND_DBUS_TIMEOUT_SECONDS
+    )
   except dbus.exceptions.DBusException as e:
     logging.warning("Failed to terminate logind session: %s", e)
 
@@ -97,21 +106,42 @@ class SignalHandler:
 
 def setup_argument_parser():
   parser = argparse.ArgumentParser(
-      usage="Usage: %(prog)s --type=x11 [ -- [ X server options ] ]")
+    usage="Usage: %(prog)s --type=x11 [ -- [ X server options ] ]"
+  )
   # Not `required=True`, since XDesktop re-invokes this script with only
   # --watch-resolution.
-  parser.add_argument("--type", dest="session_type", choices=["x11"],
-                      help="Type of desktop session to launch.")
+  parser.add_argument(
+    "--type",
+    dest="session_type",
+    choices=["x11"],
+    help="Type of desktop session to launch.",
+  )
   # Appended by exec_self_via_login_shell() when re-executing this script.
-  parser.add_argument("--child-process", dest="child_process", default=False,
-                      action="store_true", help=argparse.SUPPRESS)
+  parser.add_argument(
+    "--child-process",
+    dest="child_process",
+    default=False,
+    action="store_true",
+    help=argparse.SUPPRESS,
+  )
   # The script is being run in a new PAM session. Attempt to exec a login shell
   # to allow the user's ~/.profile or similar to run.
-  parser.add_argument("--new-session", dest="new_session", default=False,
-                      action="store_true", help=argparse.SUPPRESS)
-  parser.add_argument("--watch-resolution", dest="watch_resolution",
-                      type=int, nargs=2, default=False, action="store",
-                      help=argparse.SUPPRESS)
+  parser.add_argument(
+    "--new-session",
+    dest="new_session",
+    default=False,
+    action="store_true",
+    help=argparse.SUPPRESS,
+  )
+  parser.add_argument(
+    "--watch-resolution",
+    dest="watch_resolution",
+    type=int,
+    nargs=2,
+    default=False,
+    action="store",
+    help=argparse.SUPPRESS,
+  )
   parser.add_argument(dest="args", nargs="*", help=argparse.SUPPRESS)
   return parser
 
@@ -134,7 +164,8 @@ def main():
   logging.info("CRD desktop session (%s) is starting", options.session_type)
   logging.info("Machine hostname: %s", socket.getfqdn())
   uptime = datetime.timedelta(
-      seconds=int(time.clock_gettime(time.CLOCK_BOOTTIME)))
+    seconds=int(time.clock_gettime(time.CLOCK_BOOTTIME))
+  )
   logging.info("Machine uptime: %s", uptime)
 
   # Most desktop environments support only one graphical session per user,
@@ -142,14 +173,15 @@ def main():
   # `systemd --user` instance. Logging in locally as the same user while this
   # session is running may therefore fail or misbehave.
   local_login_message = (
-      "A Chrome Remote Desktop session is running for %(user)s. Most "
-      "desktop environments support only one graphical session per user, so "
-      "logging in locally as %(user)s while this session is running may fail "
-      "or not work correctly. To log in locally, first stop the Chrome Remote "
-      "Desktop session from an SSH session or a text console (e.g. "
-      "Ctrl+Alt+F3) by running `sudo systemctl stop "
-      "chrome-remote-desktop-x11-session@%(user)s`." %
-      {"user": pwd.getpwuid(os.getuid()).pw_name})
+    "A Chrome Remote Desktop session is running for %(user)s. Most "
+    "desktop environments support only one graphical session per user, so "
+    "logging in locally as %(user)s while this session is running may fail "
+    "or not work correctly. To log in locally, first stop the Chrome Remote "
+    "Desktop session from an SSH session or a text console (e.g. "
+    "Ctrl+Alt+F3) by running `sudo systemctl stop "
+    "chrome-remote-desktop-x11-session@%(user)s`."
+    % {"user": pwd.getpwuid(os.getuid()).pw_name}
+  )
   logging.info(local_login_message)
   syslog.syslog(syslog.LOG_NOTICE | syslog.LOG_DAEMON, local_login_message)
 
@@ -167,6 +199,7 @@ def main():
 
 
 if __name__ == "__main__":
-  logging.basicConfig(level=logging.DEBUG,
-                      format="%(asctime)s:%(levelname)s:%(message)s")
+  logging.basicConfig(
+    level=logging.DEBUG, format="%(asctime)s:%(levelname)s:%(message)s"
+  )
   sys.exit(main())

@@ -65,8 +65,10 @@ def UnpackZip(target, source):
     target_file = os.path.normpath(os.path.join(target, f))
     # Sanity check to make sure .zip uses relative paths.
     if os.path.commonprefix([target_file, target]) != target:
-      print("Failed to unpack '%s': '%s' is not under '%s'" % (
-          source, target_file, target))
+      print(
+        "Failed to unpack '%s': '%s' is not under '%s'"
+        % (source, target_file, target)
+      )
       return 1
 
     # Create intermediate directories.
@@ -115,6 +117,7 @@ def Merge(left, right):
       raise TypeError('Error: merging a dictionary and non-dictionary value')
     else:
       return right
+
 
 quote_matcher_regex = re.compile(r'\s|"')
 quote_replacer_regex = re.compile(r'(\\*)"')
@@ -174,7 +177,7 @@ def GenerateCommandLine(tool, source, dest, parameters):
   switches += ('-out', dest, source)
 
   # Generate the actual command line
-  #return ' '.join(map(QuoteArgument, switches))
+  # return ' '.join(map(QuoteArgument, switches))
   return switches
 
 
@@ -182,7 +185,8 @@ def Run(args):
   """Runs a command interpreting the passed |args| as a command line."""
   command = ' '.join(map(QuoteArgument, args))
   popen = subprocess.Popen(
-      command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+  )
   out, _ = popen.communicate()
   if popen.returncode:
     print(command)
@@ -240,7 +244,8 @@ def GenerateMsi(target, source, parameters):
 
   # Add the architecture to candle-specific parameters.
   parameters = Merge(
-      parameters, {'candle': {'switches': ['-arch', arch_param]}})
+    parameters, {'candle': {'switches': ['-arch', arch_param]}}
+  )
 
   # Run candle and light to generate the installation.
   wixobj = '%(intermediate_dir)s\\%(basename)s.wixobj' % parameters
@@ -269,6 +274,6 @@ def main():
 
   return GenerateMsi(args[1], args[0], dict(options.__dict__))
 
+
 if __name__ == '__main__':
   sys.exit(main())
-

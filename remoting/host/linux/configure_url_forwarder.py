@@ -8,13 +8,13 @@ import hashlib
 import json
 import logging
 import os
-import shutil
+import shutil  # noqa: F401
 import socket
 import subprocess
 import sys
 
 from pathlib import Path
-from typing import Callable
+from typing import Callable  # noqa: F401
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -28,8 +28,9 @@ URL_FORWARDER_DESKTOP_ENTRY = 'crd-url-forwarder.desktop'
 XFCE4_WEB_BROWSER_DESKTOP_ENTRY = 'xfce4-web-browser.desktop'
 
 HOST_SETTINGS_PATH = os.path.join(
-    os.environ['HOME'],
-    '.config/chrome-remote-desktop/host#{}.settings.json'.format(HOST_HASH))
+  os.environ['HOME'],
+  '.config/chrome-remote-desktop/host#{}.settings.json'.format(HOST_HASH),
+)
 
 X_SESSIONS_DIR = '/usr/share/xsessions/'
 
@@ -54,7 +55,7 @@ def get_default_browser(desktop_env: str) -> str:
 
   try:
     return subprocess.check_output(args, env=env).decode('utf-8').strip()
-  except CalledProcessError as e:
+  except CalledProcessError as e:  # noqa: F821
     print('Failed to execute', args, ':', e, file=sys.stderr)
     return ''
 
@@ -63,17 +64,15 @@ def set_default_browser(desktop_env: str, desktop_entry: str) -> None:
   """Sets the XDG default-web-browser setting for the given desktop
   environment."""
 
-  args = [
-      'xdg-settings', 'set', XDG_SETTING_DEFAULT_WEB_BROWSER, desktop_entry]
+  args = ['xdg-settings', 'set', XDG_SETTING_DEFAULT_WEB_BROWSER, desktop_entry]
   env = env_with_current_desktop(desktop_env)
 
   subprocess.run(args, env=env)
 
 
 def set_default_browser_to_url_forwarder(
-    desktop_env: str,
-    backup_dict: dict[str, str],
-    backup_key: str) -> None:
+  desktop_env: str, backup_dict: dict[str, str], backup_key: str
+) -> None:
   """Sets default browser on the given desktop environment to the remote URL
   forwarder and backs up the previous default browser.
 
@@ -89,20 +88,35 @@ def set_default_browser_to_url_forwarder(
     print('Cannot get default browser for', desktop_env, file=sys.stderr)
     return
   if current_entry == URL_FORWARDER_DESKTOP_ENTRY:
-    print('Default browser for', desktop_env, 'is already',
-          URL_FORWARDER_DESKTOP_ENTRY, file=sys.stderr)
+    print(
+      'Default browser for',
+      desktop_env,
+      'is already',
+      URL_FORWARDER_DESKTOP_ENTRY,
+      file=sys.stderr,
+    )
     return
   backup_dict[backup_key] = current_entry
   if current_entry == XFCE4_WEB_BROWSER_DESKTOP_ENTRY:
-    print('Default browser for', desktop_env, 'has been set to',
-          XFCE4_WEB_BROWSER_DESKTOP_ENTRY, ', which effectively forces',
-          desktop_env, 'to use XFCE\'s default browser setting.')
+    print(
+      'Default browser for',
+      desktop_env,
+      'has been set to',
+      XFCE4_WEB_BROWSER_DESKTOP_ENTRY,
+      ', which effectively forces',
+      desktop_env,
+      'to use XFCE\'s default browser setting.',
+    )
     # We can't back up XFCE's default browser here for local fallback, since it
     # might have been changed to the URL forwarder already.
     return
   set_default_browser(desktop_env, URL_FORWARDER_DESKTOP_ENTRY)
-  print('Default browser for', desktop_env, 'has been successfully set to',
-        URL_FORWARDER_DESKTOP_ENTRY)
+  print(
+    'Default browser for',
+    desktop_env,
+    'has been successfully set to',
+    URL_FORWARDER_DESKTOP_ENTRY,
+  )
 
 
 def load_host_settings_file() -> dict[str, str]:
@@ -113,7 +127,7 @@ def load_host_settings_file() -> dict[str, str]:
   with open(HOST_SETTINGS_PATH, 'r') as settings_file:
     try:
       return json.load(settings_file)
-    except JSONDecodeError as e:
+    except JSONDecodeError as e:  # noqa: F821
       print('Failed to load JSON file:', e, file=sys.stderr)
       return {}
 
@@ -133,17 +147,20 @@ def get_supported_desktop_envs_and_settings_key() -> dict[str, str]:
     if desktop_name.startswith('xfce'):
       desktop_envs_and_settings_keys['XFCE'] = 'previous_default_browser_xfce'
     elif desktop_name.startswith('cinnamon'):
-      desktop_envs_and_settings_keys['X-Cinnamon'] = \
-          'previous_default_browser_cinnamon'
+      desktop_envs_and_settings_keys['X-Cinnamon'] = (
+        'previous_default_browser_cinnamon'
+      )
     elif desktop_name.startswith('gnome'):
       desktop_envs_and_settings_keys['GNOME'] = 'previous_default_browser_gnome'
 
   if not desktop_envs_and_settings_keys:
     # Add X-Generic for generic fallback.
-    desktop_envs_and_settings_keys['X-Generic'] = \
-        'previous_default_browser_generic'
+    desktop_envs_and_settings_keys['X-Generic'] = (
+      'previous_default_browser_generic'
+    )
 
   return desktop_envs_and_settings_keys
+
 
 def setup_url_forwarder() -> None:
   settings = load_host_settings_file()
@@ -158,12 +175,19 @@ def setup_url_forwarder() -> None:
   # so that the URL forwarder doesn't launch itself recursively in case of local
   # fallback.
   for desktop_env, setting_key in desktop_envs_and_setting_keys.items():
-    if (setting_key in settings and
-        settings[setting_key] == XFCE4_WEB_BROWSER_DESKTOP_ENTRY):
+    if (
+      setting_key in settings
+      and settings[setting_key] == XFCE4_WEB_BROWSER_DESKTOP_ENTRY
+    ):
       if 'XFCE' not in desktop_envs_and_setting_keys:
-        print('Default browser for', desktop_env, 'is set to',
-              XFCE4_WEB_BROWSER_DESKTOP_ENTRY, 'but XFCE is not found',
-              file=sys.stderr)
+        print(
+          'Default browser for',
+          desktop_env,
+          'is set to',
+          XFCE4_WEB_BROWSER_DESKTOP_ENTRY,
+          'but XFCE is not found',
+          file=sys.stderr,
+        )
         break
       xfce_setting_key = desktop_envs_and_setting_keys['XFCE']
       if xfce_setting_key not in settings:
@@ -184,9 +208,8 @@ def setup_url_forwarder() -> None:
 
 
 def restore_default_browser(
-    desktop_env: str,
-    backup_dict: dict[str, str],
-    backup_key: str) -> None:
+  desktop_env: str, backup_dict: dict[str, str], backup_key: str
+) -> None:
   """Restores XDG default-web-browser to backup_dict[backup_key] on the given
   desktop environment.
 
@@ -200,31 +223,56 @@ def restore_default_browser(
     print("No setting to restore from", backup_key, file=sys.stderr)
     return
   previous_setting = backup_dict[backup_key]
-  if (previous_setting == URL_FORWARDER_DESKTOP_ENTRY or
-      previous_setting == XFCE4_WEB_BROWSER_DESKTOP_ENTRY):
-    print('Setting to restore from', backup_key, 'is', previous_setting,
-          '. Ignored.', file=sys.stderr)
+  if (
+    previous_setting == URL_FORWARDER_DESKTOP_ENTRY
+    or previous_setting == XFCE4_WEB_BROWSER_DESKTOP_ENTRY
+  ):
+    print(
+      'Setting to restore from',
+      backup_key,
+      'is',
+      previous_setting,
+      '. Ignored.',
+      file=sys.stderr,
+    )
     return
   current_entry = get_default_browser(desktop_env)
   if current_entry == XFCE4_WEB_BROWSER_DESKTOP_ENTRY:
-    print('Default browser for', desktop_env, 'is',
-          XFCE4_WEB_BROWSER_DESKTOP_ENTRY, '. Ignored.', file=sys.stderr)
+    print(
+      'Default browser for',
+      desktop_env,
+      'is',
+      XFCE4_WEB_BROWSER_DESKTOP_ENTRY,
+      '. Ignored.',
+      file=sys.stderr,
+    )
     return
   if current_entry != URL_FORWARDER_DESKTOP_ENTRY:
-    print('Default browser for', desktop_env, 'is no longer',
-          URL_FORWARDER_DESKTOP_ENTRY,
-          '. Previously stored setting will not be restored.', file=sys.stderr)
+    print(
+      'Default browser for',
+      desktop_env,
+      'is no longer',
+      URL_FORWARDER_DESKTOP_ENTRY,
+      '. Previously stored setting will not be restored.',
+      file=sys.stderr,
+    )
     return
   set_default_browser(desktop_env, previous_setting)
-  print('Default browser for', desktop_env, 'has been successfully restored to',
-        previous_setting)
+  print(
+    'Default browser for',
+    desktop_env,
+    'has been successfully restored to',
+    previous_setting,
+  )
 
 
 def restore_previous_settings() -> None:
   settings = load_host_settings_file()
 
-  for desktop_env, setting_key in (
-      get_supported_desktop_envs_and_settings_key().items()):
+  for (
+    desktop_env,
+    setting_key,
+  ) in get_supported_desktop_envs_and_settings_key().items():
     restore_default_browser(desktop_env, settings, setting_key)
 
 
@@ -232,16 +280,23 @@ def check_default_browser_is_url_forwarder(desktop_env: str) -> None:
   """Checks if the default browser is set to the remote URL forwarder on the
   given desktop environment. Exits with 1 if it's not the case."""
 
-  if (desktop_env != 'XFCE' and
-      get_default_browser(desktop_env) == XFCE4_WEB_BROWSER_DESKTOP_ENTRY):
-    print('Default browser for', desktop_env, 'is',
-          XFCE4_WEB_BROWSER_DESKTOP_ENTRY,
-          '. Checking default browser for XFCE instead...')
+  if (
+    desktop_env != 'XFCE'
+    and get_default_browser(desktop_env) == XFCE4_WEB_BROWSER_DESKTOP_ENTRY
+  ):
+    print(
+      'Default browser for',
+      desktop_env,
+      'is',
+      XFCE4_WEB_BROWSER_DESKTOP_ENTRY,
+      '. Checking default browser for XFCE instead...',
+    )
     check_default_browser_is_url_forwarder('XFCE')
     return
   if get_default_browser(desktop_env) != URL_FORWARDER_DESKTOP_ENTRY:
-    print('Default browser for', desktop_env, 'is not',
-          URL_FORWARDER_DESKTOP_ENTRY)
+    print(
+      'Default browser for', desktop_env, 'is not', URL_FORWARDER_DESKTOP_ENTRY
+    )
     sys.exit(1)
 
 
@@ -255,21 +310,32 @@ def check_url_forwarder_setup() -> None:
 
 def main() -> None:
   parser = argparse.ArgumentParser(
-      usage='Usage: %(prog)s [options]',
-      description='Set up a URL forwarder so that URLs will be opened on the '
-      'Chrome Remote Desktop client. This script must be run within the remote '
-      'desktop\'s session.')
-  parser.add_argument('--setup', dest='setup', default=False,
-                      action='store_true',
-                      help='Set up the URL forwarder.')
-  parser.add_argument('--restore', dest='restore', default=False,
-                      action='store_true',
-                      help='Remove the URL forwarder and restore default '
-                      'browser settings.')
-  parser.add_argument('--check-setup', dest='check_setup', default=False,
-                      action='store_true',
-                      help='Exit with 0 if the URL forwarder is properly set '
-                      'up, or 1 otherwise.')
+    usage='Usage: %(prog)s [options]',
+    description='Set up a URL forwarder so that URLs will be opened on the '
+    'Chrome Remote Desktop client. This script must be run within the remote '
+    'desktop\'s session.',
+  )
+  parser.add_argument(
+    '--setup',
+    dest='setup',
+    default=False,
+    action='store_true',
+    help='Set up the URL forwarder.',
+  )
+  parser.add_argument(
+    '--restore',
+    dest='restore',
+    default=False,
+    action='store_true',
+    help='Remove the URL forwarder and restore default browser settings.',
+  )
+  parser.add_argument(
+    '--check-setup',
+    dest='check_setup',
+    default=False,
+    action='store_true',
+    help='Exit with 0 if the URL forwarder is properly set up, or 1 otherwise.',
+  )
   options = parser.parse_args()
   if options.setup:
     setup_url_forwarder()
@@ -280,7 +346,9 @@ def main() -> None:
   else:
     parser.print_usage()
 
+
 if __name__ == '__main__':
-  logging.basicConfig(level=logging.DEBUG,
-                      format='%(asctime)s:%(levelname)s:%(message)s')
+  logging.basicConfig(
+    level=logging.DEBUG, format='%(asctime)s:%(levelname)s:%(message)s'
+  )
   sys.exit(main())

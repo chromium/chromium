@@ -48,8 +48,7 @@ class VideoSendEvent(Event):
 
   @classmethod
   def from_event(cls, event: Event, time_since_last: Optional[int] = None):
-    return cls(**dataclasses.asdict(event),
-               time_since_last=time_since_last)
+    return cls(**dataclasses.asdict(event), time_since_last=time_since_last)
 
 
 def analyzer_video(events: Iterable[Event]):
@@ -66,31 +65,31 @@ def analyzer_video(events: Iterable[Event]):
     yield VideoSendEvent.from_event(event, time_since_last=time_since_last)
 
 
-ANALYZER_FUNCTIONS = {
-  'Video': analyzer_video
-}
+ANALYZER_FUNCTIONS = {'Video': analyzer_video}
 
 
 def analyze_events(events: Iterable[Dict[str, Any]]):
   analyzed_events: Dict[str, List[Any]] = {}
   for event in events:
-    analyzed_event = Event(name=event['name'],
-                           cat=event['cat'],
-                           ts=event['ts'],
-                           duration=0,
-                           pid=event['pid'],
-                           tid=event['tid'],
-                           args=event.get('args', {}))
+    analyzed_event = Event(
+      name=event['name'],
+      cat=event['cat'],
+      ts=event['ts'],
+      duration=0,
+      pid=event['pid'],
+      tid=event['tid'],
+      args=event.get('args', {}),
+    )
     if Phase(event['ph']) == Phase.END:
       prev_analyzed_event = analyzed_events[analyzed_event.name][-1]
       prev_analyzed_event.duration = analyzed_event.ts - prev_analyzed_event.ts
     else:
-      analyzed_events.setdefault(analyzed_event.name, []).append(
-        analyzed_event)
+      analyzed_events.setdefault(analyzed_event.name, []).append(analyzed_event)
 
   for name, items in analyzed_events.items():
     analyzed_events[name] = list(
-      ANALYZER_FUNCTIONS.get(name, lambda x: x)(items))
+      ANALYZER_FUNCTIONS.get(name, lambda x: x)(items)
+    )
 
   return analyzed_events
 

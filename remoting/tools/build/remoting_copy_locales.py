@@ -18,8 +18,9 @@ import sys
 
 # Prepend the grit module from the source tree so it takes precedence over other
 # grit versions that might present in the search path.
-sys.path.insert(1, os.path.join(os.path.dirname(__file__), '..', '..', '..',
-                                'tools', 'grit'))
+sys.path.insert(
+  1, os.path.join(os.path.dirname(__file__), '..', '..', '..', 'tools', 'grit')
+)
 from grit.format import data_pack
 
 # Some build paths defined by gyp.
@@ -32,6 +33,7 @@ OS = None
 # Extra input files.
 EXTRA_INPUT_FILES = []
 
+
 class Usage(Exception):
   def __init__(self, msg):
     self.msg = msg
@@ -39,12 +41,17 @@ class Usage(Exception):
 
 def calc_output(locale):
   """Determine the file that will be generated for the given locale."""
-  #e.g. '<(INTERMEDIATE_DIR)/remoting_locales/da.pak',
+  # e.g. '<(INTERMEDIATE_DIR)/remoting_locales/da.pak',
   if OS == 'mac' or OS == 'ios':
     # For Cocoa to find the locale at runtime, it needs to use '_' instead
     # of '-' (http://crbug.com/20441).
-    return os.path.join(INT_DIR, 'remoting', 'resources',
-                        '%s.lproj' % locale.replace('-', '_'), 'locale.pak')
+    return os.path.join(
+      INT_DIR,
+      'remoting',
+      'resources',
+      '%s.lproj' % locale.replace('-', '_'),
+      'locale.pak',
+    )
   else:
     return os.path.join(INT_DIR, 'remoting_locales', locale + '.pak')
 
@@ -53,7 +60,7 @@ def calc_inputs(locale):
   """Determine the files that need processing for the given locale."""
   inputs = []
 
-  #e.g. '<(grit_out_dir)/remoting/resources/da.pak'
+  # e.g. '<(grit_out_dir)/remoting/resources/da.pak'
   inputs.append(os.path.join(GRIT_DIR, 'remoting/resources/%s.pak' % locale))
 
   # Add any extra input files.
@@ -92,7 +99,7 @@ def list_inputs(locales):
 
 
 def repack_locales(locales):
-  """ Loop over and repack the given locales."""
+  """Loop over and repack the given locales."""
   for locale in locales:
     inputs = calc_inputs(locale)
     output = calc_output(locale)
@@ -106,19 +113,46 @@ def DoMain(argv):
   global EXTRA_INPUT_FILES
 
   parser = optparse.OptionParser("usage: %prog [options] locales")
-  parser.add_option("-i", action="store_true", dest="inputs", default=False,
-                    help="Print the expected input file list, then exit.")
-  parser.add_option("-o", action="store_true", dest="outputs", default=False,
-                    help="Print the expected output file list, then exit.")
-  parser.add_option("-g", action="store", dest="grit_dir",
-                    help="GRIT build files output directory.")
-  parser.add_option("-x", action="store", dest="int_dir",
-                    help="Intermediate build files output directory.")
-  parser.add_option("-e", action="append", dest="extra_input", default=[],
-                    help="Full path to an extra input pak file without the\
-                         locale suffix and \".pak\" extension.")
-  parser.add_option("-p", action="store", dest="os",
-                    help="The target OS. (e.g. mac, linux, win, etc.)")
+  parser.add_option(
+    "-i",
+    action="store_true",
+    dest="inputs",
+    default=False,
+    help="Print the expected input file list, then exit.",
+  )
+  parser.add_option(
+    "-o",
+    action="store_true",
+    dest="outputs",
+    default=False,
+    help="Print the expected output file list, then exit.",
+  )
+  parser.add_option(
+    "-g",
+    action="store",
+    dest="grit_dir",
+    help="GRIT build files output directory.",
+  )
+  parser.add_option(
+    "-x",
+    action="store",
+    dest="int_dir",
+    help="Intermediate build files output directory.",
+  )
+  parser.add_option(
+    "-e",
+    action="append",
+    dest="extra_input",
+    default=[],
+    help="Full path to an extra input pak file without the\
+                         locale suffix and \".pak\" extension.",
+  )
+  parser.add_option(
+    "-p",
+    action="store",
+    dest="os",
+    help="The target OS. (e.g. mac, linux, win, etc.)",
+  )
   options, locales = parser.parse_args(argv)
 
   if not locales:
@@ -147,7 +181,7 @@ def DoMain(argv):
     parser.error('Please specify "-g".\n')
   if print_outputs and not INT_DIR:
     parser.error('Please specify "-x".\n')
-  if not (print_inputs or print_outputs  or (GRIT_DIR and INT_DIR)):
+  if not (print_inputs or print_outputs or (GRIT_DIR and INT_DIR)):
     parser.error('Please specify both "-g" and "-x".\n')
 
   if print_inputs:
@@ -157,6 +191,7 @@ def DoMain(argv):
     return list_outputs(locales)
 
   return repack_locales(locales)
+
 
 if __name__ == '__main__':
   results = DoMain(sys.argv[1:])

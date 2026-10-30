@@ -20,9 +20,11 @@ import shutil
 import subprocess
 import sys
 
-sys.path.append(os.path.join(
-    os.path.dirname(__file__), os.pardir, os.pardir, os.pardir,
-    "build"))
+sys.path.append(
+  os.path.join(
+    os.path.dirname(__file__), os.pardir, os.pardir, os.pardir, "build"
+  )
+)
 import zip_helpers
 
 
@@ -141,7 +143,7 @@ def copyZipIntoArchive(out_dir, files_root, zip_file):
 
   # We don't use the 'zipfile' module here because it doesn't restore all the
   # file permissions correctly. We use the 'unzip' command manually.
-  old_dir = os.getcwd();
+  old_dir = os.getcwd()
   os.chdir(os.path.dirname(zip_file))
   subprocess.call(['unzip', '-qq', '-o', base_zip_name])
   os.chdir(old_dir)
@@ -155,8 +157,16 @@ def copyZipIntoArchive(out_dir, files_root, zip_file):
   shutil.copytree(src_dir, os.path.join(out_zip_dir, base_dir_name))
 
 
-def buildHostArchive(temp_dir, zip_path, source_file_roots, source_files,
-                     gen_files, gen_files_dst, removed_files, defs):
+def buildHostArchive(
+  temp_dir,
+  zip_path,
+  source_file_roots,
+  source_files,
+  gen_files,
+  gen_files_dst,
+  removed_files,
+  defs,
+):
   """Builds a zip archive with the files needed to build the installer.
 
   Args:
@@ -178,7 +188,7 @@ def buildHostArchive(temp_dir, zip_path, source_file_roots, source_files,
 
   for f in source_files:
     dst_file = remapSrcFile(temp_dir, source_file_roots, f)
-    base_file = os.path.basename(f)
+    base_file = os.path.basename(f)  # noqa: F841
     (base, ext) = os.path.splitext(f)
     if ext == '.zip':
       copyZipIntoArchive(temp_dir, source_file_roots, f)
@@ -204,9 +214,11 @@ def buildHostArchive(temp_dir, zip_path, source_file_roots, source_files,
       os.remove(removed_file)
 
   zip_helpers.zip_directory(
-    zip_path, temp_dir,
+    zip_path,
+    temp_dir,
     compress=True,
-    zip_prefix_path=os.path.splitext(os.path.basename(zip_path))[0])
+    zip_prefix_path=os.path.splitext(os.path.basename(zip_path))[0],
+  )
 
 
 def error(msg):
@@ -216,15 +228,16 @@ def error(msg):
 
 def usage():
   """Display basic usage information."""
-  print('Usage: %s\n'
-        '  <temp-dir> <zip-path>\n'
-        '  --source-file-roots <list of roots to strip off source files...>\n'
-        '  --source-files <list of source files...>\n'
-        '  --generated-files <list of generated target files...>\n'
-        '  --generated-files-dst <dst for each generated file...>\n'
-        '  --removed-files <list of files to be removed from the archive...>\n'
-        '  --defs <list of VARIABLE=value definitions...>'
-        ) % sys.argv[0]
+  print(
+    'Usage: %s\n'
+    '  <temp-dir> <zip-path>\n'
+    '  --source-file-roots <list of roots to strip off source files...>\n'
+    '  --source-files <list of source files...>\n'
+    '  --generated-files <list of generated target files...>\n'
+    '  --generated-files-dst <dst for each generated file...>\n'
+    '  --removed-files <list of files to be removed from the archive...>\n'
+    '  --defs <list of VARIABLE=value definitions...>'
+  ) % sys.argv[0]
 
 
 def main():
@@ -287,9 +300,16 @@ def main():
 
   defs = buildDefDictionary(definitions)
 
-  result = buildHostArchive(temp_dir, zip_path, source_file_roots,
-                            source_files, generated_files, generated_files_dst,
-                            removed_files, defs)
+  result = buildHostArchive(  # noqa: F841
+    temp_dir,
+    zip_path,
+    source_file_roots,
+    source_files,
+    generated_files,
+    generated_files_dst,
+    removed_files,
+    defs,
+  )
 
   return 0
 

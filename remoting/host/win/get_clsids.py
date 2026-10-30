@@ -23,6 +23,8 @@ rdp_desktop_session_guid = sys.argv[1]
 version_full = sys.argv[2]
 
 # Output a GN list of 1 strings.
-print('["' + \
-    str(uuid.uuid5(uuid.UUID(rdp_desktop_session_guid), version_full)) + '"]')
-
+print(
+  '["'
+  + str(uuid.uuid5(uuid.UUID(rdp_desktop_session_guid), version_full))
+  + '"]'
+)

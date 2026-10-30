@@ -10,6 +10,7 @@ from __future__ import print_function
 
 import sys
 
+
 def main():
   if len(sys.argv) < 1:
     print('Usage: %s <string>' % sys.argv[0])
@@ -18,6 +19,7 @@ def main():
   # Takes all arguments passed in, joins as one string, and removes spaces.
   nospace = "".join(sys.argv[1:]).replace(" ", "")
   print(nospace)
+
 
 if __name__ == '__main__':
   sys.exit(main())
