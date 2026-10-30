@@ -194,14 +194,19 @@ EXPORTS
   ConvertSidToStringSidW = ApifwConvertSidToStringSidW
   ConvertStringSidToSidW = ApifwConvertStringSidToSidW
   CreateEventW = ApifwCreateEventW
+  CreateFileMappingA = ApifwCreateFileMappingA
   CreateFileMappingW = ApifwCreateFileMappingW
   CreateFileW = ApifwCreateFileW
   CreateIoCompletionPort = ApifwCreateIoCompletionPort
+  CreateMutexW = ApifwCreateMutexW
   CreateNamedPipeW = ApifwCreateNamedPipeW
   CreateSemaphoreA = ApifwCreateSemaphoreA
   CreateSemaphoreW = ApifwCreateSemaphoreW
   CreateSymbolicLinkW = ApifwCreateSymbolicLinkW
   CreateToolhelp32Snapshot = ApifwCreateToolhelp32Snapshot
+  CreateWaitableTimerExW = ApifwCreateWaitableTimerExW
+  CryptProtectMemory = ApifwCryptProtectMemory
+  CryptUnprotectMemory = ApifwCryptUnprotectMemory
   DiscardVirtualMemory = ApifwDiscardVirtualMemory
   DuplicateHandle = ApifwDuplicateHandle
   DWriteCoreCreateFactory = ApifwDWriteCoreCreateFactory
@@ -216,6 +221,7 @@ EXPORTS
   FindNextFileW = ApifwFindNextFileW
   FindResourceW = ApifwFindResourceW
   FlsGetValue2 = ApifwFlsGetValue2
+  FormatMessageA = ApifwFormatMessageA
   FormatMessageW = ApifwFormatMessageW
   FreeLibrary = ApifwFreeLibrary
   FreeLibraryAndExitThread = ApifwFreeLibraryAndExitThread
@@ -223,12 +229,14 @@ EXPORTS
   GetAce = ApifwGetAce
   GetActiveProcessorCount = ApifwGetActiveProcessorCount
   GetCommandLineA = ApifwGetCommandLineA
+  GetConsoleMode = ApifwGetConsoleMode
   GetCurrentDirectoryW = ApifwGetCurrentDirectoryW
   GetDateFormatEx = ApifwGetDateFormatEx
   GetDynamicTimeZoneInformation = ApifwGetDynamicTimeZoneInformation
   GetFileAttributesExW = ApifwGetFileAttributesExW
   GetFileAttributesW = ApifwGetFileAttributesW
   GetFileInformationByHandle = ApifwGetFileInformationByHandle
+  GetFileInformationByHandleEx = ApifwGetFileInformationByHandleEx
   GetFileSizeEx = ApifwGetFileSizeEx
   GetFileType = ApifwGetFileType
   GetFullPathNameW = ApifwGetFullPathNameW
@@ -240,6 +248,8 @@ EXPORTS
   GetLocalTime = ApifwGetLocalTime
   GetLogicalProcessorInformation = ApifwGetLogicalProcessorInformation
   GetLogicalProcessorInformationEx = ApifwGetLogicalProcessorInformationEx
+  GetMaximumProcessorCount = ApifwGetMaximumProcessorCount
+  GetMaximumProcessorGroupCount = ApifwGetMaximumProcessorGroupCount
   GetModuleHandleA = ApifwGetModuleHandleA
   GetModuleHandleExW = ApifwGetModuleHandleExW
   GetModuleHandleW = ApifwGetModuleHandleW
@@ -282,6 +292,8 @@ EXPORTS
   GetVersionExW = ApifwGetVersionExW
   GetWindowsDirectoryA = ApifwGetWindowsDirectoryA
   GlobalMemoryStatusEx = ApifwGlobalMemoryStatusEx
+  htonl = Apifwhtonl @8
+  htons = Apifwhtons @9
   InitializeAcl = ApifwInitializeAcl
   InitializeSecurityDescriptor = ApifwInitializeSecurityDescriptor
   IsProcessInJob = ApifwIsProcessInJob
@@ -292,6 +304,7 @@ EXPORTS
   IsWow64Process = ApifwIsWow64Process
   IsWow64Process2 = ApifwIsWow64Process2
   K32EnumProcessModules = ApifwK32EnumProcessModules
+  K32GetModuleFileNameExA = ApifwK32GetModuleFileNameExA
   K32GetModuleInformation = ApifwK32GetModuleInformation
   K32GetProcessMemoryInfo = ApifwK32GetProcessMemoryInfo
   K32QueryWorkingSetEx = ApifwK32QueryWorkingSetEx
@@ -302,15 +315,19 @@ EXPORTS
   LoadLibraryExA = ApifwLoadLibraryExA
   LoadLibraryExW = ApifwLoadLibraryExW
   LoadLibraryW = ApifwLoadLibraryW
+  LocalAlloc = ApifwLocalAlloc
   LocaleNameToLCID = ApifwLocaleNameToLCID
   LocalFree = ApifwLocalFree
   LockFileEx = ApifwLockFileEx
   lstrcmpiA = ApifwlstrcmpiA
+  lstrlenA = ApifwlstrlenA
   Module32FirstW = ApifwModule32FirstW
   Module32NextW = ApifwModule32NextW
   MultiByteToWideChar = ApifwMultiByteToWideChar
   NtClose = ApifwNtClose
   NtCreateKey = ApifwNtCreateKey
+  ntohl = Apifwntohl @14
+  ntohs = Apifwntohs @15
   NtOpenKeyEx = ApifwNtOpenKeyEx
   NtQueryInformationProcess = ApifwNtQueryInformationProcess
   NtQueryObject = ApifwNtQueryObject
@@ -319,8 +336,11 @@ EXPORTS
   NtSetValueKey = ApifwNtSetValueKey
   OpenProcess = ApifwOpenProcess
   OpenProcessToken = ApifwOpenProcessToken
+  OpenThread = ApifwOpenThread
+  OutputDebugStringA = ApifwOutputDebugStringA
   PostQueuedCompletionStatus = ApifwPostQueuedCompletionStatus
   ProcessPrng = ApifwProcessPrng
+  QueryProcessCycleTime = ApifwQueryProcessCycleTime
   QueryThreadCycleTime = ApifwQueryThreadCycleTime
   RegCloseKey = ApifwRegCloseKey
   RegCreateKeyExW = ApifwRegCreateKeyExW
@@ -333,12 +353,14 @@ EXPORTS
   RegisterTraceGuidsW = ApifwRegisterTraceGuidsW
   RegisterWaitForSingleObject = ApifwRegisterWaitForSingleObject
   RegNotifyChangeKeyValue = ApifwRegNotifyChangeKeyValue
+  RegOpenKeyExA = ApifwRegOpenKeyExA
   RegOpenKeyExW = ApifwRegOpenKeyExW
   RegOverridePredefKey = ApifwRegOverridePredefKey
   RegQueryInfoKeyW = ApifwRegQueryInfoKeyW
   RegQueryValueExA = ApifwRegQueryValueExA
   RegQueryValueExW = ApifwRegQueryValueExW
   RegSetValueExW = ApifwRegSetValueExW
+  ReleaseMutex = ApifwReleaseMutex
   ReleaseSemaphore = ApifwReleaseSemaphore
   ResumeThread = ApifwResumeThread
   RoActivateInstance = ApifwRoActivateInstance
@@ -363,8 +385,10 @@ EXPORTS
   SetThreadInformation = ApifwSetThreadInformation
   SetThreadPriority = ApifwSetThreadPriority
   SetThreadPriorityBoost = ApifwSetThreadPriorityBoost
+  SetWaitableTimer = ApifwSetWaitableTimer
   SuspendThread = ApifwSuspendThread
   SwitchToThread = ApifwSwitchToThread
+  SystemTimeToTzSpecificLocalTime = ApifwSystemTimeToTzSpecificLocalTime
   timeBeginPeriod = ApifwtimeBeginPeriod
   timeEndPeriod = ApifwtimeEndPeriod
   TraceEvent = ApifwTraceEvent
@@ -381,6 +405,10 @@ EXPORTS
   WindowsCreateStringReference = ApifwWindowsCreateStringReference
   WindowsDeleteString = ApifwWindowsDeleteString
   Wow64GetThreadContext = ApifwWow64GetThreadContext
+  WSACloseEvent = ApifwWSACloseEvent
+  WSACreateEvent = ApifwWSACreateEvent
+  WSAResetEvent = ApifwWSAResetEvent
+  WSASetEvent = ApifwWSASetEvent
 
 ; Modified-behavior thunks (thunks_modified.cc).
 ; Return a canned value or normalize input (UTF-8 only) instead of forwarding
@@ -403,7 +431,7 @@ EXPORTS
 ; Exported but never observed at runtime. Two kinds of names land here:
 ;   * APIs chrome.dll/chrome_elf.dll may import but no measured child has
 ;     ever called, and
-;   * whole DLLs (ws2_32/crypt32/version/dwrite) whose imports
+;   * unobserved APIs from DLLs (ws2_32/crypt32/version/dwrite) whose imports
 ;     redirect_imports.gni rewrites through apifw.dll, so every name must
 ;     resolve at load.
 ; None are on the allowlist, and a full basket audit (renderer + utility
@@ -447,26 +475,21 @@ EXPORTS
   CreateDirectoryW = ApifwNotReached
   CreateEventA = ApifwNotReached
   CreateFileA = ApifwNotReached
-  CreateFileMappingA = ApifwNotReached
   CreateHardLinkW = ApifwNotReached
   CreateJobObjectW = ApifwNotReached
   CreateMemoryResourceNotification = ApifwNotReached
   CreateMutexA = ApifwNotReached
-  CreateMutexW = ApifwNotReached
   CreatePipe = ApifwNotReached
   CreateProcessA = ApifwNotReached
   CreateProcessW = ApifwNotReached
   CreateThreadpoolWait = ApifwNotReached
   CreateThreadpoolWork = ApifwNotReached
-  CreateWaitableTimerExW = ApifwNotReached
   CryptAcquireCertificatePrivateKey = ApifwNotReached
   CryptMsgClose = ApifwNotReached
   CryptMsgGetParam = ApifwNotReached
   CryptProtectData = ApifwNotReached
-  CryptProtectMemory = ApifwNotReached
   CryptQueryObject = ApifwNotReached
   CryptUnprotectData = ApifwNotReached
-  CryptUnprotectMemory = ApifwNotReached
   CryptVerifyCertificateSignatureEx = ApifwNotReached
   DeleteFileA = ApifwNotReached
   DeleteFileW = ApifwNotReached
@@ -485,7 +508,6 @@ EXPORTS
   FindVolumeClose = ApifwNotReached
   FlushViewOfFile = ApifwNotReached
   FoldStringW = ApifwNotReached
-  FormatMessageA = ApifwNotReached
   freeaddrinfo = ApifwNotReached
   FreeAddrInfoExW = ApifwNotReached
   FreeConsole = ApifwNotReached
@@ -499,7 +521,6 @@ EXPORTS
   GetComputerNameExW = ApifwNotReached
   GetComputerNameW = ApifwNotReached
   GetConsoleDisplayMode = ApifwNotReached
-  GetConsoleMode = ApifwNotReached
   GetConsoleOutputCP = ApifwNotReached
   GetConsoleScreenBufferInfo = ApifwNotReached
   GetCurrencyFormatEx = ApifwNotReached
@@ -513,7 +534,6 @@ EXPORTS
   GetErrorMode = ApifwNotReached
   GetExitCodeProcess = ApifwNotReached
   GetFileAttributesA = ApifwNotReached
-  GetFileInformationByHandleEx = ApifwNotReached
   GetFileSize = ApifwNotReached
   GetFileTime = ApifwNotReached
   GetFileVersionInfoSizeW = ApifwNotReached
@@ -524,8 +544,6 @@ EXPORTS
   gethostname = ApifwNotReached @57
   GetLogicalDriveStringsW = ApifwNotReached
   GetLongPathNameW = ApifwNotReached
-  GetMaximumProcessorCount = ApifwNotReached
-  GetMaximumProcessorGroupCount = ApifwNotReached
   GetModuleFileNameA = ApifwNotReached
   GetModuleHandleExA = ApifwNotReached
   GetNamedPipeClientProcessId = ApifwNotReached
@@ -577,8 +595,6 @@ EXPORTS
   HeapUnlock = ApifwNotReached
   HeapValidate = ApifwNotReached
   HeapWalk = ApifwNotReached
-  htonl = ApifwNotReached @8
-  htons = ApifwNotReached @9
   inet_ntop = ApifwNotReached
   ioctlsocket = ApifwNotReached @10
   IsThreadAFiber = ApifwNotReached
@@ -587,7 +603,6 @@ EXPORTS
   K32EnumProcessModulesEx = ApifwNotReached
   K32GetMappedFileNameW = ApifwNotReached
   K32GetModuleBaseNameW = ApifwNotReached
-  K32GetModuleFileNameExA = ApifwNotReached
   K32GetModuleFileNameExW = ApifwNotReached
   K32GetPerformanceInfo = ApifwNotReached
   K32GetProcessImageFileNameA = ApifwNotReached
@@ -598,14 +613,12 @@ EXPORTS
   LoadRegTypeLib = ApifwNotReached
   LoadResource = ApifwNotReached
   LoadTypeLib = ApifwNotReached
-  LocalAlloc = ApifwNotReached
   LocalFileTimeToFileTime = ApifwNotReached
   LockFile = ApifwNotReached
   LockResource = ApifwNotReached
   lstrcmpA = ApifwNotReached
   lstrcmpiW = ApifwNotReached
   lstrcmpW = ApifwNotReached
-  lstrlenA = ApifwNotReached
   lstrlenW = ApifwNotReached
   midiInAddBuffer = ApifwNotReached
   midiInClose = ApifwNotReached
@@ -629,16 +642,13 @@ EXPORTS
   MoveFileW = ApifwNotReached
   NtDeleteKey = ApifwNotReached
   NtDeleteValueKey = ApifwNotReached
-  ntohl = ApifwNotReached @14
-  ntohs = ApifwNotReached @15
   NtQueryInformationThread = ApifwNotReached
   NtQuerySystemInformation = ApifwNotReached
+  NtQueryVolumeInformationFile = ApifwNotReached
   NtReadFile = ApifwNotReached
   NtWriteFile = ApifwNotReached
   OpenEventW = ApifwNotReached
   OpenPackageInfoByFullName = ApifwNotReached
-  OpenThread = ApifwNotReached
-  OutputDebugStringA = ApifwNotReached
   PeekNamedPipe = ApifwNotReached
   PlaySoundW = ApifwNotReached
   PowerClearRequest = ApifwNotReached
@@ -654,14 +664,12 @@ EXPORTS
   QueryFullProcessImageNameW = ApifwNotReached
   QueryInformationJobObject = ApifwNotReached
   QueryMemoryResourceNotification = ApifwNotReached
-  QueryProcessCycleTime = ApifwNotReached
   ReadConsoleW = ApifwNotReached
   ReadDirectoryChangesW = ApifwNotReached
   ReadProcessMemory = ApifwNotReached
   recv = ApifwNotReached @16
   recvfrom = ApifwNotReached @17
   RegisterApplicationRestart = ApifwNotReached
-  ReleaseMutex = ApifwNotReached
   RemoveDirectoryW = ApifwNotReached
   ReplaceFileW = ApifwNotReached
   ResolveLocaleName = ApifwNotReached
@@ -702,7 +710,6 @@ EXPORTS
   SetThreadAffinityMask = ApifwNotReached
   SetThreadExecutionState = ApifwNotReached
   SetThreadpoolWait = ApifwNotReached
-  SetWaitableTimer = ApifwNotReached
   shutdown = ApifwNotReached @22
   SizeofResource = ApifwNotReached
   socket = ApifwNotReached @23
@@ -713,7 +720,6 @@ EXPORTS
   SysFreeString = ApifwNotReached
   SysStringByteLen = ApifwNotReached
   SysStringLen = ApifwNotReached
-  SystemTimeToTzSpecificLocalTime = ApifwNotReached
   TerminateJobObject = ApifwNotReached
   TzSpecificLocalTimeToSystemTime = ApifwNotReached
   UnlockFile = ApifwNotReached
@@ -741,8 +747,6 @@ EXPORTS
   waveOutWrite = ApifwNotReached
   WriteConsoleW = ApifwNotReached
   WriteProcessMemory = ApifwNotReached
-  WSACloseEvent = ApifwNotReached
-  WSACreateEvent = ApifwNotReached
   WSADuplicateSocketW = ApifwNotReached
   WSAEnumNameSpaceProvidersW = ApifwNotReached
   WSAEnumNetworkEvents = ApifwNotReached
@@ -756,10 +760,8 @@ EXPORTS
   WSALookupServiceNextW = ApifwNotReached
   WSARecv = ApifwNotReached
   WSARecvFrom = ApifwNotReached
-  WSAResetEvent = ApifwNotReached
   WSASend = ApifwNotReached
   WSASendTo = ApifwNotReached
-  WSASetEvent = ApifwNotReached
   WSASetServiceW = ApifwNotReached
   WSASocketW = ApifwNotReached
   WSAStartup = ApifwNotReached @115

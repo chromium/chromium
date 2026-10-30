@@ -21,6 +21,9 @@ extern bool g_log_call_sites;
 // Allows ORIGINAL_FN thunks to forward during explicit audit runs.
 extern bool g_audit_basic_sandbox;
 
+// Suppresses repeated stub records in long-running processes.
+extern bool g_log_once_mode;
+
 namespace basic_process {
 
 // Use for ordinary logged thunks.

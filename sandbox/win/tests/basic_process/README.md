@@ -58,11 +58,13 @@ content_shell.exe               basic_process_echo_service.exe
 
 Key files:
 
-*   `basic_sandbox.def` defines the Basic Process API allowlist.
-*   `shim/exports_logging.def` routes allowlisted APIs to Windows DLLs and
-    other APIs to shim thunks.
-*   `shim/thunks_*.cc` implements logged, modified, and unsupported APIs.
-*   `tools/` checks that the allowlist, exports, and thunks remain consistent.
+*   `basic_sandbox.def`: Basic Process API allowlist.
+*   `shim/exports_logging.def`: API export routing.
+*   `shim/thunks_*.cc`: API logging, forwarding, and modifications.
+*   `shim/string_util.h`: Allocation-free string helpers, bounded buffers, and
+    FNV-1a hashing.
+*   `shim/libcxx_support.h`: No-CRT libc++ hardening support.
+*   `tools/`: Allowlist, export, and thunk consistency checks.
 
 ## Command-line switches
 
@@ -74,6 +76,12 @@ Appends API records to `<path>`, creating the file if needed.
 
 Without this switch, or if the path cannot be opened, ordinary records are
 still sent to `OutputDebugString`.
+
+### `--basic-process-api-test-log-dir=<path>`
+
+Enables suite auditing: the shim creates a new log per process in this existing
+directory and enables audit, call-site, and log-once modes. Use this instead of
+`--basic-process-api-test-log-file` for parallel tests.
 
 ### `--basic-process-api-test-log-call-sites`
 
@@ -88,6 +96,11 @@ instead of invoking the API. Directly forwarded allowlisted APIs and modified
 thunks that do not reach the gate are unaffected.
 
 `ApifwNotReached` tripwires always log a stack and crash, even during an audit.
+
+### `--basic-process-api-test-log-once`
+
+Reduces log volume in long-running processes by suppressing repeated `stub:`
+records. Call-site records are always deduplicated.
 
 ## Running the test
 

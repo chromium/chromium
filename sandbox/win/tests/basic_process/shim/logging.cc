@@ -4,10 +4,17 @@
 
 #include "sandbox/win/tests/basic_process/shim/logging.h"
 
-#include <cstdint>
+// clang-format off: Must precede C++ standard library headers.
+#include "sandbox/win/tests/basic_process/shim/libcxx_support.h"
+// clang-format on
 
-#include "sandbox/win/tests/basic_process/nocrt.h"
+#include <array>
+#include <cstdint>
+#include <string_view>
+
+#include "sandbox/win/tests/basic_process/shim/nocrt.h"
 #include "sandbox/win/tests/basic_process/shim/shim_runtime.h"
+#include "sandbox/win/tests/basic_process/shim/string_util.h"
 
 // Log file handle for file-based stub logging. Opened by DllEntryPoint from the
 // explicit test-only log-file switch.
@@ -20,94 +27,83 @@ bool g_log_call_sites = false;
 // logging.h / DllEntryPoint). Off by default, so forwards trip a crash.
 bool g_audit_basic_sandbox = false;
 
+bool g_log_once_mode = false;
+
 namespace basic_process {
 namespace {
 
-// A fixed-capacity, bounds-checked line builder for composing one log line
-// without the CRT or //base. Every append is capped at the buffer's own
-// capacity, so no write can overflow; an over-long line is silently truncated
-// (logging is best-effort). Co-locating the storage with its length — instead
-// of threading a raw (dst, pos, max) triple through every helper and call
-// site — confines the only raw-pointer bookkeeping, and the single scoped
-// unsafe-buffer escape hatch, to this one small, auditable class. Callers hold
-// a LogLine and call type-checked member functions, so they need no unsafe
-// annotation of their own.
-//
-// SAFETY: the members below index the fixed array `buf_` solely by `len_`,
-// which every method keeps in [0, kCapacity - 1] (one wchar_t is always
-// reserved for the NUL that CStr() appends). //base is unavailable in this
-// no-CRT DLL, so base::span cannot carry the bound; the pragma scopes the
-// in-bounds raw indexing to this class.
-#pragma clang unsafe_buffer_usage begin
-template <int kCapacity>
+// Fixed-capacity line builder for the no-CRT shim.
+template <size_t kCapacity>
 class BoundedLine {
  public:
   BoundedLine() = default;
   BoundedLine(const BoundedLine&) = delete;
   BoundedLine& operator=(const BoundedLine&) = delete;
   void Append(const char* s) {
-    for (; s && *s && len_ < kCapacity - 1; ++s) {
-      buf_[len_++] = static_cast<unsigned char>(*s);
+    if (s) {
+      for (char c : std::string_view(s)) {
+        AppendChar(static_cast<unsigned char>(c));
+      }
     }
   }
 
   void AppendWide(const wchar_t* s) {
-    for (; s && *s && len_ < kCapacity - 1; ++s) {
-      buf_[len_++] = *s;
+    if (s) {
+      AppendWide(std::wstring_view(s));
+    }
+  }
+
+  void AppendWide(std::wstring_view text) {
+    if (buffer_.AppendPrefix(text) != text.size()) {
+      truncated_ = true;
     }
   }
 
   void AppendChar(wchar_t c) {
-    if (len_ < kCapacity - 1) {
-      buf_[len_++] = c;
+    if (!buffer_.TryAppend(c)) {
+      truncated_ = true;
     }
   }
 
   // Appends an unsigned decimal value.
   void AppendDecimal(uint64_t value) {
-    wchar_t tmp[20];
-    int n = 0;
-    do {
-      tmp[n++] = static_cast<wchar_t>(L'0' + value % 10);
-      value /= 10;
-    } while (value && n < static_cast<int>(sizeof(tmp) / sizeof(tmp[0])));
-    while (n > 0) {
-      AppendChar(tmp[--n]);
-    }
+    std::array<wchar_t, kMaxUint64DecimalDigits> digits;
+    AppendWide(FormatDecimal(value, digits));
   }
 
   // Appends "0x" followed by the minimal-width hex form of `value`.
   void AppendHex(uint64_t value) {
-    static const wchar_t kHex[] = L"0123456789abcdef";
-    Append("0x");
-    bool started = false;
-    for (int shift = 60; shift >= 0; shift -= 4) {
-      int nibble = static_cast<int>((value >> shift) & 0xF);
-      if (nibble != 0 || started || shift == 0) {
-        AppendChar(kHex[nibble]);
-        started = true;
-      }
-    }
+    std::array<wchar_t, kMaxUint64HexChars> text;
+    AppendWide(FormatHex(value, text));
   }
 
   void AppendPointer(const void* p) {
     AppendHex(static_cast<uint64_t>(reinterpret_cast<uintptr_t>(p)));
   }
 
-  // Appends `count` frame pointers, comma-separated.
-  void AppendFrames(void* const* frames, int count) {
-    for (int i = 0; i < count; ++i) {
-      AppendPointer(frames[i]);
-      AppendChar(',');
+  const wchar_t* CStr() const { return buffer_.c_str(); }
+
+  size_t size() const { return buffer_.size(); }
+
+  // Guarantees a newline and marks truncation, trimming partial stack frames.
+  void Finish() {
+    static constexpr char kTruncatedSuffix[] = " !truncated\n";
+    constexpr size_t kSuffixLength = sizeof(kTruncatedSuffix) - 1;
+    static_assert(kCapacity > kSuffixLength + 1);
+    if (!truncated_ && buffer_.remaining()) {
+      AppendChar(L'\n');
+      return;
     }
+    buffer_.Truncate(buffer_.capacity() - kSuffixLength);
+    const std::wstring_view text = buffer_.view();
+    const size_t separator = text.find_last_of(L";,");
+    const size_t space = text.find_last_of(L' ');
+    if (separator != std::wstring_view::npos &&
+        (space == std::wstring_view::npos || separator > space)) {
+      buffer_.Truncate(separator);
+    }
+    Append(kTruncatedSuffix);
   }
-
-  const wchar_t* CStr() {
-    buf_[len_] = '\0';
-    return buf_;
-  }
-
-  int size() const { return len_; }
 
   // Writes the accumulated line to the shared --bp-log-file, if open. The file
   // format intentionally remains ASCII for existing report tooling.
@@ -115,23 +111,26 @@ class BoundedLine {
     if (g_log_file_handle == INVALID_HANDLE_VALUE) {
       return;
     }
-    char bytes[kCapacity];
-    for (int i = 0; i < len_; ++i) {
+    std::array<char, kCapacity> bytes;
+    const std::wstring_view text = buffer_.view();
+    for (size_t i = 0; i < text.size(); ++i) {
       bytes[i] =
-          (buf_[i] >= 0 && buf_[i] < 128) ? static_cast<char>(buf_[i]) : '?';
+          (text[i] >= 0 && text[i] < 128) ? static_cast<char>(text[i]) : '?';
     }
     DWORD written = 0;
-    ::WriteFile(g_log_file_handle, bytes, static_cast<DWORD>(len_), &written,
-                nullptr);
+    ::WriteFile(g_log_file_handle, bytes.data(),
+                static_cast<DWORD>(text.size()), &written, nullptr);
   }
 
  private:
-  wchar_t buf_[kCapacity];
-  int len_ = 0;
+  WideStringBuffer<kCapacity> buffer_;
+  bool truncated_ = false;
 };
-#pragma clang unsafe_buffer_usage end
 
 using LogLine = BoundedLine<1024>;
+
+// Stack records need room for module+RVA frames and loader detail.
+using StackLogLine = BoundedLine<4096>;
 
 // Dedup key builder. Small enough that a handful of unique keys fit; longer
 // keys are truncated, which at worst merges two rare stubs in the dedup table.
@@ -146,28 +145,21 @@ void AppendPidPrefix(LogLine& line) {
   line.Append("] stub: ");
 }
 
-// Routes one fully-composed line to both sinks: the debugger
-// (OutputDebugString) and the shared --bp-log-file. Building the line once and
-// emitting it here avoids constructing the same text twice and keeps the two
-// sinks byte-for-byte identical.
-void Emit(LogLine& line) {
+// Both sinks receive the same newline-terminated record.
+template <typename Line>
+void Emit(Line& line) {
+  line.Finish();
   ::OutputDebugStringW(line.CStr());
   line.WriteToLogFile();
 }
 
-// Dedup table for "log once per unique (function, arg) pair" stubs, used by
-// LoadLibrary* / GetModuleHandle* so we still record which modules were seen
-// without flooding the log with repeats — and by the call-site logger, which
-// keys on (function, module+rva). Lock-protected; a small linear scan is fine
-// since the table grows slowly relative to total calls. Sized for the call-site
-// case (a few sites per logged API); grows to a hard cap then stops recording
-// new keys (existing keys keep deduping).
-constexpr int kMaxLogOnceEntries = 4096;
-struct LogOnceEntry {
-  wchar_t key[128];
-};
-LogOnceEntry g_log_once_table[kMaxLogOnceEntries];
+// Open-addressing dedup set. The half-full cap bounds probe cost.
+constexpr int kLogOnceSlots = 1 << 17;
+constexpr int kMaxLogOnceEntries = kLogOnceSlots / 2;
+uint64_t g_log_once_table[kLogOnceSlots];
 int g_log_once_count = 0;
+// Ensures the saturation warning is emitted only once.
+bool g_log_once_saturated = false;
 CRITICAL_SECTION g_log_once_cs;
 INIT_ONCE g_log_once_cs_init = INIT_ONCE_STATIC_INIT;
 
@@ -176,45 +168,53 @@ BOOL CALLBACK InitLogOnceCs(PINIT_ONCE, PVOID, PVOID*) {
   return TRUE;
 }
 
-// Atomically checks the table for `key` and inserts it if absent. Returns true
-// if this is the first time `key` was seen (caller should log), false for a
-// duplicate (caller should skip).
+// Zero marks an empty slot, so a zero hash is remapped.
+uint64_t HashLogOnceKey(std::wstring_view key) {
+  Fnv1aHasher hasher;
+  hasher.AddString(key);
+  return hasher.value() ? hasher.value() : 1;
+}
+
+// Returns true only when a new key is inserted below the cap.
 bool LogOnceShouldEmit(const wchar_t* key) {
+  const uint64_t hash = HashLogOnceKey(key);
   ::InitOnceExecuteOnce(&g_log_once_cs_init, InitLogOnceCs, nullptr, nullptr);
   ::EnterCriticalSection(&g_log_once_cs);
   bool should_emit = true;
-  // SAFETY: `i` and `g_log_once_count` are both kept in
-  // [0, kMaxLogOnceEntries], so every g_log_once_table[] subscript below is in
-  // bounds; the copy is additionally capped at the 128-byte slot width.
+  bool report_saturation = false;
+  // SAFETY: every index is masked to [0, kLogOnceSlots). The load factor is
+  // capped at one half, so probing always reaches an empty slot.
 #pragma clang unsafe_buffer_usage begin
-  for (int i = 0; i < g_log_once_count; ++i) {
-    const wchar_t* lhs = g_log_once_table[i].key;
-    const wchar_t* rhs = key;
-    while (*lhs && *lhs == *rhs) {
-      ++lhs;
-      ++rhs;
-    }
-    if (*lhs == *rhs) {
+  int slot = static_cast<int>(hash & (kLogOnceSlots - 1));
+  while (g_log_once_table[slot]) {
+    if (g_log_once_table[slot] == hash) {
       should_emit = false;
       break;
     }
+    slot = (slot + 1) & (kLogOnceSlots - 1);
   }
   if (should_emit) {
     if (g_log_once_count < kMaxLogOnceEntries) {
-      wchar_t* dst = g_log_once_table[g_log_once_count].key;
-      int j = 0;
-      while (key[j] && j < 127) {
-        dst[j] = key[j];
-        ++j;
-      }
-      dst[j] = '\0';
+      g_log_once_table[slot] = hash;
       ++g_log_once_count;
     } else {
       should_emit = false;
+      if (!g_log_once_saturated) {
+        g_log_once_saturated = true;
+        report_saturation = true;
+      }
     }
   }
 #pragma clang unsafe_buffer_usage end
   ::LeaveCriticalSection(&g_log_once_cs);
+
+  // Keep I/O outside the lock and bypass dedup to avoid recursion.
+  if (report_saturation) {
+    LogLine line;
+    AppendPidPrefix(line);
+    line.Append("log-once table saturated");
+    Emit(line);
+  }
   return should_emit;
 }
 
@@ -232,89 +232,154 @@ void BuildDedupKey(LogKey& key,
   }
 }
 
+bool ShouldLogCall(const char* function,
+                   const char* narrow_arg,
+                   const wchar_t* wide_arg) {
+  if (!g_log_once_mode) {
+    return true;
+  }
+  LogKey key;
+  BuildDedupKey(key, function, narrow_arg, wide_arg);
+  return LogOnceShouldEmit(key.CStr());
+}
+
+// Bypasses dedup for tripwires and callers that already checked it.
+void EmitFn(const char* function,
+            const char* narrow_arg,
+            const wchar_t* wide_arg) {
+  LogLine line;
+  AppendPidPrefix(line);
+  line.Append(function);
+  line.AppendChar('(');
+  if (narrow_arg) {
+    line.Append(narrow_arg);
+  } else {
+    line.AppendWide(wide_arg);
+  }
+  line.AppendChar(')');
+  Emit(line);
+}
+
+// Emits module+RVA frames, omitting leading shim frames.
+// SAFETY: `n` bounds frame access.
+#pragma clang unsafe_buffer_usage begin
+void AppendModuleFrames(StackLogLine& line, void* const* frames, int n) {
+  const uintptr_t self_base = reinterpret_cast<uintptr_t>(g_module);
+  bool wrote_any = false;
+  bool past_shim = false;
+  for (int i = 0; i < n; ++i) {
+    HMODULE mod = nullptr;
+    ::GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+                             GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                         reinterpret_cast<LPCWSTR>(frames[i]), &mod);
+    const uintptr_t base = reinterpret_cast<uintptr_t>(mod);
+    if (!past_shim) {
+      if (base == self_base) {
+        continue;
+      }
+      past_shim = true;
+    }
+    std::array<wchar_t, MAX_PATH> path;
+    const DWORD pn = mod ? ::GetModuleFileNameW(mod, path.data(), MAX_PATH) : 0;
+    if (wrote_any) {
+      line.AppendChar(';');
+    }
+    if (pn) {
+      // A truncated path returns the capacity, including its final NUL.
+      const size_t length = pn < path.size() ? pn : path.size() - 1;
+      const std::wstring_view text(path.begin(), path.end());
+      line.AppendWide(BaseName(text.substr(0, length)));
+    } else {
+      line.AppendWide(L"?");
+    }
+    line.AppendChar('+');
+    line.AppendHex(reinterpret_cast<uintptr_t>(frames[i]) - base);
+    wrote_any = true;
+  }
+}
+#pragma clang unsafe_buffer_usage end
+
+// Keep the large buffer off the deduplicated hot path's stack.
+__declspec(noinline) void EmitCallSite(const char* function,
+                                       void* const* frames,
+                                       int n,
+                                       const char* detail_narrow,
+                                       const wchar_t* detail_wide) {
+  StackLogLine line;
+  line.AppendChar('[');
+  line.AppendDecimal(::GetCurrentProcessId());
+  line.Append("] stub-site: ");
+  line.Append(function);
+  line.AppendChar(' ');
+  AppendModuleFrames(line, frames, n);
+  if (detail_narrow) {
+    line.AppendChar(' ');
+    line.Append(detail_narrow);
+  } else if (detail_wide) {
+    line.AppendChar(' ');
+    line.AppendWide(detail_wide);
+  }
+  Emit(line);
+}
+
+constexpr int kMaxCallSiteFrames = 32;
+
+// Hash process-local addresses before doing expensive module resolution.
+// SAFETY: `n` bounds `frames`; detail strings are NUL-terminated.
+#pragma clang unsafe_buffer_usage begin
+uint64_t HashStack(void* const* frames,
+                   int n,
+                   const char* detail_narrow,
+                   const wchar_t* detail_wide) {
+  Fnv1aHasher hasher;
+  for (int i = 0; i < n; ++i) {
+    hasher.AddLittleEndian(reinterpret_cast<uintptr_t>(frames[i]));
+  }
+  if (detail_narrow) {
+    hasher.AddString(detail_narrow);
+  }
+  if (detail_wide) {
+    hasher.AddString(detail_wide);
+  }
+  return hasher.value();
+}
+#pragma clang unsafe_buffer_usage end
+
 }  // namespace
 
 void LogFn(const char* function, const char* arg) {
-  LogLine line;
-  AppendPidPrefix(line);
-  line.Append(function);
-  line.AppendChar('(');
-  line.Append(arg);
-  line.Append(")\n");
-  Emit(line);
+  if (ShouldLogCall(function, arg, nullptr)) {
+    EmitFn(function, arg, nullptr);
+  }
 }
 
 void LogFn(const char* function, const wchar_t* arg) {
-  LogLine line;
-  AppendPidPrefix(line);
-  line.Append(function);
-  line.AppendChar('(');
-  line.AppendWide(arg);
-  line.Append(")\n");
-  Emit(line);
+  if (ShouldLogCall(function, nullptr, arg)) {
+    EmitFn(function, nullptr, arg);
+  }
 }
 
 void LogStackFn(const char* function) {
-  // Emit the normal "stub:" line first so the call still shows up in the
-  // per-API histogram.
-  LogFn(function);
+  // Tripwire records must bypass dedup.
+  EmitFn(function, nullptr, nullptr);
 
   void* frames[24] = {};
-  // Skip frame 0 (this function) so the first logged frame is the stub.
+  // Skip this function.
   WORD n = RtlCaptureStackBackTrace(1, 24, frames, nullptr);
 
-  LogLine line;
+  StackLogLine line;
   line.Append("stub-stack: ");
   line.Append(function);
   line.AppendChar(' ');
-  line.AppendFrames(frames, n);
-  line.AppendChar('\n');
+  AppendModuleFrames(line, frames, n);
   Emit(line);
 }
-
-// Maximum stack depth captured per call site. Deep enough to reach meaningful
-// application frames; stacks are deduplicated by full contents, so log volume
-// stays bounded regardless of call frequency.
-constexpr int kMaxCallSiteFrames = 32;
-
-// FNV-1a hash of the raw frame addresses plus the detail string, used to dedup
-// stacks per process. Absolute addresses are process-stable and
-// LogOnceShouldEmit is per-process, so hashing raw pointers is sound and lets
-// the hot (already-seen) path skip all module resolution.
-// SAFETY: `frames[i]` is read only for i in [0, n); `n` is the frame count from
-// RtlCaptureStackBackTrace (<= kMaxCallSiteFrames). //base is unavailable here.
-#pragma clang unsafe_buffer_usage begin
-static uint64_t HashStack(void* const* frames,
-                          int n,
-                          const char* detail_narrow,
-                          const wchar_t* detail_wide) {
-  uint64_t h = 1469598103934665603ULL;
-  auto mix_byte = [&h](unsigned char b) {
-    h ^= b;
-    h *= 1099511628211ULL;
-  };
-  for (int i = 0; i < n; ++i) {
-    uint64_t v = reinterpret_cast<uintptr_t>(frames[i]);
-    for (int b = 0; b < 8; ++b) {
-      mix_byte(static_cast<unsigned char>((v >> (b * 8)) & 0xFF));
-    }
-  }
-  for (const char* p = detail_narrow; p && *p; ++p) {
-    mix_byte(static_cast<unsigned char>(*p));
-  }
-  for (const wchar_t* p = detail_wide; p && *p; ++p) {
-    mix_byte(static_cast<unsigned char>(*p & 0xFF));
-  }
-  return h;
-}
-#pragma clang unsafe_buffer_usage end
 
 void MaybeLogCallSite(const char* function,
                       void* return_address,
                       const char* detail_narrow,
                       const wchar_t* detail_wide) {
-  // Capture the caller stack. Skip frame 0 (MaybeLogCallSite itself); the
-  // remaining apifw.dll frames (the Apifw* thunk) are dropped by module below.
+  // Skip this capture helper; AppendModuleFrames() drops remaining shim frames.
   void* frames[kMaxCallSiteFrames] = {};
   int n = RtlCaptureStackBackTrace(1, kMaxCallSiteFrames, frames, nullptr);
   if (n <= 0) {
@@ -331,70 +396,14 @@ void MaybeLogCallSite(const char* function,
   if (!LogOnceShouldEmit(key.CStr())) {
     return;
   }
-
-  const uintptr_t self_base = reinterpret_cast<uintptr_t>(g_module);
-  LogLine line;
-  line.AppendChar('[');
-  line.AppendDecimal(::GetCurrentProcessId());
-  line.Append("] stub-site: ");
-  line.Append(function);
-  line.AppendChar(' ');
-
-  // Emit the stack as ";"-joined "<module>+0x<rva>" frames (innermost first),
-  // dropping the leading apifw.dll frames so the first frame is the real
-  // caller. Each rva is module-relative for offline symbolization.
-  // SAFETY: `frames[i]` is read only for i in [0, n); the basename scan indexes
-  // `path` within the length GetModuleFileNameW returned. //base is
-  // unavailable in this no-CRT DLL, so the raw indexing is scoped here.
-#pragma clang unsafe_buffer_usage begin
-  bool wrote_any = false;
-  bool past_shim = false;
-  for (int i = 0; i < n; ++i) {
-    HMODULE mod = nullptr;
-    ::GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
-                             GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
-                         reinterpret_cast<LPCWSTR>(frames[i]), &mod);
-    const uintptr_t base = reinterpret_cast<uintptr_t>(mod);
-    if (!past_shim) {
-      if (base == self_base) {
-        continue;  // Skip MaybeLogCallSite / the Apifw* thunk.
-      }
-      past_shim = true;
-    }
-    wchar_t path[MAX_PATH];
-    const DWORD pn = mod ? ::GetModuleFileNameW(mod, path, MAX_PATH) : 0;
-    const wchar_t* basename = path;
-    for (DWORD c = 0; c < pn; ++c) {
-      if (path[c] == L'\\' || path[c] == L'/') {
-        basename = path + c + 1;
-      }
-    }
-    if (wrote_any) {
-      line.AppendChar(';');
-    }
-    line.AppendWide(pn ? basename : L"?");
-    line.AppendChar('+');
-    line.AppendHex(reinterpret_cast<uintptr_t>(frames[i]) - base);
-    wrote_any = true;
-  }
-#pragma clang unsafe_buffer_usage end
-
-  if (detail_narrow) {
-    line.AppendChar(' ');
-    line.Append(detail_narrow);
-  } else if (detail_wide) {
-    line.AppendChar(' ');
-    line.AppendWide(detail_wide);
-  }
-  line.AppendChar('\n');
-  Emit(line);
+  EmitCallSite(function, frames, n, detail_narrow, detail_wide);
 }
 
 void LogFnOnceW(const char* function, const wchar_t* arg) {
   LogKey key;
   BuildDedupKey(key, function, nullptr, arg);
   if (LogOnceShouldEmit(key.CStr())) {
-    LogFn(function, arg ? arg : L"");
+    EmitFn(function, nullptr, arg ? arg : L"");
   }
 }
 
@@ -402,13 +411,17 @@ void LogFnOnceA(const char* function, const char* arg) {
   LogKey key;
   BuildDedupKey(key, function, arg, nullptr);
   if (LogOnceShouldEmit(key.CStr())) {
-    LogFn(function, arg ? arg : "");
+    EmitFn(function, arg ? arg : "", nullptr);
   }
 }
 
 void LogFnUInt(const char* function,
                const char* arg_name,
                unsigned int arg_value) {
+  // Ignore varying values in log-once mode.
+  if (!ShouldLogCall(function, arg_name, nullptr)) {
+    return;
+  }
   LogLine line;
   AppendPidPrefix(line);
   line.Append(function);
@@ -416,17 +429,21 @@ void LogFnUInt(const char* function,
   line.Append(arg_name);
   line.AppendChar('=');
   line.AppendDecimal(arg_value);
-  line.Append(")\n");
+  line.AppendChar(')');
   Emit(line);
 }
 
 void LogHandle(const char* function, const void* handle) {
+  // Ignore varying handles in log-once mode.
+  if (!ShouldLogCall(function, nullptr, nullptr)) {
+    return;
+  }
   LogLine line;
   AppendPidPrefix(line);
   line.Append(function);
   line.AppendChar('(');
   line.AppendPointer(handle);
-  line.Append(")\n");
+  line.AppendChar(')');
   Emit(line);
 }
 
@@ -438,7 +455,6 @@ void LogOnDemandLoad(const wchar_t* module_name) {
   AppendPidPrefix(line);
   line.Append("on-demand loaded ");
   line.AppendWide(module_name);
-  line.AppendChar('\n');
   Emit(line);
 }
 

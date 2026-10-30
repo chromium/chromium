@@ -16,6 +16,7 @@ if (is_win && is_basic_api_shim) {
       "//build/config/coverage:default_coverage",
       "//build/config/sanitizers:default_sanitizer_flags",
     ]
+    defines = [ "BASIC_PROCESS_NO_CRT" ]
     ldflags = [
       "/ENTRY:DllEntryPoint",
       "/NODEFAULTLIB:shell32.lib",
@@ -30,16 +31,19 @@ if (is_win && is_basic_api_shim) {
     # /GS- is incompatible with the stack protector mode in Clang modules.
     use_libcxx_modules = false
     sources = [
-      "nocrt.cc",
-      "nocrt.h",
       "shim/bcryptprimitives_declarations.h",
       "shim/dll_main.cc",
       "shim/dwrite_declarations.h",
       "shim/exports_logging.def",
+      "shim/libcxx_support.h",
       "shim/logging.cc",
       "shim/logging.h",
+      "shim/nocrt.cc",
+      "shim/nocrt.h",
       "shim/ntdll_declarations.h",
       "shim/shim_runtime.h",
+      "shim/string_util.cc",
+      "shim/string_util.h",
       "shim/thunks_loader.cc",
       "shim/thunks_modified.cc",
       "shim/thunks_notreached.cc",

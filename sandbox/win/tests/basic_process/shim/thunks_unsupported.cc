@@ -7,9 +7,11 @@
 // DLL section.
 
 #include <windows.h>
+#include <winsock2.h>
 
 #include <aclapi.h>
 #include <appmodel.h>
+#include <dpapi.h>
 #include <evntprov.h>
 #include <evntrace.h>
 #include <mmeapi.h>
@@ -23,9 +25,9 @@
 #include <winstring.h>
 #include <wtypes.h>
 
-#include "sandbox/win/tests/basic_process/nocrt.h"
 #include "sandbox/win/tests/basic_process/shim/bcryptprimitives_declarations.h"
 #include "sandbox/win/tests/basic_process/shim/dwrite_declarations.h"
+#include "sandbox/win/tests/basic_process/shim/nocrt.h"
 #include "sandbox/win/tests/basic_process/shim/ntdll_declarations.h"
 #include "sandbox/win/tests/basic_process/shim/shim_runtime.h"
 
@@ -162,6 +164,12 @@ APIFW_FORWARD_ADVAPI32(RegGetValueW,
                        (LPDWORD, pdwType),
                        (PVOID, pvData),
                        (LPDWORD, pcbData))
+APIFW_FORWARD_ADVAPI32(RegOpenKeyExA,
+                       (HKEY, hKey),
+                       (LPCSTR, lpSubKey),
+                       (DWORD, ulOptions),
+                       (REGSAM, samDesired),
+                       (PHKEY, phkResult))
 APIFW_FORWARD_ADVAPI32(RegOverridePredefKey, (HKEY, hKey), (HKEY, hNewHKey))
 APIFW_FORWARD_ADVAPI32(RegQueryInfoKeyW,
                        (HKEY, hKey),
@@ -241,6 +249,17 @@ APIFW_FORWARD_COMBASE(WindowsCreateStringReference,
                       (HSTRING*, string))
 APIFW_FORWARD_COMBASE(WindowsDeleteString, (HSTRING, string))
 
+// --- crypt32 passthroughs ---
+
+APIFW_FORWARD_CRYPT32(CryptProtectMemory,
+                      (LPVOID, pDataIn),
+                      (DWORD, cbDataIn),
+                      (DWORD, dwFlags))
+APIFW_FORWARD_CRYPT32(CryptUnprotectMemory,
+                      (LPVOID, pDataIn),
+                      (DWORD, cbDataIn),
+                      (DWORD, dwFlags))
+
 // --- dwrite passthroughs ---
 
 APIFW_FORWARD_DWRITE(DWriteCreateFactory,
@@ -277,6 +296,13 @@ APIFW_FORWARD_KERNEL32(CreateEventW,
                        (BOOL, bManualReset),
                        (BOOL, bInitialState),
                        (LPCWSTR, lpName))
+APIFW_FORWARD_KERNEL32(CreateFileMappingA,
+                       (HANDLE, hFile),
+                       (LPSECURITY_ATTRIBUTES, lpFileMappingAttributes),
+                       (DWORD, flProtect),
+                       (DWORD, dwMaximumSizeHigh),
+                       (DWORD, dwMaximumSizeLow),
+                       (LPCSTR, lpName))
 APIFW_FORWARD_KERNEL32(CreateFileMappingW,
                        (HANDLE, hFile),
                        (LPSECURITY_ATTRIBUTES, lpFileMappingAttributes),
@@ -289,6 +315,10 @@ APIFW_FORWARD_KERNEL32(CreateIoCompletionPort,
                        (HANDLE, ExistingCompletionPort),
                        (ULONG_PTR, CompletionKey),
                        (DWORD, NumberOfConcurrentThreads))
+APIFW_FORWARD_KERNEL32(CreateMutexW,
+                       (LPSECURITY_ATTRIBUTES, lpMutexAttributes),
+                       (BOOL, bInitialOwner),
+                       (LPCWSTR, lpName))
 APIFW_FORWARD_KERNEL32(CreateNamedPipeW,
                        (LPCWSTR, lpName),
                        (DWORD, dwOpenMode),
@@ -310,6 +340,11 @@ APIFW_FORWARD_KERNEL32(CreateSymbolicLinkW,
 APIFW_FORWARD_KERNEL32(CreateToolhelp32Snapshot,
                        (DWORD, dwFlags),
                        (DWORD, th32ProcessID))
+APIFW_FORWARD_KERNEL32(CreateWaitableTimerExW,
+                       (LPSECURITY_ATTRIBUTES, lpTimerAttributes),
+                       (LPCWSTR, lpTimerName),
+                       (DWORD, dwFlags),
+                       (DWORD, dwDesiredAccess))
 APIFW_FORWARD_KERNEL32(DiscardVirtualMemory,
                        (PVOID, VirtualAddress),
                        (SIZE_T, Size))
@@ -357,6 +392,14 @@ APIFW_FORWARD_KERNEL32(EnumSystemLocalesW,
                        (LOCALE_ENUMPROC, lpLocaleEnumProc),
                        (DWORD, dwFlags))
 APIFW_FORWARD_KERNEL32(FlsGetValue2, (DWORD, dwFlsIndex))
+APIFW_FORWARD_KERNEL32(FormatMessageA,
+                       (DWORD, dwFlags),
+                       (LPCVOID, lpSource),
+                       (DWORD, dwMessageId),
+                       (DWORD, dwLanguageId),
+                       (LPSTR, lpBuffer),
+                       (DWORD, nSize),
+                       (va_list*, Arguments))
 APIFW_FORWARD_KERNEL32(FormatMessageW,
                        (DWORD, dwFlags),
                        (LPCVOID, lpSource),
@@ -387,6 +430,9 @@ APIFW_FORWARD_KERNEL32(GetDateFormatW,
                        (LPWSTR, lpDateStr),
                        (int, cchDate))
 APIFW_FORWARD_KERNEL32(GetCommandLineA)
+APIFW_FORWARD_KERNEL32(GetConsoleMode,
+                       (HANDLE, hConsoleHandle),
+                       (LPDWORD, lpMode))
 APIFW_FORWARD_KERNEL32(GetCurrentDirectoryW,
                        (DWORD, nBufferLength),
                        (LPWSTR, lpBuffer))
@@ -399,6 +445,11 @@ APIFW_FORWARD_KERNEL32(GetFileAttributesExW,
 APIFW_FORWARD_KERNEL32(GetFileInformationByHandle,
                        (HANDLE, hFile),
                        (LPBY_HANDLE_FILE_INFORMATION, lpFileInformation))
+APIFW_FORWARD_KERNEL32(GetFileInformationByHandleEx,
+                       (HANDLE, hFile),
+                       (FILE_INFO_BY_HANDLE_CLASS, FileInformationClass),
+                       (LPVOID, lpFileInformation),
+                       (DWORD, dwBufferSize))
 APIFW_FORWARD_KERNEL32(GetFileSizeEx,
                        (HANDLE, hFile),
                        (PLARGE_INTEGER, lpFileSize))
@@ -455,6 +506,8 @@ APIFW_FORWARD_KERNEL32(GetLogicalProcessorInformationEx,
                        (LOGICAL_PROCESSOR_RELATIONSHIP, RelationshipType),
                        (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION_EX, Buffer),
                        (PDWORD, ReturnedLength))
+APIFW_FORWARD_KERNEL32(GetMaximumProcessorCount, (WORD, GroupNumber))
+APIFW_FORWARD_KERNEL32(GetMaximumProcessorGroupCount)
 APIFW_FORWARD_KERNEL32(GetNativeSystemInfo, (LPSYSTEM_INFO, lpSystemInfo))
 APIFW_FORWARD_KERNEL32(GetPriorityClass, (HANDLE, hProcess))
 APIFW_FORWARD_KERNEL32(GetProcessHeaps,
@@ -535,6 +588,11 @@ APIFW_FORWARD_KERNEL32(K32EnumProcessModules,
                        (HMODULE*, lphModule),
                        (DWORD, cb),
                        (LPDWORD, lpcbNeeded))
+APIFW_FORWARD_KERNEL32(K32GetModuleFileNameExA,
+                       (HANDLE, hProcess),
+                       (HMODULE, hModule),
+                       (LPSTR, lpFilename),
+                       (DWORD, nSize))
 APIFW_FORWARD_KERNEL32(K32GetModuleInformation,
                        (HANDLE, hProcess),
                        (HMODULE, hModule),
@@ -570,6 +628,7 @@ APIFW_FORWARD_KERNEL32(LCMapStringW,
                        (int, cchSrc),
                        (LPWSTR, lpDestStr),
                        (int, cchDest))
+APIFW_FORWARD_KERNEL32(LocalAlloc, (UINT, uFlags), (SIZE_T, uBytes))
 APIFW_FORWARD_KERNEL32(LocalFree, (HLOCAL, hMem))
 APIFW_FORWARD_KERNEL32(LocaleNameToLCID, (LPCWSTR, lpName), (DWORD, dwFlags))
 APIFW_FORWARD_KERNEL32(lstrcmpiA, (LPCSTR, lpString1), (LPCSTR, lpString2))
@@ -580,6 +639,7 @@ APIFW_FORWARD_KERNEL32(LockFileEx,
                        (DWORD, nNumberOfBytesToLockLow),
                        (DWORD, nNumberOfBytesToLockHigh),
                        (LPOVERLAPPED, lpOverlapped))
+APIFW_FORWARD_KERNEL32(lstrlenA, (LPCSTR, lpString))
 APIFW_FORWARD_KERNEL32(Module32FirstW,
                        (HANDLE, hSnapshot),
                        (LPMODULEENTRY32W, lpme))
@@ -594,11 +654,19 @@ APIFW_FORWARD_KERNEL32(OpenProcessToken,
                        (HANDLE, ProcessHandle),
                        (DWORD, DesiredAccess),
                        (PHANDLE, TokenHandle))
+APIFW_FORWARD_KERNEL32(OpenThread,
+                       (DWORD, dwDesiredAccess),
+                       (BOOL, bInheritHandle),
+                       (DWORD, dwThreadId))
+APIFW_FORWARD_KERNEL32(OutputDebugStringA, (LPCSTR, lpOutputString))
 APIFW_FORWARD_KERNEL32(PostQueuedCompletionStatus,
                        (HANDLE, CompletionPort),
                        (DWORD, dwNumberOfBytesTransferred),
                        (ULONG_PTR, CompletionKey),
                        (LPOVERLAPPED, lpOverlapped))
+APIFW_FORWARD_KERNEL32(QueryProcessCycleTime,
+                       (HANDLE, ProcessHandle),
+                       (PULONG64, CycleTime))
 APIFW_FORWARD_KERNEL32(QueryThreadCycleTime,
                        (HANDLE, ThreadHandle),
                        (PULONG64, CycleTime))
@@ -629,6 +697,7 @@ APIFW_FORWARD_KERNEL32(RegQueryValueExW,
                        (LPDWORD, lpType),
                        (LPBYTE, lpData),
                        (LPDWORD, lpcbData))
+APIFW_FORWARD_KERNEL32(ReleaseMutex, (HANDLE, hMutex))
 APIFW_FORWARD_KERNEL32(ReleaseSemaphore,
                        (HANDLE, hSemaphore),
                        (LONG, lReleaseCount),
@@ -679,8 +748,19 @@ APIFW_FORWARD_KERNEL32(SetThreadPriority, (HANDLE, hThread), (int, nPriority))
 APIFW_FORWARD_KERNEL32(SetThreadPriorityBoost,
                        (HANDLE, hThread),
                        (BOOL, bDisablePriorityBoost))
+APIFW_FORWARD_KERNEL32(SetWaitableTimer,
+                       (HANDLE, hTimer),
+                       (const LARGE_INTEGER*, lpDueTime),
+                       (LONG, lPeriod),
+                       (PTIMERAPCROUTINE, pfnCompletionRoutine),
+                       (LPVOID, lpArgToCompletionRoutine),
+                       (BOOL, fResume))
 APIFW_FORWARD_KERNEL32(SuspendThread, (HANDLE, hThread))
 APIFW_FORWARD_KERNEL32(SwitchToThread)
+APIFW_FORWARD_KERNEL32(SystemTimeToTzSpecificLocalTime,
+                       (const TIME_ZONE_INFORMATION*, lpTimeZoneInformation),
+                       (const SYSTEMTIME*, lpUniversalTime),
+                       (LPSYSTEMTIME, lpLocalTime))
 APIFW_FORWARD_KERNEL32(TransactNamedPipe,
                        (HANDLE, hNamedPipe),
                        (LPVOID, lpInBuffer),
@@ -779,5 +859,16 @@ APIFW_FORWARD_NTDLL(RtlInitUnicodeString,
 
 APIFW_FORWARD_WINMM(timeBeginPeriod, (UINT, uPeriod))
 APIFW_FORWARD_WINMM(timeEndPeriod, (UINT, uPeriod))
+
+// --- ws2_32 passthroughs ---
+
+APIFW_FORWARD_WS2_32(htonl, (u_long, hostlong))
+APIFW_FORWARD_WS2_32(htons, (u_short, hostshort))
+APIFW_FORWARD_WS2_32(ntohl, (u_long, netlong))
+APIFW_FORWARD_WS2_32(ntohs, (u_short, netshort))
+APIFW_FORWARD_WS2_32(WSACloseEvent, (WSAEVENT, hEvent))
+APIFW_FORWARD_WS2_32(WSACreateEvent)
+APIFW_FORWARD_WS2_32(WSAResetEvent, (WSAEVENT, hEvent))
+APIFW_FORWARD_WS2_32(WSASetEvent, (WSAEVENT, hEvent))
 
 }  // extern "C"

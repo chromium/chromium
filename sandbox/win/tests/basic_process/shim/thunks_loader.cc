@@ -6,51 +6,30 @@
 // are logged so audits capture dynamic and delay-loaded APIs. FreeLibrary
 // protects redirected module handles.
 
-#include "sandbox/win/tests/basic_process/nocrt.h"
+// clang-format off: Must precede C++ standard library headers.
+#include "sandbox/win/tests/basic_process/shim/libcxx_support.h"
+// clang-format on
+
+#include <string_view>
+
 #include "sandbox/win/tests/basic_process/shim/shim_runtime.h"
+#include "sandbox/win/tests/basic_process/shim/string_util.h"
 
 namespace {
 
 template <typename Char>
-bool EqualsAsciiIgnoringCase(Char lhs, char rhs) {
-  if (lhs >= static_cast<Char>('A') && lhs <= static_cast<Char>('Z')) {
-    lhs += static_cast<Char>('a' - 'A');
-  }
-  if (rhs >= 'A' && rhs <= 'Z') {
-    rhs += 'a' - 'A';
-  }
-  return lhs == static_cast<Char>(rhs);
-}
-
-// SAFETY: both arguments are caller-provided NUL-terminated strings.
-#pragma clang unsafe_buffer_usage begin
-template <typename Char>
-bool EqualsModuleName(const Char* module_name, const char* expected_name) {
-  while (*module_name && *expected_name) {
-    if (!EqualsAsciiIgnoringCase(*module_name, *expected_name)) {
+bool EqualsModuleName(std::basic_string_view<Char> module_name,
+                      std::string_view expected_name) {
+  constexpr std::string_view kDllSuffix = ".dll";
+  if (module_name.size() > expected_name.size()) {
+    if (!basic_process::EqualsAsciiIgnoringCase(
+            module_name.substr(expected_name.size()), kDllSuffix)) {
       return false;
     }
-    ++module_name;
-    ++expected_name;
+    module_name.remove_suffix(kDllSuffix.size());
   }
-  if (*expected_name) {
-    return false;
-  }
-  if (!*module_name) {
-    return true;
-  }
-
-  const char* suffix = ".dll";
-  while (*module_name && *suffix) {
-    if (!EqualsAsciiIgnoringCase(*module_name, *suffix)) {
-      return false;
-    }
-    ++module_name;
-    ++suffix;
-  }
-  return !*module_name && !*suffix;
+  return basic_process::EqualsAsciiIgnoringCase(module_name, expected_name);
 }
-#pragma clang unsafe_buffer_usage end
 
 // Identifies system DLL names redirected to apifw.dll, including full paths
 // and names with an omitted ".dll" suffix.
@@ -59,12 +38,8 @@ bool IsRedirectedModuleName(const Char* module_name) {
   if (!module_name) {
     return false;
   }
-  const Char* basename = nullptr;
-  if constexpr (sizeof(Char) == sizeof(char)) {
-    basename = path_basename_a(module_name);
-  } else {
-    basename = path_basename_w(module_name);
-  }
+  const auto basename =
+      basic_process::BaseName(std::basic_string_view<Char>(module_name));
   return EqualsModuleName(basename, "advapi32") ||
          EqualsModuleName(basename, "bcryptprimitives") ||
          EqualsModuleName(basename, "combase") ||

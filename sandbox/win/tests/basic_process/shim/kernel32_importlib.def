@@ -15,6 +15,7 @@ EXPORTS
   GetModuleFileNameW
   GetCommandLineW
 
+  GetLastError
   SetLastError
 
   AcquireSRWLockExclusive

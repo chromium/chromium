@@ -6,60 +6,113 @@
 
 #include <windows.h>
 
-#include <cstdint>
+// clang-format off: Must precede C++ standard library headers.
+#include "sandbox/win/tests/basic_process/shim/libcxx_support.h"
+// clang-format on
 
-#include "sandbox/win/tests/basic_process/nocrt.h"
+#include <cstdint>
+#include <limits>
+#include <string_view>
+
 #include "sandbox/win/tests/basic_process/shim/logging.h"
+#include "sandbox/win/tests/basic_process/shim/nocrt.h"
 #include "sandbox/win/tests/basic_process/shim/shim_runtime.h"
+#include "sandbox/win/tests/basic_process/shim/string_util.h"
 
 namespace {
 
 constexpr wchar_t kLogFileSwitch[] = L"--basic-process-api-test-log-file=";
+constexpr wchar_t kLogDirSwitch[] = L"--basic-process-api-test-log-dir=";
 constexpr wchar_t kLogCallSitesSwitch[] =
     L"--basic-process-api-test-log-call-sites";
 constexpr wchar_t kAuditSwitch[] = L"--basic-process-api-test-audit";
+constexpr wchar_t kLogOnceSwitch[] = L"--basic-process-api-test-log-once";
+constexpr size_t kMaxDwordDecimalDigits =
+    std::numeric_limits<DWORD>::digits10 + 1;
 
-// SAFETY: This parses a switch value from the NUL-terminated process command
-// line into a fixed-size local buffer. Every write is bounded by MAX_PATH.
-#pragma clang unsafe_buffer_usage begin
-HANDLE OpenLogFileFromCommandLine() {
-  wchar_t* command_line = ::GetCommandLineW();
-  wchar_t* switch_position = wcsstr(command_line, kLogFileSwitch);
-  if (!switch_position) {
+bool CopyLogPath(std::wstring_view command_line,
+                 size_t switch_position,
+                 std::wstring_view switch_name,
+                 basic_process::WideStringBuffer<MAX_PATH>& path) {
+  const bool quoted =
+      switch_position > 0 && command_line[switch_position - 1] == L'"';
+  const std::wstring_view value = basic_process::ExtractQuotedValue(
+      command_line.substr(switch_position + switch_name.size()), quoted);
+  if (value.empty() || !path.TryAppend(value)) {
+    ::SetLastError(ERROR_INVALID_PARAMETER);
+    return false;
+  }
+  return true;
+}
+
+HANDLE CreateLogInDirectory(basic_process::WideStringBuffer<MAX_PATH>& path) {
+  // Reserve the maximum decimal widths of the PID and collision suffix.
+  constexpr size_t kFilenameCapacity =
+      sizeof(L"\\apifw__.log") / sizeof(wchar_t) + 2 * kMaxDwordDecimalDigits;
+  if (path.size() + kFilenameCapacity > MAX_PATH) {
+    ::SetLastError(ERROR_FILENAME_EXCED_RANGE);
     return INVALID_HANDLE_VALUE;
   }
-
-  wchar_t* value = switch_position + wcslen(kLogFileSwitch);
-  bool quoted = switch_position > command_line && switch_position[-1] == L'"';
-  if (*value == L'"') {
-    quoted = true;
-    ++value;
+  if (!path.view().ends_with(L'\\') && !path.view().ends_with(L'/') &&
+      !path.TryAppend(L'\\')) {
+    ::SetLastError(ERROR_FILENAME_EXCED_RANGE);
+    return INVALID_HANDLE_VALUE;
   }
+  const size_t directory_length = path.size();
 
-  wchar_t path[MAX_PATH];
-  size_t path_length = 0;
-  while (*value && path_length < MAX_PATH - 1) {
-    if ((quoted && *value == L'"') ||
-        (!quoted && (*value == L' ' || *value == L'\t'))) {
-      break;
+  for (DWORD suffix = 0;; ++suffix) {
+    path.Truncate(directory_length);
+    if (!path.TryAppend(L"apifw_") ||
+        !path.TryAppendDecimal(::GetCurrentProcessId()) ||
+        !path.TryAppend(L'_') || !path.TryAppendDecimal(suffix) ||
+        !path.TryAppend(L".log")) {
+      ::SetLastError(ERROR_FILENAME_EXCED_RANGE);
+      return INVALID_HANDLE_VALUE;
     }
-    path[path_length++] = *value++;
+
+    // Avoid appending to old logs when PIDs are reused.
+    HANDLE handle = ::CreateFileW(path.c_str(), FILE_APPEND_DATA,
+                                  FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr,
+                                  CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (handle != INVALID_HANDLE_VALUE ||
+        ::GetLastError() != ERROR_FILE_EXISTS || suffix == MAXDWORD) {
+      return handle;
+    }
   }
-  if (path_length == 0 ||
-      (path_length == MAX_PATH - 1 && *value && *value != L'"')) {
-    return INVALID_HANDLE_VALUE;
-  }
-  path[path_length] = L'\0';
-  return ::CreateFileW(path, FILE_APPEND_DATA,
-                       FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr, OPEN_ALWAYS,
-                       FILE_ATTRIBUTE_NORMAL, nullptr);
 }
 
-bool CommandLineHasSwitch(const wchar_t* command_line,
-                          const wchar_t* switch_name) {
-  return wcsstr(command_line, switch_name) != nullptr;
+HANDLE OpenLogFileFromCommandLine(std::wstring_view command_line) {
+  const size_t file_switch = command_line.find(kLogFileSwitch);
+  const size_t dir_switch = command_line.find(kLogDirSwitch);
+  const bool has_file = file_switch != std::wstring_view::npos;
+  const bool has_dir = dir_switch != std::wstring_view::npos;
+  if (!has_file && !has_dir) {
+    return INVALID_HANDLE_VALUE;
+  }
+
+  HANDLE handle = INVALID_HANDLE_VALUE;
+  basic_process::WideStringBuffer<MAX_PATH> path;
+  if (has_file && has_dir) {
+    ::SetLastError(ERROR_INVALID_PARAMETER);
+  } else if (has_file &&
+             CopyLogPath(command_line, file_switch, kLogFileSwitch, path)) {
+    handle = ::CreateFileW(path.c_str(), FILE_APPEND_DATA,
+                           FILE_SHARE_READ | FILE_SHARE_WRITE, nullptr,
+                           OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+  } else if (has_dir &&
+             CopyLogPath(command_line, dir_switch, kLogDirSwitch, path)) {
+    handle = CreateLogInDirectory(path);
+  }
+  if (handle == INVALID_HANDLE_VALUE) {
+    basic_process::LogFnUInt("ApifwOpenLogFile", "error", ::GetLastError());
+  }
+  return handle;
 }
-#pragma clang unsafe_buffer_usage end
+
+bool CommandLineHasSwitch(std::wstring_view command_line,
+                          std::wstring_view switch_name) {
+  return command_line.find(switch_name) != std::wstring_view::npos;
+}
 
 }  // namespace
 
@@ -85,13 +138,23 @@ extern int __stdcall DllEntryPoint(HANDLE hDllHandle,
   switch (dwReason) {
     case DLL_PROCESS_ATTACH: {
       g_module = reinterpret_cast<HMODULE>(hDllHandle);
-      LPWSTR command_line = GetCommandLineW();
-      g_log_file_handle = OpenLogFileFromCommandLine();
-      if (CommandLineHasSwitch(command_line, kLogCallSitesSwitch)) {
+      const std::wstring_view command_line = ::GetCommandLineW();
+      const bool directory_audit =
+          CommandLineHasSwitch(command_line, kLogDirSwitch);
+      g_log_file_handle = OpenLogFileFromCommandLine(command_line);
+      if (directory_audit && g_log_file_handle == INVALID_HANDLE_VALUE) {
+        return FALSE;
+      }
+      if (directory_audit ||
+          CommandLineHasSwitch(command_line, kLogCallSitesSwitch)) {
         g_log_call_sites = true;
       }
-      if (CommandLineHasSwitch(command_line, kAuditSwitch)) {
+      if (directory_audit || CommandLineHasSwitch(command_line, kAuditSwitch)) {
         g_audit_basic_sandbox = true;
+      }
+      if (directory_audit ||
+          CommandLineHasSwitch(command_line, kLogOnceSwitch)) {
+        g_log_once_mode = true;
       }
     } break;
 

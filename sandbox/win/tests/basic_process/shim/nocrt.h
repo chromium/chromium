@@ -2,8 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_WIN_TESTS_BASIC_PROCESS_NOCRT_H_
-#define SANDBOX_WIN_TESTS_BASIC_PROCESS_NOCRT_H_
+#ifndef SANDBOX_WIN_TESTS_BASIC_PROCESS_SHIM_NOCRT_H_
+#define SANDBOX_WIN_TESTS_BASIC_PROCESS_SHIM_NOCRT_H_
+
+// clang-format off: Must precede C++ standard library headers.
+#include "sandbox/win/tests/basic_process/shim/libcxx_support.h"
+// clang-format on
 
 #include <cstddef>
 
@@ -21,9 +25,7 @@ size_t wcslen(const wchar_t* str);
 size_t strlen(const char* str);
 int strcmp(const char* str1, const char* str2);
 int strcmpi_ascii(const char* str1, const char* str2);
-const char* path_basename_a(const char* path);
-const wchar_t* path_basename_w(const wchar_t* path);
 int wcsicmp(const wchar_t* str1, const wchar_t* str2);
 }  // extern "C"
 
-#endif  // SANDBOX_WIN_TESTS_BASIC_PROCESS_NOCRT_H_
+#endif  // SANDBOX_WIN_TESTS_BASIC_PROCESS_SHIM_NOCRT_H_

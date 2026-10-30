@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "sandbox/win/tests/basic_process/nocrt.h"
+#include "sandbox/win/tests/basic_process/shim/nocrt.h"
+
+#include "sandbox/win/tests/basic_process/shim/string_util.h"
 
 // Enough CRT APIs to get the basic process stub API DLL off the ground, as the
 // built-in CRT is not compatible with the available API set.
@@ -43,10 +45,9 @@ void* memcpy(void* dest, const void* src, size_t count) {
 
 }  // extern "C"
 
-// SAFETY: these are freestanding string/number primitives that walk
-// caller-supplied NUL-terminated buffers with raw pointer arithmetic. //base
-// is unavailable to this no-CRT code, so base::span and the other safe-buffer
-// helpers cannot be used; the check is scoped to this block.
+// SAFETY: these CRT entry points walk caller-provided NUL-terminated strings.
+// Length/search primitives must not delegate to string_view operations, which
+// can call these entry points themselves.
 #pragma clang unsafe_buffer_usage begin
 
 const wchar_t* wcsstr(const wchar_t* haystack, const wchar_t* needle) {
@@ -107,18 +108,10 @@ int strcmp(const char* str1, const char* str2) {
   return static_cast<unsigned char>(*str1) - static_cast<unsigned char>(*str2);
 }
 
-char tolower_ascii(char c) {
-  return (c >= 'A' && c <= 'Z') ? static_cast<char>(c + ('a' - 'A')) : c;
-}
-
-wchar_t tolower_ascii(wchar_t c) {
-  return (c >= L'A' && c <= L'Z') ? static_cast<wchar_t>(c + (L'a' - L'A')) : c;
-}
-
 int strcmpi_ascii(const char* str1, const char* str2) {
   while (*str1 && *str2) {
-    char c1 = tolower_ascii(*str1);
-    char c2 = tolower_ascii(*str2);
+    char c1 = basic_process::ToLowerAscii(*str1);
+    char c2 = basic_process::ToLowerAscii(*str2);
     if (c1 != c2) {
       return static_cast<unsigned char>(c1) - static_cast<unsigned char>(c2);
     }
@@ -128,38 +121,10 @@ int strcmpi_ascii(const char* str1, const char* str2) {
   return static_cast<unsigned char>(*str1) - static_cast<unsigned char>(*str2);
 }
 
-const char* path_basename_a(const char* path) {
-  const char* basename = path;
-  for (const char* p = path; p && *p; ++p) {
-    if (*p == '\\' || *p == '/') {
-      basename = p + 1;
-    }
-  }
-  return basename;
-}
-
-const wchar_t* path_basename_w(const wchar_t* path) {
-  const wchar_t* basename = path;
-  for (const wchar_t* p = path; p && *p; ++p) {
-    if (*p == L'\\' || *p == L'/') {
-      basename = p + 1;
-    }
-  }
-  return basename;
-}
-
 int wcsicmp(const wchar_t* str1, const wchar_t* str2) {
   while (*str1 && *str2) {
-    wchar_t c1 = *str1;
-    wchar_t c2 = *str2;
-
-    // Convert ASCII uppercase to lowercase
-    if (c1 >= L'A' && c1 <= L'Z') {
-      c1 += 0x20;
-    }
-    if (c2 >= L'A' && c2 <= L'Z') {
-      c2 += 0x20;
-    }
+    wchar_t c1 = basic_process::ToLowerAscii(*str1);
+    wchar_t c2 = basic_process::ToLowerAscii(*str2);
 
     if (c1 != c2) {
       return (int)c1 - (int)c2;

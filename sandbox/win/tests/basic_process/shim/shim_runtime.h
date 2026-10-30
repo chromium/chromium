@@ -8,8 +8,8 @@
 #include <windows.h>
 #include <winternl.h>
 
-#include "sandbox/win/tests/basic_process/nocrt.h"
 #include "sandbox/win/tests/basic_process/shim/logging.h"
+#include "sandbox/win/tests/basic_process/shim/nocrt.h"
 
 // Shared runtime glue for the apifw.dll stub thunks: the marker macros, the
 // lazily-resolving ORIGINAL_FN machinery, and the globals/helpers the thunks
@@ -168,6 +168,9 @@ inline void ApifwAuditForwardGate() {
 #define APIFW_FORWARD_COMBASE(name, ...) \
   APIFW_FORWARD_THUNK(name, L"combase.dll" __VA_OPT__(, ) __VA_ARGS__)
 
+#define APIFW_FORWARD_CRYPT32(name, ...) \
+  APIFW_FORWARD_THUNK(name, L"crypt32.dll" __VA_OPT__(, ) __VA_ARGS__)
+
 #define APIFW_FORWARD_DWRITE(name, ...) \
   APIFW_FORWARD_THUNK(name, L"dwrite.dll" __VA_OPT__(, ) __VA_ARGS__)
 
@@ -179,5 +182,8 @@ inline void ApifwAuditForwardGate() {
 
 #define APIFW_FORWARD_WINMM(name, ...) \
   APIFW_FORWARD_THUNK(name, L"winmm.dll" __VA_OPT__(, ) __VA_ARGS__)
+
+#define APIFW_FORWARD_WS2_32(name, ...) \
+  APIFW_FORWARD_THUNK(name, L"ws2_32.dll" __VA_OPT__(, ) __VA_ARGS__)
 
 #endif  // SANDBOX_WIN_TESTS_BASIC_PROCESS_SHIM_SHIM_RUNTIME_H_
