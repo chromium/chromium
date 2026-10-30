@@ -1206,23 +1206,16 @@ def main():
         ),
     ]
 
-    # JetStream is disabled on 32-bit Windows due to failures, see
-    # https://crbug.com/327040688.
-    if not (
-        not args.android_browser
-        and sys.platform == 'win32'
-        and args.target_arch == 'x86'
-    ):
-        jetstream_args = ['jetstream3']
-        if args.target_arch in ('arm', 'x86'):
-            # Skip memory-hungry stories on 32-bit platforms to avoid OOM and
-            # timeouts, see https://crbug.com/487336000 and
-            # https://crbug.com/565414952.
-            jetstream_args.append(
-                '--stories=default,-babylonjs-scene-es6,'
-                '-transformersjs-bert-wasm'
-            )
-        benchmarks.append(Benchmark('jetstream3.crossbench', jetstream_args))
+    jetstream_args = ['jetstream3']
+    if args.target_arch in ('arm', 'x86'):
+        # Skip memory-hungry stories on 32-bit platforms to avoid OOM and
+        # timeouts, see https://crbug.com/487336000 and
+        # https://crbug.com/565414952.
+        jetstream_args.append(
+            '--stories=default,-babylonjs-scene-es6,'
+            '-transformersjs-bert-wasm'
+        )
+    benchmarks.append(Benchmark('jetstream3.crossbench', jetstream_args))
 
     # These benchmarks require special access permissions:
     # https://www.chromium.org/developers/telemetry/upload_to_cloud_storage/#request-access-for-google-partners
