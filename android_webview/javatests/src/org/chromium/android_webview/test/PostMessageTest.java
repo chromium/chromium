@@ -414,7 +414,10 @@ public class PostMessageTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-PostMessage"})
+    @SkipMutations(
+            reason = "This test depends on AwSettings.setAllowUniversalAccessFromFileURLs(false)")
     public void testPostSharedArrayBuffer() throws Throwable {
+        mAwContents.getSettings().setAllowUniversalAccessFromFileUrls(false);
         mActivityTestRule.getAwBrowserContext().setCrossOriginIsolatedAllowList(Set.of("*"));
 
         List<Pair<String, String>> requestHeaders =
@@ -450,7 +453,10 @@ public class PostMessageTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-PostMessage"})
+    @SkipMutations(
+            reason = "This test depends on AwSettings.setAllowUniversalAccessFromFileURLs(false)")
     public void testPostSharedArrayBufferWithoutAllowlist() throws Throwable {
+        mAwContents.getSettings().setAllowUniversalAccessFromFileUrls(false);
         List<Pair<String, String>> responseHeaders =
                 List.of(new Pair<>("Document-Isolation-Policy", "isolate-and-credentialless"));
         final String url =
@@ -481,7 +487,10 @@ public class PostMessageTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-PostMessage"})
+    @SkipMutations(
+            reason = "This test depends on AwSettings.setAllowUniversalAccessFromFileURLs(false)")
     public void testPostSharedArrayBufferToApp() throws Throwable {
+        mAwContents.getSettings().setAllowUniversalAccessFromFileUrls(false);
         mActivityTestRule.getAwBrowserContext().setCrossOriginIsolatedAllowList(Set.of("*"));
 
         List<Pair<String, String>> requestHeaders =
@@ -519,7 +528,10 @@ public class PostMessageTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-PostMessage"})
+    @SkipMutations(
+            reason = "This test depends on AwSettings.setAllowUniversalAccessFromFileURLs(false)")
     public void testPostSharedArrayBufferWithMessagePort() throws Throwable {
+        mAwContents.getSettings().setAllowUniversalAccessFromFileUrls(false);
         mActivityTestRule.getAwBrowserContext().setCrossOriginIsolatedAllowList(Set.of("*"));
 
         List<Pair<String, String>> requestHeaders =
@@ -560,7 +572,10 @@ public class PostMessageTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-PostMessage"})
+    @SkipMutations(
+            reason = "This test depends on AwSettings.setAllowUniversalAccessFromFileURLs(false)")
     public void testPostSharedArrayBufferToWrongOrigin() throws Throwable {
+        mAwContents.getSettings().setAllowUniversalAccessFromFileUrls(false);
         mActivityTestRule.getAwBrowserContext().setCrossOriginIsolatedAllowList(Set.of("*"));
 
         List<Pair<String, String>> requestHeaders =
@@ -615,7 +630,10 @@ public class PostMessageTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-PostMessage"})
+    @SkipMutations(
+            reason = "This test depends on AwSettings.setAllowUniversalAccessFromFileURLs(false)")
     public void testPostClosedSharedArrayBufferIsDropped() throws Throwable {
+        mAwContents.getSettings().setAllowUniversalAccessFromFileUrls(false);
         mActivityTestRule.getAwBrowserContext().setCrossOriginIsolatedAllowList(Set.of("*"));
 
         List<Pair<String, String>> requestHeaders =
@@ -650,7 +668,10 @@ public class PostMessageTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-PostMessage"})
+    @SkipMutations(
+            reason = "This test depends on AwSettings.setAllowUniversalAccessFromFileURLs(false)")
     public void testPostSharedArrayBufferWithoutResponseHeaders() throws Throwable {
+        mAwContents.getSettings().setAllowUniversalAccessFromFileUrls(false);
         mActivityTestRule.getAwBrowserContext().setCrossOriginIsolatedAllowList(Set.of("*"));
         final String url =
                 mWebServer.setResponse(

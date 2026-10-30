@@ -101,7 +101,10 @@ public class AwCrossOriginIsolatedAllowlistTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @SkipMutations(
+            reason = "This test depends on AwSettings.setAllowUniversalAccessFromFileURLs(false)")
     public void testSharedArrayBufferInWorker() throws Throwable {
+        mAwContents.getSettings().setAllowUniversalAccessFromFileUrls(false);
         List<Pair<String, String>> requestHeaders =
                 List.of(new Pair<>("Document-Isolation-Policy", "isolate-and-credentialless"));
         String fullIndexUrl = mWebServer.setResponse("/index.html", INDEX_HTML, requestHeaders);

@@ -750,7 +750,10 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "JsJavaInteraction"})
+    @SkipMutations(
+            reason = "This test depends on AwSettings.setAllowUniversalAccessFromFileURLs(false)")
     public void testPostSharedArrayBufferWorks() throws Throwable {
+        mAwContents.getSettings().setAllowUniversalAccessFromFileUrls(false);
         mActivityTestRule.getAwBrowserContext().setCrossOriginIsolatedAllowList(Set.of("*"));
         addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
 
@@ -799,7 +802,10 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "JsJavaInteraction"})
+    @SkipMutations(
+            reason = "This test depends on AwSettings.setAllowUniversalAccessFromFileURLs(false)")
     public void testPostSharedArrayBufferFromJsShouldThrowException() throws Throwable {
+        mAwContents.getSettings().setAllowUniversalAccessFromFileUrls(false);
         mActivityTestRule.getAwBrowserContext().setCrossOriginIsolatedAllowList(Set.of("*"));
         addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
 
@@ -913,7 +919,10 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "JsJavaInteraction"})
+    @SkipMutations(
+            reason = "This test depends on AwSettings.setAllowUniversalAccessFromFileURLs(false)")
     public void testPostSharedArrayBufferWithoutAllowlistShouldThrowException() throws Throwable {
+        mAwContents.getSettings().setAllowUniversalAccessFromFileUrls(false);
         mActivityTestRule
                 .getAwBrowserContext()
                 .setCrossOriginIsolatedAllowList(Set.of("https://example.com"));
@@ -927,8 +936,11 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "JsJavaInteraction"})
+    @SkipMutations(
+            reason = "This test depends on AwSettings.setAllowUniversalAccessFromFileURLs(false)")
     public void testPostSharedArrayBufferWithoutResponseHeadersShouldThrowException()
             throws Throwable {
+        mAwContents.getSettings().setAllowUniversalAccessFromFileUrls(false);
         mActivityTestRule.getAwBrowserContext().setCrossOriginIsolatedAllowList(Set.of("*"));
 
         assertPostSharedArrayBufferThrowsForNonIsolatedFrame(/* responseHeaders= */ null);
@@ -941,7 +953,10 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView", "JsJavaInteraction"})
+    @SkipMutations(
+            reason = "This test depends on AwSettings.setAllowUniversalAccessFromFileURLs(false)")
     public void testPostSharedArrayBufferAfterFrameIsGoneDropsMessage() throws Throwable {
+        mAwContents.getSettings().setAllowUniversalAccessFromFileUrls(false);
         mActivityTestRule.getAwBrowserContext().setCrossOriginIsolatedAllowList(Set.of("*"));
 
         List<Pair<String, String>> requestHeaders =
