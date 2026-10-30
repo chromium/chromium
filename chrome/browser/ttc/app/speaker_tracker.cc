@@ -53,8 +53,9 @@ void SpeakerTracker::SetSpeaker(Speaker speaker) {
   if (speaker_ == speaker) {
     return;
   }
+  const Speaker old_speaker = speaker_;
   speaker_ = speaker;
-  speaker_changed_callback_.Run();
+  speaker_changed_callback_.Run(old_speaker, speaker_);
 }
 
 }  // namespace ttc

@@ -59,6 +59,8 @@ class SessionJournalImpl : public SessionJournal {
            std::vector<actor::mojom::JournalDetailsPtr> details,
            Track track) override;
   void HandleServerJournalEvent(const ServerJournalEvent& event) override;
+  void LogAudio(std::string_view mime_type,
+                base::span<const uint8_t> data) override;
 
   // Begins an async event, which lasts until the returned object ends it.
   [[nodiscard]] std::unique_ptr<PendingAsyncEvent> BeginAsyncEvent(

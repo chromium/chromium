@@ -86,11 +86,16 @@ SessionJournal& ConversationImpl::GetJournal() {
 void ConversationImpl::OnCapturedAudio(base::span<const int16_t> pcm_data,
                                        const media::AudioParameters& params,
                                        float energy) {
+  audio_logger_.OnCapturedAudio(base::as_bytes(pcm_data), params,
+                                speaker_tracker_.speaker());
+
   backend_->SendAudioChunk(pcm_data);
   session_controller_->UserAudioLevelUpdate(energy);
 }
 
 void ConversationImpl::OnCaptureStopped() {
+  audio_logger_.OnCaptureStopped();
+
   // No more audio levels arrive, so settle the UI at silence.
   session_controller_->UserAudioLevelUpdate(0.0f);
 }
@@ -174,8 +179,12 @@ void ConversationImpl::OnUserTurnStateUpdate(UserTurnStateUpdate update) {
   speaker_tracker_.OnUserTurnStateUpdate(update);
 }
 
-void ConversationImpl::OnSpeakerChanged() {
-  session_controller_->OnSpeakerChanged(speaker_tracker_.speaker());
+void ConversationImpl::OnSpeakerChanged(Speaker old_speaker,
+                                        Speaker new_speaker) {
+  if (old_speaker == Speaker::kUser) {
+    audio_logger_.DumpToJournal(session_controller_->GetJournal());
+  }
+  session_controller_->OnSpeakerChanged(new_speaker);
 }
 
 void ConversationImpl::OnToolCall(const ToolRequest& tool_request,

@@ -41,6 +41,8 @@ source_set("app") {
 source_set("impl") {
   sources = [
     "audio_controller_impl.cc",
+    "audio_logger.cc",
+    "audio_logger.h",
     "conversation_impl.cc",
     "conversation_impl.h",
     "make_conversation.cc",

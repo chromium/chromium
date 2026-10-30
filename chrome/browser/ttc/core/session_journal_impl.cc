@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ttc/core/session_journal_impl.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check_op.h"
@@ -57,6 +58,12 @@ void SessionJournalImpl::Log(
     Track track) {
   journal_->Log(GURL(), task_id_, MakeTrackUUID(track, task_id_), event_name,
                 std::move(details));
+}
+
+void SessionJournalImpl::LogAudio(std::string_view mime_type,
+                                  base::span<const uint8_t> data) {
+  journal_->LogScreenshot(GURL(), task_id_, mime_type, data,
+                          /*iframe_data=*/std::nullopt);
 }
 
 std::unique_ptr<SessionJournalImpl::PendingAsyncEvent>

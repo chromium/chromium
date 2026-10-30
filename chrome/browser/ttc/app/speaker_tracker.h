@@ -17,9 +17,9 @@ namespace ttc {
 // state updates reported by the backend.
 class SpeakerTracker {
  public:
-  // Called whenever the speaker changes. Use `speaker()` to read the new
-  // speaker.
-  using SpeakerChangedCallback = base::RepeatingClosure;
+  // Called whenever the speaker changes.
+  using SpeakerChangedCallback =
+      base::RepeatingCallback<void(Speaker old_speaker, Speaker new_speaker)>;
 
   explicit SpeakerTracker(SpeakerChangedCallback speaker_changed_callback);
   ~SpeakerTracker();

@@ -15,6 +15,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ttc/app/audio_logger.h"
 #include "chrome/browser/ttc/app/public/audio_controller.h"
 #include "chrome/browser/ttc/app/speaker_tracker.h"
 #include "chrome/browser/ttc/core/states.h"
@@ -97,10 +98,14 @@ class ConversationImpl : public Conversation,
   Speaker speaker() const { return speaker_tracker_.speaker(); }
 
  private:
-  void OnSpeakerChanged();
+  void OnSpeakerChanged(Speaker old_speaker, Speaker new_speaker);
 
   std::unique_ptr<TtcBackend> backend_;
   std::unique_ptr<AudioController> audio_controller_;
+
+  // Buffers captured audio during the user's turn so it can be logged to the
+  // journal when the turn ends.
+  AudioLogger audio_logger_;
 
   // Safe because the SessionController owns this object.
   const raw_ref<SessionController> session_controller_;
