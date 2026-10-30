@@ -104,6 +104,7 @@ OnDeviceOptions::~OnDeviceOptions() = default;
 OnDeviceOptions::OnDeviceOptions(const OnDeviceOptions& orig)
     : model_client(orig.model_client->Clone()),
       model_versions(orig.model_versions),
+      base_model(orig.base_model),
       adapter(orig.adapter),
       token_limits(orig.token_limits),
       session_params(orig.session_params),

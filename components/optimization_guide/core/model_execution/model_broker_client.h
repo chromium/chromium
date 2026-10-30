@@ -15,6 +15,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_execution.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_names.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom.h"
@@ -67,6 +68,8 @@ class ModelClient final {
     return feature_adapter_->GetFeatureMetadata();
   }
 
+  OnDeviceBaseModel base_model() const { return base_model_; }
+
  private:
   // Called when the remote disconnects.
   void OnDisconnect();
@@ -76,6 +79,7 @@ class ModelClient final {
   mojo::Remote<mojom::ModelSolution> remote_;
   scoped_refptr<const OnDeviceModelFeatureAdapter> feature_adapter_;
   proto::OnDeviceModelVersions model_versions_;
+  OnDeviceBaseModel base_model_ = OnDeviceBaseModel::kUnknown;
   on_device_model::Capabilities capabilities_;
   mojom::OnDeviceFeature feature_;
   base::WeakPtrFactory<ModelClient> weak_ptr_factory_{this};

@@ -159,6 +159,10 @@ class ManifestSolutionFactory {
   ModelBrokerImpl::MaybeSolution CreateSolutionForUseCase(
       const std::string& use_case_name);
 
+  // Resolves the base model recipe ID for a given solution recipe ID,
+  // unwrapping adaptations and postprocessed models.
+  const std::string& GetBaseModelRecipeId(const std::string& solution_id) const;
+
   // Logs the model's version, backend and cache configuration to the
   // optimization guide internals page.
   void LogBaseModelInitialization(const std::string& model_id,

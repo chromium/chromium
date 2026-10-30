@@ -31,6 +31,13 @@ namespace optimization_guide {
 
 namespace {
 
+OnDeviceBaseModel GetBaseModelFromVersions(
+    const proto::OnDeviceModelVersions& versions) {
+  return ConvertComponentKeyToEnum(versions.on_device_model_service_version()
+                                       .on_device_base_model_metadata()
+                                       .base_model_name());
+}
+
 std::unique_ptr<OnDeviceSession> CreateSessionWithParams(
     const SessionConfigParams& config_params,
     base::WeakPtr<OptimizationGuideLogger> logger,
@@ -91,6 +98,7 @@ ModelClient::ModelClient(mojo::PendingRemote<mojom::ModelSolution> remote,
                .As<proto::OnDeviceModelExecutionFeatureConfig>())),
       model_versions_(
           *config->model_versions.As<proto::OnDeviceModelVersions>()),
+      base_model_(GetBaseModelFromVersions(model_versions_)),
       capabilities_(config->model_capabilities),
       feature_(ToOnDeviceFeature(feature_adapter_->config().feature())
                    .value_or(mojom::OnDeviceFeature::kTest)) {
@@ -113,6 +121,7 @@ std::unique_ptr<OnDeviceSession> ModelClient::CreateSession(
   opts.model_client = std::make_unique<ModelClient::OnDeviceOptionsClient>(
       weak_ptr_factory_.GetWeakPtr());
   opts.model_versions = model_versions_;
+  opts.base_model = base_model_;
   opts.adapter = feature_adapter_;
   opts.token_limits = feature_adapter_->GetTokenLimits();
   opts.logger = logger;
