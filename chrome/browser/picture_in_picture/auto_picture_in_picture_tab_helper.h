@@ -163,10 +163,9 @@ class AutoPictureInPictureTabHelper
   // never.  The other parameters are described in AutoPipSettingHelper.
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<AutoPipSettingOverlayView>
-  CreateOverlayPermissionViewIfNeeded(
-      base::OnceClosure close_pip_cb,
-      views::View* anchor_view,
-      views::BubbleBorder::Arrow arrow);
+  CreateOverlayPermissionViewIfNeeded(base::OnceClosure close_pip_cb,
+                                      views::View* anchor_view,
+                                      views::BubbleBorder::Arrow arrow);
 #endif  //! BUILDFLAG(IS_ANDROID)
 
   // Should be called when the user closes the pip window manually, so that we
@@ -270,6 +269,7 @@ class AutoPictureInPictureTabHelper
   //   * Is playing unmuted playback
   //   * Has a safe URL as reported by
   //   `AutoPictureInPictureSafeBrowsingCheckerClient`
+  //   * Is not currently being visibly captured
   bool MeetsVideoPlaybackConditions() const;
 
   // Returns true if the tab is currently using the camera or microphone.

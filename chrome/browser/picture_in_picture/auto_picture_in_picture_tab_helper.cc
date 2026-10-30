@@ -789,7 +789,8 @@ bool AutoPictureInPictureTabHelper::IsEligibleForAutoPictureInPicture(
 
 bool AutoPictureInPictureTabHelper::MeetsVideoPlaybackConditions() const {
   return has_audio_focus_ && is_playing_ && WasRecentlyAudible() &&
-         has_safe_url_ && MeetsMediaEngagementConditions();
+         has_safe_url_ && MeetsMediaEngagementConditions() &&
+         !web_contents()->IsBeingVisiblyCaptured();
 }
 
 bool AutoPictureInPictureTabHelper::IsUsingCameraOrMicrophone() const {
