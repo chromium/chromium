@@ -104,9 +104,12 @@ NSError* CreateCancelledError() {
   self = [super init];
   if (self) {
     if (base::ThreadPoolInstance::Get()) {
+      // Use `SKIP_ON_SHUTDOWN` so blocking CoreAudio IPC cannot hang
+      // `ThreadPoolInstance::Shutdown()`; iOS automatically reclaims the
+      // process's audio session upon termination.
       _audioSessionTaskRunner = base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::USER_VISIBLE, base::MayBlock(),
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
     }
     [self registerNotificationObservers];
   }
