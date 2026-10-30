@@ -854,7 +854,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the outcome of attempting to attribute a Web App notification to its
     App Shim on macOS. Recorded when displaying a notification that has a Web
-    App ID.
+    App ID: synchronously when no installed App Shim is eligible for
+    attribution, or asynchronously once the App Shim's DisplayNotification call
+    completes (or its Mojo connection fails).
   </summary>
 </histogram>
 

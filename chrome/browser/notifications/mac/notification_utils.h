@@ -19,12 +19,22 @@ class Profile;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// LINT.IfChange(MacNotificationAttributionOutcome)
 enum class MacNotificationAttributionOutcome {
-  kAttributed = 0,
+  kDeprecatedAttributed = 0,
   kFallbackFeatureDisabled = 1,
   kFallbackNoAppShim = 2,
-  kMaxValue = kFallbackNoAppShim,
+  kFallbackPermissionNotDetermined = 3,
+  kFallbackPermissionPromptPending = 4,
+  kFallbackPermissionImplicitlyDenied = 5,
+  kFallbackAppShimConnectionFailed = 6,
+  kAttributedPermissionGranted = 7,
+  kAttributedPermissionDenied = 8,
+  kAttributedDeliveryFailed = 9,
+  kAppShimConnectionFailedPermissionDenied = 10,
+  kMaxValue = kAppShimConnectionFailedPermissionDenied,
 };
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:MacNotificationAttributionOutcome)
 
 namespace message_center {
 class Notification;

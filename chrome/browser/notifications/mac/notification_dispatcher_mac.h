@@ -27,6 +27,7 @@ struct MacNotificationIdentifier {
     return std::tie(notification_id, profile_id, incognito) <
            std::tie(rhs.notification_id, rhs.profile_id, rhs.incognito);
   }
+  bool operator==(const MacNotificationIdentifier& rhs) const = default;
 };
 
 // Interface to interact with notifications on macOS. It is responsible for one

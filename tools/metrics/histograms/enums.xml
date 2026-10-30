@@ -22370,11 +22370,25 @@ from previous Chrome versions.
   <int value="2" label="Failure"/>
 </enum>
 
+<!-- LINT.IfChange(MacNotificationAttributionOutcome) -->
+
 <enum name="MacNotificationAttributionOutcome">
-  <int value="0" label="Attributed to App Shim"/>
+  <int value="0" label="Attributed to App Shim (Deprecated)"/>
   <int value="1" label="Fallback: Feature Disabled"/>
   <int value="2" label="Fallback: App Shim not installed in profile"/>
+  <int value="3" label="Fallback: Permission Not Determined"/>
+  <int value="4" label="Fallback: Permission Prompt Pending"/>
+  <int value="5" label="Fallback: Permission Implicitly Denied"/>
+  <int value="6" label="Fallback: App Shim connection failed"/>
+  <int value="7" label="Attributed: Permission Granted"/>
+  <int value="8" label="Attributed: Permission Explicitly Denied"/>
+  <int value="9" label="Attributed: OS delivery failed"/>
+  <int value="10"
+      label="Dropped: App Shim connection failed while permission explicitly
+             denied"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/notifications/mac/notification_utils.h:MacNotificationAttributionOutcome) -->
 
 <enum name="MacThermalState">
   <int value="0" label="0-Nominal"/>

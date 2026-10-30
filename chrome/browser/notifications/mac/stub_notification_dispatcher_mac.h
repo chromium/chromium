@@ -7,12 +7,16 @@
 
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/notifications/mac/notification_dispatcher_mac.h"
 #include "chrome/services/mac_notifications/public/mojom/mac_notifications.mojom.h"
 
 class StubNotificationDispatcherMac : public NotificationDispatcherMac {
  public:
+  using OnDisplayCallback =
+      base::RepeatingCallback<void(DisplayNotificationCallback)>;
+
   StubNotificationDispatcherMac();
   StubNotificationDispatcherMac(const StubNotificationDispatcherMac&) = delete;
   StubNotificationDispatcherMac& operator=(
@@ -51,13 +55,34 @@ class StubNotificationDispatcherMac : public NotificationDispatcherMac {
     supports_synchronization_ = supports_synchronization;
   }
 
+  // Configures `DisplayNotification()` to synchronously invoke its callback
+  // with `display_result`. Overrides any callback previously set via
+  // `set_on_display_callback()`.
+  void set_display_result(
+      mac_notifications::mojom::DisplayNotificationResult display_result);
+
+  // Configures `DisplayNotification()` to pass its completion callback to
+  // `callback` instead of completing synchronously, allowing tests to defer
+  // completion and choose the `DisplayNotificationResult`. Note that closing a
+  // notification while its callback is deferred will not suppress a subsequent
+  // `kSuccess` completion from recording the notification.
+  void set_on_display_callback(OnDisplayCallback callback);
+
   base::WeakPtr<StubNotificationDispatcherMac> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
  private:
+  void OnDisplayFinished(
+      MacNotificationIdentifier identifier,
+      mac_notifications::mojom::NotificationPtr notification,
+      DisplayNotificationCallback callback,
+      mac_notifications::mojom::DisplayNotificationResult result);
+  void EraseNotificationWithId(const MacNotificationIdentifier& identifier);
+
   std::vector<mac_notifications::mojom::NotificationPtr> notifications_;
   bool supports_synchronization_ = true;
+  OnDisplayCallback on_display_callback_;
 
   base::WeakPtrFactory<StubNotificationDispatcherMac> weak_factory_{this};
 };

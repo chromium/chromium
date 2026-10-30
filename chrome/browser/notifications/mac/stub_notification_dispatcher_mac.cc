@@ -10,14 +10,19 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/notifications/mac/notification_utils.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 #include "chrome/browser/profiles/profile.h"
 #include "url/origin.h"
 
-StubNotificationDispatcherMac::StubNotificationDispatcherMac() = default;
+StubNotificationDispatcherMac::StubNotificationDispatcherMac() {
+  set_display_result(
+      mac_notifications::mojom::DisplayNotificationResult::kSuccess);
+}
 
 StubNotificationDispatcherMac::~StubNotificationDispatcherMac() = default;
 
@@ -26,16 +31,50 @@ void StubNotificationDispatcherMac::DisplayNotification(
     Profile* profile,
     const message_center::Notification& notification,
     DisplayNotificationCallback callback) {
-  CloseNotificationWithId({notification.id(),
-                           NotificationPlatformBridge::GetProfileId(profile),
-                           profile->IsOffTheRecord()});
-  notifications_.push_back(
-      CreateMacNotification(notification_type, profile, notification));
-  std::move(callback).Run(
-      mac_notifications::mojom::DisplayNotificationResult::kSuccess);
+  MacNotificationIdentifier identifier = {
+      notification.id(), NotificationPlatformBridge::GetProfileId(profile),
+      profile->IsOffTheRecord()};
+  on_display_callback_.Run(base::BindOnce(
+      &StubNotificationDispatcherMac::OnDisplayFinished,
+      weak_factory_.GetWeakPtr(), std::move(identifier),
+      CreateMacNotification(notification_type, profile, notification),
+      std::move(callback)));
+}
+
+void StubNotificationDispatcherMac::set_display_result(
+    mac_notifications::mojom::DisplayNotificationResult display_result) {
+  on_display_callback_ = base::BindRepeating(
+      [](mac_notifications::mojom::DisplayNotificationResult result,
+         DisplayNotificationCallback callback) {
+        std::move(callback).Run(result);
+      },
+      display_result);
+}
+
+void StubNotificationDispatcherMac::set_on_display_callback(
+    OnDisplayCallback callback) {
+  CHECK(callback);
+  on_display_callback_ = std::move(callback);
+}
+
+void StubNotificationDispatcherMac::OnDisplayFinished(
+    MacNotificationIdentifier identifier,
+    mac_notifications::mojom::NotificationPtr notification,
+    DisplayNotificationCallback callback,
+    mac_notifications::mojom::DisplayNotificationResult result) {
+  if (result == mac_notifications::mojom::DisplayNotificationResult::kSuccess) {
+    EraseNotificationWithId(identifier);
+    notifications_.push_back(std::move(notification));
+  }
+  std::move(callback).Run(result);
 }
 
 void StubNotificationDispatcherMac::CloseNotificationWithId(
+    const MacNotificationIdentifier& identifier) {
+  EraseNotificationWithId(identifier);
+}
+
+void StubNotificationDispatcherMac::EraseNotificationWithId(
     const MacNotificationIdentifier& identifier) {
   std::erase_if(notifications_, [&identifier](const auto& notification) {
     const auto& notification_id = notification->meta->id->id;

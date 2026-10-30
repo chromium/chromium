@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/notifications/mac/notification_utils.h"
@@ -40,6 +41,10 @@ namespace {
 class MockNotificationDispatcherMac : public StubNotificationDispatcherMac {
  public:
   MOCK_METHOD(void, CloseAllNotifications, (), (override));
+  MOCK_METHOD(void,
+              CloseNotificationWithId,
+              (const MacNotificationIdentifier&),
+              (override));
 };
 
 }  // namespace
@@ -591,6 +596,7 @@ class NotificationPlatformBridgeMacTestWithNotificationAttribution
 
 TEST_F(NotificationPlatformBridgeMacTestWithNotificationAttribution,
        BannersAndAlertsAreAttributed) {
+  base::HistogramTester histogram_tester;
   std::unique_ptr<Notification> alert =
       CreateAlert("Title", "Context", "https://gmail.com", "Button 1", nullptr,
                   installed_app_id_);
@@ -609,6 +615,195 @@ TEST_F(NotificationPlatformBridgeMacTestWithNotificationAttribution,
   auto* app_dispatcher = dispatcher_for_web_app(installed_app_id_);
   ASSERT_TRUE(app_dispatcher);
   EXPECT_EQ(2u, app_dispatcher->notifications().size());
+  histogram_tester.ExpectUniqueSample(
+      "Notifications.macOS.AttributionOutcome",
+      MacNotificationAttributionOutcome::kAttributedPermissionGranted, 2);
+}
+
+struct AttributionResultTestCase {
+  std::string test_name;
+  mac_notifications::mojom::DisplayNotificationResult display_result;
+  std::optional<AppShimRegistry::NotificationPermissionStatus>
+      cached_permission;
+  bool expect_fallback;
+  MacNotificationAttributionOutcome expected_outcome;
+};
+
+class NotificationPlatformBridgeMacAttributionResultTest
+    : public NotificationPlatformBridgeMacTestWithNotificationAttribution,
+      public testing::WithParamInterface<AttributionResultTestCase> {};
+
+TEST_P(NotificationPlatformBridgeMacAttributionResultTest,
+       DisplayHandlesNonSuccessResult) {
+  const AttributionResultTestCase& test_case = GetParam();
+  if (test_case.cached_permission.has_value()) {
+    AppShimRegistry::Get()->SaveNotificationPermissionStatusForApp(
+        installed_app_id_, *test_case.cached_permission);
+  }
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<Notification> alert =
+      CreateAlert("Title", "Context", "https://gmail.com", "Button 1", nullptr,
+                  installed_app_id_);
+  std::unique_ptr<Notification> banner =
+      CreateBanner("Title", "Context", "https://gmail.com", "Button 1", nullptr,
+                   installed_app_id_);
+  std::unique_ptr<Notification> unattributed_banner = CreateBanner(
+      "Title", "Context", "https://gmail.com", "Button 1", nullptr);
+  auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
+      CreateBannerDispatcher(), CreateAlertDispatcher(),
+      base::BindLambdaForTesting(
+          [&](const webapps::AppId& web_app_id)
+              -> std::unique_ptr<NotificationDispatcherMac> {
+            // CloseNotificationWithId must never be called on the web app
+            // dispatcher during Display() or fallback, as that could relaunch a
+            // disconnected AppShim.
+            auto dispatcher = std::make_unique<
+                testing::StrictMock<MockNotificationDispatcherMac>>();
+            dispatcher->set_display_result(test_case.display_result);
+            EXPECT_CALL(*dispatcher, CloseNotificationWithId).Times(0);
+            web_app_dispatchers_[web_app_id] = dispatcher->AsWeakPtr();
+            return dispatcher;
+          }));
+
+  // Seed an existing Chrome banner notification with `notification_id1` to
+  // verify it is replaced (on fallback) or closed (when not falling back).
+  bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
+                  Notification("notification_id1", *unattributed_banner),
+                  nullptr);
+  ASSERT_EQ(1u, banner_dispatcher()->notifications().size());
+
+  bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
+                  Notification("notification_id1", *banner), nullptr);
+  bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
+                  Notification("notification_id2", *alert), nullptr);
+
+  EXPECT_EQ(test_case.expect_fallback ? 1u : 0u,
+            banner_dispatcher()->notifications().size());
+  EXPECT_EQ(test_case.expect_fallback ? 1u : 0u,
+            alert_dispatcher()->notifications().size());
+  auto* app_dispatcher = dispatcher_for_web_app(installed_app_id_);
+  ASSERT_TRUE(app_dispatcher);
+  EXPECT_TRUE(app_dispatcher->notifications().empty());
+  histogram_tester.ExpectUniqueSample("Notifications.macOS.AttributionOutcome",
+                                      test_case.expected_outcome, 2);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    NotificationPlatformBridgeMacAttributionResultTest,
+    testing::Values(
+        AttributionResultTestCase{
+            "PermissionNotDetermined",
+            mac_notifications::mojom::DisplayNotificationResult::
+                kPermissionNotDetermined,
+            std::nullopt,
+            /*expect_fallback=*/true,
+            MacNotificationAttributionOutcome::kFallbackPermissionNotDetermined,
+        },
+        AttributionResultTestCase{
+            "PermissionPromptPending",
+            mac_notifications::mojom::DisplayNotificationResult::
+                kPermissionPromptPending,
+            std::nullopt,
+            /*expect_fallback=*/true,
+            MacNotificationAttributionOutcome::kFallbackPermissionPromptPending,
+        },
+        AttributionResultTestCase{
+            "PermissionImplicitlyDenied",
+            mac_notifications::mojom::DisplayNotificationResult::
+                kPermissionDenied,
+            AppShimRegistry::NotificationPermissionStatus::kImplicitlyDenied,
+            /*expect_fallback=*/true,
+            MacNotificationAttributionOutcome::
+                kFallbackPermissionImplicitlyDenied,
+        },
+        AttributionResultTestCase{
+            "PermissionExplicitlyDenied",
+            mac_notifications::mojom::DisplayNotificationResult::
+                kPermissionDenied,
+            AppShimRegistry::NotificationPermissionStatus::kExplicitlyDenied,
+            /*expect_fallback=*/false,
+            MacNotificationAttributionOutcome::kAttributedPermissionDenied,
+        },
+        AttributionResultTestCase{
+            "PermissionRevokedBeforeSync",
+            mac_notifications::mojom::DisplayNotificationResult::
+                kPermissionDenied,
+            AppShimRegistry::NotificationPermissionStatus::kGranted,
+            /*expect_fallback=*/false,
+            MacNotificationAttributionOutcome::kAttributedPermissionDenied,
+        },
+        AttributionResultTestCase{
+            "DeliveryFailed",
+            mac_notifications::mojom::DisplayNotificationResult::
+                kDeliveryFailed,
+            std::nullopt,
+            /*expect_fallback=*/false,
+            MacNotificationAttributionOutcome::kAttributedDeliveryFailed,
+        },
+        AttributionResultTestCase{
+            "ConnectionFailed",
+            mac_notifications::mojom::DisplayNotificationResult::
+                kConnectionFailed,
+            std::nullopt,
+            /*expect_fallback=*/true,
+            MacNotificationAttributionOutcome::kFallbackAppShimConnectionFailed,
+        },
+        AttributionResultTestCase{
+            "ConnectionFailedCachedGranted",
+            mac_notifications::mojom::DisplayNotificationResult::
+                kConnectionFailed,
+            AppShimRegistry::NotificationPermissionStatus::kGranted,
+            /*expect_fallback=*/true,
+            MacNotificationAttributionOutcome::kFallbackAppShimConnectionFailed,
+        },
+        AttributionResultTestCase{
+            "ConnectionFailedCachedExplicitlyDenied",
+            mac_notifications::mojom::DisplayNotificationResult::
+                kConnectionFailed,
+            AppShimRegistry::NotificationPermissionStatus::kExplicitlyDenied,
+            /*expect_fallback=*/false,
+            MacNotificationAttributionOutcome::
+                kAppShimConnectionFailedPermissionDenied,
+        }),
+    [](const testing::TestParamInfo<AttributionResultTestCase>& info) {
+      return info.param.test_name;
+    });
+
+TEST_F(NotificationPlatformBridgeMacTestWithNotificationAttribution,
+       FallbackCancelledWhenClosedBeforeReply) {
+  NotificationDispatcherMac::DisplayNotificationCallback display_callback;
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<Notification> banner =
+      CreateBanner("Title", "Context", "https://gmail.com", "Button 1", nullptr,
+                   installed_app_id_);
+  auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
+      CreateBannerDispatcher(), CreateAlertDispatcher(),
+      base::BindLambdaForTesting(
+          [&](const webapps::AppId&)
+              -> std::unique_ptr<NotificationDispatcherMac> {
+            auto dispatcher = std::make_unique<StubNotificationDispatcherMac>();
+            dispatcher->set_on_display_callback(base::BindLambdaForTesting(
+                [&](NotificationDispatcherMac::DisplayNotificationCallback cb) {
+                  display_callback = std::move(cb);
+                }));
+            return dispatcher;
+          }));
+  bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
+                  Notification("notification_id1", *banner), nullptr);
+  ASSERT_TRUE(display_callback);
+
+  // Close the notification before the app shim replies.
+  bridge->Close(profile(), "notification_id1");
+  std::move(display_callback)
+      .Run(mac_notifications::mojom::DisplayNotificationResult::
+               kPermissionNotDetermined);
+
+  EXPECT_TRUE(banner_dispatcher()->notifications().empty());
+  EXPECT_TRUE(alert_dispatcher()->notifications().empty());
+  histogram_tester.ExpectUniqueSample(
+      "Notifications.macOS.AttributionOutcome",
+      MacNotificationAttributionOutcome::kFallbackPermissionNotDetermined, 1);
 }
 
 TEST_F(NotificationPlatformBridgeMacTestWithNotificationAttribution,
@@ -705,6 +900,60 @@ TEST_F(NotificationPlatformBridgeMacTestWithNotificationAttribution,
     auto [notifications, supports_synchronization] = future.Get();
     EXPECT_EQ(1u, notifications.size());
     EXPECT_FALSE(supports_synchronization);
+  }
+}
+
+TEST_F(NotificationPlatformBridgeMacTestWithNotificationAttribution,
+       GetDisplayedForOriginIncludesPendingDisplay) {
+  NotificationDispatcherMac::DisplayNotificationCallback display_callback;
+  std::unique_ptr<Notification> banner =
+      CreateBanner("Title", "Context", "https://gmail.com", "Button 1", nullptr,
+                   installed_app_id_);
+  auto bridge = std::make_unique<NotificationPlatformBridgeMac>(
+      CreateBannerDispatcher(), CreateAlertDispatcher(),
+      base::BindLambdaForTesting(
+          [&](const webapps::AppId&)
+              -> std::unique_ptr<NotificationDispatcherMac> {
+            auto dispatcher = std::make_unique<StubNotificationDispatcherMac>();
+            dispatcher->set_on_display_callback(base::BindLambdaForTesting(
+                [&](NotificationDispatcherMac::DisplayNotificationCallback cb) {
+                  display_callback = std::move(cb);
+                }));
+            return dispatcher;
+          }));
+  bridge->Display(NotificationHandler::Type::WEB_PERSISTENT, profile(),
+                  Notification("notification_id1", *banner), nullptr);
+  ASSERT_TRUE(display_callback);
+
+  // While the attributed display is still in flight (neither in the app shim's
+  // delivered set nor yet fallen back to Chrome), GetDisplayedForOrigin for the
+  // matching origin should still include it.
+  {
+    base::test::TestFuture<std::set<std::string>, bool> future;
+    bridge->GetDisplayedForOrigin(profile(), GURL("https://gmail.com"),
+                                  future.GetCallback());
+    auto [notifications, supports_synchronization] = future.Get();
+    EXPECT_THAT(notifications, testing::ElementsAre("notification_id1"));
+    EXPECT_TRUE(supports_synchronization);
+  }
+  {
+    base::test::TestFuture<std::set<std::string>, bool> future;
+    bridge->GetDisplayedForOrigin(profile(), GURL("https://example.com"),
+                                  future.GetCallback());
+    auto [notifications, supports_synchronization] = future.Get();
+    EXPECT_TRUE(notifications.empty());
+    EXPECT_TRUE(supports_synchronization);
+  }
+
+  // Closing the in-flight notification removes it immediately.
+  bridge->Close(profile(), "notification_id1");
+  {
+    base::test::TestFuture<std::set<std::string>, bool> future;
+    bridge->GetDisplayedForOrigin(profile(), GURL("https://gmail.com"),
+                                  future.GetCallback());
+    auto [notifications, supports_synchronization] = future.Get();
+    EXPECT_TRUE(notifications.empty());
+    EXPECT_TRUE(supports_synchronization);
   }
 }
 
