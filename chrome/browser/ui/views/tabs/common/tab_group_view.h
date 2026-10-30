@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_collection_animating_layout_manager.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_z_order_manager.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_unfocus_button.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -21,7 +22,6 @@
 class TabCollectionNode;
 class TabGroupHeaderView;
 class TabGroupLineView;
-class TabGroupUnfocusButton;
 
 namespace tabs {
 class TabGroupDataObserver;
@@ -32,6 +32,7 @@ class TabGroupDataObserver;
 // for tab dragging.
 class TabGroupView : public TabCollectionZOrderManager,
                      public TabGroupHeaderView::Delegate,
+                     public TabGroupUnfocusButton::Delegate,
                      public DraggedTabsContainer,
                      public TabCollectionAnimatingLayoutManager::Delegate {
   METADATA_HEADER(TabGroupView, TabCollectionZOrderManager)
@@ -146,7 +147,10 @@ class TabGroupView : public TabCollectionZOrderManager,
   void OnDataChanged();
   void OnCollapseStateChanged(tabs::VerticalTabStripCollapseState state);
   void UpdateChildVisibilityForCollapseState(bool collapsed);
-  void ExitFocusMode();
+  void ExitFocusMode() override;
+
+  // Refreshes tab-count-dependent views of an ephemeral group.
+  void OnTabCountChanged();
 
   const TabStripOrientation orientation_;
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;

@@ -15,6 +15,7 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/tabs/tab_group_attention_indicator.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_unfocus_button.h"
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_tracker.h"
 #include "chrome/browser/ui/views/tabs/hovercard/hover_card_anchor_target.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
@@ -41,12 +42,11 @@ class Label;
 class View;
 }  // namespace views
 
-class TabGroupUnfocusButton;
-
 // View for tab group headers in the tab strip, which are markers of group
 // boundaries. There is one header for each group, which is included in the tab
 // strip flow and positioned left of the leftmost tab in the group.
 class TabGroupHeader : public TabSlotView,
+                       public TabGroupUnfocusButton::Delegate,
                        public views::ContextMenuController,
                        public views::ViewObserver,
                        public views::ViewTargeterDelegate,
@@ -76,6 +76,11 @@ class TabGroupHeader : public TabSlotView,
   TabSlotView::ViewType GetTabSlotViewType() const override;
   TabSizeInfo GetTabSizeInfo() const override;
   gfx::Rect GetAnchorBoundsInScreen() const override;
+
+  // TabGroupUnfocusButton::Delegate:
+  void ExitFocusMode() override;
+  bool IsValid() const override;
+  const TabGroup& GetTabGroup() const override;
 
   // HoverCardAnchorTarget:
   bool NeedsToShowThumbnail() const override;

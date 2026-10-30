@@ -69,13 +69,12 @@ std::u16string MakeICUFormattedTabTitleList(
   return base::i18n::UnicodeStringToString16(formatted);
 }
 
-}  // namespace
-
-std::u16string GetHoverCardAccessibilityText(const tabs::TabGroupData& data) {
+// Returns the comma-separated list describing the group's tabs, starting with
+// the tab count (e.g. "3 tabs, • Tab 1, • Tab 2, • Tab 3").
+std::u16string GetTabListString(const tabs::TabGroupData& data) {
   const int num_tabs = data.num_tabs_in_group;
   const auto& tab_data = data.tab_data;
 
-  // Prepare arguments for accessibility string, starting with the tab list.
   static constexpr int kAccessibleTabTitleMaxLength = 50;
   std::vector<std::u16string> formatted_titles;
   // First put an item to show the number of tabs.
@@ -97,17 +96,25 @@ std::u16string GetHoverCardAccessibilityText(const tabs::TabGroupData& data) {
     formatted_titles.emplace_back(remaining_string);
   }
 
-  std::u16string list_string = MakeICUFormattedTabTitleList(formatted_titles);
+  return MakeICUFormattedTabTitleList(formatted_titles);
+}
+
+std::u16string GetCollapsedStateString(const tabs::TabGroupData& data) {
+  return data.visual_data.is_collapsed()
+             ? l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_COLLAPSED)
+             : l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_EXPANDED);
+}
+
+}  // namespace
+
+std::u16string GetHoverCardAccessibilityText(const tabs::TabGroupData& data) {
+  const std::u16string list_string = GetTabListString(data);
+  const std::u16string collapsed_state = GetCollapsedStateString(data);
 
   std::u16string shared_state =
       data.is_sharing_group
           ? l10n_util::GetStringUTF16(IDS_SAVED_GROUP_AX_LABEL_SHARED)
           : u"";
-
-  std::u16string collapsed_state =
-      data.visual_data.is_collapsed()
-          ? l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_COLLAPSED)
-          : l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_EXPANDED);
 
   std::u16string group_title = data.visual_data.title();
 
@@ -120,6 +127,22 @@ std::u16string GetHoverCardAccessibilityText(const tabs::TabGroupData& data) {
         IDS_GROUP_AX_LABEL_NAMED_GROUP_FORMAT,
         {shared_state, group_title, list_string, collapsed_state}, nullptr);
   }
+}
+
+std::u16string GetFocusedGroupAccessibilityText(
+    const tabs::TabGroupData& data) {
+  // The base label starts with a space when the shared state is empty.
+  return l10n_util::GetStringFUTF16(
+      IDS_GROUP_AX_LABEL_FOCUSED_GROUP_FORMAT,
+      std::u16string(base::TrimWhitespace(GetHoverCardAccessibilityText(data),
+                                          base::TRIM_LEADING)));
+}
+
+std::u16string GetEphemeralGroupAccessibilityText(
+    const tabs::TabGroupData& data) {
+  return l10n_util::GetStringFUTF16(
+      IDS_GROUP_AX_LABEL_EPHEMERAL_GROUP_FORMAT,
+      {GetTabListString(data), GetCollapsedStateString(data)}, nullptr);
 }
 
 }  // namespace tab_groups

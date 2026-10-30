@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_style.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/tabs/public/tab_group.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -36,11 +37,13 @@ namespace {
 constexpr int kIconSize = 16;
 }  // namespace
 
-TabGroupUnfocusButton::TabGroupUnfocusButton(TabStripOrientation orientation,
-                                             base::RepeatingClosure callback)
+TabGroupUnfocusButton::TabGroupUnfocusButton(Delegate& delegate,
+                                             TabStripOrientation orientation)
     : views::LabelButton(
-          std::move(callback),
+          base::BindRepeating(&Delegate::ExitFocusMode,
+                              base::Unretained(&delegate)),
           l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_UNFOCUS_BUTTON)),
+      delegate_(delegate),
       orientation_(orientation) {
   SetAppearDisabledInInactiveWidget(false);
   SetProperty(views::kElementIdentifierKey, kUnfocusTabGroupButtonElementId);
@@ -52,6 +55,7 @@ TabGroupUnfocusButton::TabGroupUnfocusButton(TabStripOrientation orientation,
                 0, TabGroupStyle::GetInsetsForHeaderChip(orientation_).left());
   SetBorder(views::CreateEmptyBorder(insets));
   views::FocusRing::Install(this);
+  UpdateAccessibleName();
 }
 
 TabGroupUnfocusButton::~TabGroupUnfocusButton() = default;
@@ -156,8 +160,6 @@ void TabGroupUnfocusButton::UpdateCollapsedState() {
 void TabGroupUnfocusButton::UpdateTextAndIcon() {
   if (is_collapsed_) {
     SetText(std::u16string());
-    GetViewAccessibility().SetName(
-        l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_UNFOCUS_BUTTON));
     SetImageModel(views::Button::STATE_NORMAL,
                   ui::ImageModel::FromVectorIcon(
                       kFilterTiltShiftIcon, GetForegroundColor(), kIconSize));
@@ -165,6 +167,21 @@ void TabGroupUnfocusButton::UpdateTextAndIcon() {
     SetText(l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_UNFOCUS_BUTTON));
     SetImageModel(views::Button::STATE_NORMAL, ui::ImageModel());
   }
+  // SetText() resets the accessible name, so re-apply it.
+  UpdateAccessibleName();
+}
+
+void TabGroupUnfocusButton::UpdateAccessibleName() {
+  if (!delegate_->IsValid()) {
+    return;
+  }
+  GetViewAccessibility().SetName(
+      delegate_->GetTabGroup().is_ephemeral()
+          ? l10n_util::GetPluralStringFUTF16(
+                IDS_TAB_GROUP_HEADER_UNFOCUS_BUTTON_EPHEMERAL_AX_LABEL,
+                delegate_->GetTabGroup().tab_count())
+          : l10n_util::GetStringUTF16(
+                IDS_TAB_GROUP_HEADER_UNFOCUS_BUTTON_AX_LABEL));
 }
 
 void TabGroupUnfocusButton::OnThemeChanged() {

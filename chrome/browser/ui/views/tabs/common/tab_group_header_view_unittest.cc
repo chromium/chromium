@@ -37,9 +37,13 @@
 
 namespace {
 
-class MockDelegate : public TabGroupHeaderView::Delegate {
+class MockDelegate : public TabGroupHeaderView::Delegate,
+                     public TabGroupUnfocusButton::Delegate {
  public:
   MockDelegate() {
+    ON_CALL(*this, IsValid).WillByDefault(testing::Return(true));
+    ON_CALL(*this, GetTabGroup)
+        .WillByDefault(testing::ReturnRef(default_tab_group_));
     ON_CALL(*this, GetTabClosingHelper).WillByDefault(testing::Return(nullptr));
     ON_CALL(*this, CanShowEditorBubbleButton)
         .WillByDefault(testing::Return(true));
@@ -52,6 +56,7 @@ class MockDelegate : public TabGroupHeaderView::Delegate {
               ShowGroupEditorBubble,
               (bool),
               (override));
+  MOCK_METHOD(void, ExitFocusMode, (), (override));
   MOCK_METHOD(bool, IsValid, (), (const, override));
   MOCK_METHOD(void, InitHeaderDrag, (const ui::LocatedEvent&), (override));
   MOCK_METHOD(bool, ContinueHeaderDrag, (const ui::LocatedEvent&), (override));
@@ -81,6 +86,11 @@ class MockDelegate : public TabGroupHeaderView::Delegate {
               GetTabClosingHelper,
               (),
               (const, override));
+
+ private:
+  tabs::MockTabGroup default_tab_group_{nullptr,
+                                        tab_groups::TabGroupId::GenerateNew(),
+                                        tab_groups::TabGroupVisualData()};
 };
 
 int GetPlatformDependentAccelerator() {
@@ -370,6 +380,89 @@ TEST_F(TabGroupHeaderViewTest, HoverCardAccessibilityText_OneTab) {
 #endif
 
   EXPECT_EQ(header->GetViewAccessibility().GetCachedName(), expected_acc_text);
+}
+
+TEST_F(TabGroupHeaderViewTest, AccessibleNameWhenGroupFocused) {
+  MockDelegate delegate;
+  ON_CALL(delegate, IsGroupFocused()).WillByDefault(testing::Return(true));
+  tab_groups::TabGroupVisualData visual_data(
+      u"Group Title", tab_groups::TabGroupColorId::kBlue, false);
+
+  auto header = std::make_unique<TabGroupHeaderView>(
+      delegate, TabStripOrientation::kVertical, nullptr, &visual_data);
+
+  tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
+  tabs::MockTabGroup mock_tab_group(nullptr, group_id, visual_data);
+  EXPECT_CALL(delegate, GetTabGroup())
+      .WillRepeatedly(testing::ReturnRef(mock_tab_group));
+
+  tabs::TabGroupData data;
+  data.visual_data = visual_data;
+  data.num_tabs_in_group = 1;
+  tabs::TabGroupTabData tab;
+  tab.title = u"Tab 1";
+  tab.last_committed_url = GURL("https://google.com");
+  data.tab_data.push_back(tab);
+  EXPECT_CALL(delegate, GetTabGroupData())
+      .WillRepeatedly(testing::ReturnRef(data));
+  header->OnDataChanged(data);
+
+  // "Focused on" prefix, with the base label's leading space trimmed.
+#if BUILDFLAG(IS_MAC)
+  const std::u16string expected_acc_text =
+      u"Focused on group Group Title - 1 Tab, \u2022  Tab 1 - Expanded";
+#else
+  const std::u16string expected_acc_text =
+      u"Focused on group Group Title - 1 tab, \u2022  Tab 1 - Expanded";
+#endif
+  EXPECT_EQ(header->GetViewAccessibility().GetCachedName(), expected_acc_text);
+}
+
+TEST_F(TabGroupHeaderViewTest, AccessibleNameForEphemeralGroup) {
+  MockDelegate delegate;
+  ON_CALL(delegate, IsValid()).WillByDefault(testing::Return(true));
+  ON_CALL(delegate, IsGroupFocused()).WillByDefault(testing::Return(true));
+  tab_groups::TabGroupVisualData visual_data(
+      u"", tab_groups::TabGroupColorId::kGrey, false);
+
+  auto header = std::make_unique<TabGroupHeaderView>(
+      delegate, TabStripOrientation::kVertical, nullptr, &visual_data);
+
+  tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
+  tabs::MockTabGroup mock_tab_group(nullptr, group_id, visual_data);
+  mock_tab_group.SetIsEphemeral(true);
+  mock_tab_group.AddTab();
+  EXPECT_CALL(delegate, GetTabGroup())
+      .WillRepeatedly(testing::ReturnRef(mock_tab_group));
+
+  tabs::TabGroupData data;
+  data.visual_data = visual_data;
+  data.num_tabs_in_group = 1;
+  tabs::TabGroupTabData tab;
+  tab.title = u"Tab 1";
+  tab.last_committed_url = GURL("https://google.com");
+  data.tab_data.push_back(tab);
+  EXPECT_CALL(delegate, GetTabGroupData())
+      .WillRepeatedly(testing::ReturnRef(data));
+  header->OnDataChanged(data);
+
+  // Ephemeral group: describes the tabs, with a custom role description.
+#if BUILDFLAG(IS_MAC)
+  const std::u16string expected_acc_text =
+      u"Focused on 1 Tab, \u2022  Tab 1 - Expanded";
+#else
+  const std::u16string expected_acc_text =
+      u"Focused on 1 tab, \u2022  Tab 1 - Expanded";
+#endif
+  EXPECT_EQ(header->GetViewAccessibility().GetCachedName(), expected_acc_text);
+  EXPECT_EQ(
+      header->GetViewAccessibility().GetRoleDescription(),
+      l10n_util::GetStringUTF16(IDS_GROUP_AX_ROLE_DESCRIPTION_EPHEMERAL_GROUP));
+
+  // Converting to a regular group drops the role description.
+  mock_tab_group.SetIsEphemeral(false);
+  header->OnDataChanged(data);
+  EXPECT_TRUE(header->GetViewAccessibility().GetRoleDescription().empty());
 }
 
 TEST_F(TabGroupHeaderViewTest, HoverCardAccessibilityText_FiveTabs) {
@@ -848,14 +941,17 @@ TEST_F(TabGroupHeaderViewTest, AcquiresHoverCardHideLockWhenEditorBubbleOpens) {
 }
 
 TEST_F(TabGroupHeaderViewTest, UnfocusButtonCollapsedState) {
+  MockDelegate delegate;
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   auto* button =
       widget->SetContentsView(std::make_unique<TabGroupUnfocusButton>(
-          TabStripOrientation::kVertical, base::DoNothing()));
+          delegate, TabStripOrientation::kVertical));
 
   const std::u16string expected_text =
       l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_UNFOCUS_BUTTON);
+  const std::u16string expected_ax_name =
+      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_UNFOCUS_BUTTON_AX_LABEL);
   const int collapsed_width =
       tabs::kVerticalTabStripCollapsedWidth -
       2 * GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding);
@@ -864,17 +960,62 @@ TEST_F(TabGroupHeaderViewTest, UnfocusButtonCollapsedState) {
   button->SetBounds(0, 0, collapsed_width + 20, 24);
   EXPECT_EQ(button->GetText(), expected_text);
   EXPECT_FALSE(button->GetImageModel(views::Button::STATE_NORMAL).has_value());
+  EXPECT_EQ(button->GetViewAccessibility().GetCachedName(), expected_ax_name);
 
   // Collapsed width: clears text, shows icon, and preserves accessible name.
   button->SetBounds(0, 0, collapsed_width, 24);
   EXPECT_TRUE(button->GetText().empty());
   ASSERT_TRUE(button->GetImageModel(views::Button::STATE_NORMAL).has_value());
   EXPECT_FALSE(button->GetImageModel(views::Button::STATE_NORMAL)->IsEmpty());
-  EXPECT_EQ(button->GetViewAccessibility().GetCachedName(), expected_text);
+  EXPECT_EQ(button->GetViewAccessibility().GetCachedName(), expected_ax_name);
 
   // Expanding again restores text and clears icon.
   button->SetBounds(0, 0, collapsed_width + 20, 24);
   EXPECT_EQ(button->GetText(), expected_text);
   ASSERT_TRUE(button->GetImageModel(views::Button::STATE_NORMAL).has_value());
   EXPECT_TRUE(button->GetImageModel(views::Button::STATE_NORMAL)->IsEmpty());
+  EXPECT_EQ(button->GetViewAccessibility().GetCachedName(), expected_ax_name);
+}
+
+TEST_F(TabGroupHeaderViewTest, UnfocusButtonAccessibleName) {
+  MockDelegate delegate;
+  tab_groups::TabGroupVisualData visual_data(
+      u"", tab_groups::TabGroupColorId::kGrey, false);
+  tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
+  tabs::MockTabGroup mock_tab_group(nullptr, group_id, visual_data);
+  mock_tab_group.AddTab();
+  EXPECT_CALL(delegate, GetTabGroup())
+      .WillRepeatedly(testing::ReturnRef(mock_tab_group));
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* button =
+      widget->SetContentsView(std::make_unique<TabGroupUnfocusButton>(
+          delegate, TabStripOrientation::kHorizontal));
+  const std::u16string group_name =
+      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_UNFOCUS_BUTTON_AX_LABEL);
+
+  // Regular group: "Unfocus tab group".
+  EXPECT_EQ(button->GetViewAccessibility().GetCachedName(), group_name);
+
+  // Ephemeral group: "Unfocus tab" / "Unfocus tabs".
+  mock_tab_group.SetIsEphemeral(true);
+  button->UpdateAccessibleName();
+  EXPECT_EQ(button->GetViewAccessibility().GetCachedName(),
+            l10n_util::GetPluralStringFUTF16(
+                IDS_TAB_GROUP_HEADER_UNFOCUS_BUTTON_EPHEMERAL_AX_LABEL, 1));
+  mock_tab_group.AddTab();
+  mock_tab_group.AddTab();
+  button->UpdateAccessibleName();
+  EXPECT_EQ(button->GetViewAccessibility().GetCachedName(),
+            l10n_util::GetPluralStringFUTF16(
+                IDS_TAB_GROUP_HEADER_UNFOCUS_BUTTON_EPHEMERAL_AX_LABEL, 3));
+
+  // The visible text never changes.
+  EXPECT_EQ(button->GetText(),
+            l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_UNFOCUS_BUTTON));
+
+  mock_tab_group.SetIsEphemeral(false);
+  button->UpdateAccessibleName();
+  EXPECT_EQ(button->GetViewAccessibility().GetCachedName(), group_name);
 }

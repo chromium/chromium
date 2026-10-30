@@ -84,10 +84,8 @@ TabGroupView::TabGroupView(TabCollectionNode* collection_node)
       tab_group_visual_data_(
           *GetTabGroupFromNode(collection_node_)->visual_data()),
       is_ephemeral_(GetTabGroupFromNode(collection_node_)->is_ephemeral()),
-      unfocus_header_(AddChildView(std::make_unique<TabGroupUnfocusButton>(
-          orientation_,
-          base::BindRepeating(&TabGroupView::ExitFocusMode,
-                              base::Unretained(this))))),
+      unfocus_header_(AddChildView(
+          std::make_unique<TabGroupUnfocusButton>(*this, orientation_))),
       group_header_(AddChildView(std::make_unique<TabGroupHeaderView>(
           *this,
           orientation_,
@@ -300,9 +298,7 @@ void TabGroupView::AttachChildView(std::unique_ptr<views::View> child_view,
   }
   layout_manager_->AnimateAndReparentView(std::move(child_view),
                                           previous_bounds_in_screen);
-  if (IsValid() && GetTabGroup().is_ephemeral()) {
-    group_header_->OnTabCountChanged();
-  }
+  OnTabCountChanged();
 }
 
 std::unique_ptr<views::View> TabGroupView::DetachChildView(
@@ -313,10 +309,18 @@ std::unique_ptr<views::View> TabGroupView::DetachChildView(
     child_view->SetVisible(true);
   }
   auto removed = RemoveChildViewT(child_view);
-  if (IsValid() && GetTabGroup().is_ephemeral()) {
-    group_header_->OnTabCountChanged();
-  }
+  OnTabCountChanged();
   return removed;
+}
+
+void TabGroupView::OnTabCountChanged() {
+  if (!IsValid() || !GetTabGroup().is_ephemeral()) {
+    return;
+  }
+  group_header_->OnTabCountChanged();
+  if (unfocus_header_) {
+    unfocus_header_->UpdateAccessibleName();
+  }
 }
 
 void TabGroupView::ResetCollectionNode() {
@@ -345,6 +349,7 @@ void TabGroupView::OnDataChanged() {
     unfocus_header_->SetVisible(IsGroupFocused());
     unfocus_header_->SetGroupColorData(tab_group_visual_data_.color(),
                                        is_ephemeral_);
+    unfocus_header_->UpdateAccessibleName();
   }
   group_header_->OnDataChanged(tab_group_data);
 

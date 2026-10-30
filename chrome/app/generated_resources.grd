@@ -13145,6 +13145,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_TAB_GROUP_HEADER_UNFOCUS_BUTTON" desc="The label for the unfocus button header attached to a focused tab group.">
         Unfocus
       </message>
+      <message name="IDS_TAB_GROUP_HEADER_UNFOCUS_BUTTON_AX_LABEL" is_accessibility_with_no_ui="true" desc="Screen reader label for the unfocus button of a focused tab group.">
+        Unfocus tab group
+      </message>
+      <message name="IDS_TAB_GROUP_HEADER_UNFOCUS_BUTTON_EPHEMERAL_AX_LABEL" is_accessibility_with_no_ui="true" desc="Screen reader label for the unfocus button of an ephemeral tab group, i.e. focused tabs that are not in a real group. [ICU Syntax]">
+        {NUM_TABS, plural, =1 {Unfocus tab} other {Unfocus tabs}}
+      </message>
       <message name="IDS_TAB_GROUP_FOCUS_EXITED_TOAST_BODY" desc="Text shown in a toast when focus mode is exited because a tab outside of the focused tab group was activated.">
         Unfocused tab group
       </message>
@@ -17379,6 +17385,15 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_GROUP_AX_LABEL_NAMED_GROUP_FORMAT" desc="Spoken by screen readers when a tab group header that has been named by the user gets focused but is not visually rendered. Example: 'Group MyGroupName - Google Search and 3 other tabs - Collapsed'">
        <ph name="SHARE_STATE">$1<ex>Shared</ex></ph> group <ph name="GROUP_NAME">$2</ph> - <ph name="GROUP_CONTENTS">$3<ex>Google Search and 3 other tabs</ex></ph> - <ph name="COLLAPSED_STATE">$4</ph>
+      </message>
+      <message name="IDS_GROUP_AX_LABEL_FOCUSED_GROUP_FORMAT" is_accessibility_with_no_ui="true" desc="Spoken by screen readers when the header of a tab group in focus mode gets focused. Wraps the regular group header label. Example: 'Focused on group MyGroupName - Google Search and 3 other tabs - Expanded'">
+        Focused on <ph name="GROUP_LABEL">$1<ex>group MyGroupName - Google Search and 3 other tabs - Expanded</ex></ph>
+      </message>
+      <message name="IDS_GROUP_AX_LABEL_EPHEMERAL_GROUP_FORMAT" is_accessibility_with_no_ui="true" desc="Spoken by screen readers when the header of an ephemeral tab group (focused tabs that are not in a real group) gets focused. Example: 'Focused on 2 tabs, Google Search, Gmail - Expanded'">
+        Focused on <ph name="GROUP_CONTENTS">$1<ex>2 tabs, Google Search, Gmail</ex></ph> - <ph name="COLLAPSED_STATE">$2<ex>Expanded</ex></ph>
+      </message>
+      <message name="IDS_GROUP_AX_ROLE_DESCRIPTION_EPHEMERAL_GROUP" is_accessibility_with_no_ui="true" desc="Spoken by screen readers in place of the control type (e.g. 'tab group') for the header of an ephemeral tab group (focused tabs that are not in a real group).">
+        Focus Selection Header
       </message>
       <message name="IDS_GROUP_AX_LABEL_COLLAPSED" desc="Used as part of the accessibility label text of a group header for a collapsed tab group.">
         Collapsed

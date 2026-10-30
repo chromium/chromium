@@ -580,6 +580,7 @@ void TabGroupHeaderView::OnTabCountChanged() {
     const int tab_count = delegate_->GetTabGroup().tab_count();
     group_header_label_->SetText(l10n_util::GetPluralStringFUTF16(
         IDS_TAB_GROUP_HEADER_EPHEMERAL_TAB_COUNT, tab_count));
+    UpdateAccessibleName();
   }
 }
 
@@ -611,8 +612,22 @@ void TabGroupHeaderView::UpdateAttentionState(bool needs_attention) {
 }
 
 void TabGroupHeaderView::UpdateAccessibleName() {
+  if (!delegate_->IsValid()) {
+    return;
+  }
+  const tabs::TabGroupData& data = delegate_->GetTabGroupData();
+  if (delegate_->GetTabGroup().is_ephemeral()) {
+    GetViewAccessibility().SetName(
+        tab_groups::GetEphemeralGroupAccessibilityText(data));
+    GetViewAccessibility().SetRoleDescription(l10n_util::GetStringUTF16(
+        IDS_GROUP_AX_ROLE_DESCRIPTION_EPHEMERAL_GROUP));
+    return;
+  }
+  GetViewAccessibility().RemoveRoleDescription();
   GetViewAccessibility().SetName(
-      tab_groups::GetHoverCardAccessibilityText(delegate_->GetTabGroupData()));
+      delegate_->IsGroupFocused()
+          ? tab_groups::GetFocusedGroupAccessibilityText(data)
+          : tab_groups::GetHoverCardAccessibilityText(data));
 }
 
 SkColor TabGroupHeaderView::GetBackgroundColor() const {

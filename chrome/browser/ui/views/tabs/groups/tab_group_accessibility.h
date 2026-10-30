@@ -22,6 +22,14 @@ std::u16string GetGroupContentString(const TabGroup* tab_group);
 // Returns the accessibility text for the tab group hover card.
 std::u16string GetHoverCardAccessibilityText(const tabs::TabGroupData& data);
 
+// Like GetHoverCardAccessibilityText(), for a group that is in focus mode.
+std::u16string GetFocusedGroupAccessibilityText(const tabs::TabGroupData& data);
+
+// Like GetHoverCardAccessibilityText(), for an ephemeral group. The text
+// describes the focused tabs rather than a group.
+std::u16string GetEphemeralGroupAccessibilityText(
+    const tabs::TabGroupData& data);
+
 }  // namespace tab_groups
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_GROUPS_TAB_GROUP_ACCESSIBILITY_H_
