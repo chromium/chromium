@@ -5,6 +5,7 @@
 #include "net/cert/test_root_certs.h"
 
 #include "base/files/file_path.h"
+#include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
@@ -78,6 +79,9 @@ class TestRootCertsTest : public testing::TestWithParam<bool> {
   // where CHROME_ROOT_STORE_OPTIONAL is set; on other platforms both test
   // params will run the same test.
   bool use_chrome_cert_validator() { return GetParam(); }
+
+ private:
+  base::test::TaskEnvironment task_environment_;
 };
 
 // Test basic functionality when adding from an existing X509Certificate.

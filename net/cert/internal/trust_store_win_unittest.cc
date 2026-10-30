@@ -9,17 +9,25 @@
 #include <wincrypt.h>
 
 #include <algorithm>
+#include <atomic>
 #include <memory>
 #include <string_view>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/containers/to_vector.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/threading/platform_thread.h"
+#include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "crypto/scoped_capi_types.h"
 #include "net/base/features.h"
@@ -467,17 +475,15 @@ TEST_F(TrustStoreWinTest, GetAllUserAddedCerts) {
 // level. This ensures dynamic updates without restarting the process.
 //
 // This test validates the complete event-driven certificate monitoring
-// pipeline:
+// pipeline against the real OS stores:
 // 1. CERT_STORE_CTRL_NOTIFY_CHANGE API integration for Windows store changes
-// 2. RegisterWaitForSingleObject with WT_EXECUTEONLYONCE for one-shot callbacks
+// 2. The watch on the change event, and its re-arming after each change
 // 3. CertDatabase::Observer notification propagation to Chrome components
-// 4. Explicit re-registration after resync to detect subsequent modifications
-// 5. Cache invalidation and resync behavior for all public API methods
+// 4. Rebuilding and republishing the store snapshot on the next access
 //
 // The test performs certificate addition and removal operations while
-// monitoring the notification count to ensure each Windows API store change
-// triggers exactly one callback, followed by explicit re-registration in
-// EnsureStoresAreSynced() for the next change detection cycle.
+// monitoring the notification count to ensure each batch of store changes is
+// coalesced into exactly one notification.
 //
 // WARNING: This test modifies the OS trust store. If it fails to clean up
 // after itself, your system may be left in an insecure state. To verify it
@@ -496,14 +502,12 @@ TEST_F(TrustStoreWinTest, GetAllUserAddedCerts) {
 // to validate end-to-end synchronization behavior.
 TEST_F(TrustStoreWinTest, MANUAL_AutoSyncCertStores) {
   // Create notification observer to track CertDatabase events triggered by
-  // CertStoreChangeNotifier's CERT_STORE_CTRL_NOTIFY_CHANGE callbacks.
+  // the CERT_STORE_CTRL_NOTIFY_CHANGE registrations.
   CertStoreNotificationObserver notification_observer;
 
   // Create a real TrustStoreWin that connects to actual Windows system stores.
-  // This sets up certificate monitoring with CERT_STORE_CTRL_NOTIFY_CHANGE
-  // and RegisterWaitForSingleObject using WT_EXECUTEONLYONCE, which fires
-  // exactly one callback per registration and requires explicit re-registration
-  // after each change is processed.
+  // This sets up certificate monitoring with CERT_STORE_CTRL_NOTIFY_CHANGE and
+  // a watch on the resulting change event.
   auto trust_store_win = std::make_unique<TrustStoreWin>();
   trust_store_win->InitializeStores();
 
@@ -526,10 +530,10 @@ TEST_F(TrustStoreWinTest, MANUAL_AutoSyncCertStores) {
   EXPECT_EQ(0, notification_observer.trust_store_notifications());
 
   // This test twice performs operations that should trigger notifications.
-  // After each change, EnsureStoresAreSynced() is called which:
-  // 1. Resets the manual-reset event
-  // 2. Calls CERT_STORE_CTRL_RESYNC to sync stores
-  // 3. Re-registers via RegisterWaitForChangeNotification() for the next change
+  // For each change, the monitor:
+  // 1. Resets the manual-reset event and re-arms the watch
+  // 2. Coalesces the burst of signals and marks the snapshot stale
+  // 3. Causes the next trust store access to build and publish a new snapshot
   // This verifies the complete lifecycle works across multiple iterations.
   for (int iteration = 0; iteration < 2; ++iteration) {
     int notifications_before_cert_add =
@@ -537,7 +541,7 @@ TEST_F(TrustStoreWinTest, MANUAL_AutoSyncCertStores) {
 
     // Create multiple test certificates to test debouncing behavior.
     // Adding multiple certs before accessing the trust store should result
-    // in only one notification due to WT_EXECUTEONLYONCE.
+    // in only one notification, because the monitor coalesces bursts.
     constexpr int kNumCertsToAdd = 3;
     std::vector<std::shared_ptr<const bssl::ParsedCertificate>> test_certs;
     std::vector<crypto::ScopedPCCERT_CONTEXT> test_cert_contexts;
@@ -575,9 +579,9 @@ TEST_F(TrustStoreWinTest, MANUAL_AutoSyncCertStores) {
     notification_observer.set_on_notification_callback(
         add_run_loop.QuitClosure());
 
-    // Add all certificates. Due to WT_EXECUTEONLYONCE, only one notification
-    // should be triggered regardless of how many certs are added before
-    // accessing the trust store.
+    // Add all certificates. The burst of change signals is coalesced, so only
+    // one notification should be triggered regardless of how many certs are
+    // added before accessing the trust store.
     for (int cert_index = 0; cert_index < kNumCertsToAdd; ++cert_index) {
       BOOL add_result = CertAddCertificateContextToStore(
           system_root_store.get(), test_cert_contexts[cert_index].get(),
@@ -607,24 +611,23 @@ TEST_F(TrustStoreWinTest, MANUAL_AutoSyncCertStores) {
     add_run_loop.Run();
 
     // Verify exactly one notification was received despite adding multiple
-    // certs. This tests the WT_EXECUTEONLYONCE debouncing behavior.
+    // certs. This tests the coalescing behavior.
     EXPECT_EQ(notification_observer.trust_store_notifications(),
               notifications_before_cert_add + 1)
-        << "Expected exactly 1 notification from WT_EXECUTEONLYONCE callback "
-        << "despite adding " << kNumCertsToAdd << " certificates";
+        << "Expected exactly 1 coalesced notification despite adding "
+        << kNumCertsToAdd << " certificates";
 
     // Verify all certificates are trusted via GetTrust (validates cache
     // invalidation and auto-sync). This is the first access after the store
-    // changes, so it triggers EnsureStoresAreSynced() which resets the event,
-    // resyncs via CERT_STORE_CTRL_RESYNC, and re-registers the wait callback.
+    // changes, so it builds and publishes a fresh snapshot of the stores.
     for (const auto& test_cert : test_certs) {
       EXPECT_EQ(ExpectedTrustForAnchor().ToDebugString(),
                 trust_store_win->GetTrust(test_cert.get()).ToDebugString());
     }
 
-    // Test removal (validates that re-registration worked).
-    // The wait callback was re-registered after the add operation above, so
-    // removing certs should trigger exactly one more notification.
+    // Test removal (validates that the watch was re-armed).
+    // The watch was re-armed after the add operation above, so removing certs
+    // should trigger exactly one more notification.
     int notifications_before_cert_remove =
         notification_observer.trust_store_notifications();
 
@@ -651,8 +654,8 @@ TEST_F(TrustStoreWinTest, MANUAL_AutoSyncCertStores) {
     // certs.
     EXPECT_EQ(notification_observer.trust_store_notifications(),
               notifications_before_cert_remove + 1)
-        << "Expected exactly 1 notification from WT_EXECUTEONLYONCE callback "
-        << "despite removing " << kNumCertsToAdd << " certificates";
+        << "Expected exactly 1 coalesced notification despite removing "
+        << kNumCertsToAdd << " certificates";
 
     // Verify certificates are no longer trusted after removal and resync.
     for (const auto& test_cert : test_certs) {
@@ -664,6 +667,104 @@ TEST_F(TrustStoreWinTest, MANUAL_AutoSyncCertStores) {
   int total_notifications = notification_observer.trust_store_notifications();
   EXPECT_EQ(total_notifications, 4)
       << "Expected 4 notifications (2 batch adds + 2 batch removes)";
+}
+
+// Restores the default change debounce delay on destruction, so that tests
+// which force refreshes do not have to wait out the production delay.
+class ScopedShortChangeDebounceDelay {
+ public:
+  ScopedShortChangeDebounceDelay()
+      : previous_delay_(TrustStoreWin::SetChangeDebounceDelayForTesting(
+            base::Milliseconds(1))) {}
+
+  ~ScopedShortChangeDebounceDelay() {
+    TrustStoreWin::SetChangeDebounceDelayForTesting(previous_delay_);
+  }
+
+ private:
+  const base::TimeDelta previous_delay_;
+};
+
+// Signaling the certificate store change event must notify observers and
+// cause the next access to publish a freshly built snapshot. Unlike
+// MANUAL_AutoSyncCertStores this does not touch the OS trust store, so it can
+// run on the bots.
+TEST_F(TrustStoreWinTest, StoreChangeEventTriggersRefresh) {
+  ScopedShortChangeDebounceDelay short_delay;
+  CertStoreNotificationObserver notification_observer;
+
+  TrustStoreWin trust_store_win;
+  trust_store_win.InitializeStores();
+
+  HANDLE change_event = trust_store_win.GetChangeEventForTesting();
+  ASSERT_NE(nullptr, change_event);
+
+  base::RunLoop run_loop;
+  notification_observer.set_on_notification_callback(run_loop.QuitClosure());
+  ASSERT_TRUE(::SetEvent(change_event));
+  run_loop.Run();
+
+  EXPECT_EQ(1, notification_observer.trust_store_notifications());
+
+  // The refresh must not have broken the store: reads still work, and the
+  // watch must have been re-armed so that a second change is also seen.
+  EXPECT_EQ(bssl::CertificateTrust::ForUnspecified().ToDebugString(),
+            trust_store_win.GetTrust(d_by_d_.get()).ToDebugString());
+
+  base::RunLoop second_run_loop;
+  notification_observer.set_on_notification_callback(
+      second_run_loop.QuitClosure());
+  ASSERT_TRUE(::SetEvent(change_event));
+  second_run_loop.Run();
+
+  EXPECT_EQ(2, notification_observer.trust_store_notifications());
+}
+
+// Readers must be able to run concurrently with a refresh. Before the stores
+// were made immutable, a refresh mutated stores that other threads were
+// enumerating, which is a use-after-free inside crypt32 that ASAN reports as
+// an access violation on a freed certificate element.
+TEST_F(TrustStoreWinTest, ConcurrentReadsDuringRefresh) {
+  ScopedShortChangeDebounceDelay short_delay;
+  TrustStoreWin trust_store_win;
+  trust_store_win.InitializeStores();
+
+  HANDLE change_event = trust_store_win.GetChangeEventForTesting();
+  ASSERT_NE(nullptr, change_event);
+
+  std::atomic<bool> stop{false};
+  std::vector<std::shared_ptr<const bssl::ParsedCertificate>> certs = {
+      a_by_b_, b_by_c_, c_by_d_, d_by_d_, e_by_e_};
+
+  std::vector<std::unique_ptr<base::Thread>> readers;
+  for (int i = 0; i < 4; ++i) {
+    auto thread = std::make_unique<base::Thread>(
+        base::StrCat({"reader", base::NumberToString(i)}));
+    ASSERT_TRUE(thread->Start());
+    thread->task_runner()->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          while (!stop.load(std::memory_order_relaxed)) {
+            for (const auto& cert : certs) {
+              trust_store_win.GetTrust(cert.get());
+              bssl::ParsedCertificateList issuers;
+              trust_store_win.SyncGetIssuersOf(cert.get(), &issuers);
+            }
+            trust_store_win.GetAllUserAddedCerts();
+          }
+        }));
+    readers.push_back(std::move(thread));
+  }
+
+  // Force many refreshes while the readers are enumerating the stores.
+  for (int i = 0; i < 50; ++i) {
+    ASSERT_TRUE(::SetEvent(change_event));
+    base::PlatformThread::Sleep(base::Milliseconds(20));
+  }
+
+  stop.store(true, std::memory_order_relaxed);
+  for (auto& thread : readers) {
+    thread->Stop();
+  }
 }
 
 }  // namespace

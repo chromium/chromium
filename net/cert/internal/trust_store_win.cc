@@ -5,21 +5,29 @@
 #include "net/cert/internal/trust_store_win.h"
 
 #include <algorithm>
+#include <atomic>
 #include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
+#include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
-#include "base/synchronization/waitable_event.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
+#include "base/win/object_watcher.h"
+#include "base/win/scoped_handle.h"
 #include "crypto/obsolete/sha1.h"
-#include "net/base/features.h"
 #include "net/cert/cert_database.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_win.h"
@@ -49,6 +57,17 @@ bssl::CertificateTrust RootCertTrust() {
 // self-signed).
 bssl::CertificateTrust TrustedPeopleTrust() {
   return bssl::CertificateTrust::ForTrustedLeaf().WithRequireLeafSelfSigned();
+}
+
+// A single logical certificate store change (an enterprise policy refresh, for
+// instance) typically signals the change event several times in quick
+// succession, once per affected physical store. Waiting for the event to stay
+// quiet for this long coalesces such a burst into one refresh.
+constexpr base::TimeDelta kDefaultStoreChangeDebounceDelay = base::Seconds(1);
+
+std::atomic<base::TimeDelta>& StoreChangeDebounceDelay() {
+  static std::atomic<base::TimeDelta> delay{kDefaultStoreChangeDebounceDelay};
+  return delay;
 }
 
 // Returns true if the cert can be used for server authentication, based on
@@ -187,10 +206,106 @@ void TrustStoreWin::CertStores::InitializeAllCertsStore() {
   }
 }
 
-class TrustStoreWin::Impl {
+class TrustStoreWin::ChangeMonitor
+    : public base::RefCountedDeleteOnSequence<TrustStoreWin::ChangeMonitor>,
+      public base::win::ObjectWatcher::Delegate {
  public:
-  // Creates a TrustStoreWin.
-  Impl() {
+  // Returns null if the change event could not be created, in which case the
+  // caller simply does not monitor for changes.
+  static scoped_refptr<ChangeMonitor> Create() {
+    scoped_refptr<base::SequencedTaskRunner> task_runner =
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
+    auto monitor = base::MakeRefCounted<ChangeMonitor>(task_runner);
+    if (!monitor->event_.is_valid()) {
+      return nullptr;
+    }
+    // `watcher_` is sequence-affine, so every operation on it, including its
+    // destruction, happens on `task_runner`.
+    task_runner->PostTask(
+        FROM_HERE, base::BindOnce(&ChangeMonitor::StartWatching, monitor));
+    return monitor;
+  }
+
+  explicit ChangeMonitor(scoped_refptr<base::SequencedTaskRunner> task_runner)
+      : base::RefCountedDeleteOnSequence<ChangeMonitor>(std::move(task_runner)),
+        debounce_delay_(
+            StoreChangeDebounceDelay().load(std::memory_order_relaxed)),
+        event_(::CreateEvent(/*lpEventAttributes=*/nullptr,
+                             /*bManualReset=*/TRUE,
+                             /*bInitialState=*/FALSE,
+                             /*lpName=*/nullptr)) {
+    if (!event_.is_valid()) {
+      PLOG(ERROR) << "Failed to create certificate store change event";
+    }
+  }
+
+  ChangeMonitor(const ChangeMonitor& other) = delete;
+  ChangeMonitor& operator=(const ChangeMonitor& other) = delete;
+
+  // The event stays open for as long as any reference is held, which includes
+  // every Impl whose stores are registered against it. It is therefore never
+  // closed while Windows may still signal it.
+  HANDLE event() const { return event_.get(); }
+
+  // Safe to call from any sequence.
+  bool stores_are_stale() const {
+    return stores_are_stale_.load(std::memory_order_acquire);
+  }
+  void clear_stores_are_stale() {
+    stores_are_stale_.store(false, std::memory_order_release);
+  }
+
+  // base::win::ObjectWatcher::Delegate:
+  void OnObjectSignaled(HANDLE object) override {
+    ::ResetEvent(event_.get());
+    // Re-arm before doing anything else so that a change arriving while this
+    // one is being processed is still observed.
+    StartWatching();
+    stores_are_stale_debounce_timer_.Start(FROM_HERE, debounce_delay_, this,
+                                           &ChangeMonitor::OnChangeSettled);
+  }
+
+ private:
+  friend class base::RefCountedDeleteOnSequence<ChangeMonitor>;
+  friend class base::DeleteHelper<ChangeMonitor>;
+
+  ~ChangeMonitor() override = default;
+
+  void StartWatching() {
+    if (!watcher_.StartWatchingOnce(event_.get(), this, FROM_HERE)) {
+      LOG(ERROR) << "Failed to watch for certificate store changes";
+    }
+  }
+
+  void OnChangeSettled() {
+    // The stores are not rebuilt here. Rebuilding is left to the next call
+    // into TrustStoreWin, so that the cost is not paid at all if nothing needs
+    // the stores.
+    stores_are_stale_.store(true, std::memory_order_release);
+    CertDatabase::GetInstance()->NotifyObserversTrustStoreChanged();
+  }
+
+  const base::TimeDelta debounce_delay_;
+
+  const base::win::ScopedHandle event_;
+
+  // True if Windows has reported a change that the published snapshot does not
+  // reflect yet.
+  std::atomic<bool> stores_are_stale_{false};
+
+  // Both are only ever used on the owning sequence.
+  base::win::ObjectWatcher watcher_;
+  base::OneShotTimer stores_are_stale_debounce_timer_;
+};
+
+class TrustStoreWin::Impl
+    : public base::RefCountedThreadSafe<TrustStoreWin::Impl> {
+ public:
+  // Creates a snapshot of the Windows certificate stores. If `monitor` is
+  // non-null, the stores are registered to signal its event when they change.
+  explicit Impl(scoped_refptr<ChangeMonitor> monitor)
+      : monitor_(std::move(monitor)) {
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
 
@@ -267,192 +382,62 @@ class TrustStoreWin::Impl {
     disallowed_cert_store_ = std::move(stores.disallowed);
     all_certs_store_ = std::move(stores.all);
 
-    // Monitor certificate store changes for cache invalidation.
-    SetupCollectionStoreMonitoring();
+    // Ask Windows to signal the change event when any of these stores change.
+    // No synchronization is needed: this snapshot has not been published yet,
+    // so no other thread can be reading the stores.
+    if (monitor_) {
+      ApplyCertStoreControlToAllStores(CERT_STORE_CTRL_NOTIFY_CHANGE);
+    }
   }
 
-  Impl(CertStores stores)
+  explicit Impl(CertStores stores)
       : root_cert_store_(std::move(stores.roots)),
         intermediate_cert_store_(std::move(stores.intermediates)),
         all_certs_store_(std::move(stores.all)),
         trusted_people_cert_store_(std::move(stores.trusted_people)),
         disallowed_cert_store_(std::move(stores.disallowed)) {}
 
-  ~Impl() {
-    // Clean up certificate store monitoring resources.
-    UnregisterWaitHandle();
-    CloseChangeEventHandle();
-  }
   Impl(const Impl& other) = delete;
   Impl& operator=(const Impl& other) = delete;
 
  private:
-  // Closes and cleans up the shared change event handle.
-  void CloseChangeEventHandle() EXCLUSIVE_LOCKS_REQUIRED(stores_resync_lock_) {
-    if (shared_change_event_) {
-      CloseHandle(shared_change_event_);
-      shared_change_event_ = nullptr;
+  friend class base::RefCountedThreadSafe<Impl>;
+
+  ~Impl() {
+    // Stop Windows from signaling the change event through these stores before
+    // they are closed. The `crypto::ScopedHCERTSTORE` members are destroyed
+    // after this body runs, and `monitor_` is released after them, so the
+    // event outlives every store that refers to it.
+    if (monitor_) {
+      ApplyCertStoreControlToAllStores(CERT_STORE_CTRL_CANCEL_NOTIFY);
     }
   }
 
-  // Unregisters the wait handle using WaitableEvent to avoid deadlock issues.
-  void UnregisterWaitHandle() EXCLUSIVE_LOCKS_REQUIRED(stores_resync_lock_) {
-    if (!shared_wait_handle_) {
-      return;
-    }
-
-    // Create a WaitableEvent and pass its handle to UnregisterWaitEx.
-    // This avoids the deadlock that can occur when calling UnregisterWaitEx
-    // with INVALID_HANDLE_VALUE from the UI thread while a callback is running.
-    base::WaitableEvent event;
-    if (!UnregisterWaitEx(shared_wait_handle_, event.handle())) {
-      if (const auto error = GetLastError(); error != ERROR_IO_PENDING) {
-        PLOG(ERROR) << "UnregisterWaitEx failed";
-        shared_wait_handle_ = nullptr;
-        return;
+  // Runs CertControlStore with `control_code` on each certificate store.
+  // Every store is attempted even if an earlier one fails, so that a partial
+  // failure cannot leave some stores registered and others not. Returns true
+  // only if all stores succeeded.
+  bool ApplyCertStoreControlToAllStores(DWORD control_code) const {
+    HANDLE event = monitor_->event();
+    bool all_succeeded = true;
+    for (HCERTSTORE store :
+         {root_cert_store_.get(), intermediate_cert_store_.get(),
+          trusted_people_cert_store_.get(), disallowed_cert_store_.get()}) {
+      if (!store) {
+        continue;
+      }
+      if (!CertControlStore(store, 0, control_code, &event)) {
+        PLOG(ERROR) << "CertControlStore failed with control code: "
+                    << control_code;
+        all_succeeded = false;
       }
     }
-    // Wait for unregistration to complete.
-    event.Wait();
-    shared_wait_handle_ = nullptr;
-  }
-
-  // Sets up certificate store change monitoring using Windows event handles.
-  // Registers a manual-reset event with all stores and a thread pool callback
-  // that fires once per change (WT_EXECUTEONLYONCE), requiring explicit
-  // re-registration after each sync to detect subsequent changes.
-  void SetupCollectionStoreMonitoring()
-      EXCLUSIVE_LOCKS_REQUIRED(stores_resync_lock_) {
-    // Manual-reset event: stays signaled until explicitly reset, allowing us to
-    // control when we clear it (in EnsureStoresAreSynced before resyncing).
-    shared_change_event_ = CreateEvent(/*lpEventAttributes=*/nullptr,
-                                       /*bManualReset=*/TRUE,
-                                       /*bInitialState=*/FALSE,
-                                       /*lpName=*/nullptr);
-    if (!shared_change_event_) {
-      PLOG(ERROR) << "Failed to create certificate store change event";
-      return;
-    }
-
-    // Register change notifications with all stores. Windows will signal
-    // shared_change_event_ when any certificate is added/removed/modified.
-    if (!ApplyCertStoreControlToAllStores(CERT_STORE_CTRL_NOTIFY_CHANGE)) {
-      PLOG(ERROR) << "Failed to register change notifications with cert stores";
-      CloseChangeEventHandle();
-      return;
-    }
-
-    if (!RegisterWaitForChangeNotification()) {
-      PLOG(ERROR) << "Failed to register certificate store change callback";
-      CloseChangeEventHandle();
-    }
-  }
-
-  // Registers the wait callback for certificate store change notifications.
-  // Uses WT_EXECUTEONLYONCE to fire the callback exactly once, then
-  // automatically unregister. This gives explicit control over when to
-  // re-register (after processing the change in EnsureStoresAreSynced).
-  bool RegisterWaitForChangeNotification()
-      EXCLUSIVE_LOCKS_REQUIRED(stores_resync_lock_) {
-    UnregisterWaitHandle();
-    if (RegisterWaitForSingleObject(&shared_wait_handle_, shared_change_event_,
-                                    CollectionStoreChangeCallback, this,
-                                    INFINITE, WT_EXECUTEONLYONCE)) {
-      return true;
-    }
-    return false;
-  }
-
-  static void CALLBACK CollectionStoreChangeCallback(PVOID context,
-                                                     BOOLEAN timed_out) {
-    // We registered with INFINITE timeout, so timed_out should always be FALSE.
-    // The callback is only invoked when the event is signaled, never by
-    // timeout.
-    DCHECK(!timed_out);
-    static_cast<TrustStoreWin::Impl*>(context)->OnCollectionStoreChange();
-  }
-
-  // Runs CertControlStore operations on all certificate stores using the passed
-  // control code. Called from:
-  //   - SetupCollectionStoreMonitoring() with CERT_STORE_CTRL_NOTIFY_CHANGE
-  //   - EnsureStoresAreSynced() with CERT_STORE_CTRL_RESYNC
-  // Returns true only if all stores successfully complete the operation.
-  bool ApplyCertStoreControlToAllStores(DWORD control_code)
-      EXCLUSIVE_LOCKS_REQUIRED(stores_resync_lock_) {
-    if (!shared_change_event_) {
-      PLOG(ERROR) << "Certificate store monitoring not active";
-      return false;
-    }
-
-    if (!CertControlStore(root_cert_store_.get(), 0, control_code,
-                          &shared_change_event_) ||
-        !CertControlStore(intermediate_cert_store_.get(), 0, control_code,
-                          &shared_change_event_) ||
-        !CertControlStore(trusted_people_cert_store_.get(), 0, control_code,
-                          &shared_change_event_) ||
-        !CertControlStore(disallowed_cert_store_.get(), 0, control_code,
-                          &shared_change_event_)) {
-      PLOG(ERROR) << "CertControlStore failed with control code: "
-                  << control_code;
-      return false;
-    }
-    return true;
-  }
-
-  void OnCollectionStoreChange() {
-    // The actual sync is deferred until the next certificate access which
-    // ensures we don't sync multiple times when the store is in a state of
-    // flux.
-    stores_need_to_be_resynced_ = true;
-
-    // Notify observers immediately to invalidate cached certificate decisions.
-    // This callback fires only once due to WT_EXECUTEONLYONCE, so observers
-    // are notified once even if multiple changes occur before we re-register.
-    CertDatabase::GetInstance()->NotifyObserversTrustStoreChanged();
-  }
-
-  // Syncs certificate stores if stores_need_to_be_resynced_ is set.
-  // Called before each store access to ensure stores are up to date.
-  // Uses double-checked locking: first check without lock (fast path),
-  // then acquire lock and check again to ensure only one thread resyncs.
-  void EnsureStoresAreSynced() {
-    // Fast path: if no resync needed, avoid acquiring the lock.
-    if (!stores_need_to_be_resynced_) {
-      return;
-    }
-
-    base::AutoLock lock(stores_resync_lock_);
-    // Check again under lock - another thread may have already resynced.
-    if (!stores_need_to_be_resynced_) {
-      return;
-    }
-
-    // Reset event before syncing to minimize race window.
-    if (shared_change_event_) {
-      ResetEvent(shared_change_event_);
-    }
-
-    // Sync all stores with their physical Windows counterparts.
-    if (!ApplyCertStoreControlToAllStores(CERT_STORE_CTRL_RESYNC)) {
-      PLOG(ERROR) << "Failed to resync certificate stores";
-      return;
-    }
-
-    // Re-register for the next change.
-    if (!RegisterWaitForChangeNotification()) {
-      PLOG(ERROR) << "Failed to re-register change notification callback";
-    }
-
-    // Clear flag only after resync completes, so other threads don't
-    // access stores while resync is in progress.
-    stores_need_to_be_resynced_ = false;
+    return all_succeeded;
   }
 
  public:
   void SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
-                        bssl::ParsedCertificateList* issuers) {
-    EnsureStoresAreSynced();
-
+                        bssl::ParsedCertificateList* issuers) const {
     if (!root_cert_store_.get() || !intermediate_cert_store_.get() ||
         !trusted_people_cert_store_.get() || !all_certs_store_.get() ||
         !disallowed_cert_store_.get()) {
@@ -479,9 +464,7 @@ class TrustStoreWin::Impl {
     }
   }
 
-  bssl::CertificateTrust GetTrust(const bssl::ParsedCertificate* cert) {
-    EnsureStoresAreSynced();
-
+  bssl::CertificateTrust GetTrust(const bssl::ParsedCertificate* cert) const {
     if (!root_cert_store_.get() || !intermediate_cert_store_.get() ||
         !trusted_people_cert_store_.get() || !all_certs_store_.get() ||
         !disallowed_cert_store_.get()) {
@@ -552,9 +535,8 @@ class TrustStoreWin::Impl {
     return bssl::CertificateTrust::ForUnspecified();
   }
 
-  std::vector<net::PlatformTrustStore::CertWithTrust> GetAllUserAddedCerts() {
-    EnsureStoresAreSynced();
-
+  std::vector<net::PlatformTrustStore::CertWithTrust> GetAllUserAddedCerts()
+      const {
     std::vector<net::PlatformTrustStore::CertWithTrust> certs;
     if (!root_cert_store_.get() || !intermediate_cert_store_.get() ||
         !trusted_people_cert_store_.get() || !all_certs_store_.get() ||
@@ -593,6 +575,10 @@ class TrustStoreWin::Impl {
   }
 
  private:
+  // Held first so that it is released last: the change event must outlive the
+  // stores registered against it. Null if change monitoring is not in use.
+  const scoped_refptr<ChangeMonitor> monitor_;
+
   // Cert Collection containing all user-added trust anchors.
   crypto::ScopedHCERTSTORE root_cert_store_;
 
@@ -607,29 +593,6 @@ class TrustStoreWin::Impl {
 
   // Cert Collection for all disallowed certs.
   crypto::ScopedHCERTSTORE disallowed_cert_store_;
-
-  // Shared Windows event handle signaled when any certificate store changes.
-  // Manual-reset event that stays signaled until explicitly reset in
-  // EnsureStoresAreSynced(). Accessed under stores_resync_lock_ during normal
-  // operation; constructor/destructor access is exempt from analysis.
-  HANDLE shared_change_event_ GUARDED_BY(stores_resync_lock_) = nullptr;
-
-  // Wait handle registered with thread pool for shared_change_event_.
-  // Re-registered on each sync via RegisterWaitForChangeNotification() using
-  // WT_EXECUTEONLYONCE to give explicit control over the notification
-  // lifecycle. Accessed under stores_resync_lock_ during normal operation;
-  // constructor/destructor access is exempt from analysis.
-  HANDLE shared_wait_handle_ GUARDED_BY(stores_resync_lock_) = nullptr;
-
-  // True if certificate stores must be resynced before next access.
-  // Set by OnCollectionStoreChange and cleared after re-syncing the store
-  // contents in EnsureStoresAreSynced.
-  std::atomic<bool> stores_need_to_be_resynced_{false};
-
-  // Protects certificate store resync operations.
-  // - Held by EnsureStoresAreSynced while re-syncing the store contents
-  // This ensures only one thread performs the resync at a time.
-  base::Lock stores_resync_lock_;
 };
 
 // TODO(crbug.com/40784681): support CTLs.
@@ -637,31 +600,72 @@ TrustStoreWin::TrustStoreWin() = default;
 
 void TrustStoreWin::InitializeStores() {
   // Don't need return value
-  MaybeInitializeAndGetImpl();
+  GetImpl();
 }
 
-TrustStoreWin::Impl* TrustStoreWin::MaybeInitializeAndGetImpl() {
-  base::AutoLock lock(init_lock_);
-  if (!impl_) {
-    impl_ = std::make_unique<TrustStoreWin::Impl>();
+scoped_refptr<const TrustStoreWin::Impl> TrustStoreWin::GetImpl() {
+  {
+    base::AutoLock lock(impl_lock_);
+    if (impl_ && !rebuild_in_progress_ &&
+        !(monitor_ && monitor_->stores_are_stale())) {
+      return impl_;
+    }
   }
-  return impl_.get();
+
+  // Serialize rebuilds and wait for any in-progress rebuild to publish its
+  // replacement before checking whether another rebuild is needed.
+  base::AutoLock rebuild_lock(rebuild_lock_);
+
+  scoped_refptr<ChangeMonitor> monitor;
+  {
+    base::AutoLock lock(impl_lock_);
+    if (impl_ && !(monitor_ && monitor_->stores_are_stale())) {
+      // Another thread rebuilt while this one waited for `rebuild_lock_`.
+      return impl_;
+    }
+    monitor = monitor_;
+    // Keep the old snapshot's notification registrations alive until the
+    // replacement has registered its stores, but block new accesses until it
+    // is published.
+    rebuild_in_progress_ = true;
+  }
+
+  if (!monitor) {
+    // Attempt monitoring on initial construction. If event creation fails,
+    // publish the snapshot without a monitor. Subsequent calls return it via
+    // the fast path above, so monitoring is not retried for this TrustStoreWin.
+    monitor = ChangeMonitor::Create();
+  } else {
+    // Clear the flag before building rather than after, so that a change
+    // arriving while the snapshot is being built costs one redundant rebuild
+    // instead of being dropped. The in-progress flag keeps new accesses from
+    // using the old snapshot while the stale flag is cleared.
+    monitor->clear_stores_are_stale();
+  }
+
+  auto fresh = base::MakeRefCounted<Impl>(monitor);
+
+  base::AutoLock lock(impl_lock_);
+  monitor_ = std::move(monitor);
+  impl_ = std::move(fresh);
+  rebuild_in_progress_ = false;
+  return impl_;
 }
 
 std::unique_ptr<TrustStoreWin> TrustStoreWin::CreateForTesting(
     CertStores stores) {
   return base::WrapUnique(new TrustStoreWin(
-      std::make_unique<TrustStoreWin::Impl>(std::move(stores))));
+      base::MakeRefCounted<TrustStoreWin::Impl>(std::move(stores))));
 }
 
-TrustStoreWin::TrustStoreWin(std::unique_ptr<Impl> impl)
+TrustStoreWin::TrustStoreWin(scoped_refptr<Impl> impl)
     : impl_(std::move(impl)) {}
 
 TrustStoreWin::~TrustStoreWin() = default;
 
 void TrustStoreWin::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
                                      bssl::ParsedCertificateList* issuers) {
-  MaybeInitializeAndGetImpl()->SyncGetIssuersOf(cert, issuers);
+  GetImpl()->SyncGetIssuersOf(cert, issuers);
 }
 
 // As documented in IsCertTrustedForServerAuth(), on Windows, the
@@ -696,7 +700,7 @@ void TrustStoreWin::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
 // is usable for TLS server auth.
 bssl::CertificateTrust TrustStoreWin::GetTrust(
     const bssl::ParsedCertificate* cert) {
-  return MaybeInitializeAndGetImpl()->GetTrust(cert);
+  return GetImpl()->GetTrust(cert);
 }
 
 std::shared_ptr<const bssl::MTCAnchor> TrustStoreWin::GetTrustedMTCIssuerOf(
@@ -706,7 +710,18 @@ std::shared_ptr<const bssl::MTCAnchor> TrustStoreWin::GetTrustedMTCIssuerOf(
 
 std::vector<net::PlatformTrustStore::CertWithTrust>
 TrustStoreWin::GetAllUserAddedCerts() {
-  return MaybeInitializeAndGetImpl()->GetAllUserAddedCerts();
+  return GetImpl()->GetAllUserAddedCerts();
+}
+
+HANDLE TrustStoreWin::GetChangeEventForTesting() {
+  base::AutoLock lock(impl_lock_);
+  return monitor_ ? monitor_->event() : nullptr;
+}
+
+// static
+base::TimeDelta TrustStoreWin::SetChangeDebounceDelayForTesting(
+    base::TimeDelta delay) {
+  return StoreChangeDebounceDelay().exchange(delay, std::memory_order_relaxed);
 }
 
 }  // namespace net
