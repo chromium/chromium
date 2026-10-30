@@ -188,20 +188,32 @@ async function sendSearchPortHandshake(
   }
 }
 
+// LINT.IfChange(AllowedOrigins)
 function urlMatchesAllowList(origin: string): boolean {
   try {
     const url = new URL(origin);
+    // <if expr="not is_official_build">
+    if (url.protocol === 'file:' ||
+        (url.protocol === 'http:' && url.hostname === 'localhost')) {
+      return true;
+    }
+    // </if>
     if (url.protocol !== 'https:') {
       return false;
     }
     const host = url.hostname;
-    return host === 'google.com' || host === 'www.google.com' ||
-        host.endsWith('.borg.google.com') ||
-        host.endsWith('.corp.google.com') || host.endsWith('.prod.google.com');
+    return host === 'google.com' || host.endsWith('.google.com') ||
+        host.endsWith('.corp.google.com') ||
+        host.endsWith('.prod.google.com') || host === 'googlers.com' ||
+        host.endsWith('.googlers.com');
   } catch {
     return false;
   }
 }
+// LINT.ThenChange(
+//   manifest.json:AllowedOrigins,
+//   manifest.json:WebAccessibleMatches
+// )
 
 chrome.runtime.onConnectExternal.addListener((port: chrome.runtime.Port) => {
   // Only accept connections on the dedicated search channel.

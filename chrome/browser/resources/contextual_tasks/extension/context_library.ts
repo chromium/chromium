@@ -50,7 +50,6 @@ export class ContextLibraryElement extends CrLitElement {
 
   private isTrackingFaviconGroup_: boolean = false;
   private resizeObserver_: ResizeObserver|null = null;
-  private messageListener_: ((event: MessageEvent) => void)|null = null;
   private listenerIds_: number[] = [];
 
   override connectedCallback() {
@@ -60,13 +59,6 @@ export class ContextLibraryElement extends CrLitElement {
       window.requestResize?.();
     });
     this.resizeObserver_.observe(this);
-
-    this.messageListener_ = (event: MessageEvent) => {
-      if (event.data?.type === 'SET_TABS' && Array.isArray(event.data.tabs)) {
-        this.tabs = event.data.tabs;
-      }
-    };
-    window.addEventListener('message', this.messageListener_);
 
     const callbackRouter =
         ExtensionBrowserProxyImpl.getInstance().callbackRouter;
@@ -86,10 +78,6 @@ export class ContextLibraryElement extends CrLitElement {
     }
     this.resizeObserver_?.disconnect();
     this.resizeObserver_ = null;
-    if (this.messageListener_) {
-      window.removeEventListener('message', this.messageListener_);
-      this.messageListener_ = null;
-    }
     const callbackRouter =
         ExtensionBrowserProxyImpl.getInstance().callbackRouter;
     for (const id of this.listenerIds_) {
