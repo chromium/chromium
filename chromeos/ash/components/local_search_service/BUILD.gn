@@ -40,6 +40,7 @@ source_set("local_search_service") {
     "//base",
     "//components/metrics",
     "//components/prefs",
+    "//third_party/abseil-cpp:absl",
     "//ui/gfx",
   ]
 }
@@ -102,5 +103,6 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//mojo/public/cpp/bindings",
     "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
   ]
 }

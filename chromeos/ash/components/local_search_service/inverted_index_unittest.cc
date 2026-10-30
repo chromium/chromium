@@ -6,7 +6,6 @@
 
 #include <cmath>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -16,6 +15,8 @@
 #include "chromeos/ash/components/local_search_service/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace ash::local_search_service {
 
@@ -38,8 +39,7 @@ class InvertedIndexTest : public ::testing::Test {
  public:
   void SetUp() override {
     // All content weights are initialized to |kDefaultWeight|.
-    index_.doc_length_ =
-        std::unordered_map<std::string, uint32_t>({{"doc1", 8}, {"doc2", 6}});
+    index_.doc_length_ = DocLength({{"doc1", 8}, {"doc2", 6}});
 
     index_.dictionary_[u"A"] = PostingList(
         {{"doc1",
@@ -81,7 +81,7 @@ class InvertedIndexTest : public ::testing::Test {
   }
 
   std::vector<Result> FindMatchingDocumentsApproximately(
-      const std::unordered_set<std::u16string>& terms,
+      const TermSet& terms,
       double prefix_threshold,
       double block_threshold) {
     return index_.FindMatchingDocumentsApproximately(terms, prefix_threshold,
@@ -173,17 +173,11 @@ class InvertedIndexTest : public ::testing::Test {
 
   bool IsInvertedIndexBuilt() { return index_.IsInvertedIndexBuilt(); }
 
-  std::unordered_map<std::u16string, PostingList> GetDictionary() {
-    return index_.dictionary_;
-  }
+  Dictionary GetDictionary() { return index_.dictionary_; }
 
-  std::unordered_map<std::string, uint32_t> GetDocLength() {
-    return index_.doc_length_;
-  }
+  DocLength GetDocLength() { return index_.doc_length_; }
 
-  std::unordered_map<std::u16string, std::vector<TfidfResult>> GetTfidfCache() {
-    return index_.tfidf_cache_;
-  }
+  TfidfCache GetTfidfCache() { return index_.tfidf_cache_; }
 
   DocumentToUpdate GetDocumentsToUpdate() {
     return index_.documents_to_update_;

@@ -7,8 +7,6 @@
 
 #include <string>
 #include <tuple>
-#include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -16,6 +14,8 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/local_search_service/shared_structs.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace ash::local_search_service {
 
@@ -23,23 +23,24 @@ namespace ash::local_search_service {
 using Posting = std::vector<WeightedPosition>;
 
 // A map from document id to posting.
-using PostingList = std::unordered_map<std::string, Posting>;
+using PostingList = absl::flat_hash_map<std::string, Posting>;
 
 // A tuple that stores a document ID, token's positions and token's TF-IDF
 // score.
 using TfidfResult = std::tuple<std::string, Posting, float>;
 
 // A map from document IDs to their length.
-using DocLength = std::unordered_map<std::string, uint32_t>;
+using DocLength = absl::flat_hash_map<std::string, uint32_t>;
 
 // A map from terms to their PostingList.
-using Dictionary = std::unordered_map<std::u16string, PostingList>;
+using Dictionary = absl::flat_hash_map<std::u16string, PostingList>;
 
 // A set of terms.
-using TermSet = std::unordered_set<std::u16string>;
+using TermSet = absl::flat_hash_set<std::u16string>;
 
 // Data structure to store TF-IDF cache keyed by terms.
-using TfidfCache = std::unordered_map<std::u16string, std::vector<TfidfResult>>;
+using TfidfCache =
+    absl::flat_hash_map<std::u16string, std::vector<TfidfResult>>;
 
 // Tuple to store document state variables.
 using DocumentStateVariables = std::tuple<DocLength, Dictionary, TermSet>;
@@ -66,7 +67,7 @@ class InvertedIndex {
   // Returns documents that approximately match one or more terms in |terms|.
   // Returned documents will be ranked.
   std::vector<Result> FindMatchingDocumentsApproximately(
-      const std::unordered_set<std::u16string>& terms,
+      const TermSet& terms,
       double prefix_threshold,
       double block_threshold) const;
 

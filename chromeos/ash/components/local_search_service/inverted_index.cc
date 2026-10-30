@@ -17,6 +17,8 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chromeos/ash/components/local_search_service/search_utils.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace ash::local_search_service {
 
@@ -98,7 +100,7 @@ bool RemoveDocumentIfExist(const std::string& document_id,
   if (doc_length->erase(document_id) == 0) {
     return document_removed;
   }
-  std::erase_if(*dictionary, [&](auto& item) {
+  absl::erase_if(*dictionary, [&](auto& item) {
     if (item.second.erase(document_id) > 0) {
       terms_to_be_updated->insert(item.first);
       document_removed = true;
@@ -181,14 +183,14 @@ PostingList InvertedIndex::FindTerm(const std::u16string& term) const {
 }
 
 std::vector<Result> InvertedIndex::FindMatchingDocumentsApproximately(
-    const std::unordered_set<std::u16string>& terms,
+    const TermSet& terms,
     double prefix_threshold,
     double block_threshold) const {
   // For each document, its score is the sum of the scores of its terms that
   // match one of more query term. Each term's score is the product of its
   // TF-IDF score and its match relevance score.
   // The map is keyed by the document id.
-  std::unordered_map<std::string, ScoreWithPosting> matching_docs;
+  absl::flat_hash_map<std::string, ScoreWithPosting> matching_docs;
   for (const auto& kv : tfidf_cache_) {
     const std::u16string& index_term = kv.first;
     const std::vector<TfidfResult>& tfidf_results = kv.second;
@@ -239,11 +241,15 @@ void InvertedIndex::AddDocuments(DocumentToUpdate documents,
     return;
   }
 
+  // Use `std::exchange` to reinitialize moved-from `absl::flat_hash_*` members
+  // as empty containers, since Abseil hash tables disallow reading or moving
+  // from a moved-from instance before reinitialization.
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&UpdateDocumentStateVariables, std::move(documents),
-                     std::move(doc_length_), std::move(dictionary_),
-                     std::move(terms_to_be_updated_)),
+                     std::exchange(doc_length_, {}),
+                     std::exchange(dictionary_, {}),
+                     std::exchange(terms_to_be_updated_, {})),
       base::BindOnce(&InvertedIndex::OnAddDocumentsComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -260,8 +266,9 @@ void InvertedIndex::RemoveDocuments(
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&UpdateDocumentStateVariables, std::move(documents),
-                     std::move(doc_length_), std::move(dictionary_),
-                     std::move(terms_to_be_updated_)),
+                     std::exchange(doc_length_, {}),
+                     std::exchange(dictionary_, {}),
+                     std::exchange(terms_to_be_updated_, {})),
       base::BindOnce(&InvertedIndex::OnUpdateDocumentsComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -272,8 +279,9 @@ void InvertedIndex::UpdateDocuments(
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&UpdateDocumentStateVariables, std::move(documents),
-                     std::move(doc_length_), std::move(dictionary_),
-                     std::move(terms_to_be_updated_)),
+                     std::exchange(doc_length_, {}),
+                     std::exchange(dictionary_, {}),
+                     std::exchange(terms_to_be_updated_, {})),
       base::BindOnce(&InvertedIndex::OnUpdateDocumentsComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -293,8 +301,8 @@ void InvertedIndex::BuildInvertedIndex(base::OnceCallback<void()> callback) {
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&BuildTfidf, num_docs_from_last_update_, doc_length_,
-                     dictionary_, std::move(terms_to_be_updated_),
-                     std::move(tfidf_cache_)),
+                     dictionary_, std::exchange(terms_to_be_updated_, {}),
+                     std::exchange(tfidf_cache_, {})),
       base::BindOnce(&InvertedIndex::OnBuildTfidfComplete,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -304,8 +312,9 @@ void InvertedIndex::ClearInvertedIndex(base::OnceCallback<void()> callback) {
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ClearData, std::move(documents_to_update_), doc_length_,
-                     std::move(dictionary_), std::move(terms_to_be_updated_),
-                     std::move(tfidf_cache_)),
+                     std::exchange(dictionary_, {}),
+                     std::exchange(terms_to_be_updated_, {}),
+                     std::exchange(tfidf_cache_, {})),
       base::BindOnce(&InvertedIndex::OnDataCleared,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 #include <string_view>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -23,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace ash::local_search_service {
 
@@ -52,7 +52,7 @@ std::unique_ptr<base::i18n::Transliterator> CreateHyphenRemover() {
 }  // namespace
 
 std::vector<Token> ConsolidateToken(const std::vector<Token>& tokens) {
-  std::unordered_map<std::u16string, std::vector<WeightedPosition>> dictionary;
+  absl::flat_hash_map<std::u16string, std::vector<WeightedPosition>> dictionary;
   dictionary.reserve(tokens.size());
   for (const auto& token : tokens) {
     base::Extend(dictionary[token.content], token.positions);

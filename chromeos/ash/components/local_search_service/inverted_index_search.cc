@@ -22,6 +22,7 @@
 #include "chromeos/ash/components/local_search_service/content_extraction_utils.h"
 #include "chromeos/ash/components/local_search_service/inverted_index.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 namespace ash::local_search_service {
 
@@ -57,8 +58,7 @@ ExtractedContent ExtractDocumentsContent(const std::vector<Data>& data) {
   return documents;
 }
 
-std::unordered_set<std::u16string> GetTokenizedQuery(
-    const std::u16string& query) {
+TermSet GetTokenizedQuery(const std::u16string& query) {
   // TODO(jiameng): actual input query may not be the same as default locale.
   // Need another way to determine actual language of the query.
   const TokenizedString::Mode mode =
@@ -67,7 +67,7 @@ std::unordered_set<std::u16string> GetTokenizedQuery(
           : TokenizedString::Mode::kWords;
 
   const TokenizedString tokenized_query(query, mode);
-  std::unordered_set<std::u16string> tokens;
+  TermSet tokens;
   tokens.reserve(tokenized_query.tokens().size());
   for (const auto& token : tokenized_query.tokens()) {
     // TODO(jiameng): we are not removing stopword because they shouldn't exist
