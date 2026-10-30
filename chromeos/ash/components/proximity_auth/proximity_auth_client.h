@@ -6,7 +6,6 @@
 #define CHROMEOS_ASH_COMPONENTS_PROXIMITY_AUTH_PROXIMITY_AUTH_CLIENT_H_
 
 #include "ash/public/cpp/smartlock_state.h"
-#include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
 
 namespace proximity_auth {
 

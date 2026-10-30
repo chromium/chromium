@@ -5,14 +5,24 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_MULTIDEVICE_BEACON_SEED_H_
 #define CHROMEOS_ASH_COMPONENTS_MULTIDEVICE_BEACON_SEED_H_
 
-#include <google/protobuf/repeated_field.h>
 #include <ostream>
 #include <string>
 #include <vector>
 
 #include "base/time/time.h"
-#include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
-#include "chromeos/ash/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
+
+namespace cryptauth {
+class BeaconSeed;
+}  // namespace cryptauth
+
+namespace cryptauthv2 {
+class BeaconSeed;
+}  // namespace cryptauthv2
+
+namespace google::protobuf {
+template <typename Element>
+class RepeatedPtrField;
+}  // namespace google::protobuf
 
 namespace ash::multidevice {
 
@@ -28,6 +38,9 @@ class BeaconSeed {
              base::Time start_time,
              base::Time end_time);
   BeaconSeed(const BeaconSeed& other);
+  BeaconSeed& operator=(const BeaconSeed& other);
+  BeaconSeed(BeaconSeed&& other) noexcept;
+  BeaconSeed& operator=(BeaconSeed&& other) noexcept;
   ~BeaconSeed();
 
   const std::string& data() const { return data_; }
@@ -42,14 +55,14 @@ class BeaconSeed {
   base::Time end_time_;
 };
 
-BeaconSeed FromCryptAuthSeed(cryptauth::BeaconSeed cryptauth_seed);
-cryptauth::BeaconSeed ToCryptAuthSeed(BeaconSeed multidevice_seed);
+BeaconSeed FromCryptAuthSeed(const cryptauth::BeaconSeed& cryptauth_seed);
+cryptauth::BeaconSeed ToCryptAuthSeed(const BeaconSeed& multidevice_seed);
 
-BeaconSeed FromCryptAuthV2Seed(cryptauthv2::BeaconSeed cryptauth_seed);
-cryptauthv2::BeaconSeed ToCryptAuthV2Seed(BeaconSeed multidevice_seed);
+BeaconSeed FromCryptAuthV2Seed(const cryptauthv2::BeaconSeed& cryptauth_seed);
+cryptauthv2::BeaconSeed ToCryptAuthV2Seed(const BeaconSeed& multidevice_seed);
 
 std::vector<cryptauth::BeaconSeed> ToCryptAuthSeedList(
-    const std::vector<BeaconSeed>& cryptauth_seed_list);
+    const std::vector<BeaconSeed>& multidevice_seed_list);
 std::vector<BeaconSeed> FromCryptAuthSeedList(
     const std::vector<cryptauth::BeaconSeed>& cryptauth_seed_list);
 

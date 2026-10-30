@@ -7,8 +7,10 @@
 #include <memory>
 #include <vector>
 
+#include "chromeos/ash/components/multidevice/beacon_seed.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
 #include "chromeos/ash/services/secure_channel/data_with_timestamp.h"
 #include "chromeos/ash/services/secure_channel/foreground_eid_generator.h"
 

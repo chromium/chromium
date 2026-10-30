@@ -5,10 +5,14 @@
 #include "chromeos/ash/components/multidevice/beacon_seed.h"
 
 #include <algorithm>
+#include <iterator>
 
 #include "base/base64.h"
 #include "base/i18n/time_formatting.h"
-#include "base/logging.h"
+#include "base/strings/utf_ostream_operators.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_better_together_device_metadata.pb.h"
+#include "third_party/protobuf/src/google/protobuf/repeated_ptr_field.h"
 
 namespace ash::multidevice {
 
@@ -21,6 +25,12 @@ BeaconSeed::BeaconSeed(const std::string& data,
 
 BeaconSeed::BeaconSeed(const BeaconSeed& other) = default;
 
+BeaconSeed& BeaconSeed::operator=(const BeaconSeed& other) = default;
+
+BeaconSeed::BeaconSeed(BeaconSeed&& other) noexcept = default;
+
+BeaconSeed& BeaconSeed::operator=(BeaconSeed&& other) noexcept = default;
+
 BeaconSeed::~BeaconSeed() = default;
 
 bool BeaconSeed::operator==(const BeaconSeed& other) const {
@@ -28,7 +38,7 @@ bool BeaconSeed::operator==(const BeaconSeed& other) const {
          end_time_ == other.end_time_;
 }
 
-BeaconSeed FromCryptAuthSeed(cryptauth::BeaconSeed cryptauth_seed) {
+BeaconSeed FromCryptAuthSeed(const cryptauth::BeaconSeed& cryptauth_seed) {
   return BeaconSeed(cryptauth_seed.data(),
                     base::Time::FromMillisecondsSinceUnixEpoch(
                         cryptauth_seed.start_time_millis()),
@@ -36,7 +46,7 @@ BeaconSeed FromCryptAuthSeed(cryptauth::BeaconSeed cryptauth_seed) {
                         cryptauth_seed.end_time_millis()));
 }
 
-cryptauth::BeaconSeed ToCryptAuthSeed(BeaconSeed multidevice_seed) {
+cryptauth::BeaconSeed ToCryptAuthSeed(const BeaconSeed& multidevice_seed) {
   cryptauth::BeaconSeed cryptauth_seed;
   cryptauth_seed.set_data(multidevice_seed.data());
   cryptauth_seed.set_start_time_millis(
@@ -46,7 +56,7 @@ cryptauth::BeaconSeed ToCryptAuthSeed(BeaconSeed multidevice_seed) {
   return cryptauth_seed;
 }
 
-BeaconSeed FromCryptAuthV2Seed(cryptauthv2::BeaconSeed cryptauth_seed) {
+BeaconSeed FromCryptAuthV2Seed(const cryptauthv2::BeaconSeed& cryptauth_seed) {
   return BeaconSeed(cryptauth_seed.data(),
                     base::Time::FromMillisecondsSinceUnixEpoch(
                         cryptauth_seed.start_time_millis()),
@@ -54,7 +64,7 @@ BeaconSeed FromCryptAuthV2Seed(cryptauthv2::BeaconSeed cryptauth_seed) {
                         cryptauth_seed.end_time_millis()));
 }
 
-cryptauthv2::BeaconSeed ToCryptAuthV2Seed(BeaconSeed multidevice_seed) {
+cryptauthv2::BeaconSeed ToCryptAuthV2Seed(const BeaconSeed& multidevice_seed) {
   cryptauthv2::BeaconSeed cryptauth_seed;
   cryptauth_seed.set_data(multidevice_seed.data());
   cryptauth_seed.set_start_time_millis(

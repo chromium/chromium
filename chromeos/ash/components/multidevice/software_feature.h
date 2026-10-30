@@ -7,7 +7,9 @@
 
 #include <ostream>
 
-#include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
+namespace cryptauth {
+enum SoftwareFeature : int;
+}  // namespace cryptauth
 
 namespace ash::multidevice {
 

@@ -298,7 +298,6 @@ class SmartLockService
 
   // Stores the unlock keys for Smart Lock before the current device sync, so we
   // can compare it to the unlock keys after syncing.
-  std::vector<cryptauth::ExternalDeviceInfo> unlock_keys_before_sync_;
   multidevice::RemoteDeviceRefList remote_device_unlock_keys_before_sync_;
 
   // True if the pairing changed notification was shown, so that the next time

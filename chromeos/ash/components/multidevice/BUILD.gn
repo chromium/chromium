@@ -32,13 +32,14 @@ static_library("multidevice") {
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/easy_unlock",
     "//chromeos/ash/components/multidevice/logging",
+    "//chromeos/ash/services/device_sync/proto",
     "//chromeos/ash/services/device_sync/proto:util",
     "//components/prefs",
+    "//third_party/protobuf:protobuf_lite",
   ]
 
   public_deps = [
     "//base",
-    "//chromeos/ash/services/device_sync/proto",
     "//third_party/securemessage/proto",
   ]
 }

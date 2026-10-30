@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/multidevice/software_feature.h"
 
 #include "base/notreached.h"
+#include "chromeos/ash/services/device_sync/proto/cryptauth_api.pb.h"
 
 namespace ash::multidevice {
 
