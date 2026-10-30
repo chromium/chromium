@@ -455,6 +455,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         mMultiColumnSettings.addObserver(mMultiColumnTitleUpdater);
     }
 
+    @RequiresNonNull("mMultiColumnSettings")
     private void createSearchCoordinator(@Nullable Bundle savedState) {
         Toolbar actionBar = findViewById(R.id.action_bar);
         mSearchCoordinator =
@@ -468,19 +469,14 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                         this::updateFirstVisibleTitle,
                         getModalDialogManagerSupplier(),
                         /* shownInTab= */ false);
-        if (mMultiColumnSettings != null) {
-            if (savedState != null) {
-                // Title text view gets temporarily hidden while restoring the
-                // search UI to avoid flickering. See https://crbug.com/482952320.
-                assumeNonNull(ToolbarUtils.getTitleTextView(actionBar))
-                        .setVisibility(View.INVISIBLE);
-            }
-            mMultiColumnSettings.setOnCreateViewRunnable(
-                    () -> assumeNonNull(mSearchCoordinator).initializeSearchUi(savedState));
-            mMultiColumnSettings.addObserver(mSearchCoordinator);
-        } else {
-            mSearchCoordinator.initializeSearchUi(savedState);
+        if (savedState != null) {
+            // Title text view gets temporarily hidden while restoring the
+            // search UI to avoid flickering. See https://crbug.com/482952320.
+            assumeNonNull(ToolbarUtils.getTitleTextView(actionBar)).setVisibility(View.INVISIBLE);
         }
+        mMultiColumnSettings.setOnCreateViewRunnable(
+                () -> assumeNonNull(mSearchCoordinator).initializeSearchUi(savedState));
+        mMultiColumnSettings.addObserver(mSearchCoordinator);
     }
 
     private void updateFirstVisibleTitle(int index) {
@@ -676,11 +672,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
                     .replace(R.id.settings_content, fragment, MAIN_FRAGMENT_TAG)
                     .addToBackStack(null)
                     .commit();
-        }
-        if (mMultiColumnSettings == null && mSearchCoordinator != null) {
-            // In single-column settings, refresh the search UI layout as it can have been
-            // cluttered while showing other settings activities on top.
-            mSearchCoordinator.updateSingleColumnSearchUiWidth();
         }
         mStartTimeSaved = false;
     }
