@@ -571,13 +571,16 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.AmbientMode.AnimationSmoothness.PhotoTransition" units="%"
-    expires_after="2026-09-06">
+    expires_after="2027-10-25">
   <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@google.com</owner>
   <summary>
     Emitted when the ambient mode photo transition animation completes to report
     the smoothness of this animation. 100% represents ideally smooth 60 frames
     per second.
+
+    Warning: this histogram was expired from 2026-09-06 to 2026-10-25; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -590,6 +593,20 @@ chromium-metrics-reviews@google.com.
     session. The metric is emitted when ambient mode is ended. 2 new animated
     ambient mode themes have been added started in M104.
   </summary>
+</histogram>
+
+<histogram name="Ash.AmbientMode.LottieAnimationSmoothness.{Settings}"
+    units="%" expires_after="2027-10-25">
+  <owner>cowmoo@google.com</owner>
+  <owner>cros-p13n-eng@google.com</owner>
+  <summary>
+    Emitted periodically while {Settings} is rendering in ambient mode. 100%
+    represents ideal smoothness.
+
+    Warning: this histogram was expired from 2025-06-30 to 2026-10-25; data may
+    be missing.
+  </summary>
+  <token key="Settings" variants="AmbientUiSettings"/>
 </histogram>
 
 <histogram name="Ash.AmbientMode.PhotoSource" enum="AmbientModePhotoSource"
@@ -650,7 +667,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.AmbientMode.VideoSmoothness.{Settings}" units="%"
-    expires_after="2026-01-25">
+    expires_after="2027-10-25">
   <owner>cowmoo@google.com</owner>
   <owner>cros-p13n-eng@chromium.org</owner>
   <summary>
@@ -664,6 +681,9 @@ chromium-metrics-reviews@google.com.
     record and will not be tracked. As such, this metric is just a general gauge
     of the video's performance in the field. Separate fine-grained metrics
     tracking rebuffering frequency and duration may be added in the future.
+
+    Warning: this histogram was expired from 2026-01-25 to 2026-10-25; data may
+    be missing.
   </summary>
   <token key="Settings" variants="AmbientUiSettings"/>
 </histogram>

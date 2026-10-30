@@ -218,6 +218,15 @@ void RecordAmbientModeTopicSource(
   base::UmaHistogramEnumeration("Ash.AmbientMode.TopicSource", topic_source);
 }
 
+void RecordAmbientModeAnimationSmoothness(
+    int smoothness,
+    const AmbientUiSettings& ui_settings) {
+  base::UmaHistogramPercentage(
+      base::StrCat({"Ash.AmbientMode.LottieAnimationSmoothness.",
+                    ui_settings.ToString()}),
+      smoothness);
+}
+
 void RecordAmbientModeStartupTime(base::TimeDelta startup_time,
                                   const AmbientUiSettings& ui_settings) {
   base::UmaHistogramCustomTimes(
