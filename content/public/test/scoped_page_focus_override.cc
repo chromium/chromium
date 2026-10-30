@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
@@ -27,6 +28,12 @@ ScopedPageFocusOverride::ScopedPageFocusOverride(
 }
 
 ScopedPageFocusOverride::~ScopedPageFocusOverride() {
+  // If the session is already gone, so is focus emulation, and a command would
+  // never get a response. For example, the JS code coverage harness detaches
+  // all DevTools clients after each WebUIMochaBrowserTest.
+  if (agent_host_closed_) {
+    return;
+  }
   SetFocusEmulationEnabled(false);
   agent_host_->DetachClient(this);
 }
@@ -48,7 +55,13 @@ void ScopedPageFocusOverride::DispatchProtocolMessage(
   std::move(run_loop_quit_closure_).Run();
 }
 
-void ScopedPageFocusOverride::AgentHostClosed(DevToolsAgentHost* agent_host) {}
+void ScopedPageFocusOverride::AgentHostClosed(DevToolsAgentHost* agent_host) {
+  agent_host_closed_ = true;
+  // Stop waiting for a response that will never come.
+  if (run_loop_quit_closure_) {
+    std::move(run_loop_quit_closure_).Run();
+  }
+}
 
 void ScopedPageFocusOverride::SetFocusEmulationEnabled(bool enabled) {
   base::DictValue command =
