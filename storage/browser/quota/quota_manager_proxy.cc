@@ -69,6 +69,26 @@ QuotaManagerProxy::QuotaManagerProxy(
   DETACH_FROM_SEQUENCE(quota_manager_impl_sequence_checker_);
 }
 
+void QuotaManagerProxy::PostTaskWithQuotaManager(
+    base::OnceCallback<void(base::WeakPtr<QuotaManagerImpl>)> callback) {
+  quota_manager_impl_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<QuotaManagerProxy> proxy,
+             base::OnceCallback<void(base::WeakPtr<QuotaManagerImpl>)>
+                 callback) {
+            DCHECK_CALLED_ON_VALID_SEQUENCE(
+                proxy->quota_manager_impl_sequence_checker_);
+            base::WeakPtr<QuotaManagerImpl> quota_manager;
+            if (proxy->quota_manager_impl_) {
+              quota_manager =
+                  proxy->quota_manager_impl_->weak_factory_.GetWeakPtr();
+            }
+            std::move(callback).Run(std::move(quota_manager));
+          },
+          base::WrapRefCounted(this), std::move(callback)));
+}
+
 base::FilePath QuotaManagerProxy::GetBucketPath(const BucketLocator& bucket) {
   return CreateBucketPath(profile_path_, bucket);
 }
@@ -288,6 +308,34 @@ void QuotaManagerProxy::GetBucketsModifiedBetween(base::Time begin,
 
   quota_manager_impl_->GetBucketsModifiedBetween(begin, end,
                                                  std::move(callback));
+}
+
+void QuotaManagerProxy::DeleteStorageKeyData(
+    const StorageKey& storage_key,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+    StatusCallback callback) {
+  CHECK(callback_task_runner);
+  CHECK(callback);
+
+  if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
+    quota_manager_impl_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&QuotaManagerProxy::DeleteStorageKeyData, this,
+                       storage_key, std::move(callback_task_runner),
+                       std::move(callback)));
+    return;
+  }
+
+  DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
+
+  auto respond =
+      base::BindPostTask(std::move(callback_task_runner), std::move(callback));
+  if (!quota_manager_impl_) {
+    std::move(respond).Run(blink::mojom::QuotaStatusCode::kErrorAbort);
+    return;
+  }
+
+  quota_manager_impl_->DeleteStorageKeyData(storage_key, std::move(respond));
 }
 
 void QuotaManagerProxy::GetBucketById(

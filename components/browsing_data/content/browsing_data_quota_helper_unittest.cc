@@ -56,8 +56,8 @@ class BrowsingDataQuotaHelperTest : public testing::Test {
         /*is_incognito=*/false, temp_dir_.GetPath(),
         content::GetIOThreadTaskRunner({}).get(),
         /*special_storage_policy=*/nullptr, storage::GetQuotaSettingsFunc());
-    helper_ =
-        base::MakeRefCounted<BrowsingDataQuotaHelperImpl>(quota_manager_.get());
+    helper_ = base::MakeRefCounted<BrowsingDataQuotaHelperImpl>(
+        quota_manager_->proxy());
   }
 
   void TearDown() override {

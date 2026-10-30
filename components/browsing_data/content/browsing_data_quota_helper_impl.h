@@ -5,37 +5,27 @@
 #ifndef COMPONENTS_BROWSING_DATA_CONTENT_BROWSING_DATA_QUOTA_HELPER_IMPL_H_
 #define COMPONENTS_BROWSING_DATA_CONTENT_BROWSING_DATA_QUOTA_HELPER_IMPL_H_
 
-#include <stdint.h>
-
-#include <map>
-#include <set>
-#include <string>
-#include <utility>
-
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
 
 namespace blink {
 class StorageKey;
 }
 
 namespace storage {
-class QuotaManager;
+class QuotaManagerProxy;
 }
 
-// Implementation of BrowsingDataQuotaHelper.  Since a client of
-// BrowsingDataQuotaHelper should live in UI thread and QuotaManager lives in
-// IO thread, we have to communicate over thread using PostTask.
+// Implementation of BrowsingDataQuotaHelper, used on the UI thread.
 class BrowsingDataQuotaHelperImpl : public BrowsingDataQuotaHelper {
  public:
   void StartFetching(FetchResultCallback callback) override;
   void DeleteStorageKeyData(const blink::StorageKey& storage_key,
                             base::OnceClosure completed) override;
 
-  explicit BrowsingDataQuotaHelperImpl(storage::QuotaManager* quota_manager);
+  explicit BrowsingDataQuotaHelperImpl(
+      scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
 
   BrowsingDataQuotaHelperImpl(const BrowsingDataQuotaHelperImpl&) = delete;
   BrowsingDataQuotaHelperImpl& operator=(const BrowsingDataQuotaHelperImpl&) =
@@ -44,12 +34,7 @@ class BrowsingDataQuotaHelperImpl : public BrowsingDataQuotaHelper {
  private:
   ~BrowsingDataQuotaHelperImpl() override;
 
-  // Callback function for QuotaManager::GetStorageKeysForType.
-  void GotStorageKeys(FetchResultCallback callback,
-                      const std::set<blink::StorageKey>& storage_keys);
-
-  scoped_refptr<storage::QuotaManager> quota_manager_;
-  base::WeakPtrFactory<BrowsingDataQuotaHelperImpl> weak_factory_{this};
+  scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 };
 
 #endif  // COMPONENTS_BROWSING_DATA_CONTENT_BROWSING_DATA_QUOTA_HELPER_IMPL_H_

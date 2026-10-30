@@ -22,7 +22,7 @@ class StoragePartition;
 }
 
 namespace storage {
-class QuotaManager;
+class QuotaManagerProxy;
 }  // namespace storage
 
 namespace android_webview {
@@ -69,13 +69,6 @@ class AwQuotaManagerBridge
       const base::android::JavaRef<jobject>& callback,
       bool is_quota);
 
-  using GetOriginsCallback =
-      base::OnceCallback<void(const std::vector<std::string>& /* origin */,
-                              const std::vector<int64_t>& /* usaoge */,
-                              const std::vector<int64_t>& /* quota */)>;
-  using QuotaUsageCallback =
-      base::OnceCallback<void(int64_t /* usage */, int64_t /* quota */)>;
-
  private:
   friend class base::RefCountedThreadSafe<AwQuotaManagerBridge>;
   explicit AwQuotaManagerBridge(AwBrowserContext* browser_context);
@@ -83,7 +76,7 @@ class AwQuotaManagerBridge
 
   content::StoragePartition* GetStoragePartition() const;
 
-  storage::QuotaManager* GetQuotaManager() const;
+  scoped_refptr<storage::QuotaManagerProxy> GetQuotaManagerProxy() const;
 
   raw_ptr<AwBrowserContext> browser_context_;
 
