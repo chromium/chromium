@@ -1679,6 +1679,36 @@ void HWNDMessageHandler::OnAppbarAutohideEdgesChanged() {
                  SWP_FRAMECHANGED | SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
+void HWNDMessageHandler::UpdateAutohideTaskbarAdjustments() {
+  // Only maximized windows adjust on auto-hide taskbar updates; other
+  // OnNCCalcSize() insets don't depend on display or work area changes (DPI is
+  // handled by WM_DPICHANGED).
+  if (!IsMaximized()) {
+    if (!base::FeatureList::IsEnabled(
+            features::kSkipRedundantSendFrameChanged)) {
+      SendFrameChanged();
+    }
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kSkipRedundantMaximizedFrameChange)) {
+    // Skip if OnNCCalcSize() didn't apply auto-hide adjustments (e.g.
+    // system-drawn frame) or cached edges are already applied.
+    // GetAppbarAutohideEdges() refreshes the cache asynchronously and calls
+    // OnAppbarAutohideEdgesChanged() if they change.
+    if (!applied_autohide_edges_.has_value()) {
+      return;
+    }
+    HMONITOR monitor = ::MonitorFromWindow(hwnd(), MONITOR_DEFAULTTONULL);
+    if (monitor &&
+        GetAppbarAutohideEdges(monitor) == *applied_autohide_edges_) {
+      return;
+    }
+  }
+  SendFrameChanged();
+}
+
 void HWNDMessageHandler::SetInitialFocus() {
   if (!(::GetWindowLong(hwnd(), GWL_EXSTYLE) & WS_EX_TRANSPARENT) &&
       !(::GetWindowLong(hwnd(), GWL_EXSTYLE) & WS_EX_NOACTIVATE)) {
@@ -2153,15 +2183,7 @@ void HWNDMessageHandler::OnDisplayChange(UINT bits_per_pixel,
     return;
   }
 
-  // Force a WM_NCCALCSIZE to occur to ensure that we handle auto hide
-  // taskbars correctly. OnNCCalcSize() only adjusts for auto-hide taskbars when
-  // the window is maximized, and the other insets it computes don't depend on
-  // the display configuration (except DPI, handled by WM_DPICHANGED). So the
-  // costly frame change can be skipped for other windows.
-  if (!base::FeatureList::IsEnabled(features::kSkipRedundantSendFrameChanged) ||
-      IsMaximized()) {
-    SendFrameChanged();
-  }
+  UpdateAutohideTaskbarAdjustments();
 }
 
 LRESULT HWNDMessageHandler::OnDpiChanged(UINT msg,
@@ -2639,6 +2661,8 @@ LRESULT HWNDMessageHandler::OnNCActivate(UINT message,
 }
 
 LRESULT HWNDMessageHandler::OnNCCalcSize(BOOL mode, LPARAM l_param) {
+  applied_autohide_edges_.reset();
+
   // We only override the default handling if we need to specify a custom
   // non-client edge width. Note that in most cases "no insets" means no
   // custom width, but in fullscreen mode or when the FrameView
@@ -2695,11 +2719,11 @@ LRESULT HWNDMessageHandler::OnNCCalcSize(BOOL mode, LPARAM l_param) {
     // thickness of the auto-hide taskbar on each such edge, so the window isn't
     // treated as a "fullscreen app", which would cause the taskbars to
     // disappear.
-    const int autohide_edges = GetAppbarAutohideEdges(monitor);
-    if (autohide_edges & ViewsDelegate::EDGE_LEFT) {
+    applied_autohide_edges_ = GetAppbarAutohideEdges(monitor);
+    if (*applied_autohide_edges_ & ViewsDelegate::EDGE_LEFT) {
       client_rect->left += kAutoHideTaskbarThicknessPx;
     }
-    if (autohide_edges & ViewsDelegate::EDGE_TOP) {
+    if (*applied_autohide_edges_ & ViewsDelegate::EDGE_TOP) {
       if (IsFrameSystemDrawn()) {
         // Tricky bit.  Due to a bug in DwmDefWindowProc()'s handling of
         // WM_NCHITTEST, having any nonclient area atop the window causes the
@@ -2715,10 +2739,10 @@ LRESULT HWNDMessageHandler::OnNCCalcSize(BOOL mode, LPARAM l_param) {
         client_rect->top += kAutoHideTaskbarThicknessPx;
       }
     }
-    if (autohide_edges & ViewsDelegate::EDGE_RIGHT) {
+    if (*applied_autohide_edges_ & ViewsDelegate::EDGE_RIGHT) {
       client_rect->right -= kAutoHideTaskbarThicknessPx;
     }
-    if (autohide_edges & ViewsDelegate::EDGE_BOTTOM) {
+    if (*applied_autohide_edges_ & ViewsDelegate::EDGE_BOTTOM) {
       client_rect->bottom -= kAutoHideTaskbarThicknessPx;
     }
 
@@ -3075,14 +3099,9 @@ void HWNDMessageHandler::OnSettingChange(UINT flags, const wchar_t* section) {
 
   // If the work area is changing, then it could be as a result of the taskbar
   // broadcasting the WM_SETTINGCHANGE message due to changes in auto hide
-  // settings, etc. Force a WM_NCCALCSIZE to occur to ensure that we handle
-  // this correctly. As in OnDisplayChange(), only maximized windows have
-  // auto-hide taskbar adjustments, so skip the costly frame change otherwise.
-  if (flags == SPI_SETWORKAREA &&
-      (!base::FeatureList::IsEnabled(
-           features::kSkipRedundantSendFrameChanged) ||
-       IsMaximized())) {
-    SendFrameChanged();
+  // settings, etc.
+  if (flags == SPI_SETWORKAREA) {
+    UpdateAutohideTaskbarAdjustments();
   }
 }
 

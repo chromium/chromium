@@ -382,6 +382,10 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // ViewsDelegate::GetAppbarAutohideEdges() for details.
   void OnAppbarAutohideEdgesChanged();
 
+  // Ensures that OnNCCalcSize() applies up-to-date auto-hide taskbar
+  // adjustments, after a display or work area change.
+  void UpdateAutohideTaskbarAdjustments();
+
   // Can be called after the delegate has had the opportunity to set focus and
   // did not do so.
   void SetInitialFocus();
@@ -790,6 +794,11 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
 
   // True the first time nccalc is called on a sizable widget
   bool is_first_nccalc_;
+
+  // Auto-hide taskbar edges applied by the last OnNCCalcSize() call, or nullopt
+  // if it didn't apply auto-hide taskbar adjustments (e.g. the window wasn't
+  // maximized, uses a system-drawn frame, or has no custom frame insets).
+  std::optional<int> applied_autohide_edges_;
 
   // Copy of custom window region specified via SetRegion(), if any.
   base::win::ScopedGDIObject<HRGN> custom_window_region_;

@@ -48,6 +48,9 @@ class DesktopWindowTreeHostWinTestApi {
 
   void SetRemoteSessionForTesting(bool is_remote);
 
+  // Resets the display that CheckForMonitorChange() last saw.
+  void ResetLastNearestDisplayForTesting();
+
  private:
   raw_ptr<DesktopWindowTreeHostWin> host_;
 };

@@ -86,6 +86,12 @@ BASE_FEATURE(kNotifyCompositorOfWindowVisibilityOnMacOs,
 #endif
 
 #if BUILDFLAG(IS_WIN)
+// When enabled, HWNDMessageHandler skips the frame change that updates
+// auto-hide taskbar adjustments of a maximized window on display and work area
+// changes, when the adjustments are already up-to-date.
+BASE_FEATURE(kSkipRedundantMaximizedFrameChange,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, HWNDMessageHandler skips redundant SendFrameChanged() calls and
 // no-op HandleClientSizeChanged() notifications.
 BASE_FEATURE(kSkipRedundantSendFrameChanged, base::FEATURE_DISABLED_BY_DEFAULT);

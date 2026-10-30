@@ -11,6 +11,7 @@
 
 #include <memory>
 #include <string_view>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -18,9 +19,11 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -41,15 +44,21 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/compositor/compositor.h"
+#include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/color_space.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/desktop_window_tree_host_win_test_api.h"
+#include "ui/views/test/test_views_delegate.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
+#include "ui/views/views_delegate.h"
 #include "ui/views/views_features.h"
 #include "ui/views/widget/desktop_aura/desktop_drag_drop_client_win.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
@@ -1434,14 +1443,23 @@ class ShowStateChangeCounter : public WidgetObserver {
 
 class DesktopWindowTreeHostWinSkipRedundantSendFrameChangedTest
     : public DesktopWindowTreeHostWinTest,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  protected:
   DesktopWindowTreeHostWinSkipRedundantSendFrameChangedTest() {
-    feature_list_.InitWithFeatureState(features::kSkipRedundantSendFrameChanged,
-                                       skip_redundant_send_frame_changed());
+    feature_list_.InitWithFeatureStates(
+        {{features::kSkipRedundantSendFrameChanged,
+          skip_redundant_send_frame_changed()},
+         {features::kSkipRedundantMaximizedFrameChange,
+          skip_redundant_maximized_frame_change()}});
   }
 
-  static bool skip_redundant_send_frame_changed() { return GetParam(); }
+  static bool skip_redundant_send_frame_changed() {
+    return std::get<0>(GetParam());
+  }
+
+  static bool skip_redundant_maximized_frame_change() {
+    return std::get<1>(GetParam());
+  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -1450,8 +1468,14 @@ class DesktopWindowTreeHostWinSkipRedundantSendFrameChangedTest
 INSTANTIATE_TEST_SUITE_P(
     ,
     DesktopWindowTreeHostWinSkipRedundantSendFrameChangedTest,
-    testing::Bool(),
-    [](const auto& info) { return info.param ? "Enabled" : "Disabled"; });
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const auto& info) {
+      return base::StrCat(
+          {std::get<0>(info.param) ? "SkipRedundantSendFrameChanged_"
+                                   : "NoSkipRedundantSendFrameChanged_",
+           std::get<1>(info.param) ? "SkipRedundantMaximizedFrameChange"
+                                   : "NoSkipRedundantMaximizedFrameChange"});
+    });
 
 // Verifies that observers are notified of a show state change that doesn't
 // change the client area size, e.g. when maximizing a window whose client area
@@ -1521,7 +1545,9 @@ TEST_P(DesktopWindowTreeHostWinSkipRedundantSendFrameChangedTest,
 
 // Verifies that WM_DISPLAYCHANGE and WM_SETTINGCHANGE(SPI_SETWORKAREA) only
 // cause a frame change and client size notification for maximized windows when
-// kSkipRedundantSendFrameChanged is enabled, and for all windows otherwise.
+// kSkipRedundantSendFrameChanged is enabled (unless
+// kSkipRedundantMaximizedFrameChange is also enabled), and for all windows
+// otherwise.
 TEST_P(DesktopWindowTreeHostWinSkipRedundantSendFrameChangedTest,
        SkipRedundantSendFrameChangedOnDisplayAndSettingChange) {
   Widget widget;
@@ -1534,9 +1560,11 @@ TEST_P(DesktopWindowTreeHostWinSkipRedundantSendFrameChangedTest,
   ScopedWndProcMessageCounter nc_calc_counter(hwnd, WM_NCCALCSIZE);
   HostResizeCounter resize_counter(widget.GetNativeWindow()->GetHost());
 
-  // For a non-maximized window, WM_DISPLAYCHANGE and
-  // WM_SETTINGCHANGE(SPI_SETWORKAREA) call SendFrameChanged(), which notifies
-  // the delegate of a client size change, unless the feature is enabled.
+  // OnDisplayChange() (which ignores WM_DISPLAYCHANGE's parameters) and
+  // OnSettingChange(SPI_SETWORKAREA) only call SendFrameChanged() to update
+  // auto-hide taskbar adjustments, which never apply to non-maximized windows.
+  // So SendFrameChanged() is redundant on any such message, and skipped when
+  // kSkipRedundantSendFrameChanged is enabled.
   ::SendMessage(hwnd, WM_DISPLAYCHANGE, 32, MAKELPARAM(1920, 1080));
   EXPECT_EQ(nc_calc_counter.count(),
             skip_redundant_send_frame_changed() ? 0 : 1);
@@ -1551,17 +1579,22 @@ TEST_P(DesktopWindowTreeHostWinSkipRedundantSendFrameChangedTest,
   EXPECT_EQ(resize_counter.count(),
             skip_redundant_send_frame_changed() ? 0 : 1);
 
-  // For a maximized window, they always call SendFrameChanged().
+  // For a maximized window with a system-drawn frame, OnNCCalcSize() lets
+  // Windows compute the client area instead of applying auto-hide taskbar
+  // adjustments, so SendFrameChanged() is skipped when
+  // kSkipRedundantMaximizedFrameChange is enabled.
   widget.Maximize();
   ASSERT_TRUE(widget.IsMaximized());
 
   nc_calc_counter.reset();
   ::SendMessage(hwnd, WM_DISPLAYCHANGE, 32, MAKELPARAM(1920, 1080));
-  EXPECT_EQ(nc_calc_counter.count(), 1);
+  EXPECT_EQ(nc_calc_counter.count(),
+            skip_redundant_maximized_frame_change() ? 0 : 1);
 
   nc_calc_counter.reset();
   ::SendMessage(hwnd, WM_SETTINGCHANGE, SPI_SETWORKAREA, 0);
-  EXPECT_EQ(nc_calc_counter.count(), 1);
+  EXPECT_EQ(nc_calc_counter.count(),
+            skip_redundant_maximized_frame_change() ? 0 : 1);
 }
 
 // Verifies that a size constraints change that doesn't change GWL_STYLE only
@@ -1622,6 +1655,211 @@ TEST_P(DesktopWindowTreeHostWinSkipRedundantSendFrameChangedTest,
   resize_counter.reset();
   widget.SetBounds(gfx::Rect(100, 100, 300, 300));
   EXPECT_EQ(resize_counter.count(), 1);
+}
+
+namespace {
+
+// Returns cached auto-hide taskbar edges, and lets tests simulate the
+// asynchronous refresh of the cache.
+class AutohideEdgesTestViewsDelegate : public TestViewsDelegate {
+ public:
+  // TestViewsDelegate:
+  int GetAppbarAutohideEdges(HMONITOR monitor,
+                             base::OnceClosure callback) override {
+    callback_ = std::move(callback);
+    return edges_;
+  }
+
+  // Changes the cached edges, without running the callback.
+  void set_edges(int edges) { edges_ = edges; }
+
+  // Simulates a refresh of the cache that returns `edges`. Like
+  // ChromeViewsDelegate, runs the callback if the edges changed.
+  void RefreshEdges(int edges) {
+    const bool changed = edges != edges_;
+    edges_ = edges;
+    if (changed && callback_) {
+      std::move(callback_).Run();
+    }
+  }
+
+ private:
+  int edges_ = EDGE_BOTTOM;
+  base::OnceClosure callback_;
+};
+
+}  // namespace
+
+class DesktopWindowTreeHostWinSkipRedundantMaximizedFrameChangeTest
+    : public DesktopWindowTreeHostWinTest,
+      public testing::WithParamInterface<bool> {
+ protected:
+  DesktopWindowTreeHostWinSkipRedundantMaximizedFrameChangeTest() {
+    feature_list_.InitWithFeatureState(
+        features::kSkipRedundantMaximizedFrameChange,
+        skip_redundant_maximized_frame_change());
+  }
+
+  // DesktopWindowTreeHostWinTest:
+  void SetUp() override {
+    views_delegate_ =
+        set_views_delegate(std::make_unique<AutohideEdgesTestViewsDelegate>());
+    DesktopWindowTreeHostWinTest::SetUp();
+  }
+  void TearDown() override {
+    // The views delegate is destroyed in TearDown().
+    views_delegate_ = nullptr;
+    DesktopWindowTreeHostWinTest::TearDown();
+  }
+
+  static bool skip_redundant_maximized_frame_change() { return GetParam(); }
+
+  AutohideEdgesTestViewsDelegate* views_delegate() { return views_delegate_; }
+
+  // Initializes `widget` as a maximized window with a custom frame, to which
+  // OnNCCalcSize() applies auto-hide taskbar adjustments.
+  HWND InitMaximizedWidget(Widget& widget) {
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
+    params.bounds = gfx::Rect(100, 100, 200, 200);
+    widget.set_frame_type(Widget::FrameType::kForceCustom);
+    HWND hwnd = InitTestWidget(widget, std::move(params));
+    widget.Maximize();
+    return hwnd;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  raw_ptr<AutohideEdgesTestViewsDelegate> views_delegate_ = nullptr;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    DesktopWindowTreeHostWinSkipRedundantMaximizedFrameChangeTest,
+    testing::Bool(),
+    [](const auto& info) { return info.param ? "Enabled" : "Disabled"; });
+
+// Verifies that WM_DISPLAYCHANGE and WM_SETTINGCHANGE(SPI_SETWORKAREA) only
+// cause a frame change for a maximized window when
+// kSkipRedundantMaximizedFrameChange is disabled, if the auto-hide taskbar
+// edges match those already applied on Maximize().
+TEST_P(DesktopWindowTreeHostWinSkipRedundantMaximizedFrameChangeTest,
+       UnchangedAutohideEdges) {
+  Widget widget;
+  HWND hwnd = InitMaximizedWidget(widget);
+  ASSERT_TRUE(widget.IsMaximized());
+
+  // InitMaximizedWidget() already applied the initial EDGE_BOTTOM adjustments.
+  ScopedWndProcMessageCounter nc_calc_counter(hwnd, WM_NCCALCSIZE);
+  ::SendMessage(hwnd, WM_DISPLAYCHANGE, 32, MAKELPARAM(1920, 1080));
+  EXPECT_EQ(nc_calc_counter.count(),
+            skip_redundant_maximized_frame_change() ? 0 : 1);
+
+  nc_calc_counter.reset();
+  ::SendMessage(hwnd, WM_SETTINGCHANGE, SPI_SETWORKAREA, 0);
+  EXPECT_EQ(nc_calc_counter.count(),
+            skip_redundant_maximized_frame_change() ? 0 : 1);
+}
+
+// Verifies that WM_DISPLAYCHANGE and WM_SETTINGCHANGE(SPI_SETWORKAREA) cause a
+// frame change for a maximized window when the cached auto-hide taskbar edges
+// differ from the applied ones.
+TEST_P(DesktopWindowTreeHostWinSkipRedundantMaximizedFrameChangeTest,
+       ChangedCachedAutohideEdges) {
+  Widget widget;
+  HWND hwnd = InitMaximizedWidget(widget);
+  ASSERT_TRUE(widget.IsMaximized());
+
+  ScopedWndProcMessageCounter nc_calc_counter(hwnd, WM_NCCALCSIZE);
+  HostResizeCounter resize_counter(widget.GetNativeWindow()->GetHost());
+  views_delegate()->set_edges(ViewsDelegate::EDGE_LEFT);
+  ::SendMessage(hwnd, WM_DISPLAYCHANGE, 32, MAKELPARAM(1920, 1080));
+  EXPECT_EQ(nc_calc_counter.count(), 1);
+  EXPECT_EQ(resize_counter.count(), 1);
+
+  // Test an identical WM_DISPLAYCHANGE without any change to the edges.
+  nc_calc_counter.reset();
+  ::SendMessage(hwnd, WM_DISPLAYCHANGE, 32, MAKELPARAM(1920, 1080));
+  EXPECT_EQ(nc_calc_counter.count(),
+            skip_redundant_maximized_frame_change() ? 0 : 1);
+
+  nc_calc_counter.reset();
+  resize_counter.reset();
+  views_delegate()->set_edges(ViewsDelegate::EDGE_TOP);
+  ::SendMessage(hwnd, WM_SETTINGCHANGE, SPI_SETWORKAREA, 0);
+  EXPECT_EQ(nc_calc_counter.count(), 1);
+  EXPECT_EQ(resize_counter.count(), 1);
+
+  // Test an identical WM_SETTINGCHANGE without any change to the edges.
+  nc_calc_counter.reset();
+  ::SendMessage(hwnd, WM_SETTINGCHANGE, SPI_SETWORKAREA, 0);
+  EXPECT_EQ(nc_calc_counter.count(),
+            skip_redundant_maximized_frame_change() ? 0 : 1);
+}
+
+// Verifies that a maximized window gets a frame change when the auto-hide
+// taskbar edges change after WM_DISPLAYCHANGE or
+// WM_SETTINGCHANGE(SPI_SETWORKAREA), once the cache is refreshed.
+TEST_P(DesktopWindowTreeHostWinSkipRedundantMaximizedFrameChangeTest,
+       RefreshedAutohideEdges) {
+  Widget widget;
+  HWND hwnd = InitMaximizedWidget(widget);
+  ASSERT_TRUE(widget.IsMaximized());
+
+  ScopedWndProcMessageCounter nc_calc_counter(hwnd, WM_NCCALCSIZE);
+  HostResizeCounter resize_counter(widget.GetNativeWindow()->GetHost());
+  ::SendMessage(hwnd, WM_DISPLAYCHANGE, 32, MAKELPARAM(1920, 1080));
+  EXPECT_EQ(nc_calc_counter.count(),
+            skip_redundant_maximized_frame_change() ? 0 : 1);
+
+  nc_calc_counter.reset();
+  resize_counter.reset();
+  views_delegate()->RefreshEdges(ViewsDelegate::EDGE_LEFT);
+  EXPECT_EQ(nc_calc_counter.count(), 1);
+  EXPECT_EQ(resize_counter.count(), 1);
+
+  nc_calc_counter.reset();
+  ::SendMessage(hwnd, WM_SETTINGCHANGE, SPI_SETWORKAREA, 0);
+  EXPECT_EQ(nc_calc_counter.count(),
+            skip_redundant_maximized_frame_change() ? 0 : 1);
+
+  nc_calc_counter.reset();
+  resize_counter.reset();
+  views_delegate()->RefreshEdges(ViewsDelegate::EDGE_TOP);
+  EXPECT_EQ(nc_calc_counter.count(), 1);
+  EXPECT_EQ(resize_counter.count(), 1);
+}
+
+// Verifies that WM_DISPLAYCHANGE runs CheckForMonitorChange() for a maximized
+// window, updating the compositor's display color spaces if the nearest display
+// changed.
+TEST_P(DesktopWindowTreeHostWinSkipRedundantSendFrameChangedTest,
+       DisplayChangeChecksForMonitorChangeWhenMaximized) {
+  Widget widget;
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  params.bounds = gfx::Rect(100, 100, 200, 200);
+  HWND hwnd = InitTestWidget(widget, std::move(params));
+  widget.Maximize();
+  ASSERT_TRUE(widget.IsMaximized());
+
+  aura::WindowTreeHost* host = widget.GetNativeWindow()->GetHost();
+  ui::Compositor* compositor = host->compositor();
+  const gfx::DisplayColorSpaces display_color_spaces =
+      display::Screen::Get()
+          ->GetDisplayNearestWindow(host->window())
+          .GetColorSpaces();
+  const gfx::DisplayColorSpaces stale_color_spaces(
+      gfx::ColorSpace::CreateDisplayP3D65());
+  ASSERT_NE(stale_color_spaces, display_color_spaces);
+  compositor->SetDisplayColorSpaces(stale_color_spaces);
+  // Simulate a change of the nearest display.
+  DesktopWindowTreeHostWinTestApi(static_cast<DesktopWindowTreeHostWin*>(host))
+      .ResetLastNearestDisplayForTesting();
+
+  ::SendMessage(hwnd, WM_DISPLAYCHANGE, 32, MAKELPARAM(1920, 1080));
+  EXPECT_EQ(compositor->display_color_spaces(), display_color_spaces);
 }
 
 }  // namespace test
