@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_browser_agent.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_task_lifecycle_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/actor_browser_utils.h"
@@ -177,15 +178,29 @@ void CancelActuationAsyncEntry(
 
 }  // namespace
 
-// Default intervention delegate for TTC tasks.
-@interface TtcTaskInterventionHandler : NSObject <ActorTaskInterventionDelegate>
+// Default intervention delegate and task lifecycle observer for TTC tasks.
+@interface TtcTaskInterventionHandler
+    : NSObject <ActorTaskInterventionDelegate, ActorTaskLifecycleObserver>
+
+- (instancetype)initWithTaskStoppedCallback:
+    (base::RepeatingCallback<void(actor::ActorTaskId)>)callback
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+
 @end
 
 #pragma mark - Initializers
 
 TtcActuationHandler::TtcActuationHandler(actor::ActorService* actor_service)
-    : actor_service_(actor_service),
-      intervention_delegate_([[TtcTaskInterventionHandler alloc] init]) {}
+    : actor_service_(actor_service) {
+  intervention_delegate_ = [[TtcTaskInterventionHandler alloc]
+      initWithTaskStoppedCallback:base::BindRepeating(
+                                      &TtcActuationHandler::OnTaskStopped,
+                                      weak_ptr_factory_.GetWeakPtr())];
+  if (actor_service_) {
+    actor_service_->AddTaskLifecycleObserver(intervention_delegate_);
+  }
+}
 
 TtcActuationHandler::~TtcActuationHandler() {
   Disconnect();
@@ -209,7 +224,8 @@ void TtcActuationHandler::Disconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   weak_ptr_factory_.InvalidateWeakPtrs();
-  intervention_delegate_ = nil;
+  TtcTaskInterventionHandler* intervention_delegate =
+      std::exchange(intervention_delegate_, nil);
 
   actor::ActorTaskId task_id = std::exchange(task_id_, actor::ActorTaskId());
   actor::ActorService* actor_service = std::exchange(actor_service_, nullptr);
@@ -217,8 +233,12 @@ void TtcActuationHandler::Disconnect() {
   CancelActuationAsyncEntry(std::move(active_async_entry_));
   journal_.reset();
 
-  if (!task_id.is_null() && actor_service) {
-    actor_service->StopTask(task_id, actor::ActorTaskStoppedReason::kShutdown);
+  if (actor_service) {
+    actor_service->RemoveTaskLifecycleObserver(intervention_delegate);
+    if (!task_id.is_null()) {
+      actor_service->StopTask(task_id,
+                              actor::ActorTaskStoppedReason::kShutdown);
+    }
   }
 
   if (callback) {
@@ -259,24 +279,6 @@ void TtcActuationHandler::DispatchActuationRequest(
     FailWithError(std::move(callback),
                   actor::mojom::ActionResultCode::kTaskWentAway);
     return;
-  }
-
-  // The task can be stopped externally (e.g., if the user closes a controlled
-  // tab or stops the task from the UI), in which case it is replaced by a new
-  // one and any in-flight callback is failed with `kTaskWentAway`.
-  // TODO(crbug.com/517583120): Query the task state for `task_id_` directly on
-  // `ActorService` instead of assuming a single active task.
-  if (!task_id_.is_null() &&
-      !actor_service_->GetActiveTaskState().has_value()) {
-    weak_ptr_factory_.InvalidateWeakPtrs();
-    task_id_ = actor::ActorTaskId();
-    ActuationCallback active_callback = std::move(active_callback_);
-    CancelActuationAsyncEntry(std::move(active_async_entry_));
-    if (active_callback) {
-      std::move(active_callback)
-          .Run(ttc::ToolResponse::Error(
-              actor::mojom::ActionResultCode::kTaskWentAway));
-    }
   }
 
   web::BrowserState* browser_state =
@@ -337,13 +339,11 @@ void TtcActuationHandler::DispatchActuationRequest(
   actor_service_->PerformActions(
       task_id_, std::move(actions), request.task_update,
       base::BindOnce(&TtcActuationHandler::OnPerformActionsFinished,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), task_id_));
 }
 
 void TtcActuationHandler::StopTask(actor::ActorTaskStoppedReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  weak_ptr_factory_.InvalidateWeakPtrs();
 
   actor::ActorTaskId task_id = std::exchange(task_id_, actor::ActorTaskId());
   ActuationCallback callback = std::move(active_callback_);
@@ -362,10 +362,11 @@ void TtcActuationHandler::StopTask(actor::ActorTaskStoppedReason reason) {
 #pragma mark - Private
 
 void TtcActuationHandler::OnPerformActionsFinished(
+    actor::ActorTaskId task_id,
     actor::PerformActionsResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!active_callback_) {
+  if (task_id != task_id_ || !active_callback_) {
     return;
   }
   ActuationCallback callback = std::move(active_callback_);
@@ -442,7 +443,48 @@ TtcActuationHandler::BeginActuationAsyncEntry(
           .Build());
 }
 
-@implementation TtcTaskInterventionHandler
+void TtcActuationHandler::OnTaskStopped(actor::ActorTaskId task_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (task_id.is_null() || task_id != task_id_) {
+    return;
+  }
+  task_id_ = actor::ActorTaskId();
+  CancelActuationAsyncEntry(std::move(active_async_entry_));
+  if (active_callback_) {
+    std::move(active_callback_)
+        .Run(ttc::ToolResponse::Error(
+            actor::mojom::ActionResultCode::kTaskWentAway));
+  }
+}
+
+@implementation TtcTaskInterventionHandler {
+  base::RepeatingCallback<void(actor::ActorTaskId)> _taskStoppedCallback;
+}
+
+- (instancetype)initWithTaskStoppedCallback:
+    (base::RepeatingCallback<void(actor::ActorTaskId)>)callback {
+  self = [super init];
+  if (self) {
+    _taskStoppedCallback = std::move(callback);
+  }
+  return self;
+}
+
+#pragma mark - ActorTaskLifecycleObserver
+
+- (void)actorServiceDidStartTaskWithID:(actor::ActorTaskId)taskID
+                            sourceInfo:
+                                (const actor::TaskSourceInfo&)sourceInfo {
+  // No-op: TtcActuationHandler only reacts to task stop events.
+}
+
+- (void)actorServiceDidStopTaskWithID:(actor::ActorTaskId)taskID
+                           sourceInfo:(const actor::TaskSourceInfo&)sourceInfo
+                           finalState:(actor::ActorTaskState)finalState {
+  if (_taskStoppedCallback) {
+    _taskStoppedCallback.Run(taskID);
+  }
+}
 
 #pragma mark - ActorTaskInterventionDelegate
 

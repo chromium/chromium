@@ -80,7 +80,11 @@ class TtcActuationHandler {
 
  private:
   // Handles completion of `ActorService::PerformActions`.
-  void OnPerformActionsFinished(actor::PerformActionsResult result);
+  void OnPerformActionsFinished(actor::ActorTaskId task_id,
+                                actor::PerformActionsResult result);
+
+  // Invoked when `task_id` is stopped in `ActorService`.
+  void OnTaskStopped(actor::ActorTaskId task_id);
 
   // Logs an `ActuationDispatchRejected` error entry to `journal_` (using
   // `reason` if non-empty, or `base::ToString(code)` otherwise) and invokes

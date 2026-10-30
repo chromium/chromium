@@ -12,6 +12,7 @@
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "base/values.h"
+#import "components/actor/core/task_source_info.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/tools/ttc_actuation_data_types.h"
@@ -269,15 +270,16 @@ TEST_F(TtcActuationHandlerTest,
   handler->Disconnect();
 }
 
-// Tests that if the session task is stopped externally in `ActorService`, a
-// subsequent actuation request replaces it with a new task.
+// Tests that if the session task is stopped externally in `ActorService` while
+// an unrelated task remains active, a subsequent actuation request replaces the
+// stopped task with a new one.
 TEST_F(TtcActuationHandlerTest,
        TestDispatchActuationRequestReplacesExternallyStoppedTask) {
   actor::ActorService* actor_service = GetActorService();
   ASSERT_TRUE(actor_service);
   std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
 
-  auto request_result =
+  base::expected<TtcActuationRequest, std::string> request_result =
       TtcToolValidator::CreateActuationRequest(ttc::ToolRequest{
           ttc::kToolOpenUrl, CreateUrlArgs("https://example.com/1")});
   ASSERT_TRUE(request_result.has_value());
@@ -288,18 +290,47 @@ TEST_F(TtcActuationHandlerTest,
   EXPECT_TRUE(first_future.Get().Ok());
   EXPECT_TRUE(actor_service->GetActiveTaskState().has_value());
 
-  // Stops the task externally via `ActorService`.
+  // Stops the handler's task externally and creates an unrelated active task so
+  // `GetActiveTaskState()` remains non-null.
   actor_service->StopAllTasks();
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return !actor_service->GetActiveTaskState().has_value(); }));
+  actor::ActorTaskId other_task_id = actor_service->CreateTask(
+      "Other Task",
+      actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kGlic,
+                            /*id=*/std::nullopt),
+      /*allow_incognito_web_states=*/false);
+  ASSERT_FALSE(other_task_id.is_null());
+  actor::FlushCurrentSequence();
 
   // The next actuation request should create a replacement task.
   base::test::TestFuture<ttc::ToolResponse> second_future;
   handler->DispatchActuationRequest(request_result.value(), GetActiveWebState(),
                                     second_future.GetCallback());
   EXPECT_TRUE(second_future.Get().Ok());
-  EXPECT_TRUE(actor_service->GetActiveTaskState().has_value());
 
+  handler->Disconnect();
+  actor_service->StopAllTasks();
+}
+
+// Tests that stopping the task externally in `ActorService` while an actuation
+// request is in flight fails the pending callback with `kTaskWentAway`.
+TEST_F(TtcActuationHandlerTest, TestExternalStopCancelsActiveActuation) {
+  actor::ActorService* actor_service = GetActorService();
+  ASSERT_TRUE(actor_service);
+  std::unique_ptr<TtcActuationHandler> handler = CreateHandler();
+  base::expected<TtcActuationRequest, std::string> request_result =
+      TtcToolValidator::CreateActuationRequest(ttc::ToolRequest{
+          ttc::kToolOpenUrl, CreateUrlArgs("https://example.com")});
+  ASSERT_TRUE(request_result.has_value());
+  base::test::TestFuture<ttc::ToolResponse> future;
+  handler->DispatchActuationRequest(request_result.value(), GetActiveWebState(),
+                                    future.GetCallback());
+
+  actor_service->StopAllTasks();
+
+  const ttc::ToolResponse& response = future.Get();
+  ASSERT_FALSE(response.Ok());
+  EXPECT_EQ(actor::mojom::ActionResultCode::kTaskWentAway,
+            response.error().code);
   handler->Disconnect();
 }
 

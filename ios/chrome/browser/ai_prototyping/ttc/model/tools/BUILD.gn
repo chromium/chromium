@@ -48,6 +48,7 @@ source_set("unit_tests") {
     ":tools",
     "//base",
     "//base/test:test_support",
+    "//components/actor/core",
     "//components/actor/public/mojom:mojo_bindings",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/ttc/app/public",
