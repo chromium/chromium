@@ -85,34 +85,15 @@ public class SettingsActivityTest {
         }
     }
 
+    /** Test status bar is always black in Automotive devices. */
     @Test
     @SmallTest
     @Feature({"StatusBar, Automotive Toolbar"})
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_AUTO)
-    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_AUTOMOTIVE)
-    public void testStatusBarInAutomotive() {
-        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
-
-        assertEquals(
-                "Window status bar should be transparent when drawing edge-to-edge.",
-                Color.TRANSPARENT,
-                activity.getWindow().getStatusBarColor());
-        assertEquals(
-                "Edge-to-edge layout should draw the status bar with the settings background"
-                        + " color.",
-                SemanticColorUtils.getSettingsBackgroundColor(activity),
-                activity.ensureEdgeToEdgeLayoutCoordinator().getStatusBarColor());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"StatusBar, Automotive Toolbar"})
-    @Restriction(DeviceRestriction.RESTRICTION_TYPE_AUTO)
-    @DisableFeatures(ChromeFeatureList.EDGE_TO_EDGE_AUTOMOTIVE)
-    public void testStatusBarBlackInAutomotive_EdgeToEdgeDisabled() {
+    public void testStatusBarBlackInAutomotive() {
         mSettingsActivityTestRule.startSettingsActivity();
         assertEquals(
-                "Status bar should be black in automotive devices without edge-to-edge.",
+                "Status bar should always be black in automotive devices.",
                 Color.BLACK,
                 mSettingsActivityTestRule.getActivity().getWindow().getStatusBarColor());
     }
