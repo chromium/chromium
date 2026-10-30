@@ -17,6 +17,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "build/build_config.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "chrome/browser/background/extensions/background_application_list_model.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,7 +36,7 @@
 #include "chrome/browser/startup/startup_launch_manager.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
 #include "base/types/expected.h"
 
 namespace dbus_xdg {
@@ -136,7 +138,7 @@ class BackgroundModeManager : public BrowserCollectionObserver,
     return client_installed_notifications_;
   }
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
   // Allows injecting a fake portal client in tests.
   void SetBackgroundPortalClientForTesting(
       std::unique_ptr<dbus_xdg::BackgroundPortalClient> portal_client);
@@ -487,7 +489,7 @@ class BackgroundModeManager : public BrowserCollectionObserver,
   // Set to true when background mode is suspended.
   bool background_mode_suspended_ = false;
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
   // Synchronizes background permission and autostart configuration with
   // xdg-desktop-portal on Linux when in a sandboxed environment. Does nothing
   // until background mode has been entered once in this session.

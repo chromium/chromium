@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
 import("//chrome/common/features.gni")
 
 assert(enable_background_mode)
@@ -12,6 +13,8 @@ source_set("extensions") {
     "background_application_list_model.h",
     "background_mode_manager.h",
   ]
+
+  public_deps = [ "//build/config/linux/dbus:buildflags" ]
 
   deps = [
     "//base",
@@ -54,6 +57,7 @@ source_set("impl") {
   deps = [
     ":extensions",
     "//base",
+    "//build/config/linux/dbus:buildflags",
     "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//chrome/browser:browser_process",
     "//chrome/browser/background",
@@ -97,10 +101,10 @@ source_set("impl") {
   }
 
   if (is_linux) {
-    deps += [
-      "//chrome/browser:shell_integration_linux",
-      "//components/dbus",
-    ]
+    deps += [ "//chrome/browser:shell_integration_linux" ]
+    if (use_dbus) {
+      deps += [ "//components/dbus" ]
+    }
   }
 }
 
@@ -114,6 +118,7 @@ source_set("unit_tests") {
   deps = [
     ":extensions",
     "//base",
+    "//build/config/linux/dbus:buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser/background",
     "//chrome/browser/lifetime",
@@ -134,7 +139,7 @@ source_set("unit_tests") {
     deps += [ "//chrome/browser/startup" ]
   }
 
-  if (is_linux) {
+  if (is_linux && use_dbus) {
     deps += [ "//components/dbus" ]
   }
 }

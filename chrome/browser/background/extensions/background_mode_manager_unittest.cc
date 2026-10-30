@@ -19,6 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_simple_task_runner.h"
 #include "build/build_config.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -63,7 +64,7 @@
 #include "chrome/browser/startup/startup_launch_manager.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
 #include "base/nix/xdg_util.h"
 #include "base/scoped_environment_variable_override.h"
 #include "components/dbus/xdg/background_portal.h"
@@ -1310,7 +1311,7 @@ TEST_F(BackgroundModeManagerTest,
   EXPECT_FALSE(keep_alive_registry->IsKeepingAlive());
 }
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
 namespace {
 
 class FakeBackgroundPortalClient : public dbus_xdg::BackgroundPortalClient {

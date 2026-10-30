@@ -25,6 +25,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/background/extensions/background_application_list_model.h"
 #include "chrome/browser/browser_process.h"
@@ -79,7 +80,7 @@
 #include "chrome/browser/win/app_icon.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
 #include "base/nix/xdg_util.h"
 #include "chrome/browser/shell_integration_linux.h"
 #include "components/dbus/xdg/background_portal.h"
@@ -358,7 +359,7 @@ BackgroundModeManager::~BackgroundModeManager() {
 // static
 void BackgroundModeManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kBackgroundModeEnabled, true);
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
   registry->RegisterBooleanPref(prefs::kBackgroundModePortalAutostartGranted,
                                 false);
 #endif
@@ -485,7 +486,7 @@ void BackgroundModeManager::OnExtensionsReady(Profile* profile) {
   // never called).
   startup_launch_client_.SetLaunchOnStartup(ShouldLaunchOnStartup());
 #endif
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
   MaybeClearStalePortalAutostart();
 #endif
 
@@ -508,7 +509,7 @@ void BackgroundModeManager::OnBackgroundModeEnabledPrefChanged() {
   } else {
     DisableBackgroundMode();
   }
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
   SynchronizeBackgroundPortalState();
 #endif
 }
@@ -575,7 +576,7 @@ void BackgroundModeManager::OnProfileWillBeRemoved(
   // background apps installed.
   startup_launch_client_.SetLaunchOnStartup(ShouldLaunchOnStartup());
 #endif
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
   // As above, only update the portal's autostart state on profile deletion.
   SynchronizeBackgroundPortalState();
 #endif
@@ -732,7 +733,7 @@ void BackgroundModeManager::StartBackgroundMode() {
 
   UpdateKeepAliveAndTrayIcon();
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
   SynchronizeBackgroundPortalState();
 #endif
 }
@@ -742,7 +743,7 @@ void BackgroundModeManager::EndBackgroundMode() {
     return;
   }
   in_background_mode_ = false;
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
   portal_status_set_ = false;
 #endif
 
@@ -842,7 +843,7 @@ void BackgroundModeManager::OnClientsChanged(
       OnBackgroundClientInstalled(name);
     }
   }
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
   SynchronizeBackgroundPortalState();
 #endif
 }
@@ -873,7 +874,7 @@ bool BackgroundModeManager::HasPersistentBackgroundClientForProfile(
 }
 
 bool BackgroundModeManager::ShouldBeInBackgroundMode() const {
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
   if (portal_denied_) {
     return false;
   }
@@ -1099,7 +1100,7 @@ bool BackgroundModeManager::IsBackgroundModePrefEnabled() const {
   return service->GetBoolean(prefs::kBackgroundModeEnabled);
 }
 
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
 void BackgroundModeManager::SetBackgroundPortalClientForTesting(
     std::unique_ptr<dbus_xdg::BackgroundPortalClient> portal_client) {
   background_portal_client_ = std::move(portal_client);
