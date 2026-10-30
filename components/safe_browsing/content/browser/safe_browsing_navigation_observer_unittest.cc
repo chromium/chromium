@@ -1305,41 +1305,6 @@ TEST_F(SBNavigationObserverTest,
 
 // Regression test for b/568560137.
 TEST_F(SBNavigationObserverTest,
-       RecordNewWebContentsWithFrameTransientUserActivation) {
-  sessions::SessionTabHelper::CreateForWebContents(web_contents(),
-                                                   base::NullCallback());
-  std::unique_ptr<content::WebContents> target_web_contents =
-      CreateTestWebContents();
-  sessions::SessionTabHelper::CreateForWebContents(target_web_contents.get(),
-                                                   base::NullCallback());
-
-  content::RenderFrameHost* subframe =
-      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
-  subframe = content::NavigationSimulator::NavigateAndCommitFromDocument(
-      GURL("http://bar/subframe"), subframe);
-  content::RenderFrameHostTester::For(subframe)->SimulateUserActivation();
-
-  navigation_observer_manager_->RecordNewWebContents(
-      web_contents(), subframe, GURL("http://foo/new_tab"),
-      ui::PAGE_TRANSITION_LINK, target_web_contents.get(),
-      /*renderer_initiated=*/true);
-
-  ASSERT_EQ(2U, navigation_event_list()->NavigationEventsSize());
-  VerifyNavigationEvent(
-      GURL("http://bar/subframe"),  // source_url
-      GURL("http://foo/0"),         // source_main_frame_url
-      GURL("http://foo/new_tab"),   // original_request_url
-      GURL("http://foo/new_tab"),   // destination_url
-      sessions::SessionTabHelper::IdForTab(web_contents()),
-      sessions::SessionTabHelper::IdForTab(target_web_contents.get()),
-      ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE,
-      false,  // has_committed
-      false,  // has_server_redirect
-      navigation_event_list()->GetNavigationEvent(1U));
-}
-
-// Regression test for b/568560137.
-TEST_F(SBNavigationObserverTest,
        PendingNavigationEventSameTabIsNotRetargeting) {
   sessions::SessionTabHelper::CreateForWebContents(web_contents(),
                                                    base::NullCallback());

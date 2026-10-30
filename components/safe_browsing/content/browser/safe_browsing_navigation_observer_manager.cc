@@ -743,18 +743,7 @@ void SafeBrowsingNavigationObserverManager::RecordNewWebContents(
 
   if (!renderer_initiated) {
     nav_event->navigation_initiation = ReferrerChainEntry::BROWSER_INITIATED;
-  } else if (HasUnexpiredUserGesture(source_web_contents) ||
-             // DidGetUserInteraction() is not called for user interactions in
-             // cross-origin subframes (OOPIFs), so HasUnexpiredUserGesture() on
-             // source_web_contents is false. Check the source frame's transient
-             // user activation directly to cover new tabs opened from OOPIFs.
-             // TODO(b/568560137): When a new window is created via
-             // RenderFrameHostImpl::CreateNewWindow (e.g. window.open()), the
-             // source frame's transient user activation is consumed before
-             // RecordNewWebContents is called, so HasTransientUserActivation()
-             // is already false here. Handle that case as well.
-             (source_render_frame_host &&
-              source_render_frame_host->HasTransientUserActivation())) {
+  } else if (HasUnexpiredUserGesture(source_web_contents)) {
     OnUserGestureConsumed(source_web_contents);
     nav_event->navigation_initiation =
         ReferrerChainEntry::RENDERER_INITIATED_WITH_USER_GESTURE;
