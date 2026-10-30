@@ -121,9 +121,6 @@ struct BlockLineClampData {
 
   LineClampData data;
 
-  // Set to true when we relayout ignoring line clamp.
-  bool ignore_line_clamp = false;
-
   // TODO(abotella): Make the following fields into a union.
 
   // The initial number of lines until clamp from the start of this layout.

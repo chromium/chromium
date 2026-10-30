@@ -56,6 +56,11 @@ struct LineClampData {
     // a number of lines, unless the BFC offset is reached before that point, in
     // which case it relayouts with `kClampByLines`.
     kClampByLinesWithBfcOffset,
+
+    // We are in a line-clamp context (unlike `kDisabled`), but we never clamp.
+    // Used to relayout without an ellipsis, since floats should still be
+    // clipped in that case.
+    kDontClamp,
   };
 
   bool IsLineClampContext() const { return state != State::kDisabled; }

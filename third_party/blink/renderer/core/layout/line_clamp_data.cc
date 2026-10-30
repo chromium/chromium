@@ -26,6 +26,7 @@ CORE_EXPORT LineClampData::LineClampData(const LineClampData& o)
     : state(o.state) {
   switch (state) {
     case State::kDisabled:
+    case State::kDontClamp:
       break;
     case State::kClampByLines:
     case State::kCountLines:
@@ -51,6 +52,7 @@ CORE_EXPORT LineClampData& LineClampData::operator=(const LineClampData& o) {
   state = o.state;
   switch (state) {
     case State::kDisabled:
+    case State::kDontClamp:
       break;
     case State::kClampByLines:
     case State::kCountLines:
