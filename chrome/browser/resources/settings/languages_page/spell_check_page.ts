@@ -28,7 +28,9 @@ import type {CrCollapseElement} from 'chrome://resources/cr_elements/cr_collapse
 // </if>
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
+// <if expr="not is_macosx">
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+// </if>
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 // <if expr="_google_chrome">
@@ -134,29 +136,27 @@ export class SettingsSpellCheckPageElement extends
     // </if>
   }
 
+  // <if expr="not is_macosx">
   override disconnectedCallback() {
     super.disconnectedCallback();
 
-    // <if expr="not is_macosx">
     if (this.boundOnLanguagesChanged_) {
       this.languageHelper_.removeEventListener(
           'languages-changed', this.boundOnLanguagesChanged_);
       this.boundOnLanguagesChanged_ = null;
     }
-    // </if>
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
-    // <if expr="not is_macosx">
     const changedPrivateProperties =
         changedProperties as Map<PropertyKey, unknown>;
     if (changedPrivateProperties.has('enableSpellcheckingPref_')) {
       this.updateSpellcheckEnabled_();
     }
-    // </if>
   }
+  // </if>
 
   protected onEnableSpellcheckingToggleSettingsBooleanControlChange_(e: Event) {
     this.languageSettingsMetricsProxy_.recordSettingsMetric(

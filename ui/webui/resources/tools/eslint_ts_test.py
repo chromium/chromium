@@ -326,6 +326,8 @@ class EslintTsTest(unittest.TestCase):
     _EXPECTED_MISSING_CUSTOM_EVENT_TYPE_PARAMETER_ERROR = "Missing CustomEvent type parameter for %(type)s '%(name)s' (use CustomEvent<void> or CustomEvent<SomeType>)"
     _EXPECTED_INVALID_DOLLAR_SIGN_PROPERTY_ERROR = "Optional or nullable property '%(propertyName)s' is not allowed on the '$' interface of '%(className)s'. Elements accessed via '$' are expected to always exist in the DOM"
     _EXPECTED_NO_CONSTRUCTOR_PARAMS_ERROR = "Constructor in CrLitElement subclass %(className)s must not accept parameters"
+    _EXPECTED_EMPTY_PROPERTIES_GETTER_ERROR = "Unnecessary empty 'properties()' getter in class %(className)s. Remove it if the element has no reactive properties"
+    _EXPECTED_EMPTY_LIFECYCLE_METHOD_ERROR = "Unnecessary empty lifecycle method '%(methodName)s' in class %(className)s"
     _EXPECTED_NO_NEW_CR_LIT_ELEMENT_ERROR = "Do not instantiate CrLitElement subclass '%(className)s' using 'new'. Use document.createElement() or an HTML template instead"
 
     super_call_required_methods = [
@@ -380,6 +382,35 @@ class EslintTsTest(unittest.TestCase):
         'className': 'TestError6Element',
         'expectedOrder': '[is, styles, render, properties, constructor, connectedCallback, disconnectedCallback, willUpdate, firstUpdated, updated]',
         'actualOrder': '[render, styles, is, properties, disconnectedCallback, connectedCallback, constructor, willUpdate, updated, firstUpdated]',
+      },
+      _EXPECTED_EMPTY_PROPERTIES_GETTER_ERROR
+      % {
+        'className': 'TestError6Element',
+      },
+      _EXPECTED_EMPTY_LIFECYCLE_METHOD_ERROR
+      % {
+        'className': 'TestError6Element',
+        'methodName': 'disconnectedCallback',
+      },
+      _EXPECTED_EMPTY_LIFECYCLE_METHOD_ERROR
+      % {
+        'className': 'TestError6Element',
+        'methodName': 'connectedCallback',
+      },
+      _EXPECTED_EMPTY_LIFECYCLE_METHOD_ERROR
+      % {
+        'className': 'TestError6Element',
+        'methodName': 'willUpdate',
+      },
+      _EXPECTED_EMPTY_LIFECYCLE_METHOD_ERROR
+      % {
+        'className': 'TestError6Element',
+        'methodName': 'updated',
+      },
+      _EXPECTED_EMPTY_LIFECYCLE_METHOD_ERROR
+      % {
+        'className': 'TestError6Element',
+        'methodName': 'firstUpdated',
       },
       _EXPECTED_MISSING_CUSTOM_EVENT_TYPE_PARAMETER_ERROR
       % {
@@ -540,6 +571,35 @@ class EslintTsTest(unittest.TestCase):
         'className': 'TestNoError3Element',
         'expectedOrder': '[is, styles, render, properties, constructor, connectedCallback, disconnectedCallback, willUpdate, firstUpdated, updated]',
         'actualOrder': '',
+      },
+      _EXPECTED_EMPTY_PROPERTIES_GETTER_ERROR
+      % {
+        'className': 'TestNoError3Element',
+      },
+      _EXPECTED_EMPTY_LIFECYCLE_METHOD_ERROR
+      % {
+        'className': 'TestNoError3Element',
+        'methodName': 'connectedCallback',
+      },
+      _EXPECTED_EMPTY_LIFECYCLE_METHOD_ERROR
+      % {
+        'className': 'TestNoError3Element',
+        'methodName': 'disconnectedCallback',
+      },
+      _EXPECTED_EMPTY_LIFECYCLE_METHOD_ERROR
+      % {
+        'className': 'TestNoError3Element',
+        'methodName': 'willUpdate',
+      },
+      _EXPECTED_EMPTY_LIFECYCLE_METHOD_ERROR
+      % {
+        'className': 'TestNoError3Element',
+        'methodName': 'firstUpdated',
+      },
+      _EXPECTED_EMPTY_LIFECYCLE_METHOD_ERROR
+      % {
+        'className': 'TestNoError3Element',
+        'methodName': 'updated',
       },
       _EXPECTED_NO_CONSTRUCTOR_PARAMS_ERROR
       % {

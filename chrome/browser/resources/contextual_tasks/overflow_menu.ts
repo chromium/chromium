@@ -14,7 +14,9 @@ import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/h
 // </if>
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+// <if expr="not is_android">
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+// </if>
 
 import type {ToolbarBrowserProxy} from './contextual_tasks_toolbar_browser_proxy.js';
 import {ToolbarBrowserProxyImpl} from './contextual_tasks_toolbar_browser_proxy.js';
@@ -118,10 +120,10 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
     this.toolbarListenerIds_ = [];
   }
 
+  // <if expr="not is_android">
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
-    // <if expr="not is_android">
     const showPin = this.shouldShowPinButton_();
     if (showPin && !this.helpBubbleRegistered_) {
       this.registerHelpBubble(
@@ -132,8 +134,8 @@ export class OverflowMenuElement extends OverflowMenuElementBase {
           'kContextualTasksWebUIOverflowMenuPinButtonElementId');
       this.helpBubbleRegistered_ = false;
     }
-    // </if>
   }
+  // </if>
 
   async showAt(target: HTMLElement) {
     if (this.isUnboundedMenuEnabled_) {

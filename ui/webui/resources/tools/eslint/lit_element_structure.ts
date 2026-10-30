@@ -30,13 +30,14 @@ interface OrderEntry {
 }
 
 type Options = [];
-type MessageIds = 'htmlImportInTsFile'|'inconsistentClassName'|
-    'inconsistentFilename'|'incorrectClassNameSuffix'|'incorrectDomNameSuffix'|
-    'incorrectFilenameSuffix'|'incorrectMethodDefinitionOrder'|
-    'invalidDollarSignProperty'|'missingCustomElementRegistration'|
-    'missingCustomEventTypeParameter'|'missingStaticIsGetter'|
-    'missingSuperCalls'|'missingTagNameRegistration'|'noConstructorParams'|
-    'noNewCrLitElement';
+type MessageIds =
+    'emptyLifecycleMethod'|'emptyPropertiesGetter'|'htmlImportInTsFile'|
+    'inconsistentClassName'|'inconsistentFilename'|'incorrectClassNameSuffix'|
+    'incorrectDomNameSuffix'|'incorrectFilenameSuffix'|
+    'incorrectMethodDefinitionOrder'|'invalidDollarSignProperty'|
+    'missingCustomElementRegistration'|'missingCustomEventTypeParameter'|
+    'missingStaticIsGetter'|'missingSuperCalls'|'missingTagNameRegistration'|
+    'noConstructorParams'|'noNewCrLitElement';
 
 // Necessary info to track about each CrLitElement subclass definition
 // encountered in the current file.
@@ -96,6 +97,43 @@ class ClassInfo {
         return;
       default:
         assert.fail(`Unexpected type ${node.argument.type} encountered.`);
+    }
+  }
+
+  runEmptyPropertiesGetterCheck(node: TSESTree.ReturnStatement) {
+    if (!node.argument || !isType(node.argument, Node.ObjectExpression) ||
+        node.argument.properties.length > 0) {
+      return;
+    }
+
+    this.context.report({
+      node,
+      messageId: 'emptyPropertiesGetter',
+      data: {
+        className: this.name,
+      },
+    });
+  }
+
+  runEmptyLifecycleMethodCheck(node: TSESTree.MethodDefinition) {
+    if (!node.value.body) {
+      return;
+    }
+
+    assert.ok(isIdentifier(node.key));
+    const methodName = node.key.name;
+    const statements = node.value.body.body;
+    const isOnlySuperCall = statements.length === 1 &&
+        isSuperLifecycleCall(statements[0]!, methodName);
+    if (statements.length === 0 || isOnlySuperCall) {
+      this.context.report({
+        node,
+        messageId: 'emptyLifecycleMethod',
+        data: {
+          className: this.name,
+          methodName,
+        },
+      });
     }
   }
 
@@ -394,6 +432,18 @@ class ClassInfo {
   }
 }
 
+function isSuperLifecycleCall(
+    statement: TSESTree.Statement, methodName: string): boolean {
+  if (!isType(statement, Node.ExpressionStatement) ||
+      !isType(statement.expression, Node.CallExpression)) {
+    return false;
+  }
+  const callee = statement.expression.callee;
+  return isType(callee, Node.MemberExpression) &&
+      isType(callee.object, Node.Super) && isIdentifier(callee.property) &&
+      callee.property.name === methodName;
+}
+
 function isNullableOrUndefinable(typeNode: TSESTree.TypeNode): boolean {
   if (isType(typeNode, Node.TSNullKeyword) ||
       isType(typeNode, Node.TSUndefinedKeyword)) {
@@ -448,6 +498,10 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
       description: 'Checks that the structure of a LitElement is correct',
     },
     messages: {
+      emptyLifecycleMethod:
+          'Unnecessary empty lifecycle method \'{{methodName}}\' in class {{className}}.',
+      emptyPropertiesGetter:
+          'Unnecessary empty \'properties()\' getter in class {{className}}. Remove it if the element has no reactive properties.',
       htmlImportInTsFile:
           'Found import of html in file containing a CrLitElement subclass definition. Templates for CrLitElement subclasses belong in the .html.ts template file, not the class definition file.',
       incorrectClassNameSuffix:
@@ -500,6 +554,12 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
         METHOD_DEFINITION_SELECTOR_TEMPLATE.replace(
             '{{methodDefinition}}', METHOD_DEFINITION_ORDER_REGEX);
 
+    const ALL_LIFECYCLE_METHODS_REGEX =
+        '^(connectedCallback|disconnectedCallback|willUpdate|firstUpdated|updated)$';
+    const ALL_LIFECYCLE_METHOD_DEFINITION_SELECTOR =
+        METHOD_DEFINITION_SELECTOR_TEMPLATE.replace(
+            '{{methodDefinition}}', ALL_LIFECYCLE_METHODS_REGEX);
+
     const SUPER_CALL_REQUIRED_REGEX =
         '^(connectedCallback|disconnectedCallback|willUpdate|updated)$';
     const LIFECYCLE_METHOD_DEFINITION_SELECTOR =
@@ -547,6 +607,14 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
 
         currentClassInfo.visitStaticGetIs(node);
       },
+      'ClassDeclaration > ClassBody > MethodDefinition[key.name="properties"] > FunctionExpression > BlockStatement > ReturnStatement'(
+          node: TSESTree.ReturnStatement) {
+        if (!currentClassInfo) {
+          return;
+        }
+
+        currentClassInfo.runEmptyPropertiesGetterCheck(node);
+      },
       [METHOD_DEFINITION_SELECTOR](node: TSESTree.MethodDefinition) {
         if (!currentClassInfo) {
           return;
@@ -563,6 +631,14 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
         }
 
         currentClassInfo.runConstructorParamsCheck(node);
+      },
+      [ALL_LIFECYCLE_METHOD_DEFINITION_SELECTOR](
+          node: TSESTree.MethodDefinition) {
+        if (!currentClassInfo) {
+          return;
+        }
+
+        currentClassInfo.runEmptyLifecycleMethodCheck(node);
       },
       [LIFECYCLE_METHOD_DEFINITION_SELECTOR](node: TSESTree.MethodDefinition) {
         if (!currentClassInfo) {

@@ -318,8 +318,13 @@ export class TestNoError3Element extends CrLitElement {
   }
 
   static override get properties() {
-    return {};
+    return {
+      foo: {type: String},
+    };
   }
+
+  accessor foo: string = 'foo';
+  private bar_: number = 0;
 
   constructor() {
     super();
@@ -327,17 +332,22 @@ export class TestNoError3Element extends CrLitElement {
 
   override connectedCallback() {
     super.connectedCallback();
+    this.bar_ = 1;
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.bar_ = 0;
   }
 
   override willUpdate() {
     super.willUpdate();
+    this.bar_ = 2;
   }
 
-  override firstUpdated() {}
+  override firstUpdated() {
+    this.bar_ = 3;
+  }
 
   override updated() {
     super.updated();
