@@ -1012,7 +1012,9 @@ void MTPDeviceDelegateImpl::ReadDirectoryInternal(
     ReadDirectorySuccessCallback success_callback,
     ErrorCallback error_callback) {
   CHECK_CURRENTLY_ON(content::BrowserThread::IO, base::NotFatalUntil::M161);
-  CHECK(task_in_progress_, base::NotFatalUntil::M161);
+  // TODO(crbug.com/577935716): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(task_in_progress_);
 
   std::optional<uint32_t> dir_id = CachedPathToId(root);
   if (!dir_id) {
