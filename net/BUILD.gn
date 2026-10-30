@@ -3015,7 +3015,6 @@ target(_test_target_type, "net_unittests") {
     "cert/ct_log_verifier_unittest.cc",
     "cert/ct_objects_extractor_unittest.cc",
     "cert/ct_serialization_unittest.cc",
-    "cert/ev_root_ca_metadata_unittest.cc",
     "cert/internal/cert_issuer_source_aia_unittest.cc",
     "cert/internal/cert_issuer_source_sync_unittest.cc",
     "cert/internal/revocation_checker_unittest.cc",
@@ -3772,18 +3771,21 @@ target(_test_target_type, "net_unittests") {
     deps += [ "//components/winhttp" ]
   }
 
-  if (chrome_root_store_supported) {
-    sources += [ "cert/internal/trust_store_chrome_unittest.cc" ]
-    deps += [
-      "//base/version_info",
-      "//net/data/ssl/chrome_root_store:gen_root_store_test_inc",
-      "//net/data/ssl/chrome_root_store:gen_signer_set_inc",
-    ]
+  if (chrome_root_store_supported || is_fuchsia) {
+    sources += [ "cert/ev_root_ca_metadata_unittest.cc" ]
+    deps += [ "//net/data/ssl/chrome_root_store:gen_root_store_test_inc" ]
 
-    if (is_win) {
-      sources += [ "cert/internal/trust_store_win_unittest.cc" ]
-      sources += [ "cert/internal/path_builder_trust_store_win_unittest.cc" ]
-      libs += [ "crypt32.lib" ]
+    if (chrome_root_store_supported) {
+      sources += [ "cert/internal/trust_store_chrome_unittest.cc" ]
+      deps += [
+        "//base/version_info",
+        "//net/data/ssl/chrome_root_store:gen_signer_set_inc",
+      ]
+      if (is_win) {
+        sources += [ "cert/internal/trust_store_win_unittest.cc" ]
+        sources += [ "cert/internal/path_builder_trust_store_win_unittest.cc" ]
+        libs += [ "crypt32.lib" ]
+      }
     }
   }
 

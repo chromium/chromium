@@ -15,6 +15,8 @@ namespace net {
 namespace {
 
 #if defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
+#include "net/data/ssl/chrome_root_store/chrome-ev-roots-test-data-inc.cc"
+
 const char kFakePolicyStr[] = "2.16.840.1.42";
 
 // DER OID values (no tag or length).
@@ -25,19 +27,14 @@ const SHA256HashValue kFakeFingerprint = {
     {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa,
      0xbb, 0xcc, 0xdd, 0xee, 0xff, 0x00, 0x11, 0x22, 0x33, 0x44, 0x55,
      0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff}};
-// This root must be in the Chrome Root Store. This must be kept in sync with
-// the test in google3, and with the contents of the Chrome Root Store.
-//
-// Failure to update this test first before removing the below root from the
-// Chrome Root Store wil break the sync of the Chrome Root Store between google3
-// and the chromium repository.
-const SHA256HashValue kAmazonFingerprint = {
-    {0x1b, 0xa5, 0xb2, 0xaa, 0x8c, 0x65, 0x40, 0x1a, 0x82, 0x96, 0x01,
-     0x18, 0xf8, 0x0b, 0xec, 0x4f, 0x62, 0x30, 0x4d, 0x83, 0xce, 0xc4,
-     0x71, 0x3a, 0x19, 0xc3, 0x9c, 0x01, 0x1e, 0xa4, 0x6d, 0xb4}};
+const SHA256HashValue kActalisFingerprint = {
+    {0x55, 0x92, 0x60, 0x84, 0xec, 0x96, 0x3a, 0x64, 0xb9, 0x6e, 0x2a,
+     0xbe, 0x01, 0xce, 0x0b, 0xa8, 0x6a, 0x64, 0xfb, 0xfe, 0xbc, 0xc7,
+     0xaa, 0xb5, 0xaf, 0xc1, 0x55, 0xb3, 0x7f, 0xd7, 0x60, 0x66}};
 
 TEST(EVRootCAMetadataTest, Basic) {
-  EVRootCAMetadata* ev_metadata(EVRootCAMetadata::GetInstance());
+  std::unique_ptr<EVRootCAMetadata> ev_metadata(
+      EVRootCAMetadata::CreateForTesting(kEvRootCaMetadata));
 
   // Contains an expected policy.
   EXPECT_TRUE(ev_metadata->IsEVPolicyOID(bssl::der::Input(kCabEvPolicy)));
@@ -46,7 +43,7 @@ TEST(EVRootCAMetadataTest, Basic) {
   EXPECT_FALSE(ev_metadata->IsEVPolicyOID(bssl::der::Input(kFakePolicy)));
 
   // The policy is correct for the right root.
-  EXPECT_TRUE(ev_metadata->HasEVPolicyOID(kAmazonFingerprint,
+  EXPECT_TRUE(ev_metadata->HasEVPolicyOID(kActalisFingerprint,
                                           bssl::der::Input(kCabEvPolicy)));
 
   // The policy does not match if the root does not match.
@@ -55,17 +52,18 @@ TEST(EVRootCAMetadataTest, Basic) {
 
   // The expected root only has the expected policies; it should fail to match
   // the root against unknown policies.
-  EXPECT_FALSE(ev_metadata->HasEVPolicyOID(kAmazonFingerprint,
+  EXPECT_FALSE(ev_metadata->HasEVPolicyOID(kActalisFingerprint,
                                            bssl::der::Input(kFakePolicy)));
 
   // Test a completely bogus OID.
   const uint8_t bad_oid[] = {0};
-  EXPECT_FALSE(ev_metadata->HasEVPolicyOID(kAmazonFingerprint,
+  EXPECT_FALSE(ev_metadata->HasEVPolicyOID(kActalisFingerprint,
                                            bssl::der::Input(bad_oid)));
 }
 
 TEST(EVRootCAMetadataTest, AddRemove) {
-  EVRootCAMetadata* ev_metadata(EVRootCAMetadata::GetInstance());
+  std::unique_ptr<EVRootCAMetadata> ev_metadata(
+      EVRootCAMetadata::CreateForTesting(kEvRootCaMetadata));
 
   // An unregistered/junk policy should not work.
   EXPECT_FALSE(ev_metadata->IsEVPolicyOID(bssl::der::Input(kFakePolicy)));
@@ -76,7 +74,7 @@ TEST(EVRootCAMetadataTest, AddRemove) {
   {
     // However, this unregistered/junk policy can be temporarily registered
     // and made to work.
-    ScopedTestEVPolicy test_ev_policy(ev_metadata, kFakeFingerprint,
+    ScopedTestEVPolicy test_ev_policy(ev_metadata.get(), kFakeFingerprint,
                                       kFakePolicyStr);
 
     EXPECT_TRUE(ev_metadata->IsEVPolicyOID(bssl::der::Input(kFakePolicy)));

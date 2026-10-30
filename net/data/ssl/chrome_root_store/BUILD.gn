@@ -36,7 +36,10 @@ compiled_action("gen_root_store_test_inc") {
     "test_store.certs",
     "test_store.textproto",
   ]
-  outputs = [ "${target_gen_dir}/chrome-root-store-test-data-inc.cc" ]
+  outputs = [
+    "${target_gen_dir}/chrome-root-store-test-data-inc.cc",
+    "${target_gen_dir}/chrome-ev-roots-test-data-inc.cc",
+  ]
   args = [
     "--root-store=" + rebase_path("test_store.textproto", root_build_dir),
     "--certs=" + rebase_path("test_store.certs", root_build_dir),
@@ -44,6 +47,9 @@ compiled_action("gen_root_store_test_inc") {
         rebase_path("test_additional.certs", root_build_dir),
     "--write-cpp-root-store=" +
         rebase_path("${target_gen_dir}/chrome-root-store-test-data-inc.cc",
+                    root_build_dir),
+    "--write-cpp-ev-roots=" +
+        rebase_path("${target_gen_dir}/chrome-ev-roots-test-data-inc.cc",
                     root_build_dir),
   ]
 }

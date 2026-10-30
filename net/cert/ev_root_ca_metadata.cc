@@ -10,7 +10,10 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_view_util.h"
 #include "third_party/boringssl/src/pki/input.h"
+
 #if defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
+#include "base/containers/span.h"
+#include "base/memory/ptr_util.h"
 #include "crypto/openssl_util.h"
 #include "net/cert/internal/chrome_root_store_data.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -25,6 +28,11 @@ EVRootCAMetadata* EVRootCAMetadata::GetInstance() {
 }
 
 #if defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
+// static
+std::unique_ptr<EVRootCAMetadata> EVRootCAMetadata::CreateForTesting(
+    base::span<const EVMetadata> ev_root_ca_metadata_list) {
+  return base::WrapUnique(new EVRootCAMetadata(ev_root_ca_metadata_list));
+}
 
 namespace {
 
@@ -111,10 +119,14 @@ bool EVRootCAMetadata::RemoveEVCA(const SHA256HashValue& fingerprint) {
 
 #endif
 
-EVRootCAMetadata::EVRootCAMetadata() {
-// Constructs the object from the raw metadata in GetEvRootCaMetadata().
 #if defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
-  for (const auto& ev_root : GetEvRootCaMetadata()) {
+// Constructs the object from the raw metadata in GetEvRootCaMetadata().
+EVRootCAMetadata::EVRootCAMetadata()
+    : EVRootCAMetadata(GetEvRootCaMetadata()) {}
+
+EVRootCAMetadata::EVRootCAMetadata(
+    base::span<const EVMetadata> ev_root_ca_metadata_list) {
+  for (const auto& ev_root : ev_root_ca_metadata_list) {
     for (const auto& policy : ev_root.policy_oids) {
       if (policy.empty())
         break;
@@ -129,8 +141,10 @@ EVRootCAMetadata::EVRootCAMetadata() {
       policy_oids_.insert(policy_der);
     }
   }
-#endif
 }
+#else
+EVRootCAMetadata::EVRootCAMetadata() = default;
+#endif
 
 EVRootCAMetadata::~EVRootCAMetadata() = default;
 

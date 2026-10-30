@@ -23,6 +23,11 @@
 #define PLATFORM_USES_CHROMIUM_EV_METADATA
 #endif
 
+#if defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
+#include "base/containers/span.h"
+#include "net/cert/internal/chrome_root_store_data.h"
+#endif
+
 namespace bssl {
 namespace der {
 class Input;
@@ -36,9 +41,14 @@ namespace net {
 class NET_EXPORT_PRIVATE EVRootCAMetadata {
  public:
   static EVRootCAMetadata* GetInstance();
+#if defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
+  static std::unique_ptr<EVRootCAMetadata> CreateForTesting(
+      base::span<const EVMetadata> ev_root_ca_metadata_list);
+#endif
 
   EVRootCAMetadata(const EVRootCAMetadata&) = delete;
   EVRootCAMetadata& operator=(const EVRootCAMetadata&) = delete;
+  ~EVRootCAMetadata();
 
   // Returns true if policy_oid is an EV policy OID of some root CA.
   bool IsEVPolicyOID(bssl::der::Input policy_oid) const;
@@ -61,7 +71,10 @@ class NET_EXPORT_PRIVATE EVRootCAMetadata {
   friend class base::NoDestructor<EVRootCAMetadata>;
 
   EVRootCAMetadata();
-  ~EVRootCAMetadata();
+#if defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
+  explicit EVRootCAMetadata(
+      base::span<const EVMetadata> ev_root_ca_metadata_list);
+#endif
 
 #if defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
   using PolicyOIDMap = std::map<SHA256HashValue, std::vector<std::string>>;
