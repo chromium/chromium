@@ -6,7 +6,9 @@
 #define NET_QUIC_QUIC_CHROMIUM_PACKET_WRITER_H_
 
 #include <stddef.h>
+#include <stdint.h>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -38,9 +40,9 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketWriter
     size_t capacity() const { return capacity_; }
     size_t size() const { return size_; }
 
-    // Does memcpy from |buffer| into this->data(). |buf_len <=
-    // capacity()| must be true, |HasOneRef()| must be true.
-    void Set(const char* buffer, size_t buf_len);
+    // Copies |buffer| into this->data(). |buffer.size() <= capacity()| must
+    // be true, |HasOneRef()| must be true.
+    void Set(base::span<const uint8_t> buffer);
 
    private:
     ~ReusableIOBuffer() override;
@@ -124,7 +126,7 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketWriter
   void UnregisterQuicConnectionClosePayload();
 
  private:
-  void SetPacket(const char* buffer, size_t buf_len);
+  void SetPacket(base::span<const uint8_t> buffer);
   bool MaybeRetryAfterWriteError(int rv);
   void RetryPacketAfterNoBuffers();
   quic::WriteResult WritePacketToSocketImpl();

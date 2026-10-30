@@ -92,13 +92,12 @@ QuicChromiumPacketWriter::ReusableIOBuffer::ReusableIOBuffer(size_t capacity)
 
 QuicChromiumPacketWriter::ReusableIOBuffer::~ReusableIOBuffer() = default;
 
-void QuicChromiumPacketWriter::ReusableIOBuffer::Set(const char* buffer,
-                                                     size_t buf_len) {
-  CHECK_LE(buf_len, capacity_);
+void QuicChromiumPacketWriter::ReusableIOBuffer::Set(
+    base::span<const uint8_t> buffer) {
+  CHECK_LE(buffer.size(), capacity_);
   CHECK(HasOneRef());
-  size_ = buf_len;
-  span().copy_prefix_from(
-      base::as_bytes(UNSAFE_TODO(base::span(buffer, buf_len))));
+  size_ = buffer.size();
+  span().copy_prefix_from(buffer);
 }
 
 QuicChromiumPacketWriter::QuicChromiumPacketWriter(
@@ -125,22 +124,22 @@ void QuicChromiumPacketWriter::set_force_write_blocked(
     delegate_->OnWriteUnblocked();
 }
 
-void QuicChromiumPacketWriter::SetPacket(const char* buffer, size_t buf_len) {
+void QuicChromiumPacketWriter::SetPacket(base::span<const uint8_t> buffer) {
   if (!packet_) [[unlikely]] {
-    packet_ = base::MakeRefCounted<ReusableIOBuffer>(
-        std::max(buf_len, static_cast<size_t>(quic::kMaxOutgoingPacketSize)));
+    packet_ = base::MakeRefCounted<ReusableIOBuffer>(std::max(
+        buffer.size(), static_cast<size_t>(quic::kMaxOutgoingPacketSize)));
     RecordNotReusableReason(NOT_REUSABLE_NULLPTR);
   }
-  if (packet_->capacity() < buf_len) [[unlikely]] {
-    packet_ = base::MakeRefCounted<ReusableIOBuffer>(buf_len);
+  if (packet_->capacity() < buffer.size()) [[unlikely]] {
+    packet_ = base::MakeRefCounted<ReusableIOBuffer>(buffer.size());
     RecordNotReusableReason(NOT_REUSABLE_TOO_SMALL);
   }
   if (!packet_->HasOneRef()) [[unlikely]] {
-    packet_ = base::MakeRefCounted<ReusableIOBuffer>(
-        std::max(buf_len, static_cast<size_t>(quic::kMaxOutgoingPacketSize)));
+    packet_ = base::MakeRefCounted<ReusableIOBuffer>(std::max(
+        buffer.size(), static_cast<size_t>(quic::kMaxOutgoingPacketSize)));
     RecordNotReusableReason(NOT_REUSABLE_REF_COUNT);
   }
-  packet_->Set(buffer, buf_len);
+  packet_->Set(buffer);
 }
 
 quic::WriteResult QuicChromiumPacketWriter::WritePacket(
@@ -151,7 +150,9 @@ quic::WriteResult QuicChromiumPacketWriter::WritePacket(
     quic::PerPacketOptions* /*options*/,
     const quic::QuicPacketWriterParams& params) {
   CHECK(!IsWriteBlocked());
-  SetPacket(buffer, buf_len);
+  // SAFETY: This method implements the quic::QuicPacketWriter::WritePacket()
+  // interface from QUICHE, which guarantees |buffer| holds |buf_len| bytes.
+  SetPacket(base::as_bytes(UNSAFE_BUFFERS(base::span(buffer, buf_len))));
   EcnCodePoint new_ecn = QuicheEcnToChromiumEcn(params.ecn_codepoint);
   outgoing_ecn_history_ |= (1 << static_cast<uint8_t>(new_ecn));
   if (new_ecn != outgoing_ecn_) {
