@@ -21,8 +21,8 @@
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service.h"
 #import "ui/base/cocoa/cocoa_base_utils.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 using content::OpenURLParams;
 using content::Referrer;
@@ -35,7 +35,7 @@ namespace {
 // NB: Takes |node| by value, because the HistoryMenuBridge could be destroyed
 // before RunInSafeProfileHelper finishes.
 void OpenURLForItem(HistoryMenuBridge::HistoryItem node,
-                    WindowOpenDisposition disposition,
+                    ui::mojom::WindowOpenDisposition disposition,
                     Profile* profile) {
   if (!profile) {
     return;  // Failed to load profile, ignore.
@@ -92,7 +92,7 @@ void OpenURLForItem(HistoryMenuBridge::HistoryItem node,
 
 // Open the URL of the given history item in the current tab.
 - (void)openURLForItem:(const HistoryMenuBridge::HistoryItem*)node {
-  WindowOpenDisposition disposition =
+  ui::mojom::WindowOpenDisposition disposition =
       ui::WindowOpenDispositionFromNSEvent([NSApp currentEvent]);
   if (Profile* profile = _bridge->profile()) {
     OpenURLForItem(*node, disposition, profile);

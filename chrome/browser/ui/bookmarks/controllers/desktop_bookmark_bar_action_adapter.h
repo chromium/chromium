@@ -13,6 +13,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_context_menu.h"
 #include "components/browser_apis/ui_controllers/bookmark_bar/adapters/action_adapter.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class BrowserWindowInterface;
 

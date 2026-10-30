@@ -10,7 +10,7 @@
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "content/public/browser/navigation_controller.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
 #endif
@@ -911,7 +911,7 @@ void WebUIBrowserWindow::TabDraggingStatusChanged(bool is_dragging) {
 }
 
 void WebUIBrowserWindow::LinkOpeningFromGesture(
-    WindowOpenDisposition disposition) {
+    ui::mojom::WindowOpenDisposition disposition) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 

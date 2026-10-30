@@ -15,8 +15,8 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace {
@@ -75,7 +75,7 @@ TEST_F(BookmarkStatsTabHelperTest, LaunchActionAddedWithPendingEntry) {
   // been set should result in a no-op.
   helper->SetLaunchAction(
       {BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()},
-      WindowOpenDisposition::kCurrentTab);
+      ui::mojom::WindowOpenDisposition::kCurrentTab);
   EXPECT_FALSE(helper->launch_action_for_testing().has_value());
   EXPECT_FALSE(helper->tab_disposition_for_testing().has_value());
 
@@ -84,7 +84,7 @@ TEST_F(BookmarkStatsTabHelperTest, LaunchActionAddedWithPendingEntry) {
   LoadUrl(kTestUrl1);
   helper->SetLaunchAction(
       {BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()},
-      WindowOpenDisposition::kCurrentTab);
+      ui::mojom::WindowOpenDisposition::kCurrentTab);
   EXPECT_TRUE(helper->launch_action_for_testing().has_value());
   EXPECT_TRUE(helper->tab_disposition_for_testing().has_value());
 
@@ -113,7 +113,7 @@ TEST_F(BookmarkStatsTabHelperTest, EmitsNonEmptyPaintMetrics) {
   LoadUrl(kTestUrl1);
   helper->SetLaunchAction(
       {BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()},
-      WindowOpenDisposition::kCurrentTab);
+      ui::mojom::WindowOpenDisposition::kCurrentTab);
   EXPECT_TRUE(helper->launch_action_for_testing().has_value());
   EXPECT_TRUE(helper->tab_disposition_for_testing().has_value());
 

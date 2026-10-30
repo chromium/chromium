@@ -17,7 +17,7 @@
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #include "content/public/browser/web_contents.h"
 #import "ui/base/cocoa/cocoa_base_utils.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/gfx/native_ui_types.h"
 
 namespace {
@@ -111,7 +111,7 @@ remote_cocoa::NativeWidgetNSWindowBridge* FindBridgeForSender(
   bool was_executed = false;
   FindBridgeForSender(sender, window)
       ->host()
-      ->ExecuteCommand(command, WindowOpenDisposition::kCurrentTab,
+      ->ExecuteCommand(command, ui::mojom::WindowOpenDisposition::kCurrentTab,
                        /*is_before_first_responder=*/false, &was_executed);
   CHECK(was_executed, base::NotFatalUntil::M162);
 }

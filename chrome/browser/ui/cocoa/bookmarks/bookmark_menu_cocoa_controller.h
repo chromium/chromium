@@ -8,7 +8,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/uuid.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class BookmarkMenuBridge;
 class Profile;
@@ -37,7 +37,7 @@ class BookmarkNode;
 @interface BookmarkMenuCocoaController (ExposedForUnitTests)
 + (void)openBookmarkByGUID:(base::Uuid)guid
                  inProfile:(Profile*)profile
-           withDisposition:(WindowOpenDisposition)disposition;
+           withDisposition:(ui::mojom::WindowOpenDisposition)disposition;
 @end  // BookmarkMenuCocoaController (ExposedForUnitTests)
 
 #endif  // CHROME_BROWSER_UI_COCOA_BOOKMARKS_BOOKMARK_MENU_COCOA_CONTROLLER_H_

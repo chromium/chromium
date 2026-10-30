@@ -32,10 +32,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest_mac.h"
 #include "ui/base/cocoa/nswindow_test_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #import "ui/base/test/scoped_fake_nswindow_focus.h"
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 #import "ui/base/test/windowed_nsnotification_observer.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/views/test/views_test_utils.h"
 
 using extensions::AppWindow;
@@ -69,9 +69,10 @@ class NativeAppWindowCocoaBrowserTest : public PlatformAppBrowserTest {
       content::CreateAndLoadWebContentsObserver app_loaded_observer;
       web_app::LaunchExtensionOrWebApp(
           profile(),
-          apps::AppLaunchParams(
-              app->id(), apps::LaunchContainer::kLaunchContainerNone,
-              WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest),
+          apps::AppLaunchParams(app->id(),
+                                apps::LaunchContainer::kLaunchContainerNone,
+                                ui::mojom::WindowOpenDisposition::kNewWindow,
+                                apps::LaunchSource::kFromTest),
           base::DoNothing());
       app_loaded_observer.Wait();
     }

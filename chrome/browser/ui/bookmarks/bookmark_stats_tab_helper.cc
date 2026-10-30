@@ -8,13 +8,13 @@
 #include "base/time/time.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 BookmarkStatsTabHelper::~BookmarkStatsTabHelper() = default;
 
 bool BookmarkStatsTabHelper::SetLaunchAction(
     const BookmarkLaunchAction& launch_action,
-    WindowOpenDisposition tab_disposition) {
+    ui::mojom::WindowOpenDisposition tab_disposition) {
   if (web_contents()->GetController().GetPendingEntry()) {
     launch_action_ = launch_action;
     tab_disposition_ = tab_disposition;
@@ -45,7 +45,7 @@ void BookmarkStatsTabHelper::DidFinishNavigation(
 
 void BookmarkStatsTabHelper::DidFirstVisuallyNonEmptyPaint() {
   if (launch_action_ &&
-      tab_disposition_ == WindowOpenDisposition::kCurrentTab &&
+      tab_disposition_ == ui::mojom::WindowOpenDisposition::kCurrentTab &&
       launch_action_->location == BookmarkLaunchLocation::kAttachedBar) {
     base::UmaHistogramTimes(
         "Bookmarks.AttachedBar.CurrentTab.TimeToFirstVisuallyNonEmptyPaint",

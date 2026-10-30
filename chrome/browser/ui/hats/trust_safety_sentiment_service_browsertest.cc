@@ -18,7 +18,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 using ::testing::_;
 
@@ -95,7 +95,7 @@ class TrustSafetySentimentServiceBrowserTest : public InProcessBrowserTest {
          i++) {
       ui_test_utils::NavigateToURLWithDisposition(
           browser(), GURL(chrome::kChromeUINewTabURL),
-          WindowOpenDisposition::kNewForegroundTab,
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     }
   }

@@ -39,7 +39,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 using zoom::ZoomChangedWatcher;
 using zoom::ZoomController;
@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,
   ASSERT_TRUE(tab_strip);
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   {
     content::WebContents* web_contents = tab_strip->GetActiveWebContents();
@@ -347,7 +347,7 @@ IN_PROC_BROWSER_TEST_F(ZoomControllerBrowserTest,
   // When we navigate away from the NTP, the HostZoomMap changes, and we need to
   // test that the ZoomController correctly detects this.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

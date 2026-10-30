@@ -38,7 +38,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuCocoaControllerBrowserTest,
   [BookmarkMenuCocoaController
       openBookmarkByGUID:uuid1
                inProfile:test_profile
-         withDisposition:WindowOpenDisposition::kCurrentTab];
+         withDisposition:ui::mojom::WindowOpenDisposition::kCurrentTab];
 
   // While the model is loading, no navigation could have happened.
   EXPECT_EQ(nullptr, contents->GetController().GetPendingEntry());

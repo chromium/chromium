@@ -18,7 +18,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace {
 
@@ -133,7 +133,7 @@ void WebUIBrowserBookmarkBarPageHandler::OpenInNewTab(int64_t node_id) {
   const bookmarks::BookmarkNode* node =
       bookmarks::GetBookmarkNodeByID(bookmark_model_, node_id);
   bookmarks::OpenAllIfAllowed(
-      browser_, {node}, WindowOpenDisposition::kNewForegroundTab,
+      browser_, {node}, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       bookmarks::OpenAllBookmarksContext::kNone,
       chrome_navigation_initiator::kBookmarkBar,
       {{BookmarkLaunchLocation::kAttachedBar, base::TimeTicks::Now()}});

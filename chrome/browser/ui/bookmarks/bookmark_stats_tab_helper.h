@@ -8,7 +8,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 // A tab helper responsible for reporting metrics on various bookmarks user
 // journeys.
@@ -27,7 +27,7 @@ class BookmarkStatsTabHelper
   // `tab_disposition` is the disposition requested for by this tab for the
   // navigation.
   bool SetLaunchAction(const BookmarkLaunchAction& launch_action,
-                       WindowOpenDisposition tab_disposition);
+                       ui::mojom::WindowOpenDisposition tab_disposition);
 
   // content::WebContentsObserver:
   void DidStartNavigation(
@@ -39,8 +39,8 @@ class BookmarkStatsTabHelper
   const std::optional<BookmarkLaunchAction>& launch_action_for_testing() const {
     return launch_action_;
   }
-  const std::optional<WindowOpenDisposition>& tab_disposition_for_testing()
-      const {
+  const std::optional<ui::mojom::WindowOpenDisposition>&
+  tab_disposition_for_testing() const {
     return tab_disposition_;
   }
 
@@ -52,7 +52,7 @@ class BookmarkStatsTabHelper
   // The launch action and requested tab disposition for the current navigation.
   // These will be reset after the following navigation begins.
   std::optional<BookmarkLaunchAction> launch_action_;
-  std::optional<WindowOpenDisposition> tab_disposition_;
+  std::optional<ui::mojom::WindowOpenDisposition> tab_disposition_;
 
   // Tracks whether launch data should be reset as a new primary frame
   // navigation begins.

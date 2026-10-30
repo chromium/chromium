@@ -13,7 +13,7 @@
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
 #include "ui/base/accelerators/accelerator_manager.h"
 #import "ui/base/cocoa/nsmenu_additions.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/content_accelerators/accelerator_util.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
@@ -118,9 +118,9 @@
   const bool kIsBeforeFirstResponder = true;
 
   // See if this command will execute on the window bridge side.
-  bridge->host()->WillExecuteCommand(result.chrome_command,
-                                     WindowOpenDisposition::kCurrentTab,
-                                     kIsBeforeFirstResponder, &will_execute);
+  bridge->host()->WillExecuteCommand(
+      result.chrome_command, ui::mojom::WindowOpenDisposition::kCurrentTab,
+      kIsBeforeFirstResponder, &will_execute);
 
   // On macOS, command key shortcuts flash the title of their owning menu
   // in the menu bar. In Chrome, that doesn't happen for File->New Window,
@@ -134,7 +134,7 @@
 
   bool was_executed = false;
   bridge->host()->ExecuteCommand(result.chrome_command,
-                                 WindowOpenDisposition::kCurrentTab,
+                                 ui::mojom::WindowOpenDisposition::kCurrentTab,
                                  kIsBeforeFirstResponder, &was_executed);
 
   return was_executed ? ui::PerformKeyEquivalentResult::kHandled
@@ -171,7 +171,7 @@
 
       bool was_executed = false;
       bridge->host()->ExecuteCommand(
-          result.chrome_command, WindowOpenDisposition::kCurrentTab,
+          result.chrome_command, ui::mojom::WindowOpenDisposition::kCurrentTab,
           /*is_before_first_responder=*/false, &was_executed);
       CHECK(was_executed, base::NotFatalUntil::M162);
       return ui::PerformKeyEquivalentResult::kHandled;

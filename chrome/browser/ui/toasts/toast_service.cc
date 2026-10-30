@@ -56,8 +56,8 @@
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/base_window.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/menus/simple_menu_model.h"
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
@@ -183,7 +183,7 @@ void ToastService::RegisterToasts() {
                   window->OpenGURL(
                       chrome::GetSettingsUrl(
                           chrome::kSafeBrowsingEnhancedProtectionSubPage),
-                      WindowOpenDisposition::kNewForegroundTab);
+                      ui::mojom::WindowOpenDisposition::kNewForegroundTab);
                 }))
             .AddCloseButton()
             .Build());
@@ -374,7 +374,7 @@ void ToastService::RegisterToasts() {
               base::BindRepeating([](BrowserWindowInterface* window) {
                 window->OpenGURL(
                     chrome::GetSettingsUrl(chrome::kSecuritySubPage),
-                    WindowOpenDisposition::kNewForegroundTab);
+                    ui::mojom::WindowOpenDisposition::kNewForegroundTab);
               }))
           .AddCloseButton()
           .AddGlobalScoped()

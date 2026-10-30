@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "components/page_load_metrics/browser/navigation_initiator.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/gfx/native_ui_types.h"
 
 class BrowserWindowInterface;
@@ -78,7 +78,7 @@ void OpenAllIfAllowed(
     BrowserWindowInterface* browser,
     const std::vector<
         raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes,
-    WindowOpenDisposition initial_disposition,
+    ui::mojom::WindowOpenDisposition initial_disposition,
     bookmarks::OpenAllBookmarksContext context =
         bookmarks::OpenAllBookmarksContext::kNone,
     std::optional<page_load_metrics::NavigationInitiator> navigation_initiator =

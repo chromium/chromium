@@ -20,7 +20,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/test/widget_activation_waiter.h"
 
@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserInteractiveTest,
   // Add a second tab.
   GURL url = embedded_https_test_server().GetURL("a.com", "/defaultresponse");
   EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   content::WebContents* second_tab =

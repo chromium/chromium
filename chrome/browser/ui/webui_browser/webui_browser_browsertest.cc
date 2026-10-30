@@ -61,7 +61,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/base_window.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -286,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, TabFullscreenEnterAndExit) {
   // Add a second tab.
   GURL url = embedded_https_test_server().GetURL("a.com", "/defaultresponse");
   EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   content::WebContents* second_tab =
@@ -449,7 +449,7 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest,
   // Initial tab is active. Let's open a second tab.
   GURL url = embedded_https_test_server().GetURL("a.com", "/defaultresponse");
   EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   // We should have exactly 2 tabs now and index 1 is active.
@@ -644,7 +644,7 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, NewTabGetsFocus) {
   // Open a new tab (e.g. simulating the new tab action or dragging a new tab).
   GURL url = embedded_https_test_server().GetURL("a.com", "/defaultresponse");
   EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   content::WebContents* second_tab =

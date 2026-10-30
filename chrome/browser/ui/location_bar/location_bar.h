@@ -15,8 +15,8 @@
 #include "base/scoped_observation_traits.h"
 #include "base/time/time.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -60,7 +60,8 @@ class LocationBar {
   // Holds the details necessary to open the omnibox match via browser commands.
   struct NavigationParams {
     GURL destination_url;
-    WindowOpenDisposition disposition{WindowOpenDisposition::kCurrentTab};
+    ui::mojom::WindowOpenDisposition disposition{
+        ui::mojom::WindowOpenDisposition::kCurrentTab};
     ui::PageTransition transition{ui::PAGE_TRANSITION_TYPED |
                                   ui::PAGE_TRANSITION_FROM_ADDRESS_BAR};
     base::TimeTicks match_selection_timestamp;

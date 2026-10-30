@@ -68,8 +68,8 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/blink/public/public_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
-#include "ui/base/window_open_disposition.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/test/gmock_expected_support.h"
@@ -1452,10 +1452,11 @@ TEST_F(ContentSettingBubbleModelTest, PopupBubbleModelListItems) {
       content_setting_bubble_model->bubble_content().list_items;
   EXPECT_EQ(0U, list_items.size());
 
-  const BlockedWindowParams params(
-      GURL("about:blank"), std::nullopt, url::Origin(), nullptr,
-      content::Referrer(), std::string(), WindowOpenDisposition::kNewPopup,
-      blink::mojom::WindowFeatures(), false, true);
+  const BlockedWindowParams params(GURL("about:blank"), std::nullopt,
+                                   url::Origin(), nullptr, content::Referrer(),
+                                   std::string(),
+                                   ui::mojom::WindowOpenDisposition::kNewPopup,
+                                   blink::mojom::WindowFeatures(), false, true);
   constexpr size_t kItemCount = 3;
   for (size_t i = 1; i <= kItemCount; i++) {
     NavigateParams navigate_params =
@@ -1486,7 +1487,7 @@ TEST_F(ContentSettingBubbleModelTest, PopupBubbleModelListItemsSpoofing) {
 
   const BlockedWindowParams params(spoof_url, std::nullopt, url::Origin(),
                                    nullptr, content::Referrer(), std::string(),
-                                   WindowOpenDisposition::kNewPopup,
+                                   ui::mojom::WindowOpenDisposition::kNewPopup,
                                    blink::mojom::WindowFeatures(), false, true);
 
   NavigateParams navigate_params =

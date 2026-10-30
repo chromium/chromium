@@ -58,9 +58,9 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -290,9 +290,10 @@ IN_PROC_BROWSER_TEST_F(
   const int browser_tabs = browser()->GetTabStripModel()->count();
   const int incognito_tabs = incognito_browser->GetTabStripModel()->count();
 
-  bookmarks::OpenAllIfAllowed(incognito_browser, {incognito_folder},
-                              WindowOpenDisposition::kNewBackgroundTab,
-                              bookmarks::OpenAllBookmarksContext::kInGroup);
+  bookmarks::OpenAllIfAllowed(
+      incognito_browser, {incognito_folder},
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+      bookmarks::OpenAllBookmarksContext::kInGroup);
 
   EXPECT_EQ(incognito_tabs, incognito_browser->GetTabStripModel()->count());
   EXPECT_EQ(browser_tabs + 2, browser()->GetTabStripModel()->count());
@@ -315,9 +316,10 @@ IN_PROC_BROWSER_TEST_F(
   const int browser_tabs = browser()->GetTabStripModel()->count();
   const int incognito_tabs = incognito_browser->GetTabStripModel()->count();
 
-  bookmarks::OpenAllIfAllowed(incognito_browser, {incognito_page},
-                              WindowOpenDisposition::kNewBackgroundTab,
-                              bookmarks::OpenAllBookmarksContext::kInSplit);
+  bookmarks::OpenAllIfAllowed(
+      incognito_browser, {incognito_page},
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+      bookmarks::OpenAllBookmarksContext::kInSplit);
 
   EXPECT_EQ(incognito_tabs, incognito_browser->GetTabStripModel()->count());
   EXPECT_EQ(browser_tabs + 1, browser()->GetTabStripModel()->count());
@@ -378,8 +380,9 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllFromRegular_NewTab) {
                     embedded_test_server()->GetURL("/title2.html"));
 
   EXPECT_EQ(1, regular_browser->GetTabStripModel()->count());
-  bookmarks::OpenAllIfAllowed(regular_browser, {bbar},
-                              WindowOpenDisposition::kNewBackgroundTab);
+  bookmarks::OpenAllIfAllowed(
+      regular_browser, {bbar},
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab);
   EXPECT_EQ(5, regular_browser->GetTabStripModel()->count());
   bookmark_model->RemoveAllUserBookmarks(FROM_HERE);
 }
@@ -400,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllFromRegular_NewWindow) {
 
   EXPECT_EQ(1, regular_browser->GetTabStripModel()->count());
   bookmarks::OpenAllIfAllowed(regular_browser, {bbar},
-                              WindowOpenDisposition::kNewWindow);
+                              ui::mojom::WindowOpenDisposition::kNewWindow);
 
   BrowserWindowInterface* regular_browser2 = nullptr;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
@@ -437,8 +440,9 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllFromRegular_Incognito) {
     EXPECT_EQ(1, regular_browser->GetTabStripModel()->count());
     EXPECT_EQ(1, incognito_browser->GetTabStripModel()->count());
 
-    bookmarks::OpenAllIfAllowed(regular_browser, {bbar},
-                                WindowOpenDisposition::kOffTheRecord);
+    bookmarks::OpenAllIfAllowed(
+        regular_browser, {bbar},
+        ui::mojom::WindowOpenDisposition::kOffTheRecord);
     EXPECT_EQ(1, regular_browser->GetTabStripModel()->count());
     EXPECT_EQ(3, incognito_browser->GetTabStripModel()->count());
 
@@ -471,8 +475,9 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllFromIncognito_NewTab) {
     EXPECT_EQ(1, regular_browser->GetTabStripModel()->count());
     EXPECT_EQ(1, incognito_browser->GetTabStripModel()->count());
 
-    bookmarks::OpenAllIfAllowed(incognito_browser, {incognito_bbar},
-                                WindowOpenDisposition::kNewBackgroundTab);
+    bookmarks::OpenAllIfAllowed(
+        incognito_browser, {incognito_bbar},
+        ui::mojom::WindowOpenDisposition::kNewBackgroundTab);
     EXPECT_EQ(3, regular_browser->GetTabStripModel()->count());
     EXPECT_EQ(3, incognito_browser->GetTabStripModel()->count());
 
@@ -507,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllFromIncognito_NewWindow) {
     EXPECT_EQ(1, incognito_browser->GetTabStripModel()->count());
 
     bookmarks::OpenAllIfAllowed(incognito_browser, {incognito_bbar},
-                                WindowOpenDisposition::kNewWindow);
+                                ui::mojom::WindowOpenDisposition::kNewWindow);
 
     BrowserWindowInterface* incognito_browser2 = nullptr;
     ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
@@ -543,9 +548,9 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, OpenAllFiltersJavascriptURLs) {
 
   ASSERT_EQ(1, browser()->GetTabStripModel()->count());
 
-  bookmarks::OpenAllIfAllowed(browser(), {folder},
-                              WindowOpenDisposition::kNewBackgroundTab,
-                              bookmarks::OpenAllBookmarksContext::kNone);
+  bookmarks::OpenAllIfAllowed(
+      browser(), {folder}, ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+      bookmarks::OpenAllBookmarksContext::kNone);
   EXPECT_EQ(2, browser()->GetTabStripModel()->count());
   EXPECT_EQ(
       GURL("https://www.example.com"),

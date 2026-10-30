@@ -11,7 +11,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/color/color_variant.h"
 #include "ui/gfx/native_ui_types.h"
 

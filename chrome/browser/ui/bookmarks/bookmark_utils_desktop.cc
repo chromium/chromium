@@ -56,8 +56,8 @@
 #include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 using bookmarks::BookmarkModel;
@@ -94,11 +94,11 @@ using OpenedWebContentsSet = base::flat_set<const content::WebContents*>;
 OpenedWebContentsSet OpenAllHelper(
     BrowserWindowInterface* browser,
     std::vector<UrlAndId> bookmark_urls,
-    WindowOpenDisposition initial_disposition,
+    ui::mojom::WindowOpenDisposition initial_disposition,
     std::optional<page_load_metrics::NavigationInitiator> navigation_initiator,
     std::optional<BookmarkLaunchAction> launch_action) {
   OpenedWebContentsSet::container_type opened_tabs;
-  WindowOpenDisposition disposition = initial_disposition;
+  ui::mojom::WindowOpenDisposition disposition = initial_disposition;
   // We keep track of (potentially) two browsers in addition to the original
   // browser. This allows us to open the URLs in the correct
   // browser depending on the URL type and `initial_disposition`.
@@ -113,15 +113,15 @@ OpenedWebContentsSet OpenAllHelper(
   if (profile) {
     opening_urls_in_incognito =
         profile->IsPrimaryOTRProfileWithRegularParent() ||
-        initial_disposition == WindowOpenDisposition::kOffTheRecord;
+        initial_disposition == ui::mojom::WindowOpenDisposition::kOffTheRecord;
   } else {
     opening_urls_in_incognito =
-        initial_disposition == WindowOpenDisposition::kOffTheRecord;
+        initial_disposition == ui::mojom::WindowOpenDisposition::kOffTheRecord;
   }
 
   for (const auto& bookmark_url : bookmark_urls) {
     // Javascript URLs should not open in a new tab. See crbug.com/528757894.
-    if (disposition != WindowOpenDisposition::kCurrentTab &&
+    if (disposition != ui::mojom::WindowOpenDisposition::kCurrentTab &&
         bookmark_url.url.SchemeIs(url::kJavaScriptScheme)) {
       continue;
     }
@@ -177,8 +177,8 @@ OpenedWebContentsSet OpenAllHelper(
     }
 
     bool opening_in_new_window =
-        disposition == WindowOpenDisposition::kNewWindow ||
-        disposition == WindowOpenDisposition::kOffTheRecord;
+        disposition == ui::mojom::WindowOpenDisposition::kNewWindow ||
+        disposition == ui::mojom::WindowOpenDisposition::kOffTheRecord;
     // If we are opening URLs in a new window we set the disposition to
     // `NEW_BACKGROUND_TAB` so that the rest of the URLs open in a new tab
     // instead of a new window.
@@ -189,7 +189,7 @@ OpenedWebContentsSet OpenAllHelper(
     // See crbug.com/40855833.
     if (opening_in_new_window) {
       if (!opening_urls_in_incognito || url_allowed_in_incognito) {
-        disposition = WindowOpenDisposition::kNewBackgroundTab;
+        disposition = ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
       }
     }
 
@@ -291,7 +291,7 @@ void GetURLsAndFoldersForOpenTabs(
 void DoOpen(
     BrowserWindowInterface* browser,
     std::vector<UrlAndId> url_and_ids_to_open,
-    WindowOpenDisposition initial_disposition,
+    ui::mojom::WindowOpenDisposition initial_disposition,
     std::optional<base::Uuid> bookmark_folder_node_id,
     std::optional<std::u16string> folder_title,
     bool add_to_split,
@@ -355,7 +355,7 @@ void DoOpen(
 void DoOpenPromptConfirm(
     BrowserWindowInterface* browser,
     std::vector<UrlAndId> url_and_ids_to_open,
-    WindowOpenDisposition initial_disposition,
+    ui::mojom::WindowOpenDisposition initial_disposition,
     std::optional<base::Uuid> bookmark_folder_node_id,
     std::optional<std::u16string> folder_title,
     bool add_to_split,
@@ -376,12 +376,13 @@ void OpenAllIfAllowed(
     BrowserWindowInterface* browser,
     const std::vector<
         raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes,
-    WindowOpenDisposition initial_disposition,
+    ui::mojom::WindowOpenDisposition initial_disposition,
     bookmarks::OpenAllBookmarksContext context,
     std::optional<page_load_metrics::NavigationInitiator> navigation_initiator,
     std::optional<BookmarkLaunchAction> launch_action) {
-  std::vector<UrlAndId> url_and_ids = GetURLsToOpen(
-      nodes, initial_disposition == WindowOpenDisposition::kOffTheRecord);
+  std::vector<UrlAndId> url_and_ids =
+      GetURLsToOpen(nodes, initial_disposition ==
+                               ui::mojom::WindowOpenDisposition::kOffTheRecord);
 
   std::optional<base::Uuid> bookmark_folder_node_id;
   if (nodes.size() == 1 && nodes[0]->is_folder()) {
