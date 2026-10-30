@@ -424,7 +424,7 @@ AudioWorkletProcessor* AudioWorkletProcessor::Create(
     return nullptr;
   }
   auto* port = MakeGarbageCollected<MessagePort>(*global_scope);
-  port->Entangle(std::move(params->PortChannel()));
+  port->Entangle(params->PortChannel());
   return MakeGarbageCollected<AudioWorkletProcessor>(global_scope,
                                                      params->Name(), port);
 }

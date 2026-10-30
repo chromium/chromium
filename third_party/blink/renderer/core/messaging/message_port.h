@@ -28,7 +28,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_MESSAGING_MESSAGE_PORT_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -97,8 +96,6 @@ class CORE_EXPORT MessagePort : public EventTarget,
   // Returns an empty array if the passed array is empty.
   static GCedMessagePortArray* EntanglePorts(ExecutionContext&,
                                              Vector<MessagePortChannel>);
-  static GCedMessagePortArray* EntanglePorts(ExecutionContext&,
-                                             std::vector<MessagePortChannel>);
 
   bool Started() const { return started_; }
 

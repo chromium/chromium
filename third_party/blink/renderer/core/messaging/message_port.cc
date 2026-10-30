@@ -29,9 +29,7 @@
 #include <memory>
 #include <optional>
 
-#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 #include "third_party/blink/public/common/features.h"
@@ -348,15 +346,9 @@ Vector<MessagePortChannel> MessagePort::DisentanglePorts(
 GCedMessagePortArray* MessagePort::EntanglePorts(
     ExecutionContext& context,
     Vector<MessagePortChannel> channels) {
-  return EntanglePorts(context, base::ToVector(std::move(channels)));
-}
-
-GCedMessagePortArray* MessagePort::EntanglePorts(
-    ExecutionContext& context,
-    std::vector<MessagePortChannel> channels) {
   // https://html.spec.whatwg.org/C/#message-ports
   // |ports| should be an empty array, not null even when there is no ports.
-  wtf_size_t count = base::checked_cast<wtf_size_t>(channels.size());
+  wtf_size_t count = channels.size();
   GCedMessagePortArray* port_array =
       MakeGarbageCollected<GCedMessagePortArray>(count);
   for (wtf_size_t i = 0; i < count; ++i) {

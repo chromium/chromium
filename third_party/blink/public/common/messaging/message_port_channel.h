@@ -28,6 +28,9 @@ class BLINK_COMMON_EXPORT MessagePortChannel {
   MessagePortChannel(const MessagePortChannel& other);
   MessagePortChannel& operator=(const MessagePortChannel& other);
 
+  MessagePortChannel(MessagePortChannel&& other) noexcept;
+  MessagePortChannel& operator=(MessagePortChannel&& other) noexcept;
+
   explicit MessagePortChannel(MessagePortDescriptor handle);
 
   const MessagePortDescriptor& GetHandle() const;

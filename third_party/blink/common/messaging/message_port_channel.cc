@@ -4,6 +4,10 @@
 
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 
+#include <utility>
+#include <vector>
+
+#include "base/containers/to_vector.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -38,10 +42,13 @@ MessagePortChannel::MessagePortChannel(const MessagePortChannel& other) =
     default;
 
 MessagePortChannel& MessagePortChannel::operator=(
-    const MessagePortChannel& other) {
-  state_ = other.state_;
-  return *this;
-}
+    const MessagePortChannel& other) = default;
+
+MessagePortChannel::MessagePortChannel(MessagePortChannel&& other) noexcept =
+    default;
+
+MessagePortChannel& MessagePortChannel::operator=(
+    MessagePortChannel&& other) noexcept = default;
 
 MessagePortChannel::MessagePortChannel(MessagePortDescriptor handle)
     : state_(new State(std::move(handle))) {}
@@ -57,19 +64,15 @@ MessagePortDescriptor MessagePortChannel::ReleaseHandle() const {
 // static
 std::vector<MessagePortDescriptor> MessagePortChannel::ReleaseHandles(
     const std::vector<MessagePortChannel>& ports) {
-  std::vector<MessagePortDescriptor> handles(ports.size());
-  for (size_t i = 0; i < ports.size(); ++i)
-    handles[i] = ports[i].ReleaseHandle();
-  return handles;
+  return base::ToVector(ports, &MessagePortChannel::ReleaseHandle);
 }
 
 // static
 std::vector<MessagePortChannel> MessagePortChannel::CreateFromHandles(
     std::vector<MessagePortDescriptor> handles) {
-  std::vector<MessagePortChannel> ports(handles.size());
-  for (size_t i = 0; i < handles.size(); ++i)
-    ports[i] = MessagePortChannel(std::move(handles[i]));
-  return ports;
+  return base::ToVector(handles, [](MessagePortDescriptor& handle) {
+    return MessagePortChannel(std::move(handle));
+  });
 }
 
 MessagePortChannel::State::State() = default;
