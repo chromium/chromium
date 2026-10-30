@@ -275,10 +275,15 @@ void SecureChannel::Authenticate() {
       connection_.get(),
       multidevice::SecureMessageDelegateImpl::Factory::Create());
   authenticator_->AddObserver(this);
-  authenticator_->Authenticate(base::BindOnce(
-      &SecureChannel::OnAuthenticationResult, weak_ptr_factory_.GetWeakPtr()));
 
   TransitionToStatus(Status::AUTHENTICATING);
+
+  // The authenticator may run its callback synchronously if authentication
+  // fails before any asynchronous work has started. OnAuthenticationResult()
+  // can result in |this| being deleted, so this call must be the last
+  // operation in this method.
+  authenticator_->Authenticate(base::BindOnce(
+      &SecureChannel::OnAuthenticationResult, weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SecureChannel::ProcessMessageQueue() {

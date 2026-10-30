@@ -113,7 +113,11 @@ class SecureChannelNearbyConnectionTest : public testing::Test {
               fake_observer_.last_status_update);
   }
 
-  void TearDown() override { connection_->RemoveObserver(&fake_observer_); }
+  void TearDown() override {
+    if (connection_) {
+      connection_->RemoveObserver(&fake_observer_);
+    }
+  }
 
   FakeNearbyConnector::FakeConnection* CompleteConnection() {
     base::RunLoop connect_run_loop;
@@ -129,6 +133,8 @@ class SecureChannelNearbyConnectionTest : public testing::Test {
   }
 
   Connection* connection() { return connection_.get(); }
+
+  void DestroyConnection() { connection_.reset(); }
 
   void RegisterPayloadFile(
       int64_t payload_id,
@@ -190,6 +196,47 @@ TEST_F(SecureChannelNearbyConnectionTest, ConnectAndTransferMessages) {
   EXPECT_EQ(Connection::Status::DISCONNECTED,
             fake_observer_.last_status_update);
   EXPECT_EQ(Connection::Status::DISCONNECTED, connection()->status());
+}
+
+TEST_F(SecureChannelNearbyConnectionTest,
+       ObserverDeletesConnectionOnSuccessfulSend) {
+  CompleteConnection();
+
+  // Delete the connection when notified that the send has completed. Observers
+  // may respond to a completed send by disconnecting and releasing the
+  // connection, so the connection must not be used after observers have been
+  // notified.
+  base::RunLoop send_run_loop;
+  fake_observer_.on_send_complete_closure = base::BindLambdaForTesting([&]() {
+    DestroyConnection();
+    send_run_loop.Quit();
+  });
+  connection()->SendMessage(
+      std::make_unique<WireMessage>("send_payload", "send_feature"));
+  send_run_loop.Run();
+
+  EXPECT_TRUE(fake_observer_.last_send_complete_success);
+}
+
+TEST_F(SecureChannelNearbyConnectionTest,
+       ObserverDeletesConnectionOnFailedSend) {
+  FakeNearbyConnector::FakeConnection* fake_connection = CompleteConnection();
+  fake_connection->set_should_send_succeed(false);
+
+  // Delete the connection when notified that the send has failed. Observers
+  // may respond to a failed send by disconnecting and releasing the
+  // connection, so the connection must not be used after observers have been
+  // notified.
+  base::RunLoop send_run_loop;
+  fake_observer_.on_send_complete_closure = base::BindLambdaForTesting([&]() {
+    DestroyConnection();
+    send_run_loop.Quit();
+  });
+  connection()->SendMessage(
+      std::make_unique<WireMessage>("send_payload", "send_feature"));
+  send_run_loop.Run();
+
+  EXPECT_FALSE(fake_observer_.last_send_complete_success);
 }
 
 TEST_F(SecureChannelNearbyConnectionTest, MultipleFileTransferUpdates) {

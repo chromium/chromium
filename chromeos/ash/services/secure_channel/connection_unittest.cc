@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/services/secure_channel/connection.h"
 
+#include <memory>
 #include <optional>
 
 #include "base/functional/bind.h"
@@ -270,6 +271,29 @@ TEST_F(CryptAuthConnectionTest,
           DoAll(SetArgPointee<0>(false), Return(new TestWireMessage)));
   EXPECT_CALL(observer, OnMessageReceived(Ref(connection), _));
   connection.OnBytesReceived(std::string());
+}
+
+TEST_F(CryptAuthConnectionTest, OnBytesReceived_ObserverDeletesConnection) {
+  auto connection = std::make_unique<NiceMock<MockConnection>>();
+  connection->SetStatus(Connection::Status::CONNECTED);
+
+  NiceMock<MockConnectionObserver> observer;
+  connection->AddObserver(&observer);
+
+  ON_CALL(*connection, DeserializeWireMessageProxy(_))
+      .WillByDefault(
+          DoAll(SetArgPointee<0>(false), Return(new TestWireMessage)));
+
+  // Delete the connection when the message is received. Observers may respond
+  // to a received message by disconnecting and releasing the connection, so
+  // the connection must not be used after observers have been notified.
+  EXPECT_CALL(observer, OnMessageReceived(_, _))
+      .WillOnce([&](const Connection&, const WireMessage&) {
+        connection->RemoveObserver(&observer);
+        connection.reset();
+      });
+  connection->OnBytesReceived(std::string());
+  EXPECT_FALSE(connection);
 }
 
 TEST_F(CryptAuthConnectionTest,

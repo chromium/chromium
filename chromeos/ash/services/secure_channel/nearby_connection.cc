@@ -215,7 +215,14 @@ void NearbyConnection::OnConnectResult(
 }
 
 void NearbyConnection::OnSendMessageResult(bool success) {
+  // Create a WeakPtr to |this| before notifying observers of the completed
+  // send. An observer may respond to the OnSendCompleted() call by
+  // disconnecting and releasing the connection, deleting |this|.
+  base::WeakPtr<NearbyConnection> weak_this = weak_ptr_factory_.GetWeakPtr();
   OnDidSendMessage(*message_being_sent_, success);
+  if (!weak_this) {
+    return;
+  }
 
   if (success) {
     message_being_sent_.reset();

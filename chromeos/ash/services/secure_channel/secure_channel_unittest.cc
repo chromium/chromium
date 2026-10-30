@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -118,6 +119,59 @@ class DeletingObserver final : public SecureChannel::Observer {
 
  private:
   raw_ptr<std::unique_ptr<SecureChannel>> secure_channel_;
+};
+
+// Observer used in the AuthenticationFailsSynchronously_ObserverDeletesChannel
+// test. This Observer deletes the SecureChannel when the channel becomes
+// disconnected, as NearbyConnectionManagerImpl does when a channel it owns
+// disconnects.
+class DisconnectionDeletingObserver final : public SecureChannel::Observer {
+ public:
+  explicit DisconnectionDeletingObserver(
+      std::unique_ptr<SecureChannel>* secure_channel)
+      : secure_channel_(secure_channel) {}
+
+  // SecureChannel::Observer:
+  void OnSecureChannelStatusChanged(
+      SecureChannel* secure_channel,
+      const SecureChannel::Status& old_status,
+      const SecureChannel::Status& new_status) override {
+    DCHECK(secure_channel == secure_channel_->get());
+    // Delete the channel once it has become disconnected.
+    if (new_status == SecureChannel::Status::DISCONNECTED) {
+      secure_channel_->reset();
+    }
+  }
+
+ private:
+  raw_ptr<std::unique_ptr<SecureChannel>> secure_channel_;
+};
+
+// Authenticator which runs its callback synchronously from within
+// Authenticate(), as DeviceToDeviceAuthenticator does when authentication
+// fails before any asynchronous work has been started.
+class SynchronouslyFailingAuthenticator final : public Authenticator {
+ public:
+  SynchronouslyFailingAuthenticator() = default;
+  ~SynchronouslyFailingAuthenticator() override = default;
+
+  // Authenticator:
+  void Authenticate(AuthenticationCallback callback) override {
+    // Running |callback| may delete |this|, so it must be the last operation
+    // in this method.
+    std::move(callback).Run(Result::FAILURE, nullptr);
+  }
+};
+
+class SynchronouslyFailingAuthenticatorFactory final
+    : public DeviceToDeviceAuthenticator::Factory {
+ public:
+  std::unique_ptr<Authenticator> CreateInstance(
+      Connection* connection,
+      std::unique_ptr<multidevice::SecureMessageDelegate>
+          secure_message_delegate) override {
+    return std::make_unique<SynchronouslyFailingAuthenticator>();
+  }
 };
 
 class TestAuthenticatorFactory final
@@ -423,6 +477,41 @@ TEST_F(SecureChannelConnectionTest, AuthenticationFails_Failure) {
        SecureChannel::Status::DISCONNECTING},
       {SecureChannel::Status::DISCONNECTING,
        SecureChannel::Status::DISCONNECTED}});
+}
+
+// An authentication attempt can fail synchronously (i.e., the authenticator
+// can run its callback before Authenticate() has returned). An observer may
+// respond to the resulting disconnection by deleting the channel, as
+// NearbyConnectionManagerImpl does; ensure that this is handled gracefully.
+TEST_F(SecureChannelConnectionTest,
+       AuthenticationFailsSynchronously_ObserverDeletesChannel) {
+  SynchronouslyFailingAuthenticatorFactory failing_authenticator_factory;
+  DeviceToDeviceAuthenticator::Factory::SetFactoryForTesting(
+      &failing_authenticator_factory);
+
+  DisconnectionDeletingObserver deleting_observer(&secure_channel_);
+  secure_channel_->AddObserver(&deleting_observer);
+
+  secure_channel_->Initialize();
+  VerifyConnectionStateChanges(std::vector<SecureChannelStatusChange>{
+      {SecureChannel::Status::DISCONNECTED,
+       SecureChannel::Status::CONNECTING}});
+
+  // Completing the connection starts an authentication attempt, which fails
+  // synchronously; the channel disconnects, and |deleting_observer| deletes
+  // the channel when notified of the disconnection.
+  fake_connection_->CompleteInProgressConnection(/* success */ true);
+  VerifyConnectionStateChanges(std::vector<SecureChannelStatusChange>{
+      {SecureChannel::Status::CONNECTING, SecureChannel::Status::CONNECTED},
+      {SecureChannel::Status::CONNECTED, SecureChannel::Status::AUTHENTICATING},
+      {SecureChannel::Status::AUTHENTICATING,
+       SecureChannel::Status::DISCONNECTING},
+      {SecureChannel::Status::DISCONNECTING,
+       SecureChannel::Status::DISCONNECTED}});
+  EXPECT_FALSE(secure_channel_);
+
+  DeviceToDeviceAuthenticator::Factory::SetFactoryForTesting(
+      test_authenticator_factory_.get());
 }
 
 // Regression test for crbug.com/765810. This test ensures that a crash does not

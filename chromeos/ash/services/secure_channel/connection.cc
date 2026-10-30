@@ -134,14 +134,17 @@ void Connection::OnBytesReceived(const std::string& bytes) {
   if (is_incomplete_message)
     return;
 
-  if (message) {
-    for (auto& observer : observers_)
-      observer.OnMessageReceived(*this, *message);
-  }
-
   // Whether the message was parsed successfully or not, clear the
   // |received_bytes_| buffer.
   received_bytes_.clear();
+
+  if (message) {
+    // Notifying observers may delete |this| (e.g., an observer may respond to
+    // the message by disconnecting and releasing the connection), so it must
+    // be the last operation in this method.
+    for (auto& observer : observers_)
+      observer.OnMessageReceived(*this, *message);
+  }
 }
 
 std::unique_ptr<WireMessage> Connection::DeserializeWireMessage(
