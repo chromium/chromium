@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/level_up/coordinator/level_up_mediator.h"
+#import "ios/chrome/browser/level_up/model/level_up_metrics.h"
 #import "ios/chrome/browser/level_up/model/level_up_service.h"
 #import "ios/chrome/browser/level_up/model/level_up_service_factory.h"
 #import "ios/chrome/browser/level_up/model/task_info.h"
@@ -306,6 +307,7 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
   // `handleSignInResult:` instead.
   if (_authService->HasPrimaryIdentity()) {
     _prefService->SetBoolean(prefs::kLevelUpOptIn, true);
+    RecordLevelUpOptInStateChanged(true);
   }
   __weak __typeof(self) weakSelf = self;
   [self stopLevelUpNavigationController:^{
@@ -330,6 +332,8 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
 // Handles a task tap by closing the level up screen and preparing to navigate
 // to the beginning of the tapped task.
 - (void)didTapTask:(LevelUpTask*)task {
+  RecordLevelUpTaskStarted(task.taskInfo->GetTaskType());
+
   // Save the task so it can be executed once the level up view is closed.
   _pendingNavigationAction = task.taskInfo->GetNavigationAction();
 
@@ -427,6 +431,7 @@ void RunPendingAction(TaskInfo::NavigationAction pending_action,
 - (void)handleSignInResult:(SigninCoordinatorResultOrIdentity)result {
   if (result.has_value()) {
     _prefService->SetBoolean(prefs::kLevelUpOptIn, true);
+    RecordLevelUpOptInStateChanged(true);
     [self showLevelUp];
   } else {
     [self didTapDismissButton];

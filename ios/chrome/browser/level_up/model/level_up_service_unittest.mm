@@ -5,11 +5,13 @@
 #import "ios/chrome/browser/level_up/model/level_up_service.h"
 
 #import "base/memory/raw_ptr.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/prefs/pref_service.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
+#import "ios/chrome/browser/level_up/model/level_up_metrics.h"
 #import "ios/chrome/browser/level_up/model/level_up_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
@@ -411,6 +413,41 @@ TEST_F(LevelUpServiceTest, TestTaskTriggerUserActionsAreUniqueAndNonEmpty) {
           << "Duplicate trigger user action: " << action;
     }
   }
+}
+
+// Tests that completing a task records the TaskCompleted histogram once.
+TEST_F(LevelUpServiceTest, RecordsTaskCompletedMetric) {
+  base::HistogramTester histogram_tester;
+
+  service_->MarkTaskCompleted(TaskType::kTabGroups);
+  histogram_tester.ExpectUniqueSample(kLevelUpTaskCompletedHistogram,
+                                      TaskType::kTabGroups, 1);
+
+  // Marking the same task completed again should not emit a duplicate sample.
+  service_->MarkTaskCompleted(TaskType::kTabGroups);
+  histogram_tester.ExpectTotalCount(kLevelUpTaskCompletedHistogram, 1);
+}
+
+// Tests that reaching a new milestone level records the LevelChanged histogram.
+TEST_F(LevelUpServiceTest, RecordsLevelChangedMetric) {
+  base::HistogramTester histogram_tester;
+
+  service_->MarkTaskCompleted(TaskType::kTabGroups);
+  service_->MarkTaskCompleted(TaskType::kAutofill);
+  histogram_tester.ExpectTotalCount(kLevelUpLevelChangedHistogram, 0);
+
+  // Completing the 3rd task reaches Level 2.
+  service_->MarkTaskCompleted(TaskType::kGemini);
+  histogram_tester.ExpectUniqueSample(kLevelUpLevelChangedHistogram, 2, 1);
+
+  // Completing 5 more tasks (total 8) reaches Level 3.
+  service_->MarkTaskCompleted(TaskType::kPaymentMethods);
+  service_->MarkTaskCompleted(TaskType::kClearBrowsingData);
+  service_->MarkTaskCompleted(TaskType::kSafeBrowsing);
+  service_->MarkTaskCompleted(TaskType::kIncognito);
+  service_->MarkTaskCompleted(TaskType::kPasswordCheckup);
+  histogram_tester.ExpectBucketCount(kLevelUpLevelChangedHistogram, 3, 1);
+  histogram_tester.ExpectTotalCount(kLevelUpLevelChangedHistogram, 2);
 }
 
 }  // namespace

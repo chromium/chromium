@@ -15,6 +15,7 @@ source_set("view_models") {
   deps = [
     "//base",
     "//ios/chrome/browser/level_up/model",
+    "//ios/chrome/browser/level_up/model:task_info",
     "//ios/chrome/browser/shared/ui/symbols",
   ]
 }
@@ -43,6 +44,8 @@ source_set("coordinator") {
     "//ios/chrome/browser/bubble/ui_bundled:bubble_view",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/level_up/model",
+    "//ios/chrome/browser/level_up/model:metrics",
+    "//ios/chrome/browser/level_up/model:task_info",
     "//ios/chrome/browser/level_up/ui",
     "//ios/chrome/browser/level_up/ui:promo",
     "//ios/chrome/browser/popup_menu/overflow_menu/public:overflow_menu_constants",
@@ -74,5 +77,29 @@ source_set("coordinator") {
     "//ios/chrome/common/ui/promo_style",
     "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/common/ui/util",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "level_up_mediator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs",
+    "//ios/chrome/browser/level_up/model",
+    "//ios/chrome/browser/level_up/model:metrics",
+    "//ios/chrome/browser/level_up/model:task_info",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
   ]
 }

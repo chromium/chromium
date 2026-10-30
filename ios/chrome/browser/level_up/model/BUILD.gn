@@ -9,8 +9,21 @@ source_set("task_info") {
     "task_types.h",
     "task_types.mm",
   ]
-  public_deps = [ "//ios/chrome/browser/shared/ui/symbols" ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/shared/ui/symbols",
+  ]
+}
+
+source_set("metrics") {
+  sources = [
+    "level_up_metrics.h",
+    "level_up_metrics.mm",
+  ]
+  deps = [
+    ":task_info",
+    "//base",
+  ]
 }
 
 source_set("model") {
@@ -25,11 +38,9 @@ source_set("model") {
     "level_up_service_observer_bridge.h",
     "level_up_service_observer_bridge.mm",
   ]
-  public_deps = [
-    ":task_info",
-    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
-  ]
   deps = [
+    ":metrics",
+    ":task_info",
     "//base",
     "//components/keyed_service/core",
     "//components/pref_registry",
@@ -47,6 +58,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
@@ -61,6 +73,7 @@ source_set("unit_tests") {
     "level_up_service_unittest.mm",
   ]
   deps = [
+    ":metrics",
     ":model",
     ":task_info",
     "//base",

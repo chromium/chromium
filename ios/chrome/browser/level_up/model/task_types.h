@@ -9,6 +9,9 @@
 #import <string_view>
 
 // Enum for all available tasks in the Level Up feature.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(LevelUpTaskType)
 enum class TaskType {
   kUnknown = 0,
   kTabGroups = 1,
@@ -25,6 +28,7 @@ enum class TaskType {
   kLensCameraSearch = 12,
   kMaxValue = kLensCameraSearch,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:LevelUpTaskType)
 
 // Categories grouping the level-up tasks.
 enum class LevelUpTaskCategory {

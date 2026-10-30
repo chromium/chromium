@@ -16,6 +16,7 @@
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
+#import "ios/chrome/browser/level_up/model/level_up_metrics.h"
 #import "ios/chrome/browser/level_up/model/level_up_service_observer.h"
 #import "ios/chrome/browser/level_up/model/tasks/task_factories.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
@@ -347,6 +348,7 @@ void LevelUpService::MarkTaskCompleted(TaskType task_type) {
     ScopedListPrefUpdate update(pref_service_, prefs::kLevelUpCompletedTasks);
     update->Append(storage_id);
 
+    RecordLevelUpTaskCompleted(task_type);
     UpdateLevelAndPref();
     pref_service_->SetInteger(
         prefs::kIosMagicStackSegmentationLevelUpImpressionsSinceFreshness, 0);
@@ -581,6 +583,7 @@ void LevelUpService::UpdateLevelAndPref() {
 
   if (current_level_ > highest_level_pref) {
     pref_service_->SetInteger(prefs::kLevelUpHighestLevel, current_level_);
+    RecordLevelUpLevelChanged(current_level_);
   }
 }
 

@@ -6,6 +6,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -13,6 +14,7 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/content_suggestions/tips/model/tips_metrics.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_view_finder_metrics_recorder.h"
+#import "ios/chrome/browser/level_up/model/level_up_metrics.h"
 #import "ios/chrome/browser/level_up/model/level_up_service.h"
 #import "ios/chrome/browser/level_up/model/level_up_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -386,6 +388,27 @@ TEST_F(LevelUpSceneAgentTest,
   EXPECT_EQ(
       1, service_->GetStatValue(LevelUpTaskStatType::kPhotoSearchesPerformed));
   EXPECT_OCMOCK_VERIFY((id)mock_snackbar_handler_);
+}
+
+// Tests that transitioning to ForegroundActive records the current level when
+// opted in.
+TEST_F(LevelUpSceneAgentTest, RecordsCurrentLevelWhenOptedIn) {
+  base::HistogramTester histogram_tester;
+
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  histogram_tester.ExpectUniqueSample(kLevelUpCurrentLevelHistogram, 1, 1);
+}
+
+// Tests that transitioning to ForegroundActive does not record the current
+// level when opted out.
+TEST_F(LevelUpSceneAgentTest, DoesNotRecordCurrentLevelWhenOptedOut) {
+  profile_->GetPrefs()->SetBoolean(prefs::kLevelUpOptIn, false);
+  base::HistogramTester histogram_tester;
+
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  histogram_tester.ExpectTotalCount(kLevelUpCurrentLevelHistogram, 0);
 }
 
 }  // namespace

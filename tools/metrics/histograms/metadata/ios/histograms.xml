@@ -4591,6 +4591,80 @@ chromium-metrics-reviews@google.com.
   <summary>Records the way the app was launched on iOS.</summary>
 </histogram>
 
+<histogram name="IOS.LevelUp.CurrentLevel" units="level"
+    expires_after="2027-09-01">
+  <owner>rkgibson@google.com</owner>
+  <owner>pabouchard@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Logs the current Level Up level for opted-in users when any scene becomes
+    active in the foreground.
+  </summary>
+</histogram>
+
+<histogram name="IOS.LevelUp.LevelChanged" units="level"
+    expires_after="2027-09-01">
+  <owner>rkgibson@google.com</owner>
+  <owner>pabouchard@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Logs the new level achieved by the user when their Level Up level changes.
+  </summary>
+</histogram>
+
+<histogram name="IOS.LevelUp.NewTaskNotificationsStateChanged"
+    enum="BooleanEnabled" expires_after="2027-09-01">
+  <owner>rkgibson@google.com</owner>
+  <owner>pabouchard@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Logs the new state when the user toggles the Level Up new task notifications
+    setting.
+  </summary>
+</histogram>
+
+<histogram name="IOS.LevelUp.NotificationsStateChanged" enum="BooleanEnabled"
+    expires_after="2027-09-01">
+  <owner>rkgibson@google.com</owner>
+  <owner>pabouchard@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Logs the new state when the user toggles the Level Up progress updates
+    notifications setting.
+  </summary>
+</histogram>
+
+<histogram name="IOS.LevelUp.OptInStateChanged" enum="BooleanEnabled"
+    expires_after="2027-09-01">
+  <owner>rkgibson@google.com</owner>
+  <owner>pabouchard@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Logs the new opt-in state when the user opts in or opts out of Level Up.
+  </summary>
+</histogram>
+
+<histogram name="IOS.LevelUp.TaskCompleted" enum="LevelUpTaskType"
+    expires_after="2027-09-01">
+  <owner>rkgibson@google.com</owner>
+  <owner>pabouchard@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Logs which Level Up task was completed whenever a task is completed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.LevelUp.TaskStarted" enum="LevelUpTaskType"
+    expires_after="2027-09-01">
+  <owner>rkgibson@google.com</owner>
+  <owner>pabouchard@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    Logs which Level Up task was tapped by the user in the Level Up UI to start
+    the task flow.
+  </summary>
+</histogram>
+
 <histogram name="IOS.LevelUpPromo.Action" enum="PromoStyleSheetAction"
     expires_after="2027-09-01">
   <owner>zijingl@google.com</owner>
