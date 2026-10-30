@@ -654,6 +654,34 @@ class FetchManagerTest : public testing::Test {
     base::raw_ref<test::TaskEnvironment> task_environment_;
   };
 
+  // Turns the response into a 302 with an empty Location header. The mock
+  // loader would follow a registered 3xx itself, whereas //net delivers this
+  // response as a final one.
+  class EmptyLocationRedirectLoaderTestDelegate
+      : public EmptyBodyLoaderTestDelegate {
+   public:
+    // The response gets `location_headers` empty Location headers.
+    explicit EmptyLocationRedirectLoaderTestDelegate(
+        test::TaskEnvironment& task_environment,
+        int location_headers = 1)
+        : EmptyBodyLoaderTestDelegate(task_environment),
+          location_headers_(location_headers) {}
+
+    void DidReceiveResponse(URLLoaderClient* original_client,
+                            const WebURLResponse& response) override {
+      WebURLResponse redirect_response(response);
+      redirect_response.SetHttpStatusCode(302);
+      for (int i = 0; i < location_headers_; ++i) {
+        redirect_response.AddHttpHeaderField("Location", "");
+      }
+      EmptyBodyLoaderTestDelegate::DidReceiveResponse(original_client,
+                                                      redirect_response);
+    }
+
+   private:
+    const int location_headers_;
+  };
+
   void TearDown() override {
     URLLoaderMockFactory::GetSingletonInstance()->SetLoaderDelegate(nullptr);
     url_test_helpers::UnregisterAllURLsAndClearMemoryCache();
@@ -788,6 +816,64 @@ TEST_F(FetchManagerTest, RecordsOkForManualRedirect) {
   Histogram().ExpectTotalCount(
       FetchManager::kErrorCodesBeforeResponseHeadersHistogramName, 0);
   Histogram().ExpectTotalCount(FetchManager::kAbortedReasonHistogramName, 0);
+}
+
+// Covers redirect responses that reach fetch() as the final response, in
+// "follow" and "error" modes. //net delivers a redirect response that way when
+// its Location values are all empty. It reports one with a non-empty Location
+// as a redirect, which WillFollowRedirect() follows or fails.
+class FetchManagerFinalRedirectResponseTest
+    : public FetchManagerTest,
+      public testing::WithParamInterface<V8RequestRedirect::Enum> {
+ protected:
+  // Fetches a URL in the redirect mode under test, and `delegate` turns its
+  // response into the redirect response. The URL is registered with a 200
+  // because the mock loader would follow a registered 3xx itself.
+  void FetchRedirectAsFinalResponse(URLLoaderTestDelegate& delegate) {
+    URLLoaderMockFactory::GetSingletonInstance()->SetLoaderDelegate(&delegate);
+
+    V8TestingScope scope(KURL("https://example.com/"));
+    const KURL target("https://example.com/redirect");
+    WebURLResponse response(target);
+    response.SetHttpStatusCode(200);
+    URLLoaderMockFactory::GetSingletonInstance()->RegisterURL(
+        target, response, /*file_path=*/WebString());
+
+    StartFetch(scope, target, /*signal=*/nullptr, GetParam());
+    url_test_helpers::ServeAsynchronousRequests();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FetchManagerFinalRedirectResponseTest,
+    testing::Values(V8RequestRedirect::Enum::kFollow,
+                    V8RequestRedirect::Enum::kError),
+    [](const testing::TestParamInfo<V8RequestRedirect::Enum>& info) {
+      return info.param == V8RequestRedirect::Enum::kFollow ? "Follow"
+                                                            : "Error";
+    });
+
+// fetch() resolves with the redirect response. The response also exercises the
+// DCHECK on non-empty Location values in DidReceiveResponse(), which must not
+// fire.
+TEST_P(FetchManagerFinalRedirectResponseTest, EmptyLocationResolves) {
+  EmptyLocationRedirectLoaderTestDelegate delegate(task_environment());
+  FetchRedirectAsFinalResponse(delegate);
+
+  Histogram().ExpectUniqueSample(FetchManager::kErrorCodesHistogramName,
+                                 -net::OK, 1);
+}
+
+// The two empty Location headers reach DidReceiveResponse() joined as ", ",
+// which the DCHECK on non-empty Location values must still treat as empty.
+TEST_P(FetchManagerFinalRedirectResponseTest, TwoEmptyLocationHeadersResolve) {
+  EmptyLocationRedirectLoaderTestDelegate delegate(task_environment(),
+                                                   /*location_headers=*/2);
+  FetchRedirectAsFinalResponse(delegate);
+
+  Histogram().ExpectUniqueSample(FetchManager::kErrorCodesHistogramName,
+                                 -net::OK, 1);
 }
 
 TEST_F(FetchManagerTest, RecordsCategoryUkmWhenParamMatches) {

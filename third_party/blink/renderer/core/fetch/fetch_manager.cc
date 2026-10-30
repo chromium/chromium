@@ -114,6 +114,7 @@
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -199,11 +200,12 @@ bool IsFetchLaterSendOnEnterBackForwardCacheEnabled() {
                                                  "send_on_enter_bfcache", true);
 }
 
-bool HasNonEmptyLocationHeader(const FetchHeaderList* headers) {
-  String value;
-  if (!headers->Get(http_names::kLocation, value))
-    return false;
-  return !value.empty();
+// Several Location headers are joined with ", ", so any other character comes
+// from a non-empty value.
+bool HasNonEmptyLocationValue(const ResourceResponse& response) {
+  return response.HttpHeaderField(http_names::kLocation).Find([](UChar c) {
+    return c != ',' && !IsAsciiSpace(c);
+  }) != kNotFound;
 }
 
 const char* SerializeTrustTokenOperationType(
@@ -728,6 +730,12 @@ void FetchManager::Loader::DidReceiveResponse(
   auto response_type = response.GetType();
   DCHECK_NE(response_type, FetchResponseType::kError);
 
+  // //net only reports a redirect when a Location value is non-empty, so
+  // outside "manual" mode a Location header here has only empty values.
+  DCHECK(!(network_utils::IsRedirectResponseCode(response.HttpStatusCode()) &&
+           HasNonEmptyLocationValue(response) &&
+           GetFetchRequestData()->Redirect() != RedirectMode::kManual));
+
   LogIfKeepalive("Succeeded");
 
   ScriptState::Scope scope(GetScriptState());
@@ -760,9 +768,6 @@ void FetchManager::Loader::DidReceiveResponse(
   }
 
   DCHECK_EQ(response_type, response.GetType());
-  DCHECK(!(network_utils::IsRedirectResponseCode(response_http_status_code_) &&
-           HasNonEmptyLocationHeader(response_data->HeaderList()) &&
-           GetFetchRequestData()->Redirect() != RedirectMode::kManual));
 
   if (network_utils::IsRedirectResponseCode(response_http_status_code_) &&
       GetFetchRequestData()->Redirect() == RedirectMode::kManual) {
