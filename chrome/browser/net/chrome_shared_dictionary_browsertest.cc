@@ -72,11 +72,6 @@ constexpr uint8_t kBrotliCompressedData[] = {
     0x09, 0x9d, 0xf0, 0xb0, 0x01, 0x47, 0x14, 0x87, 0x14, 0x6d, 0xfb,
     0x60, 0x96, 0xdb, 0xae, 0x9e, 0x79, 0x54, 0xe3, 0x69, 0x03, 0x29};
 
-// NOLINTNEXTLINE(runtime/string)
-const std::string kBrotliCompressedDataString =
-    std::string(reinterpret_cast<const char*>(kBrotliCompressedData),
-                sizeof(kBrotliCompressedData));
-
 // kZstdCompressedData is generated using the following commands:
 // $ echo -n "A dictionary" > /tmp/dict
 // $ echo -n "This is compressed test data using a test dictionary" > /tmp/data
@@ -95,11 +90,6 @@ constexpr uint8_t kZstdCompressedData[] = {
     0x20, 0x64, 0x61, 0x74, 0x61, 0x20, 0x75, 0x73, 0x69, 0x6e, 0x67, 0x20,
     0x61, 0x20, 0x74, 0x65, 0x73, 0x74, 0x20, 0x64, 0x69, 0x63, 0x74, 0x69,
     0x6f, 0x6e, 0x61, 0x72, 0x79, 0x9e, 0x99, 0xf2, 0xbc};
-
-// NOLINTNEXTLINE(runtime/string)
-const std::string kZstdCompressedDataString =
-    std::string(reinterpret_cast<const char*>(kZstdCompressedData),
-                sizeof(kZstdCompressedData));
 
 class SharedDictionaryAccessObserver : public content::WebContentsObserver {
  public:
@@ -393,7 +383,7 @@ class ChromeSharedDictionaryBrowserTest : public InProcessBrowserTest {
       response->AddCustomHeader(
           "content-encoding",
           net::shared_dictionary::kSharedBrotliContentEncodingName);
-      response->set_content(kBrotliCompressedDataString);
+      response->set_content(base::as_string_view(kBrotliCompressedData));
       return response;
     } else if (request.relative_url == "/path/zstd_compressed") {
       CHECK(GetAvailableDictionary(request.headers));
@@ -401,7 +391,7 @@ class ChromeSharedDictionaryBrowserTest : public InProcessBrowserTest {
       response->AddCustomHeader(
           "content-encoding",
           net::shared_dictionary::kSharedZstdContentEncodingName);
-      response->set_content(kZstdCompressedDataString);
+      response->set_content(base::as_string_view(kZstdCompressedData));
       return response;
     }
     return nullptr;

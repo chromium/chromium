@@ -6,6 +6,7 @@
 
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/json/json_reader.h"
 #include "net/base/ip_address.h"
@@ -16,11 +17,12 @@
 namespace net {
 namespace {
 
-const IPAddress ip1(192, 0, 2, 1);
-const IPAddress ip2(0x20, 0x01, 0x0d, 0xb8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
-const IPAddress ip3(192, 0, 2, 2);
-const IPAddress ip4(0x20, 0x01, 0x0d, 0xb8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2);
-const DnsOverHttpsServerConfig::Endpoints endpoints{{ip1, ip2}, {ip3, ip4}};
+constexpr IPAddress kIp1(192, 0, 2, 1);
+constexpr IPAddress
+    kIp2(0x20, 0x01, 0x0d, 0xb8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1);
+constexpr IPAddress kIp3(192, 0, 2, 2);
+constexpr IPAddress
+    kIp4(0x20, 0x01, 0x0d, 0xb8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2);
 
 TEST(DnsOverHttpsServerConfigTest, ValidWithGet) {
   auto parsed = DnsOverHttpsServerConfig::FromString(
@@ -99,6 +101,8 @@ TEST(DnsOverHttpsServerConfigTest, ToValueSimple) {
 }
 
 TEST(DnsOverHttpsServerConfigTest, ToValueWithEndpoints) {
+  const DnsOverHttpsServerConfig::Endpoints endpoints{{kIp1, kIp2},
+                                                      {kIp3, kIp4}};
   auto parsed = DnsOverHttpsServerConfig::FromString(
       "https://dnsserver.example.net/dns-query{?dns}", endpoints);
   ASSERT_TRUE(parsed);
@@ -155,6 +159,8 @@ TEST(DnsOverHttpsServerConfigTest, FromValueWithEndpoints) {
   auto parsed =
       DnsOverHttpsServerConfig::FromValue(std::move(input).TakeDict());
 
+  const DnsOverHttpsServerConfig::Endpoints endpoints{{kIp1, kIp2},
+                                                      {kIp3, kIp4}};
   auto expected = DnsOverHttpsServerConfig::FromString(
       "https://dnsserver.example.net/dns-query{?dns}", endpoints);
   EXPECT_EQ(expected, parsed);

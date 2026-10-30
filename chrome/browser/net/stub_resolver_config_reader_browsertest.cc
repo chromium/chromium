@@ -5,6 +5,7 @@
 #include "chrome/browser/net/stub_resolver_config_reader.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/enterprise_util.h"
 #include "base/feature_list.h"
@@ -47,7 +48,7 @@
 
 namespace {
 
-const std::string kDnsOverHttpsTemplatesPrefName =
+constexpr std::string_view kDnsOverHttpsTemplatesPrefName =
     prefs::kDnsOverHttpsTemplates;
 
 class StubResolverConfigReaderBrowsertest

@@ -4,6 +4,10 @@
 
 #include "net/dns/public/dns_over_https_config.h"
 
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/values.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -12,17 +16,20 @@
 namespace net {
 namespace {
 
-const DnsOverHttpsServerConfig kServerConfig1 =
-    *DnsOverHttpsServerConfig::FromString("https://example1.test");
-const DnsOverHttpsServerConfig kServerConfig2 =
-    *DnsOverHttpsServerConfig::FromString("https://example2.test");
+DnsOverHttpsServerConfig GetServerConfig1() {
+  return *DnsOverHttpsServerConfig::FromString("https://example1.test");
+}
+
+DnsOverHttpsServerConfig GetServerConfig2() {
+  return *DnsOverHttpsServerConfig::FromString("https://example2.test");
+}
 
 TEST(DnsOverHttpsConfigTest, SingleValue) {
-  DnsOverHttpsConfig config({kServerConfig1});
-  EXPECT_THAT(config.servers(), testing::ElementsAre(kServerConfig1));
+  DnsOverHttpsConfig config({GetServerConfig1()});
+  EXPECT_THAT(config.servers(), testing::ElementsAre(GetServerConfig1()));
 
   base::ListValue expected_servers;
-  expected_servers.Append(kServerConfig1.ToValue());
+  expected_servers.Append(GetServerConfig1().ToValue());
   base::DictValue expected_value;
   expected_value.Set("servers", std::move(expected_servers));
   EXPECT_EQ(expected_value, config.ToValue());
@@ -31,17 +38,18 @@ TEST(DnsOverHttpsConfigTest, SingleValue) {
 }
 
 TEST(DnsOverHttpsConfigTest, MultiValue) {
-  std::vector<DnsOverHttpsServerConfig> servers{kServerConfig1, kServerConfig2};
+  std::vector<DnsOverHttpsServerConfig> servers{GetServerConfig1(),
+                                                GetServerConfig2()};
   DnsOverHttpsConfig config(servers);
   EXPECT_EQ(servers, config.servers());
 
-  EXPECT_EQ(kServerConfig1.server_template() + "\n" +
-                kServerConfig2.server_template(),
+  EXPECT_EQ(GetServerConfig1().server_template() + "\n" +
+                GetServerConfig2().server_template(),
             config.ToString());
 
   base::ListValue expected_servers;
-  expected_servers.Append(kServerConfig1.ToValue());
-  expected_servers.Append(kServerConfig2.ToValue());
+  expected_servers.Append(GetServerConfig1().ToValue());
+  expected_servers.Append(GetServerConfig2().ToValue());
   base::DictValue expected_value;
   expected_value.Set("servers", std::move(expected_servers));
   EXPECT_EQ(expected_value, config.ToValue());
@@ -50,20 +58,20 @@ TEST(DnsOverHttpsConfigTest, MultiValue) {
 }
 
 TEST(DnsOverHttpsConfigTest, Equal) {
-  DnsOverHttpsConfig a({kServerConfig1});
-  DnsOverHttpsConfig a2({kServerConfig1});
-  DnsOverHttpsConfig b({kServerConfig1, kServerConfig2});
-  DnsOverHttpsConfig b2({kServerConfig1, kServerConfig2});
+  DnsOverHttpsConfig a({GetServerConfig1()});
+  DnsOverHttpsConfig a2({GetServerConfig1()});
+  DnsOverHttpsConfig b({GetServerConfig1(), GetServerConfig2()});
+  DnsOverHttpsConfig b2({GetServerConfig1(), GetServerConfig2()});
 
   EXPECT_EQ(a, a2);
   EXPECT_EQ(b, b2);
 }
 
 TEST(DnsOverHttpsConfigTest, NotEqual) {
-  DnsOverHttpsConfig a({kServerConfig1});
-  DnsOverHttpsConfig b({kServerConfig2});
-  DnsOverHttpsConfig c({kServerConfig1, kServerConfig2});
-  DnsOverHttpsConfig d({kServerConfig2, kServerConfig1});
+  DnsOverHttpsConfig a({GetServerConfig1()});
+  DnsOverHttpsConfig b({GetServerConfig2()});
+  DnsOverHttpsConfig c({GetServerConfig1(), GetServerConfig2()});
+  DnsOverHttpsConfig d({GetServerConfig2(), GetServerConfig1()});
 
   EXPECT_FALSE(a == b);
   EXPECT_FALSE(a == c);
@@ -73,30 +81,29 @@ TEST(DnsOverHttpsConfigTest, NotEqual) {
 
 TEST(DnsOverHttpsConfigTest, FromStringSingleValue) {
   auto config =
-      DnsOverHttpsConfig::FromString(kServerConfig1.server_template());
-  EXPECT_THAT(config, testing::Optional(DnsOverHttpsConfig({kServerConfig1})));
+      DnsOverHttpsConfig::FromString(GetServerConfig1().server_template());
+  EXPECT_THAT(config,
+              testing::Optional(DnsOverHttpsConfig({GetServerConfig1()})));
 }
 
 TEST(DnsOverHttpsConfigTest, FromStringMultiValue) {
-  auto config =
-      DnsOverHttpsConfig::FromString(kServerConfig1.server_template() + "\n" +
-                                     kServerConfig2.server_template());
-  EXPECT_THAT(
-      config,
-      testing::Optional(DnsOverHttpsConfig({kServerConfig1, kServerConfig2})));
+  auto config = DnsOverHttpsConfig::FromString(
+      GetServerConfig1().server_template() + "\n" +
+      GetServerConfig2().server_template());
+  EXPECT_THAT(config, testing::Optional(DnsOverHttpsConfig(
+                          {GetServerConfig1(), GetServerConfig2()})));
 }
 
 TEST(DnsOverHttpsConfigTest, FromStringExtraWhitespace) {
   auto config = DnsOverHttpsConfig::FromString(
-      "  \t" + kServerConfig1.server_template() + "    " +
-      kServerConfig2.server_template() + "\n ");
-  EXPECT_THAT(
-      config,
-      testing::Optional(DnsOverHttpsConfig({kServerConfig1, kServerConfig2})));
+      "  \t" + GetServerConfig1().server_template() + "    " +
+      GetServerConfig2().server_template() + "\n ");
+  EXPECT_THAT(config, testing::Optional(DnsOverHttpsConfig(
+                          {GetServerConfig1(), GetServerConfig2()})));
 
-  auto config2 =
-      DnsOverHttpsConfig::FromString(kServerConfig1.server_template() + "\t" +
-                                     kServerConfig2.server_template());
+  auto config2 = DnsOverHttpsConfig::FromString(
+      GetServerConfig1().server_template() + "\t" +
+      GetServerConfig2().server_template());
   EXPECT_EQ(config2, config);
 }
 
@@ -114,11 +121,11 @@ TEST(DnsOverHttpsConfigTest, FromStringAllInvalid) {
 }
 
 TEST(DnsOverHttpsConfigTest, FromStringSomeInvalid) {
-  std::string some_invalid = "foo " + kServerConfig1.server_template() +
-                             " bar " + kServerConfig2.server_template() +
+  std::string some_invalid = "foo " + GetServerConfig1().server_template() +
+                             " bar " + GetServerConfig2().server_template() +
                              " baz";
   EXPECT_FALSE(DnsOverHttpsConfig::FromString(some_invalid));
-  EXPECT_EQ(DnsOverHttpsConfig({kServerConfig1, kServerConfig2}),
+  EXPECT_EQ(DnsOverHttpsConfig({GetServerConfig1(), GetServerConfig2()}),
             DnsOverHttpsConfig::FromStringLax(some_invalid));
 }
 
