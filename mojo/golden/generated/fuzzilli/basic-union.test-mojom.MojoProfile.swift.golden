@@ -21,6 +21,9 @@ extension ILType {
         withMethods: [
             "useUnion",
             "getUnion",
+            "getBrowserMadeUnion",
+            "getOrderedUnion",
+            "useOrderedUnion",
             "syncGetUnion",
         ])
     fileprivate static let jsGoldenPrimaryRemoteWrapper: ILType = .object(
@@ -44,6 +47,13 @@ extension ObjectGroup {
             "getUnion": [
                 .plain(.boolean),
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetUnion_ResponseParams),
+            "getBrowserMadeUnion": [
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetBrowserMadeUnion_ResponseParams),
+            "getOrderedUnion": [
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetOrderedUnion_ResponseParams),
+            "useOrderedUnion": [
+                .plain(.jsGoldenOrderedUnionUnion),
+            ] => .undefined,
             "syncGetUnion": [
                 .plain(.boolean),
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_SyncGetUnion_ResponseParams),
@@ -72,8 +82,31 @@ extension ILType {
     fileprivate static let jsGoldenTokenConstructor: ILType = .constructor([
         .plain(.jsUint8),
     ] => .jsGoldenToken)
+    fileprivate static let jsGoldenOrderedToken: ILType = .object(
+        ofGroup: "golden.OrderedToken",
+        withProperties: [
+            "data",
+        ])
+    fileprivate static let jsGoldenOrderedTokenConstructor: ILType = .constructor([
+        .plain(.jsUint8),
+    ] => .jsGoldenOrderedToken)
+    fileprivate static let jsGoldenBrowserMadeToken: ILType = .object(
+        ofGroup: "golden.BrowserMadeToken",
+        withProperties: [
+            "data",
+        ])
     fileprivate static let jsGoldenPrimary_GetUnion_ResponseParams: ILType = .object(
         ofGroup: "golden.Primary_GetUnion_ResponseParams",
+        withProperties: [
+            "result",
+        ])
+    fileprivate static let jsGoldenPrimary_GetBrowserMadeUnion_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_GetBrowserMadeUnion_ResponseParams",
+        withProperties: [
+            "result",
+        ])
+    fileprivate static let jsGoldenPrimary_GetOrderedUnion_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_GetOrderedUnion_ResponseParams",
         withProperties: [
             "result",
         ])
@@ -93,11 +126,43 @@ extension ObjectGroup {
         ],
         methods: [:]
     )
+    fileprivate static let goldenOrderedToken = ObjectGroup(
+        name: "golden.OrderedToken",
+        instanceType: .jsGoldenOrderedToken,
+        properties: [
+            "data": .jsUint8,
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenBrowserMadeToken = ObjectGroup(
+        name: "golden.BrowserMadeToken",
+        instanceType: .jsGoldenBrowserMadeToken,
+        properties: [
+            "data": .jsUint8,
+        ],
+        methods: [:]
+    )
     fileprivate static let goldenPrimaryGetUnionResponseParams = ObjectGroup(
         name: "golden.Primary_GetUnion_ResponseParams",
         instanceType: .jsGoldenPrimary_GetUnion_ResponseParams,
         properties: [
             "result": .jsGoldenSimpleUnionUnion,
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenPrimaryGetBrowserMadeUnionResponseParams = ObjectGroup(
+        name: "golden.Primary_GetBrowserMadeUnion_ResponseParams",
+        instanceType: .jsGoldenPrimary_GetBrowserMadeUnion_ResponseParams,
+        properties: [
+            "result": .jsGoldenBrowserMadeUnionUnion,
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenPrimaryGetOrderedUnionResponseParams = ObjectGroup(
+        name: "golden.Primary_GetOrderedUnion_ResponseParams",
+        instanceType: .jsGoldenPrimary_GetOrderedUnion_ResponseParams,
+        properties: [
+            "result": .jsGoldenOrderedUnionUnion,
         ],
         methods: [:]
     )
@@ -157,6 +222,22 @@ extension ILType {
         [.plain(.jsGoldenToken)] => .jsGoldenSimpleUnionUnion)
     fileprivate static let jsGoldenSimpleUnionUnionFlagConstructor: ILType = .constructor(
         [.either(.boolean, .undefined)] => .jsGoldenSimpleUnionUnion)
+    fileprivate static let jsGoldenOrderedUnionUnion: ILType = .object(
+        ofGroup: "golden.OrderedUnion",
+        withProperties: [
+            "token",
+            "val",
+        ])
+    fileprivate static let jsGoldenOrderedUnionUnionTokenConstructor: ILType = .constructor(
+        [.plain(.jsGoldenOrderedToken)] => .jsGoldenOrderedUnionUnion)
+    fileprivate static let jsGoldenOrderedUnionUnionValConstructor: ILType = .constructor(
+        [.plain(.jsInt32)] => .jsGoldenOrderedUnionUnion)
+    fileprivate static let jsGoldenBrowserMadeUnionUnion: ILType = .object(
+        ofGroup: "golden.BrowserMadeUnion",
+        withProperties: [
+            "token",
+            "val",
+        ])
 }
 
 extension ObjectGroup {
@@ -167,6 +248,24 @@ extension ObjectGroup {
             "arr": .jsInt64MojoArray,
             "token": .jsGoldenToken,
             "flag": .boolean,
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenOrderedUnionUnion = ObjectGroup(
+        name: "golden.OrderedUnion",
+        instanceType: .jsGoldenOrderedUnionUnion,
+        properties: [
+            "token": .jsGoldenOrderedToken,
+            "val": .jsInt32,
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenBrowserMadeUnionUnion = ObjectGroup(
+        name: "golden.BrowserMadeUnion",
+        instanceType: .jsGoldenBrowserMadeUnionUnion,
+        properties: [
+            "token": .jsGoldenBrowserMadeToken,
+            "val": .jsInt32,
         ],
         methods: [:]
     )
@@ -230,9 +329,15 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .goldenPrimaryRemote,
     .goldenPrimaryRemoteWrapper,
     .goldenToken,
+    .goldenOrderedToken,
+    .goldenBrowserMadeToken,
     .goldenPrimaryGetUnionResponseParams,
+    .goldenPrimaryGetBrowserMadeUnionResponseParams,
+    .goldenPrimaryGetOrderedUnionResponseParams,
     .goldenPrimarySyncGetUnionResponseParams,
     .goldenSimpleUnionUnion,
+    .goldenOrderedUnionUnion,
+    .goldenBrowserMadeUnionUnion,
 ] + commonMojoObjectGroups
 
 private let mojoBuiltins: [String: ILType] = [
@@ -246,9 +351,12 @@ private let mojoBuiltins: [String: ILType] = [
     /// as an opaque object Fuzzilli does not use it as a general-purpose array.
     "mojoAsyncFunctionPromises": .object(withMethods: ["push"]),
     "golden.Token": .jsGoldenTokenConstructor,
+    "golden.OrderedToken": .jsGoldenOrderedTokenConstructor,
     "golden.SimpleUnion.arr": .jsGoldenSimpleUnionUnionArrConstructor,
     "golden.SimpleUnion.token": .jsGoldenSimpleUnionUnionTokenConstructor,
     "golden.SimpleUnion.flag": .jsGoldenSimpleUnionUnionFlagConstructor,
+    "golden.OrderedUnion.token": .jsGoldenOrderedUnionUnionTokenConstructor,
+    "golden.OrderedUnion.val": .jsGoldenOrderedUnionUnionValConstructor,
 ]
 
 private let keepGenerators = [

@@ -9,11 +9,13 @@ extension ILType {
             "{{field.name}}",
         {%- endfor %}
         ])
+    {%- if union in js_unions %}
     {%- for field in union.fields %}
     fileprivate static let {{union|format_il_type}}
         {{- field.name|to_camel}}Constructor: ILType = .constructor(
         [{{macros.to_fuzzilli_parameter(field)}}] => .{{union|format_il_type}})
     {%- endfor %}
+    {%- endif %}
 {%- endfor %}
 }
 

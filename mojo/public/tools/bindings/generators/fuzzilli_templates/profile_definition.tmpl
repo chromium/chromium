@@ -75,7 +75,7 @@ private let mojoBuiltins: [String: ILType] = [
 {%- for struct in js_structs %}
     "{{struct|fully_qualified_name}}": .{{struct|format_il_type}}Constructor,
 {%- endfor %}
-{%- for union in unions %}
+{%- for union in js_unions %}
     {%- for field in union.fields %}
     "{{union|fully_qualified_name}}.{{field.name}}": .{{union|format_il_type}}
         {{- field.name|to_camel}}Constructor,

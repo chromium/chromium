@@ -99,7 +99,8 @@ class Generator(generator.Generator):
     self.arrays = {}
     self.maps = {}
     self.enums = {}
-    self.unions = {}
+    self.js_unions = {}
+    self.browser_unions = {}
     self.js_structs = {}
     self.browser_structs = {}
     # Methods with a response return a Promise that resolves to a JavaScript
@@ -147,7 +148,9 @@ class Generator(generator.Generator):
       "arrays": list(self.arrays.values()),
       "maps": list(self.maps.values()),
       "enums": list(self.enums.values()),
-      "unions": list(self.unions.values()),
+      "js_unions": list(self.js_unions.values()),
+      # Union of `js_unions` and `browser_unions`
+      "unions": list((self.js_unions | self.browser_unions).values()),
       "js_structs": list(self.js_structs.values()),
       # Union of `js_structs` and `browser_structs`
       "structs": list((self.js_structs | self.browser_structs).values()),
@@ -205,10 +208,11 @@ class Generator(generator.Generator):
     self.enums[name] = enum
 
   def _CollectUnion(self, union, is_in_js):
+    unions = self.js_unions if is_in_js else self.browser_unions
     name = self._FormatUniqueName(union)
-    if name in self.unions:
+    if name in unions:
       return
-    self.unions[name] = union
+    unions[name] = union
     for field in union.fields:
       self._CollectInterfaceAndTypes(field.kind, is_in_js)
 

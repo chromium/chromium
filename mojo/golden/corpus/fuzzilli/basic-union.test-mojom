@@ -6,6 +6,12 @@ module golden;
 interface Primary {
   UseUnion(SimpleUnion param);
   GetUnion(bool flag) => (SimpleUnion result);
+  GetBrowserMadeUnion() => (BrowserMadeUnion result);
+
+  // `OrderedUnion` is first seen in a response, then in a parameter. Ensures
+  // that visit order doesn't affect the content of profiles.
+  GetOrderedUnion() => (OrderedUnion result);
+  UseOrderedUnion(OrderedUnion param);
 
   [Sync]
   SyncGetUnion(bool flag) => (SimpleUnion result);
@@ -18,5 +24,23 @@ union SimpleUnion {
 };
 
 struct Token {
+  uint8 data;
+};
+
+union BrowserMadeUnion {
+  BrowserMadeToken token;
+  int32 val;
+};
+
+struct BrowserMadeToken {
+  uint8 data;
+};
+
+union OrderedUnion {
+  OrderedToken token;
+  int32 val;
+};
+
+struct OrderedToken {
   uint8 data;
 };
