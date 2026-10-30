@@ -2,3 +2,11 @@ include_rules = [
   "+components/page_content_annotations/core",
   "+ios/chrome/browser/passwords/model/actor_login",
 ]
+
+specific_include_rules = {
+  "^type_tool\\.mm$": [
+    # keep-sorted start
+    "+ios/chrome/browser/passwords/model/password_native_keystroke_autologin.h",
+    # keep-sorted end
+  ],
+}

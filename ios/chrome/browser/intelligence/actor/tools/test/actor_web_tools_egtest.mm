@@ -360,6 +360,39 @@
                          @"Hello World", @"Input value did not match");
 }
 
+// Tests that the `TypeTool` with `follow_by_enter = true` submits the enclosing
+// form.
+- (void)testTypeTool_followByEnterSubmitsForm {
+  const std::string formHTML = R"(
+    <form onsubmit="event.preventDefault(); window.formSubmitted = true;">
+      <input type="text">
+    </form>
+  )";
+  [ChromeEarlGrey loadURL:[self URLForHTML:formHTML]];
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:[ElementSelector
+                                           selectorWithCSSSelector:"input"]];
+
+  optimization_guide::proto::Action action;
+  optimization_guide::proto::TypeAction* typeAction = action.mutable_type();
+  typeAction->set_tab_id([ChromeEarlGrey currentTabID].intValue);
+  typeAction->set_text("Hello World");
+  typeAction->set_mode(optimization_guide::proto::TypeAction::APPEND);
+  typeAction->set_follow_by_enter(true);
+
+  [self setCoordinatesOnTarget:typeAction->mutable_target()
+                  withSelector:"input"];
+
+  GREYAssertNil([self executeAction:action], @"Action execution failed.");
+
+  base::Value value = [ChromeEarlGrey
+      evaluateJavaScript:@"document.querySelector('input').value"];
+  GREYAssertEqualObjects(base::SysUTF8ToNSString(value.GetString()),
+                         @"Hello World", @"Input value did not match");
+
+  [ChromeEarlGrey waitForJavaScriptCondition:@"window.formSubmitted === true"];
+}
+
 #pragma mark - ScrollTool Tests
 
 // Tests that the ScrollTool can successfully scroll an element given its

@@ -43,24 +43,6 @@ enum class TypeToolResultCode {
 // A feature that provides methods to execute a type action in the web page.
 class TypeToolJavaScriptFeature : public web::JavaScriptFeature {
  public:
-  static TypeToolJavaScriptFeature* GetInstance();
-
-  // Executes a type action on the given `target_frame`.
-  void Type(base::WeakPtr<web::WebFrame> target_frame,
-            const ActionTarget& target,
-            const std::string& text,
-            optimization_guide::proto::TypeAction_TypeMode mode,
-            bool follow_by_enter,
-            ToolExecutionCallback callback);
-
- protected:
-  TypeToolJavaScriptFeature();
-  ~TypeToolJavaScriptFeature() override;
-
- private:
-  friend class base::NoDestructor<TypeToolJavaScriptFeature>;
-  friend class TypeToolJavaScriptFeatureTest;
-
   // Callback invoked when `Type()` completes, receiving the execution `result`
   // and the resolved `field_id` of the typed leaf element (or a null
   // `autofill::FieldRendererId` if typing did not succeed on a valid leaf
@@ -68,6 +50,8 @@ class TypeToolJavaScriptFeature : public web::JavaScriptFeature {
   using TypeExecutionCallback =
       base::OnceCallback<void(ToolExecutionResult result,
                               autofill::FieldRendererId field_id)>;
+
+  static TypeToolJavaScriptFeature* GetInstance();
 
   // Executes a type action on the given `target_frame` and passes both the
   // execution result and the resolved `autofill::FieldRendererId` to
@@ -78,19 +62,18 @@ class TypeToolJavaScriptFeature : public web::JavaScriptFeature {
             optimization_guide::proto::TypeAction_TypeMode mode,
             TypeExecutionCallback callback);
 
-  // Handles completion of the `Type()` JavaScript call and triggers
-  // `SubmitWithEnterFallback()` if `follow_by_enter` is requested.
-  void OnTypeCompleted(base::WeakPtr<web::WebFrame> target_frame,
-                       bool follow_by_enter,
-                       ToolExecutionCallback callback,
-                       ToolExecutionResult result,
-                       autofill::FieldRendererId field_id);
-
   // Dispatches a fallback synthetic `Enter` event sequence and implicit form
   // submission on the element identified by `field_id` in `target_frame`.
   void SubmitWithEnterFallback(base::WeakPtr<web::WebFrame> target_frame,
                                autofill::FieldRendererId field_id,
                                base::OnceClosure callback);
+
+ protected:
+  TypeToolJavaScriptFeature();
+  ~TypeToolJavaScriptFeature() override;
+
+ private:
+  friend class base::NoDestructor<TypeToolJavaScriptFeature>;
 };
 
 }  // namespace actor

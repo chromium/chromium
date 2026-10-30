@@ -90,21 +90,6 @@ void TypeToolJavaScriptFeature::Type(
     const ActionTarget& target,
     const std::string& text,
     optimization_guide::proto::TypeAction_TypeMode mode,
-    bool follow_by_enter,
-    ToolExecutionCallback callback) {
-  // `base::Unretained(this)` is safe because `TypeToolJavaScriptFeature` is a
-  // `base::NoDestructor` singleton that is never destroyed.
-  Type(target_frame, target, text, mode,
-       base::BindOnce(&TypeToolJavaScriptFeature::OnTypeCompleted,
-                      base::Unretained(this), target_frame, follow_by_enter,
-                      std::move(callback)));
-}
-
-void TypeToolJavaScriptFeature::Type(
-    base::WeakPtr<web::WebFrame> target_frame,
-    const ActionTarget& target,
-    const std::string& text,
-    optimization_guide::proto::TypeAction_TypeMode mode,
     TypeExecutionCallback callback) {
   CHECK(target.is_valid());
 
@@ -141,21 +126,6 @@ void TypeToolJavaScriptFeature::Type(
                      kJavascriptFeatureFailedToCallJavaScriptFunction),
              autofill::FieldRendererId());
   }
-}
-
-void TypeToolJavaScriptFeature::OnTypeCompleted(
-    base::WeakPtr<web::WebFrame> target_frame,
-    bool follow_by_enter,
-    ToolExecutionCallback callback,
-    ToolExecutionResult result,
-    autofill::FieldRendererId field_id) {
-  if (result.IsOk() && follow_by_enter && !field_id.is_null()) {
-    SubmitWithEnterFallback(
-        std::move(target_frame), field_id,
-        base::BindOnce(std::move(callback), std::move(result)));
-    return;
-  }
-  std::move(callback).Run(std::move(result));
 }
 
 void TypeToolJavaScriptFeature::SubmitWithEnterFallback(
