@@ -178,6 +178,7 @@ bool IsFromUserInteraction(feedback::FeedbackSource source) {
     case feedback::kFeedbackSourcePriceInsights:
     case feedback::kFeedbackSourceQuickAnswers:
     case feedback::kFeedbackSourceQuickOffice:
+    case feedback::kFeedbackSourceReadingMode:
     case feedback::kFeedbackSourceSettingsPerformancePage:
       return true;
     default:

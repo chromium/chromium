@@ -25,6 +25,7 @@
 #include "base/test/values_test_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
+#include "chrome/browser/feedback/public/feedback_source.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -70,6 +71,7 @@
 #include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/filename_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "pdf/pdf_features.h"
@@ -2574,6 +2576,66 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTranslateEntryPointTest,
   controller = TranslateController::From(browser());
   ASSERT_NE(controller, nullptr);
   EXPECT_NE(controller->GetTranslateBubble(), nullptr);
+}
+
+class ReadAnythingUntrustedPageHandlerSendFeedbackTest
+    : public ReadAnythingUntrustedPageHandlerTest {
+ public:
+  ReadAnythingUntrustedPageHandlerSendFeedbackTest()
+      : ReadAnythingUntrustedPageHandlerTest(
+            {features::kReadAnythingSendFeedback}) {}
+};
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerSendFeedbackTest,
+                       OnSendFeedback_RecordsFeedbackSource) {
+  base::HistogramTester histogram_tester;
+  SetUpHandler();
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+
+  // Without transient user activation, OnSendFeedback should be ignored.
+  EXPECT_FALSE(rfh->HasTransientUserActivation());
+  handler_remote_->OnSendFeedback();
+  handler_remote_.FlushForTesting();
+  histogram_tester.ExpectTotalCount("Feedback.RequestSource", 0);
+
+  // With transient user activation, OnSendFeedback should open feedback.
+  GrantUserActivation(rfh);
+  handler_remote_->OnSendFeedback();
+  handler_remote_.FlushForTesting();
+
+  histogram_tester.ExpectUniqueSample("Feedback.RequestSource",
+                                      feedback::kFeedbackSourceReadingMode, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerSendFeedbackTest,
+                       OnSendFeedback_IgnoresWhenTabNotActive) {
+  base::HistogramTester histogram_tester;
+  SetUpHandler();
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+
+  // Open a new foreground tab so the handler's tab is no longer active.
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(url::kAboutBlankURL),
+      WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  GrantUserActivation(rfh);
+  handler_remote_->OnSendFeedback();
+  handler_remote_.FlushForTesting();
+
+  histogram_tester.ExpectTotalCount("Feedback.RequestSource", 0);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       OnSendFeedback_ReportsBadMessageWhenFlagDisabled) {
+  base::HistogramTester histogram_tester;
+  handler_ = CreateHandler();
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  handler_remote_->OnSendFeedback();
+  EXPECT_EQ("Send feedback entry point not enabled",
+            bad_message_observer.WaitForBadMessage());
+  histogram_tester.ExpectTotalCount("Feedback.RequestSource", 0);
 }
 
 class ReadAnythingUntrustedPageHandlerPdfTranslationStateTest

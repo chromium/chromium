@@ -321,6 +321,9 @@ declare namespace chrome {
     // Called when a user requests translation via the webui toolbar.
     function onTranslationRequested(): void;
 
+    // Called when a user requests to send feedback via the webui toolbar.
+    function onSendFeedback(): void;
+
     // Called when a user toggles images via the webui toolbar.
     function onImagesEnabledToggled(): void;
 

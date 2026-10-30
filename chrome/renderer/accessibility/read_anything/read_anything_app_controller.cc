@@ -1446,6 +1446,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
           "onLinksEnabledToggled")
       .SetMethod<&ReadAnythingAppController::OnTranslationRequested>(
           "onTranslationRequested")
+      .SetMethod<&ReadAnythingAppController::OnSendFeedback>("onSendFeedback")
       .SetMethod<&ReadAnythingAppController::OnScroll>("onScroll")
       .SetMethod<&ReadAnythingAppController::OnLinkClicked>("onLinkClicked")
       .SetMethod<&ReadAnythingAppController::OnLetterSpacingChange>(
@@ -2469,6 +2470,13 @@ void ReadAnythingAppController::OnTranslationRequested() {
     return;
   }
   page_handler_->OnTranslationRequested();
+}
+
+void ReadAnythingAppController::OnSendFeedback() {
+  if (!IsReadAnythingSendFeedbackEnabled()) {
+    return;
+  }
+  page_handler_->OnSendFeedback();
 }
 
 void ReadAnythingAppController::OnImagesEnabledToggled() {

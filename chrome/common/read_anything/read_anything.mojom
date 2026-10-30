@@ -269,6 +269,11 @@ interface UntrustedPageHandler {
   // via the webui toolbar.
   OnTranslationRequested();
 
+  // Informs the browser controller that the user requested to send feedback
+  // via the webui toolbar, opening the Chrome feedback dialog pre-configured to
+  // route feedback to the Reading Mode component.
+  OnSendFeedback();
+
   // Informs the browser controller that the user has toggled images
   // via the webui toolbar.
   OnImagesEnabledChanged(bool enabled);

@@ -37,6 +37,7 @@ source_set("read_anything") {
     "//chrome/browser/component_updater",
     "//chrome/browser/dom_distiller",
     "//chrome/browser/extensions",
+    "//chrome/browser/feedback",
     "//chrome/browser/language",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/side_panel/read_anything:resources",
@@ -121,6 +122,7 @@ source_set("browser_tests") {
   sources = [ "read_anything_untrusted_page_handler_browsertest.cc" ]
   deps = [
     ":read_anything",
+    "//chrome/browser/feedback:feedback_enum",
     "//chrome/browser/pdf:pdf_extension_test_utils",
     "//chrome/browser/speech",
     "//chrome/browser/translate",
@@ -143,6 +145,7 @@ source_set("browser_tests") {
     "//content/test:browsertest_support",
     "//content/test:test_support",
     "//extensions/browser/mime_handler",
+    "//mojo/public/cpp/test_support:test_utils",
     "//pdf:features",
     "//testing/gmock",
     "//testing/gtest",

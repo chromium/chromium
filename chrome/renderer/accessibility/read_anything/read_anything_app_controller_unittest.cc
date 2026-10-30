@@ -129,6 +129,7 @@ class MockReadAnythingUntrustedPageHandler
   MOCK_METHOD(void, OnFontSizeChange, (double font_size), (override));
   MOCK_METHOD(void, OnLinksEnabledChanged, (bool enabled), (override));
   MOCK_METHOD(void, OnTranslationRequested, (), (override));
+  MOCK_METHOD(void, OnSendFeedback, (), (override));
   MOCK_METHOD(void, OnImagesEnabledChanged, (bool enabled), (override));
   MOCK_METHOD(void, OnSpeechRateChange, (double rate), (override));
   MOCK_METHOD(void,
@@ -472,6 +473,12 @@ class ReadAnythingAppControllerTest : public testing::Test {
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndEnableFeature(
         features::kReadAnythingTranslateEntryPoint);
+  }
+
+  void EnableReadAnythingSendFeedback() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kReadAnythingSendFeedback);
   }
 
   void EnableLineFocus() {
@@ -3012,6 +3019,18 @@ TEST_F(ReadAnythingAppControllerTest,
   EnableReadAnythingTranslateEntryPoint();
   EXPECT_CALL(page_handler_, OnTranslationRequested()).Times(1);
   controller().OnTranslationRequested();
+}
+
+TEST_F(ReadAnythingAppControllerTest, OnSendFeedback_ForwardsToPageHandler) {
+  EnableReadAnythingSendFeedback();
+  EXPECT_CALL(page_handler_, OnSendFeedback()).Times(1);
+  controller().OnSendFeedback();
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnSendFeedback_DoesNotForwardWhenFlagDisabled) {
+  EXPECT_CALL(page_handler_, OnSendFeedback()).Times(0);
+  controller().OnSendFeedback();
 }
 
 TEST_F(ReadAnythingAppControllerTest, IsContentTranslated_DefaultsToFalse) {

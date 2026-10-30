@@ -9981,6 +9981,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_OFF_HIGHLIGHT_LABEL" desc="Dropdown option for turning off highlighting in Read Aloud.">
         Off
       </message>
+      <message name="IDS_READING_MODE_FEEDBACK_PLACEHOLDER" desc="Placeholder text for the feedback dialog opened from Reading Mode.">
+        Share reading mode issues or feature requests
+      </message>
       <message name="IDS_READING_MODE_LINE_FOCUS_WINDOW_HEADING" desc="Heading in dropdown menu for the sliding window line focus options.">
         Highlight
       </message>

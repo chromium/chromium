@@ -225,6 +225,7 @@ class ReadAnythingAppController
   void OnFontSizeReset();
   void OnLinksEnabledToggled();
   void OnTranslationRequested();
+  void OnSendFeedback();
   void OnImagesEnabledToggled();
   int LetterSpacing() const;
   int LineSpacing() const;

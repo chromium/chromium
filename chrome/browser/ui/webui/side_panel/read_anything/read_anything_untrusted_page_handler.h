@@ -241,6 +241,7 @@ class ReadAnythingUntrustedPageHandler :
   void OnFontSizeChange(double font_size) override;
   void OnLinksEnabledChanged(bool enabled) override;
   void OnTranslationRequested() override;
+  void OnSendFeedback() override;
   void OnImagesEnabledChanged(bool enabled) override;
   void OnColorChange(read_anything::mojom::Colors color) override;
   void OnHighlightGranularityChanged(
@@ -491,7 +492,7 @@ class ReadAnythingUntrustedPageHandler :
   class ReadabilityDistillerDelegate;
   std::unique_ptr<ReadabilityDistillerDelegate> distiller_delegate_;
 
-  const mojo::Receiver<read_anything::mojom::UntrustedPageHandler> receiver_;
+  mojo::Receiver<read_anything::mojom::UntrustedPageHandler> receiver_;
   const mojo::Remote<read_anything::mojom::UntrustedPage> page_;
 
   // The trigger used the last time Reading Mode was shown. Intentionally not

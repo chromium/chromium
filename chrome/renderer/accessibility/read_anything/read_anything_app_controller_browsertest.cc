@@ -123,6 +123,7 @@ class MockReadAnythingUntrustedPageHandler
   MOCK_METHOD(void, OnFontSizeChange, (double font_size), (override));
   MOCK_METHOD(void, OnLinksEnabledChanged, (bool enabled), (override));
   MOCK_METHOD(void, OnTranslationRequested, (), (override));
+  MOCK_METHOD(void, OnSendFeedback, (), (override));
   MOCK_METHOD(void, OnImagesEnabledChanged, (bool enabled), (override));
   MOCK_METHOD(void, OnSpeechRateChange, (double rate), (override));
   MOCK_METHOD(void,
@@ -942,4 +943,12 @@ TEST_F(ReadAnythingAppControllerTest,
         &enabled));
     EXPECT_EQ(0, enabled);
   }
+}
+
+TEST_F(ReadAnythingAppControllerTest, OnSendFeedback_ExposedToJavaScript) {
+  base::test::ScopedFeatureList feature_list(
+      features::kReadAnythingSendFeedback);
+  EXPECT_CALL(page_handler_, OnSendFeedback()).Times(1);
+  ExecuteJavaScriptForTests("chrome.readingMode.onSendFeedback();");
+  page_handler_.FlushForTesting();
 }

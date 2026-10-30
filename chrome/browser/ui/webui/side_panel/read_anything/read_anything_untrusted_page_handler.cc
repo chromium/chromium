@@ -20,6 +20,8 @@
 #include "chrome/browser/accessibility/phrase_segmentation/dependency_parser_model_loader.h"
 #include "chrome/browser/accessibility/phrase_segmentation/dependency_parser_model_loader_factory.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
+#include "chrome/browser/feedback/public/feedback_source.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
@@ -38,6 +40,7 @@
 #include "chrome/common/read_anything/read_anything.mojom.h"
 #include "chrome/common/read_anything/read_anything_util.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/dom_distiller/content/browser/distiller_javascript_utils.h"
 #include "components/dom_distiller/content/browser/distiller_page_web_contents.h"
 #include "components/dom_distiller/core/distiller_page.h"
@@ -77,6 +80,7 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -191,6 +195,9 @@ constexpr int PDF_LOAD_DELAY_MS = 1000;
 
 // Prefix definition for logging.
 constexpr char kReadAnythingPrefix[] = "Read Anything";
+
+// Category tag for feedback reports submitted from Reading Mode.
+constexpr char kFeedbackCategoryTag[] = "reading_mode";
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // chrome://whats-new renders its content in a single https://www.google.com
@@ -1037,6 +1044,32 @@ void ReadAnythingUntrustedPageHandler::OnTranslationRequested() {
 
   translate_manager->ShowTranslateUI(/*auto_translate=*/true,
                                      /*triggered_from_menu=*/true);
+}
+
+void ReadAnythingUntrustedPageHandler::OnSendFeedback() {
+  if (!features::IsReadAnythingSendFeedbackEnabled()) {
+    receiver_.ReportBadMessage("Send feedback entry point not enabled");
+    return;
+  }
+
+  if (!HasTransientUserActivation()) {
+    return;
+  }
+
+  if (!tab_->IsActivated() || !tab_->GetBrowserWindowInterface()) {
+    return;
+  }
+
+  // TODO(crbug.com/579419628): Use chrome::CanShowFeedback(profile_) via
+  // ReadAnythingUntrustedUI loadTimeData to hide the send feedback entry point
+  // when feedback is disabled by policy.
+  chrome::ShowFeedbackPage(
+      tab_->GetBrowserWindowInterface(), feedback::kFeedbackSourceReadingMode,
+      /*description_template=*/std::string(),
+      /*description_placeholder_text=*/
+      l10n_util::GetStringUTF8(IDS_READING_MODE_FEEDBACK_PLACEHOLDER),
+      /*category_tag=*/kFeedbackCategoryTag,
+      /*extra_diagnostics=*/std::string());
 }
 
 void ReadAnythingUntrustedPageHandler::OnImagesEnabledChanged(bool enabled) {
