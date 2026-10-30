@@ -235,7 +235,7 @@ bool UIControlsOzone::SendTouchEventsNotifyWhenDone(int action,
                                                     int x,
                                                     int y,
                                                     base::OnceClosure task) {
-  DCHECK_NE(0, action);
+  CHECK_NE(0, action, base::NotFatalUntil::M163);
   gfx::PointF host_location(x, y);
   int64_t display_id = display::kInvalidDisplayId;
   if (!ScreenDIPToHostPixels(&host_location, &display_id))

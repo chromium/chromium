@@ -34,7 +34,8 @@ EventGeneratorDelegateAura::Create(ui::test::EventGenerator* owner,
   // Tests should not create event generators for a "root window" that's not
   // actually the root window.
   if (root_window)
-    DCHECK_EQ(root_window, root_window->GetRootWindow());
+    CHECK_EQ(root_window, root_window->GetRootWindow(),
+             base::NotFatalUntil::M163);
 
   return std::make_unique<DefaultEventGeneratorDelegate>(root_window);
 }
@@ -78,7 +79,7 @@ void EventGeneratorDelegateAura::ConvertPointFromTarget(
 void EventGeneratorDelegateAura::ConvertPointToTarget(
     const ui::EventTarget* event_target,
     gfx::Point* point) const {
-  DCHECK(point);
+  CHECK(point, base::NotFatalUntil::M163);
   const Window* target = WindowFromTarget(event_target);
   aura::client::ScreenPositionClient* client = GetScreenPositionClient(target);
   if (client)
@@ -110,7 +111,7 @@ gfx::Point EventGeneratorDelegateAura::CenterOfWindow(
 void EventGeneratorDelegateAura::ConvertPointFromWindow(
     const Window* window,
     gfx::Point* point) const {
-  DCHECK(point);
+  CHECK(point, base::NotFatalUntil::M163);
   aura::client::ScreenPositionClient* client = GetScreenPositionClient(window);
   if (client)
     client->ConvertPointToScreen(window, point);

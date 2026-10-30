@@ -18,7 +18,7 @@
 namespace aura {
 
 ScreenOzone::ScreenOzone() {
-  DCHECK(!display::Screen::HasScreen());
+  CHECK(!display::Screen::HasScreen(), base::NotFatalUntil::M163);
   display::Screen::SetScreenInstance(this);
 
   auto* platform = ui::OzonePlatform::GetInstance();
@@ -47,13 +47,13 @@ gfx::Point ScreenOzone::GetCursorScreenPoint() {
 }
 
 bool ScreenOzone::IsWindowUnderCursor(gfx::NativeWindow window) {
-  DCHECK(platform_screen_);
+  CHECK(platform_screen_, base::NotFatalUntil::M163);
   gfx::AcceleratedWidget widget = GetAcceleratedWidgetForWindow(window);
   return platform_screen_->IsAcceleratedWidgetUnderCursor(widget);
 }
 
 gfx::NativeWindow ScreenOzone::GetWindowAtScreenPoint(const gfx::Point& point) {
-  DCHECK(platform_screen_);
+  CHECK(platform_screen_, base::NotFatalUntil::M163);
   return GetNativeWindowFromAcceleratedWidget(
       platform_screen_->GetAcceleratedWidgetAtScreenPoint(point));
 }
@@ -61,7 +61,7 @@ gfx::NativeWindow ScreenOzone::GetWindowAtScreenPoint(const gfx::Point& point) {
 gfx::NativeWindow ScreenOzone::GetLocalProcessWindowAtPoint(
     const gfx::Point& point,
     const std::set<gfx::NativeWindow>& ignore) {
-  DCHECK(platform_screen_);
+  CHECK(platform_screen_, base::NotFatalUntil::M163);
   std::set<gfx::AcceleratedWidget> ignore_top_level;
   for (auto* const window : ignore)
     ignore_top_level.emplace(window->GetHost()->GetAcceleratedWidget());
@@ -80,7 +80,7 @@ const std::vector<display::Display>& ScreenOzone::GetAllDisplays() const {
 
 display::Display ScreenOzone::GetDisplayNearestWindow(
     gfx::NativeWindow window) const {
-  DCHECK(platform_screen_);
+  CHECK(platform_screen_, base::NotFatalUntil::M163);
   gfx::AcceleratedWidget widget = GetAcceleratedWidgetForWindow(window);
   if (!widget)
     return GetPrimaryDisplay();

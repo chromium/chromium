@@ -710,7 +710,7 @@ void Window::AddChild(Window* child) {
 
   Window* old_root = child->GetRootWindow();
 
-  DCHECK(!std::ranges::contains(children_, child));
+  CHECK(!std::ranges::contains(children_, child), base::NotFatalUntil::M163);
   if (layout_manager_) {
     CHECK(child->layer_managed_by_parent());
   }
@@ -787,7 +787,7 @@ void Window::ConvertPointToTarget(const Window* source,
                                   gfx::PointF* point) {
   if (!source)
     return;
-  DCHECK(target);
+  CHECK(target, base::NotFatalUntil::M163);
   if (source->GetRootWindow() != target->GetRootWindow()) {
     client::ScreenPositionClient* source_client =
         client::GetScreenPositionClient(source->GetRootWindow());
@@ -839,7 +839,7 @@ void Window::ConvertPointToTarget(const Window* source,
 void Window::ConvertRectToTarget(const Window* source,
                                  const Window* target,
                                  gfx::Rect* rect) {
-  DCHECK(rect);
+  CHECK(rect, base::NotFatalUntil::M163);
   gfx::Point origin = rect->origin();
   ConvertPointToTarget(source, target, &origin);
   rect->set_origin(origin);
@@ -870,7 +870,7 @@ void Window::ConvertNativePointToTargetHost(const Window* source,
 
 void Window::MoveCursorTo(const gfx::Point& point_in_window) {
   Window* root_window = GetRootWindow();
-  DCHECK(root_window);
+  CHECK(root_window, base::NotFatalUntil::M163);
   gfx::Point point_in_root(point_in_window);
   ConvertPointToTarget(this, root_window, &point_in_root);
   root_window->GetHost()->MoveCursorToLocationInDIP(point_in_root);
@@ -913,7 +913,7 @@ void Window::SetEventTargetingPolicy(EventTargetingPolicy policy) {
       (policy == EventTargetingPolicy::kTargetOnly) ||
       (policy == EventTargetingPolicy::kTargetAndDescendants);
   if (new_window_accepts_events != old_window_accepts_events)
-    DCHECK(!created_layer_tree_frame_sink_);
+    CHECK(!created_layer_tree_frame_sink_, base::NotFatalUntil::M163);
 #endif
 
   if (event_targeting_policy_ == policy)
@@ -1004,7 +1004,7 @@ Window* Window::GetToplevelWindow() {
 
 void Window::Focus() {
   client::FocusClient* client = client::GetFocusClient(this);
-  DCHECK(client);
+  CHECK(client, base::NotFatalUntil::M163);
   client->FocusWindow(this);
 }
 
@@ -1224,7 +1224,8 @@ void Window::RemoveOrDestroyChildren() {
     if (child->owned_by_parent_) {
       delete child;
       // Deleting the child so remove it from out children_ list.
-      DCHECK(!std::ranges::contains(children_, child));
+      CHECK(!std::ranges::contains(children_, child),
+            base::NotFatalUntil::M163);
     } else {
       // Even if we can't delete the child, we still need to remove it from the
       // parent so that relevant bookkeeping (parent_ back-pointers etc) are
@@ -1466,11 +1467,11 @@ void Window::StackChildRelativeTo(Window* child,
                                   Window* target,
                                   StackDirection direction) {
   ScopedDeleteBlocker blocker(this);
-  DCHECK_NE(child, target);
-  DCHECK(child);
-  DCHECK(target);
-  DCHECK_EQ(this, child->parent());
-  DCHECK_EQ(this, target->parent());
+  CHECK_NE(child, target, base::NotFatalUntil::M163);
+  CHECK(child, base::NotFatalUntil::M163);
+  CHECK(target, base::NotFatalUntil::M163);
+  CHECK_EQ(this, child->parent(), base::NotFatalUntil::M163);
+  CHECK_EQ(this, target->parent(), base::NotFatalUntil::M163);
 
   WindowOcclusionTracker::ScopedPause pause_occlusion_tracking;
 
@@ -1509,7 +1510,8 @@ void Window::StackChildRelativeTo(Window* child,
 void Window::StackChildLayerRelativeTo(Window* child,
                                        Window* target,
                                        StackDirection direction) {
-  DCHECK(layer() && child->layer() && target->layer());
+  CHECK(layer() && child->layer() && target->layer(),
+        base::NotFatalUntil::M163);
   if (!child->layer_managed_by_parent() || !target->layer_managed_by_parent()) {
     LOG(WARNING) << "StackChildLayerRelativeTo called with unmanaged layer(s)."
                  << " child=" << child->GetName()
@@ -1707,7 +1709,7 @@ bool Window::CleanupGestureState() {
 std::unique_ptr<cc::LayerTreeFrameSink> Window::CreateLayerTreeFrameSink() {
   // Currently we don't have a need for both SetEmbedFrameSinkId() and
   // this function be called.
-  DCHECK(!embeds_external_client_);
+  CHECK(!embeds_external_client_, base::NotFatalUntil::M163);
 
   auto* context_factory = Env::GetInstance()->context_factory();
   auto* host_frame_sink_manager = context_factory->GetHostFrameSinkManager();
@@ -1739,7 +1741,7 @@ std::unique_ptr<cc::LayerTreeFrameSink> Window::CreateLayerTreeFrameSink() {
           /*shared_image_interface=*/nullptr, &params);
   frame_sink_ = frame_sink->GetWeakPtr();
   AllocateLocalSurfaceId();
-  DCHECK(GetLocalSurfaceId().is_valid());
+  CHECK(GetLocalSurfaceId().is_valid(), base::NotFatalUntil::M163);
 #if DCHECK_IS_ON()
   created_layer_tree_frame_sink_ = true;
 #endif
@@ -1796,9 +1798,9 @@ void Window::UpdateLocalSurfaceIdFromEmbeddedClient(
 
 const viz::FrameSinkId& Window::GetFrameSinkId() const {
   if (IsRootWindow()) {
-    DCHECK(host_);
+    CHECK(host_, base::NotFatalUntil::M163);
     auto* compositor = host_->compositor();
-    DCHECK(compositor);
+    CHECK(compositor, base::NotFatalUntil::M163);
     return compositor->frame_sink_id();
   }
   return frame_sink_id_;
@@ -1851,10 +1853,11 @@ void Window::SetOpaqueRegionsForOcclusion(
   // Opaque regions for occlusion do not apply to opaque windows, so only
   // allow opaque regions for occlusion to be set for them if they are the
   // same as the window bounds size.
-  DCHECK(GetTransparent() || layer()->AsNotDrawn() ||
-         opaque_regions_for_occlusion.empty() ||
-         (opaque_regions_for_occlusion.size() == 1 &&
-          opaque_regions_for_occlusion[0] == gfx::Rect(bounds().size())));
+  CHECK(GetTransparent() || layer()->AsNotDrawn() ||
+            opaque_regions_for_occlusion.empty() ||
+            (opaque_regions_for_occlusion.size() == 1 &&
+             opaque_regions_for_occlusion[0] == gfx::Rect(bounds().size())),
+        base::NotFatalUntil::M163);
   if (opaque_regions_for_occlusion == opaque_regions_for_occlusion_)
     return;
   opaque_regions_for_occlusion_ = opaque_regions_for_occlusion;
@@ -1947,7 +1950,7 @@ void Window::OnLayerFillsBoundsOpaquelyChanged(
   // Non-transparent windows should not have opaque regions for occlusion set.
 #if DCHECK_IS_ON()
   if (!GetTransparent() && !layer()->AsNotDrawn()) {
-    DCHECK(opaque_regions_for_occlusion_.empty());
+    CHECK(opaque_regions_for_occlusion_.empty(), base::NotFatalUntil::M163);
   }
 #endif
 
@@ -2012,7 +2015,7 @@ void Window::ConvertEventToTarget(const ui::EventTarget* target,
 }
 
 gfx::PointF Window::GetScreenLocationF(const ui::LocatedEvent& event) const {
-  DCHECK_EQ(this, event.target());
+  CHECK_EQ(this, event.target(), base::NotFatalUntil::M163);
   gfx::PointF screen_location(event.root_location_f());
   const Window* root = GetRootWindow();
   auto* screen_position_client = aura::client::GetScreenPositionClient(root);
@@ -2026,7 +2029,7 @@ std::unique_ptr<ui::Layer> Window::ReleaseLayer() {
     // Before we release our own layer, if this window was marked for capture,
     // we need to reset the SubtreeCaptureId on that layer as it will no longer
     // be associated with us.
-    DCHECK(subtree_capture_id_.is_valid());
+    CHECK(subtree_capture_id_.is_valid(), base::NotFatalUntil::M163);
     if (layer())
       layer()->SetSubtreeCaptureId(viz::SubtreeCaptureId());
   }
@@ -2085,14 +2088,15 @@ void Window::SetLayer(std::unique_ptr<ui::Layer> alayer) {
   if (number_of_capture_requests_) {
     // If this window was marked for capture before, then the new layer that we
     // own now should be given the current SubtreeCaptureId that we have.
-    DCHECK(subtree_capture_id_.is_valid());
+    CHECK(subtree_capture_id_.is_valid(), base::NotFatalUntil::M163);
     if (layer())
       layer()->SetSubtreeCaptureId(subtree_capture_id_);
   }
 }
 
 void Window::OnFirstSurfaceActivation(const viz::SurfaceInfo& surface_info) {
-  DCHECK_EQ(surface_info.id().frame_sink_id(), GetFrameSinkId());
+  CHECK_EQ(surface_info.id().frame_sink_id(), GetFrameSinkId(),
+           base::NotFatalUntil::M163);
   layer()->AsSurface()->SetShowSurface(
       surface_info.id(), bounds().size(),
       cc::DeadlinePolicy::UseDefaultDeadline(),
@@ -2103,7 +2107,7 @@ void Window::OnFrameTokenChanged(uint32_t frame_token,
                                  base::TimeTicks activation_time) {}
 
 void Window::UpdateLayerName() {
-  DCHECK(layer());
+  CHECK(layer(), base::NotFatalUntil::M163);
 
   std::string layer_name(GetName());
   if (layer_name.empty())
@@ -2116,7 +2120,7 @@ void Window::UpdateLayerName() {
 }
 
 void Window::RegisterFrameSinkId() {
-  DCHECK(frame_sink_id_.is_valid());
+  CHECK(frame_sink_id_.is_valid(), base::NotFatalUntil::M163);
   if (registered_frame_sink_id_ || disable_frame_sink_id_registration_) {
     return;
   }
@@ -2153,8 +2157,9 @@ bool Window::IsEmbeddingExternalContent() const {
 
 void Window::OnScopedWindowCaptureRequestAdded() {
   if (++number_of_capture_requests_ == 1) {
-    DCHECK(!subtree_capture_id_.is_valid());
-    DCHECK(!layer() || !layer()->GetSubtreeCaptureId().is_valid());
+    CHECK(!subtree_capture_id_.is_valid(), base::NotFatalUntil::M163);
+    CHECK(!layer() || !layer()->GetSubtreeCaptureId().is_valid(),
+          base::NotFatalUntil::M163);
 
     subtree_capture_id_ =
         Env::GetInstance()->context_factory()->AllocateSubtreeCaptureId();
@@ -2162,15 +2167,15 @@ void Window::OnScopedWindowCaptureRequestAdded() {
       layer()->SetSubtreeCaptureId(subtree_capture_id_);
   }
 
-  DCHECK(subtree_capture_id_.is_valid());
+  CHECK(subtree_capture_id_.is_valid(), base::NotFatalUntil::M163);
 }
 
 void Window::OnScopedWindowCaptureRequestRemoved() {
-  DCHECK(subtree_capture_id_.is_valid());
-  DCHECK(number_of_capture_requests_);
+  CHECK(subtree_capture_id_.is_valid(), base::NotFatalUntil::M163);
+  CHECK(number_of_capture_requests_, base::NotFatalUntil::M163);
 
   --number_of_capture_requests_;
-  DCHECK_GE(number_of_capture_requests_, 0);
+  CHECK_GE(number_of_capture_requests_, 0, base::NotFatalUntil::M163);
 
   if (number_of_capture_requests_ == 0) {
     subtree_capture_id_ = viz::SubtreeCaptureId();

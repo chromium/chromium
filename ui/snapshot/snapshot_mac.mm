@@ -132,8 +132,10 @@ gfx::Image GrabViewSnapshotCGWindowListImpl(gfx::NativeView native_view,
   gfx::Rect screen_snapshot_bounds = snapshot_bounds;
   screen_snapshot_bounds.Offset(view_bounds.OffsetFromOrigin());
 
-  DCHECK_LE(screen_snapshot_bounds.right(), view_bounds.right());
-  DCHECK_LE(screen_snapshot_bounds.bottom(), view_bounds.bottom());
+  CHECK_LE(screen_snapshot_bounds.right(), view_bounds.right(),
+           base::NotFatalUntil::M163);
+  CHECK_LE(screen_snapshot_bounds.bottom(), view_bounds.bottom(),
+           base::NotFatalUntil::M163);
 
   base::apple::ScopedCFTypeRef<CGImageRef> window_snapshot(
       CGWindowListCreateImage(

@@ -40,7 +40,7 @@ class ScreenshotGrabber::ScopedCursorHider {
  public:
   // The nullptr might be returned when GetCursorClient is nullptr.
   static std::unique_ptr<ScopedCursorHider> Create(aura::Window* window) {
-    DCHECK(window->IsRootWindow());
+    CHECK(window->IsRootWindow(), base::NotFatalUntil::M163);
     aura::client::CursorClient* cursor_client =
         aura::client::GetCursorClient(window);
     if (!cursor_client)
@@ -72,7 +72,7 @@ ScreenshotGrabber::~ScreenshotGrabber() = default;
 void ScreenshotGrabber::TakeScreenshot(gfx::NativeWindow window,
                                        const gfx::Rect& rect,
                                        ScreenshotCallback callback) {
-  DCHECK(base::CurrentUIThread::IsSet());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
   last_screenshot_timestamp_ = base::TimeTicks::Now();
 
   bool is_partial = true;
@@ -105,7 +105,7 @@ void ScreenshotGrabber::GrabSnapshotImageCallback(
     bool is_partial,
     ScreenshotCallback callback,
     scoped_refptr<base::RefCountedMemory> png_data) {
-  DCHECK(base::CurrentUIThread::IsSet());
+  CHECK(base::CurrentUIThread::IsSet(), base::NotFatalUntil::M163);
 
 #if defined(USE_AURA)
   cursor_hider_.reset();

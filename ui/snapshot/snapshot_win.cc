@@ -77,10 +77,10 @@ void GrabHwndSnapshot(HWND window_handle,
 void GrabNativeWindowSnapshot(gfx::NativeWindow native_window,
                               const gfx::Rect& snapshot_bounds,
                               gfx::Image* image) {
-  DCHECK(native_window);
+  CHECK(native_window, base::NotFatalUntil::M163);
   gfx::Rect window_bounds = native_window->GetBoundsInRootWindow();
   aura::WindowTreeHost* host = native_window->GetHost();
-  DCHECK(host);
+  CHECK(host, base::NotFatalUntil::M163);
   HWND hwnd = host->GetAcceleratedWidget();
 
   gfx::Rect snapshot_bounds_in_pixels =

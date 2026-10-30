@@ -102,9 +102,10 @@ ui::EventTargeter* WindowEventDispatcher::GetDefaultEventTargeter() {
 }
 
 void WindowEventDispatcher::RepostEvent(const ui::LocatedEvent* event) {
-  DCHECK(event->type() == ui::EventType::kMousePressed ||
-         event->type() == ui::EventType::kGestureTapDown ||
-         event->type() == ui::EventType::kTouchPressed);
+  CHECK(event->type() == ui::EventType::kMousePressed ||
+            event->type() == ui::EventType::kGestureTapDown ||
+            event->type() == ui::EventType::kTouchPressed,
+        base::NotFatalUntil::M163);
   // We allow for only one outstanding repostable event. This is used
   // in exiting context menus.  A dropped repost request is allowed.
   if (event->type() == ui::EventType::kMousePressed) {
@@ -115,7 +116,8 @@ void WindowEventDispatcher::RepostEvent(const ui::LocatedEvent* event) {
     held_repostable_event_ =
         std::make_unique<ui::TouchEvent>(*event->AsTouchEvent());
   } else {
-    DCHECK(event->type() == ui::EventType::kGestureTapDown);
+    CHECK(event->type() == ui::EventType::kGestureTapDown,
+          base::NotFatalUntil::M163);
     held_repostable_event_.reset();
     // TODO(rbyers): Reposing of gestures is tricky to get
     // right, so it's not yet supported.  crbug.com/170987.
@@ -200,7 +202,7 @@ void WindowEventDispatcher::HoldPointerMoves() {
 
 void WindowEventDispatcher::ReleasePointerMoves() {
   --move_hold_count_;
-  DCHECK_GE(move_hold_count_, 0);
+  CHECK_GE(move_hold_count_, 0, base::NotFatalUntil::M163);
   if (!move_hold_count_) {
     // HoldPointerMoves cancels the pending synthesized mouse move if any.
     // So ReleasePointerMoves should ensure that |synthesize_mouse_move_|
@@ -589,7 +591,8 @@ ui::EventDispatchDetails WindowEventDispatcher::PostDispatchEvent(
   event_dispatch_target_ = old_dispatch_target_;
   old_dispatch_target_ = nullptr;
 #ifndef NDEBUG
-  DCHECK(!event_dispatch_target_ || window()->Contains(event_dispatch_target_));
+  CHECK(!event_dispatch_target_ || window()->Contains(event_dispatch_target_),
+        base::NotFatalUntil::M163);
 #endif
 
   if (event.IsTouchEvent() && !details.target_destroyed) {
@@ -641,8 +644,9 @@ void WindowEventDispatcher::DispatchSyntheticTouchEvent(ui::TouchEvent* event) {
   // The synthetic event's location is based on the last known location of
   // the pointer, in dips. OnEventFromSource expects events with co-ordinates
   // in raw pixels, so we convert back to raw pixels here.
-  DCHECK(event->type() == ui::EventType::kTouchCancelled ||
-         event->type() == ui::EventType::kTouchPressed);
+  CHECK(event->type() == ui::EventType::kTouchCancelled ||
+            event->type() == ui::EventType::kTouchPressed,
+        base::NotFatalUntil::M163);
   event->UpdateForRootTransform(
       host_->GetRootTransform(),
       host_->GetRootTransformForLocalEventCoordinates());
@@ -688,7 +692,8 @@ void WindowEventDispatcher::OnWindowRemovingFromRootWindow(Window* detached,
   if (!host_->window()->Contains(detached))
     return;
 
-  DCHECK(client::GetCaptureWindow(window()) != window());
+  CHECK(client::GetCaptureWindow(window()) != window(),
+        base::NotFatalUntil::M163);
 
   DispatchMouseExitToHidingWindow(detached);
   SynthesizeMouseMoveAfterChangeToWindow(detached);
@@ -1148,7 +1153,7 @@ WindowEventDispatcher::CreateScropedMetricsMonitorForEvent(
         scroll_tracker_.OnScrollBegin(metrics.get());
       }
     } else {
-      DCHECK(gesture->IsPinchEvent());
+      CHECK(gesture->IsPinchEvent(), base::NotFatalUntil::M163);
       metrics = cc::PinchEventMetrics::Create(
           gesture->type(), input_type, gesture->time_stamp(),
           base::IdType64<class ui::LatencyInfo>(event.latency()->trace_id()));

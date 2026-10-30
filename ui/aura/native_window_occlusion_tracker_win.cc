@@ -106,7 +106,7 @@ void NativeWindowOcclusionTrackerWin::DeleteInstanceForTesting() {
 }
 
 void NativeWindowOcclusionTrackerWin::Enable(Window* window) {
-  DCHECK(window->IsRootWindow());
+  CHECK(window->IsRootWindow(), base::NotFatalUntil::M163);
   if (window->HasObserver(this)) {
     NOTREACHED() << "window shouldn't already be observing occlusion tracker";
   }
@@ -141,7 +141,7 @@ void NativeWindowOcclusionTrackerWin::Enable(Window* window) {
 }
 
 void NativeWindowOcclusionTrackerWin::Disable(Window* window) {
-  DCHECK(window->IsRootWindow());
+  CHECK(window->IsRootWindow(), base::NotFatalUntil::M163);
   const auto it = hwnd_widget_to_app_root_map_.find(window);
   if (it == hwnd_widget_to_app_root_map_.end()) {
     return;
@@ -151,7 +151,7 @@ void NativeWindowOcclusionTrackerWin::Disable(Window* window) {
   hwnd_widget_to_app_root_map_.erase(it);
 
   // Check that the root_window_hwnd doesn't get cleared before this is called.
-  DCHECK(root_window_hwnd);
+  CHECK(root_window_hwnd, base::NotFatalUntil::M163);
   window->RemoveObserver(this);
 
   hwnd_root_window_map_[root_window_hwnd].erase(window);
@@ -421,14 +421,14 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::CreateInstance(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     scoped_refptr<base::SequencedTaskRunner> ui_thread_task_runner,
     base::WeakPtr<NativeWindowOcclusionTrackerWin> tracker) {
-  DCHECK(!instance_);
+  CHECK(!instance_, base::NotFatalUntil::M163);
   instance_ = new WindowOcclusionCalculator(task_runner, ui_thread_task_runner,
                                             std::move(tracker));
 }
 
 void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
     DeleteInstanceForTesting(base::WaitableEvent* done_event) {
-  DCHECK(instance_);
+  CHECK(instance_, base::NotFatalUntil::M163);
   delete instance_;
   instance_ = nullptr;
   done_event->Signal();
@@ -704,7 +704,7 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
 void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
     RegisterEventHooks() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(global_event_hooks_.empty());
+  CHECK(global_event_hooks_.empty(), base::NotFatalUntil::M163);
 
   // This helps with the case where an extension tried to foreground a window,
   // but Windows prevented it, and the user clicks on the task bar to bring the

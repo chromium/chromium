@@ -37,8 +37,8 @@ bool WindowTargeter::SubtreeShouldBeExploredForEvent(
 bool WindowTargeter::GetHitTestRects(Window* window,
                                      gfx::Rect* hit_test_rect_mouse,
                                      gfx::Rect* hit_test_rect_touch) const {
-  DCHECK(hit_test_rect_mouse);
-  DCHECK(hit_test_rect_touch);
+  CHECK(hit_test_rect_mouse, base::NotFatalUntil::M163);
+  CHECK(hit_test_rect_touch, base::NotFatalUntil::M163);
   *hit_test_rect_mouse = *hit_test_rect_touch = window->bounds();
 
   if (ShouldUseExtendedBounds(window)) {
@@ -77,7 +77,8 @@ void WindowTargeter::SetInsets(const gfx::Insets& mouse_extend,
 Window* WindowTargeter::GetPriorityTargetInRootWindow(
     Window* root_window,
     const ui::LocatedEvent& event) {
-  DCHECK_EQ(root_window, root_window->GetRootWindow());
+  CHECK_EQ(root_window, root_window->GetRootWindow(),
+           base::NotFatalUntil::M163);
 
   // Mouse events should be dispatched to the window that processed the
   // mouse-press events (if any).
@@ -93,8 +94,8 @@ Window* WindowTargeter::GetPriorityTargetInRootWindow(
     return capture_window;
 
   if (event.IsPinchEvent()) {
-    DCHECK_EQ(event.AsGestureEvent()->details().device_type(),
-              ui::GestureDeviceType::DEVICE_TOUCHPAD);
+    CHECK_EQ(event.AsGestureEvent()->details().device_type(),
+             ui::GestureDeviceType::DEVICE_TOUCHPAD, base::NotFatalUntil::M163);
     WindowEventDispatcher* dispatcher = root_window->GetHost()->dispatcher();
     if (dispatcher->touchpad_pinch_handler())
       return dispatcher->touchpad_pinch_handler();
@@ -114,7 +115,8 @@ Window* WindowTargeter::GetPriorityTargetInRootWindow(
 
 Window* WindowTargeter::FindTargetInRootWindow(Window* root_window,
                                                const ui::LocatedEvent& event) {
-  DCHECK_EQ(root_window, root_window->GetRootWindow());
+  CHECK_EQ(root_window, root_window->GetRootWindow(),
+           base::NotFatalUntil::M163);
 
   Window* priority_target = GetPriorityTargetInRootWindow(root_window, event);
   if (priority_target)
@@ -126,7 +128,8 @@ Window* WindowTargeter::FindTargetInRootWindow(Window* root_window,
     // GetTouchLockedTarget() is handled in GetPriorityTargetInRootWindow().
     ui::GestureRecognizer* gesture_recognizer =
         Env::GetInstance()->gesture_recognizer();
-    DCHECK(!gesture_recognizer->GetTouchLockedTarget(touch));
+    CHECK(!gesture_recognizer->GetTouchLockedTarget(touch),
+          base::NotFatalUntil::M163);
     ui::GestureConsumer* consumer = gesture_recognizer->GetTargetForLocation(
         event.location_f(), touch.source_device_id());
     if (consumer)
@@ -237,7 +240,7 @@ ui::EventSink* WindowTargeter::GetNewEventSinkForEvent(
   // |window|. So do not allow dispatching from here. Instead, dispatch the
   // event through the WindowEventDispatcher that owns |target|.
   Window* new_root = target_window->GetRootWindow();
-  DCHECK(new_root);
+  CHECK(new_root, base::NotFatalUntil::M163);
   if (in_out_event->IsLocatedEvent()) {
     // The event has been transformed to be in |target|'s coordinate system.
     // But dispatching the event through the EventProcessor requires the event
@@ -295,8 +298,8 @@ bool WindowTargeter::ShouldUseExtendedBounds(const aura::Window* w) const {
   // WindowEventDispatcher). Insets should never be set in this case, so the
   // return should not matter.
   if (!window()) {
-    DCHECK(mouse_extend_.IsEmpty());
-    DCHECK(touch_extend_.IsEmpty());
+    CHECK(mouse_extend_.IsEmpty(), base::NotFatalUntil::M163);
+    CHECK(touch_extend_.IsEmpty(), base::NotFatalUntil::M163);
     return false;
   }
 

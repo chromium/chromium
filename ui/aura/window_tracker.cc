@@ -45,7 +45,7 @@ void WindowTracker::Remove(Window* window) {
 }
 
 Window* WindowTracker::Pop() {
-  DCHECK(!windows_.empty());
+  CHECK(!windows_.empty(), base::NotFatalUntil::M163);
   Window* result = windows_[0];
   Remove(result);
   return result;
@@ -56,7 +56,7 @@ bool WindowTracker::Contains(Window* window) const {
 }
 
 void WindowTracker::OnWindowDestroying(Window* window) {
-  DCHECK(Contains(window));
+  CHECK(Contains(window), base::NotFatalUntil::M163);
   Remove(window);
 }
 

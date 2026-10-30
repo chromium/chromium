@@ -2170,12 +2170,14 @@ TEST_F(WindowOcclusionTrackerTest, OcclusionStatesDontBecomeStable) {
   // Once the maximum number of times that occlusion can be recomputed is
   // reached, the occlusion state of all IsVisible() windows should be set to
   // VISIBLE.
-  EXPECT_DCHECK_DEATH({
-    delegate_a->set_expectation(Window::OcclusionState::VISIBLE,
-                                SkRegion(SkIRect::MakeXYWH(20, 0, 10, 10)));
-    delegate_d->set_expectation(Window::OcclusionState::HIDDEN, SkRegion());
-    window_d->Hide();
-  });
+  EXPECT_CHECK_DEATH(
+      {
+        delegate_a->set_expectation(Window::OcclusionState::VISIBLE,
+                                    SkRegion(SkIRect::MakeXYWH(20, 0, 10, 10)));
+        delegate_d->set_expectation(Window::OcclusionState::HIDDEN, SkRegion());
+        window_d->Hide();
+      },
+      base::NotFatalUntil::M163);
 }
 
 // Verify that the occlusion states are correctly updated when a branch of the
@@ -3318,16 +3320,15 @@ TEST_F(WindowOcclusionTrackerTest, DoNotCountTwice) {
   }
   EXPECT_FALSE(window_occlusion_tracker->IsObservingWindowTreeHostsForTest());
 
-  // This test requires DCHECK enabled.
-#if defined(GTEST_HAS_DEATH_TEST) && DCHECK_IS_ON()
+#if defined(GTEST_HAS_DEATH_TEST)
   window_occlusion_tracker->set_num_tracked_windows_count_check_for_test(true);
-  EXPECT_DEATH(
+  EXPECT_CHECK_DEATH_WITH(
       {
         auto w = test::TestWindowBuilder().SetShow(true).Build();
         TestObserver obs(w.get());
         root_window()->AddChild(w.get());
       },
-      "DCHECK failed.*num_tracked_windows.*");
+      ".*num_tracked_windows.*", base::NotFatalUntil::M163);
 #endif
 }
 

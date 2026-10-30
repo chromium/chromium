@@ -52,7 +52,8 @@ class DefaultWindowOcclusionChangeBuilder
     if (disallow_unknown_state_) {
       // Change back to UNKNOWN is not allowed by default.
       // TODO(crbug.com/436906707): change this to CHECK.
-      DCHECK_NE(occlusion_state, Window::OcclusionState::UNKNOWN);
+      CHECK_NE(occlusion_state, Window::OcclusionState::UNKNOWN,
+               base::NotFatalUntil::M163);
     }
 
     windows_.Add(window);

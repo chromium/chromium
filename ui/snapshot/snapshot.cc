@@ -25,7 +25,8 @@ scoped_refptr<base::RefCountedMemory> EncodeImageAsPNG(
   if (image.IsEmpty()) {
     return nullptr;
   }
-  DCHECK(!image.AsImageSkia().GetRepresentation(1.0f).is_null());
+  CHECK(!image.AsImageSkia().GetRepresentation(1.0f).is_null(),
+        base::NotFatalUntil::M163);
 
   return image.As1xPNGBytes();
 }
@@ -35,7 +36,8 @@ scoped_refptr<base::RefCountedMemory> EncodeImageAsJPEG(
   if (image.IsEmpty()) {
     return nullptr;
   }
-  DCHECK(!image.AsImageSkia().GetRepresentation(1.0f).is_null());
+  CHECK(!image.AsImageSkia().GetRepresentation(1.0f).is_null(),
+        base::NotFatalUntil::M163);
 
   std::optional<std::vector<uint8_t>> result =
       gfx::JPEG1xEncodedDataFromImage(image, /*quality=*/100);

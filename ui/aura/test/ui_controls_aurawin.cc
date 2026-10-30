@@ -34,11 +34,12 @@ class UIControlsWin : public UIControlsAura {
                      int accelerator_state) override {
     // UIControlsWin only supports key events with both press and release.
     // TODO(crbug.com/40256300): Support any `key_event_types` on win.
-    DCHECK_EQ(key_event_types,
-              ui_controls::kKeyPress | ui_controls::kKeyRelease);
+    CHECK_EQ(key_event_types, ui_controls::kKeyPress | ui_controls::kKeyRelease,
+             base::NotFatalUntil::M163);
 
     // No command key on Aura.
-    DCHECK(!(accelerator_state & ui_controls::kCommand));
+    CHECK(!(accelerator_state & ui_controls::kCommand),
+          base::NotFatalUntil::M163);
 
     HWND window = native_window->GetHost()->GetAcceleratedWidget();
     return ui_controls::internal::SendKeyPressReleaseImpl(
@@ -54,11 +55,12 @@ class UIControlsWin : public UIControlsAura {
       ui_controls::KeyEventType wait_for) override {
     // UIControlsWin only supports key events with both press and release.
     // TODO(crbug.com/40256300): Support any `key_event_types` on win.
-    DCHECK_EQ(key_event_types,
-              ui_controls::kKeyPress | ui_controls::kKeyRelease);
+    CHECK_EQ(key_event_types, ui_controls::kKeyPress | ui_controls::kKeyRelease,
+             base::NotFatalUntil::M163);
 
     // No command key on Aura.
-    DCHECK(!(accelerator_state & ui_controls::kCommand));
+    CHECK(!(accelerator_state & ui_controls::kCommand),
+          base::NotFatalUntil::M163);
 
     HWND window = native_window->GetHost()->GetAcceleratedWidget();
     return ui_controls::internal::SendKeyPressReleaseImpl(
