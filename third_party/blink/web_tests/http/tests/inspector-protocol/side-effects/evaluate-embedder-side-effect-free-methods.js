@@ -24,6 +24,9 @@
 
     var textNode = document.createTextNode('footext');
     var divNoAttrs = document.createElement('div');
+    var documentFragment = document.createDocumentFragment();
+    var shadowHost = document.createElement('div');
+    var shadowRoot = shadowHost.attachShadow({mode: 'open'});
 
     var htmlCollection = document.getElementsByTagName('div');
     var nodeList = document.getElementsByName('div-name');
@@ -49,6 +52,11 @@
   // Unsafe Command Line API
   await checkHasSideEffect(`monitorEvents()`);
   await checkHasSideEffect(`unmonitorEvents()`);
+
+  // NonElementParentNode
+  await checkHasNoSideEffect(`document.getElementById('foo')`);
+  await checkHasNoSideEffect(`documentFragment.getElementById('foo')`);
+  await checkHasNoSideEffect(`shadowRoot.getElementById('foo')`);
 
   // Document
   await checkHasNoSideEffect(`document.getElementsByTagName('div')`);

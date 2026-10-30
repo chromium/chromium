@@ -21,6 +21,12 @@ Expression `monitorEvents()`
 has side effect: true, expected: true
 Expression `unmonitorEvents()`
 has side effect: true, expected: true
+Expression `document.getElementById('foo')`
+has side effect: false, expected: false
+Expression `documentFragment.getElementById('foo')`
+has side effect: false, expected: false
+Expression `shadowRoot.getElementById('foo')`
+has side effect: false, expected: false
 Expression `document.getElementsByTagName('div')`
 has side effect: false, expected: false
 Expression `document.getElementsByTagNameNS(namespace, 'div')`
