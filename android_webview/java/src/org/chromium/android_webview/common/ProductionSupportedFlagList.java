@@ -1522,6 +1522,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BlinkFeatures.XML_PARSING_RUST,
                 "Enables the Rust based XML parser for all XML parsing."),
+        Flag.baseFeature(
+                "V8Flag_code_cache_source_hash_sha256",
+                "Auto-generated flag for V8Flag_code_cache_source_hash_sha256."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
