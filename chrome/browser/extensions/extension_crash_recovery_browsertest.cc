@@ -36,7 +36,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/test/extension_background_page_waiter.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrashRecoveryTest,
   extensions::TestExtensionRegistryObserver observer(GetExtensionRegistry());
   {
     content::LoadStopObserver notification_observer(GetActiveWebContents());
-    chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+    chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
     notification_observer.Wait();
   }
   scoped_refptr<const Extension> extension = observer.WaitForExtensionLoaded();

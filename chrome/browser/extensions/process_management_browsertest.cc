@@ -42,7 +42,7 @@
 #include "extensions/common/switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 using content::NavigationController;
 using content::WebContents;
@@ -363,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagementTest, ExtensionAndWebProcessOverflow) {
   GURL web_url2(embedded_test_server()->GetURL("foo.com", "/title2.html"));
   GURL web_url3(embedded_test_server()->GetURL("foo.com", "/title3.html"));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), web_url1, WindowOpenDisposition::kCurrentTab,
+      browser(), web_url1, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   WebContents* web_contents1 =
       browser()->GetTabStripModel()->GetActiveWebContents();

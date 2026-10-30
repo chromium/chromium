@@ -13,7 +13,6 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/test_extension_dir.h"
-#include "ui/base/window_open_disposition.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 

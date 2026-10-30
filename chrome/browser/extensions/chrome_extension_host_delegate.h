@@ -11,6 +11,7 @@
 #include "extensions/browser/extension_host_delegate.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -29,7 +30,7 @@ class ChromeExtensionHostDelegate : public ExtensionHostDelegate {
   void CreateTab(std::unique_ptr<content::WebContents> web_contents,
                  const GURL& target_url,
                  const ExtensionId& extension_id,
-                 WindowOpenDisposition disposition,
+                 ui::mojom::WindowOpenDisposition disposition,
                  const blink::mojom::WindowFeatures& window_features,
                  bool user_gesture) override;
   void ProcessMediaAccessRequest(content::WebContents* web_contents,
@@ -50,7 +51,7 @@ class ChromeExtensionHostDelegate : public ExtensionHostDelegate {
                        std::unique_ptr<content::WebContents> web_contents,
                        GURL target_url,
                        ExtensionId extension_id,
-                       WindowOpenDisposition disposition,
+                       ui::mojom::WindowOpenDisposition disposition,
                        blink::mojom::WindowFeatures window_features,
                        bool user_gesture,
                        BrowserWindowInterface* browser);

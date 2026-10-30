@@ -29,8 +29,8 @@
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "ui/base/base_window.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 // TODO(http://crbug.com/453008083): Stop including
 // "android/chrome_feature_list.h".
@@ -303,8 +303,8 @@ bool BrowserExtensionWindowController::OpenOptionsPage(
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           url,
-          open_in_tab ? WindowOpenDisposition::kNewForegroundTab
-                      : WindowOpenDisposition::kCurrentTab,
+          open_in_tab ? ui::mojom::WindowOpenDisposition::kNewForegroundTab
+                      : ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_LINK);
   browser_->OpenURL(params, /*navigation_handle_callback=*/{});
 #else

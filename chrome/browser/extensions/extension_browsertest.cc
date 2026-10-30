@@ -54,7 +54,7 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_notification_observer.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -939,7 +939,7 @@ content::RenderFrameHost* ExtensionBrowserTest::NavigateToURLInNewTab(
   return content::ConvertToRenderFrameHost(new_web_contents);
 #else
   return ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 #endif
 }

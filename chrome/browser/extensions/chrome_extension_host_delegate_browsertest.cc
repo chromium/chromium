@@ -13,7 +13,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/content_settings/request_desktop_site_web_contents_observer_android.h"
@@ -76,7 +76,8 @@ IN_PROC_BROWSER_TEST_F(ChromeExtensionHostDelegateTest,
   // Create a new foreground tab.
   ChromeExtensionHostDelegate delegate;
   delegate.CreateTab(std::move(contents), GURL("chrome://version"),
-                     ExtensionId(), WindowOpenDisposition::kNewForegroundTab,
+                     ExtensionId(),
+                     ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                      blink::mojom::WindowFeatures(), /*user_gesture=*/true);
 
   // Wait for the tab to be added.
@@ -109,7 +110,8 @@ IN_PROC_BROWSER_TEST_F(ChromeExtensionHostDelegateTest,
   // Create a new background tab.
   ChromeExtensionHostDelegate delegate;
   delegate.CreateTab(std::move(contents), GURL("chrome://version"),
-                     ExtensionId(), WindowOpenDisposition::kNewBackgroundTab,
+                     ExtensionId(),
+                     ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
                      blink::mojom::WindowFeatures(), /*user_gesture=*/true);
 
   // Wait for the tab to be added.
@@ -147,7 +149,8 @@ IN_PROC_BROWSER_TEST_F(ChromeExtensionHostDelegateTest,
   // Invoke CreateTab.
   ChromeExtensionHostDelegate delegate;
   delegate.CreateTab(std::move(contents), GURL("chrome://version"),
-                     ExtensionId(), WindowOpenDisposition::kNewForegroundTab,
+                     ExtensionId(),
+                     ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                      blink::mojom::WindowFeatures(), /*user_gesture=*/true);
 
   // TabHelpers should be attached synchronously before CreateTab returns.

@@ -27,8 +27,8 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/manifest_handlers/manifest_url_handlers.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/image/image.h"
@@ -245,7 +245,7 @@ void ExtensionUninstallDialog::HandleReportAbuse() {
       profile_,
       extension_urls::GetWebstoreReportAbuseUrl(extension_->id(), kReferrerId),
       ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
 }
 

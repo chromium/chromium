@@ -40,7 +40,7 @@
 #include "extensions/common/switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 using content::NavigationController;
 using content::RenderViewHost;
@@ -426,7 +426,7 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ReloadIntoAppProcess) {
   content::LoadStopObserver reload_observer(
       browser()->GetTabStripModel()->GetActiveWebContents());
   LOG(INFO) << "Reloading.";
-  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
   reload_observer.Wait();
   LOG(INFO) << "Reloading - done.";
   EXPECT_TRUE(process_map->Contains(
@@ -442,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ReloadIntoAppProcess) {
   content::LoadStopObserver reload_observer2(
       browser()->GetTabStripModel()->GetActiveWebContents());
   LOG(INFO) << "Reloading.";
-  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
   reload_observer2.Wait();
   LOG(INFO) << "Reloading - done.";
   EXPECT_FALSE(process_map->Contains(
@@ -644,7 +644,7 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, ReloadAppAfterCrash) {
   content::CrashTab(browser()->GetTabStripModel()->GetActiveWebContents());
   content::LoadStopObserver observer(
       browser()->GetTabStripModel()->GetActiveWebContents());
-  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
   observer.Wait();
   ASSERT_EQ(true, content::EvalJs(contents, "chrome.app.isInstalled"));
 }

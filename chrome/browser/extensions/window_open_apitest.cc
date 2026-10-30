@@ -38,8 +38,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/base_window.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 using content::OpenURLParams;
 using content::Referrer;
@@ -195,14 +195,16 @@ IN_PROC_BROWSER_TEST_F(WindowOpenApiTest, PopupBlockingHostedApp) {
                         ->GetURL(popup_app_contents_path + "open_popup.html")
                         .ReplaceComponents(replace_host);
 
-  browser()->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                         open_tab, WindowOpenDisposition::kNewForegroundTab,
-                         ui::PAGE_TRANSITION_TYPED),
-                     /*navigation_handle_callback=*/{});
-  browser()->OpenURL(OpenURLParams::CreateBrowserInitiated(
-                         open_popup, WindowOpenDisposition::kNewForegroundTab,
-                         ui::PAGE_TRANSITION_TYPED),
-                     /*navigation_handle_callback=*/{});
+  browser()->OpenURL(
+      OpenURLParams::CreateBrowserInitiated(
+          open_tab, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+          ui::PAGE_TRANSITION_TYPED),
+      /*navigation_handle_callback=*/{});
+  browser()->OpenURL(
+      OpenURLParams::CreateBrowserInitiated(
+          open_popup, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+          ui::PAGE_TRANSITION_TYPED),
+      /*navigation_handle_callback=*/{});
 
   EXPECT_TRUE(WaitForTabsPopupsApps(browser(), 3, 1, 0));
 }

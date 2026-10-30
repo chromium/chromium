@@ -71,7 +71,7 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -678,7 +678,8 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest,
 
   // Now load an extension page and a non-extension page...
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), kExt1EmptyUrl, WindowOpenDisposition::kNewBackgroundTab,
+      browser(), kExt1EmptyUrl,
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   NavigateToURL(embedded_test_server()->GetURL("/two_iframes.html"));
   EXPECT_EQ(1u, pm->GetAllFrames().size());
@@ -2139,7 +2140,7 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, SynchronousClosureUAF) {
   // Open a new tab to main.html.
   GURL main_url = extension->GetResourceURL("main.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), main_url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), main_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   content::WebContents* tab =

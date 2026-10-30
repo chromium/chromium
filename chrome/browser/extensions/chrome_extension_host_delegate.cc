@@ -20,8 +20,8 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/base_window.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
 #include "chrome/browser/apps/platform_apps/audio_focus_web_contents_observer.h"
@@ -65,7 +65,7 @@ void ChromeExtensionHostDelegate::CreateTab(
     std::unique_ptr<content::WebContents> web_contents,
     const GURL& target_url,
     const ExtensionId& extension_id,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture) {
   // Verify that the browser is not shutting down. It can be the case if the
@@ -154,7 +154,7 @@ void ChromeExtensionHostDelegate::NavigateBrowser(
     std::unique_ptr<content::WebContents> web_contents,
     GURL target_url,
     ExtensionId extension_id,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     blink::mojom::WindowFeatures window_features,
     bool user_gesture,
     BrowserWindowInterface* browser) {
@@ -167,8 +167,8 @@ void ChromeExtensionHostDelegate::NavigateBrowser(
   // supported. See browser_navigator_android.cc or http://crbug.com/441594986.
   auto params =
       std::make_unique<NavigateParams>(browser, /*contents_to_insert=*/nullptr);
-  if (disposition == WindowOpenDisposition::kNewForegroundTab ||
-      disposition == WindowOpenDisposition::kNewBackgroundTab) {
+  if (disposition == ui::mojom::WindowOpenDisposition::kNewForegroundTab ||
+      disposition == ui::mojom::WindowOpenDisposition::kNewBackgroundTab) {
     params->contents_to_insert = std::move(web_contents);
   } else {
     params->url = std::move(target_url);
@@ -183,7 +183,7 @@ void ChromeExtensionHostDelegate::NavigateBrowser(
   // among other things, whether the location bar gets displayed.
   // TODO(mpcomplete): This seems wrong. What if the extension content is
   // hosted in a tab?
-  if (disposition == WindowOpenDisposition::kNewPopup) {
+  if (disposition == ui::mojom::WindowOpenDisposition::kNewPopup) {
     params->app_id = extension_id;
   }
 

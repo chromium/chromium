@@ -26,8 +26,8 @@
 #include "extensions/browser/process_manager.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest_handlers/background_info.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebContentsBrowserTest,
   NavigateParams params(GetBrowserWindowInterface(),
                         embedded_test_server()->GetURL("/iframe.html"),
                         ui::PAGE_TRANSITION_TYPED);
-  params.disposition = WindowOpenDisposition::kCurrentTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
   Navigate(&params);
 
   // Ensure the load is complete so DidFinishNavigation will fire.

@@ -64,8 +64,8 @@
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -1057,10 +1057,11 @@ GURL ExtensionTabUtil::ResolvePossiblyRelativeURL(const std::string& url_string,
   return url;
 }
 
-void ExtensionTabUtil::NavigateToURL(WindowOpenDisposition disposition,
-                                     content::WebContents* source_contents,
-                                     const GURL& url,
-                                     base::OnceClosure done_callback) {
+void ExtensionTabUtil::NavigateToURL(
+    ui::mojom::WindowOpenDisposition disposition,
+    content::WebContents* source_contents,
+    const GURL& url,
+    base::OnceClosure done_callback) {
   BrowserWindowInterface* browser =
       source_contents
           ? browser_window_util::GetBrowserForTabContents(*source_contents)

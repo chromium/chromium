@@ -41,7 +41,7 @@
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace extensions {
 
@@ -1424,7 +1424,7 @@ IN_PROC_BROWSER_TEST_F(NativeBindingsApiTest,
   // messaging via `ui_test_utils::NavigateToURLWithDisposition()`.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), extension->GetResourceURL("page.html"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   // Verify that the one-time message sender received the reply from

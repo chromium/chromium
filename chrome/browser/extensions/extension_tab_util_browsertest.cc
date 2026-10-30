@@ -35,7 +35,7 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
@@ -180,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, NavigateToURLNormal) {
   content::TestNavigationObserver version_page_observer(
       GURL("chrome://version"));
   version_page_observer.WatchWebContents(web_contents);
-  ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::kCurrentTab,
+  ExtensionTabUtil::NavigateToURL(ui::mojom::WindowOpenDisposition::kCurrentTab,
                                   web_contents, GURL("chrome://version"),
                                   base::DoNothing());
   version_page_observer.Wait();
@@ -192,9 +192,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, NavigateToURLNormal) {
   content::TestNavigationObserver history_page_observer(
       GURL("chrome://history"));
   history_page_observer.StartWatchingNewWebContents();
-  ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::kNewForegroundTab,
-                                  web_contents, GURL("chrome://history"),
-                                  base::DoNothing());
+  ExtensionTabUtil::NavigateToURL(
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab, web_contents,
+      GURL("chrome://history"), base::DoNothing());
   history_page_observer.Wait();
 
   EXPECT_EQ(initial_tab_count + 1, GetTabCount());
@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest, NavigateToURLWindow) {
   BrowserCreatedWaiter browser_created_waiter;
 
   base::RunLoop loop;
-  ExtensionTabUtil::NavigateToURL(WindowOpenDisposition::kNewWindow,
+  ExtensionTabUtil::NavigateToURL(ui::mojom::WindowOpenDisposition::kNewWindow,
                                   web_contents, GURL("chrome://version"),
                                   loop.QuitClosure());
   loop.Run();
@@ -663,7 +663,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabUtilBrowserTest,
   ASSERT_EQ(1, incognito_tab_strip->count());
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       incognito_browser, GURL("about:blank"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   ASSERT_EQ(2, incognito_tab_strip->count());
 

@@ -21,7 +21,7 @@
 #include "components/tab_groups/tab_group_id.h"     // nogncheck
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/mojom/context_type.mojom-forward.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -257,7 +257,7 @@ class ExtensionTabUtil {
   // Navigates to a URL, triggered by a given `source_contents`. Navigation may
   // be asynchronous and `done_callback` is invoked when the navigate has been
   // fully initiated.
-  static void NavigateToURL(WindowOpenDisposition disposition,
+  static void NavigateToURL(ui::mojom::WindowOpenDisposition disposition,
                             content::WebContents* source_contents,
                             const GURL& url,
                             base::OnceClosure done_callback);

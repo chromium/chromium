@@ -45,7 +45,7 @@
 #include "net/test/embedded_test_server/install_default_websocket_handlers.h"
 #include "net/test/embedded_test_server/register_basic_auth_handler.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -178,9 +178,10 @@ bool ExtensionApiTest::RunExtensionTest(const base::FilePath& extension_path,
     OpenURL(url_to_open, run_options.open_in_incognito);
   } else if (run_options.launch_as_platform_app) {
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
-    apps::AppLaunchParams params(
-        extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-        WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest);
+    apps::AppLaunchParams params(extension->id(),
+                                 apps::LaunchContainer::kLaunchContainerNone,
+                                 ui::mojom::WindowOpenDisposition::kNewWindow,
+                                 apps::LaunchSource::kFromTest);
     params.command_line = *base::CommandLine::ForCurrentProcess();
     apps::AppServiceProxyFactory::GetForProfile(
         run_options.profile ? run_options.profile.get() : profile())

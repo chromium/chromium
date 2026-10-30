@@ -31,8 +31,8 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "ui/base/base_window.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -200,9 +200,9 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
 
   NavigateParams navigate_params(&browser, validated_url,
                                  ui::PAGE_TRANSITION_LINK);
-  navigate_params.disposition = active
-                                    ? WindowOpenDisposition::kNewForegroundTab
-                                    : WindowOpenDisposition::kNewBackgroundTab;
+  navigate_params.disposition =
+      active ? ui::mojom::WindowOpenDisposition::kNewForegroundTab
+             : ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
 
   // If splitWithTabId is specified, determine the relative positioning of the
   // new tab. Defaults to the right of the target tab if index is not specified.

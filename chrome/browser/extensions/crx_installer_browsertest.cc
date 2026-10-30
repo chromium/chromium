@@ -94,7 +94,7 @@
 #include "extensions/test/test_extension_dir.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
@@ -517,7 +517,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
 
   TestExtensionRegistryObserver registry_observer(extension_registry());
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::kCurrentTab,
+      browser(), url, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   EXPECT_TRUE(registry_observer.WaitForExtensionInstalled());

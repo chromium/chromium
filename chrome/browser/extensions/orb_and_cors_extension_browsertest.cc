@@ -86,8 +86,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -2143,7 +2143,8 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
     NavigateParams nav_params(
         browser(), web_ui_url,
         ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED));
-    nav_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    nav_params.disposition =
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     content::WebContentsAddedObserver new_web_contents_observer;
     Navigate(&nav_params);
 
@@ -3072,7 +3073,8 @@ IN_PROC_BROWSER_TEST_F(OrbAndCorsExtensionBrowserTest,
     NavigateParams nav_params(
         browser(), extension_resource,
         ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED));
-    nav_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    nav_params.disposition =
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     content::WebContentsAddedObserver new_web_contents_observer;
     Navigate(&nav_params);
     extension_web_contents = new_web_contents_observer.GetWebContents();

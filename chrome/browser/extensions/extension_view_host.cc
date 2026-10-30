@@ -16,7 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/process_util.h"
 #include "extensions/buildflags/buildflags.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -117,13 +117,13 @@ content::WebContents* ExtensionViewHost::OpenURLFromTab(
         navigation_handle_callback) {
   // Allowlist the dispositions we will allow to be opened.
   switch (params.disposition) {
-    case WindowOpenDisposition::kSingletonTab:
-    case WindowOpenDisposition::kNewForegroundTab:
-    case WindowOpenDisposition::kNewBackgroundTab:
-    case WindowOpenDisposition::kNewPopup:
-    case WindowOpenDisposition::kNewWindow:
-    case WindowOpenDisposition::kSaveToDisk:
-    case WindowOpenDisposition::kOffTheRecord: {
+    case ui::mojom::WindowOpenDisposition::kSingletonTab:
+    case ui::mojom::WindowOpenDisposition::kNewForegroundTab:
+    case ui::mojom::WindowOpenDisposition::kNewBackgroundTab:
+    case ui::mojom::WindowOpenDisposition::kNewPopup:
+    case ui::mojom::WindowOpenDisposition::kNewWindow:
+    case ui::mojom::WindowOpenDisposition::kSaveToDisk:
+    case ui::mojom::WindowOpenDisposition::kOffTheRecord: {
       // Only allow these from hosts that are bound to a browser (e.g. popups).
       // Otherwise they are not driven by a user gesture.
       return delegate_->OpenURL(params, std::move(navigation_handle_callback));

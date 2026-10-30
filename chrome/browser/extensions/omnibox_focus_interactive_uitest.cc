@@ -25,7 +25,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/test/test_extension_dir.h"
 #include "third_party/blink/public/common/features.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace extensions {
 
@@ -444,7 +444,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest, TabFocusStealingFromOopif) {
   {
     content::TestFrameNavigationObserver nav_observer(
         web_contents->GetPrimaryMainFrame());
-    chrome::Home(browser(), WindowOpenDisposition::kCurrentTab);
+    chrome::Home(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
     nav_observer.Wait();
   }
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
@@ -495,7 +495,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxFocusInteractiveTest,
   {
     content::TestFrameNavigationObserver nav_observer(
         web_contents->GetPrimaryMainFrame());
-    chrome::Home(browser(), WindowOpenDisposition::kCurrentTab);
+    chrome::Home(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
     nav_observer.Wait();
   }
   EXPECT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));

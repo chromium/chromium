@@ -80,8 +80,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_PDF)
@@ -1043,7 +1043,8 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest, ContentScriptBlockingScript) {
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           embedded_test_server()->GetURL("/empty.html"),
-          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED);
+          ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_TYPED);
   web_contents->OpenURL(params,
                         /*navigation_handle_callback=*/{});
 
@@ -1097,7 +1098,8 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           embedded_test_server()->GetURL("/empty.html"),
-          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED);
+          ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_TYPED);
   web_contents->OpenURL(params,
                         /*navigation_handle_callback=*/{});
 
@@ -1138,7 +1140,8 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           embedded_test_server()->GetURL("/empty.html"),
-          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED);
+          ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_TYPED);
   web_contents->OpenURL(params,
                         /*navigation_handle_callback=*/{});
 
@@ -2035,7 +2038,8 @@ IN_PROC_BROWSER_TEST_F(ContentScriptRelatedFrameTest,
   NavigateParams navigate_params(browser_window_interface(),
                                  null_document_url(),
                                  ui::PAGE_TRANSITION_TYPED);
-  navigate_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  navigate_params.disposition =
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab;
 
   // Save the WebContents instance that will be created by this navigation, as
   // the dom message that we later wait for is sent in this instance.
@@ -2682,7 +2686,8 @@ IN_PROC_BROWSER_TEST_P(ContentScriptApiTestWithBackgroundCompilation,
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           embedded_test_server()->GetURL("/empty.html"),
-          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED);
+          ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_TYPED);
   web_contents->OpenURL(params,
                         /*navigation_handle_callback=*/{});
 

@@ -65,7 +65,7 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "third_party/zlib/google/compression_utils.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/extensions/browsertest_util.h"
@@ -1154,7 +1154,7 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
   const char kLargeResource[] = "ten_meg_background.js";
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), extension->GetResourceURL(kLargeResource),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 }
 

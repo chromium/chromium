@@ -73,7 +73,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -172,7 +172,8 @@ class ScriptInjectionTrackerBrowserTest : public ExtensionBrowserTest {
     content::TestNavigationObserver nav_observer(parent_url);
     nav_observer.StartWatchingNewWebContents();
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), parent_url, WindowOpenDisposition::kNewForegroundTab,
+        browser(), parent_url,
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
     response.WaitForRequest();
 
@@ -2420,7 +2421,8 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
     content::TestNavigationObserver nav_observer(main_url);
     nav_observer.StartWatchingNewWebContents();
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), main_url, WindowOpenDisposition::kNewForegroundTab,
+        browser(), main_url,
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
     navigation_response.WaitForRequest();
     navigation_response.Send(net::HTTP_OK, "text/html",
@@ -2629,7 +2631,8 @@ IN_PROC_BROWSER_TEST_F(DynamicScriptsTrackerBrowserTest,
     content::TestNavigationObserver nav_observer(main_url);
     nav_observer.StartWatchingNewWebContents();
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), main_url, WindowOpenDisposition::kNewForegroundTab,
+        browser(), main_url,
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
     navigation_response.WaitForRequest();
     navigation_response.Send(net::HTTP_OK, "text/html",
