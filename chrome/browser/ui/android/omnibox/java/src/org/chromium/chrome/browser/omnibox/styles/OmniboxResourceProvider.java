@@ -28,7 +28,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
-import androidx.core.content.ContextCompat;
 
 import com.google.android.material.color.MaterialColors;
 
@@ -415,13 +414,12 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
         return ColorUtils.overlayColor(baseColor, hoverColor, fraction);
     }
 
-    /**
-     * Get suggestions dropdown background color.
-     *
-     * @see #getSuggestionsDropdownBackgroundColor(Context, ...)
-     */
+    /** Get suggestions dropdown background color. */
     public @ColorInt int getSuggestionsDropdownBackgroundColor() {
-        return getSuggestionsDropdownBackgroundColor(mContext, getBrandedColorScheme());
+        return mCache.getColor(
+                isIncognito()
+                        ? R.color.omnibox_dropdown_bg_incognito
+                        : R.color.omnibox_suggestion_dropdown_bg);
     }
 
     /** Get suggestion background color for the instance context and color scheme. */
@@ -434,7 +432,7 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
                             : R.color.omnibox_popover_suggestion_bg_color);
         }
         return isDropdownContainer
-                ? getSuggestionsDropdownBackgroundColor(mContext, getBrandedColorScheme())
+                ? getSuggestionsDropdownBackgroundColor()
                 : getStandardSuggestionBackgroundColor();
     }
 
@@ -955,17 +953,6 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
             colorId = R.color.default_green;
         }
         return context.getColor(colorId);
-    }
-
-    /**
-     * Returns the background color for the suggestions dropdown for the given {@link
-     * BrandedColorScheme} with the given context.
-     */
-    public static @ColorInt int getSuggestionsDropdownBackgroundColor(
-            Context context, @BrandedColorScheme int brandedColorScheme) {
-        return brandedColorScheme == BrandedColorScheme.INCOGNITO
-                ? context.getColor(R.color.omnibox_dropdown_bg_incognito)
-                : ContextCompat.getColor(context, R.color.omnibox_suggestion_dropdown_bg);
     }
 
     /**

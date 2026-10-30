@@ -852,9 +852,7 @@ public class LocationBarTabletUnitTest {
                 (GradientDrawable) background.findDrawableByLayerId(R.id.focused_popup_inner_bg);
 
         @ColorInt
-        int expectedIncognitoOuterColor =
-                OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
-                        mActivity, BrandedColorScheme.INCOGNITO);
+        int expectedIncognitoOuterColor = mResourceProvider.getSuggestionsDropdownBackgroundColor();
         assertEquals(expectedIncognitoOuterColor, outerRect.getColor().getDefaultColor());
 
         @ColorInt
@@ -865,8 +863,7 @@ public class LocationBarTabletUnitTest {
 
         @ColorInt
         int expectedAppDefaultOuterColor =
-                OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
-                        mActivity, BrandedColorScheme.APP_DEFAULT);
+                mResourceProvider.getSuggestionsDropdownBackgroundColor();
         assertEquals(expectedAppDefaultOuterColor, outerRect.getColor().getDefaultColor());
 
         @ColorInt

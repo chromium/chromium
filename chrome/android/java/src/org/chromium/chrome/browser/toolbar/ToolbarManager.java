@@ -1318,7 +1318,7 @@ public class ToolbarManager
                         scrimManager,
                         new TabObscuringCallback(tabObscuringHandler),
                         /* context= */ activity,
-                        mLocationBarModel,
+                        mResourceProvider,
                         scrimClickAction,
                         scrimTarget,
                         mTabStripTopControlLayer.getSupplier(),

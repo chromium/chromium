@@ -6349,6 +6349,8 @@ public class LocationBarMediatorUnitTest {
 
         verify(mLocationBarLayout, atLeastOnce()).setLensButtonVisibility(false);
         verify(mUrlCoordinator).setIncognitoColorsEnabled(true);
+        assertEquals(
+                BrandedColorScheme.INCOGNITO, mOmniboxResourceProvider.getBrandedColorScheme());
         clearInvocations(mLocationBarLayout, mUrlCoordinator);
 
         doReturn(true).when(mLensController).isLensEnabled(any());
@@ -6357,6 +6359,8 @@ public class LocationBarMediatorUnitTest {
 
         verify(mLocationBarLayout, atLeastOnce()).setLensButtonVisibility(true);
         verify(mUrlCoordinator).setIncognitoColorsEnabled(false);
+        assertEquals(
+                BrandedColorScheme.APP_DEFAULT, mOmniboxResourceProvider.getBrandedColorScheme());
     }
 
     @Test

@@ -21,7 +21,6 @@ import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.omnibox.OmniboxCapabilities;
@@ -69,7 +68,7 @@ public class LocationBarFocusScrimHandler {
     /** Whether the scrim should be fully opaque, obscuring the content beneath it. */
     private boolean mUseOpaqueScrim;
 
-    private final LocationBarDataProvider mLocationBarDataProvider;
+    private final OmniboxResourceProvider mResourceProvider;
     private final Context mContext;
     private final NonNullObservableSupplier<Integer> mTabStripHeightSupplier;
     private final Callback<Integer> mTabStripHeightChangeCallback;
@@ -82,7 +81,8 @@ public class LocationBarFocusScrimHandler {
      * @param visibilityChangeCallback Callback used to obscure/unobscure tabs when the scrim is
      *     shown/hidden.
      * @param context Context for retrieving resources.
-     * @param locationBarDataProvider Provider of location bar data, e.g. the NTP state.
+     * @param resourceProvider The shared {@link OmniboxResourceProvider} used to resolve scrim
+     *     colors and the current incognito color scheme.
      * @param clickDelegate Click handler for the scrim.
      * @param scrimTarget View that the scrim should be anchored to.
      * @param tabStripHeightSupplier Supplier for the tab strip height.
@@ -92,13 +92,13 @@ public class LocationBarFocusScrimHandler {
             ScrimManager scrimManager,
             Callback<Boolean> visibilityChangeCallback,
             Context context,
-            LocationBarDataProvider locationBarDataProvider,
+            OmniboxResourceProvider resourceProvider,
             Runnable clickDelegate,
             View scrimTarget,
             NonNullObservableSupplier<Integer> tabStripHeightSupplier,
             BottomControlsStacker bottomControlsStacker) {
         mScrimManager = scrimManager;
-        mLocationBarDataProvider = locationBarDataProvider;
+        mResourceProvider = resourceProvider;
         mBottomControlsStacker = bottomControlsStacker;
         mContext = context;
         Callback<Boolean> visibilityChangeCallbackWrapper =
@@ -142,11 +142,7 @@ public class LocationBarFocusScrimHandler {
         Integer scrimColor =
                 switch (computeScrimState()) {
                     case ScrimState.OPAQUE ->
-                            OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
-                                    mContext,
-                                    mLocationBarDataProvider.isIncognitoBranded()
-                                            ? BrandedColorScheme.INCOGNITO
-                                            : BrandedColorScheme.APP_DEFAULT);
+                            mResourceProvider.getSuggestionsDropdownBackgroundColor();
                     case ScrimState.TRANSPARENT -> Color.TRANSPARENT;
                     case ScrimState.LIGHT_COLOR -> mLightScrimColor;
                     // A null color lets the ScrimManager apply its default scrim color.
@@ -179,9 +175,7 @@ public class LocationBarFocusScrimHandler {
             return ScrimState.TRANSPARENT;
         }
 
-        if (!isTablet
-                && !mLocationBarDataProvider.isIncognitoBranded()
-                && !ColorUtils.inNightMode(mContext)) {
+        if (!isTablet && !mResourceProvider.isIncognito() && !ColorUtils.inNightMode(mContext)) {
             return ScrimState.LIGHT_COLOR;
         }
 

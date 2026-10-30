@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -47,11 +48,11 @@ public class LocationBarFocusScrimHandlerUnitTest {
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private Runnable mClickDelegate;
-    @Mock private LocationBarDataProvider mLocationBarDataProvider;
     @Mock private ScrimManager mScrimManager;
     @Mock private BottomControlsStacker mBottomControlsStacker;
 
     private final View mScrimTarget = new View(ContextUtils.getApplicationContext());
+    private OmniboxResourceProvider mResourceProvider;
     LocationBarFocusScrimHandler mScrimHandler;
 
     private final SettableNonNullObservableSupplier<Integer> mTabStripHeightSupplier =
@@ -59,12 +60,15 @@ public class LocationBarFocusScrimHandlerUnitTest {
 
     @Before
     public void setUp() {
+        mResourceProvider =
+                new OmniboxResourceProvider(
+                        ContextUtils.getApplicationContext(), BrandedColorScheme.APP_DEFAULT);
         mScrimHandler =
                 new LocationBarFocusScrimHandler(
                         mScrimManager,
                         (visible) -> {},
                         ContextUtils.getApplicationContext(),
-                        mLocationBarDataProvider,
+                        mResourceProvider,
                         mClickDelegate,
                         mScrimTarget,
                         mTabStripHeightSupplier,
@@ -153,10 +157,7 @@ public class LocationBarFocusScrimHandlerUnitTest {
                         .getScrimModelForTesting()
                         .get(ScrimProperties.BACKGROUND_COLOR)
                         .intValue();
-        assertEquals(
-                OmniboxResourceProvider.getSuggestionsDropdownBackgroundColor(
-                        ContextUtils.getApplicationContext(), BrandedColorScheme.APP_DEFAULT),
-                color);
+        assertEquals(mResourceProvider.getSuggestionsDropdownBackgroundColor(), color);
         assertEquals(255, Color.alpha(color));
 
         mScrimHandler.setUseOpaqueScrim(false);
@@ -166,6 +167,13 @@ public class LocationBarFocusScrimHandlerUnitTest {
                         mScrimHandler
                                 .getScrimModelForTesting()
                                 .get(ScrimProperties.BACKGROUND_COLOR));
+    }
+
+    @Test
+    public void testUpdateScrimVisualState_incognitoPhone_usesDefaultScrim() {
+        mResourceProvider.setBrandedColorScheme(BrandedColorScheme.INCOGNITO);
+        mScrimHandler.updateScrimVisualState();
+        assertNull(mScrimHandler.getScrimModelForTesting().get(ScrimProperties.BACKGROUND_COLOR));
     }
 
     @Test

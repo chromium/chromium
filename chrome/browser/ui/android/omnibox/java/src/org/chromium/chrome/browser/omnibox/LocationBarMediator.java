@@ -2998,6 +2998,7 @@ public class LocationBarMediator
         updateSearchEngineStatusIconShownState();
         // Update the visuals to use correct incognito colors.
         mUrlCoordinator.setIncognitoColorsEnabled(mLocationBarDataProvider.isIncognitoBranded());
+        updateBrandedColorScheme();
     }
 
     @Override

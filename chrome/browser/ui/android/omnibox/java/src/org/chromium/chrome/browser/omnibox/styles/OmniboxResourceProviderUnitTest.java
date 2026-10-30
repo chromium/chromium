@@ -321,6 +321,18 @@ public class OmniboxResourceProviderUnitTest {
     }
 
     @Test
+    public void getSuggestionsDropdownBackgroundColor() {
+        final int incognitoColor = mContext.getColor(R.color.omnibox_dropdown_bg_incognito);
+        final int defaultColor = mContext.getColor(R.color.omnibox_suggestion_dropdown_bg);
+
+        mProvider.setBrandedColorScheme(BrandedColorScheme.INCOGNITO);
+        assertEquals(incognitoColor, mProvider.getSuggestionsDropdownBackgroundColor());
+
+        mProvider.setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
+        assertEquals(defaultColor, mProvider.getSuggestionsDropdownBackgroundColor());
+    }
+
+    @Test
     public void getStatusSeparatorColor() {
         final int darkColor = mContext.getColor(R.color.locationbar_status_separator_color_dark);
         final int lightColor = mContext.getColor(R.color.locationbar_status_separator_color_light);
