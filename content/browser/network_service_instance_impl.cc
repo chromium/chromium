@@ -476,8 +476,9 @@ base::RepeatingCallbackList<void(bool)>& GetProcessGoneHandlersList() {
 }
 
 void OnNetworkServiceProcessGone(bool crashed) {
-  CHECK(BrowserThread::CurrentlyOn(BrowserThread::UI),
-        base::NotFatalUntil::M160);
+  // TODO(crbug.com/578652641): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   CHECK(g_observed_network_service, base::NotFatalUntil::M160);
   CHECK(g_observed_network_service->remote().is_bound(),
         base::NotFatalUntil::M160);
