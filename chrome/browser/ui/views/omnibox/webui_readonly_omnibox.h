@@ -274,6 +274,7 @@ class WebUIReadOnlyOmnibox
   // State of the world at the time of last call to `OnBeforePossibleChange()`;
   // used in `OnAfterPossibleChange()` to figure out what changed.
   State state_before_change_;
+  bool had_inline_autocompletion_before_change_ = false;
 
   bool has_focus_ = false;
   bool aim_hint_currently_shown_ = false;

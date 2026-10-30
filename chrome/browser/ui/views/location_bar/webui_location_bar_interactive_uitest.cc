@@ -1306,6 +1306,34 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, InlineSuggestion) {
       WaitTillOmniboxViewText("local.test", View::kStatic));
 }
 
+// See crbug.com/579050376
+IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest,
+                       InlineSuggestionDelete) {
+  history::HistoryService* history_service =
+      HistoryServiceFactory::GetForProfile(this->browser()->GetProfile(),
+                                           ServiceAccessType::EXPLICIT_ACCESS);
+  GURL url("https://local.test/");
+  history_service->AddPage(url, base::Time::Now(), history::SOURCE_BROWSED);
+  ui_test_utils::WaitForHistoryToLoad(history_service);
+
+  RunTestSequence(InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
+                  InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
+                  EnsureNoPopup(), FocusOmnibox(),
+                  // Shouldn't have a popup visible yet.
+                  EnsureNoPopup(),
+                  // Type some text, it should show up.
+                  EnterText(u"https://local"), WaitForPopupShow(),
+                  WaitTillInlineComplete("https://local", ".test"),
+
+                  // Delete the suggestion with backspace
+                  InAnyContext(SendKeyPress(InputWebContents(), ui::VKEY_BACK)),
+                  WaitTillOmniboxViewText("https://local"),
+
+                  // Accept the input.
+                  SendEnter(),
+                  WaitForWebContentsNavigation(kTabId, GURL("https://local")));
+}
+
 // An inline suggestion where the case of one of the characters doesn't match.
 // See crbug.com/571658273
 IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest,

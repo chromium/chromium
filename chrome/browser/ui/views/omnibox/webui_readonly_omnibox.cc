@@ -391,6 +391,7 @@ void WebUIReadOnlyOmnibox::OnRevertTemporaryText(
 
 void WebUIReadOnlyOmnibox::OnBeforePossibleChange() {
   state_before_change_ = GetStateWithoutInlineSuggestion();
+  had_inline_autocompletion_before_change_ = !inline_autocompletion_.empty();
 
   // User is editing or traversing the text, as opposed to moving
   // through suggestions. Clear the accessibility label
@@ -403,6 +404,13 @@ bool WebUIReadOnlyOmnibox::OnAfterPossibleChange(bool allow_keyword_ui_change) {
   State new_state = GetStateWithoutInlineSuggestion();
   OmniboxView::StateChanges state_changes =
       GetStateChanges(state_before_change_, new_state);
+  // Properly set diff bits when deleting inline completion.
+  if (!state_changes.text_differs &&
+      had_inline_autocompletion_before_change_ &&
+      inline_autocompletion_.empty()) {
+    state_changes.selection_differs = true;
+    state_changes.just_deleted_text = true;
+  }
 
   bool something_changed = controller()->edit_model()->OnAfterPossibleChange(
       state_changes, allow_keyword_ui_change);
