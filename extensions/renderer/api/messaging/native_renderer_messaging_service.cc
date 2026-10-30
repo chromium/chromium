@@ -4,6 +4,7 @@
 
 #include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"
 
+#include <functional>
 #include <map>
 #include <memory>
 #include <string>
@@ -12,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/supports_user_data.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/renderer/render_frame.h"
@@ -296,16 +298,61 @@ void NativeRendererMessagingService::DeliverMessage(
     const PortId& target_port_id,
     Message message,
     content::RenderFrame* restrict_to_render_frame) {
-  // We use `std::ref` to avoid copying the `extensions::Message` object (which
-  // is move-only) into the callback. `ScriptContextSetIterable::ForEach` is
-  // synchronous, so `message` remains valid for the duration of the loop.
-  // Note: `DeliverMessageToScriptContext` takes `const Message&` and clones the
-  // message for each listener to ensure each receives its own copy of the data.
+  // Messages can be large (up to `mojom::kMaxMessageBytes`), so avoid copying
+  // them when possible. There's usually at most one receiving context (and
+  // never more than one on a service worker thread), so count the receivers
+  // first and let the last one take ownership of `message`, copying it only
+  // for the others.
+  size_t remaining_receivers = 0;
   context_set->ForEach(
       restrict_to_render_frame,
       base::BindRepeating(
-          &NativeRendererMessagingService::DeliverMessageToScriptContext,
-          base::Unretained(this), std::ref(message), target_port_id));
+          [](NativeRendererMessagingService* service, const PortId& port_id,
+             size_t& receivers, ScriptContext* script_context) {
+            if (service->ContextHasMessagePort(script_context, port_id)) {
+              ++receivers;
+            }
+          },
+          base::Unretained(this), target_port_id,
+          std::ref(remaining_receivers)));
+  if (remaining_receivers == 0) {
+    return;
+  }
+
+  // We use `std::ref` to avoid copying the `extensions::Message` object (which
+  // is move-only) into the callback. `ScriptContextSetIterable::ForEach` is
+  // synchronous, so `message` and `remaining_receivers` remain valid for the
+  // duration of the loop.
+  context_set->ForEach(
+      restrict_to_render_frame,
+      base::BindRepeating(
+          [](NativeRendererMessagingService* service, const PortId& port_id,
+             Message& message, size_t& receivers,
+             ScriptContext* script_context) {
+            if (!service->ContextHasMessagePort(script_context, port_id)) {
+              return;
+            }
+            // JS run by an earlier receiver may invalidate the remaining
+            // contexts or disconnect their ports (in which case every receiver
+            // simply gets a copy), but it cannot add `port_id` to other
+            // contexts.
+            if (receivers == 0) {
+              NOTREACHED(base::NotFatalUntil::M162);
+              return;
+            }
+            --receivers;
+            Message message_for_context;
+            if (receivers == 0) {
+              message_for_context = std::move(message);
+            } else {
+              message_for_context = message.Clone();
+              ++service->message_clone_count_;
+            }
+            service->DeliverMessageToScriptContext(
+                std::move(message_for_context), port_id, script_context);
+          },
+          base::Unretained(this), target_port_id, std::ref(message),
+          std::ref(remaining_receivers)));
 }
 
 void NativeRendererMessagingService::DispatchOnDisconnect(
@@ -505,21 +552,13 @@ void NativeRendererMessagingService::DispatchOnConnectToScriptContext(
 }
 
 void NativeRendererMessagingService::DeliverMessageToScriptContext(
-    const Message& message,
+    Message message,
     const PortId& target_port_id,
     ScriptContext* script_context) {
-  if (!ContextHasMessagePort(script_context, target_port_id)) {
-    return;
-  }
-
-  // Since this is a broadcast to potentially multiple listeners in different
-  // script contexts, we must clone the message here. `message` is a reference
-  // that must remain valid for subsequent iterations of the loop in
-  // `DeliverMessage`, but the worker/background page functions take ownership.
   if (script_context->IsForServiceWorker()) {
-    DeliverMessageToWorker(message.Clone(), target_port_id, script_context);
+    DeliverMessageToWorker(std::move(message), target_port_id, script_context);
   } else {
-    DeliverMessageToBackgroundPage(message.Clone(), target_port_id,
+    DeliverMessageToBackgroundPage(std::move(message), target_port_id,
                                    script_context);
   }
 }

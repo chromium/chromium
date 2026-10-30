@@ -188,6 +188,15 @@ TEST_F(NativeRendererMessagingServiceTest, DeliverMessageToPort) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 
+  // Add another context (e.g. another page of the same extension) that doesn't
+  // have any of the ports.
+  v8::Local<v8::Context> context_without_port = AddContext();
+  ScriptContext* script_context_without_port =
+      CreateScriptContext(context_without_port, extension(),
+                          mojom::ContextType::kPrivilegedExtension);
+  script_context_without_port->set_url(extension()->url());
+  bindings_system()->UpdateBindingsForContext(script_context_without_port);
+
   base::UnguessableToken other_context_id = base::UnguessableToken::Create();
   const PortId port_id1(other_context_id, 0, false,
                         mojom::SerializationFormat::kJson);
@@ -257,6 +266,127 @@ TEST_F(NativeRendererMessagingServiceTest, DeliverMessageToPort) {
             GetStringPropertyFromObject(global, context, kPort1Message));
   EXPECT_EQ("undefined",
             GetStringPropertyFromObject(global, context, kPort2Message));
+  // There was a single receiver, so the message shouldn't have been copied.
+  EXPECT_EQ(0u, messaging_service()->message_clone_count_for_testing());
+}
+
+// Tests that when multiple contexts have the target port (e.g. multiple
+// runtime.onConnect listeners), each of them receives the full message. Only
+// the last receiver takes ownership of the original message, while the others
+// receive a copy.
+TEST_F(NativeRendererMessagingServiceTest, DeliverMessageToMultipleContexts) {
+  RuntimeMessageValidationIgnorer message_validation_ignorer;
+
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context_a = MainContext();
+  v8::Local<v8::Context> context_b = AddContext();
+
+  ScriptContext* script_context_b = CreateScriptContext(
+      context_b, extension(), mojom::ContextType::kPrivilegedExtension);
+  script_context_b->set_url(extension()->url());
+  bindings_system()->UpdateBindingsForContext(script_context_b);
+
+  constexpr char kAddListener[] =
+      R"((function() {
+           chrome.runtime.onConnect.addListener((port) => {
+             port.onMessage.addListener((message) => {
+               this.receivedMessage = message;
+             });
+           });
+         }))";
+  for (v8::Local<v8::Context> context : {context_a, context_b}) {
+    RunFunctionOnGlobal(FunctionFromString(context, kAddListener), context, 0,
+                        nullptr);
+  }
+
+  base::UnguessableToken other_context_id = base::UnguessableToken::Create();
+  const PortId port_id(other_context_id, 0, false,
+                       mojom::SerializationFormat::kJson);
+
+  NativeRendererMessagingService::TabConnectionInfo tab_connection_info;
+  NativeRendererMessagingService::ExternalConnectionInfo
+      external_connection_info;
+  external_connection_info.target_id = extension()->id();
+  external_connection_info.source_endpoint =
+      MessagingEndpoint::ForExtension(extension()->id());
+  external_connection_info.guest_process_id =
+      content::kInvalidChildProcessUniqueId;
+
+  mojo::PendingAssociatedRemote<mojom::MessagePortHost> port_host_remote;
+  auto port_host_receiver =
+      port_host_remote.InitWithNewEndpointAndPassReceiver();
+  mojo::PendingAssociatedReceiver<mojom::MessagePort> port_receiver;
+  auto port_remote = port_receiver.InitWithNewEndpointAndPassRemote();
+
+  // Open the port in both contexts.
+  bool port_opened = false;
+  messaging_service()->DispatchOnConnect(
+      script_context_set(), port_id, mojom::ChannelType::kConnect, "channel",
+      tab_connection_info, external_connection_info, std::move(port_receiver),
+      std::move(port_host_remote), nullptr,
+      base::BindLambdaForTesting(
+          [&port_opened](bool success) { port_opened = success; }));
+  port_host_receiver.EnableUnassociatedUsage();
+  port_remote.EnableUnassociatedUsage();
+  testing::Mock::VerifyAndClearExpectations(ipc_message_sender());
+  ASSERT_TRUE(port_opened);
+  ASSERT_TRUE(
+      messaging_service()->HasPortForTesting(script_context(), port_id));
+  ASSERT_TRUE(
+      messaging_service()->HasPortForTesting(script_context_b, port_id));
+
+  const char kMessageString[] = R"({"data":"hello"})";
+  messaging_service()->DeliverMessage(
+      script_context_set(), port_id,
+      Message(kMessageString, /*user_gesture=*/false),
+      /*restrict_to_render_frame=*/nullptr);
+
+  EXPECT_EQ(kMessageString,
+            GetStringPropertyFromObject(context_a->Global(), context_a,
+                                        "receivedMessage"));
+  EXPECT_EQ(kMessageString,
+            GetStringPropertyFromObject(context_b->Global(), context_b,
+                                        "receivedMessage"));
+  // Only one of the two receivers should have needed a copy.
+  EXPECT_EQ(1u, messaging_service()->message_clone_count_for_testing());
+}
+
+// Tests that a message for a port that no context has anymore (e.g. because
+// the receiver closed it while the message was in flight) is dropped.
+TEST_F(NativeRendererMessagingServiceTest, DeliverMessageWithNoReceivers) {
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  base::UnguessableToken other_context_id = base::UnguessableToken::Create();
+  const PortId port_id(other_context_id, 0, false,
+                       mojom::SerializationFormat::kJson);
+
+  mojo::PendingAssociatedRemote<mojom::MessagePort> message_port_remote;
+  mojo::PendingAssociatedReceiver<mojom::MessagePortHost>
+      message_port_host_receiver;
+  GinPort* port = messaging_service()->CreatePortForTesting(
+      script_context(), "channel", mojom::ChannelType::kSendMessage, port_id,
+      message_port_remote, message_port_host_receiver);
+  message_port_remote.EnableUnassociatedUsage();
+  message_port_host_receiver.EnableUnassociatedUsage();
+
+  // Close the port from JS.
+  v8::Local<v8::Value> args[] = {port->GetWrapper(isolate()).ToLocalChecked()};
+  RunFunctionOnGlobal(
+      FunctionFromString(context, "(function(port) { port.disconnect(); })"),
+      context, std::size(args), args);
+  ASSERT_FALSE(
+      messaging_service()->HasPortForTesting(script_context(), port_id));
+
+  // A message that was still in flight should be dropped without copying it.
+  messaging_service()->DeliverMessage(
+      script_context_set(), port_id,
+      Message(R"({"data":"hello"})", /*user_gesture=*/false),
+      /*restrict_to_render_frame=*/nullptr);
+  // The clone count alone doesn't prove that the message was dropped, but
+  // delivering it to `script_context()` anyway would crash in `GetPort()`,
+  // since the context no longer has the port.
+  EXPECT_EQ(0u, messaging_service()->message_clone_count_for_testing());
 }
 
 TEST_F(NativeRendererMessagingServiceTest, DisconnectMessagePort) {
