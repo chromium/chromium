@@ -373,11 +373,14 @@ TEST_F(SearchboxUtilsTest,
 
   ON_CALL(provider_client, ShouldOpenCoBrowsePanel())
       .WillByDefault(Return(true));
-  const std::u16string side_panel_suffix =
-      u", " +
-      l10n_util::GetStringUTF16(IDS_CONTEXTUAL_SEARCH_OPENS_IN_SIDE_PANEL);
-  EXPECT_EQ(get_label(0), entrypoint_label + side_panel_suffix);
-  EXPECT_EQ(get_label(1), u"foo search suggestion" + side_panel_suffix);
+  EXPECT_EQ(get_label(0),
+            l10n_util::GetStringFUTF16(
+                IDS_ACC_CONTEXTUAL_SEARCH_OPENS_IN_SIDE_PANEL_SUFFIX,
+                entrypoint_label));
+  EXPECT_EQ(get_label(1),
+            l10n_util::GetStringFUTF16(
+                IDS_ACC_CONTEXTUAL_SEARCH_OPENS_IN_SIDE_PANEL_SUFFIX,
+                u"foo search suggestion"));
 }
 
 }  // namespace searchbox

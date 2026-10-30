@@ -53,6 +53,9 @@
   <message name="IDS_ACC_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION" desc="Announcement when lens action button is focused">
     Ask Google about this page button, activate to ask Google about this page
   </message>
+  <message name="IDS_ACC_CONTEXTUAL_SEARCH_OPENS_IN_SIDE_PANEL_SUFFIX" desc="Suffix for the spoken description of the 'Ask Google about this page' omnibox suggestion and contextual suggestions, informing the user that selecting the suggestion opens the results in the browser side panel." is_accessibility_with_no_ui="true">
+    <ph name="SUGGESTION_TEXT">$1<ex>Ask Google about this page</ex></ph>, opens in side panel
+  </message>
 
   <!-- AI Mode Entrypoint Strings -->
   <message name="IDS_AI_MODE_ENTRYPOINT_LABEL" desc="The label of the omnibox AI mode entrypoint" formatter_data="android_java">
