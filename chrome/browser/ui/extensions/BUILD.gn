@@ -91,6 +91,7 @@ source_set("extensions") {
     "//ui/base/unowned_user_data",
     "//ui/gfx",
     "//ui/gfx/geometry",
+    "//url",
   ]
 
   if (enable_extensions) {
@@ -124,7 +125,6 @@ source_set("extensions") {
       "//ui/base/mojom:ui_base_types",
       "//ui/gfx",
       "//ui/gfx/geometry",
-      "//url",
     ]
   }
 }

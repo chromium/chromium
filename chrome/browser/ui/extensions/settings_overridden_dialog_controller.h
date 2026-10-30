@@ -10,7 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "ui/base/models/image_model.h"
-#include "ui/gfx/image/image.h"
+#include "url/gurl.h"
 
 namespace gfx {
 struct VectorIcon;
@@ -30,7 +30,13 @@ class SettingsOverriddenDialogController {
     // Additional subtext describing the option.
     std::u16string description;
 
-    // An icon pertaining to the option.
+    // The URL of the favicon. If specified, the icon should be fetched and used
+    // to override the default image.
+    GURL favicon_url;
+
+    // An icon pertaining to the option. It should be populated with a default
+    // or fallback favicon initially, but may be overwritten by an icon fetched
+    // from `favicon_url`.
     ui::ImageModel image;
   };
 
@@ -38,7 +44,7 @@ class SettingsOverriddenDialogController {
   struct ShowParams {
     ShowParams();
     ~ShowParams();
-    ShowParams(const SettingsOverriddenDialogController::ShowParams& params);
+    ShowParams(const ShowParams& params);
     ShowParams(std::u16string dialog_title,
                std::u16string dialog_message,
                const gfx::VectorIcon* icon);
