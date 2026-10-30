@@ -48,6 +48,7 @@
 #include "build/build_config.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
+#include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/private/SkJpegMetadataDecoder.h"
@@ -1032,16 +1033,16 @@ bool JPEGImageDecoder::GetGainmapInfoAndData(
   return false;
 }
 
-bool JPEGImageDecoder::HasC2PAManifest() const {
+C2PAManifestStatus JPEGImageDecoder::GetC2PAManifestStatus() const {
   auto* metadata_decoder = reader_ ? reader_->GetMetadataDecoder() : nullptr;
   if (!metadata_decoder) {
-    return false;
+    return C2PAManifestStatus::kUnknown;
   }
 
   // C2PA manifests are contained in APP11 blocks in JUMBF format
   auto jumbf_data = metadata_decoder->getJUMBFMetadata(/*copyData=*/false);
   if (!jumbf_data) {
-    return false;
+    return C2PAManifestStatus::kNotDetected;
   }
 
   // APP11 blocks have a 2-byte extension type set to 'JP' for JUMBF
@@ -1064,7 +1065,7 @@ bool JPEGImageDecoder::HasC2PAManifest() const {
   static constexpr size_t kC2PAOffset = 22;
 
   if (jumbf_data->size() < kC2PAOffset + sizeof(kC2PASig)) {
-    return false;
+    return C2PAManifestStatus::kNotDetected;
   }
   const uint8_t* jumbf_bytes = jumbf_data->bytes();
   if (UNSAFE_TODO(memcmp(jumbf_bytes + kSBOffset, kSBSig, sizeof(kSBSig))) !=
@@ -1073,10 +1074,10 @@ bool JPEGImageDecoder::HasC2PAManifest() const {
           0 ||
       UNSAFE_TODO(
           memcmp(jumbf_bytes + kC2PAOffset, kC2PASig, sizeof(kC2PASig))) != 0) {
-    return false;
+    return C2PAManifestStatus::kNotDetected;
   }
 
-  return true;
+  return C2PAManifestStatus::kDetected;
 }
 
 gfx::Size JPEGImageDecoder::GetImageCodedSize() const {

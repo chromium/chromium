@@ -575,8 +575,8 @@ uint8_t ImageDecoder::GetYUVBitDepth() const {
   return 8;
 }
 
-bool ImageDecoder::HasC2PAManifest() const {
-  return false;
+C2PAManifestStatus ImageDecoder::GetC2PAManifestStatus() const {
+  return C2PAManifestStatus::kUnknown;
 }
 
 gfx::Size ImageDecoder::FrameSizeAtIndex(wtf_size_t) const {

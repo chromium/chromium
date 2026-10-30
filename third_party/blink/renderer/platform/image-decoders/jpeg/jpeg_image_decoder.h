@@ -60,7 +60,7 @@ class PLATFORM_EXPORT JPEGImageDecoder final : public ImageDecoder {
   bool GetGainmapInfoAndData(
       SkGainmapInfo& out_gainmap_info,
       scoped_refptr<SegmentReader>& out_gainmap_data) const override;
-  bool HasC2PAManifest() const override;
+  C2PAManifestStatus GetC2PAManifestStatus() const override;
 
   bool HasImagePlanes() const { return image_planes_.get(); }
 

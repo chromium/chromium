@@ -71,6 +71,7 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   bool GetHotSpot(gfx::Point&) const override;
   String FilenameExtension() const override;
   const AtomicString& MimeType() const override;
+  C2PAManifestStatus GetC2PAManifestStatus() const override;
 
   SizeAvailability SetData(scoped_refptr<SharedBuffer> data,
                            bool all_data_received) override;

@@ -381,4 +381,9 @@ TEST(ImageDecoderTest, hasSufficientDataToSniffMimeTypeAvif) {
 }
 #endif  // BUILDFLAG(ENABLE_DAV1D_DECODER)
 
+TEST(ImageDecoderTest, getC2PAManifestStatusDefaultIsUnknown) {
+  auto decoder = std::make_unique<TestImageDecoder>();
+  EXPECT_EQ(decoder->GetC2PAManifestStatus(), C2PAManifestStatus::kUnknown);
+}
+
 }  // namespace blink

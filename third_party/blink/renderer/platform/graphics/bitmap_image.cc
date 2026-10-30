@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -207,7 +208,7 @@ void BitmapImage::RecordDecodedImageType(UseCounter* use_counter) {
 }
 
 void BitmapImage::RecordDecodedImageC2PA(UseCounter* use_counter) {
-  if (decoder_->HasC2PAManifest()) {
+  if (GetC2PAManifestStatus() == C2PAManifestStatus::kDetected) {
     BitmapImageMetrics::CountDecodedImageC2PA(use_counter);
   }
 }
@@ -299,6 +300,11 @@ String BitmapImage::FilenameExtension() const {
 
 const AtomicString& BitmapImage::MimeType() const {
   return decoder_ ? decoder_->MimeType() : g_null_atom;
+}
+
+C2PAManifestStatus BitmapImage::GetC2PAManifestStatus() const {
+  return decoder_ ? decoder_->GetC2PAManifestStatus()
+                  : C2PAManifestStatus::kUnknown;
 }
 
 void BitmapImage::Draw(cc::PaintCanvas* canvas,

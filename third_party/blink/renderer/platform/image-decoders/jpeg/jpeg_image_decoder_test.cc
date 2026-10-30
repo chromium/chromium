@@ -24,6 +24,7 @@
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_animation.h"
+#include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_decoder_factory.h"
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_rust_image_decoder.h"
@@ -1624,7 +1625,8 @@ TEST(JPEGImageDecoderTest, c2paManifestPresent) {
 
   std::unique_ptr<ImageDecoder> test_decoder = CreateJPEGDecoder();
   test_decoder->SetData(test_data.get(), true);
-  EXPECT_TRUE(test_decoder->HasC2PAManifest());
+  EXPECT_EQ(test_decoder->GetC2PAManifestStatus(),
+            C2PAManifestStatus::kDetected);
 }
 
 // Decode a JPEG without C2PA metadata, verify that none is found
@@ -1635,7 +1637,14 @@ TEST(JPEGImageDecoderTest, c2paManifestNotPresent) {
 
   std::unique_ptr<ImageDecoder> test_decoder = CreateJPEGDecoder();
   test_decoder->SetData(test_data.get(), true);
-  EXPECT_FALSE(test_decoder->HasC2PAManifest());
+  EXPECT_EQ(test_decoder->GetC2PAManifestStatus(),
+            C2PAManifestStatus::kNotDetected);
+}
+
+TEST(JPEGImageDecoderTest, c2paManifestUnknownWithoutData) {
+  std::unique_ptr<ImageDecoder> test_decoder = CreateJPEGDecoder();
+  EXPECT_EQ(test_decoder->GetC2PAManifestStatus(),
+            C2PAManifestStatus::kUnknown);
 }
 
 // JPEG Suite parameterized tests, modeled after BMPImageDecoderSuiteTest.

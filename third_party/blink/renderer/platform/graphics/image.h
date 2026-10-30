@@ -62,6 +62,7 @@ class RectF;
 
 namespace blink {
 
+enum class C2PAManifestStatus;
 class GraphicsContext;
 class Image;
 class WebGraphicsContext3DProvider;
@@ -214,6 +215,9 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
 
   // Returns g_null_atom if unknown.
   virtual const AtomicString& MimeType() const;
+
+  // Returns whether the image contains an embedded C2PA manifest.
+  virtual C2PAManifestStatus GetC2PAManifestStatus() const;
 
   virtual void DestroyDecodedData() = 0;
 

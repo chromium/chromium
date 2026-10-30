@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
+#include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
@@ -203,6 +204,10 @@ String Image::FilenameExtension() const {
 
 const AtomicString& Image::MimeType() const {
   return g_empty_atom;
+}
+
+C2PAManifestStatus Image::GetC2PAManifestStatus() const {
+  return C2PAManifestStatus::kUnknown;
 }
 
 namespace {

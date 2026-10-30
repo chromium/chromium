@@ -107,7 +107,6 @@ DeferredImageDecoder::DeferredImageDecoder(
       can_yuv_decode_(false),
       has_hot_spot_(false),
       image_is_high_bit_depth_(false),
-      has_c2pa_manifest_(false),
       complete_frame_content_id_(PaintImage::GetNextContentId()) {}
 
 DeferredImageDecoder::~DeferredImageDecoder() {
@@ -264,9 +263,9 @@ wtf_size_t DeferredImageDecoder::FrameCount() {
                            : frame_data_.size();
 }
 
-bool DeferredImageDecoder::HasC2PAManifest() const {
-  return metadata_decoder_ ? metadata_decoder_->HasC2PAManifest()
-                           : has_c2pa_manifest_;
+C2PAManifestStatus DeferredImageDecoder::GetC2PAManifestStatus() const {
+  return metadata_decoder_ ? metadata_decoder_->GetC2PAManifestStatus()
+                           : c2pa_manifest_status_;
 }
 
 int DeferredImageDecoder::RepetitionCount() const {
@@ -343,7 +342,7 @@ void DeferredImageDecoder::ActivateLazyDecoding() {
 
   size_ = metadata_decoder_->Size();
   image_is_high_bit_depth_ = metadata_decoder_->ImageIsHighBitDepth();
-  has_c2pa_manifest_ = metadata_decoder_->HasC2PAManifest();
+  c2pa_manifest_status_ = metadata_decoder_->GetC2PAManifestStatus();
   has_hot_spot_ = metadata_decoder_->HotSpot(hot_spot_);
   filename_extension_ = metadata_decoder_->FilenameExtension();
   mime_type_ = metadata_decoder_->MimeType();

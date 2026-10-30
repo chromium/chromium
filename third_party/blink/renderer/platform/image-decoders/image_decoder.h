@@ -110,6 +110,15 @@ class PLATFORM_EXPORT ImagePlanes final {
       HighBitDepthOutputType::kScaledTo16Bits;
 };
 
+// Indicates whether an image contains an embedded C2PA manifest.
+enum class C2PAManifestStatus {
+  // C2PA manifest detection is unsupported for this image format, or the image
+  // metadata has not been decoded yet.
+  kUnknown,
+  kNotDetected,
+  kDetected,
+};
+
 // ImageDecoder is a base for all format-specific decoders
 // (e.g. JPEGImageDecoder). This base manages the ImageFrame cache.
 //
@@ -293,7 +302,7 @@ class PLATFORM_EXPORT ImageDecoder {
   virtual uint8_t GetYUVBitDepth() const;
 
   // Image decoders that support C2PA manifest embedding can override this.
-  virtual bool HasC2PAManifest() const;
+  virtual C2PAManifestStatus GetC2PAManifestStatus() const;
 
   // Returns the information required to decide whether or not hardware
   // acceleration can be used to decode this image. Callers of this function
