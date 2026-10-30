@@ -135,16 +135,18 @@ class ContextualTasksExtensionHandler
       override;
 
   // composebox::mojom::PageHandler:
+  void HandleLensButtonClick() override;
+  void SetSmartTabSharingActive(bool active) override;
+  void GetSmartTabSharingActive(
+      GetSmartTabSharingActiveCallback callback) override;
+
+  // composebox::mojom::PageHandler stubs:
   void FocusChanged(bool focused) override;
   void StartPlatformVoiceRecognition() override;
-  void HandleLensButtonClick() override;
   void HandleFileUpload(bool is_image) override;
   void NavigateUrl(const GURL& url) override;
   void CloseLensOverlayFromWebUI(
       composebox::mojom::LensOverlayDismissalSource dismissal_source) override;
-  void SetSmartTabSharingActive(bool active) override;
-  void GetSmartTabSharingActive(
-      GetSmartTabSharingActiveCallback callback) override;
   void NotifyComposeboxQuerySubmittedWithContext() override;
   void CanShowNextboxAnimation(
       CanShowNextboxAnimationCallback callback) override;
@@ -287,6 +289,12 @@ class ContextualTasksExtensionHandler
   // to the extension page. Duplicates are skipped.
   void SendTabContextToExtensionPage(
       const contextual_search::TabContextState& state);
+  // Notifies the extension page of the current tab context when user data
+  // changes.
+  void OnTabContextUpdatedFromUserData();
+  bool IsSmartTabSharingActive();
+  // Triggers tab embedding pre-flighting for Smart Tab Sharing.
+  void PreflightSmartTabSharingEmbeddings();
   void OnLensThumbnailCreated(const std::string& thumbnail_uri);
   void OnLensCropUpdated(const GURL& data_uri);
 

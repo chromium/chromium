@@ -160,7 +160,8 @@ suite('ContextLibraryTest', () => {
           createTab(10, 'https://www.google.com'),
           createTab(20, 'https://www.youtube.com'),
         ];
-        browserProxy.callbackRouterRemote.onTabContextUpdated(tabs, [20]);
+        browserProxy.callbackRouterRemote.onTabContextUpdated(
+            tabs, [20], {active: false, visible: false});
         await browserProxy.callbackRouterRemote.$.flushForTesting();
         await microtasksFinished();
 
@@ -169,6 +170,7 @@ suite('ContextLibraryTest', () => {
         assertEquals(20, app.tabs[1]!.tabId);
         assertTrue(app.submittedTabIds.has(20));
         assertFalse(app.submittedTabIds.has(10));
+        assertFalse(app.smartTabSharingActive);
         assertTrue(app.$.faviconGroup.submittedTabIds.has(20));
 
         const items =
@@ -176,11 +178,41 @@ suite('ContextLibraryTest', () => {
         assertEquals(2, items.length);
       });
 
+  test(
+      'Renders Smart Tab Sharing coin when smartTabSharingActive is true',
+      async () => {
+        assertEquals(null, app.shadowRoot.querySelector('#stsCoin'));
+        assertFalse(app.$.faviconGroup.hidden);
+
+        browserProxy.callbackRouterRemote.onTabContextUpdated(
+            [], [], {active: true, visible: true});
+        await browserProxy.callbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        assertTrue(app.smartTabSharingActive);
+        const stsCoin = app.shadowRoot.querySelector('#stsCoin');
+        assertTrue(!!stsCoin);
+        assertEquals(
+            'composebox:screensaverAuto', stsCoin.getAttribute('icon'));
+        assertTrue(app.$.faviconGroup.hidden);
+
+        browserProxy.callbackRouterRemote.onTabContextUpdated(
+            [createTab(10, 'https://www.google.com')], [],
+            {active: false, visible: true});
+        await browserProxy.callbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        assertFalse(app.smartTabSharingActive);
+        assertEquals(null, app.shadowRoot.querySelector('#stsCoin'));
+        assertFalse(app.$.faviconGroup.hidden);
+      });
+
   test('Stops updating after element is disconnected', async () => {
     app.remove();
 
     browserProxy.callbackRouterRemote.onTabContextUpdated(
-        [createTab(10, 'https://www.google.com')], [10]);
+        [createTab(10, 'https://www.google.com')], [10],
+        {active: false, visible: false});
     await browserProxy.callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
 

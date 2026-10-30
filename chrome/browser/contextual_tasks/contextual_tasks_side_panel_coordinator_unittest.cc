@@ -3927,15 +3927,17 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
       ContextualTasksExtensionHandler::GetOrCreateForCurrentDocument(
           panel_wc->GetPrimaryMainFrame());
   ASSERT_NE(ext_handler, nullptr);
-  ON_CALL(mock_ext_page, OnTabContextUpdated(_, _))
-      .WillByDefault(
-          [&updated_tab_ids](std::vector<searchbox::mojom::TabInfoPtr> tabs,
-                             const std::vector<int32_t>&) {
-            updated_tab_ids.clear();
-            for (const auto& t : tabs) {
-              updated_tab_ids.push_back(t->tab_id);
-            }
-          });
+  ON_CALL(mock_ext_page, OnTabContextUpdated(_, _, _))
+      .WillByDefault([&updated_tab_ids](
+                         std::vector<searchbox::mojom::TabInfoPtr> tabs,
+                         const std::vector<int32_t>& /*submitted_tab_ids*/,
+                         mojom::SmartTabSharingStatePtr
+                         /*smart_tab_sharing_state*/) {
+        updated_tab_ids.clear();
+        for (const auto& t : tabs) {
+          updated_tab_ids.push_back(t->tab_id);
+        }
+      });
   ext_handler->CreateExtensionPageHandler(
       mock_ext_page.BindAndGetRemote(),
       ext_handler_remote.BindNewPipeAndPassReceiver());
@@ -4273,15 +4275,17 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   auto* full_tab_ext_handler =
       ContextualTasksExtensionHandler::GetOrCreateForCurrentDocument(
           ai_tab->GetContents()->GetPrimaryMainFrame());
-  ON_CALL(full_tab_ext_page, OnTabContextUpdated(_, _))
-      .WillByDefault(
-          [&full_tab_ext_ids](std::vector<searchbox::mojom::TabInfoPtr> tabs,
-                              const std::vector<int32_t>&) {
-            full_tab_ext_ids.clear();
-            for (const auto& t : tabs) {
-              full_tab_ext_ids.push_back(t->tab_id);
-            }
-          });
+  ON_CALL(full_tab_ext_page, OnTabContextUpdated(_, _, _))
+      .WillByDefault([&full_tab_ext_ids](
+                         std::vector<searchbox::mojom::TabInfoPtr> tabs,
+                         const std::vector<int32_t>& /*submitted_tab_ids*/,
+                         mojom::SmartTabSharingStatePtr
+                         /*smart_tab_sharing_state*/) {
+        full_tab_ext_ids.clear();
+        for (const auto& t : tabs) {
+          full_tab_ext_ids.push_back(t->tab_id);
+        }
+      });
   full_tab_ext_handler->CreateExtensionPageHandler(
       full_tab_ext_page.BindAndGetRemote(),
       full_tab_ext_remote.BindNewPipeAndPassReceiver());

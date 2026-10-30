@@ -1080,7 +1080,7 @@ suite('TabPickerTest', () => {
       'Repopulates selected tabs when onTabContextUpdated is dispatched',
       async () => {
         extensionBrowserProxy.callbackRouterRemote.onTabContextUpdated(
-            [tab0, tab2], []);
+            [tab0, tab2], [], {active: false, visible: false});
         await extensionBrowserProxy.callbackRouterRemote.$.flushForTesting();
         await microtasksFinished();
 
@@ -1115,7 +1115,8 @@ suite('TabPickerTest', () => {
             createTabInfo(3, 'Tab Three Navigated', 'https://example.com/3b');
         testProxy.resetResolver('getRecentTabs');
         testProxy.setRecentTabs([tab1, updatedTab2]);
-        extensionBrowserProxy.callbackRouterRemote.onTabContextUpdated([], []);
+        extensionBrowserProxy.callbackRouterRemote.onTabContextUpdated(
+            [], [], {active: false, visible: false});
         await extensionBrowserProxy.callbackRouterRemote.$.flushForTesting();
         await testProxy.whenCalled('getRecentTabs');
         await microtasksFinished();
@@ -1131,7 +1132,8 @@ suite('TabPickerTest', () => {
         // closes automatically.
         testProxy.resetResolver('getRecentTabs');
         testProxy.setRecentTabs([]);
-        extensionBrowserProxy.callbackRouterRemote.onTabContextUpdated([], []);
+        extensionBrowserProxy.callbackRouterRemote.onTabContextUpdated(
+            [], [], {active: false, visible: false});
         await extensionBrowserProxy.callbackRouterRemote.$.flushForTesting();
         await testProxy.whenCalled('getRecentTabs');
         await microtasksFinished();

@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
+import 'chrome://resources/cr_components/composebox/icons.html.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
+import type {SmartTabSharingState} from 'chrome://contextual-tasks/contextual_tasks.mojom-webui.js';
 import {ExtensionBrowserProxyImpl} from 'chrome://contextual-tasks/contextual_tasks_browser_proxy.js';
 import type {ComposeboxFaviconGroupElement} from 'chrome://resources/cr_components/composebox/composebox_favicon_group.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
@@ -47,6 +50,7 @@ export class ContextLibraryElement extends CrLitElement {
     return {
       tabs: {type: Array},
       submittedTabIds: {type: Object},
+      smartTabSharingActive: {type: Boolean},
       darkMode: {
         type: Boolean,
         reflect: true,
@@ -56,6 +60,7 @@ export class ContextLibraryElement extends CrLitElement {
 
   accessor tabs: TabInfo[] = [];
   accessor submittedTabIds: Set<number> = new Set();
+  accessor smartTabSharingActive: boolean = false;
   accessor darkMode: boolean = false;
 
   private isTrackingFaviconGroup_: boolean = false;
@@ -73,9 +78,11 @@ export class ContextLibraryElement extends CrLitElement {
     const callbackRouter =
         ExtensionBrowserProxyImpl.getInstance().callbackRouter;
     this.listenerIds_.push(callbackRouter.onTabContextUpdated.addListener(
-        (tabs: TabInfo[], submittedTabIds: number[]) => {
+        (tabs: TabInfo[], submittedTabIds: number[],
+         smartTabSharingState: SmartTabSharingState) => {
           this.tabs = tabs;
           this.submittedTabIds = new Set(submittedTabIds);
+          this.smartTabSharingActive = smartTabSharingState.active;
         }));
     this.updateFaviconTracking_();
   }

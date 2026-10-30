@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 #include <optional>
+#include <ranges>
 #include <set>
 #include <utility>
 #include <vector>
@@ -23,6 +24,8 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
@@ -254,7 +257,10 @@ void ContextualTasksExtensionHandler::CreateExtensionPageHandler(
     user_data->UpdateExtensionFrameBound(
         this, /*is_page_bound=*/true,
         base::BindRepeating(&ContextualTasksExtensionHandler::OnLensCropUpdated,
-                            weak_ptr_factory_.GetWeakPtr()));
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindRepeating(
+            &ContextualTasksExtensionHandler::OnTabContextUpdatedFromUserData,
+            weak_ptr_factory_.GetWeakPtr()));
   }
   InitializeInputStateModel();
   // Do not reset the session's tab context here. The session is shared by every
@@ -263,12 +269,20 @@ void ContextualTasksExtensionHandler::CreateExtensionPageHandler(
   // attached) would drop the tabs unexpectedly. Instead, send the page any
   // tabs added before it subscribed, since subscribing does not load initial
   // state.
-  if (auto* session_handle = GetOrCreateContextualSessionHandle()) {
+  if (contextual_search::ContextualSearchSessionHandle* session_handle =
+          GetOrCreateContextualSessionHandle()) {
     MaybeRefreshTabContextSubscription(session_handle);
     const auto& tab_context = session_handle->GetTabContextState();
-    if (!tab_context.attached.empty() || !tab_context.restored.empty()) {
+    contextual_tasks::ContextualTasksWebContentsUserData* user_data =
+        GetOrCreateWebContentsUserData();
+    const bool sts_enabled = user_data && user_data->IsSmartTabSharingEnabled();
+    if (!tab_context.attached.empty() || !tab_context.restored.empty() ||
+        sts_enabled) {
       SendTabContextToExtensionPage(tab_context);
     }
+  }
+  if (IsSmartTabSharingActive()) {
+    PreflightSmartTabSharingEmbeddings();
   }
 }
 
@@ -331,9 +345,7 @@ void ContextualTasksExtensionHandler::OnLensThumbnailCreated(
   }
 }
 
-// composebox::mojom::PageHandler stubs:
-void ContextualTasksExtensionHandler::FocusChanged(bool focused) {}
-void ContextualTasksExtensionHandler::StartPlatformVoiceRecognition() {}
+// composebox::mojom::PageHandler:
 void ContextualTasksExtensionHandler::HandleLensButtonClick() {
 #if !BUILDFLAG(IS_ANDROID)
   if (!IsEmbeddedInSidePanel()) {
@@ -377,15 +389,29 @@ void ContextualTasksExtensionHandler::HandleLensButtonClick() {
   }
 #endif
 }
+
+void ContextualTasksExtensionHandler::SetSmartTabSharingActive(bool active) {
+  if (contextual_tasks::ContextualTasksWebContentsUserData* user_data =
+          GetOrCreateWebContentsUserData()) {
+    user_data->SetSmartTabSharingActive(active);
+  }
+  if (IsSmartTabSharingActive()) {
+    PreflightSmartTabSharingEmbeddings();
+  }
+}
+
+void ContextualTasksExtensionHandler::GetSmartTabSharingActive(
+    GetSmartTabSharingActiveCallback callback) {
+  std::move(callback).Run(IsSmartTabSharingActive());
+}
+
+// composebox::mojom::PageHandler stubs:
+void ContextualTasksExtensionHandler::FocusChanged(bool focused) {}
+void ContextualTasksExtensionHandler::StartPlatformVoiceRecognition() {}
 void ContextualTasksExtensionHandler::HandleFileUpload(bool is_image) {}
 void ContextualTasksExtensionHandler::NavigateUrl(const GURL& url) {}
 void ContextualTasksExtensionHandler::CloseLensOverlayFromWebUI(
     composebox::mojom::LensOverlayDismissalSource dismissal_source) {}
-void ContextualTasksExtensionHandler::SetSmartTabSharingActive(bool active) {}
-void ContextualTasksExtensionHandler::GetSmartTabSharingActive(
-    GetSmartTabSharingActiveCallback callback) {
-  std::move(callback).Run(false);
-}
 void ContextualTasksExtensionHandler::
     NotifyComposeboxQuerySubmittedWithContext() {}
 void ContextualTasksExtensionHandler::CanShowNextboxAnimation(
@@ -411,6 +437,9 @@ void ContextualTasksExtensionHandler::QueryAutocomplete(
   DCHECK(!tab_id.has_value())
       << "QueryAutocomplete with tab_id is only supported for the full WebUI "
          "Omnibox.";
+  if (IsSmartTabSharingActive()) {
+    PreflightSmartTabSharingEmbeddings();
+  }
 }
 void ContextualTasksExtensionHandler::StopAutocomplete(bool clear_result) {}
 void ContextualTasksExtensionHandler::OpenAutocompleteMatch(
@@ -511,7 +540,12 @@ void ContextualTasksExtensionHandler::GetInputState(
 }
 void ContextualTasksExtensionHandler::ResetSmartTabSharing(
     ResetSmartTabSharingCallback callback) {
-  std::move(callback).Run(false);
+  contextual_tasks::ContextualTasksWebContentsUserData* user_data =
+      GetOrCreateWebContentsUserData();
+  if (user_data) {
+    user_data->ResetSmartTabSharing();
+  }
+  std::move(callback).Run(user_data && user_data->IsSmartTabSharingActive());
 }
 void ContextualTasksExtensionHandler::NotifySessionStarted() {}
 void ContextualTasksExtensionHandler::NotifySessionAbandoned() {}
@@ -833,92 +867,131 @@ void ContextualTasksExtensionHandler::MaybeRefreshTabContextSubscription(
           base::Unretained(this)));
 }
 
+void ContextualTasksExtensionHandler::OnTabContextUpdatedFromUserData() {
+  if (contextual_search::ContextualSearchSessionHandle* session_handle =
+          GetOrCreateContextualSessionHandle()) {
+    SendTabContextToExtensionPage(session_handle->GetTabContextState());
+  }
+}
+
+bool ContextualTasksExtensionHandler::IsSmartTabSharingActive() {
+  contextual_tasks::ContextualTasksWebContentsUserData* user_data =
+      GetOrCreateWebContentsUserData();
+  return user_data && user_data->IsSmartTabSharingActive();
+}
+
+void ContextualTasksExtensionHandler::PreflightSmartTabSharingEmbeddings() {
+  auto* profile =
+      Profile::FromBrowserContext(render_frame_host().GetBrowserContext());
+  if (!profile) {
+    return;
+  }
+  if (auto* context_service =
+          contextual_tasks::ContextualTasksContextServiceFactory::GetForProfile(
+              profile)) {
+    BrowserWindowInterface* browser_window = GetBrowserWindowInterface();
+    context_service->OnTypedQuery(browser_window ? browser_window->GetWeakPtr()
+                                                 : nullptr);
+  }
+}
+
 void ContextualTasksExtensionHandler::SendTabContextToExtensionPage(
     const contextual_search::TabContextState& state) {
   if (!contextual_tasks_page_.is_bound()) {
     return;
   }
 
-  std::vector<base::UnguessableToken> uploaded_tokens;
-  if (subscribed_session_handle_) {
-    uploaded_tokens = subscribed_session_handle_->GetUploadedContextTokens();
-  }
+  contextual_tasks::ContextualTasksWebContentsUserData* user_data =
+      GetOrCreateWebContentsUserData();
+  auto smart_tab_sharing_state =
+      contextual_tasks::mojom::SmartTabSharingState::New();
+  smart_tab_sharing_state->active =
+      user_data && user_data->IsSmartTabSharingActive();
+  smart_tab_sharing_state->visible =
+      user_data && user_data->IsSmartTabSharingEnabled();
 
   // Combine and deduplicate tabs between restored tabs and attached
   // tabs into a single tab list to send to the frontend extension.
   // Key tabs by TabHandle ID (used by the frontend) rather than SessionID.
   std::vector<searchbox::mojom::TabInfoPtr> tabs;
   std::vector<int32_t> submitted_tab_ids;
-  std::set<GURL> seen_urls;
-  std::set<int32_t> seen_tab_ids;
 
-  // Resolve each tab's SessionID to its TabHandle ID via `user_data` (falling
-  // back to SessionID if no matching open or mapped tab handle exists).
-  // Frontend uses tab handle ID to identify tabs, while restored tab session
-  // IDs are persistent between chat sessions.
-  auto* user_data = GetOrCreateWebContentsUserData();
+  if (!smart_tab_sharing_state->active) {
+    std::vector<base::UnguessableToken> uploaded_tokens;
+    if (subscribed_session_handle_) {
+      uploaded_tokens = subscribed_session_handle_->GetUploadedContextTokens();
+    }
+    std::set<GURL> seen_urls;
+    std::set<int32_t> seen_tab_ids;
 
-  // Attached tabs are reversed to show the newest tabs first and processed
-  // before restored tabs so they take precedence during deduplication.
-  for (const auto& tab : base::Reversed(state.attached)) {
-    if (!tab.tab_id.has_value() ||
-        state.deselected.contains(
-            SessionID::FromSerializedValue(*tab.tab_id))) {
-      continue;
+    // Resolve each tab's SessionID to its TabHandle ID via `user_data` (falling
+    // back to SessionID if no matching open or mapped tab handle exists).
+    // Frontend uses tab handle ID to identify tabs, while restored tab session
+    // IDs are persistent between chat sessions.
+
+    // Attached tabs are reversed to show the newest tabs first and processed
+    // before restored tabs so they take precedence during deduplication.
+    for (const auto& tab : std::views::reverse(state.attached)) {
+      if (!tab.tab_id.has_value() ||
+          state.deselected.contains(
+              SessionID::FromSerializedValue(*tab.tab_id))) {
+        continue;
+      }
+      const int32_t tab_handler_id =
+          (user_data ? user_data->ResolveAndRecordTabHandleForSessionTabId(
+                           *tab.tab_id)
+                     : std::nullopt)
+              .value_or(*tab.tab_id);
+      // Skip duplicate tabs.
+      if (!seen_tab_ids.insert(tab_handler_id).second) {
+        continue;
+      }
+      // Record the URL so restored duplicates are skipped below. Attached tabs
+      // are never skipped, even if two share a URL since the user manually
+      // selected them.
+      if (tab.url.is_valid()) {
+        seen_urls.insert(tab.url);
+      }
+      tabs.push_back(CreateMojomTab(tab, tab_handler_id));
+      const bool is_submitted =
+          !tab.pending_delayed_upload &&
+          !std::ranges::contains(uploaded_tokens, tab.context_token);
+      if (is_submitted) {
+        submitted_tab_ids.push_back(tab_handler_id);
+      }
     }
-    const int32_t tab_handler_id =
-        (user_data
-             ? user_data->ResolveAndRecordTabHandleForSessionTabId(*tab.tab_id)
-             : std::nullopt)
-            .value_or(*tab.tab_id);
-    // Skip duplicate tabs.
-    if (!seen_tab_ids.insert(tab_handler_id).second) {
-      continue;
-    }
-    // Record the URL so restored duplicates are skipped below. Attached tabs
-    // are never skipped, even if two share a URL since the user manually
-    // selected them.
-    if (tab.url.is_valid()) {
-      seen_urls.insert(tab.url);
-    }
-    tabs.push_back(CreateMojomTab(tab, tab_handler_id));
-    const bool is_submitted =
-        !tab.pending_delayed_upload &&
-        !std::ranges::contains(uploaded_tokens, tab.context_token);
-    if (is_submitted) {
+
+    for (const auto& tab : std::views::reverse(state.restored)) {
+      // Tab ID is not guaranteed to be present. Verify it exists and skip
+      // deselected tabs.
+      if (!tab.tab_id.has_value() ||
+          state.deselected.contains(
+              SessionID::FromSerializedValue(*tab.tab_id))) {
+        continue;
+      }
+
+      const int32_t tab_handler_id =
+          (user_data ? user_data->ResolveAndRecordTabHandleForSessionTabId(
+                           *tab.tab_id)
+                     : std::nullopt)
+              .value_or(*tab.tab_id);
+      // Disallow duplicate restored IDs.
+      if (!seen_tab_ids.insert(tab_handler_id).second) {
+        continue;
+      }
+
+      // Allow for empty URLs, but not duplicate restored URLs.
+      if (tab.url.is_valid() && !seen_urls.insert(tab.url).second) {
+        continue;
+      }
+      tabs.push_back(CreateMojomTab(tab, tab_handler_id));
       submitted_tab_ids.push_back(tab_handler_id);
     }
   }
 
-  for (const auto& tab : base::Reversed(state.restored)) {
-    // Tab ID is not guaranteed to be present. Verify it exists and skip
-    // deselected tabs.
-    if (!tab.tab_id.has_value() ||
-        state.deselected.contains(
-            SessionID::FromSerializedValue(*tab.tab_id))) {
-      continue;
-    }
-
-    const int32_t tab_handler_id =
-        (user_data
-             ? user_data->ResolveAndRecordTabHandleForSessionTabId(*tab.tab_id)
-             : std::nullopt)
-            .value_or(*tab.tab_id);
-    // Disallow duplicate restored IDs.
-    if (!seen_tab_ids.insert(tab_handler_id).second) {
-      continue;
-    }
-
-    // Allow for empty URLs, but not duplicate restored URLs.
-    if (tab.url.is_valid() && !seen_urls.insert(tab.url).second) {
-      continue;
-    }
-    tabs.push_back(CreateMojomTab(tab, tab_handler_id));
-    submitted_tab_ids.push_back(tab_handler_id);
-  }
-
-  contextual_tasks_page_->OnTabContextUpdated(std::move(tabs),
-                                              std::move(submitted_tab_ids));
+  contextual_tasks_page_->OnTabContextUpdated(
+      std::move(tabs), std::move(submitted_tab_ids),
+      std::move(smart_tab_sharing_state));
 }
 
 void ContextualTasksExtensionHandler::StartScreenshare(
