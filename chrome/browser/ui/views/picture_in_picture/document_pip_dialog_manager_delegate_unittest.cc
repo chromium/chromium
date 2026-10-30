@@ -11,8 +11,10 @@
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
+#include "chrome/browser/ui/views/picture_in_picture/document_pip_contents_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_frame_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
+#include "chrome/browser/ui/views/picture_in_picture/document_pip_widget_delegate.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
@@ -24,12 +26,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/test/test_views_delegate.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
+#include "ui/views/window/frame_view.h"
 #include "ui/views/window/non_client_view.h"
 
 namespace {
@@ -142,6 +146,36 @@ class DocumentPipDialogManagerDelegateTest : public ChromeViewsTestBase {
   }
 
   content::WebContents* opener() { return opener_web_contents_.get(); }
+
+  // Match the Browser-backed dialog's 3-DIP overlap of the contents divider.
+  void ExpectDialogInContentsArea(DocumentPipHost* host,
+                                  views::Widget* dialog_widget) {
+    auto* widget_delegate = static_cast<DocumentPipWidgetDelegate*>(
+        host->GetWidget()->widget_delegate());
+    ASSERT_TRUE(widget_delegate);
+    DocumentPipContentsView* contents_view =
+        widget_delegate->GetDocumentPipContentsView();
+    ASSERT_TRUE(contents_view);
+
+    const gfx::Rect window_bounds =
+        host->GetWidget()->GetWindowBoundsInScreen();
+    const gfx::Rect contents_bounds = contents_view->GetBoundsInScreen();
+    // The frame view occupies the strip between the window and contents tops.
+    ASSERT_GT(contents_bounds.y(), window_bounds.y());
+    constexpr int kConstrainedWindowOverlap = 3;
+    gfx::Rect allowed_bounds = contents_bounds;
+    allowed_bounds.Inset(
+        gfx::Insets::TLBR(-kConstrainedWindowOverlap, 0, 0, 0));
+    gfx::Rect dialog_bounds = dialog_widget->GetWindowBoundsInScreen();
+    ASSERT_TRUE(dialog_widget->non_client_view());
+    dialog_bounds.Inset(
+        dialog_widget->non_client_view()->frame_view()->GetInsets());
+    EXPECT_EQ(contents_bounds.y() - kConstrainedWindowOverlap,
+              dialog_bounds.y());
+    EXPECT_TRUE(allowed_bounds.Contains(dialog_bounds))
+        << "dialog " << dialog_bounds.ToString() << " outside contents "
+        << allowed_bounds.ToString();
+  }
 
  protected:
   content::RenderViewHostTestEnabler test_render_host_factories_;
@@ -315,6 +349,31 @@ TEST_F(DocumentPipDialogManagerDelegateTest, Prompt_ReturnsInput) {
   EXPECT_EQ(u"default-input", input);
 }
 
+// Every JavaScript dialog type matches the Browser-backed divider overlap.
+TEST_F(DocumentPipDialogManagerDelegateTest, DialogsPlacedBelowFrameView) {
+  DocumentPipHost* host = CreateHostAndOpenPipWindow();
+  DocumentPipDialogManagerDelegate delegate(host->GetWidget());
+  for (const auto dialog_type : {content::JAVASCRIPT_DIALOG_TYPE_ALERT,
+                                 content::JAVASCRIPT_DIALOG_TYPE_CONFIRM,
+                                 content::JAVASCRIPT_DIALOG_TYPE_PROMPT}) {
+    SCOPED_TRACE(testing::Message() << "dialog_type=" << dialog_type);
+    base::WeakPtr<javascript_dialogs::TabModalDialogView> view =
+        delegate.CreateNewDialog(host->GetChildWebContents(), u"example says",
+                                 dialog_type, u"hello",
+                                 /*default_prompt_text=*/std::u16string(),
+                                 base::DoNothing(), base::DoNothing());
+    ASSERT_TRUE(view);
+
+    views::Widget* dialog_widget = delegate.GetActiveDialogWidgetForTesting();
+    ASSERT_TRUE(dialog_widget);
+    ExpectDialogInContentsArea(host, dialog_widget);
+
+    views::test::WidgetDestroyedWaiter dialog_waiter(dialog_widget);
+    dialog_widget->widget_delegate()->AsDialogDelegate()->CancelDialog();
+    dialog_waiter.Wait();
+  }
+}
+
 // Opening a dialog larger than the PiP window grows the PiP window to contain
 // it; closing the dialog restores the PiP window to its pre-dialog bounds.
 TEST_F(DocumentPipDialogManagerDelegateTest,
@@ -345,6 +404,8 @@ TEST_F(DocumentPipDialogManagerDelegateTest,
   EXPECT_GE(grown_bounds.width(), original_bounds.width());
   EXPECT_GE(grown_bounds.height(), original_bounds.height());
   EXPECT_NE(grown_bounds.size(), original_bounds.size());
+  // The grown window reserves room for the frame and its divider overlap.
+  ExpectDialogInContentsArea(host, dialog_widget);
 
   // Closing the dialog restores the PiP window to its pre-dialog size. The
   // production restore path intentionally preserves the current origin, since

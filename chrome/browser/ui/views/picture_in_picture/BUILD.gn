@@ -57,6 +57,7 @@ source_set("picture_in_picture") {
     "//chrome/browser/ui/views/exclusive_access",
     "//chrome/browser/ui/views/location_bar",
     "//chrome/browser/ui/views/page_info",
+    "//components/constrained_window",
     "//components/content_settings/browser",
     "//components/javascript_dialogs",
     "//components/omnibox/browser:location_bar",

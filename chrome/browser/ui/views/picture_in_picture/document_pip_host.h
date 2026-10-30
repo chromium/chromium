@@ -314,6 +314,8 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
   // GetExclusiveAccessManagerForTesting().
   ExclusiveAccessManager* GetExclusiveAccessManager();
 
+  gfx::Size GetMaximumDialogSize() const;
+
   // Test-only hooks for the child-dialog resize path, reached by the friended
   // tests above. Private (not a public API); defined in the .cc where
   // ChildDialogObserverHelper is complete.

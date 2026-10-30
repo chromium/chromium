@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "components/javascript_dialogs/tab_modal_dialog_view.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -28,18 +29,18 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
-// A window-modal JavaScript dialog parented to the standalone PiP widget.
+// A child-modal JavaScript dialog hosted by the standalone PiP WebContents.
 //
 // This mirrors JavaScriptTabModalDialogViewViews but does not depend on
 // tabs::TabInterface / TabStripModel: the standalone PiP child WebContents is
 // not a tab, so there is no tab-modal lock to acquire. The dialog is instead
-// shown as a window-modal dialog parented directly to the PiP widget.
+// shown through the WebContents modal host without a tab-modal lock.
 class DocumentPipJavaScriptDialogView
     : public javascript_dialogs::TabModalDialogView,
       public views::DialogDelegate {
  public:
   DocumentPipJavaScriptDialogView(
-      views::Widget* pip_widget,
+      content::WebContents* web_contents,
       const std::u16string& title,
       content::JavaScriptDialogType dialog_type,
       const std::u16string& message_text,
@@ -53,7 +54,7 @@ class DocumentPipJavaScriptDialogView
         dialog_callback_(std::move(dialog_callback)),
         dialog_force_closed_callback_(std::move(dialog_force_closed_callback)) {
     SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
-    SetModalType(ui::mojom::ModalType::kWindow);
+    SetModalType(ui::mojom::ModalType::kChild);
     SetDefaultButton(static_cast<int>(ui::mojom::DialogButton::kOk));
     const bool is_alert = dialog_type == content::JAVASCRIPT_DIALOG_TYPE_ALERT;
     SetButtons(
@@ -97,14 +98,14 @@ class DocumentPipJavaScriptDialogView
     message_box_view_ = message_box_view.get();
     SetContentsView(std::move(message_box_view));
 
-    // Show the dialog window-modal to the PiP widget, parented to the PiP
-    // widget's native view. Ownership of both this delegate and the widget is
-    // kept by DocumentPipDialogManagerDelegate; the widget uses
+    // The WebContents modal host supplies parenting, positioning, and blocking.
+    // Ownership stays with DocumentPipDialogManagerDelegate; the widget uses
     // CLIENT_OWNS_WIDGET and routes Close() through `close_callback`.
-    dialog_widget_.reset(views::DialogDelegate::CreateDialogWidget(
-        this, gfx::NativeWindow(), pip_widget->GetNativeView()));
+    dialog_widget_.reset(
+        constrained_window::CreateWebModalDialogViews(this, web_contents));
     dialog_widget_->MakeCloseSynchronous(std::move(close_callback));
-    dialog_widget_->Show();
+    constrained_window::ShowModalDialog(dialog_widget_->GetNativeWindow(),
+                                        web_contents);
   }
 
   DocumentPipJavaScriptDialogView(const DocumentPipJavaScriptDialogView&) =
@@ -214,8 +215,9 @@ DocumentPipDialogManagerDelegate::CreateNewDialog(
     content::JavaScriptDialogManager::DialogClosedCallback dialog_callback,
     base::OnceClosure dialog_closed_callback) {
   active_dialog_ = std::make_unique<DocumentPipJavaScriptDialogView>(
-      &pip_widget_.get(), title, dialog_type, message_text, default_prompt_text,
-      std::move(dialog_callback), std::move(dialog_closed_callback),
+      alerting_web_contents, title, dialog_type, message_text,
+      default_prompt_text, std::move(dialog_callback),
+      std::move(dialog_closed_callback),
       base::BindOnce(
           [](base::WeakPtr<DocumentPipDialogManagerDelegate> delegate,
              views::Widget::ClosedReason) {

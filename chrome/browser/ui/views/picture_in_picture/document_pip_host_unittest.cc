@@ -1582,8 +1582,6 @@ TEST_F(DocumentPipHostTest,
   auto* contents_view = delegate->GetDocumentPipContentsView();
   ASSERT_TRUE(contents_view);
 
-  EXPECT_EQ(contents_view->size(), host->GetMaximumDialogSize());
-
   gfx::Rect contents_area =
       contents_view->ConvertRectToWidget(contents_view->GetLocalBounds());
   gfx::Size dialog_size(100, 80);
@@ -1592,14 +1590,42 @@ TEST_F(DocumentPipHostTest,
   int expected_x = middle_x - dialog_size.width() / 2;
   int max_x = contents_area.right() - dialog_size.width();
   expected_x = std::max(std::min(expected_x, max_x), contents_area.x());
-  EXPECT_EQ(gfx::Point(expected_x, contents_area.y()), pos);
+  constexpr int kConstrainedWindowOverlap = 3;
+  gfx::Size maximum_size = contents_view->size();
+  maximum_size.Enlarge(0, kConstrainedWindowOverlap);
+  EXPECT_EQ(maximum_size, host->GetMaximumDialogSize());
+  EXPECT_EQ(contents_area.bottom(),
+            host->GetDialogPosition(maximum_size).y() + maximum_size.height());
+  auto* resize_delegate =
+      static_cast<PipChildDialogObserverHelper::Delegate*>(host);
+  EXPECT_EQ(host->GetWidget()->GetWindowBoundsInScreen().size() - maximum_size,
+            resize_delegate->ComputeDialogPadding());
+  EXPECT_EQ(
+      gfx::Point(expected_x, contents_area.y() - kConstrainedWindowOverlap),
+      pos);
 
   // When the dialog is wider than the contents area, x should clamp to
   // contents_area.x().
   gfx::Size wide_dialog_size(contents_area.width() + 200, 80);
   gfx::Point wide_pos = host->GetDialogPosition(wide_dialog_size);
   EXPECT_EQ(contents_area.x(), wide_pos.x());
-  EXPECT_EQ(contents_area.y(), wide_pos.y());
+  EXPECT_EQ(contents_area.y() - kConstrainedWindowOverlap, wide_pos.y());
+}
+
+TEST_F(DocumentPipHostTest, PositionChildDialog_PreservesNonModalBounds) {
+  DocumentPipHost* host = CreateHostAndOpenPipWindow();
+  ASSERT_TRUE(host);
+
+  auto bubble = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  ASSERT_FALSE(bubble->IsModal());
+  bubble->SetBounds(gfx::Rect(45, 65, 100, 80));
+  const gfx::Rect original_bounds = bubble->GetWindowBoundsInScreen();
+
+  auto* resize_delegate =
+      static_cast<PipChildDialogObserverHelper::Delegate*>(host);
+  resize_delegate->PositionChildDialog(bubble.get());
+
+  EXPECT_EQ(original_bounds, bubble->GetWindowBoundsInScreen());
 }
 
 TEST_F(DocumentPipHostTest, ClosePipWindow_UnsetsDialogManagerDelegate) {

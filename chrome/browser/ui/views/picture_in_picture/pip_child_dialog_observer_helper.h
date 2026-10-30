@@ -58,7 +58,7 @@ class PipChildDialogObserverHelper : public views::WidgetObserver {
     // around it (e.g. to keep the dialog aligned with the window's client
     // area). The Browser-backed frame view relies on its modal dialog host to
     // place dialogs and keeps the default no-op; the standalone host overrides
-    // this to pin dialogs to the client-area origin.
+    // this to place dialogs in the contents area below its frame view.
     virtual void PositionChildDialog(views::Widget* child_dialog) {}
 
     // Called when the helper's tracked user-desired bounds change (with

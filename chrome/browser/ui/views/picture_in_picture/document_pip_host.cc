@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
 
 #include <algorithm>
+#include <utility>
 #include <vector>
 
 #include "base/cancelable_callback.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_frame_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_widget_delegate.h"
 #include "chrome/browser/ui/views/picture_in_picture/picture_in_picture_tucker.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
@@ -48,12 +50,14 @@
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/events/event.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/frame_view.h"
 #include "ui/views/window/non_client_view.h"
 #include "url/origin.h"
 
@@ -80,6 +84,9 @@
 #endif
 
 namespace {
+
+// Match BrowserViewLayoutImpl's overlap of the divider above the contents.
+constexpr int kConstrainedWindowOverlap = 3;
 
 // Resolves the extension (if any) that owns `security_origin`, mirroring
 // Browser::GetExtensionForOrigin so media-capture requests from extension
@@ -988,11 +995,20 @@ views::Widget* DocumentPipHost::GetPipWidget() {
 }
 
 gfx::Size DocumentPipHost::ComputeDialogPadding() const {
-  return widget_->GetWindowBoundsInScreen().size() -
-         widget_->GetClientAreaBoundsInScreen().size();
+  // The PiP widget removes the standard frame, so its native client area is
+  // the whole window, including the frame view's top bar. Measure against the
+  // maximum dialog size instead, matching PictureInPictureBrowserFrameView.
+  if (!widget_ || !widget_delegate_) {
+    return gfx::Size();
+  }
+  return widget_->GetWindowBoundsInScreen().size() - GetMaximumDialogSize();
 }
 
 void DocumentPipHost::PositionChildDialog(views::Widget* child_dialog) {
+  if (!widget_ || !child_dialog->IsModal()) {
+    return;
+  }
+
   // The exit-instruction popup positions itself relative to the PiP window.
   if (child_dialog->GetContentsView()->GetProperty(
           views::kElementIdentifierKey) ==
@@ -1000,11 +1016,27 @@ void DocumentPipHost::PositionChildDialog(views::Widget* child_dialog) {
     return;
   }
 
-  gfx::Rect dialog_bounds = child_dialog->GetWindowBoundsInScreen();
-  if (dialog_bounds.IsEmpty()) {
+  if (child_dialog->GetWindowBoundsInScreen().IsEmpty()) {
     return;
   }
-  dialog_bounds.set_origin(widget_->GetClientAreaBoundsInScreen().origin());
+  if (child_dialog->widget_delegate()->GetModalType() ==
+      ui::mojom::ModalType::kChild) {
+    // The shared helper handles child-widget coordinates for web modals.
+    constrained_window::UpdateWebContentsModalDialogPosition(child_dialog,
+                                                             this);
+    return;
+  }
+
+  gfx::Rect dialog_bounds = child_dialog->GetWindowBoundsInScreen();
+  gfx::Point origin = GetDialogPosition(dialog_bounds.size());
+  if (child_dialog->non_client_view() &&
+      child_dialog->non_client_view()->frame_view()) {
+    origin.set_y(
+        origin.y() -
+        child_dialog->non_client_view()->frame_view()->GetInsets().top());
+  }
+  views::View::ConvertPointToScreen(widget_->GetRootView(), &origin);
+  dialog_bounds.set_origin(origin);
   child_dialog->SetBounds(dialog_bounds);
 }
 
@@ -1063,15 +1095,21 @@ gfx::Point DocumentPipHost::GetDialogPosition(const gfx::Size& size) {
   int dialog_x = middle_x - size.width() / 2;
   int max_x = contents_area.right() - size.width();
   dialog_x = std::max(std::min(dialog_x, max_x), contents_area.x());
-  return gfx::Point(dialog_x, contents_area.y());
+  return gfx::Point(dialog_x, contents_area.y() - kConstrainedWindowOverlap);
 }
 
 gfx::Size DocumentPipHost::GetMaximumDialogSize() {
+  return std::as_const(*this).GetMaximumDialogSize();
+}
+
+gfx::Size DocumentPipHost::GetMaximumDialogSize() const {
   if (!widget_ || !widget_delegate_) {
     return gfx::Size();
   }
   if (auto* contents_view = widget_delegate_->GetDocumentPipContentsView()) {
-    return contents_view->size();
+    gfx::Size size = contents_view->size();
+    size.Enlarge(0, kConstrainedWindowOverlap);
+    return size;
   }
   return widget_->GetContentsView() ? widget_->GetContentsView()->size()
                                     : gfx::Size();

@@ -30,11 +30,12 @@ class DocumentPipJavaScriptDialogView;
 // Unlike JavaScriptTabModalDialogManagerDelegateDesktop, this delegate does not
 // depend on Browser / TabStripModel / TabInterface: the PiP child WebContents
 // is not a tab in any browser's tab strip. Dialogs are parented directly to the
-// PiP widget as window-modal dialogs.
+// PiP WebContents as child-modal dialogs through its Browser-free modal host.
 class DocumentPipDialogManagerDelegate
     : public javascript_dialogs::TabModalDialogManagerDelegate {
  public:
-  // `pip_widget` is the floating PiP widget that dialogs are parented to. Its
+  // `pip_widget` is the floating PiP widget used to check window state.
+  // Dialogs are parented through the PiP WebContents modal host. The widget's
   // storage outlives this delegate (the delegate is owned by the
   // TabModalDialogManager attached to the PiP child WebContents, and is
   // destroyed during the widget's teardown when that child WebContents is
@@ -74,7 +75,7 @@ class DocumentPipDialogManagerDelegate
   views::Widget* GetActiveDialogWidgetForTesting();
 
  private:
-  // The floating PiP widget that dialogs are parented to.
+  // The floating PiP widget used to check window state.
   const raw_ref<views::Widget> pip_widget_;
   std::unique_ptr<DocumentPipJavaScriptDialogView> active_dialog_;
 
