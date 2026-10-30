@@ -12,6 +12,7 @@
 #include <vector>
 
 #import "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/values.h"
 #import "ios/web/public/js_messaging/content_world.h"
@@ -162,11 +163,11 @@ class JavaScriptFeature {
   // specified prior to configuring this feaure. If `origin_filter` is set
   // message will only be processed if coming from this domain. All
   // FeatureScript in `feature_script` must have the same OriginFilter.
-  JavaScriptFeature(ContentWorld supported_world,
-                    std::vector<FeatureScript> feature_scripts,
-                    std::vector<const JavaScriptFeature*> dependent_feature =
-                        std::vector<const JavaScriptFeature*>(),
-                    OriginFilter origin_filter = OriginFilter::kPublic);
+  JavaScriptFeature(
+      ContentWorld supported_world,
+      std::vector<FeatureScript> feature_scripts,
+      std::vector<raw_ptr<const JavaScriptFeature>> dependent_features = {},
+      OriginFilter origin_filter = OriginFilter::kPublic);
   virtual ~JavaScriptFeature();
 
   // Returns a weak ptr to the feature.
@@ -190,7 +191,8 @@ class JavaScriptFeature {
   // Returns a vector of scripts used by this feature.
   virtual std::vector<FeatureScript> GetScripts() const;
   // Returns a vector of features which this one depends upon being available.
-  virtual std::vector<const JavaScriptFeature*> GetDependentFeatures() const;
+  virtual const std::vector<raw_ptr<const JavaScriptFeature>>&
+  GetDependentFeatures() const;
 
   // Returns the script message handler name which this feature will receive
   // messages from JavaScript. Returning null will not register any handler.
@@ -302,7 +304,7 @@ class JavaScriptFeature {
 
   ContentWorld supported_world_;
   const std::vector<FeatureScript> scripts_;
-  const std::vector<const JavaScriptFeature*> dependent_features_;
+  const std::vector<raw_ptr<const JavaScriptFeature>> dependent_features_;
   OriginFilter origin_filter_ = OriginFilter::kPublic;
   std::vector<url::Origin> origin_filter_origins_;
   base::WeakPtrFactory<JavaScriptFeature> weak_factory_;

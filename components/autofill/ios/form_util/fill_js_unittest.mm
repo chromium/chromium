@@ -51,7 +51,7 @@ std::unique_ptr<web::JavaScriptFeature> CreateFillTestFeature(
       /*feature_scripts=*/
       std::vector<web::JavaScriptFeature::FeatureScript>({GetFillTestScript()}),
       /*dependent_features=*/
-      std::vector<const web::JavaScriptFeature*>(
+      std::vector<raw_ptr<const web::JavaScriptFeature>>(
           {// `fill_util_test.ts` indirectly depends of
            // `autofill_form_features.ts`.
            AutofillFormFeaturesJavaScriptFeature::GetInstance()}));

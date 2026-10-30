@@ -223,11 +223,11 @@ JavaScriptFeature::JavaScriptFeature(ContentWorld supported_world)
 JavaScriptFeature::JavaScriptFeature(
     ContentWorld supported_world,
     std::vector<FeatureScript> feature_scripts,
-    std::vector<const JavaScriptFeature*> dependent_features,
+    std::vector<raw_ptr<const JavaScriptFeature>> dependent_features,
     OriginFilter origin_filter)
     : supported_world_(supported_world),
       scripts_(feature_scripts),
-      dependent_features_(dependent_features),
+      dependent_features_(std::move(dependent_features)),
       origin_filter_(origin_filter),
       weak_factory_(this) {
   for (auto& feature_script : scripts_) {
@@ -265,8 +265,8 @@ std::vector<JavaScriptFeature::FeatureScript> JavaScriptFeature::GetScripts()
   return scripts_;
 }
 
-std::vector<const JavaScriptFeature*> JavaScriptFeature::GetDependentFeatures()
-    const {
+const std::vector<raw_ptr<const JavaScriptFeature>>&
+JavaScriptFeature::GetDependentFeatures() const {
   return dependent_features_;
 }
 
