@@ -27,6 +27,7 @@ import org.chromium.base.BaseFeatures;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 
 /** Unit tests for {@link KeyboardUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -81,6 +82,7 @@ public class KeyboardUtilsTest {
     }
 
     @Test
+    @EnableFeatures(BaseFeatures.SPLIT_SCREEN_IME_INSET_VISIBILITY)
     public void isAndroidSoftKeyboardShowing_checksImeVisibilityDirectly() {
         when(mWindowInsets.getInsets(WindowInsets.Type.ime())).thenReturn(Insets.of(0, 0, 0, 0));
         when(mWindowInsets.isVisible(WindowInsets.Type.ime())).thenReturn(true);

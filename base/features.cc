@@ -173,7 +173,7 @@ BASE_FEATURE(kRebindServiceBatchApi, FEATURE_DISABLED_BY_DEFAULT);
 
 // Kill switch for checking IME visibility directly in split-screen mode when
 // the bottom IME inset is 0.
-BASE_FEATURE(kSplitScreenImeInsetVisibility, FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kSplitScreenImeInsetVisibility, FEATURE_DISABLED_BY_DEFAULT);
 
 // Use shared service connection to rebind a service binding to update the LRU
 // in the ProcessList of OomAdjuster.
@@ -229,7 +229,6 @@ BASE_FEATURE(kUserBlockingAboveNormalPriority, FEATURE_DISABLED_BY_DEFAULT);
 // If retrying fails, the function returns failure as usual and reports the
 // last error code.
 BASE_FEATURE(kRetryCreateFileMappingOnCommitLimit, FEATURE_DISABLED_BY_DEFAULT);
-
 
 // Prevents base::DeletePathRecursively on Windows from traversing NTFS reparse
 // points (such as directory junctions). This protects against TOCTOU

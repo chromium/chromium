@@ -36,6 +36,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 
 import java.lang.ref.WeakReference;
@@ -157,6 +158,7 @@ public class ActivityKeyboardVisibilityDelegateUnitTest {
     }
 
     @Test
+    @EnableFeatures(BaseFeatures.SPLIT_SCREEN_IME_INSET_VISIBILITY)
     public void testKeyboardInsetObserver_SplitScreenZeroKeyboardInset() {
         mKeyboardVisibilityDelegate.setLazyKeyboardInsetSupplier(mLazyKeyboardInsetSupplier);
         mKeyboardVisibilityDelegate.addKeyboardVisibilityListener(mKeyboardVisibilityListener);

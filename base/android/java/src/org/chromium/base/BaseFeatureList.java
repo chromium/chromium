@@ -54,7 +54,7 @@ public class BaseFeatureList {
             new MutableFlagWithSafeDefault(
                     BaseFeatureMap.getInstance(),
                     BaseFeatures.SPLIT_SCREEN_IME_INSET_VISIBILITY,
-                    true);
+                    false);
 
     public static final MutableFlagWithSafeDefault sVirtualKeyboardGeometryAndInsetFixes =
             new MutableFlagWithSafeDefault(
