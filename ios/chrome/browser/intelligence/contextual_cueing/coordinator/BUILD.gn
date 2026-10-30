@@ -1,0 +1,40 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "gemini_contextual_cue_settings_coordinator.h",
+    "gemini_contextual_cue_settings_coordinator.mm",
+    "gemini_contextual_cue_settings_mediator.h",
+    "gemini_contextual_cue_settings_mediator.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
+    "//ios/chrome/browser/intelligence/contextual_cueing",
+    "//ios/chrome/browser/intelligence/contextual_cueing/ui",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/web/public",
+  ]
+  public_deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "gemini_contextual_cue_settings_coordinator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
+    "//ios/chrome/browser/intelligence/contextual_cueing/ui",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
