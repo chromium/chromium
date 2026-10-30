@@ -5327,6 +5327,118 @@ class SetNoParentTest(unittest.TestCase):
         self.assertEqual([], errors)
 
 
+class SafeBrowsingOwnersTest(unittest.TestCase):
+
+    def assertOwnersCheckResult(self, affected_files, repo_owners,
+                                expected_errors):
+        mock_input_api = MockInputApi()
+        mock_input_api.InitFiles(affected_files)
+        repo_root = mock_input_api.change.RepositoryRoot()
+        abs_repo_owners = {
+            mock_input_api.os_path.join(repo_root, os.path.normpath(k)):
+            '\n'.join(v)
+            for k, v in repo_owners.items()
+        }
+        orig_isfile = mock_input_api.os_path.isfile
+        mock_input_api.os_path.isfile = lambda p: (
+            p in abs_repo_owners if p.endswith('OWNERS') else orig_isfile(p))
+        orig_read_file = mock_input_api.ReadFile
+        mock_input_api.ReadFile = lambda p: (
+            abs_repo_owners[p] if p in abs_repo_owners else orig_read_file(p))
+
+        results = PRESUBMIT.CheckSafeBrowsingOwners(mock_input_api,
+                                                    MockOutputApi())
+        if not expected_errors:
+            self.assertEqual([], results)
+            return
+        self.assertEqual(1, len(results))
+        self.assertEqual('error', results[0].type)
+        self.assertEqual(expected_errors, results[0].items)
+
+    def testValidPerFileRules(self):
+        self.assertOwnersCheckResult(
+            affected_files=[
+                MockAffectedFile('components/safe_browsing/fake/OWNERS', [
+                    'owner@chromium.org',
+                    'per-file foo.cc,sub/baz.proto=user@chromium.org',
+                    'per-file bar_*=file://components/safe_browsing/OWNERS # c',
+                ]),
+                MockAffectedFile('components/safe_browsing/fake/foo.cc', []),
+                MockAffectedFile(
+                    'components/safe_browsing/fake/bar_unittest.cc', []),
+                MockAffectedFile('components/safe_browsing/fake/sub/baz.proto',
+                                 []),
+            ],
+            repo_owners={},
+            expected_errors=[])
+
+    def testMissingPerFileTarget(self):
+        owners_path = os.path.normpath('components/safe_browsing/fake/OWNERS')
+        self.assertOwnersCheckResult(
+            affected_files=[
+                MockAffectedFile('components/safe_browsing/fake/OWNERS', [
+                    'per-file missing.cc=user1@chromium.org',
+                    'per-file missing.cc=user2@chromium.org',
+                    'per-file missing_glob*=user@chromium.org',
+                ]),
+            ],
+            repo_owners={},
+            expected_errors=[
+                f'{owners_path}: per-file pattern "missing.cc" '
+                'does not match any existing file.',
+                f'{owners_path}: per-file pattern "missing_glob*" '
+                'does not match any existing file.',
+            ])
+
+    def testDeletedPerFileTargetInUnmodifiedOwnersFails(self):
+        owners_path = os.path.normpath('components/safe_browsing/fake/OWNERS')
+        self.assertOwnersCheckResult(
+            affected_files=[
+                MockAffectedFile('components/safe_browsing/fake/sub/foo.cc',
+                                 [],
+                                 action='D'),
+            ],
+            repo_owners={
+                'components/safe_browsing/fake/OWNERS': [
+                    'per-file sub/foo.cc=user@chromium.org',
+                ],
+            },
+            expected_errors=[
+                f'{owners_path}: per-file pattern "sub/foo.cc" '
+                'does not match any existing file.',
+            ])
+
+    def testDeletedPerFileTargetWithUpdatedOwnersSucceeds(self):
+        self.assertOwnersCheckResult(
+            affected_files=[
+                MockAffectedFile('components/safe_browsing/fake/OWNERS', [
+                    'owner@chromium.org',
+                ]),
+                MockAffectedFile('components/safe_browsing/fake/foo.cc', [],
+                                 action='D'),
+            ],
+            repo_owners={
+                'components/safe_browsing/fake/OWNERS': [
+                    'per-file foo.cc=user@chromium.org',
+                ],
+            },
+            expected_errors=[])
+
+    def testUnrelatedChangesDoNotScanUnmodifiedOwners(self):
+        self.assertOwnersCheckResult(
+            affected_files=[
+                MockAffectedFile('components/safe_browsing/fake/foo.cc', []),
+                MockAffectedFile('chrome/browser/unrelated/bar.cc', [],
+                                 action='D'),
+            ],
+            repo_owners={
+                'components/safe_browsing/fake/OWNERS': [
+                    'per-file missing.cc=user@chromium.org',
+                ],
+            },
+            expected_errors=[])
+
+
 class MojomStabilityCheckTest(unittest.TestCase):
 
     def runTestWithAffectedFiles(self, affected_files, footers={}):

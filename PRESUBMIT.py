@@ -5437,6 +5437,74 @@ def CheckSetNoParent(input_api, output_api):
     return results
 
 
+def CheckSafeBrowsingOwners(input_api, output_api):
+    """Checks that safe_browsing OWNERS files do not have per-file ownership
+    for a file that doesn't exist at the specified location.
+
+    Only runs validation if safe_browsing OWNERS files are modified or if
+    safe_browsing files are deleted or moved.
+    """
+    repo_root = input_api.change.RepositoryRoot()
+    owners_file_contents = {}
+    checked_dirs = set()
+    for f in input_api.AffectedFiles(include_deletes=True):
+        path = f.LocalPath()
+        if 'safe_browsing' not in path:
+            continue
+        if f.Action() == 'D':
+            # If a safe_browsing file was deleted or moved, check OWNERS files
+            # in its ancestor safe_browsing directories in case a per-file rule
+            # became stale.
+            cur_dir = input_api.os_path.dirname(path)
+            while 'safe_browsing' in cur_dir and cur_dir not in checked_dirs:
+                checked_dirs.add(cur_dir)
+                owners_path = input_api.os_path.join(cur_dir, 'OWNERS')
+                abs_owners = input_api.os_path.join(repo_root, owners_path)
+                if (owners_path not in owners_file_contents
+                        and input_api.os_path.isfile(abs_owners)):
+                    owners_file_contents[owners_path] = input_api.ReadFile(
+                        abs_owners).splitlines()
+                cur_dir = input_api.os_path.dirname(cur_dir)
+        elif path.endswith('OWNERS'):
+            owners_file_contents[path] = f.NewContents()
+
+    if not owners_file_contents:
+        return []
+
+    per_file_pattern = input_api.re.compile(r'^per-file\s+(.+?)=.+$')
+    errors = []
+
+    for owners_path, lines in owners_file_contents.items():
+        # Strip comments and validate each comma-separated glob in `per-file`
+        # rules relative to the OWNERS file's directory.
+        owners_dir = input_api.os_path.dirname(owners_path)
+        checked_patterns = set()
+        for raw_line in lines:
+            match = per_file_pattern.match(raw_line.split('#', 1)[0].strip())
+            if not match:
+                continue
+            for pattern in match.group(1).strip().split(','):
+                if pattern in checked_patterns:
+                    continue
+                checked_patterns.add(pattern)
+                abs_pattern = input_api.os_path.normpath(
+                    input_api.os_path.join(repo_root, owners_dir, pattern))
+                if not any(
+                        input_api.os_path.isfile(p)
+                        for p in input_api.glob(abs_pattern)):
+                    errors.append(
+                        f'{owners_path}: per-file pattern "{pattern}" '
+                        'does not match any existing file.')
+
+    if not errors:
+        return []
+    return [
+        output_api.PresubmitError(
+            'Found invalid per-file entries in safe_browsing OWNERS files:',
+            items=errors)
+    ]
+
+
 def CheckUselessForwardDeclarations(input_api, output_api):
     """Checks that added or removed lines in non third party affected
        header files do not lead to new useless class or struct forward
