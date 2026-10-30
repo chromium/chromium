@@ -135,8 +135,7 @@ void TimelineTrigger::HandlePostTripAdd(Animation* animation,
   if (old_behavior_for_current_state != new_behavior_for_current_state) {
     // We are retroactively activating or deactivating the animation. The same
     // restrictions on activation/deactivation should apply.
-    base::AutoReset<bool> is_activating_or_deactivating(
-        &is_activating_or_deactivating_, true);
+    base::AutoReset<bool> forbid_updates(&forbid_behavior_map_updates_, true);
     PerformBehavior(*animation, *new_behavior_for_current_state,
                     /*async_event_time=*/std::nullopt, exception_state);
     animation->UpdateIfNecessary();

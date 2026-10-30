@@ -111,9 +111,9 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable,
   // thread version is cloned from this.
   scoped_refptr<cc::AnimationTrigger> compositor_trigger_;
 
-  // Set to true during PerformActivate and PerformDeactivate to prevent
-  // mutations of the behavior map.
-  bool is_activating_or_deactivating_ = false;
+  // Set to true while iterating or acting on `animation_behavior_map_` to
+  // prevent re-entrant mutations of the map.
+  bool forbid_behavior_map_updates_ = false;
 
  private:
   virtual void WillAddAnimation(Animation* animation,
