@@ -13,9 +13,6 @@ namespace base {
 class Clock;
 }  // namespace base
 
-// A help article on how to set up a passcode.
-extern const char kPasscodeArticleURL[];
-
 // This is used before accessing sensitive data or performing sensitive
 // operations.
 @interface ReauthenticationModule : NSObject <ReauthenticationProtocol>

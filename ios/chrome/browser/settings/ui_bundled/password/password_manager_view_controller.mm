@@ -75,7 +75,6 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/common/ui/elements/popover_label_view_controller.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -357,11 +356,6 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   // Not an invariant due to possible race conditions. DCHECKing for debugging
   // purposes. See crbug.com/40067451.
   DCHECK(!_identityManagerObserver.get());
-}
-
-- (void)setReauthenticationModule:
-    (ReauthenticationModule*)reauthenticationModule {
-  _reauthenticationModule = reauthenticationModule;
 }
 
 - (void)setMostRecentlyUpdatedPasswordDetails:

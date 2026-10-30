@@ -13,8 +13,6 @@
 #import "base/time/default_clock.h"
 #import "base/time/time.h"
 
-constexpr char kPasscodeArticleURL[] = "https://support.apple.com/HT204060";
-
 namespace {
 
 // Duration of authentication validity.

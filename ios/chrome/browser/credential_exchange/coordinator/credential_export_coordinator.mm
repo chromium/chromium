@@ -40,7 +40,7 @@
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/common/credential_provider/passkey_keychain_provider_bridge.h"
 #import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -66,7 +66,7 @@
   std::vector<password_manager::AffiliatedGroup> _affiliatedGroups;
 
   // Module handling reauthentication before accessing sensitive data.
-  ReauthenticationModule* _reauthModule;
+  id<ReauthenticationProtocol> _reauthModule;
 
   // Alert for "Preparing Passwords" state of CSV export.
   UIAlertController* _preparingPasswordsAlert;

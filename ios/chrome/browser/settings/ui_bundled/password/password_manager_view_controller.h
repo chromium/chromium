@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/settings/ui_bundled/settings_navigation_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
 @protocol PasswordsSettingsCommands;
 @protocol PasswordManagerViewControllerDelegate;
@@ -48,10 +47,6 @@ class IdentityManager;
 
 @property(nonatomic, weak) id<PasswordManagerViewControllerPresentationDelegate>
     presentationDelegate;
-
-// Reauthentication module.
-@property(nonatomic, strong) id<ReauthenticationProtocol>
-    reauthenticationModule;
 
 // Data source for favicon images.
 @property(nonatomic, weak) id<TableViewFaviconDataSource> imageDataSource;

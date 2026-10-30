@@ -8,11 +8,13 @@
 #import "base/functional/callback.h"
 #import "base/memory/weak_ptr.h"
 #import "components/device_reauth/device_authenticator_common.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+
+@protocol ReauthenticationProtocol;
 
 // The DeviceAuthenticator implementation on iOS. This wraps up a
-// `ReauthenticationModule`. Use this instead of the `ReauthenticationModule`
-// when callsite specifically requires a `device_reauth::DeviceAuthenticator`.
+// `ReauthenticationProtocol`. Use this instead of the
+// `ReauthenticationProtocol` when callsite specifically requires a
+// `device_reauth::DeviceAuthenticator`.
 class IOSDeviceAuthenticator : public DeviceAuthenticatorCommon {
  public:
   IOSDeviceAuthenticator(id<ReauthenticationProtocol> reauth_module,

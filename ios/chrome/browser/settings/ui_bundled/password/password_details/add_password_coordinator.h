@@ -8,7 +8,6 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol AddPasswordCoordinatorDelegate;
-@protocol ReauthenticationProtocol;
 
 // This coordinator presents add password sheet for the user.
 @interface AddPasswordCoordinator : ChromeCoordinator

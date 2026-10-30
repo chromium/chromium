@@ -19,7 +19,7 @@
 #import "ios/chrome/browser/settings/bulk_upload/coordinator/bulk_upload_mediator_delegate.h"
 #import "ios/chrome/browser/settings/bulk_upload/ui/bulk_upload_consumer.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
-#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -82,7 +82,7 @@ const std::array<BulkUploadModelItem, 3> GetUploadModelItems() {
   std::map<syncer::DataType, syncer::LocalDataDescription> _map;
   // Provides the face id or password authentication. It is required to bulk
   // upload passwords.
-  ReauthenticationModule* _reauthenticationModule;
+  id<ReauthenticationProtocol> _reauthenticationModule;
   // Whether the saving process is in progress.
   BOOL _isSaving;
 }

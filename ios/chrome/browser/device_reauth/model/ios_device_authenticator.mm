@@ -8,6 +8,7 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 
 IOSDeviceAuthenticator::IOSDeviceAuthenticator(
     id<ReauthenticationProtocol> reauth_module,

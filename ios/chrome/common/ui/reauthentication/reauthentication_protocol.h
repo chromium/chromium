@@ -18,6 +18,10 @@ enum class ReauthenticationResult {
 // Block taking a ReauthenticationResult as parameter.
 using ReauthenticationResultBlock = void (^)(ReauthenticationResult);
 
+// A help article on how to set up a passcode.
+inline constexpr char kPasscodeArticleURL[] =
+    "https://support.apple.com/HT204060";
+
 // Protocol for implementor of hardware reauthentication check.
 @protocol ReauthenticationProtocol <NSObject>
 
