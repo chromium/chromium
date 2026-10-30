@@ -348,6 +348,7 @@ nightly_coverage_builder(
                 targets = [
                     "android_10_emulator_gtests",
                     "android_10_isolated_scripts",
+                    "android_isolated_scripts_once",
                 ],
             ),
             "chromium_android_scripts",

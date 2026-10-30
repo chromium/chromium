@@ -459,13 +459,6 @@ ci.builder(
             "content_shell_crash_test": targets.remove(
                 reason = "crbug.com/40131701",
             ),
-            "telemetry_perf_unittests_android_chrome": targets.remove(
-                # The system_health smoke stories can't run on x64 emulators
-                # (no clear_system_cache for android_x86_64), and the suite
-                # would require chromium_with_telemetry_dependencies. Coverage
-                # remains on android-10-x86-rel.
-                reason = "crbug.com/578069352",
-            ),
         },
     ),
     targets_settings = targets.settings(
@@ -580,13 +573,6 @@ ci.builder(
                 swarming = targets.swarming(
                     shards = 6,
                 ),
-            ),
-            "telemetry_perf_unittests_android_chrome": targets.remove(
-                # The system_health smoke stories can't run on x64 emulators
-                # (no clear_system_cache for android_x86_64), and the suite
-                # would require chromium_with_telemetry_dependencies. Coverage
-                # remains on android-10-x86-rel.
-                reason = "crbug.com/578069352",
             ),
             "content_shell_crash_test": targets.remove(
                 reason = "crbug.com/40131701",

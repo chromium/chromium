@@ -39,7 +39,6 @@ targets.bundle(
         "chromium_junit_tests_scripts",
         "components_perftests_isolated_scripts",
         "telemetry_android_minidump_unittests_isolated_scripts",
-        "telemetry_perf_unittests_isolated_scripts_android",
     ],
 )
 
@@ -558,7 +557,6 @@ targets.bundle(
         "android_rel_isolated_scripts",
         "components_perftests_isolated_scripts",
         "telemetry_android_minidump_unittests_isolated_scripts",
-        "telemetry_perf_unittests_isolated_scripts_android",
     ],
 )
 
@@ -586,6 +584,18 @@ targets.bundle(
             ],
         ),
     },
+)
+
+# Android suites that only need to run on a few builders rather than on every
+# builder that uses the common Android bundles. Builders using this bundle
+# need "chromium_with_telemetry_dependencies" in their gclient config, since
+# telemetry_perf_unittests needs the telemetry benchmark data. This group should
+# only be used across ~3 builders.
+targets.bundle(
+    name = "android_isolated_scripts_once",
+    targets = [
+        "telemetry_perf_unittests_isolated_scripts_android",
+    ],
 )
 
 targets.bundle(
@@ -6012,17 +6022,6 @@ targets.bundle(
             ),
         ),
     },
-)
-
-targets.bundle(
-    name = "pie_isolated_scripts",
-    targets = [
-        "android_isolated_scripts",
-        "chromium_junit_tests_scripts",
-        "components_perftests_isolated_scripts",
-        "telemetry_android_minidump_unittests_isolated_scripts",
-        "telemetry_perf_unittests_isolated_scripts_android",
-    ],
 )
 
 targets.bundle(
