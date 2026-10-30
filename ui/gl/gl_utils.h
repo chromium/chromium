@@ -45,7 +45,6 @@ GL_EXPORT bool UsePassthroughCommandDecoder(
 // SetGlWorkarounds function below.
 struct GlWorkarounds {
   bool disable_d3d11 = false;
-  bool disable_metal = false;
   bool disable_direct_composition_video_overlays = false;
   bool disable_vp_auto_hdr = false;
 };
