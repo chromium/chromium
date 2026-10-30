@@ -12,8 +12,16 @@
 
 @interface SystemAlertHandlerImpl : BaseEGTestHelperImpl
 
-// Handles system alerts if any are present, closing them to unblock the UI.
+// Handles currently visible system alerts, closing them to unblock the UI.
+// Does not wait for in-flight alerts to appear. Asks the app under test, so it
+// is not guaranteed to detect alerts raised by a previous app process.
 - (void)handleSystemAlertIfVisible;
+
+// Same as `-handleSystemAlertIfVisible`, but also detects alerts left behind by
+// a previous app process (e.g. a permission prompt from a test that failed
+// before dismissing it). More expensive; intended to be called once after the
+// app is (re)launched.
+- (void)handleLeftoverSystemAlertIfVisible;
 
 @end
 

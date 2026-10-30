@@ -15,6 +15,7 @@
 #import "ios/testing/earl_grey/base_earl_grey_test_case_app_interface.h"
 #import "ios/testing/earl_grey/coverage_utils.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/testing/earl_grey/system_alert_handler.h"
 #import "ios/third_party/edo/src/Service/Sources/EDOServiceException.h"
 
 namespace {
@@ -199,6 +200,16 @@ bool LaunchArgumentsAreEqual(NSArray<NSString*>* args1,
   }
 
   [CoverageUtils configureCoverageReportPath];
+
+  // A system alert left behind by a previous test (e.g. a photo library
+  // permission prompt) belongs to SpringBoard and survives the app being
+  // killed. While it is showing, the freshly launched app never becomes
+  // foreground-active, so app-side setup performed by observers (which may
+  // wait on the foreground-active scene) would time out and crash the app,
+  // failing every subsequent test in the class. Dismiss it before notifying
+  // observers; this cannot happen before `-launch` because handling the alert
+  // needs the app process to be up.
+  [SystemAlertHandler handleLeftoverSystemAlertIfVisible];
 
   if (self.runningApplication) {
     [self.observers appLaunchManagerDidRelaunchApp:self runResets:runResets];

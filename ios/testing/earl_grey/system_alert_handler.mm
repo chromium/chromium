@@ -12,53 +12,80 @@
 @implementation SystemAlertHandlerImpl
 
 - (void)handleSystemAlertIfVisible {
+  // Asks the app under test whether SpringBoard is showing an alert. Going
+  // through an EarlGrey matcher also synchronizes with the app's idle state,
+  // which callers in test `setUp` and `loadURL:` rely on; see b/579116520.
+  // This is not guaranteed to report alerts raised by a previous app process;
+  // see `-handleLeftoverSystemAlertIfVisible`.
   NSError* systemAlertFoundError = nil;
   [[EarlGrey selectElementWithMatcher:grey_systemAlertViewShown()]
       assertWithMatcher:grey_nil()
                   error:&systemAlertFoundError];
-
-  if (systemAlertFoundError) {
-    NSError* alertGetTextError = nil;
-    NSString* alertText =
-        [EarlGrey SystemAlertTextWithError:&alertGetTextError];
-    GREYAssertNil(alertGetTextError, @"Error getting alert text.\n%@",
-                  alertGetTextError);
-
-    @try {
-      // Calling this method has for side-effect to throw an
-      // NSInternalInconsistencyException if the system alert is unknown to the
-      // EG2 framework.
-      // If it does throw, handle the system alert in @catch.
-      // If it doesn’t throw, accept it here.
-      // TODO(crbug.com/40127610): Style guide does not allow throwing
-      // exceptions.
-      [EarlGrey SystemAlertType];
-
-      DLOG(WARNING) << "Accepting iOS system alert: "
-                    << base::SysNSStringToUTF8(alertText);
-
-      NSError* acceptAlertError = nil;
-      [EarlGrey AcceptSystemDialogWithError:&acceptAlertError];
-      GREYAssertNil(acceptAlertError, @"Error accepting system alert.\n%@",
-                    acceptAlertError);
-
-    } @catch (NSException* exception) {
-      GREYAssert((exception.name == NSInternalInconsistencyException &&
-                  [exception.reason containsString:@"Invalid System Alert"]),
-                 @"Unknown error caught when handling unknown system alert: %@",
-                 exception.reason);
-
-      // Manually handle EG2-unsupported alerts for some known cases, otherwise
-      // fail the test.
-      [self handleSystemAlertUnsupportedByEG2:alertText];
-    }
+  if (!systemAlertFoundError) {
+    return;
   }
+  [self handleVisibleSystemAlert];
+}
+
+- (void)handleLeftoverSystemAlertIfVisible {
+  // Query SpringBoard directly rather than the app under test: a prompt raised
+  // by a previous app process (e.g. a test that failed mid-way) may not be
+  // reported by `-[UIApplication _isSpringBoardShowingAnAlert]` in the new
+  // process, whereas this query sees the same hierarchy the dismissal code
+  // operates on. Snapshotting SpringBoard is noticeably more expensive than
+  // the in-process check, so this is only meant to be called once per app
+  // launch.
+  XCUIApplication* springboardApp = [[XCUIApplication alloc]
+      initWithBundleIdentifier:@"com.apple.springboard"];
+  if (!springboardApp.alerts.firstMatch.exists) {
+    return;
+  }
+  [self handleVisibleSystemAlert];
+}
+
+#pragma mark - Private
+
+// Accepts or dismisses the currently visible system alert, failing the test if
+// it is unknown or cannot be dismissed.
+- (void)handleVisibleSystemAlert {
+  NSError* alertGetTextError = nil;
+  NSString* alertText = [EarlGrey SystemAlertTextWithError:&alertGetTextError];
+  GREYAssertNil(alertGetTextError, @"Error getting alert text.\n%@",
+                alertGetTextError);
+
+  @try {
+    // Calling this method has for side-effect to throw an
+    // NSInternalInconsistencyException if the system alert is unknown to the
+    // EG2 framework.
+    // If it does throw, handle the system alert in @catch.
+    // If it doesn’t throw, accept it here.
+    // TODO(crbug.com/40127610): Style guide does not allow throwing
+    // exceptions.
+    [EarlGrey SystemAlertType];
+
+    DLOG(WARNING) << "Accepting iOS system alert: "
+                  << base::SysNSStringToUTF8(alertText);
+
+    NSError* acceptAlertError = nil;
+    [EarlGrey AcceptSystemDialogWithError:&acceptAlertError];
+    GREYAssertNil(acceptAlertError, @"Error accepting system alert.\n%@",
+                  acceptAlertError);
+
+  } @catch (NSException* exception) {
+    GREYAssert((exception.name == NSInternalInconsistencyException &&
+                [exception.reason containsString:@"Invalid System Alert"]),
+               @"Unknown error caught when handling unknown system alert: %@",
+               exception.reason);
+
+    // Manually handle EG2-unsupported alerts for some known cases, otherwise
+    // fail the test.
+    [self handleSystemAlertUnsupportedByEG2:alertText];
+  }
+
   // Ensures no visible alert after handling.
   [EarlGrey WaitForAlertVisibility:NO
                        withTimeout:kSystemAlertVisibilityTimeout];
 }
-
-#pragma mark - Private
 
 // Tries to dismiss a system alert if it matches a list of known system alerts.
 // alertText (NSString*) is the text of the system alert currently being shown.
