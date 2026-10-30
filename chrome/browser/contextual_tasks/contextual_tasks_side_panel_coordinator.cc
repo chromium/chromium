@@ -28,6 +28,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/optional_util.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
@@ -598,6 +599,8 @@ void ContextualTasksSidePanelCoordinator::Show(
       TabListInterface::From(browser_window_)->GetActiveTab();
   CHECK(active_tab_interface);
   std::optional<ContextualTask> existing_task = GetCurrentTask();
+  const bool is_pending_error_page =
+      IsPendingErrorPageTask(base::OptionalToPtr(existing_task));
   const bool is_new_ui_service_task =
       existing_task.has_value() &&
       !task_id_to_web_contents_cache_.contains(existing_task->GetTaskId()) &&
@@ -606,7 +609,7 @@ void ContextualTasksSidePanelCoordinator::Show(
            ->GetCreationUrlForTask(existing_task->GetTaskId())
            .has_value() ||
        GetUiService()->IsTaskWaitingForUrl(existing_task->GetTaskId()) ||
-       GetUiService()->IsPendingErrorPage(existing_task->GetTaskId()));
+       is_pending_error_page);
   const bool is_continuing_existing_thread =
       contextual_tasks::IsContextualTasksPinningV2Enabled() &&
       entry_point == omnibox::ChromeAimEntryPoint::
@@ -689,6 +692,9 @@ void ContextualTasksSidePanelCoordinator::Show(
         ContextualTasksPanelHost::AnimationStyle::kTransitionFromTab;
   }
 
+  if (IsContextualTasksSidePanelRearchitectureEnabled()) {
+    SetErrorPageVisible(is_pending_error_page);
+  }
   contextual_tasks_panel_host_->Show(animation_style);
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -751,6 +757,7 @@ void ContextualTasksSidePanelCoordinator::Close() {
     }
   }
   UpdateOpenState(/*is_open=*/false);
+  SetErrorPageVisible(false);
   contextual_tasks_panel_host_->Close(
       ContextualTasksPanelHost::AnimationStyle::kStandard);
   MaybeRemoveImplicitTabContext();
@@ -918,6 +925,7 @@ bool ContextualTasksSidePanelCoordinator::MoveActiveTabToNewThreadIfShared() {
     // duration metrics for the new thread's `WebContents`.
     it->second->open_time_ticks = base::TimeTicks();
   }
+  SetErrorPageVisible(false);
   UpdateWebContentsForActiveTab();
   UpdateContextualTaskUI();
   NotifyActiveTaskContextProvider();
@@ -1300,6 +1308,7 @@ void ContextualTasksSidePanelCoordinator::TransferWebContentsFromTab(
     it->second->link_click_count = 0;
   }
   UpdateOpenState(/*is_open=*/true);
+  SetErrorPageVisible(false);
   UpdateWebContentsForActiveTab();
   UpdateContextualTaskUI();
 }
@@ -1340,6 +1349,10 @@ void ContextualTasksSidePanelCoordinator::DidFinishNavigation(
 
 void ContextualTasksSidePanelCoordinator::PrimaryPageChanged(
     content::Page& page) {
+  if (GetIsProtectedPageErrorEnabled()) {
+    SetErrorPageVisible(false);
+  }
+
   // Hide panel if contextual tasks pages is loaded on tab.
   GURL url = page.GetMainDocument().GetLastCommittedURL();
   if (auto* ui_service = GetUiService();
@@ -1854,6 +1867,18 @@ ContextualTasksSidePanelCoordinator::GetCurrentTask() const {
           active_tab_interface->GetContents()));
 }
 
+bool ContextualTasksSidePanelCoordinator::IsPendingErrorPageTask(
+    const ContextualTask* task) const {
+  if (!task || task_id_to_web_contents_cache_.contains(task->GetTaskId())) {
+    return false;
+  }
+  ContextualTasksUiService* ui_service = GetUiService();
+  return ui_service &&
+         !ui_service->GetCreationUrlForTask(task->GetTaskId()).has_value() &&
+         !ui_service->IsTaskWaitingForUrl(task->GetTaskId()) &&
+         ui_service->IsPendingErrorPage(task->GetTaskId());
+}
+
 void ContextualTasksSidePanelCoordinator::UpdatePanelVisibility() {
   bool should_be_open = ShouldBeOpen();
 
@@ -1968,6 +1993,10 @@ bool ContextualTasksSidePanelCoordinator::UpdateWebContentsForActiveTab() {
 void ContextualTasksSidePanelCoordinator::OnActiveTabChanged(
     TabListInterface& tab_list,
     tabs::TabInterface* tab) {
+  if (GetIsProtectedPageErrorEnabled()) {
+    SetErrorPageVisible(false);
+  }
+
   // crbug.com/477278769: Do not open panel if glic panel is already open on tab
   // changed.
   if (contextual_tasks_panel_host_->IsPanelSuppressed()) {
@@ -2133,6 +2162,7 @@ void ContextualTasksSidePanelCoordinator::CreateCachedWebContentsForTesting(
 }
 
 void ContextualTasksSidePanelCoordinator::Hide() {
+  SetErrorPageVisible(false);
   contextual_tasks_panel_host_->Close(
       ContextualTasksPanelHost::AnimationStyle::kNoAnimation);
   MaybeRemoveImplicitTabContext();

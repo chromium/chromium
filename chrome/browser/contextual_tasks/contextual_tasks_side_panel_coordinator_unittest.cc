@@ -49,6 +49,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/host_override.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
+#include "components/lens/contextual_input.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/composebox_features.h"
@@ -185,6 +186,10 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
                const blink::mojom::WindowFeatures& window_features),
               (override));
   MOCK_METHOD(bool, IsRestorableSidePanelUrl, (const GURL& url), (override));
+  MOCK_METHOD(bool,
+              IsPendingErrorPage,
+              (const base::Uuid& task_id),
+              (override));
 };
 
 class MockActiveTaskContextProvider : public ActiveTaskContextProvider {
@@ -209,15 +214,26 @@ class CountingTabContextualizationController
       : lens::TabContextualizationController(tab) {}
   ~CountingTabContextualizationController() override = default;
 
+  void set_return_ineligible_data(bool value) {
+    return_ineligible_data_ = value;
+  }
+
   // lens::TabContextualizationController:
   void GetPageContext(GetPageContextCallback callback) override {
     ++get_page_context_calls_;
+    if (return_ineligible_data_) {
+      auto data = std::make_unique<lens::ContextualInputData>();
+      data->is_page_context_eligible = false;
+      std::move(callback).Run(std::move(data));
+      return;
+    }
     std::move(callback).Run(nullptr);
   }
   int get_page_context_calls() const { return get_page_context_calls_; }
 
  private:
   int get_page_context_calls_ = 0;
+  bool return_ineligible_data_ = false;
 };
 #endif
 
@@ -4883,5 +4899,129 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   histogram_tester.ExpectTotalCount(
       "ContextualTasks.Tab.ClosedWithSidePanelOpenState.WithoutLinkClick", 0);
 }
+
+TEST_F(
+    ContextualTasksSidePanelCoordinatorTest,
+    ProtectedPageErrorScrim_ShownForPendingErrorPageAndDismissedOnTabChange) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kContextualTasks, kContextualTasksSidePanelRearchitecture}, {});
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(true));
+  EXPECT_CALL(*GetMockUiService(), IsPendingErrorPage(task.GetTaskId()))
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_panel_host_, Show(_)).Times(testing::AtLeast(1));
+
+  coordinator_->Show(
+      /*transition_from_tab=*/false,
+      omnibox::ChromeAimEntryPoint::
+          DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT);
+  EXPECT_TRUE(coordinator_->IsErrorPageVisible());
+
+  // Navigating the active tab's primary page dismisses the error scrim.
+  tabs::TabInterface* active_tab = tab_list_->GetActiveTab();
+  ASSERT_NE(active_tab, nullptr);
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      active_tab->GetContents(), GURL("https://example.com/next"));
+  EXPECT_FALSE(coordinator_->IsErrorPageVisible());
+
+  // Re-show the error scrim, then switch tabs: the error scrim is dismissed.
+  coordinator_->SetErrorPageVisible(true);
+  EXPECT_TRUE(coordinator_->IsErrorPageVisible());
+  tabs::TabInterface* second_tab = CreateMockTab();
+  SetActiveTab(second_tab);
+  coordinator_->OnActiveTabChanged(*tab_list_, second_tab);
+  EXPECT_FALSE(coordinator_->IsErrorPageVisible());
+
+  // Re-show the error scrim, then close the panel: the error scrim is
+  // dismissed.
+  coordinator_->SetErrorPageVisible(true);
+  EXPECT_TRUE(coordinator_->IsErrorPageVisible());
+  coordinator_->Close();
+  EXPECT_FALSE(coordinator_->IsErrorPageVisible());
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       ProtectedPageErrorScrim_ShownWhenSubmittedTabContextIsIneligible) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kContextualTasks, kContextualTasksSidePanelRearchitecture}, {});
+
+  tabs::TabInterface* active_tab = tab_list_->GetActiveTab();
+  ASSERT_NE(active_tab, nullptr);
+  content::WebContentsTester::For(active_tab->GetContents())
+      ->NavigateAndCommit(GURL("https://protected.example.com"));
+  ON_CALL(*static_cast<tabs::MockTabInterface*>(active_tab), GetTitle())
+      .WillByDefault(Return(u"Protected Tab"));
+  const SessionID active_session_id =
+      sessions::SessionTabHelper::IdForTab(active_tab->GetContents());
+
+  const base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(active_session_id))
+      .WillByDefault(Return(ContextualTask(task_id)));
+  ON_CALL(*mock_controller_, GetContextForTask(task_id, _, _, _))
+      .WillByDefault(
+          [task_id, active_session_id](
+              const base::Uuid&, const std::set<ContextualTaskContextSource>&,
+              std::unique_ptr<ContextDecorationParams>,
+              base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
+                  callback) {
+            ContextualTask task_with_tab(task_id);
+            UrlResource resource(GURL("https://protected.example.com"),
+                                 ResourceType::kWebpage);
+            resource.tab_id = active_session_id;
+            task_with_tab.AddUrlResource(resource);
+            std::move(callback).Run(
+                std::make_unique<ContextualTaskContext>(task_with_tab));
+          });
+  CreateCachedWebContentsWithUrlForTesting(
+      task_id, /*is_open=*/true,
+      GURL("https://www.google.com/search?udm=50&mtid=1&q=Thread"));
+  content::WebContents* panel_wc = GetWebContentsForTaskForTesting(task_id);
+  ASSERT_NE(panel_wc, nullptr);
+  webui::SetBrowserWindowInterface(panel_wc, browser_window_.get());
+  ASSERT_TRUE(UpdateWebContentsForActiveTab());
+  ON_CALL(*mock_panel_host_, IsPanelOpenForContextualTask())
+      .WillByDefault(Return(true));
+
+  auto session_handle = std::make_unique<
+      NiceMock<contextual_search::MockContextualSearchSessionHandle>>();
+  auto* session_handle_ptr = session_handle.get();
+  session_handle_ptr->AddPendingDelayedTab(
+      active_session_id.id(), GURL("https://protected.example.com"),
+      "Protected Tab");
+
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(panel_wc)
+      ->SetTaskSession(task_id, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(panel_wc);
+  ASSERT_NE(user_data, nullptr);
+  user_data->SetTaskId(task_id);
+  user_data->SetContextualTasksServiceForTesting(mock_controller_);
+  user_data->SetSearchMessageDispatcherForTesting(base::DoNothing());
+  user_data->RecordTabIdMapping(active_tab->GetHandle().raw_value(),
+                                active_session_id.id());
+
+  CountingTabContextualizationController tab_contextualization_controller(
+      active_tab);
+  tab_contextualization_controller.set_return_ineligible_data(true);
+
+  EXPECT_FALSE(coordinator_->IsErrorPageVisible());
+  content::WebContentsTester::For(panel_wc)->TestDidReceiveMouseDownEvent();
+  user_data->HandleOnSubmitQueryRequest("summarize");
+  EXPECT_EQ(tab_contextualization_controller.get_page_context_calls(), 1);
+  EXPECT_TRUE(coordinator_->IsErrorPageVisible());
+
+  user_data->SetSearchMessageDispatcherForTesting(base::NullCallback());
+  webui::SetBrowserWindowInterface(panel_wc, nullptr);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace contextual_tasks

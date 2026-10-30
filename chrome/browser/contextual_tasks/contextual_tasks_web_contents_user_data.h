@@ -367,6 +367,7 @@ class ContextualTasksWebContentsUserData
       std::string query_text,
       std::vector<lens::AddedContext> lens_added_contexts,
       std::optional<base::UnguessableToken> overlay_token);
+  void OnPageContextIneligible();
   void OnPageChanged(bool is_zero_state);
   // Runs `on_tab_context_updated_cb` on every bound extension frame.
   void NotifyExtensionFramesTabContextUpdated();

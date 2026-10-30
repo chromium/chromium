@@ -950,6 +950,9 @@ void ContextualTasksWebContentsUserData::HandleOnSubmitQueryRequest(
   params.auto_suggested_chip_tabs = GetPendingDelayedTabs(*session_handle);
   params.enable_smart_tab_selection =
       !overlay_token.has_value() && is_smart_tab_sharing_active;
+  params.on_ineligible_callback = base::BindRepeating(
+      &ContextualTasksWebContentsUserData::OnPageContextIneligible,
+      weak_ptr_factory_.GetWeakPtr());
   // The contextualizer's session handle is ignored: it is null when there was
   // nothing to contextualize, so the callback gets the session handle itself.
   params.complete_callback = base::IgnoreArgs<
@@ -1002,6 +1005,24 @@ std::vector<int32_t> ContextualTasksWebContentsUserData::GetPendingDelayedTabs(
     // Delayed tabs are mapped when added in `AddTabContext()`.
     if (std::optional<int32_t> tab_handle_id =
             GetTabHandleForSessionTabId(delayed_tab_id.id())) {
+      tabs.push_back(*tab_handle_id);
+    }
+  }
+
+  // Also include any manually attached tabs whose initial upload failed (for
+  // example, due to page context ineligibility on a CSE-protected tab) so
+  // `QueryContextualizer` re-checks their eligibility on submit.
+  for (const auto& attached_tab :
+       session_handle.GetTabContextState().attached) {
+    if (attached_tab.pending_delayed_upload ||
+        !attached_tab.tab_id.has_value() ||
+        !failed_context_uploads_.contains(attached_tab.context_token)) {
+      continue;
+    }
+    if (std::optional<int32_t> tab_handle_id =
+            ResolveAndRecordTabHandleForSessionTabId(*attached_tab.tab_id);
+        tab_handle_id.has_value() &&
+        !std::ranges::contains(tabs, *tab_handle_id)) {
       tabs.push_back(*tab_handle_id);
     }
   }
@@ -1064,6 +1085,22 @@ void ContextualTasksWebContentsUserData::OnSubmitQueryContextualized(
   UpdateContextLibraryInputState();
 
   DoSubmitQueryCleanup();
+}
+
+void ContextualTasksWebContentsUserData::OnPageContextIneligible() {
+  if (!submit_pending_ || !GetIsProtectedPageErrorEnabled()) {
+    return;
+  }
+  auto* browser = GetBrowserWindowInterface();
+  auto* controller =
+      browser ? ContextualTasksPanelController::From(browser) : nullptr;
+  if (!controller || !controller->IsPanelOpenForContextualTask() ||
+      controller->GetActiveWebContents() != &GetWebContents()) {
+    return;
+  }
+  RecordErrorPageShown(
+      contextual_search::ContextualSearchSource::kContextualTasks);
+  controller->SetErrorPageVisible(true);
 }
 
 void ContextualTasksWebContentsUserData::OnPageChanged(bool is_zero_state) {

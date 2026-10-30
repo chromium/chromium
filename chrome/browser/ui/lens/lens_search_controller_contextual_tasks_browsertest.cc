@@ -660,6 +660,12 @@ class ContextualTasksLensInteractionBrowserTestBase
   }
 
   bool IsContextualTasksErrorPageOpen() {
+    if (auto* panel_controller =
+            contextual_tasks::ContextualTasksPanelController::From(browser());
+        panel_controller && panel_controller->IsErrorPageVisible()) {
+      return true;
+    }
+
     auto* ui_service = static_cast<TestingContextualTasksUiService*>(
         contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
             browser()->GetProfile()));

@@ -313,6 +313,10 @@ class ContextualTasksSidePanelCoordinator
   // mutating pending task state.
   std::optional<ContextualTask> GetCurrentTask() const;
 
+  // Returns whether `task` is a new UI service task waiting to display the
+  // protected page error scrim.
+  bool IsPendingErrorPageTask(const ContextualTask* task) const;
+
   // Clean up unused WebContents.
   void CleanUpUnusedWebContents() override;
 

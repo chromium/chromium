@@ -815,6 +815,7 @@ void ContextualTasksUIBase::CreateNewThread() {
   if (!panel_controller) {
     return;
   }
+  panel_controller->SetErrorPageVisible(false);
   content::WebContents* target_contents =
       panel_controller->GetActiveWebContents();
   if (!target_contents) {
