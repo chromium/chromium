@@ -97,6 +97,113 @@ async def test_screen_settings_set_and_clear(
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "unsupported_screen_area",
+    [
+        {"width": 10_000_001, "height": 100},
+        {"width": 100, "height": 10_000_001},
+    ],
+    ids=["width", "height"],
+)
+async def test_unsupported_screen_area_does_not_persist(
+    websocket, context_id, unsupported_screen_area
+):
+    valid_screen_area = {"width": 320, "height": 240}
+    await execute_command(
+        websocket,
+        {
+            "method": "emulation.setScreenSettingsOverride",
+            "params": {"contexts": [context_id], "screenArea": valid_screen_area},
+        },
+    )
+
+    try:
+        with pytest.raises(Exception, match="unsupported operation"):
+            await execute_command(
+                websocket,
+                {
+                    "method": "emulation.setScreenSettingsOverride",
+                    "params": {
+                        "contexts": [context_id],
+                        "screenArea": unsupported_screen_area,
+                    },
+                },
+            )
+
+        assert await get_screen_settings(websocket, context_id) == {
+            "width": valid_screen_area["width"],
+            "height": valid_screen_area["height"],
+            "availWidth": valid_screen_area["width"],
+            "availHeight": valid_screen_area["height"],
+        }
+
+        await execute_command(
+            websocket,
+            {
+                "method": "browsingContext.setViewport",
+                "params": {
+                    "context": context_id,
+                    "viewport": {"width": 300, "height": 200},
+                },
+            },
+        )
+        response = await execute_command(
+            websocket,
+            {
+                "method": "script.evaluate",
+                "params": {
+                    "expression": "({width: innerWidth, height: innerHeight})",
+                    "target": {"context": context_id},
+                    "awaitPromise": True,
+                },
+            },
+        )
+        viewport = {key: value["value"] for key, value in response["result"]["value"]}
+        assert viewport == {"width": 300, "height": 200}
+    finally:
+        await execute_command(
+            websocket,
+            {
+                "method": "emulation.setScreenSettingsOverride",
+                "params": {"contexts": [context_id], "screenArea": None},
+            },
+        )
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize(
+    "target_kind, expected_error",
+    [
+        ("invalid_context", "no such frame"),
+        ("invalid_user_context", "no such user context"),
+        ("both_target_types", "invalid argument"),
+    ],
+)
+async def test_unsupported_screen_area_preserves_target_errors(
+    websocket, context_id, target_kind, expected_error
+):
+    target_params = {
+        "invalid_context": {"contexts": ["_invalid_"]},
+        "invalid_user_context": {"userContexts": ["_invalid_"]},
+        "both_target_types": {
+            "contexts": [context_id],
+            "userContexts": ["default"],
+        },
+    }[target_kind]
+    with pytest.raises(Exception, match=expected_error):
+        await execute_command(
+            websocket,
+            {
+                "method": "emulation.setScreenSettingsOverride",
+                "params": {
+                    **target_params,
+                    "screenArea": {"width": 10_000_001, "height": 100},
+                },
+            },
+        )
+
+
+@pytest.mark.asyncio
 async def test_screen_settings_screen_area_and_viewport(
     websocket, context_id, read_messages, initial_screen_settings
 ):

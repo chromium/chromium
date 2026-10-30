@@ -310,6 +310,7 @@ export class EmulationProcessor {
   async setScreenSettingsOverride(
     params: Emulation.SetScreenSettingsOverrideParameters,
   ): Promise<EmptyResult> {
+    const maxDimensionSize = 10_000_000;
     const relatedBrowsingContexts =
       await this.#contextConfigStorage.updateConfig(
         {
@@ -318,6 +319,17 @@ export class EmulationProcessor {
         params.contexts,
         params.userContexts,
         false,
+        () => {
+          if (
+            params.screenArea !== null &&
+            (params.screenArea.width > maxDimensionSize ||
+              params.screenArea.height > maxDimensionSize)
+          ) {
+            throw new UnsupportedOperationException(
+              `Screen dimension over ${maxDimensionSize} is not supported`,
+            );
+          }
+        },
       );
 
     await Promise.all(

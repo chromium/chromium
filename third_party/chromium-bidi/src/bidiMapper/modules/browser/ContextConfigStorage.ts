@@ -172,6 +172,8 @@ export class ContextConfigStorage {
    *   `browsingContextIds` and `userContextIds` are `undefined`) is allowed.
    *   Defaults to `true`. If `false`, throws `InvalidArgumentException` when
    *   neither is provided.
+   * @param validateConfig Optional validation to run after target validation
+   *   but before any configuration is changed.
    * @returns The deduplicated list of related top-level browsing contexts.
    */
   async updateConfig(
@@ -179,6 +181,7 @@ export class ContextConfigStorage {
     browsingContextIds?: BrowsingContext.BrowsingContext[],
     userContextIds?: Browser.UserContext[],
     allowGlobal = true,
+    validateConfig?: () => void,
   ): Promise<BrowsingContextImpl[]> {
     const relatedBrowsingContexts =
       await this.#getRelatedTopLevelBrowsingContexts(
@@ -186,6 +189,8 @@ export class ContextConfigStorage {
         userContextIds,
         allowGlobal,
       );
+
+    validateConfig?.();
 
     for (const browsingContextId of browsingContextIds ?? []) {
       this.#updateBrowsingContextConfig(browsingContextId, config);
