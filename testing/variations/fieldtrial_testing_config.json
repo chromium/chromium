@@ -19851,6 +19851,7 @@
                         "WebUIBypassMojoConnections",
                         "WebUIHomeButton",
                         "WebUIInProcessResourceLoadingV2",
+                        "WebUILocationBar",
                         "WebUIReloadButton",
                         "WebUISplitTabsButton",
                         "WebUIToolbarFrameEvictionOptOut",
