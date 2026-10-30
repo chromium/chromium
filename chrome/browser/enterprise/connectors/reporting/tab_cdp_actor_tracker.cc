@@ -16,6 +16,7 @@
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/process_extractor.h"
+#include "content/public/browser/web_contents.h"
 #include "net/base/ip_endpoint.h"
 
 namespace enterprise_connectors {
@@ -168,37 +169,52 @@ void CdpActorBuffer::UpdateExternalActorProcessTree(
   it->process_tree = std::move(process_tree);
 }
 
+void CdpActorBuffer::OnDevToolsUiAttached() {
+  PruneExpiredEntries(base::TimeTicks::Now());
+  ++devtools_ui_active_sessions_;
+}
+
+void CdpActorBuffer::OnDevToolsUiDetached() {
+  PruneExpiredEntries(base::TimeTicks::Now());
+  if (devtools_ui_active_sessions_ > 0) {
+    --devtools_ui_active_sessions_;
+  }
+}
+
 std::optional<chrome::cros::reporting::proto::EventInitiatorInfo>
 CdpActorBuffer::BuildEventInitiatorInfo() {
-  if (!base::FeatureList::IsEnabled(kEventReportingCdpAttribution)) {
-    return std::nullopt;
-  }
+  PruneExpiredEntries(base::TimeTicks::Now());
 
-  const base::TimeTicks now = base::TimeTicks::Now();
-  PruneExpiredEntries(now);
-
-  if (external_actors_.empty()) {
-    return std::nullopt;
-  }
-
-  chrome::cros::reporting::proto::EventInitiatorInfo initiator;
-  auto* external_process_info = initiator.mutable_external_process_info();
-  for (const ExternalActorEntry& entry : external_actors_) {
-    auto* external_process = external_process_info->add_external_processes();
-    external_process->set_transport_type(entry.transport_type);
-    for (const ProcessNode& node : entry.process_tree.process_nodes) {
-      auto* proto_node = external_process->add_process_nodes();
-      proto_node->set_process_id(node.process_id);
-      proto_node->set_parent_process_id(node.parent_process_id);
-      if (!node.executable_path.empty()) {
-        proto_node->set_executable_path(node.executable_path);
-      }
-      if (!node.script_path.empty()) {
-        proto_node->set_script_path(node.script_path);
+  if (!external_actors_.empty()) {
+    chrome::cros::reporting::proto::EventInitiatorInfo initiator;
+    auto* external_process_info = initiator.mutable_external_process_info();
+    for (const ExternalActorEntry& entry : external_actors_) {
+      auto* external_process = external_process_info->add_external_processes();
+      external_process->set_transport_type(entry.transport_type);
+      for (const ProcessNode& node : entry.process_tree.process_nodes) {
+        auto* proto_node = external_process->add_process_nodes();
+        proto_node->set_process_id(node.process_id);
+        proto_node->set_parent_process_id(node.parent_process_id);
+        if (!node.executable_path.empty()) {
+          proto_node->set_executable_path(node.executable_path);
+        }
+        if (!node.script_path.empty()) {
+          proto_node->set_script_path(node.script_path);
+        }
       }
     }
+    return initiator;
   }
-  return initiator;
+
+  if (devtools_ui_active_sessions_ > 0) {
+    chrome::cros::reporting::proto::EventInitiatorInfo initiator;
+    initiator.mutable_browser_feature_info()->set_feature_type(
+        chrome::cros::reporting::proto::BrowserFeatureInfo::
+            FEATURE_TYPE_DEVTOOLS_UI);
+    return initiator;
+  }
+
+  return std::nullopt;
 }
 
 const std::vector<CdpActorBuffer::ExternalActorEntry>&
@@ -263,13 +279,36 @@ void CdpActorBuffer::EvictOneEntryForInsert() {
   }
 
   // Evict the oldest detached entry first; if all entries are still attached,
-  // all map to `(true, std::nullopt)` so `min_element` selects `begin()` (the
-  // oldest attached entry).
+  // all map to `(true, std::nullopt)` so `std::ranges::min_element()` selects
+  // `begin()` (the oldest attached entry).
   auto victim = std::ranges::min_element(
       external_actors_, {}, [](const ExternalActorEntry& entry) {
         return std::make_pair(entry.IsAttached(), entry.detached_at);
       });
   external_actors_.erase(victim);
 }
+
+TabCdpActorTracker::TabCdpActorTracker(content::WebContents* web_contents)
+    : content::WebContentsUserData<TabCdpActorTracker>(*web_contents) {}
+
+TabCdpActorTracker::~TabCdpActorTracker() = default;
+
+// static
+std::optional<chrome::cros::reporting::proto::EventInitiatorInfo>
+TabCdpActorTracker::GetEventInitiatorInfo(content::WebContents* web_contents) {
+  if (!web_contents ||
+      !base::FeatureList::IsEnabled(kEventReportingCdpAttribution)) {
+    return std::nullopt;
+  }
+
+  TabCdpActorTracker* tracker = FromWebContents(web_contents);
+  if (!tracker) {
+    return std::nullopt;
+  }
+
+  return tracker->buffer_.BuildEventInitiatorInfo();
+}
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(TabCdpActorTracker);
 
 }  // namespace enterprise_connectors

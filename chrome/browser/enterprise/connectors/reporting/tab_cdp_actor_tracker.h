@@ -13,17 +13,23 @@
 #include "base/time/time.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/process_extractor.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "net/base/ip_endpoint.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace enterprise_connectors {
 
-// Bounded buffer of active and recently detached external CDP actors
-// (`TRANSPORT_TYPE_PIPE` or `TRANSPORT_TYPE_WEBSOCKET`) for a target tab, with
-// detached entries evicted first when at capacity.
+// Bounded buffer of active and recently detached CDP actors for a target tab's
+// WebContents, with detached entries evicted first when at capacity.
 //
-// Maintains up to `kCdpAttributionMaxActorsPerTab` unique actors, deduplicated
-// by transport + endpoint or leaf PID, with session reference counting and
-// post-detach retention for `kCdpAttributionDetachedActorTtl`.
+// Maintains up to `kCdpAttributionMaxActorsPerTab` unique external actors
+// (`TRANSPORT_TYPE_PIPE` or `TRANSPORT_TYPE_WEBSOCKET`), deduplicated by
+// transport + endpoint or leaf PID, with session reference counting and
+// post-detach retention for `kCdpAttributionDetachedActorTtl`. Also tracks
+// active built-in DevTools UI (`FEATURE_TYPE_DEVTOOLS_UI`) attachments.
 class CdpActorBuffer {
  public:
   // Represents a tracked external CDP actor in the buffer, holding its
@@ -100,9 +106,16 @@ class CdpActorBuffer {
       std::optional<net::IPEndPoint> peer_endpoint,
       ProcessTree process_tree);
 
+  // Records a built-in DevTools UI (`"DevTools"`) attachment or detachment.
+  void OnDevToolsUiAttached();
+  void OnDevToolsUiDetached();
+
   // Lazily prunes expired detached entries and builds `EventInitiatorInfo`.
-  // Returns `std::nullopt` if no actor is currently attached or within the
-  // post-detach TTL window.
+  // External CDP actors (`PIPE` / `WEBSOCKET`) take precedence over built-in
+  // DevTools UI (`FEATURE_TYPE_DEVTOOLS_UI`) because `EventInitiatorInfo.actor`
+  // is a `oneof`. Returns `std::nullopt` if no external actor is currently
+  // attached or within the post-detach TTL window and no DevTools UI session is
+  // active.
   std::optional<chrome::cros::reporting::proto::EventInitiatorInfo>
   BuildEventInitiatorInfo();
 
@@ -110,6 +123,7 @@ class CdpActorBuffer {
   const std::vector<ExternalActorEntry>& GetExternalActorsForTesting();
 
  private:
+  // Prunes detached entries whose age exceeds the post-detach TTL.
   void PruneExpiredEntries(base::TimeTicks now);
 
   // Returns an iterator to the entry matching `transport_type`,
@@ -120,9 +134,41 @@ class CdpActorBuffer {
           transport_type,
       std::optional<net::IPEndPoint> peer_endpoint,
       base::ProcessId leaf_pid);
+
+  // Evicts the oldest detached entry, or the oldest attached entry if all
+  // entries are active.
   void EvictOneEntryForInsert();
 
   std::vector<ExternalActorEntry> external_actors_;
+  size_t devtools_ui_active_sessions_ = 0;
+};
+
+// Per-tab `WebContentsUserData` wrapper around `CdpActorBuffer`.
+class TabCdpActorTracker
+    : public content::WebContentsUserData<TabCdpActorTracker> {
+ public:
+  ~TabCdpActorTracker() override;
+
+  TabCdpActorTracker(const TabCdpActorTracker&) = delete;
+  TabCdpActorTracker& operator=(const TabCdpActorTracker&) = delete;
+
+  // Returns `EventInitiatorInfo` if `web_contents` has an active or
+  // within-TTL CDP actor (and `kEventReportingCdpAttribution` is enabled), or
+  // `std::nullopt` otherwise.
+  static std::optional<chrome::cros::reporting::proto::EventInitiatorInfo>
+  GetEventInitiatorInfo(content::WebContents* web_contents);
+
+  CdpActorBuffer& buffer() { return buffer_; }
+  const CdpActorBuffer& buffer() const { return buffer_; }
+
+ private:
+  friend class content::WebContentsUserData<TabCdpActorTracker>;
+
+  explicit TabCdpActorTracker(content::WebContents* web_contents);
+
+  CdpActorBuffer buffer_;
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace enterprise_connectors
