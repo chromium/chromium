@@ -1221,6 +1221,7 @@ if (enable_java_templates) {
                 invoker.build_config,
                 _r8_path,
                 _custom_r8_path,
+                _chrome_r8_binary_path,
               ]
     if (defined(invoker.inputs)) {
       _inputs += invoker.inputs
