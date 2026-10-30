@@ -7,7 +7,7 @@ import {ComposeboxWindowProxy, LhsClientAction} from 'chrome://new-tab-page/lazy
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../test_support.js';
 
@@ -169,5 +169,106 @@ suite('NewTabPageThreadsRailTest', () => {
         threadsRailElement.shadowRoot.querySelector<HTMLElement>(
             'cr-tooltip[for="railItem-3"]');
     assertFalse(!!emptyItemTooltip);
+  });
+
+  test('handles click actions for configured rail items', async () => {
+    const tasksUrl = 'https://www.google.com/search?udm=50&tasks=1';
+    const fallbackUrl = 'https://www.google.com/search?udm=50&creations=1';
+    await createThreadsRail({
+      items: [
+        {
+          iconSvg: '<svg></svg>',
+          name: 'AI Mode history',
+          clientAction: LhsClientAction.EXPAND_RAIL,
+          targetUrl: 'https://www.google.com/search?udm=50&atvm=1',
+        },
+        {
+          iconSvg: '<svg></svg>',
+          name: 'Start new AI Mode search',
+          clientAction: LhsClientAction.FOCUS_REALBOX_AIM,
+        },
+        {
+          iconSvg: '<svg></svg>',
+          name: 'Scheduled Tasks',
+          clientAction: LhsClientAction.NAVIGATE,
+          targetUrl: tasksUrl,
+        },
+        {
+          iconSvg: '<svg></svg>',
+          name: 'Future Action',
+          clientAction: LhsClientAction.UNSPECIFIED,
+          targetUrl: fallbackUrl,
+        },
+      ],
+    });
+
+    let hostClicked = false;
+    threadsRailElement.addEventListener('click', () => {
+      hostClicked = true;
+    });
+
+    // 1. EXPAND_RAIL dispatches expand-rail without navigating.
+    const expandButton =
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>('#railItem-0');
+    assertTrue(!!expandButton);
+    const whenExpandRail = eventToPromise('expand-rail', threadsRailElement);
+    expandButton.click();
+    await whenExpandRail;
+    assertEquals(0, windowProxy.getCallCount('navigate'));
+    assertFalse(hostClicked);
+
+    // 2. FOCUS_REALBOX_AIM dispatches open-composebox without navigating.
+    const newSearchButton =
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>('#railItem-1');
+    assertTrue(!!newSearchButton);
+    const whenOpenComposebox =
+        eventToPromise('open-composebox', threadsRailElement);
+    newSearchButton.click();
+    await whenOpenComposebox;
+    assertEquals(0, windowProxy.getCallCount('navigate'));
+    assertFalse(hostClicked);
+
+    // 3. NAVIGATE navigates to targetUrl.
+    const tasksButton =
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>('#railItem-2');
+    assertTrue(!!tasksButton);
+    tasksButton.click();
+    assertEquals(1, windowProxy.getCallCount('navigate'));
+    assertEquals(tasksUrl, windowProxy.getArgs('navigate')[0]);
+    assertFalse(hostClicked);
+
+    // 4. UNSPECIFIED falls back to targetUrl when present.
+    const fallbackButton =
+        threadsRailElement.shadowRoot.querySelector<HTMLElement>('#railItem-3');
+    assertTrue(!!fallbackButton);
+    fallbackButton.click();
+    assertEquals(2, windowProxy.getCallCount('navigate'));
+    assertEquals(fallbackUrl, windowProxy.getArgs('navigate')[1]);
+    assertFalse(hostClicked);
+  });
+
+  test('does not navigate when targetUrl is missing', async () => {
+    await createThreadsRail({
+      items: [
+        {
+          iconSvg: '<svg></svg>',
+          name: 'Missing URL',
+          clientAction: LhsClientAction.NAVIGATE,
+        },
+        {
+          iconSvg: '<svg></svg>',
+          name: 'Unspecified Missing URL',
+          clientAction: LhsClientAction.UNSPECIFIED,
+        },
+      ],
+    });
+
+    const buttons = threadsRailElement.shadowRoot.querySelectorAll<HTMLElement>(
+        '#iconsContainer cr-icon-button');
+    assertEquals(2, buttons.length);
+    for (const button of buttons) {
+      button.click();
+    }
+    assertEquals(0, windowProxy.getCallCount('navigate'));
   });
 });

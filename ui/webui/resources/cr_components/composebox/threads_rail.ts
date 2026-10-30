@@ -74,6 +74,31 @@ export class ThreadsRailElement extends ThreadsRailElementBase {
         encodeURIComponent(item.iconSvg)}");`;
   }
 
+  protected onItemClick_(e: Event): void {
+    e.stopPropagation();
+    const index = Number((e.currentTarget as HTMLElement).dataset['index']);
+    const item = this.getItems_()[index];
+    if (!item) {
+      return;
+    }
+
+    switch (item.clientAction) {
+      case LhsClientAction.EXPAND_RAIL:
+        this.fire('expand-rail');
+        return;
+      case LhsClientAction.FOCUS_REALBOX_AIM:
+        this.fire('open-composebox');
+        return;
+      case LhsClientAction.NAVIGATE:
+      case LhsClientAction.UNSPECIFIED:
+      default:
+        if (item.targetUrl) {
+          WindowProxy.getInstance().navigate(item.targetUrl);
+        }
+        return;
+    }
+  }
+
   protected onLogoClick_(e: Event): void {
     e.stopPropagation();
     const googleBaseUrl = loadTimeData.getString('googleBaseUrl');
