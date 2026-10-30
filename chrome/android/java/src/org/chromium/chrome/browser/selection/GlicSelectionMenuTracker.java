@@ -10,9 +10,11 @@ import android.view.MenuItem;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.glic.GlicMetrics;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -20,6 +22,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.function.BooleanSupplier;
+import java.util.function.Supplier;
 
 /**
  * Records Glic.WebContentsContextMenu.TextSelection for the Ask Gemini item in a text selection
@@ -33,6 +36,15 @@ import java.util.function.BooleanSupplier;
 public class GlicSelectionMenuTracker {
     private boolean mAskGeminiShown;
     private boolean mAskGeminiClicked;
+    private final @Nullable Supplier<@Nullable Profile> mProfileSupplier;
+
+    public GlicSelectionMenuTracker() {
+        this(null);
+    }
+
+    public GlicSelectionMenuTracker(@Nullable Supplier<@Nullable Profile> profileSupplier) {
+        mProfileSupplier = profileSupplier;
+    }
 
     /** Called after the floating toolbar's menu is prepared, which can happen more than once. */
     public void onFloatingMenuPrepared(Menu menu) {
@@ -96,7 +108,9 @@ public class GlicSelectionMenuTracker {
 
     private void endSession() {
         if (mAskGeminiShown) {
-            GlicMetrics.recordWebContentsContextMenuResult(
+            @Nullable
+            Profile profile = mProfileSupplier != null ? mProfileSupplier.get() : null;
+            GlicMetrics.recordWebContentsContextMenuResult(profile,
                     GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU_TEXT_SELECTION,
                     mAskGeminiClicked);
         }

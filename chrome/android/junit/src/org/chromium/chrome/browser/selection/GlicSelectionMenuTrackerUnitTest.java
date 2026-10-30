@@ -18,6 +18,9 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.glic.GlicMetrics;
+import org.chromium.chrome.browser.glic.GlicMetricsJni;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
@@ -27,6 +30,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @RunWith(BaseRobolectricTestRunner.class)
 public class GlicSelectionMenuTrackerUnitTest {
     private static final String HISTOGRAM_NAME = "Glic.WebContentsContextMenu.TextSelection";
+    private static final String PROVIDER_HISTOGRAM =
+            "Glic.Consumer.WebContentsContextMenu.TextSelection";
     private static final int SHOWN_AND_IGNORED = 0;
     private static final int EXECUTED = 1;
 
@@ -77,8 +82,10 @@ public class GlicSelectionMenuTrackerUnitTest {
 
     @Test
     public void testFloatingShownAndDestroyed_recordsShownAndIgnored() {
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(HISTOGRAM_NAME, SHOWN_AND_IGNORED);
+        HistogramWatcher watcher = HistogramWatcher.newBuilder()
+                                           .expectIntRecord(HISTOGRAM_NAME, SHOWN_AND_IGNORED)
+                                           .expectIntRecord(PROVIDER_HISTOGRAM, SHOWN_AND_IGNORED)
+                                           .build();
         mTracker.onFloatingMenuPrepared(
                 createMenuWithAskGemini(/* visible= */ true, /* enabled= */ true));
         closeFloatingMenu();
@@ -87,8 +94,10 @@ public class GlicSelectionMenuTrackerUnitTest {
 
     @Test
     public void testFloatingShownAndClickedAndDestroyed_recordsExecuted() {
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(HISTOGRAM_NAME, EXECUTED);
+        HistogramWatcher watcher = HistogramWatcher.newBuilder()
+                                           .expectIntRecord(HISTOGRAM_NAME, EXECUTED)
+                                           .expectIntRecord(PROVIDER_HISTOGRAM, EXECUTED)
+                                           .build();
         mTracker.onFloatingMenuPrepared(
                 createMenuWithAskGemini(/* visible= */ true, /* enabled= */ true));
         mTracker.onFloatingItemClicked(R.id.contextmenu_ask_gemini);
@@ -98,8 +107,10 @@ public class GlicSelectionMenuTrackerUnitTest {
 
     @Test
     public void testFloatingShownAndOtherItemClickedAndDestroyed_recordsShownAndIgnored() {
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(HISTOGRAM_NAME, SHOWN_AND_IGNORED);
+        HistogramWatcher watcher = HistogramWatcher.newBuilder()
+                                           .expectIntRecord(HISTOGRAM_NAME, SHOWN_AND_IGNORED)
+                                           .expectIntRecord(PROVIDER_HISTOGRAM, SHOWN_AND_IGNORED)
+                                           .build();
         mTracker.onFloatingMenuPrepared(
                 createMenuWithAskGemini(/* visible= */ true, /* enabled= */ true));
         mTracker.onFloatingItemClicked(android.R.id.copy);
@@ -109,8 +120,10 @@ public class GlicSelectionMenuTrackerUnitTest {
 
     @Test
     public void testFloatingMenuWithoutItem_recordsNothing() {
-        HistogramWatcher watcher =
-                HistogramWatcher.newBuilder().expectNoRecords(HISTOGRAM_NAME).build();
+        HistogramWatcher watcher = HistogramWatcher.newBuilder()
+                                           .expectNoRecords(HISTOGRAM_NAME)
+                                           .expectNoRecords(PROVIDER_HISTOGRAM)
+                                           .build();
         mTracker.onFloatingMenuPrepared(mock(Menu.class));
         closeFloatingMenu();
         watcher.assertExpected();
@@ -118,8 +131,10 @@ public class GlicSelectionMenuTrackerUnitTest {
 
     @Test
     public void testFloatingDisabledItem_recordsNothing() {
-        HistogramWatcher watcher =
-                HistogramWatcher.newBuilder().expectNoRecords(HISTOGRAM_NAME).build();
+        HistogramWatcher watcher = HistogramWatcher.newBuilder()
+                                           .expectNoRecords(HISTOGRAM_NAME)
+                                           .expectNoRecords(PROVIDER_HISTOGRAM)
+                                           .build();
         mTracker.onFloatingMenuPrepared(
                 createMenuWithAskGemini(/* visible= */ true, /* enabled= */ false));
         closeFloatingMenu();
@@ -128,8 +143,10 @@ public class GlicSelectionMenuTrackerUnitTest {
 
     @Test
     public void testFloatingHiddenItem_recordsNothing() {
-        HistogramWatcher watcher =
-                HistogramWatcher.newBuilder().expectNoRecords(HISTOGRAM_NAME).build();
+        HistogramWatcher watcher = HistogramWatcher.newBuilder()
+                                           .expectNoRecords(HISTOGRAM_NAME)
+                                           .expectNoRecords(PROVIDER_HISTOGRAM)
+                                           .build();
         mTracker.onFloatingMenuPrepared(
                 createMenuWithAskGemini(/* visible= */ false, /* enabled= */ true));
         closeFloatingMenu();
@@ -142,23 +159,29 @@ public class GlicSelectionMenuTrackerUnitTest {
         mTracker.onFloatingMenuPrepared(
                 createMenuWithAskGemini(/* visible= */ true, /* enabled= */ true));
 
-        HistogramWatcher noRecordsWatcher =
-                HistogramWatcher.newBuilder().expectNoRecords(HISTOGRAM_NAME).build();
+        HistogramWatcher noRecordsWatcher = HistogramWatcher.newBuilder()
+                                                    .expectNoRecords(HISTOGRAM_NAME)
+                                                    .expectNoRecords(PROVIDER_HISTOGRAM)
+                                                    .build();
         mTracker.onFloatingMenuDestroyed(running::get);
         running.set(true); // Re-shown in the same task.
         ShadowLooper.runUiThreadTasks();
         noRecordsWatcher.assertExpected();
 
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(HISTOGRAM_NAME, SHOWN_AND_IGNORED);
+        HistogramWatcher watcher = HistogramWatcher.newBuilder()
+                                           .expectIntRecord(HISTOGRAM_NAME, SHOWN_AND_IGNORED)
+                                           .expectIntRecord(PROVIDER_HISTOGRAM, SHOWN_AND_IGNORED)
+                                           .build();
         closeFloatingMenu();
         watcher.assertExpected();
     }
 
     @Test
     public void testFloatingPreparedAgainWithoutItem_recordsShownAndIgnored() {
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(HISTOGRAM_NAME, SHOWN_AND_IGNORED);
+        HistogramWatcher watcher = HistogramWatcher.newBuilder()
+                                           .expectIntRecord(HISTOGRAM_NAME, SHOWN_AND_IGNORED)
+                                           .expectIntRecord(PROVIDER_HISTOGRAM, SHOWN_AND_IGNORED)
+                                           .build();
         mTracker.onFloatingMenuPrepared(
                 createMenuWithAskGemini(/* visible= */ true, /* enabled= */ true));
         mTracker.onFloatingMenuPrepared(mock(Menu.class));
@@ -168,8 +191,10 @@ public class GlicSelectionMenuTrackerUnitTest {
 
     @Test
     public void testFloatingDestroyedTwice_recordsOnce() {
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(HISTOGRAM_NAME, SHOWN_AND_IGNORED);
+        HistogramWatcher watcher = HistogramWatcher.newBuilder()
+                                           .expectIntRecord(HISTOGRAM_NAME, SHOWN_AND_IGNORED)
+                                           .expectIntRecord(PROVIDER_HISTOGRAM, SHOWN_AND_IGNORED)
+                                           .build();
         mTracker.onFloatingMenuPrepared(
                 createMenuWithAskGemini(/* visible= */ true, /* enabled= */ true));
         closeFloatingMenu();
@@ -179,8 +204,10 @@ public class GlicSelectionMenuTrackerUnitTest {
 
     @Test
     public void testDropdownShownAndDismissed_recordsShownAndIgnored() {
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(HISTOGRAM_NAME, SHOWN_AND_IGNORED);
+        HistogramWatcher watcher = HistogramWatcher.newBuilder()
+                                           .expectIntRecord(HISTOGRAM_NAME, SHOWN_AND_IGNORED)
+                                           .expectIntRecord(PROVIDER_HISTOGRAM, SHOWN_AND_IGNORED)
+                                           .build();
         ListItem askGemini = createDropdownAskGemini(/* enabled= */ true);
         mTracker.onDropdownMenuShown(createDropdownItems(askGemini));
         mTracker.onDropdownMenuDismissed();
@@ -189,8 +216,10 @@ public class GlicSelectionMenuTrackerUnitTest {
 
     @Test
     public void testDropdownDisabledItem_recordsNothing() {
-        HistogramWatcher watcher =
-                HistogramWatcher.newBuilder().expectNoRecords(HISTOGRAM_NAME).build();
+        HistogramWatcher watcher = HistogramWatcher.newBuilder()
+                                           .expectNoRecords(HISTOGRAM_NAME)
+                                           .expectNoRecords(PROVIDER_HISTOGRAM)
+                                           .build();
         ListItem askGemini = createDropdownAskGemini(/* enabled= */ false);
         mTracker.onDropdownMenuShown(createDropdownItems(askGemini));
         mTracker.onDropdownMenuDismissed();
@@ -199,8 +228,10 @@ public class GlicSelectionMenuTrackerUnitTest {
 
     @Test
     public void testDropdownSynchronousDismissOnClick_recordsExecuted() {
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(HISTOGRAM_NAME, EXECUTED);
+        HistogramWatcher watcher = HistogramWatcher.newBuilder()
+                                           .expectIntRecord(HISTOGRAM_NAME, EXECUTED)
+                                           .expectIntRecord(PROVIDER_HISTOGRAM, EXECUTED)
+                                           .build();
         ListItem askGemini = createDropdownAskGemini(/* enabled= */ true);
         mTracker.onDropdownMenuShown(createDropdownItems(askGemini));
         mTracker.wrapDropdownClickListener(model -> mTracker.onDropdownMenuDismissed())
@@ -213,6 +244,7 @@ public class GlicSelectionMenuTrackerUnitTest {
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(HISTOGRAM_NAME, EXECUTED, SHOWN_AND_IGNORED)
+                        .expectIntRecords(PROVIDER_HISTOGRAM, EXECUTED, SHOWN_AND_IGNORED)
                         .build();
         ListItem askGemini = createDropdownAskGemini(/* enabled= */ true);
         mTracker.onDropdownMenuShown(createDropdownItems(askGemini));
@@ -222,6 +254,29 @@ public class GlicSelectionMenuTrackerUnitTest {
         ListItem secondAskGemini = createDropdownAskGemini(/* enabled= */ true);
         mTracker.onDropdownMenuShown(createDropdownItems(secondAskGemini));
         mTracker.onDropdownMenuDismissed();
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testEnterpriseProviderMetric_recordsEnterprise() {
+        Profile profile = mock(Profile.class);
+        GlicMetrics.Natives glicMetricsJni = mock(GlicMetrics.Natives.class);
+        GlicMetricsJni.setInstanceForTesting(glicMetricsJni);
+        when(glicMetricsJni.getMetricsInfix(profile)).thenReturn("Enterprise");
+
+        GlicSelectionMenuTracker tracker = new GlicSelectionMenuTracker(() -> profile);
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(HISTOGRAM_NAME, SHOWN_AND_IGNORED)
+                        .expectIntRecord(
+                                "Glic.Enterprise.WebContentsContextMenu.TextSelection",
+                                SHOWN_AND_IGNORED)
+                        .expectNoRecords("Glic.Consumer.WebContentsContextMenu.TextSelection")
+                        .build();
+        tracker.onFloatingMenuPrepared(
+                createMenuWithAskGemini(/* visible= */ true, /* enabled= */ true));
+        tracker.onFloatingMenuDestroyed(() -> false);
+        ShadowLooper.runUiThreadTasks();
         watcher.assertExpected();
     }
 }

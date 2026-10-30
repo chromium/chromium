@@ -1517,9 +1517,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     @Override
     public void onMenuClosed() {
+        Profile profile = getProfile();
         for (int source : mShownGlicSources) {
             GlicMetrics.recordWebContentsContextMenuResult(
-                    source, Objects.equals(mClickedGlicSource, source));
+                    profile, source, Objects.equals(mClickedGlicSource, source));
         }
         mShownGlicSources.clear();
         mClickedGlicSource = null;

@@ -10,7 +10,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -20,6 +19,7 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -252,13 +252,13 @@ void GlicKeyedServiceAndroid::ShareTabs(JNIEnv* env,
     }
   }
 
+  GlicMetricReporter metric_reporter(service_->profile());
   if (new_conversation) {
-    base::UmaHistogramCounts100(
-        "Glic.TabContextMenu.PinnedTabsToNewConversation", tab_handles.size());
+    metric_reporter.RecordCounts100(
+        "TabContextMenu.PinnedTabsToNewConversation", tab_handles.size());
   } else {
-    base::UmaHistogramCounts100(
-        "Glic.TabContextMenu.PinnedTabsToExistingConversation",
-        tab_handles.size());
+    metric_reporter.RecordCounts100(
+        "TabContextMenu.PinnedTabsToExistingConversation", tab_handles.size());
   }
 
   options.tab_sharing =

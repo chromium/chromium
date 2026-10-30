@@ -771,38 +771,6 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   </summary>
 </histogram>
 
-<histogram name="Glic.EntryPoint.Click.{TabContext}"
-    enum="GlicInvocationSource" expires_after="2027-05-30">
-  <owner>haileywang@google.com</owner>
-  <owner>wenyufu@google.com</owner>
-  <summary>
-    Recorded on Android when a user clicks on a Glic entry point (e.g., toolbar
-    button or 3-dot menu). The recorded sample represents the source of the
-    invocation. This metric is split by {TabContext} to distinguish whether the
-    user was on the New Tab Page or another tab when they clicked the entry
-    point.
-  </summary>
-  <token key="TabContext">
-    <variant name="Ntp" summary="the New Tab Page"/>
-    <variant name="Other" summary="any tab other than the New Tab Page"/>
-  </token>
-</histogram>
-
-<histogram name="Glic.EntryPoint.SendSelectedTextSucceeded" enum="Boolean"
-    expires_after="2027-05-30">
-  <owner>alexiswu@google.com</owner>
-  <owner>ssid@google.com</owner>
-  <summary>
-    Recorded on Android when the user taps the 'Ask Gemini' item in the text
-    selection menu and Chrome attempts to send the selected text to Glic.
-    Records true if Glic was successfully invoked with the selected text, and
-    false if the target tab or the Glic service was unavailable, or if Glic
-    could not be opened. Pairs with Glic.EntryPoint.Click.{TabContext}
-    (WebContentsContextMenu bucket) to form a click to successful-send funnel
-    for the text selection entry point.
-  </summary>
-</histogram>
-
 <histogram name="Glic.EntryPoint.Status" enum="GlicEntryPointStatus"
     expires_after="2027-04-04">
   <owner>sanaakbani@google.com</owner>
@@ -1943,26 +1911,6 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   </summary>
 </histogram>
 
-<histogram name="Glic.TabContextMenu.PinnedTabsToExistingConversation"
-    units="tabs" expires_after="2027-04-11">
-  <owner>sanaakbani@google.com</owner>
-  <owner>birnie@google.com</owner>
-  <summary>
-    Records the number of tabs selected when pinning to an existing conversation
-    from the tab context menu.
-  </summary>
-</histogram>
-
-<histogram name="Glic.TabContextMenu.PinnedTabsToNewConversation" units="tabs"
-    expires_after="2027-04-11">
-  <owner>sanaakbani@google.com</owner>
-  <owner>birnie@google.com</owner>
-  <summary>
-    Records the number of tabs selected when pinning to a new conversation from
-    the tab context menu.
-  </summary>
-</histogram>
-
 <histogram name="Glic.TabContextMenu.UnpinnedTabs" units="tabs"
     expires_after="2027-04-18">
   <owner>sanaakbani@google.com</owner>
@@ -2017,32 +1965,6 @@ ApiRequestType variants; see go/geic-metrics-split. -->
     or upon receiving a scenario notification). Records the time elapsed between
     Schedule() and the idle state being reached.
   </summary>
-</histogram>
-
-<histogram name="Glic.WebContentsContextMenu.{GlicContextType}"
-    enum="GlicWebContentsContextMenuResult" expires_after="2027-04-11">
-  <owner>basiaz@google.com</owner>
-  <owner>birnie@chromium.org</owner>
-  <owner>alexiswu@google.com</owner>
-  <summary>
-    Logs when the Glic context menu item was shown and ignored, or executed when
-    the user opened the context menu on {GlicContextType}. Recorded when the
-    menu closes, once for each Glic item shown in it. Recorded on desktop for
-    all variants except Link, and on Android for Image, Link, Page and
-    TextSelection. On Android, Ask Gemini counts as shown even when the text
-    selection toolbar moves it into the overflow menu.
-  </summary>
-  <token key="GlicContextType">
-    <variant name="Image"
-        summary="an image (recorded for the Glic share image item)"/>
-    <variant name="Link"
-        summary="a link with no selection (on Android, this includes a link
-                 that wraps an image)"/>
-    <variant name="Page" summary="a page with no selection"/>
-    <variant name="TextSelection" summary="a text selection"/>
-    <variant name="TextSelectionWithLink"
-        summary="a text selection with click target that is a link"/>
-  </token>
 </histogram>
 
 <histogram name="Glic.YoutubeSummarizeVideoZSS.Events"
@@ -2211,6 +2133,40 @@ ApiRequestType variants; see go/geic-metrics-split. -->
     semantics and proportions.
 
     Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.EntryPoint.Click.{TabContext}"
+    enum="GlicInvocationSource" expires_after="2027-05-30">
+  <owner>haileywang@google.com</owner>
+  <owner>wenyufu@google.com</owner>
+  <summary>
+    Recorded on Android when a user clicks on a Glic entry point (e.g., toolbar
+    button or 3-dot menu). The recorded sample represents the source of the
+    invocation. This metric is split by {TabContext} to distinguish whether the
+    user was on the New Tab Page or another tab when they clicked the entry
+    point. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+  <token key="TabContext">
+    <variant name="Ntp" summary="the New Tab Page"/>
+    <variant name="Other" summary="any tab other than the New Tab Page"/>
+  </token>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.EntryPoint.SendSelectedTextSucceeded"
+    enum="Boolean" expires_after="2027-05-30">
+  <owner>alexiswu@google.com</owner>
+  <owner>ssid@google.com</owner>
+  <summary>
+    Recorded on Android when the user taps the 'Ask Gemini' item in the text
+    selection menu and Chrome attempts to send the selected text to Glic.
+    Records true if Glic was successfully invoked with the selected text, and
+    false if the target tab or the Glic service was unavailable, or if Glic
+    could not be opened. Pairs with Glic.EntryPoint.Click.{{TabContext}}
+    (WebContentsContextMenu bucket) to form a click to successful-send funnel
+    for the text selection entry point. Scope: {GlicProvider}.
   </summary>
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>
@@ -3722,6 +3678,29 @@ ApiRequestType variants; see go/geic-metrics-split. -->
   <token key="GlicProvider" variants="GlicProvider"/>
 </histogram>
 
+<histogram
+    name="Glic{GlicProvider}.TabContextMenu.PinnedTabsToExistingConversation"
+    units="tabs" expires_after="2027-04-11">
+  <owner>sanaakbani@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the number of tabs selected when pinning to an existing conversation
+    from the tab context menu. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.TabContextMenu.PinnedTabsToNewConversation"
+    units="tabs" expires_after="2027-04-11">
+  <owner>sanaakbani@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the number of tabs selected when pinning to a new conversation from
+    the tab context menu. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
 <histogram name="Glic{GlicProvider}.Turn.Actuation.IsRetry" enum="Boolean"
     expires_after="2027-02-14">
   <owner>qinmin@google.com</owner>
@@ -4022,6 +4001,33 @@ ApiRequestType variants; see go/geic-metrics-split. -->
     {GlicProvider}.
   </summary>
   <token key="GlicProvider" variants="GlicProvider"/>
+</histogram>
+
+<histogram name="Glic{GlicProvider}.WebContentsContextMenu.{GlicContextType}"
+    enum="GlicWebContentsContextMenuResult" expires_after="2027-04-11">
+  <owner>basiaz@google.com</owner>
+  <owner>birnie@chromium.org</owner>
+  <owner>alexiswu@google.com</owner>
+  <summary>
+    Logs when the Glic context menu item was shown and ignored, or executed when
+    the user opened the context menu on {GlicContextType}. Recorded when the
+    menu closes, once for each Glic item shown in it. Recorded on desktop for
+    all variants except Link, and on Android for Image, Link, Page and
+    TextSelection. On Android, Ask Gemini counts as shown even when the text
+    selection toolbar moves it into the overflow menu. Scope: {GlicProvider}.
+  </summary>
+  <token key="GlicProvider" variants="GlicProvider"/>
+  <token key="GlicContextType">
+    <variant name="Image"
+        summary="an image (recorded for the Glic share image item)"/>
+    <variant name="Link"
+        summary="a link with no selection (on Android, this includes a link
+                 that wraps an image)"/>
+    <variant name="Page" summary="a page with no selection"/>
+    <variant name="TextSelection" summary="a text selection"/>
+    <variant name="TextSelectionWithLink"
+        summary="a text selection with click target that is a link"/>
+  </token>
 </histogram>
 
 <histogram name="Glic{GlicProvider}.ZoomAction" enum="GlicZoomAction"

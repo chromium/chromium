@@ -3358,7 +3358,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         Tab currentTab = mActivityTabProvider.get();
         boolean isNtp = currentTab != null && UrlUtilities.isNtpUrl(currentTab.getUrl());
-        GlicMetrics.recordEntryPointClick(invocationSource, isNtp);
+        GlicMetrics.recordEntryPointClick(profile, invocationSource, isNtp);
         // TODO(crbug.com/489548570): Remove this entry point into SidePanelDevFeature.
         if (mSidePanelDevFeature != null) {
             mSidePanelDevFeature.toggle();

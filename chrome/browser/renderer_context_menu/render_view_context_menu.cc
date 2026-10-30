@@ -72,6 +72,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/indigo/indigo_image_replacement.h"
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
@@ -480,10 +481,11 @@ std::string_view GetGlicWebContentsContextToken(
 }
 
 // Records whether the Glic item for `token` was executed or ignored.
-void RecordGlicWebContentsContextMenuResult(std::string_view token,
+void RecordGlicWebContentsContextMenuResult(Profile* profile,
+                                            std::string_view token,
                                             bool executed) {
-  base::UmaHistogramEnumeration(
-      base::StrCat({"Glic.WebContentsContextMenu.", token}),
+  glic::GlicMetricReporter(profile).RecordEnumeration(
+      base::StrCat({"WebContentsContextMenu.", token}),
       executed ? GlicWebContentsContextMenuResult::kExecuted
                : GlicWebContentsContextMenuResult::kShownAndIgnored);
 }
@@ -1172,10 +1174,11 @@ void RenderViewContextMenu::MenuClosed(ui::SimpleMenuModel* source) {
   if (source == &menu_model_) {
     if (glic_item_shown_) {
       RecordGlicWebContentsContextMenuResult(
-          GetGlicWebContentsContextToken(params_), glic_item_executed_);
+          GetProfile(), GetGlicWebContentsContextToken(params_),
+          glic_item_executed_);
     }
     if (glic_share_image_item_shown_) {
-      RecordGlicWebContentsContextMenuResult("Image",
+      RecordGlicWebContentsContextMenuResult(GetProfile(), "Image",
                                              glic_share_image_item_executed_);
     }
     glic_item_shown_ = false;

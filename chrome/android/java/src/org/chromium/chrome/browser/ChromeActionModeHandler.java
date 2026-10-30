@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.enterprise.util.DataProtectionBridge;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.selection.ChromeSelectionDropdownMenuDelegate;
 import org.chromium.chrome.browser.selection.GlicSelectionMenuTracker;
@@ -82,21 +83,24 @@ public class ChromeActionModeHandler {
             Supplier<@Nullable ReadAloudController> readAloudControllerSupplier) {
         mInitWebContentsObserver =
                 (webContents) -> {
+                    Tab tab = assertNonNull(mActiveTab);
+                    Supplier<@Nullable Profile> profileSupplier =
+                            () -> !tab.isDestroyed() ? tab.getProfile() : null;
                     SelectionPopupController spc =
                             SelectionPopupController.fromWebContents(webContents);
                     spc.setActionModeCallback(
                             new ChromeActionModeCallback(
-                                    assertNonNull(mActiveTab),
+                                    tab,
                                     webContents,
                                     searchCallback,
                                     showWebSearch,
                                     shareDelegateSupplier,
                                     controlsState,
                                     readAloudControllerSupplier,
-                                    new GlicSelectionMenuTracker()));
+                                    new GlicSelectionMenuTracker(profileSupplier)));
                     spc.setDropdownMenuDelegate(
                             new ChromeSelectionDropdownMenuDelegate(
-                                    new GlicSelectionMenuTracker()));
+                                    new GlicSelectionMenuTracker(profileSupplier)));
                 };
 
         new ActivityTabProvider.ActivityTabTabObserver(activityTabProvider) {

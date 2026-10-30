@@ -1635,6 +1635,9 @@ TEST_F(RenderViewContextMenuPrefsTest, GlicShareImageContextMenuResultMetrics) {
   }
   histogram_tester.ExpectUniqueSample("Glic.WebContentsContextMenu.Image",
                                       /*kShownAndIgnored*/ 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.Consumer.WebContentsContextMenu.Image",
+      /*kShownAndIgnored*/ 0, 1);
 
   // Case 2: Share image item is executed.
   {
@@ -1651,6 +1654,12 @@ TEST_F(RenderViewContextMenuPrefsTest, GlicShareImageContextMenuResultMetrics) {
                                      /*kExecuted*/ 1, 1);
   histogram_tester.ExpectBucketCount("Glic.WebContentsContextMenu.Image",
                                      /*kShownAndIgnored*/ 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Consumer.WebContentsContextMenu.Image",
+      /*kExecuted*/ 1, 1);
+  histogram_tester.ExpectBucketCount(
+      "Glic.Consumer.WebContentsContextMenu.Image",
+      /*kShownAndIgnored*/ 0, 1);
   EXPECT_THAT(
       histogram_tester.GetTotalCountsForPrefix("Glic.WebContentsContextMenu."),
       testing::ElementsAre(

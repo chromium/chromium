@@ -294,7 +294,10 @@ if (is_android) {
       ":public_java",
       "//base:base_java",
       "//build/android:build_java",
+      "//chrome/browser/glic/android:jni_headers_java",
+      "//chrome/browser/profiles/android:java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
     ]
   }
 }

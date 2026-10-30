@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/tabs/glic_tab_sub_menu_model.h"
 
-#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/public/glic_provider_metrics.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
@@ -92,15 +92,16 @@ void GlicTabSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
 
     GlicInvokeOptions options(mojom::InvocationSource::kTabContextMenu);
 
+    GlicMetricReporter metric_reporter(tab_strip_model_->profile());
     if (command_id == TabStripModel::CommandGlicCreateNewChat) {
-      base::UmaHistogramCounts100(
-          "Glic.TabContextMenu.PinnedTabsToNewConversation", tabs.size());
+      metric_reporter.RecordCounts100(
+          "TabContextMenu.PinnedTabsToNewConversation", tabs.size());
       options.target = Target(*target_tab, NewConversation());
     } else {
       size_t conversation_index = command_id - kMinRecentConversationCommandId;
       CHECK_LT(conversation_index, recent_conversations_.size());
-      base::UmaHistogramCounts100(
-          "Glic.TabContextMenu.PinnedTabsToExistingConversation", tabs.size());
+      metric_reporter.RecordCounts100(
+          "TabContextMenu.PinnedTabsToExistingConversation", tabs.size());
       options.target = Target(
           *target_tab, recent_conversations_[conversation_index].instance_id);
     }
