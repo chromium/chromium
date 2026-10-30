@@ -10,7 +10,7 @@
 #include "base/strings/to_string.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/ttc/core/test_utils.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/core/task_id.h"
@@ -22,6 +22,7 @@ namespace ttc {
 
 namespace {
 
+using ::actor::ActorJournalRecorder;
 using ::actor::mojom::JournalEntryType;
 using ::testing::Contains;
 using ::testing::Pair;

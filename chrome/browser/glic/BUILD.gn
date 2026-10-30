@@ -918,6 +918,7 @@ source_set("unit_tests") {
     ":impl",
     "//base/test:test_support",
     "//chrome/browser:global_features",
+    "//chrome/browser/actor:test_support",
     "//chrome/browser/actor/ui",
     "//chrome/browser/actor/ui:test_support",
     "//chrome/browser/background/glic",
@@ -982,7 +983,6 @@ source_set("unit_tests") {
     ]
 
     deps += [
-      "//chrome/browser/actor:test_support",
       "//chrome/browser/background",
       "//chrome/browser/glic/media:unit_tests",
       "//chrome/browser/status_icons",

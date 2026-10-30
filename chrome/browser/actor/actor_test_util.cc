@@ -1075,4 +1075,42 @@ TestTabState::~TestTabState() {
                                     tabs::TabInterface::DetachReason::kDelete);
 }
 
+ActorJournalRecorder::Entry::Entry() = default;
+
+ActorJournalRecorder::Entry::Entry(const Entry&) = default;
+
+ActorJournalRecorder::Entry& ActorJournalRecorder::Entry::operator=(
+    const Entry&) = default;
+
+ActorJournalRecorder::Entry::~Entry() = default;
+
+ActorJournalRecorder::ActorJournalRecorder(AggregatedJournal& journal) {
+  observation_.Observe(&journal);
+}
+
+ActorJournalRecorder::~ActorJournalRecorder() = default;
+
+std::vector<ActorJournalRecorder::Entry> ActorJournalRecorder::GetEntries(
+    std::string_view event) const {
+  std::vector<Entry> entries;
+  for (const Entry& entry : entries_) {
+    if (entry.event == event) {
+      entries.push_back(entry);
+    }
+  }
+  return entries;
+}
+
+void ActorJournalRecorder::WillAddJournalEntry(
+    const AggregatedJournal::Entry& entry) {
+  Entry& recorded = entries_.emplace_back();
+  recorded.type = entry.data->type;
+  recorded.event = entry.data->event;
+  recorded.task_id = entry.data->task_id;
+  recorded.track_uuid = entry.data->track_uuid;
+  for (const mojom::JournalDetailsPtr& detail : entry.data->details) {
+    recorded.details.emplace(detail->key, detail->value);
+  }
+}
+
 }  // namespace actor

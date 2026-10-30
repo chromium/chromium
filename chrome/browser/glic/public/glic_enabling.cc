@@ -56,6 +56,9 @@
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/actor/core/aggregated_journal.h"
+#include "components/actor/core/journal_details_builder.h"
+#include "components/actor/core/task_id.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/pdf/common/constants.h"
@@ -71,6 +74,7 @@
 #include "components/variations/synthetic_trials.h"
 #include "content/public/common/content_switches.h"
 #include "ui/base/device_form_factor.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"  // nogncheck
@@ -143,6 +147,39 @@ bool IsAnchorable(Profile* profile, bool consented) {
 }
 
 constexpr int kExperimentalTriggeringVersion = 1;
+
+std::string_view ToString(
+    syncer::DeviceInfo::GlicExperimentalTriggeringState state) {
+  switch (state) {
+    case syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable:
+      return "kUnavailable";
+    case syncer::DeviceInfo::GlicExperimentalTriggeringState::kNeedsOptIn:
+      return "kNeedsOptIn";
+    case syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady:
+      return "kReady";
+  }
+}
+
+std::string_view ToString(ExperimentalTriggeringNotReadyReason reason) {
+  switch (reason) {
+    case ExperimentalTriggeringNotReadyReason::kNone:
+      return "kNone";
+    case ExperimentalTriggeringNotReadyReason::kGlicNotEnabled:
+      return "kGlicNotEnabled";
+    case ExperimentalTriggeringNotReadyReason::kFeatureDisabled:
+      return "kFeatureDisabled";
+    case ExperimentalTriggeringNotReadyReason::kDisabledBySparkPolicy:
+      return "kDisabledBySparkPolicy";
+    case ExperimentalTriggeringNotReadyReason::kCannotActOnWeb:
+      return "kCannotActOnWeb";
+    case ExperimentalTriggeringNotReadyReason::kMissingGlicOptIn:
+      return "kMissingGlicOptIn";
+    case ExperimentalTriggeringNotReadyReason::kMissingActuationOptIn:
+      return "kMissingActuationOptIn";
+    case ExperimentalTriggeringNotReadyReason::kMissingExperimentalOptIn:
+      return "kMissingExperimentalOptIn";
+  }
+}
 
 std::vector<std::string> GetFieldTrialParamAsSplitString(
     const base::Feature& feature,
@@ -1473,9 +1510,7 @@ GlicEnabling::GlicEnabling(
                 base::Unretained(this)));
   }
 #endif  // BUILDFLAG(IS_ANDROID)
-  last_experimental_triggering_state_ = GetExperimentalTriggeringState();
-  last_experimental_triggering_capabilities_ =
-      GetExperimentalTriggeringCapabilities();
+  MaybeNotifyExperimentalTriggeringStateChanged();
   int pref_state =
       profile_->GetPrefs()->GetInteger(prefs::kGlicLastProfileReadyState);
   last_profile_ready_state_ = GetSanitizedProfileReadyState(pref_state);
@@ -1646,12 +1681,21 @@ bool GlicEnabling::CanUseAdultFeatures(
 
 syncer::DeviceInfo::GlicExperimentalTriggeringState
 GlicEnabling::GetExperimentalTriggeringState() const {
+  return ComputeExperimentalTriggeringState().first;
+}
+
+std::pair<syncer::DeviceInfo::GlicExperimentalTriggeringState,
+          ExperimentalTriggeringNotReadyReason>
+GlicEnabling::ComputeExperimentalTriggeringState() const {
+  using State = syncer::DeviceInfo::GlicExperimentalTriggeringState;
+  using Reason = ExperimentalTriggeringNotReadyReason;
+
   if (!IsEnabledForProfile(profile_)) {
-    return syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable;
+    return {State::kUnavailable, Reason::kGlicNotEnabled};
   }
 
   if (!base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering)) {
-    return syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable;
+    return {State::kUnavailable, Reason::kFeatureDisabled};
   }
 
   bool is_managed = IsBrowserManaged(profile_) || IsDeviceManaged() ||
@@ -1664,7 +1708,7 @@ GlicEnabling::GetExperimentalTriggeringState() const {
     auto policy_state = static_cast<glic::prefs::GlicSparkPolicyState>(
         pref_service->GetInteger(glic::prefs::kGlicSparkPolicySettings));
     if (policy_state != glic::prefs::GlicSparkPolicyState::kEnabled) {
-      return syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable;
+      return {State::kUnavailable, Reason::kDisabledBySparkPolicy};
     }
   }
 
@@ -1674,14 +1718,19 @@ GlicEnabling::GetExperimentalTriggeringState() const {
   // may route requests here that can never succeed. Note that a policy URL
   // allowlist leaves CanActOnWeb() true, deferring to per-URL evaluation.
   if (!actor_policy_checker_ || !actor_policy_checker_->CanActOnWeb()) {
-    return syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable;
+    return {State::kUnavailable, Reason::kCannotActOnWeb};
   }
 
-  if (HasConsented() && GetUserEnabledActuationOnWeb() &&
-      GetExperimentalTriggeringEnabled()) {
-    return syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady;
+  switch (GetRequiredExperimentalOptIn()) {
+    case RequiredExperimentalOptIn::kGlic:
+      return {State::kNeedsOptIn, Reason::kMissingGlicOptIn};
+    case RequiredExperimentalOptIn::kActuation:
+      return {State::kNeedsOptIn, Reason::kMissingActuationOptIn};
+    case RequiredExperimentalOptIn::kExperimental:
+      return {State::kNeedsOptIn, Reason::kMissingExperimentalOptIn};
+    case RequiredExperimentalOptIn::kNotNeeded:
+      return {State::kReady, Reason::kNone};
   }
-  return syncer::DeviceInfo::GlicExperimentalTriggeringState::kNeedsOptIn;
 }
 
 std::optional<int> GlicEnabling::GetExperimentalTriggeringVersion() const {
@@ -1910,14 +1959,30 @@ void GlicEnabling::UpdateConsentStatus() {
 }
 
 void GlicEnabling::MaybeNotifyExperimentalTriggeringStateChanged() {
-  syncer::DeviceInfo::GlicExperimentalTriggeringState new_state =
-      GetExperimentalTriggeringState();
-  base::flat_set<std::string> new_capabilities =
+  const auto [state, reason] = ComputeExperimentalTriggeringState();
+  if (last_experimental_triggering_state_ != std::pair(state, reason)) {
+    if (auto* actor_service = actor::ActorKeyedService::Get(profile_)) {
+      actor_service->GetJournal().Log(
+          GURL(), actor::TaskId(),
+          "GlicEnabling::ExperimentalTriggeringStateChanged",
+          actor::JournalDetailsBuilder()
+              .Add("outcome", ToString(state))
+              .Add("reasons", ToString(reason))
+              .Build());
+    }
+  }
+
+  // Observers (e.g. the Sync DeviceInfo refresh) only depend on the state and
+  // the capabilities, so don't notify them when only the reason changed.
+  base::flat_set<std::string> capabilities =
       GetExperimentalTriggeringCapabilities();
-  if (new_state != last_experimental_triggering_state_ ||
-      new_capabilities != last_experimental_triggering_capabilities_) {
-    last_experimental_triggering_state_ = new_state;
-    last_experimental_triggering_capabilities_ = std::move(new_capabilities);
+  const bool changed =
+      !last_experimental_triggering_state_ ||
+      last_experimental_triggering_state_->first != state ||
+      capabilities != last_experimental_triggering_capabilities_;
+  last_experimental_triggering_state_.emplace(state, reason);
+  last_experimental_triggering_capabilities_ = std::move(capabilities);
+  if (changed) {
     experimental_triggering_state_changed_callback_list_.Notify();
   }
 }

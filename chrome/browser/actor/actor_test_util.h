@@ -5,14 +5,19 @@
 #ifndef CHROME_BROWSER_ACTOR_ACTOR_TEST_UTIL_H_
 #define CHROME_BROWSER_ACTOR_ACTOR_TEST_UTIL_H_
 
+#include <stdint.h>
+
+#include <map>
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <type_traits>
 #include <vector>
 
 #include "base/base64.h"
 #include "base/callback_list.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -29,6 +34,7 @@
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
+#include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/shared_types.h"
 #include "components/actor/core/task_id.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
@@ -522,6 +528,39 @@ struct TestTabState {
   ::ui::UnownedUserDataHost user_data_host;
   std::unique_ptr<ActorTabData> tab_data;
   std::unique_ptr<ActorSurfaceTabHelper> actor_surface_tab_helper;
+};
+
+// Records the entries added to an actor journal while it's alive.
+class ActorJournalRecorder : public AggregatedJournal::Observer {
+ public:
+  struct Entry {
+    Entry();
+    Entry(const Entry&);
+    Entry& operator=(const Entry&);
+    ~Entry();
+
+    mojom::JournalEntryType type = mojom::JournalEntryType::kInstant;
+    std::string event;
+    TaskId task_id;
+    uint64_t track_uuid = 0;
+    std::map<std::string, std::string> details;
+  };
+
+  explicit ActorJournalRecorder(AggregatedJournal& journal);
+  ActorJournalRecorder(const ActorJournalRecorder&) = delete;
+  ActorJournalRecorder& operator=(const ActorJournalRecorder&) = delete;
+  ~ActorJournalRecorder() override;
+
+  // Returns the recorded entries for `event`, in the order they were added.
+  std::vector<Entry> GetEntries(std::string_view event) const;
+
+  // AggregatedJournal::Observer:
+  void WillAddJournalEntry(const AggregatedJournal::Entry& entry) override;
+
+ private:
+  std::vector<Entry> entries_;
+  base::ScopedObservation<AggregatedJournal, AggregatedJournal::Observer>
+      observation_{this};
 };
 
 }  // namespace actor

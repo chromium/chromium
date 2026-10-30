@@ -27,6 +27,8 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
@@ -60,6 +62,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/actor/core/aggregated_journal.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/startup_visibility.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
@@ -2719,6 +2722,90 @@ TEST_F(GlicEnablingCombinedObserverTest,
   callback_called = false;
   enabling.SetCompletedFre(prefs::FreStatus::kCompleted);
   EXPECT_TRUE(callback_called);
+}
+
+constexpr char kStateChangedEvent[] =
+    "GlicEnabling::ExperimentalTriggeringStateChanged";
+
+// Matches a journal entry for the given experimental triggering state.
+auto LoggedState(std::string_view outcome, std::string_view reasons) {
+  return testing::Field(
+      &actor::ActorJournalRecorder::Entry::details,
+      testing::ElementsAre(testing::Pair("outcome", std::string(outcome)),
+                           testing::Pair("reasons", std::string(reasons))));
+}
+
+class GlicEnablingExperimentalTriggeringJournalTest
+    : public GlicEnablingProfileReadyStateTestBase {
+ public:
+  GlicEnablingExperimentalTriggeringJournalTest()
+      : GlicEnablingProfileReadyStateTestBase(
+            /*extra_enabled_features=*/{
+                features::kGlicExperimentalTriggering}) {}
+
+ protected:
+  GlicEnabling& enabling() {
+    return GlicKeyedService::Get(profile())->enabling();
+  }
+
+  actor::AggregatedJournal& journal() {
+    return actor::ActorKeyedService::Get(profile())->GetJournal();
+  }
+};
+
+TEST_F(GlicEnablingExperimentalTriggeringJournalTest,
+       LogsInitialStateOnConstruction) {
+  actor::ActorJournalRecorder recorder(journal());
+
+  // Without a GlicActorPolicyChecker, the profile can't act on the web.
+  auto new_enabling = GlicEnabling::CreateForTesting(
+      profile(), /*profile_attributes_storage=*/nullptr);
+
+  EXPECT_THAT(
+      recorder.GetEntries(kStateChangedEvent),
+      testing::ElementsAre(LoggedState("kUnavailable", "kCannotActOnWeb")));
+}
+
+TEST_F(GlicEnablingExperimentalTriggeringJournalTest,
+       LogsReasonOnlyChangesWithoutNotifying) {
+  actor::ActorJournalRecorder recorder(journal());
+  int callback_count = 0;
+  auto subscription = enabling().RegisterOnExperimentalTriggeringStateChanged(
+      base::BindLambdaForTesting([&]() { ++callback_count; }));
+
+  // The Glic opt-in is still missing, so this changes neither the state nor
+  // the reason.
+  enabling().SetUserEnabledActuationOnWeb(true);
+
+  enabling().SetCompletedFre(prefs::FreStatus::kCompleted);
+  enabling().SetUserEnabledActuationOnWeb(false);
+
+  EXPECT_THAT(recorder.GetEntries(kStateChangedEvent),
+              testing::ElementsAre(
+                  LoggedState("kNeedsOptIn", "kMissingExperimentalOptIn"),
+                  LoggedState("kNeedsOptIn", "kMissingActuationOptIn")));
+  EXPECT_EQ(callback_count, 0);
+}
+
+TEST_F(GlicEnablingExperimentalTriggeringJournalTest,
+       LogsStateChangesAndNotifies) {
+  enabling().SetCompletedFre(prefs::FreStatus::kCompleted);
+  enabling().SetUserEnabledActuationOnWeb(true);
+  actor::ActorJournalRecorder recorder(journal());
+  int callback_count = 0;
+  auto subscription = enabling().RegisterOnExperimentalTriggeringStateChanged(
+      base::BindLambdaForTesting([&]() { ++callback_count; }));
+
+  enabling().SetExperimentalTriggeringEnabled(true);
+  SetGlicCapability(profile(), false);
+  SetGlicCapability(profile(), true);
+
+  EXPECT_THAT(
+      recorder.GetEntries(kStateChangedEvent),
+      testing::ElementsAre(LoggedState("kReady", "kNone"),
+                           LoggedState("kUnavailable", "kGlicNotEnabled"),
+                           LoggedState("kReady", "kNone")));
+  EXPECT_EQ(callback_count, 3);
 }
 
 class GlicEnablingWebActuationToggleTest

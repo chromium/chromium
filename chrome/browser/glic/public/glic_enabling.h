@@ -8,6 +8,8 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
+#include <utility>
 
 #include "base/auto_reset.h"
 #include "base/callback_list.h"
@@ -218,6 +220,20 @@ enum class RequiredExperimentalOptIn {
   kMaxValue = kNotNeeded,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicRequiredExperimentalOptIn)
+
+// Why experimental triggering isn't ready, i.e. why
+// GlicEnabling::GetExperimentalTriggeringState() isn't kReady. Logged to the
+// actor journal.
+enum class ExperimentalTriggeringNotReadyReason {
+  kNone,
+  kGlicNotEnabled,
+  kFeatureDisabled,
+  kDisabledBySparkPolicy,
+  kCannotActOnWeb,
+  kMissingGlicOptIn,
+  kMissingActuationOptIn,
+  kMissingExperimentalOptIn,
+};
 
 // Returns true if any Glic entry point (such as the tab strip button or the
 // OS-level shortcut) is enabled in settings.
@@ -713,6 +729,9 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   void OnUserEnabledActuationOnWebChanged();
   void OnExperimentalTriggeringEnabledChanged();
   void OnActOnWebCapabilityChanged(bool can_act_on_web);
+  std::pair<syncer::DeviceInfo::GlicExperimentalTriggeringState,
+            ExperimentalTriggeringNotReadyReason>
+  ComputeExperimentalTriggeringState() const;
   void MaybeNotifyExperimentalTriggeringStateChanged();
 
   // IdentityManagerObserver:
@@ -797,9 +816,9 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
       subscription_eligibility::SubscriptionEligibilityService,
       subscription_eligibility::SubscriptionEligibilityService::Observer>
       subscription_eligibility_service_observation_{this};
-  syncer::DeviceInfo::GlicExperimentalTriggeringState
-      last_experimental_triggering_state_ =
-          syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable;
+  std::optional<std::pair<syncer::DeviceInfo::GlicExperimentalTriggeringState,
+                          ExperimentalTriggeringNotReadyReason>>
+      last_experimental_triggering_state_;
   // The experimental triggering capabilities as of the last
   // `ExperimentalTriggeringStateChangedCallback` notification. Observers are
   // notified when either the state or the capabilities change.

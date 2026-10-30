@@ -12,10 +12,10 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/open_url_tool_request.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ttc/core/session_controller.h"
-#include "chrome/browser/ttc/core/test_utils.h"
 #include "chrome/browser/ttc/core/ttc_core_browser_test_base.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
 #include "components/actor/core/journal_details_builder.h"
@@ -30,6 +30,8 @@
 namespace ttc {
 
 namespace {
+
+using ::actor::ActorJournalRecorder;
 
 using JournalEntries = std::vector<ActorJournalRecorder::Entry>;
 
