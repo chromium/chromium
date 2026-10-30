@@ -22,11 +22,6 @@
 
 namespace net::features {
 
-// Enables ALPS extension of TLS 1.3 for HTTP/2, see
-// https://vasilvv.github.io/tls-alps/draft-vvv-tls-alps.html and
-// https://vasilvv.github.io/httpbis-alps/draft-vvv-httpbis-alps.html.
-NET_EXPORT BASE_DECLARE_FEATURE(kAlpsForHttp2);
-
 // If enabled, HttpNetworkTransaction will use a hybrid retry strategy for
 // connection errors: retrying synchronously initially, and switching to
 // asynchronous (yielding to the message loop) after many attempts.
@@ -377,9 +372,6 @@ NET_EXPORT BASE_DECLARE_FEATURE(kThirdPartyStoragePartitioning);
 
 // Whether ALPS parsing is on for any type of frame.
 NET_EXPORT BASE_DECLARE_FEATURE(kAlpsParsing);
-
-// Whether ALPS parsing is on for client hint parsing specifically.
-NET_EXPORT BASE_DECLARE_FEATURE(kAlpsClientHintParsing);
 
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableWebsocketsOverHttp3);
 

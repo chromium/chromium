@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "net/base/features.h"
@@ -113,17 +114,17 @@ bool AlpsDecoder::AcceptChParser::OnFrameHeader(spdy::SpdyStreamId stream_id,
                                                 uint8_t type,
                                                 uint8_t flags) {
   // Ignore data after an error has occurred.
-  if (error_ != Error::kNoError)
+  if (error_ != Error::kNoError) {
     return false;
+  }
   // Stop all alps parsing if it's disabled.
-  if (!base::FeatureList::IsEnabled(features::kAlpsParsing))
+  if (!base::FeatureList::IsEnabled(features::kAlpsParsing)) {
     return false;
+  }
+
   // Handle per-type parsing.
   switch (type) {
     case static_cast<uint8_t>(spdy::SpdyFrameType::ACCEPT_CH): {
-      // Stop alps client hint parsing if it's disabled.
-      if (!base::FeatureList::IsEnabled(features::kAlpsClientHintParsing))
-        return false;
       // Check for issues with the frame.
       if (stream_id != 0) {
         error_ = Error::kAcceptChInvalidStream;

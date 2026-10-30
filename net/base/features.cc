@@ -29,8 +29,6 @@
 
 namespace net::features {
 
-BASE_FEATURE(kAlpsForHttp2, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAsyncRetryOnTooManyConnectionErrors,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -307,8 +305,6 @@ BASE_FEATURE(kCookieDomainRejectNonASCII, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kThirdPartyStoragePartitioning, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAlpsParsing, base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAlpsClientHintParsing, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableWebsocketsOverHttp3, base::FEATURE_DISABLED_BY_DEFAULT);
 

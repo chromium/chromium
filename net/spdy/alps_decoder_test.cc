@@ -152,32 +152,6 @@ TEST(AlpsDecoderTest, DisableAlpsParsing) {
   EXPECT_THAT(decoder.GetAcceptCh(), IsEmpty());
 }
 
-TEST(AlpsDecoderTest, DisableAlpsClientHintParsing) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kAlpsClientHintParsing);
-  AlpsDecoder decoder;
-  AlpsDecoder::Error error = decoder.Decode(HexDecode(
-      // ACCEPT_CH frame
-      "00003d"                    // length
-      "89"                        // type ACCEPT_CH
-      "00"                        // flags
-      "00000000"                  // stream ID
-      "0017"                      // origin length
-      "68747470733a2f2f7777772e"  //
-      "6578616d706c652e636f6d"    // origin "https://www.example.com"
-      "0003"                      // value length
-      "666f6f"                    // value "foo"
-      "0018"                      // origin length
-      "68747470733a2f2f6d61696c"  //
-      "2e6578616d706c652e636f6d"  // origin "https://mail.example.com"
-      "0003"                      // value length
-      "626172"                    // value "bar"
-      ));
-
-  EXPECT_EQ(AlpsDecoder::Error::kNoError, error);
-  EXPECT_THAT(decoder.GetAcceptCh(), IsEmpty());
-}
-
 TEST(AlpsDecoderTest, IncompleteFrame) {
   AlpsDecoder decoder;
   AlpsDecoder::Error error =

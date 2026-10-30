@@ -200,10 +200,8 @@ HttpNetworkSession::HttpNetworkSession(const HttpNetworkSessionParams& params,
 
   if (params_.enable_http2) {
     next_protos_.push_back(NextProto::kProtoHTTP2);
-    if (base::FeatureList::IsEnabled(features::kAlpsForHttp2)) {
-      // Enable ALPS for HTTP/2 with empty data.
-      application_settings_[NextProto::kProtoHTTP2] = {};
-    }
+    // Enable ALPS for HTTP/2 with empty data.
+    application_settings_[NextProto::kProtoHTTP2] = {};
   }
 
   next_protos_.push_back(NextProto::kProtoHTTP11);
