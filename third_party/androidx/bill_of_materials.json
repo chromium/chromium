@@ -1102,7 +1102,7 @@
     {
         "name": "espresso-idling-resource",
         "group": "androidx.test.espresso",
-        "version": "3.8.0-alpha01"
+        "version": "3.8.0-alpha03"
     },
     {
         "name": "espresso-intents",
