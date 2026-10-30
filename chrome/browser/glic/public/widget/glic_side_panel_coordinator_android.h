@@ -47,6 +47,8 @@ class GlicSidePanelCoordinatorAndroid
   bool IsGlicSidePanelActive() override;
   void SuppressBottomSheetForTesting(bool suppress);
   bool GetRestoreExpandedOnRecreationForTesting() const;
+  bool HasBridgesForTesting() const;
+  bool HasJavaWebContentsForTesting() const;
 
   // context_sharing::TabBottomSheetBridge::Observer:
   void OnClosed() override;
@@ -63,6 +65,7 @@ class GlicSidePanelCoordinatorAndroid
   // Callback triggered when a TabBottomSheetManager is initialized for a
   // WindowAndroid.
   void OnManagerInitialized(ui::WindowAndroid* window);
+  void EnsureBridgesCreated();
   base::android::ScopedJavaLocalRef<jobject> CreateBottomSheetContentProvider();
 
   State state_ = State::kClosed;

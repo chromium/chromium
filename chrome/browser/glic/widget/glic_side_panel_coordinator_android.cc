@@ -37,15 +37,6 @@ GlicSidePanelCoordinatorAndroid::GlicSidePanelCoordinatorAndroid(
   will_detach_subscription_ = tab_->RegisterWillDetach(
       base::BindRepeating(&GlicSidePanelCoordinatorAndroid::OnTabWillDetach,
                           base::Unretained(this)));
-
-  views_bridge_ = std::make_unique<context_sharing::CoBrowseViewsBridge>(
-      *tab, context_sharing::TabBottomSheetClientType::kGlic,
-      context_sharing::CoBrowseContainerType::kBottomSheet,
-      CreateBottomSheetContentProvider(),
-      /*enable_pinch_to_zoom=*/false, kColorGlicBackground,
-      kColorGlicPlaceholderElem);
-  tab_bottom_sheet_bridge_ =
-      std::make_unique<context_sharing::TabBottomSheetBridge>(this, tab);
   manager_initialized_subscription_ =
       context_sharing::TabBottomSheetBridge::RegisterManagerInitializedCallback(
           base::BindRepeating(
@@ -70,6 +61,8 @@ void GlicSidePanelCoordinatorAndroid::Show(const ShowOptions& options) {
     SetState(State::kBackgrounded);
     return;
   }
+
+  EnsureBridgesCreated();
 
   // If the Java bottom sheet manager layout infrastructure is not ready yet
   // (e.g. during startup or activity recreation before layout inflation
@@ -117,7 +110,9 @@ void GlicSidePanelCoordinatorAndroid::SetWebContents(
   } else {
     web_contents_.reset();
   }
-  views_bridge_->SetWebContents(web_contents, /*request_focus=*/false);
+  if (views_bridge_) {
+    views_bridge_->SetWebContents(web_contents, /*request_focus=*/false);
+  }
 }
 
 void GlicSidePanelCoordinatorAndroid::Close(const CloseOptions& options) {
@@ -132,17 +127,28 @@ void GlicSidePanelCoordinatorAndroid::Close(const CloseOptions& options) {
     return;
   }
 
+  CHECK(tab_bottom_sheet_bridge_);
   tab_bottom_sheet_bridge_->Close(/* animate= */ !options.suppress_animations);
 }
 
 void GlicSidePanelCoordinatorAndroid::SuppressBottomSheetForTesting(  // IN-TEST
     bool suppress) {
+  EnsureBridgesCreated();
   tab_bottom_sheet_bridge_->SuppressBottomSheetForTesting(suppress);  // IN-TEST
 }
 
 bool GlicSidePanelCoordinatorAndroid::GetRestoreExpandedOnRecreationForTesting()
     const {
   return restore_expanded_on_recreation_;
+}
+
+bool GlicSidePanelCoordinatorAndroid::HasBridgesForTesting() const {
+  return views_bridge_ != nullptr && tab_bottom_sheet_bridge_ != nullptr;
+}
+
+bool GlicSidePanelCoordinatorAndroid::HasJavaWebContentsForTesting() const {
+  return views_bridge_ &&
+         views_bridge_->HasJavaWebContentsForTesting();  // IN-TEST
 }
 
 bool GlicSidePanelCoordinatorAndroid::IsShowing() const {
@@ -207,7 +213,9 @@ void GlicSidePanelCoordinatorAndroid::OnTabWillDeactivate(
   SaveStateBeforeDeactivation();
   SetState(State::kBackgrounded);
 
-  tab_bottom_sheet_bridge_->Close(/* animate= */ false);
+  if (tab_bottom_sheet_bridge_) {
+    tab_bottom_sheet_bridge_->Close(/* animate= */ false);
+  }
 }
 
 void GlicSidePanelCoordinatorAndroid::OnTabWillDetach(
@@ -221,7 +229,9 @@ void GlicSidePanelCoordinatorAndroid::OnTabWillDetach(
   if (state_ != State::kClosed) {
     SaveStateBeforeDeactivation();
     SetState(State::kBackgrounded);
-    tab_bottom_sheet_bridge_->Close(/* animate= */ false);
+    if (tab_bottom_sheet_bridge_) {
+      tab_bottom_sheet_bridge_->Close(/* animate= */ false);
+    }
   }
 }
 
@@ -253,6 +263,7 @@ void GlicSidePanelCoordinatorAndroid::OnManagerInitialized(
       web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr;
 
   if (tab_window == window) {
+    EnsureBridgesCreated();
     // Rebuild CoBrowseViews now that TabBottomSheetManager is registered on the
     // window, ensuring the PeekViewManager is instantiated non-null.
     views_bridge_->CreateCoBrowseViews(web_contents_.get(),
@@ -263,6 +274,21 @@ void GlicSidePanelCoordinatorAndroid::OnManagerInitialized(
       options.initial_state = ShowOptions::InitialState::kExpanded;
     }
     Show(options);
+  }
+}
+
+void GlicSidePanelCoordinatorAndroid::EnsureBridgesCreated() {
+  if (!views_bridge_) {
+    views_bridge_ = std::make_unique<context_sharing::CoBrowseViewsBridge>(
+        *tab_, context_sharing::TabBottomSheetClientType::kGlic,
+        context_sharing::CoBrowseContainerType::kBottomSheet,
+        CreateBottomSheetContentProvider(),
+        /*enable_pinch_to_zoom=*/false, kColorGlicBackground,
+        kColorGlicPlaceholderElem);
+  }
+  if (!tab_bottom_sheet_bridge_) {
+    tab_bottom_sheet_bridge_ =
+        std::make_unique<context_sharing::TabBottomSheetBridge>(this, &*tab_);
   }
 }
 

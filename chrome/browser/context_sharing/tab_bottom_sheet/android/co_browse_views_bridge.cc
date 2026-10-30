@@ -74,6 +74,7 @@ CoBrowseViewsBridge::~CoBrowseViewsBridge() {
 bool CoBrowseViewsBridge::CreateCoBrowseViews(
     content::WebContents* web_contents,
     bool request_focus) {
+  Observe(web_contents);
   TabAndroid* tab_android = GetTabAndroid();
   if (!tab_android) {
     LOG(WARNING) << "Cannot create CoBrowseViews: TabAndroid is null.";
@@ -116,7 +117,7 @@ bool CoBrowseViewsBridge::CreateCoBrowseViews(
 
 void CoBrowseViewsBridge::SetWebContents(content::WebContents* web_contents,
                                          bool request_focus) {
-  guest_web_contents_ = web_contents;
+  Observe(web_contents);
   if (web_contents) {
     web_contents->SetIgnoreZoomGestures(!enable_pinch_to_zoom_);
     if (!zoom::ZoomController::FromWebContents(web_contents)) {
@@ -157,6 +158,23 @@ CoBrowseViewsBridge::GetCoBrowseViews() {
   return base::android::ScopedJavaLocalRef<jobject>(env, java_co_browse_views_);
 }
 
+bool CoBrowseViewsBridge::HasJavaWebContentsForTesting() const {
+  if (!java_co_browse_views_) {
+    return false;
+  }
+  JNIEnv* env = AttachCurrentThread();
+  return !Java_CoBrowseViews_getWebContents(env, java_co_browse_views_)
+              .is_null();
+}
+
+void CoBrowseViewsBridge::WebContentsDestroyed() {
+  if (java_co_browse_views_) {
+    JNIEnv* env = AttachCurrentThread();
+    Java_CoBrowseViews_setWebContents(env, java_co_browse_views_, nullptr,
+                                      /*requestFocus=*/false);
+  }
+}
+
 void CoBrowseViewsBridge::DestroyCoBrowseViews() {
   if (!java_co_browse_views_) {
     return;
@@ -174,6 +192,9 @@ TabAndroid* CoBrowseViewsBridge::GetTabAndroid() const {
 }
 
 void CoBrowseViewsBridge::OnTabInserted(tabs::TabInterface* tab) {
+  if (!java_co_browse_views_) {
+    return;
+  }
   TabAndroid* tab_android = GetTabAndroid();
   if (!tab_android) {
     return;
@@ -185,7 +206,7 @@ void CoBrowseViewsBridge::OnTabInserted(tabs::TabInterface* tab) {
           : nullptr;
 
   if (current_window && current_window != window_android_) {
-    CreateCoBrowseViews(guest_web_contents_, /*request_focus=*/false);
+    CreateCoBrowseViews(web_contents(), /*request_focus=*/false);
   }
 }
 

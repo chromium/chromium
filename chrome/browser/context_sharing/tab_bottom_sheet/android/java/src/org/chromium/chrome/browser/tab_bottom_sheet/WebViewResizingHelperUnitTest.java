@@ -127,12 +127,12 @@ public class WebViewResizingHelperUnitTest {
     @Test
     public void testInitialization() {
         FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
-        assertEquals(1, container.getChildCount());
+        assertEquals(0, container.getChildCount());
         verify(mMockInsetObserver).addWindowInsetsAnimationListener(any());
         assertEquals(mMockComponentProvider, mHelper.getComponentProviderForTesting());
-        verify(mMockComponentProvider)
-                .createResizingPlaceholderCoordinator(mContext, Color.WHITE, Color.LTGRAY);
-        assertNotNull(mHelper.getPlaceholderCoordinator());
+        verify(mMockComponentProvider, never())
+                .createResizingPlaceholderCoordinator(any(), anyInt(), anyInt());
+        assertNull(mHelper.getPlaceholderCoordinator());
     }
 
     @Test
@@ -166,6 +166,7 @@ public class WebViewResizingHelperUnitTest {
 
     @Test
     public void testDestroy() {
+        mHelper.reset();
         View placeholder = mHelper.getPlaceholderCoordinator().getView();
         placeholder.setVisibility(View.VISIBLE);
         placeholder.setAlpha(0.4f);
@@ -193,10 +194,10 @@ public class WebViewResizingHelperUnitTest {
 
     @Test
     public void testReset() {
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
         View placeholder = mHelper.getPlaceholderCoordinator().getView();
         placeholder.setVisibility(View.VISIBLE);
         placeholder.setAlpha(0.4f);
-        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
         mHelper.reset();
 
         FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
@@ -511,6 +512,7 @@ public class WebViewResizingHelperUnitTest {
 
     @Test
     public void testUpdatePlaceholderHeight_LimitsAndAlphaTransitions() {
+        mHelper.reset();
         FrameLayout resizingContainer = (FrameLayout) mHelper.getResizingContainer();
         View placeholder = resizingContainer.getChildAt(0);
         View content = placeholder.findViewById(R.id.tab_bottom_sheet_resizing_content);
@@ -809,6 +811,10 @@ public class WebViewResizingHelperUnitTest {
                         Color.LTGRAY,
                         false,
                         provider);
+        verify(provider, never()).createResizingPlaceholderCoordinator(any(), anyInt(), anyInt());
+        assertNull(helper.getPlaceholderCoordinator());
+
+        helper.reset();
         verify(provider).createResizingPlaceholderCoordinator(mContext, Color.WHITE, Color.LTGRAY);
         assertSame(customCoordinator, helper.getPlaceholderCoordinator());
 
@@ -822,6 +828,42 @@ public class WebViewResizingHelperUnitTest {
         assertEquals(View.INVISIBLE, customPlaceholderView.getVisibility());
         assertEquals(1.0f, customPlaceholderView.getAlpha(), 0.01f);
         assertEquals(0, ((FrameLayout) helper.getResizingContainer()).getChildCount());
+    }
+
+    @Test
+    public void testUpdatePlaceholderHeight_BeforeReset_NoOpUntilReset() {
+        CoBrowseComponentProvider provider = mock(CoBrowseComponentProvider.class);
+        ResizingPlaceholderCoordinator customCoordinator =
+                mock(ResizingPlaceholderCoordinator.class);
+        View customPlaceholderView = new View(mContext);
+        when(customCoordinator.getView()).thenReturn(customPlaceholderView);
+        when(provider.createResizingPlaceholderCoordinator(any(), anyInt(), anyInt()))
+                .thenReturn(customCoordinator);
+
+        WebViewResizingHelper helper =
+                new WebViewResizingHelper(
+                        mContainerView,
+                        mMockWindowAndroid,
+                        mMockBottomSheetController,
+                        Color.WHITE,
+                        Color.LTGRAY,
+                        false,
+                        provider);
+
+        helper.updatePlaceholderHeight(180);
+
+        verify(provider, never()).createResizingPlaceholderCoordinator(any(), anyInt(), anyInt());
+        assertNull(helper.getPlaceholderCoordinator());
+        verify(customCoordinator, never()).updateVisibleHeight(anyInt());
+
+        helper.reset();
+
+        verify(provider).createResizingPlaceholderCoordinator(mContext, Color.WHITE, Color.LTGRAY);
+        verify(customCoordinator, never()).updateVisibleHeight(anyInt());
+
+        helper.updatePlaceholderHeight(320);
+        verify(customCoordinator).updateVisibleHeight(320);
+        helper.destroy();
     }
 
     @Test

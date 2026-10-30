@@ -4,6 +4,8 @@
 
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 
+#include <memory>
+
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/context_sharing/tab_bottom_sheet/android/tab_bottom_sheet_bridge.h"
@@ -154,6 +156,83 @@ IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorAndroidBrowserTest,
   EXPECT_EQ(first_state_future.Take(), GlicSidePanelCoordinator::State::kShown);
   EXPECT_EQ(first_coordinator->state(),
             GlicSidePanelCoordinator::State::kShown);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorAndroidBrowserTest,
+                       BridgesLazilyCreatedOnShow) {
+  tabs::TabInterface* active_tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(active_tab);
+  EXPECT_FALSE(
+      GetSidePanelCoordinatorAndroid(active_tab)->HasBridgesForTesting());
+
+  std::unique_ptr<content::WebContents> bg_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(GetProfile()));
+  tabs::TabInterface* tab = GetTabListInterface()->InsertWebContentsAt(
+      /*index=*/1, std::move(bg_contents), /*should_pin=*/false,
+      /*group=*/std::nullopt);
+  ASSERT_TRUE(tab);
+  GetTabListInterface()->ActivateTab(active_tab->GetHandle());
+  ASSERT_FALSE(tab->IsActivated());
+  GlicSidePanelCoordinatorAndroid* coordinator =
+      GetSidePanelCoordinatorAndroid(tab);
+
+  EXPECT_FALSE(coordinator->HasBridgesForTesting());
+
+  std::unique_ptr<content::WebContents> guest_web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(GetProfile()));
+  coordinator->SetWebContents(guest_web_contents.get());
+  EXPECT_FALSE(coordinator->HasBridgesForTesting());
+
+  // `Show()` on a background tab defers bridge creation until the tab
+  // activates.
+  coordinator->Show(GlicSidePanelCoordinator::ShowOptions());
+  EXPECT_FALSE(coordinator->HasBridgesForTesting());
+
+  GetTabListInterface()->ActivateTab(tab->GetHandle());
+  EXPECT_TRUE(coordinator->HasBridgesForTesting());
+  ASSERT_OK(WaitForSidePanelState(tab, GlicSidePanelCoordinator::State::kPeek));
+
+  CloseOptions close_options;
+  close_options.suppress_animations = true;
+  coordinator->Close(close_options);
+  ASSERT_OK(
+      WaitForSidePanelState(tab, GlicSidePanelCoordinator::State::kClosed));
+  coordinator->SetWebContents(nullptr);
+  guest_web_contents.reset();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicSidePanelCoordinatorAndroidBrowserTest,
+                       GuestWebContentsDestroyedClearsJavaViews) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  GlicSidePanelCoordinatorAndroid* coordinator =
+      GetSidePanelCoordinatorAndroid(tab);
+
+  std::unique_ptr<content::WebContents> guest_web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(GetProfile()));
+  coordinator->SetWebContents(guest_web_contents.get());
+
+  GlicSidePanelCoordinator::ShowOptions show_options;
+  show_options.suppress_animations = true;
+  coordinator->Show(show_options);
+  ASSERT_OK(
+      WaitForSidePanelState(tab, GlicSidePanelCoordinator::State::kShown));
+  EXPECT_TRUE(coordinator->HasJavaWebContentsForTesting());
+
+  // Destroy `guest_web_contents` while the sheet is shown;
+  // `WebContentsDestroyed()` must notify Java to clear its `WebContents`
+  // reference cleanly.
+  guest_web_contents.reset();
+  EXPECT_FALSE(coordinator->HasJavaWebContentsForTesting());
+
+  CloseOptions close_options;
+  close_options.suppress_animations = true;
+  coordinator->Close(close_options);
+  ASSERT_OK(
+      WaitForSidePanelState(tab, GlicSidePanelCoordinator::State::kClosed));
 }
 
 }  // namespace glic

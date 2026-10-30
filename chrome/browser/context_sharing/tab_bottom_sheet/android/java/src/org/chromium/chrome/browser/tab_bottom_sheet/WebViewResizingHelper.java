@@ -120,7 +120,6 @@ public class WebViewResizingHelper {
 
     private final Context mContext;
     private final FrameLayout mResizingContainer;
-    private final @Nullable View mResizingPlaceholder;
     private final View mExpandedContentGroup;
     private final WindowAndroid mWindowAndroid;
     private final @Nullable BottomSheetController mBottomSheetController;
@@ -128,10 +127,14 @@ public class WebViewResizingHelper {
     private final boolean mIsSidePanel;
     private final @Px int mWebUiTopMarginPx;
     private final Rect mLastSafeAreaInsets = new Rect(0, 0, 0, -1);
-    private final @Nullable ResizingPlaceholderCoordinator mPlaceholderCoordinator;
     private final View.OnLayoutChangeListener mOnLayoutChangeListener;
     private final @Nullable CoBrowseComponentProvider mComponentProvider;
+    private final @ColorInt int mBackgroundColor;
+    private final @ColorInt int mPlaceholderElemColor;
 
+    private @Nullable View mResizingPlaceholder;
+    private @Nullable ResizingPlaceholderCoordinator mPlaceholderCoordinator;
+    private boolean mPlaceholderInitialized;
     private @Nullable ThinWebView mThinWebView;
     private @Nullable WebContents mWebContents;
     private boolean mIsViewportSizeFixed;
@@ -163,6 +166,8 @@ public class WebViewResizingHelper {
         mBottomSheetController = bottomSheetController;
         mIsSidePanel = isSidePanel;
         mComponentProvider = componentProvider;
+        mBackgroundColor = backgroundColor;
+        mPlaceholderElemColor = placeholderElemColor;
         mWebUiTopMarginPx =
                 mContext.getResources()
                         .getDimensionPixelSize(R.dimen.tab_bottom_sheet_web_ui_top_margin);
@@ -180,17 +185,6 @@ public class WebViewResizingHelper {
                             }
                         });
         mResizingContainer.addOnLayoutChangeListener(mOnLayoutChangeListener);
-
-        mPlaceholderCoordinator =
-                mComponentProvider != null
-                        ? mComponentProvider.createResizingPlaceholderCoordinator(
-                                mContext, backgroundColor, placeholderElemColor)
-                        : null;
-        mResizingPlaceholder =
-                mPlaceholderCoordinator != null ? mPlaceholderCoordinator.getView() : null;
-        if (mResizingPlaceholder != null) {
-            mResizingContainer.addView(mResizingPlaceholder);
-        }
 
         if (mInsetObserver != null) {
             mInsetObserver.addWindowInsetsAnimationListener(mInsetAnimationListener);
@@ -217,6 +211,21 @@ public class WebViewResizingHelper {
         }
     }
 
+    private void ensurePlaceholderCoordinator() {
+        if (mPlaceholderInitialized) {
+            return;
+        }
+        mPlaceholderInitialized = true;
+        if (mComponentProvider == null) {
+            return;
+        }
+        mPlaceholderCoordinator =
+                mComponentProvider.createResizingPlaceholderCoordinator(
+                        mContext, mBackgroundColor, mPlaceholderElemColor);
+        mResizingPlaceholder =
+                mPlaceholderCoordinator != null ? mPlaceholderCoordinator.getView() : null;
+    }
+
     /** Destroys the helper and releases the WebContents. */
     public void destroy() {
         if (mPlaceholderCoordinator != null) {
@@ -237,6 +246,7 @@ public class WebViewResizingHelper {
 
     /** Resets the helper to its initial state without resetting the WebContents. */
     public void reset() {
+        ensurePlaceholderCoordinator();
         resetInternal(/* reattachPlaceholder= */ true);
     }
 

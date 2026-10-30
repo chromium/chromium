@@ -244,6 +244,7 @@ public class CoBrowseViews {
         return mClientType;
     }
 
+    @CalledByNative
     @Nullable WebContents getWebContents() {
         return mWebUi != null ? mWebUi.getWebContents() : null;
     }

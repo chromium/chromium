@@ -473,6 +473,9 @@ public class TabBottomSheetWebUiUnitTest {
                         null,
                         mMockComponentProvider);
 
+        verify(mMockComponentProvider, never())
+                .createResizingPlaceholderCoordinator(any(), anyInt(), anyInt());
+        webUi.setWebContents(mWebContents, false);
         webUi.destroy();
         verify(mMockPlaceholderCoordinator).destroy();
     }
