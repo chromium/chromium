@@ -1648,6 +1648,10 @@ public class StripLayoutHelper
         mRenderHost.requestRender();
     }
 
+    public @Nullable LayerTitleCache getLayerTitleCacheForTesting() {
+        return mLayerTitleCache;
+    }
+
     private void updateTitleCacheForInit() {
         if (mModel == null || mLayerTitleCache == null) return;
 

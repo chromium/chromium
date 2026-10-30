@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <atomic>
 #include <string>
 #include <string_view>
 
@@ -27,6 +28,13 @@ using base::android::ScopedJavaLocalRef;
 
 namespace l10n_util {
 
+namespace {
+
+// -1: uncached, 0: false (LTR), 1: true (RTL).
+constinit std::atomic<int> g_layout_rtl_cache{-1};
+
+}  // namespace
+
 static int32_t JNI_LocalizationUtils_GetFirstStrongCharacterDirection(
     JNIEnv* env,
     const JavaRef<jstring>& string) {
@@ -34,18 +42,20 @@ static int32_t JNI_LocalizationUtils_GetFirstStrongCharacterDirection(
       base::android::ConvertJavaStringToUTF16(env, string));
 }
 
-bool IsLayoutRtl() {
-  static bool is_layout_rtl_cached = false;
-  static bool layout_rtl_cache;
+static void JNI_LocalizationUtils_InvalidateLayoutRtlCacheForTesting(
+    JNIEnv* env) {
+  g_layout_rtl_cache.store(-1, std::memory_order_relaxed);
+}
 
-  if (!is_layout_rtl_cached) {
-    is_layout_rtl_cached = true;
+bool IsLayoutRtl() {
+  int cached = g_layout_rtl_cache.load(std::memory_order_relaxed);
+  if (cached == -1) {
     JNIEnv* env = base::android::AttachCurrentThread();
-    layout_rtl_cache =
-        static_cast<bool>(Java_LocalizationUtils_isLayoutRtl(env));
+    cached = Java_LocalizationUtils_isLayoutRtlForNative(env) ? 1 : 0;
+    g_layout_rtl_cache.store(cached, std::memory_order_relaxed);
   }
 
-  return layout_rtl_cache;
+  return cached != 0;
 }
 
 bool ShouldMirrorBackForwardGestures() {

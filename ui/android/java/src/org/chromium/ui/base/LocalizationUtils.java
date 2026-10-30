@@ -30,6 +30,7 @@ public class LocalizationUtils {
     public static final int LEFT_TO_RIGHT = 2;
 
     private static @Nullable Boolean sIsLayoutRtlForTesting;
+    private static volatile boolean sHasNativeLayoutRtlCache;
 
     private LocalizationUtils() {
         /* cannot be instantiated */
@@ -48,13 +49,15 @@ public class LocalizationUtils {
     /**
      * Returns whether the Android layout direction is RTL.
      *
-     * Note that the locale direction can be different from layout direction. Two known cases:
-     * - RTL languages on Android 4.1, due to the lack of RTL layout support on 4.1.
-     * - When user turned on force RTL layout option under developer options.
+     * <p>Note that the locale direction can be different from layout direction. Two known cases:
      *
-     * Therefore, only this function should be used to query RTL for layout purposes.
+     * <ul>
+     *   <li>RTL languages on Android 4.1, due to the lack of RTL layout support on 4.1.
+     *   <li>When user turned on force RTL layout option under developer options.
+     * </ul>
+     *
+     * <p>Therefore, only this function should be used to query RTL for layout purposes.
      */
-    @CalledByNative
     public static boolean isLayoutRtl() {
         if (sIsLayoutRtlForTesting != null) return sIsLayoutRtlForTesting;
 
@@ -65,10 +68,28 @@ public class LocalizationUtils {
                 == View.LAYOUT_DIRECTION_RTL;
     }
 
+    @CalledByNative
+    private static boolean isLayoutRtlForNative() {
+        sHasNativeLayoutRtlCache = true;
+        return isLayoutRtl();
+    }
+
     @CalledByNativeForTesting
     public static void setRtlForTesting(boolean shouldBeRtl) {
         sIsLayoutRtlForTesting = shouldBeRtl;
-        ResettersForTesting.register(() -> sIsLayoutRtlForTesting = null);
+        invalidateNativeLayoutRtlCache();
+        ResettersForTesting.register(
+                () -> {
+                    sIsLayoutRtlForTesting = null;
+                    invalidateNativeLayoutRtlCache();
+                });
+    }
+
+    private static void invalidateNativeLayoutRtlCache() {
+        if (sHasNativeLayoutRtlCache) {
+            sHasNativeLayoutRtlCache = false;
+            LocalizationUtilsJni.get().invalidateLayoutRtlCacheForTesting(); // IN-TEST
+        }
     }
 
     /** Returns whether navigation gestures should be mirrored due to the UI language. */
@@ -141,5 +162,7 @@ public class LocalizationUtils {
         int getFirstStrongCharacterDirection(String string);
 
         String getNativeUiLocale();
+
+        void invalidateLayoutRtlCacheForTesting();
     }
 }
