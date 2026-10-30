@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <!-- Disable spellcheck to avoid flakiness related to dictionary init on
+         Windows. -->
+    <p>Contenteditable element that replaces multiline compositions:</p>
+    <div id="contenteditable" contenteditable="true" spellcheck="false"></div>
+    <script>
+      const contenteditable = document.getElementById('contenteditable');
+      // This is a contrived example of behaviour described in
+      // https://crbug.com/537833858
+      const handleComposition = (e) => {
+        if (e.data && e.data.includes('\n')) {
+          contenteditable.textContent =
+              'Intentional interference with a composition with a newline.';
+        }
+      };
+      contenteditable.addEventListener('compositionstart', handleComposition);
+      contenteditable.addEventListener('compositionupdate', handleComposition);
+      contenteditable.addEventListener('compositionend', handleComposition);
+    </script>
+  </body>
+</html>

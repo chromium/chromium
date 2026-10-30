@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/functional/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/dictation/dictation_interactive_browser_test_base.h"
 #include "chrome/browser/dictation/features.h"
 #include "chrome/browser/dictation/test_util.h"
@@ -38,6 +39,13 @@ class DictationTargetBrowserTest : public DictationInteractiveBrowserTestBase {
                                       std::string_view expected) {
     return dictation::GetEditableExpectedText(
         web_contents()->GetPrimaryMainFrame(), selector, expected);
+  }
+
+  // Performs a renderer round-trip to prevent `Target` from coalescing
+  // back-to-back composition operations while an earlier operation is still in
+  // flight.
+  StepBuilder RoundTrip(ui::ElementIdentifier web_contents_id) {
+    return ExecuteJs(web_contents_id, "() => {}");
   }
 };
 
@@ -168,6 +176,56 @@ IN_PROC_BROWSER_TEST_F(DictationTargetBrowserTest, InsertIntoContentEditable) {
 
   EXPECT_EDITABLE_TEXT_EQ("#anchor_id", "Hello world");
 }
+
+class DictationTargetShowPartialsBrowserTest
+    : public DictationTargetBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  DictationTargetShowPartialsBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kDictation, {{"use_component_extension", "false"},
+                     {"auto_session_end_delay", "0ms"},
+                     {"show_partials", GetParam() ? "true" : "false"}});
+  }
+  ~DictationTargetShowPartialsBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Some sites have contenteditables that interact poorly with IME composition
+// when the composition contains newlines. The test page used here intentionally
+// handles newlines in compositions poorly, and we test that the final text
+// makes it into the element correctly. Regression test for
+// https://crbug.com/537833858
+IN_PROC_BROWSER_TEST_P(DictationTargetShowPartialsBrowserTest,
+                       NewlineRejectingContentEditable) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
+  const GURL url = embedded_test_server()->GetURL(
+      "/dictation/newline_rejecting_contenteditable.html");
+
+  // clang-format off
+  RunTestSequence(
+    InstrumentTab(kWebContentsElementId),
+    NavigateWebContents(kWebContentsElementId, url),
+    StartSessionWithTarget(kWebContentsElementId, "#contenteditable"),
+    ExtensionAPISetStreamState(ExtensionStreamState::kTranscribing),
+    ExtensionAPIUpdateTranscription(
+        ExtensionTranscriptionType::kPartial, "* one"),
+    RoundTrip(kWebContentsElementId),
+    ExtensionAPIUpdateTranscription(
+        ExtensionTranscriptionType::kFinal, "* one\n* two"),
+    RoundTrip(kWebContentsElementId),
+    ExtensionAPISetStreamState(ExtensionStreamState::kComplete)
+  );
+  // clang-format on
+
+  EXPECT_EDITABLE_TEXT_EQ("#contenteditable", "* one\n* two");
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         DictationTargetShowPartialsBrowserTest,
+                         testing::Bool());
 
 }  // namespace
 
