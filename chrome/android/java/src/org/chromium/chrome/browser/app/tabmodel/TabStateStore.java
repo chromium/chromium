@@ -292,8 +292,8 @@ public class TabStateStore implements TabPersistentStore {
     public void saveState() {
         assertInitialized();
 
-        // All mutations to the collection tree should already be queue to the DB thread so no
-        // additional work is required for that.
+        mModelTrackingManager.drainDirtyTabs(/* incognito= */ false);
+        mModelTrackingManager.drainDirtyTabs(/* incognito= */ true);
 
         saveTabIfNotClean(mTabModelSelector.getModel(false).getCurrentTabSupplier().get());
         if (mModelTrackingManager.isSynchronizerPresent(/* incognito= */ true)) {
@@ -643,11 +643,14 @@ public class TabStateStore implements TabPersistentStore {
         updateTabCountForModel(isTabOtr);
     }
 
-    private void onTabUnregistered(Tab tab) {
+    @VisibleForTesting
+    void onTabUnregistered(Tab tab) {
+        assertInitialized();
         if (!tab.isDestroyed()) {
             assumeNonNull(TabStateAttributesRegistry.getAttributesFor(tab, TabStateStore.class))
                     .removeObserver(mAttributesObserver);
         }
+        mModelTrackingManager.removeTab(tab);
         // TODO(https://crbug.com/430996004): If closing, delete the tab record.
         updateTabCountForModel(tab.isOffTheRecord());
     }

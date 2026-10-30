@@ -43,6 +43,10 @@ import org.chromium.components.tabs.TabStripCollection;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Manages the tracking lifecycles of {@link StorageCollectionSynchronizer}s and orchestrates the
@@ -145,6 +149,9 @@ public class ModelTrackingOrchestrator {
             createVisualDataUpdateObserver(/* incognito= */ false);
     private final TabGroupObserver mIncognitoVisualDataUpdateObserver =
             createVisualDataUpdateObserver(/* incognito= */ true);
+
+    private final Set<Tab> mRegularDirtyTabs = new HashSet<>();
+    private final Set<Tab> mIncognitoDirtyTabs = new HashSet<>();
 
     private @Nullable StorageCollectionSynchronizer mIncognitoSynchronizer;
     private @Nullable StorageCollectionSynchronizer mRegularSynchronizer;
@@ -309,8 +316,54 @@ public class ModelTrackingOrchestrator {
             }
         }
 
+        mRegularDirtyTabs.clear();
+        mIncognitoDirtyTabs.clear();
+
         mRegularSynchronizerManager.reset();
         if (mIncognitoSynchronizerManager != null) mIncognitoSynchronizerManager.reset();
+    }
+
+    private Set<Tab> getDirtyTabs(boolean incognito) {
+        return incognito ? mIncognitoDirtyTabs : mRegularDirtyTabs;
+    }
+
+    /**
+     * Removes the tab from tracking and any pending dirty tab sets.
+     *
+     * @param tab The tab to remove.
+     */
+    void removeTab(Tab tab) {
+        getDirtyTabs(tab.isOffTheRecord()).remove(tab);
+    }
+
+    /**
+     * Drains and saves all pending dirty tabs for the specified model via {@link #saveTab(Tab)}.
+     *
+     * @param incognito Whether to drain dirty tabs for the incognito model.
+     */
+    void drainDirtyTabs(boolean incognito) {
+        if (!isSynchronizerPresent(incognito)) return;
+
+        Set<Tab> dirtyTabs = getDirtyTabs(incognito);
+        if (dirtyTabs.isEmpty()) return;
+
+        TabModel model = mTabModelSelector.getModel(incognito);
+        Profile profile = model.getProfile();
+        if (profile == null) return;
+
+        List<Tab> tabsToSave = new ArrayList<>(dirtyTabs);
+        try (ScopedStorageBatch ignored = createBatch(profile)) {
+            for (Tab tab : tabsToSave) {
+                if (tab.isDestroyed() || tab.isClosing()) {
+                    dirtyTabs.remove(tab);
+                    continue;
+                }
+                if (!tab.hasParentCollection()) {
+                    continue;
+                }
+                saveTab(tab);
+            }
+        }
     }
 
     /**
@@ -319,7 +372,12 @@ public class ModelTrackingOrchestrator {
      * @param tab The tab to save.
      */
     public void saveTab(Tab tab) {
-        if (!isSynchronizerPresent(tab.isOffTheRecord())) return;
+        boolean incognito = tab.isOffTheRecord();
+        Set<Tab> dirtyTabs = getDirtyTabs(incognito);
+        if (!isSynchronizerPresent(incognito)) {
+            dirtyTabs.add(tab);
+            return;
+        }
 
         TabStateAttributes attributes =
                 TabStateAttributesRegistry.getAttributesFor(tab, TabStateStore.class);
@@ -333,10 +391,12 @@ public class ModelTrackingOrchestrator {
 
         mTabStateStorageService.saveTabData(tab);
 
-        TabModel model = mTabModelSelector.getModel(tab.isOffTheRecord());
+        TabModel model = mTabModelSelector.getModel(incognito);
         if (model.getCurrentTabSupplier().get() == tab) {
             mActiveTabCache.saveActiveTab(tab);
         }
+
+        dirtyTabs.remove(tab);
     }
 
     /**
@@ -354,6 +414,7 @@ public class ModelTrackingOrchestrator {
             callback.run();
             return;
         }
+        drainDirtyTabs(incognito);
         synchronizer.saveStructureSnapshot(clearUnusedNodes, callback);
     }
 
@@ -443,6 +504,8 @@ public class ModelTrackingOrchestrator {
                 attributes.clearTabStateDirtiness();
             }
         }
+        // fullSave() saves both the collection hierarchy and all tab payloads.
+        getDirtyTabs(incognito).clear();
 
         initializeTrackingSuite(incognito);
         return true;
@@ -641,6 +704,7 @@ public class ModelTrackingOrchestrator {
         }
 
         public void reset() {
+            getDirtyTabs(mIncognito).clear();
             if (mIncognito) {
                 if (mIncognitoSynchronizer != null) {
                     mIncognitoSynchronizer.destroy();

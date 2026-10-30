@@ -1536,4 +1536,27 @@ public class TabStateStoreUnitTest {
         verify(mObserver).onStateLoaded();
         verify(mModelTrackingOrchestrator).onRestoreFinished();
     }
+
+    @Test
+    public void testOnTabUnregistered_callsRemoveTab() {
+        mTabStateStore.onNativeLibraryReady();
+        Tab tab = createMockTabWithParentCollection(1, mProfile);
+        TabStateAttributesRegistry.createAttributesForTab(
+                tab, TabStateStore.class, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabStateStore.onTabRegistered(tab);
+
+        mTabStateStore.onTabUnregistered(tab);
+
+        verify(mModelTrackingOrchestrator).removeTab(eq(tab));
+    }
+
+    @Test
+    public void testSaveState_drainsDirtyTabs() {
+        mTabStateStore.onNativeLibraryReady();
+
+        mTabStateStore.saveState();
+
+        verify(mModelTrackingOrchestrator).drainDirtyTabs(/* incognito= */ false);
+        verify(mModelTrackingOrchestrator).drainDirtyTabs(/* incognito= */ true);
+    }
 }

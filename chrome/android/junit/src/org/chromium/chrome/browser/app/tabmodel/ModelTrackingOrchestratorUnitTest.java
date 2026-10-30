@@ -927,4 +927,122 @@ public class ModelTrackingOrchestratorUnitTest {
         assertTrue(mOrchestrator.isSynchronizerPresent(/* incognito= */ false));
         verify(mRegularSynchronizer).consumeRestoreOrchestratorFactory(any());
     }
+
+    @Test
+    public void testSaveStructureSnapshot_drainsDirtyTabs() {
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ true);
+        MockTab tab = createTab(1, mProfile, /* hasParentCollection= */ true);
+        TabStateAttributesRegistry.createAttributesForTab(
+                tab, TabStateStore.class, TabCreationState.FROZEN_FOR_LAZY_LOAD);
+        TabStateAttributes attributes =
+                TabStateAttributesRegistry.getAttributesFor(tab, TabStateStore.class);
+        assertEquals(DirtinessState.DIRTY, attributes.getDirtinessState());
+
+        // Queue dirty tab before synchronizer is initialized.
+        mOrchestrator.saveTab(tab);
+        verify(mTabStateStorageService, never()).saveTabData(any());
+        assertEquals(DirtinessState.DIRTY, attributes.getDirtinessState());
+
+        // Load data to initialize the synchronizer.
+        mOrchestrator.onDataLoaded(mRegularData, /* incognito= */ false);
+        assertTrue(mOrchestrator.isSynchronizerPresent(/* incognito= */ false));
+
+        Runnable callback = mock(Runnable.class);
+        mOrchestrator.saveStructureSnapshot(
+                /* incognito= */ false, /* clearUnusedNodes= */ true, callback);
+
+        verify(mTabStateStorageService).saveTabData(eq(tab));
+        assertEquals(DirtinessState.CLEAN, attributes.getDirtinessState());
+        verify(mRegularSynchronizer).saveStructureSnapshot(eq(true), eq(callback));
+    }
+
+    @Test
+    public void testRemoveTab_removesFromDirtyTabs() {
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ true);
+        MockTab tab = createTab(1, mProfile, /* hasParentCollection= */ true);
+        TabStateAttributesRegistry.createAttributesForTab(
+                tab, TabStateStore.class, TabCreationState.FROZEN_FOR_LAZY_LOAD);
+
+        mOrchestrator.saveTab(tab);
+        mOrchestrator.removeTab(tab);
+
+        mOrchestrator.onDataLoaded(mRegularData, /* incognito= */ false);
+        mOrchestrator.saveStructureSnapshot(
+                /* incognito= */ false, /* clearUnusedNodes= */ true, () -> {});
+
+        verify(mTabStateStorageService, never()).saveTabData(eq(tab));
+    }
+
+    @Test
+    public void testDrainDirtyTabs_skipsDestroyedAndClosingTabs() {
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ true);
+
+        MockTab closingTab = createTab(1, mProfile, /* hasParentCollection= */ true);
+        TabStateAttributesRegistry.createAttributesForTab(
+                closingTab, TabStateStore.class, TabCreationState.FROZEN_FOR_LAZY_LOAD);
+        mOrchestrator.saveTab(closingTab);
+        closingTab.setClosing(true);
+
+        MockTab destroyedTab = createTab(2, mProfile, /* hasParentCollection= */ true);
+        TabStateAttributesRegistry.createAttributesForTab(
+                destroyedTab, TabStateStore.class, TabCreationState.FROZEN_FOR_LAZY_LOAD);
+        mOrchestrator.saveTab(destroyedTab);
+        destroyedTab.destroy();
+
+        MockTab detachedTab = createTab(3, mProfile, /* hasParentCollection= */ false);
+        TabStateAttributesRegistry.createAttributesForTab(
+                detachedTab, TabStateStore.class, TabCreationState.FROZEN_FOR_LAZY_LOAD);
+        mOrchestrator.saveTab(detachedTab);
+
+        MockTab validTab = createTab(4, mProfile, /* hasParentCollection= */ true);
+        TabStateAttributesRegistry.createAttributesForTab(
+                validTab, TabStateStore.class, TabCreationState.FROZEN_FOR_LAZY_LOAD);
+        mOrchestrator.saveTab(validTab);
+
+        mOrchestrator.onDataLoaded(mRegularData, /* incognito= */ false);
+        mOrchestrator.saveStructureSnapshot(
+                /* incognito= */ false, /* clearUnusedNodes= */ true, () -> {});
+
+        verify(mTabStateStorageService).saveTabData(eq(validTab));
+        verify(mTabStateStorageService, never()).saveTabData(eq(closingTab));
+        verify(mTabStateStorageService, never()).saveTabData(eq(destroyedTab));
+        verify(mTabStateStorageService, never()).saveTabData(eq(detachedTab));
+
+        // Verify closingTab was evicted from dirty tabs and is not saved on subsequent drains.
+        closingTab.setClosing(false);
+        mOrchestrator.drainDirtyTabs(/* incognito= */ false);
+        verify(mTabStateStorageService, never()).saveTabData(eq(closingTab));
+    }
+
+    @Test
+    public void testDrainDirtyTabs_doesNothingWhenSynchronizerNotPresent() {
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ true);
+        MockTab tab = createTab(1, mProfile, /* hasParentCollection= */ true);
+        TabStateAttributesRegistry.createAttributesForTab(
+                tab, TabStateStore.class, TabCreationState.FROZEN_FOR_LAZY_LOAD);
+
+        mOrchestrator.saveTab(tab);
+        mOrchestrator.drainDirtyTabs(/* incognito= */ false);
+
+        verify(mTabStateStorageService, never()).saveTabData(any());
+
+        mOrchestrator.onDataLoaded(mRegularData, /* incognito= */ false);
+        mOrchestrator.saveStructureSnapshot(
+                /* incognito= */ false, /* clearUnusedNodes= */ true, () -> {});
+        verify(mTabStateStorageService).saveTabData(eq(tab));
+    }
+
+    private MockTab createTab(int id, Profile profile, boolean hasParentCollection) {
+        return new MockTab(id, profile) {
+            @Override
+            public boolean hasParentCollection() {
+                return hasParentCollection;
+            }
+
+            @Override
+            public boolean isInitialized() {
+                return true;
+            }
+        };
+    }
 }
