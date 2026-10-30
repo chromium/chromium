@@ -193,7 +193,9 @@ void BrowsingInstance::RegisterSiteInstance(SiteInstanceImpl* site_instance) {
   // Explicitly prevent the default SiteInstance from being added since
   // the map is only supposed to contain instances that map to a single site.
   if (site_instance->IsDefaultSiteInstance()) {
-    CHECK(!ShouldUseDefaultSiteInstanceGroup(), base::NotFatalUntil::M160);
+    // TODO(crbug.com/578414909): CHECK-exclusion: Convert to a CHECK once we
+    // are confident it won't be triggered.
+    DCHECK(!ShouldUseDefaultSiteInstanceGroup());
     SiteShard shard = site_instance->GetSiteInfo().shard();
     CHECK(!default_site_instances_.contains(shard));
     default_site_instances_[shard] = site_instance;
