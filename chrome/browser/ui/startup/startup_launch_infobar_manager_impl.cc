@@ -189,8 +189,10 @@ void StartupLaunchInfoBarManagerImpl::CreateInfoBarForWebContents(
 
   auto* content_infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(web_contents);
-  infobars::InfoBar* infobar = content_infobar_manager->AddInfoBar(
-      CreateConfirmInfoBar(std::move(delegate)));
+  infobars::InfoBar* infobar =
+      content_infobar_manager->AddInfoBar(CreateConfirmInfoBar(
+          ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(),
+          std::move(delegate)));
 
   if (infobar == nullptr) {
     // Infobar may be null if `InfoBarManager::ShouldShowInfoBar` returns false,

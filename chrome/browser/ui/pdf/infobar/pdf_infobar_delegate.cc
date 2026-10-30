@@ -29,8 +29,9 @@ infobars::InfoBar* PdfInfoBarDelegate::Create(
   base::UmaHistogramBoolean("PDF.InfoBar.Shown", true);
 
   CHECK(infobar_manager);
-  return infobar_manager->AddInfoBar(
-      CreateConfirmInfoBar(std::make_unique<PdfInfoBarDelegate>()));
+  return infobar_manager->AddInfoBar(CreateConfirmInfoBar(
+      ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(),
+      std::make_unique<PdfInfoBarDelegate>()));
 }
 
 PdfInfoBarDelegate::~PdfInfoBarDelegate() {

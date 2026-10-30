@@ -5,14 +5,10 @@
 #ifndef CHROME_BROWSER_INFOBARS_CONFIRM_INFOBAR_CREATION_ALLOWLIST_H_
 #define CHROME_BROWSER_INFOBARS_CONFIRM_INFOBAR_CREATION_ALLOWLIST_H_
 
-#include <memory>
-#include <string>
+#include <string_view>
 
 #include "base/types/pass_key.h"
-#include "components/infobars/core/infobar_delegate.h"
 #include "net/cert/cert_status_flags.h"
-
-class ConfirmInfoBarDelegate;
 
 namespace content {
 class WebContents;
@@ -27,14 +23,8 @@ class IncognitoConnectabilityInfoBarDelegate;
 class WebAuthFlowInfoBarDelegate;
 }  // namespace extensions
 
-namespace gfx {
-struct VectorIcon;
-}
-
 namespace infobars {
 class BrowserInfoBarManager;
-class ContentInfoBarManager;
-class InfoBar;
 }  // namespace infobars
 
 namespace installer_downloader {
@@ -106,26 +96,16 @@ class ConfirmInfoBarCreationAllowlist {
   friend class ChromeSelectFilePolicy;
   friend class FlagsUI;
   friend class policy::internal::LocalTestInfoBarVisibilityManager;
-  friend void ShowBadFlagsInfoBar(content::WebContents*, int, const char*);
+  friend void ShowBadFlagsInfoBar(content::WebContents*, int, std::string_view);
   friend void ShowBadFlagsPrompt(content::WebContents*);
-
-  // Transitional creators & View:
-  friend class ConfirmInfoBar;
-  friend std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
-      std::unique_ptr<ConfirmInfoBarDelegate> delegate);
-  friend void CreateSimpleAlertInfoBar(
-      infobars::ContentInfoBarManager* infobar_manager,
-      infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier,
-      const gfx::VectorIcon* vector_icon,
-      const std::u16string& message,
-      bool auto_expire,
-      bool should_animate,
-      bool closeable,
-      infobars::InfoBarDelegate::InfobarPriority infobar_priority);
 
   ConfirmInfoBarCreationAllowlist() = default;
 
+  // For the centralized framework and permanent architectural exceptions.
   static PassKey GetPassKey() { return PassKey(); }
+
+  // For legacy callers in the burndown list pending migration/cleanup.
+  static PassKey GetPassKeyForMigration() { return PassKey(); }
 };
 
 #endif  // CHROME_BROWSER_INFOBARS_CONFIRM_INFOBAR_CREATION_ALLOWLIST_H_

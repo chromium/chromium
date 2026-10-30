@@ -16,6 +16,7 @@
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
+#include "chrome/browser/infobars/confirm_infobar_creation_allowlist.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/infobars/infobar_spec.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
@@ -380,8 +381,9 @@ TEST_F(BrowserInfoBarManagerUnitTest, ReplaceEdgeCases) {
   EXPECT_EQ(u"Buttonless",
             replaced->delegate()->AsConfirmInfoBarDelegate()->GetMessageText());
 
-  std::unique_ptr<infobars::InfoBar> unowned_infobar =
-      CreateConfirmInfoBar(std::make_unique<DummyConfirmDelegate>());
+  std::unique_ptr<infobars::InfoBar> unowned_infobar = CreateConfirmInfoBar(
+      ConfirmInfoBarCreationAllowlist::GetPassKeyForTesting(),
+      std::make_unique<DummyConfirmDelegate>());
   ASSERT_EQ(nullptr, unowned_infobar->owner());
   EXPECT_EQ(nullptr, manager()->Replace(unowned_infobar.get(), id_buttonless));
 
@@ -425,8 +427,9 @@ TEST_F(BrowserInfoBarManagerUnitTest, HideOverloadsAndTrackedGlobalInstances) {
                           .SetScope(InfoBarScope::kGlobal)
                           .Build());
 
-  std::unique_ptr<infobars::InfoBar> unowned_infobar =
-      CreateConfirmInfoBar(std::make_unique<DummyConfirmDelegate>());
+  std::unique_ptr<infobars::InfoBar> unowned_infobar = CreateConfirmInfoBar(
+      ConfirmInfoBarCreationAllowlist::GetPassKeyForTesting(),
+      std::make_unique<DummyConfirmDelegate>());
   manager()->Hide(unowned_infobar.get());
 
   manager()->Hide(unregistered_id);

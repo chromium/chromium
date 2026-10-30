@@ -21,6 +21,7 @@
 #include "chrome/browser/contextual_cueing/prefs.h"
 #include "chrome/browser/contextual_cueing/test_cue_target.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/infobars/confirm_infobar_creation_allowlist.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -2049,8 +2050,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
       browser()->GetTabStripModel()->GetActiveWebContents();
   auto* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(web_contents);
-  infobar_manager->AddInfoBar(
-      ConfirmInfoBar::Create(std::make_unique<TestInfoBarDelegate>()));
+  infobar_manager->AddInfoBar(ConfirmInfoBar::Create(
+      ConfirmInfoBarCreationAllowlist::GetPassKeyForTesting(),
+      std::make_unique<TestInfoBarDelegate>()));
   ASSERT_FALSE(infobar_manager->infobars().empty());
 
   SimulateFilterPassed();

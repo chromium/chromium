@@ -37,9 +37,4 @@ std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
     std::unique_ptr<views::View> custom_message_view);
 #endif
 
-// Deprecated: Transitional non-PassKey overload for legacy callers.
-// Will be removed in Part 2 once all call sites are migrated to base::PassKey.
-std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
-    std::unique_ptr<ConfirmInfoBarDelegate> delegate);
-
 #endif  // CHROME_BROWSER_INFOBARS_CONFIRM_INFOBAR_CREATOR_H_

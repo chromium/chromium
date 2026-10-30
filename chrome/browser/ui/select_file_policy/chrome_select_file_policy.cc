@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/infobars/confirm_infobar_creation_allowlist.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -76,6 +77,7 @@ void ChromeSelectFilePolicy::SelectFileDenied() {
         infobars::ContentInfoBarManager::FromWebContents(source_contents_);
     if (infobar_manager) {
       CreateSimpleAlertInfoBar(
+          ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(),
           infobar_manager,
           infobars::InfoBarDelegate::FILE_ACCESS_DISABLED_INFOBAR_DELEGATE,
           nullptr,

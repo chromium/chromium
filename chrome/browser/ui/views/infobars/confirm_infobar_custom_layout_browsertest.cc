@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/infobars/confirm_infobar_creation_allowlist.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
@@ -89,7 +90,9 @@ class ConfirmInfobarCustomLayoutBrowserTest : public InProcessBrowserTest {
     ASSERT_TRUE(infobar_manager);
     auto delegate = std::make_unique<CustomLayoutTestConfirmInfoBarDelegate>(
         show_link_before_button);
-    infobar_manager->AddInfoBar(ConfirmInfoBar::Create(std::move(delegate)));
+    infobar_manager->AddInfoBar(ConfirmInfoBar::Create(
+        ConfirmInfoBarCreationAllowlist::GetPassKeyForTesting(),
+        std::move(delegate)));
   }
 
   ConfirmInfoBar* GetActiveConfirmInfoBar() {

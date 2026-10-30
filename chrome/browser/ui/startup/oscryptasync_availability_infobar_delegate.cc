@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/grit/generated_resources.h"
@@ -18,8 +19,9 @@
 // static
 void OSCryptAsyncAvailabilityInfoBarDelegate::Create(
     infobars::ContentInfoBarManager* infobar_manager) {
-  infobar_manager->AddInfoBar(
-      CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(
+  infobar_manager->AddInfoBar(CreateConfirmInfoBar(
+      ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(),
+      base::WrapUnique<ConfirmInfoBarDelegate>(
           new OSCryptAsyncAvailabilityInfoBarDelegate())));
 }
 

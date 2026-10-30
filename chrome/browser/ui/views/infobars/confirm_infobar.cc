@@ -50,21 +50,6 @@ std::unique_ptr<ConfirmInfoBar> ConfirmInfoBar::Create(
   return Create(pass_key, std::move(delegate));
 }
 
-// static
-std::unique_ptr<ConfirmInfoBar> ConfirmInfoBar::Create(
-    std::unique_ptr<ConfirmInfoBarDelegate> delegate) {
-  return Create(ConfirmInfoBarCreationAllowlist::GetPassKey(),
-                std::move(delegate));
-}
-
-// static
-std::unique_ptr<ConfirmInfoBar> ConfirmInfoBar::Create(
-    std::unique_ptr<ConfirmInfoBarDelegate> delegate,
-    std::unique_ptr<views::View> custom_message_view) {
-  return Create(ConfirmInfoBarCreationAllowlist::GetPassKey(),
-                std::move(delegate), std::move(custom_message_view));
-}
-
 template <typename T>
 T* ConfirmInfoBar::AssignMessageLabel(std::unique_ptr<T> view) {
   auto* message_label = content_container()->AddChildViewAt(std::move(view), 0);

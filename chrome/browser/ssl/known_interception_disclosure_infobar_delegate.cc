@@ -128,7 +128,9 @@ void MaybeShowKnownInterceptionDisclosureDialog(
           infobars::ContentInfoBarManager::FromWebContents(web_contents);
       auto delegate =
           std::make_unique<KnownInterceptionDisclosureInfoBarDelegate>(profile);
-      infobar_manager->AddInfoBar(CreateConfirmInfoBar(std::move(delegate)));
+      infobar_manager->AddInfoBar(CreateConfirmInfoBar(
+          ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(),
+          std::move(delegate)));
     }
 #endif
   }

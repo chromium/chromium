@@ -96,6 +96,7 @@ source_set("infobar_impl") {
     ":controller",
     ":infobar",
     "//chrome/app:branded_strings_grit",
+    "//chrome/browser/infobars",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/views/infobars",
     "//components/infobars/content",

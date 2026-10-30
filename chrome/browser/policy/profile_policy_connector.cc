@@ -26,6 +26,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_switcher/browser_switcher_policy_migrator.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
+#include "chrome/browser/infobars/confirm_infobar_creation_allowlist.h"
 #include "chrome/browser/infobars/simple_alert_infobar_creator.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/infobars/browser_infobar_manager.h"
@@ -272,6 +273,7 @@ class LocalTestInfoBarVisibilityManager :
       return;
     }
     CreateSimpleAlertInfoBar(
+        ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(),
         infobar_manager,
         infobars::InfoBarDelegate::LOCAL_TEST_POLICIES_APPLIED_INFOBAR, nullptr,
         l10n_util::GetStringUTF16(IDS_LOCAL_TEST_POLICIES_ENABLED),

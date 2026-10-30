@@ -2378,8 +2378,9 @@ void DevToolsWindow::MaybeShowSharedProcessInfobar() {
           std::move(params));
     } else if (auto* infobar_manager = GetInfoBarManager()) {
       sharing_infobar_ = infobar_manager->AddInfoBar(
-          CreateConfirmInfoBar(std::make_unique<ProcessSharingInfobarDelegate>(
-              inspected_web_contents)));
+          CreateConfirmInfoBar(ConfirmInfoBarCreationAllowlist::GetPassKey(),
+                               std::make_unique<ProcessSharingInfobarDelegate>(
+                                   inspected_web_contents)));
     }
     if (sharing_infobar_) {
       sharing_infobar_->owner()->AddObserver(this);

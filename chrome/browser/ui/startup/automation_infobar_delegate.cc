@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/devtools/global_confirm_info_bar.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/grit/generated_resources.h"
@@ -23,8 +24,9 @@ void AutomationInfoBarDelegate::Create() {
 // static
 infobars::InfoBar* AutomationInfoBarDelegate::Create(
     infobars::ContentInfoBarManager* infobar_manager) {
-  return infobar_manager->AddInfoBar(
-      CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(
+  return infobar_manager->AddInfoBar(CreateConfirmInfoBar(
+      ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(),
+      base::WrapUnique<ConfirmInfoBarDelegate>(
           new AutomationInfoBarDelegate())));
 }
 

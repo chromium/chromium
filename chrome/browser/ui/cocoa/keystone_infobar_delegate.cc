@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
@@ -32,10 +33,12 @@ void KeystonePromotionInfoBarDelegate::Create(
     return;
   }
   infobars::ContentInfoBarManager::FromWebContents(web_contents)
-      ->AddInfoBar(CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(
-          new KeystonePromotionInfoBarDelegate(
-              Profile::FromBrowserContext(web_contents->GetBrowserContext())
-                  ->GetPrefs()))));
+      ->AddInfoBar(CreateConfirmInfoBar(
+          ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(),
+          base::WrapUnique<ConfirmInfoBarDelegate>(
+              new KeystonePromotionInfoBarDelegate(
+                  Profile::FromBrowserContext(web_contents->GetBrowserContext())
+                      ->GetPrefs()))));
 }
 
 KeystonePromotionInfoBarDelegate::KeystonePromotionInfoBarDelegate(

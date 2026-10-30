@@ -39,17 +39,4 @@ void CreateSimpleAlertInfoBar(
     infobars::InfoBarDelegate::InfobarPriority infobar_priority =
         infobars::InfoBarDelegate::InfobarPriority::kDefault);
 
-// Deprecated: Transitional non-PassKey overload for legacy callers.
-// Will be removed in Part 2 once callers are migrated to base::PassKey.
-void CreateSimpleAlertInfoBar(
-    infobars::ContentInfoBarManager* infobar_manager,
-    infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier,
-    const gfx::VectorIcon* vector_icon,
-    const std::u16string& message,
-    bool auto_expire = true,
-    bool should_animate = true,
-    bool closeable = true,
-    infobars::InfoBarDelegate::InfobarPriority infobar_priority =
-        infobars::InfoBarDelegate::InfobarPriority::kDefault);
-
 #endif  // CHROME_BROWSER_INFOBARS_SIMPLE_ALERT_INFOBAR_CREATOR_H_

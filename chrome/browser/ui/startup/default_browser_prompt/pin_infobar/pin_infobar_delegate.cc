@@ -37,8 +37,9 @@ namespace default_browser {
 infobars::InfoBar* PinInfoBarDelegate::Create(
     infobars::ContentInfoBarManager* infobar_manager) {
   CHECK(infobar_manager);
-  return infobar_manager->AddInfoBar(
-      CreateConfirmInfoBar(std::make_unique<PinInfoBarDelegate>()));
+  return infobar_manager->AddInfoBar(CreateConfirmInfoBar(
+      ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(),
+      std::make_unique<PinInfoBarDelegate>()));
 }
 
 PinInfoBarDelegate::~PinInfoBarDelegate() {

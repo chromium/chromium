@@ -46,14 +46,6 @@ class ConfirmInfoBar : public InfoBarView {
       std::unique_ptr<ConfirmInfoBarDelegate> delegate,
       std::unique_ptr<views::View> custom_message_view);
 
-  // Deprecated: Transitional non-PassKey overloads for legacy callers.
-  // Will be removed in Part 2 once callers are migrated to base::PassKey.
-  static std::unique_ptr<ConfirmInfoBar> Create(
-      std::unique_ptr<ConfirmInfoBarDelegate> delegate);
-  static std::unique_ptr<ConfirmInfoBar> Create(
-      std::unique_ptr<ConfirmInfoBarDelegate> delegate,
-      std::unique_ptr<views::View> custom_message_view);
-
   ConfirmInfoBar(const ConfirmInfoBar&) = delete;
   ConfirmInfoBar& operator=(const ConfirmInfoBar&) = delete;
 

@@ -30,18 +30,3 @@ void CreateSimpleAlertInfoBar(
                     should_animate, closeable, infobar_priority)));
 #endif
 }
-
-void CreateSimpleAlertInfoBar(
-    infobars::ContentInfoBarManager* infobar_manager,
-    infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier,
-    const gfx::VectorIcon* vector_icon,
-    const std::u16string& message,
-    bool auto_expire,
-    bool should_animate,
-    bool closeable,
-    infobars::InfoBarDelegate::InfobarPriority infobar_priority) {
-  CreateSimpleAlertInfoBar(ConfirmInfoBarCreationAllowlist::GetPassKey(),
-                           infobar_manager, infobar_identifier, vector_icon,
-                           message, auto_expire, should_animate, closeable,
-                           infobar_priority);
-}

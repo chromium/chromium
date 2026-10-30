@@ -321,7 +321,8 @@ void GlobalConfirmInfoBar::MaybeAddInfoBar(content::WebContents* web_contents) {
       weak_factory_.GetWeakPtr());
   GlobalConfirmInfoBar::DelegateProxy* proxy_ptr = proxy.get();
   infobars::InfoBar* added_bar =
-      infobar_manager->AddInfoBar(CreateConfirmInfoBar(std::move(proxy)));
+      infobar_manager->AddInfoBar(CreateConfirmInfoBar(
+          ConfirmInfoBarCreationAllowlist::GetPassKey(), std::move(proxy)));
 
   // If AddInfoBar() fails, either infobars are globally disabled, or something
   // strange has gone wrong and we can't show the infobar on every tab. In

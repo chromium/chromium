@@ -120,6 +120,7 @@ if (!is_android) {
     deps = [
       ":contextual_cueing",
       "//base/test:test_support",
+      "//chrome/browser/infobars",
       "//chrome/browser/optimization_guide:test_support",
       "//chrome/browser/private_insights",
       "//chrome/browser/signin:signin_browser_test_base",

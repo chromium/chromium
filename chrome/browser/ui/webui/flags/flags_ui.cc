@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/infobars/confirm_infobar_creation_allowlist.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/flags/flags_ui_handler.h"
@@ -104,8 +105,10 @@ content::WebUIDataSource* CreateAndAddFlagsUIHTMLSource(Profile* profile) {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-void ShowFlagsWarningInfoBar(content::WebContents* web_contents,
-                             int message_id) {
+void ShowFlagsWarningInfoBar(
+    base::PassKey<ConfirmInfoBarCreationAllowlist> pass_key,
+    content::WebContents* web_contents,
+    int message_id) {
   const gfx::VectorIcon& icon = features::IsRoundedIconsEnabled()
                                     ? vector_icons::kWarningFilledIcon
                                     : vector_icons::kWarningOldIcon;
@@ -127,7 +130,7 @@ void ShowFlagsWarningInfoBar(content::WebContents* web_contents,
   }
 
   CreateSimpleAlertInfoBar(
-      infobars::ContentInfoBarManager::FromWebContents(web_contents),
+      pass_key, infobars::ContentInfoBarManager::FromWebContents(web_contents),
       infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE, &icon,
       l10n_util::GetStringUTF16(message_id),
       /*auto_expire=*/false, /*should_animate=*/true, /*closeable=*/true,
@@ -140,11 +143,13 @@ void ShowFlagsWarningInfoBar(content::WebContents* web_contents,
 // after finishing it the UI can be properly populated. This function is the
 // callback for whether the owner is signed in. It will respectively pick the
 // proper PrefService for the flags interface.
-void FinishInitialization(base::WeakPtr<FlagsUI> flags_ui,
-                          Profile* profile,
-                          FlagsUIHandler* dom_handler,
-                          std::unique_ptr<flags_ui::FlagsStorage> storage,
-                          flags_ui::FlagAccess access) {
+void FinishInitialization(
+    [[maybe_unused]] base::PassKey<ConfirmInfoBarCreationAllowlist> pass_key,
+    base::WeakPtr<FlagsUI> flags_ui,
+    Profile* profile,
+    FlagsUIHandler* dom_handler,
+    std::unique_ptr<flags_ui::FlagsStorage> storage,
+    flags_ui::FlagAccess access) {
   // If the flags_ui has gone away, there's nothing to do.
   if (!flags_ui) {
     return;
@@ -158,13 +163,13 @@ void FinishInitialization(base::WeakPtr<FlagsUI> flags_ui,
   // Show a warning info bar when kSafeMode switch is present.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           ash::switches::kSafeMode)) {
-    ShowFlagsWarningInfoBar(flags_ui->web_ui()->GetWebContents(),
+    ShowFlagsWarningInfoBar(pass_key, flags_ui->web_ui()->GetWebContents(),
                             IDS_FLAGS_IGNORED_DUE_TO_CRASHY_CHROME);
   }
 
   // Show a warning info bar for secondary users.
   if (!ash::ProfileHelper::IsPrimaryProfile(profile)) {
-    ShowFlagsWarningInfoBar(flags_ui->web_ui()->GetWebContents(),
+    ShowFlagsWarningInfoBar(pass_key, flags_ui->web_ui()->GetWebContents(),
                             IDS_FLAGS_IGNORED_SECONDARY_USERS);
   }
 #endif
@@ -209,23 +214,27 @@ void FlagsUI::AddStrings(content::WebUIDataSource* source) {
   source->AddLocalizedStrings(kLocalizedStrings);
 }
 
-FlagsUIHandler* InitializeHandler(content::WebUI* web_ui,
-                                  Profile* profile,
-                                  base::WeakPtrFactory<FlagsUI>& weak_factory) {
+FlagsUIHandler* InitializeHandler(
+    base::PassKey<ConfirmInfoBarCreationAllowlist> pass_key,
+    content::WebUI* web_ui,
+    Profile* profile,
+    base::WeakPtrFactory<FlagsUI>& weak_factory) {
   auto handler_owner = std::make_unique<FlagsUIHandler>();
   FlagsUIHandler* handler = handler_owner.get();
   web_ui->AddMessageHandler(std::move(handler_owner));
 
   about_flags::GetStorage(
-      profile, base::BindOnce(&FinishInitialization, weak_factory.GetWeakPtr(),
-                              profile, handler));
+      profile, base::BindOnce(&FinishInitialization, pass_key,
+                              weak_factory.GetWeakPtr(), profile, handler));
   return handler;
 }
 
 FlagsUI::FlagsUI(content::WebUI* web_ui)
     : WebUIController(web_ui), weak_factory_(this) {
   Profile* profile = Profile::FromWebUI(web_ui);
-  auto* handler = InitializeHandler(web_ui, profile, weak_factory_);
+  auto* handler = InitializeHandler(
+      ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(), web_ui,
+      profile, weak_factory_);
   CHECK(handler, base::NotFatalUntil::M162);
 
   // Set up the about:flags source.

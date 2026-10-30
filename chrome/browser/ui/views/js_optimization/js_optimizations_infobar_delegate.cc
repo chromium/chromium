@@ -19,7 +19,9 @@
 void JsOptimizationsInfoBarDelegate::Create(
     infobars::ContentInfoBarManager* infobar_manager) {
   auto delegate = std::make_unique<JsOptimizationsInfoBarDelegate>();
-  infobar_manager->AddInfoBar(CreateConfirmInfoBar(std::move(delegate)));
+  infobar_manager->AddInfoBar(CreateConfirmInfoBar(
+      ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(),
+      std::move(delegate)));
 }
 
 JsOptimizationsInfoBarDelegate::JsOptimizationsInfoBarDelegate() = default;

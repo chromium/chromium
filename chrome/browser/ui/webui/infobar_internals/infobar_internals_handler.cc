@@ -616,6 +616,7 @@ bool InfoBarInternalsHandler::PerformInfoBarActionInternal(
         return false;
       }
       return infobar_manager->AddInfoBar(CreateConfirmInfoBar(
+                 ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(),
                  std::make_unique<ProcessSharingInfobarDelegate>(
                      web_contents))) != nullptr;
     }
@@ -657,6 +658,7 @@ bool InfoBarInternalsHandler::PerformInfoBarActionInternal(
         return false;
       }
       return infobar_manager->AddInfoBar(CreateConfirmInfoBar(
+                 ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(),
                  std::make_unique<apps::EnableLinkCapturingInfoBarDelegate>(
                      *profile, app_id))) != nullptr;
     }
@@ -903,7 +905,9 @@ bool InfoBarInternalsHandler::PerformInfoBarActionInternal(
         auto delegate =
             std::make_unique<KnownInterceptionDisclosureInfoBarDelegate>(
                 profile);
-        infobar_manager->AddInfoBar(CreateConfirmInfoBar(std::move(delegate)));
+        infobar_manager->AddInfoBar(CreateConfirmInfoBar(
+            ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(),
+            std::move(delegate)));
       }
       return true;
     }

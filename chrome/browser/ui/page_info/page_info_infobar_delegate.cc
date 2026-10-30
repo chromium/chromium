@@ -22,6 +22,7 @@
 void PageInfoInfoBarDelegate::Create(
     infobars::ContentInfoBarManager* infobar_manager) {
   infobar_manager->AddInfoBar(CreateConfirmInfoBar(
+      ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(),
       base::WrapUnique<ConfirmInfoBarDelegate>(new PageInfoInfoBarDelegate())));
 }
 

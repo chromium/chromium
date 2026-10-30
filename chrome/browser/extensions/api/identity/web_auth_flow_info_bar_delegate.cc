@@ -32,7 +32,9 @@ base::WeakPtr<WebAuthFlowInfoBarDelegate> WebAuthFlowInfoBarDelegate::Create(
   // because on Android this method executes before all other tab helpers are
   // attached to `WebContents`.
   infobars::ContentInfoBarManager::GetOrCreateForWebContents(web_contents)
-      ->AddInfoBar(CreateConfirmInfoBar(std::move(delegate)));
+      ->AddInfoBar(CreateConfirmInfoBar(
+          ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(),
+          std::move(delegate)));
 
   return weak_ptr;
 }

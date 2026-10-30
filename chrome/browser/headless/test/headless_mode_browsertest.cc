@@ -20,6 +20,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -200,8 +201,9 @@ class TestInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   static void Create(infobars::ContentInfoBarManager* infobar_manager,
                      int buttons) {
-    infobar_manager->AddInfoBar(
-        CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(
+    infobar_manager->AddInfoBar(CreateConfirmInfoBar(
+        ConfirmInfoBarCreationAllowlist::GetPassKeyForTesting(),
+        base::WrapUnique<ConfirmInfoBarDelegate>(
             new TestInfoBarDelegate(buttons))));
   }
 

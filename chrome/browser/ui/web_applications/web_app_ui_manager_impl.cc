@@ -862,7 +862,9 @@ void WebAppUiManagerImpl::MaybeCreateEnableSupportedLinksInfobar(
                                                             launch_name);
   if (delegate) {
     infobars::ContentInfoBarManager::FromWebContents(web_contents)
-        ->AddInfoBar(CreateConfirmInfoBar(std::move(delegate)));
+        ->AddInfoBar(CreateConfirmInfoBar(
+            ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(),
+            std::move(delegate)));
   }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 }

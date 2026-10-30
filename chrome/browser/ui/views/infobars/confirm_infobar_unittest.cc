@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/infobars/confirm_infobar_creation_allowlist.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar_with_custom_view.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar_with_normal_label.h"
@@ -170,7 +171,9 @@ class ConfirmInfoBarTest : public views::ViewsTestBase {
 
   views::Label* CreateNormalLabelInfoBarAndGetLabel() {
     auto delegate = std::make_unique<FakeConfirmInfoBarDelegate>();
-    infobar_ = ConfirmInfoBar::Create(std::move(delegate));
+    infobar_ = ConfirmInfoBar::Create(
+        ConfirmInfoBarCreationAllowlist::GetPassKeyForTesting(),
+        std::move(delegate));
     auto* standard_infobar =
         static_cast<ConfirmInfoBarWithNormalLabel*>(infobar_.get());
     return standard_infobar->label_for_testing();
@@ -182,7 +185,9 @@ class ConfirmInfoBarTest : public views::ViewsTestBase {
     substitutions.emplace_back(u"text", false, std::nullopt);
     auto delegate = std::make_unique<InlineSubstitutionTestDelegate>(
         u"Message with $1 and $2", std::move(substitutions));
-    infobar_ = ConfirmInfoBar::Create(std::move(delegate));
+    infobar_ = ConfirmInfoBar::Create(
+        ConfirmInfoBarCreationAllowlist::GetPassKeyForTesting(),
+        std::move(delegate));
     auto* inline_infobar =
         static_cast<ConfirmInfoBarWithStyledLabel*>(infobar_.get());
     return inline_infobar->styled_label_for_testing();
@@ -209,8 +214,9 @@ TEST_F(ConfirmInfoBarTest, CustomMessageViewAndExtraButton) {
   auto delegate = std::make_unique<ExtraButtonTestDelegate>();
   auto custom_view = std::make_unique<views::View>();
   views::View* raw_custom_view = custom_view.get();
-  std::unique_ptr<ConfirmInfoBar> infobar =
-      ConfirmInfoBar::Create(std::move(delegate), std::move(custom_view));
+  std::unique_ptr<ConfirmInfoBar> infobar = ConfirmInfoBar::Create(
+      ConfirmInfoBarCreationAllowlist::GetPassKeyForTesting(),
+      std::move(delegate), std::move(custom_view));
 
   ASSERT_TRUE(views::IsViewClass<ConfirmInfoBarWithCustomView>(infobar.get()));
   EXPECT_EQ(raw_custom_view,
@@ -224,6 +230,7 @@ TEST_F(ConfirmInfoBarTest, CustomMessageViewAndExtraButton) {
   EXPECT_EQ(u"Extra", infobar->extra_button_for_testing()->GetText());
 
   std::unique_ptr<ConfirmInfoBar> fallback_infobar = ConfirmInfoBar::Create(
+      ConfirmInfoBarCreationAllowlist::GetPassKeyForTesting(),
       std::make_unique<ExtraButtonTestDelegate>(), nullptr);
   EXPECT_TRUE(views::IsViewClass<ConfirmInfoBarWithNormalLabel>(
       fallback_infobar.get()));
@@ -244,8 +251,10 @@ TEST_F(ConfirmInfoBarTest, ExtraButtonClickTriggersCallback) {
           ConfirmInfoBarDelegate::BUTTON_CANCEL |
           ConfirmInfoBarDelegate::BUTTON_EXTRA,
       /*close_on_extra_button=*/false);
-  auto* infobar = static_cast<ConfirmInfoBar*>(manager.AddInfoBar(
-      ConfirmInfoBar::Create(std::move(keep_open_delegate))));
+  auto* infobar =
+      static_cast<ConfirmInfoBar*>(manager.AddInfoBar(ConfirmInfoBar::Create(
+          ConfirmInfoBarCreationAllowlist::GetPassKeyForTesting(),
+          std::move(keep_open_delegate))));
 
   ASSERT_NE(nullptr, infobar->extra_button_for_testing());
   views::test::ButtonTestApi(infobar->extra_button_for_testing())
@@ -263,8 +272,10 @@ TEST_F(ConfirmInfoBarTest, ExtraButtonClickTriggersCallback) {
           ConfirmInfoBarDelegate::BUTTON_CANCEL |
           ConfirmInfoBarDelegate::BUTTON_EXTRA,
       /*close_on_extra_button=*/true);
-  infobar = static_cast<ConfirmInfoBar*>(
-      manager.AddInfoBar(ConfirmInfoBar::Create(std::move(close_delegate))));
+  infobar =
+      static_cast<ConfirmInfoBar*>(manager.AddInfoBar(ConfirmInfoBar::Create(
+          ConfirmInfoBarCreationAllowlist::GetPassKeyForTesting(),
+          std::move(close_delegate))));
 
   ASSERT_NE(nullptr, infobar->extra_button_for_testing());
   views::test::ButtonTestApi(infobar->extra_button_for_testing())
@@ -279,8 +290,9 @@ TEST_F(ConfirmInfoBarTest, ExtraButtonMargins) {
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
 
-  std::unique_ptr<ConfirmInfoBar> multi_button_infobar =
-      ConfirmInfoBar::Create(std::make_unique<ExtraButtonTestDelegate>());
+  std::unique_ptr<ConfirmInfoBar> multi_button_infobar = ConfirmInfoBar::Create(
+      ConfirmInfoBarCreationAllowlist::GetPassKeyForTesting(),
+      std::make_unique<ExtraButtonTestDelegate>());
   ASSERT_NE(nullptr, multi_button_infobar->extra_button_for_testing());
   const gfx::Insets* multi_margins =
       multi_button_infobar->extra_button_for_testing()->GetProperty(
@@ -292,8 +304,9 @@ TEST_F(ConfirmInfoBarTest, ExtraButtonMargins) {
                           ConfirmInfoBarDelegate::BUTTON_EXTRA,
                       ConfirmInfoBarDelegate::BUTTON_CANCEL |
                           ConfirmInfoBarDelegate::BUTTON_EXTRA}) {
-    std::unique_ptr<ConfirmInfoBar> two_button_infobar =
-        ConfirmInfoBar::Create(std::make_unique<ExtraButtonTestDelegate>(
+    std::unique_ptr<ConfirmInfoBar> two_button_infobar = ConfirmInfoBar::Create(
+        ConfirmInfoBarCreationAllowlist::GetPassKeyForTesting(),
+        std::make_unique<ExtraButtonTestDelegate>(
             /*extra_button_pressed_out=*/nullptr, buttons));
     ASSERT_NE(nullptr, two_button_infobar->extra_button_for_testing());
     const gfx::Insets* two_button_margins =
@@ -303,8 +316,9 @@ TEST_F(ConfirmInfoBarTest, ExtraButtonMargins) {
     EXPECT_EQ(expected_button_spacing, two_button_margins->left());
   }
 
-  std::unique_ptr<ConfirmInfoBar> extra_only_infobar =
-      ConfirmInfoBar::Create(std::make_unique<ExtraButtonTestDelegate>(
+  std::unique_ptr<ConfirmInfoBar> extra_only_infobar = ConfirmInfoBar::Create(
+      ConfirmInfoBarCreationAllowlist::GetPassKeyForTesting(),
+      std::make_unique<ExtraButtonTestDelegate>(
           /*extra_button_pressed_out=*/nullptr,
           ConfirmInfoBarDelegate::BUTTON_EXTRA));
   EXPECT_EQ(nullptr, extra_only_infobar->ok_button_for_testing());
@@ -326,8 +340,9 @@ TEST_F(ConfirmInfoBarTest, ShouldUseTextColorForButtonIcon) {
       /*close_on_extra_button=*/true,
       /*use_text_color_for_extra_icon=*/false, icon_model);
 
-  std::unique_ptr<ConfirmInfoBar> infobar =
-      ConfirmInfoBar::Create(std::move(delegate));
+  std::unique_ptr<ConfirmInfoBar> infobar = ConfirmInfoBar::Create(
+      ConfirmInfoBarCreationAllowlist::GetPassKeyForTesting(),
+      std::move(delegate));
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   widget->SetContentsView(infobar.get());
@@ -381,7 +396,9 @@ TEST_F(ConfirmInfoBarWithInlineLinksTest,
       u"Message with $1", std::move(substitutions), &clicked_index);
 
   auto* infobar = static_cast<ConfirmInfoBarWithStyledLabel*>(
-      manager.AddInfoBar(ConfirmInfoBar::Create(std::move(delegate))));
+      manager.AddInfoBar(ConfirmInfoBar::Create(
+          ConfirmInfoBarCreationAllowlist::GetPassKeyForTesting(),
+          std::move(delegate))));
 
   views::StyledLabel* message_label = infobar->styled_label_for_testing();
   ASSERT_NE(nullptr, message_label);

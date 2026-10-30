@@ -121,13 +121,17 @@ calling `ContentInfoBarManager::AddInfoBar()`:
 
 ## Legacy Utilities (Do Not Use in New Code)
 
-<!-- TODO(https://crbug.com/567121669): Update this section and remove the
+<!-- TODO(https://crbug.com/512837934): Update this section and remove the
 IsInfoBarMigrated() note above once all desktop infobar migrations complete and
-the base::PassKey compile-time gate lands on CreateConfirmInfoBar(),
-CreateSimpleAlertInfoBar(), and ConfirmInfoBar::Create(). -->
+the burndown list in ConfirmInfoBarCreationAllowlist is removed. -->
 
-* `confirm_infobar_creator.h` (`CreateConfirmInfoBar`) and
-  `simple_alert_infobar_creator.h` (`CreateSimpleAlertInfoBar`) are legacy
-  helpers retained only for unmigrated infobars and internal use by
-  `BrowserInfoBarManager`. Do not add new callers.
+* `confirm_infobar_creator.h` (`CreateConfirmInfoBar`),
+  `simple_alert_infobar_creator.h` (`CreateSimpleAlertInfoBar`), and
+  `ConfirmInfoBar::Create()` are legacy creation entry points gated at compile
+  time by `base::PassKey<ConfirmInfoBarCreationAllowlist>`
+  ([`confirm_infobar_creation_allowlist.h`](confirm_infobar_creation_allowlist.h)).
+  They are retained only for internal use by `BrowserInfoBarManager`, permanent
+  architectural exceptions (`GetPassKey()`), and the burndown list of
+  unmigrated infobars (`GetPassKeyForMigration()`). Do not add new callers or
+  allowlist entries.
 

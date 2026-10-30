@@ -4,10 +4,6 @@ These instructions apply to Desktop Chrome InfoBars implemented through
 `chrome/browser/infobars/`.
 
 ## Use the Centralized Framework
-<!-- TODO(https://crbug.com/567121669): Update this file once all desktop
-infobar migrations complete and the base::PassKey compile-time gate lands on
-CreateConfirmInfoBar(), CreateSimpleAlertInfoBar(), and
-ConfirmInfoBar::Create(). -->
 
 For new Desktop InfoBars, use:
 
@@ -20,7 +16,14 @@ Do not introduce new feature-specific subclasses of
 
 Do not create feature InfoBars by calling `CreateConfirmInfoBar()`,
 `CreateSimpleAlertInfoBar()`, `ConfirmInfoBar::Create()`, or
-`ContentInfoBarManager::AddInfoBar()` directly.
+`ContentInfoBarManager::AddInfoBar()` directly. These creation entry points
+are gated at compile time via `base::PassKey<ConfirmInfoBarCreationAllowlist>`
+([confirm_infobar_creation_allowlist.h](confirm_infobar_creation_allowlist.h)),
+where `GetPassKey()` is reserved for `BrowserInfoBarManager` and permanent
+architectural exceptions and `GetPassKeyForMigration()` is reserved for the
+legacy burndown list. Do not add new `friend` declarations to
+`ConfirmInfoBarCreationAllowlist` or call `GetPassKeyForTesting()` in
+production code to bypass this gate.
 
 These restrictions concern feature implementation. They do not prohibit
 maintaining the centralized framework's internal creation code or the

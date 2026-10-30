@@ -12,6 +12,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/infobars/confirm_infobar_creation_allowlist.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -93,8 +94,9 @@ class InfoBarContainerViewBrowserTest : public InProcessBrowserTest {
       bool closeable = true) {
     auto delegate = std::make_unique<PriorityInfoBarDelegate>(
         priority, base::UTF8ToUTF16(message), closeable);
-    return GetInfoBarManager()->AddInfoBar(
-        ConfirmInfoBar::Create(std::move(delegate)));
+    return GetInfoBarManager()->AddInfoBar(ConfirmInfoBar::Create(
+        ConfirmInfoBarCreationAllowlist::GetPassKeyForTesting(),
+        std::move(delegate)));
   }
 
   infobars::InfoBar* AddNonCloseableInfoBar(
@@ -320,7 +322,9 @@ IN_PROC_BROWSER_TEST_F(
   auto low_delegate = std::make_unique<PriorityInfoBarDelegate>(
       infobars::InfoBarDelegate::InfobarPriority::kLow, u"Low 1");
   infobars::InfoBar* low_1 = GetInfoBarManager()->ReplaceInfoBar(
-      default_1, ConfirmInfoBar::Create(std::move(low_delegate)));
+      default_1, ConfirmInfoBar::Create(
+                     ConfirmInfoBarCreationAllowlist::GetPassKeyForTesting(),
+                     std::move(low_delegate)));
 
   EXPECT_EQ(std::vector<std::string>({"Default 2"}),
             GetVisibleInfoBarMessages());
@@ -368,7 +372,9 @@ IN_PROC_BROWSER_TEST_F(InfoBarContainerPriorityTest,
       infobars::InfoBarDelegate::InfobarPriority::kDefault,
       u"Default Replacement");
   infobars::InfoBar* replacement = GetInfoBarManager()->ReplaceInfoBar(
-      default_1, ConfirmInfoBar::Create(std::move(replacement_delegate)));
+      default_1, ConfirmInfoBar::Create(
+                     ConfirmInfoBarCreationAllowlist::GetPassKeyForTesting(),
+                     std::move(replacement_delegate)));
 
   EXPECT_EQ(std::vector<std::string>({"Default Replacement"}),
             GetVisibleInfoBarMessages());

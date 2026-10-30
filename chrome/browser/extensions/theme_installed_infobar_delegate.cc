@@ -59,8 +59,9 @@ void ThemeInstalledInfoBarDelegate::Create(
     const std::string& theme_id,
     std::unique_ptr<ThemeService::ThemeReinstaller> prev_theme_reinstaller) {
   // Create the new infobar.
-  std::unique_ptr<infobars::InfoBar> new_infobar(
-      CreateConfirmInfoBar(base::WrapUnique<ConfirmInfoBarDelegate>(
+  std::unique_ptr<infobars::InfoBar> new_infobar(CreateConfirmInfoBar(
+      ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(),
+      base::WrapUnique<ConfirmInfoBarDelegate>(
           new ThemeInstalledInfoBarDelegate(
               theme_service, theme_name, theme_id,
               std::move(prev_theme_reinstaller)))));

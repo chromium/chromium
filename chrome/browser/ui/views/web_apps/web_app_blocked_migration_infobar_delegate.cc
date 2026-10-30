@@ -51,6 +51,7 @@ void WebAppBlockedMigrationInfoBarDelegate::Create(
   }
 
   infobar_manager->AddInfoBar(CreateConfirmInfoBar(
+      ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(),
       base::WrapUnique(new WebAppBlockedMigrationInfoBarDelegate(
           std::move(on_dismiss_callback)))));
 }

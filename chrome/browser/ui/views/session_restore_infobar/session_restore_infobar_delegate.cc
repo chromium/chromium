@@ -45,7 +45,9 @@ infobars::InfoBar* SessionRestoreInfoBarDelegate::Show(
   std::unique_ptr<SessionRestoreInfoBarDelegate> delegate =
       std::make_unique<SessionRestoreInfoBarDelegate>(
           profile, std::move(close_cb), message_type);
-  return infobar_manager->AddInfoBar(CreateConfirmInfoBar(std::move(delegate)));
+  return infobar_manager->AddInfoBar(CreateConfirmInfoBar(
+      ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(),
+      std::move(delegate)));
 }
 
 SessionRestoreInfoBarDelegate::SessionRestoreInfoBarDelegate(

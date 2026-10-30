@@ -38,9 +38,3 @@ std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
                                 std::move(custom_message_view));
 }
 #endif
-
-std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
-    std::unique_ptr<ConfirmInfoBarDelegate> delegate) {
-  return CreateConfirmInfoBar(ConfirmInfoBarCreationAllowlist::GetPassKey(),
-                              std::move(delegate));
-}

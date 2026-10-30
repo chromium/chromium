@@ -21,6 +21,7 @@
 #include "cc/base/switches.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/infobars/browser_infobar_manager.h"
+#include "chrome/browser/infobars/confirm_infobar_creation_allowlist.h"
 #include "chrome/browser/infobars/infobar_features.h"
 #include "chrome/browser/infobars/simple_alert_infobar_creator.h"
 #include "chrome/browser/ui/simple_message_box.h"
@@ -263,9 +264,11 @@ static const std::variant<const base::Feature*, const char*>
         &blink::features::kPersistentWidgetAPI,
 };
 
-void ShowBadFlagsInfoBarHelper(content::WebContents* web_contents,
-                               int message_id,
-                               std::string_view flag) {
+void ShowBadFlagsInfoBarHelper(
+    base::PassKey<ConfirmInfoBarCreationAllowlist> pass_key,
+    content::WebContents* web_contents,
+    int message_id,
+    std::string_view flag) {
 #if !BUILDFLAG(IS_ANDROID)
   if (infobars::IsInfoBarMigrated(
           infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE)) {
@@ -291,7 +294,7 @@ void ShowBadFlagsInfoBarHelper(content::WebContents* web_contents,
   // --ignore-certificate-errors-spki-list.  This infobar only appears at
   // startup so the animation isn't visible to users anyway.
   CreateSimpleAlertInfoBar(
-      infobars::ContentInfoBarManager::FromWebContents(web_contents),
+      pass_key, infobars::ContentInfoBarManager::FromWebContents(web_contents),
       infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE, nullptr,
       l10n_util::GetStringFUTF16(message_id, base::UTF8ToUTF16(flag)),
       /*auto_expire=*/false, /*should_animate=*/false);
@@ -350,8 +353,9 @@ void ShowBadFlagsPrompt(content::WebContents* web_contents) {
                                              IDS_BAD_FEATURES_WARNING_MESSAGE,
                                              base::UTF8ToUTF16(bad_flag_name)));
 #else
-      ShowBadFlagsInfoBarHelper(web_contents, IDS_BAD_FEATURES_WARNING_MESSAGE,
-                                bad_flag_name);
+      ShowBadFlagsInfoBarHelper(
+          ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(),
+          web_contents, IDS_BAD_FEATURES_WARNING_MESSAGE, bad_flag_name);
 #endif
       return;
     }
@@ -364,7 +368,8 @@ void ShowBadFlagsInfoBar(content::WebContents* web_contents,
   std::string switch_value =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(flag);
   ShowBadFlagsInfoBarHelper(
-      web_contents, message_id,
+      ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(), web_contents,
+      message_id,
       switch_value.empty() ? base::StrCat({"--", flag})
                            : base::StrCat({"--", flag, "=", switch_value}));
 }

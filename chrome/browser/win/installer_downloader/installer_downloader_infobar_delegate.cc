@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
+#include "chrome/browser/infobars/confirm_infobar_creation_allowlist.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -35,8 +36,9 @@ infobars::InfoBar* InstallerDownloaderInfoBarDelegate::Show(
   std::unique_ptr<InstallerDownloaderInfoBarDelegate> delegate =
       std::make_unique<InstallerDownloaderInfoBarDelegate>(std::move(accept_cb),
                                                            std::move(close_cb));
-  return infobar_manager->AddInfoBar(
-      ConfirmInfoBar::Create(std::move(delegate)));
+  return infobar_manager->AddInfoBar(ConfirmInfoBar::Create(
+      ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(),
+      std::move(delegate)));
 }
 
 InstallerDownloaderInfoBarDelegate::InstallerDownloaderInfoBarDelegate(

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
@@ -22,8 +23,9 @@ infobars::InfoBar* IncognitoConnectabilityInfoBarDelegate::Create(
     infobars::ContentInfoBarManager* infobar_manager,
     const std::u16string& message,
     IncognitoConnectabilityInfoBarDelegate::InfoBarCallback callback) {
-  return infobar_manager->AddInfoBar(
-      CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(
+  return infobar_manager->AddInfoBar(CreateConfirmInfoBar(
+      ConfirmInfoBarCreationAllowlist::GetPassKeyForMigration(),
+      base::WrapUnique<ConfirmInfoBarDelegate>(
           new IncognitoConnectabilityInfoBarDelegate(message,
                                                      std::move(callback)))));
 }
