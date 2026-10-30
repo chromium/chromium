@@ -21,6 +21,9 @@ extension ILType {
         withMethods: [
             "passMap",
             "passNestedMap",
+            "getBrowserMadeMap",
+            "getOrderedMap",
+            "passOrderedMap",
             "getMap",
         ])
     fileprivate static let jsGoldenPrimaryRemoteWrapper: ILType = .object(
@@ -46,6 +49,13 @@ extension ObjectGroup {
                 .plain(.jsInt32_String_GoldenEntryMojoMapMojoMap),
                 .plain(.jsInt32),
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_PassNestedMap_ResponseParams),
+            "getBrowserMadeMap": [
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetBrowserMadeMap_ResponseParams),
+            "getOrderedMap": [
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetOrderedMap_ResponseParams),
+            "passOrderedMap": [
+                .plain(.jsString_GoldenOrderedEntryMojoMap),
+            ] => .undefined,
             "getMap": [
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetMap_ResponseParams),
         ]
@@ -71,6 +81,19 @@ extension ILType {
         ])
     fileprivate static let jsGoldenEntryConstructor: ILType = .constructor([
     ] => .jsGoldenEntry)
+    fileprivate static let jsGoldenOrderedEntry: ILType = .object(
+        ofGroup: "golden.OrderedEntry",
+        withProperties: [
+            "data",
+        ])
+    fileprivate static let jsGoldenOrderedEntryConstructor: ILType = .constructor([
+        .plain(.jsUint8),
+    ] => .jsGoldenOrderedEntry)
+    fileprivate static let jsGoldenBrowserMadeEntry: ILType = .object(
+        ofGroup: "golden.BrowserMadeEntry",
+        withProperties: [
+            "data",
+        ])
     fileprivate static let jsGoldenPrimary_PassMap_ResponseParams: ILType = .object(
         ofGroup: "golden.Primary_PassMap_ResponseParams",
         withProperties: [
@@ -78,6 +101,16 @@ extension ILType {
         ])
     fileprivate static let jsGoldenPrimary_PassNestedMap_ResponseParams: ILType = .object(
         ofGroup: "golden.Primary_PassNestedMap_ResponseParams",
+        withProperties: [
+            "result",
+        ])
+    fileprivate static let jsGoldenPrimary_GetBrowserMadeMap_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_GetBrowserMadeMap_ResponseParams",
+        withProperties: [
+            "result",
+        ])
+    fileprivate static let jsGoldenPrimary_GetOrderedMap_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_GetOrderedMap_ResponseParams",
         withProperties: [
             "result",
         ])
@@ -95,6 +128,22 @@ extension ObjectGroup {
         properties: [:],
         methods: [:]
     )
+    fileprivate static let goldenOrderedEntry = ObjectGroup(
+        name: "golden.OrderedEntry",
+        instanceType: .jsGoldenOrderedEntry,
+        properties: [
+            "data": .jsUint8,
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenBrowserMadeEntry = ObjectGroup(
+        name: "golden.BrowserMadeEntry",
+        instanceType: .jsGoldenBrowserMadeEntry,
+        properties: [
+            "data": .jsUint8,
+        ],
+        methods: [:]
+    )
     fileprivate static let goldenPrimaryPassMapResponseParams = ObjectGroup(
         name: "golden.Primary_PassMap_ResponseParams",
         instanceType: .jsGoldenPrimary_PassMap_ResponseParams,
@@ -108,6 +157,22 @@ extension ObjectGroup {
         instanceType: .jsGoldenPrimary_PassNestedMap_ResponseParams,
         properties: [
             "result": .jsString_GoldenEntryMojoMap,
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenPrimaryGetBrowserMadeMapResponseParams = ObjectGroup(
+        name: "golden.Primary_GetBrowserMadeMap_ResponseParams",
+        instanceType: .jsGoldenPrimary_GetBrowserMadeMap_ResponseParams,
+        properties: [
+            "result": .jsString_GoldenBrowserMadeEntryMojoMap,
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenPrimaryGetOrderedMapResponseParams = ObjectGroup(
+        name: "golden.Primary_GetOrderedMap_ResponseParams",
+        instanceType: .jsGoldenPrimary_GetOrderedMap_ResponseParams,
+        properties: [
+            "result": .jsString_GoldenOrderedEntryMojoMap,
         ],
         methods: [:]
     )
@@ -134,6 +199,16 @@ extension ILType {
         .createJsMapType(
             ofKeyType: .jsInt32,
             ofValueType: .jsString_GoldenEntryMojoMap
+        )
+    fileprivate static let jsString_GoldenOrderedEntryMojoMap: ILType =
+        .createJsMapType(
+            ofKeyType: .string,
+            ofValueType: .jsGoldenOrderedEntry
+        )
+    fileprivate static let jsString_GoldenBrowserMadeEntryMojoMap: ILType =
+        .createJsMapType(
+            ofKeyType: .string,
+            ofValueType: .jsGoldenBrowserMadeEntry
         )
     fileprivate static let jsFloat_BoolMojoMap: ILType =
         .createJsMapType(
@@ -175,13 +250,13 @@ private let MojoInt32_String_GoldenEntryMojoMapMojoMapGenerator = CodeGenerator(
     var values: [Variable] = [val]
     b.createMap(withKeys: keys, withValues: values)
 }
-private let MojoFloat_BoolMojoMapGenerator = CodeGenerator(
-    "MojoFloat_BoolMojoMapGenerator",
+private let MojoString_GoldenOrderedEntryMojoMapGenerator = CodeGenerator(
+    "MojoString_GoldenOrderedEntryMojoMapGenerator",
     inputs: .one,
-    produces: [.jsFloat_BoolMojoMap]
+    produces: [.jsString_GoldenOrderedEntryMojoMap]
 ) { b, _ in
-    let key = b.findOrGenerateType(.float)
-    let val = b.findOrGenerateType(.boolean)
+    let key = b.findOrGenerateType(.string)
+    let val = b.findOrGenerateType(.jsGoldenOrderedEntry)
     var keys: [Variable] = [key]
     var values: [Variable] = [val]
     b.createMap(withKeys: keys, withValues: values)
@@ -245,8 +320,12 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .goldenPrimaryRemote,
     .goldenPrimaryRemoteWrapper,
     .goldenEntry,
+    .goldenOrderedEntry,
+    .goldenBrowserMadeEntry,
     .goldenPrimaryPassMapResponseParams,
     .goldenPrimaryPassNestedMapResponseParams,
+    .goldenPrimaryGetBrowserMadeMapResponseParams,
+    .goldenPrimaryGetOrderedMapResponseParams,
     .goldenPrimaryGetMapResponseParams,
 ] + commonMojoObjectGroups
 
@@ -261,6 +340,7 @@ private let mojoBuiltins: [String: ILType] = [
     /// as an opaque object Fuzzilli does not use it as a general-purpose array.
     "mojoAsyncFunctionPromises": .object(withMethods: ["push"]),
     "golden.Entry": .jsGoldenEntryConstructor,
+    "golden.OrderedEntry": .jsGoldenOrderedEntryConstructor,
 ]
 
 private let keepGenerators = [
@@ -325,7 +405,7 @@ let mojoPrimaryProfile = Profile(
         (MojoPropertyRetrievalGenerator, 10000),
         (MojoString_GoldenEntryMojoMapGenerator, 1),
         (MojoInt32_String_GoldenEntryMojoMapMojoMapGenerator, 1),
-        (MojoFloat_BoolMojoMapGenerator, 1),
+        (MojoString_GoldenOrderedEntryMojoMapGenerator, 1),
     ] + commonMojoCodeGenerators,
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,

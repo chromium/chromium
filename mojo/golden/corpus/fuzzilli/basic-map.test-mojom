@@ -6,10 +6,24 @@ module golden;
 interface Primary {
   PassMap(map<string, Entry> entry_map, string token) => (Entry result);
   PassNestedMap(map<int32, map<string, Entry>> nested_map, int32 key) => (map<string, Entry> result);
+  GetBrowserMadeMap() => (map<string, BrowserMadeEntry> result);
+
+  // `map<string, OrderedEntry>` is first seen in a response, then in a
+  // parameter. Ensures that visit order doesn't affect the content of profiles.
+  GetOrderedMap() => (map<string, OrderedEntry> result);
+  PassOrderedMap(map<string, OrderedEntry> entry_map);
 
   [Sync]
   GetMap() => (map<float, bool> result);
 };
 
 struct Entry {};
+
+struct BrowserMadeEntry {
+  uint8 data;
+};
+
+struct OrderedEntry {
+  uint8 data;
+};
 

@@ -89,16 +89,23 @@ class Generator(generator.Generator):
     self.interface_remotes = {}
     self.interface_receivers = {}
 
-    # The following track which pending endpoint types are used from the JS
-    # side.
+    # TODO(crbug.com/522372048): Consider improving the organization of all
+    # these types.
+    # The following track which endpoint types are used from the JS side.
     self.interface_pending_remotes = set()
     self.interface_associated_pending_remotes = set()
     self.interface_pending_receivers = set()
     self.interface_associated_pending_receivers = set()
 
+    # Track each type by the side whence they are used. This ensures that the
+    # generated profiles do not include constructors or CodeGenerators that
+    # cannot successfully run. For instance, if a type can not be synthesized
+    # from the JS side, Fuzzilli should never try to use a constructor for it,
+    # instead relying on the API that retrieves it from the browser.
     self.js_arrays = {}
     self.browser_arrays = {}
-    self.maps = {}
+    self.js_maps = {}
+    self.browser_maps = {}
     self.enums = {}
     self.js_unions = {}
     self.browser_unions = {}
@@ -149,7 +156,9 @@ class Generator(generator.Generator):
       "js_arrays": list(self.js_arrays.values()),
       # Union of `js_arrays` and `browser_arrays`
       "arrays": list((self.js_arrays | self.browser_arrays).values()),
-      "maps": list(self.maps.values()),
+      "js_maps": list(self.js_maps.values()),
+      # Union of `js_maps` and `browser_maps`
+      "maps": list((self.js_maps | self.browser_maps).values()),
       "enums": list(self.enums.values()),
       "js_unions": list(self.js_unions.values()),
       # Union of `js_unions` and `browser_unions`
@@ -200,10 +209,11 @@ class Generator(generator.Generator):
     self._CollectInterfaceAndTypes(array.kind, is_in_js)
 
   def _CollectMap(self, m, is_in_js):
+    maps = self.js_maps if is_in_js else self.browser_maps
     name = self._FormatUniqueName(m)
-    if name in self.maps:
+    if name in maps:
       return
-    self.maps[name] = m
+    maps[name] = m
     self._CollectInterfaceAndTypes(m.key_kind, is_in_js)
     self._CollectInterfaceAndTypes(m.value_kind, is_in_js)
 

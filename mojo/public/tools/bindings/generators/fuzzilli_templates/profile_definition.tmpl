@@ -151,7 +151,7 @@ let mojo{{primary.name}}Profile = Profile(
 {%- for array in js_arrays %}
         (Mojo{{array|format_unique_name}}Generator, 1),
 {%- endfor %}
-{%- for m in maps %}
+{%- for m in js_maps %}
         (Mojo{{m|format_unique_name}}Generator, 1),
 {%- endfor %}
     ] + commonMojoCodeGenerators,
