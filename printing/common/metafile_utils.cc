@@ -457,11 +457,13 @@ SkSerialReturnType SerializeOopPicture(SkPicture* pic, void* ctx) {
 sk_sp<SkPicture> DeserializeOopPicture(const void* data,
                                        size_t length,
                                        void* ctx) {
+  // SAFETY: Skia passes `length` as the size of `data`.
+  base::SpanReader reader(
+      UNSAFE_BUFFERS(base::span(static_cast<const uint8_t*>(data), length)));
   uint32_t pic_id;
-  if (length < sizeof(pic_id)) {
+  if (!reader.ReadU32NativeEndian(pic_id)) {
     NOTREACHED();  // Should not happen if the content is as written.
   }
-  UNSAFE_TODO(memcpy(&pic_id, data, sizeof(pic_id)));
 
   auto* context = reinterpret_cast<PictureDeserializationContext*>(ctx);
   auto iter = context->find(pic_id);
@@ -541,7 +543,7 @@ SkSerialReturnType SerializeRasterImage(SkImage* img, void* ctx) {
 
   uint32_t img_id = img->uniqueID();
   if (context->contains(img_id)) {
-    return SkData::MakeWithCopy(&img_id, sizeof(img_id));
+    return gfx::MakeSkDataFromSpanWithCopy(base::byte_span_from_ref(img_id));
   }
 
   sk_sp<const SkData> img_data = GetImageData(img);
@@ -554,7 +556,6 @@ SkSerialReturnType SerializeRasterImage(SkImage* img, void* ctx) {
   auto data = SkData::MakeUninitialized(
       base::CheckAdd(img_data->size(), sizeof(img_id)).ValueOrDie());
 
-  // SAFETY: The span is used as a view to avoid direct pointer access.
   auto [id_span, data_span] =
       skia::as_writable_byte_span(*data).split_at<sizeof(img_id)>();
   id_span.copy_from(base::byte_span_from_ref(img_id));
@@ -591,8 +592,7 @@ sk_sp<SkImage> DeserializeRasterImage(sk_sp<SkData> data,
   }
 
   // Copy the data to avoid `bytes` being freed before the image is decoded.
-  auto data_span = reader.remaining_span();
-  auto img_data = SkData::MakeWithCopy(data_span.data(), data_span.size());
+  auto img_data = gfx::MakeSkDataFromSpanWithCopy(reader.remaining_span());
 
   // Need to explicitly decode here, as the data are prefixed with image id,
   // invalidating the built-in Skia fallback.
