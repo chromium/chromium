@@ -146,6 +146,20 @@ def _merge_reachability_metadata(config_dir, extra_metadata):
         json.dump(data, f, indent=2)
 
 
+def _register_all_fields(config_dir):
+    metadata_path = os.path.join(config_dir, 'reachability-metadata.json')
+    if not os.path.exists(metadata_path):
+        return
+    with open(metadata_path, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    for entry in data.get('reflection', []):
+        t = entry.get('type')
+        if isinstance(t, str) and not t.endswith('[]'):
+            entry['allDeclaredFields'] = True
+    with open(metadata_path, 'w', encoding='utf-8') as f:
+        json.dump(data, f, indent=2)
+
+
 def _format_export(exp):
     return exp if '=' in exp else f'{exp}=ALL-UNNAMED'
 
@@ -240,6 +254,8 @@ def build_native_image(
     pgo_args_list=None,
     java_home_relative_to_executable=None,
     check_workloads=False,
+    register_all_fields=False,
+    copy_shared_libs=False,
 ):
     """Builds a GraalVM native-image binary from a jar file.
 
@@ -267,6 +283,12 @@ def build_native_image(
           path relative to the directory containing the executable (rather
           than to $JAVA_HOME or "."), like the JDK's own launchers do.
       check_workloads: Whether to fail if tracing or PGO runs exit non-zero.
+      register_all_fields: Whether to register all fields of every type in the
+          reflection metadata (traced or extra), for code that looks up field
+          offsets in ways the tracing agent does not record.
+      copy_shared_libs: Whether to also copy the JDK .so files that
+          native-image writes next to the executable (e.g. libawt.so when
+          java.awt or javax.imageio is reachable) into output_path's directory.
     """
     graal_home = ensure_graalvm()
     java_bin = os.path.join(graal_home, 'bin', 'java')
@@ -332,6 +354,8 @@ def build_native_image(
             _merge_reachability_metadata(
                 config_dir, extra_reachability_metadata
             )
+        if register_all_fields:
+            _register_all_fields(config_dir)
 
         # 2. Compile GraalVmWrapper so java.home is initialized at startup.
         wrapper_dir = os.path.join(work_dir, 'wrapper')
@@ -455,3 +479,10 @@ def build_native_image(
         ):
             raise RuntimeError(f'{output_path} contains {modules_path}')
         shutil.copy(temp_output, output_path)
+        if copy_shared_libs:
+            for name in os.listdir(work_dir):
+                if name.endswith('.so'):
+                    shutil.copy(
+                        os.path.join(work_dir, name),
+                        os.path.dirname(output_path),
+                    )

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2026 The Chromium Authors
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="sample_format">%1$d items</string>
+    <string name="sample_title">Sample</string>
+    <string name="sample_unused">Unused</string>
+    <string name="sample_ellipsis">Loading...</string>
+    <plurals name="sample_count">
+        <item quantity="one">%d item</item>
+        <item quantity="other">%d items</item>
+    </plurals>
+    <dimen name="sample_padding">8dp</dimen>
+    <dimen name="sample_text_size">14dp</dimen>
+    <color name="sample_color">#ff0000</color>
+</resources>
