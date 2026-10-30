@@ -4857,6 +4857,133 @@ TEST_F(PdfAccessibilityTreeTest,
 }
 
 TEST_F(PdfAccessibilityTreeTest,
+       HeuristicTopCornerHeaderInSideMarginClassifiedAsHeader) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  page_info_.bounds = gfx::Rect(0, 0, 800, 1000);
+
+  // Run 0: Page number "1" in the top-left corner (x = 20, y = 50, right = 35
+  // <= 68, bottom = 65 <= 100). Runs 1-3: Body text at x = 100..400
+  // establishing left_margin = 68.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f, 10.0f, 10.0f},
+      {normal_style, normal_style, normal_style, normal_style},
+      MakeCharVector({"1", "body1", "body2", "end"}),
+      {gfx::RectF(20.0f, 50.0f, 15.0f, 15.0f),
+       gfx::RectF(100.0f, 150.0f, 300.0f, 15.0f),
+       gfx::RectF(100.0f, 165.0f, 300.0f, 15.0f),
+       gfx::RectF(100.0f, 180.0f, 300.0f, 15.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  // Top corner page number should be classified as a section header, not a
+  // section footer.
+  const ui::AXNode* header_block = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, header_block);
+  EXPECT_EQ(ax::mojom::Role::kSectionHeader, header_block->GetRole());
+
+  const ui::AXNode* body_block = page->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, body_block);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, body_block->GetRole());
+
+  // Bottom edge at y = 65 on 1000px height is 7%.
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.HeaderNormalizedLocation", 7, 1);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.PdfHeuristics.FooterNormalizedLocation", 0);
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       HeuristicListMarkerInLeftSideMarginPreservesList) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  page_info_.bounds = gfx::Rect(0, 0, 800, 1000);
+
+  // Runs 0-2: Body text at x = 100..400 establishing left_margin = 68.
+  // Run 3: Standalone bullet marker in the left side margin (right = 50 <= 68).
+  // Run 4: Item text on the same line at x = 80.
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f, 10.0f, 10.0f, 10.0f},
+      {normal_style, normal_style, normal_style, normal_style, normal_style},
+      MakeCharVector({"body1", "body2", "end", "\xE2\x80\xA2", "List item"}),
+      {gfx::RectF(100.0f, 100.0f, 300.0f, 15.0f),
+       gfx::RectF(100.0f, 115.0f, 300.0f, 15.0f),
+       gfx::RectF(100.0f, 130.0f, 300.0f, 15.0f),
+       gfx::RectF(40.0f, 300.0f, 10.0f, 15.0f),
+       gfx::RectF(80.0f, 300.0f, 150.0f, 15.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(2u, page->GetChildCount());
+
+  CheckUnorderedList(page->GetChildAtIndex(1u), {"List item"}, "• ");
+}
+
+TEST_F(PdfAccessibilityTreeTest,
+       SideMarginFooterExcludedFromFooterNormalizedLocationMetrics) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityTextStyleInfo normal_style = CreateNormalStyle();
+  page_info_.bounds = gfx::Rect(0, 0, 800, 1000);
+
+  // Run 0: Side-margin artifact in left margin (x = 20, right = 35 <= 68) at y
+  // = 200. Runs 1-3: Body text at x = 100..400. Run 4: Footer in bottom margin
+  // (y = 920 >= 900).
+  SetUpHeuristicAccessibilityTreeDetailed(
+      /*font_sizes=*/{10.0f, 10.0f, 10.0f, 10.0f, 10.0f},
+      {normal_style, normal_style, normal_style, normal_style, normal_style},
+      MakeCharVector({"SIDE", "body1", "body2", "end", "2"}),
+      {gfx::RectF(20.0f, 200.0f, 15.0f, 15.0f),
+       gfx::RectF(100.0f, 300.0f, 300.0f, 15.0f),
+       gfx::RectF(100.0f, 315.0f, 300.0f, 15.0f),
+       gfx::RectF(100.0f, 330.0f, 300.0f, 15.0f),
+       gfx::RectF(100.0f, 920.0f, 20.0f, 20.0f)});
+
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(3u, page->GetChildCount());
+
+  // Side-margin artifact is classified as kSectionFooter, but excluded from
+  // FooterNormalizedLocation metrics because it does not sit in the bottom
+  // margin.
+  const ui::AXNode* side_block = page->GetChildAtIndex(0u);
+  ASSERT_NE(nullptr, side_block);
+  EXPECT_EQ(ax::mojom::Role::kSectionFooter, side_block->GetRole());
+
+  const ui::AXNode* body_block = page->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, body_block);
+  EXPECT_EQ(ax::mojom::Role::kParagraph, body_block->GetRole());
+
+  const ui::AXNode* footer_block = page->GetChildAtIndex(2u);
+  ASSERT_NE(nullptr, footer_block);
+  EXPECT_EQ(ax::mojom::Role::kSectionFooter, footer_block->GetRole());
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.FooterNormalizedLocation", 92, 1);
+}
+
+TEST_F(PdfAccessibilityTreeTest,
        HeuristicNarrowMarginPageClampsSideMarginsToBodyRuns) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(

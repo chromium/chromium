@@ -910,8 +910,13 @@ void RecordHeaderFooterLocationHistograms(
         edge_y = bounds.bottom();
         break;
       case ax::mojom::Role::kSectionFooter:
-        histogram_name = "Accessibility.PdfHeuristics.FooterNormalizedLocation";
         edge_y = bounds.y();
+        // Skip side-margin footers that sit above the bottom margin.
+        if (edge_y - page_properties.page_offset_y <
+            page_properties.bottom_page_number_margin) {
+          continue;
+        }
+        histogram_name = "Accessibility.PdfHeuristics.FooterNormalizedLocation";
         break;
       default:
         continue;
@@ -1234,6 +1239,8 @@ std::optional<ax::mojom::Role> GetAXRoleForHeaderFooterRole(
   }
 }
 
+// Returns whether `run` is narrow and lies in the left or right side margin.
+// Geometry only; callers exclude runs already classified as headers or footers.
 bool IsInSideMargin(const chrome_pdf::AccessibilityTextRunInfo& run,
                     const HeuristicPageProperties& page_properties) {
   CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
@@ -1456,12 +1463,22 @@ std::optional<bool> BreakAtHeaderFooterBoundary(
     current_role = HeaderFooterRole::kFooter;
   }
 
+  // Resolve the next run's header/footer role before the side-margin check, so
+  // that headers and footers in a corner are not treated as side-margin runs.
+  PageNumberKind next_page_number_kind;
+  HeaderFooterRole next_role = GetHeaderFooterRole(
+      next_run_context, page_properties, &next_page_number_kind);
+
   // Always break when transitioning into or out of the side margin so that
   // side-margin artifacts are isolated from body blocks.
+  float block_page_y =
+      block_node->relative_bounds.bounds.y() - page_properties.page_offset_y;
   bool current_in_side_margin =
       current_role == HeaderFooterRole::kFooter &&
+      block_page_y < page_properties.bottom_page_number_margin &&
       IsInSideMargin(*current_run_context.run, page_properties);
   bool next_in_side_margin =
+      next_role == HeaderFooterRole::kNone &&
       IsInSideMargin(*current_run_context.next_run, page_properties);
   if (current_in_side_margin != next_in_side_margin) {
     return true;
@@ -1471,10 +1488,6 @@ std::optional<bool> BreakAtHeaderFooterBoundary(
   if (current_in_side_margin) {
     return is_large_line_spacing_break;
   }
-
-  PageNumberKind next_page_number_kind = PageNumberKind::kNone;
-  HeaderFooterRole next_role = GetHeaderFooterRole(
-      next_run_context, page_properties, &next_page_number_kind);
 
   if (current_role != HeaderFooterRole::kNone) {
     // Without a large gap, the next run continues the current line or opens one
@@ -2634,13 +2647,6 @@ PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
     return result;
   }
 
-  if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
-      IsInSideMargin(*run_context.run, page_properties)) {
-    result.node = CreateLineBreakingNode(ax::mojom::Role::kSectionFooter,
-                                         run_context.run->language);
-    return result;
-  }
-
   // Resolving the header and footer role up front also reports whether the run
   // reads as a page number, which decides the ordering below.
   std::optional<ax::mojom::Role> header_footer_ax_role;
@@ -2660,6 +2666,16 @@ PdfAccessibilityTreeBuilderHeuristic::CreateBlockLevelNode(
     if (result.list_marker_kind.form != ListMarkerForm::kNone) {
       result.node = CreateListItemNode(run_context, result.list_marker_kind,
                                        std::move(levels));
+      return result;
+    }
+
+    // Check the side margin only after header, footer, and list marker
+    // classification, so corner headers and hanging list markers keep their
+    // roles.
+    if (!header_footer_ax_role.has_value() &&
+        IsInSideMargin(*run_context.run, page_properties)) {
+      result.node = CreateLineBreakingNode(ax::mojom::Role::kSectionFooter,
+                                           run_context.run->language);
       return result;
     }
   }
