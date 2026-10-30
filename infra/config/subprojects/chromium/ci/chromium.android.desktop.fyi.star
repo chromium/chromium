@@ -152,6 +152,7 @@ ci.builder(
                 mixins = [
                     "17-desktop-x64-emulator",
                     "emulator-8-cores",
+                    "force-main-user",
                 ],
             ),
             targets.bundle(
@@ -162,6 +163,33 @@ ci.builder(
                 ],
             ),
         ],
+        per_test_modifications = {
+            "android_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 30,
+                ),
+            ),
+            "chrome_public_test_apk": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 40,
+                ),
+            ),
+            "chrome_public_test_apk_desktop": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
+            "chrome_public_unit_test_apk": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 5,
+                ),
+            ),
+            "unit_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 6,
+                ),
+            ),
+        },
     ),
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
