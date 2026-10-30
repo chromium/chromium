@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+selection_test(
+  '<div contenteditable>^<textarea></textarea>|<canvas></canvas></div>',
+  selection => {
+    selection.document.querySelector('div').focus();
+    assert_own_property(
+        window, 'textInputController',
+        'This test requires textInputController to simulate IME operations');
+    textInputController.setComposition('a');
+  },
+  '<div contenteditable>|<canvas></canvas></div>',
+  'SetComposition should not crash when no ending selection remains after replacing the selection');
+</script>

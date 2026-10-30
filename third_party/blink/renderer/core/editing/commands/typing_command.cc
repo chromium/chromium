@@ -772,6 +772,12 @@ void TypingCommand::InsertTextInternal(const String& text,
   ContainerNode* const editable =
       RootEditableElementOrTreeScopeRootNodeOf(EndingSelection().Anchor());
 
+  // The insertion can leave no ending selection, e.g. after replacing a
+  // selected <textarea> that is followed by a <canvas>.
+  if (!editable) {
+    return;
+  }
+
   const EphemeralRange new_selection_start_collapsed_range =
       PlainTextRange(selection_start_, selection_start_).CreateRange(*editable);
   const Position current_selection_end = EndingSelection().End();
