@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_SELECTION_METRICS_LOGGER_H_
 #define CHROME_BROWSER_SELECTION_METRICS_LOGGER_H_
 
+#include <memory>
 #include <string_view>
+
+#include "base/containers/span.h"
 
 namespace selection {
 
@@ -95,6 +98,8 @@ class MetricsLogger {
   ~MetricsLogger();
 
   void RecordSpatialSelectionCompleted();
+  void RecordSuggestionsShown(
+      base::span<const std::unique_ptr<Suggestion>> suggestions);
   void RecordSuggestionAccepted(const Suggestion& suggestion);
   void RecordPromptSubmitted();
   void RecordSessionEnd(bool cancelled_by_user);

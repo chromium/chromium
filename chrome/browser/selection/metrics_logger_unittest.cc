@@ -4,8 +4,10 @@
 
 #include "chrome/browser/selection/metrics_logger.h"
 
+#include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/selection/mojom/action.mojom.h"
@@ -197,6 +199,36 @@ TEST(MetricsLoggerTest, RecordSuggestionAcceptedLogsToolType) {
                  1),
           Bucket(optimization_guide::proto::SMART_SELECTION_TOOL_QUICK_ANSWERS,
                  1)));
+}
+
+TEST(MetricsLoggerTest, RecordSuggestionsShownCounts) {
+  base::HistogramTester histogram_tester;
+  MetricsLogger logger(EntryPoint::kContextMenuText, "text/html",
+                       /*has_preselected_region=*/true);
+
+  std::vector<std::unique_ptr<Suggestion>> suggestions;
+  suggestions.push_back(std::make_unique<FakeSuggestion>(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME));
+  suggestions.push_back(std::make_unique<FakeSuggestion>(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME));
+  suggestions.push_back(std::make_unique<FakeSuggestion>(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GOOGLE_LENS));
+  suggestions.push_back(std::make_unique<FakeSuggestion>(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GOOGLE_SEARCH));
+  logger.RecordSuggestionsShown(suggestions);
+
+  histogram_tester.ExpectUniqueSample(
+      "SmartSelection.Suggestions.TotalShownCount", 4, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SmartSelection.Suggestions.GeminiInChromeShownCount", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SmartSelection.Suggestions.GoogleLensShownCount", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SmartSelection.Suggestions.GoogleSearchShownCount", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SmartSelection.Suggestions.QuickAnswersShownCount", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SmartSelection.Suggestions.UnknownShownCount", 0, 1);
 }
 
 }  // namespace

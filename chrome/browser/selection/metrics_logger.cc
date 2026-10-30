@@ -4,9 +4,15 @@
 
 #include "chrome/browser/selection/metrics_logger.h"
 
+#include <array>
+#include <cstddef>
+#include <memory>
 #include <string_view>
+#include <utility>
 
+#include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/selection/suggestion.h"
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 
@@ -31,6 +37,27 @@ DocumentMimeType GetDocumentMimeType(std::string_view mime_type) {
     return DocumentMimeType::kJson;
   }
   return DocumentMimeType::kUnknown;
+}
+
+std::string_view GetToolHistogramName(
+    optimization_guide::proto::SmartSelectionToolId tool_id) {
+  switch (tool_id) {
+    case optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME:
+      return "GeminiInChrome";
+    case optimization_guide::proto::SMART_SELECTION_TOOL_GOOGLE_LENS:
+      return "GoogleLens";
+    case optimization_guide::proto::SMART_SELECTION_TOOL_GOOGLE_SEARCH:
+      return "GoogleSearch";
+    case optimization_guide::proto::SMART_SELECTION_TOOL_QUICK_ANSWERS:
+      return "QuickAnswers";
+    case optimization_guide::proto::SMART_SELECTION_TOOL_UNSPECIFIED:
+    case optimization_guide::proto::
+        SmartSelectionToolId_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case optimization_guide::proto::
+        SmartSelectionToolId_INT_MAX_SENTINEL_DO_NOT_USE_:
+      return "Unknown";
+  }
+  return "Unknown";
 }
 
 }  // namespace
@@ -62,6 +89,37 @@ void MetricsLogger::RecordSpatialSelectionCompleted() {
   spatial_selection_completed_ = true;
   base::UmaHistogramEnumeration("SmartSelection.Selection.Outcome",
                                 SelectionOutcome::kSpatialSelectionCompleted);
+}
+
+void MetricsLogger::RecordSuggestionsShown(
+    base::span<const std::unique_ptr<Suggestion>> suggestions) {
+  std::array<int, optimization_guide::proto::SmartSelectionToolId_ARRAYSIZE>
+      counts = {};
+  int total = 0;
+
+  for (const std::unique_ptr<Suggestion>& suggestion : suggestions) {
+    if (!suggestion) {
+      continue;
+    }
+    ++total;
+    const Suggestion::ToolId tool_id = suggestion->GetToolId();
+    const size_t index =
+        optimization_guide::proto::SmartSelectionToolId_IsValid(tool_id)
+            ? static_cast<size_t>(std::to_underlying(tool_id))
+            : static_cast<size_t>(std::to_underlying(
+                  optimization_guide::proto::SMART_SELECTION_TOOL_UNSPECIFIED));
+    ++counts[index];
+  }
+
+  base::UmaHistogramExactLinear("SmartSelection.Suggestions.TotalShownCount",
+                                total, /*exclusive_max=*/10);
+  for (size_t i = 0; i < counts.size(); ++i) {
+    const auto tool_id = static_cast<Suggestion::ToolId>(i);
+    base::UmaHistogramExactLinear(
+        base::StrCat({"SmartSelection.Suggestions.",
+                      GetToolHistogramName(tool_id), "ShownCount"}),
+        counts[i], /*exclusive_max=*/10);
+  }
 }
 
 void MetricsLogger::RecordSuggestionAccepted(const Suggestion& suggestion) {

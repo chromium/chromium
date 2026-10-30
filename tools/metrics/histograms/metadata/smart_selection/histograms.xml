@@ -160,6 +160,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SmartSelection.Suggestions.TotalShownCount"
+    units="suggestions" expires_after="2027-04-14">
+  <owner>schwering@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <summary>
+    Records the total number of suggestions for a single selection. Emitted when
+    the suggestions are presented to the user once suggestion fetching
+    completes.
+  </summary>
+</histogram>
+
+<histogram name="SmartSelection.Suggestions.{SuggestionType}ShownCount"
+    units="suggestions" expires_after="2027-04-14">
+  <owner>schwering@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <summary>
+    Records the number of {SuggestionType} suggestions for a single selection.
+    Emitted when the suggestions are presented to the user once suggestion
+    fetching completes.
+  </summary>
+  <token key="SuggestionType">
+    <variant name="GeminiInChrome" summary="Gemini in Chrome"/>
+    <variant name="GoogleLens" summary="Google Lens"/>
+    <variant name="GoogleSearch" summary="Google Search"/>
+    <variant name="QuickAnswers" summary="Quick Answers"/>
+    <variant name="Unknown" summary="Unknown or unspecified tool"/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
