@@ -4,6 +4,12 @@
 
 #include "chrome/browser/ui/startup/focus/match_candidate.h"
 
+#include <optional>
+#include <string>
+#include <string_view>
+#include <utility>
+
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/startup/focus/selector.h"
@@ -22,22 +28,23 @@ GURL CanonicalizeUrl(const GURL& url) {
     return url;
   }
 
-  std::string spec = url.spec();
+  std::string_view spec = url.spec();
 
   // For root paths (just domain), ensure consistent trailing slash.
   if (url.path().length() <= 1) {
     // Root path: ensure it ends with /
-    if (!base::EndsWith(spec, "/", base::CompareCase::SENSITIVE)) {
-      spec += "/";
+    if (!spec.ends_with('/')) {
+      return GURL(base::StrCat({spec, "/"}));
     }
-  } else {
-    // Non-root path: remove trailing slash.
-    if (base::EndsWith(spec, "/", base::CompareCase::SENSITIVE)) {
-      spec = spec.substr(0, spec.length() - 1);
-    }
+    return url;
   }
 
-  return GURL(spec);
+  // Non-root path: remove trailing slash.
+  if (std::optional<std::string_view> trimmed = base::RemoveSuffix(spec, "/")) {
+    return GURL(*trimmed);
+  }
+
+  return url;
 }
 
 // Attempts to match an app window by its manifest ID against the selector.
@@ -69,10 +76,8 @@ std::optional<std::string> MatchAppByManifestId(
   if (selector.type == SelectorType::kUrlExact) {
     is_match = (canonicalized_manifest_id == canonicalized_selector_url);
   } else if (selector.type == SelectorType::kUrlPrefix) {
-    std::string manifest_id_string = canonicalized_manifest_id.spec();
-    std::string selector_url_string = canonicalized_selector_url.spec();
-    is_match = base::StartsWith(manifest_id_string, selector_url_string,
-                                base::CompareCase::SENSITIVE);
+    is_match = canonicalized_manifest_id.spec().starts_with(
+        canonicalized_selector_url.spec());
   }
 
   if (is_match) {
@@ -88,14 +93,14 @@ MatchCandidate::MatchCandidate(BrowserWindowInterface& browser_window,
                                int tab_index,
                                content::WebContents& web_contents,
                                base::Time last_active_time,
-                               const std::string& matched_url,
-                               const std::optional<std::string>& app_id)
+                               std::string matched_url,
+                               std::optional<std::string> app_id)
     : browser_window(browser_window),
       tab_index(tab_index),
       web_contents(web_contents),
       last_active_time(last_active_time),
-      matched_url(matched_url),
-      app_id(app_id) {}
+      matched_url(std::move(matched_url)),
+      app_id(std::move(app_id)) {}
 
 MatchCandidate::MatchCandidate(MatchCandidate&& other) noexcept = default;
 
@@ -161,10 +166,8 @@ std::optional<MatchCandidate> MatchTab(const Selector& selector,
     if (selector.type == SelectorType::kUrlExact) {
       is_match = (canonicalized_tab_url == canonicalized_selector_url);
     } else if (selector.type == SelectorType::kUrlPrefix) {
-      std::string tab_url_string = canonicalized_tab_url.spec();
-      std::string selector_url_string = canonicalized_selector_url.spec();
-      is_match = base::StartsWith(tab_url_string, selector_url_string,
-                                  base::CompareCase::SENSITIVE);
+      is_match = canonicalized_tab_url.spec().starts_with(
+          canonicalized_selector_url.spec());
     }
   }
 
@@ -174,7 +177,8 @@ std::optional<MatchCandidate> MatchTab(const Selector& selector,
 
   base::Time last_active_time = web_contents.GetLastActiveTime();
   return MatchCandidate(browser_window, tab_index, web_contents,
-                        last_active_time, tab_url.spec(), matched_app_id);
+                        last_active_time, tab_url.spec(),
+                        std::move(matched_app_id));
 }
 
 }  // namespace focus

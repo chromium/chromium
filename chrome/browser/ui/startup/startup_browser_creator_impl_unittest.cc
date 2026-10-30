@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/startup/startup_browser_creator_impl.h"
 
+#include <string_view>
+#include <vector>
+
 #include "base/command_line.h"
-#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
@@ -119,8 +121,8 @@ class FakeStartupTabProvider : public StartupTabProvider {
 // tabs and restored tabs.
 class DuplicateFakeStartupTabProvider : public StartupTabProvider {
  public:
-  static constexpr char kDuplicateUrl[] = "https://duplicate.test";
-  static constexpr char kDuplicateHost[] = "duplicate.test";
+  static constexpr std::string_view kDuplicateUrl = "https://duplicate.test";
+  static constexpr std::string_view kDuplicateHost = "duplicate.test";
 
   DuplicateFakeStartupTabProvider() = default;
 
@@ -183,8 +185,7 @@ class DuplicateFakeStartupTabProvider : public StartupTabProvider {
 // Comparing a `StartupTab` with a string will compare the tab's host with that
 // string. This is used to compare lists more easily via
 // `testing::ElementsAreArray`.
-bool operator==(const StartupTab& actual_tab,
-                const std::string& expected_host) {
+bool operator==(const StartupTab& actual_tab, std::string_view expected_host) {
   return actual_tab.url.host() == expected_host;
 }
 
@@ -212,7 +213,7 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs) {
       /*promotional_tabs_enabled=*/true, /*whats_new_enabled=*/false);
   EXPECT_EQ(LaunchResult::kNormally, output.launch_result);
 
-  std::vector<std::string> expected_tab_hosts;
+  std::vector<std::string_view> expected_tab_hosts;
   expected_tab_hosts.emplace_back("reset-trigger");
   expected_tab_hosts.emplace_back("prefs");
   expected_tab_hosts.emplace_back("pinned");
@@ -447,7 +448,7 @@ TEST_F(StartupBrowserCreatorImplTest, DetermineStartupTabs_NewFeaturesPage) {
       /*whats_new_enabled=*/true);
   EXPECT_EQ(LaunchResult::kNormally, output.launch_result);
 
-  std::vector<std::string> expected_tab_hosts;
+  std::vector<std::string_view> expected_tab_hosts;
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   expected_tab_hosts.emplace_back("new-tab");
 #else

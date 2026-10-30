@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -171,8 +172,7 @@ BrowserWindowInterface* GetExistingBrowserForOpenBehavior(
 
   if (!current_workspace.empty()) {
     GlobalBrowserCollection::GetInstance()->ForEach(
-        [&, current_workspace,
-         match_original_profiles](BrowserWindowInterface* window) {
+        [&](BrowserWindowInterface* window) {
           Profile* const candidate_profile = window->GetProfile();
           if (match_original_profiles) {
             if (candidate_profile->GetOriginalProfile() !=
@@ -374,7 +374,7 @@ BrowserWindowInterface* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     // asking us to open such a URL should really ask the handler directly.
     bool handled_by_chrome =
         ProfileIOData::IsHandledURL(tab.url) ||
-        (registry && registry->IsHandledProtocol(tab.url.GetScheme()));
+        (registry && registry->IsHandledProtocol(tab.url.scheme()));
     if (process_startup == chrome::startup::IsProcessStartup::kNo &&
         !handled_by_chrome) {
       continue;
@@ -596,9 +596,9 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
   tab_groups::MaybeShowSharedTabGroupVersionUpToDateToast(browser);
 
   if (base::FeatureList::IsEnabled(features::kNonMilestoneUpdateToast)) {
-    std::string current_version_string =
+    std::string_view current_version_string =
         current_chrome_version_string_for_testing_.has_value()
-            ? current_chrome_version_string_for_testing_.value()
+            ? std::string_view(*current_chrome_version_string_for_testing_)
             : CHROME_VERSION_STRING;
     MaybeShowNonMilestoneUpdateToast(browser, current_version_string);
   }
@@ -859,13 +859,13 @@ StartupBrowserCreatorImpl::DetermineSynchronousRestoreOptions(
 // static
 void StartupBrowserCreatorImpl::MaybeShowNonMilestoneUpdateToast(
     BrowserWindowInterface* browser,
-    const std::string& current_version_string) {
+    std::string_view current_version_string) {
   if (!browser) {
     return;
   }
 
   PrefService* local_state = g_browser_process->local_state();
-  std::string last_version_string =
+  const std::string& last_version_string =
       local_state->GetString(prefs::kNonMilestoneUpdateToastVersion);
 
   if (IsNonMilestoneUpdate(last_version_string, current_version_string)) {
@@ -877,8 +877,8 @@ void StartupBrowserCreatorImpl::MaybeShowNonMilestoneUpdateToast(
 }
 
 bool StartupBrowserCreatorImpl::IsNonMilestoneUpdate(
-    const std::string& last_version_string,
-    const std::string& current_version_string) {
+    std::string_view last_version_string,
+    std::string_view current_version_string) {
   base::Version last_version(last_version_string);
   base::Version current_version(current_version_string);
   if (!last_version.IsValid() || !current_version.IsValid()) {

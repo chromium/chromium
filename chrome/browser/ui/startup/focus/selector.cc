@@ -4,13 +4,21 @@
 
 #include "chrome/browser/ui/startup/focus/selector.h"
 
+#include <optional>
+#include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
+
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "url/gurl.h"
 
 namespace focus {
 
-Selector::Selector(SelectorType type, const GURL& url) : type(type), url(url) {}
+Selector::Selector(SelectorType type, GURL url)
+    : type(type), url(std::move(url)) {}
 
 Selector::~Selector() = default;
 
@@ -25,33 +33,28 @@ bool Selector::IsValid() const {
 
 std::string Selector::ToString() const {
   if (type == SelectorType::kUrlPrefix) {
-    return url.spec() + "*";
+    return base::StrCat({url.spec(), "*"});
   }
   return url.spec();
 }
 
-std::vector<Selector> ParseSelectors(const std::string& input) {
+std::vector<Selector> ParseSelectors(std::string_view input) {
   std::vector<Selector> selectors;
 
   if (input.empty()) {
     return selectors;
   }
 
-  std::vector<std::string_view> items = base::SplitStringPiece(
-      input, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-  for (const auto& item : items) {
-    bool is_prefix = base::EndsWith(item, "*", base::CompareCase::SENSITIVE);
-    std::string_view url_part = item;
-    if (is_prefix) {
-      url_part = item.substr(0, item.length() - 1);
-    }
+  for (std::string_view item : base::SplitStringPiece(
+           input, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
+    std::optional<std::string_view> trimmed = base::RemoveSuffix(item, "*");
+    std::string_view url_part = trimmed.value_or(item);
 
     GURL url(url_part);
     if (url.is_valid() && (url.has_host() || url.has_path())) {
-      SelectorType type =
-          is_prefix ? SelectorType::kUrlPrefix : SelectorType::kUrlExact;
-      selectors.emplace_back(type, url);
+      SelectorType type = trimmed.has_value() ? SelectorType::kUrlPrefix
+                                              : SelectorType::kUrlExact;
+      selectors.emplace_back(type, std::move(url));
     }
   }
 

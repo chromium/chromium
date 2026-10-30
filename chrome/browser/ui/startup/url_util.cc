@@ -17,6 +17,10 @@
 #include "chrome/browser/headless/headless_mode_util.h"
 #endif
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "base/no_destructor.h"
+#endif
+
 namespace startup {
 
 namespace {
@@ -47,18 +51,22 @@ bool ValidateLaunchUrlWebUnsafe(const GURL& url) {
     return false;
   }
 
-  const GURL settings_url(chrome::kChromeUISettingsURL);
   bool url_points_to_an_approved_settings_page = false;
 #if BUILDFLAG(IS_CHROMEOS)
   // In ChromeOS, allow any settings page to be specified on the command line.
+  const GURL& origin_url =
+      url.SchemeIsFileSystem() && url.inner_url() ? *url.inner_url() : url;
   url_points_to_an_approved_settings_page =
-      url.DeprecatedGetOriginAsURL() == settings_url.DeprecatedGetOriginAsURL();
+      origin_url.SchemeIs(content::kChromeUIScheme) &&
+      origin_url.host() == chrome::kChromeUISettingsHost &&
+      !origin_url.has_port();
 #else
   // Exposed for external cleaners to offer a settings reset to the
   // user. The allowed URLs must match exactly.
-  const GURL reset_settings_url =
-      settings_url.Resolve(chrome::kResetProfileSettingsSubPage);
-  url_points_to_an_approved_settings_page = url == reset_settings_url;
+  static const base::NoDestructor<GURL> kResetSettingsUrl(
+      GURL(chrome::kChromeUISettingsURL)
+          .Resolve(chrome::kResetProfileSettingsSubPage));
+  url_points_to_an_approved_settings_page = url == *kResetSettingsUrl;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   bool url_scheme_is_chrome = false;
@@ -82,11 +90,15 @@ bool ValidateLaunchUrlWebUnsafe(const GURL& url) {
   url_scheme_is_content = url.SchemeIs(url::kContentScheme);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+  if (url.SchemeIsHTTPOrHTTPS() || url.SchemeIs(url::kFileScheme) ||
+      url_scheme_is_chrome || url_scheme_is_content ||
+      url_points_to_an_approved_settings_page ||
+      url.spec() == url::kAboutBlankURL) {
+    return true;
+  }
+
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
-  return policy->IsWebSafeScheme(url.GetScheme()) ||
-         url.SchemeIs(url::kFileScheme) || url_scheme_is_chrome ||
-         url_scheme_is_content || url_points_to_an_approved_settings_page ||
-         url.spec() == url::kAboutBlankURL;
+  return policy->IsWebSafeScheme(url.GetScheme());
 }
 
 }  // namespace startup

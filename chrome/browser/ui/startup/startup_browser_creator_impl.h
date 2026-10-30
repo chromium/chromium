@@ -6,6 +6,10 @@
 #define CHROME_BROWSER_UI_STARTUP_STARTUP_BROWSER_CREATOR_IMPL_H_
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -90,8 +94,8 @@ class StartupBrowserCreatorImpl {
       TabOverWrite is_active_tab_overwrite = TabOverWrite::kNo);
 
   void SetCurrentChromeVersionStringForTesting(
-      const std::optional<std::string>& version) {
-    current_chrome_version_string_for_testing_ = version;
+      std::optional<std::string> version) {
+    current_chrome_version_string_for_testing_ = std::move(version);
   }
 
  private:
@@ -219,13 +223,13 @@ class StartupBrowserCreatorImpl {
   // Show a toast if a non milestone update is detected.
   static void MaybeShowNonMilestoneUpdateToast(
       BrowserWindowInterface* browser,
-      const std::string& current_version_string);
+      std::string_view current_version_string);
 
   // Return whether the current version update is non milestone update.
   // e.g, from 140.0.7297.0 to 140.0.7297.3 should return true.
   // from 140.0.7297.0 to 141.0.7327.0 should return false.
-  static bool IsNonMilestoneUpdate(const std::string& last_version_string,
-                                   const std::string& current_version_string);
+  static bool IsNonMilestoneUpdate(std::string_view last_version_string,
+                                   std::string_view current_version_string);
 
   // Returns whether `switches::kKioskMode` is set on the command line of
   // the current process. This is a static method to avoid accidentally reading

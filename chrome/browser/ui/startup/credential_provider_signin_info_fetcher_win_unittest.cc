@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/startup/credential_provider_signin_info_fetcher_win.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -63,7 +64,7 @@ class CredentialProviderFetcherTest : public ::testing::Test {
     return shared_factory_;
   }
 
-  void RunFetcher(const std::string& additional_oauth_scopes);
+  void RunFetcher(std::string_view additional_oauth_scopes);
 
   // Used for result verification
   base::DictValue fetch_result_;
@@ -129,7 +130,7 @@ void CredentialProviderFetcherTest::SetFakeResponses(
 }
 
 void CredentialProviderFetcherTest::RunFetcher(
-    const std::string& additional_oauth_scopes) {
+    std::string_view additional_oauth_scopes) {
   base::RunLoop run_loop;
   auto fetcher_callback =
       base::BindOnce(&CredentialProviderFetcherTest::OnFetchComplete,

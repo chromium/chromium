@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/files/file_path.h"
 #include "chrome/browser/ui/startup/focus/focus_handler.h"
 
 namespace focus {
@@ -15,7 +16,7 @@ namespace focus {
 std::string CreateFocusJsonString(const FocusResult& result);
 
 // Writes focus result information to a file in JSON format.
-void WriteResultToFile(std::string file_path, const FocusResult& result);
+void WriteResultToFile(base::FilePath file_path, const FocusResult& result);
 
 }  // namespace focus
 

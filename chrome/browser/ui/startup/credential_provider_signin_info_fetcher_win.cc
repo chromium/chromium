@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/startup/credential_provider_signin_info_fetcher_win.h"
 
 #include <memory>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -21,9 +23,9 @@
 
 CredentialProviderSigninInfoFetcher::CredentialProviderSigninInfoFetcher(
     const std::string& refresh_token,
-    const std::string& consumer_name,
+    std::string consumer_name,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : consumer_name_(consumer_name),
+    : consumer_name_(std::move(consumer_name)),
       scoped_access_token_fetcher_(
           GaiaAccessTokenFetcher::
               CreateExchangeRefreshTokenForAccessTokenInstance(
@@ -40,7 +42,7 @@ CredentialProviderSigninInfoFetcher::~CredentialProviderSigninInfoFetcher() =
 
 void CredentialProviderSigninInfoFetcher::SetCompletionCallbackAndStart(
     const std::string& access_token,
-    const std::string& additional_mdm_oauth_scopes,
+    std::string_view additional_mdm_oauth_scopes,
     FetchCompletionCallback completion_callback) {
   CHECK(!completion_callback.is_null(), base::NotFatalUntil::M162);
   completion_callback_ = std::move(completion_callback);
@@ -50,11 +52,11 @@ void CredentialProviderSigninInfoFetcher::SetCompletionCallbackAndStart(
   // used for MDM registration.
   std::vector<std::string> access_scopes = {"email", "profile", "openid"};
 
-  std::vector<std::string> extra_scopes(
-      base::SplitString(additional_mdm_oauth_scopes, ",", base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_NONEMPTY));
-  access_scopes.insert(access_scopes.end(), extra_scopes.begin(),
-                       extra_scopes.end());
+  for (std::string_view scope : base::SplitStringPiece(
+           additional_mdm_oauth_scopes, ",", base::TRIM_WHITESPACE,
+           base::SPLIT_WANT_NONEMPTY)) {
+    access_scopes.emplace_back(scope);
+  }
 
   scoped_access_token_fetcher_->Start(gaia_urls->oauth2_chrome_client_id(),
                                       gaia_urls->oauth2_chrome_client_secret(),
@@ -143,13 +145,16 @@ void CredentialProviderSigninInfoFetcher::WriteResultsIfFinished(
   base::DictValue fetch_result;
   if (!has_error) {
     fetch_result.Set(credential_provider::kKeyMdmAccessToken,
-                     mdm_access_token_);
-    fetch_result.Set(credential_provider::kKeyMdmIdToken, mdm_id_token_);
-    fetch_result.Set(credential_provider::kKeyFullname, full_name_);
+                     std::move(mdm_access_token_));
+    fetch_result.Set(credential_provider::kKeyMdmIdToken,
+                     std::move(mdm_id_token_));
+    fetch_result.Set(credential_provider::kKeyFullname, std::move(full_name_));
     if (!picture_url_.empty()) {
-      fetch_result.Set(credential_provider::kKeyPicture, picture_url_);
+      fetch_result.Set(credential_provider::kKeyPicture,
+                       std::move(picture_url_));
     }
-    fetch_result.Set(credential_provider::kKeyTokenHandle, token_handle_);
+    fetch_result.Set(credential_provider::kKeyTokenHandle,
+                     std::move(token_handle_));
   }
 
   std::move(completion_callback_).Run(std::move(fetch_result));

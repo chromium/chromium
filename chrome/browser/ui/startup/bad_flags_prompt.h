@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_STARTUP_BAD_FLAGS_PROMPT_H_
 #define CHROME_BROWSER_UI_STARTUP_BAD_FLAGS_PROMPT_H_
 
+#include <string_view>
+
 namespace content {
 class WebContents;
 }
@@ -19,7 +21,7 @@ void ShowBadFlagsPrompt(content::WebContents* web_contents);
 // should otherwise be used only by ShowBadFlagsPrompt().
 void ShowBadFlagsInfoBar(content::WebContents* web_contents,
                          int message_id,
-                         const char* flag);
+                         std::string_view flag);
 
 // Shows a warning dialog if the originally specified user data dir was invalid.
 void MaybeShowInvalidUserDataDirWarningDialog();

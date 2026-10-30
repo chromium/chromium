@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ui/startup/google_chrome_scheme_util.h"
 
+#include <optional>
+#include <string>
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
@@ -22,9 +26,11 @@ namespace startup {
 
 namespace {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-const char* kScheme = "google-chrome";
+constexpr std::string_view kScheme = "google-chrome";
+constexpr std::string_view kOtherScheme = "chromium";
 #else
-const char* kScheme = "chromium";
+constexpr std::string_view kScheme = "chromium";
+constexpr std::string_view kOtherScheme = "google-chrome";
 #endif
 }  // namespace
 
@@ -35,7 +41,7 @@ TEST(GoogleChromeSchemeUtilTest, StripGoogleChromeScheme) {
   std::wstring scheme_prefix = base::ASCIIToWide(kScheme) + L"://";
   using StringType = std::wstring;
 #else
-  std::string scheme_prefix = std::string(kScheme) + "://";
+  std::string scheme_prefix = base::StrCat({kScheme, "://"});
   using StringType = std::string;
 #endif
 
@@ -69,14 +75,14 @@ TEST(GoogleChromeSchemeUtilTest, StripGoogleChromeScheme) {
   // Case insensitive
   {
     // Construct mixed case scheme.
-    std::string mixed_scheme_ascii = kScheme;
+    std::string mixed_scheme_ascii(kScheme);
     mixed_scheme_ascii[0] = toupper(mixed_scheme_ascii[0]);
 #if BUILDFLAG(IS_WIN)
     StringType mixed_scheme_prefix =
         base::ASCIIToWide(mixed_scheme_ascii) + L"://";
     StringType expected = L"example.com";
 #else
-    StringType mixed_scheme_prefix = mixed_scheme_ascii + "://";
+    StringType mixed_scheme_prefix = base::StrCat({mixed_scheme_ascii, "://"});
     StringType expected = "example.com";
 #endif
     StringType arg_str = mixed_scheme_prefix + expected;
@@ -101,7 +107,7 @@ TEST(GoogleChromeSchemeUtilTest, StripGoogleChromeScheme) {
     StringType malformed = base::ASCIIToWide(kScheme) + L":" + expected;
 #else
     StringType expected = "example.com";
-    StringType malformed = std::string(kScheme) + ":" + expected;
+    StringType malformed = base::StrCat({kScheme, ":", expected});
 #endif
     base::FilePath::StringViewType arg = malformed;
     EXPECT_TRUE(StripGoogleChromeScheme(arg));
@@ -115,7 +121,7 @@ TEST(GoogleChromeSchemeUtilTest, StripGoogleChromeScheme) {
     StringType malformed = base::ASCIIToWide(kScheme) + L":" + expected;
 #else
     StringType expected = "/example.com";
-    StringType malformed = std::string(kScheme) + ":" + expected;
+    StringType malformed = base::StrCat({kScheme, ":", expected});
 #endif
     base::FilePath::StringViewType arg = malformed;
     EXPECT_TRUE(StripGoogleChromeScheme(arg));
@@ -128,7 +134,7 @@ TEST(GoogleChromeSchemeUtilTest, StripGoogleChromeScheme) {
     StringType opaque = base::ASCIIToWide(kScheme) + L":" + expected;
 #else
     StringType expected = "http://www.example.com";
-    StringType opaque = std::string(kScheme) + ":" + expected;
+    StringType opaque = base::StrCat({kScheme, ":", expected});
 #endif
     base::FilePath::StringViewType arg = opaque;
     EXPECT_TRUE(StripGoogleChromeScheme(arg));
@@ -141,7 +147,7 @@ TEST(GoogleChromeSchemeUtilTest, StripGoogleChromeScheme) {
     StringType opaque = base::ASCIIToWide(kScheme) + L":" + expected;
 #else
     StringType expected = "file:///tmp/test";
-    StringType opaque = std::string(kScheme) + ":" + expected;
+    StringType opaque = base::StrCat({kScheme, ":", expected});
 #endif
     base::FilePath::StringViewType arg = opaque;
     EXPECT_TRUE(StripGoogleChromeScheme(arg));
@@ -170,15 +176,9 @@ TEST(GoogleChromeSchemeUtilTest, StripGoogleChromeScheme) {
 TEST(GoogleChromeSchemeUtilTest, ExtractGoogleChromeSchemeInnerUrl) {
   base::test::ScopedFeatureList feature_list{features::kGoogleChromeScheme};
 
-#if BUILDFLAG(IS_WIN)
-  std::string scheme = base::WideToASCII(base::ASCIIToWide(kScheme));
-#else
-  std::string scheme = kScheme;
-#endif
-
   // Standard case
   {
-    GURL url(scheme + "://example.com");
+    GURL url(base::StrCat({kScheme, "://example.com"}));
     std::optional<GURL> result = ExtractGoogleChromeSchemeInnerUrl(url);
     EXPECT_TRUE(result.has_value());
     EXPECT_EQ(result.value(), GURL("example.com"));
@@ -186,7 +186,7 @@ TEST(GoogleChromeSchemeUtilTest, ExtractGoogleChromeSchemeInnerUrl) {
 
   // Opaque case
   {
-    GURL url(scheme + ":http://example.com");
+    GURL url(base::StrCat({kScheme, ":http://example.com"}));
     std::optional<GURL> result = ExtractGoogleChromeSchemeInnerUrl(url);
     EXPECT_TRUE(result.has_value());
     EXPECT_EQ(result.value(), GURL("http://example.com"));
@@ -194,7 +194,7 @@ TEST(GoogleChromeSchemeUtilTest, ExtractGoogleChromeSchemeInnerUrl) {
 
   // File case
   {
-    GURL url(scheme + ":file:///tmp/test");
+    GURL url(base::StrCat({kScheme, ":file:///tmp/test"}));
     std::optional<GURL> result = ExtractGoogleChromeSchemeInnerUrl(url);
     EXPECT_TRUE(result.has_value());
     EXPECT_EQ(result.value(), GURL("file:///tmp/test"));
@@ -211,20 +211,14 @@ TEST(GoogleChromeSchemeUtilTest, ExtractGoogleChromeSchemeInnerUrl) {
   {
     base::test::ScopedFeatureList disabled_feature;
     disabled_feature.InitAndDisableFeature(features::kGoogleChromeScheme);
-    GURL url(scheme + "://example.com");
+    GURL url(base::StrCat({kScheme, "://example.com"}));
     std::optional<GURL> result = ExtractGoogleChromeSchemeInnerUrl(url);
     EXPECT_FALSE(result.has_value());
   }
 
   // Cross-scheme support (Strict mode - should fail)
   {
-    std::string other_scheme;
-    if (std::string(kScheme) == "google-chrome") {
-      other_scheme = "chromium";
-    } else {
-      other_scheme = "google-chrome";
-    }
-    GURL url(base::StrCat({other_scheme, "://example.com"}));
+    GURL url(base::StrCat({kOtherScheme, "://example.com"}));
     std::optional<GURL> result = ExtractGoogleChromeSchemeInnerUrl(url);
     EXPECT_FALSE(result.has_value());
   }

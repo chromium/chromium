@@ -43,7 +43,7 @@
 namespace {
 
 // The OAuth token consumer name.
-const char kOAuthConsumerName[] = "credential_provider_signin_dialog";
+constexpr char kOAuthConsumerName[] = "credential_provider_signin_dialog";
 
 // This message must match the one sent in inline_login_app.js:
 // sendLSTFetchResults.
@@ -115,7 +115,7 @@ void HandleSigninCompleteForGcpwLogin(
   } else if (signin_result.size() > 1) {
     std::string access_token =
         *signin_result.FindString(credential_provider::kKeyAccessToken);
-    std::string refresh_token =
+    const std::string& refresh_token =
         *signin_result.FindString(credential_provider::kKeyRefreshToken);
     CHECK(!access_token.empty() && !refresh_token.empty(),
           base::NotFatalUntil::M162);
@@ -142,9 +142,9 @@ class CredentialProviderWebUIMessageHandler
  public:
   explicit CredentialProviderWebUIMessageHandler(
       HandleGcpwSigninCompleteResult signin_callback,
-      const std::string& additional_mdm_oauth_scopes)
+      std::string additional_mdm_oauth_scopes)
       : signin_callback_(std::move(signin_callback)),
-        additional_mdm_oauth_scopes_(additional_mdm_oauth_scopes) {}
+        additional_mdm_oauth_scopes_(std::move(additional_mdm_oauth_scopes)) {}
 
   CredentialProviderWebUIMessageHandler(
       const CredentialProviderWebUIMessageHandler&) = delete;
@@ -269,19 +269,19 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
   // |email_domains| is used to pre fill the email domain on Gaia's signin page
   // so that the user only needs to enter their user name.
   CredentialProviderWebDialogDelegate(
-      const std::string& reauth_email,
-      const std::string& reauth_gaia_id,
-      const std::string& email_domains,
-      const std::string& gcpw_endpoint_path,
-      const std::string& additional_mdm_oauth_scopes,
-      const std::string& show_tos,
+      std::string reauth_email,
+      std::string reauth_gaia_id,
+      std::string email_domains,
+      std::string gcpw_endpoint_path,
+      std::string additional_mdm_oauth_scopes,
+      std::string show_tos,
       HandleGcpwSigninCompleteResult signin_callback)
-      : reauth_email_(reauth_email),
-        reauth_gaia_id_(reauth_gaia_id),
-        email_domains_(email_domains),
-        gcpw_endpoint_path_(gcpw_endpoint_path),
-        additional_mdm_oauth_scopes(additional_mdm_oauth_scopes),
-        show_tos_(show_tos),
+      : reauth_email_(std::move(reauth_email)),
+        reauth_gaia_id_(std::move(reauth_gaia_id)),
+        email_domains_(std::move(email_domains)),
+        gcpw_endpoint_path_(std::move(gcpw_endpoint_path)),
+        additional_mdm_oauth_scopes_(std::move(additional_mdm_oauth_scopes)),
+        show_tos_(std::move(show_tos)),
         signin_callback_(std::move(signin_callback)) {}
 
   CredentialProviderWebDialogDelegate(
@@ -346,7 +346,7 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
     // The WebDialogUI will own and delete this message handler.
     CHECK(!handler_, base::NotFatalUntil::M162);
     handler_ = new CredentialProviderWebUIMessageHandler(
-        std::move(signin_callback_), additional_mdm_oauth_scopes);
+        std::move(signin_callback_), std::move(additional_mdm_oauth_scopes_));
     handlers->push_back(handler_);
   }
 
@@ -403,7 +403,7 @@ class CredentialProviderWebDialogDelegate : public ui::WebDialogDelegate {
   const std::string gcpw_endpoint_path_;
 
   // Additional mdm oauth scopes flag value.
-  const std::string additional_mdm_oauth_scopes;
+  std::string additional_mdm_oauth_scopes_;
 
   // Show tos page in the login path when this parameter is set to 1.
   const std::string show_tos_;
@@ -534,8 +534,9 @@ views::WebDialogView* ShowCredentialProviderSigninDialog(
   // Delegate to handle the result of the sign in request. This will
   // delete itself eventually when it receives the OnDialogClosed call.
   auto delegate = std::make_unique<CredentialProviderWebDialogDelegate>(
-      reauth_email, reauth_gaia_id, email_domains, gcpw_endpoint_path,
-      additional_mdm_oauth_scopes, show_tos,
+      std::move(reauth_email), std::move(reauth_gaia_id),
+      std::move(email_domains), std::move(gcpw_endpoint_path),
+      std::move(additional_mdm_oauth_scopes), std::move(show_tos),
       std::move(signin_complete_handler));
 
   // The web dialog view that will contain the web ui for the login screen.

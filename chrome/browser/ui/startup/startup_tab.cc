@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/startup/startup_tab.h"
 
-StartupTab::StartupTab(const GURL& url, Type type) : url(url), type(type) {}
+#include <utility>
 
-StartupTab::StartupTab(const GURL& url, bool is_untrusted_launch)
-    : url(url), is_untrusted_launch(is_untrusted_launch) {}
+StartupTab::StartupTab(GURL url, Type type) : url(std::move(url)), type(type) {}
+
+StartupTab::StartupTab(GURL url, bool is_untrusted_launch)
+    : url(std::move(url)), is_untrusted_launch(is_untrusted_launch) {}
 
 StartupTab::~StartupTab() = default;

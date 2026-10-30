@@ -155,16 +155,18 @@ base::Value GetWebApps::GetInstalledWebApps() {
 }
 
 base::Value GetWebApps::GetOpenWebApps() {
+  const std::string target_profile_base_name =
+      profile_base_name_.AsUTF8Unsafe();
   base::flat_map<std::string, base::ListValue> open_apps;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
-      [this, &open_apps](BrowserWindowInterface* browser) {
+      [&target_profile_base_name, &open_apps](BrowserWindowInterface* browser) {
         if (browser->GetType() != BrowserWindowInterface::TYPE_APP) {
           return true;
         }
         std::string app_profile_base_name =
             browser->GetProfile()->GetBaseName().AsUTF8Unsafe();
-        if (!profile_base_name_.empty() &&
-            profile_base_name_.AsUTF8Unsafe() != app_profile_base_name) {
+        if (!target_profile_base_name.empty() &&
+            target_profile_base_name != app_profile_base_name) {
           return true;
         }
         base::DictValue web_app_info;
@@ -173,15 +175,14 @@ base::Value GetWebApps::GetOpenWebApps() {
         web_app_info.Set("id", app_controller->app_id());
         web_app_info.Set("name",
                          base::UTF16ToUTF8(app_controller->GetAppShortName()));
-        auto iter_and_inserted =
-            open_apps.emplace(app_profile_base_name, base::ListValue());
-        iter_and_inserted.first->second.Append(std::move(web_app_info));
+        open_apps[std::move(app_profile_base_name)].Append(
+            std::move(web_app_info));
         return true;
       });
   base::ListValue open_apps_list;
   for (auto& item : open_apps) {
     base::DictValue item_info;
-    item_info.Set("profile_id", item.first);
+    item_info.Set("profile_id", std::move(item.first));
     item_info.Set("web_apps", std::move(item.second));
     open_apps_list.Append(std::move(item_info));
   }

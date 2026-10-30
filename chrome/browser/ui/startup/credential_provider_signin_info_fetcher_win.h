@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_STARTUP_CREDENTIAL_PROVIDER_SIGNIN_INFO_FETCHER_WIN_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -40,7 +41,7 @@ class CredentialProviderSigninInfoFetcher
 
   CredentialProviderSigninInfoFetcher(
       const std::string& refresh_token,
-      const std::string& consumer_name,
+      std::string consumer_name,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   CredentialProviderSigninInfoFetcher(
       const CredentialProviderSigninInfoFetcher&) = delete;
@@ -50,7 +51,7 @@ class CredentialProviderSigninInfoFetcher
 
   void SetCompletionCallbackAndStart(
       const std::string& access_token,
-      const std::string& additional_mdm_oauth_scopes,
+      std::string_view additional_mdm_oauth_scopes,
       FetchCompletionCallback completion_callback);
 
   // gaia::GaiaOAuthClient::Delegate:

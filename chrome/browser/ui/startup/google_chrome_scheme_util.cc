@@ -5,18 +5,18 @@
 #include "chrome/browser/ui/startup/google_chrome_scheme_util.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/common/chrome_features.h"
 #include "url/gurl.h"
-#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
 #endif
 
@@ -26,11 +26,14 @@ namespace {
 
 bool TryStripSchemePrefix(base::FilePath::StringViewType& arg,
                           std::string_view scheme) {
+  if (arg.size() <= scheme.size() ||
+      !base::EqualsCaseInsensitiveASCII(arg.substr(0, scheme.size()), scheme)) {
+    return false;
+  }
+
+  base::FilePath::StringViewType rest = arg.substr(scheme.size());
   // First check for "scheme://"
-  const base::FilePath kFullPrefixPath = base::FilePath::FromASCII(
-      base::StrCat({scheme, url::kStandardSchemeSeparator}));
-  if (auto suffix = base::RemovePrefix(arg, kFullPrefixPath.value(),
-                                       base::CompareCase::INSENSITIVE_ASCII)) {
+  if (auto suffix = base::RemovePrefix(rest, FILE_PATH_LITERAL("://"))) {
     arg = *suffix;
     return true;
   }
@@ -38,10 +41,7 @@ bool TryStripSchemePrefix(base::FilePath::StringViewType& arg,
   // Fallback: check for "scheme:" (opaque). This supports cases where
   // GURL parsing might have treated the scheme as opaque (e.g.
   // google-chrome:http://example.com) or if the user omitted slashes.
-  const base::FilePath kSimplePrefixPath =
-      base::FilePath::FromASCII(base::StrCat({scheme, ":"}));
-  if (auto suffix = base::RemovePrefix(arg, kSimplePrefixPath.value(),
-                                       base::CompareCase::INSENSITIVE_ASCII)) {
+  if (auto suffix = base::RemovePrefix(rest, FILE_PATH_LITERAL(":"))) {
     arg = *suffix;
     return true;
   }
@@ -91,7 +91,7 @@ std::optional<GURL> ExtractGoogleChromeSchemeInnerUrl(const GURL& url) {
   // administrator expectations.
   if (StripGoogleChromeScheme(url_view)) {
 #if BUILDFLAG(IS_WIN)
-    return GURL(base::WideToUTF8(url_view));
+    return GURL(base::AsStringPiece16(url_view));
 #else
     return GURL(url_view);
 #endif

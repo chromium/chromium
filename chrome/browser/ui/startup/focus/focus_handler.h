@@ -37,8 +37,8 @@ struct FocusResult {
 
   explicit FocusResult(FocusStatus status);
   FocusResult(FocusStatus status,
-              const std::string& matched_selector,
-              const std::string& matched_url);
+              std::string matched_selector,
+              std::string matched_url);
   FocusResult(FocusStatus status, Error error_type);
   FocusResult(FocusStatus status, std::string opened_url);
   FocusResult(const FocusResult& other);

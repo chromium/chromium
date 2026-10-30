@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -203,15 +205,17 @@ StartupTabs StartupTabProviderImpl::GetInitialPrefsTabsForState(
     const std::vector<GURL>& first_run_tabs) {
   // Constants: Magic words used by initial preferences files in place of a URL
   // host to indicate that internal pages should appear on first run.
-  static constexpr char kNewTabUrlHost[] = "new_tab_page";
+  static constexpr std::string_view kNewTabUrlHost = "new_tab_page";
 
   StartupTabs tabs;
   if (is_first_run) {
     tabs.reserve(first_run_tabs.size());
-    for (GURL url : first_run_tabs) {
-      if (url.host() == kNewTabUrlHost) {
-        url = chrome::ChromeUINewTabURLAsGURL();
+    for (const GURL& first_run_tab : first_run_tabs) {
+      std::optional<GURL> ntp_url;
+      if (first_run_tab.host() == kNewTabUrlHost) {
+        ntp_url = chrome::ChromeUINewTabURLAsGURL();
       }
+      const GURL& url = ntp_url ? *ntp_url : first_run_tab;
       if (IsWelcomePageUrl(url)) {
         // These URLs are still referenced from some of the installers. As
         // these chrome UIs are removed, avoid opening tabs pointing to
@@ -222,7 +226,7 @@ StartupTabs StartupTabProviderImpl::GetInitialPrefsTabsForState(
                                   true);
         continue;
       }
-      tabs.emplace_back(url);
+      tabs.emplace_back(ntp_url ? std::move(*ntp_url) : first_run_tab);
     }
   }
   return tabs;
@@ -314,7 +318,7 @@ StartupTabProviderImpl::ParseTabFromCommandLineArg(
 
     GURL url(GetDefaultSearchURLForSearchTerms(
         TemplateURLServiceFactory::GetForProfile(maybe_profile),
-        base::FilePath(arg).LossyDisplayName().substr(/* remove "? " */ 2)));
+        base::FilePath(arg.substr(/* remove "? " */ 2)).LossyDisplayName()));
     if (url.is_valid()) {
       return {CommandLineTabsPresent::kYes, std::move(url)};
     }

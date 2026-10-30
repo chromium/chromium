@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -38,7 +39,7 @@ class FocusHandlerTest : public testing::Test {
 
   void TearDown() override { profile_.reset(); }
 
-  base::FilePath GetTempFilePath(const std::string& filename) {
+  base::FilePath GetTempFilePath(std::string_view filename) {
     return temp_dir_.GetPath().AppendASCII(filename);
   }
 
@@ -112,7 +113,7 @@ TEST_F(FocusHandlerTest, WriteResultToFile) {
 
   FocusResult result(FocusStatus::kFocused, "https://example.com",
                      "https://example.com/path");
-  WriteResultToFile(test_file.AsUTF8Unsafe(), result);
+  WriteResultToFile(test_file, result);
 
   // Wait for async write to complete.
   task_environment_.RunUntilIdle();
@@ -136,8 +137,7 @@ TEST_F(FocusHandlerTest, IncognitoDoesNotWriteResultFile) {
 
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kFocus, "https://example.com");
-  command_line.AppendSwitchASCII(switches::kFocusResultFile,
-                                 test_file.AsUTF8Unsafe());
+  command_line.AppendSwitchPath(switches::kFocusResultFile, test_file);
 
   FocusResult result =
       ProcessFocusRequestWithResultFile(command_line, *incognito_profile);

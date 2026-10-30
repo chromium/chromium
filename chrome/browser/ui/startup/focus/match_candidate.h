@@ -34,8 +34,8 @@ struct MatchCandidate {
                  int tab_index,
                  content::WebContents& web_contents,
                  base::Time last_active_time,
-                 const std::string& matched_url,
-                 const std::optional<std::string>& app_id);
+                 std::string matched_url,
+                 std::optional<std::string> app_id);
   MatchCandidate(const MatchCandidate& other) = delete;
   MatchCandidate& operator=(const MatchCandidate& other) = delete;
   MatchCandidate(MatchCandidate&& other) noexcept;

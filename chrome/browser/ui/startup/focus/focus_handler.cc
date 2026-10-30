@@ -28,11 +28,11 @@ FocusResult::FocusResult(FocusStatus status)
     : status(status), error_type(Error::kNone) {}
 
 FocusResult::FocusResult(FocusStatus status,
-                         const std::string& matched_selector,
-                         const std::string& matched_url)
+                         std::string matched_selector,
+                         std::string matched_url)
     : status(status),
-      matched_selector(matched_selector),
-      matched_url(matched_url),
+      matched_selector(std::move(matched_selector)),
+      matched_url(std::move(matched_url)),
       error_type(Error::kNone) {}
 
 FocusResult::FocusResult(FocusStatus status, Error error_type)
@@ -142,10 +142,10 @@ bool FocusByUrl(const Selector& selector,
   }
 
   SortCandidatesByMRU(candidates);
-  const MatchCandidate& best_candidate = candidates[0];
+  MatchCandidate& best_candidate = candidates[0];
 
   if (FocusCandidate(best_candidate)) {
-    focused_url = best_candidate.matched_url;
+    focused_url = std::move(best_candidate.matched_url);
     return true;
   }
 
@@ -157,10 +157,9 @@ std::optional<FocusResult> FocusBestMatch(
     Profile& profile) {
   for (const auto& selector : selectors) {
     std::string matched_url;
-    std::string matched_selector = selector.ToString();
-
     if (FocusByUrl(selector, profile, matched_url)) {
-      return FocusResult(FocusStatus::kFocused, matched_selector, matched_url);
+      return FocusResult(FocusStatus::kFocused, selector.ToString(),
+                         std::move(matched_url));
     }
   }
 
@@ -221,10 +220,8 @@ FocusResult ProcessFocusRequestWithResultFile(
   // Skip writing result files for off-the-record profiles for privacy.
   if (command_line.HasSwitch(switches::kFocusResultFile) &&
       !profile.IsOffTheRecord()) {
-    base::FilePath result_file_path =
-        command_line.GetSwitchValuePath(switches::kFocusResultFile);
-
-    WriteResultToFile(result_file_path.AsUTF8Unsafe(), result);
+    WriteResultToFile(
+        command_line.GetSwitchValuePath(switches::kFocusResultFile), result);
   }
 
   return result;

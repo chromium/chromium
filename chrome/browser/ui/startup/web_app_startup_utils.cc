@@ -97,8 +97,8 @@ class StartupWebAppCreator
     }
 
     scoped_refptr<StartupWebAppCreator> web_app_startup =
-        base::AdoptRef(new StartupWebAppCreator(command_line, cur_dir, profile,
-                                                is_first_run, app_id));
+        base::AdoptRef(new StartupWebAppCreator(
+            command_line, cur_dir, profile, is_first_run, std::move(app_id)));
     // Even though the launch commands can be scheduled before the provider is
     // started, there is logic filtering out incorrect file & protocol launches
     // that happens without locks first, and that has to wait until the database
@@ -123,12 +123,12 @@ class StartupWebAppCreator
                        const base::FilePath& cur_dir,
                        Profile* profile,
                        chrome::startup::IsFirstRun is_first_run,
-                       const webapps::AppId& app_id)
+                       webapps::AppId app_id)
       : command_line_(command_line),
         cur_dir_(cur_dir),
         profile_(profile),
         is_first_run_(is_first_run),
-        app_id_(app_id),
+        app_id_(std::move(app_id)),
         provider_(WebAppProvider::GetForWebApps(profile_)),
         profile_keep_alive_(std::make_unique<ScopedProfileKeepAlive>(
             profile,
@@ -173,7 +173,7 @@ class StartupWebAppCreator
     if (file_launch_infos_.empty()) {
       std::optional<GURL> protocol;
       if (!protocol_url_.is_empty()) {
-        protocol = protocol_url_;
+        protocol = std::move(protocol_url_);
       }
       provider_->scheduler().LaunchAppFromCommandLine(
           app_id_, command_line_, cur_dir_, protocol,
@@ -227,7 +227,7 @@ class StartupWebAppCreator
       return LaunchResult::kHandled;
     }
 
-    protocol_url_ = protocol_url;
+    protocol_url_ = std::move(protocol_url);
 
     // `this` will stay alive until `launch_callback` is executed or destroyed.
     auto launch_callback =

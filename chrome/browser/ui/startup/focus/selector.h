@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_STARTUP_FOCUS_SELECTOR_H_
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "url/gurl.h"
@@ -18,7 +19,7 @@ enum class SelectorType { kUrlExact, kUrlPrefix };
 // URLs are matched against both tab URLs and app manifest IDs.
 // If an app window's manifest ID matches, it will be preferred over tabs.
 struct Selector {
-  Selector(SelectorType type, const GURL& url);
+  Selector(SelectorType type, GURL url);
   ~Selector();
 
   Selector(const Selector& other);
@@ -55,7 +56,7 @@ struct Selector {
 //
 // Returns an empty vector if the input is invalid or contains no valid
 // selectors.
-std::vector<Selector> ParseSelectors(const std::string& input);
+std::vector<Selector> ParseSelectors(std::string_view input);
 
 }  // namespace focus
 

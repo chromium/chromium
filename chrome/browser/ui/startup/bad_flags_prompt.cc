@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
@@ -325,21 +326,21 @@ void ShowBadFlagsPrompt(content::WebContents* web_contents) {
 #endif
 
   for (const auto& flag_or_feature : kBadFeatureFlagsInAboutFlags) {
-    std::string bad_flag_name = std::visit(
-        absl::Overload{[](const base::Feature* feature) -> std::string {
+    std::string_view bad_flag_name = std::visit(
+        absl::Overload{[](const base::Feature* feature) -> std::string_view {
                          if (feature &&
                              base::FeatureList::IsEnabled(*feature)) {
                            return feature->name;
                          }
-                         return "";
+                         return {};
                        },
-                       [](const char* flag_name) -> std::string {
+                       [](const char* flag_name) -> std::string_view {
                          if (flag_name &&
                              base::CommandLine::ForCurrentProcess()->HasSwitch(
                                  flag_name)) {
                            return flag_name;
                          }
-                         return "";
+                         return {};
                        }},
         flag_or_feature);
 
@@ -359,14 +360,13 @@ void ShowBadFlagsPrompt(content::WebContents* web_contents) {
 
 void ShowBadFlagsInfoBar(content::WebContents* web_contents,
                          int message_id,
-                         const char* flag) {
+                         std::string_view flag) {
   std::string switch_value =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(flag);
-  if (!switch_value.empty()) {
-    switch_value = "=" + switch_value;
-  }
-  ShowBadFlagsInfoBarHelper(web_contents, message_id,
-                            std::string("--") + flag + switch_value);
+  ShowBadFlagsInfoBarHelper(
+      web_contents, message_id,
+      switch_value.empty() ? base::StrCat({"--", flag})
+                           : base::StrCat({"--", flag, "=", switch_value}));
 }
 
 void MaybeShowInvalidUserDataDirWarningDialog() {

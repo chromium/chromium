@@ -19,8 +19,8 @@ struct StartupTab {
     kFromLastAndUrlsStartupPref,
   };
 
-  explicit StartupTab(const GURL& url, Type type = Type::kNormal);
-  StartupTab(const GURL& url, bool is_untrusted_launch);
+  explicit StartupTab(GURL url, Type type = Type::kNormal);
+  StartupTab(GURL url, bool is_untrusted_launch);
   ~StartupTab();
 
   // The url to load.

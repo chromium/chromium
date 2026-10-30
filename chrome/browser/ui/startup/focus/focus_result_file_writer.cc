@@ -4,9 +4,13 @@
 
 #include "chrome/browser/ui/startup/focus/focus_result_file_writer.h"
 
+#include <string>
 #include <string_view>
+#include <utility>
 
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
@@ -30,7 +34,7 @@ int FocusResultToExitCode(const FocusResult& result) {
   return 1;
 }
 
-std::string_view FocusResultToString(const FocusResult& result) {
+std::string_view FocusResultToStringView(const FocusResult& result) {
   switch (result.status) {
     case FocusStatus::kFocused:
       return "focused";
@@ -49,7 +53,7 @@ std::string_view FocusResultToString(const FocusResult& result) {
 std::string CreateFocusJsonString(const FocusResult& result) {
   base::DictValue json_dict;
 
-  json_dict.Set("status", FocusResultToString(result));
+  json_dict.Set("status", FocusResultToStringView(result));
 
   // Add error details for parse errors.
   if (result.status == FocusStatus::kParseError) {
@@ -73,7 +77,7 @@ std::string CreateFocusJsonString(const FocusResult& result) {
   return json_string;
 }
 
-void WriteResultToFile(std::string file_path, const FocusResult& result) {
+void WriteResultToFile(base::FilePath file_path, const FocusResult& result) {
   std::string json_string = CreateFocusJsonString(result);
 
   // Write to file on a background thread asynchronously.
@@ -84,9 +88,8 @@ void WriteResultToFile(std::string file_path, const FocusResult& result) {
       FROM_HERE,
       {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(
-          [](const std::string& path, const std::string& content) {
-            base::FilePath file_path = base::FilePath::FromUTF8Unsafe(path);
-            base::WriteFile(file_path, content);
+          [](const base::FilePath& path, const std::string& content) {
+            base::WriteFile(path, content);
           },
           std::move(file_path), std::move(json_string)));
 }

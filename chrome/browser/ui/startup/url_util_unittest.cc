@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/startup/url_util.h"
 
+#include <string_view>
+
+#include "base/strings/strcat.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
@@ -139,22 +142,23 @@ TEST(UrlUtilTest, ValidateUrlRejectsNestedSchemes) {
 TEST(UrlUtilTest, ValidateGoogleChromeSchemeUrls) {
   base::test::ScopedFeatureList feature_list{features::kGoogleChromeScheme};
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  std::string scheme = "google-chrome";
+  constexpr std::string_view kScheme = "google-chrome";
 #else
-  std::string scheme = "chromium";
+  constexpr std::string_view kScheme = "chromium";
 #endif
 
   // 1. Laundering filesystem: URLs -> must be extracted and REJECTED by
   // WebSafe.
   {
-    GURL url(scheme + ":filesystem:chrome://settings/temporary/t.txt");
+    GURL url(base::StrCat(
+        {kScheme, ":filesystem:chrome://settings/temporary/t.txt"}));
     ASSERT_OK_AND_ASSIGN(GURL inner, ExtractGoogleChromeSchemeInnerUrl(url));
     EXPECT_FALSE(ValidateLaunchUrlWebSafe(inner));
   }
 
   // 2. Laundering blob: URLs -> must be extracted and REJECTED by WebSafe.
   {
-    GURL url(scheme + ":blob:chrome://settings/guid-string");
+    GURL url(base::StrCat({kScheme, ":blob:chrome://settings/guid-string"}));
     ASSERT_OK_AND_ASSIGN(GURL inner, ExtractGoogleChromeSchemeInnerUrl(url));
     EXPECT_FALSE(ValidateLaunchUrlWebSafe(inner));
   }
@@ -162,7 +166,7 @@ TEST(UrlUtilTest, ValidateGoogleChromeSchemeUrls) {
   // 3. Standard WebSafe http redirect -> must be extracted and APPROVED by
   // WebSafe.
   {
-    GURL url(scheme + ":https://google.com");
+    GURL url(base::StrCat({kScheme, ":https://google.com"}));
     ASSERT_OK_AND_ASSIGN(GURL inner, ExtractGoogleChromeSchemeInnerUrl(url));
     EXPECT_TRUE(ValidateLaunchUrlWebSafe(inner));
   }
@@ -170,7 +174,7 @@ TEST(UrlUtilTest, ValidateGoogleChromeSchemeUrls) {
   // 4. Laundering chrome://version -> must be extracted and REJECTED by
   // WebSafe.
   {
-    GURL url(scheme + ":chrome://version");
+    GURL url(base::StrCat({kScheme, ":chrome://version"}));
     ASSERT_OK_AND_ASSIGN(GURL inner, ExtractGoogleChromeSchemeInnerUrl(url));
     EXPECT_FALSE(ValidateLaunchUrlWebSafe(inner));
   }
@@ -178,7 +182,7 @@ TEST(UrlUtilTest, ValidateGoogleChromeSchemeUrls) {
   // 5. Laundering chrome://settings -> must be extracted and REJECTED by
   // WebSafe.
   {
-    GURL url(scheme + ":chrome://settings");
+    GURL url(base::StrCat({kScheme, ":chrome://settings"}));
     ASSERT_OK_AND_ASSIGN(GURL inner, ExtractGoogleChromeSchemeInnerUrl(url));
     EXPECT_FALSE(ValidateLaunchUrlWebSafe(inner));
   }
