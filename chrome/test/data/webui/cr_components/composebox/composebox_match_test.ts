@@ -82,6 +82,16 @@ suite('ComposeboxMatch', () => {
         matchElement.shadowRoot.querySelector<HTMLElement>('.container');
     assertTrue(!!container);
     assertEquals(64, container.offsetHeight);
+
+    // When selected, the focus indicator should align with the top of the
+    // container rather than being offset by the 10px top block padding.
+    matchElement.toggleAttribute('selected', true);
+    await microtasksFinished();
+    const focusIndicator =
+        matchElement.shadowRoot.querySelector<HTMLElement>('#focusIndicator');
+    assertTrue(!!focusIndicator);
+    assertEquals(0, focusIndicator.offsetTop);
+    assertEquals(container.offsetHeight, focusIndicator.offsetHeight);
   });
 
   test('renders no secondary text when the match has none', async () => {
