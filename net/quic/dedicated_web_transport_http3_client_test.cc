@@ -427,8 +427,8 @@ TEST_F(DedicatedWebTransportHttp3Test, ConnectViaProxy) {
   client_->Connect();
 }
 
-// TODO(crbug.com/40816637): The test is flaky on Mac and iOS.
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC)
+// TODO(crbug.com/40816637): The test is flaky on Mac.
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_CloseTimeout DISABLED_CloseTimeout
 #else
 #define MAYBE_CloseTimeout CloseTimeout
