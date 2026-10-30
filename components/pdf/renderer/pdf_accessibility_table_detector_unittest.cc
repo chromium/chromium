@@ -39,13 +39,13 @@ RulingLine CreateVLine(float x, float y_start, float y_end) {
           /*is_horizontal=*/false};
 }
 
-// Returns characters for the ASCII `text`, each `char_width` px wide.
+// Returns characters for the BMP-only `text`, each `char_width` px wide.
 std::vector<chrome_pdf::AccessibilityCharInfo> CreateChars(
-    std::string_view text,
+    std::u16string_view text,
     double char_width) {
   std::vector<chrome_pdf::AccessibilityCharInfo> chars;
   chars.reserve(text.size());
-  for (char c : text) {
+  for (char16_t c : text) {
     chars.push_back({static_cast<uint32_t>(c), char_width});
   }
   return chars;
@@ -181,7 +181,7 @@ TEST(PdfAccessibilityTableDetectorTest, ExtractRulingLinesFromThinFilledRects) {
 class PdfAccessibilityTableDetectorSplitTest : public testing::Test {
  protected:
   PdfAccessibilityTableDetectorSplitTest()
-      : chars_(CreateChars("Left RightNext", 10)),
+      : chars_(CreateChars(u"Left RightNext", 10)),
         text_runs_({CreateTextRun(0, 10, gfx::RectF(100, 100, 100, 12)),
                     CreateTextRun(10, 4, gfx::RectF(100, 200, 40, 12))}) {}
 
@@ -212,7 +212,7 @@ TEST_F(PdfAccessibilityTableDetectorSplitTest, SplitsAtVerticalDivider) {
 }
 
 TEST_F(PdfAccessibilityTableDetectorSplitTest, SplitsAtMultipleDividers) {
-  chars_ = CreateChars("A B C", 10);
+  chars_ = CreateChars(u"A B C", 10);
   text_runs_ = {CreateTextRun(0, 5, gfx::RectF(0, 0, 50, 12))};
 
   ASSERT_TRUE(
@@ -228,6 +228,84 @@ TEST_F(PdfAccessibilityTableDetectorSplitTest, NoSplitWithoutVerticalLines) {
   ASSERT_EQ(2u, text_runs_.size());
   EXPECT_FALSE(Split({CreateSegment(100, 112, 200, 112)}));
   EXPECT_EQ(2u, text_runs_.size());
+}
+
+TEST_F(PdfAccessibilityTableDetectorSplitTest, NoSplitAtLineCrossingText) {
+  // A "W" below the gap, which the line runs through, so the line is more
+  // likely a chart gridline than a column divider.
+  chars_ = CreateChars(u"Left RightW", 10);
+  text_runs_ = {CreateTextRun(0, 10, gfx::RectF(100, 100, 100, 12)),
+                CreateTextRun(10, 1, gfx::RectF(140, 120, 10, 12))};
+
+  EXPECT_FALSE(Split({CreateSegment(145, 95, 145, 135)}));
+  EXPECT_EQ(2u, text_runs_.size());
+}
+
+TEST_F(PdfAccessibilityTableDetectorSplitTest, SplitsAtLineEndingAtTextEdges) {
+  // A "W" above and below the gap. The line ends at the bottom edge of the
+  // upper "W" and the top edge of the lower "W", so it crosses neither.
+  chars_ = CreateChars(u"WLeft RightW", 10);
+  text_runs_ = {CreateTextRun(0, 1, gfx::RectF(140, 80, 10, 12)),
+                CreateTextRun(1, 10, gfx::RectF(100, 100, 100, 12)),
+                CreateTextRun(11, 1, gfx::RectF(140, 120, 10, 12))};
+
+  ASSERT_TRUE(Split({CreateSegment(145, 92, 145, 120)}));
+
+  ASSERT_EQ(4u, text_runs_.size());
+  ExpectTextRun(text_runs_[0], 0, 1, gfx::RectF(140, 80, 10, 12));
+  ExpectTextRun(text_runs_[1], 1, 5, gfx::RectF(100, 100, 40, 12));
+  ExpectTextRun(text_runs_[2], 6, 5, gfx::RectF(150, 100, 50, 12));
+  ExpectTextRun(text_runs_[3], 11, 1, gfx::RectF(140, 120, 10, 12));
+}
+
+TEST_F(PdfAccessibilityTableDetectorSplitTest,
+       SplitsAtVerticalDividerWithCombiningMarks) {
+  // "Cómo Estás", with each accent as a combining mark inside its base letter,
+  // so the letter's 10 px is shared between the two characters.
+  chars_ = CreateChars(u"Co\u0301mo Esta\u0301s", 10);
+  chars_[1].char_width = 4;
+  chars_[2].char_width = 6;
+  chars_[9].char_width = 4;
+  chars_[10].char_width = 6;
+  text_runs_ = {CreateTextRun(0, 12, gfx::RectF(100, 100, 100, 12))};
+
+  ASSERT_TRUE(Split({CreateSegment(145, 95, 145, 117)}));
+
+  ASSERT_EQ(2u, text_runs_.size());
+  ExpectTextRun(text_runs_[0], 0, 6, gfx::RectF(100, 100, 40, 12));
+  ExpectTextRun(text_runs_[1], 6, 6, gfx::RectF(150, 100, 50, 12));
+}
+
+TEST_F(PdfAccessibilityTableDetectorSplitTest,
+       NoSplitAtLineCrossingCombiningMark) {
+  // An "ó" below the gap, as an "o" followed by a combining accent that starts
+  // left of the "o". That gives the "o" a negative width, but the line still
+  // runs through the accent's box.
+  chars_ = CreateChars(u"Left Righto\u0301", 10);
+  chars_[10].char_width = -2;
+  chars_[11].char_width = 12;
+  text_runs_ = {CreateTextRun(0, 10, gfx::RectF(100, 100, 100, 12)),
+                CreateTextRun(10, 2, gfx::RectF(140, 120, 10, 12))};
+
+  EXPECT_FALSE(Split({CreateSegment(145, 95, 145, 135)}));
+  EXPECT_EQ(2u, text_runs_.size());
+}
+
+TEST_F(PdfAccessibilityTableDetectorSplitTest, SplitsThaiTextWithStackedMarks) {
+  // "ภาษา ที่", with a space between the cells. Thai doesn't put spaces between
+  // words, so this space would come from PDFium generating one in a wide enough
+  // gap. The two marks in "ที่" sit over "ท", so they share its 10 px.
+  chars_ = CreateChars(u"\u0e20\u0e32\u0e29\u0e32 \u0e17\u0e35\u0e48", 10);
+  chars_[5].char_width = 2;
+  chars_[6].char_width = 0;
+  chars_[7].char_width = 8;
+  text_runs_ = {CreateTextRun(0, 8, gfx::RectF(100, 100, 60, 12))};
+
+  ASSERT_TRUE(Split({CreateSegment(145, 95, 145, 117)}));
+
+  ASSERT_EQ(2u, text_runs_.size());
+  ExpectTextRun(text_runs_[0], 0, 5, gfx::RectF(100, 100, 40, 12));
+  ExpectTextRun(text_runs_[1], 5, 3, gfx::RectF(150, 100, 10, 12));
 }
 
 TEST_F(PdfAccessibilityTableDetectorSplitTest, NoSplitAtNarrowGap) {

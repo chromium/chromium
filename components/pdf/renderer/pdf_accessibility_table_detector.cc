@@ -5,10 +5,12 @@
 #include "components/pdf/renderer/pdf_accessibility_table_detector.h"
 
 #include <algorithm>
+#include <ranges>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/pdf/renderer/pdf_accessibility_text_utils.h"
@@ -48,6 +50,11 @@ constexpr float kRulingLineGapTolerancePx = 2.0f;
 // sits above that step.
 constexpr float kMinDividerGapPx = 3.0f;
 constexpr float kMinDividerGapHeightRatio = 0.25f;
+
+// Inset, in pixels, from each side of a character when checking whether a
+// vertical ruling line runs through it, so text touching a cell border does not
+// disqualify the border.
+constexpr float kGlyphCrossingInsetPx = 1.0f;
 
 // Minimum fraction of a text run's height that a vertical ruling line must
 // cover to count as running alongside or through its text, so lines that only
@@ -181,10 +188,40 @@ bool CoversVerticalRange(const RulingLine& line, const gfx::RectF& bounds) {
   return overlap >= kMinVerticalCoverageRatio * bounds.height();
 }
 
-// Returns the vertical lines in `ruling_lines`, such as table column dividers,
-// sorted by x.
-base::span<const RulingLine> GetVerticalDividers(
-    base::span<const RulingLine> ruling_lines) {
+// Sets `line_crosses_text[i]` to true for each line `vertical_lines[i]`, sorted
+// by x, that runs through `box`, shrunk horizontally by `kGlyphCrossingInsetPx`
+// on each side. `line_crosses_text` must have one entry per line. Never resets
+// entries to false, so calling this for each box in turn marks every line that
+// runs through any of them.
+void MarkLinesCrossingBox(base::span<const RulingLine> vertical_lines,
+                          const gfx::RectF& box,
+                          base::span<bool> line_crosses_text) {
+  CHECK_EQ(line_crosses_text.size(), vertical_lines.size());
+  const float inner_left = box.x() + kGlyphCrossingInsetPx;
+  const float inner_right = box.right() - kGlyphCrossingInsetPx;
+  if (inner_left > inner_right) {
+    return;
+  }
+  // `GetVerticalLineIndicesInXRange()` binary searches for the lines within
+  // the box's x-range, so only those lines are checked.
+  const gfx::Range indices = GetVerticalLineIndicesInXRange(
+      vertical_lines, gfx::RangeF(inner_left, inner_right));
+  // Visit each of those lines along with its entry in `line_crosses_text`.
+  for (auto [line, crosses_text] : std::views::zip(
+           vertical_lines.subspan(indices.start(), indices.length()),
+           line_crosses_text.subspan(indices.start(), indices.length()))) {
+    crosses_text = crosses_text || CoversVerticalRange(line, box);
+  }
+}
+
+// Returns the vertical lines in `ruling_lines` that don't run through any
+// character in `text_runs`, such as table column dividers (as opposed to chart
+// gridlines behind text), sorted by x. `chars` holds the characters of
+// `text_runs`.
+std::vector<RulingLine> GetVerticalDividers(
+    base::span<const RulingLine> ruling_lines,
+    base::span<const chrome_pdf::AccessibilityCharInfo> chars,
+    base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs) {
   // `ruling_lines` must hold horizontal lines first, then vertical lines sorted
   // by x, for the binary searches in `GetVerticalLineIndicesInXRange()`.
   CHECK(std::ranges::is_partitioned(ruling_lines, &RulingLine::is_horizontal));
@@ -195,7 +232,44 @@ base::span<const RulingLine> GetVerticalDividers(
   CHECK(std::ranges::is_sorted(vertical_lines, {}, [](const RulingLine& line) {
     return line.start.x();
   }));
-  return vertical_lines;
+  if (vertical_lines.empty()) {
+    return {};
+  }
+
+  auto line_crosses_text =
+      base::HeapArray<bool>::WithSize(vertical_lines.size());
+  for (const chrome_pdf::AccessibilityTextRunInfo& run : text_runs) {
+    auto [run_chars, remaining_chars] = chars.split_at(run.len);
+    chars = remaining_chars;
+    if (!IsLeftToRightRun(run)) {
+      // Character positions are only computed for left-to-right runs, so treat
+      // the whole run as one box.
+      MarkLinesCrossingBox(vertical_lines, run.bounds, line_crosses_text);
+      continue;
+    }
+    const std::vector<float> edges = GetCharEdges(run, run_chars);
+    // Check each character's box, skipping whitespace since dividers are
+    // expected to run through the spaces between cells.
+    for (size_t i = 0; i < run_chars.size(); ++i) {
+      if (!IsWhitespace(run_chars[i])) {
+        MarkLinesCrossingBox(
+            vertical_lines,
+            gfx::RectF(edges[i], run.bounds.y(), edges[i + 1] - edges[i],
+                       run.bounds.height()),
+            line_crosses_text);
+      }
+    }
+  }
+
+  std::vector<RulingLine> vertical_dividers;
+  vertical_dividers.reserve(vertical_lines.size());
+  for (auto [line, crosses_text] :
+       std::views::zip(vertical_lines, line_crosses_text)) {
+    if (!crosses_text) {
+      vertical_dividers.push_back(line);
+    }
+  }
+  return vertical_dividers;
 }
 
 // Returns whether a line in `vertical_dividers`, sorted by x, lies in the
@@ -337,8 +411,8 @@ SplitTextRunsAtVerticalDividers(
     base::span<const RulingLine> ruling_lines,
     base::span<const chrome_pdf::AccessibilityCharInfo> chars,
     base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs) {
-  base::span<const RulingLine> vertical_dividers =
-      GetVerticalDividers(ruling_lines);
+  const std::vector<RulingLine> vertical_dividers =
+      GetVerticalDividers(ruling_lines, chars, text_runs);
   if (vertical_dividers.empty()) {
     return {};
   }

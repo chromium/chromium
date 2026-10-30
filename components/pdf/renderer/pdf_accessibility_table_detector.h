@@ -37,9 +37,11 @@ std::vector<RulingLine> ExtractRulingLines(
 
 // Splits each horizontal, left-to-right text run in `text_runs` where a
 // vertical line in `ruling_lines`, such as a table column divider, runs through
-// the whitespace between two words. `ruling_lines` must be ordered as returned
-// by `ExtractRulingLines()`, and `chars` holds the characters of `text_runs`.
-// Returns the split text runs, or an empty vector if no run was split.
+// the whitespace between two words. Ignores lines that run through any
+// character, such as chart gridlines behind text. `ruling_lines` must be
+// ordered as returned by `ExtractRulingLines()`, and `chars` holds the
+// characters of `text_runs`. Returns the split text runs, or an empty vector if
+// no run was split.
 std::vector<chrome_pdf::AccessibilityTextRunInfo>
 SplitTextRunsAtVerticalDividers(
     base::span<const RulingLine> ruling_lines,
