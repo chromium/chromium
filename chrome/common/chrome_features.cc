@@ -1040,14 +1040,6 @@ const base::FeatureParam<base::TimeDelta> kGlicMetricsSessionStartTimeout{
     &kGlicMetricsSession, "glic-metrics-session-start-timeout",
     base::Seconds(5)};
 
-BASE_FEATURE(kGlicPrintMenuItem, base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<int> kGlicCompositeViewWidth{
-    &kGlicPrintMenuItem, "glic-composite-view-width", 800};
-
-const base::FeatureParam<int> kGlicCompositeViewHeight{
-    &kGlicPrintMenuItem, "glic-composite-view-height", 480};
-
 BASE_FEATURE(kGlicArchiveConversation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Whether to enable OneTimePassword filling in Glic.

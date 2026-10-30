@@ -1486,11 +1486,8 @@ void RenderViewContextMenu::InitMenu() {
       !(features::IsMenuSimplificationEnabled() && editable) &&
       content_type_->SupportsGroup(ContextMenuContentType::ITEM_GROUP_PRINT)) {
     AppendPrintItem();
-  } else {
-    if (IsAnyGlicWebContents(this) &&
-        base::FeatureList::IsEnabled(features::kGlicPrintMenuItem)) {
-      AppendPrintItem();
-    }
+  } else if (IsAnyGlicWebContents(this)) {
+    AppendPrintItem();
   }
 
   // ITEM_GROUP_SMART_SELECTION is for selected text that is not a link.
@@ -4834,8 +4831,7 @@ bool RenderViewContextMenu::IsPasteAndMatchStyleEnabled() const {
 }
 
 bool RenderViewContextMenu::IsPrintPreviewEnabled() const {
-  if (IsAnyGlicWebContents(this) &&
-      base::FeatureList::IsEnabled(features::kGlicPrintMenuItem)) {
+  if (IsAnyGlicWebContents(this)) {
     return GetPrefs(browser_context_)->GetBoolean(prefs::kPrintingEnabled) &&
            (source_web_contents_ && !source_web_contents_->IsCrashed());
   }

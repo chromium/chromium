@@ -11134,11 +11134,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kActorStepProgressNotification)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"glic-print-menu-item", flag_descriptions::kGlicPrintMenuItemName,
-     flag_descriptions::kGlicPrintMenuItemDescription,
-     kOsMac | kOsWin | kOsLinux,
-     FEATURE_VALUE_TYPE(features::kGlicPrintMenuItem)},
-
 #if !BUILDFLAG(IS_ANDROID)
     {"glic-pdf-summarize", flag_descriptions::kGlicPdfSummarizeName,
      flag_descriptions::kGlicPdfSummarizeDescription, kOsDesktop,

@@ -55,6 +55,7 @@ namespace glic {
 
 namespace {
 BASE_FEATURE(kGlicFloatingUiReattachment, base::FEATURE_ENABLED_BY_DEFAULT);
+constexpr gfx::Size kCompositeViewDefaultSize = {800, 480};
 }  // namespace
 
 // static
@@ -64,8 +65,7 @@ gfx::Size GlicFloatingUi::GetDefaultSize() {
 }
 
 gfx::Size GlicFloatingUi::GetCompositeViewDefaultSize() {
-  return {features::kGlicCompositeViewWidth.Get(),
-          features::kGlicCompositeViewHeight.Get()};
+  return kCompositeViewDefaultSize;
 }
 // end static
 

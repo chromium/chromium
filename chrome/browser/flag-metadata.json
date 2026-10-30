@@ -6032,14 +6032,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "glic-print-menu-item",
-    "owners": [
-      "basiaz@google.com",
-      "//chrome/browser/glic/OWNERS"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "glic-reuse-cookies",
     "owners": [
       "alexilin@chromium.org",
