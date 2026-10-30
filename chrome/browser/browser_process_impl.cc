@@ -43,6 +43,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "build/config/linux/dbus/buildflags.h"
+#include "chrome/browser/accessibility/accessibility_prefs/accessibility_prefs_controller.h"
 #include "chrome/browser/accessibility/soda_installer_impl.h"
 #include "chrome/browser/battery/battery_metrics.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -191,7 +192,6 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/accessibility/accessibility_prefs/android/accessibility_prefs_controller.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/ssl/chrome_security_state_client.h"
 #include "chrome/browser/webapps/webapps_client_android.h"

@@ -282,7 +282,7 @@
 #include "chrome/browser/ui/webui/management/management_ui.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/accessibility/accessibility_prefs/android/accessibility_prefs_controller.h"
+#include "chrome/browser/accessibility/accessibility_prefs/accessibility_prefs_controller.h"
 #include "chrome/browser/android/ntp/recent_tabs_page_prefs.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_decider.h"
 #include "chrome/browser/android/preferences/browser_prefs_android.h"

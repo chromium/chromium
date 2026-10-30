@@ -23,7 +23,7 @@
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "chrome/browser/accessibility/accessibility_prefs/android/accessibility_prefs_controller.h"
+#include "chrome/browser/accessibility/accessibility_prefs/accessibility_prefs_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/buildflags.h"
 #include "components/keep_alive_registry/keep_alive_state_observer.h"

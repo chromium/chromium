@@ -3,9 +3,9 @@
 # found in the LICENSE file.
 
 source_set("accessibility_prefs") {
-  public = [ "android/accessibility_prefs_controller.h" ]
+  public = [ "accessibility_prefs_controller.h" ]
 
-  sources = [ "android/accessibility_prefs_controller.cc" ]
+  sources = [ "accessibility_prefs_controller.cc" ]
 
   deps = [
     "//base",

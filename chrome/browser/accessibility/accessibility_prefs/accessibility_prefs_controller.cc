@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility/accessibility_prefs/android/accessibility_prefs_controller.h"
+#include "chrome/browser/accessibility/accessibility_prefs/accessibility_prefs_controller.h"
 
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
