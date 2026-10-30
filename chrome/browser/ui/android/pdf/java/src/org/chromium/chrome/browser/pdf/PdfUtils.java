@@ -305,7 +305,8 @@ public class PdfUtils {
         return new PdfInfo(
                 nativePage.getTitle(),
                 nativePage.getCanonicalFilepath(),
-                nativePage.isDownloadSafe());
+                nativePage.isDownloadSafe(),
+                nativePage.getInitiatorOrigin());
     }
 
     static String getFileNameFromUrl(@Nullable String url, String defaultTitle) {

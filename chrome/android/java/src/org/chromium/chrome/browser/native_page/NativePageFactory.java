@@ -525,6 +525,9 @@ public class NativePageFactory {
                 return null;
             case NativePageType.CANDIDATE:
                 page = candidatePage;
+                if (isPdf && page != null) {
+                    page.setInitiatorOrigin(assumeNonNull(pdfInfo).initiatorOrigin);
+                }
                 break;
             case NativePageType.NTP:
                 page = getBuilder().buildNewTabPage(tab, url);
@@ -631,6 +634,7 @@ public class NativePageFactory {
                 && !candidatePage.isFrozen()
                 && url.equals(candidatePage.getUrl())) {
             page = candidatePage;
+            page.setInitiatorOrigin(pdfInfo.initiatorOrigin);
         } else {
             assert tabModelSelector != null;
             page =

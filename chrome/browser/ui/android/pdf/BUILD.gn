@@ -25,7 +25,10 @@ generate_jni("pdf_jni_headers") {
 
 android_library("pdf_info_java") {
   sources = [ "java/src/org/chromium/chrome/browser/pdf/PdfInfo.java" ]
-  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  deps = [
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//url:url_java",
+  ]
 }
 
 android_library("pdf_utils_java") {

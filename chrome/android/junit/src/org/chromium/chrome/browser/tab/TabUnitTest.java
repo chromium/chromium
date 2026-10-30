@@ -1878,6 +1878,36 @@ public class TabUnitTest {
     }
 
     @Test
+    @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
+    public void testLoadUrl_PdfPassesInitiatorOriginInPdfInfo() {
+        doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getContext();
+        setUpTabWithWebContents();
+        doReturn(mNativePage)
+                .when(mDelegateFactory)
+                .createNativePage(any(String.class), any(), eq(mTab), any());
+        doReturn(new View(mActivity)).when(mNativePage).getView();
+
+        String pdfUrl = PdfUtils.encodePdfPageUrl("https://example.com/test.pdf");
+        Origin initiatorOrigin = JUnitTestOrigins.createTuple("https", "initiator.example", 443);
+        LoadUrlParams params = new LoadUrlParams(pdfUrl);
+        params.setIsPdf(true);
+        params.setInitiatorOrigin(initiatorOrigin);
+
+        mTab.loadUrl(params);
+
+        verify(mDelegateFactory)
+                .createNativePage(
+                        eq(pdfUrl),
+                        any(),
+                        eq(mTab),
+                        argThat(
+                                pdfInfo ->
+                                        pdfInfo != null
+                                                && initiatorOrigin.equals(
+                                                        pdfInfo.initiatorOrigin)));
+    }
+
+    @Test
     public void testUnfreezeContents_RestoreFailed_SetsRendererInitiatedAndOpaqueOrigin() {
         WebContentsFactory.setWebContentsForTesting(mWebContents);
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);

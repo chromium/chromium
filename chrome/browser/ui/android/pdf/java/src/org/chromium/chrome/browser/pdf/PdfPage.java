@@ -22,6 +22,7 @@ import org.chromium.chrome.modules.on_demand.OnDemandModule;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 /** Native page that displays pdf file. */
 @NullMarked
@@ -33,6 +34,7 @@ public class PdfPage extends BasicNativePage {
     private String mUrl;
     private final boolean mIsIncognito;
     private boolean mIsDownloadSafe;
+    private @Nullable Origin mInitiatorOrigin;
     private long mTransientDownloadStartTimestamp;
 
     /**
@@ -66,6 +68,7 @@ public class PdfPage extends BasicNativePage {
         }
 
         mIsDownloadSafe = pdfInfo.isDownloadSafe;
+        mInitiatorOrigin = pdfInfo.initiatorOrigin;
         String decodedUrl = PdfUtils.decodePdfPageUrl(url);
         String filepath =
                 pdfInfo.filepath == null
@@ -174,6 +177,16 @@ public class PdfPage extends BasicNativePage {
     }
 
     @Override
+    public @Nullable Origin getInitiatorOrigin() {
+        return mInitiatorOrigin;
+    }
+
+    @Override
+    public void setInitiatorOrigin(@Nullable Origin initiatorOrigin) {
+        mInitiatorOrigin = initiatorOrigin;
+    }
+
+    @Override
     public boolean hasUnsavedChanges() {
         return mPdfCoordinator.hasUnsavedChanges();
     }
@@ -241,6 +254,9 @@ public class PdfPage extends BasicNativePage {
                             mPdfCoordinator.resetLoadState();
                             LoadUrlParams params = new LoadUrlParams(redownloadUrl);
                             params.setShouldReplaceCurrentEntry(true);
+                            // Preserve the initiator origin so that the re-download keeps the
+                            // SameSite cookie context of the navigation that opened this PDF.
+                            params.setInitiatorOrigin(mInitiatorOrigin);
                             mHost.loadUrl(params, mIsIncognito);
                         };
                 if (mPdfCoordinator.hasChanges()) {

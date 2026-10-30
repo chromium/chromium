@@ -1053,7 +1053,7 @@ class TabImpl implements Tab, TabInternal {
         if (isPdf) {
             boolean preferReused =
                     (params.getTransitionType() & PageTransition.CORE_MASK) == PageTransition.TYPED;
-            pdfInfo = PdfInfo.initReuse(preferReused);
+            pdfInfo = PdfInfo.initReuse(preferReused, params.getInitiatorOrigin());
             params.setIsPdf(true);
         }
         return pdfInfo;
@@ -2206,7 +2206,7 @@ class TabImpl implements Tab, TabInternal {
                 PdfUtils.shouldOpenPdfInline(isIncognito())
                         && PdfUtils.isDownloadedPdf(url.getSpec());
         boolean preferReuse = transitionType == PageTransition.TYPED || mIsNativePageCommitPending;
-        var pdfInfo = isPdf ? PdfInfo.initReuse(preferReuse) : null;
+        var pdfInfo = isPdf ? PdfInfo.initReuse(preferReuse, initiatorOrigin) : null;
         mIsNativePageCommitPending = false;
         if (!maybeShowNativePage(url.getSpec(), isReload, pdfInfo)) {
             // This is restricted to HTTP(S) URLs specifically, as these are the only schemes that

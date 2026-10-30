@@ -25,6 +25,8 @@ import org.chromium.chrome.browser.history.HistoryFeatures;
 import org.chromium.chrome.browser.ui.native_page.NativePage.NativePageType;
 import org.chromium.components.extensions.ExtensionsBuildflags;
 import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestOrigins;
+import org.chromium.url.Origin;
 
 /** Tests public methods in NativePage. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -331,5 +333,21 @@ public class NativePageTest {
                         /* isIncognito= */ false,
                         /* preferReuse= */ false,
                         /* hasPdfDownload= */ false));
+    }
+
+    @Test
+    public void testFrozenNativePage_PreservesInitiatorOrigin() {
+        NativePage page = mock(NativePage.class);
+        Origin initiatorOrigin = JUnitTestOrigins.createTuple("https", "initiator.example", 443);
+        doReturn("pdf").when(page).getHost();
+        doReturn("chrome-native://pdf/link?url=https%3A%2F%2Fexample.com%2Fdoc.pdf")
+                .when(page)
+                .getUrl();
+        doReturn("doc.pdf").when(page).getTitle();
+        doReturn(true).when(page).isPdf();
+        doReturn(initiatorOrigin).when(page).getInitiatorOrigin();
+
+        FrozenNativePage frozen = FrozenNativePage.freeze(page);
+        Assert.assertEquals(initiatorOrigin, frozen.getInitiatorOrigin());
     }
 }

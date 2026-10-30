@@ -18,6 +18,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.extensions.ExtensionsBuildflags;
 import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -183,6 +184,21 @@ public interface NativePage {
     default boolean isDownloadSafe() {
         return true;
     }
+
+    /**
+     * @return the {@link Origin} that initiated the navigation to this page, or null if
+     *     browser-initiated or not applicable.
+     */
+    default @Nullable Origin getInitiatorOrigin() {
+        return null;
+    }
+
+    /**
+     * Sets the {@link Origin} that initiated the navigation to this page.
+     *
+     * @param initiatorOrigin The initiator origin, or null if browser-initiated.
+     */
+    default void setInitiatorOrigin(@Nullable Origin initiatorOrigin) {}
 
     /** Triggers downloading for the native page. */
     default void download() {}

@@ -47,6 +47,8 @@ import org.chromium.chrome.browser.ui.native_page.NativePage.NativePageType;
 import org.chromium.chrome.browser.ui.native_page.NativePageTest.UrlCombo;
 import org.chromium.chrome.browser.url_constants.ExtensionsUrlOverrideRegistry;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.url.JUnitTestOrigins;
+import org.chromium.url.Origin;
 
 /** Tests public methods in NativePageFactory. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -289,17 +291,20 @@ public class NativePageFactoryTest {
                         mActivity);
         Assert.assertNull("Only pdf native page is supported on custom tab.", page);
 
+        Origin initiatorOrigin = JUnitTestOrigins.createTuple("https", "initiator.example", 443);
+        PdfInfo pdfInfoWithInitiator = PdfInfo.initReuse(/* preferReuse= */ false, initiatorOrigin);
         page =
                 NativePageFactory.createNativePageForCustomTab(
                         PDF_LINK,
                         mCandidatePage,
                         mTab,
-                        mPdfInfo,
+                        pdfInfoWithInitiator,
                         mBrowserControlsManager,
                         mTabModelSelector,
                         mActivity);
         Assert.assertEquals(
                 "Candidate page should be reused when the url matches.", mCandidatePage, page);
+        verify(mCandidatePage).setInitiatorOrigin(initiatorOrigin);
 
         page =
                 NativePageFactory.createNativePageForCustomTab(
@@ -311,6 +316,26 @@ public class NativePageFactoryTest {
                         mTabModelSelector,
                         mActivity);
         Assert.assertEquals("A new pdf page should be created.", mPdfPage, page);
+    }
+
+    @Test
+    public void testCreateNativePageForURL_ReusedPdfUpdatesInitiatorOrigin() {
+        Origin initiatorOrigin = JUnitTestOrigins.createTuple("https", "initiator.example", 443);
+        PdfInfo pdfInfoWithInitiator = PdfInfo.initReuse(/* preferReuse= */ true, initiatorOrigin);
+        doReturn(true).when(mCandidatePage).isPdf();
+        doReturn(true)
+                .when(mCandidatePage)
+                .shouldReusePage(PDF_LINK, PDF_LINK, /* preferReuse= */ true);
+
+        NativePage page =
+                mNativePageFactory.createNativePageForURL(
+                        PDF_LINK,
+                        mCandidatePage,
+                        mTab,
+                        /* isIncognito= */ false,
+                        pdfInfoWithInitiator);
+        Assert.assertSame(mCandidatePage, page);
+        verify(mCandidatePage).setInitiatorOrigin(initiatorOrigin);
     }
 
     @Test

@@ -51,6 +51,8 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.ChromeFileProvider;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.MimeTypeUtils;
+import org.chromium.url.JUnitTestOrigins;
+import org.chromium.url.Origin;
 
 import java.io.File;
 import java.io.IOException;
@@ -903,5 +905,22 @@ public class PdfUtilsUnitTest {
                 "Non-numeric page should return 0.",
                 0,
                 PdfUtils.getPageNumberFromUrl(PDF_LINK + "#page=abc"));
+    }
+
+    @Test
+    public void testGetPdfInfo_PreservesInitiatorOrigin() {
+        Origin initiatorOrigin = JUnitTestOrigins.createTuple("https", "initiator.example", 443);
+        doReturn(true).when(mNativePage).isPdf();
+        doReturn(FILE_NAME).when(mNativePage).getTitle();
+        doReturn(FILE_PATH).when(mNativePage).getCanonicalFilepath();
+        doReturn(true).when(mNativePage).isDownloadSafe();
+        doReturn(initiatorOrigin).when(mNativePage).getInitiatorOrigin();
+
+        PdfInfo pdfInfo = PdfUtils.getPdfInfo(mNativePage);
+        Assert.assertNotNull(pdfInfo);
+        Assert.assertEquals(FILE_NAME, pdfInfo.filename);
+        Assert.assertEquals(FILE_PATH, pdfInfo.filepath);
+        Assert.assertTrue(pdfInfo.isDownloadSafe);
+        Assert.assertEquals(initiatorOrigin, pdfInfo.initiatorOrigin);
     }
 }
