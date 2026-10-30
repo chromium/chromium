@@ -13,7 +13,8 @@
 @protocol GeminiZeroStateConsumer <NSObject>
 
 // Sets the list of zero-state suggestions to display. An empty list clears the
-// current suggestions.
+// current suggestions. Passing `nil` resets the view to display empty
+// placeholder suggestion chips while waiting for suggestions to generate.
 - (void)setZeroStateSuggestions:(NSArray<ZeroStateSuggestion*>*)suggestions;
 
 @end

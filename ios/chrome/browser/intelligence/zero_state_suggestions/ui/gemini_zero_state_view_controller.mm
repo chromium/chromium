@@ -17,13 +17,15 @@
 namespace {
 
 // UI Constants for chip layout.
+constexpr CGFloat kPlaceholderChipWidths[] = {200.0, 260.0, 140.0};
+NSString* const kPlaceholderChipTitle = @" ";
+constexpr NSTimeInterval kSuggestionChipsAnimationDuration = 0.3;
 constexpr CGFloat kChipInterItemSpacing = 8.0;
 constexpr CGFloat kChipContentPaddingVertical = 12.0;
 constexpr CGFloat kChipContentPaddingHorizontal = 16.0;
 constexpr CGFloat kContainerTopPadding = 36.0;
 constexpr CGFloat kGeminiLogoSize = 38.0;
 constexpr CGFloat kLogoToGreetingSpacing = 16.0;
-constexpr CGFloat kChipsContainerHeight = 180.0;
 constexpr CGFloat kCloseButtonSize = 44.0;
 constexpr CGFloat kCloseButtonSymbolPointSize = 18.0;
 
@@ -36,9 +38,14 @@ constexpr CGFloat kCloseButtonSymbolPointSize = 18.0;
   UIImageView* _logoImageView;
   // Label containing the greeting text.
   UILabel* _greetingLabel;
-  // Currently displayed suggestions.
-  NSArray<ZeroStateSuggestion*>* _zeroStateSuggestions;
+  // Fixed list of suggestion chip buttons (initially placeholders).
+  NSArray<UIButton*>* _suggestionButtons;
+  // Fixed width constraints corresponding to each button in
+  // `_suggestionButtons` when in the placeholder state.
+  NSArray<NSLayoutConstraint*>* _placeholderWidthConstraints;
 }
+
+#pragma mark - UIViewController
 
 - (void)viewDidLoad {
   [super viewDidLoad];
@@ -93,6 +100,8 @@ constexpr CGFloat kCloseButtonSymbolPointSize = 18.0;
                                       forAxis:UILayoutConstraintAxisVertical];
   [self.view addSubview:_suggestionsStack];
 
+  [self setupSuggestionButtons];
+
   UIButtonConfiguration* closeButtonConfig =
       [UIButtonConfiguration filledButtonConfiguration];
   closeButtonConfig.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
@@ -138,28 +147,61 @@ constexpr CGFloat kCloseButtonSymbolPointSize = 18.0;
         constraintEqualToAnchor:self.view.trailingAnchor],
     guideTopConstraint,
     [headerLayoutGuide.bottomAnchor
-        constraintEqualToAnchor:self.view.bottomAnchor
-                       constant:-kChipsContainerHeight],
-    [_suggestionsStack.topAnchor
-        constraintGreaterThanOrEqualToAnchor:headerLayoutGuide.bottomAnchor],
+        constraintEqualToAnchor:_suggestionsStack.topAnchor
+                       constant:-kContainerTopPadding],
     [headerStack.topAnchor
         constraintGreaterThanOrEqualToAnchor:headerLayoutGuide.topAnchor],
     [headerStack.bottomAnchor
         constraintLessThanOrEqualToAnchor:headerLayoutGuide.bottomAnchor],
     centerHeaderConstraint,
   ]];
-
-  [self updateSuggestionChips];
 }
 
 #pragma mark - GeminiZeroStateConsumer
 
 - (void)setZeroStateSuggestions:(NSArray<ZeroStateSuggestion*>*)suggestions {
-  _zeroStateSuggestions = [suggestions copy];
-
-  if ([self isViewLoaded]) {
-    [self updateSuggestionChips];
+  if (!suggestions) {
+    [self resetToPlaceholderSuggestionChips];
+    return;
   }
+
+  // This ensures the view hierarchy is ready for the subsequent button updates
+  [self.view layoutIfNeeded];
+
+  __weak __typeof(self) weakSelf = self;
+  for (NSUInteger i = 0; i < _suggestionButtons.count; ++i) {
+    UIButton* chipButton = _suggestionButtons[i];
+    [self removeAllActionsFromButton:chipButton];
+
+    // If we receive less than 3 suggestions, hide the remaining buttons
+    if (i >= suggestions.count) {
+      chipButton.hidden = YES;
+      chipButton.userInteractionEnabled = NO;
+      continue;
+    }
+
+    ZeroStateSuggestion* suggestion = suggestions[i];
+    _placeholderWidthConstraints[i].active = NO;
+
+    UIButtonConfiguration* config = chipButton.configuration;
+    config.title = suggestion.text;
+    chipButton.configuration = config;
+    chipButton.hidden = NO;
+    chipButton.userInteractionEnabled = YES;
+    chipButton.titleLabel.alpha = 0.0;
+
+    UIAction* tapAction = [UIAction actionWithHandler:^(UIAction* action) {
+      [weakSelf.mutator geminiZeroStateViewController:weakSelf
+                                  didSelectSuggestion:suggestion];
+    }];
+    [chipButton addAction:tapAction
+         forControlEvents:UIControlEventTouchUpInside];
+  }
+
+  [UIView animateWithDuration:kSuggestionChipsAnimationDuration
+                   animations:^{
+                     [weakSelf layoutSuggestionChips];
+                   }];
 }
 
 #pragma mark - Private
@@ -177,38 +219,95 @@ constexpr CGFloat kCloseButtonSymbolPointSize = 18.0;
           : l10n_util::GetNSString(IDS_GEMINI_IOS_ZERO_STATE_GREETING);
 }
 
-// Rebuilds the chip button UI elements based on current suggestions.
-- (void)updateSuggestionChips {
-  for (UIView* subview in _suggestionsStack.arrangedSubviews) {
-    [subview removeFromSuperview];
+// Initializes the 3 suggestion chip buttons and their placeholder width
+// constraints, and adds them to `_suggestionsStack`.
+- (void)setupSuggestionButtons {
+  NSMutableArray<UIButton*>* buttons = [[NSMutableArray alloc] init];
+  NSMutableArray<NSLayoutConstraint*>* widthConstraints =
+      [[NSMutableArray alloc] init];
+
+  for (CGFloat width : kPlaceholderChipWidths) {
+    UIButton* chipButton = [self createPlaceholderChipButton];
+    NSLayoutConstraint* widthConstraint =
+        [chipButton.widthAnchor constraintEqualToConstant:width];
+    widthConstraint.active = YES;
+
+    [buttons addObject:chipButton];
+    [widthConstraints addObject:widthConstraint];
+    [_suggestionsStack addArrangedSubview:chipButton];
   }
 
-  __weak __typeof(self) weakSelf = self;
-  for (ZeroStateSuggestion* suggestion in _zeroStateSuggestions) {
-    UIButtonConfiguration* config =
-        [UIButtonConfiguration filledButtonConfiguration];
-    config.title = suggestion.text;
-    config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
-    config.contentInsets = NSDirectionalEdgeInsetsMake(
-        kChipContentPaddingVertical, kChipContentPaddingHorizontal,
-        kChipContentPaddingVertical, kChipContentPaddingHorizontal);
-    config.titleAlignment = UIButtonConfigurationTitleAlignmentCenter;
-    config.baseBackgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
-    config.baseForegroundColor = [UIColor colorNamed:kTextPrimaryColor];
+  _suggestionButtons = [buttons copy];
+  _placeholderWidthConstraints = [widthConstraints copy];
+}
 
-    UIAction* tapAction = [UIAction actionWithHandler:^(UIAction* action) {
-      [weakSelf.mutator geminiZeroStateViewController:weakSelf
-                                  didSelectSuggestion:suggestion];
+// Resets all suggestion chip buttons to their empty placeholder state.
+- (void)resetToPlaceholderSuggestionChips {
+  for (NSUInteger i = 0; i < _suggestionButtons.count; ++i) {
+    UIButton* chipButton = _suggestionButtons[i];
+    [self removeAllActionsFromButton:chipButton];
+
+    UIButtonConfiguration* config = chipButton.configuration;
+    config.title = kPlaceholderChipTitle;
+    chipButton.configuration = config;
+    chipButton.hidden = NO;
+    chipButton.userInteractionEnabled = NO;
+    chipButton.titleLabel.alpha = 0.0;
+    _placeholderWidthConstraints[i].active = YES;
+  }
+}
+
+// Removes all registered `UIAction`s from `button`.
+- (void)removeAllActionsFromButton:(UIButton*)button {
+  [button enumerateEventHandlers:^(UIAction* action, id target, SEL selector,
+                                   UIControlEvents controlEvents, BOOL* stop) {
+    if (action) {
+      [button removeAction:action forControlEvents:controlEvents];
+    }
+  }];
+}
+
+// Creates an empty suggestion chip button in its initial placeholder state.
+- (UIButton*)createPlaceholderChipButton {
+  UIButtonConfiguration* config =
+      [UIButtonConfiguration filledButtonConfiguration];
+  config.title = kPlaceholderChipTitle;
+  config.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+  config.contentInsets = NSDirectionalEdgeInsetsMake(
+      kChipContentPaddingVertical, kChipContentPaddingHorizontal,
+      kChipContentPaddingVertical, kChipContentPaddingHorizontal);
+  config.titleAlignment = UIButtonConfigurationTitleAlignmentCenter;
+  config.baseBackgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+  config.baseForegroundColor = [UIColor colorNamed:kTextPrimaryColor];
+
+  UIButton* chipButton = [UIButton buttonWithConfiguration:config
+                                             primaryAction:nil];
+  chipButton.translatesAutoresizingMaskIntoConstraints = NO;
+  chipButton.userInteractionEnabled = NO;
+  chipButton.titleLabel.alpha = 0.0;
+  [chipButton setContentHuggingPriority:UILayoutPriorityRequired
+                                forAxis:UILayoutConstraintAxisVertical];
+  [chipButton
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisVertical];
+
+  return chipButton;
+}
+
+// Flushes pending layout for the suggestion chip buttons and the root view,
+// and fades in the chip button titles.
+- (void)layoutSuggestionChips {
+  [self.view layoutIfNeeded];
+  for (UIButton* chipButton in _suggestionButtons) {
+    if (chipButton.hidden) {
+      continue;
+    }
+    [chipButton layoutIfNeeded];
+    [UIView performWithoutAnimation:^{
+      [chipButton.titleLabel.layer removeAllAnimations];
+      chipButton.titleLabel.alpha = 0.0;
     }];
-
-    UIButton* chipButton = [UIButton buttonWithConfiguration:config
-                                               primaryAction:tapAction];
-    [chipButton setContentHuggingPriority:UILayoutPriorityRequired
-                                  forAxis:UILayoutConstraintAxisVertical];
-    [chipButton
-        setContentCompressionResistancePriority:UILayoutPriorityRequired
-                                        forAxis:UILayoutConstraintAxisVertical];
-    [_suggestionsStack addArrangedSubview:chipButton];
+    chipButton.titleLabel.alpha = 1.0;
   }
 }
 

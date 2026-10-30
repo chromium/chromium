@@ -289,13 +289,18 @@ class GeminiContainerMediatorTabHelperObserver
   if (!geminiTabHelper ||
       ![self shouldShowSuggestionChipsForEntryPoint:startupState.entryPoint]) {
     [self.zeroStateConsumer setZeroStateSuggestions:@[]];
+    [self updateZeroStateMediumDetentHeight];
     return;
   }
+
+  // Set the suggestions to nil to show empty buttons while fetching them.
+  [self.zeroStateConsumer setZeroStateSuggestions:nil];
+  [self updateZeroStateMediumDetentHeight];
 
   __weak __typeof(self) weakSelf = self;
   geminiTabHelper->FetchZeroStateSuggestions(
       base::BindOnce(^(NSArray<ZeroStateSuggestion*>* suggestions) {
-        [weakSelf.zeroStateConsumer setZeroStateSuggestions:suggestions];
+        [weakSelf onZeroStateSuggestionsFetched:suggestions];
       }));
 }
 
@@ -823,11 +828,7 @@ class GeminiContainerMediatorTabHelperObserver
   [self.consumer setActuationActive:containerUIState.actuating];
 
   if (containerUIState.zeroStateVisible) {
-    CGFloat contentHeight = [self.consumer contentHeight];
-    if (contentHeight > 0) {
-      [self.containerHandler
-          setAssistantContainerMediumDetentHeight:ceil(contentHeight)];
-    }
+    [self updateZeroStateMediumDetentHeight];
   } else if (!containerUIState.actuating) {
     // While actuating, the medium detent height is owned by
     // `containerDidChangeActuationHeight:`.
@@ -890,6 +891,28 @@ class GeminiContainerMediatorTabHelperObserver
 }
 
 #pragma mark - Private
+
+// Updates the zero-state consumer with fetched `suggestions` and adapts the
+// medium detent height of the assistant container.
+- (void)onZeroStateSuggestionsFetched:
+    (NSArray<ZeroStateSuggestion*>*)suggestions {
+  [self.zeroStateConsumer setZeroStateSuggestions:suggestions];
+  [self updateZeroStateMediumDetentHeight];
+}
+
+// Updates the medium detent height of the assistant container to match the
+// consumer's content height when in zero state.
+- (void)updateZeroStateMediumDetentHeight {
+  if (!_stateManager.currentUIState.zeroStateVisible ||
+      !IsIOSGeminiBottomSheetMigrationEnabled()) {
+    return;
+  }
+  CGFloat contentHeight = [self.consumer contentHeight];
+  if (contentHeight > 0) {
+    [self.containerHandler
+        setAssistantContainerMediumDetentHeight:ceil(contentHeight)];
+  }
+}
 
 // Forwards the worklog presentation for `state` to the consumer. Non-actuating
 // states are ignored since the worklog is hidden and its mode is re-sent on

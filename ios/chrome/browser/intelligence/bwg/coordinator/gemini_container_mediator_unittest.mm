@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_test_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
+#import "ios/chrome/browser/intelligence/zero_state_suggestions/ui/gemini_zero_state_consumer.h"
 #import "ios/chrome/browser/intelligence/zero_state_suggestions/zero_state_suggestions_service.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
@@ -1713,6 +1714,55 @@ TEST_F(GeminiContainerMediatorTest,
                  conversationID:nil];
   EXPECT_EQ(3, fake_container_handler.setMediumDetentHeightCallCount);
   EXPECT_EQ(std::nullopt, fake_container_handler.mediumDetentHeight);
+}
+
+// Tests that fetching zero-state suggestions updates the consumer and adapts
+// the medium detent height of the assistant container when in zero state.
+TEST_F(GeminiContainerMediatorTest,
+       TestFetchZeroStateSuggestionsAdaptsMediumDetentHeight) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kAssistantContainer, kIOSGeminiBottomSheetMigration,
+       kZeroStateSuggestions, kZeroStateSuggestionsCentralization},
+      {});
+
+  constexpr CGFloat kInitialHeight = 388.0;
+  constexpr CGFloat kReducedHeight = 330.0;
+
+  FakeAssistantContainerCommandsHandler* fake_container_handler =
+      [[FakeAssistantContainerCommandsHandler alloc] init];
+  mediator_.containerHandler = fake_container_handler;
+
+  FakeGeminiContainerConsumer* consumer =
+      [[FakeGeminiContainerConsumer alloc] init];
+  consumer.contentHeight = kInitialHeight;
+  mediator_.consumer = consumer;
+
+  id mock_zero_state_consumer =
+      OCMProtocolMock(@protocol(GeminiZeroStateConsumer));
+  mediator_.zeroStateConsumer = mock_zero_state_consumer;
+
+  web::FakeWebState* web_state = AppendActiveWebState();
+  web_state->SetCurrentURL(GURL("https://example.com"));
+  web_state->SetVisibleURL(GURL("https://example.com"));
+
+  [mediator_ connect];
+  EXPECT_EQ(std::optional<NSInteger>(kInitialHeight),
+            fake_container_handler.mediumDetentHeight);
+
+  // Simulate consumer content height shrinking when fewer suggestions arrive on
+  // a subsequent fetch (e.g. New Chat).
+  OCMExpect([mock_zero_state_consumer setZeroStateSuggestions:nil]);
+  OCMExpect([mock_zero_state_consumer
+      setZeroStateSuggestions:[OCMArg checkWithBlock:^BOOL(id value) {
+        consumer.contentHeight = kReducedHeight;
+        return value != nil;
+      }]]);
+
+  [mediator_ fetchZeroStateSuggestions:startup_state_];
+  EXPECT_OCMOCK_VERIFY(mock_zero_state_consumer);
+  EXPECT_EQ(std::optional<NSInteger>(kReducedHeight),
+            fake_container_handler.mediumDetentHeight);
 }
 
 // Test that entering the Tab Grid minimizes the assistant container and stops
