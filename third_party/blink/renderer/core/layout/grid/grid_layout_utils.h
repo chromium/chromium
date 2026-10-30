@@ -363,6 +363,16 @@ void InitializeTrackCollection(const SubgriddedItemData& opt_subgrid_data,
 // sizing.
 bool HasBlockSizeDependentGridItem(const GridItems& grid_items);
 
+// Computes a virtual item's contribution for the requested track-sizing step
+// using its group's cached measurements and the tracks it spans.
+// `track_baseline` is the shared baseline for the track that `virtual_item`
+// participates in, or `LayoutUnit::Min()` if the item is not baseline-aligned.
+LayoutUnit ContributionSizeForVirtualItem(
+    const GridLayoutTrackCollection& track_collection,
+    LayoutUnit track_baseline,
+    GridItemContributionType contribution_type,
+    GridItemData* virtual_item);
+
 // Appends items from any subgridded children to `grid_items`.
 template <typename NodeType>
 void AppendSubgriddedItems(const NodeType& node, GridItems* grid_items) {
