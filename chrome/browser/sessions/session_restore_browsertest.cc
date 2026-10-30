@@ -5,6 +5,7 @@
 #include "chrome/browser/sessions/session_restore.h"
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <array>
 #include <memory>
@@ -12,6 +13,7 @@
 #include <ranges>
 #include <set>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/base_switches.h"
@@ -47,6 +49,7 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -115,6 +118,11 @@
 #include "components/collaboration/public/messaging/empty_messaging_backend_service.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/page_content_annotations/content/page_content_extraction_service.h"
+#include "components/page_content_annotations/core/page_content_annotations_features.h"
+#include "components/page_content_annotations/core/page_content_annotations_switches.h"
+#include "components/page_content_annotations/core/page_content_extraction_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/saved_tab_groups/internal/saved_tab_group_model.h"
@@ -124,6 +132,7 @@
 #include "components/saved_tab_groups/public/types.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/content/content_test_helper.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/command_storage_backend.h"
 #include "components/sessions/core/command_storage_features.h"
 #include "components/sessions/core/command_storage_manager.h"
@@ -161,6 +170,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
@@ -168,6 +178,7 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
+#include "url/gurl.h"
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
@@ -6005,4 +6016,194 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreFocusModeTest, RestoreFocusedTabGroup) {
   EXPECT_TRUE(new_tab_strip_model->GetFocusedGroup().has_value());
   EXPECT_EQ(new_tab_strip_model->GetTabGroupForTab(0),
             new_tab_strip_model->GetFocusedGroup());
+}
+
+class PageContentCacheSessionRestoreTest : public SessionRestoreTest {
+ public:
+  PageContentCacheSessionRestoreTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{page_content_annotations::features::kPageContentCache, {}},
+         {page_content_annotations::features::kAnnotatedPageContentExtraction,
+          {{"capture_delay", "0s"}, {"triggering_mode", "on_load"}}}},
+        {page_content_annotations::features::
+             kPageContentExtractionUsingPageSettledMonitor});
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    SessionRestoreTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        page_content_annotations::switches::
+            kPageContentAnnotationsSkipFCPWaitForTesting);
+  }
+
+ protected:
+  page_content_annotations::PageContentExtractionService* GetExtractionService(
+      Profile* profile) {
+    return page_content_annotations::PageContentExtractionServiceFactory::
+        GetForProfile(profile);
+  }
+
+  std::optional<optimization_guide::proto::PageContext> GetCachedPageContent(
+      Profile* profile,
+      int64_t tab_id) {
+    base::test::TestFuture<
+        std::optional<optimization_guide::proto::PageContext>>
+        future;
+    GetExtractionService(profile)->GetPageContentFromOnDiskCache(
+        tab_id, future.GetCallback());
+    return future.Get();
+  }
+
+  // Navigates Tab 0 to GetUrl1(), waits for APC extraction, and opens Tab 1 at
+  // GetUrl2() in the foreground so Tab 0 is hidden and cached on disk. Returns
+  // Tab 0's SessionID.
+  SessionID PopulateCacheForBackgroundTab0(BrowserWindowInterface* target) {
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(target, GetUrl1()));
+    content::WebContents* tab0 =
+        target->GetTabStripModel()->GetWebContentsAt(0);
+    const SessionID tab0_id = sessions::SessionTabHelper::IdForTab(tab0);
+    EXPECT_TRUE(tab0_id.is_valid());
+
+    base::test::TestFuture<
+        std::optional<page_content_annotations::ExtractedPageContentResult>>
+        extract_future;
+    GetExtractionService(target->GetProfile())
+        ->GetExtractedPageContentAndEligibilityForPageAsync(
+            tab0->GetPrimaryPage(), extract_future.GetCallback());
+    EXPECT_TRUE(extract_future.Get().has_value());
+
+    // Opening a new foreground tab hides Tab 0, which writes its extracted
+    // PageContext to PageContentCache under `tab0_id`.
+    ui_test_utils::NavigateToURLWithDisposition(
+        target, GetUrl2(), WindowOpenDisposition::kNewForegroundTab,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+    EXPECT_EQ(target->GetTabStripModel()->count(), 2);
+
+    std::optional<optimization_guide::proto::PageContext> cached =
+        GetCachedPageContent(target->GetProfile(), tab0_id.id());
+    EXPECT_TRUE(cached.has_value());
+    if (cached.has_value()) {
+      EXPECT_EQ(cached->url(), GetUrl1().spec());
+    }
+    return tab0_id;
+  }
+
+  // Quits `browser` and restores the session with `no_memory_pressure = false`
+  // so background restored tabs are not automatically reloaded (which would
+  // trigger `OnNewNavigation` and evict their cached page content).
+  BrowserWindowInterface* QuitBrowserAndRestoreActiveTabOnly(
+      BrowserWindowInterface* browser) {
+    return QuitBrowserAndRestore(browser, GURL(),
+                                 /*no_memory_pressure=*/false);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PageContentCacheSessionRestoreTest,
+                       MigratesPageContentCacheTabIdAcrossMultipleRestores) {
+  Profile* profile = browser()->GetProfile();
+  const SessionID tab0_id = PopulateCacheForBackgroundTab0(browser());
+
+  // Restore #1 (Session 1 -> Session 2): background Tab 0 receives a fresh
+  // SessionID, and its cached PageContext is re-keyed from `tab0_id` to
+  // `restored1_tab0_id`.
+  BrowserWindowInterface* restored1 =
+      QuitBrowserAndRestoreActiveTabOnly(browser());
+  TabStripModel* tab_strip_model1 = restored1->GetTabStripModel();
+  ASSERT_EQ(tab_strip_model1->count(), 2);
+
+  const SessionID restored1_tab0_id = sessions::SessionTabHelper::IdForTab(
+      tab_strip_model1->GetWebContentsAt(0));
+  ASSERT_TRUE(restored1_tab0_id.is_valid());
+  EXPECT_NE(tab0_id, restored1_tab0_id);
+
+  EXPECT_FALSE(GetCachedPageContent(profile, tab0_id.id()).has_value());
+  std::optional<optimization_guide::proto::PageContext> restored1_cached =
+      GetCachedPageContent(profile, restored1_tab0_id.id());
+  ASSERT_TRUE(restored1_cached.has_value());
+  EXPECT_EQ(restored1_cached->url(), GetUrl1().spec());
+
+  // Restore #2 (Session 2 -> Session 3): background Tab 0 stays unloaded and
+  // unfocused throughout Session 2. Verify SessionService still persists
+  // `restored1_tab0_id` so the next restore migrates it to `restored2_tab0_id`.
+  BrowserWindowInterface* restored2 =
+      QuitBrowserAndRestoreActiveTabOnly(restored1);
+  TabStripModel* tab_strip_model2 = restored2->GetTabStripModel();
+  ASSERT_EQ(tab_strip_model2->count(), 2);
+
+  const SessionID restored2_tab0_id = sessions::SessionTabHelper::IdForTab(
+      tab_strip_model2->GetWebContentsAt(0));
+  ASSERT_TRUE(restored2_tab0_id.is_valid());
+  EXPECT_NE(restored1_tab0_id, restored2_tab0_id);
+
+  EXPECT_FALSE(
+      GetCachedPageContent(profile, restored1_tab0_id.id()).has_value());
+  std::optional<optimization_guide::proto::PageContext> restored2_cached =
+      GetCachedPageContent(profile, restored2_tab0_id.id());
+  ASSERT_TRUE(restored2_cached.has_value());
+  EXPECT_EQ(restored2_cached->url(), GetUrl1().spec());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PageContentCacheSessionRestoreTest,
+    RestoreForeignSessionDoesNotMigrateLocalPageContentCache) {
+  Profile* profile = browser()->GetProfile();
+  const SessionID local_tab0_id = PopulateCacheForBackgroundTab0(browser());
+
+  // Close `browser()` while keeping `profile` alive so `local_tab0_id`'s cached
+  // PageContext remains on disk under `local_tab0_id`.
+  auto keep_alive = std::make_unique<ScopedKeepAlive>(
+      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
+  auto profile_keep_alive = std::make_unique<ScopedProfileKeepAlive>(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+  CloseBrowserSynchronously(browser());
+
+  // Restore a foreign session tab whose remote `tab_id` happens to match
+  // `local_tab0_id`.
+  sessions::SessionWindow window;
+
+  auto foreign_tab1 = std::make_unique<sessions::SessionTab>();
+  foreign_tab1->tab_id = local_tab0_id;
+  foreign_tab1->tab_visual_index = 0;
+  foreign_tab1->current_navigation_index = 0;
+  foreign_tab1->pinned = false;
+  foreign_tab1->navigations.push_back(
+      ContentTestHelper::CreateNavigation(GetUrl2().spec(), "two"));
+
+  auto foreign_tab2 = std::make_unique<sessions::SessionTab>();
+  foreign_tab2->tab_id = SessionID::FromSerializedValue(local_tab0_id.id() + 1);
+  foreign_tab2->tab_visual_index = 1;
+  foreign_tab2->current_navigation_index = 0;
+  foreign_tab2->pinned = false;
+  foreign_tab2->navigations.push_back(
+      ContentTestHelper::CreateNavigation(GetUrl3().spec(), "three"));
+
+  window.selected_tab_index = 1;
+  window.tabs.push_back(std::move(foreign_tab1));
+  window.tabs.push_back(std::move(foreign_tab2));
+
+  const std::vector<const sessions::SessionWindow*> session = {&window};
+  base::test::TestFuture<std::vector<BrowserWindowInterface*>> future;
+  SessionRestore::RestoreForeignSessionWindows(
+      profile, session.begin(), session.end(), future.GetCallback());
+  std::vector<BrowserWindowInterface*> browsers = future.Get();
+  ASSERT_EQ(browsers.size(), 1u);
+
+  content::WebContents* foreign_restored_contents =
+      browsers[0]->GetTabStripModel()->GetWebContentsAt(0);
+  const SessionID foreign_restored_id =
+      sessions::SessionTabHelper::IdForTab(foreign_restored_contents);
+  ASSERT_TRUE(foreign_restored_id.is_valid());
+  EXPECT_NE(local_tab0_id, foreign_restored_id);
+
+  // Foreign session restore skips `UpdateTabId`, so local cache data under
+  // `local_tab0_id` is untouched and not migrated to `foreign_restored_id`.
+  std::optional<optimization_guide::proto::PageContext> local_cached =
+      GetCachedPageContent(profile, local_tab0_id.id());
+  ASSERT_TRUE(local_cached.has_value());
+  EXPECT_EQ(local_cached->url(), GetUrl1().spec());
+  EXPECT_FALSE(
+      GetCachedPageContent(profile, foreign_restored_id.id()).has_value());
 }

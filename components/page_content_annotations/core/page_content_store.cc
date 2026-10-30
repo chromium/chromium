@@ -4,8 +4,11 @@
 
 #include "components/page_content_annotations/core/page_content_store.h"
 
+#include <stdint.h>
+
 #include <set>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -333,6 +336,16 @@ bool PageContentStore::DeletePageContentForTab(int64_t tab_id) {
   if (!transaction.Begin()) {
     return false;
   }
+  if (!DeletePageContentForTabInternal(tab_id)) {
+    return false;
+  }
+  return transaction.Commit();
+}
+
+bool PageContentStore::DeletePageContentForTabInternal(int64_t tab_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(db_initialized_);
+  CHECK(db_.HasActiveTransactions());
 
   static const char kDeleteContentSql[] =
       "DELETE FROM page_content WHERE id IN "
@@ -349,7 +362,41 @@ bool PageContentStore::DeletePageContentForTab(int64_t tab_id) {
   sql::Statement delete_metadata_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kDeleteMetadataSql));
   delete_metadata_statement.BindInt64(0, tab_id);
-  if (!delete_metadata_statement.Run()) {
+  return delete_metadata_statement.Run();
+}
+
+bool PageContentStore::UpdateTabId(int64_t old_tab_id, int64_t new_tab_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK_GT(old_tab_id, 0);
+  CHECK_GT(new_tab_id, 0);
+  CHECK_NE(old_tab_id, new_tab_id);
+  if (!db_initialized_) {
+    return false;
+  }
+  base::ElapsedTimer update_timer;
+  absl::Cleanup record_latency = [&]() {
+    base::UmaHistogramTimes(
+        "OptimizationGuide.PageContentStore.UpdateTabIdLatency",
+        update_timer.Elapsed());
+  };
+
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  // Delete existing contents, else the update call would fail since `tab_id` is
+  // marked unique.
+  if (!DeletePageContentForTabInternal(new_tab_id)) {
+    return false;
+  }
+
+  static constexpr char kUpdateSql[] =
+      "UPDATE page_metadata SET tab_id = ? WHERE tab_id = ?";
+  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kUpdateSql));
+  statement.BindInt64(0, new_tab_id);
+  statement.BindInt64(1, old_tab_id);
+  if (!statement.Run()) {
     return false;
   }
   return transaction.Commit();

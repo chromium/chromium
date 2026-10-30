@@ -315,6 +315,14 @@ void PageContentExtractionService::OnTabCloseUndone(int64_t tab_id) {
   }
 }
 
+void PageContentExtractionService::UpdateTabId(int64_t old_tab_id,
+                                               int64_t new_tab_id) {
+  if (is_page_content_cache_enabled_) {
+    page_content_cache_handler_->page_content_cache()->UpdateTabId(old_tab_id,
+                                                                   new_tab_id);
+  }
+}
+
 void PageContentExtractionService::OnVisibilityChanged(
     std::optional<int64_t> tab_id,
     content::WebContents* web_contents,

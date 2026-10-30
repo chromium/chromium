@@ -4,10 +4,13 @@
 
 #include "components/page_content_annotations/core/page_content_cache.h"
 
+#include <stdint.h>
+
 #include <optional>
 #include <set>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
@@ -206,6 +209,24 @@ void PageContentCache::RemovePageContentForTab(int64_t tab_id) {
             }
           },
           weak_ptr_factory_.GetWeakPtr(), tab_id, base::ElapsedTimer()));
+}
+
+void PageContentCache::UpdateTabId(int64_t old_tab_id, int64_t new_tab_id) {
+  CHECK_GT(old_tab_id, 0);
+  CHECK_GT(new_tab_id, 0);
+  if (old_tab_id == new_tab_id) {
+    return;
+  }
+  if (!store_initialized_) {
+    pending_tasks_.push_back(base::BindOnce(&PageContentCache::UpdateTabId,
+                                            weak_ptr_factory_.GetWeakPtr(),
+                                            old_tab_id, new_tab_id));
+    return;
+  }
+  store_
+      .AsyncCall(base::IgnoreResult(
+          &optimization_guide::PageContentStore::UpdateTabId))
+      .WithArgs(old_tab_id, new_tab_id);
 }
 
 void PageContentCache::RunCleanUpTasksWithActiveTabs(

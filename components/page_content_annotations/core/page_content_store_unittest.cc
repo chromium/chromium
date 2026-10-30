@@ -10,6 +10,7 @@
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -18,6 +19,7 @@
 #include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace optimization_guide {
 
@@ -344,6 +346,43 @@ TEST_F(PageContentStoreTest, GetAllTabIds) {
   EXPECT_EQ(tab_ids[1], 2);
 }
 
+TEST_F(PageContentStoreTest, UpdateTabId) {
+  const base::Time visit_timestamp = base::Time::Now();
+  const base::Time extraction_timestamp = base::Time::Now();
+  const GURL url1("https://example.com/1");
+  const proto::PageContext page_context1 = TestContent("test title 1");
+
+  EXPECT_TRUE(store_->AddPageContent(url1, page_context1, visit_timestamp,
+                                     extraction_timestamp, 1));
+
+  // Migrate tab 1 -> tab 2.
+  EXPECT_TRUE(store_->UpdateTabId(1, 2));
+  EXPECT_FALSE(store_->GetPageContentForTab(1).has_value());
+  EXPECT_THAT(store_->GetPageContentForTab(2),
+              Optional(EqualsProto(page_context1)));
+  EXPECT_THAT(store_->GetAllTabIds(), testing::ElementsAre(2));
+
+  // A `new_tab_id` collision shouldn't happen in normal operation, but we
+  // guard against it to avoid UNIQUE constraint errors. Verify that migrating
+  // tab 2 -> tab 3 replaces tab 3's previous entry and underlying
+  // page_content row.
+  const GURL url3("https://example.com/3");
+  const proto::PageContext page_context3 = TestContent("test title 3");
+  EXPECT_TRUE(store_->AddPageContent(url3, page_context3, visit_timestamp,
+                                     extraction_timestamp, 3));
+  EXPECT_TRUE(store_->UpdateTabId(2, 3));
+  EXPECT_FALSE(store_->GetPageContentForTab(2).has_value());
+  EXPECT_FALSE(store_->GetPageContent(url3).has_value());
+  EXPECT_THAT(store_->GetPageContentForTab(3),
+              Optional(EqualsProto(page_context1)));
+  EXPECT_THAT(store_->GetAllTabIds(), testing::ElementsAre(3));
+
+  // Updating a non-existent old_tab_id succeeds as a no-op.
+  EXPECT_TRUE(store_->UpdateTabId(999, 4));
+  EXPECT_FALSE(store_->GetPageContentForTab(4).has_value());
+  EXPECT_THAT(store_->GetAllTabIds(), testing::ElementsAre(3));
+}
+
 TEST_F(PageContentStoreTest, DatabaseErrorRecovery) {
   EXPECT_TRUE(store_->AddPageContent(GURL(kUrl), TestContent("test title"),
                                      /*visit_timestamp=*/base::Time::Now(),
@@ -442,6 +481,10 @@ TEST_F(PageContentStoreNoEncryptorTest,
 
 TEST_F(PageContentStoreNoEncryptorTest, DeletePageContentForNonExistentTab) {
   EXPECT_TRUE(store_->DeletePageContentForTab(kTabId));
+}
+
+TEST_F(PageContentStoreNoEncryptorTest, UpdateTabIdForNonExistentTab) {
+  EXPECT_TRUE(store_->UpdateTabId(1, 2));
 }
 
 }  // namespace optimization_guide

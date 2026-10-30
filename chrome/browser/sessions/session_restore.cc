@@ -16,6 +16,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/debug/alias.h"
@@ -41,6 +42,7 @@
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -93,11 +95,13 @@
 #include "chrome/common/url_constants.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -1201,6 +1205,26 @@ class SessionRestoreImpl : public BrowserCollectionObserver {
         session_storage_namespace.get(), tab.user_agent_override,
         tab.extra_data, true /* from_session_restore */, is_active_browser);
     CHECK(web_contents, base::NotFatalUntil::M163);
+
+    // `AddRestoredTab()` assigns a fresh `SessionID` to `web_contents`, so
+    // re-key any cached page content from the pre-restore `tab.tab_id` on
+    // local session restores.
+    // TODO(crbug.com/578645589): Consider preserving `SessionID` across
+    // cross-process Desktop session restores instead of re-keying
+    // `PageContentCache`.
+    if (!is_foreign_session_restore_ && tab.tab_id.is_valid()) {
+      page_content_annotations::PageContentExtractionService*
+          extraction_service = page_content_annotations::
+              PageContentExtractionServiceFactory::GetForProfile(profile_);
+      if (extraction_service) {
+        const SessionID new_tab_id =
+            sessions::SessionTabHelper::IdForTab(web_contents);
+        CHECK(new_tab_id.is_valid());
+        extraction_service->UpdateTabId(
+            /*old_tab_id=*/tab.tab_id.id(),
+            /*new_tab_id=*/new_tab_id.id());
+      }
+    }
 
     RestoredTab restored_tab(web_contents, is_selected_tab,
                              tab.extension_app_id.empty(), tab.pinned,
