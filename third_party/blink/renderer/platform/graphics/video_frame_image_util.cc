@@ -270,7 +270,6 @@ VideoFrameAcceleratedSnapshotPool::VideoFrameAcceleratedSnapshotPool(
   }
 
   resource_ = NewOrRecycledResource();
-  FlushForImageListener::Get()->AddObserver(this);
 }
 
 VideoFrameAcceleratedSnapshotPool::~VideoFrameAcceleratedSnapshotPool() {
@@ -281,7 +280,6 @@ VideoFrameAcceleratedSnapshotPool::~VideoFrameAcceleratedSnapshotPool() {
   if (raster_context_provider_) {
     raster_context_provider_->RemoveObserver(this);
   }
-  FlushForImageListener::Get()->RemoveObserver(this);
 
   UMA_HISTOGRAM_EXACT_LINEAR("Blink.Canvas.MaximumInflightResources",
                              max_inflight_resources_, 20);
@@ -296,9 +294,6 @@ void VideoFrameAcceleratedSnapshotPool::OnContextDestroyed() {
     image_pool_->Clear();
   }
 }
-
-void VideoFrameAcceleratedSnapshotPool::OnFlushForImage(
-    cc::PaintImage::ContentId content_id) {}
 
 void VideoFrameAcceleratedSnapshotPool::ClearUnusedResources() {
   if (image_pool_) {
