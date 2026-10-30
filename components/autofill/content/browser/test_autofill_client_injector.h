@@ -29,6 +29,8 @@ class TestAutofillClientInjectorBase {
   TestAutofillClientInjectorBase();
   ~TestAutofillClientInjectorBase();
 
+  static bool ShouldInject(content::WebContents* web_contents);
+
  private:
   static size_t num_instances_;
 };
@@ -74,6 +76,9 @@ class TestAutofillClientInjector : public TestAutofillClientInjectorBase {
 
  private:
   void InjectClient(content::WebContents* web_contents) {
+    if (!ShouldInject(web_contents)) {
+      return;
+    }
     auto client = std::make_unique<T>(web_contents);
     clients_[web_contents] = client.get();
     web_contents->SetUserData(T::UserDataKey(), std::move(client));

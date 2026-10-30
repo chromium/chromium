@@ -125,7 +125,10 @@ source_set("test_support") {
     "//content/test:test_support",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//components/keyed_service/content",
+  ]
 }
 
 source_set("unit_tests") {
