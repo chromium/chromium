@@ -17,6 +17,7 @@
 #include <string_view>
 
 #include "base/files/file_path.h"
+#include "components/reporting/storage/storage_uploader_interface.h"
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -30,6 +31,12 @@ class ReportingClient::TestEnvironment {
   static std::unique_ptr<TestEnvironment> CreateWithLocalStorage(
       const base::FilePath& reporting_path,
       std::string_view verification_key);
+
+  // Requests a new uploader from the owned `ReportingClient`, the same way
+  // local storage does. Must be called on the client's sequence.
+  void StartUploader(
+      UploaderInterface::UploadReason reason,
+      UploaderInterface::UploaderInterfaceResultCb start_uploader_cb);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
   // Factory method creates an environment with a given storage module

@@ -321,7 +321,10 @@ source_set("test_support") {
       "//ui/snapshot",
     ]
   }
-  public_deps = [ "//chrome/test/base:chrome_test_utils" ]
+  public_deps = [
+    "//chrome/test/base:chrome_test_utils",
+    "//components/reporting/storage:storage_uploader_interface",
+  ]
 }
 
 # Browser tests for specific policies.
@@ -868,6 +871,7 @@ source_set("unit_tests") {
     "//components/reporting/encryption:decryption",
     "//components/reporting/encryption:primitives",
     "//components/reporting/encryption:testing_primitives",
+    "//components/reporting/storage:storage_uploader_interface",
     "//components/reporting/storage:test_support",
     "//components/reporting/util:status_macros",
     "//components/reporting/util:test_callbacks_support",

@@ -5,6 +5,7 @@
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 
 #include <string_view>
+#include <utility>
 
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
@@ -42,6 +43,13 @@ ReportingClient::TestEnvironment::CreateWithLocalStorage(
             std::move(storage_created_cb));
       },
       reporting_path, verification_key)));
+}
+
+void ReportingClient::TestEnvironment::StartUploader(
+    UploaderInterface::UploadReason reason,
+    UploaderInterface::UploaderInterfaceResultCb start_uploader_cb) {
+  ReportingClient::AsyncStartUploader(client_->GetWeakPtr(), reason,
+                                      std::move(start_uploader_cb));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

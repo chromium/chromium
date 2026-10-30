@@ -193,7 +193,7 @@ void ReportingClient::ConfigureReportQueue(
 class ReportingClient::Uploader : public UploaderInterface {
  public:
   using UploadCallback = base::OnceCallback<
-      Status(bool, std::vector<EncryptedRecord>, ScopedReservation)>;
+      void(bool, std::vector<EncryptedRecord>, ScopedReservation)>;
 
   static std::unique_ptr<Uploader> Create(bool need_encryption_key,
                                           UploadCallback upload_callback) {
@@ -312,13 +312,9 @@ void ReportingClient::Uploader::Helper::Completed(Status final_status) {
     return;
   }
   CHECK(upload_callback_);
-  Status upload_status =
-      std::move(upload_callback_)
-          .Run(need_encryption_key_, std::move(encrypted_records_),
-               std::move(encrypted_records_reservation_));
-  if (!upload_status.ok()) {
-    LOG(ERROR) << "Unable to upload records: " << upload_status;
-  }
+  std::move(upload_callback_)
+      .Run(need_encryption_key_, std::move(encrypted_records_),
+           std::move(encrypted_records_reservation_));
 }
 
 // static
@@ -384,23 +380,30 @@ void ReportingClient::DeliverAsyncStartUploader(
   auto uploader = Uploader::Create(
       /*need_encryption_key=*/
       reason == UploaderInterface::UploadReason::KEY_DELIVERY,
-      base::BindOnce(
-          [](base::WeakPtr<EncryptedReportingUploadProvider> upload_provider,
-             bool need_encryption_key, std::vector<EncryptedRecord> records,
-             ScopedReservation scoped_reservation) {
-            if (!upload_provider) {
-              base::UmaHistogramEnumeration(
-                  reporting::kUmaUnavailableErrorReason,
-                  UnavailableErrorReason::UPLOAD_PROVIDER_IS_NULL,
-                  UnavailableErrorReason::MAX_VALUE);
-              return Status{error::UNAVAILABLE, "Uploader not available"};
-            }
-            upload_provider->RequestUploadEncryptedRecords(
-                need_encryption_key, std::move(records),
-                std::move(scoped_reservation), base::DoNothing());
-            return Status::StatusOK();
-          },
-          upload_provider_->GetWeakPtr()));
+      // `Uploader` runs this callback on its own sequence, but the weak pointer
+      // to `upload_provider_` may only be checked on the sequence `this` lives
+      // on, so post back to it.
+      base::BindPostTask(
+          sequenced_task_runner(),
+          base::BindOnce(
+              [](base::WeakPtr<EncryptedReportingUploadProvider>
+                     upload_provider,
+                 bool need_encryption_key, std::vector<EncryptedRecord> records,
+                 ScopedReservation scoped_reservation) {
+                if (!upload_provider) {
+                  LOG(ERROR) << "Unable to upload records: "
+                                "Uploader not available";
+                  base::UmaHistogramEnumeration(
+                      reporting::kUmaUnavailableErrorReason,
+                      UnavailableErrorReason::UPLOAD_PROVIDER_IS_NULL,
+                      UnavailableErrorReason::MAX_VALUE);
+                  return;
+                }
+                upload_provider->RequestUploadEncryptedRecords(
+                    need_encryption_key, std::move(records),
+                    std::move(scoped_reservation), base::DoNothing());
+              },
+              upload_provider_->GetWeakPtr())));
   std::move(start_uploader_cb).Run(std::move(uploader));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)

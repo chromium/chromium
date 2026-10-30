@@ -18,6 +18,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/expected.h"
@@ -38,6 +39,7 @@
 #include "components/reporting/encryption/primitives.h"
 #include "components/reporting/encryption/testing_primitives.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
+#include "components/reporting/storage/storage_uploader_interface.h"
 #include "components/reporting/util/encrypted_reporting_json_keys.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
@@ -47,6 +49,7 @@
 
 using ::testing::_;
 using ::testing::Eq;
+using ::testing::IsEmpty;
 using ::testing::Ne;
 using ::testing::SizeIs;
 using ::testing::StrEq;
@@ -403,6 +406,63 @@ TEST_P(ReportClientTest, SpeculativelyEnqueueMessageAndUpload) {
   EXPECT_THAT(request_body, IsDataUploadRequestValid());
   VerifyDataUpload(std::move(request_body));
   test_env_.SimulateResponseForRequest(0);
+}
+
+// Verifies that uploaders existing at the same time can all hand their records
+// over to the upload provider, even though each of them completes on its own
+// sequence.
+TEST_P(ReportClientTest, OverlappingUploadersComplete) {
+  // Create queue, so that the storage gets initialized.
+  auto report_queue_result = CreateQueue();
+  ASSERT_TRUE(report_queue_result.has_value());
+
+  if (is_encryption_enabled()) {
+    // Satisfy the initial key delivery triggered by the periodic storage timer
+    // so background flushes do not compete with the uploaders below when
+    // `RunUntil` advances mock time.
+    task_environment_.FastForwardBy(base::Seconds(1));
+    ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
+    test_env_.SimulateCustomResponseForRequest(0, GetEncryptionKeyResponse());
+    task_environment_.FastForwardBy(base::Seconds(1));
+    ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), IsEmpty());
+  }
+
+  // Start two uploaders before either of them completes.
+  test::TestEvent<StatusOr<std::unique_ptr<UploaderInterface>>>
+      start_first_uploader_event;
+  test_reporting_->StartUploader(UploaderInterface::UploadReason::KEY_DELIVERY,
+                                 start_first_uploader_event.cb());
+  auto first_uploader_result = start_first_uploader_event.result();
+  ASSERT_TRUE(first_uploader_result.has_value())
+      << first_uploader_result.error();
+
+  test::TestEvent<StatusOr<std::unique_ptr<UploaderInterface>>>
+      start_second_uploader_event;
+  test_reporting_->StartUploader(UploaderInterface::UploadReason::KEY_DELIVERY,
+                                 start_second_uploader_event.cb());
+  auto second_uploader_result = start_second_uploader_event.result();
+  ASSERT_TRUE(second_uploader_result.has_value())
+      << second_uploader_result.error();
+
+  // Complete both uploaders one by one. Since they request the encryption key,
+  // each of them hands over to the upload provider even without any records.
+  for (auto* uploader_result :
+       {&first_uploader_result, &second_uploader_result}) {
+    uploader_result->value()->Completed(Status::StatusOK());
+    ASSERT_TRUE(base::test::RunUntil([&] {
+      return !test_env_.url_loader_factory()->pending_requests()->empty();
+    }));
+
+    ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), SizeIs(1));
+    EXPECT_THAT(test_env_.request_body(0),
+                IsEncryptionKeyRequestUploadRequestValid());
+    if (is_encryption_enabled()) {
+      test_env_.SimulateCustomResponseForRequest(0, GetEncryptionKeyResponse());
+    } else {
+      test_env_.SimulateResponseForRequest(0);
+    }
+    ASSERT_THAT(*test_env_.url_loader_factory()->pending_requests(), IsEmpty());
+  }
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
