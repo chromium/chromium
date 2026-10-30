@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -3751,6 +3752,37 @@ TEST_F(AIPageContentAgentTest, HiddenUntilFoundOnIframe) {
 
   const auto& hidden_text_node = *iframe_root.children_nodes[0];
   CheckTextNode(hidden_text_node, "hidden text");
+}
+
+TEST_F(AIPageContentAgentTest, HiddenUntilFoundAcrossMultipleFrames) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      "<body>"
+      "  <div hidden=until-found>main hidden text</div>"
+      "  <iframe srcdoc='<div hidden=until-found>iframe 1 hidden "
+      "text</div>'></iframe>"
+      "  <iframe srcdoc='<div hidden=until-found>iframe 2 hidden "
+      "text</div>'></iframe>"
+      "</body>",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContent();
+
+  const auto& root = ContentRootNode();
+  EXPECT_TRUE(TreeContainsTextSubstring(root, "main hidden text"));
+  EXPECT_TRUE(TreeContainsTextSubstring(root, "iframe 1 hidden text"));
+  EXPECT_TRUE(TreeContainsTextSubstring(root, "iframe 2 hidden text"));
+
+  Document* main_doc = helper_.LocalMainFrame()->GetFrame()->GetDocument();
+  ASSERT_TRUE(main_doc);
+  EXPECT_FALSE(
+      main_doc->GetDisplayLockDocumentState().ActivatableDisplayLocksForced());
+  main_doc->View()->ForAllChildLocalFrameViews([](LocalFrameView& frame_view) {
+    if (Document* child_doc = frame_view.GetFrame().GetDocument()) {
+      EXPECT_FALSE(child_doc->GetDisplayLockDocumentState()
+                       .ActivatableDisplayLocksForced());
+    }
+  });
 }
 
 #if DCHECK_IS_ON()
