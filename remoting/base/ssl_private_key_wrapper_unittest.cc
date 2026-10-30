@@ -4,10 +4,13 @@
 
 #include "remoting/base/ssl_private_key_wrapper.h"
 
+#include <array>
+#include <cstdint>
 #include <memory>
 #include <utility>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -22,7 +25,7 @@ namespace remoting {
 namespace {
 
 constexpr uint16_t kTestAlgorithm = 0x0403;  // ecdsa_secp256r1_sha256
-const std::vector<uint8_t> kTestSignature = {1, 2, 3, 4, 5};
+constexpr auto kTestSignature = std::to_array<uint8_t>({1, 2, 3, 4, 5});
 
 class MockSSLPrivateKey : public net::SSLPrivateKey {
  public:
@@ -43,7 +46,7 @@ class MockSSLPrivateKey : public net::SSLPrivateKey {
     if (fail_) {
       std::move(callback).Run(net::ERR_FAILED, {});
     } else {
-      std::move(callback).Run(net::OK, kTestSignature);
+      std::move(callback).Run(net::OK, base::ToVector(kTestSignature));
     }
   }
 
@@ -98,7 +101,7 @@ TEST_F(SSLPrivateKeyWrapperTest, SignSuccess) {
   run_loop.Run();
 
   EXPECT_EQ(sign_net_error, static_cast<int32_t>(net::OK));
-  EXPECT_EQ(sign_signature, kTestSignature);
+  EXPECT_EQ(sign_signature, base::ToVector(kTestSignature));
   EXPECT_TRUE(mock_key->sign_called());
   EXPECT_EQ(mock_key->last_algorithm(), kTestAlgorithm);
   EXPECT_EQ(mock_key->last_input(), input_data);

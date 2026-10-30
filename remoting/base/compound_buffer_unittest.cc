@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
@@ -157,7 +158,7 @@ class CompoundBufferTest : public testing::Test {
 
   // Construct and prepare data in the |buffer|.
   static void PrepareData(std::unique_ptr<CompoundBuffer>* buffer) {
-    static const std::string kTestData =
+    static constexpr std::string_view kTestData =
         "Hello world!"
         "This is testing"
         "MultipleArrayInputStream"
