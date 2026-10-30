@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/animations/tab_strip_animations.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
@@ -59,6 +60,7 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_test_api.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/animation/animation_test_api.h"
@@ -1828,4 +1830,122 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabViewPinnedStylingDisabledTest,
   SkPath active_path =
       tab0->tab_styling()->GetPath(TabStyle::PathType::kActiveTab, 1.0f, {});
   EXPECT_FALSE(active_path.isRRect(nullptr));
+}
+
+class HorizontalTabViewDeclutterTest
+    : public HorizontalTabViewPinnedStylingDisabledTest {
+ public:
+  const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
+      override {
+    auto enabled =
+        HorizontalTabViewPinnedStylingDisabledTest::GetEnabledFeatures();
+    enabled.push_back({features::kTabStripDeclutter, {}});
+    return enabled;
+  }
+
+  void AppendUnpinnedTabSynchronously() {
+    std::unique_ptr<content::WebContents> contents =
+        content::WebContents::Create(
+            content::WebContents::CreateParams(browser()->GetProfile()));
+    tab_strip_model()->InsertWebContentsAt(tab_strip_model()->count(),
+                                           std::move(contents), ADD_ACTIVE);
+    ResetTabHoverStates();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabViewDeclutterTest,
+                       HorizontalSeparators_DeclutterThresholdRepaintsTabs) {
+  AppendPinnedTab();
+  AppendPinnedTab();
+
+  while (tab_strip_model()->count() <
+         TabStyle::kTabStripDeclutterMinTabsForSeparatorHide - 1) {
+    AppendUnpinnedTabSynchronously();
+  }
+  RunScheduledLayouts();
+
+  TabView* tab0 = GetTabView(0);
+  TabView* tab1 = GetTabView(1);
+  TabView* tab2 = GetTabView(2);
+  ASSERT_TRUE(tab0);
+  ASSERT_TRUE(tab1);
+  ASSERT_TRUE(tab2);
+  ASSERT_FALSE(tab0->IsActive());
+  ASSERT_FALSE(tab1->IsActive());
+  ASSERT_FALSE(tab2->IsActive());
+
+  views::View* pinned_container = pinned_collection_node()->view();
+  views::View* unpinned_container = unpinned_collection_node()->view();
+  ASSERT_TRUE(pinned_container);
+  ASSERT_TRUE(unpinned_container);
+  ASSERT_TRUE(pinned_container->layer());
+  ASSERT_TRUE(unpinned_container->layer());
+  ui::LayerTestApi pinned_layer_test_api(pinned_container->layer());
+  ui::LayerTestApi unpinned_layer_test_api(unpinned_container->layer());
+
+  // Just below the declutter threshold (19 tabs), inactive pinned and unpinned
+  // tabs render separators.
+  EXPECT_EQ(tab0->tab_styling()->GetSeparatorOpacitiesForTesting().right, 1.0f);
+  EXPECT_EQ(tab2->tab_styling()->GetSeparatorOpacitiesForTesting().right, 1.0f);
+
+  pinned_container->layer()->SendDamagedRects();
+  unpinned_container->layer()->SendDamagedRects();
+  ASSERT_TRUE(pinned_layer_test_api.damaged_region().IsEmpty());
+  ASSERT_TRUE(unpinned_layer_test_api.damaged_region().IsEmpty());
+
+  // Adding an unpinned tab to reach the declutter threshold (20 tabs) hides
+  // separators and must synchronously schedule a repaint on both layer-backed
+  // containers before layout runs and without requiring mouse hover.
+  AppendUnpinnedTabSynchronously();
+
+  EXPECT_EQ(tab0->tab_styling()->GetSeparatorOpacitiesForTesting().right, 0.0f);
+  EXPECT_EQ(tab2->tab_styling()->GetSeparatorOpacitiesForTesting().right, 0.0f);
+  EXPECT_TRUE(pinned_layer_test_api.damaged_region().Contains(tab0->bounds()));
+  EXPECT_TRUE(pinned_layer_test_api.damaged_region().Contains(tab1->bounds()));
+  EXPECT_TRUE(
+      unpinned_layer_test_api.damaged_region().Contains(tab2->bounds()));
+  RunScheduledLayouts();
+
+  // Adding and closing a tab while staying at or above the threshold (20 <->
+  // 21) should not schedule full-container repaints on either container.
+  pinned_container->layer()->SendDamagedRects();
+  unpinned_container->layer()->SendDamagedRects();
+  ASSERT_TRUE(pinned_layer_test_api.damaged_region().IsEmpty());
+  ASSERT_TRUE(unpinned_layer_test_api.damaged_region().IsEmpty());
+
+  AppendUnpinnedTabSynchronously();
+  EXPECT_TRUE(pinned_layer_test_api.damaged_region().IsEmpty());
+  EXPECT_FALSE(
+      unpinned_layer_test_api.damaged_region().Contains(tab2->bounds()));
+  RunScheduledLayouts();
+
+  pinned_container->layer()->SendDamagedRects();
+  unpinned_container->layer()->SendDamagedRects();
+  ASSERT_TRUE(pinned_layer_test_api.damaged_region().IsEmpty());
+  ASSERT_TRUE(unpinned_layer_test_api.damaged_region().IsEmpty());
+
+  tab_strip_model()->CloseWebContentsAt(tab_strip_model()->count() - 1,
+                                        TabCloseTypes::CLOSE_NONE);
+  EXPECT_TRUE(pinned_layer_test_api.damaged_region().IsEmpty());
+  EXPECT_FALSE(
+      unpinned_layer_test_api.damaged_region().Contains(tab2->bounds()));
+  RunScheduledLayouts();
+
+  // Closing an unpinned tab to drop below the declutter threshold (20 -> 19)
+  // restores separators and must synchronously schedule a repaint on both
+  // containers.
+  pinned_container->layer()->SendDamagedRects();
+  unpinned_container->layer()->SendDamagedRects();
+  ASSERT_TRUE(pinned_layer_test_api.damaged_region().IsEmpty());
+  ASSERT_TRUE(unpinned_layer_test_api.damaged_region().IsEmpty());
+
+  tab_strip_model()->CloseWebContentsAt(tab_strip_model()->count() - 1,
+                                        TabCloseTypes::CLOSE_NONE);
+
+  EXPECT_EQ(tab0->tab_styling()->GetSeparatorOpacitiesForTesting().right, 1.0f);
+  EXPECT_EQ(tab2->tab_styling()->GetSeparatorOpacitiesForTesting().right, 1.0f);
+  EXPECT_TRUE(pinned_layer_test_api.damaged_region().Contains(tab0->bounds()));
+  EXPECT_TRUE(pinned_layer_test_api.damaged_region().Contains(tab1->bounds()));
+  EXPECT_TRUE(
+      unpinned_layer_test_api.damaged_region().Contains(tab2->bounds()));
 }

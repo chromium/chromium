@@ -508,6 +508,8 @@ void BaseTabStripRegionView::OnChildrenAdded(
     new_tab_button_pressed_start_time_.reset();
   }
   hover_tab_selector_->CancelTabTransition();
+  CHECK(tab_strip_view_);
+  tab_strip_view_->OnChildCountChanged();
 
   const tabs::TabInterface* active_tab = tab_strip_model_->GetActiveTab();
   if (!active_tab) {
@@ -531,6 +533,8 @@ void BaseTabStripRegionView::OnChildrenAdded(
 
 void BaseTabStripRegionView::OnChildrenRemoved() {
   hover_tab_selector_->CancelTabTransition();
+  CHECK(tab_strip_view_);
+  tab_strip_view_->OnChildCountChanged();
 }
 
 void BaseTabStripRegionView::OnChildMoved(TabCollectionNode* moved_node) {

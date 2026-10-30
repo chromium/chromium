@@ -75,6 +75,7 @@ class TabStripView final : public views::View,
   // views::WidgetObserver:
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
+  void OnChildCountChanged();
   void OnChildMoved(TabCollectionNode* moved_node);
   void OnTabChanged(const tabs::TabInterface* active_tab);
 
@@ -135,6 +136,8 @@ class TabStripView final : public views::View,
 
   void HideHoverCardOnScroll();
   void OnScrollButtonsVisibilityChanged();
+  bool ShouldHideSeparators() const;
+  void UpdateSeparatorVisibility();
 
   PrefService* GetPrefs() const;
 
@@ -150,6 +153,7 @@ class TabStripView final : public views::View,
   raw_ptr<UnpinnedTabContainerView> unpinned_tabs_container_view_ = nullptr;
   raw_ptr<TabScrollButtonContainer> tab_scroll_button_container_ = nullptr;
   bool is_collapsed_ = false;
+  bool are_separators_hidden_ = false;
   int leading_overlap_ = 0;
 
   // Used for seek time metrics from the time the mouse enters the tabstrip.

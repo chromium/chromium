@@ -17,6 +17,8 @@
 #include "chrome/browser/ui/tabs/horizontal_tab_strip_metrics.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_style.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/frame_separator.h"
 #include "chrome/browser/ui/views/tabs/common/pinned_tab_container_view.h"
@@ -164,6 +166,7 @@ class TabStripView::TargetViewsTracker : public views::ViewObserver {
 TabStripView::TabStripView(TabCollectionNode* collection_node)
     : orientation_(collection_node->orientation()),
       collection_node_(collection_node),
+      are_separators_hidden_(ShouldHideSeparators()),
       target_views_tracker_(
           std::make_unique<TargetViewsTracker>(orientation_)) {
   // Paint to a layer and mask to bounds to prevent tabs from overflowing and
@@ -270,6 +273,10 @@ void TabStripView::OnWidgetActivationChanged(views::Widget* widget,
     hover_card_controller->UpdateHoverCard(
         nullptr, TabSlotController::HoverCardUpdateType::kEvent);
   }
+}
+
+void TabStripView::OnChildCountChanged() {
+  UpdateSeparatorVisibility();
 }
 
 void TabStripView::OnChildMoved(TabCollectionNode* moved_node) {
@@ -814,6 +821,27 @@ void TabStripView::OnScrollButtonsVisibilityChanged() {
       target_views_tracker_->empty()) {
     ScrollToFitTabs(collection_node_->GetController()->GetActiveTab(), nullptr);
   }
+}
+
+bool TabStripView::ShouldHideSeparators() const {
+  CHECK(collection_node_);
+  return orientation_ == TabStripOrientation::kHorizontal &&
+         features::IsTabStripDeclutterEnabled() &&
+         collection_node_->GetController()->GetTabCount() >=
+             TabStyle::kTabStripDeclutterMinTabsForSeparatorHide;
+}
+
+void TabStripView::UpdateSeparatorVisibility() {
+  const bool should_hide_separators = ShouldHideSeparators();
+  if (are_separators_hidden_ == should_hide_separators) {
+    return;
+  }
+
+  are_separators_hidden_ = should_hide_separators;
+  CHECK(pinned_tabs_container_view_);
+  CHECK(unpinned_tabs_container_view_);
+  pinned_tabs_container_view_->SchedulePaint();
+  unpinned_tabs_container_view_->SchedulePaint();
 }
 
 BEGIN_METADATA(TabStripView)
