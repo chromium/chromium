@@ -7,13 +7,11 @@
 #include <utility>
 
 #include "base/atomicops.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/memory.h"
 #include "base/process/process_metrics.h"
 #include "build/build_config.h"
 #include "partition_alloc/oom_callback.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
@@ -65,24 +63,11 @@ void CrashMemoryMetricsReporterImpl::SetSharedMemory(
     shared_metrics_mapping_ = std::move(mapping);
   }
 #if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(features::kGateMemoryMetricsOnVisibility)) {
-    timer_.StartRepeating(base::Seconds(1), FROM_HERE);
-    return;
-  }
-  UpdateTimer();
+  timer_.StartRepeating(base::Seconds(1), FROM_HERE);
 #endif
 }
 
 void CrashMemoryMetricsReporterImpl::ResetForTesting() {
-#if BUILDFLAG(IS_ANDROID)
-  timer_.Stop();
-  is_visible_ = false;
-  timer_.SetTaskRunnerForTesting(Thread::MainThread()
-                                     ->Scheduler()
-                                     ->ToMainThreadScheduler()
-                                     ->NonWakingTaskRunner(),
-                                 nullptr);
-#endif
   base::AutoLock auto_lock(lock_);
   shared_metrics_mapping_ = base::WritableSharedMemoryMapping();
   last_reported_metrics_ = OomInterventionMetrics();
@@ -98,35 +83,6 @@ void CrashMemoryMetricsReporterImpl::WriteIntoSharedMemory() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void CrashMemoryMetricsReporterImpl::SetRendererVisible(bool visible) {
-  DCHECK(IsMainThread());
-  if (is_visible_ == visible) {
-    return;
-  }
-  is_visible_ = visible;
-  if (!base::FeatureList::IsEnabled(features::kGateMemoryMetricsOnVisibility)) {
-    return;
-  }
-  UpdateTimer();
-}
-
-void CrashMemoryMetricsReporterImpl::UpdateTimer() {
-  DCHECK(IsMainThread());
-  bool has_shared_memory;
-  {
-    base::AutoLock auto_lock(lock_);
-    has_shared_memory = shared_metrics_mapping_.IsValid();
-  }
-  if (is_visible_ && has_shared_memory) {
-    if (!timer_.IsActive()) {
-      SampleMemoryState(nullptr);
-      timer_.StartRepeating(base::Seconds(1), FROM_HERE);
-    }
-  } else {
-    timer_.Stop();
-  }
-}
-
 void CrashMemoryMetricsReporterImpl::SampleMemoryState(TimerBase*) {
   base::SystemMemoryInfo meminfo;
   base::GetSystemMemoryInfo(&meminfo);

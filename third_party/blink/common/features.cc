@@ -799,12 +799,6 @@ BASE_FEATURE(kFreezeSharedWorker, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFrequencyCappingForOverlayPopupDetection,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-// Gates periodic 1 Hz renderer memory metrics sampling timers on renderer
-// visibility on Android.
-BASE_FEATURE(kGateMemoryMetricsOnVisibility, base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 BASE_FEATURE(kGlobalPrivacyControlAlwaysSample,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

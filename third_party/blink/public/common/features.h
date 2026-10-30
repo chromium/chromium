@@ -557,10 +557,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFreezeSharedWorker);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kFrequencyCappingForOverlayPopupDetection);
 
-#if BUILDFLAG(IS_ANDROID)
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kGateMemoryMetricsOnVisibility);
-#endif
-
 // If enabled, disables subsampling of GlobalPrivacyControl histogram entries.
 // Used in tests that verifies sampling in Renderer thread.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kGlobalPrivacyControlAlwaysSample);

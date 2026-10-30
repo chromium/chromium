@@ -70,7 +70,6 @@ component("controller") {
     "performance_manager/v8_detailed_memory_reporter_impl.h",
     "performance_manager/v8_worker_memory_reporter.cc",
     "performance_manager/v8_worker_memory_reporter.h",
-    "web_memory_features.cc",
   ]
 
   if (is_linux || is_chromeos) {
