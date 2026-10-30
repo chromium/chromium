@@ -636,6 +636,8 @@ TEST_F(DocumentPipFrameViewTest, HttpsSecureUrlHasEmptyChipText) {
       CreatePipAndGetFrameView(/*disallow_return_to_opener=*/false);
 
   EXPECT_TRUE(GetOriginChip(frame_view)->GetText().empty());
+  EXPECT_EQ(GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING),
+            GetOriginChip(frame_view)->GetInsets());
 }
 
 // A plain HTTP page reports the WARNING security level, so the chip shows the
@@ -649,6 +651,12 @@ TEST_F(DocumentPipFrameViewTest, HttpWarningUrlChipSaysNotSecure) {
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_NOT_SECURE_VERBOSE_STATE),
             GetOriginChip(frame_view)->GetText());
+  gfx::Insets expected = GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING);
+  expected.set_right(
+      expected.right() +
+      GetLayoutConstant(
+          LayoutConstant::kLocationBarPageInfoIconLabelExtraTrailingPadding));
+  EXPECT_EQ(expected, GetOriginChip(frame_view)->GetInsets());
 }
 
 // A DANGEROUS page that fails the malware check shows the "Dangerous" verbose
@@ -663,6 +671,12 @@ TEST_F(DocumentPipFrameViewTest, DangerousMalwareUrlChipSaysDangerous) {
 
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_DANGEROUS_VERBOSE_STATE),
             GetOriginChip(frame_view)->GetText());
+  gfx::Insets expected = GetLayoutInsets(LOCATION_BAR_PAGE_INFO_ICON_PADDING);
+  expected.set_left(GetLayoutConstant(
+      LayoutConstant::kLocationBarPageInfoIconDangerousLeadingPadding));
+  expected.set_right(GetLayoutConstant(
+      LayoutConstant::kLocationBarPageInfoIconDangerousTrailingPadding));
+  EXPECT_EQ(expected, GetOriginChip(frame_view)->GetInsets());
 }
 
 // A DANGEROUS page on the billing interstitial list carries its own UI, so the

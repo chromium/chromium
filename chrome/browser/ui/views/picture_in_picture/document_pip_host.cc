@@ -1055,6 +1055,15 @@ void DocumentPipHost::OnAnyBrowserEnteredFullscreen() {
 void DocumentPipHost::SetWebContentsBlocked(content::WebContents* web_contents,
                                             bool blocked) {
   CHECK_EQ(GetChildWebContents(), web_contents, base::NotFatalUntil::M162);
+  // Dim the PiP contents while any web-modal dialog (JavaScript dialogs, HTTP
+  // Basic Auth, WebAuthn, etc.) blocks interaction. This mirrors how
+  // Browser-backed windows drive their scrim from the blocked state rather than
+  // from individual dialog notifications.
+  if (widget_delegate_) {
+    if (auto* contents_view = widget_delegate_->GetDocumentPipContentsView()) {
+      contents_view->SetDialogScrimVisible(blocked);
+    }
+  }
   if (!blocked && widget_ && widget_->IsActive()) {
     FocusChildWebContents();
   }

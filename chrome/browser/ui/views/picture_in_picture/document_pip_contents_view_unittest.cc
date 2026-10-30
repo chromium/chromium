@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/browser/web_contents.h"
@@ -49,4 +50,22 @@ TEST_F(DocumentPipContentsViewTest, DestructionDestroysChildWebContents) {
   view.reset();
 
   EXPECT_TRUE(watcher.IsDestroyed());
+}
+
+TEST_F(DocumentPipContentsViewTest, DialogScrimFollowsVisibilityAndBounds) {
+  DocumentPipContentsView view(&profile_, CreateChildWebContents());
+  view.SetBounds(0, 0, 400, 300);
+  ScrimView* scrim = view.dialog_scrim_for_testing();
+  ASSERT_TRUE(scrim);
+  EXPECT_FALSE(scrim->GetVisible());
+  EXPECT_EQ(view.GetLocalBounds(), scrim->bounds());
+  EXPECT_FALSE(scrim->GetCanProcessEventsWithinSubtree());
+
+  view.SetDialogScrimVisible(true);
+  EXPECT_TRUE(scrim->GetVisible());
+  view.SetSize({500, 350});
+  EXPECT_EQ(view.GetLocalBounds(), scrim->bounds());
+
+  view.SetDialogScrimVisible(false);
+  EXPECT_FALSE(scrim->GetVisible());
 }

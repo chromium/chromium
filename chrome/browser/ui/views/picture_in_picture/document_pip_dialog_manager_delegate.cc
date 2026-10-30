@@ -8,11 +8,13 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/title_origin_label.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/javascript_dialogs/tab_modal_dialog_view.h"
 #include "content/public/browser/javascript_dialog_manager.h"
@@ -23,11 +25,15 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/controls/message_box_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
+#include "ui/views/window/non_client_view.h"
 
 // A child-modal JavaScript dialog hosted by the standalone PiP WebContents.
 //
@@ -161,6 +167,9 @@ class DocumentPipJavaScriptDialogView
 
   // views::WidgetDelegate:
   void OnWidgetInitialized() override {
+    CHECK_DEREF(views::AsViewClass<views::BubbleFrameView>(
+                    GetWidget()->non_client_view()->frame_view()))
+        .SetTitleView(CreateTitleOriginLabel(GetWindowTitle()));
     if (!message_text_.empty()) {
       GetWidget()->GetRootView()->GetViewAccessibility().SetDescription(
           message_text_);
@@ -232,7 +241,10 @@ DocumentPipDialogManagerDelegate::CreateNewDialog(
   return active_dialog_->GetWeakPtr();
 }
 
-void DocumentPipDialogManagerDelegate::WillRunDialog() {}
+void DocumentPipDialogManagerDelegate::WillRunDialog() {
+  // The contents scrim is driven from DocumentPipHost::SetWebContentsBlocked(),
+  // which covers every web-modal dialog, not just JavaScript dialogs.
+}
 
 void DocumentPipDialogManagerDelegate::DidCloseDialog() {}
 

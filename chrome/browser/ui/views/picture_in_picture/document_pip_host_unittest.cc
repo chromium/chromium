@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/views/exclusive_access/exclusive_access_bubble_views.h"
+#include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_contents_view.h"
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_widget_delegate.h"
 #include "chrome/test/base/testing_profile.h"
@@ -1557,6 +1558,28 @@ TEST_F(DocumentPipHostTest, SetWebContentsBlocked_InactiveWidgetDoesNotFocus) {
     EXPECT_EQ(focused_view_before_unblock, focus_manager->GetFocusedView());
     EXPECT_EQ(stored_focus_before_unblock, focus_manager->GetStoredFocusView());
   }
+}
+
+TEST_F(DocumentPipHostTest, SetWebContentsBlocked_TogglesContentsScrim) {
+  DocumentPipHost* host = CreateHostAndOpenPipWindow();
+  ASSERT_TRUE(host);
+
+  content::WebContents* child = host->GetChildWebContents();
+  ASSERT_TRUE(child);
+
+  auto* delegate = static_cast<DocumentPipWidgetDelegate*>(
+      host->GetWidget()->widget_delegate());
+  ASSERT_TRUE(delegate);
+  auto* contents_view = delegate->GetDocumentPipContentsView();
+  ASSERT_TRUE(contents_view);
+  ScrimView* scrim = contents_view->dialog_scrim_for_testing();
+  ASSERT_TRUE(scrim);
+
+  EXPECT_FALSE(scrim->GetVisible());
+  host->SetWebContentsBlocked(child, true);
+  EXPECT_TRUE(scrim->GetVisible());
+  host->SetWebContentsBlocked(child, false);
+  EXPECT_FALSE(scrim->GetVisible());
 }
 
 TEST_F(DocumentPipHostTest, GetWebContentsModalDialogHost_ReturnsHost) {

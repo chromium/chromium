@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/webview.h"
 
@@ -14,7 +15,12 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace gfx {
+class Rect;
+}  // namespace gfx
+
 class Profile;
+class ScrimView;
 
 // DocumentPipContentsView is the contents view for the standalone Document
 // Picture-in-Picture widget. It is a views::WebView that hosts the PiP child
@@ -33,6 +39,17 @@ class DocumentPipContentsView : public views::WebView {
   DocumentPipContentsView& operator=(const DocumentPipContentsView&) = delete;
 
   ~DocumentPipContentsView() override;
+
+  void SetDialogScrimVisible(bool visible);
+
+  ScrimView* dialog_scrim_for_testing() { return dialog_scrim_; }
+
+ protected:
+  // views::WebView:
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+
+ private:
+  raw_ptr<ScrimView> dialog_scrim_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PICTURE_IN_PICTURE_DOCUMENT_PIP_CONTENTS_VIEW_H_
