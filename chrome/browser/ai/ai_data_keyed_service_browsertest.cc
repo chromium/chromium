@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,14 +31,16 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/actor/core/actor_switches.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
-#include "components/autofill/core/browser/test_utils/autofill_form_test_util.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_test_util.h"
-#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -370,43 +373,44 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, SpecifierOff) {
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest,
                        GetFormDataByFieldGlobalIdForModelPrototyping) {
-  // Simulate loading `expected_form`.
   LoadSimplePage();
   autofill::ContentAutofillDriver* driver =
       autofill::ContentAutofillDriver::GetForRenderFrameHost(
           web_contents()->GetPrimaryMainFrame());
-  const autofill::FormData expected_form = autofill::test::GetFormData(
-      {.fields = {{.label = u"Field 1"}, {.label = u"Field 2"}}});
   ASSERT_TRUE(driver);
   autofill::TestAutofillManagerSingleEventWaiter wait_for_forms_seen(
       driver->GetAutofillManager(),
-      &autofill::AutofillManager::Observer::OnAfterFormsSeen,
-      testing::ElementsAre(expected_form.global_id()), testing::IsEmpty());
-  driver->GetAutofillManager().OnFormsSeen(
-      /*updated_forms=*/{expected_form},
-      /*removed_forms=*/{}, autofill::AutofillManagerTestApi::pass_key());
+      &autofill::AutofillManager::Observer::OnAfterFormsSeen);
+  ASSERT_TRUE(content::ExecJs(web_contents(),
+                              R"(document.body.innerHTML +=
+           '<form>' +
+             '<label for="f1">Field 1</label><input id="f1">' +
+             '<label for="f2">Field 2</label><input id="f2">' +
+           '</form>';)"));
   ASSERT_TRUE(std::move(wait_for_forms_seen).Wait());
 
-  // Query the API for `expected_form`'s first field.
+  std::vector<const autofill::FormStructure*> forms =
+      test_api(driver->GetAutofillManager()).form_structures();
+  ASSERT_EQ(forms.size(), 1u);
+  ASSERT_EQ(forms[0]->field_count(), 2u);
+  const autofill::FieldGlobalId field_id = forms[0]->field(0)->global_id();
+
+  // Query the API for the form's first field.
   AiDataKeyedService::AiDataSpecifier specifier;
   auto* global_id = specifier.mutable_browser_data_collection_specifier()
                         ->mutable_foreground_tab_page_context_specifier()
                         ->mutable_field_global_id();
-  global_id->set_frame_token(
-      expected_form.fields()[0].global_id().frame_token->ToString());
-  global_id->set_renderer_id(
-      expected_form.fields()[0].global_id().renderer_id.value());
+  global_id->set_frame_token(field_id.frame_token->ToString());
+  global_id->set_renderer_id(field_id.renderer_id.value());
   AiData ai_data = QueryAiDataWithSpecifier(std::move(specifier));
 
-  // Expect that the result matches `expected_form`.
+  // Expect that the result matches the form in the DOM.
   ASSERT_TRUE(ai_data.has_value());
   ASSERT_TRUE(ai_data->has_form_data());
   const optimization_guide::proto::FormData& actual_form = ai_data->form_data();
   ASSERT_EQ(actual_form.fields_size(), 2);
-  EXPECT_EQ(actual_form.fields(0).field_label(),
-            base::UTF16ToUTF8(expected_form.fields()[0].label()));
-  EXPECT_EQ(actual_form.fields(1).field_label(),
-            base::UTF16ToUTF8(expected_form.fields()[1].label()));
+  EXPECT_EQ(actual_form.fields(0).field_label(), "Field 1");
+  EXPECT_EQ(actual_form.fields(1).field_label(), "Field 2");
 }
 #endif
 
