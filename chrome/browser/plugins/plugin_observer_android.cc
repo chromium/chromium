@@ -11,8 +11,8 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 DEFINE_USER_DATA(PluginObserverAndroid);
 
@@ -54,7 +54,7 @@ void PluginObserverAndroid::OpenPDF(const GURL& url) {
 
   content::OpenURLParams open_url_params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::kCurrentTab,
+          url, ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_AUTO_BOOKMARK, referrer);
   // On Android, PDFs downloaded with a user gesture are auto-opened.
   open_url_params.user_gesture = true;

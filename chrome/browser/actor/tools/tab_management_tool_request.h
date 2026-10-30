@@ -11,7 +11,7 @@
 
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool_request.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 namespace actor {
 class ToolRequestVisitorFunctor;
@@ -22,7 +22,8 @@ class CreateTabToolRequest : public ToolRequest {
   static constexpr char kName[] = "CreateTab";
   static constexpr std::string_view kModelFacingName = "create_tab";
 
-  CreateTabToolRequest(int32_t window_id, WindowOpenDisposition disposition);
+  CreateTabToolRequest(int32_t window_id,
+                       ::ui::mojom::WindowOpenDisposition disposition);
   ~CreateTabToolRequest() override;
 
   // Returns the `ToolId::kCreateTab` tool schema definition.
@@ -39,7 +40,7 @@ class CreateTabToolRequest : public ToolRequest {
 
  private:
   int32_t window_id_;
-  WindowOpenDisposition disposition_;
+  ::ui::mojom::WindowOpenDisposition disposition_;
 };
 
 // Brings the specified tab to the foreground.

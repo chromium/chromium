@@ -15,7 +15,7 @@
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace actor {
 
@@ -40,8 +40,9 @@ constexpr std::string_view kTabIdParamDescription =
 }  // namespace
 using tabs::TabInterface;
 
-CreateTabToolRequest::CreateTabToolRequest(int32_t window_id,
-                                           WindowOpenDisposition disposition)
+CreateTabToolRequest::CreateTabToolRequest(
+    int32_t window_id,
+    ::ui::mojom::WindowOpenDisposition disposition)
     : window_id_(window_id), disposition_(disposition) {}
 
 CreateTabToolRequest::~CreateTabToolRequest() = default;

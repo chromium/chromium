@@ -74,7 +74,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace {
 
@@ -431,9 +431,10 @@ void ActorKeyedService::CreateActorTab(TaskId task_id,
                         ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
 
   if (window_for_new_tab) {
-    params.disposition = open_in_background
-                             ? WindowOpenDisposition::kNewBackgroundTab
-                             : WindowOpenDisposition::kNewForegroundTab;
+    params.disposition =
+        open_in_background
+            ? ::ui::mojom::WindowOpenDisposition::kNewBackgroundTab
+            : ::ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     params.browser = window_for_new_tab;
     params.window_action = NavigateParams::WindowAction::kNoAction;
 
@@ -451,8 +452,8 @@ void ActorKeyedService::CreateActorTab(TaskId task_id,
 #if BUILDFLAG(IS_ANDROID)
     if (open_in_background) {
       // Workaround for b/489440503. On Android we ignore
-      // WindowOpenDisposition::kNewBackgroundTab when a tabstrip_index is set,
-      // so revert the index to its default value.
+      // `::ui::mojom::WindowOpenDisposition::kNewBackgroundTab` when a
+      // tabstrip_index is set, so revert the index to its default value.
       params.tabstrip_index = -1;
     }
 #endif
@@ -463,7 +464,7 @@ void ActorKeyedService::CreateActorTab(TaskId task_id,
     // If window_for_new_tab is still null (e.g. the initiating window was
     // closed) the tab will be created in a new window.
     // TODO(b/454046200): Reconsider what should happen in this case.
-    params.disposition = WindowOpenDisposition::kNewWindow;
+    params.disposition = ::ui::mojom::WindowOpenDisposition::kNewWindow;
     params.window_action = NavigateParams::WindowAction::kShowWindow;
   }
 

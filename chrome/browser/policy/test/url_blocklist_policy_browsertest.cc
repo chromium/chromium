@@ -33,7 +33,7 @@
 
 #if !BUILDFLAG(IS_MAC)
 #include "extensions/browser/app_window/app_window.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #endif
 
 using content::BrowserThread;
@@ -458,7 +458,8 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, JavascriptBlocklistable) {
   // Without blocklist policy value is incremented properly.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("javascript:increment()"),
-      WindowOpenDisposition::kCurrentTab, ui_test_utils::BROWSER_TEST_NO_WAIT);
+      ui::mojom::WindowOpenDisposition::kCurrentTab,
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   EXPECT_EQ(JSIncrementerFetch(contents), 2);
 
@@ -475,7 +476,8 @@ IN_PROC_BROWSER_TEST_F(UrlBlockingPolicyTest, JavascriptBlocklistable) {
   // unchanged.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("javascript:increment()"),
-      WindowOpenDisposition::kCurrentTab, ui_test_utils::BROWSER_TEST_NO_WAIT);
+      ui::mojom::WindowOpenDisposition::kCurrentTab,
+      ui_test_utils::BROWSER_TEST_NO_WAIT);
   EXPECT_EQ(JSIncrementerFetch(contents), 2);
 
   // But in-page links still work even if they are javascript-links.

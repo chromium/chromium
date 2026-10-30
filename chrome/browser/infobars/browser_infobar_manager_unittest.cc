@@ -44,9 +44,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/test/mock_base_window.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/switches.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/label.h"
@@ -746,9 +746,8 @@ TEST_F(BrowserInfoBarManagerUnitTest,
           .AddExtraButton(u"Extra", base::DoNothing())
           .SetDismissAction(base::DoNothing())
           .SetInlineLinkCallback(base::BindLambdaForTesting(
-              [](content::WebContents*, size_t, WindowOpenDisposition) {
-                return false;
-              }))
+              [](content::WebContents*, size_t,
+                 ui::mojom::WindowOpenDisposition) { return false; }))
           .SetResultCallback(base::BindLambdaForTesting(
               [&](content::WebContents*, InfoBarResult result) {
                 results.push_back(result);
@@ -819,25 +818,26 @@ TEST_F(BrowserInfoBarManagerUnitTest,
   EXPECT_FALSE(infobar3->delegate()
                    ->AsConfirmInfoBarDelegate()
                    ->InlineSubstitutionLinkClicked(
-                       0u, WindowOpenDisposition::kCurrentTab));
+                       0u, ui::mojom::WindowOpenDisposition::kCurrentTab));
   EXPECT_FALSE(infobar3->delegate()->LinkClicked(
-      WindowOpenDisposition::kNewBackgroundTab));
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab));
   ContentInfoBarManager::FromWebContents(contents)->RemoveInfoBar(infobar3);
   ASSERT_EQ(1u, results.size());
   EXPECT_EQ(InfoBarResult::kLinkClicked, results[0]);
 
   results.clear();
   InfoBarShowParams inline_params;
-  inline_params.inline_link_callback =
-      base::BindLambdaForTesting([](content::WebContents*, size_t,
-                                    WindowOpenDisposition) { return true; });
+  inline_params.inline_link_callback = base::BindLambdaForTesting(
+      [](content::WebContents*, size_t, ui::mojom::WindowOpenDisposition) {
+        return true;
+      });
   infobars::InfoBar* infobar4 =
       manager()->Show(tab, id, std::move(inline_params));
   ASSERT_NE(nullptr, infobar4);
   EXPECT_TRUE(infobar4->delegate()
                   ->AsConfirmInfoBarDelegate()
                   ->InlineSubstitutionLinkClicked(
-                      0u, WindowOpenDisposition::kCurrentTab));
+                      0u, ui::mojom::WindowOpenDisposition::kCurrentTab));
   infobar4->RemoveSelf();
   ASSERT_EQ(1u, results.size());
   EXPECT_EQ(InfoBarResult::kLinkClicked, results[0]);
@@ -847,7 +847,7 @@ TEST_F(BrowserInfoBarManagerUnitTest,
   infobars::InfoBar* infobar5 = nullptr;
   InfoBarShowParams inline_hide_params;
   inline_hide_params.inline_link_callback = base::BindLambdaForTesting(
-      [&](content::WebContents*, size_t, WindowOpenDisposition) {
+      [&](content::WebContents*, size_t, ui::mojom::WindowOpenDisposition) {
         manager()->Hide(infobar5);
         return true;
       });
@@ -856,7 +856,7 @@ TEST_F(BrowserInfoBarManagerUnitTest,
   EXPECT_TRUE(infobar5->delegate()
                   ->AsConfirmInfoBarDelegate()
                   ->InlineSubstitutionLinkClicked(
-                      0u, WindowOpenDisposition::kCurrentTab));
+                      0u, ui::mojom::WindowOpenDisposition::kCurrentTab));
   infobar5->RemoveSelf();
   EXPECT_TRUE(results.empty());
 }
@@ -931,18 +931,19 @@ TEST_F(BrowserInfoBarManagerUnitTest, GlobalCascadeCloseAndTeardown) {
   const auto global_id = InfoBarDelegate::TEST_INFOBAR;
   std::vector<InfoBarResult> results;
 
-  manager()->Register(InfoBarSpec::Builder(global_id)
-                          .SetMessageText(u"Global")
-                          .SetScope(InfoBarScope::kGlobal)
-                          .AddOkButton(u"OK", base::DoNothing())
-                          .SetInlineLinkCallback(base::BindLambdaForTesting(
-                              [](content::WebContents*, size_t,
-                                 WindowOpenDisposition) { return true; }))
-                          .SetResultCallback(base::BindLambdaForTesting(
-                              [&](content::WebContents*, InfoBarResult result) {
-                                results.push_back(result);
-                              }))
-                          .Build());
+  manager()->Register(
+      InfoBarSpec::Builder(global_id)
+          .SetMessageText(u"Global")
+          .SetScope(InfoBarScope::kGlobal)
+          .AddOkButton(u"OK", base::DoNothing())
+          .SetInlineLinkCallback(base::BindLambdaForTesting(
+              [](content::WebContents*, size_t,
+                 ui::mojom::WindowOpenDisposition) { return true; }))
+          .SetResultCallback(base::BindLambdaForTesting(
+              [&](content::WebContents*, InfoBarResult result) {
+                results.push_back(result);
+              }))
+          .Build());
 
   auto browser1 = CreateBrowserWindow();
   content::WebContents* b1_tab0 = browser1->AddTab();
@@ -982,7 +983,7 @@ TEST_F(BrowserInfoBarManagerUnitTest, GlobalCascadeCloseAndTeardown) {
   EXPECT_TRUE(b2_infobar->delegate()
                   ->AsConfirmInfoBarDelegate()
                   ->InlineSubstitutionLinkClicked(
-                      0u, WindowOpenDisposition::kCurrentTab));
+                      0u, ui::mojom::WindowOpenDisposition::kCurrentTab));
   b2_infobar->RemoveSelf();
   EXPECT_EQ(0u,
             ContentInfoBarManager::FromWebContents(b1_tab0)->infobars().size());

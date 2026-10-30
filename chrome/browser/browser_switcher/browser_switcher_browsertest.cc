@@ -29,7 +29,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 namespace browser_switcher {
@@ -159,7 +159,8 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherBrowserTest, RunsExternalCommand) {
   // We open a new tab, because closing the last tab in the browser
   // causes the whole browser to close.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(kTestUrl), WindowOpenDisposition::kNewForegroundTab,
+      browser(), GURL(kTestUrl),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   base::RunLoop run_loop;
@@ -185,7 +186,7 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherBrowserTest, DoesNotKeepSpaces) {
   // causes the whole browser to close.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(kTestUrlWithSpaces),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   base::RunLoop run_loop;
@@ -215,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherBrowserTest, UnencodesSingleQUotes) {
   // causes the whole browser to close.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(kTestUrlWithQuotes),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   base::RunLoop run_loop;
@@ -241,7 +242,8 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherBrowserTest, DoesNotRunOnRandomUrls) {
   // We open a new tab, because closing the last tab in the browser
   // causes the whole browser to close.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(kOtherUrl), WindowOpenDisposition::kNewForegroundTab,
+      browser(), GURL(kOtherUrl),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   base::RunLoop run_loop;

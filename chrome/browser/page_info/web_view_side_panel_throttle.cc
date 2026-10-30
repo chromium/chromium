@@ -13,8 +13,8 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/url_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 const char kWebViewSidePanelWebContentsUserDataKey[] =
     "web_view_side_panel_web_contents_user_data";
@@ -89,13 +89,15 @@ void MaybeCreateAndAddWebViewSidePanelThrottle(
                     handle->IsRendererInitiated()
                         ? content::OpenURLParams::CreateRendererInitiated(
                               next_url,
-                              WindowOpenDisposition::kNewForegroundTab,
+                              ui::mojom::WindowOpenDisposition::
+                                  kNewForegroundTab,
                               handle->GetPageTransition(),
                               content::Referrer(handle->GetReferrer()),
                               handle->GetInitiatorNavigationState())
                         : content::OpenURLParams::CreateBrowserInitiated(
                               next_url,
-                              WindowOpenDisposition::kNewForegroundTab,
+                              ui::mojom::WindowOpenDisposition::
+                                  kNewForegroundTab,
                               handle->GetPageTransition(),
                               content::Referrer(handle->GetReferrer()));
                 params.initiator_origin = handle->GetInitiatorOrigin();

@@ -15,7 +15,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace actor {
 namespace {
@@ -27,7 +27,8 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest, StopPausedTask) {
   // Open a second tab to prevent the browser from closing when the active tab
   // is closed.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
+      browser(), GURL("about:blank"),
+      ::ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Navigate the active tab to a new page.
@@ -71,7 +72,8 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
 
   // Open a second tab to observe.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL("about:blank"), WindowOpenDisposition::kNewForegroundTab,
+      browser(), GURL("about:blank"),
+      ::ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   tabs::TabInterface* second_tab =

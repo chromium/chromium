@@ -18,7 +18,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace policy {
 
@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(CpuPerformancePolicyTest, PolicyChangeNormalTab) {
 
   // Step 4: Open second tab in the same window.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url(), WindowOpenDisposition::kNewForegroundTab,
+      browser(), url(), ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   // New tab has overridden tier.

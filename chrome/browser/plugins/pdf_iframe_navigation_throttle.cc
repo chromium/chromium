@@ -21,6 +21,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "net/http/http_response_headers.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -136,7 +137,7 @@ PDFIFrameNavigationThrottle::WillProcessResponse() {
       // Open in new tab
       content::OpenURLParams params =
           content::OpenURLParams::FromNavigationHandle(navigation_handle());
-      params.disposition = WindowOpenDisposition::kNewForegroundTab;
+      params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
       navigation_handle()->GetWebContents()->OpenURL(
           params, /*navigation_handle_callback=*/{});
       // Cancel the navigation in the original frame so it doesn't show

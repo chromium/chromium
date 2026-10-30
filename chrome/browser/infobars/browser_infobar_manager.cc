@@ -30,7 +30,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/view.h"
 #include "url/gurl.h"
@@ -281,7 +281,7 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate,
     RunAction(spec_.dismiss_callback(), InfoBarResult::kDismissed);
   }
 
-  bool LinkClicked(WindowOpenDisposition disposition) override {
+  bool LinkClicked(ui::mojom::WindowOpenDisposition disposition) override {
     base::AutoReset<bool> in_interaction(&in_interaction_, true);
     MarkLinkClicked();
     base::UmaHistogramSparse("InfoBar.Centralized.LinkClicked",
@@ -292,7 +292,7 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate,
 
   bool InlineSubstitutionLinkClicked(
       size_t index,
-      WindowOpenDisposition disposition) override {
+      ui::mojom::WindowOpenDisposition disposition) override {
     base::AutoReset<bool> in_interaction(&in_interaction_, true);
     MarkLinkClicked();
     base::UmaHistogramSparse("InfoBar.Centralized.LinkClicked",

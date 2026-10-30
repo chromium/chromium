@@ -23,7 +23,7 @@
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/common/extension.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 namespace policy {
 
@@ -108,7 +108,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenPolicyTest, FullscreenAllowedApp) {
       ->BrowserAppLauncher()
       ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
           extension->id(), apps::LaunchContainer::kLaunchContainerNone,
-          WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest));
+          ui::mojom::WindowOpenDisposition::kNewWindow,
+          apps::LaunchSource::kFromTest));
   extensions::AppWindow* window = add_window_observer.WaitForAppWindow();
   ASSERT_TRUE(window);
 

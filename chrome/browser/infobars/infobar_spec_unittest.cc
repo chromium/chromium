@@ -10,7 +10,7 @@
 #include "components/infobars/core/infobar_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -149,7 +149,7 @@ TEST_F(InfoBarSpecTest, BuildSpecWithTemplateAndSubstitutions) {
   bool link_clicked = false;
   auto link_cb = base::BindRepeating(
       [](bool* clicked, content::WebContents*, size_t index,
-         WindowOpenDisposition) {
+         ui::mojom::WindowOpenDisposition) {
         *clicked = true;
         return true;
       },
@@ -171,7 +171,7 @@ TEST_F(InfoBarSpecTest, BuildSpecWithTemplateAndSubstitutions) {
 
   ASSERT_FALSE(spec.inline_link_callback().is_null());
   EXPECT_TRUE(spec.inline_link_callback().Run(
-      nullptr, 0, WindowOpenDisposition::kCurrentTab));
+      nullptr, 0, ui::mojom::WindowOpenDisposition::kCurrentTab));
   EXPECT_TRUE(link_clicked);
 }
 

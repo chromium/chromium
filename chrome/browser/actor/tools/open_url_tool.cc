@@ -24,7 +24,7 @@
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 namespace actor {
@@ -80,7 +80,7 @@ void OpenUrlTool::Invoke(ToolCallback callback) {
   // supported.
   create_tab_tool_ = std::make_unique<TabManagementTool>(
       task_id(), tool_delegate(), browser->GetSessionID().id(),
-      WindowOpenDisposition::kNewForegroundTab);
+      ::ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   create_tab_tool_->Invoke(base::BindOnce(&OpenUrlTool::OnTabCreated,
                                           weak_ptr_factory_.GetWeakPtr(),
                                           std::move(callback)));

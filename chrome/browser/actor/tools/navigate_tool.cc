@@ -22,8 +22,8 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -78,7 +78,7 @@ void NavigateTool::Invoke(ToolCallback callback) {
   // NavigateUsingLoadURL path lands safely.
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url_, WindowOpenDisposition::kCurrentTab,
+          url_, ::ui::mojom::WindowOpenDisposition::kCurrentTab,
           ::ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL);
 
   // TODO(b/460113906): Alternate to the NavigateUsingLoadURL path to fix for

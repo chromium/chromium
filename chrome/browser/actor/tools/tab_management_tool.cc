@@ -16,7 +16,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -24,10 +24,11 @@ namespace actor {
 
 using ::tabs::TabHandle;
 
-TabManagementTool::TabManagementTool(TaskId task_id,
-                                     ToolDelegate& tool_delegate,
-                                     int32_t window_id,
-                                     WindowOpenDisposition create_disposition)
+TabManagementTool::TabManagementTool(
+    TaskId task_id,
+    ToolDelegate& tool_delegate,
+    int32_t window_id,
+    ::ui::mojom::WindowOpenDisposition create_disposition)
     : Tool(task_id, tool_delegate),
       action_(Action::kCreate),
       create_disposition_(create_disposition),
@@ -104,9 +105,9 @@ void TabManagementTool::CreateTab(TabListInterface* tab_list) {
   CHECK(window_id_.has_value());
   CHECK(create_disposition_.has_value());
   // Open a blank tab.
-  tab_list->OpenTab(
-      GURL(url::kAboutBlankURL), /*index=*/-1,
-      create_disposition_.value() == WindowOpenDisposition::kNewForegroundTab);
+  tab_list->OpenTab(GURL(url::kAboutBlankURL), /*index=*/-1,
+                    create_disposition_.value() ==
+                        ::ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 }
 
 void TabManagementTool::ActivateTab(TabListInterface* tab_list) {

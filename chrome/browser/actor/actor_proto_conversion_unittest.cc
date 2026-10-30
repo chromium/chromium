@@ -34,6 +34,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/gfx/geometry/point.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -747,7 +748,7 @@ TEST_F(ActorProtoConversionTest, GetClientToolForRequest) {
             ClientTool(RuleMetadata::CAPABILITY_FORWARD));
 
   CreateTabToolRequest create_tab_req(
-      /*window_id=*/1, WindowOpenDisposition::kNewForegroundTab);
+      /*window_id=*/1, ::ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   EXPECT_EQ(GetClientToolForRequest(create_tab_req),
             ClientTool(RuleMetadata::CAPABILITY_CREATE_TAB));
 

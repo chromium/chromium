@@ -16,8 +16,8 @@
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
 
@@ -70,7 +70,7 @@ class InfoBarSpec {
   // Called with the substitution index when an inline link is clicked.
   // Returns true to close the infobar.
   using InlineLinkCallback = base::RepeatingCallback<
-      bool(content::WebContents*, size_t, WindowOpenDisposition)>;
+      bool(content::WebContents*, size_t, ui::mojom::WindowOpenDisposition)>;
   // Creates a custom message view to replace the standard label.
   using CustomViewCallback =
       base::RepeatingCallback<std::unique_ptr<views::View>(

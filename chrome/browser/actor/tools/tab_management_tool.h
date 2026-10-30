@@ -13,7 +13,7 @@
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class BrowserWindowInterface;
 class TabListInterface;
@@ -32,7 +32,7 @@ class TabManagementTool : public Tool, public TabListInterfaceObserver {
   TabManagementTool(TaskId task_id,
                     ToolDelegate& tool_delegate,
                     int32_t window,
-                    WindowOpenDisposition create_disposition);
+                    ::ui::mojom::WindowOpenDisposition create_disposition);
   // Activate|Close constructor.
   TabManagementTool(TaskId task_id,
                     ToolDelegate& tool_delegate,
@@ -84,7 +84,7 @@ class TabManagementTool : public Tool, public TabListInterfaceObserver {
   std::optional<tabs::TabHandle> target_tab_;
 
   // If creating a tab, whether to create in the foreground.
-  std::optional<WindowOpenDisposition> create_disposition_;
+  std::optional<::ui::mojom::WindowOpenDisposition> create_disposition_;
 
   // If creating a tab, the window in which to create the tab.
   std::optional<int32_t> window_id_;

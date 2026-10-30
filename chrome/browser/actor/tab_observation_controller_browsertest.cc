@@ -30,7 +30,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace actor {
@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
   actor::AddTabToTask(*tab1, *actor_service()->GetTask(task_id));
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), url, ::ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   tabs::TabInterface* tab2 = browser()->GetActiveTabInterface();
   actor::AddTabToTask(*tab2, *actor_service()->GetTask(task_id));

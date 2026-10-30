@@ -63,8 +63,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/views/controls/animated_image_view.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
@@ -478,7 +478,8 @@ class ActorUiTabControllerNavigationConfirmTest
     // SetUserText() clears the paste state, so mark the paste afterwards.
     model->OnPaste();
     model->OpenSelection(OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch),
-                         base::TimeTicks(), WindowOpenDisposition::kCurrentTab,
+                         base::TimeTicks(),
+                         ::ui::mojom::WindowOpenDisposition::kCurrentTab,
                          /*via_keyboard=*/true);
   }
 

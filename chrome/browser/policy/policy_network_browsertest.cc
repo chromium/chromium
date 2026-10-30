@@ -57,7 +57,7 @@
 #include "third_party/boringssl/src/include/openssl/nid.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "third_party/boringssl/src/include/openssl/tls1.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1204,7 +1204,8 @@ IN_PROC_BROWSER_TEST_P(TLS13EarlyDataPolicyEnabledByDefaultTest,
                                 /*from_user_gesture=*/true));
 
   auto* render_frame_host = ui_test_utils::NavigateToURLWithDisposition(
-      incognito_browser, GetTestPageURL(), WindowOpenDisposition::kOffTheRecord,
+      incognito_browser, GetTestPageURL(),
+      ui::mojom::WindowOpenDisposition::kOffTheRecord,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_TRUE(render_frame_host);
 
@@ -1236,7 +1237,8 @@ IN_PROC_BROWSER_TEST_P(TLS13EarlyDataPolicyEnabledByDefaultTest,
   BrowserWindowInterface* new_browser = CreateBrowser(new_profile);
 
   auto* render_frame_host = ui_test_utils::NavigateToURLWithDisposition(
-      new_browser, GetTestPageURL(), WindowOpenDisposition::kCurrentTab,
+      new_browser, GetTestPageURL(),
+      ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_TRUE(render_frame_host);
 

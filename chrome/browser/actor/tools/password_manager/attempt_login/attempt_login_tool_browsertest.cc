@@ -44,7 +44,7 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1343,7 +1343,8 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolFederatedTest,
   const GURL other_url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), other_url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), other_url,
+      ::ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   content::CreateAndLoadWebContentsObserver web_contents_observer(

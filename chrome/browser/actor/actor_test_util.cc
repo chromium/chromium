@@ -58,7 +58,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace actor {
@@ -772,8 +772,9 @@ std::unique_ptr<ToolRequest> MakeWaitRequest(TabInterface* observe_tab) {
 std::unique_ptr<ToolRequest> MakeCreateTabRequest(SessionID window_id,
                                                   bool foreground) {
   return std::make_unique<CreateTabToolRequest>(
-      window_id.id(), foreground ? WindowOpenDisposition::kNewForegroundTab
-                                 : WindowOpenDisposition::kNewBackgroundTab);
+      window_id.id(),
+      foreground ? ::ui::mojom::WindowOpenDisposition::kNewForegroundTab
+                 : ::ui::mojom::WindowOpenDisposition::kNewBackgroundTab);
 }
 
 std::unique_ptr<ToolRequest> MakeActivateTabRequest(TabHandle tab) {

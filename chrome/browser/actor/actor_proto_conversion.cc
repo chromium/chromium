@@ -89,7 +89,7 @@
 #include "net/base/schemeful_site.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 #if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
@@ -461,10 +461,10 @@ std::unique_ptr<ToolRequest> CreateCreateTabRequest(
 
   // TODO(bokan): Is the foreground bit always set? If not, should this return
   // an error or default to what? For now we default to foreground.
-  WindowOpenDisposition disposition =
+  ::ui::mojom::WindowOpenDisposition disposition =
       !action.has_foreground() || action.foreground()
-          ? WindowOpenDisposition::kNewForegroundTab
-          : WindowOpenDisposition::kNewBackgroundTab;
+          ? ::ui::mojom::WindowOpenDisposition::kNewForegroundTab
+          : ::ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
 
   return std::make_unique<CreateTabToolRequest>(window_id, disposition);
 }

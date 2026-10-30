@@ -64,8 +64,8 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace {
@@ -890,7 +890,7 @@ void ComposeSession::OpenBugReportingLink() {
   }
   web_contents_->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL(url), WindowOpenDisposition::kNewForegroundTab,
+          GURL(url), ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }
@@ -909,7 +909,8 @@ void ComposeSession::OpenComposeLearnMorePage() {
   web_contents_->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(kComposeLearnMorePageURL),
-          WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK),
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+          ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }
 
@@ -917,7 +918,8 @@ void ComposeSession::OpenEnterpriseComposeLearnMorePage() {
   web_contents_->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(kEnterpriseComposeLearnMorePageURL),
-          WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK),
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+          ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }
 
@@ -933,7 +935,7 @@ void ComposeSession::OpenFeedbackSurveyLink() {
   }
   web_contents_->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL(url), WindowOpenDisposition::kNewForegroundTab,
+          GURL(url), ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }
@@ -941,7 +943,8 @@ void ComposeSession::OpenFeedbackSurveyLink() {
 void ComposeSession::OpenSignInPage() {
   web_contents_->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
-          GURL(kSignInPageURL), WindowOpenDisposition::kNewForegroundTab,
+          GURL(kSignInPageURL),
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }

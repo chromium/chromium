@@ -34,8 +34,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/widget.h"
@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolAgnosticBrowserTest,
   WebContents* background_contents = web_contents();
 
   NavigateParams params(browser(), url_foreground, ::ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ::ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   ::ui_test_utils::NavigateToURL(&params);
 
   WebContents* foreground_contents = web_contents();

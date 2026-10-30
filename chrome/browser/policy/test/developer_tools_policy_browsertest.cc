@@ -35,7 +35,7 @@
 #include "extensions/common/extension.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom.h"
 
 using extensions::mojom::ManifestLocation;
 
@@ -90,7 +90,7 @@ PolicyMap MakeDeveloperToolsAvailabilityMap(int value) {
 // events.
 void NavigateToURLNoWait(BrowserWindowInterface* browser, const GURL& url) {
   ui_test_utils::NavigateToURLWithDisposition(
-      browser, url, WindowOpenDisposition::kCurrentTab,
+      browser, url, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 }
 
