@@ -6,12 +6,14 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -37,6 +39,7 @@
 #include "extensions/browser/updater/extension_downloader_delegate.h"
 #include "extensions/browser/updater/extension_downloader_test_delegate.h"
 #include "extensions/browser/updater/request_queue_impl.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_updater_uma.h"
 #include "extensions/common/extension_urls.h"
@@ -1136,10 +1139,26 @@ void ExtensionDownloader::NotifyDelegateDownloadFinished(
   const GURL& url = fetch_data->url;
   const base::Version& version = fetch_data->version;
   const std::set<int> request_ids = fetch_data->GetRequestIds();
+  bool is_webstore = false;
+  bool allow_dev = false;
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kExtensionDownloaderPublisherProofByUpdateUrl)) {
+    // Key the publisher proof requirement on the browser-specified task update
+    // URLs, never on `fetch_data->url` (`codebase`), which comes from the
+    // update manifest response.
+    is_webstore = std::ranges::any_of(
+        fetch_data->associated_tasks, [](const ExtensionDownloaderTask& task) {
+          return extension_urls::IsWebstoreUpdateUrl(task.update_url);
+        });
+    allow_dev = extension_urls::GetWebstoreUpdateUrl() !=
+                extension_urls::GetDefaultWebstoreUpdateUrl();
+  } else {
+    // Previous behavior, kept behind a kill switch.
+    is_webstore = extension_urls::IsWebstoreUpdateUrl(url);
+  }
   const crx_file::VerifierFormat required_format =
-      extension_urls::IsWebstoreUpdateUrl(fetch_data->url)
-          ? GetWebstoreVerifierFormat(false)
-          : crx_format_requirement_;
+      is_webstore ? GetWebstoreVerifierFormat(allow_dev)
+                  : crx_format_requirement_;
   CRXFileInfo crx_info(crx_path, required_format);
   crx_info.expected_hash = package_hash;
   crx_info.extension_id = id;

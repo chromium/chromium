@@ -141,6 +141,11 @@ BASE_FEATURE(kExtensionAsyncListenerRegistration,
 // TODO(crbug.com/561948316): Remove this kill switch in M160.
 BASE_FEATURE(kExtensionDebuggerStrictPolicyRestrictions,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// TODO(crbug.com/578677350): Remove this kill switch in M161.
+BASE_FEATURE(kExtensionDownloaderPublisherProofByUpdateUrl,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kExtensionLocalizationGuid, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExtensionIconVariants, base::FEATURE_DISABLED_BY_DEFAULT);
