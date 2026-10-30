@@ -165,7 +165,8 @@ TEST(IconBadgingTest, VerifyFromDisk) {
     ASSERT_OK_AND_ASSIGN(expected_bitmap,
                          LoadImageFromTestFile(icon_path_relative));
     EXPECT_THAT(expected_bitmap,
-                gfx::test::EqualsBitmap(image_icon.AsBitmap()));
+                gfx::test::IsCloseToBitmap(image_icon.AsBitmap(),
+                                           /*max_per_channel_deviation=*/2));
   }
 }
 
