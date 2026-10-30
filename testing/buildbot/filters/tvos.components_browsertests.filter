@@ -13,6 +13,15 @@
 # (Refer https://crrev.com/c/6801248)
 -BadMessageBrowserTest.CheckFrameNotPrerendering_Prerendering
 
+# TODO(crbug.com/431824306): These tests require cross-process subframes, but
+# tvOS runs in single-process mode, so `IsCrossProcessSubframe()` is false.
+# Relaxing that assertion would not help: TransformToRootCoordinates() only
+# clamps against frames whose RenderWidgetHostView differs from their parent's,
+# and frames that share a local root share one view, so the clamping under test
+# never runs without out-of-process iframes.
+-RendererDataValidationNestedFramesBrowserTest.TransformToRootCoordinatesClampsDisjointBounds
+-RendererDataValidationNestedFramesBrowserTest.TransformToRootCoordinatesClampsOverlappingBounds
+
 # TODO(crbug.com/516839852): The test has been failing on tvOS since
 # https://crrev.com/c/7253416.
 -PageContentProtoProviderBrowserTestNoTimeouts.MainFrameRendererCrashWithPendingRequest
