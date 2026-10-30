@@ -286,7 +286,8 @@ std::unique_ptr<Conversation> AppBrowserTestBase::MakeConversation(
             [this]() -> std::unique_ptr<media::AudioSystem> {
               return std::make_unique<media::AudioSystemImpl>(
                   audio_manager_.get());
-            }));
+            }),
+        session_controller.GetDebugSink());
   }
 
   return MakeConversationImpl(session_controller, std::move(audio_controller));

@@ -15,6 +15,7 @@
 #include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/ttc/app/public/debug_sink.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "media/audio/audio_device_description.h"
@@ -214,10 +215,12 @@ AudioControllerImpl::GetDefaultAudioStreamFactoryBinder() {
 
 AudioControllerImpl::AudioControllerImpl(
     AudioStreamFactoryBinder factory_binder,
-    AudioSystemFactory audio_system_factory)
+    AudioSystemFactory audio_system_factory,
+    DebugSink* debug_sink)
     : main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()),
       factory_binder_(std::move(factory_binder)),
       audio_system_factory_(std::move(audio_system_factory)),
+      debug_sink_(debug_sink),
       capture_fifo_(std::make_unique<media::AudioPushFifo>(
           base::BindRepeating(&AudioControllerImpl::DeliverCapturedAudio,
                               base::Unretained(this)))) {
@@ -232,6 +235,10 @@ AudioControllerImpl::AudioControllerImpl(
   error_callback_runner_ = base::BindPostTask(
       main_task_runner_,
       base::BindRepeating(&AudioControllerImpl::OnAudioErrorOnMainThread,
+                          weak_factory_.GetWeakPtr()));
+  render_error_callback_runner_ = base::BindPostTask(
+      main_task_runner_,
+      base::BindRepeating(&AudioControllerImpl::OnRenderErrorOnMainThread,
                           weak_factory_.GetWeakPtr()));
 }
 
@@ -319,6 +326,19 @@ void AudioControllerImpl::OnInputDeviceParametersReceived(
         processing_settings->automatic_gain_control);
   }
   audio_capturer_source_->Start();
+
+  if (debug_sink_) {
+    DebugSink::CaptureFormat format{.sample_rate = device_params->sample_rate(),
+                                    .channels = device_params->channels()};
+    if (processing_settings.has_value()) {
+      format.processing = DebugSink::CaptureFormat::Processing{
+          .echo_cancellation = processing_settings->echo_cancellation,
+          .noise_suppression = processing_settings->noise_suppression,
+          .automatic_gain_control = processing_settings->automatic_gain_control,
+      };
+    }
+    debug_sink_->OnCaptureFormat(format);
+  }
 }
 
 void AudioControllerImpl::StopCapture() {
@@ -477,12 +497,20 @@ void AudioControllerImpl::OnCaptureError(
   error_callback_runner_.Run(error_code);
 }
 
-void AudioControllerImpl::OnCaptureMuted(bool is_muted) {}
+void AudioControllerImpl::OnCaptureMuted(bool is_muted) {
+  // Unlike Capture(), called on the sequence that started capture.
+  if (debug_sink_) {
+    debug_sink_->OnCaptureMuted(is_muted);
+  }
+}
 
 void AudioControllerImpl::OnCapturedAudioOnMainThread(
     std::vector<int16_t> pcm_data,
     media::AudioParameters params,
     float energy) {
+  if (debug_sink_) {
+    debug_sink_->OnMicLevel(energy);
+  }
   observers_.Notify(&Observer::OnCapturedAudio, pcm_data, params, energy);
 }
 
@@ -546,6 +574,7 @@ int AudioControllerImpl::Render(base::TimeDelta delay,
 
 void AudioControllerImpl::OnRenderError() {
   VLOG(1) << "AudioController audio render error";
+  render_error_callback_runner_.Run();
 }
 
 void AudioControllerImpl::OnAudioRenderedOnMainThread(
@@ -560,6 +589,12 @@ void AudioControllerImpl::OnAudioRenderedOnMainThread(
 
 void AudioControllerImpl::OnAudioErrorOnMainThread(ErrorCode error_code) {
   observers_.Notify(&Observer::OnAudioError, error_code);
+}
+
+void AudioControllerImpl::OnRenderErrorOnMainThread() {
+  if (debug_sink_) {
+    debug_sink_->OnRenderError();
+  }
 }
 
 }  // namespace ttc

@@ -19,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/ttc/app/public/debug_sink.h"
 #include "components/ttc/app/public/error_codes.h"
 #include "media/audio/audio_system_impl.h"
 #include "media/audio/mock_audio_manager.h"
@@ -56,6 +57,22 @@ class MockAudioControllerObserver : public AudioController::Observer {
               (override));
   MOCK_METHOD(void, OnPlaybackCompleted, (int64_t sequence_number), (override));
   MOCK_METHOD(void, OnAudioError, (ErrorCode error), (override));
+};
+
+// Records what's reported to the debug tools.
+class RecordingDebugSink : public DebugSink {
+ public:
+  void OnCaptureFormat(const CaptureFormat& format) override {
+    capture_formats.push_back(format);
+  }
+  void OnCaptureMuted(bool muted) override { capture_muted.push_back(muted); }
+  void OnMicLevel(float rms) override { mic_levels.push_back(rms); }
+  void OnRenderError() override { ++render_errors; }
+
+  std::vector<CaptureFormat> capture_formats;
+  std::vector<bool> capture_muted;
+  std::vector<float> mic_levels;
+  int render_errors = 0;
 };
 
 }  // namespace
@@ -774,6 +791,121 @@ TEST_F(AudioControllerImplTest, PlayAudioExtractsAndDispatchesAudioEnvelope) {
   ASSERT_EQ(third_envelope.segments.size(), 1u);
   EXPECT_EQ(third_envelope.segments[0].start_time, base::Milliseconds(0));
   EXPECT_EQ(third_envelope.segments[0].duration, base::Milliseconds(20));
+}
+
+TEST_F(AudioControllerImplTest, ReportsCaptureFormatToDebugSink) {
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(media::kChromeWideEchoCancellation);
+#endif
+  RecordingDebugSink debug_sink;
+  AudioControllerImpl controller(base::DoNothing(), GetAudioSystemFactory(),
+                                 &debug_sink);
+
+  controller.StartCapture(/*device_id=*/"");
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !debug_sink.capture_formats.empty(); }));
+
+  // The device's format, converted by the browser.
+  ASSERT_EQ(debug_sink.capture_formats.size(), 1u);
+  EXPECT_EQ(debug_sink.capture_formats[0].sample_rate, 44100);
+  EXPECT_EQ(debug_sink.capture_formats[0].channels, 2);
+  EXPECT_FALSE(debug_sink.capture_formats[0].processing);
+}
+
+TEST_F(AudioControllerImplTest, ReportsCaptureProcessingToDebugSink) {
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kChromeWideEchoCancellation);
+
+  // Hardware noise suppression only, so the audio service provides the rest.
+  media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+                                media::ChannelLayoutConfig::Mono(), 48000, 480);
+  params.set_effects(media::AudioParameters::NOISE_SUPPRESSION);
+  audio_manager_.SetInputStreamParameters(params);
+
+  FakeStreamFactoryForAec fake_factory;
+  auto fake_binder = base::BindLambdaForTesting(
+      [&](mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
+        fake_factory.Bind(std::move(receiver));
+      });
+  RecordingDebugSink debug_sink;
+  AudioControllerImpl controller(fake_binder, GetAudioSystemFactory(),
+                                 &debug_sink);
+
+  controller.StartCapture(/*device_id=*/"");
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return !debug_sink.capture_formats.empty(); }));
+
+  ASSERT_EQ(debug_sink.capture_formats.size(), 1u);
+  const DebugSink::CaptureFormat& format = debug_sink.capture_formats[0];
+  EXPECT_EQ(format.sample_rate, 48000);
+  EXPECT_EQ(format.channels, 1);
+  ASSERT_TRUE(format.processing);
+  EXPECT_TRUE(format.processing->echo_cancellation);
+  EXPECT_FALSE(format.processing->noise_suppression);
+  EXPECT_TRUE(format.processing->automatic_gain_control);
+#endif
+}
+
+TEST_F(AudioControllerImplTest, ReportsMicLevelToDebugSink) {
+  RecordingDebugSink debug_sink;
+  AudioControllerImpl controller(
+      AudioControllerImpl::AudioStreamFactoryBinder(),
+      AudioControllerImpl::AudioSystemFactory(), &debug_sink);
+  controller.AddObserver(&observer_);
+
+  float observed_energy = -1.0f;
+  EXPECT_CALL(observer_, OnCapturedAudio)
+      .WillOnce([&](base::span<const int16_t> pcm_data,
+                    const media::AudioParameters& params,
+                    float energy) { observed_energy = energy; });
+
+  auto input_bus = media::AudioBus::Create(1, 1600);
+  for (int i = 0; i < input_bus->frames(); ++i) {
+    input_bus->channel(0)[i] = 0.5f;
+  }
+  controller.Capture(input_bus.get(), base::TimeTicks::Now(), {}, 1.0);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return !debug_sink.mic_levels.empty(); }));
+
+  // The same level the observers get.
+  ASSERT_EQ(debug_sink.mic_levels.size(), 1u);
+  EXPECT_NEAR(debug_sink.mic_levels[0], 0.5f, 0.01f);
+  EXPECT_EQ(debug_sink.mic_levels[0], observed_energy);
+}
+
+TEST_F(AudioControllerImplTest, ReportsCaptureMutedAndRenderErrorsToDebugSink) {
+  RecordingDebugSink debug_sink;
+  AudioControllerImpl controller(
+      AudioControllerImpl::AudioStreamFactoryBinder(),
+      AudioControllerImpl::AudioSystemFactory(), &debug_sink);
+
+  // Mute changes arrive on the sequence that started capture, so they're
+  // reported right away.
+  controller.OnCaptureMuted(true);
+  EXPECT_THAT(debug_sink.capture_muted, testing::ElementsAre(true));
+
+  // Render errors arrive on the audio thread, so they're reported on the main
+  // sequence.
+  controller.OnRenderError();
+  EXPECT_EQ(debug_sink.render_errors, 0);
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return debug_sink.render_errors == 1; }));
+}
+
+// The debug tools are off by default, so there's no sink.
+TEST_F(AudioControllerImplTest, DebugSinkIsOptional) {
+  AudioControllerImpl controller;
+  controller.AddObserver(&observer_);
+  EXPECT_CALL(observer_, OnCapturedAudio);
+
+  auto input_bus = media::AudioBus::Create(1, 1600);
+  input_bus->Zero();
+  controller.Capture(input_bus.get(), base::TimeTicks::Now(), {}, 1.0);
+  controller.OnCaptureMuted(true);
+  controller.OnRenderError();
+  base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace ttc

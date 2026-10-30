@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <optional>
 #include <string>
 #include <variant>
 #include <vector>
@@ -124,7 +125,31 @@ class DebugSink {
                                    UserTurnState,
                                    UnknownFrame>;
 
+  // The format the microphone is captured in, before conversion to what the
+  // server takes (16 kHz mono PCM16).
+  struct CaptureFormat {
+    // The audio service's processing.
+    struct Processing {
+      bool echo_cancellation = false;
+      bool noise_suppression = false;
+      bool automatic_gain_control = false;
+    };
+    int sample_rate = 0;
+    int channels = 0;
+    // Set if the audio service processes the audio. Otherwise, the browser
+    // converts the device format itself.
+    std::optional<Processing> processing;
+  };
+
   virtual ~DebugSink() = default;
+
+  // Capture has started, with the format of the device.
+  virtual void OnCaptureFormat(const CaptureFormat& format) {}
+  // The capture device reported being muted or unmuted, e.g. by a hardware
+  // switch.
+  virtual void OnCaptureMuted(bool muted) {}
+  // The level (RMS, from 0 to 1) of a chunk of captured audio.
+  virtual void OnMicLevel(float rms) {}
 
   // From the client to the server, and the connection between them.
   virtual void OnClientFrame(const ClientFrame& frame) {}
@@ -135,6 +160,9 @@ class DebugSink {
 
   // From the server to the client.
   virtual void OnServerFrame(const ServerFrame& frame) {}
+
+  // The playback device reported an error.
+  virtual void OnRenderError() {}
 };
 
 }  // namespace ttc

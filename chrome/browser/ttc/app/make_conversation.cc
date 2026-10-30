@@ -21,7 +21,9 @@ std::unique_ptr<Conversation> MakeConversationImpl(
     std::unique_ptr<AudioController> audio_controller) {
   if (!audio_controller) {
     audio_controller = std::make_unique<AudioControllerImpl>(
-        AudioControllerImpl::GetDefaultAudioStreamFactoryBinder());
+        AudioControllerImpl::GetDefaultAudioStreamFactoryBinder(),
+        AudioControllerImpl::AudioSystemFactory(),
+        session_controller.GetDebugSink());
   }
   return std::make_unique<ConversationImpl>(
       std::make_unique<TtcMesClient>(
