@@ -4,12 +4,14 @@
 
 #include "content/common/zygote/zygote_communication_linux.h"
 
-#include <string.h>
 #include <sys/socket.h>
+
+#include <array>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/platform_file.h"
 #include "base/i18n/unicodestring.h"
@@ -160,15 +162,15 @@ pid_t ZygoteCommunication::ForkRequest(
     peer_sock.reset();
 
     {
-      uint8_t buf[sizeof(kZygoteChildPingMessage) + 1];
+      std::array<uint8_t, sizeof(kZygoteChildPingMessage) + 1> buf;
       std::vector<base::ScopedFD> recv_fds;
       base::ProcessId real_pid;
 
       ssize_t n = base::UnixDomainSocket::RecvMsgWithPid(my_sock.get(), buf,
                                                          &recv_fds, &real_pid);
       if (n != sizeof(kZygoteChildPingMessage) ||
-          0 != UNSAFE_TODO(memcmp(buf, kZygoteChildPingMessage,
-                                  sizeof(kZygoteChildPingMessage)))) {
+          base::span(buf).first<sizeof(kZygoteChildPingMessage)>() !=
+              base::as_byte_span(kZygoteChildPingMessage)) {
         // Zygote children should still be trustworthy when they're supposed to
         // ping us, so something's broken if we don't receive a valid ping.
         DUMP_WILL_BE_NOTREACHED() << "Did not receive ping from zygote child";

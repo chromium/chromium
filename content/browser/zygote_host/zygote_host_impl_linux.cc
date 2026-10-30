@@ -10,7 +10,7 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -46,19 +46,20 @@ namespace {
 // Receive a fixed message on fd and return the sender's PID.
 // Returns true if the message received matches the expected message.
 bool ReceiveFixedMessage(int fd,
-                         const char* expect_msg,
-                         size_t expect_len,
+                         base::span<const uint8_t> expect_msg,
                          base::ProcessId* sender_pid) {
   // Allocate an extra byte of buffer space so we can check that we received
-  // exactly |expect_len| bytes, and the message wasn't just truncated to fit.
-  base::FixedArray<uint8_t> buf(expect_len + 1);
+  // exactly `expect_msg.size()` bytes, and the message wasn't just truncated
+  // to fit.
+  base::FixedArray<uint8_t> buf(expect_msg.size() + 1);
   std::vector<base::ScopedFD> fds_vec;
 
   const ssize_t len =
       base::UnixDomainSocket::RecvMsgWithPid(fd, buf, &fds_vec, sender_pid);
-  if (static_cast<size_t>(len) != expect_len)
+  if (static_cast<size_t>(len) != expect_msg.size()) {
     return false;
-  if (UNSAFE_TODO(memcmp(buf.data(), expect_msg, expect_len)) != 0) {
+  }
+  if (base::span(buf).first(expect_msg.size()) != expect_msg) {
     return false;
   }
   if (!fds_vec.empty())
@@ -234,8 +235,8 @@ pid_t ZygoteHostImpl::FinishSandboxedZygoteLaunch(base::Process process,
 
   // First we receive a message from the zygote boot process.
   base::ProcessId boot_pid;
-  if (!ReceiveFixedMessage(control_fd, kZygoteBootMessage,
-                           sizeof(kZygoteBootMessage), &boot_pid)) {
+  if (!ReceiveFixedMessage(control_fd, base::as_byte_span(kZygoteBootMessage),
+                           &boot_pid)) {
     int exit_code = 0;
     bool exited = process.WaitForExitWithTimeout(base::TimeDelta(), &exit_code);
     if (exited) {
@@ -259,8 +260,8 @@ pid_t ZygoteHostImpl::FinishSandboxedZygoteLaunch(base::Process process,
   // Now receive the message that the zygote's ready to go, along with the
   // main zygote process's ID.
   pid_t real_pid;
-  if (!ReceiveFixedMessage(control_fd, kZygoteHelloMessage,
-                           sizeof(kZygoteHelloMessage), &real_pid)) {
+  if (!ReceiveFixedMessage(control_fd, base::as_byte_span(kZygoteHelloMessage),
+                           &real_pid)) {
     int exit_code = 0;
     bool exited = process.WaitForExitWithTimeout(base::TimeDelta(), &exit_code);
     if (exited) {
