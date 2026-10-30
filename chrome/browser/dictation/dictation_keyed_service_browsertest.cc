@@ -1008,7 +1008,8 @@ IN_PROC_BROWSER_TEST_P(DictationGlicSelectionOverlayBrowserTest,
   auto* overlay_controller =
       glic::SelectionOverlayController::FromTabWebContents(tab_contents);
   ASSERT_TRUE(overlay_controller);
-  overlay_controller->Show(/*options=*/nullptr);
+  overlay_controller->Show(/*options=*/nullptr,
+                           ::selection::EntryPoint::kKeyboardShortcut);
 
   ASSERT_OK(glic::RunUntilEqual(
       [&]() { return overlay_controller->state(); },

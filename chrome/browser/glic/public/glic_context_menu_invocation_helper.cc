@@ -26,6 +26,7 @@
 #include "chrome/browser/glic/glic_selection_observer.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/ui/tabs/page_context_eligibility_helper.h"
+#include "third_party/blink/public/mojom/context_menu/context_menu.mojom-shared.h"
 #endif
 
 namespace glic {
@@ -158,8 +159,11 @@ void GlicContextMenuInvocationHelper::HandleSmartSuggestionClick(
   // TODO(b/559202240): Pre-select the image when `params` targets an image.
   gfx::Rect selection_bounds;
   auto interaction_options = selection::InteractionOptions::New();
+  ::selection::EntryPoint entry_point =
+      ::selection::EntryPoint::kContextMenuPage;
   if (!params.is_editable &&
       !base::TrimWhitespace(params.selection_text, base::TRIM_ALL).empty()) {
+    entry_point = ::selection::EntryPoint::kContextMenuText;
     selection_bounds =
         web_contents->GetTextSelectionBounds(&frame).value_or(gfx::Rect());
     if (!selection_bounds.IsEmpty()) {
@@ -167,9 +171,13 @@ void GlicContextMenuInvocationHelper::HandleSmartSuggestionClick(
       interaction_options->disable_multi_select = true;
       interaction_options->skip_intro_animation = true;
     }
+  } else if (params.media_type ==
+                 blink::mojom::ContextMenuDataMediaType::kImage &&
+             params.has_image_contents) {
+    entry_point = ::selection::EntryPoint::kContextMenuImage;
   }
   controller->ShowWithSelection(&frame, selection_bounds,
-                                std::move(interaction_options));
+                                std::move(interaction_options), entry_point);
 #endif
 }
 

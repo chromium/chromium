@@ -21,6 +21,7 @@
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/selection/selection_overlay.mojom.h"
 #include "chrome/browser/selection/feedback_zip_builder.h"
+#include "chrome/browser/selection/metrics_logger.h"
 #include "chrome/browser/selection/mojom/action.mojom-forward.h"
 #include "chrome/browser/selection/suggestion_service.h"
 #include "chrome/browser/ui/lens/overlay_base_controller.h"
@@ -60,6 +61,7 @@ class SelectionOverlayController
     kOther,
     kCloseButton,
     kEscapeKeyPress,
+    kBackgroundClick,
   };
 
   SelectionOverlayController(tabs::TabInterface* tab,
@@ -109,12 +111,14 @@ class SelectionOverlayController
   // applying to every entry point.
   bool CanStartSession();
 
-  void Show(mojom::TabContextOptionsPtr options);
+  void Show(mojom::TabContextOptionsPtr options,
+            ::selection::EntryPoint entry_point);
   // Shows the overlay with a region pre-selected around `selection_bounds`,
   // which is in screen coordinates.
   void ShowWithSelection(content::RenderFrameHost* selected_frame,
                          const gfx::Rect& selection_bounds,
-                         selection::InteractionOptionsPtr interaction_options);
+                         selection::InteractionOptionsPtr interaction_options,
+                         ::selection::EntryPoint entry_point);
   void Close(CloseReason reason = CloseReason::kOther);
 
   using OverlayClosedCallback = base::OnceCallback<void(CloseReason)>;
@@ -336,6 +340,8 @@ class SelectionOverlayController
     // Subscription for `OverlayBaseController::overlay_web_view_` taking focus.
     // Scoped to the lifetime of that WebView.
     base::CallbackListSubscription overlay_web_view_focus_subscription;
+    // The entry point that started this Smart Selection session.
+    std::optional<::selection::EntryPoint> entry_point;
     std::optional<CloseReason> close_reason;
     // Subscription to the active tab changes of the window that hosts `tab_`.
     base::CallbackListSubscription active_tab_subscription;

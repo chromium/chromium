@@ -84,7 +84,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
   auto* controller =
       SelectionOverlayController::FromTabWebContents(web_contents);
   ASSERT_TRUE(controller);
-  controller->Show(/*options=*/nullptr);
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
 
   // 4. Wait until state is State::kOverlay.
   ASSERT_OK(RunUntilEqual(
@@ -137,7 +138,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
   auto* controller =
       SelectionOverlayController::FromTabWebContents(tab->GetContents());
   ASSERT_TRUE(controller);
-  controller->Show(/*options=*/nullptr);
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
 
   EXPECT_TRUE(RunUntil(
       [this]() {
@@ -210,7 +212,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
   auto* controller =
       SelectionOverlayController::FromTabWebContents(web_contents);
   ASSERT_TRUE(controller);
-  controller->Show(/*options=*/nullptr);
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
 
   TestSuggestedActionsListener listener;
   controller->GetSuggestedActionsForTesting(listener.GetCallback());
@@ -320,7 +323,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   auto* controller =
       SelectionOverlayController::FromTabWebContents(web_contents);
   ASSERT_TRUE(controller);
-  controller->Show(/*options=*/nullptr);
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
   ASSERT_OK(RunUntilEqual(
       [&]() { return controller->state(); },
       SelectionOverlayController::State::kOverlay,
@@ -374,7 +378,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayStaticSuggestionsBrowserTest,
   auto* controller =
       SelectionOverlayController::FromTabWebContents(web_contents);
   ASSERT_TRUE(controller);
-  controller->Show(/*options=*/nullptr);
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
   ASSERT_OK(RunUntilEqual(
       [&]() { return controller->state(); },
       SelectionOverlayController::State::kOverlay,
@@ -423,7 +428,8 @@ IN_PROC_BROWSER_TEST_F(
   auto* controller =
       SelectionOverlayController::FromTabWebContents(web_contents);
   ASSERT_TRUE(controller);
-  controller->Show(/*options=*/nullptr);
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
   ASSERT_OK(RunUntilEqual(
       [&]() { return controller->state(); },
       SelectionOverlayController::State::kOverlay,
@@ -482,7 +488,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayQuickAnswersSuggestionsBrowserTest,
                              50);
   controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
                                 selection_bounds,
-                                selection::InteractionOptions::New());
+                                selection::InteractionOptions::New(),
+                                ::selection::EntryPoint::kContextMenuText);
   ASSERT_OK(RunUntilEqual(
       [&]() { return controller->state(); },
       SelectionOverlayController::State::kOverlay,
@@ -531,7 +538,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
                              50);
   controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
                                 selection_bounds,
-                                selection::InteractionOptions::New());
+                                selection::InteractionOptions::New(),
+                                ::selection::EntryPoint::kContextMenuText);
 
   EXPECT_EQ(controller->GetSelectedRegionCount(), 1u);
 
@@ -552,7 +560,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
                              50);
   controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
                                 selection_bounds,
-                                selection::InteractionOptions::New());
+                                selection::InteractionOptions::New(),
+                                ::selection::EntryPoint::kContextMenuText);
   ASSERT_OK(RunUntilEqual(
       [&]() { return controller->state(); },
       SelectionOverlayController::State::kOverlay,
@@ -581,7 +590,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
                              50);
   controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
                                 selection_bounds,
-                                selection::InteractionOptions::New());
+                                selection::InteractionOptions::New(),
+                                ::selection::EntryPoint::kContextMenuText);
   ASSERT_OK(RunUntilEqual(
       [&]() { return controller->state(); },
       SelectionOverlayController::State::kOverlay,
@@ -597,7 +607,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   EXPECT_FALSE(controller->CanStartSession());
   controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
                                 selection_bounds,
-                                selection::InteractionOptions::New());
+                                selection::InteractionOptions::New(),
+                                ::selection::EntryPoint::kContextMenuText);
   EXPECT_EQ(controller->GetSelectedRegionCount(), 2u);
 }
 
@@ -618,7 +629,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   EXPECT_FALSE(controller->CanStartSession());
   controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
                                 selection_bounds,
-                                selection::InteractionOptions::New());
+                                selection::InteractionOptions::New(),
+                                ::selection::EntryPoint::kContextMenuText);
   EXPECT_EQ(controller->state(), SelectionOverlayController::State::kOff);
   EXPECT_EQ(controller->GetSelectedRegionCount(), 0u);
 }
@@ -638,7 +650,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
                              50);
   controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
                                 selection_bounds,
-                                selection::InteractionOptions::New());
+                                selection::InteractionOptions::New(),
+                                ::selection::EntryPoint::kContextMenuText);
 
   EXPECT_EQ(controller->GetSelectedRegionCount(), 1u);
 
@@ -840,7 +853,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   auto* controller =
       SelectionOverlayController::FromTabWebContents(web_contents);
   ASSERT_TRUE(controller);
-  controller->Show(/*options=*/nullptr);
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
   ASSERT_OK(RunUntilEqual(
       [&]() { return controller->state(); },
       SelectionOverlayController::State::kOverlay,
@@ -963,7 +977,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
                              50);
   controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
                                 selection_bounds,
-                                selection::InteractionOptions::New());
+                                selection::InteractionOptions::New(),
+                                ::selection::EntryPoint::kContextMenuText);
   ASSERT_OK(RunUntilEqual(
       [&]() { return controller->state(); },
       SelectionOverlayController::State::kOverlay,
@@ -992,7 +1007,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   auto* controller =
       SelectionOverlayController::FromTabWebContents(web_contents);
   ASSERT_TRUE(controller);
-  controller->Show(/*options=*/nullptr);
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
   ASSERT_OK(RunUntilEqual(
       [&]() { return controller->state(); },
       SelectionOverlayController::State::kOverlay,
@@ -1222,7 +1238,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   auto* controller =
       SelectionOverlayController::FromTabWebContents(tab->GetContents());
   ASSERT_TRUE(controller);
-  controller->Show(/*options=*/nullptr);
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
   ASSERT_OK(RunUntilEqual(
       [&]() { return controller->state(); },
       SelectionOverlayController::State::kOverlay,
@@ -1252,7 +1269,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   auto* controller =
       SelectionOverlayController::FromTabWebContents(tab->GetContents());
   ASSERT_TRUE(controller);
-  controller->Show(/*options=*/nullptr);
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
   ASSERT_OK(RunUntilEqual(
       [&]() { return controller->state(); },
       SelectionOverlayController::State::kOverlay,
@@ -1296,7 +1314,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   auto* controller =
       SelectionOverlayController::FromTabWebContents(tab->GetContents());
   ASSERT_TRUE(controller);
-  controller->Show(/*options=*/nullptr);
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
   ASSERT_OK(RunUntilEqual(
       [&]() { return controller->state(); },
       SelectionOverlayController::State::kOverlay,
@@ -1378,7 +1397,8 @@ content::RenderFrameHost* ShowOverlay(tabs::TabInterface* tab) {
   auto* controller =
       SelectionOverlayController::FromTabWebContents(tab->GetContents());
   CHECK(controller);
-  controller->Show(/*options=*/nullptr);
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
   EXPECT_OK(RunUntilEqual(
       [&]() { return controller->state(); },
       SelectionOverlayController::State::kOverlay,
@@ -1472,7 +1492,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayDogfoodFeedbackBrowserTest,
   auto* controller =
       SelectionOverlayController::FromTabWebContents(tab->GetContents());
   ASSERT_TRUE(controller);
-  controller->Show(/*options=*/nullptr);
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
   ASSERT_OK(RunUntilEqual(
       [&]() { return controller->state(); },
       SelectionOverlayController::State::kOverlay,
@@ -1500,7 +1521,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,
   auto* controller =
       SelectionOverlayController::FromTabWebContents(tab->GetContents());
   ASSERT_TRUE(controller);
-  controller->Show(/*options=*/nullptr);
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
   ASSERT_OK(RunUntilEqual(
       [&]() { return controller->state(); },
       SelectionOverlayController::State::kOverlay,

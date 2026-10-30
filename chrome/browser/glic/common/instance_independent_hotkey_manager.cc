@@ -140,11 +140,13 @@ void InstanceIndependentHotkeyManager::RequestCaptureRegion() {
           selection_observer->GetSelectedFrame(), *bounds,
           selection::InteractionOptions::New(
               /*hide_handles=*/true, /*disable_multi_select=*/true,
-              /*skip_intro_animation=*/true));
+              /*skip_intro_animation=*/true),
+          ::selection::EntryPoint::kKeyboardShortcut);
       return;
     }
   }
-  controller->Show(/*options=*/nullptr);
+  controller->Show(/*options=*/nullptr,
+                   ::selection::EntryPoint::kKeyboardShortcut);
 }
 #endif
 

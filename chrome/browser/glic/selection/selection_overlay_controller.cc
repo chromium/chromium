@@ -620,10 +620,12 @@ bool SelectionOverlayController::CanStartSession() {
   return true;
 }
 
-void SelectionOverlayController::Show(mojom::TabContextOptionsPtr options) {
+void SelectionOverlayController::Show(mojom::TabContextOptionsPtr options,
+                                      ::selection::EntryPoint entry_point) {
   if (!CanStartSession()) {
     return;
   }
+  session_->entry_point = entry_point;
   ShowImpl(std::move(options));
 }
 
@@ -649,10 +651,12 @@ void SelectionOverlayController::ShowImpl(mojom::TabContextOptionsPtr options) {
 void SelectionOverlayController::ShowWithSelection(
     content::RenderFrameHost* selected_frame,
     const gfx::Rect& selection_bounds,
-    selection::InteractionOptionsPtr interaction_options) {
+    selection::InteractionOptionsPtr interaction_options,
+    ::selection::EntryPoint entry_point) {
   if (!CanStartSession()) {
     return;
   }
+  session_->entry_point = entry_point;
   session_->interaction_options = std::move(interaction_options);
   SetRegionFromBounds(selected_frame, selection_bounds);
   ShowImpl(/*options=*/nullptr);
@@ -988,7 +992,7 @@ void SelectionOverlayController::DismissOverlay(
       Close(CloseReason::kCloseButton);
       break;
     case selection::DismissOverlayReason::kBackgroundClick:
-      Close(CloseReason::kOther);
+      Close(CloseReason::kBackgroundClick);
       break;
   }
 }

@@ -342,9 +342,10 @@ void GlicSelectionWidgetController::ShowSelectionOverlay() {
         delegate_->GetSelectedFrame(), *bounds,
         selection::InteractionOptions::New(
             /*hide_handles=*/true, /*disable_multi_select=*/true,
-            /*skip_intro_animation=*/true));
+            /*skip_intro_animation=*/true),
+        ::selection::EntryPoint::kInlineCue);
   } else {
-    controller->Show(/*options=*/nullptr);
+    controller->Show(/*options=*/nullptr, ::selection::EntryPoint::kInlineCue);
   }
 }
 

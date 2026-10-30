@@ -232,7 +232,7 @@ class SelectionOverlayInteractiveTest : public test::InteractiveGlicTest {
     controller->ShowWithSelection(
         web_contents->GetPrimaryMainFrame(),
         gfx::Rect(view_bounds.x() + 10, view_bounds.y() + 10, 100, 50),
-        std::move(options));
+        std::move(options), ::selection::EntryPoint::kContextMenuText);
   }
 
   auto LoadPageAndWaitForPaint(ui::ElementIdentifier tab) {
@@ -525,7 +525,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
       // Open the panel first so the tab has a Glic instance to send to.
       LoadPageAndWaitForPaint(kActiveTab), OpenGlic(), Do([this]() {
         SelectionOverlayController* controller = GetController();
-        controller->Show(/*options=*/nullptr);
+        controller->Show(/*options=*/nullptr,
+                         ::selection::EntryPoint::kKeyboardShortcut);
         static_cast<selection::SelectionOverlayPageHandler*>(controller)
             ->AdjustRegion(selection::SelectedRegion::New(
                                base::UnguessableToken::Create(),
@@ -574,7 +575,10 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
       Do([this]() { GetController()->Close(); }),
       WaitForHide(OverlayBaseController::kOverlayId),
       // A plain session: default options, no pre-selected region.
-      Do([this]() { GetController()->Show(/*options=*/nullptr); }),
+      Do([this]() {
+        GetController()->Show(/*options=*/nullptr,
+                              ::selection::EntryPoint::kKeyboardShortcut);
+      }),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kSecondOverlayWebContentsId,
                               OverlayBaseController::kOverlayId),
@@ -675,7 +679,10 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
 
   RunTestSequence(
       LoadPageAndWaitForPaint(kActiveTab),
-      Do([this]() { GetController()->Show(/*options=*/nullptr); }),
+      Do([this]() {
+        GetController()->Show(/*options=*/nullptr,
+                              ::selection::EntryPoint::kKeyboardShortcut);
+      }),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
                               OverlayBaseController::kOverlayId),
@@ -2968,7 +2975,8 @@ IN_PROC_BROWSER_TEST_P(SelectionOverlayInteractiveScreenshotSizeCapTest,
         options->annotated_page_content = true;
         options->screenshot_collection_options.max_width = 10;
         options->screenshot_collection_options.max_height = 10;
-        controller->Show(std::move(options));
+        controller->Show(std::move(options),
+                         ::selection::EntryPoint::kKeyboardShortcut);
       }),
       WaitForShow(OverlayBaseController::kOverlayId),
       InstrumentNonTabWebView(kOverlayWebContentsId,
