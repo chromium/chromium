@@ -33,7 +33,6 @@ INSERTION_TRIPWIRES = [
     # In Chromium, all codecs should use the safe bitstream reader. Roller must
     # undo any new usage of the unchecked reader.
     "^.define.*UNCHECKED_BITSTREAM_READER.*1",
-
     # In Chromium, explicitly skipping some matroskadec code blocks for
     # the following CONFIG variables (which should remain defined as 0) is
     # necessary to remove code that may be a security risk. Discuss with cevans@
@@ -43,7 +42,6 @@ INSERTION_TRIPWIRES = [
     "^.define.*CONFIG_RA_288_DECODER.*1",
     "^.define.*CONFIG_COOK_DECODER.*1",
     "^.define.*CONFIG_ATRAC3_DECODER.*1",
-
     # Miscellaneous tripwires.
     "^.define.*CONFIG_SPDIF_DEMUXER.*1",
     "^.define.*CONFIG_W64_DEMUXER.*1",
@@ -74,9 +72,14 @@ def main(argv):
 
     print(f"Comparing {new_commit} to baseline {EXISTING_COMMIT}...")
 
-    diff = subprocess.Popen(
-        ["git", "diff", "-U0", EXISTING_COMMIT, new_commit],
-        stdout=subprocess.PIPE).communicate()[0].decode(sys.stdout.encoding)
+    diff = (
+        subprocess.Popen(
+            ["git", "diff", "-U0", EXISTING_COMMIT, new_commit],
+            stdout=subprocess.PIPE,
+        )
+        .communicate()[0]
+        .decode(sys.stdout.encoding)
+    )
     filename = None
     skip = False
     files_encountered = 0
@@ -96,8 +99,7 @@ def main(argv):
             # Drop the leading "+" from the string being searched.
             tripwire = search_regexps(line[1:], INSERTION_TRIPWIRES)
             if tripwire:
-                failures.add("Tripwire '%s' found in %s" %
-                             (tripwire, filename))
+                failures.add("Tripwire '%s' found in %s" % (tripwire, filename))
 
     # If we have failures, then print them and fail.
     if failures:

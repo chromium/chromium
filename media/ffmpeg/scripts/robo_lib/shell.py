@@ -19,6 +19,7 @@ CLEAR_LINE = '\r\033[K'
 
 class Style:
     """ANSI escape codes for terminal formatting."""
+
     RESET = '\033[0m'
     BOLD = '\033[1m'
     DIM = '\033[2m'
@@ -76,9 +77,9 @@ def rolling_log(line):
         log(sline, style=Style.RED)
     else:
         # Rolling log. We use print directly to control cursor.
-        print(f'{CLEAR_LINE}{Style.DIM}{sline}{Style.RESET}',
-              end='',
-              flush=True)
+        print(
+            f'{CLEAR_LINE}{Style.DIM}{sline}{Style.RESET}', end='', flush=True
+        )
 
 
 def log(message, style=None, **kwargs):
@@ -138,7 +139,7 @@ def run_live(command, on_line, **kwargs):
 
     def pipe_stderr():
         for line in process.stderr:
-            l = line.rstrip()
+            l = line.rstrip()  # noqa: E741
             if l:
                 if g_log_file:
                     g_log_file.write(_strip_ansi(l) + '\n')
@@ -163,21 +164,24 @@ def run_live(command, on_line, **kwargs):
     print()
     if process.returncode != 0:
         raise RuntimeError(
-            f'`{" ".join(command)}` returned {process.returncode}')
+            f'`{" ".join(command)}` returned {process.returncode}'
+        )
     return None
 
 
 def run(command, **kwargs):
     """Wraps subprocess.run with specific defaults (utf-8, piped output)."""
-    return subprocess.run(command,
-                          encoding=kwargs.get('encoding', 'utf-8'),
-                          shell=kwargs.get('shell', False),
-                          stderr=kwargs.get('stderr', subprocess.PIPE),
-                          stdout=kwargs.get('stdout', subprocess.PIPE))
+    return subprocess.run(
+        command,
+        encoding=kwargs.get('encoding', 'utf-8'),
+        shell=kwargs.get('shell', False),
+        stderr=kwargs.get('stderr', subprocess.PIPE),
+        stdout=kwargs.get('stdout', subprocess.PIPE),
+    )
 
 
 def output_or_error(command, error_gen=None, **kwargs):
-    ''' Run a command and return the output as a string, or raise error.
+    '''Run a command and return the output as a string, or raise error.
     error_gen: a function that could either return or raise an error
              from a given subprocess.CompletedProcess object.
     '''
@@ -196,8 +200,7 @@ def output_or_error(command, error_gen=None, **kwargs):
 
 
 def check_run(command, error_gen=None, **kwargs):
-    ''' Just like output_or_error, but returns None on success.
-    '''
+    '''Just like output_or_error, but returns None on success.'''
     output_or_error(command, error_gen, **kwargs)
     return None
 

@@ -23,12 +23,18 @@ class OsFlavor(enum.Enum):
     Arch = ('pacman', '-S')
 
 
-Nasm = Library('nasm', {
-    OsFlavor.Debian: 'nasm',
-    OsFlavor.Arch: 'nasm',
-})
+Nasm = Library(
+    'nasm',
+    {
+        OsFlavor.Debian: 'nasm',
+        OsFlavor.Arch: 'nasm',
+    },
+)
 
-GccMultilib = Library('gcc-multilib', {
-    OsFlavor.Debian: 'gcc-multilib',
-    OsFlavor.Arch: 'gcc',
-})
+GccMultilib = Library(
+    'gcc-multilib',
+    {
+        OsFlavor.Debian: 'gcc-multilib',
+        OsFlavor.Arch: 'gcc',
+    },
+)

@@ -20,12 +20,12 @@ for idx, arg in enumerate(sys.argv[1:]):
         # also handle lld-link argument
         filename = arg.split(':')[-1]
 
-    if filename != None:
+    if filename != None:  # noqa: E711
         # If the file exists, then take no action.
         if not os.path.exists(filename):
             print("creating fake linker output file: %s" % filename)
             open(filename, "w+").close()
         sys.exit(0)
 
-print("Please supply a '-o filename\' somewhere on the command line")
+print("Please supply a '-o filename' somewhere on the command line")
 sys.exit(1)

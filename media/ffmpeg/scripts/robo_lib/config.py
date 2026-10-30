@@ -1,8 +1,7 @@
 # Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-""" Contains the global configuration object.
-"""
+"""Contains the global configuration object."""
 
 import os
 import platform
@@ -26,24 +25,42 @@ def GetLinuxFlavor():
                 else:
                     raise Exception(
                         "Couldn't determine OS flavor from lsb-release "
-                        "(needed to install packages)")
-        except:
+                        "(needed to install packages)"
+                    )
+        except:  # noqa: E722
             pass
     else:
         raise Exception(
             "Couldn't read OS flavor from /etc/{os,lsb}-release file "
-            "(needed to install packages)")
+            "(needed to install packages)"
+        )
+
 
 class RoboConfiguration:
-    __slots__ = ('_sushi_branch_prefix', '_gn_commit_title',
-                 '_readme_chromium_commit_title',
-                 '_origin_merge_base', '_llvm_path', '_autorename_git_file',
-                 '_chrome_src', '_host_operating_system', '_host_architecture',
-                 '_ffmpeg_home', '_relative_asan_directory', '_branch_name',
-                 '_sushi_branch_name', '_readme_chromium_commit_title',
-                 '_nasm_path', '_prompt_on_call', '_os_flavor',
-                 '_force_gn_rebuild', '_skip_allowed', '_script_directory',
-                 '_relative_x86_directory', '_log_shell_calls')
+    __slots__ = (
+        '_sushi_branch_prefix',
+        '_gn_commit_title',
+        '_readme_chromium_commit_title',
+        '_origin_merge_base',
+        '_llvm_path',
+        '_autorename_git_file',
+        '_chrome_src',
+        '_host_operating_system',
+        '_host_architecture',
+        '_ffmpeg_home',
+        '_relative_asan_directory',
+        '_branch_name',
+        '_sushi_branch_name',
+        '_readme_chromium_commit_title',
+        '_nasm_path',
+        '_prompt_on_call',
+        '_os_flavor',
+        '_force_gn_rebuild',
+        '_skip_allowed',
+        '_script_directory',
+        '_relative_x86_directory',
+        '_log_shell_calls',
+    )
 
     def __init__(self, quiet=False):
         # Important: Robosushi might be running the --setup command, so some of
@@ -72,8 +89,13 @@ class RoboConfiguration:
         self._origin_merge_base = "origin/master"  # nocheck
 
         # Directory where llvm lives.
-        self._llvm_path = os.path.join(self.chrome_src(), "third_party",
-                                       "llvm-build", "Release+Asserts", "bin")
+        self._llvm_path = os.path.join(
+            self.chrome_src(),
+            "third_party",
+            "llvm-build",
+            "Release+Asserts",
+            "bin",
+        )
 
         self.EnsurePathContainsLLVM()
         self.EnsureNoMakeInfo()
@@ -93,8 +115,9 @@ class RoboConfiguration:
         # TODO(crbug.com/450394703): Should this use script_directory, or stay
         # with ffmpeg?  As long as there's a .gitignore entry, either should be
         # fine.
-        self._autorename_git_file = os.path.join(self.ffmpeg_home(), "scripts",
-                                                 ".git_commands.sh")
+        self._autorename_git_file = os.path.join(
+            self.ffmpeg_home(), "scripts", ".git_commands.sh"
+        )
 
     def chrome_src(self):
         return self._chrome_src
@@ -123,15 +146,15 @@ class RoboConfiguration:
         os.chdir(self.ffmpeg_src())
 
     def target_config_directory(self, arch, opsys, target):
-        return os.path.join(self.ffmpeg_home(), f'build.{arch}.{opsys}',
-                            target)
+        return os.path.join(self.ffmpeg_home(), f'build.{arch}.{opsys}', target)
 
     def patches_dir_location(self):
         return os.path.join(self.ffmpeg_home(), "chromium", "patches")
 
     def exported_configs_directory(self, arch, opsys, target):
-        return os.path.join(self.ffmpeg_home(), "chromium", "config", target,
-                            opsys, arch)
+        return os.path.join(
+            self.ffmpeg_home(), "chromium", "config", target, opsys, arch
+        )
 
     def autorename_git_file(self):
         return self.get_script_path('git_commands.sh')
@@ -162,7 +185,7 @@ class RoboConfiguration:
 
     def sushi_branch_name(self):
         """If the workspace is currently on a branch that we created (a "sushi
-    branch"), return it.  Else return None."""
+        branch"), return it.  Else return None."""
         return self._sushi_branch_name
 
     def sushi_branch_prefix(self):
@@ -218,7 +241,8 @@ class RoboConfiguration:
             self._host_architecture = "riscv64"
         else:
             raise ValueError(
-                f"Unrecognized CPU architecture: {platform.machine()}")
+                f"Unrecognized CPU architecture: {platform.machine()}"
+            )
 
         if platform.system() == "Linux":
             self._host_operating_system = "linux"
@@ -226,8 +250,7 @@ class RoboConfiguration:
             self._os_flavor = GetLinuxFlavor()
         elif platform.system() == "Darwin":
             self._host_operating_system = "mac"
-        elif platform.system() == "Windows" or "CYGWIN_NT" in platform.system(
-        ):
+        elif platform.system() == "Windows" or "CYGWIN_NT" in platform.system():
             self._host_operating_system = "win"
         else:
             raise ValueError(f"Unsupported platform: {platform.system()}")
@@ -253,8 +276,9 @@ class RoboConfiguration:
 
     def EnsureFFmpegHome(self):
         """Ensure that |self| has "ffmpeg_home" set."""
-        self._ffmpeg_home = os.path.join(self.chrome_src(), "third_party",
-                                         "ffmpeg")
+        self._ffmpeg_home = os.path.join(
+            self.chrome_src(), "third_party", "ffmpeg"
+        )
 
     def EnsureGNConfig(self):
         """Find the gn directories.  Note that we don't create them."""
@@ -270,14 +294,16 @@ class RoboConfiguration:
         if self.llvm_path() not in os.environ["PATH"]:
             raise errors.UserInstructions(
                 f"Please add:\n{self.llvm_path()}\n to the beginning of $PATH"
-                f":\nexport PATH={self.llvm_path()}:$PATH")
+                f":\nexport PATH={self.llvm_path()}:$PATH"
+            )
 
     def EnsureNoMakeInfo(self):
         """Ensure that makeinfo is not available."""
         if os.system("makeinfo --version > /dev/null 2>&1") == 0:
             raise errors.UserInstructions(
                 "makeinfo is available and we don't need it, so please remove "
-                "it\nExample: sudo apt-get remove texinfo")
+                "it\nExample: sudo apt-get remove texinfo"
+            )
 
     def llvm_path(self):
         return self._llvm_path
@@ -286,7 +312,8 @@ class RoboConfiguration:
         """Get the current branch name and set it."""
         self.chdir_to_ffmpeg_src()
         branch_name = shell.output_or_error(
-            ["git", "rev-parse", "--abbrev-ref", "HEAD"])
+            ["git", "rev-parse", "--abbrev-ref", "HEAD"]
+        )
         self.SetBranchName(str(branch_name))
 
     def SetBranchName(self, name):
@@ -298,8 +325,8 @@ class RoboConfiguration:
         self._sushi_branch_name = name
 
     def prompt_on_call(self):
-        """ Return True if and only if we're supposed to ask the user before
-            running any command that might have a side-effect."""
+        """Return True if and only if we're supposed to ask the user before
+        running any command that might have a side-effect."""
         return self._prompt_on_call
 
     def log_shell_calls(self):
@@ -313,7 +340,7 @@ class RoboConfiguration:
 
     def Call(self, args, on_console_line=None, **kwargs):
         """Run the command specified by |args| (see subprocess.call), optionally
-    prompting the user."""
+        prompting the user."""
         if self.log_shell_calls():
             cmd = args if kwargs.get("shell", False) else " ".join(args)
             shell.log(f"Command: [{os.getcwd()}] {cmd}", style=shell.Style.DIM)
@@ -340,7 +367,7 @@ class RoboConfiguration:
         return shell.check_run(args, **kwargs)
 
     def CheckCall(self, *args, **kwargs):
-        fwd_kwargs = {k:v for k,v in kwargs.items() if k != "errmsg"}
+        fwd_kwargs = {k: v for k, v in kwargs.items() if k != "errmsg"}
         if self.Call(*args, **fwd_kwargs):
             if "errmsg" in kwargs:
                 raise Exception(kwargs["errmsg"])

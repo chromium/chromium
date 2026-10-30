@@ -18,7 +18,7 @@ def extract_lines_per_file(lines):
     filemap = {}
     current_file = None
     for line in lines:
-        if match := definition_pattern.match(line):
+        if match := definition_pattern.match(line):  # noqa: F841
             assert current_file is not None
             replaced = line.replace('#define', '').replace('%define', '')
             filemap[current_file].add(replaced)
@@ -30,8 +30,12 @@ def extract_lines_per_file(lines):
 
 def get_config_flag_changes(cfg):
     command = [
-        'git', 'diff',
-        cfg.origin_merge_base(), '--unified=0', '--', 'chromium/config/*'
+        'git',
+        'diff',
+        cfg.origin_merge_base(),
+        '--unified=0',
+        '--',
+        'chromium/config/*',
     ]
 
     lines = shell.output_or_error(command).split('\n')

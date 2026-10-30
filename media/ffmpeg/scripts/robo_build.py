@@ -7,25 +7,25 @@
 
 import glob
 import os
-import re
+import re  # noqa: F401
 import shutil
-import sys
+import sys  # noqa: F401
 from robo_lib import shell
 
 
 def ObliterateOldBuildOutputIfNeeded(robo_configuration):
     """Erase any build.*.* directories from build_ffmpeg if we haven't started
-     the merge yet.
-  Args:
-    robo_configuration: RoboConfiguration.
-  """
+       the merge yet.
+    Args:
+      robo_configuration: RoboConfiguration.
+    """
 
     # We have a sushi branch name if and only if we're on a sushi branch.  If
     # we're not, then we haven't done the initial merge from upstream yet, and
     # should clear the build directories.  Really, the idea is that any time we
     # merge from upstream, we should erase all of this.
     if robo_configuration.sushi_branch_name():
-        shell.log(f"Skipping erase of build output - Already on sushi branch")
+        shell.log("Skipping erase of build output - Already on sushi branch")
         return
 
     shell.log("Removing all build output from build_ffmpeg.py")
@@ -37,14 +37,16 @@ def ObliterateOldBuildOutputIfNeeded(robo_configuration):
 def ConfigureAndBuildFFmpeg(robo_configuration, platform, architecture):
     """Run FFmpeg's configure script, and build ffmpeg.
 
-  Args:
-    robo_configuration: RoboConfiguration.
-    platform: platform name (e.g., "linux")
-    architecture: (optional) arch name (e.g., "ia32").  If omitted, then we
-          build all of them for |platform|.
-  """
-    shell.log("Generating FFmpeg config and building for %s %s" %
-              (platform, architecture))
+    Args:
+      robo_configuration: RoboConfiguration.
+      platform: platform name (e.g., "linux")
+      architecture: (optional) arch name (e.g., "ia32").  If omitted, then we
+            build all of them for |platform|.
+    """
+    shell.log(
+        "Generating FFmpeg config and building for %s %s"
+        % (platform, architecture)
+    )
 
     shell.log("Starting FFmpeg build for %s %s" % (platform, architecture))
     robo_configuration.chdir_to_ffmpeg_home()
@@ -56,18 +58,19 @@ def ConfigureAndBuildFFmpeg(robo_configuration, platform, architecture):
         command.append(architecture)
     if err := robo_configuration.Call(command, stdout=None, stderr=None):
         print(err)
-        raise Exception("FFmpeg build failed for %s %s" %
-                        (platform, architecture))
+        raise Exception(
+            "FFmpeg build failed for %s %s" % (platform, architecture)
+        )
 
 
 def ImportFFmpegConfigsIntoChromium(robo_configuration, write_git_file=False):
     """Import all FFmpeg configs that have been built so far and build gn files.
 
-  Args:
-    robo_configuration: RoboConfiguration.
-    write_git_file: if true, then we'll ask generate_gn.py to write a script
-    with the appropriate git commands to add / rm autorenames.
-  """
+    Args:
+      robo_configuration: RoboConfiguration.
+      write_git_file: if true, then we'll ask generate_gn.py to write a script
+      with the appropriate git commands to add / rm autorenames.
+    """
     robo_configuration.chdir_to_ffmpeg_home()
     shell.log("Copying FFmpeg configs")
     CopyConfigPythonTranslation(robo_configuration)
@@ -86,27 +89,39 @@ def ImportFFmpegConfigsIntoChromium(robo_configuration, write_git_file=False):
 def CopyConfigPythonTranslation(robo_configuration):
     for opsys in ("android", "linux", "linux-noasm", "mac", "win"):
         for target in ("Chromium", "Chrome"):
-            for arch in ("arm", "arm-neon", "arm64", "ia32", "x64", "mipsel",
-                         "mips64el", "riscv64"):
+            for arch in (
+                "arm",
+                "arm-neon",
+                "arm64",
+                "ia32",
+                "x64",
+                "mipsel",
+                "mips64el",
+                "riscv64",
+            ):
                 gen_dir = robo_configuration.target_config_directory(
-                    arch, opsys, target)
+                    arch, opsys, target
+                )
                 export_dir = robo_configuration.exported_configs_directory(
-                    arch, opsys, target)
+                    arch, opsys, target
+                )
                 if not os.path.exists(os.path.join(gen_dir, "config.h")):
                     continue  # Don't waste time on non-existent configs.
                     # if there is no config.h, skip.
-                for file in (("config.h", ), ("config_components.asm", ),
-                             ("config_components.h", ), ("config.asm", ),
-                             ("libavutil", "avconfig.h"), ("libavutil",
-                                                           "ffversion.h"),
-                             ("libavcodec", "bsf_list.c"), ("libavcodec",
-                                                            "codec_list.c"),
-                             ("libavcodec",
-                              "parser_list.c"), ("libavformat",
-                                                 "demuxer_list.c"),
-                             ("libavformat",
-                              "muxer_list.c"), ("libavformat",
-                                                "protocol_list.c")):
+                for file in (
+                    ("config.h",),
+                    ("config_components.asm",),
+                    ("config_components.h",),
+                    ("config.asm",),
+                    ("libavutil", "avconfig.h"),
+                    ("libavutil", "ffversion.h"),
+                    ("libavcodec", "bsf_list.c"),
+                    ("libavcodec", "codec_list.c"),
+                    ("libavcodec", "parser_list.c"),
+                    ("libavformat", "demuxer_list.c"),
+                    ("libavformat", "muxer_list.c"),
+                    ("libavformat", "protocol_list.c"),
+                ):
                     copy_from = os.path.join(gen_dir, *file)
                     copy_to = os.path.join(export_dir, *file)
                     if os.path.exists(copy_from):
@@ -119,10 +134,12 @@ def CopyConfigPythonTranslation(robo_configuration):
                 if opsys == "mac":
                     copy_from = export_dir
                     ios_dir = robo_configuration.exported_configs_directory(
-                        arch, 'ios', target)
+                        arch, 'ios', target
+                    )
                     if robo_configuration.Call(["mkdir", "-p", ios_dir]):
                         raise Exception(
-                            f"Could not make iOS config directory {ios_dir}")
+                            f"Could not make iOS config directory {ios_dir}"
+                        )
                     # `cp -r` is a little odd.  If the target directory does
                     # not exist, then `cp a b` will copy the contents of `a`
                     # into a newly created `b` such that `ls a` and `ls b`
@@ -131,7 +148,8 @@ def CopyConfigPythonTranslation(robo_configuration):
                     # the second copy will result in a subdirectory called `a`
                     # inside `b`.  `-T` fixes this.
                     if robo_configuration.Call(
-                        ["cp", "-rT", copy_from, ios_dir]):
+                        ["cp", "-rT", copy_from, ios_dir]
+                    ):
                         raise Exception(
                             f"Failed cp of iOS configs {copy_from} to {ios_dir}"
                         )
@@ -140,14 +158,16 @@ def CopyConfigPythonTranslation(robo_configuration):
 def BuildAndImportAllFFmpegConfigs(robo_configuration):
     """Build ffmpeg for all platforms that we can, and build the gn files.
 
-  Args:
-    robo_configuration: RoboConfiguration.
-  """
+    Args:
+      robo_configuration: RoboConfiguration.
+    """
     if robo_configuration.host_operating_system() == "linux":
         ConfigureAndBuildFFmpeg(robo_configuration, "all", None)
     else:
-        raise Exception("I don't know how to build ffmpeg for host type %s" %
-                        robo_configuration.host_operating_system())
+        raise Exception(
+            "I don't know how to build ffmpeg for host type %s"
+            % robo_configuration.host_operating_system()
+        )
 
     # Now that we've built everything, import them and build the gn config.
     ImportFFmpegConfigsIntoChromium(robo_configuration, True)
@@ -157,18 +177,20 @@ def BuildAndImportAllFFmpegConfigs(robo_configuration):
 def BuildAndImportFFmpegConfigForHost(robo_configuration):
     """Build and import FFmpeg for our host only.
 
-  Build FFmpeg for our host, and create gn files for it.  This will probably
-  produce autorename warnings which don't matter.
+    Build FFmpeg for our host, and create gn files for it.  This will probably
+    produce autorename warnings which don't matter.
 
-  This is useful for building local tests for the new ffmpeg.
+    This is useful for building local tests for the new ffmpeg.
 
-  Args:
-    robo_configuration: RoboConfiguration.
-  """
+    Args:
+      robo_configuration: RoboConfiguration.
+    """
 
-    ConfigureAndBuildFFmpeg(robo_configuration,
-                            robo_configuration.host_operating_system(),
-                            robo_configuration.host_architecture())
+    ConfigureAndBuildFFmpeg(
+        robo_configuration,
+        robo_configuration.host_operating_system(),
+        robo_configuration.host_architecture(),
+    )
 
     # Note that this will import anything that you've built, but that's okay.
     # Also note that we don't write the command file, since it's going to be
@@ -180,30 +202,35 @@ def BuildAndImportFFmpegConfigForHost(robo_configuration):
 def BuildChromeTargetASAN(robo_configuration, target, platform, architecture):
     """Build a Chromium asan target.
 
-  Args:
-    robo_configuration: RoboConfiguration.
-    target: chrome target to build (e.g., "media_unittests")
-    platform: platform to build it for, which should probably be the host's.
-    architecture: arch to build it for (e.g., "x64").
-  """
+    Args:
+      robo_configuration: RoboConfiguration.
+      target: chrome target to build (e.g., "media_unittests")
+      platform: platform to build it for, which should probably be the host's.
+      architecture: arch to build it for (e.g., "x64").
+    """
     robo_configuration.chdir_to_chrome_src()
-    if robo_configuration.Call([
-            "autoninja", "-C",
-            robo_configuration.relative_asan_directory(), target
-    ]):
+    if robo_configuration.Call(
+        [
+            "autoninja",
+            "-C",
+            robo_configuration.relative_asan_directory(),
+            target,
+        ]
+    ):
         raise Exception("Failed to build %s" % target)
 
 
-def BuildAndRunChromeTargetASAN(robo_configuration, target, platform,
-                                architecture):
+def BuildAndRunChromeTargetASAN(
+    robo_configuration, target, platform, architecture
+):
     """Build and run a Chromium asan target.
 
-  Args:
-    robo_configuration: RoboConfiguration.
-    target: chrome target to build (e.g., "media_unittests")
-    platform: platform to build it for, which should probably be the host's.
-    architecture: arch to build it for (e.g., "x64").
-  """
+    Args:
+      robo_configuration: RoboConfiguration.
+      target: chrome target to build (e.g., "media_unittests")
+      platform: platform to build it for, which should probably be the host's.
+      architecture: arch to build it for (e.g., "x64").
+    """
     shell.log("Building and running %s" % target)
     BuildChromeTargetASAN(robo_configuration, target, platform, architecture)
     # TODO(crbug.com/450394703): we should be smarter about running things on
@@ -211,7 +238,8 @@ def BuildAndRunChromeTargetASAN(robo_configuration, target, platform,
     shell.log("Running %s" % target)
     robo_configuration.chdir_to_chrome_src()
     if robo_configuration.Call(
-        [os.path.join(robo_configuration.absolute_asan_directory(), target)]):
+        [os.path.join(robo_configuration.absolute_asan_directory(), target)]
+    ):
         raise Exception("%s didn't complete successfully" % target)
     shell.log("%s ran successfully" % target)
 
@@ -219,17 +247,16 @@ def BuildAndRunChromeTargetASAN(robo_configuration, target, platform,
 def BuildChromex86(robo_configuration):
     """Build a Chromium target for x86 to make sure ffmpeg builds there.
 
-  Args:
-    robo_configuration: RoboConfiguration.
-  """
+    Args:
+      robo_configuration: RoboConfiguration.
+    """
     target = "media_unittests"
     # We choose chromeos rather than linux because x86 linux isn't supported.
     shell.log(f"Building x86 {target}")
     robo_configuration.chdir_to_chrome_src()
-    if robo_configuration.Call([
-            "autoninja", "-C",
-            robo_configuration.relative_x86_directory(), target
-    ]):
+    if robo_configuration.Call(
+        ["autoninja", "-C", robo_configuration.relative_x86_directory(), target]
+    ):
         raise Exception(f"Failed to build {target}")
     shell.log(f"x86 {target} built successfully")
 
@@ -237,18 +264,26 @@ def BuildChromex86(robo_configuration):
 def RunTests(robo_configuration):
     """Build all tests and run them locally.
 
-  This assumes that the FFmpeg config and gn files are up to date for the host.
-  If not, then please run BuildAndImportFFmpegConfigForHost first.
+    This assumes that the FFmpeg config and gn files are up to date for the host.
+    If not, then please run BuildAndImportFFmpegConfigForHost first.
 
-  Args:
-    robo_configuration: RoboConfiguration.
-  """
+    Args:
+      robo_configuration: RoboConfiguration.
+    """
     host_operating_system = robo_configuration.host_operating_system()
     host_architecture = robo_configuration.host_architecture()
-    BuildAndRunChromeTargetASAN(robo_configuration, "media_unittests",
-                                host_operating_system, host_architecture)
-    BuildAndRunChromeTargetASAN(robo_configuration, "ffmpeg_regression_tests",
-                                host_operating_system, host_architecture)
+    BuildAndRunChromeTargetASAN(
+        robo_configuration,
+        "media_unittests",
+        host_operating_system,
+        host_architecture,
+    )
+    BuildAndRunChromeTargetASAN(
+        robo_configuration,
+        "ffmpeg_regression_tests",
+        host_operating_system,
+        host_architecture,
+    )
     # chrome works, if you want to do some manual testing.
     #  BuildAndRunChromeTargetASAN(robo_configuration, "chrome",
     #          host_operating_system, host_architecture)

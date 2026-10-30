@@ -1,0 +1,16 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+line-length = 80
+extend-exclude = [
+  "*_pb2.py",
+]
+
+[format]
+quote-style = "preserve"
+
+[lint]
+# Enable the legacy Ruff 0.15 default ruleset.
+select = ["E4", "E7", "E9", "F"]
+unfixable = ["F401"]

@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 #
-# Copyright 2015 The Chromium Authors.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 import codecs
-import copy
+import copy  # noqa: F401
 import credits_updater as cu
 import os
 import unittest
 
 # Assumes this script is in ffmpeg/chromium/scripts/
-SOURCE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                          os.path.pardir, os.path.pardir)
+SOURCE_DIR = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), os.path.pardir, os.path.pardir
+)
 OUTPUT_FILE = 'CREDITS.testing'
 
 # Expected credits for swresample.h applied with the rot13 encoding. Otherwise
@@ -46,7 +47,6 @@ def NewCreditsUpdater():
 
 
 class CreditsUpdaterUnittest(unittest.TestCase):
-
     def tearDown(self):
         # Cleanup the testing output file
         test_credits = os.path.join(SOURCE_DIR, OUTPUT_FILE)
@@ -58,9 +58,11 @@ class CreditsUpdaterUnittest(unittest.TestCase):
         NewCreditsUpdater().WriteCredits()
 
         # Credits should *always* have LICENSE.md followed by full LGPL text.
-        expected_lines = NormalizeNewLines(GetLicenseMdLines() +
-                                           GetSeparatorLines() +
-                                           GetLicenseLines(cu.License.LGPL))
+        expected_lines = NormalizeNewLines(
+            GetLicenseMdLines()
+            + GetSeparatorLines()
+            + GetLicenseLines(cu.License.LGPL)
+        )
         credits_lines = ReadCreditsLines()
         self.assertEqual(expected_lines, credits_lines)
 
@@ -72,9 +74,11 @@ class CreditsUpdaterUnittest(unittest.TestCase):
         updater.WriteCredits()
 
         # Expect output to have just LGPL text (once) preceded by LICENSE.md
-        expected_lines = NormalizeNewLines(GetLicenseMdLines() +
-                                           GetSeparatorLines() +
-                                           GetLicenseLines(cu.License.LGPL))
+        expected_lines = NormalizeNewLines(
+            GetLicenseMdLines()
+            + GetSeparatorLines()
+            + GetLicenseLines(cu.License.LGPL)
+        )
         credits_lines = ReadCreditsLines()
         self.assertEqual(expected_lines, credits_lines)
 
@@ -89,11 +93,16 @@ class CreditsUpdaterUnittest(unittest.TestCase):
         # and LICENSE.md header. JPEG should appear before MIPS because known
         # buckets will be printed in alphabetical order.
         expected_lines = NormalizeNewLines(
-            GetLicenseMdLines() + GetSeparatorLines() +
-            ['libavcodec/jfdctfst.c\n\n'] + GetLicenseLines(cu.License.JPEG) +
-            GetSeparatorLines() + ['libavutil/mips/float_dsp_mips.c\n\n'] +
-            GetLicenseLines(cu.License.MIPS) + GetSeparatorLines() +
-            GetLicenseLines(cu.License.LGPL))
+            GetLicenseMdLines()
+            + GetSeparatorLines()
+            + ['libavcodec/jfdctfst.c\n\n']
+            + GetLicenseLines(cu.License.JPEG)
+            + GetSeparatorLines()
+            + ['libavutil/mips/float_dsp_mips.c\n\n']
+            + GetLicenseLines(cu.License.MIPS)
+            + GetSeparatorLines()
+            + GetLicenseLines(cu.License.LGPL)
+        )
         credits_lines = ReadCreditsLines()
         self.assertEqual(expected_lines, credits_lines)
 
@@ -107,11 +116,15 @@ class CreditsUpdaterUnittest(unittest.TestCase):
 
         # Expect output to put swresample.h header first, followed by MIPS.
         expected_lines = NormalizeNewLines(
-            GetLicenseMdLines() + GetSeparatorLines() +
-            SWRESAMPLE_H_LICENSE.splitlines(True) + GetSeparatorLines() +
-            ['libavutil/mips/float_dsp_mips.c\n\n'] +
-            GetLicenseLines(cu.License.MIPS) + GetSeparatorLines() +
-            GetLicenseLines(cu.License.LGPL))
+            GetLicenseMdLines()
+            + GetSeparatorLines()
+            + SWRESAMPLE_H_LICENSE.splitlines(True)
+            + GetSeparatorLines()
+            + ['libavutil/mips/float_dsp_mips.c\n\n']
+            + GetLicenseLines(cu.License.MIPS)
+            + GetSeparatorLines()
+            + GetLicenseLines(cu.License.LGPL)
+        )
         credits_lines = ReadCreditsLines()
         self.assertEqual(expected_lines, credits_lines)
 
@@ -137,8 +150,9 @@ class CreditsUpdaterUnittest(unittest.TestCase):
             i = credits.find(f, current_offset)
             if i == -1:
                 self.fail(
-                    "Failed to find %s starting at offset %s of content:\n%s" %
-                    (f, current_offset, credits))
+                    "Failed to find %s starting at offset %s of content:\n%s"
+                    % (f, current_offset, credits)
+                )
             current_offset = i + len(f)
 
     def testKnownFileDigestChange(self):
@@ -155,7 +169,8 @@ class CreditsUpdaterUnittest(unittest.TestCase):
         # license header.
         orig_file_info = updater.known_file_map[known_file]
         altered_file_info = cu.FileInfo(
-            cu.License.LGPL, 'chris' + orig_file_info.license_digest[5:])
+            cu.License.LGPL, 'chris' + orig_file_info.license_digest[5:]
+        )
         updater.known_file_map[known_file] = altered_file_info
 
         # Verify digest mismatch triggers SystemExit.
@@ -176,16 +191,18 @@ def ReadCreditsLines():
 def GetLicenseMdLines():
     global g_license_md_lines
     if not len(g_license_md_lines):
-        with open(os.path.join(SOURCE_DIR,
-                               cu.UPSTREAM_LICENSEMD)) as license_md:
+        with open(
+            os.path.join(SOURCE_DIR, cu.UPSTREAM_LICENSEMD)
+        ) as license_md:
             g_license_md_lines = license_md.readlines()
     return g_license_md_lines
 
 
 def GetLicenseLines(license_file):
-    if not license_file in g_license_lines:
+    if license_file not in g_license_lines:
         g_license_lines[license_file] = GetFileLines(
-            os.path.join(cu.LICENSE_TEXTS[license_file]))
+            os.path.join(cu.LICENSE_TEXTS[license_file])
+        )
     return g_license_lines[license_file]
 
 

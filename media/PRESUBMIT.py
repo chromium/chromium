@@ -25,7 +25,8 @@ BASE_TIME_TYPES_RE = re.compile(r'\bconst (%s)&' % '|'.join(BASE_TIME_TYPES))
 def _FilterFile(affected_file):
     """Return true if the file could contain code requiring a presubmit check."""
     return affected_file.LocalPath().endswith(
-        ('.h', '.cc', '.cpp', '.cxx', '.mm'))
+        ('.h', '.cc', '.cpp', '.cxx', '.mm')
+    )
 
 
 def _CheckForUseOfWrongClock(input_api, output_api):
@@ -57,19 +58,27 @@ def _CheckForUseOfWrongClock(input_api, output_api):
     # allowed depending on DEPS rules.
     openscreen_time_pattern = r'(^|\W)openscreen::Clock\s*'
 
-    problem_re = input_api.re.compile(r'(' + base_time_type_pattern + r')|(' +
-                                      base_time_member_pattern + r')')
-    exception_re = input_api.re.compile(r'(' + using_base_time_decl_pattern +
-                                        r')|(' + base_time_konstant_pattern +
-                                        r')|(' + openscreen_time_pattern +
-                                        r')')
+    problem_re = input_api.re.compile(
+        r'(' + base_time_type_pattern + r')|(' + base_time_member_pattern + r')'
+    )
+    exception_re = input_api.re.compile(
+        r'('
+        + using_base_time_decl_pattern
+        + r')|('
+        + base_time_konstant_pattern
+        + r')|('
+        + openscreen_time_pattern
+        + r')'
+    )
     problems = []
     for f in input_api.AffectedSourceFiles(_FilterFile):
         for line_number, line in f.ChangedContents():
             if problem_re.search(line):
                 if not exception_re.search(line):
-                    problems.append('  %s:%d\n    %s' %
-                                    (f.LocalPath(), line_number, line.strip()))
+                    problems.append(
+                        '  %s:%d\n    %s'
+                        % (f.LocalPath(), line_number, line.strip())
+                    )
 
     if problems:
         return [
@@ -78,7 +87,8 @@ def _CheckForUseOfWrongClock(input_api, output_api):
                 'of its member functions (or base::Clock/DefaultClock). In media\n'
                 'code, it is rarely correct to use a clock susceptible to time skew!\n'
                 'Instead, could you use base::TimeTicks to track the passage of\n'
-                'real-world time?\n\n' + '\n'.join(problems))
+                'real-world time?\n\n' + '\n'.join(problems)
+            )
         ]
     else:
         return []
@@ -103,13 +113,23 @@ def _CheckForHistogramOffByOne(input_api, output_api):
     histogram_max = r'([^;,]*)'
 
     # This should match a uma histogram enumeration macro expression.
-    uma_macro_re = input_api.re.compile(r'\bUMA_HISTOGRAM_ENUMERATION\(' +
-                                        whitespace + histogram_name + r',' +
-                                        whitespace + histogram_value + r',' +
-                                        whitespace + histogram_max +
-                                        whitespace + r'\)' + whitespace +
-                                        r';(?:' + whitespace +
-                                        r'\/\/ (PRESUBMIT_IGNORE_UMA_MAX))?')
+    uma_macro_re = input_api.re.compile(
+        r'\bUMA_HISTOGRAM_ENUMERATION\('
+        + whitespace
+        + histogram_name
+        + r','
+        + whitespace
+        + histogram_value
+        + r','
+        + whitespace
+        + histogram_max
+        + whitespace
+        + r'\)'
+        + whitespace
+        + r';(?:'
+        + whitespace
+        + r'\/\/ (PRESUBMIT_IGNORE_UMA_MAX))?'
+    )
 
     uma_max_re = input_api.re.compile(r'.*(?:Max|MAX).* \+ 1')
 
@@ -131,19 +151,24 @@ def _CheckForHistogramOffByOne(input_api, output_api):
             line_number += contents.count('\n', 0, match.start())
             max_arg = match.group(1)  # The third argument.
 
-            if (not uma_max_re.match(max_arg)
-                    and match.group(2) != 'PRESUBMIT_IGNORE_UMA_MAX'):
-                uma_range = range(match.start(), match.end() + 1)
+            if (
+                not uma_max_re.match(max_arg)
+                and match.group(2) != 'PRESUBMIT_IGNORE_UMA_MAX'
+            ):
+                uma_range = range(match.start(), match.end() + 1)  # noqa: F841
                 # Check if any part of the match is in the changed lines:
                 for num, line in f.ChangedContents():
-                    if line_number <= num <= line_number + match.group().count(
-                            '\n'):
+                    if (
+                        line_number
+                        <= num
+                        <= line_number + match.group().count('\n')
+                    ):
                         problems.append('%s:%d' % (f, line_number))
                         break
 
             # Strip off the file contents up to the end of the match and update the
             # line number.
-            contents = contents[match.end():]
+            contents = contents[match.end() :]
             line_number += match.group().count('\n')
             match = uma_macro_re.search(contents)
 
@@ -156,7 +181,8 @@ def _CheckForHistogramOffByOne(input_api, output_api):
                 '   last valid value, e.g. FOO_MAX = LAST_VALID_FOO.\n'
                 ' - 1 must be added to that max value.\n'
                 'Contact dalecurtis@chromium.org if you have questions.',
-                problems)
+                problems,
+            )
         ]
 
     return []
@@ -164,7 +190,7 @@ def _CheckForHistogramOffByOne(input_api, output_api):
 
 def _CheckPassByValue(input_api, output_api):
     """Check that base::Time and derived classes are passed by value, and not by
-  const reference """
+    const reference"""
 
     problems = []
 
@@ -178,7 +204,8 @@ def _CheckPassByValue(input_api, output_api):
             output_api.PresubmitError(
                 'base::Time and derived classes should be passed by value and not by\n'
                 'const ref, see base/time/time.h for more information.',
-                problems)
+                problems,
+            )
         ]
     return []
 
@@ -199,7 +226,8 @@ def _CheckForUseOfLazyInstance(input_api, output_api):
         return [
             output_api.PresubmitError(
                 'base::LazyInstance is deprecated; use a thread safe static.',
-                problems)
+                problems,
+            )
         ]
     return []
 
@@ -209,7 +237,8 @@ def _CheckNoLoggingOverrideInHeaders(input_api, output_api):
     files = []
     pattern = input_api.re.compile(
         r'^#include\s*"media/base/logging_override_if_enabled.h"',
-        input_api.re.MULTILINE)
+        input_api.re.MULTILINE,
+    )
     for f in input_api.AffectedSourceFiles(input_api.FilterSourceFile):
         if not f.LocalPath().endswith('.h'):
             continue
@@ -222,7 +251,9 @@ def _CheckNoLoggingOverrideInHeaders(input_api, output_api):
             output_api.PresubmitError(
                 'Do not #include "logging_override_if_enabled.h" in header files, '
                 'since it overrides DVLOG() in every file including the header. '
-                'Instead, only include it in source files.', files)
+                'Instead, only include it in source files.',
+                files,
+            )
         ]
     return []
 
@@ -240,7 +271,8 @@ def _CheckV4L2StructureInitialization(input_api, output_api):
 
     # Matches struct v4l2_foo bar = { ... }; but allows = {};
     v4l2_aggregate_initializer_re = re.compile(
-        r'(^|\W)struct.+v4l2_.+=[^{]*{\s*[^}\s].*};')
+        r'(^|\W)struct.+v4l2_.+=[^{]*{\s*[^}\s].*};'
+    )
 
     for f in input_api.AffectedSourceFiles(_FilterFile):
         for line_number, line in f.ChangedContents():
@@ -255,20 +287,25 @@ def _CheckV4L2StructureInitialization(input_api, output_api):
                 'sized members: when a union is initialized by aggregate '
                 'initialization, only the first non-static member is initialized, '
                 'leaving other members uninitialized if they are larger. '
-                'Use = {} instead.', problems)
+                'Use = {} instead.',
+                problems,
+            )
         ]
     return []
 
 
 def _CheckChangeInBundle(input_api, output_api):
     import sys
+
     old_sys_path = sys.path[:]
     results = []
     try:
         sys.path.append(input_api.change.RepositoryRoot())
         from build.ios import presubmit_support
-        results += presubmit_support.CheckBundleData(input_api, output_api,
-                                                     'unit_tests_bundle_data')
+
+        results += presubmit_support.CheckBundleData(
+            input_api, output_api, 'unit_tests_bundle_data'
+        )
     finally:
         sys.path = old_sys_path
     return results
@@ -290,13 +327,17 @@ def _CheckIfGenerateGnTestsFail(input_api, output_api):
         errors += input_api.RunTests(
             input_api.canned_checks.GetUnitTests(
                 input_api,
-                output_api, [
-                    os.path.join('ffmpeg', 'scripts',
-                                 'generate_gn_unittest_wrapper.py')
+                output_api,
+                [
+                    os.path.join(
+                        'ffmpeg', 'scripts', 'generate_gn_unittest_wrapper.py'
+                    )
                 ],
                 run_on_python2=False,
                 run_on_python3=True,
-                skip_shebang_check=False))
+                skip_shebang_check=False,
+            )
+        )
 
     return errors
 
@@ -320,3 +361,7 @@ def CheckChangeOnUpload(input_api, output_api):
 
 def CheckChangeOnCommit(input_api, output_api):
     return _CheckChange(input_api, output_api)
+
+
+def CheckRuff(input_api, output_api):
+    return input_api.canned_checks.RunRuff(input_api, output_api)

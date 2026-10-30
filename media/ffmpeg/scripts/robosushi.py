@@ -16,51 +16,59 @@ This script orchestrates the following steps:
 
 import argparse
 import sys
-import typing
+import typing  # noqa: F401
 
-import robo_branch
+import robo_branch  # noqa: F401
 from robo_lib import shell
 from robo_lib import errors
 from robo_lib import config
 from robo_lib import task
 import robo_build
-import robo_setup
-import robo_process
+import robo_setup  # noqa: F401
+import robo_process  # noqa: F401
 
 
 def main(argv):
     """Parses arguments and runs the requested build steps."""
     parser = argparse.ArgumentParser(usage='%(prog)s [options]')
-    parser.add_argument('--branch',
-                        action='store',
-                        help='Manually set sushi branch name')
-    parser.add_argument('--prompt',
-                        action='store_true',
-                        help='Prompt for each robosushi step')
-    parser.add_argument('--verbose',
-                        action='store_true',
-                        help='Log all shell calls')
+    parser.add_argument(
+        '--branch', action='store', help='Manually set sushi branch name'
+    )
+    parser.add_argument(
+        '--prompt', action='store_true', help='Prompt for each robosushi step'
+    )
+    parser.add_argument(
+        '--verbose', action='store_true', help='Log all shell calls'
+    )
     parser.add_argument(
         '--setup',
         action='store_true',
-        help='Run initial setup steps. Do this once before auto-merge.')
-    parser.add_argument('--test',
-                        action='store_true',
-                        help='Build and run all tests')
+        help='Run initial setup steps. Do this once before auto-merge.',
+    )
+    parser.add_argument(
+        '--test', action='store_true', help='Build and run all tests'
+    )
     parser.add_argument(
         '--build-gn',
         action='store_true',
-        help='Unconditionally build all the configs and import them.')
-    parser.add_argument('--auto-merge',
-                        action='store_true',
-                        help='Run auto-merge. (Usually what you want)')
+        help='Unconditionally build all the configs and import them.',
+    )
+    parser.add_argument(
+        '--auto-merge',
+        action='store_true',
+        help='Run auto-merge. (Usually what you want)',
+    )
     parser.add_argument('--list', action='store_true', help='List steps')
-    parser.add_argument('--no-skip',
-                        action='store_true',
-                        help='Don\'t allow any steps to be skipped')
-    parser.add_argument('--force-gn-rebuild',
-                        action='store_true',
-                        help='Force rebuild of GN args.')
+    parser.add_argument(
+        '--no-skip',
+        action='store_true',
+        help='Don\'t allow any steps to be skipped',
+    )
+    parser.add_argument(
+        '--force-gn-rebuild',
+        action='store_true',
+        help='Force rebuild of GN args.',
+    )
     parser.add_argument('--step', action='append', help='Step to run.')
 
     options = parser.parse_args(argv)
@@ -73,7 +81,8 @@ def main(argv):
     robo_configuration.chdir_to_ffmpeg_home()
 
     shell.enable_file_logging(
-        robo_configuration.get_script_path("robosushi.log"))
+        robo_configuration.get_script_path("robosushi.log")
+    )
 
     exec_steps = []
 
@@ -108,8 +117,9 @@ def main(argv):
     # TODO(crbug.com/450394703): make sure that any untracked autorename files
     # are removed, or make sure that the autorename git script doesn't try to
     # 'git rm' untracked files, else the script fails.
-    task.RunTasks(robo_configuration,
-                  [task.Task.Lookup(step) for step in exec_steps])
+    task.RunTasks(
+        robo_configuration, [task.Task.Lookup(step) for step in exec_steps]
+    )
 
     # TODO(crbug.com/450394703): Start a fake deps roll.  To do this, we would:
     # Create new remote branch from the current remote sushi branch.

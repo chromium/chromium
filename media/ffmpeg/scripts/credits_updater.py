@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-# Copyright 2015 The Chromium Authors.
+# Copyright 2015 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 """Updates the CREDITS.chromium file for ffmpeg.
@@ -44,7 +44,7 @@ DEFAULT_OUTPUT_FILE = 'CREDITS.chromium'
 
 # Minimum similarity threshold to consider a comment header LGPL when compared
 # against FFMPEG_LGPL_REF.
-LGPL_MATCH_THRESHOLD = .9
+LGPL_MATCH_THRESHOLD = 0.9
 
 # Regular expressions for finding license header comments.
 C_COMMENT_BLOCK_START = re.compile('/\*+')
@@ -89,146 +89,159 @@ FileInfo = collections.namedtuple('FileInfo', 'license, license_digest')
 KNOWN_FILE_BUCKETS = [
     # Files that are LGPL but just miss the similarity cutoff.
     [
-        'libavcodec/codec_desc.c', License.LGPL,
-        '091f9c6d1efc62038e516f5c67263962'
+        'libavcodec/codec_desc.c',
+        License.LGPL,
+        '091f9c6d1efc62038e516f5c67263962',
     ],
     # Files with MIPS license.
     [
-        'libavcodec/mdct_fixed_32.c', License.MIPS,
-        '179c17c9dab77f95dc6540709b5fb8cd'
+        'libavcodec/mdct_fixed_32.c',
+        License.MIPS,
+        '179c17c9dab77f95dc6540709b5fb8cd',
     ],
     [
-        'libavcodec/fft_fixed_32.c', License.MIPS,
-        '179c17c9dab77f95dc6540709b5fb8cd'
+        'libavcodec/fft_fixed_32.c',
+        License.MIPS,
+        '179c17c9dab77f95dc6540709b5fb8cd',
     ],
     [
-        'libavcodec/fft_init_table.c', License.MIPS,
-        '179c17c9dab77f95dc6540709b5fb8cd'
+        'libavcodec/fft_init_table.c',
+        License.MIPS,
+        '179c17c9dab77f95dc6540709b5fb8cd',
     ],
     [
-        'libavcodec/mips/aacdec_mips.c', License.MIPS,
-        'a08afe43d908fe6625603d0cbc95da46'
+        'libavcodec/mips/aacdec_mips.c',
+        License.MIPS,
+        'a08afe43d908fe6625603d0cbc95da46',
     ],
     [
-        'libavcodec/mips/sbrdsp_mips.c', License.MIPS,
-        'c34ece06ebe27e5a7611ef362962b048'
+        'libavcodec/mips/sbrdsp_mips.c',
+        License.MIPS,
+        'c34ece06ebe27e5a7611ef362962b048',
     ],
     [
-        'libavcodec/mips/aacpsdsp_mips.c', License.MIPS,
-        'a08afe43d908fe6625603d0cbc95da46'
+        'libavcodec/mips/aacpsdsp_mips.c',
+        License.MIPS,
+        'a08afe43d908fe6625603d0cbc95da46',
     ],
     [
-        'libavutil/mips/float_dsp_mips.c', License.MIPS,
-        'fb9f51968ec8289768547144b920cf79'
+        'libavutil/mips/float_dsp_mips.c',
+        License.MIPS,
+        'fb9f51968ec8289768547144b920cf79',
     ],
     [
-        'libavcodec/mips/aacsbr_mips.c', License.MIPS,
-        '82c53533b2576fe5d2c04880a46595f2'
+        'libavcodec/mips/aacsbr_mips.c',
+        License.MIPS,
+        '82c53533b2576fe5d2c04880a46595f2',
+    ],
+    ['libavutil/fixed_dsp.c', License.MIPS, '7a521412ac91287b3e1026885f6bd56f'],
+    [
+        'libavcodec/mips/aacdec_mips.h',
+        License.MIPS,
+        'c34ece06ebe27e5a7611ef362962b048',
     ],
     [
-        'libavutil/fixed_dsp.c', License.MIPS,
-        '7a521412ac91287b3e1026885f6bd56f'
+        'libavcodec/mips/lsp_mips.h',
+        License.MIPS,
+        'eef419f576f738e66ca3bfc975a37996',
     ],
     [
-        'libavcodec/mips/aacdec_mips.h', License.MIPS,
-        'c34ece06ebe27e5a7611ef362962b048'
+        'libavcodec/mips/aacsbr_mips.h',
+        License.MIPS,
+        '82c53533b2576fe5d2c04880a46595f2',
     ],
     [
-        'libavcodec/mips/lsp_mips.h', License.MIPS,
-        'eef419f576f738e66ca3bfc975a37996'
+        'libavutil/mips/libm_mips.h',
+        License.MIPS,
+        '4b408982f2aa83fac9c020c61853bdae',
     ],
     [
-        'libavcodec/mips/aacsbr_mips.h', License.MIPS,
-        '82c53533b2576fe5d2c04880a46595f2'
+        'libavcodec/mips/amrwbdec_mips.h',
+        License.MIPS,
+        '4b408982f2aa83fac9c020c61853bdae',
     ],
     [
-        'libavutil/mips/libm_mips.h', License.MIPS,
-        '4b408982f2aa83fac9c020c61853bdae'
+        'libavcodec/fft_table.h',
+        License.MIPS,
+        '179c17c9dab77f95dc6540709b5fb8cd',
     ],
     [
-        'libavcodec/mips/amrwbdec_mips.h', License.MIPS,
-        '4b408982f2aa83fac9c020c61853bdae'
+        'libavcodec/mips/compute_antialias_float.h',
+        License.MIPS,
+        'a7ff7e3157e3726cba79e022628d3b93',
     ],
     [
-        'libavcodec/fft_table.h', License.MIPS,
-        '179c17c9dab77f95dc6540709b5fb8cd'
+        'libavcodec/mips/compute_antialias_fixed.h',
+        License.MIPS,
+        '97e366b4c71ad5ceca991d89044c414d',
     ],
     [
-        'libavcodec/mips/compute_antialias_float.h', License.MIPS,
-        'a7ff7e3157e3726cba79e022628d3b93'
+        'libavutil/softfloat_tables.h',
+        License.MIPS,
+        'de3e5c962caa5c8249bef3085ef36bc8',
     ],
-    [
-        'libavcodec/mips/compute_antialias_fixed.h', License.MIPS,
-        '97e366b4c71ad5ceca991d89044c414d'
-    ],
-    [
-        'libavutil/softfloat_tables.h', License.MIPS,
-        'de3e5c962caa5c8249bef3085ef36bc8'
-    ],
-    [
-        'libavutil/fixed_dsp.h', License.MIPS,
-        '4b408982f2aa83fac9c020c61853bdae'
-    ],
+    ['libavutil/fixed_dsp.h', License.MIPS, '4b408982f2aa83fac9c020c61853bdae'],
     # Files with JPEG Group license.
     [
-        'libavcodec/jfdctint_template.c', License.JPEG,
-        'd80cfd2e439eb700aed0f5bc44fef9b5'
+        'libavcodec/jfdctint_template.c',
+        License.JPEG,
+        'd80cfd2e439eb700aed0f5bc44fef9b5',
     ],
-    [
-        'libavcodec/jfdctfst.c', License.JPEG,
-        '7dcfa68ad9c8fd940fb404ee3242e03f'
-    ],
+    ['libavcodec/jfdctfst.c', License.JPEG, '7dcfa68ad9c8fd940fb404ee3242e03f'],
     ['libavcodec/jrevdct.c', License.JPEG, 'a9b8f5dcb74fa76a72069306b841b042'],
     # Files written by Ahlberg and RullgAYrd for parsing Ogg (MIT/X11 license).
     [
-        'libavformat/oggparseogm.c', License.OGG_MA_MR_2005,
-        'ee65196bafec5d8e871e64bb739bdc79'
+        'libavformat/oggparseogm.c',
+        License.OGG_MA_MR_2005,
+        'ee65196bafec5d8e871e64bb739bdc79',
     ],
     [
-        'libavformat/oggdec.c', License.OGG_MA_MR_2005,
-        '43ed5da1268cb2f104095c79410fd394'
+        'libavformat/oggdec.c',
+        License.OGG_MA_MR_2005,
+        '43ed5da1268cb2f104095c79410fd394',
     ],
     [
-        'libavformat/oggdec.h', License.OGG_MA_MR_2005,
-        'ee65196bafec5d8e871e64bb739bdc79'
+        'libavformat/oggdec.h',
+        License.OGG_MA_MR_2005,
+        'ee65196bafec5d8e871e64bb739bdc79',
     ],
     [
-        'libavformat/oggparsevorbis.c', License.OGG_MA_MR_2005,
-        '6c432580b4486564e43cd538370e3dbc'
+        'libavformat/oggparsevorbis.c',
+        License.OGG_MA_MR_2005,
+        '6c432580b4486564e43cd538370e3dbc',
     ],
 ]
 
 # Path describing 'license_texts' folder as a sibling of this script's location.
-LICENSE_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                              'license_texts')
+LICENSE_FOLDER = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), 'license_texts'
+)
 
 # Files containing license text to be used for the known license buckets. These
 # files should all live in LICENSE_FOLDER.
 LICENSE_TEXTS = {
-    License.MIPS:
-    os.path.join(LICENSE_FOLDER, 'mips.txt'),
-    License.JPEG:
-    os.path.join(LICENSE_FOLDER, 'jpeg.txt'),
-    License.LGPL:
-    os.path.join(LICENSE_FOLDER, 'full_lgpl.txt'),
-    License.OGG_MA_MR_2005:
-    os.path.join(LICENSE_FOLDER, 'oggparse_ahlberg_rullgayrd_2005.txt'),
+    License.MIPS: os.path.join(LICENSE_FOLDER, 'mips.txt'),
+    License.JPEG: os.path.join(LICENSE_FOLDER, 'jpeg.txt'),
+    License.LGPL: os.path.join(LICENSE_FOLDER, 'full_lgpl.txt'),
+    License.OGG_MA_MR_2005: os.path.join(
+        LICENSE_FOLDER, 'oggparse_ahlberg_rullgayrd_2005.txt'
+    ),
 }
 
 
 class CreditsUpdater(object):
     """CreditsUpdater parses license headers for files supplied via ProcessFile.
-  The parsed headers are stored for generating the FFmpeg credits file
-  (LICENSE.md) upon calling OutputCredits."""
+    The parsed headers are stored for generating the FFmpeg credits file
+    (LICENSE.md) upon calling OutputCredits."""
 
     def __init__(self, source_dir, output_file=DEFAULT_OUTPUT_FILE):
-        """ Creates a CreditsUpdater
-    Args:
-      source_dir: Root of ffmpeg sources; where LICENSE.md is found and where
-        the generated DEFAULT_OUTPUT_FILE will be written.
-      output_file: (Optional) Name of the file to write the credits to. File
-        will live in source_dir.
-    """
+        """Creates a CreditsUpdater
+        Args:
+          source_dir: Root of ffmpeg sources; where LICENSE.md is found and where
+            the generated DEFAULT_OUTPUT_FILE will be written.
+          output_file: (Optional) Name of the file to write the credits to. File
+            will live in source_dir.
+        """
         self.source_dir = source_dir
         self.output_file = output_file
         # Files where we failed to find any license header. Any entry in this list
@@ -246,17 +259,19 @@ class CreditsUpdater(object):
         self.known_file_map = {}
         for item in KNOWN_FILE_BUCKETS:
             self.known_file_map[os.path.join(item[0])] = FileInfo(
-                item[1], item[2])
+                item[1], item[2]
+            )
 
     def ProcessFile(self, file_path):
-        """ Process the file updating credits.
-    Args:
-      file_path: Path to file to process. Path can be absolute or relative, but
-      should be a descendant of source_dir provided to constructor.
-    """
+        """Process the file updating credits.
+        Args:
+          file_path: Path to file to process. Path can be absolute or relative, but
+          should be a descendant of source_dir provided to constructor.
+        """
         if not os.path.isabs(file_path):
             file_path = os.path.abspath(
-                os.path.join(self.source_dir, file_path))
+                os.path.join(self.source_dir, file_path)
+            )
 
         comment_lines = ExtractFirstCommentBlock(file_path)
         if not comment_lines:
@@ -268,9 +283,9 @@ class CreditsUpdater(object):
         # totally different header or a header with significant alterations.
         normalized_lines = NormalizeCommentLines(comment_lines)
         if normalized_lines:
-            sim_ratio = (difflib.SequenceMatcher(None,
-                                                 ConcatLines(normalized_lines),
-                                                 FFMPEG_LGPL_REF).ratio())
+            sim_ratio = difflib.SequenceMatcher(
+                None, ConcatLines(normalized_lines), FFMPEG_LGPL_REF
+            ).ratio()
 
             # File is a close match to typical LGPL case.
             if sim_ratio >= LGPL_MATCH_THRESHOLD:
@@ -284,8 +299,9 @@ class CreditsUpdater(object):
 
     def HandleNonLGPLFile(self, comment_lines, file_path):
         # Make file_path relative to FFmpeg directory to lookup self.known_file_map.
-        rel_file_path = os.path.relpath(file_path,
-                                        os.path.abspath(self.source_dir))
+        rel_file_path = os.path.relpath(
+            file_path, os.path.abspath(self.source_dir)
+        )
 
         # Many non-LGPL files fall into known groups (e.g. MIPS). We bucket these
         # together to avoid repeating the same license text in the credits.
@@ -299,17 +315,20 @@ class CreditsUpdater(object):
                 exit(
                     'File %(file_path)s header has changed (was: %(old_digest)s '
                     'now: %(new_digest)s). Inspect the header and update the '
-                    'exceptions table to continue generating credits.' % {
+                    'exceptions table to continue generating credits.'
+                    % {
                         'file_path': rel_file_path,
                         'old_digest': file_license_info.license_digest,
-                        'new_digest': hasher.hexdigest()
-                    })
+                        'new_digest': hasher.hexdigest(),
+                    }
+                )
             # Store known files in a list for printing.
             self.known_credits[file_license_info.license].append(rel_file_path)
         else:
             # This file does have a known bucket. We'll print its license verbatim.
             self.generated_credits[rel_file_path] = ConcatLines(
-                comment_lines).strip()
+                comment_lines
+            ).strip()
 
     def PrintStats(self):
         num_known_credits = 0
@@ -340,7 +359,8 @@ class CreditsUpdater(object):
 
             # Next write verbatim headers from the generated credits map.
             for filename, file_license in sorted(
-                    self.generated_credits.items(), key=lambda x: x[0]):
+                self.generated_credits.items(), key=lambda x: x[0]
+            ):
                 open_output.writelines(LICENSE_SEPARATOR)
                 open_output.writelines('%s\n\n%s' % (filename, file_license))
 
@@ -373,7 +393,7 @@ def NormalizeCommentLines(comment_lines):
     # Find start of ffmpeg lgpl header.
     line_index = 0
     for line in comment_lines:
-        if (FFMPEG_HEADER_START.search(line)):
+        if FFMPEG_HEADER_START.search(line):
             break
         line_index += 1
 
@@ -388,7 +408,7 @@ def NormalizeCommentLines(comment_lines):
         return None
 
     # Pull out stuff before header start.
-    comment_lines = comment_lines[line_index:len(comment_lines)]
+    comment_lines = comment_lines[line_index : len(comment_lines)]
     return comment_lines
 
 
@@ -417,8 +437,9 @@ def ExtractFirstCommentBlock(file_path):
 
         for _ in range(0, 100):
             line = open_file.readline()
-            found_comment_start = (found_comment_start
-                                   or comment_start_re.search(line))
+            found_comment_start = (
+                found_comment_start or comment_start_re.search(line)
+            )
             if not found_comment_start:
                 continue
 
@@ -445,5 +466,4 @@ def StripCommentChars(comment_lines, is_asm=False):
         comment_lines[-1] = re.sub(C_COMMENT_BLOCK_END, '', comment_lines[-1])
         # Strip off the comment star for middle lines
         for i in range(1, len(comment_lines)):
-            comment_lines[i] = re.sub(C_COMMENT_BLOCK_MID, '',
-                                      comment_lines[i])
+            comment_lines[i] = re.sub(C_COMMENT_BLOCK_MID, '', comment_lines[i])

@@ -25,14 +25,14 @@ import collections
 import copy
 import credits_updater
 import datetime
-import fnmatch
+import fnmatch  # noqa: F401
 import functools
 import hashlib
 import itertools
 import optparse
 import os
 import re
-import shutil
+import shutil  # noqa: F401
 import subprocess
 import sys
 from robo_lib import config
@@ -80,10 +80,9 @@ GN_SOURCE_END = """]
 _Attrs = ('ARCHITECTURE', 'TARGET', 'PLATFORM')
 Attr = collections.namedtuple('Attr', _Attrs)(*_Attrs)
 SUPPORT_MATRIX = {
-    Attr.ARCHITECTURE:
-    set(['ia32', 'x64', 'arm64', 'arm-neon', 'riscv64']),
+    Attr.ARCHITECTURE: set(['ia32', 'x64', 'arm64', 'arm-neon', 'riscv64']),
     Attr.TARGET: set(['Chromium', 'Chrome']),
-    Attr.PLATFORM: set(['android', 'linux', 'win', 'mac'])
+    Attr.PLATFORM: set(['android', 'linux', 'win', 'mac']),
 }
 
 
@@ -95,24 +94,21 @@ def NormalizeFilename(name):
 def CleanObjectFiles(object_files):
     """Removes unneeded object files due to linker errors, binary size, etc...
 
-  Args:
-    object_files: List of object files that needs cleaning.
-  """
+    Args:
+      object_files: List of object files that needs cleaning.
+    """
     cleaning_list = [
         # Host tool helper for cl.exe make dependencies on Windows; not part of
         # the FFmpeg library built by GN.
         'ffbuild/mscl.o',
-
         'libavcodec/file_open.o',  # Includes libavutil/file_open.c
         'libavformat/file_open.o',  # Includes libavutil/file_open.c
-
         # These codecs are not supported by Chromium and allowing ogg to parse
         # them can lead to issues. See http://crbug.com/654612 for an example.
         'libavformat/oggparsecelt.o',
         'libavformat/oggparsedaala.o',
         'libavformat/oggparsedirac.o',
         'libavformat/oggparsespeex.o',
-
         # The following files are removed to trim down on binary size.
         # TODO(ihf): Warning, it is *easy* right now to remove more files
         # than is healthy and end up with a library that the linker does
@@ -176,12 +172,12 @@ def IsSourceFile(f):
 def GetSourceFiles(source_dir):
     """Returns a list of source files for the given source directory.
 
-  Args:
-    source_dir: Path to build a source mapping for.
+    Args:
+      source_dir: Path to build a source mapping for.
 
-  Returns:
-    A python list of source file paths.
-  """
+    Returns:
+      A python list of source file paths.
+    """
 
     def IsSourceDir(d):
         return d != '.git'
@@ -192,25 +188,26 @@ def GetSourceFiles(source_dir):
         files = filter(IsSourceFile, files)
 
         # Strip leading source_dir from root.
-        root = root[len(source_dir):]
+        root = root[len(source_dir) :]
         source_files.extend(
-            [NormalizeFilename(os.path.join(root, name)) for name in files])
+            [NormalizeFilename(os.path.join(root, name)) for name in files]
+        )
     return source_files
 
 
 def GetObjectFiles(build_dir):
     """Returns a list of object files for the given build directory.
 
-  Args:
-    build_dir: Path to build an object file list for.
+    Args:
+      build_dir: Path to build an object file list for.
 
-  Returns:
-    A python list of object files paths.
-  """
+    Returns:
+      A python list of object files paths.
+    """
     object_files = []
     for root, _, files in os.walk(build_dir):
         # Strip leading build_dir from root.
-        root = root[len(build_dir):]
+        root = root[len(build_dir) :]
 
         for name in files:
             _, ext = os.path.splitext(name)
@@ -224,12 +221,12 @@ def GetObjectFiles(build_dir):
 def GetObjectToSourceMapping(source_files):
     """Returns a map of object file paths to source file paths.
 
-  Args:
-    source_files: List of source file paths.
+    Args:
+      source_files: List of source file paths.
 
-  Returns:
-    Map with object file paths as keys and source file paths as values.
-  """
+    Returns:
+      Map with object file paths as keys and source file paths as values.
+    """
     object_to_sources = {}
     for name in source_files:
         basename, _ = os.path.splitext(name)
@@ -241,13 +238,13 @@ def GetObjectToSourceMapping(source_files):
 def GetSourceFileSet(object_to_sources, object_files):
     """Determines set of source files given object files.
 
-  Args:
-    object_to_sources: A dictionary of object to source file paths.
-    object_files: A list of object file paths.
+    Args:
+      object_to_sources: A dictionary of object to source file paths.
+      object_files: A list of object file paths.
 
-  Returns:
-    A python set of source files required to build said objects.
-  """
+    Returns:
+      A python set of source files required to build said objects.
+    """
     source_set = set()
     for name in object_files:
         # Intentionally raise a KeyError if lookup fails since something is
@@ -257,7 +254,8 @@ def GetSourceFileSet(object_to_sources, object_files):
 
 
 SourceListCondition = collections.namedtuple(
-    'SourceListCondition', [Attr.ARCHITECTURE, Attr.TARGET, Attr.PLATFORM])
+    'SourceListCondition', [Attr.ARCHITECTURE, Attr.TARGET, Attr.PLATFORM]
+)
 
 
 class SourceSet(object):
@@ -268,11 +266,11 @@ class SourceSet(object):
     def __init__(self, sources, conditions):
         """Creates a SourceSet.
 
-    Args:
-      sources: a python set of source files
-      conditions: a python set of SourceListConditions where the given sources
-        are to be used.
-    """
+        Args:
+          sources: a python set of source files
+          conditions: a python set of SourceListConditions where the given sources
+            are to be used.
+        """
         self.sources = sources
         self.conditions = conditions
 
@@ -280,41 +278,44 @@ class SourceSet(object):
         return '{%s, %s}' % (self.sources, self.conditions)
 
     def __eq__(self, other):
-        return (self.sources == other.sources
-                and self.conditions == other.conditions)
+        return (
+            self.sources == other.sources
+            and self.conditions == other.conditions
+        )
 
     def __hash__(self):
         return hash((frozenset(self.sources), frozenset(self.conditions)))
 
     def Intersect(self, other):
         """Return a new SourceSet containing the set of source files common to
-        both this and the other SourceSet.
+            both this and the other SourceSet.
 
-    The resulting SourceSet represents the union of the architectures and
-    targets of this and the other SourceSet.
-    """
-        return SourceSet(self.sources & other.sources,
-                         self.conditions | other.conditions)
+        The resulting SourceSet represents the union of the architectures and
+        targets of this and the other SourceSet.
+        """
+        return SourceSet(
+            self.sources & other.sources, self.conditions | other.conditions
+        )
 
     def Difference(self, other):
         """Return a new SourceSet containing the set of source files not present
-        in the other SourceSet.
+            in the other SourceSet.
 
-    The resulting SourceSet represents the intersection of the
-    SourceListConditions from this and the other SourceSet.
-    """
-        return SourceSet(self.sources - other.sources,
-                         self.conditions & other.conditions)
+        The resulting SourceSet represents the intersection of the
+        SourceListConditions from this and the other SourceSet.
+        """
+        return SourceSet(
+            self.sources - other.sources, self.conditions & other.conditions
+        )
 
     def IsEmpty(self):
         """An empty SourceSet is defined as containing no source files or no
         conditions (i.e., a set of files that aren't built on anywhere).
         """
-        return (len(self.sources) == 0 or len(self.conditions) == 0)
+        return len(self.sources) == 0 or len(self.conditions) == 0
 
     def GenerateGnStanza(self):
-        """Generates a gn conditional stanza representing this source set.
-        """
+        """Generates a gn conditional stanza representing this source set."""
 
         conjunctions = []
         for condition in self.conditions:
@@ -326,7 +327,8 @@ class SourceSet(object):
                 arch_condition = 'current_cpu == "x86"'
             elif condition.ARCHITECTURE == 'arm64':
                 arch_condition = (
-                    '(current_cpu == "arm64" || current_cpu == "arm64e")')
+                    '(current_cpu == "arm64" || current_cpu == "arm64e")'
+                )
             else:
                 arch_condition = 'current_cpu == "%s"' % condition.ARCHITECTURE
 
@@ -350,7 +352,8 @@ class SourceSet(object):
                 platform_condition = 'is_%s' % condition.PLATFORM
 
             conjunction_parts = filter(
-                None, [platform_condition, arch_condition, target_condition])
+                None, [platform_condition, arch_condition, target_condition]
+            )
             conjunctions.append(' && '.join(conjunction_parts))
 
         # If there is more that one clause, wrap various conditions in parens
@@ -416,9 +419,9 @@ class SourceSet(object):
 def CreatePairwiseDisjointSets(sets):
     """Given a list of SourceSet objects, returns the pairwise disjoint sets.
 
-  NOTE: This isn't the most efficient algorithm, but given how infrequent we
-  need to run this and how small the input size is we'll leave it as is.
-  """
+    NOTE: This isn't the most efficient algorithm, but given how infrequent we
+    need to run this and how small the input size is we'll leave it as is.
+    """
 
     disjoint_sets = list(sets)
 
@@ -457,10 +460,10 @@ def CreatePairwiseDisjointSets(sets):
 
 def GetAllMatchingConditions(conditions, condition_to_match):
     """Given a set of conditions, find those that match the condition_to_match.
-  Matches are found when all attributes of the condition have the same value as
-  the condition_to_match, or value is accepted for wildcard attributes within
-  condition_to_match.
-  """
+    Matches are found when all attributes of the condition have the same value as
+    the condition_to_match, or value is accepted for wildcard attributes within
+    condition_to_match.
+    """
 
     found_matches = set()
 
@@ -478,8 +481,9 @@ def GetAllMatchingConditions(conditions, condition_to_match):
     for condition in conditions:
         condition_matches = True
         for attribute in attributes_to_check:
-            if (getattr(condition, attribute)
-                    != getattr(condition_to_match, attribute)):
+            if getattr(condition, attribute) != getattr(
+                condition_to_match, attribute
+            ):
                 condition_matches = False
                 break
         if condition_matches:
@@ -490,7 +494,7 @@ def GetAllMatchingConditions(conditions, condition_to_match):
 
 def GetAttributeValuesRange(attribute, condition):
     """Get the range of values for the given attribute considering the values
-  of all attributes in the given condition."""
+    of all attributes in the given condition."""
     if getattr(condition, attribute) == '*':
         values = copy.copy(SUPPORT_MATRIX[attribute])
     else:
@@ -515,23 +519,26 @@ def GenerateConditionExpansion(condition):
     platforms = GetAttributeValuesRange(Attr.PLATFORM, condition)
     return set(
         SourceListCondition(arch, target, plat)
-        for (arch, target,
-             plat) in itertools.product(architectures, targets, platforms))
+        for (arch, target, plat) in itertools.product(
+            architectures, targets, platforms
+        )
+    )
 
 
 def ReduceConditionalLogic(source_set):
     """Reduces the conditions for the given SourceSet.
 
-  The reduction leverages what we know about the space of possible combinations,
-  finding cases where conditions span all values possible of a given attribute.
-  In such cases, these conditions can be flattened into a single condition with
-  the spanned attribute removed.
+    The reduction leverages what we know about the space of possible combinations,
+    finding cases where conditions span all values possible of a given attribute.
+    In such cases, these conditions can be flattened into a single condition with
+    the spanned attribute removed.
 
-  There is room for further reduction (e.g. Quine-McCluskey), not implemented
-  at this time."""
+    There is room for further reduction (e.g. Quine-McCluskey), not implemented
+    at this time."""
 
-    ConditionReduction = collections.namedtuple('ConditionReduction',
-                                                'condition, matches')
+    ConditionReduction = collections.namedtuple(
+        'ConditionReduction', 'condition, matches'
+    )
     reduced_conditions = set()
 
     for condition in source_set.conditions:
@@ -546,11 +553,13 @@ def ReduceConditionalLogic(source_set):
             # Conditions with wildcards can replace existing conditions iff the
             # source set contains conditions covering all possible expansions
             # of the wildcarded values.
-            matches = GetAllMatchingConditions(source_set.conditions,
-                                               new_condition)
+            matches = GetAllMatchingConditions(
+                source_set.conditions, new_condition
+            )
             if matches == GenerateConditionExpansion(new_condition):
                 reduced_conditions.add(
-                    ConditionReduction(new_condition, frozenset(matches)))
+                    ConditionReduction(new_condition, frozenset(matches))
+                )
             else:
                 # This wildcard won't work, restore the original value.
                 condition_dict[attribute] = original_attribute_value
@@ -580,10 +589,10 @@ def ReduceConditionalLogic(source_set):
 def ParseOptions():
     """Parses the options and terminates program if they are not sane.
 
-  Returns:
-    The pair (optparse.OptionValues, [string]), that is the output of
-    a successful call to parser.parse_args().
-  """
+    Returns:
+      The pair (optparse.OptionValues, [string]), that is the output of
+      a successful call to parser.parse_args().
+    """
     parser = optparse.OptionParser(usage='usage: %prog [options] DIR')
 
     orig_cwd = os.getcwd()
@@ -596,50 +605,62 @@ def ParseOptions():
         ROBO_CONFIGURATION = config.RoboConfiguration(quiet=True)
         ffmpeg_src = ROBO_CONFIGURATION.ffmpeg_src()
         ffmpeg_home = ROBO_CONFIGURATION.ffmpeg_home()
-    except:
+    except:  # noqa: E722
         pass
 
-    parser.add_option('-s',
-                      '--source_dir',
-                      dest='source_dir',
-                      default=ffmpeg_src,
-                      metavar='DIR',
-                      help='FFmpeg source directory.')
+    parser.add_option(
+        '-s',
+        '--source_dir',
+        dest='source_dir',
+        default=ffmpeg_src,
+        metavar='DIR',
+        help='FFmpeg source directory.',
+    )
 
-    parser.add_option('-b',
-                      '--build_dir',
-                      dest='build_dir',
-                      default=ffmpeg_home,
-                      metavar='DIR',
-                      help='Build root containing build.x64.linux, etc...')
+    parser.add_option(
+        '-b',
+        '--build_dir',
+        dest='build_dir',
+        default=ffmpeg_home,
+        metavar='DIR',
+        help='Build root containing build.x64.linux, etc...',
+    )
 
-    parser.add_option('-p',
-                      '--print_licenses',
-                      dest='print_licenses',
-                      default=False,
-                      action='store_true',
-                      help='Print all licenses to console.')
+    parser.add_option(
+        '-p',
+        '--print_licenses',
+        dest='print_licenses',
+        default=False,
+        action='store_true',
+        help='Print all licenses to console.',
+    )
 
-    parser.add_option('-i',
-                      '--output_git_commands',
-                      dest='output_git_commands',
-                      default=False,
-                      help='Write git commands for renames to a file.')
+    parser.add_option(
+        '-i',
+        '--output_git_commands',
+        dest='output_git_commands',
+        default=False,
+        help='Write git commands for renames to a file.',
+    )
 
     options, args = parser.parse_args()
 
-    if (options.output_git_commands
-            and not os.path.isabs(options.output_git_commands)):
+    if options.output_git_commands and not os.path.isabs(
+        options.output_git_commands
+    ):
         options.output_git_commands = os.path.abspath(
-            os.path.join(orig_cwd, options.output_git_commands))
+            os.path.join(orig_cwd, options.output_git_commands)
+        )
 
     if options.source_dir and not os.path.isabs(options.source_dir):
         options.source_dir = os.path.abspath(
-            os.path.join(orig_cwd, options.source_dir))
+            os.path.join(orig_cwd, options.source_dir)
+        )
 
     if options.build_dir and not os.path.isabs(options.build_dir):
         options.build_dir = os.path.abspath(
-            os.path.join(orig_cwd, options.build_dir))
+            os.path.join(orig_cwd, options.build_dir)
+        )
 
     if not options.source_dir:
         parser.error('No FFmpeg source directory specified')
@@ -661,8 +682,9 @@ def SourceSetCompare(x, y):
         return len(x.conditions) - len(y.conditions)
     if len(str(x.conditions)) != len(str(y.conditions)):
         return len(str(x.conditions)) - len(str(y.conditions))
-    return (int(hashlib.md5(str(x).encode('utf-8')).hexdigest(), 16) -
-            int(hashlib.md5(str(y).encode('utf-8')).hexdigest(), 16))
+    return int(hashlib.md5(str(x).encode('utf-8')).hexdigest(), 16) - int(
+        hashlib.md5(str(y).encode('utf-8')).hexdigest(), 16
+    )
 
 
 def WriteGn(fd, disjoint_sets, asm_dirs, replaced_sources):
@@ -709,7 +731,6 @@ IGNORED_INCLUDE_FILES = [
     os.path.join('libavformat', 'protocol_list.c'),
     os.path.join('libavutil', 'avconfig.h'),
     os.path.join('libavutil', 'ffversion.h'),
-
     # Current configure values are set such that we don't include these (because
     # of various defines) and we also don't generate them at all, so we will
     # fail to find these because they don't exist in our repository.
@@ -725,7 +746,6 @@ IGNORED_INCLUDE_FILES = [
     os.path.join('libavcodec', 'pcm_tables.h'),
     os.path.join('libavcodec', 'sinewin_tables.h'),
     os.path.join('libavcodec', 'sinewin_fixed_tables.h'),
-
     # Removed upstream when dropping legacy pre-UCRT MSVC support.
     os.path.join('compat', 'msvcrt', 'strtod.h'),
 ]
@@ -787,22 +807,22 @@ RENAME_CONTENT = """{0} Automatically generated on %s. See crbug.com/495833.
 
 def GetIncludedSources(file_path, source_dir, include_set, scan_only=False):
     """Recurse over include tree, accumulating absolute paths to all included
-  files (including the seed file) in include_set.
+    files (including the seed file) in include_set.
 
-  Pass in the set returned from previous calls to avoid re-walking parts of the
-  tree. Given file_path may be relative (to options.src_dir) or absolute.
+    Pass in the set returned from previous calls to avoid re-walking parts of the
+    tree. Given file_path may be relative (to options.src_dir) or absolute.
 
-  NOTE: This algorithm is greedy. It does not know which includes may be
-  excluded due to compile-time defines, so it considers any mentioned include.
+    NOTE: This algorithm is greedy. It does not know which includes may be
+    excluded due to compile-time defines, so it considers any mentioned include.
 
-  NOTE: This algorithm makes hard assumptions about the include search paths.
-  Paths are checked in the order:
-  1. Directory of the file containing the #include directive
-  2. Directory specified by source_dir
+    NOTE: This algorithm makes hard assumptions about the include search paths.
+    Paths are checked in the order:
+    1. Directory of the file containing the #include directive
+    2. Directory specified by source_dir
 
-  NOTE: Files listed in IGNORED_INCLUDE_FILES will be ignored if not found. See
-  reasons at definition for IGNORED_INCLUDE_FILES.
-  """
+    NOTE: Files listed in IGNORED_INCLUDE_FILES will be ignored if not found. See
+    reasons at definition for IGNORED_INCLUDE_FILES.
+    """
     # Use options.source_dir to correctly resolve relative file path. Use only
     # absolute paths in the set to avoid same-name-errors.
     if not os.path.isabs(file_path):
@@ -832,10 +852,10 @@ def GetIncludedSources(file_path, source_dir, include_set, scan_only=False):
 
         # These may or may not be where the file lives. Just storing temps here
         # and we'll checking their validity below.
-        include_path_in_current_dir = os.path.join(current_dir,
-                                                   include_file_path)
-        include_path_in_source_dir = os.path.join(source_dir,
-                                                  include_file_path)
+        include_path_in_current_dir = os.path.join(
+            current_dir, include_file_path
+        )
+        include_path_in_source_dir = os.path.join(source_dir, include_file_path)
         resolved_include_path = ''
 
         # Check if file is in current directory.
@@ -850,8 +870,9 @@ def GetIncludedSources(file_path, source_dir, include_set, scan_only=False):
         elif include_file_path in MUST_BE_MISSING_INCLUDE_FILES:
             continue
         else:
-            exit('Failed to find file ' + include_file_path + " in " +
-                 file_path)
+            exit(
+                'Failed to find file ' + include_file_path + " in " + file_path
+            )
 
         # At this point we've found the file. Check if its in our ignore list
         # which means that the list should be updated to no longer mention this
@@ -859,36 +880,41 @@ def GetIncludedSources(file_path, source_dir, include_set, scan_only=False):
         ignored = False
         if include_file_path in IGNORED_INCLUDE_FILES:
             ignored = True
-            print(f'Found {include_file_path} in IGNORED_INCLUDE_FILES. '
-                  'Consider updating the list to remove this file.')
+            print(
+                f'Found {include_file_path} in IGNORED_INCLUDE_FILES. '
+                'Consider updating the list to remove this file.'
+            )
 
         # Also make sure that it's not in our MUST_BE_MISSING list, since it's
         # not missing anymore.
         if include_file_path in MUST_BE_MISSING_INCLUDE_FILES:
-            exit('Found file ' + include_file_path +
-                 ' that should be missing!')
+            exit('Found file ' + include_file_path + ' that should be missing!')
 
-        GetIncludedSources(resolved_include_path,
-                           source_dir,
-                           include_set,
-                           scan_only=ignored)
+        GetIncludedSources(
+            resolved_include_path, source_dir, include_set, scan_only=ignored
+        )
 
 
 def CheckLicensesForSources(sources, source_dir, print_licenses):
     # Assumed to be two back from source_dir (e.g. third_party/ffmpeg/../..).
     source_root = os.path.abspath(
-        os.path.join(source_dir, os.path.pardir, os.path.pardir))
+        os.path.join(source_dir, os.path.pardir, os.path.pardir)
+    )
 
     licensecheck_path = os.path.abspath(
-        os.path.join(source_root, 'third_party', 'devscripts',
-                     'licensecheck.pl'))
+        os.path.join(
+            source_root, 'third_party', 'devscripts', 'licensecheck.pl'
+        )
+    )
     if not os.path.exists(licensecheck_path):
         exit('Could not find licensecheck.pl: ' + str(licensecheck_path))
 
-    check_process = subprocess.Popen([licensecheck_path, '-m', '-l', '100'] +
-                                     [os.path.abspath(s) for s in sources],
-                                     stdout=subprocess.PIPE,
-                                     stderr=subprocess.PIPE)
+    check_process = subprocess.Popen(
+        [licensecheck_path, '-m', '-l', '100']
+        + [os.path.abspath(s) for s in sources],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
     stdout, _ = check_process.communicate()
     stdout = stdout.decode(sys.stdout.encoding)
 
@@ -899,9 +925,9 @@ def CheckLicensesForSources(sources, source_dir, print_licenses):
         licensename = licensename.replace('*No copyright*', '').strip()
         rel_file_path = os.path.relpath(filename, os.path.abspath(source_dir))
 
-        if (licensename in ALLOWED_LICENSES
-                or (licensename == 'UNKNOWN'
-                    and rel_file_path in LICENSE_EXCEPTIONS)):
+        if licensename in ALLOWED_LICENSES or (
+            licensename == 'UNKNOWN' and rel_file_path in LICENSE_EXCEPTIONS
+        ):
             if print_licenses:
                 print(f'{filename}: {licensename}')
             continue
@@ -912,11 +938,9 @@ def CheckLicensesForSources(sources, source_dir, print_licenses):
     return True
 
 
-def CheckLicensesForStaticLinking(sources_to_check, source_dir,
-                                  print_licenses):
+def CheckLicensesForStaticLinking(sources_to_check, source_dir, print_licenses):
     print('Checking licenses...')
-    return CheckLicensesForSources(sources_to_check, source_dir,
-                                   print_licenses)
+    return CheckLicensesForSources(sources_to_check, source_dir, print_licenses)
 
 
 def FixBasenameCollision(old_path, new_path, content):
@@ -924,24 +948,23 @@ def FixBasenameCollision(old_path, new_path, content):
         new_file.write(content)
 
 
-def FixObjectBasenameCollisions(disjoint_sets,
-                                all_sources,
-                                do_rename_cb,
-                                log_renames=True):
+def FixObjectBasenameCollisions(
+    disjoint_sets, all_sources, do_rename_cb, log_renames=True
+):
     """Mac libtool warns needlessly when it encounters two object files with
-  the same basename in a given static library. See more at
-  https://code.google.com/p/gyp/issues/detail?id=384#c7
+    the same basename in a given static library. See more at
+    https://code.google.com/p/gyp/issues/detail?id=384#c7
 
-  Here we hack around the issue by making a new source file with a different
-  base name, and #including the original file.
+    Here we hack around the issue by making a new source file with a different
+    base name, and #including the original file.
 
-  If upstream changes the name such that the collision no longer exists, we
-  detect the presence of a renamed file in all_sources which is overridden and
-  warn that it should be removed.
+    If upstream changes the name such that the collision no longer exists, we
+    detect the presence of a renamed file in all_sources which is overridden and
+    warn that it should be removed.
 
-  This will return a tuple of two sets.  The first is a list of all currently
-  renamed files, in their renamed form.  The second is a list of renamed files
-  that we have in the working directory, but no longer need."""
+    This will return a tuple of two sets.  The first is a list of all currently
+    renamed files, in their renamed form.  The second is a list of renamed files
+    that we have in the working directory, but no longer need."""
 
     SourceRename = collections.namedtuple('SourceRename', 'old_path, new_path')
     known_basenames = set()
@@ -963,16 +986,21 @@ def FixObjectBasenameCollisions(disjoint_sets,
             # Sanity check: source set should not have any renames prior to this
             # step.
             if RENAME_PREFIX in basename:
-                exit('Found unexpected renamed file in SourceSet: %s' %
-                     source_path)
+                exit(
+                    'Found unexpected renamed file in SourceSet: %s'
+                    % source_path
+                )
 
             # Craft a new unique basename from the path of the colliding file
             if basename in known_basenames:
                 name_parts = source_path.split(os.sep)
                 name_parts.insert(0, RENAME_PREFIX)
                 new_filename = '_'.join(name_parts)
-                new_source_path = (new_filename if folder == '' else
-                                   os.sep.join([folder, new_filename]))
+                new_source_path = (
+                    new_filename
+                    if folder == ''
+                    else os.sep.join([folder, new_filename])
+                )
 
                 renames.add(SourceRename(source_path, new_source_path))
             else:
@@ -989,12 +1017,17 @@ def FixObjectBasenameCollisions(disjoint_sets,
             comment_prefix = ';' if (file_extension == '.asm') else '//'
 
             do_rename_cb(
-                rename.old_path, rename.new_path,
+                rename.old_path,
+                rename.new_path,
                 RENAME_CONTENT.format(
-                    comment_prefix, include_prefix,
-                    os.path.join("..", "..", "third_party", "ffmpeg",
-                                 rename.old_path)))
-            #os.path.basename(rename.old_path)))
+                    comment_prefix,
+                    include_prefix,
+                    os.path.join(
+                        "..", "..", "third_party", "ffmpeg", rename.old_path
+                    ),
+                ),
+            )
+            # os.path.basename(rename.old_path)))
 
             source_set.sources.remove(rename.old_path)
             source_set.sources.add(rename.new_path)
@@ -1026,9 +1059,11 @@ def WriteGitCommands(filename, all_renames, to_delete):
     with open(filename, 'w') as git_file:
         git_file.write("#!/bin/sh\n")
         git_file.write(
-            "# Git commands to add all renames and delete old ones.\n")
+            "# Git commands to add all renames and delete old ones.\n"
+        )
         git_file.write(
-            "# This file is automatically generated by generate_gn.py\n")
+            "# This file is automatically generated by generate_gn.py\n"
+        )
         for renamed_file in all_renames:
             git_file.write("git add %s || exit 1\n" % renamed_file)
         for unrenamed_file in to_delete:
@@ -1056,8 +1091,7 @@ def main():
                 if not os.path.exists(build_dir):
                     continue
 
-                print(
-                    f'Processing build directory: {name} {options.build_dir}')
+                print(f'Processing build directory: {name} {options.build_dir}')
                 print(build_dir)
                 object_files = GetObjectFiles(build_dir)
                 if not object_files:
@@ -1067,7 +1101,9 @@ def main():
                 s = GetSourceFileSet(object_to_sources, object_files)
                 sets.append(
                     SourceSet(
-                        s, set([SourceListCondition(arch, target, platform)])))
+                        s, set([SourceListCondition(arch, target, platform)])
+                    )
+                )
 
     sets = CreatePairwiseDisjointSets(sets)
 
@@ -1075,19 +1111,21 @@ def main():
         ReduceConditionalLogic(source_set)
 
     if not sets:
-        exit('ERROR: failed to find any source sets. ' +
-             'Are build_dir (%s) and/or source_dir (%s) options correct?' %
-             (options.build_dir, options.source_dir))
+        exit(
+            'ERROR: failed to find any source sets. '
+            + 'Are build_dir (%s) and/or source_dir (%s) options correct?'
+            % (options.build_dir, options.source_dir)
+        )
 
     # Sort sets prior to further processing (e.g. FixObjectBasenameCollisions)
     # and printing to make order deterministic between runs.
     sets = sorted(sets, key=functools.cmp_to_key(SourceSetCompare))
 
     all_renames, to_delete, replaced_sources = FixObjectBasenameCollisions(
-        sets, source_files, FixBasenameCollision)
+        sets, source_files, FixBasenameCollision
+    )
     if options.output_git_commands:
-        WriteGitCommands(options.output_git_commands, all_renames,
-                         to_delete)
+        WriteGitCommands(options.output_git_commands, all_renames, to_delete)
 
     # Build up set of all sources and includes.
     sources_to_check = set()
@@ -1103,10 +1141,12 @@ def main():
     # We generated autorename_ files above and should not consider them for
     # licensing or credits.
     sources_to_check = list(
-        filter(lambda s: not RENAME_REGEX.search(s), sources_to_check))
+        filter(lambda s: not RENAME_REGEX.search(s), sources_to_check)
+    )
 
-    if not CheckLicensesForStaticLinking(sources_to_check, source_dir,
-                                         options.print_licenses):
+    if not CheckLicensesForStaticLinking(
+        sources_to_check, source_dir, options.print_licenses
+    ):
         exit('GENERATE FAILED: invalid licenses detected.')
     print('License checks passed.')
     UpdateCredits(sources_to_check, source_dir)
@@ -1114,8 +1154,9 @@ def main():
     gn_file_name = os.path.join(options.source_dir, 'ffmpeg_generated.gni')
     print(f'Writing: {gn_file_name}')
     with open(gn_file_name, 'w') as fd:
-        WriteGn(fd, sets, sorted(list(asm_dirs)),
-                sorted(list(replaced_sources)))
+        WriteGn(
+            fd, sets, sorted(list(asm_dirs)), sorted(list(replaced_sources))
+        )
 
     subprocess.run(['gn', 'format', gn_file_name])
 
