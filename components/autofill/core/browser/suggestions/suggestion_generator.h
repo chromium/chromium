@@ -47,6 +47,7 @@ class SuggestionGenerator {
     kLoyaltyCard,
     kIdentityCredential,
     kPasskey,
+    kTrustedVaultError,
     kCompose,
     kOneTimePassword,
     kAddressOnTyping,
@@ -73,6 +74,7 @@ class SuggestionGenerator {
           SuggestionDataSource::kAutocomplete,
           SuggestionDataSource::kAddressOnTyping,
           SuggestionDataSource::kPasskey,
+          SuggestionDataSource::kTrustedVaultError,
           SuggestionDataSource::kAtMemoryInactivityNudge,
       });
   // clang-format on
@@ -85,34 +87,59 @@ class SuggestionGenerator {
   static constexpr auto kSupportedMerges = base::MakeFixedFlatMap<
       SuggestionDataSource,
       DenseSet<SuggestionDataSource>>(
-      {{SuggestionDataSource::kAutofillAi, {SuggestionDataSource::kPasskey}},
-       {SuggestionDataSource::kCreditCard, {SuggestionDataSource::kPasskey}},
+      {{SuggestionDataSource::kAutofillAi,
+        {SuggestionDataSource::kPasskey,
+         SuggestionDataSource::kTrustedVaultError}},
+       {SuggestionDataSource::kCreditCard,
+        {SuggestionDataSource::kPasskey,
+         SuggestionDataSource::kTrustedVaultError}},
        {SuggestionDataSource::kVirtualStandaloneCvc,
-        {SuggestionDataSource::kPasskey}},
+        {SuggestionDataSource::kPasskey,
+         SuggestionDataSource::kTrustedVaultError}},
        {SuggestionDataSource::kSaveAndFillPromo,
-        {SuggestionDataSource::kPasskey}},
+        {SuggestionDataSource::kPasskey,
+         SuggestionDataSource::kTrustedVaultError}},
        {SuggestionDataSource::kOneTimePassword,
-        {SuggestionDataSource::kPasskey}},
+        {SuggestionDataSource::kPasskey,
+         SuggestionDataSource::kTrustedVaultError}},
        // Address can merge with:
        // - Loyalty Cards: To extend email suggestions.
        // - Autocomplete: To complement non-stored email addresses.
        // - Passkeys: Every SuggestionDataSource can be merged with passkeys.
+       // - Trusted Vault Error: Every SuggestionDataSource can be merged with
+       //   Trusted Vault Error suggestions.
        {SuggestionDataSource::kAddress,
         {SuggestionDataSource::kLoyaltyCard, SuggestionDataSource::kPasskey,
+         SuggestionDataSource::kTrustedVaultError,
          SuggestionDataSource::kAutocomplete}},
        {SuggestionDataSource::kIdentityCredential,
-        {SuggestionDataSource::kPasskey}},
-       {SuggestionDataSource::kLoyaltyCard, {SuggestionDataSource::kPasskey}},
-       {SuggestionDataSource::kCompose, {SuggestionDataSource::kPasskey}},
+        {SuggestionDataSource::kPasskey,
+         SuggestionDataSource::kTrustedVaultError}},
+       {SuggestionDataSource::kLoyaltyCard,
+        {SuggestionDataSource::kPasskey,
+         SuggestionDataSource::kTrustedVaultError}},
+       {SuggestionDataSource::kCompose,
+        {SuggestionDataSource::kPasskey,
+         SuggestionDataSource::kTrustedVaultError}},
        {SuggestionDataSource::kMerchantPromoCode,
-        {SuggestionDataSource::kPasskey}},
-       {SuggestionDataSource::kIban, {SuggestionDataSource::kPasskey}},
-       {SuggestionDataSource::kAutocomplete, {SuggestionDataSource::kPasskey}},
+        {SuggestionDataSource::kPasskey,
+         SuggestionDataSource::kTrustedVaultError}},
+       {SuggestionDataSource::kIban,
+        {SuggestionDataSource::kPasskey,
+         SuggestionDataSource::kTrustedVaultError}},
+       {SuggestionDataSource::kAutocomplete,
+        {SuggestionDataSource::kPasskey,
+         SuggestionDataSource::kTrustedVaultError}},
        {SuggestionDataSource::kAddressOnTyping,
-        {SuggestionDataSource::kPasskey}},
+        {SuggestionDataSource::kPasskey,
+         SuggestionDataSource::kTrustedVaultError}},
        {SuggestionDataSource::kAtMemoryInactivityNudge,
-        {SuggestionDataSource::kPasskey}},
-       {SuggestionDataSource::kPasskey, {}}});
+        {SuggestionDataSource::kPasskey,
+         SuggestionDataSource::kTrustedVaultError}},
+       {SuggestionDataSource::kPasskey,
+        {SuggestionDataSource::kTrustedVaultError}},
+       {SuggestionDataSource::kTrustedVaultError,
+        {SuggestionDataSource::kPasskey}}});
 
   static_assert(kSupportedMerges.size() ==
                 static_cast<size_t>(SuggestionDataSource::kMaxValue) + 1);

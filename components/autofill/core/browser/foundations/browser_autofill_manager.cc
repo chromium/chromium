@@ -132,6 +132,7 @@
 #include "components/autofill/core/browser/suggestions/payments/merchant_promo_code_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/trusted_vault/trusted_vault_error_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/suggestions/suggestion_util.h"
@@ -404,6 +405,7 @@ FillDataType GetEventTypeFromSingleFieldSuggestionType(SuggestionType type) {
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kPendingStateSignin:
+    case SuggestionType::kPendingStateTrustedVaultError:
     case SuggestionType::kPersonalContextNotice:
     case SuggestionType::kRemoveAutofillAi:
     case SuggestionType::kSaveAndFillCreditCardEntry:
@@ -1344,9 +1346,12 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
     prioritized_suggestions.clear();
   }
 
-  // Handle passkeys separately, since they merge with any suggestions.
+  // Handle passkeys and trusted vault errors separately, since they merge with
+  // any suggestions.
   auto passkey_suggestions =
       prioritized_suggestions.extract(FillingProduct::kPasskey);
+  auto trusted_vault_suggestions =
+      prioritized_suggestions.extract(FillingProduct::kPassword);
 
   // TODO(crbug.com/409962888): Consider moving the TTF logic to
   // `OnGenerateSuggestionsComplete()` when the old suggestion generation logic
@@ -1362,8 +1367,11 @@ void BrowserAutofillManager::OnIndividualSuggestionsGenerated(
           return;
         }
         if (!passkey_suggestions.empty()) {
-          MergePasskeysAndExistingSuggestions(
-              suggestions, std::move(passkey_suggestions.mapped()));
+          base::Extend(suggestions, std::move(passkey_suggestions.mapped()));
+        }
+        if (!trusted_vault_suggestions.empty()) {
+          base::Extend(suggestions,
+                       std::move(trusted_vault_suggestions.mapped()));
         }
         OnGenerateSuggestionsComplete(form.global_id(), field, trigger_source,
                                       suggestion_generation_start_time,
@@ -1488,10 +1496,23 @@ BrowserAutofillManager::CreatePasskeySuggestionsForMerge(
   return suggestions;
 }
 
-void BrowserAutofillManager::MergePasskeysAndExistingSuggestions(
-    std::vector<Suggestion>& suggestions,
-    std::vector<Suggestion> passkey_suggestions) {
-  base::Extend(suggestions, std::move(passkey_suggestions));
+std::vector<Suggestion>
+BrowserAutofillManager::CreateTrustedVaultUnlockSuggestionsForMerge(
+    const FormFieldData& field) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  return {};
+#else
+  PasswordManagerDelegate* password_delegate =
+      client().GetPasswordManagerDelegate(field.global_id());
+  if (!password_delegate) {
+    return {};
+  }
+  if (std::optional<Suggestion> unlock_suggestion =
+          password_delegate->GetTrustedVaultUnlockSuggestion()) {
+    return {*std::move(unlock_suggestion)};
+  }
+  return {};
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 }
 
 std::vector<Suggestion> BrowserAutofillManager::MergeWithAddressSuggestions(
@@ -1759,8 +1780,12 @@ void BrowserAutofillManager::GenerateFooter(
   std::vector<Suggestion> passkey_suggestions =
       CreatePasskeySuggestionsForMerge(field);
   if (!passkey_suggestions.empty()) {
-    MergePasskeysAndExistingSuggestions(suggestions,
-                                        std::move(passkey_suggestions));
+    base::Extend(suggestions, std::move(passkey_suggestions));
+  }
+  std::vector<Suggestion> trusted_vault_suggestions =
+      CreateTrustedVaultUnlockSuggestionsForMerge(field);
+  if (!trusted_vault_suggestions.empty()) {
+    base::Extend(suggestions, std::move(trusted_vault_suggestions));
   }
 
   OnGenerateSuggestionsComplete(
@@ -3562,6 +3587,10 @@ void BrowserAutofillManager::InitializeSuggestionGenerators(
   if (relevant_filling_products.contains(FillingProduct::kPasskey)) {
     suggestion_generators_.push_back(
         std::make_unique<PasskeySuggestionGenerator>());
+  }
+  if (relevant_filling_products.contains(FillingProduct::kPassword)) {
+    suggestion_generators_.push_back(
+        std::make_unique<TrustedVaultErrorSuggestionGenerator>());
   }
   if (relevant_filling_products.contains(FillingProduct::kOneTimePassword) &&
       otp_manager_) {

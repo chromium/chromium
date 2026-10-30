@@ -125,6 +125,7 @@ bool IsSuggestionTypeEligibleForKeyboardAccessory(SuggestionType type) {
     case SuggestionType::kDevtoolsTestAddressByCountry:
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kPendingStateSignin:
+    case SuggestionType::kPendingStateTrustedVaultError:
     case SuggestionType::kFetchingAmbientData:
     case SuggestionType::kMaximizeCreditCardBenefitsEntry:
       return true;

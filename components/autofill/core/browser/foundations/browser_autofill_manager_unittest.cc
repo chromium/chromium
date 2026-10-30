@@ -1706,6 +1706,42 @@ TEST_F(BrowserAutofillManagerTest, WebauthnSignInWithAnotherDeviceSuggestion) {
        CreateManageAddressesSuggestion()});
 }
 
+class BrowserAutofillManagerTrustedVaultTest
+    : public BrowserAutofillManagerTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  BrowserAutofillManagerTrustedVaultTest() {
+    feature_list_.InitWithFeatureState(
+        features::kAutofillNewSuggestionGeneration, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         BrowserAutofillManagerTrustedVaultTest,
+                         testing::Bool());
+
+// Tests that the `kPendingStateTrustedVaultError` suggestion is present if
+// the `PasswordManagerDelegate` returns it, both when
+// `kAutofillNewSuggestionGeneration` is enabled and disabled.
+TEST_P(BrowserAutofillManagerTrustedVaultTest,
+       TrustedVaultUnlockSuggestionMergedWithAddressSuggestions) {
+  FormData form = CreateTestHybridSignUpFormData();
+  FormsSeen({form});
+
+  ON_CALL(password_delegate(), GetTrustedVaultUnlockSuggestion)
+      .WillByDefault(
+          Return(Suggestion(SuggestionType::kPendingStateTrustedVaultError)));
+
+  OnAskForValuesToFill(form, form.fields()[0]);
+
+  EXPECT_THAT(
+      external_delegate()->suggestions(),
+      Contains(Suggestion(SuggestionType::kPendingStateTrustedVaultError)));
+}
+
 TEST_F(BrowserAutofillManagerTest,
        WebauthnInlineQrAndSignInWithAnotherDeviceSuggestion) {
   FormData form = CreateTestHybridSignUpFormData();

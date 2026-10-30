@@ -302,6 +302,7 @@ bool IsPasswordSuggestion(FormSuggestion* suggestion) {
     case SuggestionType::kDevtoolsTestAddressEntry:
     case SuggestionType::kFillAutofillAi:
     case SuggestionType::kPendingStateSignin:
+    case SuggestionType::kPendingStateTrustedVaultError:
     case SuggestionType::kLoyaltyCardEntry:
     case SuggestionType::kAllLoyaltyCardsEntry:
     case SuggestionType::kGmailOneTimePasswordEntry:

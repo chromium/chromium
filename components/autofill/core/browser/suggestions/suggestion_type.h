@@ -184,6 +184,10 @@ enum class SuggestionType {
   // state. On click the user will be directed to sign in.
   kPendingStateSignin = 65,
 
+  // Suggestion displayed when the user is in a pending state due to a trusted
+  // vault error. On click the user will be directed to resolve the error.
+  kPendingStateTrustedVaultError = 104,
+
   // Throbber suggestion to indicate loading state.
   kLoadingThrobber = 77,
 
@@ -261,9 +265,9 @@ enum class SuggestionType {
   // Suggestion to display the keyboard shortcut settings promo for AtMemory.
   kAtMemoryShortcutSettingsPromo = 103,
 
-  // Next ID: 104
+  // Next ID: 105
 
-  kMaxValue = kAtMemoryShortcutSettingsPromo
+  kMaxValue = kPendingStateTrustedVaultError
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SuggestionType)
 

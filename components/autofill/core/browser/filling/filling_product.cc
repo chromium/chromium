@@ -93,6 +93,7 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kPendingStateSignin:
+    case SuggestionType::kPendingStateTrustedVaultError:
     case SuggestionType::kTroubleSigningInEntry:
     case SuggestionType::kViewPasswordDetails:
       return FillingProduct::kPassword;
@@ -180,6 +181,8 @@ FillingProduct GetFillingProductFromSuggestionDataSource(
       return FillingProduct::kIdentityCredential;
     case SuggestionGenerator::SuggestionDataSource::kPasskey:
       return FillingProduct::kPasskey;
+    case SuggestionGenerator::SuggestionDataSource::kTrustedVaultError:
+      return FillingProduct::kPassword;
     case SuggestionGenerator::SuggestionDataSource::kCompose:
       return FillingProduct::kCompose;
     case SuggestionGenerator::SuggestionDataSource::kOneTimePassword:

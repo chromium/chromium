@@ -666,6 +666,7 @@ bool IsExpandableSuggestionType(SuggestionType type) {
     case SuggestionType::kOpenGmailForOtps:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kPendingStateSignin:
+    case SuggestionType::kPendingStateTrustedVaultError:
     case SuggestionType::kPersonalContextNotice:
     case SuggestionType::kSaveAndFillCreditCardEntry:
     case SuggestionType::kScanCreditCard:

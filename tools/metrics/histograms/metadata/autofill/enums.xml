@@ -6348,6 +6348,7 @@ Called by update_autofill_enums.py.-->
   <int value="101" label="Open Gmail for OTPs"/>
   <int value="102" label="Manage offers"/>
   <int value="103" label="AtMemory shortcut settings promo"/>
+  <int value="104" label="Pending state trusted vault error"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/autofill/core/browser/suggestions/suggestion_type.h:SuggestionType) -->

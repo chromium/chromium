@@ -109,6 +109,7 @@ bool IsValidOmniboxAutofillSuggestion(SuggestionType type) {
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kPendingStateSignin:
+    case SuggestionType::kPendingStateTrustedVaultError:
     case SuggestionType::kPersonalContextNotice:
     case SuggestionType::kRemoveAutofillAi:
     case SuggestionType::kSaveAndFillCreditCardEntry:

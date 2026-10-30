@@ -1181,6 +1181,7 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     case SuggestionType::kOpenGmailForOtps:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kPendingStateSignin:
+    case SuggestionType::kPendingStateTrustedVaultError:
     case SuggestionType::kPersonalContextNotice:
     case SuggestionType::kRemoveAutofillAi:
     case SuggestionType::kScanCreditCard:

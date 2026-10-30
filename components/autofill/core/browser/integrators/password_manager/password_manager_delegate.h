@@ -51,6 +51,10 @@ class PasswordManagerDelegate {
 
   // Called when a popup containing an inline QR code suggestion is shown.
   virtual void OnWebauthnInlineQrCodeSuggestionShown() = 0;
+
+  // Returns a suggestion to resolve Trusted Vault key retrieval error.
+  // Returns `std::nullopt` if the suggestion is not available.
+  virtual std::optional<Suggestion> GetTrustedVaultUnlockSuggestion() const = 0;
 };
 
 }  // namespace autofill

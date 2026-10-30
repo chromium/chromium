@@ -117,6 +117,8 @@ std::string_view SuggestionTypeToStringView(SuggestionType type) {
       return "kFillAutofillAi";
     case SuggestionType::kPendingStateSignin:
       return "kPendingStateSignin";
+    case SuggestionType::kPendingStateTrustedVaultError:
+      return "kPendingStateTrustedVaultError";
     case SuggestionType::kAtMemorySearchResult:
       return "kAtMemorySearchResult";
     case SuggestionType::kAtMemoryInactivityNudge:

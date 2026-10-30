@@ -57,6 +57,7 @@ SuggestionSection GetSuggestionSection(SuggestionType type) {
     case SuggestionType::kManageOffers:
     case SuggestionType::kOpenGmailForOtps:
     case SuggestionType::kPendingStateSignin:
+    case SuggestionType::kPendingStateTrustedVaultError:
     case SuggestionType::kPersonalContextNotice:
     case SuggestionType::kRemoveAutofillAi:
     case SuggestionType::kScanCreditCard:
@@ -150,7 +151,8 @@ bool IsStandaloneSuggestionType(SuggestionType type) {
       return true;
     case SuggestionSection::kFooter:
       return type == SuggestionType::kScanCreditCard ||
-             type == SuggestionType::kWebauthnSignInWithAnotherDevice;
+             type == SuggestionType::kWebauthnSignInWithAnotherDevice ||
+             type == SuggestionType::kPendingStateTrustedVaultError;
     case SuggestionSection::kStructure:
       return false;
   }
@@ -236,6 +238,7 @@ bool ShouldApplyDeactivatedStyle(const Suggestion& suggestion) {
     case SuggestionType::kPasswordEntry:
     case SuggestionType::kPasswordFieldByFieldFilling:
     case SuggestionType::kPendingStateSignin:
+    case SuggestionType::kPendingStateTrustedVaultError:
     case SuggestionType::kPersonalContextNotice:
     case SuggestionType::kRemoveAutofillAi:
     case SuggestionType::kSaveAndFillCreditCardEntry:
