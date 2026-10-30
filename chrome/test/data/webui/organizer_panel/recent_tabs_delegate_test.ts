@@ -113,7 +113,7 @@ suite('RecentTabsDelegateTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.resetForTesting({
       noRecentlyClosedTabs: 'No recently closed tabs',
-      recentlyClosed: 'Recently Closed',
+      recentlyClosed: 'Recently closed',
       oneTab: '1 tab',
       splitView: 'Split view',
       tabCount: '$1 tabs',
@@ -132,7 +132,7 @@ suite('RecentTabsDelegateTest', () => {
 
   test('returns id and header', () => {
     assertEquals('recently-closed', delegate.getId());
-    assertEquals('Recently Closed', delegate.getHeader());
+    assertEquals('Recently closed', delegate.getHeader());
   });
 
   test('returns tabs sorted by MRU', async () => {

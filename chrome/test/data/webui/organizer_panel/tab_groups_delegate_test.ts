@@ -57,7 +57,7 @@ suite('TabGroupsDelegateTest', () => {
       createTabGroup: 'Create tab group',
       options: 'Options',
       tabGroupMoreOptions: 'More options',
-      tabGroups: 'Tab Groups',
+      tabGroups: 'Tab groups',
     });
     mockHandler = TestMock.fromClass(TabGroupsOrganizerPageHandlerRemote);
     mockHandler.setResultFor(
@@ -80,7 +80,7 @@ suite('TabGroupsDelegateTest', () => {
 
   test('returns id and header', () => {
     assertEquals('tab-groups', delegate.getId());
-    assertEquals('Tab Groups', delegate.getHeader());
+    assertEquals('Tab groups', delegate.getHeader());
   });
 
   test('returns tab groups', async () => {

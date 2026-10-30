@@ -61,7 +61,7 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
       {"noResults", IDS_ORGANIZER_PANEL_NO_RESULTS},
       {"oneTab", IDS_TAB_SEARCH_ONE_TAB},
       {"options", IDS_ORGANIZER_PANEL_OPTIONS},
-      {"recentlyClosed", IDS_TAB_SEARCH_RECENTLY_CLOSED},
+      {"recentlyClosed", IDS_ORGANIZER_PANEL_RECENTLY_CLOSED},
       {"recentlyVisited", IDS_ORGANIZER_PANEL_RECENTLY_VISITED},
       {"searchTabs", IDS_TAB_SEARCH_SEARCH_TABS},
       {"showAll", IDS_ORGANIZER_PANEL_SHOW_ALL},

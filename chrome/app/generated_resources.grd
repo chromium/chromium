@@ -10815,13 +10815,16 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Split view
       </message>
       <message name="IDS_ORGANIZER_PANEL_TAB_GROUPS" desc="The label on the organizer panel list section corresponding to tab groups.">
-        Tab Groups
+        Tab groups
       </message>
       <message name="IDS_ORGANIZER_PANEL_CREATE_TAB_GROUP" desc="The label on the organizer panel item to create a tab group.">
         Create tab group
       </message>
       <message name="IDS_ORGANIZER_PANEL_CROSS_DEVICE_TABS" desc="The label on the organizer panel list section corresponding to tabs on other devices.">
         Tabs on other devices
+      </message>
+      <message name="IDS_ORGANIZER_PANEL_RECENTLY_CLOSED" desc="The label on the organizer panel list section corresponding to recently closed tabs.">
+        Recently closed
       </message>
       <message name="IDS_ORGANIZER_PANEL_RECENTLY_VISITED" desc="The label on the organizer panel list section corresponding to recently visited tabs.">
         Recently visited

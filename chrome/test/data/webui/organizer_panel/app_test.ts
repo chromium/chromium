@@ -41,13 +41,13 @@ suite('OrganizerPanelAppTest', () => {
       noRecentlyClosedTabs: 'No recently closed tabs',
       noResults: 'No results',
       options: 'Options',
-      recentlyClosed: 'Recently Closed',
+      recentlyClosed: 'Recently closed',
       recentlyVisited: 'Recently visited',
       searchTabs: 'Search Tabs',
       shortcutText: 'Ctrl+Shift+A',
       signInOnPhone: 'Sign in on your phone',
       tabGroupMoreOptions: 'More options',
-      tabGroups: 'Tab Groups',
+      tabGroups: 'Tab groups',
       tabsOnOtherDevices: 'Tabs on other devices',
     });
     mockOrganizerPanelHandler =
