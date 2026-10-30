@@ -97,8 +97,10 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorIsolatedTabPageNoticeIcon] = {SK_ColorBLACK};
 
   // Threads rail colors.
+  mixer[kColorNewTabPageThreadsRailPrimaryFont] = {ui::kColorSysOnSurface};
   mixer[kColorNewTabPageThreadsRailBackground] = {ui::kColorSysBaseContainer};
-  mixer[kColorNewTabPageThreadsRailIconButton] = {ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorNewTabPageThreadsRailHoverBackground] =
+      ui::SetAlpha(ui::kColorSysOnSurface, 0.06f * SK_AlphaOPAQUE);
 
   mixer[kColorNewTabPageModuleBackground] = {ui::kColorSysBaseContainer};
   mixer[kColorNewTabPageModuleIconBackground] = {ui::kColorSysNeutralContainer};

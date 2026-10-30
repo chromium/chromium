@@ -345,7 +345,8 @@
   E_CPONLY(kColorNewTabPageActionChipTextTitle) \
   E_CPONLY(kColorNewTabPageActionChipDeepSearchIcon) \
   E_CPONLY(kColorNewTabPageThreadsRailBackground) \
-  E_CPONLY(kColorNewTabPageThreadsRailIconButton) \
+  E_CPONLY(kColorNewTabPageThreadsRailPrimaryFont) \
+  E_CPONLY(kColorNewTabPageThreadsRailHoverBackground) \
   E_CPONLY(kColorNewTabPageChipBackground) \
   E_CPONLY(kColorNewTabPageChipForeground) \
   E_CPONLY(kColorNewTabPageComposeboxSubmitButtonBackground) \

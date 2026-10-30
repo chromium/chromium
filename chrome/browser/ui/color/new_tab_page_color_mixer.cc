@@ -274,6 +274,13 @@ void AddGeneratedThemeComprehensiveColors(ui::ColorMixer& mixer) {
                           color_utils::kMinimumReadableContrastRatio),
       ui::PickGoogleColor(gfx::kGoogleGrey500, element_background_color,
                           color_utils::kMinimumReadableContrastRatio));
+
+  mixer[kColorNewTabPageThreadsRailPrimaryFont] = {primary_foreground_color};
+  mixer[kColorNewTabPageThreadsRailBackground] =
+      SelectBasedOnWhiteNtpBackground(gfx::kGoogleGrey100,
+                                      element_background_color);
+  mixer[kColorNewTabPageThreadsRailHoverBackground] =
+      ui::SetAlpha(primary_foreground_color, 0.06f * SK_AlphaOPAQUE);
 }
 
 void AddSearchboxColors(ui::ColorMixer& mixer, const ui::ColorProviderKey& key) {
@@ -492,6 +499,16 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
         dark_mode ? SK_ColorWHITE : gfx::kGoogleGrey800};
     mixer[kColorNewTabPageText] = {dark_mode ? gfx::kGoogleGrey200
                                              : SK_ColorBLACK};
+    // Includes ThemeType::kExtension, and ThemeType::kNativeX11
+    if (key.custom_theme) {
+      mixer[kColorNewTabPageThreadsRailPrimaryFont] = {
+          primary_foreground_color};
+      mixer[kColorNewTabPageThreadsRailBackground] =
+          SelectBasedOnWhiteNtpBackground(gfx::kGoogleGrey100,
+                                          element_background_color);
+      mixer[kColorNewTabPageThreadsRailHoverBackground] =
+          ui::SetAlpha(primary_foreground_color, 0.06f * SK_AlphaOPAQUE);
+    }
   }
 
   /* NewTabFooter */
@@ -499,10 +516,6 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorNewTabFooterText] =
       ui::GetColorWithMaxContrast({kColorNewTabFooterBackground});
   mixer[kColorNewTabFooterLogoBackground] = {SK_ColorWHITE};
-
-  /* NewTabPageThreadsRail */
-  mixer[kColorNewTabPageThreadsRailBackground] = {ui::kColorSysBaseContainer};
-  mixer[kColorNewTabPageThreadsRailIconButton] = {ui::kColorSysOnSurfaceSubtle};
 }
 
 void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
@@ -654,6 +667,12 @@ void AddWebThemeNewTabPageColors(ui::ColorMixer& mixer, bool dark_mode) {
                                                          : gfx::kGoogleGrey800};
   mixer[kColorNewTabPageActionChipDeepSearchIcon] = {
       dark_mode ? SK_ColorWHITE : gfx::kGoogleGrey800};
+
+  mixer[kColorNewTabPageThreadsRailPrimaryFont] = {primary_foreground_color};
+  mixer[kColorNewTabPageThreadsRailBackground] = {
+      dark_mode ? gfx::kGoogleGrey800 : gfx::kGoogleGrey100};
+  mixer[kColorNewTabPageThreadsRailHoverBackground] =
+      ui::SetAlpha(primary_foreground_color, 0.06f * SK_AlphaOPAQUE);
 
   // Isolated Tab colors.
   // The Isolated Tab Page is designed to always remain in light mode.
