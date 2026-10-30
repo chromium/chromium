@@ -227,6 +227,7 @@ if (is_android) {
     sources = [
       "multi_source_page_context_fetcher_browsertest.cc",
       "page_content_annotations_service_browsertest.cc",
+      "page_content_cache_browsertest.cc",
       "page_settled_monitor_chrome_browsertest.cc",
       "page_text_observer_browsertest.cc",
     ]
@@ -242,6 +243,8 @@ if (is_android) {
       "//chrome/browser/page_content_annotations:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/common:non_code_constants",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
@@ -258,6 +261,7 @@ if (is_android) {
       "//components/page_content_annotations/content:metrics",
       "//components/page_content_annotations/core",
       "//components/passage_embeddings/core:test_support",
+      "//components/sessions",
       "//components/ukm:test_support",
       "//content/public/browser",
       "//content/test:browsertest_support",
@@ -268,7 +272,9 @@ if (is_android) {
       "//testing/gmock",
       "//testing/gtest",
       "//third_party/blink/public/common",
+      "//ui/base",
       "//ui/gfx/codec",
+      "//url",
     ]
     if (enable_pdf) {
       deps += [

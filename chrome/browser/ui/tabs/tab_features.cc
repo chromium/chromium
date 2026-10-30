@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 
@@ -394,6 +396,19 @@ using page_content_annotations::AnnotatedPageContentRequest;
 
 std::optional<int64_t> GetPageContentAnnotationsTabId(
     content::WebContents* web_contents) {
+  // During tab closure, `TabModel::DestroyTabFeatures()` runs before
+  // `BrowserView` unparents the closing `WebContents` and triggers
+  // `OnVisibilityChanged(HIDDEN)`. Return `std::nullopt` once `TabFeatures` is
+  // destroyed so `PageContentCacheHandler` does not treat a closing active tab
+  // as backgrounded and write its content to the on-disk cache.
+  // TODO(b/579119351): Move tab-scoped visibility/cache handling out of
+  // `AnnotatedPageContentRequest` (which is `WebContentsUserData` for
+  // `content::Page` lookups in `//components`) into a `TabFeatures`-owned
+  // helper so `DestroyTabFeatures()` tears down the observer directly.
+  TabInterface* tab = TabInterface::MaybeGetFromContents(web_contents);
+  if (!tab || !tab->GetTabFeatures()) {
+    return std::nullopt;
+  }
   SessionID id = sessions::SessionTabHelper::IdForTab(web_contents);
   if (id.is_valid()) {
     return id.id();
