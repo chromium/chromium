@@ -39,6 +39,9 @@ inline constexpr char kCujJourneyNameKey[] = "Journey name";
 inline constexpr char kCujEntryStepKey[] = "Entry step";
 inline constexpr char kCujJourneyDurationKey[] = "Journey duration in seconds";
 
+// The default time allowed between reaching a step and reaching the next one.
+inline constexpr base::TimeDelta kDefaultCujStepTimeout = base::Minutes(2);
+
 // Returns a coarse duration bucket string ("<2s", "2s-5s", "5s-15s",
 // "15s-60s", ">60s") for HaTS product-specific string data.
 std::string GetCujDurationBucket(base::TimeDelta duration);
@@ -116,6 +119,14 @@ struct Branch {
     return *this;
   }
 
+  // Overrides how long the journey waits for the next step after this branch
+  // is reached (default `kDefaultCujStepTimeout`).
+  Branch& SetTimeout(base::TimeDelta timeout) {
+    CHECK_GT(timeout, base::TimeDelta());
+    time_out_duration = timeout;
+    return *this;
+  }
+
   ~Branch();
   Branch(const Branch&);
   Branch& operator=(const Branch&);
@@ -129,6 +140,7 @@ struct Branch {
   bool is_exit_branch = false;
   base::TimeDelta min_dwell_duration = base::TimeDelta();
   base::TimeDelta max_dwell_duration = base::TimeDelta();
+  base::TimeDelta time_out_duration = kDefaultCujStepTimeout;
   // Plain-English UI entry-point label sent as `kCujEntryStepKey` in HaTS
   // product-specific data (PSD) when this branch starts the journey.
   std::string hats_entry_point = kCujDefaultEntryStep;
@@ -181,6 +193,14 @@ class CriticalUserJourney {
     }
 
     Builder& AddAnyOf(const std::vector<Branch>& branches);
+
+    // Overrides how long the journey waits for the next step after the most
+    // recently added step is reached (default `kDefaultCujStepTimeout`). Use
+    // for surfaces that stay open longer than the default, such as Reading
+    // Mode. When the most recent step is an `AddAnyOf()` group, the timeout
+    // applies to every branch.
+    Builder& SetStepTimeout(base::TimeDelta timeout);
+
     Builder& AddCustomCompletionCallback(base::RepeatingClosure callback);
     Builder& LaunchHatsSurveyOnCompletion(HatsParams params);
 

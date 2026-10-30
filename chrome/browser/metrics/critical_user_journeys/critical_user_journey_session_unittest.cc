@@ -270,6 +270,8 @@ TEST_F(CriticalUserJourneySessionTest, ExitBranchBelowDwellThreshold) {
   histogram_tester.ExpectUniqueSample(
       "CriticalUserJourney.TestJourney.Result",
       CriticalUserJourneySession::JourneyResult::kAbandonedBelowDwell, 1);
+  histogram_tester.ExpectUniqueSample(
+      "CriticalUserJourney.TestJourney.StepAborted", 3, 1);
   histogram_tester.ExpectBucketCount(
       "CriticalUserJourney.TestJourney.StepReached", 3, 0);
 }
@@ -581,6 +583,56 @@ TEST_F(CriticalUserJourneySessionTest, GetCujDurationBucketBoundaries) {
   EXPECT_EQ(GetCujDurationBucket(base::Seconds(120)), ">60s");
 }
 
+TEST_F(CriticalUserJourneySessionTest, SetStepTimeoutExtendsWaitForNextStep) {
+  auto journey = CriticalUserJourney::Builder(&kTestJourney)
+                     .AddStep(kTestElementId1,
+                              ui::InteractionSequence::StepType::kShown, 1)
+                     .SetStepTimeout(base::Minutes(5))
+                     .AddStep(kTestElementId2,
+                              ui::InteractionSequence::StepType::kShown, 2)
+                     .Build();
+
+  std::optional<CriticalUserJourneySession::JourneyResult> final_result;
+  auto session = std::make_unique<CriticalUserJourneySession>(journey.get());
+  session->set_on_done_callback(base::BindLambdaForTesting(
+      [&](CriticalUserJourneySession::JourneyResult result) {
+        final_result = result;
+      }));
+
+  ui::test::TestElement el1(kTestElementId1, kTestContext);
+  el1.Show();
+  session->Start(/*first_step_metric_id=*/std::nullopt, &el1);
+
+  // Past the default 2 minute timeout, but within the 5 minute override.
+  task_environment_.FastForwardBy(base::Minutes(3));
+  EXPECT_FALSE(final_result.has_value());
+
+  ui::test::TestElement el2(kTestElementId2, kTestContext);
+  el2.Show();
+
+  EXPECT_TRUE(base::test::RunUntil([&]() { return final_result.has_value(); }));
+  EXPECT_EQ(*final_result,
+            CriticalUserJourneySession::JourneyResult::kCompleted);
+}
+
+TEST_F(CriticalUserJourneySessionTest, SetStepTimeoutOnAnyOfAppliesToBranches) {
+  auto journey =
+      CriticalUserJourney::Builder(&kTestJourney)
+          .AddAnyOf({Branch(kTestElementId1,
+                            ui::InteractionSequence::StepType::kShown, 1),
+                     Branch(kTestElementId3,
+                            ui::InteractionSequence::StepType::kShown, 2)})
+          .SetStepTimeout(base::Minutes(5))
+          .AddStep(kTestElementId2, ui::InteractionSequence::StepType::kShown,
+                   3)
+          .Build();
+
+  for (const auto& branch : journey->steps()[0]->branches) {
+    EXPECT_EQ(branch->steps()[0]->time_out_duration, base::Minutes(5));
+  }
+  EXPECT_EQ(journey->steps()[1]->time_out_duration, kDefaultCujStepTimeout);
+}
+
 TEST_F(CriticalUserJourneySessionTest,
        HatsEntryPointReportsMatchedTriggerLabel) {
   auto journey =
@@ -663,6 +715,16 @@ TEST_F(CriticalUserJourneySessionDeathTest,
   EXPECT_CHECK_DEATH(
       Branch(kTestElementId2, ui::InteractionSequence::StepType::kHidden, 3)
           .SetExitBranch(base::Seconds(2), base::Seconds(2)));
+}
+
+TEST_F(CriticalUserJourneySessionDeathTest, NonPositiveStepTimeoutCrashes) {
+  EXPECT_CHECK_DEATH(CriticalUserJourney::Builder(&kTestJourney)
+                         .AddStep(kTestElementId1,
+                                  ui::InteractionSequence::StepType::kShown, 1)
+                         .SetStepTimeout(base::TimeDelta()));
+  EXPECT_CHECK_DEATH(
+      Branch(kTestElementId1, ui::InteractionSequence::StepType::kShown, 1)
+          .SetTimeout(base::TimeDelta()));
 }
 
 }  // namespace metrics

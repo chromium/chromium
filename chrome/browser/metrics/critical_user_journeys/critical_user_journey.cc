@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/time/time.h"
 #include "ui/base/interaction/interaction_sequence.h"
 
@@ -67,7 +68,7 @@ CriticalUserJourney::Builder& CriticalUserJourney::Builder::AddStep(
   auto step = std::make_unique<CriticalUserJourneyStep>();
   step->metric_id = metric_id;
   step->type = type;
-  step->time_out_duration = base::Minutes(2);
+  step->time_out_duration = kDefaultCujStepTimeout;
   step->context = context_mode;
   if (context_mode == ui::InteractionSequence::ContextMode::kAny) {
     step->in_any_context = true;
@@ -111,10 +112,28 @@ CriticalUserJourney::Builder& CriticalUserJourney::Builder::AddAnyOf(
     built_branch->steps()[0]->min_dwell_duration = branch.min_dwell_duration;
     built_branch->steps()[0]->max_dwell_duration = branch.max_dwell_duration;
     built_branch->steps()[0]->in_exit_branch_group = has_exit_branch;
+    built_branch->steps()[0]->time_out_duration = branch.time_out_duration;
     built_branch->steps()[0]->hats_entry_point = branch.hats_entry_point;
     step->branches.push_back(std::move(built_branch));
   }
   steps_.push_back(std::move(step));
+  return *this;
+}
+
+CriticalUserJourney::Builder& CriticalUserJourney::Builder::SetStepTimeout(
+    base::TimeDelta timeout) {
+  CHECK_GT(timeout, base::TimeDelta());
+  CHECK(!steps_.empty()) << "SetStepTimeout() requires a preceding step.";
+  CriticalUserJourneyStep* step = steps_.back().get();
+  if (step->branches.empty()) {
+    step->time_out_duration = timeout;
+    return *this;
+  }
+  for (const auto& branch : step->branches) {
+    for (const auto& branch_step : branch->steps()) {
+      branch_step->time_out_duration = timeout;
+    }
+  }
   return *this;
 }
 
