@@ -1844,6 +1844,12 @@ class NavCaptureParameterizedBrowserTest
       // True if a navigation is expected, which will trigger a dom reply.
       bool expect_navigation = true;
 
+      if (GetNavigationElement() != NavigationElement::kElementIntentPicker) {
+        // Page load completion does not guarantee that the renderer is ready
+        // for synthetic mouse input.
+        content::ReadyForInputObserver(contents_a).Wait();
+      }
+
       if (GetNavigationElement() == NavigationElement::kElementIntentPicker) {
         ASSERT_NO_FATAL_FAILURE(ClickIntentPickerChip(browser_a));
 
