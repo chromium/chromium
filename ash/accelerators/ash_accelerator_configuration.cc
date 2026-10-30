@@ -195,6 +195,8 @@ void AshAcceleratorConfiguration::OnActiveUserPrefServiceChanged(
     return;
   }
 
+  const bool had_overrides = !accelerator_overrides_.empty();
+
   // Store a copy of the pref overrides.
   accelerator_overrides_ =
       pref_service->GetDict(prefs::kShortcutCustomizationOverrides).Clone();
@@ -207,7 +209,10 @@ void AshAcceleratorConfiguration::OnActiveUserPrefServiceChanged(
     VLOG(1) << "ResetShortcutCustomizations flag enabled, "
             << "resetting all shortcuts.";
     RestoreAllDefaults();
-  } else {
+  } else if (had_overrides || !accelerator_overrides_.empty()) {
+    // Only reset and apply overrides when overrides exist or existed
+    // previously, to avoid redundantly re-registering all accelerators on
+    // login.
     ResetAllAccelerators();
     ApplyPrefOverrides();
   }
