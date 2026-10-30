@@ -1457,18 +1457,19 @@ TEST_P(ScrollingTest, NonCompositedMainThreadRepaintWithTrackedElement) {
 
   const cc::Layer* cc_layer =
       ScrollingContentsLayerByDOMElementId("composited");
-  EXPECT_EQ(2, cc_layer->tracked_element_rects().size());
+  ASSERT_TRUE(cc_layer->tracked_element_rects().has_value());
+  EXPECT_EQ(2, cc_layer->tracked_element_rects()->size());
 
   // Check the data for feature 0.
-  ASSERT_TRUE(cc_layer->tracked_element_rects().contains(feature_0));
-  auto feature_0_rects = cc_layer->tracked_element_rects().at(feature_0);
+  ASSERT_TRUE(cc_layer->tracked_element_rects()->contains(feature_0));
+  auto feature_0_rects = cc_layer->tracked_element_rects()->at(feature_0);
   ASSERT_EQ(1, feature_0_rects.size());
   EXPECT_EQ(element_id, feature_0_rects[0].id);
   EXPECT_EQ(gfx::Rect(0, 0, 50, 300), feature_0_rects[0].visible_bounds);
 
   // Check the data for feature 1.
-  ASSERT_TRUE(cc_layer->tracked_element_rects().contains(feature_1));
-  auto feature_1_rects = cc_layer->tracked_element_rects().at(feature_1);
+  ASSERT_TRUE(cc_layer->tracked_element_rects()->contains(feature_1));
+  auto feature_1_rects = cc_layer->tracked_element_rects()->at(feature_1);
   ASSERT_EQ(1, feature_1_rects.size());
   EXPECT_EQ(element_id, feature_1_rects[0].id);
   EXPECT_EQ(gfx::Rect(0, 0, 50, 300), feature_1_rects[0].visible_bounds);
@@ -1485,14 +1486,14 @@ TEST_P(ScrollingTest, NonCompositedMainThreadRepaintWithTrackedElement) {
   ForceFullCompositingUpdate();
 
   // Check the data for feature 0.
-  ASSERT_TRUE(cc_layer->tracked_element_rects().contains(feature_0));
-  feature_0_rects = cc_layer->tracked_element_rects().at(feature_0);
+  ASSERT_TRUE(cc_layer->tracked_element_rects()->contains(feature_0));
+  feature_0_rects = cc_layer->tracked_element_rects()->at(feature_0);
   ASSERT_EQ(1, feature_0_rects.size());
   EXPECT_EQ(gfx::Rect(0, 0, 50, 200), feature_0_rects[0].visible_bounds);
 
   // Check the data for feature 1.
-  ASSERT_TRUE(cc_layer->tracked_element_rects().contains(feature_1));
-  feature_1_rects = cc_layer->tracked_element_rects().at(feature_1);
+  ASSERT_TRUE(cc_layer->tracked_element_rects()->contains(feature_1));
+  feature_1_rects = cc_layer->tracked_element_rects()->at(feature_1);
   ASSERT_EQ(1, feature_1_rects.size());
   EXPECT_EQ(element_id, feature_1_rects[0].id);
   EXPECT_EQ(gfx::Rect(0, 0, 50, 200), feature_1_rects[0].visible_bounds);
@@ -1509,14 +1510,14 @@ TEST_P(ScrollingTest, NonCompositedMainThreadRepaintWithTrackedElement) {
   ForceFullCompositingUpdate();
 
   // Check the data for feature 0.
-  ASSERT_TRUE(cc_layer->tracked_element_rects().contains(feature_0));
-  feature_0_rects = cc_layer->tracked_element_rects().at(feature_0);
+  ASSERT_TRUE(cc_layer->tracked_element_rects()->contains(feature_0));
+  feature_0_rects = cc_layer->tracked_element_rects()->at(feature_0);
   ASSERT_EQ(1, feature_0_rects.size());
   EXPECT_EQ(gfx::Rect(0, 0, 50, 100), feature_0_rects[0].visible_bounds);
 
   // Check the data for feature 1.
-  ASSERT_TRUE(cc_layer->tracked_element_rects().contains(feature_1));
-  feature_1_rects = cc_layer->tracked_element_rects().at(feature_1);
+  ASSERT_TRUE(cc_layer->tracked_element_rects()->contains(feature_1));
+  feature_1_rects = cc_layer->tracked_element_rects()->at(feature_1);
   ASSERT_EQ(1, feature_1_rects.size());
   EXPECT_EQ(element_id, feature_1_rects[0].id);
   EXPECT_EQ(gfx::Rect(0, 0, 50, 100), feature_1_rects[0].visible_bounds);
@@ -1534,7 +1535,7 @@ TEST_P(ScrollingTest, NonCompositedMainThreadRepaintWithTrackedElement) {
   document.getElementById(AtomicString("tracked_element"))
       ->ClearTrackedElementSubRect(feature_1);
   ForceFullCompositingUpdate();
-  EXPECT_EQ(0, cc_layer->tracked_element_rects().size());
+  EXPECT_EQ(0, cc_layer->tracked_element_rects()->size());
 }
 
 TEST_P(ScrollingTest, TrackedElementIframeWithoutPaintedContent) {

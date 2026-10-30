@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -44,11 +43,6 @@ std::string TrackedElementRectsToString(const TrackedElementRects& bounds) {
     element_strings.push_back(s);
   }
   return base::JoinString(element_strings, "; ");
-}
-
-const TrackedElementRects& TrackedElementRectsEmpty() {
-  static const base::NoDestructor<TrackedElementRects> empty_rects;
-  return *empty_rects;
 }
 
 }  // namespace viz

@@ -16,6 +16,7 @@
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/types/optional_ref.h"
 #include "cc/base/protected_sequence_synchronizer.h"
 #include "cc/base/region.h"
 #include "cc/cc_export.h"
@@ -537,11 +538,12 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
   // Set or get data for tracked elements on this layer. The geometry provided
   // is in layer space.
   void SetTrackedElementRects(viz::TrackedElementRects rects);
-  const viz::TrackedElementRects& tracked_element_rects() const {
+  base::optional_ref<const viz::TrackedElementRects> tracked_element_rects()
+      const {
     if (const auto& rare_inputs = inputs_.Read(*this).rare_inputs) {
       return rare_inputs->tracked_element_rects;
     }
-    return viz::TrackedElementRectsEmpty();
+    return std::nullopt;
   }
 
   // Set or get the set of blocking wheel rects of this layer. The

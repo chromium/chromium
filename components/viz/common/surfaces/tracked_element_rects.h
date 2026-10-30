@@ -90,11 +90,6 @@ using TrackedElementRects =
 VIZ_COMMON_EXPORT std::string TrackedElementRectsToString(
     const TrackedElementRects& rects);
 
-// Returns a reference to a global empty TrackedElementRects. This should
-// only be used for functions that need to return a reference to a
-// TrackedElementRects, not instead of the default constructor.
-VIZ_COMMON_EXPORT const TrackedElementRects& TrackedElementRectsEmpty();
-
 }  // namespace viz
 
 #endif  // COMPONENTS_VIZ_COMMON_SURFACES_TRACKED_ELEMENT_RECTS_H_
