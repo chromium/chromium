@@ -31,6 +31,8 @@
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom-forward.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace content {
 struct DropData;
@@ -314,6 +316,10 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
 
   zoom::ZoomController* GetZoomController() const;
 
+  // Gets the zoom controller corresponding to the owner's web contents and
+  // the outermost main frame of the owner RFH.
+  zoom::ZoomController* GetEmbedderZoomController();
+
   // Convenience method for `CreateInnerPage` implementations when not creating
   // a guest.
   void RejectGuestCreation(std::unique_ptr<GuestViewBase> owned_this,
@@ -440,6 +446,18 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // consist of an integral number of physical pixels (hence |physical_pixels|
   // is represented as an int).
   double PhysicalPixelsToLogicalPixels(int physical_pixels) const;
+
+  // Whether autosize constraints, and the sizes reported due to autosize, are
+  // in the embedder's logical (CSS) pixels rather than physical pixels. True
+  // iff `kGuestViewAutoSizeInLogicalPixels` is enabled. If so, sizes reported
+  // due to autosize should be converted with AutoSizeToLogicalPixels().
+  static bool AutoSizeUsesLogicalPixels();
+
+  // Converts a size passed to GuestSizeChangedDueToAutoSize() from physical to
+  // logical pixels. Sizes within the physical constraints (which include all
+  // autosize results) are clamped to the logical constraints, so rounding can't
+  // push them outside.
+  gfx::SizeF AutoSizeToLogicalPixels(const gfx::Size& physical_size) const;
 
   void SetGuestZoomLevelToMatchEmbedder();
 
@@ -645,6 +663,12 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
 
   // The minimum size constraints of the container element in autosize mode.
   gfx::Size min_auto_size_;
+
+  // If AutoSizeUsesLogicalPixels(), the autosize constraints as given, in
+  // logical pixels. `min_auto_size_` and `max_auto_size_` then hold them
+  // converted to physical pixels at the embedder's current zoom.
+  gfx::Size logical_min_auto_size_;
+  gfx::Size logical_max_auto_size_;
 
   // The size that will be used when autosize mode is disabled.
   gfx::Size normal_size_;

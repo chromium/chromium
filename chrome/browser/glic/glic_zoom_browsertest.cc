@@ -9,13 +9,17 @@
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic_page_handler.h"
+#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,6 +27,8 @@
 #include "ui/base/accelerators/accelerator.h"
 
 namespace glic {
+
+const double kZoomEpsilon = 0.001;
 
 class GlicZoomBrowserTest : public GlicBrowserTest,
                             public testing::WithParamInterface<bool> {
@@ -48,7 +54,8 @@ class GlicZoomBrowserTest : public GlicBrowserTest,
       double relative_factor,
       std::string_view message = std::string_view()) {
     return RunUntilNear<double>([&]() { return GetZoomLevel(instance); },
-                                base_zoom * relative_factor, 0.001, message);
+                                base_zoom * relative_factor, kZoomEpsilon,
+                                message);
   }
 
   [[nodiscard]] TestResult<> WaitForPrefZoomPercent(int expected_percent) {
@@ -95,7 +102,7 @@ IN_PROC_BROWSER_TEST_P(GlicZoomBrowserTest, ZoomHotkeys) {
 
   const double base_zoom = GetZoomLevel(instance);
   if (IsNoWebview()) {
-    EXPECT_NEAR(base_zoom, 1.0, 0.001);
+    EXPECT_NEAR(base_zoom, 1.0, kZoomEpsilon);
   }
 
   // Trigger accelerator for zoom-in.
@@ -182,7 +189,7 @@ IN_PROC_BROWSER_TEST_P(GlicZoomBrowserTest, MAYBE_ZoomScroll) {
 
   const double base_zoom = GetZoomLevel(instance);
   if (IsNoWebview()) {
-    EXPECT_NEAR(base_zoom, 1.0, 0.001);
+    EXPECT_NEAR(base_zoom, 1.0, kZoomEpsilon);
   }
 
   // Simulate Ctrl+Wheel up (zoom in) and verify zoom level increased.
@@ -209,7 +216,7 @@ IN_PROC_BROWSER_TEST_P(GlicZoomBrowserTest, ZoomHotkeysPersisted) {
 
   const double base_zoom = GetZoomLevel(instance);
   if (IsNoWebview()) {
-    EXPECT_NEAR(base_zoom, 1.0, 0.001);
+    EXPECT_NEAR(base_zoom, 1.0, kZoomEpsilon);
   }
 
   // Trigger accelerator for zoom-in.
@@ -251,7 +258,7 @@ IN_PROC_BROWSER_TEST_P(GlicZoomBrowserTest, ZoomChangeCountMetric) {
 
   const double base_zoom = GetZoomLevel(instance);
   if (IsNoWebview()) {
-    EXPECT_NEAR(base_zoom, 1.0, 0.001);
+    EXPECT_NEAR(base_zoom, 1.0, kZoomEpsilon);
   }
 
   // 1. Zoom in: 1.0 -> 1.1 (count = 1).
@@ -277,6 +284,31 @@ IN_PROC_BROWSER_TEST_P(GlicZoomBrowserTest, ZoomChangeCountMetric) {
                                InstanceRemovalReason::kArchived);
 
   histogram_tester.ExpectUniqueSample("Glic.Instance.ZoomChangeCount", 3, 1);
+}
+
+// The <webview> guest's effective zoom should match its embedder's
+// (chrome://glic). The guest is matched to the embedder after it navigates (see
+// guest_view::kGuestViewMatchEmbedderZoomAfterNavigation). On Android, the
+// effective level includes a platform adjustment (e.g. for the display on
+// desktop devices) that applies to the guest too, so copying the embedder's
+// effective level would apply it twice.
+IN_PROC_BROWSER_TEST_P(GlicZoomBrowserTest, GuestZoomMatchesEmbedder) {
+  if (IsNoWebview()) {
+    GTEST_SKIP() << "Only applies to the <webview> guest";
+  }
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  ASSERT_OK(WaitForGlicClient(instance));
+
+  content::WebContents* embedder = instance->host().webui_contents();
+  content::RenderFrameHost* guest = instance->host().GetGuestMainFrame();
+  ASSERT_TRUE(embedder);
+  ASSERT_TRUE(guest);
+  EXPECT_NEAR(blink::ZoomLevelToZoomFactor(
+                  content::HostZoomMap::GetZoomLevel(embedder)),
+              blink::ZoomLevelToZoomFactor(content::HostZoomMap::GetZoomLevel(
+                  content::WebContents::FromRenderFrameHost(guest),
+                  guest->GetGlobalId())),
+              kZoomEpsilon);
 }
 
 INSTANTIATE_TEST_SUITE_P(

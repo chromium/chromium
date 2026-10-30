@@ -17,7 +17,6 @@ extern const char kAttributeMinHeight[];
 extern const char kAttributeMinWidth[];
 extern const char kElementWidth[];
 extern const char kElementHeight[];
-extern const char kElementSizeIsLogical[];
 
 // Events.
 extern const char kEventResize[];

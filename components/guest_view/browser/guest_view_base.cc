@@ -14,11 +14,14 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
+#include "build/build_config.h"
 #include "components/guest_view/browser/guest_view_event.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/common/guest_view_constants.h"
+#include "components/guest_view/common/guest_view_features.h"
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/file_select_listener.h"
+#include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/navigation_handle.h"
@@ -36,6 +39,11 @@
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
+#include "ui/gfx/geometry/size_conversions.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "net/base/url_util.h"
+#endif
 
 using content::WebContents;
 
@@ -50,6 +58,44 @@ void DestroyGuestIfUnattached(GuestViewBase* guest) {
   std::unique_ptr<GuestViewBase> owned_guest =
       guest->GetGuestViewManager()->TransferOwnership(guest);
   owned_guest.reset();
+}
+
+// Returns the zoom level of `rfh`, whose ZoomController is `zoom_controller`,
+// as stored. This is what to copy to another frame so that it matches. It can
+// differ from the effective level from ZoomController::GetZoomLevel(): on
+// Android, HostZoomMap::GetZoomLevel() (and so ZoomController::GetZoomLevel())
+// multiplies per-origin zoom factors by a platform adjustment (e.g. for the
+// display on desktop devices; see
+// HostZoomMapImpl::GetZoomLevelForHostAndSchemeAndroid()). Reading the stored
+// level is equivalent to dividing that adjustment out. Copying the effective
+// level would apply it twice, as the frame it's copied to gets the same
+// adjustment. GetZoomLevel() deliberately returns the adjusted level, since
+// that's what the page is rendered at, and e.g. the zoom UI, the <webview>
+// getZoom() API and the autosize conversion (see
+// GuestViewBase::GetEmbedderZoomFactor()) rely on it. So the stored level is
+// read here rather than changing GetZoomLevel() for every caller.
+double GetStoredZoomLevel(const zoom::ZoomController& zoom_controller,
+                          content::RenderFrameHost* rfh) {
+  const double zoom_level = zoom_controller.GetZoomLevel();
+#if BUILDFLAG(IS_ANDROID)
+  if (zoom_controller.zoom_mode() == zoom::ZoomController::ZOOM_MODE_MANUAL) {
+    // In manual mode, the ZoomController keeps its own level, which isn't
+    // adjusted.
+    return zoom_level;
+  }
+  content::HostZoomMap* zoom_map =
+      content::HostZoomMap::Get(rfh->GetSiteInstance());
+  const content::GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
+  if (zoom_map->UsesTemporaryZoomLevel(rfh_id)) {
+    // Temporary (per-frame) levels aren't adjusted either.
+    return zoom_level;
+  }
+  const GURL url = content::HostZoomMap::GetURLForRenderFrameHost(rfh_id);
+  return zoom_map->GetZoomLevelForHostAndScheme(url.GetScheme(),
+                                                net::GetHostOrSpecFromURL(url));
+#else
+  return zoom_level;
+#endif
 }
 
 }  // namespace
@@ -308,6 +354,12 @@ zoom::ZoomController* GuestViewBase::GetZoomController() const {
   return zoom::ZoomController::FromWebContents(web_contents());
 }
 
+zoom::ZoomController* GuestViewBase::GetEmbedderZoomController() {
+  return zoom::ZoomController::FromWebContentsAndRenderFrameHost(
+      owner_web_contents(),
+      owner_rfh()->GetOutermostMainFrame()->GetGlobalId());
+}
+
 void GuestViewBase::DispatchOnResizeEvent(const gfx::Size& old_size,
                                           const gfx::Size& new_size) {
   if (new_size == old_size) {
@@ -335,8 +387,24 @@ gfx::Size GuestViewBase::GetDefaultSize() const {
 
 void GuestViewBase::SetSize(const SetSizeParams& params) {
   bool enable_auto_size = params.enable_auto_size.value_or(auto_size_enabled_);
-  gfx::Size min_size = params.min_size.value_or(min_auto_size_);
-  gfx::Size max_size = params.max_size.value_or(max_auto_size_);
+  gfx::Size min_size;
+  gfx::Size max_size;
+  if (AutoSizeUsesLogicalPixels()) {
+    // The constraints are in logical pixels; missing ones fall back to the
+    // last used ones.
+    logical_min_auto_size_ = params.min_size.value_or(logical_min_auto_size_);
+    logical_max_auto_size_ = params.max_size.value_or(logical_max_auto_size_);
+    // Mirror the validation applied to the physical constraints below.
+    const gfx::Size logical_min = logical_min_auto_size_;
+    logical_min_auto_size_.SetToMin(logical_max_auto_size_);
+    logical_max_auto_size_.SetToMax(logical_min);
+    const double zoom_factor = GetEmbedderZoomFactor();
+    min_size = gfx::ScaleToRoundedSize(logical_min_auto_size_, zoom_factor);
+    max_size = gfx::ScaleToRoundedSize(logical_max_auto_size_, zoom_factor);
+  } else {
+    min_size = params.min_size.value_or(min_auto_size_);
+    max_size = params.max_size.value_or(max_auto_size_);
+  }
 
   if (params.normal_size) {
     normal_size_ = *params.normal_size;
@@ -727,6 +795,38 @@ double GuestViewBase::PhysicalPixelsToLogicalPixels(int physical_pixels) const {
   return physical_pixels / zoom_factor;
 }
 
+// static
+bool GuestViewBase::AutoSizeUsesLogicalPixels() {
+  return base::FeatureList::IsEnabled(kGuestViewAutoSizeInLogicalPixels);
+}
+
+gfx::SizeF GuestViewBase::AutoSizeToLogicalPixels(
+    const gfx::Size& physical_size) const {
+  gfx::SizeF logical_size(
+      PhysicalPixelsToLogicalPixels(physical_size.width()),
+      PhysicalPixelsToLogicalPixels(physical_size.height()));
+  // Autosize results are within the physical constraints, but rounding when
+  // converting the constraints to physical pixels can put them slightly outside
+  // the logical ones, which the embedder may reject, so clamp them. For any
+  // size within the physical constraints, clamping only undoes that rounding
+  // (at most half a physical pixel). This is only called from
+  // GuestSizeChangedDueToAutoSize(), but despite that method's name, not every
+  // size it's given was produced by autosize: its `old_size` may predate
+  // autosize being enabled, and SetSize() also calls it (via
+  // UpdateGuestSize()) with the normal size when autosize is disabled. Such a
+  // size may be well outside the constraints, and is reported as it is.
+  const bool within_constraints =
+      physical_size.width() >= min_auto_size_.width() &&
+      physical_size.height() >= min_auto_size_.height() &&
+      physical_size.width() <= max_auto_size_.width() &&
+      physical_size.height() <= max_auto_size_.height();
+  if (within_constraints) {
+    logical_size.SetToMax(gfx::SizeF(logical_min_auto_size_));
+    logical_size.SetToMin(gfx::SizeF(logical_max_auto_size_));
+  }
+  return logical_size;
+}
+
 void GuestViewBase::GuestDidStopLoading() {
   if (IsPreferredSizeModeEnabled()) {
     GetGuestMainFrame()->GetRenderViewHost()->EnablePreferredSizeMode();
@@ -1083,14 +1183,37 @@ void GuestViewBase::OnZoomChanged(
            : data.web_contents == embedder_web_contents());
   if (embedder_zoom_changed) {
     // The embedder's zoom level has changed.
+    if (auto_size_enabled_ && AutoSizeUsesLogicalPixels()) {
+      // The logical constraints map to different physical sizes at the new
+      // zoom, so re-apply them. Omitting the constraints (and everything else)
+      // from the params makes SetSize() re-apply the existing logical ones,
+      // converted at the new zoom. This depends only on the embedder's zoom,
+      // so it happens even if the guest's zoom already matches (see below).
+      SetSize(SetSizeParams());
+    }
     auto* guest_zoom_controller = GetZoomController();
-    if (blink::ZoomValuesEqual(data.new_zoom_level,
-                               guest_zoom_controller->GetZoomLevel())) {
+    double embedder_zoom_level = data.new_zoom_level;
+    double guest_zoom_level = guest_zoom_controller->GetZoomLevel();
+    auto* embedder_zoom_controller = GetEmbedderZoomController();
+    if (base::FeatureList::IsEnabled(
+            kGuestViewMatchEmbedderZoomAfterNavigation) &&
+        embedder_zoom_controller) {
+      // On Android, these levels may not be comparable: `data.new_zoom_level`
+      // is the embedder's level as stored if its ZoomController made the
+      // change, but its adjusted level otherwise (e.g. if HostZoomMap was
+      // changed directly), whereas the guest's GetZoomLevel() is adjusted (see
+      // GetStoredZoomLevel()). So compare, and copy, the levels as stored.
+      embedder_zoom_level = GetStoredZoomLevel(
+          *embedder_zoom_controller, owner_rfh()->GetOutermostMainFrame());
+      guest_zoom_level =
+          GetStoredZoomLevel(*guest_zoom_controller, GetGuestMainFrame());
+    }
+    if (blink::ZoomValuesEqual(embedder_zoom_level, guest_zoom_level)) {
       return;
     }
     // When the embedder's zoom level doesn't match the guest's, then update the
     // guest's zoom level to match.
-    guest_zoom_controller->SetZoomLevel(data.new_zoom_level);
+    guest_zoom_controller->SetZoomLevel(embedder_zoom_level);
     return;
   }
 
@@ -1255,36 +1378,32 @@ void GuestViewBase::SetUpSizing(const base::DictValue& params) {
       params.FindBool(kAttributeAutoSize);
   bool auto_size_enabled = auto_size_enabled_opt.value_or(auto_size_enabled_);
 
+  // Missing constraints fall back to the last used ones, in the units SetSize()
+  // expects. E.g. the params on attachment may omit them.
+  const bool use_logical_fallback = AutoSizeUsesLogicalPixels();
+  const gfx::Size& fallback_max_size =
+      use_logical_fallback ? logical_max_auto_size_ : max_auto_size_;
+  const gfx::Size& fallback_min_size =
+      use_logical_fallback ? logical_min_auto_size_ : min_auto_size_;
+
   int max_height =
-      params.FindInt(kAttributeMaxHeight).value_or(max_auto_size_.height());
+      params.FindInt(kAttributeMaxHeight).value_or(fallback_max_size.height());
   int max_width =
-      params.FindInt(kAttributeMaxWidth).value_or(max_auto_size_.width());
+      params.FindInt(kAttributeMaxWidth).value_or(fallback_max_size.width());
 
   int min_height =
-      params.FindInt(kAttributeMinHeight).value_or(min_auto_size_.height());
+      params.FindInt(kAttributeMinHeight).value_or(fallback_min_size.height());
   int min_width =
-      params.FindInt(kAttributeMinWidth).value_or(min_auto_size_.width());
+      params.FindInt(kAttributeMinWidth).value_or(fallback_min_size.width());
 
   double element_height = params.FindDouble(kElementHeight).value_or(0.0);
   double element_width = params.FindDouble(kElementWidth).value_or(0.0);
 
   // Set the normal size to the element size so that the guestview will fit
-  // the element initially if autosize is disabled.
-  int normal_height = normal_size_.height();
-  int normal_width = normal_size_.width();
-  // If the element size was provided in logical units (versus physical), then
-  // it will be converted to physical units.
-  std::optional<bool> element_size_is_logical_opt =
-      params.FindBool(kElementSizeIsLogical);
-  bool element_size_is_logical = element_size_is_logical_opt.value_or(false);
-  if (element_size_is_logical) {
-    // Convert the element size from logical pixels to physical pixels.
-    normal_height = LogicalPixelsToPhysicalPixels(element_height);
-    normal_width = LogicalPixelsToPhysicalPixels(element_width);
-  } else {
-    normal_height = lround(element_height);
-    normal_width = lround(element_width);
-  }
+  // the element initially if autosize is disabled. The element size is in the
+  // embedder's logical (CSS) pixels, so convert it to physical pixels.
+  int normal_height = LogicalPixelsToPhysicalPixels(element_height);
+  int normal_width = LogicalPixelsToPhysicalPixels(element_width);
 
   SetSizeParams set_size_params;
   set_size_params.enable_auto_size = auto_size_enabled;
@@ -1298,15 +1417,16 @@ void GuestViewBase::SetUpSizing(const base::DictValue& params) {
 }
 
 void GuestViewBase::SetGuestZoomLevelToMatchEmbedder() {
-  auto* embedder_zoom_controller =
-      zoom::ZoomController::FromWebContentsAndRenderFrameHost(
-          owner_web_contents(),
-          owner_rfh()->GetOutermostMainFrame()->GetGlobalId());
+  auto* embedder_zoom_controller = GetEmbedderZoomController();
   if (!embedder_zoom_controller) {
     return;
   }
 
-  GetZoomController()->SetZoomLevel(embedder_zoom_controller->GetZoomLevel());
+  GetZoomController()->SetZoomLevel(
+      base::FeatureList::IsEnabled(kGuestViewMatchEmbedderZoomAfterNavigation)
+          ? GetStoredZoomLevel(*embedder_zoom_controller,
+                               owner_rfh()->GetOutermostMainFrame())
+          : embedder_zoom_controller->GetZoomLevel());
 }
 
 void GuestViewBase::StartTrackingEmbedderZoomLevel() {
@@ -1314,10 +1434,7 @@ void GuestViewBase::StartTrackingEmbedderZoomLevel() {
     return;
   }
 
-  auto* embedder_zoom_controller =
-      zoom::ZoomController::FromWebContentsAndRenderFrameHost(
-          owner_web_contents(),
-          owner_rfh()->GetOutermostMainFrame()->GetGlobalId());
+  auto* embedder_zoom_controller = GetEmbedderZoomController();
 
   // Chrome Apps do not have a ZoomController.
   if (!embedder_zoom_controller) {
@@ -1337,10 +1454,9 @@ void GuestViewBase::StopTrackingEmbedderZoomLevel() {
   if (!owner_web_contents()) {
     return;
   }
-  auto* embedder_zoom_controller =
-      zoom::ZoomController::FromWebContentsAndRenderFrameHost(
-          owner_web_contents(),
-          owner_rfh()->GetOutermostMainFrame()->GetGlobalId());
+
+  auto* embedder_zoom_controller = GetEmbedderZoomController();
+
   // Chrome Apps do not have a ZoomController.
   if (!embedder_zoom_controller) {
     return;

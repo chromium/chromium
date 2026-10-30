@@ -30,6 +30,14 @@ export class EventDict {
     return this.data.storage[key].doubleValue;
   }
 
+  // Returns the value whether it was sent as an int or a double.
+  getNumber(key: string): number {
+    const value =
+        this.data.storage[key]?.intValue ?? this.data.storage[key]?.doubleValue;
+    assertNonNull(value);
+    return value;
+  }
+
   getDict(key: string): EventDict {
     assertNonNull(this.data.storage[key]?.dictionaryValue);
     return new EventDict(this.data.storage[key].dictionaryValue);

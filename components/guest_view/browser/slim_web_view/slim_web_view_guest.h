@@ -129,6 +129,7 @@ class SlimWebViewGuest : public GuestView<SlimWebViewGuest> {
                        GuestPageCreatedCallback callback) final;
   void GuestViewDidStopLoading() final;
   void GuestZoomChanged(double old_zoom_level, double new_zoom_level) final;
+  bool ZoomPropagatesFromEmbedderToGuest() const final;
 
   void LoadAbort(bool is_top_level, const GURL& url, net::Error error_code);
 
@@ -138,6 +139,9 @@ class SlimWebViewGuest : public GuestView<SlimWebViewGuest> {
 
   std::optional<OriginCheckParams> allowed_origins_params_;
   bool is_overriding_user_agent_ = false;
+  // Whether SetZoom() has been called, after which the guest no longer follows
+  // the embedder's zoom.
+  bool did_set_explicit_zoom_ = false;
 
   base::WeakPtrFactory<SlimWebViewGuest> weak_ptr_factory_{this};
 };

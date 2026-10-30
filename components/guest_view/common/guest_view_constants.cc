@@ -14,7 +14,6 @@ const char kAttributeMinHeight[] = "minheight";
 const char kAttributeMinWidth[] = "minwidth";
 const char kElementWidth[] = "elementWidth";
 const char kElementHeight[] = "elementHeight";
-const char kElementSizeIsLogical[] = "elementSizeIsLogical";
 
 // Events.
 const char kEventResize[] = "guestViewInternal.onResize";

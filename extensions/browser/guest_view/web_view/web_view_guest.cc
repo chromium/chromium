@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/user_metrics.h"
@@ -25,6 +26,7 @@
 #include "components/guest_view/browser/guest_view_event.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/common/guest_view_constants.h"
+#include "components/guest_view/common/guest_view_features.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/permissions/permission_util.h"
@@ -778,10 +780,20 @@ void WebViewGuest::WebContentsDestroyed() {
 void WebViewGuest::GuestSizeChangedDueToAutoSize(const gfx::Size& old_size,
                                                  const gfx::Size& new_size) {
   base::DictValue args;
-  args.Set(webview::kOldHeight, old_size.height());
-  args.Set(webview::kOldWidth, old_size.width());
-  args.Set(webview::kNewHeight, new_size.height());
-  args.Set(webview::kNewWidth, new_size.width());
+  if (AutoSizeUsesLogicalPixels()) {
+    // The <webview> applies these to its style as CSS px.
+    const gfx::SizeF logical_old_size = AutoSizeToLogicalPixels(old_size);
+    const gfx::SizeF logical_new_size = AutoSizeToLogicalPixels(new_size);
+    args.Set(webview::kOldHeight, logical_old_size.height());
+    args.Set(webview::kOldWidth, logical_old_size.width());
+    args.Set(webview::kNewHeight, logical_new_size.height());
+    args.Set(webview::kNewWidth, logical_new_size.width());
+  } else {
+    args.Set(webview::kOldHeight, old_size.height());
+    args.Set(webview::kOldWidth, old_size.width());
+    args.Set(webview::kNewHeight, new_size.height());
+    args.Set(webview::kNewWidth, new_size.width());
+  }
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       webview::kEventSizeChanged, std::move(args)));
 }
@@ -1265,6 +1277,13 @@ void WebViewGuest::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!IsObservedNavigationWithinGuest(navigation_handle)) {
     return;
+  }
+  if (base::FeatureList::IsEnabled(
+          guest_view::kGuestViewMatchEmbedderZoomAfterNavigation)) {
+    // Matches the guest's zoom to the embedder's, unless an explicit zoom was
+    // set. This happens before any pending (initial) zoom is applied below, so
+    // that it takes precedence.
+    GuestViewBase::DidFinishNavigation(navigation_handle);
   }
   if (navigation_handle->IsErrorPage() || !navigation_handle->HasCommitted()) {
     // Suppress loadabort for "mailto" URLs.

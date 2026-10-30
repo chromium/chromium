@@ -273,6 +273,21 @@ void ConfigureGuestZoom(content::WebContents& guest_contents) {
     double zoom_factor = GetZoomFactor(profile->GetPrefs());
     double zoom_level = blink::ZoomFactorToZoomLevel(zoom_factor);
     content::HostZoomMap::SetZoomLevel(&guest_contents, zoom_level);
+    // Glic's zoom is its own (see prefs::kGlicZoomLevel), not the embedder's.
+    // Setting it on the <webview> guest marks it as explicit, so the guest
+    // doesn't take the embedder's zoom instead (e.g. after it navigates; see
+    // guest_view::kGuestViewMatchEmbedderZoomAfterNavigation).
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+    if (auto* guest =
+            extensions::WebViewGuest::FromWebContents(&guest_contents)) {
+      guest->SetZoom(zoom_factor);
+    }
+#else
+    if (auto* guest =
+            guest_view::SlimWebViewGuest::FromWebContents(&guest_contents)) {
+      guest->SetZoom(zoom_factor);
+    }
+#endif
   }
 #endif
 }

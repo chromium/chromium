@@ -198,10 +198,12 @@ class SizeChangedEvent extends Event {
       bubbles: true,
       cancelable: false,
     });
-    this.oldHeight = args.getInt('oldHeight');
-    this.oldWidth = args.getInt('oldWidth');
-    this.newHeight = args.getInt('newHeight');
-    this.newWidth = args.getInt('newWidth');
+    // Sizes are fractional CSS px when converted from physical pixels for a
+    // zoomed embedder, and whole otherwise.
+    this.oldHeight = args.getNumber('oldHeight');
+    this.oldWidth = args.getNumber('oldWidth');
+    this.newHeight = args.getNumber('newHeight');
+    this.newWidth = args.getNumber('newWidth');
   }
 
   handle(element: HTMLElement) {

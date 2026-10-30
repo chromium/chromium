@@ -17,6 +17,8 @@ build_webui_tests("build") {
   ]
 
   files = [
+    "webview_autosize_test.ts",
+    "webview_autosize_test_utils.ts",
     "webview_basic_test.ts",
     "webview_content_script_test.ts",
   ]

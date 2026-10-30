@@ -17,6 +17,7 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #include "components/permissions/permission_manager.h"
+#include "components/zoom/zoom_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -27,6 +28,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/device_form_factor.h"
 
 namespace {
@@ -79,8 +81,23 @@ class SlimWebviewBrowserTest : public WebUIMochaBrowserTest,
   }
 
  protected:
+  // The embedder (the test page) has its zoom multiplied by this factor before
+  // the tests run. The factor, and the page's devicePixelRatio from before, are
+  // passed to the tests so that they can check that the zoom took effect.
+  double embedder_zoom_factor_ = 1.0;
+
   void OnWebContentsAvailable(content::WebContents* web_contents) override {
     content::WebContentsObserver::Observe(web_contents);
+    const double unzoomed_device_pixel_ratio =
+        content::EvalJs(web_contents, "devicePixelRatio").ExtractDouble();
+    if (!blink::ZoomValuesEqual(embedder_zoom_factor_, 1.0)) {
+      auto* zoom_controller =
+          zoom::ZoomController::FromWebContents(web_contents);
+      ASSERT_TRUE(zoom_controller);
+      ASSERT_TRUE(zoom_controller->SetZoomLevel(blink::ZoomFactorToZoomLevel(
+          embedder_zoom_factor_ *
+          blink::ZoomLevelToZoomFactor(zoom_controller->GetZoomLevel()))));
+    }
     auto* profile =
         Profile::FromBrowserContext(web_contents->GetBrowserContext());
     auto* permission_manager = PermissionManagerFactory::GetForProfile(profile);
@@ -97,9 +114,11 @@ class SlimWebviewBrowserTest : public WebUIMochaBrowserTest,
     }
     std::string script = content::JsReplace(
         "window.canGetLocation = $1; window.testServerUrl = $2; "
-        "window.crossOriginUrl = $3;",
+        "window.crossOriginUrl = $3; window.embedderZoomFactor = $4; "
+        "window.unzoomedDevicePixelRatio = $5;",
         can_get_location, embedded_test_server()->base_url().spec(),
-        embedded_test_server()->GetURL(kCrossOrigin, "/").spec());
+        embedded_test_server()->GetURL(kCrossOrigin, "/").spec(),
+        embedder_zoom_factor_, unzoomed_device_pixel_ratio);
     ASSERT_TRUE(ExecJs(web_contents, script));
   }
 
@@ -160,4 +179,12 @@ class SlimWebviewBrowserTest : public WebUIMochaBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SlimWebviewBrowserTest, All) {
   RunTest("guest_view_shared/slim_webview_test.js", "mocha.run();");
+}
+
+// Runs the autosize tests with the embedder zoomed, so that the embedder's CSS
+// px and physical pixels differ.
+IN_PROC_BROWSER_TEST_F(SlimWebviewBrowserTest, AutoSizeWithZoomedEmbedder) {
+  embedder_zoom_factor_ = 1.5;
+  RunTest("guest_view_shared/slim_webview_test.js",
+          "runMochaSuite('AutoSize')");
 }

@@ -457,7 +457,11 @@ source_set("browser_tests") {
 
   if (!enable_extensions_core && enable_guest_view) {
     sources += [ "guest_view_shared/slim_webview_browsertest.cc" ]
-    deps += [ "//chrome/browser/permissions" ]
+    deps += [
+      "//chrome/browser/permissions",
+      "//components/zoom",
+      "//third_party/blink/public/common",
+    ]
 
     data += [
       "//chrome/test/data/simple.html",

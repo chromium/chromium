@@ -5,7 +5,10 @@ static_library("common") {
   sources = [
     "guest_view_constants.cc",
     "guest_view_constants.h",
+    "guest_view_features.cc",
+    "guest_view_features.h",
   ]
+  public_deps = [ "//base" ]
 }
 
 mojom("mojom") {

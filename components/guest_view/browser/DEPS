@@ -6,6 +6,7 @@ include_rules = [
   "+content/public/common",
   "+mojo/public/cpp",
   "+net/base/net_errors.h",
+  "+net/base/url_util.h",
   "+third_party/blink/public/common/page/page_zoom.h",
   "+third_party/blink/public/common/page/drag_operation.h",
   "+third_party/blink/public/common/input/web_gesture_event.h",
@@ -15,6 +16,7 @@ include_rules = [
   "+third_party/blink/public/mojom/page/draggable_region.mojom-forward.h",
   "+third_party/blink/public/mojom/window_features/window_features.mojom.h",
   "+ui/base/mojom/window_open_disposition.mojom.h",
+  "+ui/gfx/geometry",
 ]
 
 specific_include_rules = {

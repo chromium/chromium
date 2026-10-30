@@ -15,6 +15,10 @@ declare global {
     canGetLocation: boolean;
     testServerUrl: string;
     crossOriginUrl: string;
+    // The factor the C++ side multiplied this page's zoom by, and this page's
+    // devicePixelRatio from before that.
+    embedderZoomFactor: number;
+    unzoomedDevicePixelRatio: number;
   }
 }
 
@@ -326,6 +330,25 @@ suite('Operations', function() {
         await new Promise<number>(resolve => webview.getZoom(resolve));
     assertEquals(1.5, zoomFactor);
   });
+
+  // An explicit zoom should survive a navigation, rather than being replaced
+  // by the embedder's zoom when it's re-applied after the navigation (see
+  // kGuestViewMatchEmbedderZoomAfterNavigation). The navigation is within the
+  // same origin, as the zoom is stored per origin.
+  test('ExplicitZoomPersistsAcrossNavigation', async function() {
+    const zoomChangePromise =
+        eventToPromise<ZoomChangeEvent>('zoomchange', webview);
+    webview.setZoom(1.5);
+    await zoomChangePromise;
+
+    await navigateAndWaitForContentLoad(
+        webview,
+        getTestUrl('/webui/guest_view_shared/eval_post_message.html?after'));
+
+    const zoomFactor =
+        await new Promise<number>(resolve => webview.getZoom(resolve));
+    assertEquals(1.5, zoomFactor);
+  });
 });
 
 suite('Requests', function() {
@@ -567,5 +590,172 @@ suite('Requests', function() {
     const fetchHeaders3 = capturedHeaders3['/capture-headers'];
     assertTrue(!!fetchHeaders3);
     assertEquals(navigator.userAgent, fetchHeaders3['User-Agent']);
+  });
+});
+
+// Autosize constraints and sizes are in the embedder's CSS px. The guest's
+// zoom matches the embedder's, so these are also the guest's CSS px.
+// SlimWebviewBrowserTest.AutoSizeWithZoomedEmbedder runs these with the
+// embedder zoomed, where its CSS px and physical pixels differ.
+suite('AutoSize', function() {
+  // A [width, height] pair.
+  type Size = [number, number];
+
+  // Checks that the embedder's zoom is what the C++ side set, so that these
+  // tests can't pass just because it didn't take effect.
+  suiteSetup(async function() {
+    const zoomFactor = () =>
+        window.devicePixelRatio / window.unzoomedDevicePixelRatio;
+    await waitFor(
+        () => Math.abs(zoomFactor() - window.embedderZoomFactor) < 0.01);
+    assertTrue(
+        Math.abs(zoomFactor() - window.embedderZoomFactor) < 0.01,
+        `expected embedder zoom factor ${window.embedderZoomFactor}, got ${
+            zoomFactor()}`);
+  });
+
+  teardown(function() {
+    document.body.replaceChildren();
+  });
+
+  // Fails with `label` if `promise` doesn't settle within `ms`, so a stall
+  // reports which step it's in rather than timing out the whole test.
+  function withTimeout<T>(
+      promise: Promise<T>, label: string, ms = 10000): Promise<T> {
+    let timeoutId = 0;
+    const timeout = new Promise<never>((_resolve, reject) => {
+      timeoutId = setTimeout(
+          () => reject(new Error(`Timed out waiting for ${label}`)), ms);
+    });
+    return Promise.race([promise, timeout])
+        .finally(() => clearTimeout(timeoutId));
+  }
+
+  // Fills the guest with a block of exactly `width` x `height` guest CSS px.
+  function setGuestContentSize(
+      webview: SlimWebviewElement, width: number, height: number) {
+    return withTimeout(
+        evalOnWebview(webview, (width: number, height: number) => {
+          document.documentElement.style.overflow = 'hidden';
+          document.body.style.margin = '0';
+          document.body.innerHTML =
+              `<div style="width:${width}px;height:${height}px"></div>`;
+        }, width, height), 'the guest content to be set');
+  }
+
+  // Returns the guest's viewport size, in guest CSS px.
+  function getGuestSize(webview: SlimWebviewElement): Promise<Size> {
+    return withTimeout(
+        evalOnWebview(webview, () => [window.innerWidth, window.innerHeight]),
+        'the guest size');
+  }
+
+  // Returns the number of embedder CSS px per guest CSS px.
+  async function getGuestToEmbedderScale(webview: SlimWebviewElement):
+      Promise<number> {
+    const guestDevicePixelRatio = await withTimeout(
+        evalOnWebview(webview, () => window.devicePixelRatio),
+        'the guest device pixel ratio');
+    return guestDevicePixelRatio / window.devicePixelRatio;
+  }
+
+  // Checks that the guest's zoom matches the embedder's (see
+  // kGuestViewMatchEmbedderZoomAfterNavigation), so that one guest CSS px is
+  // exactly one embedder CSS px. This also holds if an earlier test left the
+  // guest's origin zoomed, as matching the embedder replaces that zoom.
+  async function assertGuestMatchesEmbedderZoom(webview: SlimWebviewElement) {
+    let scale = 0;
+    await waitFor(async () => {
+      scale = await getGuestToEmbedderScale(webview);
+      return scale === 1;
+    });
+    assertEquals(1, scale);
+  }
+
+  // Returns the <webview>'s size, in embedder CSS px.
+  function getWebviewSize(webview: SlimWebviewElement): Size {
+    const rect = webview.getBoundingClientRect();
+    return [rect.width, rect.height];
+  }
+
+  // Allows for rounding to whole physical pixels.
+  function isClose(expected: Size, actual: Size): boolean {
+    return Math.abs(expected[0] - actual[0]) <= 1 &&
+        Math.abs(expected[1] - actual[1]) <= 1;
+  }
+
+  function assertClose(expected: Size, actual: Size) {
+    assertTrue(
+        isClose(expected, actual),
+        `expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`);
+  }
+
+  // Waits (up to a limit) for `condition` to hold, so that a failing assertion
+  // afterwards reports the size things settled on. Polls with a timer rather
+  // than requestAnimationFrame, which doesn't fire if the page isn't
+  // producing frames.
+  async function waitFor(condition: () => boolean | Promise<boolean>) {
+    const deadline = performance.now() + 5000;
+    while (!(await condition()) && performance.now() < deadline) {
+      await new Promise(resolve => setTimeout(resolve, 50));
+    }
+  }
+
+  async function createAutosizeWebview(
+      minWidth: number, minHeight: number, maxWidth: number,
+      maxHeight: number): Promise<SlimWebviewElement> {
+    const webview = document.createElement('webview');
+    // The element is inline by default, which would ignore the autosized
+    // width and height.
+    webview.style.display = 'block';
+    webview.autosize = true;
+    webview.minwidth = minWidth;
+    webview.minheight = minHeight;
+    webview.maxwidth = maxWidth;
+    webview.maxheight = maxHeight;
+    document.body.appendChild(webview);
+    await withTimeout(
+        navigateAndWaitForContentLoad(
+            webview,
+            getTestUrl('/webui/guest_view_shared/eval_post_message.html')),
+        'the guest to load');
+    return webview;
+  }
+
+  // The <webview> should be sized to the guest's content, in embedder CSS px.
+  test('ReportsSizeInCssPixels', async function() {
+    const webview = await createAutosizeWebview(50, 50, 1000, 1000);
+    await assertGuestMatchesEmbedderZoom(webview);
+    await setGuestContentSize(webview, 300, 200);
+
+    const expected: Size = [300, 200];
+    await waitFor(() => isClose(expected, getWebviewSize(webview)));
+    assertClose(expected, getWebviewSize(webview));
+  });
+
+  // The autosize attributes set when the guest is created should limit it to
+  // that many embedder CSS px.
+  test('AppliesInitialConstraintsInCssPixels', async function() {
+    const webview = await createAutosizeWebview(50, 50, 200, 100);
+    await assertGuestMatchesEmbedderZoom(webview);
+    await setGuestContentSize(webview, 300, 300);
+
+    const expected: Size = [200, 100];
+    await waitFor(async () => isClose(expected, await getGuestSize(webview)));
+    assertClose(expected, await getGuestSize(webview));
+  });
+
+  // Autosize attributes changed after the guest is created should also limit
+  // it to that many embedder CSS px.
+  test('AppliesUpdatedConstraintsInCssPixels', async function() {
+    const webview = await createAutosizeWebview(50, 50, 1000, 1000);
+    await assertGuestMatchesEmbedderZoom(webview);
+    await setGuestContentSize(webview, 300, 300);
+    webview.maxwidth = 200;
+    webview.maxheight = 100;
+
+    const expected: Size = [200, 100];
+    await waitFor(async () => isClose(expected, await getGuestSize(webview)));
+    assertClose(expected, await getGuestSize(webview));
   });
 });

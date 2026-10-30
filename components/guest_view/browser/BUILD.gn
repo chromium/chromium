@@ -37,7 +37,9 @@ static_library("browser") {
     "//components/zoom",
     "//content/public/browser",
     "//content/public/common",
+    "//net",
     "//third_party/blink/public/common",
+    "//ui/gfx/geometry",
     "//url",
   ]
 }
