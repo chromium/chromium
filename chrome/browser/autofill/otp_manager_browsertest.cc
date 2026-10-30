@@ -2,13 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
@@ -17,9 +23,14 @@
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
+#include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/ui/test_autofill_external_delegate.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/one_time_tokens/core/browser/fake_gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/fake_sms_otp_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_backend_notification.h"
@@ -27,13 +38,17 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/switches.h"
+#include "url/gurl.h"
 
 namespace autofill {
 
 namespace {
+
+using ::testing::ElementsAre;
 
 // AutofillCrowdsourcingManager that classifies every field as a ONE_TIME_CODE.
 class FakeAutofillCrowdsourcingManager : public AutofillCrowdsourcingManager {
@@ -132,18 +147,36 @@ class OtpTestAutofillClient : public TestContentAutofillClient {
         std::make_unique<FakeAutofillCrowdsourcingManager>(
             this, version_info::Channel::STABLE));
     set_sms_otp_service(std::make_unique<one_time_tokens::FakeSmsOtpService>());
+    set_gmail_otp_backend(
+        std::make_unique<one_time_tokens::FakeGmailOtpBackend>());
+    set_affiliation_service(&affiliation_service_);
   }
-  ~OtpTestAutofillClient() override = default;
+  ~OtpTestAutofillClient() override { set_affiliation_service(nullptr); }
+
+  // Prevents `PaymentMethodAccessoryControllerImpl` on Android from observing
+  // `TestContentAutofillClient`'s member-owned data managers, which have
+  // non-deterministic relative destruction order in `SupportsUserData` during
+  // `WebContents` teardown.
+  bool HasPersonalDataManager() const override { return false; }
 
   one_time_tokens::FakeSmsOtpService& sms_otp_service() {
     return static_cast<one_time_tokens::FakeSmsOtpService&>(
         *GetSmsOtpService());
   }
+
+  one_time_tokens::FakeGmailOtpBackend& gmail_otp_backend() {
+    return static_cast<one_time_tokens::FakeGmailOtpBackend&>(
+        *GetGmailOtpBackend());
+  }
+
+ private:
+  affiliations::FakeAffiliationService affiliation_service_;
 };
 
 }  // namespace
 
 class OtpManagerBrowserTest : public PlatformBrowserTest {
+ public:
   void SetUpCommandLine(base::CommandLine* command_line) override;
   void SetUpOnMainThread() override;
 
@@ -252,6 +285,112 @@ IN_PROC_BROWSER_TEST_P(OtpManagerWithWebOtpApiBrowserTest,
     ASSERT_EQ(suggestions.size(), 1u);
     EXPECT_EQ(suggestions[0].main_text.value, u"123456");
   }
+}
+
+class OtpManagerGmailOtpBrowserTest : public OtpManagerBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    OtpManagerBrowserTest::SetUpOnMainThread();
+    url_loader_interceptor_ =
+        content::URLLoaderInterceptor::ServeFilesFromDirectoryAtOrigin(
+            "chrome/test/data", GURL("https://example.test"));
+    autofill_client().sms_otp_service().set_platform_supported(false);
+    prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(),
+                                             true);
+  }
+
+  void TearDownOnMainThread() override {
+    url_loader_interceptor_.reset();
+    OtpManagerBrowserTest::TearDownOnMainThread();
+  }
+
+ protected:
+  void NavigateAndRequestGmailOtpSuggestions(std::string_view sender_address) {
+    base::HistogramTester histogram_tester;
+    ASSERT_TRUE(chrome_test_utils::NavigateToURL(
+        web_contents(),
+        GURL("https://example.test/autofill/sms_otp_form.html")));
+    ASSERT_TRUE(autofill_manager().WaitForFormsSeen(1));
+
+    autofill_client().gmail_otp_backend().ProcessCallbacks(
+        one_time_tokens::OneTimeToken(one_time_tokens::OneTimeTokenType::kGmail,
+                                      "123456", base::TimeTicks::Now(),
+                                      std::string(sender_address)));
+    // Wait for `GmailOtpRetriever` to finish the asynchronous sender domain
+    // check.
+    ASSERT_TRUE(base::test::RunUntil([&] {
+      return !histogram_tester
+                  .GetAllSamples(
+                      "OneTimeTokens.GmailOtpRetriever."
+                      "SenderDomainMatchAcceptedMatchType.Received")
+                  .empty() ||
+             !histogram_tester
+                  .GetAllSamples(
+                      "OneTimeTokens.GmailOtpRetriever."
+                      "SenderDomainMatchRejectionReason.Received")
+                  .empty();
+    }));
+
+    // Accepted tokens proactively trigger `AskForValuesToFill()` via
+    // `RendererShouldTriggerSuggestions()`. For rejected tokens, simulate a
+    // click on the field to request suggestions and verify none are shown.
+    if (histogram_tester
+            .GetAllSamples("OneTimeTokens.GmailOtpRetriever."
+                           "SenderDomainMatchAcceptedMatchType.Received")
+            .empty()) {
+      content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
+      content::MainThreadFrameObserver(
+          web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost())
+          .Wait();
+      content::SimulateMouseClickOrTapElementWithId(web_contents(), "otp");
+    }
+    ASSERT_TRUE(autofill_manager().WaitForSuggestionsShown(1));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillShowGmailOtpSuggestions};
+  std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
+};
+
+// Tests that a Gmail OTP whose sender domain exactly matches the page's origin
+// (e.g., `otp@example.test` on `https://example.test`) is accepted and
+// suggested by Autofill.
+IN_PROC_BROWSER_TEST_F(OtpManagerGmailOtpBrowserTest,
+                       GmailOtpSenderDomainMatch_ExactMatch) {
+  NavigateAndRequestGmailOtpSuggestions("otp@example.test");
+
+  const std::vector<Suggestion>& suggestions =
+      autofill_manager().external_delegate().suggestions();
+  ASSERT_FALSE(suggestions.empty());
+  EXPECT_EQ(suggestions[0].type, SuggestionType::kGmailOneTimePasswordEntry);
+  EXPECT_EQ(suggestions[0].main_text.value, u"123456");
+  EXPECT_THAT(suggestions[0].labels,
+              ElementsAre(ElementsAre(Suggestion::Text(u"otp@example.test"))));
+}
+
+// Tests that a Gmail OTP from a sender domain sharing the same eTLD+1 via the
+// Public Suffix List (e.g., `otp@mail.example.test` on `https://example.test`)
+// is rejected and not suggested when PSL matching is disabled.
+IN_PROC_BROWSER_TEST_F(OtpManagerGmailOtpBrowserTest,
+                       GmailOtpSenderDomainMatch_PslMatch) {
+  NavigateAndRequestGmailOtpSuggestions("otp@mail.example.test");
+
+  const std::vector<Suggestion>& suggestions =
+      autofill_manager().external_delegate().suggestions();
+  EXPECT_TRUE(suggestions.empty());
+}
+
+// Tests that a Gmail OTP from an unrelated sender domain (e.g.,
+// `otp@other.test` on `https://example.test`) is rejected and not suggested by
+// Autofill.
+IN_PROC_BROWSER_TEST_F(OtpManagerGmailOtpBrowserTest,
+                       GmailOtpSenderDomainMatch_NoMatch) {
+  NavigateAndRequestGmailOtpSuggestions("otp@other.test");
+
+  const std::vector<Suggestion>& suggestions =
+      autofill_manager().external_delegate().suggestions();
+  EXPECT_TRUE(suggestions.empty());
 }
 
 }  // namespace autofill
