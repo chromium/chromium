@@ -41,10 +41,12 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -437,10 +439,11 @@ TEST_F(RemoteActorCredentialSharingImplTest,
                   "RemoteActorCredentialSharing: Request from subframe"));
 }
 
-// Verify that calling RequestAgentAuthentication without user activation
-// reports a bad message.
+// Verify that calling `RequestAgentAuthentication()` without user activation
+// fails precondition validation and returns false.
 TEST_F(RemoteActorCredentialSharingImplTest,
-       RequestWithoutUserGestureReportsBadMessage) {
+       RequestWithoutUserGestureReturnsFalse) {
+  base::HistogramTester histograms;
   NavigateAndCommit(GURL("https://gemini.google.com"));
   content::RenderFrameHostTester::For(main_rfh())
       ->InitializeRenderFrameIfNeeded();
@@ -453,22 +456,192 @@ TEST_F(RemoteActorCredentialSharingImplTest,
   mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing> remote;
   impl->Bind(remote.BindNewEndpointAndPassDedicatedReceiver());
 
-  MockBadMessageHelper bad_message_helper;
-  base::test::TestFuture<std::string> bad_message_future;
-  EXPECT_CALL(bad_message_helper, OnBadMessage)
-      .WillOnce([&bad_message_future](const std::string& error) {
-        bad_message_future.SetValue(error);
-      });
-
+  base::test::TestFuture<bool> result;
   remote->RequestAgentAuthentication(/*gaia_id=*/"123456789",
                                      /*domain=*/"google.com",
-                                     /*task_id=*/"actor_id", base::DoNothing());
-  EXPECT_THAT(
-      bad_message_future.Get(),
-      testing::HasSubstr(
-          "RemoteActorCredentialSharing: Request without user gesture"));
+                                     /*task_id=*/"actor_id",
+                                     result.GetCallback());
+  EXPECT_FALSE(result.Get());
+  histograms.ExpectTotalCount(
+      "PasswordManager.RemoteActorCredentialSharing.Result", 0);
 }
 
+// Verify that a popup with a same-site opener navigated with a user gesture can
+// make a single `RequestAgentAuthentication()` call without in-popup transient
+// user activation, and that a subsequent call without transient activation is
+// rejected.
+TEST_F(RemoteActorCredentialSharingImplTest,
+       PopupWithUserInitiatedNavigationAllowsOneRequestWithoutGesture) {
+  base::HistogramTester histograms;
+  std::unique_ptr<content::WebContents> opener = CreateTestWebContents();
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      opener.get(), GURL("https://accounts.google.com"));
+  content::WebContentsTester::For(web_contents())->SetOpener(opener.get());
+  content::WebContentsTester::For(web_contents())
+      ->SetOriginalWindowOpenDisposition(WindowOpenDisposition::kNewPopup);
+
+  auto navigation = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://gemini.google.com"), main_rfh());
+  navigation->SetHasUserGesture(true);
+  navigation->Commit();
+  main_rfh()->GetProcess()->Init();
+  content::RenderFrameHostTester::For(main_rfh())
+      ->InitializeRenderFrameIfNeeded();
+  ASSERT_FALSE(main_rfh()->HasTransientUserActivation());
+  ASSERT_TRUE(main_rfh()->IsLastCrossDocumentNavigationStartedByUser());
+
+  CreateImpl();
+  RemoteActorCredentialSharingImpl* impl =
+      RemoteActorCredentialSharingImpl::GetForCurrentDocument(main_rfh());
+  ASSERT_NE(impl, nullptr);
+
+  mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing> remote;
+  impl->Bind(remote.BindNewEndpointAndPassDedicatedReceiver());
+
+  // First request in the popup without transient activation passes precondition
+  // validation (and returns false because not signed in).
+  base::test::TestFuture<bool> first_result;
+  remote->RequestAgentAuthentication(/*gaia_id=*/"123456789",
+                                     /*domain=*/"google.com",
+                                     /*task_id=*/"actor_id",
+                                     first_result.GetCallback());
+  EXPECT_FALSE(first_result.Get());
+  histograms.ExpectUniqueSample(
+      "PasswordManager.RemoteActorCredentialSharing.Result",
+      RemoteActorCredentialSharingResult::kUserIdentityOrSyncStateInvalid, 1);
+
+  // Second request in the same document without transient activation fails
+  // precondition validation because the one-time popup activation was consumed.
+  base::test::TestFuture<bool> second_result;
+  remote->RequestAgentAuthentication(/*gaia_id=*/"123456789",
+                                     /*domain=*/"google.com",
+                                     /*task_id=*/"actor_id",
+                                     second_result.GetCallback());
+  EXPECT_FALSE(second_result.Get());
+  histograms.ExpectTotalCount(
+      "PasswordManager.RemoteActorCredentialSharing.Result", 1);
+}
+
+// Verify that a popup with a cross-site opener still requires transient user
+// activation even if its navigation was initiated by a user gesture.
+TEST_F(RemoteActorCredentialSharingImplTest,
+       PopupWithCrossSiteOpenerReturnsFalse) {
+  base::HistogramTester histograms;
+  std::unique_ptr<content::WebContents> opener = CreateTestWebContents();
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      opener.get(), GURL("https://example.com"));
+  content::WebContentsTester::For(web_contents())->SetOpener(opener.get());
+  content::WebContentsTester::For(web_contents())
+      ->SetOriginalWindowOpenDisposition(WindowOpenDisposition::kNewPopup);
+
+  auto navigation = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://gemini.google.com"), main_rfh());
+  navigation->SetHasUserGesture(true);
+  navigation->Commit();
+  main_rfh()->GetProcess()->Init();
+  content::RenderFrameHostTester::For(main_rfh())
+      ->InitializeRenderFrameIfNeeded();
+  ASSERT_FALSE(main_rfh()->HasTransientUserActivation());
+  ASSERT_TRUE(main_rfh()->IsLastCrossDocumentNavigationStartedByUser());
+
+  CreateImpl();
+  RemoteActorCredentialSharingImpl* impl =
+      RemoteActorCredentialSharingImpl::GetForCurrentDocument(main_rfh());
+  ASSERT_NE(impl, nullptr);
+
+  mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing> remote;
+  impl->Bind(remote.BindNewEndpointAndPassDedicatedReceiver());
+
+  base::test::TestFuture<bool> result;
+  remote->RequestAgentAuthentication(/*gaia_id=*/"123456789",
+                                     /*domain=*/"google.com",
+                                     /*task_id=*/"actor_id",
+                                     result.GetCallback());
+  EXPECT_FALSE(result.Get());
+  histograms.ExpectTotalCount(
+      "PasswordManager.RemoteActorCredentialSharing.Result", 0);
+}
+
+// Verify that a non-popup tab with a same-site opener still requires transient
+// user activation even if its navigation was initiated by a user gesture.
+TEST_F(RemoteActorCredentialSharingImplTest,
+       NonPopupWithSameSiteOpenerReturnsFalse) {
+  base::HistogramTester histograms;
+  std::unique_ptr<content::WebContents> opener = CreateTestWebContents();
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      opener.get(), GURL("https://accounts.google.com"));
+  content::WebContentsTester::For(web_contents())->SetOpener(opener.get());
+  content::WebContentsTester::For(web_contents())
+      ->SetOriginalWindowOpenDisposition(
+          WindowOpenDisposition::kNewForegroundTab);
+
+  auto navigation = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://gemini.google.com"), main_rfh());
+  navigation->SetHasUserGesture(true);
+  navigation->Commit();
+  main_rfh()->GetProcess()->Init();
+  content::RenderFrameHostTester::For(main_rfh())
+      ->InitializeRenderFrameIfNeeded();
+  ASSERT_FALSE(main_rfh()->HasTransientUserActivation());
+  ASSERT_TRUE(main_rfh()->IsLastCrossDocumentNavigationStartedByUser());
+
+  CreateImpl();
+  RemoteActorCredentialSharingImpl* impl =
+      RemoteActorCredentialSharingImpl::GetForCurrentDocument(main_rfh());
+  ASSERT_NE(impl, nullptr);
+
+  mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing> remote;
+  impl->Bind(remote.BindNewEndpointAndPassDedicatedReceiver());
+
+  base::test::TestFuture<bool> result;
+  remote->RequestAgentAuthentication(/*gaia_id=*/"123456789",
+                                     /*domain=*/"google.com",
+                                     /*task_id=*/"actor_id",
+                                     result.GetCallback());
+  EXPECT_FALSE(result.Get());
+  histograms.ExpectTotalCount(
+      "PasswordManager.RemoteActorCredentialSharing.Result", 0);
+}
+
+// Verify that a popup navigated without a user gesture still requires transient
+// user activation.
+TEST_F(RemoteActorCredentialSharingImplTest,
+       PopupWithoutUserInitiatedNavigationReturnsFalse) {
+  base::HistogramTester histograms;
+  std::unique_ptr<content::WebContents> opener = CreateTestWebContents();
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      opener.get(), GURL("https://accounts.google.com"));
+  content::WebContentsTester::For(web_contents())->SetOpener(opener.get());
+  content::WebContentsTester::For(web_contents())
+      ->SetOriginalWindowOpenDisposition(WindowOpenDisposition::kNewPopup);
+
+  auto navigation = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://gemini.google.com"), main_rfh());
+  navigation->SetHasUserGesture(false);
+  navigation->Commit();
+  main_rfh()->GetProcess()->Init();
+  content::RenderFrameHostTester::For(main_rfh())
+      ->InitializeRenderFrameIfNeeded();
+  ASSERT_FALSE(main_rfh()->HasTransientUserActivation());
+  ASSERT_FALSE(main_rfh()->IsLastCrossDocumentNavigationStartedByUser());
+
+  CreateImpl();
+  RemoteActorCredentialSharingImpl* impl =
+      RemoteActorCredentialSharingImpl::GetForCurrentDocument(main_rfh());
+  ASSERT_NE(impl, nullptr);
+
+  mojo::AssociatedRemote<chrome::mojom::RemoteActorCredentialSharing> remote;
+  impl->Bind(remote.BindNewEndpointAndPassDedicatedReceiver());
+
+  base::test::TestFuture<bool> result;
+  remote->RequestAgentAuthentication(/*gaia_id=*/"123456789",
+                                     /*domain=*/"google.com",
+                                     /*task_id=*/"actor_id",
+                                     result.GetCallback());
+  EXPECT_FALSE(result.Get());
+  histograms.ExpectTotalCount(
+      "PasswordManager.RemoteActorCredentialSharing.Result", 0);
+}
 TEST_F(RemoteActorCredentialSharingImplTest,
        RejectDuplicateRequestWhenRequestAlreadyInProgress) {
   base::HistogramTester histograms;

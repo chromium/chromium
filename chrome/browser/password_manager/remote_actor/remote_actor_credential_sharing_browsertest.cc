@@ -10,6 +10,7 @@
 #include "chrome/common/password_manager/remote_actor_credential_sharing.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/core/common/autofill_test_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -75,6 +76,7 @@ class RemoteActorCredentialSharingBrowserTest : public InProcessBrowserTest {
   }
 
  private:
+  autofill::test::AutofillBrowserTestEnvironment autofill_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer ssl_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
@@ -115,6 +117,103 @@ IN_PROC_BROWSER_TEST_F(RemoteActorCredentialSharingBrowserTest,
       });
     });
   )"));
+}
+
+IN_PROC_BROWSER_TEST_F(RemoteActorCredentialSharingBrowserTest,
+                       PopupAllowsSingleCallWithoutAdditionalUserGesture) {
+  constexpr char kResultHistogram[] =
+      "PasswordManager.RemoteActorCredentialSharing.Result";
+  constexpr char kRequestScript[] = R"(
+    new Promise((resolve) => {
+      chrome.requestAgentAuthentication(
+          'gaia_id_123', 'google.com', 'task_id_456', (success) => {
+            resolve(success);
+          });
+    });
+  )";
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetURLForHost(kAllowedHost, "/title1.html")));
+
+  // In a regular (non-popup) tab, calling without a user gesture is rejected in
+  // the renderer and never reaches the browser.
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(false, content::EvalJs(GetWebContents(), kRequestScript,
+                                   content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  histogram_tester.ExpectTotalCount(kResultHistogram, 0);
+
+  // Open a popup window via `window.open` with a user gesture (simulating an
+  // `onclick` handler).
+  const GURL popup_url = GetURLForHost(kAllowedHost, "/title2.html");
+  content::WebContentsAddedObserver popup_observer;
+  ASSERT_TRUE(content::ExecJs(
+      GetWebContents(),
+      content::JsReplace("window.open($1, '_blank', 'popup');", popup_url)));
+  content::WebContents* popup_contents = popup_observer.GetWebContents();
+  ASSERT_TRUE(content::WaitForLoadStop(popup_contents));
+
+  // The first call inside the popup without an additional click succeeds in
+  // reaching the browser (using the popup-opening user gesture).
+  EXPECT_EQ(false, content::EvalJs(popup_contents, kRequestScript,
+                                   content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  histogram_tester.ExpectUniqueSample(
+      kResultHistogram,
+      password_manager::RemoteActorCredentialSharingResult::
+          kUserIdentityOrSyncStateInvalid,
+      1);
+
+  // A second call inside the same popup without a user gesture is rejected by
+  // the renderer because the one-time popup activation was consumed.
+  EXPECT_EQ(false, content::EvalJs(popup_contents, kRequestScript,
+                                   content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  histogram_tester.ExpectTotalCount(kResultHistogram, 1);
+
+  // A subsequent call with an explicit user gesture in the popup still works.
+  EXPECT_EQ(false, content::EvalJs(popup_contents, kRequestScript));
+  histogram_tester.ExpectUniqueSample(
+      kResultHistogram,
+      password_manager::RemoteActorCredentialSharingResult::
+          kUserIdentityOrSyncStateInvalid,
+      2);
+}
+
+IN_PROC_BROWSER_TEST_F(RemoteActorCredentialSharingBrowserTest,
+                       CrossSitePopupRequiresUserGesture) {
+  constexpr char kResultHistogram[] =
+      "PasswordManager.RemoteActorCredentialSharing.Result";
+  constexpr char kRequestScript[] = R"(
+    new Promise((resolve) => {
+      chrome.requestAgentAuthentication(
+          'gaia_id_123', 'google.com', 'task_id_456', (success) => {
+            resolve(success);
+          });
+    });
+  )";
+
+  // Open a popup from a cross-site opener (`example.com`). The popup activation
+  // fallback must not apply across sites.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GetURLForHost("example.com", "/title1.html")));
+  const GURL popup_url = GetURLForHost(kAllowedHost, "/title2.html");
+  content::WebContentsAddedObserver popup_observer;
+  ASSERT_TRUE(content::ExecJs(
+      GetWebContents(),
+      content::JsReplace("window.open($1, '_blank', 'popup');", popup_url)));
+  content::WebContents* popup_contents = popup_observer.GetWebContents();
+  ASSERT_TRUE(content::WaitForLoadStop(popup_contents));
+
+  base::HistogramTester histogram_tester;
+  EXPECT_EQ(false, content::EvalJs(popup_contents, kRequestScript,
+                                   content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  histogram_tester.ExpectTotalCount(kResultHistogram, 0);
+
+  // Calling with an explicit user gesture in the popup still works.
+  EXPECT_EQ(false, content::EvalJs(popup_contents, kRequestScript));
+  histogram_tester.ExpectUniqueSample(
+      kResultHistogram,
+      password_manager::RemoteActorCredentialSharingResult::
+          kUserIdentityOrSyncStateInvalid,
+      1);
 }
 
 // 3. Verify Bad Message Handling on Origin Violation (Compromised Renderer

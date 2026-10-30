@@ -17,6 +17,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/window_open_disposition.h"
 
 class GURL;
 class SkBitmap;
@@ -103,6 +104,10 @@ class WebContentsTester {
   // Simulate this WebContents' main frame having a live original opener chain
   // where the root of the chain points to the main frame of `opener`.
   virtual void SetOriginalOpener(WebContents* opener) = 0;
+
+  // Sets the return value for GetOriginalWindowOpenDisposition().
+  virtual void SetOriginalWindowOpenDisposition(
+      WindowOpenDisposition disposition) = 0;
 
   // Sets the process state for the primary main frame renderer.
   virtual void SetIsCrashed(base::TerminationStatus status, int error_code) = 0;
