@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/android/password_reuse_controller_android.h"
+#include "chrome/browser/safe_browsing/android/password_protection/password_reuse_controller_android.h"
 
 #include <memory>
 #include <string>

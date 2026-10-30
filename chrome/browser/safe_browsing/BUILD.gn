@@ -127,7 +127,7 @@ static_library("safe_browsing") {
     ]
 
     # android/safe_browsing:safe_browsing includes
-    # chrome/browser/safe_browsing/android/password_reuse_controller_android.h
+    # chrome/browser/safe_browsing/android/password_protection/password_reuse_controller_android.h
     # (password_protection/password_reuse_dialog_view_android.cc) which is
     # owned by this target.
     allow_circular_includes_from +=
@@ -627,7 +627,7 @@ static_library("safe_browsing") {
       public += [
         "android/download_protection_metrics_data.h",
         "android/notification_content_detection_manager_android.h",
-        "android/password_reuse_controller_android.h",
+        "android/password_protection/password_reuse_controller_android.h",
         "android/safe_browsing_referring_app_bridge_android.h",
         "android/safe_browsing_settings_navigation_android.h",
         "android/services_delegate_android.h",
@@ -641,7 +641,7 @@ static_library("safe_browsing") {
       sources += [
         "android/download_protection_metrics_data.cc",
         "android/notification_content_detection_manager_android.cc",
-        "android/password_reuse_controller_android.cc",
+        "android/password_protection/password_reuse_controller_android.cc",
         "android/safe_browsing_referring_app_bridge_android.cc",
         "android/safe_browsing_settings_navigation_android.cc",
         "android/services_delegate_android.cc",
@@ -1033,7 +1033,7 @@ source_set("unit_tests") {
     sources += [
       "android/chrome_safe_browsing_hats_delegate_android_unittest.cc",
       "android/client_side_detection_intelligent_scan_delegate_android_unittest.cc",
-      "android/password_reuse_controller_android_unittest.cc",
+      "android/password_protection/password_reuse_controller_android_unittest.cc",
       "android/suspicious_site_controller_android_unittest.cc",
       "download_protection/rate_limiting_key_manager_unittest.cc",
       "settings/safe_browsing_pref_change_handler_android_unittest.cc",
