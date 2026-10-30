@@ -13,8 +13,13 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/animation/ink_drop.h"
+#include "ui/views/animation/ink_drop_host.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/test/button_test_api.h"
@@ -230,11 +235,28 @@ TEST_F(GlicSelectionWidgetTest, SmallChip) {
   ASSERT_TRUE(ask_gemini_btn);
   EXPECT_TRUE(ask_gemini_btn->GetText().empty());
   EXPECT_EQ(ask_gemini_btn->GetPreferredSize(), gfx::Size(30, 30));
+  EXPECT_EQ(ask_gemini_btn->GetCornerRadii(),
+            gfx::RoundedCornersF(15, 15, 15, 0));
+  EXPECT_EQ(views::InkDrop::Get(ask_gemini_btn)->GetMode(),
+            views::InkDropHost::InkDropMode::ON);
+  EXPECT_TRUE(ask_gemini_btn->GetHasInkDropActionOnClick());
+  EXPECT_TRUE(ask_gemini_btn->GetShowInkDropWhenHotTracked());
   EXPECT_TRUE(ask_gemini_btn->HasImage(views::Button::STATE_NORMAL));
   EXPECT_FALSE(
       ask_gemini_btn->GetImageModel(views::Button::STATE_HOVERED).has_value());
   EXPECT_FALSE(
       ask_gemini_btn->GetImageModel(views::Button::STATE_PRESSED).has_value());
+
+  std::unique_ptr<views::Widget> anchor_widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  anchor_widget->Show();
+  widget_delegate->set_parent_window(anchor_widget->GetNativeView());
+  widget_delegate->ShowWidget();
+  views::Widget* widget = widget_delegate->GetWidget();
+  ASSERT_TRUE(widget);
+  EXPECT_EQ(
+      views::InkDrop::Get(ask_gemini_btn)->GetBaseColor(),
+      widget->GetColorProvider()->GetColor(ui::kColorSysStateHoverOnSubtle));
 
   views::test::ButtonTestApi(ask_gemini_btn)
       .NotifyClick(ui::MouseEvent(ui::EventType::kMousePressed, gfx::Point(),
@@ -242,6 +264,12 @@ TEST_F(GlicSelectionWidgetTest, SmallChip) {
                                   ui::EF_LEFT_MOUSE_BUTTON,
                                   ui::EF_LEFT_MOUSE_BUTTON));
   EXPECT_TRUE(test_delegate->ask_gemini_called);
+
+  TestWidgetObserver observer(widget);
+  base::RunLoop run_loop;
+  observer.quit_closure = run_loop.QuitClosure();
+  widget_delegate->CloseWidget();
+  run_loop.Run();
 }
 
 TEST_F(GlicSelectionWidgetTest, SmallChipBottom) {
@@ -257,6 +285,19 @@ TEST_F(GlicSelectionWidgetTest, SmallChipBottom) {
       *test_delegate, anchor_rect, selected_text);
 
   EXPECT_EQ(widget_delegate->arrow(), views::BubbleBorder::TOP_LEFT);
+
+  views::View* contents_view = widget_delegate->GetContentsView();
+  ASSERT_TRUE(contents_view);
+  ASSERT_EQ(contents_view->children().size(), 1u);
+  auto pill_children = contents_view->children()[0]->children();
+  ASSERT_EQ(pill_children.size(), 1u);
+  auto* ask_gemini_btn =
+      views::AsViewClass<views::MdTextButton>(pill_children[0]);
+  ASSERT_TRUE(ask_gemini_btn);
+  EXPECT_EQ(ask_gemini_btn->GetCornerRadii(),
+            gfx::RoundedCornersF(0, 15, 15, 15));
+  EXPECT_EQ(views::InkDrop::Get(ask_gemini_btn)->GetMode(),
+            views::InkDropHost::InkDropMode::ON);
 }
 
 class GlicSelectionWidgetBoundsTest : public GlicSelectionWidgetTest {
