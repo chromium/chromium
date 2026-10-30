@@ -645,21 +645,22 @@ TEST_F(FilePathTest, PathComponentsTest) {
   }
 }
 
-void IsParentTest(bool is_fast) {
 #if defined(FILE_PATH_USES_WIN_SEPARATORS)
-  auto swap_separators = [](const FilePath& path) {
-    FilePath::StringType new_path(path.value());
-    for (auto& character : new_path) {
-      if (character == '/') {
-        character = '\\';
-      } else if (character == '\\') {
-        character = '/';
-      }
+// Returns `path` with every '/' replaced by '\' and vice versa.
+FilePath SwapSeparators(const FilePath& path) {
+  FilePath::StringType new_path(path.value());
+  for (auto& character : new_path) {
+    if (character == '/') {
+      character = '\\';
+    } else if (character == '\\') {
+      character = '/';
     }
-    return new_path;
-  };
+  }
+  return FilePath(new_path);
+}
 #endif  // defined(FILE_PATH_USES_WIN_SEPARATORS)
 
+void IsParentTest(bool is_fast) {
   const auto cases = std::to_array<BinaryBooleanTestData>({
       {{FPL(""), FPL("")}, false},
       {{FPL(""), FPL(".")}, false},
@@ -748,25 +749,42 @@ void IsParentTest(bool is_fast) {
       {{FPL("\\foo/bar"), FPL("\\foo/bar/baz")}, true},
       {{FPL("\\foo/bar"), FPL("\\foo\\bar/baz")}, true},
       {{FPL("\\foo/bar"), FPL("\\foo\\/\\/bar/baz")}, true},
+      // A root can mix different types of separators too.
+      {{FPL("//host/foo"), FPL("/\\host\\foo\\bar")}, true},
+      {{FPL("\\/host"), FPL("/\\host/foo")}, true},
+      {{FPL("/"), FPL("\\/foo")}, false},
 #endif  // FILE_PATH_USES_WIN_SEPARATORS
   });
 
   for (size_t i = 0; i < std::size(cases); ++i) {
+    auto check = [&](const FilePath& parent, const FilePath& child) {
+      SCOPED_TRACE(testing::Message()
+                   << "i: " << i << ", parent: " << parent.value()
+                   << ", child: " << child.value());
+      EXPECT_EQ(parent.IsParent(child), cases[i].expected);
+    };
+
     FilePath parent(cases[i].inputs[0]);
     FilePath child(cases[i].inputs[1]);
-
-    EXPECT_EQ(parent.IsParent(child), cases[i].expected)
-        << "i: " << i << ", parent: " << parent.value()
-        << ", child: " << child.value();
+    check(parent, child);
 
 #if defined(FILE_PATH_USES_WIN_SEPARATORS)
-    // Using different separators should not affect the result.
-    FilePath parent_swapped(swap_separators(parent));
-    FilePath child_swapped(swap_separators(child));
-
-    EXPECT_EQ(parent_swapped.IsParent(child_swapped), cases[i].expected)
-        << "i (swapped): " << i << ", parent: " << parent_swapped.value()
-        << ", child: " << child_swapped.value();
+    // Swapping the separators of either path, or of both, should not affect the
+    // result.
+    FilePath parent_swapped = SwapSeparators(parent);
+    FilePath child_swapped = SwapSeparators(child);
+    {
+      SCOPED_TRACE("swapped");
+      check(parent_swapped, child_swapped);
+    }
+    {
+      SCOPED_TRACE("parent swapped");
+      check(parent_swapped, child);
+    }
+    {
+      SCOPED_TRACE("child swapped");
+      check(parent, child_swapped);
+    }
 #endif  // defined(FILE_PATH_USES_WIN_SEPARATORS)
   }
 }
@@ -860,34 +878,51 @@ TEST_F(FilePathTest, AppendRelativePathTest) {
       {{FPL("\\FOO\\bar"), FPL("\\foo\\bar\\baz")}, FPL("")},
       {{FPL("\\\\"), FPL("\\\\foo")}, FPL("foo")},
 #endif  // FILE_PATH_USES_WIN_SEPARATORS
-
   });
 
   const FilePath base(FPL("blah"));
 
   for (size_t i = 0; i < std::size(cases); ++i) {
+    auto check = [&](const FilePath& parent, const FilePath& child) {
+      SCOPED_TRACE(testing::Message()
+                   << "i: " << i << ", parent: " << parent.value()
+                   << ", child: " << child.value());
+      {
+        FilePath result;
+        bool success = parent.AppendRelativePath(child, &result);
+        EXPECT_EQ(!cases[i].expected.empty(), success);
+        EXPECT_EQ(cases[i].expected, result.value());
+      }
+      {
+        FilePath result(base);
+        bool success = parent.AppendRelativePath(child, &result);
+        EXPECT_EQ(!cases[i].expected.empty(), success);
+        EXPECT_EQ(base.Append(cases[i].expected).value(), result.value());
+      }
+    };
+
     FilePath parent(cases[i].inputs[0]);
     FilePath child(cases[i].inputs[1]);
+    check(parent, child);
+
+#if defined(FILE_PATH_USES_WIN_SEPARATORS)
+    // Swapping the separators of either path, or of both, should not affect the
+    // result.
+    FilePath parent_swapped = SwapSeparators(parent);
+    FilePath child_swapped = SwapSeparators(child);
     {
-      FilePath result;
-      bool success = parent.AppendRelativePath(child, &result);
-      EXPECT_EQ(!cases[i].expected.empty(), success)
-          << "i: " << i << ", parent: " << parent.value()
-          << ", child: " << child.value();
-      EXPECT_EQ(cases[i].expected, result.value())
-          << "i: " << i << ", parent: " << parent.value()
-          << ", child: " << child.value();
+      SCOPED_TRACE("swapped");
+      check(parent_swapped, child_swapped);
     }
     {
-      FilePath result(base);
-      bool success = parent.AppendRelativePath(child, &result);
-      EXPECT_EQ(!cases[i].expected.empty(), success)
-          << "i: " << i << ", parent: " << parent.value()
-          << ", child: " << child.value();
-      EXPECT_EQ(base.Append(cases[i].expected).value(), result.value())
-          << "i: " << i << ", parent: " << parent.value()
-          << ", child: " << child.value();
+      SCOPED_TRACE("parent swapped");
+      check(parent_swapped, child);
     }
+    {
+      SCOPED_TRACE("child swapped");
+      check(parent, child_swapped);
+    }
+#endif  // defined(FILE_PATH_USES_WIN_SEPARATORS)
   }
 }
 

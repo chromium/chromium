@@ -206,7 +206,9 @@ bool IsEmptyOrSpecialCase(const StringType& path) {
 // Leading separators are removed from the remainder of the path, unless
 // `can_be_drive_letter` is true. `can_be_drive_letter` indicates that a leading
 // drive letter in `path` must be extracted as a standalone component, even if
-// not followed by a separator.
+// not followed by a separator. On Windows, a leading root is returned with its
+// separators canonicalized, so that roots written with different separators
+// (e.g. "/" and "\") compare equal.
 std::pair<FilePath::StringViewType, FilePath::StringViewType>
 ExtractFirstComponent(FilePath::StringViewType path, bool can_be_drive_letter) {
   if (path.empty()) {
@@ -214,8 +216,8 @@ ExtractFirstComponent(FilePath::StringViewType path, bool can_be_drive_letter) {
   }
 
   // Special case for leading separators, which form a distinct path component:
-  // - 1 separator is interpreted as the root directory. Use as-is.
-  // - 2 separators indicates a network path. Use as-is.
+  // - 1 separator is interpreted as the root directory.
+  // - 2 separators indicates a network path.
   // - 3+ separators are interpreted as the root directory. Use only the
   //   first separator and discard the others.
   if (FilePath::IsSeparator(path[0])) {
@@ -230,6 +232,15 @@ ExtractFirstComponent(FilePath::StringViewType path, bool can_be_drive_letter) {
     if (first_component.size() >= 3) {
       first_component = first_component.substr(0, 1);
     }
+
+#if defined(FILE_PATH_USES_WIN_SEPARATORS)
+    // Canonicalize the separators, so that a root written with different
+    // separators (e.g. "/" and "\") compares equal.
+    static_assert(FilePath::kSeparators[0] == FILE_PATH_LITERAL('\\'));
+    static constexpr FilePath::StringViewType kCanonicalRoot =
+        FILE_PATH_LITERAL("\\\\");
+    first_component = kCanonicalRoot.substr(0, first_component.size());
+#endif  // defined(FILE_PATH_USES_WIN_SEPARATORS)
     return {first_component, remainder};
   }
 
@@ -472,13 +483,27 @@ bool FilePath::AppendRelativePath(const FilePath& child, FilePath* path) const {
   }
 #endif  // defined(FILE_PATH_USES_DRIVE_LETTERS)
 
-  // The first 2 components for network paths are [<2-Separators>, <hostname>].
-  // Use case-insensitive comparison for the hostname.
-  // https://tools.ietf.org/html/rfc3986#section-3.2.2
-  if (IsNetwork() && parent_components.size() > 1) {
-    if (*parent_comp++ != *child_comp++ ||
-        !base::EqualsCaseInsensitiveASCII(*parent_comp++, *child_comp++)) {
+  // The root is the only component made of separators, and it comes right
+  // after the drive letter, if any. Roots made of the same number of separators
+  // are equal, even if written with different separators (e.g. "/" and "\").
+  if (parent_comp != parent_components.end() &&
+      AreAllSeparators(*parent_comp)) {
+    if (parent_comp->size() != child_comp->size() ||
+        !AreAllSeparators(*child_comp)) {
       return false;
+    }
+    ++parent_comp;
+    ++child_comp;
+
+    // The first 2 components for network paths are [<2-Separators>,
+    // <hostname>]. Use case-insensitive comparison for the hostname.
+    // https://tools.ietf.org/html/rfc3986#section-3.2.2
+    if (IsNetwork() && parent_comp != parent_components.end()) {
+      if (!base::EqualsCaseInsensitiveASCII(*parent_comp, *child_comp)) {
+        return false;
+      }
+      ++parent_comp;
+      ++child_comp;
     }
   }
 
