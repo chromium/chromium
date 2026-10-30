@@ -11,13 +11,17 @@
 #include "chrome/browser/glic/gemini_enterprise/geic_fre.h"
 #include "chrome/browser/glic/gemini_enterprise/geic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/test_support/glic_api_test.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 
 namespace glic {
@@ -49,6 +53,24 @@ IN_PROC_BROWSER_TEST_F(GlicGeicApiBrowserTest, testGeicSignInTab) {
 IN_PROC_BROWSER_TEST_F(GlicGeicApiBrowserTest, testGeicAuthTab) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
+}
+
+// GEiC doesn't use the Chrome primary account: the GE web app handles sign-in,
+// and there is no AuthController. Pausing Chrome sign-in leaves the GE guest
+// showing, and the web client can still call the host API.
+IN_PROC_BROWSER_TEST_F(GlicGeicApiBrowserTest, testSignInPauseStateGeic) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  ExecuteJsTest();
+
+  // Pause the sign-in.
+  signin::SetInvalidRefreshTokenForPrimaryAccount(
+      IdentityManagerFactory::GetForProfile(GetProfile()));
+
+  // The web client calls the host API again after the pause.
+  ContinueJsTest();
+  ASSERT_OK(WaitUntilGuestIsShowing());
+  EXPECT_TRUE(instance->host().IsWebClientConnected());
+  EXPECT_TRUE(FindGlicGuestMainFrame());
 }
 
 class GlicGeicFreApiBrowserTest : public GlicGeicApiBrowserTest {

@@ -35,6 +35,18 @@ class GlicGeicApiBrowserTest extends ApiTestFixtureBase {
     assertTrue(await completedSequence.next());
   }
 
+  // GEiC doesn't use the Chrome primary account, so the host API keeps working
+  // after Chrome sign-in is paused.
+  async testSignInPauseStateGeic() {
+    assertDefined(this.host.getUserProfileInfo);
+    const profileInfo = await this.host.getUserProfileInfo();
+    assertEquals('Glic Testing', profileInfo.displayName);
+    // Chrome sign-in is paused before the next step.
+    await this.advanceToNextStep();
+    const profileInfoAfterPause = await this.host.getUserProfileInfo();
+    assertEquals(profileInfo.displayName, profileInfoAfterPause.displayName);
+  }
+
   async testGeicSignInTab() {
     // Closing before opening any tab returns NO_SIGN_IN_TAB.
     const initialResult = await this.geic.closeSignInTab();
