@@ -2952,6 +2952,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
           .SetActionId(kActionFullscreen)
           .SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_FULLSCREEN))
           .SetAccessibleName(l10n_util::GetStringUTF16(IDS_ACCNAME_FULLSCREEN))
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_FULLSCREEN))
           .SetImage(ui::ImageModel::FromVectorIcon(
               features::IsRoundedIconsEnabled() ? kFullscreenIcon
                                                 : kFullscreenRefreshOldIcon))
@@ -3730,6 +3731,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               bwi))
           .SetActionId(kActionZoomPlus)
           .SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_ZOOM_PLUS2))
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_ZOOM_PLUS))
           .SetImage(ui::ImageModel::FromVectorIcon(
               features::IsRoundedIconsEnabled() ? kAddIcon
                                                 : kZoomPlusMenuRefreshOldIcon))
@@ -3745,6 +3747,7 @@ void BrowserActions::InitializeToolbarAndMiscActions() {
               bwi))
           .SetActionId(kActionZoomMinus)
           .SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_ZOOM_MINUS2))
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_ZOOM_MINUS))
           .SetImage(ui::ImageModel::FromVectorIcon(
               features::IsRoundedIconsEnabled() ? kRemoveIcon
                                                 : kZoomMinusMenuRefreshOldIcon))
