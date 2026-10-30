@@ -237,6 +237,8 @@ class PrintContentAnalysisUtilsTest
 
 }  // namespace
 
+// Tests that `GetPrintAnalysisData` returns populated analysis data for
+// `PrintScanningContext::kBeforeSystemDialog`.
 TEST_P(PrintContentAnalysisUtilsTest, GetPrintAnalysisData_BeforeSystemDialog) {
   auto data = GetPrintAnalysisData(contents(),
                                    PrintScanningContext::kBeforeSystemDialog);
@@ -253,6 +255,8 @@ TEST_P(PrintContentAnalysisUtilsTest, GetPrintAnalysisData_BeforeSystemDialog) {
             data->settings.cloud_or_local_settings.is_cloud_analysis());
 }
 
+// Tests that `GetPrintAnalysisData` returns `std::nullopt` for
+// `PrintScanningContext::kSystemPrintAfterPreview`.
 TEST_P(PrintContentAnalysisUtilsTest,
        GetPrintAnalysisData_SystemPrintAfterPreview) {
   auto data = GetPrintAnalysisData(
@@ -265,6 +269,8 @@ TEST_P(PrintContentAnalysisUtilsTest,
   ASSERT_FALSE(data);
 }
 
+// Tests that `GetPrintAnalysisData` returns populated analysis data for
+// `PrintScanningContext::kNormalPrintAfterPreview`.
 TEST_P(PrintContentAnalysisUtilsTest,
        GetPrintAnalysisData_NormalPrintAfterPreview) {
   auto data = GetPrintAnalysisData(
@@ -282,6 +288,8 @@ TEST_P(PrintContentAnalysisUtilsTest,
             data->settings.cloud_or_local_settings.is_cloud_analysis());
 }
 
+// Tests that `GetPrintAnalysisData` returns `std::nullopt` for
+// `PrintScanningContext::kNormalPrintBeforePrintDocument`.
 TEST_P(PrintContentAnalysisUtilsTest,
        GetPrintAnalysisData_NormalPrintBeforePrintDocument) {
   auto data = GetPrintAnalysisData(
@@ -294,6 +302,8 @@ TEST_P(PrintContentAnalysisUtilsTest,
   ASSERT_FALSE(data);
 }
 
+// Tests that `GetPrintAnalysisData` returns populated analysis data for
+// `PrintScanningContext::kSystemPrintBeforePrintDocument`.
 TEST_P(PrintContentAnalysisUtilsTest,
        GetPrintAnalysisData_SystemPrintBeforePrintDocument) {
   auto data = GetPrintAnalysisData(
@@ -312,6 +322,8 @@ TEST_P(PrintContentAnalysisUtilsTest,
 }
 
 #if BUILDFLAG(IS_MAC)
+// Tests that `GetPrintAnalysisData` returns populated analysis data for
+// `PrintScanningContext::kOpenPdfInPreview` on macOS.
 TEST_P(PrintContentAnalysisUtilsTest,
        GetPrintAnalysisData_MacOpenPdfInPreview) {
   auto data =
@@ -330,6 +342,8 @@ TEST_P(PrintContentAnalysisUtilsTest,
 }
 #endif  // BUILDFLAG(IS_MAC)
 
+// Tests that `PrintIfAllowedByPolicy` allows printing without reporting an
+// event when the scan verdict is allowed.
 TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyAllowed) {
   ContentAnalysisDelegate::SetFactoryForTesting(
       base::BindRepeating(&PrintTestContentAnalysisDelegate::Create));
@@ -355,6 +369,8 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyAllowed) {
   run_loop.Run();
 }
 
+// Tests that `PrintIfAllowedByPolicy` allows printing and reports an
+// `EVENT_RESULT_ALLOWED` event when a `REPORT_ONLY` rule is triggered.
 TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyReportOnly) {
   ContentAnalysisDelegate::SetFactoryForTesting(
       base::BindRepeating(&PrintTestContentAnalysisDelegate::Create));
@@ -407,6 +423,8 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyReportOnly) {
   validator_run_loop.Run();
 }
 
+// Tests that `PrintIfAllowedByPolicy` blocks printing and reports an
+// `EVENT_RESULT_WARNED` event when the user cancels a warning verdict.
 TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnThenCancel) {
   ContentAnalysisDelegate::SetFactoryForTesting(
       base::BindRepeating(&PrintTestContentAnalysisDelegate::Create));
@@ -469,9 +487,10 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnThenCancel) {
   validator_run_loop.Run();
 }
 
-// TODO(http://crbug.com/434099738): Flaky on multiple platforms.
-TEST_P(PrintContentAnalysisUtilsTest,
-       DISABLED_PrintIfAllowedByPolicyWarnedThenBypass) {
+// Tests that `PrintIfAllowedByPolicy` allows printing and reports both
+// `EVENT_RESULT_WARNED` and `EVENT_RESULT_BYPASSED` events when the user
+// bypasses a warning verdict.
+TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyWarnedThenBypass) {
   ContentAnalysisDelegate::SetFactoryForTesting(
       base::BindRepeating(&PrintTestContentAnalysisDelegate::Create));
   enterprise_connectors::PagePrintRequestHandler::SetFactoryForTesting(
@@ -494,12 +513,19 @@ TEST_P(PrintContentAnalysisUtilsTest,
   base::RunLoop validator_warn_run_loop;
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.SetDoneClosure(validator_warn_run_loop.QuitClosure());
+  chrome::cros::reporting::proto::TriggeredRuleInfo triggered_rule;
+  triggered_rule.set_rule_name("print_rule_name");
+  triggered_rule.set_action(
+      chrome::cros::reporting::proto::TriggeredRuleInfo::WARN);
+
   chrome::cros::reporting::proto::DlpSensitiveDataEvent event_bypass;
   event_bypass.set_destination(kPrinterName);
   event_bypass.set_file_name("New Tab");
   event_bypass.set_trigger(chrome::cros::reporting::proto::PAGE_PRINT);
   event_bypass.set_event_result(
       chrome::cros::reporting::proto::EventResult::EVENT_RESULT_BYPASSED);
+  event_bypass.set_clicked_through(true);
+  *event_bypass.add_triggered_rule_info() = triggered_rule;
   event_bypass.set_profile_user_name(kUserName);
   event_bypass.set_profile_identifier(profile()->GetPath().AsUTF8Unsafe());
   event_bypass.set_scan_id(kScanId);
@@ -511,6 +537,7 @@ TEST_P(PrintContentAnalysisUtilsTest,
   event_warn.set_trigger(chrome::cros::reporting::proto::PAGE_PRINT);
   event_warn.set_event_result(
       chrome::cros::reporting::proto::EventResult::EVENT_RESULT_WARNED);
+  *event_warn.add_triggered_rule_info() = triggered_rule;
   event_warn.set_profile_user_name(kUserName);
   event_warn.set_profile_identifier(profile()->GetPath().AsUTF8Unsafe());
   event_warn.set_scan_id(kScanId);
@@ -519,20 +546,17 @@ TEST_P(PrintContentAnalysisUtilsTest,
                                                    std::move(event_bypass));
 
   auto data = CreateData();
-  base::RunLoop run_loop;
-  auto on_verdict = base::BindLambdaForTesting([&run_loop](bool allowed) {
-    ASSERT_TRUE(allowed);
-    run_loop.Quit();
-  });
-
+  base::test::TestFuture<bool> future;
   PrintIfAllowedByPolicy(data, contents(), kPrinterName,
                          PrintScanningContext::kNormalPrintAfterPreview,
-                         std::move(on_verdict),
+                         future.GetCallback(),
                          /*hide_preview=*/base::DoNothing());
-  run_loop.Run();
+  ASSERT_TRUE(future.Get());
   validator_warn_run_loop.Run();
 }
 
+// Tests that `PrintIfAllowedByPolicy` blocks printing and reports an
+// `EVENT_RESULT_BLOCKED` event when a `BLOCK` rule is triggered.
 TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyBlocked) {
   ContentAnalysisDelegate::SetFactoryForTesting(
       base::BindRepeating(&PrintTestContentAnalysisDelegate::Create));
@@ -584,6 +608,8 @@ TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyBlocked) {
   run_loop.Run();
 }
 
+// Tests that `PrintIfAllowedByPolicy` disallows printing without reporting an
+// event when the `initiator` `WebContents` is null.
 TEST_P(PrintContentAnalysisUtilsTest, PrintIfAllowedByPolicyNullInitiator) {
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   validator.ExpectNoReport();

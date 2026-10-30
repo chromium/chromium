@@ -63,6 +63,10 @@ class EventReportValidator : public EventReportValidatorBase {
       const std::vector<std::string>& expected_results,
       const std::vector<std::string>& expected_scan_ids);
 
+  // Sets up expectations on `client_` to receive both `expected_warn_event` and
+  // `expected_bypass_event` in any order, because reporting events are
+  // uploaded asynchronously via `base::ThreadPool`. Once both events are
+  // validated, `done_closure_` is executed if set.
   void ExpectSensitiveDataEventWarnThenBypass(
       chrome::cros::reporting::proto::DlpSensitiveDataEvent expected_warn_event,
       chrome::cros::reporting::proto::DlpSensitiveDataEvent
