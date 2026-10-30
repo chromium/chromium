@@ -23,9 +23,9 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -38,13 +38,14 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests for creating a tab with NewTabPage. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-// TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
-@DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
+// Tests the Java native NTP, which is not used on desktop (it uses the WebUI NTP).
+@Restriction(DeviceFormFactor.PHONE_OR_TABLET)
 public class NewTabPageCreationTest {
     private static final String TEST_URL = "/chrome/test/data/android/test.html";
 

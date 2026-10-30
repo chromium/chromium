@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.ntp;
 
-import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
-
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
@@ -18,9 +16,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.homepage.HomepageTestRule;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
@@ -38,8 +34,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-// TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
-@DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
 public class NewTabPageNavigationTest {
     private static final String HISTOGRAM_NTP_MODULE_CLICK = "NewTabPage.Module.Click";
     private static final String HISTOGRAM_START_SURFACE_MODULE_CLICK = "StartSurface.Module.Click";
@@ -76,8 +70,7 @@ public class NewTabPageNavigationTest {
     public void testNavigateBackToNtpViaUrl() {
         String url = mTestServer.getURL("/chrome/test/data/android/google.html");
         WebPageStation page = mNtp.loadWebPageProgrammatically(url);
-        page.loadPageProgrammatically(
-                getOriginalNativeNtpUrl(), RegularNewTabPageStation.newBuilder());
+        page.loadNtp();
     }
 
     /** Tests navigating to the tab switcher from the NTP. */

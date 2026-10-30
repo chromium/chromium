@@ -31,8 +31,8 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.LauncherShortcutActivity;
 import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.page_load_metrics.PageLoadMetrics;
 import org.chromium.chrome.browser.page_load_metrics.PageLoadMetricsTest;
@@ -59,8 +58,6 @@ import org.chromium.ui.base.DeviceFormFactor;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "These startup tests rely on having exactly one process start per test.")
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-// TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
-@DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
 public class StartupLoadingMetricsTest {
     private static final String TEST_PAGE = "/chrome/test/data/android/google.html";
     private static final String TEST_PAGE_2 = "/chrome/test/data/android/test.html";
@@ -355,7 +352,8 @@ public class StartupLoadingMetricsTest {
     /** Tests that the startup loading histograms are recorded correctly for NTP launches */
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/570146323
+    // Tests the Java native NTP, which is not used on desktop (it uses the WebUI NTP).
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
     public void testNtpRecordedCorrectly() throws Exception {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -377,6 +375,8 @@ public class StartupLoadingMetricsTest {
     /** Tests that Binder startup metrics are recorded correctly for NTP launches. */
     @Test
     @LargeTest
+    // Tests the Java native NTP, which is not used on desktop (it uses the WebUI NTP).
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
     public void testNtpBinderMetricRecordedCorrectly() throws Exception {
         HistogramWatcher ntpBinderWatcher =
                 HistogramWatcher.newBuilder()

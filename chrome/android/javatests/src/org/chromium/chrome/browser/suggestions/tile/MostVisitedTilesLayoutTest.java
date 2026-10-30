@@ -43,10 +43,9 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
@@ -83,8 +82,6 @@ import java.util.concurrent.TimeoutException;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 @DoNotBatch(reason = "AI automated batching was unsuccessful.")
-// TODO(b/555414915): Update Android tests with WebUI NTP enabled on AL.
-@DisableFeatures(ChromeFeatureList.USE_WEB_UI_NTP_ANDROID)
 public class MostVisitedTilesLayoutTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -157,7 +154,8 @@ public class MostVisitedTilesLayoutTest {
     @MediumTest
     @Feature({"NewTabPage", "RenderTest"})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288662
+    // Tests the Java native NTP, which is not used on desktop (it uses the WebUI NTP).
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
     public void testTilesLayoutAppearance(boolean nightModeEnabled) throws Exception {
         doTilesLayoutAppearanceTest("_with_add_new_button_v1");
     }
