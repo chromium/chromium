@@ -3944,8 +3944,7 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   const int dummy_handler_id = 0;
   user_data->RegisterExtensionFrame(&dummy_handler_id);
   user_data->UpdateExtensionFrameBound(
-      &dummy_handler_id, /*is_page_bound=*/true, base::DoNothing(),
-      base::DoNothing(), base::DoNothing());
+      &dummy_handler_id, /*is_page_bound=*/true, base::DoNothing());
 #endif
 
   EXPECT_CALL(mock_active_task_context_provider_,
@@ -3998,6 +3997,7 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
         }
       },
       &on_submit_responses, &removed_context_ids));
+  user_data->OnHandshakeComplete();
   ON_CALL(*mock_controller_, GetContextForTask(task_id, _, _, _))
       .WillByDefault(
           [task_id, session_id1](

@@ -242,7 +242,7 @@ BuildUserDataDebugState(
       user_data_state->extension_frames.push_back(
           contextual_tasks_internals::mojom::ExtensionFrameDebug::New(
               base::checked_cast<uint32_t>(i), frames[i].is_page_bound,
-              frames[i].is_handshake_complete));
+              /*is_handshake_complete=*/false));
     }
 
     user_data_state->submit_pending = user_data->submit_pending();

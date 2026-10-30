@@ -69,8 +69,6 @@
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -268,6 +266,15 @@ class ContextualTasksExtensionHandlerBrowserTestBase
     handler_->CreateExtensionPageHandler(mock_page_.BindAndGetRemote(),
                                          std::move(page_handler_receiver));
 
+    auto* user_data =
+        ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+            web_contents_);
+    user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
+        [this](const lens::ClientToSearchMessage& message) {
+          mock_page_.PostSearchMessage(mojo_base::ProtoWrapper(message));
+        }));
+    user_data->OnHandshakeComplete();
+
     // Bind the mock searchbox page and composebox page handler to the handler.
     mojo::PendingReceiver<searchbox::mojom::PageHandler> searchbox_receiver;
     static_cast<composebox::mojom::PageHandlerFactory*>(handler_)
@@ -283,6 +290,20 @@ class ContextualTasksExtensionHandlerBrowserTestBase
   }
 
   void TearDownOnMainThread() override {
+    if (web_contents_) {
+      if (auto* user_data = ContextualTasksWebContentsUserData::FromWebContents(
+              web_contents_)) {
+        user_data->SetSearchMessageDispatcherForTesting(base::NullCallback());
+      }
+    }
+    if (panel_web_contents_) {
+      if (auto* panel_user_data =
+              ContextualTasksWebContentsUserData::FromWebContents(
+                  panel_web_contents_)) {
+        panel_user_data->SetSearchMessageDispatcherForTesting(
+            base::NullCallback());
+      }
+    }
     // Expectation actions may reference test-body stack state (e.g. RunLoop
     // quit closures). Clear them before AssertThatNetworkServiceDidNotCrash()
     // spins a run loop that can dispatch late mojo messages to these mocks.
@@ -354,6 +375,17 @@ class ContextualTasksExtensionHandlerBrowserTestBase
     handler_->CreateExtensionPageHandler(mock_panel_page_.BindAndGetRemote(),
                                          std::move(page_handler_receiver));
 
+    auto* panel_user_data =
+        ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+            raw_panel_contents);
+    panel_user_data->SetSearchMessageDispatcherForTesting(
+        base::BindLambdaForTesting(
+            [this](const lens::ClientToSearchMessage& message) {
+              mock_panel_page_.PostSearchMessage(
+                  mojo_base::ProtoWrapper(message));
+            }));
+    panel_user_data->OnHandshakeComplete();
+
     composebox_handler_remote_.reset();
     mock_searchbox_page_.receiver_.reset();
     mojo::PendingReceiver<searchbox::mojom::PageHandler> searchbox_receiver;
@@ -374,7 +406,11 @@ class ContextualTasksExtensionHandlerBrowserTestBase
   void SendSearchMessage(const lens::SearchToClientMessage& msg) {
     std::vector<uint8_t> bytes(msg.ByteSizeLong());
     msg.SerializeToArray(bytes.data(), bytes.size());
-    handler_->OnWebviewMessage(bytes, std::nullopt);
+    content::WebContents* target_contents =
+        panel_web_contents_ ? panel_web_contents_.get() : web_contents_.get();
+    EXPECT_TRUE(ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+                    target_contents)
+                    ->OnSearchMessageReceived(bytes));
   }
 
   void SendOnPageChanged(bool is_zero_state) {
@@ -1240,7 +1276,8 @@ class ContextualTasksExtensionHandlerContextualizerBrowserTest
     request.SerializeToArray(serialized_request.data(),
                              serialized_request.size());
     SimulateUserInteraction();
-    handler_->OnWebviewMessage(serialized_request, std::nullopt);
+    ContextualTasksWebContentsUserData::GetOrCreateForWebContents(web_contents_)
+        ->OnSearchMessageReceived(serialized_request);
     run_loop.Run();
     testing::Mock::VerifyAndClearExpectations(&mock_page_);
     return upload_types;
@@ -1556,10 +1593,12 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksExtensionHandlerBrowserTest,
-    OnWebviewMessage_SearchToClientMessageHandshakeResponse) {
-  base::RunLoop run_loop;
-  EXPECT_CALL(mock_page_, OnHandshakeComplete())
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+    OnSearchMessageReceived_SearchToClientMessageHandshakeResponse) {
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  user_data->OnDocumentConnected(web_contents_->GetPrimaryMainFrame());
+  EXPECT_FALSE(user_data->IsHandshakeCompleteForTesting());
   EXPECT_CALL(*mock_controller_, SetAuthUserIndex(2));
 
   lens::SearchToClientMessage message;
@@ -1568,26 +1607,9 @@ IN_PROC_BROWSER_TEST_F(
   std::vector<uint8_t> serialized_message(size);
   message.SerializeToArray(serialized_message.data(), size);
 
-  handler_->OnWebviewMessage(serialized_message, std::nullopt);
-  run_loop.Run();
-
+  EXPECT_TRUE(user_data->OnSearchMessageReceived(serialized_message));
+  EXPECT_TRUE(user_data->IsHandshakeCompleteForTesting());
   EXPECT_EQ(mock_session_handle_->auth_user_index(), 2u);
-}
-
-IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
-                       OnWebviewMessage_AimToClientMessageHandshakeResponse) {
-  base::RunLoop run_loop;
-  EXPECT_CALL(mock_page_, OnHandshakeComplete())
-      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
-
-  lens::AimToClientMessage message;
-  message.mutable_handshake_response();
-  const size_t size = message.ByteSizeLong();
-  std::vector<uint8_t> serialized_message(size);
-  message.SerializeToArray(serialized_message.data(), size);
-
-  handler_->OnWebviewMessage(serialized_message, std::nullopt);
-  run_loop.Run();
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
@@ -1769,7 +1791,8 @@ IN_PROC_BROWSER_TEST_F(
   request.SerializeToArray(serialized_message.data(), size);
 
   SimulateUserInteraction();
-  handler_->OnWebviewMessage(serialized_message, std::nullopt);
+  ContextualTasksWebContentsUserData::GetOrCreateForWebContents(web_contents_)
+      ->OnSearchMessageReceived(serialized_message);
   run_loop.Run();
 
   EXPECT_FALSE(model->lens_crop().has_value());
@@ -1887,7 +1910,8 @@ IN_PROC_BROWSER_TEST_F(
   request.SerializeToArray(serialized_message.data(), size);
 
   SimulateUserInteraction();
-  handler_->OnWebviewMessage(serialized_message, std::nullopt);
+  ContextualTasksWebContentsUserData::GetOrCreateForWebContents(web_contents_)
+      ->OnSearchMessageReceived(serialized_message);
   run_loop.Run();
 
   EXPECT_FALSE(model->lens_crop().has_value());
@@ -1978,7 +2002,8 @@ IN_PROC_BROWSER_TEST_F(
   request.SerializeToArray(serialized_message.data(), size);
 
   SimulateUserInteraction();
-  handler_->OnWebviewMessage(serialized_message, std::nullopt);
+  ContextualTasksWebContentsUserData::GetOrCreateForWebContents(web_contents_)
+      ->OnSearchMessageReceived(serialized_message);
   run_loop.Run();
   mock_page_.FlushForTesting();
 }
@@ -2122,7 +2147,8 @@ IN_PROC_BROWSER_TEST_F(
   request.SerializeToArray(serialized_message.data(), size);
 
   SimulateUserInteraction();
-  handler_->OnWebviewMessage(serialized_message, std::nullopt);
+  ContextualTasksWebContentsUserData::GetOrCreateForWebContents(web_contents_)
+      ->OnSearchMessageReceived(serialized_message);
   run_loop.Run();
   mock_page_.FlushForTesting();
   EXPECT_THAT(mock_session_handle_->GetSubmittedContextTokens(),
@@ -2225,7 +2251,8 @@ IN_PROC_BROWSER_TEST_F(
   request.SerializeToArray(serialized_message.data(), size);
 
   SimulateUserInteraction();
-  handler_->OnWebviewMessage(serialized_message, std::nullopt);
+  ContextualTasksWebContentsUserData::GetOrCreateForWebContents(web_contents_)
+      ->OnSearchMessageReceived(serialized_message);
   run_loop.Run();
   mock_page_.FlushForTesting();
   EXPECT_THAT(mock_session_handle_->GetSubmittedContextTokens(),
@@ -2320,7 +2347,8 @@ IN_PROC_BROWSER_TEST_F(
   request.SerializeToArray(serialized_message.data(), size);
 
   SimulateUserInteraction();
-  handler_->OnWebviewMessage(serialized_message, std::nullopt);
+  ContextualTasksWebContentsUserData::GetOrCreateForWebContents(web_contents_)
+      ->OnSearchMessageReceived(serialized_message);
   run_loop.Run();
   mock_page_.FlushForTesting();
 }
@@ -2351,7 +2379,8 @@ IN_PROC_BROWSER_TEST_F(
   request.SerializeToArray(serialized_message.data(), size);
 
   SimulateUserInteraction();
-  handler_->OnWebviewMessage(serialized_message, std::nullopt);
+  ContextualTasksWebContentsUserData::GetOrCreateForWebContents(web_contents_)
+      ->OnSearchMessageReceived(serialized_message);
   run_loop.Run();
 }
 
@@ -2410,7 +2439,8 @@ IN_PROC_BROWSER_TEST_F(
   std::vector<uint8_t> serialized_message(size);
   request.SerializeToArray(serialized_message.data(), size);
 
-  handler_->OnWebviewMessage(serialized_message, std::nullopt);
+  ContextualTasksWebContentsUserData::GetOrCreateForWebContents(web_contents_)
+      ->OnSearchMessageReceived(serialized_message);
   mock_page_.FlushForTesting();
 }
 
@@ -2481,7 +2511,8 @@ IN_PROC_BROWSER_TEST_F(
         run_loop1.Quit();
       });
 
-  handler_->OnWebviewMessage(serialized_message, std::nullopt);
+  ContextualTasksWebContentsUserData::GetOrCreateForWebContents(web_contents_)
+      ->OnSearchMessageReceived(serialized_message);
   run_loop1.Run();
   mock_page_.FlushForTesting();
   EXPECT_FALSE(model->lens_crop().has_value());
@@ -2499,7 +2530,8 @@ IN_PROC_BROWSER_TEST_F(
           EXPECT_FALSE(message->has_on_submit_query_response());
         }
       });
-  handler_->OnWebviewMessage(serialized_message, std::nullopt);
+  ContextualTasksWebContentsUserData::GetOrCreateForWebContents(web_contents_)
+      ->OnSearchMessageReceived(serialized_message);
   mock_page_.FlushForTesting();
   EXPECT_TRUE(model->lens_crop().has_value());
 
@@ -2517,7 +2549,8 @@ IN_PROC_BROWSER_TEST_F(
         run_loop2.Quit();
       });
 
-  handler_->OnWebviewMessage(serialized_message, std::nullopt);
+  ContextualTasksWebContentsUserData::GetOrCreateForWebContents(web_contents_)
+      ->OnSearchMessageReceived(serialized_message);
   run_loop2.Run();
   mock_page_.FlushForTesting();
   EXPECT_FALSE(model->lens_crop().has_value());
@@ -2673,12 +2706,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
                       CONTEXT_STATE_READY);
         run_loop1.Quit();
       });
+  base::RunLoop crop_run_loop1;
   EXPECT_CALL(mock_page_,
               OnLensCropUpdated(GURL("data:image/png;base64,crop1")))
-      .Times(1);
+      .WillOnce([&crop_run_loop1](const GURL&) { crop_run_loop1.Quit(); });
 
   handler_->OnLensThumbnailCreatedForTesting("data:image/png;base64,crop1");
   run_loop1.Run();
+  crop_run_loop1.Run();
 
   // Step 2: Emit second crop immediately without prior dismissal.
   // Must update the chip in-place via OnLensCropUpdated without emitting any
@@ -2754,7 +2789,7 @@ IN_PROC_BROWSER_TEST_F(
                                             std::move(child_handler_receiver));
 
   base::RunLoop run_loop;
-  EXPECT_CALL(mock_child_page, PostSearchMessage(_))
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
       .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
         auto message = wrapper.As<lens::ClientToSearchMessage>();
         ASSERT_TRUE(message.has_value());
@@ -2776,63 +2811,6 @@ IN_PROC_BROWSER_TEST_F(
 
   child_handler->OnLensThumbnailCreatedForTesting(
       "data:image/png;base64,test_crop");
-  run_loop.Run();
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ContextualTasksExtensionHandlerBrowserTest,
-    OnInputStateChanged_LensChipUrlDoesNotEmitPostSearchMessage) {
-  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-      [](const net::test_server::HttpRequest& request)
-          -> std::unique_ptr<net::test_server::HttpResponse> {
-        if (request.relative_url.find("lens_chip.html") != std::string::npos) {
-          auto response =
-              std::make_unique<net::test_server::BasicHttpResponse>();
-          response->set_code(net::HTTP_OK);
-          response->set_content_type("text/html");
-          response->set_content("<html><body>lens chip</body></html>");
-          return response;
-        }
-        return nullptr;
-      }));
-  ASSERT_TRUE(embedded_test_server()->Start());
-  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-      browser(), embedded_test_server()->GetURL("/title1.html"),
-      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  content::WebContents* test_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  GURL chip_url = embedded_test_server()->GetURL("/lens_chip.html");
-  ASSERT_TRUE(
-      content::ExecJs(test_contents,
-                      "const iframe = document.createElement('iframe'); "
-                      "iframe.id = 'chip_iframe'; "
-                      "iframe.name = 'chip_iframe'; "
-                      "document.body.appendChild(iframe);"));
-  ASSERT_TRUE(
-      content::NavigateIframeToURL(test_contents, "chip_iframe", chip_url));
-
-  content::RenderFrameHost* child_rfh =
-      content::ChildFrameAt(test_contents->GetPrimaryMainFrame(), 0);
-  ASSERT_NE(child_rfh, nullptr);
-  ContextualTasksExtensionHandler::CreateForCurrentDocument(child_rfh);
-  auto* chip_handler =
-      ContextualTasksExtensionHandler::GetForCurrentDocument(child_rfh);
-  ASSERT_NE(chip_handler, nullptr);
-
-  testing::NiceMock<MockContextualTasksExtensionPage> mock_chip_page;
-  mojo::PendingReceiver<mojom::ExtensionPageHandler> chip_handler_receiver;
-  chip_handler->CreateExtensionPageHandler(mock_chip_page.BindAndGetRemote(),
-                                           std::move(chip_handler_receiver));
-
-  EXPECT_CALL(mock_chip_page, PostSearchMessage(_)).Times(0);
-
-  chip_handler->OnLensThumbnailCreatedForTesting(
-      "data:image/png;base64,test_crop");
-  base::RunLoop run_loop;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();
 }
 
@@ -3027,7 +3005,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
   search_message.SerializeToArray(serialized_message.data(), size);
 
   SimulateUserInteraction();
-  handler_->OnWebviewMessage(serialized_message, std::nullopt);
+  ContextualTasksWebContentsUserData::GetOrCreateForWebContents(web_contents_)
+      ->OnSearchMessageReceived(serialized_message);
   run_loop.Run();
   mock_page_.FlushForTesting();
 }
@@ -3151,7 +3130,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
   search_message.SerializeToArray(serialized_message.data(), size);
 
   SimulateUserInteraction();
-  handler_->OnWebviewMessage(serialized_message, std::nullopt);
+  ContextualTasksWebContentsUserData::GetOrCreateForWebContents(web_contents_)
+      ->OnSearchMessageReceived(serialized_message);
   run_loop.Run();
   mock_page_.FlushForTesting();
 }
@@ -3214,7 +3194,9 @@ IN_PROC_BROWSER_TEST_F(
         std::vector<uint8_t> serialized_message(size);
         request.SerializeToArray(serialized_message.data(), size);
         SimulateUserInteraction();
-        handler_->OnWebviewMessage(serialized_message, std::nullopt);
+        ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+            web_contents_)
+            ->OnSearchMessageReceived(serialized_message);
         run_loop.Run();
         testing::Mock::VerifyAndClearExpectations(&mock_page_);
       };
@@ -3312,7 +3294,9 @@ IN_PROC_BROWSER_TEST_F(
   std::vector<uint8_t> serialized_message(size);
   message.SerializeToArray(serialized_message.data(), size);
 
-  handler_->OnWebviewMessage(serialized_message, std::nullopt);
+  ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+      panel_web_contents_)
+      ->OnSearchMessageReceived(serialized_message);
 
   // The link is opened in a new active tab next to the side panel and
   // associated with the side panel's task.
@@ -3337,6 +3321,9 @@ IN_PROC_BROWSER_TEST_F(
     ContextualTasksExtensionHandlerBrowserTest,
     OnWebviewMessage_SearchToClientMessageOpenLinkInSidePanelMode_InvalidUrlIgnored) {
   EmbedHandlerInSidePanel();
+  auto* panel_user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          panel_web_contents_);
 
   // Non-HTTP(S) URL should be ignored.
   {
@@ -3346,7 +3333,7 @@ IN_PROC_BROWSER_TEST_F(
     const size_t size = message.ByteSizeLong();
     std::vector<uint8_t> serialized_message(size);
     message.SerializeToArray(serialized_message.data(), size);
-    handler_->OnWebviewMessage(serialized_message, std::nullopt);
+    panel_user_data->OnSearchMessageReceived(serialized_message);
   }
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
   EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(),
@@ -3359,46 +3346,11 @@ IN_PROC_BROWSER_TEST_F(
     const size_t size = message.ByteSizeLong();
     std::vector<uint8_t> serialized_message(size);
     message.SerializeToArray(serialized_message.data(), size);
-    handler_->OnWebviewMessage(serialized_message, std::nullopt);
+    panel_user_data->OnSearchMessageReceived(serialized_message);
   }
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
   EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(),
             web_contents_);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ContextualTasksExtensionHandlerBrowserTest,
-    OnWebviewMessage_AimToClientMessageOpenLinkInSidePanelMode) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL target_url = embedded_test_server()->GetURL("/title1.html");
-
-  EmbedHandlerInSidePanel();
-  ASSERT_TRUE(side_panel_task_id_.has_value());
-  content::WebContents* original_tab_contents = web_contents_;
-
-  lens::AimToClientMessage message;
-  message.mutable_open_link_in_side_panel_mode()->set_url(target_url.spec());
-  const size_t size = message.ByteSizeLong();
-  std::vector<uint8_t> serialized_message(size);
-  message.SerializeToArray(serialized_message.data(), size);
-
-  handler_->OnWebviewMessage(serialized_message, std::nullopt);
-
-  content::WebContents* active_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_NE(active_contents, nullptr);
-  EXPECT_NE(active_contents, original_tab_contents);
-  EXPECT_EQ(active_contents->GetVisibleURL(), target_url);
-
-  auto* tasks_service = ContextualTasksServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(active_contents->GetBrowserContext()));
-  ASSERT_NE(tasks_service, nullptr);
-  SessionID active_tab_id =
-      sessions::SessionTabHelper::IdForTab(active_contents);
-  std::optional<ContextualTask> task =
-      tasks_service->GetContextualTaskForTab(active_tab_id);
-  ASSERT_TRUE(task.has_value());
-  EXPECT_EQ(task->GetTaskId(), *side_panel_task_id_);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -3417,43 +3369,9 @@ IN_PROC_BROWSER_TEST_F(
   std::vector<uint8_t> serialized_message(size);
   message.SerializeToArray(serialized_message.data(), size);
 
-  handler_->OnWebviewMessage(serialized_message, std::nullopt);
-
-  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
-  content::WebContents* active_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  ASSERT_NE(active_contents, nullptr);
-  EXPECT_EQ(active_contents, original_tab_contents);
-  EXPECT_EQ(active_contents->GetVisibleURL(), target_url);
-
-  auto* tasks_service = ContextualTasksServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(active_contents->GetBrowserContext()));
-  ASSERT_NE(tasks_service, nullptr);
-  SessionID active_tab_id =
-      sessions::SessionTabHelper::IdForTab(active_contents);
-  std::optional<ContextualTask> task =
-      tasks_service->GetContextualTaskForTab(active_tab_id);
-  ASSERT_TRUE(task.has_value());
-  EXPECT_EQ(task->GetTaskId(), *side_panel_task_id_);
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ContextualTasksExtensionHandlerClobberActiveTabBrowserTest,
-    OnWebviewMessage_AimToClientMessageOpenLinkInSidePanelMode_ClobbersActiveTab) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  const GURL target_url = embedded_test_server()->GetURL("/title1.html");
-
-  EmbedHandlerInSidePanel();
-  ASSERT_TRUE(side_panel_task_id_.has_value());
-  content::WebContents* original_tab_contents = web_contents_;
-
-  lens::AimToClientMessage message;
-  message.mutable_open_link_in_side_panel_mode()->set_url(target_url.spec());
-  const size_t size = message.ByteSizeLong();
-  std::vector<uint8_t> serialized_message(size);
-  message.SerializeToArray(serialized_message.data(), size);
-
-  handler_->OnWebviewMessage(serialized_message, std::nullopt);
+  ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+      panel_web_contents_)
+      ->OnSearchMessageReceived(serialized_message);
 
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
   content::WebContents* active_contents =
@@ -3734,7 +3652,10 @@ class ContextualTasksExtensionHandlerContextLibraryBrowserTest
     const size_t size = message.ByteSizeLong();
     std::vector<uint8_t> serialized_message(size);
     message.SerializeToArray(serialized_message.data(), size);
-    handler_->OnWebviewMessage(serialized_message, std::nullopt);
+    content::WebContents* contents =
+        panel_web_contents_ ? panel_web_contents_ : web_contents_;
+    ContextualTasksWebContentsUserData::GetOrCreateForWebContents(contents)
+        ->OnSearchMessageReceived(serialized_message);
   }
 
   // Opens `url` in a background tab, so `web_contents_` stays active, and
@@ -4232,6 +4153,7 @@ IN_PROC_BROWSER_TEST_F(
       });
   SendUpdateThreadContextLibrary(library);
   mount_run_loop.Run();
+  testing::Mock::VerifyAndClearExpectations(&mock_page_);
 
   const auto& restored = mock_session_handle_->GetTabContextState().restored;
   ASSERT_EQ(restored.size(), 1u);
@@ -4301,6 +4223,7 @@ IN_PROC_BROWSER_TEST_F(
   AddWebpageContext(library, 101, "https://example.com/a", "Tab A");
   SendUpdateThreadContextLibrary(library);
   mount_run_loop.Run();
+  testing::Mock::VerifyAndClearExpectations(&mock_page_);
 
   const auto& restored = mock_session_handle_->GetTabContextState().restored;
   ASSERT_EQ(restored.size(), 1u);
@@ -4316,10 +4239,13 @@ IN_PROC_BROWSER_TEST_F(
           web_contents_);
   ASSERT_NE(user_data, nullptr);
 
-  // Unregister the primary extension frame handler to simulate 0 extension
-  // iframes mounted in the page.
+  // Unregister the primary extension frame handler and navigate to a fresh page
+  // to simulate 0 extension iframes mounted before handshake completes.
   user_data->UnregisterExtensionFrame(handler_);
+  handler_ = nullptr;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   EXPECT_FALSE(user_data->HasBoundExtensionFrame());
+  EXPECT_FALSE(user_data->IsHandshakeCompleteForTesting());
 
   std::vector<lens::ClientToSearchMessage> dispatched_messages;
   user_data->SetSearchMessageDispatcherForTesting(base::BindLambdaForTesting(
@@ -4610,7 +4536,7 @@ IN_PROC_BROWSER_TEST_F(
   request.SerializeToArray(serialized_message.data(), size);
 
   SimulateUserInteraction();
-  handler_->OnWebviewMessage(serialized_message, std::nullopt);
+  user_data->OnSearchMessageReceived(serialized_message);
   submit_run_loop.Run();
 }
 
@@ -4892,12 +4818,12 @@ IN_PROC_BROWSER_TEST_F(
       contextual_search::ContextUploadStatus::kUploadSuccessful, std::nullopt);
   ready_run_loop.Run();
 
-  // 3. Receiving a handshake response while a tab is selected mounts
-  // CONTEXT_LIBRARY and re-emits the current context state
+  // 3. Receiving a handshake response on a newly connected document while a tab
+  // is selected mounts CONTEXT_LIBRARY and re-emits the current context state
   // (CONTEXT_STATE_READY) even though CONTEXT_STATE_READY was already sent
   // prior to the handshake.
+  user_data->OnDocumentConnected(web_contents_->GetPrimaryMainFrame());
   base::RunLoop handshake_run_loop;
-  EXPECT_CALL(mock_page_, OnHandshakeComplete());
   EXPECT_CALL(mock_page_, PostSearchMessage(_))
       .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
         auto message = wrapper.As<lens::ClientToSearchMessage>();
@@ -4923,7 +4849,7 @@ IN_PROC_BROWSER_TEST_F(
   const size_t size = handshake_msg.ByteSizeLong();
   std::vector<uint8_t> serialized_handshake(size);
   handshake_msg.SerializeToArray(serialized_handshake.data(), size);
-  handler_->OnWebviewMessage(serialized_handshake, std::nullopt);
+  EXPECT_TRUE(user_data->OnSearchMessageReceived(serialized_handshake));
   handshake_run_loop.Run();
 
   // 4. Switching controllers unregisters from the old controller and registers
@@ -5040,6 +4966,8 @@ IN_PROC_BROWSER_TEST_F(
           web_contents_);
   ASSERT_NE(user_data, nullptr);
   user_data->UnregisterExtensionFrame(handler_);
+  handler_ = nullptr;
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
   EXPECT_FALSE(user_data->HasBoundExtensionFrame());
 
   user_data->OnLensThumbnailCreated("data:image/png;base64,sw_lazy_crop");
@@ -5151,8 +5079,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_NE(user_data, nullptr);
   // Keep `handler_` bound (simulating `lens_button.html` loading before the
   // top-level AIM page connects its Service Worker port). Creating a Lens crop
-  // before `OnDocumentConnected()` sets `is_lens_crop_mounted = true` via the
-  // legacy extension frame fallback.
+  // before `OnDocumentConnected()` sets `is_lens_crop_mounted = true`.
   ASSERT_TRUE(user_data->HasBoundExtensionFrame());
   user_data->OnLensThumbnailCreated("data:image/png;base64,prebound_crop");
 
@@ -5247,12 +5174,14 @@ IN_PROC_BROWSER_TEST_F(
                       CONTEXT_STATE_READY);
         mount_run_loop1.Quit();
       });
+  base::RunLoop crop_run_loop1;
   EXPECT_CALL(mock_page_,
               OnLensCropUpdated(GURL("data:image/png;base64,crop1")))
-      .Times(1);
+      .WillOnce([&crop_run_loop1](const GURL&) { crop_run_loop1.Quit(); });
 
   handler_->OnLensThumbnailCreatedForTesting("data:image/png;base64,crop1");
   mount_run_loop1.Run();
+  crop_run_loop1.Run();
 
   auto model = handler_->GetOrCreateInputStateModelForTesting();
   ASSERT_TRUE(model);
@@ -5335,7 +5264,7 @@ IN_PROC_BROWSER_TEST_F(
   const size_t size = page_changed_msg.ByteSizeLong();
   std::vector<uint8_t> serialized_page_changed(size);
   page_changed_msg.SerializeToArray(serialized_page_changed.data(), size);
-  handler_->OnWebviewMessage(serialized_page_changed, std::nullopt);
+  user_data->OnSearchMessageReceived(serialized_page_changed);
   clear_run_loop.Run();
 
   EXPECT_FALSE(model->lens_crop().has_value());
@@ -5363,12 +5292,14 @@ IN_PROC_BROWSER_TEST_F(
                       CONTEXT_STATE_READY);
         mount_run_loop2.Quit();
       });
+  base::RunLoop crop_run_loop2;
   EXPECT_CALL(mock_page_,
               OnLensCropUpdated(GURL("data:image/png;base64,crop2")))
-      .Times(1);
+      .WillOnce([&crop_run_loop2](const GURL&) { crop_run_loop2.Quit(); });
 
   handler_->OnLensThumbnailCreatedForTesting("data:image/png;base64,crop2");
   mount_run_loop2.Run();
+  crop_run_loop2.Run();
   EXPECT_TRUE(model->lens_crop().has_value());
 }
 
@@ -5613,7 +5544,7 @@ IN_PROC_BROWSER_TEST_F(
   request.SerializeToArray(serialized_message.data(), size);
 
   SimulateUserInteraction();
-  handler_->OnWebviewMessage(serialized_message, std::nullopt);
+  user_data->OnSearchMessageReceived(serialized_message);
   submit_run_loop.Run();
 }
 
@@ -5852,7 +5783,8 @@ IN_PROC_BROWSER_TEST_F(
     std::vector<uint8_t> serialized_message(size);
     request.SerializeToArray(serialized_message.data(), size);
     SimulateUserInteraction();
-    handler_->OnWebviewMessage(serialized_message, std::nullopt);
+    ContextualTasksWebContentsUserData::GetOrCreateForWebContents(web_contents_)
+        ->OnSearchMessageReceived(serialized_message);
     submit_loop.Run();
     testing::Mock::VerifyAndClearExpectations(&mock_page_);
   }
@@ -6404,11 +6336,16 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
 
   mock_session_handle_->SetPersistedTabs({{active_tab_id, {token, req_id}}});
   tab_context_run_loop.Run();
+  mock_page_.FlushForTesting();
+  testing::Mock::VerifyAndClearExpectations(&mock_page_);
 
   // Completing handshake when `uploaded_context_tokens_` is empty (e.g. on SRP
   // after CreateSearchUrl / SetPersistedTabs) still mounts CONTEXT_LIBRARY.
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  user_data->OnDocumentConnected(web_contents_->GetPrimaryMainFrame());
   base::RunLoop handshake_run_loop;
-  EXPECT_CALL(mock_page_, OnHandshakeComplete());
   EXPECT_CALL(mock_page_, PostSearchMessage(_))
       .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
         auto message = wrapper.As<lens::ClientToSearchMessage>();
@@ -6426,7 +6363,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
   const size_t size = handshake_msg.ByteSizeLong();
   std::vector<uint8_t> serialized_handshake(size);
   handshake_msg.SerializeToArray(serialized_handshake.data(), size);
-  handler_->OnWebviewMessage(serialized_handshake, std::nullopt);
+  EXPECT_TRUE(user_data->OnSearchMessageReceived(serialized_handshake));
   handshake_run_loop.Run();
 }
 
@@ -6519,7 +6456,7 @@ IN_PROC_BROWSER_TEST_F(
         std::vector<uint8_t> serialized_message(size);
         request.SerializeToArray(serialized_message.data(), size);
         SimulateUserInteraction();
-        handler_->OnWebviewMessage(serialized_message, std::nullopt);
+        user_data->OnSearchMessageReceived(serialized_message);
         run_loop.Run();
         mock_page_.FlushForTesting();
         testing::Mock::VerifyAndClearExpectations(&mock_page_);
@@ -6768,7 +6705,7 @@ IN_PROC_BROWSER_TEST_F(
     page_changed.mutable_on_page_changed()->set_is_zero_state(false);
     std::vector<uint8_t> bytes(page_changed.ByteSizeLong());
     page_changed.SerializeToArray(bytes.data(), bytes.size());
-    handler_->OnWebviewMessage(bytes, std::nullopt);
+    user_data->OnSearchMessageReceived(bytes);
   }
   ASSERT_EQ(user_data->GetSelectedTabs().size(), 1u);
   EXPECT_EQ(user_data->GetSelectedTabs()[0].url, dogs_url);

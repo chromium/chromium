@@ -8,7 +8,6 @@
 #include <iterator>
 #include <utility>
 
-#include "base/containers/adapters.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -530,30 +529,13 @@ void ContextualTasksWebContentsUserData::RegisterExtensionFrame(
 void ContextualTasksWebContentsUserData::UpdateExtensionFrameBound(
     const void* handler_id,
     bool is_page_bound,
-    base::RepeatingCallback<void(const lens::ClientToSearchMessage&)>
-        post_search_message_cb,
-    base::RepeatingClosure on_handshake_complete_cb,
     base::RepeatingCallback<void(const GURL&)> on_lens_crop_updated_cb,
     base::RepeatingClosure on_tab_context_updated_cb) {
-  bool had_bound_frame = HasBoundExtensionFrame();
   for (auto& frame : extension_frames_) {
     if (frame.handler_id == handler_id) {
       frame.is_page_bound = is_page_bound;
-      if (!is_page_bound) {
-        frame.is_handshake_complete = false;
-      }
-      frame.post_search_message_cb = std::move(post_search_message_cb);
-      frame.on_handshake_complete_cb = std::move(on_handshake_complete_cb);
       frame.on_lens_crop_updated_cb = std::move(on_lens_crop_updated_cb);
       frame.on_tab_context_updated_cb = std::move(on_tab_context_updated_cb);
-      if (is_page_bound && !had_bound_frame &&
-          !IsServiceWorkerPortConnected()) {
-        auto& page_state = GetPrimaryPageSearchState();
-        page_state.is_lens_crop_mounted = false;
-        page_state.last_lens_crop_data_uri.clear();
-        page_state.last_sent_context_state = ContextState::kNone;
-        page_state.last_sent_suggest_inputs_serialized.clear();
-      }
       return;
     }
   }
@@ -561,34 +543,9 @@ void ContextualTasksWebContentsUserData::UpdateExtensionFrameBound(
 
 void ContextualTasksWebContentsUserData::UnregisterExtensionFrame(
     const void* handler_id) {
-  if (last_active_search_handler_id_ == handler_id) {
-    last_active_search_handler_id_ = nullptr;
-  }
-  bool was_bound = false;
   std::erase_if(extension_frames_, [&](const ExtensionFrameInfo& frame) {
-    if (frame.handler_id == handler_id) {
-      was_bound = frame.is_page_bound;
-      return true;
-    }
-    return false;
+    return frame.handler_id == handler_id;
   });
-
-  if (was_bound) {
-    if (const ExtensionFrameInfo* target_frame = FindTargetExtensionFrame();
-        target_frame && target_frame->is_handshake_complete &&
-        !GetWebContents().IsBeingDestroyed() &&
-        GetWebContents().GetPrimaryMainFrame() &&
-        !IsServiceWorkerPortConnected()) {
-      // An unmounting extension iframe (such as `tab_picker.html` when the `+`
-      // menu closes) may have been the last frame to postMessage to Search,
-      // leaving Search's `ChromePostMessageService.activeChromeWindow` pointing
-      // to the detached window. Re-sending the current context state through a
-      // surviving handshake-complete frame (such as `context_library.html`)
-      // forces Search to switch `activeChromeWindow` to the surviving frame.
-      last_active_search_handler_id_ = target_frame->handler_id;
-      UpdateContextState(/*force_send=*/true);
-    }
-  }
 }
 
 bool ContextualTasksWebContentsUserData::HasBoundExtensionFrame() const {
@@ -684,8 +641,7 @@ ContextualTasksWebContentsUserData::GetPageSearchDebugState() const {
 }
 
 bool ContextualTasksWebContentsUserData::OnSearchMessageReceived(
-    base::span<const uint8_t> message,
-    const void* source_handler_id) {
+    base::span<const uint8_t> message) {
   if (message.size() > kMaxSearchMessageBytes) {
     return false;
   }
@@ -696,12 +652,6 @@ bool ContextualTasksWebContentsUserData::OnSearchMessageReceived(
     return false;
   }
 
-  if (search_to_client_message.event_message_case() !=
-          lens::SearchToClientMessage::EVENT_MESSAGE_NOT_SET &&
-      source_handler_id) {
-    last_active_search_handler_id_ = source_handler_id;
-  }
-
   switch (search_to_client_message.event_message_case()) {
     case lens::SearchToClientMessage::kHandshakeResponse: {
       int32_t raw_auth_index =
@@ -710,7 +660,7 @@ bool ContextualTasksWebContentsUserData::OnSearchMessageReceived(
       if (auto* session_handle = GetOrCreateContextualSessionHandle()) {
         session_handle->set_auth_user_index(auth_user_index);
       }
-      OnHandshakeComplete(source_handler_id);
+      OnHandshakeComplete();
       return true;
     }
     case lens::SearchToClientMessage::kOnSubmitQueryRequest:
@@ -734,31 +684,9 @@ bool ContextualTasksWebContentsUserData::OnSearchMessageReceived(
   return false;
 }
 
-void ContextualTasksWebContentsUserData::OnHandshakeComplete(
-    const void* source_handler_id) {
-  if (source_handler_id) {
-    last_active_search_handler_id_ = source_handler_id;
-    for (auto& frame : extension_frames_) {
-      if (frame.handler_id == source_handler_id && frame.is_page_bound) {
-        frame.is_handshake_complete = true;
-        if (frame.on_handshake_complete_cb) {
-          frame.on_handshake_complete_cb.Run();
-        }
-        break;
-      }
-    }
-  } else {
-    for (auto& frame : extension_frames_) {
-      if (frame.is_page_bound) {
-        frame.is_handshake_complete = true;
-        if (frame.on_handshake_complete_cb) {
-          frame.on_handshake_complete_cb.Run();
-        }
-      }
-    }
-  }
+void ContextualTasksWebContentsUserData::OnHandshakeComplete() {
   auto& page_state = GetPrimaryPageSearchState();
-  if (!source_handler_id && page_state.handshake_start_time.has_value() &&
+  if (page_state.handshake_start_time.has_value() &&
       !page_state.handshake_status_recorded) {
     page_state.handshake_status_recorded = true;
     RecordExtensionHandshakeLatency(base::TimeTicks::Now() -
@@ -772,19 +700,10 @@ void ContextualTasksWebContentsUserData::OnHandshakeComplete(
   }
   page_state.is_handshake_complete = true;
 
-  const bool had_queued_messages = !page_state.pending_search_messages.empty();
   std::vector<std::vector<uint8_t>> queued =
       std::exchange(page_state.pending_search_messages, {});
   for (const auto& msg_bytes : queued) {
     DispatchSerializedSearchMessage(msg_bytes);
-  }
-
-  if (!had_queued_messages && !IsServiceWorkerPortConnected()) {
-    if (is_first_page_handshake) {
-      page_state.context_library_is_active = false;
-    }
-    page_state.last_sent_context_state = ContextState::kNone;
-    page_state.last_sent_suggest_inputs_serialized.clear();
   }
 
   if (ContextualTasksPanelController::IsWebContentsInPanel(&GetWebContents())) {
@@ -810,33 +729,6 @@ void ContextualTasksWebContentsUserData::PostSearchMessage(
   message.SerializeToArray(bytes.data(), size);
 
   auto& page_state = GetPrimaryPageSearchState();
-  if (IsServiceWorkerPortConnected()) {
-    if (!page_state.is_handshake_complete) {
-      if (page_state.pending_search_messages.size() <
-          kMaxPendingSearchMessages) {
-        page_state.pending_search_messages.push_back(std::move(bytes));
-      } else {
-        ++page_state.dropped_overflow_messages;
-      }
-      return;
-    }
-    DispatchSerializedSearchMessage(bytes);
-    return;
-  }
-
-  // Fallback when Service Worker Port is not connected: route via the active
-  // bound extension iframe if present.
-  if (const ExtensionFrameInfo* target_frame = FindTargetExtensionFrame()) {
-    target_frame->post_search_message_cb.Run(message);
-    if (search_message_dispatcher_for_testing_) {
-      search_message_dispatcher_for_testing_.Run(message);
-    }
-    return;
-  }
-
-  // Zero bound extension frames and no Service Worker Port connected yet:
-  // queue until handshake completes (or dispatch to testing callback if
-  // handshake already completed).
   if (!page_state.is_handshake_complete) {
     if (page_state.pending_search_messages.size() < kMaxPendingSearchMessages) {
       page_state.pending_search_messages.push_back(std::move(bytes));
@@ -1638,10 +1530,10 @@ ContextualTasksWebContentsUserData::ComputeContextState() {
   return ContextState::kNone;
 }
 
-void ContextualTasksWebContentsUserData::UpdateContextState(bool force_send) {
+void ContextualTasksWebContentsUserData::UpdateContextState() {
   ContextState current_state = ComputeContextState();
   auto& page_state = GetPrimaryPageSearchState();
-  if (!force_send && current_state == page_state.last_sent_context_state) {
+  if (current_state == page_state.last_sent_context_state) {
     return;
   }
   page_state.last_sent_context_state = current_state;
@@ -2704,36 +2596,6 @@ ContextualTasksWebContentsUserData::GetLensAddedContexts(
 #endif
 }
 
-const ContextualTasksWebContentsUserData::ExtensionFrameInfo*
-ContextualTasksWebContentsUserData::FindTargetExtensionFrame() const {
-  // TODO(crbug.com/573125119): Clean up per-frame handshake tracking and
-  // routing fallback once Service Worker communication lands.
-  // `extension_frames_` is ordered from oldest to newest registration. Prefer
-  // `last_active_search_handler_id_`, then the most recently registered frame
-  // that has completed its handshake, and finally fall back to the first bound
-  // frame if no frame has completed handshake yet.
-  if (last_active_search_handler_id_) {
-    for (const auto& frame : extension_frames_) {
-      if (frame.handler_id == last_active_search_handler_id_ &&
-          frame.is_page_bound && frame.post_search_message_cb) {
-        return &frame;
-      }
-    }
-  }
-  for (const auto& frame : base::Reversed(extension_frames_)) {
-    if (frame.is_page_bound && frame.is_handshake_complete &&
-        frame.post_search_message_cb) {
-      return &frame;
-    }
-  }
-  for (const auto& frame : extension_frames_) {
-    if (frame.is_page_bound && frame.post_search_message_cb) {
-      return &frame;
-    }
-  }
-  return nullptr;
-}
-
 void ContextualTasksWebContentsUserData::DispatchSerializedSearchMessage(
     const std::vector<uint8_t>& message_bytes) {
   if (search_message_dispatcher_for_testing_) {
@@ -2747,14 +2609,6 @@ void ContextualTasksWebContentsUserData::DispatchSerializedSearchMessage(
     auto& page_state = GetPrimaryPageSearchState();
     if (page_state.service_worker_post_message_cb) {
       page_state.service_worker_post_message_cb.Run(message_bytes);
-    }
-    return;
-  }
-
-  if (const ExtensionFrameInfo* target_frame = FindTargetExtensionFrame()) {
-    lens::ClientToSearchMessage parsed;
-    if (parsed.ParseFromArray(message_bytes.data(), message_bytes.size())) {
-      target_frame->post_search_message_cb.Run(parsed);
     }
   }
 }

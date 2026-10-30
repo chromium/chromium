@@ -109,10 +109,6 @@ class ContextualTasksWebContentsUserData
 
     raw_ptr<const void> handler_id = nullptr;
     bool is_page_bound = false;
-    bool is_handshake_complete = false;
-    base::RepeatingCallback<void(const lens::ClientToSearchMessage&)>
-        post_search_message_cb;
-    base::RepeatingClosure on_handshake_complete_cb;
     base::RepeatingCallback<void(const GURL&)> on_lens_crop_updated_cb;
     base::RepeatingClosure on_tab_context_updated_cb;
   };
@@ -163,9 +159,6 @@ class ContextualTasksWebContentsUserData
   void UpdateExtensionFrameBound(
       const void* handler_id,
       bool is_page_bound,
-      base::RepeatingCallback<void(const lens::ClientToSearchMessage&)>
-          post_search_message_cb,
-      base::RepeatingClosure on_handshake_complete_cb,
       base::RepeatingCallback<void(const GURL&)> on_lens_crop_updated_cb,
       base::RepeatingClosure on_tab_context_updated_cb = base::NullCallback());
   void UnregisterExtensionFrame(const void* handler_id);
@@ -188,13 +181,11 @@ class ContextualTasksWebContentsUserData
   // Parses and handles an incoming SearchToClientMessage. Returns true if the
   // message was a valid SearchToClientMessage with a recognized payload, or
   // false if the caller should fall back to legacy AimToClientMessage parsing.
-  bool OnSearchMessageReceived(base::span<const uint8_t> message,
-                               const void* source_handler_id = nullptr);
-  void OnHandshakeComplete(const void* source_handler_id = nullptr);
+  bool OnSearchMessageReceived(base::span<const uint8_t> message);
+  void OnHandshakeComplete();
 
-  // Sends a ClientToSearchMessage to the AIM page via the Service Worker Port
-  // (if connected), queuing if the handshake is not yet complete, or falling
-  // back to the primary bound extension iframe.
+  // Sends a `ClientToSearchMessage` to the AIM page via the Service Worker
+  // Port, queuing if the handshake is not yet complete.
   void PostSearchMessage(const lens::ClientToSearchMessage& message);
 
   void OnTabContextUploadStarted(const base::UnguessableToken& context_token);
@@ -357,7 +348,7 @@ class ContextualTasksWebContentsUserData
   void ObserveContextController(
       contextual_search::ContextualSearchContextController* controller);
   ContextState ComputeContextState();
-  void UpdateContextState(bool force_send = false);
+  void UpdateContextState();
   std::vector<lens::AddedContext> ComputeSuggestInputContexts();
   void UpdateSuggestInputs();
   void RecordTimeToHandshakeComplete();
@@ -385,7 +376,6 @@ class ContextualTasksWebContentsUserData
       const std::optional<base::UnguessableToken>& overlay_token);
   std::vector<lens::AddedContext> GetLensAddedContexts(
       std::optional<base::UnguessableToken>& overlay_token);
-  const ExtensionFrameInfo* FindTargetExtensionFrame() const;
   void DispatchSerializedSearchMessage(
       const std::vector<uint8_t>& message_bytes);
   PageSearchState& GetPrimaryPageSearchState();
@@ -427,9 +417,6 @@ class ContextualTasksWebContentsUserData
   std::optional<base::Uuid> task_id_;
 
   std::vector<ExtensionFrameInfo> extension_frames_;
-  // TODO(crbug.com/573125119): Clean up per-frame handshake tracking and
-  // routing fallback once Service Worker communication lands.
-  raw_ptr<const void> last_active_search_handler_id_ = nullptr;
   base::flat_set<base::UnguessableToken> pending_context_uploads_;
   base::flat_set<base::UnguessableToken> failed_context_uploads_;
 
