@@ -80,7 +80,6 @@
 #include "third_party/blink/renderer/core/layout/forms/layout_fieldset.h"
 #include "third_party/blink/renderer/core/layout/forms/layout_text_control.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
-#include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
@@ -528,14 +527,8 @@ const PhysicalBoxFragment& FragmentForBottomEdge(
 
 }  // namespace
 
-LayoutBoxRareData::LayoutBoxRareData()
-    :  // TODO(rego): We should store these based on physical direction.
-      has_override_containing_block_content_logical_width_(false),
-      has_previous_content_box_rect_(false) {}
-
 void LayoutBoxRareData::Trace(Visitor* visitor) const {
   visitor->Trace(layout_child_);
-  visitor->Trace(previous_gap_geometries_);
 }
 
 LayoutBox::LayoutBox(ContainerNode* node) : LayoutBoxModelObject(node) {
@@ -1900,29 +1893,12 @@ bool LayoutBox::ApplyBoxClips(
 
 // TODO (lajava) Shouldn't we implement these functions based on physical
 // direction ?.
-LayoutUnit LayoutBox::OverrideContainingBlockContentLogicalWidth() const {
-  NOT_DESTROYED();
-  DCHECK(HasOverrideContainingBlockContentLogicalWidth());
-  return rare_data_->override_containing_block_content_logical_width_;
-}
-
-// TODO (lajava) Shouldn't we implement these functions based on physical
-// direction ?.
-bool LayoutBox::HasOverrideContainingBlockContentLogicalWidth() const {
-  NOT_DESTROYED();
-  return rare_data_ &&
-         rare_data_->has_override_containing_block_content_logical_width_;
-}
-
-// TODO (lajava) Shouldn't we implement these functions based on physical
-// direction ?.
 void LayoutBox::SetOverrideContainingBlockContentLogicalWidth(
     LayoutUnit logical_width) {
   NOT_DESTROYED();
   DCHECK_GE(logical_width, LayoutUnit(-1));
   EnsureRareData().override_containing_block_content_logical_width_ =
       logical_width;
-  EnsureRareData().has_override_containing_block_content_logical_width_ = true;
 }
 
 bool LayoutBox::HitTestAllPhases(HitTestResult& result,
@@ -2413,8 +2389,10 @@ LayoutUnit LayoutBox::ContainingBlockLogicalHeightForRelPositioned() const {
 
 LayoutUnit LayoutBox::ContainingBlockLogicalWidthForContent() const {
   NOT_DESTROYED();
-  if (HasOverrideContainingBlockContentLogicalWidth())
-    return OverrideContainingBlockContentLogicalWidth();
+  if (rare_data_ &&
+      rare_data_->override_containing_block_content_logical_width_) {
+    return *rare_data_->override_containing_block_content_logical_width_;
+  }
 
   const LayoutBox* container = ContainingBox();
   if (IsOutOfFlowPositioned()) {
@@ -3349,18 +3327,10 @@ RecalcScrollableOverflowResult LayoutBox::RecalcScrollableOverflow() {
         }
       }
 
-      if (RuntimeEnabledFeatures::
-              LayoutCloneForScrollableOverflowChangeEnabled()) {
-        if (rebuild_fragment_tree || scrollable_overflow) {
-          layout_result = LayoutResult::CloneWithPostLayoutFragments(
-              *layout_result, scrollable_overflow);
-          SetHavePhysicalFragmentsChanged();
-        }
-      } else {
-        if (scrollable_overflow) {
-          fragment.GetMutableForStyleRecalc().SetScrollableOverflow(
-              *scrollable_overflow);
-        }
+      if (rebuild_fragment_tree || scrollable_overflow) {
+        layout_result = LayoutResult::CloneWithPostLayoutFragments(
+            *layout_result, scrollable_overflow);
+        SetHavePhysicalFragmentsChanged();
       }
     }
     SetScrollableOverflowFromLayoutResults();
@@ -3487,8 +3457,9 @@ void LayoutBox::ClearVisualOverflow() {
   NOT_DESTROYED();
   if (overflow_)
     overflow_->visual_overflow.reset();
-  // overflow_ will be reset by MutableForPainting::ClearPreviousOverflowData()
-  // if we don't need it to store previous overflow data.
+  // overflow_ will be reset by
+  // MutableForPainting::ClearPreviousVisualOverflowData() if we don't need it
+  // to store previous overflow data.
 }
 
 bool LayoutBox::CanUseFragmentsForVisualOverflow() const {
@@ -3949,23 +3920,7 @@ void LayoutBox::MutableForPainting::SavePreviousPhysicalFragments() {
   GetLayoutBox().previous_layout_results_ = GetLayoutBox().layout_results_;
 }
 
-void LayoutBox::MutableForPainting::SavePreviousOverflowData() {
-  DCHECK(!RuntimeEnabledFeatures::PrePaintBoxInvalidatorUsesFragmentsEnabled());
-  if (!GetLayoutBox().overflow_)
-    GetLayoutBox().overflow_ = MakeGarbageCollected<BoxOverflowModel>();
-  auto& previous_overflow = GetLayoutBox().overflow_->previous_overflow_data;
-  if (!previous_overflow)
-    previous_overflow.emplace();
-  previous_overflow->previous_scrollable_overflow_rect =
-      GetLayoutBox().ScrollableOverflowRect();
-  previous_overflow->previous_visual_overflow_rect =
-      GetLayoutBox().VisualOverflowRect();
-  previous_overflow->previous_self_visual_overflow_rect =
-      GetLayoutBox().SelfVisualOverflowRect();
-}
-
 void LayoutBox::MutableForPainting::SavePreviousVisualOverflowData() {
-  DCHECK(RuntimeEnabledFeatures::PrePaintBoxInvalidatorUsesFragmentsEnabled());
   if (!GetLayoutBox().overflow_) {
     GetLayoutBox().overflow_ = MakeGarbageCollected<BoxOverflowModel>();
   }
@@ -3978,25 +3933,6 @@ void LayoutBox::MutableForPainting::SavePreviousVisualOverflowData() {
       GetLayoutBox().VisualOverflowRect();
   previous_overflow->previous_self_visual_overflow_rect =
       GetLayoutBox().SelfVisualOverflowRect();
-}
-
-void LayoutBox::MutableForPainting::SavePreviousGapGeometries() {
-  DCHECK(!RuntimeEnabledFeatures::PrePaintBoxInvalidatorUsesFragmentsEnabled());
-  auto* previous_gap_geometries =
-      MakeGarbageCollected<GCedHeapVector<Member<const GapGeometry>>>();
-  for (const PhysicalBoxFragment& fragment :
-       GetLayoutBox().PhysicalFragments()) {
-    previous_gap_geometries->push_back(fragment.GetGapGeometry());
-  }
-  GetLayoutBox().EnsureRareData().previous_gap_geometries_ =
-      previous_gap_geometries;
-}
-
-void LayoutBox::MutableForPainting::ClearPreviousGapGeometries() {
-  DCHECK(!RuntimeEnabledFeatures::PrePaintBoxInvalidatorUsesFragmentsEnabled());
-  if (auto* rare_data = GetLayoutBox().rare_data_.Get()) {
-    rare_data->previous_gap_geometries_ = nullptr;
-  }
 }
 
 void LayoutBox::MutableForPainting::SetPreviousGeometryForLayoutShiftTracking(

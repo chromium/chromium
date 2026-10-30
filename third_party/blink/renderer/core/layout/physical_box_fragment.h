@@ -497,19 +497,6 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
     return *rare_data_->mathml_paint_info_;
   }
 
-  class MutableForStyleRecalc {
-    STACK_ALLOCATED();
-
-   public:
-    MutableForStyleRecalc(base::PassKey<PhysicalBoxFragment>,
-                          PhysicalBoxFragment& fragment);
-    void SetScrollableOverflow(const PhysicalRect& scrollable_overflow);
-
-   private:
-    PhysicalBoxFragment& fragment_;
-  };
-  MutableForStyleRecalc GetMutableForStyleRecalc() const;
-
   class MutableForContainerLayout {
     STACK_ALLOCATED();
 

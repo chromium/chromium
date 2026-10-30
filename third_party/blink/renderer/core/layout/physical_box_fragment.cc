@@ -841,34 +841,6 @@ PhysicalFragmentRareData::RareField& PhysicalBoxFragment::EnsureRareField(
   return rare_data_->EnsureField(id);
 }
 
-PhysicalBoxFragment::MutableForStyleRecalc::MutableForStyleRecalc(
-    base::PassKey<PhysicalBoxFragment>,
-    PhysicalBoxFragment& fragment)
-    : fragment_(fragment) {}
-
-void PhysicalBoxFragment::MutableForStyleRecalc::SetScrollableOverflow(
-    const PhysicalRect& scrollable_overflow) {
-  bool has_scrollable_overflow =
-      scrollable_overflow != PhysicalRect({}, fragment_.Size());
-  if (has_scrollable_overflow) {
-    // This can be called even without rare_data_.
-    fragment_.EnsureRareField(FieldId::kScrollableOverflow)
-        .scrollable_overflow = scrollable_overflow;
-  } else if (fragment_.HasScrollableOverflow()) {
-    fragment_.rare_data_->RemoveField(FieldId::kScrollableOverflow);
-  }
-}
-
-PhysicalBoxFragment::MutableForStyleRecalc
-PhysicalBoxFragment::GetMutableForStyleRecalc() const {
-  DCHECK(layout_object_->GetDocument().Lifecycle().GetState() ==
-             DocumentLifecycle::kInStyleRecalc ||
-         layout_object_->GetDocument().Lifecycle().GetState() ==
-             DocumentLifecycle::kInPerformLayout);
-  return MutableForStyleRecalc(base::PassKey<PhysicalBoxFragment>(),
-                               const_cast<PhysicalBoxFragment&>(*this));
-}
-
 PhysicalBoxFragment::MutableForContainerLayout::MutableForContainerLayout(
     base::PassKey<PhysicalBoxFragment>,
     PhysicalBoxFragment& fragment)
@@ -966,10 +938,18 @@ void PhysicalBoxFragment::MutableForOofFragmentation::Merge(
 }
 
 void PhysicalBoxFragment::MutableForOofFragmentation::UpdateOverflow() {
-  PhysicalRect overflow =
+  const PhysicalRect scrollable_overflow =
       ScrollableOverflowCalculator::RecalculateScrollableOverflowForFragment(
           fragment_, /* has_block_fragmentation */ true);
-  fragment_.GetMutableForStyleRecalc().SetScrollableOverflow(overflow);
+  bool has_scrollable_overflow =
+      scrollable_overflow != PhysicalRect({}, fragment_.Size());
+  if (has_scrollable_overflow) {
+    // This can be called even without rare_data_.
+    fragment_.EnsureRareField(FieldId::kScrollableOverflow)
+        .scrollable_overflow = scrollable_overflow;
+  } else if (fragment_.HasScrollableOverflow()) {
+    fragment_.rare_data_->RemoveField(FieldId::kScrollableOverflow);
+  }
 }
 
 void PhysicalBoxFragment::SetInkOverflow(const PhysicalRect& self,

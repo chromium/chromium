@@ -50,7 +50,6 @@ class BlockBreakToken;
 class ConstraintSpace;
 class CustomLayoutChild;
 class Element;
-class GapGeometry;
 class LayoutResult;
 class MeasureCache;
 class PhysicalBoxFragment;
@@ -77,31 +76,18 @@ enum ShouldIncludeScrollbarGutter {
 
 struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
  public:
-  LayoutBoxRareData();
+  LayoutBoxRareData() = default;
   LayoutBoxRareData(const LayoutBoxRareData&) = delete;
   LayoutBoxRareData& operator=(const LayoutBoxRareData&) = delete;
 
   void Trace(Visitor* visitor) const;
 
-  bool has_override_containing_block_content_logical_width_ : 1;
-  bool has_previous_content_box_rect_ : 1;
-
-  LayoutUnit override_containing_block_content_logical_width_;
-
-  // Used by BoxPaintInvalidator. Stores the previous content rect after the
-  // last paint invalidation. It's valid if has_previous_content_box_rect_ is
-  // true.
-  PhysicalRect previous_physical_content_box_rect_;
+  std::optional<LayoutUnit> override_containing_block_content_logical_width_;
 
   // Used by CSSLayoutDefinition::Instance::Layout. Represents the script
   // object for this box that web developers can query style, and perform
   // layout upon. Only created if IsCustomItem() is true.
   Member<CustomLayoutChild> layout_child_;
-
-  // Used by BoxPaintInvalidator. Stores one entry for each fragment, holding
-  // the previous gap geometry for that fragment, or nullptr for fragments
-  // that had no gap geometry.
-  Member<GCedHeapVector<Member<const GapGeometry>>> previous_gap_geometries_;
 };
 
 // LayoutBox implements the full CSS box model.
@@ -445,8 +431,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                     const PhysicalOffset& accumulated_offset) const;
   bool HasHitTestableOverflow() const;
 
-  LayoutUnit OverrideContainingBlockContentLogicalWidth() const;
-  bool HasOverrideContainingBlockContentLogicalWidth() const;
   void SetOverrideContainingBlockContentLogicalWidth(LayoutUnit);
 
   bool HasInlineFragments() const final;
@@ -926,14 +910,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     void SavePreviousSize() {
       GetLayoutBox().previous_size_ = GetLayoutBox().StitchedSize();
     }
-    void SavePreviousOverflowData();
-    void ClearPreviousOverflowData() {
-      DCHECK(!RuntimeEnabledFeatures::
-                 PrePaintBoxInvalidatorUsesFragmentsEnabled());
-      DCHECK(!GetLayoutBox().HasVisualOverflow());
-      DCHECK(!GetLayoutBox().HasScrollableOverflow());
-      GetLayoutBox().overflow_ = nullptr;
-    }
     void SavePreviousVisualOverflowData();
     void ClearPreviousVisualOverflowData() {
       DCHECK(!GetLayoutBox().HasVisualOverflow());
@@ -944,23 +920,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
         }
       }
     }
-    void SavePreviousContentBoxRect() {
-      DCHECK(!RuntimeEnabledFeatures::
-                 PrePaintBoxInvalidatorUsesFragmentsEnabled());
-      auto& rare_data = GetLayoutBox().EnsureRareData();
-      rare_data.has_previous_content_box_rect_ = true;
-      rare_data.previous_physical_content_box_rect_ =
-          GetLayoutBox().PhysicalContentBoxRect();
-    }
-    void ClearPreviousContentBoxRect() {
-      DCHECK(!RuntimeEnabledFeatures::
-                 PrePaintBoxInvalidatorUsesFragmentsEnabled());
-      if (auto* rare_data = GetLayoutBox().rare_data_.Get())
-        rare_data->has_previous_content_box_rect_ = false;
-    }
-
-    void SavePreviousGapGeometries();
-    void ClearPreviousGapGeometries();
 
     // Called from LayoutShiftTracker when we attach this LayoutBox to a node
     // for which we saved these values when the node was detached from its
@@ -997,14 +956,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
   PhysicalRect PreviousPhysicalContentBoxRect() const {
     NOT_DESTROYED();
-    if (RuntimeEnabledFeatures::PrePaintBoxInvalidatorUsesFragmentsEnabled()) {
-      return PhysicalContractedBoxRect(kContractToContentEdge, Style(),
-                                       PreviousPhysicalFragments(),
-                                       PreviousSize());
-    }
-    return rare_data_ && rare_data_->has_previous_content_box_rect_
-               ? rare_data_->previous_physical_content_box_rect_
-               : PhysicalRect(PhysicalOffset(), PreviousSize());
+    return PhysicalContractedBoxRect(kContractToContentEdge, Style(),
+                                     PreviousPhysicalFragments(),
+                                     PreviousSize());
   }
   PhysicalRect PreviousVisualOverflowRect() const {
     NOT_DESTROYED();
@@ -1013,27 +967,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                      ->previous_visual_overflow_rect
                : PhysicalRect(PhysicalOffset(), PreviousSize());
   }
-  PhysicalRect PreviousScrollableOverflowRect() const {
-    NOT_DESTROYED();
-    DCHECK(
-        !RuntimeEnabledFeatures::PrePaintBoxInvalidatorUsesFragmentsEnabled());
-    return overflow_ && overflow_->previous_overflow_data
-               ? overflow_->previous_overflow_data
-                     ->previous_scrollable_overflow_rect
-               : PhysicalRect(PhysicalOffset(), PreviousSize());
-  }
   PhysicalRect PreviousSelfVisualOverflowRect() const {
     NOT_DESTROYED();
     return overflow_ && overflow_->previous_overflow_data
                ? overflow_->previous_overflow_data
                      ->previous_self_visual_overflow_rect
                : PhysicalRect(PhysicalOffset(), PreviousSize());
-  }
-
-  const GCedHeapVector<Member<const GapGeometry>>* PreviousGapGeometries()
-      const {
-    NOT_DESTROYED();
-    return rare_data_ ? rare_data_->previous_gap_geometries_.Get() : nullptr;
   }
 
   // Returns the cached intrinsic logical widths when no children depend on the

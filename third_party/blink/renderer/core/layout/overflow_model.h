@@ -140,10 +140,9 @@ struct BoxOverflowModel : public GarbageCollected<BoxOverflowModel> {
   std::optional<BoxScrollableOverflowModel> scrollable_overflow;
   std::optional<BoxVisualOverflowModel> visual_overflow;
 
-  // Used by BoxPaintInvalidator. Stores the previous overflow data after the
-  // last paint invalidation.
+  // Used by BoxPaintInvalidator. Stores the previous visual overflow data after
+  // the last paint invalidation.
   struct PreviousOverflowData {
-    PhysicalRect previous_scrollable_overflow_rect;
     PhysicalRect previous_visual_overflow_rect;
     PhysicalRect previous_self_visual_overflow_rect;
   };

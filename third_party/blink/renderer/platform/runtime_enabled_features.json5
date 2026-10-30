@@ -4175,10 +4175,6 @@
       public: true,
     },
     {
-      name: "LayoutCloneForScrollableOverflowChange",
-      status: "stable",
-    },
-    {
       name: "LayoutIgnoreMarginsForSticky",
     },
     {
@@ -5296,10 +5292,6 @@
       // foreign content in the HTML preload scanner. Ships in M155 and can be
       // removed in M158. https://crbug.com/40728681
       name: "PreloadScannerImprovements",
-      status: "stable",
-    },
-    {
-      name: "PrePaintBoxInvalidatorUsesFragments",
       status: "stable",
     },
     {
