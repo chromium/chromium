@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "chrome/browser/nearby_sharing/certificates/test_util.h"
 
 #include <array>
-#include <set>
 
 #include "base/no_destructor.h"
 #include "base/strings/string_view_util.h"
@@ -225,7 +223,7 @@ NearbySharePrivateCertificate GetNearbyShareTestPrivateCertificate(
       not_before + kNearbyShareCertificateValidityPeriod, *key,
       GetNearbyShareTestSecretKey(), GetNearbyShareTestMetadataEncryptionKey(),
       GetNearbyShareTestCertificateId(), GetNearbyShareTestMetadata(),
-      /*consumed_salts=*/{});
+      /*consumed_salts=*/NearbySharePrivateCertificate::SaltBitset());
   cert.next_salts_for_testing().push(GetNearbyShareTestSalt());
   return cert;
 }

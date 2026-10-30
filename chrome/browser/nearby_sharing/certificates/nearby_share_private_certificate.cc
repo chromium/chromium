@@ -4,9 +4,11 @@
 
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_private_certificate.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <array>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -17,6 +19,7 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/json/values_util.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
@@ -32,6 +35,8 @@
 #include "crypto/sign.h"
 
 namespace {
+
+using SaltBitset = NearbySharePrivateCertificate::SaltBitset;
 
 // Dictionary keys used in ToDictionary, FromDictionary
 const char kVisibility[] = "visibility";
@@ -97,31 +102,70 @@ std::optional<std::vector<uint8_t>> EncodedStringToBytes(
                      : std::nullopt;
 }
 
-std::string SaltsToString(
-    const std::set<
-        std::array<uint8_t, kNearbyShareNumBytesMetadataEncryptionKeySalt>>&
-        salts) {
-  std::string str;
-  str.reserve(salts.size() * 2 * kNearbyShareNumBytesMetadataEncryptionKeySalt);
-  for (const auto& salt : salts) {
-    str += base::HexEncode(salt);
+static_assert(kNearbyShareNumBytesMetadataEncryptionKeySalt == 2 &&
+                  SaltBitset().size() == 65536,
+              "SaltBitset assumes 2-byte (16-bit) salts.");
+
+uint16_t SaltToUint16(
+    base::span<const uint8_t, kNearbyShareNumBytesMetadataEncryptionKeySalt>
+        salt) {
+  return base::U16FromBigEndian(salt);
+}
+
+bool HasSalt(const SaltBitset& salts,
+             base::span<const uint8_t,
+                        kNearbyShareNumBytesMetadataEncryptionKeySalt> salt) {
+  return salts.test(SaltToUint16(salt));
+}
+
+void SetSalt(SaltBitset& salts,
+             base::span<const uint8_t,
+                        kNearbyShareNumBytesMetadataEncryptionKeySalt> salt) {
+  salts.set(SaltToUint16(salt));
+}
+
+constexpr size_t kCharsPerSalt =
+    2 * kNearbyShareNumBytesMetadataEncryptionKeySalt;
+
+std::string SaltsToString(const SaltBitset& salts) {
+  if (salts.none()) {
+    return {};
+  }
+  size_t remaining = salts.count();
+  static constexpr std::string_view kHexDigits = "0123456789ABCDEF";
+  std::string str(remaining * kCharsPerSalt, '\0');
+  size_t pos = 0;
+  for (size_t i = 0; i < salts.size(); ++i) {
+    if (salts[i]) {
+      str[pos] = kHexDigits[(i >> 12) & 0xf];
+      str[pos + 1] = kHexDigits[(i >> 8) & 0xf];
+      str[pos + 2] = kHexDigits[(i >> 4) & 0xf];
+      str[pos + 3] = kHexDigits[i & 0xf];
+      pos += kCharsPerSalt;
+      if (--remaining == 0) {
+        break;
+      }
+    }
   }
   return str;
 }
 
-std::set<std::array<uint8_t, kNearbyShareNumBytesMetadataEncryptionKeySalt>>
-StringToSalts(const std::string& str) {
-  CHECK(str.size() % (2 * kNearbyShareNumBytesMetadataEncryptionKeySalt) == 0,
-        base::NotFatalUntil::M160);
-  std::vector<uint8_t> salt_bytes;
-  base::HexStringToBytes(str, &salt_bytes);
-  std::set<std::array<uint8_t, kNearbyShareNumBytesMetadataEncryptionKeySalt>>
-      salts;
-  for (base::span salt_span(salt_bytes); !salt_span.empty();) {
-    std::array<uint8_t, kNearbyShareNumBytesMetadataEncryptionKeySalt> salt;
-    base::span(salt).copy_from(
+std::optional<SaltBitset> StringToSalts(std::string_view str) {
+  if (str.size() % kCharsPerSalt != 0) {
+    return std::nullopt;
+  }
+  std::optional<SaltBitset> salts(std::in_place);
+  if (str.empty()) {
+    return salts;
+  }
+  std::vector<uint8_t> salt_bytes(str.size() / 2);
+  if (!base::HexStringToSpan(str, salt_bytes)) {
+    return std::nullopt;
+  }
+  for (base::span<const uint8_t> salt_span(salt_bytes); !salt_span.empty();) {
+    SetSalt(
+        *salts,
         salt_span.take_first<kNearbyShareNumBytesMetadataEncryptionKeySalt>());
-    salts.insert(std::move(salt));
   }
   return salts;
 }
@@ -180,14 +224,13 @@ NearbySharePrivateCertificate::NearbySharePrivateCertificate(
         metadata_encryption_key,
     base::span<const uint8_t, kNearbyShareNumBytesCertificateId> id,
     nearby::sharing::proto::EncryptedMetadata unencrypted_metadata,
-    std::set<std::array<uint8_t, kNearbyShareNumBytesMetadataEncryptionKeySalt>>
-        consumed_salts)
+    const SaltBitset& consumed_salts)
     : visibility_(visibility),
       not_before_(not_before),
       not_after_(not_after),
       private_key_(std::move(private_key)),
       unencrypted_metadata_(std::move(unencrypted_metadata)),
-      consumed_salts_(std::move(consumed_salts)) {
+      consumed_salts_(consumed_salts) {
   CHECK_NE(visibility, nearby_share::mojom::Visibility::kNoOne,
            base::NotFatalUntil::M160);
   base::span(secret_key_).copy_from(secret_key);
@@ -405,22 +448,25 @@ NearbySharePrivateCertificate::FromDictionary(const base::DictValue& dict) {
     return std::nullopt;
 
   str_ptr = dict.FindString(kConsumedSalts);
-  if (!str_ptr)
+  if (!str_ptr) {
     return std::nullopt;
+  }
 
-  std::set<std::array<uint8_t, kNearbyShareNumBytesMetadataEncryptionKeySalt>>
-      consumed_salts = StringToSalts(*str_ptr);
+  std::optional<SaltBitset> consumed_salts = StringToSalts(*str_ptr);
+  if (!consumed_salts) {
+    return std::nullopt;
+  }
 
   return NearbySharePrivateCertificate(
       visibility, not_before, not_after, std::move(*private_key_opt),
       std::move(secret_key), std::move(metadata_encryption_key), std::move(id),
-      std::move(unencrypted_metadata), std::move(consumed_salts));
+      std::move(unencrypted_metadata), *consumed_salts);
 }
 
 std::optional<
     std::array<uint8_t, kNearbyShareNumBytesMetadataEncryptionKeySalt>>
 NearbySharePrivateCertificate::GenerateUnusedSalt() {
-  if (consumed_salts_.size() >= kNearbyShareMaxNumMetadataEncryptionKeySalts) {
+  if (consumed_salts_.count() >= kNearbyShareMaxNumMetadataEncryptionKeySalts) {
     CD_LOG(ERROR, Feature::NS) << "All salts exhausted for certificate.";
     return std::nullopt;
   }
@@ -437,8 +483,8 @@ NearbySharePrivateCertificate::GenerateUnusedSalt() {
       next_salts_for_testing_.pop();
     }
 
-    if (!consumed_salts_.contains(salt)) {
-      consumed_salts_.insert(salt);
+    if (!HasSalt(consumed_salts_, salt)) {
+      SetSalt(consumed_salts_, salt);
       return salt;
     }
   }

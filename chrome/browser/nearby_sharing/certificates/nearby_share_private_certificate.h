@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_NEARBY_SHARING_CERTIFICATES_NEARBY_SHARE_PRIVATE_CERTIFICATE_H_
 
 #include <array>
+#include <bitset>
 #include <memory>
 #include <optional>
-#include <set>
 #include <vector>
 
 #include "base/containers/queue.h"
@@ -31,6 +31,9 @@
 // metadata encryption key, which can then be advertised.
 class NearbySharePrivateCertificate {
  public:
+  // Bitset tracking 2-byte salts (2^16 = 65,536 possible values).
+  using SaltBitset = std::bitset<65536>;
+
   // Inverse operation of ToDictionary(). Returns std::nullopt if the
   // conversion is not successful
   static std::optional<NearbySharePrivateCertificate> FromDictionary(
@@ -55,9 +58,7 @@ class NearbySharePrivateCertificate {
           metadata_encryption_key,
       base::span<const uint8_t, kNearbyShareNumBytesCertificateId> id,
       nearby::sharing::proto::EncryptedMetadata unencrypted_metadata,
-      std::set<
-          std::array<uint8_t, kNearbyShareNumBytesMetadataEncryptionKeySalt>>
-          consumed_salts);
+      const SaltBitset& consumed_salts);
 
   NearbySharePrivateCertificate(const NearbySharePrivateCertificate& other);
   NearbySharePrivateCertificate& operator=(
@@ -159,9 +160,9 @@ class NearbySharePrivateCertificate {
   // that will eventually be serialized and encrypted.
   nearby::sharing::proto::EncryptedMetadata unencrypted_metadata_;
 
-  // The set of 2-byte salts already used to encrypt the metadata key.
-  std::set<std::array<uint8_t, kNearbyShareNumBytesMetadataEncryptionKeySalt>>
-      consumed_salts_;
+  // Tracks which 2-byte salts have already been used to encrypt the metadata
+  // key, indexed by big-endian 16-bit salt value.
+  SaltBitset consumed_salts_;
 
   // For testing only.
   base::queue<

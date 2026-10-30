@@ -4,9 +4,12 @@
 
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_private_certificate.h"
 
+#include <array>
 #include <optional>
 #include <string>
+#include <vector>
 
+#include "base/values.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_decrypted_public_certificate.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_encrypted_metadata_key.h"
@@ -54,6 +57,59 @@ TEST(NearbySharePrivateCertificateTest, ToFromDictionary) {
   std::vector before_private_key = before.private_key_.ToPrivateKeyInfo();
   std::vector after_private_key = after.private_key_.ToPrivateKeyInfo();
   EXPECT_EQ(before_private_key, after_private_key);
+}
+
+TEST(NearbySharePrivateCertificateTest,
+     ConsumedSaltsSerializationOrderAndRoundtrip) {
+  NearbySharePrivateCertificate before(
+      nearby_share::mojom::Visibility::kAllContacts,
+      GetNearbyShareTestNotBefore(), GetNearbyShareTestMetadata());
+  const std::vector<
+      std::array<uint8_t, kNearbyShareNumBytesMetadataEncryptionKeySalt>>
+      consumed_salts = {
+          {{0xff, 0xff}}, {{0x01, 0x00}}, {{0x00, 0x01}}, {{0x00, 0x00}}};
+  for (const auto& salt : consumed_salts) {
+    before.next_salts_for_testing().push(salt);
+    std::optional<NearbyShareEncryptedMetadataKey> key =
+        before.EncryptMetadataKey();
+    ASSERT_TRUE(key);
+    EXPECT_EQ(key->salt(), salt);
+  }
+
+  base::DictValue dict = before.ToDictionary();
+  const std::string* serialized_salts = dict.FindString("consumed_salts");
+  ASSERT_TRUE(serialized_salts);
+  EXPECT_EQ(*serialized_salts, "000000010100FFFF");
+
+  std::optional<NearbySharePrivateCertificate> after =
+      NearbySharePrivateCertificate::FromDictionary(dict);
+  ASSERT_TRUE(after);
+  for (const auto& salt : consumed_salts) {
+    after->next_salts_for_testing().push(salt);
+  }
+  const std::array<uint8_t, kNearbyShareNumBytesMetadataEncryptionKeySalt>
+      unused_salt = {0x12, 0x34};
+  after->next_salts_for_testing().push(unused_salt);
+  std::optional<NearbyShareEncryptedMetadataKey> next_key =
+      after->EncryptMetadataKey();
+  ASSERT_TRUE(next_key);
+  EXPECT_EQ(next_key->salt(), unused_salt);
+}
+
+TEST(NearbySharePrivateCertificateTest, FromDictionary_CorruptedConsumedSalts) {
+  NearbySharePrivateCertificate cert(
+      nearby_share::mojom::Visibility::kAllContacts,
+      GetNearbyShareTestNotBefore(), GetNearbyShareTestMetadata());
+  base::DictValue dict = cert.ToDictionary();
+
+  dict.Set("consumed_salts", "000");
+  EXPECT_FALSE(NearbySharePrivateCertificate::FromDictionary(dict));
+
+  dict.Set("consumed_salts", "0000F");
+  EXPECT_FALSE(NearbySharePrivateCertificate::FromDictionary(dict));
+
+  dict.Set("consumed_salts", "ZZZZ");
+  EXPECT_FALSE(NearbySharePrivateCertificate::FromDictionary(dict));
 }
 
 TEST(NearbySharePrivateCertificateTest, EncryptMetadataKey) {
