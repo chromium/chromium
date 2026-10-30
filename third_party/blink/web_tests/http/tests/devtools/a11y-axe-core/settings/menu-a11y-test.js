@@ -8,13 +8,23 @@ import {AxeCoreTestRunner} from 'axe_core_test_runner';
 import * as Settings from 'devtools/panels/settings/settings.js';
 import * as UI from 'devtools/ui/legacy/legacy.js';
 
+// TODO(crbug.com/407751489): Remove the `tabbedLocation` fallback once the
+// declarative SettingsScreen has rolled into Chromium.
+function settingsTabbedPane() {
+  const settingsScreen = Settings.SettingsScreen.SettingsScreen.instance();
+  if (settingsScreen.tabbedLocation) {
+    return settingsScreen.tabbedLocation.tabbedPane();
+  }
+  return UI.Widget.Widget.get(settingsScreen.contentElement.querySelector('devtools-tabbed-pane'));
+}
+
 (async function() {
   TestRunner.addResult(
       'Tests accessibility in the settings menu using the axe-core linter.');
 
   await UI.ActionRegistry.ActionRegistry.instance().getAction('settings.show').execute();
 
-  const tabbedPane = Settings.SettingsScreen.SettingsScreen.instance().tabbedLocation.tabbedPane();
+  const tabbedPane = settingsTabbedPane();
 
   // force tabs to update
   tabbedPane.performUpdate();
