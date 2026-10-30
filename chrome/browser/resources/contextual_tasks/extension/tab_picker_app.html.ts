@@ -42,6 +42,7 @@ export function getHtml(this: TabPickerAppElement) {
       ${this.tabSuggestions.map((tab, index) => html`
         <div class="suggestion-container" role="presentation">
           <button class="dropdown-item"
+              ?disabled="${this.isTabDisabled_(tab)}"
               role="menuitem"
               title="${tab.title}" data-index="${index}"
               aria-label="${tab.title}"

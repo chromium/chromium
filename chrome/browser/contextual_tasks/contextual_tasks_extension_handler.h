@@ -276,6 +276,7 @@ class ContextualTasksExtensionHandler
   void OnInputStateChanged(const omnibox::InputState& state);
   base::WeakPtr<contextual_search::InputStateModel>
   GetOrCreateInputStateModel();
+  void UpdateInputStateModelContext();
   void OnSessionChanged(
       contextual_search::ContextualSearchSessionHandle* session_handle);
   // Updates the tab context subscription callback if there is a new session.

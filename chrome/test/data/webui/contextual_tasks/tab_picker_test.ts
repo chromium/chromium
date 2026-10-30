@@ -12,8 +12,12 @@ import type {TabPickerBrowserProxy} from 'chrome://contextual-tasks/contextual_t
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {PageCallbackRouter as SearchboxPageCallbackRouter} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {PageRemote as SearchboxPageRemote, TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {InputType} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {MockInputState} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -22,6 +26,12 @@ import {TestExtensionBrowserProxy} from './test_contextual_tasks_browser_proxy.j
 class TestTabPickerBrowserProxy extends TestBrowserProxy implements
     TabPickerBrowserProxy {
   private recentTabs_: TabInfo[] = [];
+  private inputState_: InputState|null =
+      new MockInputState({maxTotalInputs: 10});
+  private callbackRouter_: SearchboxPageCallbackRouter =
+      new SearchboxPageCallbackRouter();
+  readonly callbackRouterRemote: SearchboxPageRemote =
+      this.callbackRouter_.$.bindNewPipeAndPassRemote();
 
   constructor() {
     super([
@@ -29,11 +39,25 @@ class TestTabPickerBrowserProxy extends TestBrowserProxy implements
       'getPluralString',
       'addTabContext',
       'deleteTabContext',
+      'getInputState',
     ]);
+  }
+
+  getSearchboxCallbackRouter(): SearchboxPageCallbackRouter {
+    return this.callbackRouter_;
   }
 
   setRecentTabs(tabs: TabInfo[]) {
     this.recentTabs_ = tabs;
+  }
+
+  setInputState(state: InputState|null) {
+    this.inputState_ = state;
+  }
+
+  getInputState(): Promise<{state: InputState|null}> {
+    this.methodCalled('getInputState');
+    return Promise.resolve({state: this.inputState_});
   }
 
   getRecentTabs() {
@@ -492,6 +516,190 @@ suite('TabPickerTest', () => {
 
     assertEquals('Add tabs', label.textContent.trim());
   });
+
+  test(
+      'Disables unselected tabs when flagged maxTotalInputs is reached',
+      async () => {
+        app.inputState = new MockInputState({
+          disabledInputTypes: [],
+          maxTotalInputs: 2,
+        });
+        await microtasksFinished();
+
+        app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerenter'));
+        await microtasksFinished();
+
+        const items = app.$.tabMenu.querySelectorAll<HTMLButtonElement>(
+            'button.dropdown-item');
+        assertEquals(3, items.length);
+        const item0 = items[0]!;
+        const item1 = items[1]!;
+        const item2 = items[2]!;
+
+        assertFalse(item0.disabled);
+        assertFalse(item1.disabled);
+        assertFalse(item2.disabled);
+
+        // Select tab0.
+        item0.click();
+        await testProxy.whenCalled('addTabContext');
+        testProxy.resetResolver('addTabContext');
+        await microtasksFinished();
+
+        assertFalse(item0.disabled);
+        assertFalse(item1.disabled);
+        assertFalse(item2.disabled);
+
+        // Select tab1 to reach limit of 2.
+        item1.click();
+        await testProxy.whenCalled('addTabContext');
+        testProxy.resetResolver('addTabContext');
+        await microtasksFinished();
+
+        // Selected tabs remain enabled for deselection.
+        assertFalse(item0.disabled);
+        assertFalse(item1.disabled);
+        // Unselected tab2 is disabled.
+        assertTrue(item2.disabled);
+
+        // Clicking disabled tab2 does not select it or call addTabContext.
+        item2.click();
+        await microtasksFinished();
+        assertEquals(0, testProxy.getCallCount('addTabContext'));
+        assertEquals(2, app.selectedTabs.length);
+
+        // Deselect tab1.
+        item1.click();
+        await testProxy.whenCalled('deleteTabContext');
+        testProxy.resetResolver('deleteTabContext');
+        await microtasksFinished();
+
+        // tab2 is now enabled again.
+        assertFalse(item2.disabled);
+      });
+
+  test(
+      'Does not disable tabs when maxTotalInputs is unflagged (0)',
+      async () => {
+        app.inputState = new MockInputState({
+          disabledInputTypes: [],
+          maxTotalInputs: 0,
+        });
+        await microtasksFinished();
+
+        app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerenter'));
+        await microtasksFinished();
+
+        const items = app.$.tabMenu.querySelectorAll<HTMLButtonElement>(
+            'button.dropdown-item');
+        const item0 = items[0]!;
+        const item1 = items[1]!;
+        const item2 = items[2]!;
+
+        item0.click();
+        await testProxy.whenCalled('addTabContext');
+        testProxy.resetResolver('addTabContext');
+        await microtasksFinished();
+
+        item1.click();
+        await testProxy.whenCalled('addTabContext');
+        testProxy.resetResolver('addTabContext');
+        await microtasksFinished();
+
+        // With maxTotalInputs = 0 (unflagged), remaining tab is NOT disabled.
+        assertFalse(item2.disabled);
+      });
+
+  test(
+      'Disables unselected tabs when browser tab input type is disabled',
+      async () => {
+        app.selectedTabs = [tab0];
+        app.inputState = new MockInputState({
+          disabledInputTypes: [InputType.kBrowserTab],
+          maxTotalInputs: 0,
+        });
+        await microtasksFinished();
+
+        app.$.shareTabsTrigger.dispatchEvent(new PointerEvent('pointerenter'));
+        await microtasksFinished();
+
+        const items = app.$.tabMenu.querySelectorAll<HTMLButtonElement>(
+            'button.dropdown-item');
+        const item0 = items[0]!;
+        const item1 = items[1]!;
+
+        // Already selected tab0 remains enabled for deselection.
+        assertFalse(item0.disabled);
+        // Unselected tab1 is disabled.
+        assertTrue(item1.disabled);
+      });
+
+  test(
+      'Initializes inputState on connect and updates on onInputStateChanged',
+      async () => {
+        await testProxy.whenCalled('getInputState');
+        await microtasksFinished();
+        assertEquals(10, app.inputState?.maxTotalInputs);
+
+        const updatedState = new MockInputState({
+          disabledInputTypes: [InputType.kBrowserTab],
+          maxTotalInputs: 5,
+        });
+        testProxy.callbackRouterRemote.onInputStateChanged(updatedState);
+        await testProxy.callbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        assertTrue(!!app.inputState);
+        assertEquals(5, app.inputState.maxTotalInputs);
+        assertTrue(
+            app.inputState.disabledInputTypes.includes(InputType.kBrowserTab));
+      });
+
+  test(
+      'Resets inputState to null on disconnectedCallback',
+      async () => {
+        await testProxy.whenCalled('getInputState');
+        await microtasksFinished();
+        assertTrue(!!app.inputState);
+
+        app.remove();
+        assertEquals(null, app.inputState);
+      });
+
+  test(
+      'Late-resolving getInputState does not overwrite existing inputState',
+      async () => {
+        let resolveInputState: (value: {state: InputState|null}) => void;
+        testProxy.getInputState = () => {
+          testProxy.methodCalled('getInputState');
+          return new Promise(resolve => {
+            resolveInputState = resolve;
+          });
+        };
+
+        const freshApp = document.createElement('tab-picker-app');
+        document.body.appendChild(freshApp);
+        await testProxy.whenCalled('getInputState');
+
+        const pushedState = new MockInputState({
+          disabledInputTypes: [InputType.kBrowserTab],
+          maxTotalInputs: 3,
+        });
+        testProxy.callbackRouterRemote.onInputStateChanged(pushedState);
+        await testProxy.callbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+        assertEquals(3, freshApp.inputState?.maxTotalInputs);
+
+        // Resolve getInputState with an older snapshot.
+        resolveInputState!({
+          state: new MockInputState({maxTotalInputs: 10}),
+        });
+        await microtasksFinished();
+
+        // Fresh state from onInputStateChanged should not be overwritten.
+        assertEquals(3, freshApp.inputState?.maxTotalInputs);
+        freshApp.remove();
+      });
 
   test(
       'Opens flyout menu as unbounded menu when useUnbounded is enabled',

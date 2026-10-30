@@ -183,6 +183,17 @@ composebox-favicon-group {
   outline: none;
 }
 
+
+#tabMenu .dropdown-item[disabled] {
+  color: var(--tab-picker-disabled-text-color);
+  cursor: default;
+}
+
+#tabMenu .dropdown-item[disabled]:hover,
+#tabMenu .dropdown-item[disabled]:focus {
+  background-color: transparent;
+}
+
 :host-context(.focus-outline-visible) #tabMenu .dropdown-item:focus {
   outline: 2px solid var(--cr-focus-outline-color);
   outline-offset: -2px;

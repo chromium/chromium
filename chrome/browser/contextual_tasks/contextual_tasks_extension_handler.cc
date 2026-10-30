@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -580,6 +581,7 @@ void ContextualTasksExtensionHandler::AddTabContext(
         tab, session_handle->GetMetricsRecorder(),
         /*is_tab_suggestion_chip=*/true, GetBrowserWindowInterface());
     user_data->AssociateTabWithTask(session_id);
+    UpdateInputStateModelContext();
     std::move(callback).Run(base::ok(token));
     return;
   }
@@ -591,7 +593,8 @@ void ContextualTasksExtensionHandler::AddTabContext(
           [](base::WeakPtr<contextual_tasks::ContextualTasksWebContentsUserData>
                  ud) {
             if (ud) {
-              if (auto model = ud->GetOrCreateInputStateModel()) {
+              if (base::WeakPtr<contextual_search::InputStateModel> model =
+                      ud->GetOrCreateInputStateModel()) {
                 model->OnContextChanged();
               }
               ud->RefreshActiveTaskContext();
@@ -613,6 +616,7 @@ void ContextualTasksExtensionHandler::AddTabContext(
     // Associate the tab with the task as soon as it is attached as context so
     // the task knows which tabs are part of it.
     user_data->AssociateTabWithTask(session_id);
+    UpdateInputStateModelContext();
     user_data->RefreshActiveTaskContext();
   }
 
@@ -634,6 +638,7 @@ void ContextualTasksExtensionHandler::DeleteContext(
 void ContextualTasksExtensionHandler::DeleteTabContext(int32_t tab_id) {
   if (auto* user_data = GetOrCreateWebContentsUserData()) {
     user_data->DeleteTabContext(tab_id);
+    UpdateInputStateModelContext();
   }
 }
 
@@ -787,6 +792,15 @@ ContextualTasksExtensionHandler::GetOrCreateInputStateModel() {
     }
   }
   return input_state_model_;
+}
+
+void ContextualTasksExtensionHandler::UpdateInputStateModelContext() {
+  // Ask the input state model to recalculate input limits based on the
+  // updated context.
+  if (base::WeakPtr<contextual_search::InputStateModel> model =
+          GetOrCreateInputStateModel()) {
+    model->OnContextChanged();
+  }
 }
 
 void ContextualTasksExtensionHandler::OnSessionChanged(
