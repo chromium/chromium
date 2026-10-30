@@ -694,7 +694,7 @@ FormDataImporter* ChromeAutofillClient::GetFormDataImporter() {
 
 payments::ChromePaymentsAutofillClient*
 ChromeAutofillClient::GetPaymentsAutofillClient() {
-  return &payments_autofill_client_;
+  return payments_autofill_client_.get();
 }
 
 strike_database::StrikeDatabase* ChromeAutofillClient::GetStrikeDatabase() {

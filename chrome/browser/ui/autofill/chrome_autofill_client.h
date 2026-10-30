@@ -462,13 +462,15 @@ class ChromeAutofillClient : public ContentAutofillClient {
   VotesUploader votes_uploader_{this};
   std::unique_ptr<FormDataImporter> form_data_importer_;
 
-  payments::ChromePaymentsAutofillClient payments_autofill_client_{this};
+  std::unique_ptr<payments::ChromePaymentsAutofillClient>
+      payments_autofill_client_{
+          payments::ChromePaymentsAutofillClient::Create(this)};
   SingleFieldFillRouter single_field_fill_router_{
       // This call is during construction, so GetAutocompleteHistoryManager()
       // does not dispatch to more-derived classes, should there be any.
       GetAutocompleteHistoryManager(),
-      payments_autofill_client_.GetIbanManager(),
-      payments_autofill_client_.GetMerchantPromoCodeManager()};
+      payments_autofill_client_->GetIbanManager(),
+      payments_autofill_client_->GetMerchantPromoCodeManager()};
 
   base::WeakPtr<AutofillSuggestionController> suggestion_controller_;
   base::Time flow_id_date_;

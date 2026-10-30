@@ -40,6 +40,7 @@ source_set("payments") {
     sources += [
       "android_bnpl_ui_delegate.h",
       "android_payments_window_manager.h",
+      "chrome_payments_autofill_client_android.h",
       "offer_notification_controller_android.h",
       "payments_churned_users_ui_delegate_android.h",
     ]
@@ -51,6 +52,7 @@ source_set("payments") {
     ]
   } else {
     sources += [
+      "chrome_payments_autofill_client_desktop.h",
       "desktop_bnpl_ui_delegate.h",
       "desktop_payments_window_manager.h",
       "omnibox_autofill_bubble_controller.h",
@@ -135,6 +137,7 @@ source_set("impl") {
     sources += [
       "android_bnpl_ui_delegate.cc",
       "android_payments_window_manager.cc",
+      "chrome_payments_autofill_client_android.cc",
       "offer_notification_controller_android.cc",
       "payments_churned_users_ui_delegate_android.cc",
     ]
@@ -158,6 +161,7 @@ source_set("impl") {
     ]
   } else {
     sources += [
+      "chrome_payments_autofill_client_desktop.cc",
       "desktop_bnpl_ui_delegate.cc",
       "desktop_payments_window_manager.cc",
       "omnibox_autofill_bubble_controller.cc",

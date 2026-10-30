@@ -85,15 +85,21 @@ class PaymentsWindowManager;
 class WalletReminderNoticeManager;
 class WalletReminderNoticeUiDelegate;
 
-// Chrome implementation of PaymentsAutofillClient. Used for Chrome Desktop
-// and Clank. Owned by the ChromeAutofillClient. Created lazily in the
-// ChromeAutofillClient when it is needed, and it observes the same
+// Chrome implementation of PaymentsAutofillClient. Base class shared by
+// ChromePaymentsAutofillClientDesktop and ChromePaymentsAutofillClientAndroid.
+// Owned by ChromeAutofillClient via `Create()`, and it observes the same
 // WebContents as its owning ChromeAutofillClient.
 class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
                                      public content::WebContentsObserver,
                                      public PaymentsDataManager::Observer {
  public:
-  explicit ChromePaymentsAutofillClient(ContentAutofillClient* client);
+  // Creates a platform-specific ChromePaymentsAutofillClient instance for
+  // `client`. Defined in the respective Desktop and Android implementations
+  // (`chrome_payments_autofill_client_desktop.cc` and
+  // `chrome_payments_autofill_client_android.cc`).
+  static std::unique_ptr<ChromePaymentsAutofillClient> Create(
+      ContentAutofillClient* client);
+
   ChromePaymentsAutofillClient(const ChromePaymentsAutofillClient&) = delete;
   ChromePaymentsAutofillClient& operator=(const ChromePaymentsAutofillClient&) =
       delete;
@@ -311,6 +317,11 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       std::unique_ptr<TouchToFillPaymentMethodController>
           touch_to_fill_payment_method_controller);
 #endif
+
+ protected:
+  explicit ChromePaymentsAutofillClient(ContentAutofillClient* client);
+
+  ContentAutofillClient* client() const { return &client_.get(); }
 
  private:
   // content::WebContentsObserver:
