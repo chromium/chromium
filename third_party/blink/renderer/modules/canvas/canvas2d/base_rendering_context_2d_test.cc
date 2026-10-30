@@ -420,9 +420,10 @@ class BaseRenderingContext2DSharedImageTest : public testing::Test {
 
   TestRenderingContext2D* CreateBackedContext(
       V8TestingScope& scope,
-      RasterMode raster_mode = RasterMode::kGPU) {
-    const gpu::SharedImageUsageSet shared_image_usage_flags =
-        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      RasterMode raster_mode = RasterMode::kGPU,
+      gpu::SharedImageUsageSet shared_image_usage_flags =
+          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+          gpu::SHARED_IMAGE_USAGE_SCANOUT) {
     auto* context = MakeGarbageCollected<TestRenderingContext2D>(
         scope, CanvasContextCreationAttributesCore(), kSize);
     context->CreateSharedImageProvider(raster_mode, shared_image_usage_flags);
@@ -501,6 +502,78 @@ TEST_F(BaseRenderingContext2DSharedImageTest, AllocatedBufferSizeAccelerated) {
   EXPECT_EQ(context->AllocatedBufferSize(),
             base::ByteSize(kSize.width() * kSize.height() * 4));
 }
+
+#if BUILDFLAG(IS_MAC)
+// RGBA_8888 IOSurfaces cannot be imported by ANGLE's Vulkan backend or
+// consumed by the VideoToolbox encoder, so the canvas must be BGRA_8888 when
+// MACOS_VIDEO_TOOLBOX is set. A standalone OffscreenCanvas sets
+// MACOS_VIDEO_TOOLBOX without SCANOUT.
+TEST_F(BaseRenderingContext2DSharedImageTest,
+       AcceleratedMacOSVideoToolboxUsesBGRA) {
+  V8TestingScope scope;
+
+  // Baseline: with neither SCANOUT nor MACOS_VIDEO_TOOLBOX the accelerated
+  // canvas stays RGBA_8888.
+  {
+    auto* context = CreateBackedContext(scope, RasterMode::kGPU,
+                                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
+    ASSERT_TRUE(context->IsBackingValid());
+    EXPECT_TRUE(context->Is2DCanvasAccelerated());
+
+    auto resource = context->PaintRenderingResultsToResource(
+        kBackBuffer, FlushReason::kOther);
+    ASSERT_TRUE(resource);
+    auto shared_image = resource->GetSharedImageForTesting();
+    ASSERT_TRUE(shared_image);
+    EXPECT_FALSE(shared_image->usage().HasAny(
+        gpu::SHARED_IMAGE_USAGE_SCANOUT |
+        gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX));
+    EXPECT_EQ(shared_image->format(), viz::SinglePlaneFormat::kRGBA_8888);
+  }
+
+  // Under kWebRtcMacSharedImageEncode, MACOS_VIDEO_TOOLBOX alone flips the
+  // format to BGRA_8888.
+  {
+    base::test::ScopedFeatureList feature_list(
+        features::kWebRtcMacSharedImageEncode);
+    auto* context =
+        CreateBackedContext(scope, RasterMode::kGPU,
+                            gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX);
+    ASSERT_TRUE(context->IsBackingValid());
+    EXPECT_TRUE(context->Is2DCanvasAccelerated());
+
+    auto resource = context->PaintRenderingResultsToResource(
+        kBackBuffer, FlushReason::kOther);
+    ASSERT_TRUE(resource);
+    auto shared_image = resource->GetSharedImageForTesting();
+    ASSERT_TRUE(shared_image);
+    EXPECT_FALSE(shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_SCANOUT));
+    EXPECT_TRUE(
+        shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX));
+    EXPECT_EQ(shared_image->format(), viz::SinglePlaneFormat::kBGRA_8888);
+  }
+
+  // Without the feature, MACOS_VIDEO_TOOLBOX does not change the format.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(features::kWebRtcMacSharedImageEncode);
+    auto* context =
+        CreateBackedContext(scope, RasterMode::kGPU,
+                            gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX);
+    ASSERT_TRUE(context->IsBackingValid());
+    EXPECT_TRUE(context->Is2DCanvasAccelerated());
+
+    auto resource = context->PaintRenderingResultsToResource(
+        kBackBuffer, FlushReason::kOther);
+    ASSERT_TRUE(resource);
+    auto shared_image = resource->GetSharedImageForTesting();
+    ASSERT_TRUE(shared_image);
+    EXPECT_EQ(shared_image->format(), viz::SinglePlaneFormat::kRGBA_8888);
+  }
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 class BaseRenderingContext2DSharedImageSyncTokenTest
     : public BaseRenderingContext2DSharedImageTest,
