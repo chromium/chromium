@@ -21,7 +21,7 @@
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/isolated_web_apps/scheme.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "ui/gfx/image/image.h"
 
 PageHandler::PageHandler(scoped_refptr<content::DevToolsAgentHost> agent_host,
@@ -264,18 +264,14 @@ void PageHandler::OnDidGetManifest(std::unique_ptr<GetAppIdCallback> callback,
                           parent_app_name);
     return;
   }
-  // Either both the id and start_url are present, or they are both empty.
   std::string current_app_id_str;
   std::string recommended_manifest_id_path_only;
-  if (data.manifest->id.is_valid()) {
-    CHECK(data.manifest->start_url.is_valid());
-    current_app_id_str = data.manifest->id.spec();
+  if (data.manifest) {
+    current_app_id_str = data.manifest->id().spec();
     recommended_manifest_id_path_only =
-        web_app::GenerateManifestIdFromStartUrlOnly(data.manifest->start_url)
+        web_app::GenerateManifestIdFromStartUrlOnly(data.manifest->start_url())
             .value()
             .PathForRequest();
-  } else {
-    CHECK(!data.manifest->start_url.is_valid());
   }
 
   callback->sendSuccess(current_app_id_str, recommended_manifest_id_path_only,

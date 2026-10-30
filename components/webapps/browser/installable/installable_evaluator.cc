@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
+#include "base/types/optional_ref.h"
 #include "components/security_state/core/security_state.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/webapps_client.h"
@@ -17,9 +18,11 @@
 #include "content/public/common/url_constants.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_icon_selector.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
 namespace webapps {
 
@@ -34,7 +37,7 @@ const int kMinimumPrimaryIconSizeInPx = 144;
 
 InstallableStatusCode HasManifestOrAtRootScope(
     InstallableCriteria criteria,
-    const blink::mojom::Manifest& manifest,
+    base::optional_ref<const blink::Manifest> manifest,
     const GURL& manifest_url,
     const GURL& site_url) {
   switch (criteria) {
@@ -52,7 +55,7 @@ InstallableStatusCode HasManifestOrAtRootScope(
   }
   // This occurs when there is an error parsing the manifest, a network issue,
   // or a CORS / opaque origin issue.
-  if (blink::IsEmptyManifest(manifest)) {
+  if (!manifest) {
     return InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR;
   }
 
@@ -63,42 +66,38 @@ InstallableStatusCode HasManifestOrAtRootScope(
   return InstallableStatusCode::NO_ERROR_DETECTED;
 }
 
-bool HasValidStartUrl(const blink::mojom::Manifest& manifest,
+bool HasValidStartUrl(base::optional_ref<const blink::Manifest> manifest,
                       const mojom::WebPageMetadata& metadata,
                       const GURL& site_url,
                       InstallableCriteria criteria) {
-  // Since the id is generated from the start_url, either both are valid or both
-  // are invalid. If has_valid_specified_start_url is specified, then the
-  // start_url must be valid.
-  CHECK((!manifest.start_url.is_valid() && !manifest.id.is_valid() &&
-         !manifest.has_valid_specified_start_url) ||
-        (manifest.start_url.is_valid() && manifest.id.is_valid()));
+  if (manifest) {
+    // Since the id is generated from the start_url, both are valid.
+    CHECK(manifest->start_url().is_valid() && manifest->id().is_valid());
+  }
   switch (criteria) {
     case InstallableCriteria::kValidManifestIgnoreDisplay:
     case InstallableCriteria::kValidManifestWithIcons:
-      return manifest.has_valid_specified_start_url;
+      return manifest && manifest->has_valid_specified_start_url();
     case InstallableCriteria::kDoNotCheck:
       return true;
     case InstallableCriteria::kImplicitManifestFieldsHTML:
-      return manifest.start_url.is_valid() ||
-             metadata.application_url.is_valid();
+      return manifest || metadata.application_url.is_valid();
     case InstallableCriteria::kNoManifestAtRootScope:
-      return manifest.start_url.is_valid() ||
-             metadata.application_url.is_valid() ||
+      return manifest || metadata.application_url.is_valid() ||
              site_url.GetWithoutFilename().GetPath().length() <= 1;
   }
 }
 
-bool IsManifestNameValid(const blink::mojom::Manifest& manifest) {
-  return (manifest.name && !manifest.name->empty()) ||
-         (manifest.short_name && !manifest.short_name->empty());
+bool IsManifestNameValid(const blink::Manifest& manifest) {
+  return (manifest.name() && !manifest.name()->empty()) ||
+         (manifest.short_name() && !manifest.short_name()->empty());
 }
 
 bool IsWebPageMetadataContainValidName(const mojom::WebPageMetadata& metadata) {
   return !metadata.application_name.empty() || !metadata.title.empty();
 }
 
-bool HasValidName(const blink::mojom::Manifest& manifest,
+bool HasValidName(base::optional_ref<const blink::Manifest> manifest,
                   const mojom::WebPageMetadata& metadata,
                   InstallableCriteria criteria) {
   switch (criteria) {
@@ -106,10 +105,10 @@ bool HasValidName(const blink::mojom::Manifest& manifest,
       return true;
     case InstallableCriteria::kValidManifestWithIcons:
     case InstallableCriteria::kValidManifestIgnoreDisplay:
-      return IsManifestNameValid(manifest);
+      return manifest && IsManifestNameValid(*manifest);
     case InstallableCriteria::kImplicitManifestFieldsHTML:
     case InstallableCriteria::kNoManifestAtRootScope:
-      return IsManifestNameValid(manifest) ||
+      return (manifest && IsManifestNameValid(*manifest)) ||
              IsWebPageMetadataContainValidName(metadata);
   }
 }
@@ -117,7 +116,7 @@ bool HasValidName(const blink::mojom::Manifest& manifest,
 // Returns whether |manifest| specifies a supported icon that has
 // IconPurpose::ANY, with size >= kMinimumPrimaryIconSizeInPx (or size "any"),
 // and is square.
-bool DoesManifestContainRequiredIcon(const blink::mojom::Manifest& manifest) {
+bool DoesManifestContainRequiredIcon(const blink::Manifest& manifest) {
   blink::ManifestIconSelectorParams params;
   params.purpose = IconPurpose::ANY;
   params.minimum_icon_size_in_px =
@@ -125,7 +124,7 @@ bool DoesManifestContainRequiredIcon(const blink::mojom::Manifest& manifest) {
   params.maximum_icon_size_in_px = InstallableEvaluator::kMaximumIconSizeInPx;
   params.max_width_to_height_ratio = 1.0f;
   params.limited_image_types_for_installable_icon = true;
-  return blink::ManifestIconSelector::FindBestMatchingIcon(manifest.icons,
+  return blink::ManifestIconSelector::FindBestMatchingIcon(manifest.icons(),
                                                            params)
       .has_value();
 }
@@ -143,17 +142,17 @@ bool HasNonDefaultFavicon(content::WebContents* web_contents) {
 }
 
 bool HasValidIcon(content::WebContents* web_contents,
-                  const blink::mojom::Manifest& manifest,
+                  base::optional_ref<const blink::Manifest> manifest,
                   InstallableCriteria criteria) {
   switch (criteria) {
     case webapps::InstallableCriteria::kDoNotCheck:
       return true;
     case webapps::InstallableCriteria::kValidManifestWithIcons:
     case webapps::InstallableCriteria::kValidManifestIgnoreDisplay:
-      return DoesManifestContainRequiredIcon(manifest);
+      return manifest && DoesManifestContainRequiredIcon(*manifest);
     case webapps::InstallableCriteria::kImplicitManifestFieldsHTML:
     case webapps::InstallableCriteria::kNoManifestAtRootScope:
-      return DoesManifestContainRequiredIcon(manifest) ||
+      return (manifest && DoesManifestContainRequiredIcon(*manifest)) ||
              HasNonDefaultFavicon(web_contents);
   }
 }
@@ -172,9 +171,9 @@ bool IsInstallableDisplayMode(blink::mojom::DisplayMode display_mode) {
 }  // namespace
 
 InstallableStatusCode InstallableEvaluator::GetDisplayError(
-    const blink::mojom::Manifest& manifest,
+    const blink::Manifest& manifest,
     InstallableCriteria criteria) {
-  blink::mojom::DisplayMode display_mode_to_evaluate = manifest.display;
+  blink::mojom::DisplayMode display_mode_to_evaluate = manifest.display();
   InstallableStatusCode error_type_if_invalid =
       InstallableStatusCode::MANIFEST_DISPLAY_NOT_SUPPORTED;
 
@@ -182,6 +181,39 @@ InstallableStatusCode InstallableEvaluator::GetDisplayError(
   // consequently aren't in the manifest.display_override array.
   // If this array is not empty, the first value will "win", so validate
   // this value is installable.
+  if (!manifest.display_override().empty()) {
+    display_mode_to_evaluate = manifest.display_override()[0].display();
+    error_type_if_invalid =
+        InstallableStatusCode::MANIFEST_DISPLAY_OVERRIDE_NOT_SUPPORTED;
+  }
+
+  switch (criteria) {
+    case InstallableCriteria::kValidManifestWithIcons:
+      if (!IsInstallableDisplayMode(display_mode_to_evaluate)) {
+        return error_type_if_invalid;
+      }
+      break;
+    case InstallableCriteria::kImplicitManifestFieldsHTML:
+    case InstallableCriteria::kNoManifestAtRootScope:
+      if (display_mode_to_evaluate == blink::mojom::DisplayMode::kBrowser) {
+        return error_type_if_invalid;
+      }
+      break;
+    case InstallableCriteria::kValidManifestIgnoreDisplay:
+      break;
+    case InstallableCriteria::kDoNotCheck:
+      NOTREACHED();
+  }
+  return InstallableStatusCode::NO_ERROR_DETECTED;
+}
+
+InstallableStatusCode InstallableEvaluator::GetDisplayError(
+    const blink::mojom::Manifest& manifest,
+    InstallableCriteria criteria) {
+  blink::mojom::DisplayMode display_mode_to_evaluate = manifest.display;
+  InstallableStatusCode error_type_if_invalid =
+      InstallableStatusCode::MANIFEST_DISPLAY_NOT_SUPPORTED;
+
   if (!manifest.display_override.empty()) {
     display_mode_to_evaluate = manifest.display_override[0].display();
     error_type_if_invalid =
@@ -224,44 +256,44 @@ int InstallableEvaluator::GetMinimumIconSizeInPx() {
 
 std::vector<InstallableStatusCode> InstallableEvaluator::CheckInstallability()
     const {
-  CHECK(blink::IsEmptyManifest(page_data_->GetManifest()) ||
-        (page_data_->GetManifest().start_url.is_valid() &&
-         page_data_->GetManifest().scope.is_valid() &&
-         page_data_->GetManifest().id.is_valid()));
+  base::optional_ref<const blink::Manifest> manifest =
+      page_data_->GetManifest();
+  CHECK(!manifest ||
+        (manifest->start_url().is_valid() && manifest->scope().is_valid() &&
+         manifest->id().is_valid()));
 
   std::vector<InstallableStatusCode> errors;
   if (criteria_ == InstallableCriteria::kDoNotCheck) {
     return errors;
   }
 
-  InstallableStatusCode error = HasManifestOrAtRootScope(
-      criteria_, page_data_->GetManifest(), page_data_->manifest_url(),
-      web_contents_->GetLastCommittedURL());
+  InstallableStatusCode error =
+      HasManifestOrAtRootScope(criteria_, manifest, page_data_->manifest_url(),
+                               web_contents_->GetLastCommittedURL());
   if (error != InstallableStatusCode::NO_ERROR_DETECTED) {
     errors.push_back(error);
     return errors;
   }
 
-  if (!HasValidStartUrl(page_data_->GetManifest(),
-                        page_data_->WebPageMetadata(),
+  if (!HasValidStartUrl(manifest, page_data_->WebPageMetadata(),
                         web_contents_->GetLastCommittedURL(), criteria_)) {
     errors.push_back(InstallableStatusCode::START_URL_NOT_VALID);
   }
 
-  if (!HasValidName(page_data_->GetManifest(), page_data_->WebPageMetadata(),
-                    criteria_)) {
+  if (!HasValidName(manifest, page_data_->WebPageMetadata(), criteria_)) {
     errors.push_back(
         InstallableStatusCode::MANIFEST_MISSING_NAME_OR_SHORT_NAME);
   }
 
-  InstallableStatusCode display_error = InstallableEvaluator::GetDisplayError(
-      page_data_->GetManifest(), criteria_);
-  if (display_error != InstallableStatusCode::NO_ERROR_DETECTED) {
-    errors.push_back(display_error);
+  if (manifest) {
+    InstallableStatusCode display_error =
+        InstallableEvaluator::GetDisplayError(*manifest, criteria_);
+    if (display_error != InstallableStatusCode::NO_ERROR_DETECTED) {
+      errors.push_back(display_error);
+    }
   }
 
-  if (!HasValidIcon(web_contents_.get(), page_data_->GetManifest(),
-                    criteria_)) {
+  if (!HasValidIcon(web_contents_.get(), manifest, criteria_)) {
     errors.push_back(InstallableStatusCode::MANIFEST_MISSING_SUITABLE_ICON);
   }
 

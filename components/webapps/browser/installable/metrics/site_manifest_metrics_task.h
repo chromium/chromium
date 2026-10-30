@@ -5,13 +5,14 @@
 #ifndef COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_METRICS_SITE_MANIFEST_METRICS_TASK_H_
 #define COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_METRICS_SITE_MANIFEST_METRICS_TASK_H_
 
+#include <optional>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "components/webapps/browser/installable/installable_data.h"
-#include "mojo/public/cpp/bindings/struct_ptr.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 
 namespace content {
 class WebContents;
@@ -37,14 +38,15 @@ struct InstallableData;
 
 class SiteManifestMetricsTask {
  public:
-  using ResultCallback = base::OnceCallback<void(blink::mojom::ManifestPtr)>;
+  using ResultCallback =
+      base::OnceCallback<void(std::optional<blink::Manifest>)>;
   ~SiteManifestMetricsTask();
 
   // Create the task, start collecting the manifest from the web_contents and
   // pass the task back to the MLInstallabilityPromoter. If the result of
-  // fetching the manifest is that the URL changed, then we return an empty
-  // manifest and the MLInstallabilityPromoter handles manifest URL changes.
-  // If there is no manifest present, the callback runs with a nullptr.
+  // fetching the manifest is that the URL changed, then we return std::nullopt
+  // and the MLInstallabilityPromoter handles manifest URL changes.
+  // If there is no manifest present, the callback runs with std::nullopt.
   static std::unique_ptr<SiteManifestMetricsTask> CreateAndStart(
       content::WebContents& web_contents,
       ResultCallback collect_data_and_self_destruct_callback);
@@ -57,7 +59,7 @@ class SiteManifestMetricsTask {
   void Start();
   void OnDidFetchManifest(const InstallableData& data);
 
-  blink::mojom::ManifestPtr manifest_;
+  std::optional<blink::Manifest> manifest_;
   const raw_ref<content::WebContents> web_contents_;
   ResultCallback collect_data_and_self_destruct_callback_;
   raw_ptr<InstallableManager> manager_;

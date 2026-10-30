@@ -26,6 +26,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/jni_zero/default_conversions.h"
@@ -147,19 +148,24 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
   // observing too. It is based on our assumption that it is invalid for
   // web developers to change the Web Manifest location. When it does
   // change, we will treat the new Web Manifest as the one of another WebAPK.
-  if (!data.errors.empty() || blink::IsEmptyManifest(*data.manifest) ||
-      !webapps::WebappsUtils::AreWebManifestUrlsWebApkCompatible(
-          *data.manifest)) {
+  if (!data.manifest || !data.errors.empty()) {
     return;
   }
 
-  CHECK(!data.manifest->id.is_empty());
+  blink::mojom::ManifestPtr mojo_manifest =
+      blink::ManifestToMojom(*data.manifest);
+  if (!webapps::WebappsUtils::AreWebManifestUrlsWebApkCompatible(
+          *mojo_manifest)) {
+    return;
+  }
+
+  CHECK(!mojo_manifest->id.is_empty());
 
   // If there isn't an existing manifest ID, check if either manifest URL or
   // start URL are the same. If neither of them are the same, we treat the
   // manifest as one of another WebAPK.
   if (web_manifest_id_.is_empty() && web_manifest_url_ != *data.manifest_url &&
-      start_url_ != data.manifest->start_url) {
+      start_url_ != mojo_manifest->start_url) {
     return;
   }
 
@@ -167,16 +173,16 @@ void WebApkUpdateDataFetcher::OnDidGetInstallableData(
   // different from the current one, continue observing as the id is the
   // identity for the application. We will treat the manifest with different id
   // as the one of another WebAPK.
-  if (!web_manifest_id_.is_empty() && web_manifest_id_ != data.manifest->id) {
+  if (!web_manifest_id_.is_empty() && web_manifest_id_ != mojo_manifest->id) {
     return;
   }
 
-  info_.UpdateFromManifest(*data.manifest);
+  info_.UpdateFromManifest(*mojo_manifest);
   info_.manifest_url = *data.manifest_url;
   info_.best_primary_icon_url = *data.primary_icon_url;
   info_.is_primary_icon_maskable = data.has_maskable_primary_icon;
   primary_icon_ = *data.primary_icon;
-  info_.UpdateBestSplashIcon(*data.manifest);
+  info_.UpdateBestSplashIcon(*mojo_manifest);
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());

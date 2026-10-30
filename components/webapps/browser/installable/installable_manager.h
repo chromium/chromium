@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/types/optional_ref.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_page_data.h"
@@ -25,6 +26,10 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
+
+namespace blink {
+class Manifest;
+}
 
 namespace webapps {
 
@@ -116,7 +121,7 @@ class InstallableManager
   void WebContentsDestroyed() override;
 
   const GURL& manifest_url() const;
-  const blink::mojom::Manifest& manifest() const;
+  base::optional_ref<const blink::Manifest> manifest() const;
 
   std::unique_ptr<InstallablePageData> page_data_;
   InstallableTaskQueue task_queue_;

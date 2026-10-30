@@ -9,8 +9,12 @@
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_page_data.h"
 #include "components/webapps/browser/installable/installable_params.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "url/gurl.h"
+
+namespace blink {
+class Manifest;
+}  // namespace blink
 
 namespace webapps {
 
@@ -21,6 +25,8 @@ class InstallableEvaluator {
   // Gets the installable error on the display fields for the manifest. This is
   // public so this can be checked in FetchManifestAndInstallCommand after using
   // the `kValidManifestIgnoreDisplay` criteria.
+  static InstallableStatusCode GetDisplayError(const blink::Manifest& manifest,
+                                               InstallableCriteria criteria);
   static InstallableStatusCode GetDisplayError(
       const blink::mojom::Manifest& manifest,
       InstallableCriteria criteria);

@@ -5,6 +5,7 @@
 #include "components/webapps/browser/installable/installable_task.h"
 
 #include <algorithm>
+#include <optional>
 
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -59,12 +60,10 @@ void InstallableTask::RunCallback() {
 void InstallableTask::ResetWithError(InstallableStatusCode code) {
   // Some callbacks might be already invalidated on certain resets, so we must
   // check for that.
-  // Manifest is assumed to be non-null, so we create an empty one here.
   if (callback_) {
-    blink::mojom::Manifest manifest;
     mojom::WebPageMetadata metadata;
     std::move(callback_).Run(InstallableData(
-        /*errors=*/{code}, /*manifest_url=*/GURL(), /*manifest=*/manifest,
+        /*errors=*/{code}, /*manifest_url=*/GURL(), /*manifest=*/std::nullopt,
         /*metadata=*/metadata, /*primary_icon_url=*/GURL(),
         /*primary_icon=*/nullptr,
         /*has_maskable_primary_icon=*/false,

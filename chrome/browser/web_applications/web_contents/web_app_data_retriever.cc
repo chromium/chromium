@@ -39,6 +39,7 @@
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom.h"
@@ -348,8 +349,8 @@ void WebAppDataRetriever::OnDidPerformInstallableCheck(
   CHECK(!is_installable || data.installable_check_passed);
 
   blink::mojom::ManifestPtr opt_manifest;
-  if (!blink::IsEmptyManifest(*data.manifest)) {
-    opt_manifest = data.manifest->Clone();
+  if (data.manifest) {
+    opt_manifest = blink::ManifestToMojom(*data.manifest);
   }
 
   CHECK(!check_installability_callback_.is_null());

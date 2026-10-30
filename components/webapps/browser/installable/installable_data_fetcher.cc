@@ -5,6 +5,8 @@
 #include "components/webapps/browser/installable/installable_data_fetcher.h"
 
 #include "base/functional/callback.h"
+#include "base/no_destructor.h"
+#include "base/types/optional_ref.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/constants.h"
@@ -61,10 +63,7 @@ void InstallableDataFetcher::OnDidGetManifest(
       result == blink::mojom::ManifestRequestResult::kManifestFailedToParse) {
     error = InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR;
   }
-  blink::mojom::ManifestPtr mojo_manifest =
-      manifest ? blink::ManifestToMojom(*manifest)
-               : blink::mojom::Manifest::New();
-  page_data_->OnManifestFetched(std::move(mojo_manifest), manifest_url, error);
+  page_data_->OnManifestFetched(std::move(manifest), manifest_url, error);
   std::move(finish_callback).Run(error);
 }
 
@@ -118,9 +117,15 @@ void InstallableDataFetcher::CheckAndFetchBestPrimaryIcon(
     std::move(finish_callback).Run(page_data_->icon_error());
     return;
   }
+  static const base::NoDestructor<std::vector<blink::Manifest::ImageResource>>
+      kEmptyIcons;
+  base::optional_ref<const blink::Manifest> manifest =
+      page_data_->GetManifest();
+  const std::vector<blink::Manifest::ImageResource>& icons =
+      manifest ? manifest->icons() : *kEmptyIcons;
   icon_fetcher_ = std::make_unique<InstallableIconFetcher>(
-      web_contents(), *page_data_, page_data_->GetManifest().icons,
-      prefer_maskable, fetch_favicon, std::move(finish_callback));
+      web_contents(), *page_data_, icons, prefer_maskable, fetch_favicon,
+      std::move(finish_callback));
 }
 
 void InstallableDataFetcher::CheckAndFetchScreenshots(
@@ -135,45 +140,49 @@ void InstallableDataFetcher::CheckAndFetchScreenshots(
   screenshot_complete_ = std::move(finish_callback);
 
   int num_of_screenshots = 0;
-  for (const auto& url : page_data_->GetManifest().screenshots) {
+  base::optional_ref<const blink::Manifest> manifest =
+      page_data_->GetManifest();
+  if (manifest) {
+    for (const auto& url : manifest->screenshots()) {
 #if BUILDFLAG(IS_ANDROID)
-    if (url->form_factor ==
-        blink::mojom::ManifestScreenshot::FormFactor::kWide) {
-      continue;
-    }
+      if (url.form_factor ==
+          blink::mojom::ManifestScreenshot::FormFactor::kWide) {
+        continue;
+      }
 #else
-    if (url->form_factor !=
-        blink::mojom::ManifestScreenshot::FormFactor::kWide) {
-      continue;
-    }
+      if (url.form_factor !=
+          blink::mojom::ManifestScreenshot::FormFactor::kWide) {
+        continue;
+      }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    if (++num_of_screenshots > kMaximumNumOfScreenshots) {
-      break;
-    }
+      if (++num_of_screenshots > kMaximumNumOfScreenshots) {
+        break;
+      }
 
-    // A screenshot URL that's in the map is already taken care of.
-    if (downloaded_screenshots_.count(url->image.src) > 0) {
-      continue;
-    }
+      // A screenshot URL that's in the map is already taken care of.
+      if (downloaded_screenshots_.count(url.image.src) > 0) {
+        continue;
+      }
 
-    int ideal_size_in_px = url->image.sizes.empty()
-                               ? kMinimumScreenshotSizeInPx
-                               : std::max(url->image.sizes[0].width(),
-                                          url->image.sizes[0].height());
-    // Do not pass in a maximum icon size so that screenshots larger than
-    // kMaximumScreenshotSizeInPx are not downscaled to the maximum size by
-    // `ManifestIconDownloader::Download`. Screenshots with size larger than
-    // kMaximumScreenshotSizeInPx get filtered out by OnScreenshotFetched.
-    bool can_download = content::ManifestIconDownloader::Download(
-        web_contents(), url->image.src, ideal_size_in_px,
-        kMinimumScreenshotSizeInPx,
-        /*maximum_icon_size_in_px=*/0,
-        base::BindOnce(&InstallableDataFetcher::OnScreenshotFetched,
-                       weak_ptr_factory_.GetWeakPtr(), url->image.src),
-        /*square_only=*/false);
-    if (can_download) {
-      ++screenshots_downloading_;
+      int ideal_size_in_px = url.image.sizes.empty()
+                                 ? kMinimumScreenshotSizeInPx
+                                 : std::max(url.image.sizes[0].width(),
+                                            url.image.sizes[0].height());
+      // Do not pass in a maximum icon size so that screenshots larger than
+      // kMaximumScreenshotSizeInPx are not downscaled to the maximum size by
+      // `ManifestIconDownloader::Download`. Screenshots with size larger than
+      // kMaximumScreenshotSizeInPx get filtered out by OnScreenshotFetched.
+      bool can_download = content::ManifestIconDownloader::Download(
+          web_contents(), url.image.src, ideal_size_in_px,
+          kMinimumScreenshotSizeInPx,
+          /*maximum_icon_size_in_px=*/0,
+          base::BindOnce(&InstallableDataFetcher::OnScreenshotFetched,
+                         weak_ptr_factory_.GetWeakPtr(), url.image.src),
+          /*square_only=*/false);
+      if (can_download) {
+        ++screenshots_downloading_;
+      }
     }
   }
 
@@ -201,39 +210,44 @@ void InstallableDataFetcher::OnScreenshotFetched(GURL screenshot_url,
     // the order they are declared in the manifest.
     int num_of_screenshots = 0;
     std::vector<Screenshot> screenshots;
-    for (const auto& url : page_data_->GetManifest().screenshots) {
-      if (++num_of_screenshots > kMaximumNumOfScreenshots) {
-        break;
-      }
+    base::optional_ref<const blink::Manifest> manifest =
+        page_data_->GetManifest();
+    if (manifest) {
+      for (const auto& url : manifest->screenshots()) {
+        if (++num_of_screenshots > kMaximumNumOfScreenshots) {
+          break;
+        }
 
-      auto iter = downloaded_screenshots_.find(url->image.src);
-      if (iter == downloaded_screenshots_.end()) {
-        continue;
-      }
+        auto iter = downloaded_screenshots_.find(url.image.src);
+        if (iter == downloaded_screenshots_.end()) {
+          continue;
+        }
 
-      auto screenshot = iter->second;
-      if (screenshot.dimensions().width() > kMaximumScreenshotSizeInPx ||
-          screenshot.dimensions().height() > kMaximumScreenshotSizeInPx) {
-        continue;
-      }
+        auto screenshot = iter->second;
+        if (screenshot.dimensions().width() > kMaximumScreenshotSizeInPx ||
+            screenshot.dimensions().height() > kMaximumScreenshotSizeInPx) {
+          continue;
+        }
 
-      // Screenshots must have the same aspect ratio. Cross-multiplying
-      // dimensions checks portrait vs landscape mode (1:2 vs 2:1 for instance).
-      if (screenshots.size() &&
-          screenshot.dimensions().width() *
-                  screenshots[0].image.dimensions().height() !=
-              screenshot.dimensions().height() *
-                  screenshots[0].image.dimensions().width()) {
-        continue;
-      }
+        // Screenshots must have the same aspect ratio. Cross-multiplying
+        // dimensions checks portrait vs landscape mode (1:2 vs 2:1 for
+        // instance).
+        if (screenshots.size() &&
+            screenshot.dimensions().width() *
+                    screenshots[0].image.dimensions().height() !=
+                screenshot.dimensions().height() *
+                    screenshots[0].image.dimensions().width()) {
+          continue;
+        }
 
-      std::pair<int, int> dimensions =
-          std::minmax(screenshot.width(), screenshot.height());
-      if (dimensions.second > dimensions.first * kMaximumScreenshotRatio) {
-        continue;
-      }
+        std::pair<int, int> dimensions =
+            std::minmax(screenshot.width(), screenshot.height());
+        if (dimensions.second > dimensions.first * kMaximumScreenshotRatio) {
+          continue;
+        }
 
-      screenshots.emplace_back(std::move(screenshot), url->label);
+        screenshots.emplace_back(std::move(screenshot), url.label);
+      }
     }
 
     page_data_->OnScreenshotsDownloaded(std::move(screenshots));

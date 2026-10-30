@@ -186,7 +186,7 @@ const GURL& InstallableManager::manifest_url() const {
   return page_data_->manifest_url();
 }
 
-const blink::mojom::Manifest& InstallableManager::manifest() const {
+base::optional_ref<const blink::Manifest> InstallableManager::manifest() const {
   return page_data_->GetManifest();
 }
 

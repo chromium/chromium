@@ -45,6 +45,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/installation/installation.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -357,20 +358,23 @@ void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
   }
 
   // An empty manifest indicates some kind of unrecoverable error occurred.
-  if (blink::IsEmptyManifest(*data.manifest)) {
+  if (!data.manifest) {
     CHECK(!data.errors.empty());
     Stop(data.GetFirstError());
     return;
   }
 
+  blink::mojom::ManifestPtr mojo_manifest =
+      blink::ManifestToMojom(*data.manifest);
+
   std::optional<webapps::ManifestId> manifest_id =
-      webapps::ManifestId::Create(data.manifest->id);
+      webapps::ManifestId::Create(mojo_manifest->id);
   CHECK(manifest_id.has_value());
 
-  web_app_data_.emplace(*manifest_id, data.manifest->Clone(),
+  web_app_data_.emplace(*manifest_id, std::move(mojo_manifest),
                         data.web_page_metadata->Clone(), *(data.manifest_url));
   WebappsClient::Get()->OnManifestSeen(web_contents()->GetBrowserContext(),
-                                       *data.manifest);
+                                       web_app_data_->manifest());
 
   PerformInstallableChecks();
 }
@@ -457,7 +461,7 @@ void AppBannerManager::OnDidPerformInstallableWebAppCheck(
   }
 
   std::optional<webapps::ManifestId> manifest_id =
-      webapps::ManifestId::Create(data.manifest->id);
+      webapps::ManifestId::Create(web_app_data_->manifest().id);
   if (!manifest_id.has_value()) {
     return;
   }

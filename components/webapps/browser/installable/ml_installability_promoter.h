@@ -6,6 +6,7 @@
 #define COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_ML_INSTALLABILITY_PROMOTER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -18,9 +19,8 @@
 #include "components/webapps/browser/installable/ml_install_result_reporter.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "mojo/public/cpp/bindings/struct_ptr.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "url/gurl.h"
 
@@ -139,7 +139,7 @@ class MLInstallabilityPromoter : public content::WebContentsObserver,
   void StartPipeline(const GURL& validated_url);
   void OnDidCollectSiteQualityMetrics(
       const SiteQualityMetrics& site_quality_metrics);
-  void OnDidGetManifestForCurrentURL(blink::mojom::ManifestPtr manifest);
+  void OnDidGetManifestForCurrentURL(std::optional<blink::Manifest> manifest);
 
   // This is used to delay the calling of MaybeCompleteMetricsCollection() for a
   // specific amount of seconds for changes in the web contents to modify data
@@ -203,7 +203,7 @@ class MLInstallabilityPromoter : public content::WebContentsObserver,
   // Variables & tasks used during metrics collection.
   std::unique_ptr<SiteQualityMetricsTask> site_quality_metrics_task_;
   std::unique_ptr<SiteManifestMetricsTask> site_manifest_metrics_task_;
-  blink::mojom::ManifestPtr manifest_;
+  std::optional<blink::Manifest> manifest_;
   SiteQualityMetrics site_quality_metrics_;
   SiteInstallMetrics site_install_metrics_;
   bool is_timeout_complete_ = false;

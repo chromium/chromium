@@ -19,7 +19,6 @@ namespace webapps {
 FakeInstallableManager::FakeInstallableManager(
     content::WebContents* web_contents)
     : InstallableManager(web_contents),
-      manifest_(blink::mojom::Manifest::New()),
       web_page_metadata_(mojom::WebPageMetadata::New()) {}
 
 FakeInstallableManager::~FakeInstallableManager() = default;
@@ -51,12 +50,11 @@ FakeInstallableManager::CreateForWebContentsWithManifest(
     content::WebContents* web_contents,
     InstallableStatusCode installable_code,
     const GURL& manifest_url,
-    blink::mojom::ManifestPtr manifest) {
-  DCHECK(manifest);
+    std::optional<blink::Manifest> manifest) {
   FakeInstallableManager* installable_manager =
       FakeInstallableManager::CreateForWebContents(web_contents);
 
-  const bool valid_manifest = !blink::IsEmptyManifest(manifest);
+  const bool valid_manifest = manifest.has_value();
   installable_manager->manifest_url_ = manifest_url;
   installable_manager->manifest_ = std::move(manifest);
 
@@ -71,12 +69,31 @@ FakeInstallableManager::CreateForWebContentsWithManifest(
 
   auto installable_data = std::make_unique<InstallableData>(
       std::move(errors), installable_manager->manifest_url_,
-      *installable_manager->manifest_, *installable_manager->web_page_metadata_,
+      installable_manager->manifest_, *installable_manager->web_page_metadata_,
       GURL(), icon.get(), false, std::vector<Screenshot>(), valid_manifest);
 
   installable_manager->data_ = std::move(installable_data);
 
   return installable_manager;
+}
+
+// static
+FakeInstallableManager*
+FakeInstallableManager::CreateForWebContentsWithManifest(
+    content::WebContents* web_contents,
+    InstallableStatusCode installable_code,
+    const GURL& manifest_url,
+    blink::mojom::ManifestPtr manifest) {
+  std::optional<blink::Manifest> converted_manifest;
+  if (manifest && !blink::IsEmptyManifest(manifest)) {
+    auto result = blink::ManifestFromMojom(*manifest);
+    if (result.has_value()) {
+      converted_manifest = std::move(result.value());
+    }
+  }
+  return CreateForWebContentsWithManifest(web_contents, installable_code,
+                                          manifest_url,
+                                          std::move(converted_manifest));
 }
 
 }  // namespace webapps

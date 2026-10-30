@@ -5,6 +5,8 @@
 #include "components/webapps/browser/installable/metrics/site_manifest_metrics_task.h"
 
 #include <memory>
+#include <optional>
+#include <utility>
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -13,9 +15,6 @@
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "content/public/browser/web_contents.h"
-#include "mojo/public/cpp/bindings/struct_ptr.h"
-#include "third_party/blink/public/common/manifest/manifest_util.h"
-#include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 
 namespace webapps {
 
@@ -52,13 +51,14 @@ void SiteManifestMetricsTask::Start() {
 }
 
 void SiteManifestMetricsTask::OnDidFetchManifest(const InstallableData& data) {
-  if (!data.manifest_url->is_empty() &&
-      !blink::IsEmptyManifest(*data.manifest)) {
-    manifest_ = data.manifest->Clone();
+  if (!data.manifest_url->is_empty() && data.manifest) {
+    manifest_ = *data.manifest;
   } else {
-    // Create an empty manifest and pass it along. Existence of this would mean
-    // that either the manifest does not exist or it is empty.
-    manifest_ = blink::mojom::Manifest::New();
+    // When no developer-specified manifest exists on the page (or fetching/
+    // parsing failed), `data.manifest` is the default manifest with an empty
+    // `manifest_url`. Use `std::nullopt` to represent the absence of a
+    // developer-specified manifest.
+    manifest_ = std::nullopt;
   }
 
   CHECK(collect_data_and_self_destruct_callback_);

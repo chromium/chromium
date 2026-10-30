@@ -19,18 +19,19 @@ Screenshot& Screenshot::operator=(const Screenshot& screenshot) = default;
 
 Screenshot::~Screenshot() = default;
 
-InstallableData::InstallableData(std::vector<InstallableStatusCode> errors,
-                                 const GURL& manifest_url,
-                                 const blink::mojom::Manifest& manifest,
-                                 const mojom::WebPageMetadata& metadata,
-                                 const GURL& primary_icon_url,
-                                 const SkBitmap* primary_icon,
-                                 bool has_maskable_primary_icon,
-                                 const std::vector<Screenshot>& screenshots,
-                                 bool installable_check_passed)
+InstallableData::InstallableData(
+    std::vector<InstallableStatusCode> errors,
+    const GURL& manifest_url,
+    base::optional_ref<const blink::Manifest> manifest,
+    const mojom::WebPageMetadata& metadata,
+    const GURL& primary_icon_url,
+    const SkBitmap* primary_icon,
+    bool has_maskable_primary_icon,
+    const std::vector<Screenshot>& screenshots,
+    bool installable_check_passed)
     : errors(std::move(errors)),
       manifest_url(manifest_url),
-      manifest(manifest),
+      manifest(manifest.as_ptr()),
       web_page_metadata(metadata),
       primary_icon_url(primary_icon_url),
       primary_icon(primary_icon),

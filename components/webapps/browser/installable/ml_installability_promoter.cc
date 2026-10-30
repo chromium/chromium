@@ -41,7 +41,6 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
@@ -193,7 +192,7 @@ void MLInstallabilityPromoter::OnDidCollectSiteQualityMetrics(
 }
 
 void MLInstallabilityPromoter::OnDidGetManifestForCurrentURL(
-    blink::mojom::ManifestPtr manifest) {
+    std::optional<blink::Manifest> manifest) {
   manifest_ = std::move(manifest);
   site_manifest_metrics_task_.reset();
   MaybeCompleteMetricsCollection();
@@ -243,15 +242,8 @@ GURL MLInstallabilityPromoter::GetProjectedManifestIdAfterMetricsCollection() {
     case MLPipelineState::kComplete:
       break;
   }
-  GURL manifest_id;
-  if (blink::IsEmptyManifest(manifest_)) {
-    manifest_id = site_url_.GetWithoutRef();
-  } else {
-    manifest_id = manifest_->id;
-    if (!manifest_id.is_valid()) {
-      manifest_id = site_url_.GetWithoutRef();
-    }
-  }
+  GURL manifest_id =
+      manifest_.has_value() ? manifest_->id() : site_url_.GetWithoutRef();
   CHECK(manifest_id.is_valid()) << " invalid manifest_id: " << manifest_id;
   return manifest_id;
 }
@@ -280,7 +272,7 @@ void MLInstallabilityPromoter::EmitUKMs() {
 
   // Record Site.Manifest Event data.
   ukm::builders::Site_Manifest manifest_builder(source_id);
-  if (blink::IsEmptyManifest(manifest_)) {
+  if (!manifest_.has_value()) {
     // See NullableBoolean in enums.xml for more information.
     manifest_builder
         .SetDisplayMode(
@@ -294,16 +286,16 @@ void MLInstallabilityPromoter::EmitUKMs() {
             -1)  // See ManifestUrlValidity in enums.xml for more information.
         .SetHasThemeColor(/*NullableBoolean::Null=*/2);
   } else {
-    manifest_builder.SetDisplayMode(static_cast<int>(manifest_->display))
-        .SetHasBackgroundColor(manifest_->background_color.has_value())
-        .SetHasName(manifest_->name.has_value())
-        .SetHasScreenshots(!manifest_->screenshots.empty())
-        .SetHasThemeColor(manifest_->theme_color.has_value());
+    manifest_builder.SetDisplayMode(static_cast<int>(manifest_->display()))
+        .SetHasBackgroundColor(manifest_->background_color().has_value())
+        .SetHasName(manifest_->name().has_value())
+        .SetHasScreenshots(!manifest_->screenshots().empty())
+        .SetHasThemeColor(manifest_->theme_color().has_value());
 
     // Set icon data in the UKM.
     bool has_manifest_icons_any = false;
     bool has_manifest_icons_maskable = false;
-    for (const auto& icon : manifest_->icons) {
+    for (const auto& icon : manifest_->icons()) {
       for (const auto manifest_purpose : icon.purpose) {
         if (manifest_purpose ==
             blink::mojom::ManifestImageResource_Purpose::ANY) {
@@ -322,16 +314,10 @@ void MLInstallabilityPromoter::EmitUKMs() {
         .SetHasIconsMaskable(has_manifest_icons_maskable);
 
     // Set Manifest start URL data in UKM.
-    if (!manifest_->has_valid_specified_start_url) {
-      manifest_builder.SetHasStartUrl(
-          static_cast<int>(ManifestUrlInvalid::kEmpty));
-    } else if (manifest_->start_url.is_valid()) {
-      manifest_builder.SetHasStartUrl(
-          static_cast<int>(ManifestUrlInvalid::kValid));
-    } else {
-      manifest_builder.SetHasStartUrl(
-          static_cast<int>(ManifestUrlInvalid::kInvalid));
-    }
+    manifest_builder.SetHasStartUrl(
+        static_cast<int>(manifest_->has_valid_specified_start_url()
+                             ? ManifestUrlInvalid::kValid
+                             : ManifestUrlInvalid::kEmpty));
   }
   manifest_builder.Record(ukm_recorder->Get());
   RequestMlClassification();
@@ -361,7 +347,7 @@ void MLInstallabilityPromoter::RequestMlClassification() {
     state_ = MLPipelineState::kComplete;
     return;
   }
-  if ((!manifest_ || !manifest_->has_valid_specified_start_url) &&
+  if ((!manifest_ || !manifest_->has_valid_specified_start_url()) &&
       WebappsClient::Get()->IsUrlControlledBySeenManifest(
           web_contents()->GetBrowserContext(), site_url_)) {
     state_ = MLPipelineState::kComplete;
@@ -406,7 +392,7 @@ void MLInstallabilityPromoter::OnClassificationResult(
   }
   GURL manifest_id = GetProjectedManifestIdAfterMetricsCollection();
   bool has_icons = site_quality_metrics_.non_default_favicons_count > 0 ||
-                   !manifest_->icons.empty();
+                   (manifest_.has_value() && !manifest_->icons().empty());
   bool blocked_by_history_guardrails =
       client->IsMlPromotionBlockedByHistoryGuardrail(
           web_contents()->GetBrowserContext(), manifest_id);
@@ -566,6 +552,7 @@ void MLInstallabilityPromoter::ResetRunningStagesAndTasksMaybeReportResult() {
   app_banner_manager_.reset();
   site_manifest_metrics_task_.reset();
   site_quality_metrics_task_.reset();
+  manifest_.reset();
   is_timeout_complete_ = false;
   // Note: Destroying this will report the result to the classification system,
   // if it wasn't given to an installation tracker.

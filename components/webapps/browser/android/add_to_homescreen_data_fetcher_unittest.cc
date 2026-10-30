@@ -44,6 +44,7 @@
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
@@ -249,11 +250,8 @@ class TestInstallableManager : public InstallableManager {
 
   // Builds and sets the default manifest for the given document url.
   void SetManifestAsDefault(const GURL& document_url) {
-    auto manifest = blink::mojom::Manifest::New();
-    manifest->start_url = document_url;
-    manifest->scope = document_url.GetWithoutFilename();
-    manifest->id = document_url.GetWithoutRef();
-    page_data_->OnManifestFetched(std::move(manifest), /*manifest_url=*/GURL());
+    page_data_->OnManifestFetched(blink::Manifest::CreateDefault(document_url),
+                                  /*manifest_url=*/GURL());
   }
 
   void SetManifestWithError(blink::mojom::ManifestPtr manifest,
@@ -262,7 +260,13 @@ class TestInstallableManager : public InstallableManager {
     if (!manifest->icons.empty()) {
       SetPrimaryIcon(manifest->icons[0].src);
     }
-    page_data_->OnManifestFetched(std::move(manifest), manifest_url, error);
+    auto result = blink::ManifestFromMojom(*manifest);
+    std::optional<blink::Manifest> parsed_manifest;
+    if (result.has_value()) {
+      parsed_manifest = std::move(result.value());
+    }
+    page_data_->OnManifestFetched(std::move(parsed_manifest), manifest_url,
+                                  error);
   }
 
   void SetManifest(blink::mojom::ManifestPtr manifest) {
@@ -270,7 +274,12 @@ class TestInstallableManager : public InstallableManager {
       SetPrimaryIcon(manifest->icons[0].src);
     }
 
-    page_data_->OnManifestFetched(std::move(manifest),
+    auto result = blink::ManifestFromMojom(*manifest);
+    std::optional<blink::Manifest> parsed_manifest;
+    if (result.has_value()) {
+      parsed_manifest = std::move(result.value());
+    }
+    page_data_->OnManifestFetched(std::move(parsed_manifest),
                                   GURL(kDefaultManifestUrl));
   }
 
@@ -278,7 +287,12 @@ class TestInstallableManager : public InstallableManager {
   // first icon, so the icon round can be made to fail (InitPageData defaults
   // it to NO_ACCEPTABLE_ICON) while the manifest itself stays promotable.
   void SetManifestWithoutIcon(blink::mojom::ManifestPtr manifest) {
-    page_data_->OnManifestFetched(std::move(manifest),
+    auto result = blink::ManifestFromMojom(*manifest);
+    std::optional<blink::Manifest> parsed_manifest;
+    if (result.has_value()) {
+      parsed_manifest = std::move(result.value());
+    }
+    page_data_->OnManifestFetched(std::move(parsed_manifest),
                                   GURL(kDefaultManifestUrl));
   }
 
@@ -326,7 +340,7 @@ class TestInstallableManager : public InstallableManager {
     // Initialize all default values and set "fetched" to be true so the
     // installable fetcher won't try to fetch the real data.
     if (!page_data_->manifest_fetched()) {
-      page_data_->OnManifestFetched(blink::mojom::Manifest::New(), GURL(),
+      page_data_->OnManifestFetched(std::nullopt, GURL(),
                                     InstallableStatusCode::NO_MANIFEST);
     }
     if (!page_data_->web_page_metadata_fetched()) {
