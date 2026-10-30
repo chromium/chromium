@@ -155,6 +155,18 @@ public abstract class TabListDataProvider {
     }
 
     /**
+     * Resolves the index in {@link #mItems} of the item representing {@code tabId}, or {@link
+     * TabList#INVALID_TAB_INDEX} if absent. Subclasses can override to map grouped tabs to their
+     * containing {@link TabGroupItem}.
+     *
+     * @param model The active {@link TabModel}.
+     * @param tabId The ID of the tab to resolve.
+     */
+    protected int indexOfItemForTab(TabModel model, @TabId int tabId) {
+        return indexOfTabId(tabId);
+    }
+
+    /**
      * Creates a {@link TabItem} from the given {@link Tab}.
      *
      * @param selectedTab The currently selected {@link Tab} in the model, or null if none.
@@ -190,37 +202,6 @@ public abstract class TabListDataProvider {
     }
 
     /**
-     * Removes the {@link TabItem} for {@code tabId} from {@link #mItems} and notifies observers via
-     * {@link TabListDataObserver#onItemsRemoved}.
-     *
-     * @param tabId The ID of the tab to remove.
-     */
-    protected void removeTabItem(@TabId int tabId) {
-        int index = indexOfTabId(tabId);
-        if (index == TabList.INVALID_TAB_INDEX) return;
-
-        removeItemsAt(index, /* count= */ 1);
-    }
-
-    /**
-     * Moves the {@link TabItem} for {@code tab} to its updated {@link TabModel} position and
-     * notifies observers via {@link TabListDataObserver#onItemsMoved}. No-ops if the tab should not
-     * have a visible {@link TabItem} or is not present in {@link #mItems}.
-     *
-     * @param tab The {@link Tab} to move.
-     */
-    protected void moveTabItem(Tab tab) {
-        // Ignore tabs moving out of scope; dedicated lifecycle events handle removal.
-        if (!shouldShowTab(tab)) return;
-
-        @TabId int tabId = tab.getId();
-        int fromIndex = indexOfTabId(tabId);
-        if (fromIndex == TabList.INVALID_TAB_INDEX) return;
-
-        moveItemsAt(fromIndex, /* count= */ 1);
-    }
-
-    /**
      * Synchronizes {@code tab}'s {@link TabItem} in {@link #mItems} against {@link
      * #shouldShowTab(Tab)}. Removes the item if hidden, inserts it if newly visible, or repositions
      * and returns the existing {@link TabItem} if already present.
@@ -242,8 +223,32 @@ public abstract class TabListDataProvider {
         }
 
         TabItem existingItem = (TabItem) mItems.get(fromIndex);
-        moveTabItem(tab);
+        moveItemsAt(fromIndex, /* count= */ 1);
         return existingItem;
+    }
+
+    /**
+     * Removes the {@link TabItem} for {@code tabId} from {@link #mItems} and notifies observers via
+     * {@link TabListDataObserver#onItemsRemoved}.
+     *
+     * @param tabId The ID of the tab to remove.
+     */
+    protected void removeTabItem(@TabId int tabId) {
+        removeItemsAt(indexOfTabId(tabId), /* count= */ 1);
+    }
+
+    /**
+     * Moves the {@link TabItem} for {@code tab} to its updated {@link TabModel} position and
+     * notifies observers via {@link TabListDataObserver#onItemsMoved}. No-ops if the tab should not
+     * have a visible {@link TabItem} or is not present in {@link #mItems}.
+     *
+     * @param tab The {@link Tab} to move.
+     */
+    protected void moveTabItem(Tab tab) {
+        // Ignore tabs moving out of scope; dedicated lifecycle events handle removal.
+        if (!shouldShowTab(tab)) return;
+
+        moveItemsAt(indexOfTabId(tab.getId()), /* count= */ 1);
     }
 
     /**
@@ -256,18 +261,6 @@ public abstract class TabListDataProvider {
     protected void updateTabItem(@Nullable TabItem item, @PayloadType int payload) {
         if (item == null) return;
         notifyObservers(obs -> obs.onItemUpdated(item, payload));
-    }
-
-    /**
-     * Resolves the index in {@link #mItems} of the item representing {@code tabId}, or {@link
-     * TabList#INVALID_TAB_INDEX} if absent. Subclasses can override to map grouped tabs to their
-     * containing {@link TabGroupItem}.
-     *
-     * @param model The active {@link TabModel}.
-     * @param tabId The ID of the tab to resolve.
-     */
-    protected int indexOfItemForTab(TabModel model, @TabId int tabId) {
-        return indexOfTabId(tabId);
     }
 
     /**
@@ -409,21 +402,6 @@ public abstract class TabListDataProvider {
     }
 
     /**
-     * Replaces the {@link TabListItem} at {@code index} in {@link #mItems} with {@code updatedItem}
-     * and notifies observers via {@link TabListDataObserver#onItemUpdated}.
-     *
-     * @param index The index in {@link #mItems} to update.
-     * @param updatedItem The updated {@link TabListItem} to store at {@code index}.
-     * @param payload The {@link PayloadType} indicating which property changed.
-     */
-    protected void updateItemAt(int index, TabListItem updatedItem, @PayloadType int payload) {
-        if (!isValidIndex(index)) return;
-
-        mItems.set(index, updatedItem);
-        notifyObservers(obs -> obs.onItemUpdated(updatedItem, payload));
-    }
-
-    /**
      * Removes {@code count} {@link TabListItem} entries starting at {@code startIndex} and notifies
      * observers via {@link TabListDataObserver#onItemsRemoved}.
      *
@@ -467,20 +445,25 @@ public abstract class TabListDataProvider {
         mItems.addAll(insertIndex, movedItems);
 
         // Skip observer notification if the items were restored at startIndex or did not move.
-        if (toIndex == TabList.INVALID_TAB_INDEX || startIndex == toIndex) return;
+        if (insertIndex == startIndex) return;
 
         TabListItem previousItem = getPreviousItem(insertIndex);
         notifyObservers(obs -> obs.onItemsMoved(movedItems, previousItem));
     }
 
-    /** Returns whether {@code index} is a valid index in {@link #mItems}. */
-    private boolean isValidIndex(int index) {
-        return index >= 0 && index < mItems.size();
-    }
+    /**
+     * Replaces the {@link TabListItem} at {@code index} in {@link #mItems} with {@code updatedItem}
+     * and notifies observers via {@link TabListDataObserver#onItemUpdated}.
+     *
+     * @param index The index in {@link #mItems} to update.
+     * @param updatedItem The updated {@link TabListItem} to store at {@code index}.
+     * @param payload The {@link PayloadType} indicating which property changed.
+     */
+    protected void updateItemAt(int index, TabListItem updatedItem, @PayloadType int payload) {
+        if (!isValidIndex(index)) return;
 
-    /** Returns whether {@code index} is a valid insertion position in {@link #mItems}. */
-    private boolean isValidInsertionIndex(int index) {
-        return isValidIndex(index) || index == mItems.size();
+        mItems.set(index, updatedItem);
+        notifyObservers(obs -> obs.onItemUpdated(updatedItem, payload));
     }
 
     /**
@@ -494,13 +477,6 @@ public abstract class TabListDataProvider {
             if (matchesTabGroupId(mItems.get(i), tabGroupId)) return i;
         }
         return TabList.INVALID_TAB_INDEX;
-    }
-
-    private void updateSelection(int index, boolean isSelected) {
-        TabListItem currentItem = mItems.get(index);
-        if (currentItem.isSelected() == isSelected) return;
-
-        updateItemAt(index, currentItem.withSelected(isSelected), PayloadType.SELECTION);
     }
 
     private int indexOfTabId(@TabId int tabId) {
@@ -547,6 +523,16 @@ public abstract class TabListDataProvider {
         return index > 0 && index <= mItems.size() ? mItems.get(index - 1) : null;
     }
 
+    /** Returns whether {@code index} is a valid index in {@link #mItems}. */
+    private boolean isValidIndex(int index) {
+        return index >= 0 && index < mItems.size();
+    }
+
+    /** Returns whether {@code index} is a valid insertion position in {@link #mItems}. */
+    private boolean isValidInsertionIndex(int index) {
+        return isValidIndex(index) || index == mItems.size();
+    }
+
     private static boolean matchesTabId(TabListItem item, @TabId int tabId) {
         return item instanceof TabItem tabItem && tabItem.getTabId() == tabId;
     }
@@ -561,6 +547,13 @@ public abstract class TabListDataProvider {
         return tabGroupId != null
                 && item instanceof TabGroupItem groupItem
                 && groupItem.getTabGroupId().equals(tabGroupId);
+    }
+
+    private void updateSelection(int index, boolean isSelected) {
+        TabListItem currentItem = mItems.get(index);
+        if (currentItem.isSelected() == isSelected) return;
+
+        updateItemAt(index, currentItem.withSelected(isSelected), PayloadType.SELECTION);
     }
 
     /**

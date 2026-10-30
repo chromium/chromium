@@ -58,7 +58,7 @@ public class FlatTabListDataProvider extends TabListDataProvider {
 
                     @Override
                     public void didMoveTab(Tab tab, int newIndex, int curIndex) {
-                        // Grouped tab moves and intra-group reorders are handled by
+                        // Intra-group reorders and group merges/ungroups are handled by
                         // TabGroupObserver; moveTabItem reorders standalone tabs when matching the
                         // active filter.
                         if (curIndex == newIndex || tab.getTabGroupId() != null) return;
@@ -111,6 +111,9 @@ public class FlatTabListDataProvider extends TabListDataProvider {
                     }
                 };
 
+        // Note: onTabGroupMoved is intentionally not overridden. It may be needed in the future if
+        // a multi-group filter (e.g. TabListEditor)
+        // requires reordering on whole-group moves.
         TabGroupObserver tabGroupObserver =
                 new TabGroupObserver() {
                     @Override
