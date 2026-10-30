@@ -18,6 +18,7 @@ import androidx.core.view.OneShotPreDrawListener;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.uiautomator.UiDevice;
 
+import org.junit.AssumptionViolatedException;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.Log;
@@ -52,6 +53,9 @@ public class ScreenshotOnFailureStatement extends Statement {
     public void evaluate() throws Throwable {
         try {
             mBase.evaluate();
+        } catch (AssumptionViolatedException e) {
+            // A test with a failed assumption is reported as skipped, not as failed.
+            throw e;
         } catch (Throwable e) {
             takeScreenshot();
             throw e;
