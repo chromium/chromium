@@ -359,7 +359,9 @@ void ReadAnythingAppController::ProcessPendingUpdatesIfAllowed(
     return;
   }
 
-  model_.UnserializePendingUpdates(model_.active_tree_id());
+  if (!model_.UnserializePendingUpdates(model_.active_tree_id())) {
+    return;
+  }
   ProcessModelUpdates();
 }
 

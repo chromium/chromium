@@ -706,7 +706,9 @@ class ReadAnythingAppModel {
 
   bool ContainsActiveTree() const;
 
-  void UnserializePendingUpdates(const ui::AXTreeID& tree_id);
+  // Returns false if a failed unserialization destroyed the tree. Callers that
+  // continue using the tree must check the return value.
+  bool UnserializePendingUpdates(const ui::AXTreeID& tree_id);
 
   void ClearPendingUpdates();
 
@@ -914,7 +916,9 @@ class ReadAnythingAppModel {
 
   void AddPendingUpdates(const ui::AXTreeID& tree_id, Updates& updates);
 
-  void UnserializeUpdates(const Updates& updates, const ui::AXTreeID& tree_id);
+  // Returns false if a failed unserialization destroyed the tree. Callers that
+  // continue using the tree must check the return value.
+  bool UnserializeUpdates(const Updates& updates, const ui::AXTreeID& tree_id);
 
   void ProcessNonGeneratedEvents(const std::vector<ui::AXEvent>& events);
 
