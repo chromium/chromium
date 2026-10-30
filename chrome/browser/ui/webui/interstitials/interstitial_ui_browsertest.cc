@@ -21,7 +21,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
@@ -287,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, InterstitialBackButton) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL("chrome://interstitials/ssl")));
   content::TestNavigationObserver navigation_observer(web_contents);
-  chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::GoBack(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
   navigation_observer.Wait();
   std::u16string title;
   ui_test_utils::GetCurrentTabTitle(browser(), &title);
@@ -347,5 +347,5 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, UseCorrectWebContents) {
   EXPECT_EQ(current_tab, browser()->GetTabStripModel()->active_index());
 
   // Reloading the page shouldn't cause a crash.
-  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
 }

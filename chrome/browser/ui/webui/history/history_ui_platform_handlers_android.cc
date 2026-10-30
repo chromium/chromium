@@ -150,7 +150,7 @@ CreateForeignSessionPageHandler(
       std::move(receiver), std::move(page), profile, web_ui->GetWebContents(),
       base::BindRepeating([](content::WebContents* source_web_contents,
                              const ::sessions::SessionTab& tab,
-                             WindowOpenDisposition disposition) {
+                             ui::mojom::WindowOpenDisposition disposition) {
         SessionRestore::RestoreForeignSessionTab(source_web_contents, tab,
                                                  disposition);
       }),
@@ -165,7 +165,7 @@ CreateForeignSessionPageHandler(
               for (const auto& tab : window->tabs) {
                 SessionRestore::RestoreForeignSessionTab(
                     web_contents.get(), *tab,
-                    WindowOpenDisposition::kNewBackgroundTab);
+                    ui::mojom::WindowOpenDisposition::kNewBackgroundTab);
               }
             }
           },

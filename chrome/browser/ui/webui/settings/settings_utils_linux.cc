@@ -24,8 +24,8 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 using content::BrowserThread;
 using content::OpenURLParams;
@@ -71,7 +71,8 @@ void ShowLinuxProxyConfigUrl(base::WeakPtr<content::WebContents> web_contents,
     LOG(ERROR) << "Could not find " << name << " network settings in $PATH";
   }
   OpenURLParams params = OpenURLParams::CreateBrowserInitiated(
-      GURL(kLinuxProxyConfigUrl), WindowOpenDisposition::kNewForegroundTab,
+      GURL(kLinuxProxyConfigUrl),
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui::PAGE_TRANSITION_LINK);
 
   if (web_contents) {

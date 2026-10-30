@@ -44,9 +44,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "ui/base/l10n/time_format.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -303,15 +303,16 @@ void ForeignSessionHandler::OpenForeignSessionTab(
     return;
   }
 
-  WindowOpenDisposition disposition = ui::DispositionFromClick(
+  ui::mojom::WindowOpenDisposition disposition = ui::DispositionFromClick(
       modifiers->middle_button, modifiers->alt_key, modifiers->ctrl_key,
       modifiers->meta_key, modifiers->shift_key);
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (side_panel_ui_ && disposition == WindowOpenDisposition::kCurrentTab) {
+  if (side_panel_ui_ &&
+      disposition == ui::mojom::WindowOpenDisposition::kCurrentTab) {
     // In the side panel, never replace the current tab but open a new tab
     // instead.
-    disposition = WindowOpenDisposition::kNewForegroundTab;
+    disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   }
 
   if (side_panel_ui_ && side_panel_ui_->metrics_recorder()) {

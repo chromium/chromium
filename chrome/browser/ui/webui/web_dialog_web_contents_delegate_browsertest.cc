@@ -25,8 +25,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/shell_dialogs/fake_select_file_dialog.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -121,7 +121,8 @@ IN_PROC_BROWSER_TEST_F(WebDialogWebContentsDelegateTest, OpenURLFromTabTest) {
   test_web_contents_delegate_->OpenURLFromTab(
       nullptr,
       OpenURLParams::CreateBrowserInitiated(
-          GURL(url::kAboutBlankURL), WindowOpenDisposition::kNewForegroundTab,
+          GURL(url::kAboutBlankURL),
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
   // This should create a new foreground tab in the existing browser.
@@ -135,8 +136,8 @@ IN_PROC_BROWSER_TEST_F(WebDialogWebContentsDelegateTest,
       WebContents::Create(WebContents::CreateParams(browser()->GetProfile()));
   test_web_contents_delegate_->AddNewContents(
       nullptr, std::move(contents), GURL(),
-      WindowOpenDisposition::kNewForegroundTab, blink::mojom::WindowFeatures(),
-      false, nullptr);
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      blink::mojom::WindowFeatures(), false, nullptr);
   // This should create a new foreground tab in the existing browser.
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());
@@ -152,11 +153,12 @@ IN_PROC_BROWSER_TEST_F(WebDialogWebContentsDelegateTest, DetachTest) {
   test_web_contents_delegate_->OpenURLFromTab(
       nullptr,
       OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::kNewForegroundTab,
+          url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
   test_web_contents_delegate_->AddNewContents(
-      nullptr, nullptr, url, WindowOpenDisposition::kNewForegroundTab,
+      nullptr, nullptr, url,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       blink::mojom::WindowFeatures(), false, nullptr);
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_EQ(1U, GlobalBrowserCollection::GetInstance()->GetSize());

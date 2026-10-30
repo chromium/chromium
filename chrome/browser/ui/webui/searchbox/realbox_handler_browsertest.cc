@@ -67,9 +67,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_focus_type.pb.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "url/gurl.h"
 
@@ -124,7 +124,10 @@ class RealboxSearchBrowserTestPage : public searchbox::mojom::Page {
               (searchbox::mojom::SelectionDirection,
                searchbox::mojom::SelectionStep),
               (override));
-  MOCK_METHOD(void, OpenCurrentSelection, (WindowOpenDisposition), (override));
+  MOCK_METHOD(void,
+              OpenCurrentSelection,
+              (ui::mojom::WindowOpenDisposition),
+              (override));
   MOCK_METHOD(void, SetAimButtonVisible, (bool visible), (override));
   MOCK_METHOD(
       void,
@@ -513,7 +516,7 @@ IN_PROC_BROWSER_TEST_F(RealboxHandlerAbaSearchJourneysTest,
   handler_->client()->OnAutocompleteAccept(
       template_url_service->GenerateSearchURLForDefaultSearchProvider(
           u"how do tides work"),
-      /*post_content=*/nullptr, WindowOpenDisposition::kCurrentTab,
+      /*post_content=*/nullptr, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui::PAGE_TRANSITION_GENERATED,
       omnibox::AutocompleteMatchType::kSearchWhatYouTyped,
       base::TimeTicks::Now(),

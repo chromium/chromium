@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/webui/cr_components/composebox/composebox_handler.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class OmniboxController;
 class Profile;
@@ -47,7 +48,7 @@ class OmniboxComposeboxHandler : public ComposeboxHandler {
   // ComposeboxHandler:
   void ProcessContextAndOpenUrl(
       GURL url,
-      const WindowOpenDisposition disposition) override;
+      const ui::mojom::WindowOpenDisposition disposition) override;
 
  private:
   void OnContentSharingPolicyChanged();

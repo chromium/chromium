@@ -21,7 +21,7 @@
 #include "realbox_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/gfx/geometry/size.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -87,7 +87,7 @@ class MockSearchboxPage : public searchbox::mojom::Page {
               StepSelection,
               (searchbox::mojom::SelectionDirection,
                searchbox::mojom::SelectionStep));
-  MOCK_METHOD(void, OpenCurrentSelection, (WindowOpenDisposition));
+  MOCK_METHOD(void, OpenCurrentSelection, (ui::mojom::WindowOpenDisposition));
   MOCK_METHOD(void, SetAimButtonVisible, (bool visible));
   MOCK_METHOD(void,
               SetAimButtonConfig,

@@ -37,6 +37,7 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 BookmarksMessageHandler::BookmarksMessageHandler() = default;
 
@@ -526,8 +527,8 @@ void BookmarksMessageHandler::BookmarkNodeAdded(
 void BookmarksMessageHandler::HandleOpenBookmarks(const base::ListValue& args) {
   CHECK_GE(args.size(), 3U);
   const base::ListValue& uuid_list = args[0].GetList();
-  WindowOpenDisposition disposition =
-      static_cast<WindowOpenDisposition>(args[1].GetInt());
+  ui::mojom::WindowOpenDisposition disposition =
+      static_cast<ui::mojom::WindowOpenDisposition>(args[1].GetInt());
   bookmarks::OpenAllBookmarksContext context =
       static_cast<bookmarks::OpenAllBookmarksContext>(args[2].GetInt());
 

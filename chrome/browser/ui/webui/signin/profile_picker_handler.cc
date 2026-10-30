@@ -74,10 +74,10 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/themes.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
@@ -255,13 +255,13 @@ void OpenLearnMoreURL(bool is_profile_list_empty,
     return;
   }
 
-  browser->OpenURL(
-      content::OpenURLParams::CreateBrowserInitiated(
-          GURL(is_profile_list_empty
-                   ? chrome::kSigninOnDesktopLearnMoreURL
-                   : chrome::kAddNewProfileOnDesktopLearnMoreURL),
-          WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK),
-      /*navigation_handle_callback=*/{});
+  browser->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                       GURL(is_profile_list_empty
+                                ? chrome::kSigninOnDesktopLearnMoreURL
+                                : chrome::kAddNewProfileOnDesktopLearnMoreURL),
+                       ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                       ui::PAGE_TRANSITION_LINK),
+                   /*navigation_handle_callback=*/{});
 }
 
 }  // namespace

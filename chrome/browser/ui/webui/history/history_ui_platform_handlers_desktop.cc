@@ -42,7 +42,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/webui/resources/cr_components/history/foreign_sessions.mojom.h"
 #include "ui/webui/webui_util.h"
 
@@ -201,7 +201,7 @@ CreateForeignSessionPageHandler(
       web_ui->GetWebContents(),
       base::BindRepeating([](content::WebContents* source_web_contents,
                              const ::sessions::SessionTab& tab,
-                             WindowOpenDisposition disposition) {
+                             ui::mojom::WindowOpenDisposition disposition) {
         SessionRestore::RestoreForeignSessionTab(source_web_contents, tab,
                                                  disposition);
       }),

@@ -13,9 +13,9 @@
 #include "components/url_formatter/url_formatter.h"
 #include "extensions/common/extension_urls.h"
 #include "mojo/public/cpp/bindings/message.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 ZeroStatePromoPageHandler::ZeroStatePromoPageHandler(
@@ -68,7 +68,7 @@ void ZeroStatePromoPageHandler::LaunchWebStoreLink(
 
   NavigateParams params(profile_, url_with_utm,
                         ::ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
   base::UmaHistogramEnumeration(
       "Extensions.ZeroStatePromo.IphActionChromeWebStoreLink", link);

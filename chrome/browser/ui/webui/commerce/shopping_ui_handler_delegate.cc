@@ -31,8 +31,8 @@
 #include "content/public/browser/web_ui.h"
 #include "shopping_ui_handler_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace commerce {
 
@@ -141,7 +141,7 @@ ukm::SourceId ShoppingUiHandlerDelegate::GetCurrentTabUkmSourceId() {
 
 void ShoppingUiHandlerDelegate::NavigateToUrl(BrowserWindowInterface* browser,
                                               const GURL& url) {
-  browser->OpenGURL(url, WindowOpenDisposition::kNewForegroundTab);
+  browser->OpenGURL(url, ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 }
 
 }  // namespace commerce

@@ -10,8 +10,8 @@
 #include "base/values.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 
 namespace webui {
@@ -39,10 +39,11 @@ void NavigationHandler::HandleNavigateToUrl(const base::ListValue& list) {
   CHECK(button == 0.0 || button == 1.0);
   bool middle_button = (button == 1.0);
 
-  WindowOpenDisposition disposition = ui::DispositionFromClick(
+  ui::mojom::WindowOpenDisposition disposition = ui::DispositionFromClick(
       middle_button, alt_key, ctrl_key, meta_key, shift_key,
-      (target_string == "_blank") ? WindowOpenDisposition::kNewForegroundTab
-                                  : WindowOpenDisposition::kCurrentTab);
+      (target_string == "_blank")
+          ? ui::mojom::WindowOpenDisposition::kNewForegroundTab
+          : ui::mojom::WindowOpenDisposition::kCurrentTab);
   web_ui()->GetWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(url_string), disposition, ui::PAGE_TRANSITION_LINK),

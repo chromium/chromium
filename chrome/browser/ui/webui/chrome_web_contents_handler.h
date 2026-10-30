@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROME_WEB_CONTENTS_HANDLER_H_
 
 #include "components/captive_portal/core/captive_portal_types.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/web_dialogs/web_dialog_web_contents_delegate.h"
 
 class ChromeWebContentsHandler
@@ -33,7 +34,7 @@ class ChromeWebContentsHandler
                       content::WebContents* source,
                       std::unique_ptr<content::WebContents> new_contents,
                       const GURL& target_url,
-                      WindowOpenDisposition disposition,
+                      ui::mojom::WindowOpenDisposition disposition,
                       const blink::mojom::WindowFeatures& window_features,
                       bool user_gesture) override;
   void RunFileChooser(content::RenderFrameHost* render_frame_host,

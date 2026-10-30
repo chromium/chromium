@@ -16,7 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension_urls.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -48,7 +48,8 @@ class ZeroStatePromoPageHandlerTest : public InProcessBrowserTest {
 
     // Start the test with 1 active tab.
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL("about:blank"), WindowOpenDisposition::kCurrentTab,
+        browser(), GURL("about:blank"),
+        ui::mojom::WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 

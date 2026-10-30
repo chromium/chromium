@@ -19,7 +19,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/webui/resources/cr_components/history/foreign_sessions.mojom.h"
 
 namespace sessions {
@@ -61,10 +61,10 @@ enum class SyncedTabsHistogram {
 
 class ForeignSessionHandler : public history::mojom::ForeignSessionPageHandler {
  public:
-  using RestoreForeignSessionTabCallback =
-      base::RepeatingCallback<void(content::WebContents* source_web_contents,
-                                   const ::sessions::SessionTab& tab,
-                                   WindowOpenDisposition disposition)>;
+  using RestoreForeignSessionTabCallback = base::RepeatingCallback<void(
+      content::WebContents* source_web_contents,
+      const ::sessions::SessionTab& tab,
+      ui::mojom::WindowOpenDisposition disposition)>;
 
   using RestoreForeignSessionWindowsCallback = base::RepeatingCallback<void(
       Profile* profile,

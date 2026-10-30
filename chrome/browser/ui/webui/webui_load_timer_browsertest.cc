@@ -15,7 +15,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace {
@@ -33,7 +33,7 @@ IN_PROC_BROWSER_TEST_F(WebuiLoadTimerTest, Timers) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kTestUrl)));
   WebuiLoadTimer timer(browser()->tab_strip_model()->GetActiveWebContents(),
                        kDocumentInitialLoadUmaId, kDocumentLoadCompletedUmaId);
-  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
   EXPECT_TRUE(content::WaitForLoadStop(
       browser()->tab_strip_model()->GetActiveWebContents()));
 

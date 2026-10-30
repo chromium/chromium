@@ -18,7 +18,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class MetricsReporter;
 class OmniboxController;
@@ -82,11 +82,11 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
 
   void StepSelection(OmniboxPopupSelection::Direction direction,
                      OmniboxPopupSelection::Step step);
-  void OpenCurrentSelection(WindowOpenDisposition disposition);
+  void OpenCurrentSelection(ui::mojom::WindowOpenDisposition disposition);
   void SetAimButtonVisible(bool visible) override;
 
   // SearchboxHandler:
-  WindowOpenDisposition ComputeWindowOpenDisposition(
+  ui::mojom::WindowOpenDisposition ComputeWindowOpenDisposition(
       uint8_t mouse_button,
       bool alt_key,
       bool ctrl_key,

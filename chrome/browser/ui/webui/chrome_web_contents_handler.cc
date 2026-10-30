@@ -19,8 +19,8 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/base_window.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 #include "base/check.h"
@@ -72,10 +72,11 @@ WebContents* ChromeWebContentsHandler::OpenURLFromTab(
   NavigateParams nav_params(browser, params.url, params.transition);
   nav_params.FillNavigateParamsFromOpenURLParams(params);
   if (source && source->IsCrashed() &&
-      params.disposition == WindowOpenDisposition::kCurrentTab &&
+      params.disposition == ui::mojom::WindowOpenDisposition::kCurrentTab &&
       ui::PageTransitionCoreTypeIs(params.transition,
                                    ui::PAGE_TRANSITION_LINK)) {
-    nav_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    nav_params.disposition =
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   } else {
     nav_params.disposition = params.disposition;
   }
@@ -105,7 +106,7 @@ void ChromeWebContentsHandler::AddNewContents(
     WebContents* source,
     std::unique_ptr<WebContents> new_contents,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture) {
   if (!context) {

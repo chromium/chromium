@@ -49,8 +49,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/display/display_switches.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(ContextualSearchboxHandlerBrowserTest,
   GURL url = embedded_test_server()->GetURL("/favicon/page_with_favicon.html");
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::kCurrentTab,
+      browser(), url, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
@@ -269,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(ContextualSearchboxHandlerBrowserTest,
   GURL url = embedded_test_server()->GetURL("/empty.html");
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   tabs::TabInterface* tab = browser()->GetTabStripModel()->GetActiveTab();
@@ -503,7 +503,8 @@ IN_PROC_BROWSER_TEST_F(
   // Omnibox popup WebContents when triggered from a webpage).
   const GURL webpage_url = embedded_test_server()->GetURL("/empty.html");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), webpage_url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), webpage_url,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_EQ(2, browser()->GetTabStripModel()->count());
 
@@ -559,7 +560,8 @@ IN_PROC_BROWSER_TEST_F(
 
   const GURL webpage_url = embedded_test_server()->GetURL("/empty.html");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), webpage_url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), webpage_url,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_EQ(2, browser()->GetTabStripModel()->count());
 
