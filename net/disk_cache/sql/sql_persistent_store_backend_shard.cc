@@ -363,7 +363,7 @@ void SqlPersistentStore::BackendShard::ResumePendingEviction(
       .WithArgs(std::move(pending_eviction_targets_),
                 std::move(excluded_res_ids), is_idle_time_eviction,
                 std::move(abort_flag), std::move(remaining_mandatory_size),
-                std::move(index_), base::TimeTicks::Now())
+                std::exchange(index_, std::nullopt), base::TimeTicks::Now())
       .Then(base::BindOnce(&BackendShard::OnEvictionFinished,
                            weak_factory_.GetWeakPtr(), std::move(callback)));
 }

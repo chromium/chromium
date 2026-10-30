@@ -5914,6 +5914,75 @@ TEST_P(SqlPersistentStoreTest,
             SqlPersistentStore::IndexState::kHashNotFound);
 }
 
+// Regression test for crbug.com/560658805: Verifies that
+// `ResumePendingEviction` resets `BackendShard::index_` to `std::nullopt`
+// instead of leaving an engaged `std::optional` holding a moved-from
+// `SqlPersistentStoreInMemoryIndex`.
+TEST_P(SqlPersistentStoreTest, InMemoryIndexDuringResumePendingEviction) {
+  const int64_t kMaxBytes = 100 * 1024;
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  const int kEntrySize = 1024;
+  const int kNumEntries = 100;
+  std::vector<SqlPersistentStore::ResId> res_ids;
+  PopulateCache(kNumEntries, kEntrySize, &res_ids);
+
+  // Start eviction and pause it halfway so `HasPendingEviction()` becomes true
+  // and the in-memory index is loaded and returned to the shard.
+  StartAndPauseEviction();
+  ASSERT_TRUE(store_->HasPendingEviction());
+
+  // Use the two newest entries, which will not be evicted.
+  const CacheEntryKey kHintKey("key_" + base::NumberToString(kNumEntries - 1));
+  const auto hint_res_id = res_ids[kNumEntries - 1];
+  const CacheEntryKey kDoomKey("key_" + base::NumberToString(kNumEntries - 2));
+  const auto doom_res_id = res_ids[kNumEntries - 2];
+
+  store_->SetInMemoryEntryDataHints(kHintKey.hash(), hint_res_id,
+                                    MemoryEntryDataHints(HINT_HIGH_PRIORITY));
+  EXPECT_EQ(store_->GetIndexStateForHash(kHintKey.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+  EXPECT_EQ(store_->GetInMemoryEntryDataHints(kHintKey.hash()),
+            MemoryEntryDataHints(HINT_HIGH_PRIORITY));
+  EXPECT_EQ(store_->GetIndexStateForHash(kDoomKey.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+
+  // Resume pending eviction asynchronously. This moves `index_` from
+  // `BackendShard` to the background `Backend`.
+  base::test::TestFuture<SqlPersistentStore::Error> eviction_future;
+  store_->StartEviction(
+      /*excluded_list=*/{}, /*is_idle_time_eviction=*/false,
+      base::MakeRefCounted<base::RefCountedData<std::atomic_bool>>(
+          std::in_place, false),
+      eviction_future.GetCallback());
+
+  // While `ResumePendingEviction` is running on the backend, `index_` on the IO
+  // thread must be `std::nullopt` (not a moved-from hash table).
+  EXPECT_EQ(store_->GetIndexStateForHash(kHintKey.hash()),
+            SqlPersistentStore::IndexState::kNotReady);
+  EXPECT_EQ(store_->GetInMemoryEntryDataHints(kHintKey.hash()), std::nullopt);
+
+  // Dooming an entry while `ResumePendingEviction` is running must record it in
+  // `pending_doomed_hash_and_res_ids_` and remove it once the index returns.
+  base::test::TestFuture<SqlPersistentStore::Error> doom_future;
+  store_->DoomEntry(kDoomKey, doom_res_id, /*accept_index_mismatch=*/false,
+                    doom_future.GetCallback());
+
+  EXPECT_EQ(eviction_future.Get(), SqlPersistentStore::Error::kOk);
+  EXPECT_EQ(doom_future.Get(), SqlPersistentStore::Error::kOk);
+  EXPECT_FALSE(store_->HasPendingEviction());
+
+  // After eviction completes, the index is back on the IO thread: `kHintKey`
+  // retains its hints, and `kDoomKey` has been removed from the index.
+  EXPECT_EQ(store_->GetIndexStateForHash(kHintKey.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+  EXPECT_EQ(store_->GetInMemoryEntryDataHints(kHintKey.hash()),
+            MemoryEntryDataHints(HINT_HIGH_PRIORITY));
+  EXPECT_EQ(store_->GetIndexStateForHash(kDoomKey.hash()),
+            SqlPersistentStore::IndexState::kHashNotFound);
+}
+
 TEST_P(SqlPersistentStoreTest, DoomEntryDbFailureEvictionRace) {
   const int64_t kMaxBytes = 10000;
   const int64_t kHighWatermark =
