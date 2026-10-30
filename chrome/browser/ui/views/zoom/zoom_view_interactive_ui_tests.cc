@@ -68,6 +68,11 @@ class ZoomViewInteractiveUiTest : public InteractiveBrowserTest {
     return Do([&]() { SetZoomLevel(content::PAGE_ZOOM_RESET); });
   }
 
+  page_actions::PageActionTestAccessor ZoomAccessor() {
+    return page_actions::PageActionTestAccessor(browser(),
+                                                kActionShowZoomBubble);
+  }
+
   auto WaitForZoomBubbleShow() { return WaitForZoomBubble(/*visible=*/true); }
 
   auto WaitForZoomBubbleHide() { return WaitForZoomBubble(/*visible=*/false); }
@@ -82,15 +87,11 @@ class ZoomViewInteractiveUiTest : public InteractiveBrowserTest {
                     const bool is_visible =
                         ZoomBubbleCoordinator::From(browser())->bubble() !=
                         nullptr;
-                    return is_visible == visible;
+                    return is_visible == visible &&
+                           ZoomAccessor().HasIconHighlight() == visible;
                   }),
-        WaitForState(kZoomBubbleVisible, true),
+        WaitForState(kZoomBubbleVisible, /*value=*/true),
         StopObservingState(kZoomBubbleVisible));
-  }
-
-  auto ZoomAccessor() {
-    return page_actions::PageActionTestAccessor(browser(),
-                                                kActionShowZoomBubble);
   }
 
   auto CheckZoomToolTip(std::u16string_view expected) {
@@ -128,18 +129,30 @@ IN_PROC_BROWSER_TEST_F(ZoomViewInteractiveUiTest, ZoomStateUpdates) {
 IN_PROC_BROWSER_TEST_F(ZoomViewInteractiveUiTest,
                        ShowAndHideZoomBubbleByClickWithMouse) {
   RunTestSequence(
-      Do([&]() {
-        // Disable click suppression so this can be tested without sleeps.
-        ZoomAccessor().SetSuppressionThreshold(base::TimeDelta());
+      WaitForZoomBubbleHide(), Do([&]() {
+        auto* zoom_controller = ZoomController::FromWebContents(
+            browser()->GetTabStripModel()->GetActiveWebContents());
+        zoom_controller->SetShowsNotificationBubble(/*can_show_bubble=*/false);
+        SetZoomLevel(content::PAGE_ZOOM_IN);
+        zoom_controller->SetShowsNotificationBubble(/*can_show_bubble=*/true);
       }),
-      WaitForZoomBubbleHide(), DoZoomIn(),
-      WaitForShow(kActionItemZoomElementId),
+      WaitForShow(kActionItemZoomElementId), Do([&]() {
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->GetWidget()
+            ->LayoutRootViewIfNecessary();
+      }),
       MoveMouseTo(kActionItemZoomElementId), ClickMouse(),
       WaitForZoomBubbleShow(), MoveMouseTo(kActionItemZoomElementId),
       ClickMouse(), WaitForZoomBubbleHide(),
       CheckResult(
           [&]() { return ZoomBubbleCoordinator::From(browser())->IsShowing(); },
           false),
+      Do([&]() {
+        // Disable the post-unhighlight suppression window after the dismiss
+        // click has completed so the next click can immediately re-open the
+        // bubble without sleeping.
+        ZoomAccessor().SetSuppressionThreshold(base::TimeDelta());
+      }),
       MoveMouseTo(kActionItemZoomElementId), ClickMouse(),
       WaitForZoomBubbleShow());
 }
