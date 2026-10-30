@@ -694,8 +694,13 @@ bool Database::is_open() const {
 
 void Database::Close() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   TRACE_EVENT0("sql", "Database::Close");
+
+  // The error callback is not allowed to call `Close()` (which is meant for a
+  // clean shutdown with no active statements or blobs). Error callbacks should
+  // call `Poison()` or `RazeAndPoison()` instead.
+  CHECK(!executing_error_callback_, base::NotFatalUntil::M161);
+
   // If the database was already closed by RazeAndPoison(), then no
   // need to close again.  Clear the |poisoned_| bit so that incorrect
   // API calls are caught.

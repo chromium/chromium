@@ -558,16 +558,16 @@ TEST_F(StreamingBlobHandleTest, BlobInvalidatedIfRowChanges) {
   EXPECT_THAT(read_data, HeapArrayIs({0xC0, 0xFF, 0xEE}));
 }
 
-TEST_F(StreamingBlobHandleTest, CloseDatabaseInBlobErrorCallback) {
+TEST_F(StreamingBlobHandleTest, PoisonDatabaseInBlobErrorCallback) {
   Database db(test::kTestTag);
   std::vector<int> errors;
   db.set_error_callback(
       base::BindLambdaForTesting([&](int error, Statement* statement) {
         errors.push_back(error);
 
-        // Many clients will close the database in the error callback. This call
-        // would present a problem if the blob handle were still open.
-        db.Close();
+        // Many clients will poison the database in the error callback. This
+        // call would present a problem if the blob handle were still open.
+        db.Poison();
       }));
 
   ASSERT_TRUE(db.Open(db_path_));

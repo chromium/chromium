@@ -30,6 +30,7 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/not_fatal_until.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/cstring_view.h"
@@ -44,6 +45,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/thread_annotations.h"
@@ -78,6 +80,7 @@ using ::base::test::ValueIs;
 using ::sql::test::DriveErrorTestVfs;
 using ::sql::test::ExecuteWithResult;
 using ::sql::test::GetUncheckpointedFrameCount;
+using ::testing::_;
 using ::testing::Bool;
 using ::testing::Combine;
 using ::testing::Contains;
@@ -597,10 +600,13 @@ TEST_P(SQLDatabaseTest, ErrorCallbackThatClosesDb) {
         base::BindLambdaForTesting([&](int sqlite_error, Statement* statement) {
           error_callback_called = true;
           error = sqlite_error;
-          db_->Close();
-          if (reopen_db) {
-            ASSERT_TRUE(db_->Open(db_path_));
-          }
+          EXPECT_CHECK_DEATH(db_->Close(), base::NotFatalUntil::M161,
+                             UNTIL_THEN({
+                               db_->Close();
+                               if (reopen_db) {
+                                 ASSERT_TRUE(db_->Open(db_path_));
+                               }
+                             }));
         }));
 
     {
@@ -613,8 +619,22 @@ TEST_P(SQLDatabaseTest, ErrorCallbackThatClosesDb) {
     }
     EXPECT_TRUE(error_callback_called);
     EXPECT_EQ(SQLITE_CONSTRAINT_PRIMARYKEY, error);
-    EXPECT_EQ(db_->is_open(), reopen_db);
   }
+}
+
+TEST_P(SQLDatabaseTest, ErrorCallbackThatClosesAndDeletesDb) {
+  base::MockCallback<Database::ErrorCallback> error_callback;
+  db_->set_error_callback(error_callback.Get());
+  EXPECT_CALL(error_callback, Run(SQLITE_ERROR, _)).WillOnce([&] {
+    EXPECT_CHECK_DEATH(db_->CloseAndDelete(), base::NotFatalUntil::M161,
+                       UNTIL_THEN({
+                         EXPECT_TRUE(db_->CloseAndDelete());
+                         EXPECT_FALSE(db_->is_open());
+                         EXPECT_FALSE(base::PathExists(db_path_));
+                       }));
+  });
+  ASSERT_TRUE(db_->Execute("CREATE TABLE rows(id)"));
+  EXPECT_FALSE(db_->Execute("SELECT invalid FROM rows"));
 }
 
 // Regression test for https://crbug.com/1522873

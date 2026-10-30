@@ -497,7 +497,9 @@ class COMPONENT_EXPORT(SQL) Database {
   //
   // The callback will be called on the sequence used for database operations.
   // The callback will never be called after the `Database` instance is
-  // destroyed. The callback must never destroy the `Database` instance.
+  // destroyed. The callback must never destroy the `Database` instance or call
+  // `Close()` / `CloseAndDelete()` (use `Poison()` / `RazeAndPoison()`
+  // instead).
   using ErrorCallback = base::RepeatingCallback<void(int, Statement*)>;
   void set_error_callback(ErrorCallback callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -572,14 +574,19 @@ class COMPONENT_EXPORT(SQL) Database {
   void DetachFromSequence();
 
   // Closes the database. This is automatically performed on destruction for
-  // you, but this allows you to close the database early. You must not call
-  // any other functions after closing it. It is permissable to call Close on
-  // an uninitialized or already-closed database.
+  // you, but this allows you to close the database early. You must not call any
+  // other functions after closing it. This means that `Close()` must never be
+  // called in error callbacks because these could be invoked at any time and
+  // more statements could execute after. In error callbacks, `Poison()` or
+  // `RazeAndPoison()` must be used instead. It is permissible to call `Close()`
+  // on an uninitialized or already-closed database.
   void Close();
 
   // Fast path for closing and deleting an open database. This avoids
   // checkpointing the WAL file (if any) since the data will be deleted right
   // away. When not in WAL mode, this is shorthand for `Close()` + `Delete()`.
+  // Just like `Close()`, `CloseAndDelete()` cannot be used in error callbacks,
+  // `RazeAndPoison()` should be used instead.
   bool CloseAndDelete();
 
   // Release all non-essential memory associated with this database connection.
