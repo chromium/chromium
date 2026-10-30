@@ -256,14 +256,7 @@ external/wpt/permissions-policy/reporting/report-to-multiple-endpoints.https.sub
 external/wpt/permissions-policy/reporting/report-to-single-endpoint.https.sub.html
 external/wpt/pointerevents/capturing_boundary_event_handler_at_ua_shadowdom.html*
 external/wpt/pointerevents/coalesced_events_attributes_under_load.https.optional.html*
-external/wpt/pointerevents/compat/pointerevent_mouse-pointer-on-scrollbar.html
-external/wpt/pointerevents/compat/pointerevent_touch_target_after_pointerdown_target_removed.tentative.html
-external/wpt/pointerevents/pointerevent_capture_mouse_and_release_and_capture_again.html
 external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch
-external/wpt/pointerevents/pointerevent_pointer_boundary_events_after_removing_last_over_element.html
-external/wpt/pointerevents/pointerevent_pointercapture_in_frame.html?pen
-external/wpt/pointerevents/pointerevent_sequence_at_implicit_release_on_drag.html
-external/wpt/pointerevents/pointerevent_touch-action-modified_touch.html
 external/wpt/preload/link-header-preload-non-html.html
 external/wpt/preload/preconnect-onerror-event.html
 external/wpt/screen-wake-lock/wakelock-enabled-by-permissions-policy-attribute.https.html
