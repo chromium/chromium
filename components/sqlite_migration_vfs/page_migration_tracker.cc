@@ -44,8 +44,12 @@ PageMigrationTracker::GetNextBlockToMigrateAndLockIt(
   size_t start_index = 0;
   if (previous_block.has_value()) {
     CHECK_GE(previous_block->start_page, 1u);
-    start_index = (previous_block->start_page - 1) / kPagesPerBlock;
-    CHECK_LT(start_index, blocks_.size());
+    size_t prev_index = (previous_block->start_page - 1) / kPagesPerBlock;
+    CHECK_LT(prev_index, blocks_.size());
+    // Start after `previous_block` so a block that failed migration does not
+    // get retried immediately and starve the blocks after it; it is picked up
+    // again when the scan wraps around.
+    start_index = (prev_index + 1) % blocks_.size();
   }
   for (size_t offset = 0; offset < blocks_.size(); ++offset) {
     if (IsMigrationComplete()) {

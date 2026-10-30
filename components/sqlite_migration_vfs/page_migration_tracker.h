@@ -69,9 +69,9 @@ class PageMigrationTracker {
 
   // (3) Finds the next unmigrated and unlocked block, acquires its lock, and
   // returns the Block range. If `previous_block` is provided, starts scanning
-  // from that block (wrapping around if needed) to avoid rescanning from the
-  // beginning. Skips blocks currently being migrated by other workers. Returns
-  // std::nullopt when all blocks are migrated or in-flight.
+  // from the block after it (wrapping around if needed) so a block that failed
+  // does not starve the rest. Skips blocks currently being migrated by other
+  // workers. Returns std::nullopt when all blocks are migrated or in-flight.
   std::optional<Block> GetNextBlockToMigrateAndLockIt(
       const std::optional<Block>& previous_block = std::nullopt);
 

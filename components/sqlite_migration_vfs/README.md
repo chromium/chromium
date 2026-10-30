@@ -27,7 +27,7 @@ The public interface provides only the exact methods needed by the two operation
 
 #### 2. Background Migration Path
 * **`GetNextBlockToMigrateAndLockIt(previous_block)`**:
-  - Scans for the next unmigrated and unlocked block (starting from `previous_block` if provided, wrapping around if needed), acquires its lock, and returns the `Block` (containing `start_page` and `end_page`).
+  - Scans for the next unmigrated and unlocked block (starting after `previous_block` if provided, wrapping around if needed), acquires its lock, and returns the `Block` (containing `start_page` and `end_page`).
   - Skips blocks currently being migrated by other workers.
   - Returns `std::nullopt` when all blocks have been migrated or are in-flight.
 * **`MarkMigrationAsCompletedAndUnlockIt(Block, result)`**:

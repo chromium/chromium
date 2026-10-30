@@ -134,25 +134,41 @@ TEST_F(PageMigrationTrackerTest, SequentialMigrationAndRetry) {
 
   EXPECT_FALSE(tracker.IsMigrated(65));
 
-  // Retry block 1 (passing b1 starts scan at block 1) and succeed.
-  auto b1_retry = tracker.GetNextBlockToMigrateAndLockIt(b1);
-  ASSERT_TRUE(b1_retry.has_value());
-  EXPECT_EQ(b1_retry->start_page, 65u);
-  tracker.MarkMigrationAsCompletedAndUnlockIt(*b1_retry,
-                                              BlockMigrationResult::kSuccess);
-  EXPECT_TRUE(tracker.IsMigrated(65));
-  EXPECT_TRUE(tracker.IsMigrated(128));
-
-  // Migrate block 2 to complete.
-  auto b2 = tracker.GetNextBlockToMigrateAndLockIt(b1_retry);
+  // Requesting the next block after b1 moves forward to block 2 first so the
+  // failed block does not starve the remaining unmigrated blocks.
+  auto b2 = tracker.GetNextBlockToMigrateAndLockIt(b1);
   ASSERT_TRUE(b2.has_value());
   EXPECT_EQ(b2->start_page, 129u);
   EXPECT_EQ(b2->end_page, 130u);
   tracker.MarkMigrationAsCompletedAndUnlockIt(*b2,
                                               BlockMigrationResult::kSuccess);
+  EXPECT_TRUE(tracker.IsMigrated(129));
+  EXPECT_FALSE(tracker.IsMigrationComplete());
+
+  // Requesting the next block after b2 wraps around to retry block 1, which
+  // fails again.
+  auto b1_retry = tracker.GetNextBlockToMigrateAndLockIt(b2);
+  ASSERT_TRUE(b1_retry.has_value());
+  EXPECT_EQ(b1_retry->start_page, 65u);
+  EXPECT_EQ(b1_retry->end_page, 128u);
+  tracker.MarkMigrationAsCompletedAndUnlockIt(*b1_retry,
+                                              BlockMigrationResult::kReadError);
+  EXPECT_FALSE(tracker.IsMigrated(65));
+
+  // Block 1 is now the sole unmigrated block. Requesting the next block after
+  // it scans the full circle and returns block 1 itself rather than skipping
+  // it.
+  auto b1_retry2 = tracker.GetNextBlockToMigrateAndLockIt(b1_retry);
+  ASSERT_TRUE(b1_retry2.has_value());
+  EXPECT_EQ(b1_retry2->start_page, 65u);
+  EXPECT_EQ(b1_retry2->end_page, 128u);
+  tracker.MarkMigrationAsCompletedAndUnlockIt(*b1_retry2,
+                                              BlockMigrationResult::kSuccess);
+  EXPECT_TRUE(tracker.IsMigrated(65));
+  EXPECT_TRUE(tracker.IsMigrated(128));
 
   EXPECT_TRUE(tracker.IsMigrationComplete());
-  EXPECT_EQ(tracker.GetNextBlockToMigrateAndLockIt(b2), std::nullopt);
+  EXPECT_EQ(tracker.GetNextBlockToMigrateAndLockIt(b1_retry2), std::nullopt);
 }
 
 TEST_F(PageMigrationTrackerTest, ScanFromPreviousBlockAndWrapAround) {
