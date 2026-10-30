@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 
-#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "third_party/tflite/buildflags.h"
 #include "third_party/tflite/src/tensorflow/lite/c/common.h"
 #include "third_party/tflite/src/tensorflow/lite/kernels/builtin_op_kernels.h"
