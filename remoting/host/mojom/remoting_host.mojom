@@ -91,12 +91,21 @@ struct ClientCertificateDetails {
   pending_remote<network.mojom.SSLPrivateKey> private_key;
 };
 
-// Provides an interface for the unprivileged network process to query client
-// certificates and private key signing from the elevated daemon process.
+// Provides an interface for the sandboxed network process to query client
+// certificates and delegate private key signing to the elevated daemon process
+// while keeping raw private key handles isolated in the daemon.
+//
+// Security note: This interface is only exposed to the host network process,
+// which acts as the control-plane/signaling process and communicates over HTTPS
+// exclusively with trusted Google backends. Untrusted peer-to-peer WebRTC
+// session traffic is isolated in a separate `peer_connection` process, which
+// rejects all associated interface requests and cannot access this broker.
 [EnableIf=is_win]
 interface CertificateBroker {
-  // Returns all matching client certificates and bound SSLPrivateKey remotes
-  // from the elevated certificate store.
+  // Returns all time-valid client authentication certificates and bound
+  // SSLPrivateKey remotes from the platform certificate store. Issuer
+  // filtering and best-match selection are performed by the caller
+  // (`RemoteClientCertStore` and `UrlLoaderNetworkServiceObserver`).
   GetCertificates() => (array<ClientCertificateDetails> certs);
 };
 

@@ -43,6 +43,10 @@ void CertificateBrokerImpl::GetCertificates(GetCertificatesCallback callback) {
     return;
   }
 
+  // Pass an empty SSLCertRequestInfo so the platform store returns all
+  // time-valid client authentication certificates. Issuer filtering and
+  // best-match selection are handled in the network process by
+  // RemoteClientCertStore and UrlLoaderNetworkServiceObserver.
   auto* store_ptr = client_cert_store.get();
   store_ptr->GetClientCerts(
       base::MakeRefCounted<net::SSLCertRequestInfo>(),

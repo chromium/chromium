@@ -14,8 +14,10 @@
 
 namespace remoting {
 
-// Implements mojom::CertificateBroker by querying the platform certificate
-// store and brokering private key operations via SSLPrivateKeyWrapper.
+// Implements mojom::CertificateBroker in the elevated daemon process by
+// querying the platform certificate store and brokering private key signing
+// operations to the host network process via SSLPrivateKeyWrapper. Raw private
+// key handles remain isolated in the daemon process.
 class CertificateBrokerImpl : public mojom::CertificateBroker {
  public:
   using CreateClientCertStoreCallback =
