@@ -99,6 +99,7 @@
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -5015,6 +5016,631 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
       SwitchTab(kTabStripElementId, 2), WaitForPopupActive(),
       WaitForPopupTransitionLockout(), WaitForPopupActive());
 }
+
+// Fixture for walking the elements of the Full WebUI omnibox popup with Tab and
+// Shift+Tab. With the history seeded in `SetUpOnMainThread()`, typing "title2"
+// produces these matches, in this order:
+//   [0] `kTypedText`: the search-what-you-typed default match. The AIM button
+//       is shown next to it, since it is a search match.
+//   [1] `kPastSearch`: a past search. It can be deleted, so it has a Remove
+//       Suggestion button.
+//   [2] `kSuggestion1`: a search suggestion from the test's fake suggest
+//       server, without any buttons.
+//   [3] `kSuggestion2`: a search suggestion from the test's fake suggest
+//       server, without any buttons.
+//   [4] `/title2.html`: a history URL. It can be deleted, so it has a Remove
+//       Suggestion button, and since it's open in a tab it also has a
+//       Switch-to-Tab action chip. It's not a search match, so the AIM button
+//       is hidden while it's selected.
+class FullWebUIOmniboxTabTraversalInteractiveTest
+    : public FullWebUIOmniboxInteractiveTest {
+ protected:
+  using LineState = OmniboxPopupSelection::LineState;
+
+  // The text typed into the omnibox, and the texts of matches [1] to [3].
+  static constexpr char kTypedText[] = "title2";
+  static constexpr char kPastSearch[] = "title2 history";
+  static constexpr char kSuggestion1[] = "suggestion-1";
+  static constexpr char kSuggestion2[] = "suggestion-2";
+
+  // A stop in a Tab / Shift+Tab walk: the element a key press selects.
+  struct Stop {
+    // The selected match, and the element on it.
+    size_t line;
+    LineState state;
+    // Whether the AIM button is visible.
+    bool aim_visible;
+    // The text in the input: the selected match's text, which stays in the
+    // input while one of the match's buttons or the AIM button is focused.
+    std::string input;
+  };
+
+  void SetUpOnMainThread() override {
+    FullWebUIOmniboxInteractiveTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+    page_url_ = embedded_test_server()->GetURL("/title2.html");
+
+    // Make the profile eligible for AI Mode, so the AIM button is shown and
+    // is part of the Tab order.
+    auto* aim_service =
+        AimEligibilityServiceFactory::GetForProfile(browser()->GetProfile());
+    omnibox::AimEligibilityResponse aim_response;
+    aim_response.set_is_eligible(true);
+    std::string serialized_aim_response;
+    aim_response.SerializeToString(&serialized_aim_response);
+    aim_service->SetEligibilityResponseForDebugging(
+        base::Base64Encode(serialized_aim_response));
+    ASSERT_TRUE(
+        base::test::RunUntil([&]() { return aim_service->IsAimEligible(); }));
+
+    // Build the default search engine's results URL for `kPastSearch`, to
+    // record it as a past search below.
+    TemplateURLService* template_url_service =
+        TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
+    search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
+    const TemplateURL* default_provider =
+        template_url_service->GetDefaultSearchProvider();
+    ASSERT_TRUE(default_provider);
+    const GURL search_url(default_provider->url_ref().ReplaceSearchTerms(
+        TemplateURLRef::SearchTermsArgs(
+            base::ASCIIToUTF16(std::string_view(kPastSearch))),
+        template_url_service->search_terms_data()));
+
+    // Seed history with a visit to `page_url_` (match [4]) and with
+    // `kPastSearch` as a past search (match [1]), then wait for history to
+    // finish writing so autocomplete sees both.
+    history::HistoryService* history_service =
+        HistoryServiceFactory::GetForProfile(
+            browser()->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
+    ui_test_utils::WaitForHistoryToLoad(history_service);
+    history_service->AddPage(page_url_, base::Time::Now(),
+                             history::SOURCE_BROWSED);
+    history_service->AddPage(search_url, base::Time::Now(),
+                             history::SOURCE_BROWSED);
+    history_service->SetKeywordSearchTermsForURL(
+        search_url, default_provider->id(),
+        base::ASCIIToUTF16(std::string_view(kPastSearch)));
+    base::RunLoop flush_loop;
+    history_service->FlushForTest(flush_loop.QuitClosure());
+    flush_loop.Run();
+  }
+
+  // The text match [4] fills into the input: its URL without the scheme.
+  std::string PageUrlFill() const {
+    return base::StrCat(
+        {page_url_.host(), ":", page_url_.port(), page_url_.path()});
+  }
+
+  // Opens `page_url_` in a tab, so match [4] gets a Switch-to-Tab action chip,
+  // then focuses the omnibox on another tab, types `kTypedText`, and waits for
+  // the five matches listed above with match [0] selected.
+  auto OpenPopupWithMatches() {
+    return Steps(
+        WaitForBrowserActive(), AddInstrumentedTab(kTab1, page_url_),
+        WaitForWebContentsReady(kTab1), WaitForPopupTransitionLockout(),
+        AddInstrumentedTab(kTab2, GURL("chrome://version/")),
+        WaitForWebContentsReady(kTab2), FocusOmniboxAndWaitForPopupReady(),
+        InAnyContext(WaitForElementToRender(kPopupWebView, kComposeButton)),
+        InputWebUIText(kTypedText),
+        // Wait for all five matches, including the buttons on match [1]
+        // (Remove) and on match [4] (Switch to Tab and Remove), and for
+        // autocomplete to finish so the matches don't change during the walk.
+        WaitForJsConditionAt(
+            kPopupWebView, kPopupSearchbox,
+            "(el) => el && el.dropdownIsVisible && el.isAimButtonVisible && "
+            "el.result?.matches?.length === 5 && "
+            "el.result.matches[1].supportsDeletion && "
+            "el.result.matches[4].actions?.length === 1 && "
+            "el.result.matches[4].supportsDeletion"),
+        PollUntil(
+            [this]() {
+              return GetOmniboxControllerForTest()
+                  ->autocomplete_controller()
+                  ->done();
+            },
+            "WaitForAutocompleteDone"),
+        WaitForSelection({.line = 0,
+                          .state = LineState::kNormal,
+                          .aim_visible = true,
+                          .input = kTypedText}));
+  }
+
+  // Waits until the WebUI and the browser select `stop`.
+  MultiStep WaitForSelection(const Stop& stop) {
+    MultiStep steps;
+    AddStep(steps,
+            WaitForJsConditionAt(
+                kPopupWebView, kPopupSearchbox,
+                base::StringPrintf(
+                    "(el) => el && el.selection && el.selection.line === %zu "
+                    "&& el.selection.state === %d && "
+                    "!!el.isAimButtonVisible === %s",
+                    stop.line, ToWebUISelectionState(stop.state),
+                    stop.aim_visible ? "true" : "false")));
+    if (stop.state == LineState::kFocusedButtonAim) {
+      // `SearchboxHandler::SetPopupSelection()` only forwards selections the
+      // edit model tracks (match-bound states, or the AIM button outside the
+      // matches, i.e. on `kNoMatch`). The AIM button focused alongside a
+      // match isn't one of those, so verify it on the WebUI side only.
+      AddStep(steps, InAnyContext(CheckJsResultAt(
+                         kPopupWebView, kPopupSearchbox,
+                         "(el) => el.isAiModeVirtualFocused()", true)));
+    } else {
+      AddStep(steps, PollUntil(
+                         [this, stop]() {
+                           const auto selection = GetOmniboxControllerForTest()
+                                                      ->edit_model()
+                                                      ->GetPopupSelection();
+                           return selection.line == stop.line &&
+                                  selection.state == stop.state;
+                         },
+                         "WaitForEditModelPopupSelection"));
+    }
+    AddStep(steps, WaitForWebUIInputValue(stop.input));
+    return steps;
+  }
+
+  // Presses Tab (or Shift+Tab if `reverse`) once for each of `stops`, and
+  // waits for each to be selected in turn.
+  auto PressTabThrough(bool reverse, const std::vector<Stop>& stops) {
+    MultiStep steps;
+    for (const Stop& stop : stops) {
+      AddStep(steps, InAnyContext(SendKeyPress(
+                         kPopupWebView, ui::VKEY_TAB,
+                         reverse ? ui::EF_SHIFT_DOWN : ui::EF_NONE)));
+      AddStep(steps, WaitForSelection(stop));
+    }
+    return steps;
+  }
+
+ private:
+  // Returns the WebUI's `SelectionLineState` (searchbox.mojom) for `state`,
+  // which numbers its states differently from `LineState`.
+  static int ToWebUISelectionState(LineState state) {
+    switch (state) {
+      case LineState::kNormal:
+        return 1;
+      case LineState::kFocusedButtonAction:
+        return 3;
+      case LineState::kFocusedButtonRemoveSuggestion:
+        return 4;
+      case LineState::kFocusedButtonAim:
+        return 5;
+      default:
+        NOTREACHED();
+    }
+  }
+
+  GURL page_url_;
+};
+
+// Verifies that Tab walks forward through every element of the popup listed
+// above (match rows, the AIM button, remove-suggestion buttons, and the
+// Switch-to-Tab action chip), mirrors each selected match's text in the input,
+// and wraps around from the last element to the first match.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxTabTraversalInteractiveTest,
+                       TabTraversesAllPopupElementsForward) {
+  RunTestSequence(OpenPopupWithMatches(),
+                  PressTabThrough(
+                      /*reverse=*/false,
+                      {
+                          {.line = 0,
+                           .state = LineState::kFocusedButtonAim,
+                           .aim_visible = true,
+                           .input = kTypedText},
+                          {.line = 1,
+                           .state = LineState::kNormal,
+                           .aim_visible = true,
+                           .input = kPastSearch},
+                          {.line = 1,
+                           .state = LineState::kFocusedButtonRemoveSuggestion,
+                           .aim_visible = true,
+                           .input = kPastSearch},
+                          {.line = 2,
+                           .state = LineState::kNormal,
+                           .aim_visible = true,
+                           .input = kSuggestion1},
+                          {.line = 3,
+                           .state = LineState::kNormal,
+                           .aim_visible = true,
+                           .input = kSuggestion2},
+                          {.line = 4,
+                           .state = LineState::kNormal,
+                           .aim_visible = false,
+                           .input = PageUrlFill()},
+                          {.line = 4,
+                           .state = LineState::kFocusedButtonAction,
+                           .aim_visible = false,
+                           .input = PageUrlFill()},
+                          {.line = 4,
+                           .state = LineState::kFocusedButtonRemoveSuggestion,
+                           .aim_visible = false,
+                           .input = PageUrlFill()},
+                          // Wraps around to the first match.
+                          {.line = 0,
+                           .state = LineState::kNormal,
+                           .aim_visible = true,
+                           .input = kTypedText},
+                      }));
+}
+
+// Verifies that Shift+Tab walks backward through every element of the popup
+// listed above, mirrors each selected match's text in the input, and wraps
+// around from the first match to the last element.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxTabTraversalInteractiveTest,
+                       ShiftTabTraversesAllPopupElementsBackward) {
+  RunTestSequence(OpenPopupWithMatches(),
+                  PressTabThrough(
+                      /*reverse=*/true,
+                      {
+                          // Wraps around to the last element.
+                          {.line = 4,
+                           .state = LineState::kFocusedButtonRemoveSuggestion,
+                           .aim_visible = false,
+                           .input = PageUrlFill()},
+                          {.line = 4,
+                           .state = LineState::kFocusedButtonAction,
+                           .aim_visible = false,
+                           .input = PageUrlFill()},
+                          {.line = 4,
+                           .state = LineState::kNormal,
+                           .aim_visible = false,
+                           .input = PageUrlFill()},
+                          {.line = 3,
+                           .state = LineState::kNormal,
+                           .aim_visible = true,
+                           .input = kSuggestion2},
+                          {.line = 2,
+                           .state = LineState::kNormal,
+                           .aim_visible = true,
+                           .input = kSuggestion1},
+                          {.line = 1,
+                           .state = LineState::kFocusedButtonRemoveSuggestion,
+                           .aim_visible = true,
+                           .input = kPastSearch},
+                          {.line = 1,
+                           .state = LineState::kNormal,
+                           .aim_visible = true,
+                           .input = kPastSearch},
+                          {.line = 0,
+                           .state = LineState::kFocusedButtonAim,
+                           .aim_visible = true,
+                           .input = kTypedText},
+                          {.line = 0,
+                           .state = LineState::kNormal,
+                           .aim_visible = true,
+                           .input = kTypedText},
+                      }));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FullWebUIOmniboxTabTraversalInteractiveTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "WebUIToolbarEnabled"
+                                             : "WebUIToolbarDisabled";
+                         });
+
+// Verifies that Shift+Tab leaves keyword mode entered with Tab on the default
+// match's keyword chip, and restores the default match and the typed text.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       ShiftTabExitsKeywordModeEnteredViaTab) {
+  static constexpr char kKeyword[] = "kw";
+  AddKeywordSearchEngine(base::ASCIIToUTF16(std::string_view(kKeyword)));
+  RunTestSequence(
+      // Open an NTP, whose permanent text is empty, type the keyword, and wait
+      // for its chip on the default match.
+      OpenNtpAndWaitForPopupReady(kTab1), TypeWebUITextWithKeyPresses(kKeyword),
+      InAnyContext(WaitForWebUIInputValue(kKeyword)),
+      InAnyContext(
+          WaitForElementToRender(kPopupWebView, kDefaultMatchKeywordChip)),
+      // Tab enters keyword mode on the chip.
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_TAB, ui::EF_NONE)),
+      WaitForWebUIKeywordMode(true), WaitForEditModelKeywordSelected(true),
+      // Keyword mode moves the keyword into the chip, leaving the input empty.
+      InAnyContext(WaitForWebUIInputValue("")),
+      // Shift+Tab leaves keyword mode and selects the default match again with
+      // the typed text.
+      InAnyContext(
+          SendKeyPress(kPopupWebView, ui::VKEY_TAB, ui::EF_SHIFT_DOWN)),
+      WaitForWebUIKeywordMode(false),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && el.selection?.line === 0 && "
+                           "el.selection.state === 1"),
+      InAnyContext(WaitForWebUIInputValue(kKeyword)));
+}
+
+// Verifies that ArrowDown and ArrowUp step through match lines (skipping
+// auxiliary buttons), wrap around from the last match to the first and from
+// the first match to the last, and mirror each selected match's text in the
+// WebUI input.
+//
+// Typing `kTypedText` produces these matches, in this order:
+//   [0] `kTypedText`: the search-what-you-typed default match.
+//   [1] `kSuggestion1`: a search suggestion from the test's fake suggest
+//       server.
+//   [2] `kSuggestion2`: a search suggestion from the test's fake suggest
+//       server.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       ArrowUpAndDownWrapAroundAndMirrorInput) {
+  static constexpr char kTypedText[] = "ffffff";
+  static constexpr char kSuggestion1[] = "suggestion-1";
+  static constexpr char kSuggestion2[] = "suggestion-2";
+
+  // Waits until match `expected_line` is selected (in the WebUI and the
+  // browser) and its text, `expected_input`, fills the WebUI input.
+  auto wait_for_line_selected = [this](size_t expected_line,
+                                       const std::string& expected_input) {
+    return Steps(
+        WaitForWebUIInputValue(expected_input),
+        WaitForJsConditionAt(
+            kPopupWebView, kPopupSearchbox,
+            base::StringPrintf(
+                "(el) => el && el.selection && el.selection.line === %zu && "
+                "el.selection.state === 1",
+                expected_line)),
+        PollUntil(
+            [this, expected_line]() {
+              const auto sel = GetOmniboxControllerForTest()
+                                   ->edit_model()
+                                   ->GetPopupSelection();
+              return sel.line == expected_line &&
+                     sel.state == OmniboxPopupSelection::LineState::kNormal;
+            },
+            "WaitForEditModelLineSelection"));
+  };
+
+  RunTestSequence(
+      OpenNtpAndWaitForPopupReady(kTab1),
+      TypeWebUITextWithKeyPresses(kTypedText),
+      InAnyContext(WaitForWebUIInputValue(kTypedText)),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
+                   kSuggestion1),
+      // Wait for all three matches listed at the top of this test.
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && el.dropdownIsVisible && "
+                           "el.result?.matches?.length === 3"),
+      // Initial selection: Match 0 (`kTypedText`).
+      wait_for_line_selected(0, kTypedText),
+
+      // ArrowDown steps forward through Match 1, Match 2, and wraps to Match 0.
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_DOWN, ui::EF_NONE)),
+      wait_for_line_selected(1, kSuggestion1),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_DOWN, ui::EF_NONE)),
+      wait_for_line_selected(2, kSuggestion2),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_DOWN, ui::EF_NONE)),
+      wait_for_line_selected(0, kTypedText),
+
+      // ArrowUp wraps backward from Match 0 to Match 2, then steps to Match 1
+      // and back to Match 0.
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_UP, ui::EF_NONE)),
+      wait_for_line_selected(2, kSuggestion2),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_UP, ui::EF_NONE)),
+      wait_for_line_selected(1, kSuggestion1),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_UP, ui::EF_NONE)),
+      wait_for_line_selected(0, kTypedText));
+}
+
+// Verifies character-by-character cursor movement with ArrowLeft / ArrowRight,
+// selection collapse on ArrowLeft / ArrowRight without Shift, and word-by-word
+// cursor movement with Option+Left/Right (macOS) / Ctrl+Left/Right
+// (Windows/Linux/ChromeOS).
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
+                       ArrowLeftAndRightCharacterAndWordMovement) {
+  static constexpr char kText[] = "one two three";
+  static constexpr int kTextEnd = std::char_traits<char>::length(kText);
+#if BUILDFLAG(IS_MAC)
+  constexpr int kWordMoveModifier = ui::EF_ALT_DOWN;
+#else
+  constexpr int kWordMoveModifier = ui::EF_CONTROL_DOWN;
+#endif
+  // Where moving one word right lands, starting from the start of `kText`.
+  // Windows moves to the start of the next word (after the space), while other
+  // platforms move to the end of the current word.
+#if BUILDFLAG(IS_WIN)
+  constexpr int kFirstWordRightPos = 4;
+  constexpr int kSecondWordRightPos = 8;
+#else
+  constexpr int kFirstWordRightPos = 3;
+  constexpr int kSecondWordRightPos = 7;
+#endif
+
+  RunTestSequence(
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL("chrome://version/")),
+      InputWebUIText(kText), CheckWebUIInputFocus(true),
+      CheckWebUIInputSelection(kTextEnd, kTextEnd),
+
+      // Character movement with ArrowLeft and ArrowRight.
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_LEFT, ui::EF_NONE)),
+      CheckWebUIInputSelection(kTextEnd - 1, kTextEnd - 1),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_RIGHT, ui::EF_NONE)),
+      CheckWebUIInputSelection(kTextEnd, kTextEnd),
+
+      // Word-by-word backward movement ("one two three|" -> "one two |three" ->
+      // "one |two three" -> "|one two three").
+      InAnyContext(
+          SendKeyPress(kPopupWebView, ui::VKEY_LEFT, kWordMoveModifier)),
+      CheckWebUIInputSelection(8, 8),
+      InAnyContext(
+          SendKeyPress(kPopupWebView, ui::VKEY_LEFT, kWordMoveModifier)),
+      CheckWebUIInputSelection(4, 4),
+      InAnyContext(
+          SendKeyPress(kPopupWebView, ui::VKEY_LEFT, kWordMoveModifier)),
+      CheckWebUIInputSelection(0, 0),
+
+      // Word-by-word forward movement back to the end of the input.
+      // On Windows: "|one two three" -> "one |two three" -> "one two |three"
+      // -> "one two three|".
+      // Elsewhere: "|one two three" -> "one| two three" -> "one two| three"
+      // -> "one two three|".
+      InAnyContext(
+          SendKeyPress(kPopupWebView, ui::VKEY_RIGHT, kWordMoveModifier)),
+      CheckWebUIInputSelection(kFirstWordRightPos, kFirstWordRightPos),
+      InAnyContext(
+          SendKeyPress(kPopupWebView, ui::VKEY_RIGHT, kWordMoveModifier)),
+      CheckWebUIInputSelection(kSecondWordRightPos, kSecondWordRightPos),
+      InAnyContext(
+          SendKeyPress(kPopupWebView, ui::VKEY_RIGHT, kWordMoveModifier)),
+      CheckWebUIInputSelection(kTextEnd, kTextEnd),
+
+      // Plain ArrowLeft and ArrowRight collapse a full selection to the start
+      // and end of the input, respectively.
+      PressWebUIAcceleratorKey(ui::VKEY_A),
+      CheckWebUIInputSelection(0, kTextEnd),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_LEFT, ui::EF_NONE)),
+      CheckWebUIInputSelection(0, 0), PressWebUIAcceleratorKey(ui::VKEY_A),
+      CheckWebUIInputSelection(0, kTextEnd),
+      InAnyContext(SendKeyPress(kPopupWebView, ui::VKEY_RIGHT, ui::EF_NONE)),
+      CheckWebUIInputSelection(kTextEnd, kTextEnd));
+}
+
+// Fixture for zero-prefix suggestions (ZPS) on the NTP. With the history
+// seeded in `SetUpOnMainThread()`, ZPS shows the two past searches, most recent
+// first:
+//   [0] `kZpsMatch0`
+//   [1] `kZpsMatch1`
+class FullWebUIOmniboxZpsInteractiveTest
+    : public FullWebUIOmniboxInteractiveTest {
+ protected:
+  static constexpr char kZpsMatch0[] = "zero suggest query";
+  static constexpr char kZpsMatch1[] = "older zero suggest query";
+
+  void SetUpOnMainThread() override {
+    FullWebUIOmniboxInteractiveTest::SetUpOnMainThread();
+
+    // Get the default search engine, whose results URLs are recorded as the
+    // past searches below.
+    TemplateURLService* template_url_service =
+        TemplateURLServiceFactory::GetForProfile(browser()->GetProfile());
+    search_test_utils::WaitForTemplateURLServiceToLoad(template_url_service);
+    const TemplateURL* default_provider =
+        template_url_service->GetDefaultSearchProvider();
+    ASSERT_TRUE(default_provider);
+
+    // Set up the history service to record the past searches in, and wait for
+    // it to load.
+    history::HistoryService* history_service =
+        HistoryServiceFactory::GetForProfile(
+            browser()->GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);
+    ui_test_utils::WaitForHistoryToLoad(history_service);
+
+    // Records `query` as a search with the default search engine at `time`, so
+    // it is suggested as a past search in ZPS on the NTP.
+    auto add_past_search = [&](std::string_view query, base::Time time) {
+      const std::u16string query16 = base::ASCIIToUTF16(query);
+      const GURL search_url(default_provider->url_ref().ReplaceSearchTerms(
+          TemplateURLRef::SearchTermsArgs(query16),
+          template_url_service->search_terms_data()));
+      history_service->AddPage(search_url, time, history::SOURCE_BROWSED);
+      history_service->SetKeywordSearchTermsForURL(
+          search_url, default_provider->id(), query16);
+    };
+
+    add_past_search(kZpsMatch1, base::Time::Now() - base::Days(1));
+    add_past_search(kZpsMatch0, base::Time::Now());
+
+    // Wait for history to finish writing, so ZPS sees both searches.
+    base::RunLoop flush_loop;
+    history_service->FlushForTest(flush_loop.QuitClosure());
+    flush_loop.Run();
+  }
+
+  // Waits until the dropdown shows ZPS, with `kZpsMatch0` first.
+  auto WaitForZpsShown() {
+    return Steps(WaitForMatch(kPopupWebView, kZpsMatch0PrimaryText, kZpsMatch0),
+                 WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                                      "(el) => el && el.dropdownIsVisible && "
+                                      "el.result?.matches?.length >= 2"));
+  }
+
+  // Waits until the dropdown is closed, and the input is empty and focused.
+  auto WaitForDropdownClosedWithEmptyInput() {
+    return Steps(WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                                      "(el) => el && !el.dropdownIsVisible"),
+                 WaitForWebUIInputValue(""), WaitForOmniboxFocus(true));
+  }
+
+  // Focuses the omnibox on the initial NTP and waits for ZPS, with an empty
+  // input and nothing selected.
+  //
+  // The initial NTP focuses the omnibox on its own, and its input state can
+  // reach WebUI after the test's focus request and drop the ZPS query. So
+  // once the popup is open and focused, focus the omnibox again: with the
+  // popup already open, this asks WebUI to query ZPS if the dropdown isn't
+  // showing.
+  auto FocusOmniboxOnNtpAndWaitForZps() {
+    return Steps(FocusOmniboxOnInitialNtp(kTab1),
+                 UninstrumentWebContents(kPopupWebView),
+                 FocusOmniboxAndWaitForPopupReady(), WaitForZpsShown(),
+                 WaitForWebUIInputValue(""));
+  }
+
+  auto PressKey(ui::KeyboardCode key) {
+    return InAnyContext(SendKeyPress(kPopupWebView, key, ui::EF_NONE));
+  }
+
+ private:
+  const DeepQuery kZpsMatch0PrimaryText = {
+      "omnibox-full-app", "omnibox-popup-searchbox", "cr-searchbox-dropdown",
+      "cr-searchbox-match[match-index='0']", "#primaryText"};
+};
+
+// Verifies that focusing the omnibox on the NTP shows ZPS, with an empty input.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxZpsInteractiveTest, ZpsShownOnFocus) {
+  RunTestSequence(FocusOmniboxOnNtpAndWaitForZps());
+}
+
+// Verifies that from a highlighted ZPS match, Escape #1 reverts the input to
+// the typed text (""), keeping the dropdown open; Escape #2 closes the
+// dropdown, keeping the omnibox focused; and ArrowDown then reopens ZPS.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxZpsInteractiveTest,
+                       DoubleEscapeFromZpsMatchThenArrowDownReopensZps) {
+  RunTestSequence(
+      FocusOmniboxOnNtpAndWaitForZps(),
+      // Highlight the second match, which fills its text into the input.
+      PressKey(ui::VKEY_DOWN), WaitForWebUIInputValue(kZpsMatch0),
+      PressKey(ui::VKEY_DOWN), WaitForWebUIInputValue(kZpsMatch1),
+      // Escape #1 reverts the input and selects the first match, keeping the
+      // dropdown open.
+      PressKey(ui::VKEY_ESCAPE), WaitForWebUIInputValue(""),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && el.dropdownIsVisible && "
+                           "el.selection?.line === 0"),
+      // Escape #2 closes the dropdown.
+      PressKey(ui::VKEY_ESCAPE), WaitForDropdownClosedWithEmptyInput(),
+      // ArrowDown reopens ZPS.
+      PressKey(ui::VKEY_DOWN), WaitForZpsShown());
+}
+
+// Verifies that after typing a query, Escape #1 closes the dropdown, keeping
+// the typed text; Escape #2 clears the input, keeping the omnibox focused; and
+// ArrowDown then reopens ZPS.
+IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxZpsInteractiveTest,
+                       DoubleEscapeFromTypedQueryThenArrowDownReopensZps) {
+  static constexpr char kTypedText[] = "ffffff";
+  RunTestSequence(
+      FocusOmniboxOnNtpAndWaitForZps(), TypeWebUITextWithKeyPresses(kTypedText),
+      InAnyContext(WaitForWebUIInputValue(kTypedText)),
+      WaitForMatch(kPopupWebView, kFirstSuggestionMatchPrimaryText,
+                   "suggestion-1"),
+      // Escape #1 closes the dropdown, keeping the typed text.
+      PressKey(ui::VKEY_ESCAPE),
+      WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                           "(el) => el && !el.dropdownIsVisible"),
+      WaitForWebUIInputValue(kTypedText),
+      // Escape #2 clears the typed text.
+      PressKey(ui::VKEY_ESCAPE), WaitForDropdownClosedWithEmptyInput(),
+      // ArrowDown reopens ZPS.
+      PressKey(ui::VKEY_DOWN), WaitForZpsShown());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         FullWebUIOmniboxZpsInteractiveTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "WebUIToolbarEnabled"
+                                             : "WebUIToolbarDisabled";
+                         });
 
 INSTANTIATE_TEST_SUITE_P(All,
                          FullWebUIOmniboxInteractiveTest,
