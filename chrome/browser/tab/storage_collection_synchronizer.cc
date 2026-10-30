@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/tab/collection_storage_observer.h"
+#include "chrome/browser/tab/node_hash_cache.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/direct_child_walker.h"
@@ -29,8 +30,9 @@ namespace tabs {
 // The traversal order is determined by DirectChildWalker.
 class CollectionSaveCrawler : public DirectChildWalker::Processor {
  public:
-  explicit CollectionSaveCrawler(TabStateStorageService* service)
-      : service_(service) {}
+  CollectionSaveCrawler(TabStateStorageService* service,
+                        NodeHashCache& hash_cache)
+      : service_(service), hash_cache_(hash_cache) {}
 
   void ProcessTab(const TabInterface* tab) override { service_->Save(tab); }
 
@@ -39,10 +41,18 @@ class CollectionSaveCrawler : public DirectChildWalker::Processor {
     service_->SaveChildren(collection);
     DirectChildWalker walker(collection, this);
     walker.Walk();
+
+    RecordCollectionHashes(collection);
+  }
+
+  void RecordCollectionHashes(const TabCollection* collection) {
+    NodeHashes hashes = NodeHashCache::ComputeHashes(collection, *service_);
+    hash_cache_->SetNodeHashes(service_->GetStorageId(collection), hashes);
   }
 
  private:
   raw_ptr<TabStateStorageService> service_;
+  const raw_ref<NodeHashCache> hash_cache_;
 };
 
 // CollectionSynchronizerObserver implementation.
@@ -104,16 +114,19 @@ void StorageCollectionSynchronizer::FullSave(base::OnceClosure callback) {
   if (!callback.is_null()) {
     batch.AddCallback(std::move(callback));
   }
+  hash_cache_.Clear();
   service_->Save(collection_);
-  CollectionSaveCrawler crawler(service_);
+  CollectionSaveCrawler crawler(service_, hash_cache_);
   DirectChildWalker walker(collection_, &crawler);
   walker.Walk();
+  crawler.RecordCollectionHashes(collection_);
 }
 
 void StorageCollectionSynchronizer::CancelRestore() {
   is_snapshot_scheduled_ = false;
   pending_clear_unused_nodes_ = false;
   std::vector<base::OnceClosure> callbacks = std::move(pending_callbacks_);
+  hash_cache_.Clear();
   if (observer_) {
     observer_->OnRestoreCancelled();
     observer_->SetSynchronizer(nullptr);

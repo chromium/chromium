@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab/node_hash_cache.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_collection_observer.h"
@@ -54,17 +55,21 @@ class StorageCollectionSynchronizer {
   // Cancels the restoration process.
   void CancelRestore();
 
-
   // Sets the TabCollectionObserver. If an observer is already set, it will be
   // unregistered before the new one is registered.
   void SetCollectionObserver(
       std::unique_ptr<CollectionSynchronizerObserver> new_observer);
+
+  // Returns the cache of collection node hashes used for delta snapshots.
+  NodeHashCache& hash_cache() { return hash_cache_; }
+  const NodeHashCache& hash_cache() const { return hash_cache_; }
 
  private:
   void FlushPendingStructureSnapshot();
 
   raw_ptr<TabStripCollection> collection_;
   raw_ptr<TabStateStorageService> service_;
+  NodeHashCache hash_cache_;
   std::unique_ptr<CollectionSynchronizerObserver> observer_;
 
   bool is_snapshot_scheduled_ = false;

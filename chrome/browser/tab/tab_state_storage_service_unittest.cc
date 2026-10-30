@@ -13,12 +13,22 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/tab/node_hash_cache.h"
 #include "chrome/browser/tab/restore_entity_tracker.h"
+#include "chrome/browser/tab/storage_collection_synchronizer.h"
 #include "chrome/browser/tab/storage_id.h"
+#include "chrome/browser/tab/storage_package.h"
 #include "chrome/browser/tab/tab_storage_packager.h"
+#include "components/split_tabs/split_tab_id.h"
+#include "components/split_tabs/split_tab_visual_data.h"
+#include "components/tabs/public/fake_tab_interface.h"
+#include "components/tabs/public/pinned_tab_collection.h"
+#include "components/tabs/public/split_tab_collection.h"
+#include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/tabs/public/tab_strip_collection.h"
+#include "components/tabs/public/unpinned_tab_collection.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace tabs {
@@ -31,13 +41,22 @@ class TestPayload : public Payload {
   std::vector<uint8_t> SerializePayload() const override { return {}; }
 };
 
+class TestStoragePackage : public StoragePackage {
+ public:
+  TestStoragePackage() = default;
+  ~TestStoragePackage() override = default;
+
+  std::vector<uint8_t> SerializePayload() const override { return {}; }
+  std::vector<uint8_t> SerializeChildren() const override { return {}; }
+};
+
 class TestTabStoragePackager : public TabStoragePackager {
  public:
   TestTabStoragePackager() = default;
   ~TestTabStoragePackager() override = default;
 
   std::unique_ptr<StoragePackage> Package(const TabInterface* tab) override {
-    return nullptr;
+    return std::make_unique<TestStoragePackage>();
   }
 
   bool IsOffTheRecord(const TabCollection* collection) const override {
@@ -249,6 +268,43 @@ TEST_F(TabStateStorageServiceTest, HighVolumeOperationCoalescing) {
 
   FlushOperations();
   EXPECT_TRUE(batch_committed);
+}
+
+TEST_F(TabStateStorageServiceTest, FullSavePopulatesNodeHashCache) {
+  TabStripCollection tab_strip;
+  StorageCollectionSynchronizer synchronizer(&tab_strip, service());
+
+  split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
+  split_tabs::SplitTabVisualData visual_data(
+      split_tabs::SplitTabLayout::kSideBySide, 0.5);
+  auto split = std::make_unique<SplitTabCollection>(split_id, visual_data);
+  split->AddTab(std::make_unique<FakeTabInterface>(), 0);
+  SplitTabCollection* split_ptr = split.get();
+  tab_strip.unpinned_collection()->AddCollection(std::move(split), 0);
+
+  EXPECT_EQ(0u, synchronizer.hash_cache().size());
+
+  synchronizer.FullSave(base::NullCallback());
+  FlushOperations();
+
+  // Root tab strip, pinned collection, unpinned collection, and the split
+  // collection.
+  EXPECT_EQ(4u, synchronizer.hash_cache().size());
+  EXPECT_TRUE(
+      synchronizer.hash_cache().HasNode(service()->GetStorageId(&tab_strip)));
+  EXPECT_TRUE(synchronizer.hash_cache().HasNode(
+      service()->GetStorageId(tab_strip.pinned_collection())));
+  EXPECT_TRUE(synchronizer.hash_cache().HasNode(
+      service()->GetStorageId(tab_strip.unpinned_collection())));
+  EXPECT_TRUE(
+      synchronizer.hash_cache().HasNode(service()->GetStorageId(split_ptr)));
+
+  std::optional<NodeHashes> split_hashes =
+      synchronizer.hash_cache().GetNodeHashes(
+          service()->GetStorageId(split_ptr));
+  ASSERT_TRUE(split_hashes.has_value());
+  EXPECT_NE(NodeHashes::kEmptyHash, split_hashes->payload_hash);
+  EXPECT_NE(NodeHashes::kEmptyHash, split_hashes->children_hash);
 }
 
 }  // namespace
