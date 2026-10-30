@@ -5,7 +5,7 @@
 import 'chrome://profile-picker/profile_picker.js';
 
 import type {ProfileCardElement, ProfilePickerMainViewElement, ProfileState} from 'chrome://profile-picker/profile_picker.js';
-import {loadTimeData, ManageProfilesBrowserProxyImpl, navigateTo, NavigationMixin, Routes} from 'chrome://profile-picker/profile_picker.js';
+import {loadTimeData, ManageProfilesBrowserProxyImpl, navigateTo, NavigationMixin, ProfileOrderUpdateType, Routes} from 'chrome://profile-picker/profile_picker.js';
 import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
@@ -781,6 +781,8 @@ suite('ProfilePickerProfilesReorderingTest', function() {
       dragEnterEvents: [{index: 2, expectedResultIndices: [0, 2, 1]}],
       expectedEndProfileOrder: ['profile0', 'profile2', 'profile1'],
     });
+    const args = await browserProxy.whenCalled('updateProfileOrder');
+    assertDeepEquals(args, [1, 2, ProfileOrderUpdateType.DRAG_AND_DROP]);
   });
 
   // In this test, we make sure that even in the middle of a drag event cycle
@@ -1054,7 +1056,7 @@ suite('ProfilePickerProfilesReorderingTest', function() {
     // [profile1, profile0, profile2].
     getMenuMoveButtons(cards[0]!).moveRightButton!.click();
     let args = await browserProxy.whenCalled('updateProfileOrder');
-    assertDeepEquals(args, [0, 1]);
+    assertDeepEquals(args, [0, 1, ProfileOrderUpdateType.CONTEXT_MENU_BUTTON]);
     await microtasksFinished();
     assertProfileNamesOrder(
         mainViewElement.getProfileListForTesting(),
@@ -1066,7 +1068,7 @@ suite('ProfilePickerProfilesReorderingTest', function() {
     browserProxy.resetResolver('updateProfileOrder');
     getMenuMoveButtons(cards[1]!).moveRightButton!.click();
     args = await browserProxy.whenCalled('updateProfileOrder');
-    assertDeepEquals(args, [1, 2]);
+    assertDeepEquals(args, [1, 2, ProfileOrderUpdateType.CONTEXT_MENU_BUTTON]);
     await microtasksFinished();
     assertProfileNamesOrder(
         mainViewElement.getProfileListForTesting(),
@@ -1078,7 +1080,7 @@ suite('ProfilePickerProfilesReorderingTest', function() {
     browserProxy.resetResolver('updateProfileOrder');
     getMenuMoveButtons(cards[2]!).moveLeftButton!.click();
     args = await browserProxy.whenCalled('updateProfileOrder');
-    assertDeepEquals(args, [2, 1]);
+    assertDeepEquals(args, [2, 1, ProfileOrderUpdateType.CONTEXT_MENU_BUTTON]);
     await microtasksFinished();
     assertProfileNamesOrder(
         mainViewElement.getProfileListForTesting(),

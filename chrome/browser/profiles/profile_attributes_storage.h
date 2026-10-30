@@ -43,6 +43,17 @@ class ProfileAttributesEntry;
 class ProfileAvatarDownloader;
 class PrefRegistrySimple;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ProfileOrderUpdateType)
+enum class ProfileOrderUpdateType {
+  kDragAndDrop = 0,
+  kContextMenuButton = 1,
+  kMaxValue = kContextMenuButton,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:ProfileOrderUpdateType)
+
 class ProfileAttributesStorage {
  public:
   using Observer = ProfileAttributesStorageObserver;
@@ -99,7 +110,9 @@ class ProfileAttributesStorage {
 
   // Updates `prefs::kProfilesOrder`. Move profile keys at `from_index` and
   // place it at `to_index` shifting all keys in between by 1 spot.
-  void UpdateProfilesOrderPref(size_t from_index, size_t to_index);
+  void UpdateProfilesOrderPref(size_t from_index,
+                               size_t to_index,
+                               ProfileOrderUpdateType update_type);
 
   // Returns a ProfileAttributesEntry with the data for the profile at |path|
   // if the operation is successful. Returns |nullptr| otherwise.

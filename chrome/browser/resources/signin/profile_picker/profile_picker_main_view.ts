@@ -27,7 +27,7 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {DraggableTileListInterface} from './drag_drop_reorder_tile_list_delegate.js';
 import {DragDropReorderTileListDelegate} from './drag_drop_reorder_tile_list_delegate.js';
 import type {ManageProfilesBrowserProxy, ProfileState} from './manage_profiles_browser_proxy.js';
-import {ManageProfilesBrowserProxyImpl} from './manage_profiles_browser_proxy.js';
+import {ManageProfilesBrowserProxyImpl, ProfileOrderUpdateType} from './manage_profiles_browser_proxy.js';
 import {navigateTo, NavigationMixin, Routes} from './navigation_mixin.js';
 import type {ProfileCardElement} from './profile_card.js';
 import {isAskOnStartupAllowed, isGlicVersion, isProfileCreationAllowed, isProfilesReorderingEnabled, isUseRefreshedUI} from './profile_picker_flags.js';
@@ -324,7 +324,7 @@ export class ProfilePickerMainViewElement extends
     this.profilesList_.splice(finalIndex, 0, movedProfile);
     this.requestUpdate();
     this.manageProfilesBrowserProxy_.updateProfileOrder(
-        initialIndex, finalIndex);
+        initialIndex, finalIndex, ProfileOrderUpdateType.CONTEXT_MENU_BUTTON);
   }
 
   protected onDisableAllPickerButtons_() {
@@ -414,7 +414,7 @@ export class ProfilePickerMainViewElement extends
   // @override
   onDragEnd(initialIndex: number, finalIndex: number): void {
     this.manageProfilesBrowserProxy_.updateProfileOrder(
-        initialIndex, finalIndex);
+        initialIndex, finalIndex, ProfileOrderUpdateType.DRAG_AND_DROP);
   }
 
   // @override

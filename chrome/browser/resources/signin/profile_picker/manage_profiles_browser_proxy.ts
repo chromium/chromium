@@ -51,6 +51,13 @@ export interface UserThemeChoice {
   color?: number;
 }
 
+// LINT.IfChange(ProfilePickerOrderUpdateType)
+export enum ProfileOrderUpdateType {
+  DRAG_AND_DROP = 0,
+  CONTEXT_MENU_BUTTON = 1,
+}
+// LINT.ThenChange(//chrome/browser/ui/webui/signin/profile_picker_handler.h:ProfilePickerOrderUpdateType)
+
 export interface ManageProfilesBrowserProxy {
   /**
    * Initializes profile picker main view.
@@ -152,12 +159,15 @@ export interface ManageProfilesBrowserProxy {
 
   /**
    * Sends the profile order changes
-   * @param fromIndex the initial index of the tile that was dragged.
+   * @param fromIndex the initial index of the tile that was moved.
    * @param toIndex the index to which the profile has been moved/dropped.
+   * @param updateType the action type that triggered the profile reordering.
    * All other profiles between `fromIndex` and `toIndex` +/-1 should be shifted
    * by +/-1 depending on the change direction.
    */
-  updateProfileOrder(fromIndex: number, toIndex: number): void;
+  updateProfileOrder(
+      fromIndex: number, toIndex: number,
+      updateType: ProfileOrderUpdateType): void;
 
   /**
    * Loads the last used profile; opens/uses a browser and open the "Sign in to
@@ -242,8 +252,9 @@ export class ManageProfilesBrowserProxyImpl {
     chrome.send('cancelProfileSwitch');
   }
 
-  updateProfileOrder(fromIndex: number, toIndex: number) {
-    chrome.send('updateProfileOrder', [fromIndex, toIndex]);
+  updateProfileOrder(
+      fromIndex: number, toIndex: number, updateType: ProfileOrderUpdateType) {
+    chrome.send('updateProfileOrder', [fromIndex, toIndex, updateType]);
   }
 
   onLearnMoreClicked(): void {

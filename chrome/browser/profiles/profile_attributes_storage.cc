@@ -564,8 +564,10 @@ void ProfileAttributesStorage::EnsureProfilesOrderPrefIsInitialized() {
            base::NotFatalUntil::M162);
 }
 
-void ProfileAttributesStorage::UpdateProfilesOrderPref(size_t from_index,
-                                                       size_t to_index) {
+void ProfileAttributesStorage::UpdateProfilesOrderPref(
+    size_t from_index,
+    size_t to_index,
+    ProfileOrderUpdateType update_type) {
   if (from_index == to_index) {
     return;
   }
@@ -578,7 +580,7 @@ void ProfileAttributesStorage::UpdateProfilesOrderPref(size_t from_index,
   // shift left or right based on the index comparison.
   Rotate(profile_keys_order, from_index, to_index);
 
-  base::UmaHistogramBoolean("Profile.ProfilesOrderChanged", true);
+  base::UmaHistogramEnumeration("Profile.ProfilesOrderChanged", update_type);
 }
 
 base::flat_map<std::string, ProfileAttributesEntry*>

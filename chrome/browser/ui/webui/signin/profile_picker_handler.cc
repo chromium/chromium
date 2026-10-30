@@ -733,20 +733,42 @@ void ProfilePickerHandler::HandleRemoveProfile(const base::ListValue& args) {
   // Do not use `this` after this point, it may be deleted.
 }
 
+namespace {
+
+ProfileOrderUpdateType ToProfileOrderUpdateType(
+    ProfilePickerOrderUpdateType picker_update_type) {
+  switch (picker_update_type) {
+    case ProfilePickerOrderUpdateType::kDragAndDrop:
+      return ProfileOrderUpdateType::kDragAndDrop;
+    case ProfilePickerOrderUpdateType::kContextMenuButton:
+      return ProfileOrderUpdateType::kContextMenuButton;
+  }
+}
+
+}  // namespace
+
 void ProfilePickerHandler::HandleUpdateProfileOrder(
     const base::ListValue& args) {
-  CHECK_EQ(2U, args.size());
+  CHECK_EQ(3U, args.size());
   CHECK(args[0].is_int());
   CHECK(args[1].is_int());
+  CHECK(args[2].is_int());
 
   int from_index = args[0].GetInt();
   int to_index = args[1].GetInt();
+  int update_type = args[2].GetInt();
   CHECK(from_index >= 0 && to_index >= 0);
+  CHECK_GE(update_type, 0);
+  CHECK_LE(update_type,
+           static_cast<int>(ProfilePickerOrderUpdateType::kMaxValue));
 
   UpdateProfilesOrderInternal(from_index, to_index);
   g_browser_process->profile_manager()
       ->GetProfileAttributesStorage()
-      .UpdateProfilesOrderPref(from_index, to_index);
+      .UpdateProfilesOrderPref(
+          from_index, to_index,
+          ToProfileOrderUpdateType(
+              static_cast<ProfilePickerOrderUpdateType>(update_type)));
 }
 
 void ProfilePickerHandler::HandleOnLearnMoreClicked(

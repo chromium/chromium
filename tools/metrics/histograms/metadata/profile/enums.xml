@@ -521,6 +521,15 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Deleted a profile"/>
 </enum>
 
+<!-- LINT.IfChange(ProfileOrderUpdateType) -->
+
+<enum name="ProfileOrderUpdateType">
+  <int value="0" label="Drag and drop"/>
+  <int value="1" label="Context menu button"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/profiles/profile_attributes_storage.h:ProfileOrderUpdateType) -->
+
 <!-- LINT.IfChange(ProfilePickerAction) -->
 
 <enum name="ProfilePickerAction">

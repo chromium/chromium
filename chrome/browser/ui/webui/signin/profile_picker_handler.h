@@ -43,6 +43,17 @@ enum class ProfilePickerAction {
 
 void RecordProfilePickerAction(ProfilePickerAction action);
 
+// Sub-enum of `ProfileOrderUpdateType`. This enum is not directly recorded in
+// metrics; its values are mapped to `ProfileOrderUpdateType` before recording.
+//
+// LINT.IfChange(ProfilePickerOrderUpdateType)
+enum class ProfilePickerOrderUpdateType {
+  kDragAndDrop = 0,
+  kContextMenuButton = 1,
+  kMaxValue = kContextMenuButton,
+};
+// LINT.ThenChange(//chrome/browser/resources/signin/profile_picker/manage_profiles_browser_proxy.ts:ProfilePickerOrderUpdateType)
+
 // The handler for Javascript messages related to the profile picker main view.
 class ProfilePickerHandler : public content::WebUIMessageHandler,
                              public content::WebContentsObserver,

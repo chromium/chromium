@@ -12,6 +12,7 @@
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -434,11 +435,14 @@ TEST_F(ProfilePickerHandlerTest, UpdateProfileOrder) {
             std::vector<ProfileAttributesEntry*>(
                 {profile_a, profile_b, profile_c, profile_d}));
 
-  // Perform first changes.
+  base::HistogramTester histogram_tester;
+
+  // Perform first changes via drag and drop.
   {
     base::ListValue args;
     args.Append(0);  // `from_index`
     args.Append(2);  // `to_index`
+    args.Append(static_cast<int>(ProfilePickerOrderUpdateType::kDragAndDrop));
     web_ui()->HandleReceivedMessage("updateProfileOrder", args);
 
     std::vector<ProfileAttributesEntry*> expected_profile_order{
@@ -446,13 +450,18 @@ TEST_F(ProfilePickerHandlerTest, UpdateProfileOrder) {
     EXPECT_EQ(storage->GetAllProfilesAttributesSortedForDisplay(),
               expected_profile_order);
     EXPECT_EQ(GetProfilesAttributesForDisplay(), expected_profile_order);
+    histogram_tester.ExpectBucketCount("Profile.ProfilesOrderChanged",
+                                       ProfileOrderUpdateType::kDragAndDrop,
+                                       1u);
   }
 
-  // Perform second changes.
+  // Perform second changes via context menu button.
   {
     base::ListValue args;
     args.Append(1);  // `from_index`
     args.Append(3);  // `to_index`
+    args.Append(
+        static_cast<int>(ProfilePickerOrderUpdateType::kContextMenuButton));
     web_ui()->HandleReceivedMessage("updateProfileOrder", args);
 
     std::vector<ProfileAttributesEntry*> expected_profile_order{
@@ -460,6 +469,10 @@ TEST_F(ProfilePickerHandlerTest, UpdateProfileOrder) {
     EXPECT_EQ(storage->GetAllProfilesAttributesSortedForDisplay(),
               expected_profile_order);
     EXPECT_EQ(GetProfilesAttributesForDisplay(), expected_profile_order);
+    histogram_tester.ExpectBucketCount(
+        "Profile.ProfilesOrderChanged",
+        ProfileOrderUpdateType::kContextMenuButton, 1u);
+    histogram_tester.ExpectTotalCount("Profile.ProfilesOrderChanged", 2u);
   }
 }
 
@@ -478,6 +491,7 @@ TEST_F(ProfilePickerHandlerTest, UpdateProfileOrderAndRename) {
     base::ListValue args;
     args.Append(0);  // `from_index`
     args.Append(2);  // `to_index`
+    args.Append(static_cast<int>(ProfilePickerOrderUpdateType::kDragAndDrop));
     web_ui()->HandleReceivedMessage("updateProfileOrder", args);
   }
 
@@ -492,6 +506,8 @@ TEST_F(ProfilePickerHandlerTest, UpdateProfileOrderAndRename) {
     base::ListValue args;
     args.Append(2);  // `from_index`
     args.Append(1);  // `to_index`
+    args.Append(
+        static_cast<int>(ProfilePickerOrderUpdateType::kContextMenuButton));
     web_ui()->HandleReceivedMessage("updateProfileOrder", args);
   }
 
