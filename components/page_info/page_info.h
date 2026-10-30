@@ -386,11 +386,6 @@ class PageInfo : private content_settings::CookieControlsObserver,
       PageInfo::SafeBrowsingStatus* status,
       std::u16string* details);
 
-  // Returns PageSpecificContentSettings for the observed WebContents if
-  // present, nullptr otherwise.
-  content_settings::PageSpecificContentSettings*
-  GetPageSpecificContentSettings() const;
-
   // Whether the content setting of type |type| has changed via Page Info UI.
   bool HasContentSettingChangedViaPageInfo(ContentSettingsType type) const;
 
@@ -414,6 +409,9 @@ class PageInfo : private content_settings::CookieControlsObserver,
 
   // A web contents getter used to retrieve the associated WebContents object.
   base::WeakPtr<content::WebContents> web_contents_;
+
+  base::WeakPtr<content_settings::PageSpecificContentSettings>
+      page_specific_content_settings_;
 
   // The delegate allows the embedder to customize |PageInfo|'s behavior.
   std::unique_ptr<PageInfoDelegate> delegate_;

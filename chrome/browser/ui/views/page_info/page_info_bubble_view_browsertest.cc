@@ -57,6 +57,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/pref_names.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -84,10 +85,12 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/referrer.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "media/base/media_switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/cert_test_util.h"
@@ -372,6 +375,24 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
   net::EmbeddedTestServer bad_https_server_{
       net::EmbeddedTestServer::TYPE_HTTPS};
 };
+
+class PageInfoBubbleViewBrowserTestBFCache
+    : public PageInfoBubbleViewBrowserTest,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  PageInfoBubbleViewBrowserTestBFCache() {
+    content::InitBackForwardCacheFeature(&feature_list_,
+                                         /*enable_back_forward_cache=*/
+                                         GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         PageInfoBubbleViewBrowserTestBFCache,
+                         testing::Bool());
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, ShowBubble) {
   SetupSentimentServiceExpectations(/*interacted=*/false);
@@ -661,6 +682,57 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
   // Expect that the bubble is still open even after a subframe navigation has
   // happened.
   EXPECT_TRUE(PageInfoBubbleView::IsShowing(web_contents()));
+}
+
+IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTestBFCache,
+                       BackForwardCacheRestoreAfterBubbleClose) {
+  // A page that can be stored in the back-forward cache: the file:// pages
+  // used by the close-on-navigate tests go to the internal bubble, not
+  // PageInfo.
+  const GURL url_a = embedded_test_server()->GetURL("/title1.html");
+  const GURL url_b = embedded_test_server()->GetURL("/title2.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
+  content::RenderFrameHostWrapper rfh_a(web_contents()->GetPrimaryMainFrame());
+  OpenPageInfoBubble(browser());
+  EXPECT_EQ(PageInfoBubbleView::BUBBLE_PAGE_INFO,
+            PageInfoBubbleView::GetShownBubbleTypeForTesting(web_contents()));
+
+  // PageInfo must be destroyed while A is still in the back-forward cache, so
+  // wait for the bubble widget teardown instead of depending on its timing.
+  views::BubbleDialogDelegateView* page_info_bubble =
+      PageInfoBubbleView::GetPageInfoBubbleForTesting(web_contents());
+  ASSERT_NE(nullptr, page_info_bubble);
+  views::Widget* bubble_widget = page_info_bubble->GetWidget();
+  ASSERT_NE(nullptr, bubble_widget);
+  views::test::WidgetDestroyedWaiter bubble_destroyed_waiter(bubble_widget);
+
+  // Navigating to B closes the bubble (the primary frame already switched when
+  // PageInfo is destroyed).
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+  bubble_destroyed_waiter.Wait();
+  EXPECT_FALSE(PageInfoBubbleView::IsShowing(web_contents()));
+
+  // PageInfo must stop observing the settings of the page it was created for,
+  // even if that page is no longer primary. Restore A and notify its settings
+  // to verify that no observer is left behind.
+  if (content::BackForwardCache::IsBackForwardCacheFeatureEnabled()) {
+    ASSERT_FALSE(rfh_a.IsDestroyed())
+        << "A was evicted from the back-forward cache instead of stored";
+    EXPECT_EQ(content::RenderFrameHost::LifecycleState::kInBackForwardCache,
+              rfh_a->GetLifecycleState());
+
+    content::TestNavigationObserver back_observer(web_contents());
+    web_contents()->GetController().GoBack();
+    back_observer.Wait();
+    EXPECT_FALSE(rfh_a.IsDestroyed());
+    EXPECT_EQ(rfh_a.get(), web_contents()->GetPrimaryMainFrame());
+  }
+
+  auto* settings = content_settings::PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+  ASSERT_NE(nullptr, settings);
+  settings->OnContentBlocked(ContentSettingsType::NOTIFICATIONS);
 }
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
