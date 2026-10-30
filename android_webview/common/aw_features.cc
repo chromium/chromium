@@ -294,7 +294,7 @@ BASE_FEATURE(kWebViewMoveWorkToProviderInitThreadPool,
 // When enabled, accessing multi-profile APIs skips automatic initialization
 // of the Default profile during startup.
 BASE_FEATURE(kWebViewMultiProfileSkipDefaultProfile,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill switch for the WebView Navigate method.
 BASE_FEATURE(kWebViewNavigate, base::FEATURE_ENABLED_BY_DEFAULT);

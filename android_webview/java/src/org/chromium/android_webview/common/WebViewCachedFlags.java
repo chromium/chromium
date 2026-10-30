@@ -124,7 +124,7 @@ public class WebViewCachedFlags {
                             DefaultState.DISABLED),
                     Map.entry(
                             AwFeatures.WEBVIEW_MULTI_PROFILE_SKIP_DEFAULT_PROFILE,
-                            DefaultState.DISABLED),
+                            DefaultState.ENABLED),
                     Map.entry(
                             AwFeatures.WEBVIEW_OPT_IN_TO_GMS_BIND_SERVICE_OPTIMIZATION,
                             DefaultState.DISABLED),
