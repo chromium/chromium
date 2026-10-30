@@ -487,7 +487,6 @@ std::unique_ptr<ToolRequest> CreateCloseTabRequest(
   return std::make_unique<CloseTabToolRequest>(actor_surface_handle);
 }
 
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 std::unique_ptr<ToolRequest> CreateCreateWindowRequest(
     const CreateWindowAction& action) {
   return std::make_unique<CreateWindowToolRequest>();
@@ -511,6 +510,7 @@ std::unique_ptr<ToolRequest> CreateActivateWindowRequest(
   return std::make_unique<ActivateWindowToolRequest>(action.window_id());
 }
 
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 std::unique_ptr<ToolRequest> CreateLoadAndExtractContentRequest(
     const LoadAndExtractContentAction& action) {
   if (!base::FeatureList::IsEnabled(
@@ -1009,7 +1009,6 @@ CreateToolRequest(const optimization_guide::proto::Action& action) {
           action.translate_page();
       return CreateTranslatePageRequest(translate_page_action);
     }
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     case optimization_guide::proto::Action::kCreateWindow: {
       const CreateWindowAction& create_window_action = action.create_window();
       return CreateCreateWindowRequest(create_window_action);
@@ -1023,6 +1022,7 @@ CreateToolRequest(const optimization_guide::proto::Action& action) {
           action.activate_window();
       return CreateActivateWindowRequest(activate_window_action);
     }
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     case optimization_guide::proto::Action::kLoadAndExtractContent: {
       const LoadAndExtractContentAction& load_and_extract_content_action =
           action.load_and_extract_content();
@@ -1102,13 +1102,13 @@ constexpr absl::Overload kGetCapabilityFn{
                  apc::RuleMetadata::CAPABILITY_TRANSLATE_PAGE>,
     ToCapability<TypeToolRequest, apc::RuleMetadata::CAPABILITY_TYPE>,
     ToCapability<WaitToolRequest, apc::RuleMetadata::CAPABILITY_WAIT>,
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     ToCapability<ActivateWindowToolRequest,
                  apc::RuleMetadata::CAPABILITY_ACTIVATE_WINDOW>,
     ToCapability<CloseWindowToolRequest,
                  apc::RuleMetadata::CAPABILITY_CLOSE_WINDOW>,
     ToCapability<CreateWindowToolRequest,
                  apc::RuleMetadata::CAPABILITY_CREATE_WINDOW>,
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     ToCapability<LoadAndExtractContentToolRequest,
                  apc::RuleMetadata::CAPABILITY_LOAD_AND_EXTRACT_CONTENT>,
 #endif  // !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)

@@ -86,11 +86,9 @@ constexpr absl::Overload PreToolEventsFn{
           MouseMove(*tab, pt, source),
           MouseClick(*tab, tr.GetClickType(), tr.GetClickCount())};
     },
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     NoUiEvents<ActivateWindowToolRequest>,
     NoUiEvents<CloseWindowToolRequest>,
     NoUiEvents<CreateWindowToolRequest>,
-#endif
     NoUiEvents<ActivateTabToolRequest>,
     NoUiEvents<AddBookmarkToolRequest>,
     NoUiEvents<CloseGeminiPanelToolRequest>,
@@ -147,11 +145,9 @@ constexpr absl::Overload PreToolEventsFn{
     NoUiEvents<ScrollToToolRequest>};
 
 constexpr absl::Overload PostToolEventsFn{
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
     NoUiEvents<ActivateWindowToolRequest>,
     NoUiEvents<CloseWindowToolRequest>,
     NoUiEvents<CreateWindowToolRequest>,
-#endif
     NoUiEvents<ActivateTabToolRequest>,
     NoUiEvents<AddBookmarkToolRequest>,
     NoUiEvents<ClickToolRequest>,

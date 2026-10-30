@@ -42,9 +42,7 @@ namespace actor {
 class ToolRequestVisitorFunctor {
  public:
   virtual void Apply(const ActivateTabToolRequest&) = 0;
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   virtual void Apply(const ActivateWindowToolRequest&) = 0;
-#endif
   virtual void Apply(const AddBookmarkToolRequest&) = 0;
   virtual void Apply(const AttemptLoginToolRequest&) = 0;
   virtual void Apply(const AttemptFormFillingToolRequest&) = 0;
@@ -53,13 +51,9 @@ class ToolRequestVisitorFunctor {
   virtual void Apply(const ClickToolRequest&) = 0;
   virtual void Apply(const CloseGeminiPanelToolRequest&) = 0;
   virtual void Apply(const CloseTabToolRequest&) = 0;
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   virtual void Apply(const CloseWindowToolRequest&) = 0;
-#endif
   virtual void Apply(const CreateTabToolRequest&) = 0;
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   virtual void Apply(const CreateWindowToolRequest&) = 0;
-#endif
   virtual void Apply(const DragAndReleaseToolRequest&) = 0;
   virtual void Apply(const EnterFullscreenToolRequest&) = 0;
   virtual void Apply(const ExitFullscreenToolRequest&) = 0;

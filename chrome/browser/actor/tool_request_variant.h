@@ -14,9 +14,7 @@ namespace actor {
 // LINT.IfChange(ToolRequestVariant)
 // Type safe union of ToolRequest types.
 using ToolRequestVariant = std::variant<ActivateTabToolRequest,
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
                                         ActivateWindowToolRequest,
-#endif
                                         AddBookmarkToolRequest,
                                         AttemptLoginToolRequest,
                                         AttemptFormFillingToolRequest,
@@ -25,13 +23,9 @@ using ToolRequestVariant = std::variant<ActivateTabToolRequest,
                                         ClickToolRequest,
                                         CloseGeminiPanelToolRequest,
                                         CloseTabToolRequest,
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
                                         CloseWindowToolRequest,
-#endif
                                         CreateTabToolRequest,
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
                                         CreateWindowToolRequest,
-#endif
                                         DragAndReleaseToolRequest,
                                         EnterFullscreenToolRequest,
                                         ExitFullscreenToolRequest,

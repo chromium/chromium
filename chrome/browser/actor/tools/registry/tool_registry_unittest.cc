@@ -336,7 +336,7 @@ TEST(ToolRegistryTest, ActivateTabToolDefinition) {
               HasParamOfType(ActivateTabToolRequest::kTabIdParam, "integer"));
   EXPECT_THAT(*definition, RequiresParam(ActivateTabToolRequest::kTabIdParam));
 }
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+
 TEST(ToolRegistryTest, CreateWindowToolDefinition) {
   const std::optional<ToolDefinition> definition =
       CreateWindowToolRequest::GetToolDefinition();
@@ -374,6 +374,7 @@ TEST(ToolRegistryTest, CloseWindowToolDefinition) {
               RequiresParam(CloseWindowToolRequest::kWindowIdParam));
 }
 
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 TEST(ToolRegistryTest, LoadAndExtractContentToolDefinition) {
   const std::optional<ToolDefinition> definition =
       LoadAndExtractContentToolRequest::GetToolDefinition();
@@ -867,7 +868,7 @@ TEST(ToolRegistryTest, GetAllToolsContainsActivateTabTool) {
   EXPECT_TRUE(std::ranges::contains(service->tool_registry().GetAllTools(),
                                     ToolId::kActivateTab, &ToolDefinition::id));
 }
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
+
 TEST(ToolRegistryTest, GetAllToolsContainsCreateWindowTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;
@@ -903,6 +904,7 @@ TEST(ToolRegistryTest, GetAllToolsContainsCloseWindowTool) {
                                     ToolId::kCloseWindow, &ToolDefinition::id));
 }
 
+#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
 TEST(ToolRegistryTest, GetAllToolsContainsLoadAndExtractContentTool) {
   base::test::ScopedFeatureList scoped_feature_list(features::kGlicActor);
   content::BrowserTaskEnvironment task_environment;

@@ -5,11 +5,11 @@
 #include "chrome/browser/actor/tools/window_management_tool.h"
 
 #include "base/functional/bind.h"
-#include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
@@ -17,7 +17,6 @@
 #include "ui/base/base_window.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
@@ -26,7 +25,6 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "url/url_constants.h"
 #endif
@@ -121,11 +119,13 @@ void WindowManagementTool::Invoke(ToolCallback callback) {
 
   switch (action_) {
 #if BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/470475787): Port these actions to Android. Their
-    // requests aren't dispatched there yet, so they can't reach this point.
+    // TODO(crbug.com/470475787): Port window creation to Android.
     case Action::kCreate:
-    case Action::kActivate:
-      NOTREACHED();
+      OnInvokeFinished(
+          MakeResult(mojom::ActionResultCode::kToolUnknown,
+                     /*requires_page_stabilization=*/false,
+                     "Creating windows is not supported on Android yet."));
+      break;
 #else
     case Action::kCreate: {
       BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_NORMAL,
@@ -153,6 +153,7 @@ void WindowManagementTool::Invoke(ToolCallback callback) {
       browser->GetWindow()->Show();
       break;
     }
+#endif  // BUILDFLAG(IS_ANDROID)
     case Action::kActivate: {
       BrowserWindowInterface* browser = GetTargetBrowser();
       mojom::ActionResultPtr result = ValidateBrowserWindow(browser);
@@ -166,14 +167,22 @@ void WindowManagementTool::Invoke(ToolCallback callback) {
                                     "The target window could not be found."));
         return;
       }
+#if BUILDFLAG(IS_ANDROID)
+      // Android's BrowserWindowInterface doesn't report activation changes,
+      // and bringing a task to the front is asynchronous in the OS, so finish
+      // once the request has been made rather than waiting for the window to
+      // become active.
+      browser->GetWindow()->Activate();
+      OnInvokeFinished(MakeOkResult());
+#else
       browser_did_become_active_subscription_ =
           browser->RegisterDidBecomeActive(base::BindRepeating(
               &WindowManagementTool::OnBrowserDidBecomeActive,
               base::Unretained(this)));
       browser->GetWindow()->Show();
+#endif
       break;
     }
-#endif  // BUILDFLAG(IS_ANDROID)
     case Action::kClose: {
       BrowserWindowInterface* browser = GetTargetBrowser();
       mojom::ActionResultPtr result = ValidateBrowserWindow(browser);
@@ -259,17 +268,14 @@ void WindowManagementTool::UpdateTaskBeforeInvoke(ActorTask& task,
     // If closing a window, ensure all acting tabs in this window are removed
     // from the acting set. In particular, this ensures the task isn't stopped
     // when the acting tab is closed.
-#if BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/470475787): Port to Android, which has no TabStripModel.
-    NOTREACHED();
-#else
     BrowserWindowInterface* browser = GetTargetBrowser();
-    if (browser) {
-      for (tabs::TabInterface* tab : *browser->GetTabStripModel()) {
+    TabListInterface* tab_list =
+        browser ? TabListInterface::From(browser) : nullptr;
+    if (tab_list) {
+      for (tabs::TabInterface* tab : tab_list->GetAllTabs()) {
         task.RemoveTab(tab->GetHandle());
       }
     }
-#endif
   }
   std::move(callback).Run(MakeOkResult());
 }

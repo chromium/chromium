@@ -8,7 +8,6 @@
 #include <optional>
 #include <string_view>
 
-#include "build/build_config.h"
 #include "chrome/browser/actor/tools/registry/tool_definition.h"
 #include "chrome/browser/actor/tools/registry/tool_definition_builder.h"
 #include "chrome/browser/actor/tools/registry/tool_schema_builder.h"
@@ -19,7 +18,6 @@
 namespace actor {
 namespace {
 
-#if !BUILDFLAG(IS_ANDROID)
 constexpr std::string_view kCreateWindowToolDescription =
     "Opens a new browser window.";
 
@@ -34,7 +32,6 @@ constexpr std::string_view kCloseWindowToolDescription =
 
 constexpr std::string_view kCloseWindowIdParamDescription =
     "The ID of the window to close.";
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 constexpr std::string_view kEnterFullscreenToolDescription =
     "Enter full screen mode for the active browser window.";
@@ -44,9 +41,6 @@ constexpr std::string_view kExitFullscreenToolDescription =
 
 }  // namespace
 
-// TODO(crbug.com/470475787): These requests aren't in ToolRequestVariant on
-// Android yet, so the visitor has no overloads for them there.
-#if !BUILDFLAG(IS_ANDROID)
 // CreateWindowToolRequest
 CreateWindowToolRequest::CreateWindowToolRequest() = default;
 CreateWindowToolRequest::~CreateWindowToolRequest() = default;
@@ -134,7 +128,6 @@ void CloseWindowToolRequest::Apply(ToolRequestVisitorFunctor& f) const {
 std::string_view CloseWindowToolRequest::Name() const {
   return kName;
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // EnterFullscreenToolRequest
 EnterFullscreenToolRequest::EnterFullscreenToolRequest(int32_t window_id)

@@ -22,11 +22,9 @@ class ConvertToVariantFn : public ToolRequestVisitorFunctor {
   void Apply(const ActivateTabToolRequest& tr) override {
     var_ = ToolRequestVariant(tr);
   }
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   void Apply(const ActivateWindowToolRequest& tr) override {
     var_ = ToolRequestVariant(tr);
   }
-#endif
   void Apply(const AddBookmarkToolRequest& tr) override {
     var_ = ToolRequestVariant(tr);
   }
@@ -51,19 +49,15 @@ class ConvertToVariantFn : public ToolRequestVisitorFunctor {
   void Apply(const CloseTabToolRequest& tr) override {
     var_ = ToolRequestVariant(tr);
   }
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   void Apply(const CloseWindowToolRequest& tr) override {
     var_ = ToolRequestVariant(tr);
   }
-#endif
   void Apply(const CreateTabToolRequest& tr) override {
     var_ = ToolRequestVariant(tr);
   }
-#if !BUILDFLAG(SKIP_ANDROID_UNMIGRATED_ACTOR_FILES)
   void Apply(const CreateWindowToolRequest& tr) override {
     var_ = ToolRequestVariant(tr);
   }
-#endif
   void Apply(const DragAndReleaseToolRequest& tr) override {
     var_ = ToolRequestVariant(tr);
   }

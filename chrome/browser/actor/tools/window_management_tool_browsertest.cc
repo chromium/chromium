@@ -22,7 +22,11 @@
 #include "ui/base/base_window.h"
 #include "ui/base/ozone_buildflags.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "base/command_line.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#else
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #endif
@@ -41,6 +45,15 @@ class ActorWindowManagementToolBrowserTest : public ActorToolsTest {
  public:
   ActorWindowManagementToolBrowserTest() = default;
   ~ActorWindowManagementToolBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ActorToolsTest::SetUpCommandLine(command_line);
+#if BUILDFLAG(IS_ANDROID)
+    // Opening a second window launches ChromeTabbedActivity, which would show
+    // the first-run experience instead of a browser window.
+    command_line->AppendSwitch("disable-fre");
+#endif
+  }
 
   void SetUpOnMainThread() override {
     ActorToolsTest::SetUpOnMainThread();
@@ -90,9 +103,25 @@ class ActorWindowManagementToolBrowserTest : public ActorToolsTest {
     ASSERT_TRUE(base::test::RunUntil(
         [&]() { return IsFullscreen(browser_window) == fullscreen; }));
   }
+
+  // Waits until `browser_window` is the most recently activated window.
+  void WaitForWindowActive(BrowserWindowInterface* browser_window) {
+#if BUILDFLAG(IS_ANDROID)
+    // Bringing a task to the front is asynchronous in the OS; the window's
+    // activation time is recorded when its Activity becomes top-resumed.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return GetLastActiveBrowserWindowInterfaceWithAnyProfile() ==
+             browser_window;
+    }));
+#else
+    ui_test_utils::WaitForBrowserSetLastActive(browser_window);
+#endif
+  }
+
+  // Opens a second window with one tab and waits for it to become active.
+  BrowserWindowInterface* OpenSecondWindow();
 };
 
-// TODO(crbug.com/470475787): Port the remaining window actions to Android.
 #if !BUILDFLAG(IS_ANDROID)
 class NewWindowObserver : public BrowserCollectionObserver {
  public:
@@ -113,7 +142,41 @@ class NewWindowObserver : public BrowserCollectionObserver {
   base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
       profile_browser_collection_observation_{this};
 };
+#endif  // !BUILDFLAG(IS_ANDROID)
 
+BrowserWindowInterface*
+ActorWindowManagementToolBrowserTest::OpenSecondWindow() {
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/470475787): Use the CreateWindow tool once it's ported.
+  // Window creation launches a new Activity asynchronously; the callback
+  // runs once the window exists and has a tab. A popup is used because a
+  // normal window launches adjacent to the test Activity in split-screen
+  // mode, and leaving split-screen when it closes triggers a configuration
+  // change that recreates the test Activity, which browser tests forbid
+  // (crbug.com/40237216). A popup opens in its own full-screen task.
+  BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_POPUP,
+                                   *GetProfile(),
+                                   /*from_user_gesture=*/false);
+  TestFuture<BrowserWindowInterface*> future;
+  CreateBrowserWindow(std::move(params), future.GetCallback());
+  BrowserWindowInterface* new_window = future.Get();
+#else
+  NewWindowObserver new_window_observer(GetProfile());
+  std::unique_ptr<ToolRequest> action = MakeCreateWindowRequest();
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+  BrowserWindowInterface* new_window = new_window_observer.created_browser();
+#endif
+  EXPECT_TRUE(new_window);
+  if (new_window) {
+    WaitForWindowActive(new_window);
+  }
+  return new_window;
+}
+
+// TODO(crbug.com/470475787): Port CreateWindow to Android.
+#if !BUILDFLAG(IS_ANDROID)
 // Ensure CreateWindow creates a new window and makes it the active window.
 IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, CreateWindow) {
   const size_t initial_browser_count = GetAllBrowserWindowInterfaces().size();
@@ -184,17 +247,17 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest,
   EXPECT_EQ(*actor_task().GetTabs().begin(), first_new_window_tab->GetHandle());
 }
 
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Ensure CloseWindow closes the window with the given ID.
 IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, CloseWindow) {
   const size_t initial_browser_count = GetAllBrowserWindowInterfaces().size();
   BrowserWindowInterface* initial_active_browser =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
 
-  // Create a new window to close.
-  std::unique_ptr<ToolRequest> create_action = MakeCreateWindowRequest();
-  ActResultFuture create_result;
-  actor_task().Act(ToRequestList(create_action), create_result.GetCallback());
-  ExpectOkResult(create_result);
+  // Open a new window to close.
+  BrowserWindowInterface* new_window = OpenSecondWindow();
+  ASSERT_TRUE(new_window);
   ASSERT_EQ(initial_browser_count + 1, GetAllBrowserWindowInterfaces().size());
 
   // Close the new window.
@@ -207,7 +270,7 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, CloseWindow) {
   ExpectOkResult(close_result);
 
   EXPECT_EQ(initial_browser_count, GetAllBrowserWindowInterfaces().size());
-  ui_test_utils::WaitForBrowserSetLastActive(initial_active_browser);
+  WaitForWindowActive(initial_active_browser);
   EXPECT_EQ(initial_active_browser,
             GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 }
@@ -215,17 +278,16 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, CloseWindow) {
 // Ensure CloseWindow removes the window's tab from the acting set.
 IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest,
                        CloseWindowRemovesTabFromActingSet) {
-  BrowserWindowInterface* new_window = nullptr;
-
-  // Create a new window to close.
-  {
-    NewWindowObserver new_window_observer(GetProfile());
-    std::unique_ptr<ToolRequest> create_action = MakeCreateWindowRequest();
-    ActResultFuture create_result;
-    actor_task().Act(ToRequestList(create_action), create_result.GetCallback());
-    ExpectOkResult(create_result);
-    new_window = new_window_observer.created_browser();
-  }
+  BrowserWindowInterface* new_window = OpenSecondWindow();
+  ASSERT_TRUE(new_window);
+#if BUILDFLAG(IS_ANDROID)
+  // On desktop the CreateWindow tool adds the new window's tab to the acting
+  // set. That tool isn't available on Android, so add the tab directly.
+  tabs::TabInterface* new_tab =
+      TabListInterface::From(new_window)->GetActiveTab();
+  ASSERT_TRUE(new_tab);
+  AddTabToTask(*new_tab, actor_task());
+#endif
 
   ASSERT_EQ(actor_task().GetTabs().size(), 1ul);
 
@@ -251,16 +313,10 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, ActivateWindow) {
   BrowserWindowInterface* initial_window =
       GetLastActiveBrowserWindowInterfaceWithAnyProfile();
 
-  // Create a new window, which should become active.
-  NewWindowObserver new_window_observer(GetProfile());
-  std::unique_ptr<ToolRequest> create_action = MakeCreateWindowRequest();
-  ActResultFuture create_result;
-  actor_task().Act(ToRequestList(create_action), create_result.GetCallback());
-  ExpectOkResult(create_result);
-
-  BrowserWindowInterface* new_window = new_window_observer.created_browser();
+  // Open a new window, which becomes active.
+  BrowserWindowInterface* new_window = OpenSecondWindow();
+  ASSERT_TRUE(new_window);
   ASSERT_NE(new_window, initial_window);
-  ui_test_utils::WaitForBrowserSetLastActive(new_window);
 
   // Activate the original window.
   std::unique_ptr<ToolRequest> activate_action =
@@ -270,11 +326,10 @@ IN_PROC_BROWSER_TEST_F(ActorWindowManagementToolBrowserTest, ActivateWindow) {
                    activate_result.GetCallback());
   ExpectOkResult(activate_result);
 
-  ui_test_utils::WaitForBrowserSetLastActive(initial_window);
+  WaitForWindowActive(initial_window);
   EXPECT_EQ(initial_window,
             GetLastActiveBrowserWindowInterfaceWithAnyProfile());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Ensure EnterFullscreen enters fullscreen for a specific window ID and is a
 // no-op if already in fullscreen.
