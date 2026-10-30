@@ -1,4 +1,8 @@
 {
+  "$build/chromium_orchestrator": {
+    "compilator": "ios-simulator-full-configs-compilator",
+    "compilator_watcher_git_revision": "27c191f304c8d7329a393d8a69020fc14032c3c3"
+  },
   "$build/chromium_tests_builder_config": {
     "builder_config": {
       "additional_exclusions": [
@@ -67,7 +71,7 @@
     "keep_going": 3,
     "profile_mode": "cloud",
     "project": "rbe-chromium-untrusted",
-    "remote_jobs": 150
+    "remote_jobs": -1
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -78,6 +82,6 @@
   },
   "builder_group": "tryserver.chromium.mac",
   "cq": "path-based",
-  "recipe": "chromium_trybot",
+  "recipe": "chromium/orchestrator",
   "xcode_build_version": "27a266a"
 }

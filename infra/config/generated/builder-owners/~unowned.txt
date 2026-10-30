@@ -89,7 +89,6 @@ try/ios-device
 try/ios-fieldtrial-rel
 try/ios-simulator
 try/ios-simulator-code-coverage
-try/ios-simulator-full-configs
 try/ios-simulator-noncq
 try/ios27-beta-simulator
 try/ios27-duo-beta-simulator

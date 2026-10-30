@@ -19,6 +19,8 @@ ci/mac26-arm64-rel-tests
 ci/mac26-tests-dbg
 ci/mac26-x64-rel-tests
 try/ios-simulator-compilator
+try/ios-simulator-full-configs
+try/ios-simulator-full-configs-compilator
 try/ios-vm
 try/mac-arm64-clobber-rel
 try/mac-arm64-on-arm64-rel

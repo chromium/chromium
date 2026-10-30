@@ -124,7 +124,6 @@ exempted_from_contact_builders = {
         "ios-fieldtrial-rel",
         "ios-simulator",
         "ios-simulator-code-coverage",
-        "ios-simulator-full-configs",
         "ios-simulator-noncq",
         "ios27-beta-simulator",
         "ios27-duo-beta-simulator",
