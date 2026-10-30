@@ -1,5 +1,6 @@
 include_rules = [
   "+chrome/browser/tab_list",
+  "+chrome/browser/ui/accelerator_utils.h",
   "+chrome/browser/ui/browser_tab_strip_tracker.h",
   "+chrome/browser/ui/browser_tab_strip_tracker_delegate.h",
   "+chrome/browser/ui/browser_window/public",

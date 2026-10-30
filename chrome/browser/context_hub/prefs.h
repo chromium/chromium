@@ -21,6 +21,13 @@ inline constexpr char kContextHubTabContextSyncContainerId[] =
 inline constexpr char kContextHubTopicsFishfoodFeedback[] =
     "context_hub.topics.fishfood_feedback";
 
+// User-configured keyboard shortcut that opens the Memory Banks search
+// palette, stored in `ui::Command` accelerator string format (for example,
+// "Ctrl+Shift+K" or "Command+Shift+K"). Empty when no shortcut is set, which is
+// the default.
+inline constexpr char kContextHubBrowseMemoryBanksShortcut[] =
+    "context_hub.memory_banks.browse_shortcut";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace context_hub::prefs

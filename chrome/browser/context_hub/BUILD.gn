@@ -25,6 +25,24 @@ source_set("prefs") {
   ]
 }
 
+if (!is_android) {
+  source_set("memory_banks_shortcut") {
+    sources = [
+      "memory_banks_shortcut.cc",
+      "memory_banks_shortcut.h",
+    ]
+
+    deps = [
+      ":prefs",
+      "//chrome/browser/ui:accelerator_utils_headers",
+      "//components/prefs",
+      "//ui/base",
+      "//ui/events:event_constants",
+      "//ui/events:events_base",
+    ]
+  }
+}
+
 source_set("context_hub") {
   sources = [
     "context_hub_service.cc",
@@ -125,6 +143,16 @@ source_set("unit_tests") {
   ]
 
   if (!is_android) {
-    deps += [ "//chrome/browser/ui/tabs:tab_strip_model_observer" ]
+    sources += [ "memory_banks_shortcut_unittest.cc" ]
+    deps += [
+      ":memory_banks_shortcut",
+      ":prefs",
+      "//chrome/browser/ui:accelerator_utils_headers",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+      "//components/prefs:test_support",
+      "//ui/base",
+      "//ui/events:event_constants",
+      "//ui/events:events_base",
+    ]
   }
 }
