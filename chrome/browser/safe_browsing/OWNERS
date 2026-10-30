@@ -23,6 +23,4 @@ per-file *client_side_detection*=andysjlim@chromium.org #{LAST_RESORT_SUGGESTION
 per-file *client_side_detection*=skrakowi@chromium.org #{LAST_RESORT_SUGGESTION}
 per-file *intelligent_scan_delegate*=skrakowi@chromium.org
 
-per-file *notification_content_detection*=skrakowi@chromium.org
-
 per-file chrome_safe_browsing_hats_delegate*=nwokedi@chromium.org

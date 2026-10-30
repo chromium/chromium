@@ -1,8 +1,4 @@
-per-file deep_scanning_browsertest_base*=domfc@chromium.org
 per-file deep_scanning_utils*=domfc@chromium.org
-per-file deep_scanning_test_utils*=domfc@chromium.org
-per-file file_opening_job*=domfc@chromium.org
-per-file resumable_uploader*=nancylanxiao@google.com
 
 # Primary:
 yawfrempong@google.com
