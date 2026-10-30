@@ -1227,6 +1227,15 @@ domain Page
       optional integer maxHeight
       # Maximum frame rate in frames per second.
       optional integer frameRate
+      # The area to record. Defaults to `target`.
+      experimental optional enum captureArea
+        # Records only the target page.
+        target
+        # Records the browser window that shows the target, like window
+        # capture with getDisplayMedia(). If the target is a docked DevTools
+        # window, the window shows DevTools and the inspected page. Only
+        # available to trusted clients and to embedders that support it.
+        browserWindow
     returns
       # A handle of the stream that holds resulting screencast data.
       experimental IO.StreamHandle stream

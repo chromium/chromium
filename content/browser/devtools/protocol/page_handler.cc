@@ -1688,22 +1688,52 @@ Response PageHandler::StartScreencast(std::optional<std::string> format,
   return Response::Success();
 }
 
-Response PageHandler::StartScreenRecording(std::optional<bool> audio,
-                                           std::optional<int> max_width,
-                                           std::optional<int> max_height,
-                                           std::optional<int> frame_rate,
-                                           std::string* out_stream) {
+void PageHandler::StartScreenRecording(
+    std::optional<bool> audio,
+    std::optional<int> max_width,
+    std::optional<int> max_height,
+    std::optional<int> frame_rate,
+    std::optional<std::string> capture_area,
+    std::unique_ptr<StartScreenRecordingCallback> callback) {
   if (screencast_encoder_ || media_recorder_) {
-    return Response::ServerError("Screencast is already active");
+    callback->sendFailure(
+        Response::ServerError("Screencast is already active"));
+    return;
+  }
+
+  const std::string area = capture_area.value_or(
+      Page::StartScreenRecording::CaptureAreaEnum::Target);
+  const bool record_browser_window =
+      area == Page::StartScreenRecording::CaptureAreaEnum::BrowserWindow;
+  if (area != Page::StartScreenRecording::CaptureAreaEnum::Target &&
+      !record_browser_window) {
+    callback->sendFailure(Response::InvalidParams("Unknown captureArea"));
+    return;
+  }
+  // The browser window shows more than the target page, for example the tab
+  // strip and the omnibox. Thus only trusted clients can record it.
+  if (record_browser_window && !is_trusted_) {
+    callback->sendFailure(
+        Response::ServerError("Recording the browser window is not allowed."));
+    return;
   }
 
   Response response = AssureTopLevelActiveFrame();
   if (response.IsError()) {
-    return response;
+    callback->sendFailure(std::move(response));
+    return;
   }
   RenderWidgetHostImpl* widget_host = host_->GetRenderWidgetHost();
   if (!widget_host) {
-    return Response::InternalError();
+    callback->sendFailure(Response::InternalError());
+    return;
+  }
+
+  // No embedder supports the browser window yet.
+  if (record_browser_window) {
+    callback->sendFailure(Response::ServerError(
+        "Recording the browser window is not supported for this target."));
+    return;
   }
 
   media_recorder_ = std::make_unique<MediaRecorder>(
@@ -1720,11 +1750,11 @@ Response PageHandler::StartScreenRecording(std::optional<bool> audio,
       host_, has_audio, max_width.value_or(800), max_height.value_or(600), fps);
   if (result.IsError()) {
     media_recorder_.reset();
-    return result;
+    callback->sendFailure(std::move(result));
+    return;
   }
 
-  *out_stream = media_recorder_->GetStream();
-  return Response::Success();
+  callback->sendSuccess(media_recorder_->GetStream());
 }
 
 void PageHandler::StopScreenRecording(

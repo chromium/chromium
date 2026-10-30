@@ -1,0 +1,14 @@
+Tests the captureArea parameter of Page.startScreenRecording.
+Unknown capture area:
+{
+    code : -32602
+    message : Unknown captureArea
+}
+Browser window:
+{
+    code : -32000
+    message : Recording the browser window is not supported for this target.
+}
+Target:
+stream handle successfully created
+
