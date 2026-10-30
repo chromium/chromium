@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/bwg/model/gemini_settings_constants.h"
 
+NSString* const kGeminiSettingsViewTableIdentifier =
+    @"GeminiSettingsViewTableIdentifier";
 NSString* const kGeminiSettingsGeminiAppsActivityIdentifier =
     @"GeminiSettingsGeminiAppsActivityIdentifier";
 NSString* const kGeminiSettingsPersonalizationIdentifier =

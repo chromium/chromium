@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+// The accessibility identifier for the Gemini settings table view.
+extern NSString* const kGeminiSettingsViewTableIdentifier;
 // The accessibility identifier for the Gemini Apps Activity item.
 extern NSString* const kGeminiSettingsGeminiAppsActivityIdentifier;
 // The accessibility identifier for the Personalization item.
