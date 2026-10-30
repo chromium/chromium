@@ -1149,6 +1149,7 @@ source_set("browser_tests") {
       "glic_policy_browsertest.cc",
       "glic_profile_manager_browsertest.cc",
       "glic_promotion_source_navigation_observer_browsertest.cc",
+      "glic_settings_page_browsertest.cc",
       "glic_user_status_browsertest.cc",
       "host/context/glic_tab_data_browsertest.cc",
       "host/glic_focus_browsertest.cc",
