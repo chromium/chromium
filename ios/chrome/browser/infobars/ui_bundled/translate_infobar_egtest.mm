@@ -1013,11 +1013,6 @@ TAG_SMOKE_TEST(TranslateInfobarTestCase, testInfobarTranslateRevert);
 // Test that tapping cancel in the Modal doesn't save changes to source/target
 // languages and doesn't start a Translate
 - (void)testTranslateModalCancel {
-  // TODO(crbug.com/516439940): Re-enable this flaky test on iOS below 26.
-  if (!base::ios::IsRunningOnIOS26OrLater()) {
-    EARL_GREY_TEST_DISABLED(@"Flaky on iOS below 26.");
-  }
-
   // Load a page with French text.
   GURL URL = self.testServer->GetURL(kFrenchPagePath);
   [ChromeEarlGrey loadURL:URL];
@@ -1082,6 +1077,13 @@ TAG_SMOKE_TEST(TranslateInfobarTestCase, testInfobarTranslateRevert);
                                           grey_accessibilityTrait(
                                               UIAccessibilityTraitButton),
                                           nil)] performAction:grey_tap()];
+
+  // Wait for the modal to dismiss before tapping the translate badge.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:grey_accessibilityID(
+                                                 kInfobarModalCancelButton)];
+  GREYAssertTrue([self isTranslateBadgeVisible],
+                 @"Translate badge was not found.");
 
   // Open modal by selecting the badge that shouldn't be accepted.
   [[EarlGrey
