@@ -185,6 +185,7 @@ build_webui("build") {
       "elements/viewer_bottom_toolbar_dropdown.css",
       "elements/viewer_side_panel.css",
       "elements/viewer_signature_bottom_toolbar.css",
+      "elements/viewer_signature_dialog.css",
       "elements/viewer_signature_side_panel.css",
       "elements/viewer_text_bottom_toolbar.css",
       "elements/viewer_text_side_panel.css",

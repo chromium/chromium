@@ -32,14 +32,16 @@ suite('Ink2SignatureDialogTest', () => {
     const dialog = getSignatureDialog();
     assertTrue(!!dialog);
     assertTrue(dialog.$.dialog.open);
-    assertTrue(isVisible(dialog.$.close));
     assertTrue(isVisible(dialog.$.clear));
     assertTrue(isVisible(dialog.$.create));
 
     // Clicking the close button closes the dialog while staying in signature
     // mode.
+    const closeButton =
+        dialog.$.dialog.shadowRoot.querySelector<HTMLElement>('#close');
+    assertTrue(!!closeButton);
     const whenClosed = eventToPromise('close', dialog);
-    dialog.$.close.click();
+    closeButton.click();
     await whenClosed;
     await microtasksFinished();
 
