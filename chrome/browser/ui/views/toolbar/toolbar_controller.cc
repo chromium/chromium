@@ -4,15 +4,20 @@
 
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 
+#include <algorithm>
+#include <array>
 #include <optional>
 #include <ranges>
+#include <string>
 #include <string_view>
+#include <utility>
 #include <variant>
 #include <vector>
 
+#include "base/containers/fixed_flat_map.h"
+#include "base/containers/flat_map.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -208,72 +213,90 @@ ToolbarController::GetDefaultOverflowOrder() {
 }
 
 // Every activate identifier should have an action name in order to emit
-// metrics. Please update action names in actions.xml to match this map.
+// metrics. Please update action names in actions.xml to match these tables.
 std::string ToolbarController::GetActionNameFromElementIdentifier(
     std::variant<ui::ElementIdentifier, actions::ActionId> identifier) {
-  static const base::NoDestructor<base::flat_map<
-      std::variant<ui::ElementIdentifier, actions::ActionId>, std::string_view>>
-      identifier_to_action_name_map(
-          {{kToolbarAvatarButtonElementId, "AvatarButton"},
-           {kToolbarBatterySaverButtonElementId, "BatterySaverButton"},
-           {kExtensionsMenuButtonElementId, "ExtensionsMenuButton"},
-           {kToolbarForwardButtonElementId, "ForwardButton"},
-           {kActionForward, "ForwardButton"},
-           {kToolbarHomeButtonElementId, "HomeButton"},
-           {kActionHome, "HomeButton"},
-           {kToolbarMediaButtonElementId, "MediaButton"},
-           {kToolbarSidePanelButtonElementId, "SidePanelButton"},
-           {kToolbarSplitTabsToolbarButtonElementId, "SplitTabs"},
-           {kPinnedToolbarActionShowSidePanelContextualTasksElementId,
-            "PinnedContextualTasksSidePanelButton"},
-           {kActionSidePanelShowContextualTasks,
-            "PinnedContextualTasksSidePanelButton"},
-           {kActionClearBrowsingData, "PinnedClearBrowsingDataButton"},
-           {kActionCopyUrl, "PinnedCopyLinkButton"},
-           {kActionDevTools, "PinnedDeveloperToolsButton"},
-           {kActionNewIncognitoWindow, "PinnedNewIncognitoWindowButton"},
-           {kActionNewIsolatedWindow, "PinnedNewIsolatedWindowButton"},
-           {kActionPrint, "PinnedPrintButton"},
-           {kActionQrCodeGenerator, "PinnedQrCodeGeneratorButton"},
-           {kActionRouteMedia, "PinnedCastButton"},
-           {kActionSendTabToSelf, "PinnedSendTabToSelfButton"},
-           {kActionShowAddressesBubbleOrPage,
-            "PinnedShowAddressesBubbleOrPageButton"},
-           {kActionShowChromeLabs, "PinnedShowChromeLabsButton"},
-           {kActionShowDownloads, "PinnedShowDownloadsButton"},
-           {kActionShowPasswordManager,
-            "PinnedShowPasswordsBubbleOrPageButton"},
-           {kActionShowPasswordsBubbleOrPage,
-            "PinnedShowPasswordsBubbleOrPageButton"},
-           {kActionShowPaymentMethods, "PinnedShowPaymentsBubbleOrPageButton"},
-           {kActionShowPaymentsBubbleOrPage,
-            "PinnedShowPaymentsBubbleOrPageButton"},
-           {kActionShowTranslate, "PinnedShowTranslateButton"},
-           {kActionSidePanelShowBookmarks, "PinnedShowBookmarkSidePanelButton"},
-           {kActionSidePanelShowReadAnything,
-            "PinnedShowReadAnythingSidePanelButton"},
-           {kActionSidePanelShowHistoryCluster,
-            "PinnedShowHistorySidePanelButton"},
-           {kActionSidePanelShowReadingList,
-            "PinnedShowReadingListSidePanelButton"},
-           {kActionSidePanelShowSearchCompanion,
-            "PinnedShowSearchCompanionSidePanelButton"},
-           {kActionTaskManager, "PinnedTaskManagerButton"},
-           {kActionTtcToolbar, "PinnedTtcButton"},
-           {kActionSidePanelShowLensOverlayResults,
-            "PinnedShowLensOverlayResultsSidePanelButton"},
-           {kActionSendSharedTabGroupFeedback, "SharedTabGroupFeedbackButton"},
-           {kActionTabSearch, "PinnedTabSearchButton"},
-           {kActionSidePanelShowGlic, "PinnedGlicButton"},
-           {kActionSidePanelShowTabsFromOtherDevices,
-            "PinnedTabsFromOtherDevicesButton"},
-           {kGlicButtonElementId, "GlicButtonElementId"}});
+  static constexpr auto kElementIdToActionName =
+      std::to_array<std::pair<ui::ElementIdentifier, std::string_view>>({
+          {kToolbarAvatarButtonElementId, "AvatarButton"},
+          {kToolbarBatterySaverButtonElementId, "BatterySaverButton"},
+          {kExtensionsMenuButtonElementId, "ExtensionsMenuButton"},
+          {kToolbarForwardButtonElementId, "ForwardButton"},
+          {kToolbarHomeButtonElementId, "HomeButton"},
+          {kToolbarMediaButtonElementId, "MediaButton"},
+          {kToolbarSidePanelButtonElementId, "SidePanelButton"},
+          {kToolbarSplitTabsToolbarButtonElementId, "SplitTabs"},
+          {kPinnedToolbarActionShowSidePanelContextualTasksElementId,
+           "PinnedContextualTasksSidePanelButton"},
+          {kGlicButtonElementId, "GlicButtonElementId"},
+      });
 
-  const auto it = identifier_to_action_name_map->find(identifier);
-  return it == identifier_to_action_name_map->end()
+  static constexpr auto kActionIdToActionNameMap =
+      base::MakeFixedFlatMap<actions::ActionId, std::string_view>({
+          {kActionForward, "ForwardButton"},
+          {kActionHome, "HomeButton"},
+          {kActionSidePanelShowContextualTasks,
+           "PinnedContextualTasksSidePanelButton"},
+          {kActionClearBrowsingData, "PinnedClearBrowsingDataButton"},
+          {kActionCopyUrl, "PinnedCopyLinkButton"},
+          {kActionDevTools, "PinnedDeveloperToolsButton"},
+          {kActionNewIncognitoWindow, "PinnedNewIncognitoWindowButton"},
+          {kActionNewIsolatedWindow, "PinnedNewIsolatedWindowButton"},
+          {kActionPrint, "PinnedPrintButton"},
+          {kActionQrCodeGenerator, "PinnedQrCodeGeneratorButton"},
+          {kActionRouteMedia, "PinnedCastButton"},
+          {kActionSendTabToSelf, "PinnedSendTabToSelfButton"},
+          {kActionShowAddressesBubbleOrPage,
+           "PinnedShowAddressesBubbleOrPageButton"},
+          {kActionShowChromeLabs, "PinnedShowChromeLabsButton"},
+          {kActionShowDownloads, "PinnedShowDownloadsButton"},
+          {kActionShowPasswordManager, "PinnedShowPasswordsBubbleOrPageButton"},
+          {kActionShowPasswordsBubbleOrPage,
+           "PinnedShowPasswordsBubbleOrPageButton"},
+          {kActionShowPaymentMethods, "PinnedShowPaymentsBubbleOrPageButton"},
+          {kActionShowPaymentsBubbleOrPage,
+           "PinnedShowPaymentsBubbleOrPageButton"},
+          {kActionShowTranslate, "PinnedShowTranslateButton"},
+          {kActionSidePanelShowBookmarks, "PinnedShowBookmarkSidePanelButton"},
+          {kActionSidePanelShowReadAnything,
+           "PinnedShowReadAnythingSidePanelButton"},
+          {kActionSidePanelShowHistoryCluster,
+           "PinnedShowHistorySidePanelButton"},
+          {kActionSidePanelShowReadingList,
+           "PinnedShowReadingListSidePanelButton"},
+          {kActionSidePanelShowSearchCompanion,
+           "PinnedShowSearchCompanionSidePanelButton"},
+          {kActionTaskManager, "PinnedTaskManagerButton"},
+          {kActionTtcToolbar, "PinnedTtcButton"},
+          {kActionSidePanelShowLensOverlayResults,
+           "PinnedShowLensOverlayResultsSidePanelButton"},
+          {kActionSendSharedTabGroupFeedback, "SharedTabGroupFeedbackButton"},
+          {kActionTabSearch, "PinnedTabSearchButton"},
+          {kActionSidePanelShowGlic, "PinnedGlicButton"},
+          {kActionSidePanelShowTabsFromOtherDevices,
+           "PinnedTabsFromOtherDevicesButton"},
+      });
+
+  const std::string_view suffix = std::visit(
+      absl::Overload{
+          [](ui::ElementIdentifier id) -> std::string_view {
+            const auto it = std::ranges::find(
+                kElementIdToActionName, id,
+                &std::pair<ui::ElementIdentifier, std::string_view>::first);
+            return it == kElementIdToActionName.end() ? std::string_view()
+                                                      : it->second;
+          },
+          [](actions::ActionId id) -> std::string_view {
+            const auto it = kActionIdToActionNameMap.find(id);
+            return it == kActionIdToActionNameMap.end() ? std::string_view()
+                                                        : it->second;
+          }},
+      identifier);
+
+  return suffix.empty()
              ? std::string()
-             : base::StrCat({"ResponsiveToolbar.OverflowMenuItemActivated.",
-                             it->second});
+             : base::StrCat(
+                   {"ResponsiveToolbar.OverflowMenuItemActivated.", suffix});
 }
 
 bool ToolbarController::PopOut(ui::ElementIdentifier identifier,
