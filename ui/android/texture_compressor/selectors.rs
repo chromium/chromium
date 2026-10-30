@@ -92,18 +92,22 @@ pub fn search_table_and_selectors_subblock(data: &[[[Reg; 3]; 4]], base_color: [
             let mut selector_hi = UReg::splat(0);
             for y in 0..2 {
                 for x in 0..4 {
-                    // Below, we search for the optimal selector among [-lg, -sm, sm, lg] (sm
-                    // and lg is from the selector table).
+                    // Below, we search for the optimal selector among [-lg,
+                    // -sm, sm, lg] (sm and lg is from the
+                    // selector table).
                     //
                     // We use the error metric:
                     //   abs(gray(q + s - x))
-                    //   where q = quantized average, s = selector, x = pixel before compression
-                    //         gray(p) = 19*p.r + 38*p.g + 7*p.b  (cf. rec601)
+                    //   where q = quantized average, s = selector, x = pixel
+                    // before compression         gray(p) =
+                    // 19*p.r + 38*p.g + 7*p.b  (cf. rec601)
                     //
-                    // Note that this is abs(gray(..)) not gray(abs(..)), i.e. the absolute
-                    // is taken after computing to grayscale. This allows precomputing
-                    // gray(q-x), then exploiting the fact that the selector is same for all
-                    // three channels to calculate the final error with a single addition.
+                    // Note that this is abs(gray(..)) not gray(abs(..)), i.e.
+                    // the absolute is taken after computing
+                    // to grayscale. This allows precomputing
+                    // gray(q-x), then exploiting the fact that the selector is
+                    // same for all three channels to
+                    // calculate the final error with a single addition.
                     //
                     // We will first precompute gray(q - x).
                     let mut base_err = Reg::splat(0);
@@ -112,24 +116,27 @@ pub fn search_table_and_selectors_subblock(data: &[[[Reg; 3]; 4]], base_color: [
                         base_err += (base_color[ch] - data[y][x][ch]) * Simd::splat(rgb_weight[ch]);
                     }
 
-                    // Now, the sign of selector can be easily decided. To minimize the
-                    // absolute value, the selector should be the opposite sign of
+                    // Now, the sign of selector can be easily decided. To
+                    // minimize the absolute value, the
+                    // selector should be the opposite sign of
                     // gray(q - x).
                     let prefer_neg = base_err.simd_gt(Simd::splat(0));
 
-                    // Finally, we compute the error metric for both sm and lg and decide the
-                    // winner.
+                    // Finally, we compute the error metric for both sm and lg
+                    // and decide the winner.
                     let base_err_abs = base_err.abs();
-                    // Subtract in the direction that the final error metric is smaller.
-                    // The selector is same for all three channels, so just multiply it by the
+                    // Subtract in the direction that the final error metric is
+                    // smaller. The selector is same for all
+                    // three channels, so just multiply it by the
                     // total weight.
                     let weight_sum = 64;
                     let err_sm = (base_err_abs - Reg::splat(sel_table[0] * weight_sum)).abs();
                     let err_lg = (base_err_abs - Reg::splat(sel_table[1] * weight_sum)).abs();
                     let prefer_lg = err_lg.simd_lt(err_sm);
 
-                    // The error can be fairly large (a crude upper bound is 255*64). To avoid
-                    // overflow after squaring, we use widening multiply and accumulate. This
+                    // The error can be fairly large (a crude upper bound is
+                    // 255*64). To avoid overflow after
+                    // squaring, we use widening multiply and accumulate. This
                     // is somewhat expensive.
                     let best_err = prefer_lg.select(err_lg, err_sm).cast::<i32>();
                     outer_err += best_err * best_err;
@@ -169,10 +176,10 @@ pub fn search_table_and_selectors(
     data: &[[[Reg; 3]; 4]; 4],
     base_color: [[Reg; 3]; 2],
 ) -> [UReg; 4] {
-    // We need to work on pixels in the first subblock, then the second. To allow
-    // uniform indices, the flip functions takes care of moving the first
-    // subblock to the top half and the second to bottom half. We will fix up
-    // the shuffled results in the end.
+    // We need to work on pixels in the first subblock, then the second. To
+    // allow uniform indices, the flip functions takes care of moving the
+    // first subblock to the top half and the second to bottom half. We will
+    // fix up the shuffled results in the end.
     let flip = (hdr0 & (UReg::splat(1))).simd_ne(UReg::splat(0));
     let permuted_data = flip_pixels(data, !flip);
 

@@ -118,3 +118,23 @@ fn test() {
         }
     }
 }
+
+#[gtest(TextureCompressorTest, DecompressEtc1LargeStrideSingleRow)]
+fn test() {
+    let src = [0u8; 8];
+    let mut dst = [0u32; 1];
+    decompress_etc1(&src, &mut dst, 1, 1, u32::MAX, 1);
+    expect_eq!(dst[0], 0xFF020202);
+}
+
+#[gtest(TextureCompressorTest, DecompressEtc1ZeroDimensions)]
+fn test() {
+    // Zero-sized images must return cleanly without touching `dst`, even
+    // though `src` is empty.
+    let sentinel = 0xDEADBEEFu32;
+    let mut dst = [sentinel; 4];
+    decompress_etc1(&[], &mut dst, 0, 4, 1, 4);
+    expect_eq!(dst, [sentinel; 4]);
+    decompress_etc1(&[], &mut dst, 4, 0, 1, 4);
+    expect_eq!(dst, [sentinel; 4]);
+}

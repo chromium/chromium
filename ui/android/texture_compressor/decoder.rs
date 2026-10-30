@@ -220,6 +220,13 @@ fn get_pixel_modifier_index(row: usize, col: usize, morton_interleaved: u32) -> 
     (morton_interleaved >> shift) & 0b11
 }
 
+// Precomputes the 4 packed 0xAABBGGRR colors for a subblock's base color and
+// modifier table index across all 4 2-bit selector indices (0..4).
+#[inline]
+fn precompute_subblock_palette(base: [i32; 3], table_idx: u32) -> [u32; 4] {
+    [0, 1, 2, 3].map(|sel| apply_modifier(base, table_idx, sel))
+}
+
 #[allow(clippy::needless_range_loop)] // Range loops seem more readable here.
 pub fn decode_etc1_block(input_etc1: u64) -> [[u32; 4]; 4] {
     let metadata = parse_block_metadata(input_etc1);
@@ -227,6 +234,8 @@ pub fn decode_etc1_block(input_etc1: u64) -> [[u32; 4]; 4] {
     assert!(metadata.table_idx_2 < 8);
 
     let morton_interleaved = morton_interleave(input_etc1 as u32);
+    let palette0 = precompute_subblock_palette(metadata.base[0], metadata.table_idx_1);
+    let palette1 = precompute_subblock_palette(metadata.base[1], metadata.table_idx_2);
 
     // The output layout is
     // [[ a e i m ],
@@ -239,54 +248,36 @@ pub fn decode_etc1_block(input_etc1: u64) -> [[u32; 4]; 4] {
     // or horizontally depending on the flip bit. Regardless of the
     // direction, the loop is structured so that pixels in the first
     // subblock is processed first, then the second. Within each loop, the
-    // same base color and table index is used. This is faster than
-    // iterating the block in pixel order, which requires switching between
-    // the base colors inside the loop.
+    // same precomputed 4-color palette is indexed by each pixel's 2-bit
+    // selector.
     if metadata.flip {
         // When flip bit = 1, the block is divided into two 4×2 subblocks.
-        // - Pixels a,e,i,m, b,f,j,n (rows 0, 1) use base color 1.
-        // - Pixels c,g,k,o, d,h,l,p (rows 2, 3) use base color 2.
-
+        // - Pixels a,e,i,m, b,f,j,n (rows 0, 1) use subblock 1 palette.
+        // - Pixels c,g,k,o, d,h,l,p (rows 2, 3) use subblock 2 palette.
         for row in 0..2 {
             for col in 0..4 {
-                // TODO: base[0] actually means base color 1, and base[1] means
-                // base color 2. Refactor this section for clarity.
-                output[row][col] = apply_modifier(
-                    metadata.base[0],
-                    metadata.table_idx_1,
-                    get_pixel_modifier_index(row, col, morton_interleaved),
-                );
+                output[row][col] =
+                    palette0[get_pixel_modifier_index(row, col, morton_interleaved) as usize];
             }
         }
         for row in 2..4 {
             for col in 0..4 {
-                output[row][col] = apply_modifier(
-                    metadata.base[1],
-                    metadata.table_idx_2,
-                    get_pixel_modifier_index(row, col, morton_interleaved),
-                );
+                output[row][col] =
+                    palette1[get_pixel_modifier_index(row, col, morton_interleaved) as usize];
             }
         }
     } else {
         // When flip bit = 0, the block is divided into two 2×4 subblocks.
-        // - Pixels a,b,c,d, e,f,g,h (columns 0, 1) use base color 1.
-        // - Pixels i,j,k,l, m,n,o,p (columns 2, 3) use base color 2.
+        // - Pixels a,b,c,d, e,f,g,h (columns 0, 1) use subblock 1 palette.
+        // - Pixels i,j,k,l, m,n,o,p (columns 2, 3) use subblock 2 palette.
         for row in 0..4 {
             for col in 0..2 {
-                output[row][col] = apply_modifier(
-                    metadata.base[0],
-                    metadata.table_idx_1,
-                    get_pixel_modifier_index(row, col, morton_interleaved),
-                );
+                output[row][col] =
+                    palette0[get_pixel_modifier_index(row, col, morton_interleaved) as usize];
             }
-        }
-        for row in 0..4 {
             for col in 2..4 {
-                output[row][col] = apply_modifier(
-                    metadata.base[1],
-                    metadata.table_idx_2,
-                    get_pixel_modifier_index(row, col, morton_interleaved),
-                );
+                output[row][col] =
+                    palette1[get_pixel_modifier_index(row, col, morton_interleaved) as usize];
             }
         }
     }

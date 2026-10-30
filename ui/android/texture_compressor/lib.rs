@@ -193,6 +193,70 @@ pub fn compress_etc1(
     }
 }
 
+/// Validates that `src` and `dst` slices are large enough for `decompress_etc1`
+/// using checked arithmetic to prevent 32-bit `usize` overflow on 32-bit
+/// platforms.
+fn validate_decompress_buffers(
+    src_len: usize,
+    dst_len: usize,
+    dst_width: u32,
+    dst_height: u32,
+    src_row_width: u32,
+    dst_row_width: u32,
+) {
+    let src_height = dst_height.div_ceil(4) as usize;
+    let src_width = dst_width.div_ceil(4) as usize;
+    let dst_width = dst_width as usize;
+    let dst_height = dst_height as usize;
+    let src_row_width = src_row_width as usize;
+    let dst_row_width = dst_row_width as usize;
+
+    assert!(src_width <= src_row_width);
+    assert!(dst_width <= dst_row_width);
+
+    let min_src_blocks = (src_height - 1)
+        .checked_mul(src_row_width)
+        .and_then(|n| n.checked_add(src_width))
+        .expect("src dimensions overflow usize");
+    let min_src_bytes =
+        min_src_blocks.checked_mul(ETC1_BLOCK_BYTES).expect("src byte size overflows usize");
+    assert!(src_len >= min_src_bytes);
+
+    let min_dst_pixels = (dst_height - 1)
+        .checked_mul(dst_row_width)
+        .and_then(|n| n.checked_add(dst_width))
+        .expect("dst dimensions overflow usize");
+    assert!(dst_len >= min_dst_pixels);
+}
+
+/// Writes a decoded 4x4 RGBA block into `dst` at `(x, y)`, fast-pathing
+/// interior full 4x4 blocks with fixed-size 4-element copies and clipping
+/// partial edge blocks to `(dst_width, dst_height)`.
+#[inline]
+fn write_decoded_block(
+    dst: &mut [u32],
+    block: &[[u32; 4]; 4],
+    x: usize,
+    y: usize,
+    dst_width: usize,
+    dst_height: usize,
+    dst_row_width: usize,
+) {
+    if dst_width - x >= 4 && dst_height - y >= 4 {
+        for (y_in_block, row) in block.iter().enumerate() {
+            let dst_idx = (y + y_in_block) * dst_row_width + x;
+            dst[dst_idx..dst_idx + 4].copy_from_slice(row);
+        }
+    } else {
+        let copy_width = (dst_width - x).min(4);
+        let copy_height = (dst_height - y).min(4);
+        for (y_in_block, row) in block[..copy_height].iter().enumerate() {
+            let dst_idx = (y + y_in_block) * dst_row_width + x;
+            dst[dst_idx..dst_idx + copy_width].copy_from_slice(&row[..copy_width]);
+        }
+    }
+}
+
 /// Decompress ETC1 blocks to RGBA pixels.
 ///
 /// - `src` should contain compressed ETC1 blocks.
@@ -210,15 +274,27 @@ pub fn decompress_etc1(
     src_row_width: u32,
     dst_row_width: u32,
 ) {
-    let src_height = dst_height.div_ceil(4);
-    let src_width = dst_width.div_ceil(4);
-    assert!(src_width <= src_row_width);
-    assert!(dst_width <= dst_row_width);
+    if dst_width == 0 || dst_height == 0 {
+        return;
+    }
+    validate_decompress_buffers(
+        src.len(),
+        dst.len(),
+        dst_width,
+        dst_height,
+        src_row_width,
+        dst_row_width,
+    );
 
-    let bytes_per_row = src_row_width as usize * ETC1_BLOCK_BYTES;
+    let src_height = dst_height.div_ceil(4) as usize;
+    let src_width = dst_width.div_ceil(4) as usize;
+    let dst_width = dst_width as usize;
+    let dst_height = dst_height as usize;
+    let dst_row_width = dst_row_width as usize;
+
     for src_y in 0..src_height {
         let y = src_y * 4;
-        let row_start_idx = src_y as usize * bytes_per_row;
+        let row_start_block = src_y * src_row_width as usize;
 
         for src_x in 0..src_width {
             let x = src_x * 4;
@@ -226,16 +302,19 @@ pub fn decompress_etc1(
             // rev 9") defines the 64-bit block data as big endian.
             // Reading 8 bytes via `u64::from_be_bytes` avoids any
             // 8-byte alignment requirement on `src`.
-            let block_offset = row_start_idx + src_x as usize * ETC1_BLOCK_BYTES;
+            let block_offset = (row_start_block + src_x) * ETC1_BLOCK_BYTES;
             let block_bytes: [u8; ETC1_BLOCK_BYTES] =
                 src[block_offset..block_offset + ETC1_BLOCK_BYTES].try_into().unwrap();
             let output_rgba_block = decode_etc1_block(u64::from_be_bytes(block_bytes));
-            let copy_width = (dst_width - x).min(4) as usize;
-            let copy_height = (dst_height - y).min(4) as usize;
-            for (y_in_block, row) in output_rgba_block[..copy_height].iter().enumerate() {
-                let dst_idx = (y as usize + y_in_block) * dst_row_width as usize + x as usize;
-                dst[dst_idx..dst_idx + copy_width].copy_from_slice(&row[..copy_width]);
-            }
+            write_decoded_block(
+                dst,
+                &output_rgba_block,
+                x,
+                y,
+                dst_width,
+                dst_height,
+                dst_row_width,
+            );
         }
     }
 }
