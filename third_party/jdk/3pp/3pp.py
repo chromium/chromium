@@ -74,6 +74,15 @@ def _write_java_wrapper(bin_dir):
     os.chmod(java, 0o755)
 
 
+def _write_readme(output_prefix, license_file):
+    template = (_THIS_DIR / 'README.chromium.template').read_text(
+        encoding='utf-8')
+    readme = (template.replace('$_JDK_MAJOR_VERSION', _MAJOR_VERSION).replace(
+        '$_LICENSE_FILE', license_file))
+    (pathlib.Path(output_prefix) / 'README.chromium').write_text(
+        readme, encoding='utf-8')
+
+
 def _build_native_javac(jdk_home):
     """Builds bin/javac-graalvm using javac from |jdk_home|."""
     work_dir = os.path.abspath('native_javac')
@@ -190,6 +199,7 @@ def do_install(args):
         # Structure is "jdk-25.0.4.1+1/Contents/{Home,MacOS,...}".
         _write_java_wrapper(str(root / 'Contents' / 'Home' / 'bin'))
         shutil.move(str(root / 'Contents'), args.output_prefix)
+        _write_readme(args.output_prefix, 'Contents/Home/legal/java.base/LICENSE')
         return
 
     # Structure is "jdk-25.0.4.1+1/{bin,conf,...}".
@@ -198,12 +208,14 @@ def do_install(args):
     _build_native_javac(args.output_prefix)
     # Done after building javac-graalvm since the wrapper is not needed there.
     _write_java_wrapper(os.path.join(args.output_prefix, 'bin'))
+    _write_readme(args.output_prefix, 'legal/java.base/LICENSE')
 
 
 def main():
     common.main(
         do_latest=do_latest,
         do_install=do_install,
+        version_deps=['//third_party/jdk/3pp/README.chromium.template'],
         # Used on all platforms (even though only linux uses GraalVM) since
         # DEPS requires the version to be identical across platforms.
         version_strings_func=graalvm.version_strings,

@@ -1,0 +1,61 @@
+Name: Java Development Kit
+Short Name: JDK
+URL: https://openjdk.java.net/
+Version: $_JDK_MAJOR_VERSION
+Update Mechanism: Autoroll
+CPEPrefix: cpe:/a:oracle:openjdk
+License: GPL-2.0-with-classpath-exception
+License File: $_LICENSE_FILE
+Security Critical: no
+Shipped: no
+
+Description:
+The Java Development Kit (JDK) is a software development environment used for
+developing Java applications and applets. (linux-x64, mac-arm64)
+
+On linux-x64, the package also contains bin/javac-graalvm: a GraalVM
+native-image build of the JDK's javac (built by 3pp/3pp.py using Oracle GraalVM,
+which is licensed under the GraalVM Free Terms and Conditions).
+
+Check Current Version:
+ * run ./print_version.sh
+ * Find the tag that looks like `version:2@<jdk version>.<md5 hash>`
+ * The version is the <jdk version> part of the tag.
+
+This Package is Auto-Rolled:
+ * Minor versions are auto-rolled.
+ * New instances are uploaded by the packager bot:
+   https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager
+ * The bot autoruns every 6 hours. Ping a trooper or a clank-build-core@ dev to
+   trigger it if you need it sooner:
+   https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
+ * New packages are rolled automatically by:
+   https://skia-autoroll.corp.goog/r/jdk-chromium
+
+To roll to a new JDK major version:
+ * File a bug under "Build > Android" to tag the roll commit with.
+   * File a bug blocked on the first one under "Infra > Codesearch" to ask the team to verify Codesearch does not break from the roll.
+   * Check for problems locally by:
+     1) Download the new JDK to //third_party/jdk/current
+     2) Add 'checkout_android_prebuilts_build_tools': True, to your .gclient custom_vars
+     3) Use the GN args from https://ci.chromium.org/ui/p/infra/builders/codesearch/codesearch-gen-chromium-android
+     4) Build: cd out/kythe; KYTHE_CORPUS=foo KYTHE_OUTPUT_DIRECTORY=$PWD KYTHE_ROOT_DIRECTORY=$PWD/../.. autoninja base:base_java
+     5) Build: third_party/android_deps/fetch_all.py --local
+        * If this fails, see: https://docs.gradle.org/current/userguide/compatibility.html
+ * Test locally that builds (with Errorprone enabled) work.
+ * Pause the auto-roller: https://skia-autoroll.corp.goog/r/jdk-chromium
+ * Change _MAJOR_VERSION in 3pp/3pp.py
+ * Change _GRAALVM_MAJOR_VERSION in //build/3pp_common/graalvm.py to match
+   (javac-graalvm, and all other GraalVM native-images, are built with it).
+ * Wait for the 3pp packager to create a new package
+ * Land a manual roll by:
+   * Updating jdk_version in //DEPS
+     * Make sure to run the codesearch trybots "gen-android-try" and "gen-webview-try"
+     * And also the 3pp trybots: "3pp-linux-amd64-packager" and "3pp-mac-arm64-packager"
+ * Unpause the auto-roller.
+
+Local Modifications:
+ * Added README.chromium metadata file.
+ * bin/java is a wrapper script that adds -XX:+PerfDisableSharedMem.
+ * bin/javac-graalvm is added (see above). It is built with a patched
+   jdk.internal.jrtfs.SystemImage so that java.home is respected.
