@@ -410,7 +410,27 @@ VideoFrameAcceleratedSnapshotPool::DoExternalOverdrawAndSnapshot(
     return nullptr;
   }
 
-  scoped_refptr<StaticBitmapImage> snapshot = resource_->Bitmap();
+  auto release_callback = base::BindOnce(
+      [](scoped_refptr<CanvasResourceSharedImage>&& resource,
+         const gpu::SyncToken& sync_token, bool lost_resource) {
+        CHECK(resource);
+
+        resource->WaitSyncToken(sync_token);
+        if (lost_resource) {
+          resource->NotifyResourceLost();
+        }
+
+        CanvasResource::DropRefOnOwningThread(std::move(resource));
+      },
+      resource_);
+
+  scoped_refptr<StaticBitmapImage> snapshot =
+      AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
+          resource_->GetSharedImage(), resource_->sync_token(),
+          info_.alpha_type, info_.hdr_metadata, context_provider_wrapper_,
+          base::PlatformThread::CurrentRef(),
+          ThreadScheduler::Current()->CleanupTaskRunner(),
+          std::move(release_callback));
   if (snapshot) {
     cached_content_id_ =
         snapshot->PaintImageForCurrentFrame().GetContentIdForFrame(0u);
