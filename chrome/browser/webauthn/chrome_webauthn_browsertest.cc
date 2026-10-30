@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -89,6 +90,7 @@
 #include "device/fido/virtual_fido_device_factory.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/install_verifier.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension_builder.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -337,6 +339,14 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ChromeExtensions) {
       .SetLocation(extensions::mojom::ManifestLocation::kExternalPolicyDownload)
       .SetManifestKey("web_accessible_resources",
                       base::test::ParseJson(kWebAccessibleResources));
+  // On branded builds where extension content verification defaults to
+  // ENFORCE_STRICT, WebAuthnBrowserTest.ChromeExtensions fails because it
+  // creates an in-memory kExternalPolicyDownload extension in a temp directory
+  // without writing manifest.json to disk. Write the generated manifest to
+  // manifest.json in the extension's temp directory so content verification
+  // succeeds.
+  WriteFile(temp_dir.GetPath().Append(extensions::kManifestFilename),
+            *base::WriteJson(builder.BuildManifest()));
 
   scoped_refptr<const extensions::Extension> extension = builder.Build();
   extensions::ExtensionRegistrar::Get(browser()->GetProfile())
