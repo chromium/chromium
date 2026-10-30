@@ -1,0 +1,51 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Lei Zhang <thestig@chromium.org>
+Date: Thu, 29 Oct 2026 00:00:00 +0000
+Subject: [PATCH] Update sfv v0.15 base64 dependency to 0.23.1
+
+Update sfv's base64 dependency from 0.22.1 to 0.23.1 (with default
+features disabled and `std` enabled so `simd-unsafe` stays off), and
+update the `DecodeError::InvalidLastSymbol` pattern match for the 0.23
+struct variant.
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/sfv-v0_15/Cargo.toml b/third_party/rust/chromium_crates_io/vendor/sfv-v0_15/Cargo.toml
+index e90db8e52db02..183fd5744c672 100644
+--- a/third_party/rust/chromium_crates_io/vendor/sfv-v0_15/Cargo.toml
++++ b/third_party/rust/chromium_crates_io/vendor/sfv-v0_15/Cargo.toml
+@@ -62,7 +62,9 @@ features = ["derive"]
+ optional = true
+ 
+ [dependencies.base64]
+-version = "0.22.1"
++version = "0.23.1"
++default-features = false
++features = ["std"]
+ 
+ [dependencies.indexmap]
+ version = "2.7"
+diff --git a/third_party/rust/chromium_crates_io/vendor/sfv-v0_15/Cargo.toml.orig b/third_party/rust/chromium_crates_io/vendor/sfv-v0_15/Cargo.toml.orig
+index 0a6427b14ff5c..4a9a9f7588629 100644
+--- a/third_party/rust/chromium_crates_io/vendor/sfv-v0_15/Cargo.toml.orig
++++ b/third_party/rust/chromium_crates_io/vendor/sfv-v0_15/Cargo.toml.orig
+@@ -15,7 +15,7 @@ rust-version = "1.85"
+ 
+ [dependencies]
+ arbitrary = { version = "1.4.1", optional = true, features = ["derive"] }
+-base64 = "0.22.1"
++base64 = { version = "0.23.1", default-features = false, features = ["std"] }
+ indexmap = { version = "2.7", optional = true }
+ ref-cast = "1.0.23"
+ 
+diff --git a/third_party/rust/chromium_crates_io/vendor/sfv-v0_15/src/parser.rs b/third_party/rust/chromium_crates_io/vendor/sfv-v0_15/src/parser.rs
+index c82d9dccbe0bc..e2d298defc972 100644
+--- a/third_party/rust/chromium_crates_io/vendor/sfv-v0_15/src/parser.rs
++++ b/third_party/rust/chromium_crates_io/vendor/sfv-v0_15/src/parser.rs
+@@ -484,7 +484,7 @@ assert_eq!(
+                 Err(err) => {
+                     let index = match err {
+                         base64::DecodeError::InvalidByte(offset, _)
+-                        | base64::DecodeError::InvalidLastSymbol(offset, _) => start + offset,
++                        | base64::DecodeError::InvalidLastSymbol { offset, .. } => start + offset,
+                         // Report these two at the position of the last base64
+                         // character, since they correspond to errors in the input
+                         // as a whole.

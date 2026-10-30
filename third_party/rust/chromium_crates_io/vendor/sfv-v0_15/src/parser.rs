@@ -484,7 +484,7 @@ assert_eq!(
                 Err(err) => {
                     let index = match err {
                         base64::DecodeError::InvalidByte(offset, _)
-                        | base64::DecodeError::InvalidLastSymbol(offset, _) => start + offset,
+                        | base64::DecodeError::InvalidLastSymbol { offset, .. } => start + offset,
                         // Report these two at the position of the last base64
                         // character, since they correspond to errors in the input
                         // as a whole.

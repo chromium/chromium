@@ -19,7 +19,7 @@ rust_static_library("dmg_parser") {
   ]
   deps = [
     ":dmg_decompress",
-    "//third_party/rust/base64/v0_22:lib",
+    "//third_party/rust/base64/v0_23:lib",
     "//third_party/rust/bytemuck/v1:lib",
     "//third_party/rust/flate2/v1:lib",
     "//third_party/rust/log/v0_4:lib",
@@ -62,7 +62,7 @@ rust_static_library("dmg_parser_unittests") {
     ":dmg_decompress_test_support",
     ":dmg_parser",
     "//testing/rust_gtest_interop",
-    "//third_party/rust/base64/v0_22:lib",
+    "//third_party/rust/base64/v0_23:lib",
     "//third_party/rust/bytemuck/v1:lib",
     "//third_party/rust/flate2/v1:lib",
   ]

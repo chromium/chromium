@@ -51,7 +51,7 @@ cargo_crate("lib") {
   allow_unsafe = false
 
   deps = [
-    "//third_party/rust/base64/v0_22:lib",
+    "//third_party/rust/base64/v0_23:lib",
     "//third_party/rust/ref_cast/v1:lib",
   ]
 

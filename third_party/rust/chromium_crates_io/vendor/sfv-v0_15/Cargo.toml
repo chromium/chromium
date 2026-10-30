@@ -62,7 +62,9 @@ features = ["derive"]
 optional = true
 
 [dependencies.base64]
-version = "0.22.1"
+version = "0.23.1"
+default-features = false
+features = ["std"]
 
 [dependencies.indexmap]
 version = "2.7"

@@ -1,0 +1,13 @@
+target/
+*~
+*.swp
+*.swo
+main.rs
+
+# JetBrains tools
+.idea
+*.iml
+
+# `perf record` files
+/*perf.data*
+/tmp

@@ -99,7 +99,7 @@ dependencies = [
 
 [[package]]
 name = "base64"
-version = "0.22.1"
+version = "0.23.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
@@ -2084,7 +2084,6 @@ dependencies = [
 [[package]]
 name = "sfv"
 version = "0.15.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "base64",
  "ref-cast",

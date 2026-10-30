@@ -18,7 +18,6 @@ version = "0.1.0"
 [dependencies]
 antlr4rust = "0.5.2"
 anyhow = "1.0.98"
-base64 = "0.22"
 bitflags = "2"
 bytes = "1"
 chrono = "0.4.43"
@@ -52,6 +51,11 @@ small_ctor = "0.1"
 smallvec = "1"
 static_assertions = "1"
 xml = "1.4.0"
+
+[dependencies.base64]
+version = "0.23"
+default-features = false
+features = ["std"]
 
 [dependencies.bytemuck]
 version = "1"
@@ -222,3 +226,4 @@ features = ["arith"]
 
 [patch.crates-io]
 harfrust = { path = "vendor/harfrust-v0_14" }
+sfv = { path = "vendor/sfv-v0_15" }

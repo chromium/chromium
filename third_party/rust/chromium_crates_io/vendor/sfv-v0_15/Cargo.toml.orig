@@ -15,7 +15,7 @@ rust-version = "1.85"
 
 [dependencies]
 arbitrary = { version = "1.4.1", optional = true, features = ["derive"] }
-base64 = "0.22.1"
+base64 = { version = "0.23.1", default-features = false, features = ["std"] }
 indexmap = { version = "2.7", optional = true }
 ref-cast = "1.0.23"
 

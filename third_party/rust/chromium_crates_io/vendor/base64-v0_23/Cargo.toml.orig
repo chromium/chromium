@@ -1,0 +1,60 @@
+[package]
+name = "base64"
+version = "0.23.1"
+authors = ["Marshall Pierce <marshall@mpierce.org>"]
+description = "encodes and decodes base64 as bytes or utf8"
+repository = "https://github.com/marshallpierce/rust-base64"
+documentation = "https://docs.rs/base64"
+readme = "README.md"
+keywords = ["base64", "utf8", "encode", "decode", "no_std"]
+categories = ["encoding"]
+license = "MIT OR Apache-2.0"
+edition = "2021"
+# dev-dependencies require newer toolchains, but the main code doesn't
+rust-version = "1.71.0"
+
+[[bench]]
+name = "benchmarks"
+harness = false
+required-features = ["std"]
+
+[[example]]
+name = "base64"
+required-features = ["std"]
+
+[[test]]
+name = "tests"
+required-features = ["alloc"]
+
+[[test]]
+name = "encode"
+required-features = ["alloc"]
+
+[package.metadata.docs.rs]
+rustdoc-args = ["--generate-link-to-definition"]
+
+[dev-dependencies]
+# 0.8.0 uses alloca, which breaks miri compilation
+criterion = "0.7.0"
+rand = "0.10.2"
+clap = { version = "4.6.4", features = ["derive"] }
+strum = { version = "0.28.0", features = ["derive"] }
+# test fixtures for engine tests
+rstest = "0.26.1"
+rstest_reuse = "0.7.0"
+
+[features]
+default = ["std", "simd-unsafe"]
+alloc = []
+std = ["alloc"]
+# Enables the SIMD-accelerated engines (`Simd`, `Avx2`, `Neon`). Off by default. It is the only
+# feature that introduces `unsafe`; with it disabled the crate is `#![forbid(unsafe_code)]`.
+simd-unsafe = []
+
+[profile.bench]
+# Useful for better disassembly when using `perf record` and `perf annotate`
+debug = true
+
+[profile.test]
+# Faster tests save much more than the increase in compilation time
+opt-level = 3
