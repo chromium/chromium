@@ -10,7 +10,6 @@ import org.chromium.build.annotations.Nullable;
 /** Represents a recently closed window from MultiInstanceManager. */
 @NullMarked
 public class RecentlyClosedWindow extends RecentlyClosedEntry {
-    public static final String WINDOW_DEFAULT_TITLE = "Window";
     private final int mInstanceId;
     private final int mTabCount;
     private final String mTitle;
@@ -38,7 +37,7 @@ public class RecentlyClosedWindow extends RecentlyClosedEntry {
         mTabCount = tabCount;
         mInstanceId = instanceId;
         if (title == null || title.trim().isEmpty()) {
-            mTitle = WINDOW_DEFAULT_TITLE;
+            mTitle = "";
         } else {
             mTitle = title;
         }
@@ -54,7 +53,10 @@ public class RecentlyClosedWindow extends RecentlyClosedEntry {
         return mTabCount;
     }
 
-    /** Returns the title of the window. */
+    /**
+     * Returns the user-specified title of the window, or an empty string if the default title was
+     * used when saving.
+     */
     public String getTitle() {
         return mTitle;
     }

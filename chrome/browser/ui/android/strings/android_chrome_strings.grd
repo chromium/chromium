@@ -4144,6 +4144,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
           other {<ph name="URL">%1$s<ex>example.com</ex></ph> and <ph name="TAB_COUNT_MANY">%2$s<ex>2</ex></ph> other tabs}
         }
       </message>
+      <message name="IDS_RECENT_TABS_WINDOW_CLOSURE_WITH_TITLE_ACCESSIBILITY" is_accessibility_with_no_ui="true" desc="Accessibility content description for a Recent Tabs Page > Recently Closed row item that represents a single window closed that had a user specified window title. TITLE_OF_WINDOW is the user specified title of the window.">
+        Restore window <ph name="TITLE_OF_WINDOW">%1$s<ex>Work</ex></ph>.
+      </message>
+      <message name="IDS_RECENT_TABS_WINDOW_CLOSURE_WITHOUT_TITLE_ACCESSIBILITY" is_accessibility_with_no_ui="true" desc="Accessibility content description for a Recent Tabs Page > Recently Closed row item that represents a single window closed that did not have a user specified title. TAB_COUNT is the total number of tabs closed in the window.">
+        {TAB_COUNT, plural,
+          =1 {Restore window of <ph name="TAB_COUNT_ONE">%1$s<ex>1</ex></ph> tab.}
+          other {Restore window of <ph name="TAB_COUNT_MANY">%1$s<ex>5</ex></ph> tabs.}
+        }
+      </message>
       <message name="IDS_RECENT_TABS_BULK_CLOSURE_ACCESSIBILITY" desc="Accessibility content description for a Recent Tabs Page > Recently closed row item that represents multiple tabs/groups closed together. TAB_COUNT is the total number of tabs closed in the action including grouped tabs.">
         Restore <ph name="TAB_COUNT">%1$s<ex>6</ex></ph> tabs as new background tabs.
       </message>

@@ -668,13 +668,33 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
                             R.dimen.recent_tabs_foreign_session_group_item_height));
             RecentlyClosedEntry entry = assumeNonNull(getChild(childPosition));
             if (entry instanceof RecentlyClosedWindow recentlyClosedWindow) {
-                viewHolder.textView.setText(recentlyClosedWindow.getTitle());
+                int tabCount = recentlyClosedWindow.getTabCount();
+                String windowTitle = recentlyClosedWindow.getTitle();
+                if (TextUtils.isEmpty(windowTitle)) {
+                    viewHolder.textView.setText(
+                            res.getQuantityString(
+                                    R.plurals.recent_tabs_group_closure_without_title,
+                                    tabCount,
+                                    tabCount));
+                    viewHolder.textView.setContentDescription(
+                            res.getQuantityString(
+                                    R.plurals
+                                            .recent_tabs_window_closure_without_title_accessibility,
+                                    tabCount,
+                                    tabCount));
+                } else {
+                    viewHolder.textView.setText(windowTitle);
+                    viewHolder.textView.setContentDescription(
+                            res.getString(
+                                    R.string.recent_tabs_window_closure_with_title_accessibility,
+                                    windowTitle));
+                }
                 String activeTabDomain = formatUrlForDisplay(recentlyClosedWindow.getUrl());
                 String activeTabInfo =
                         TextUtils.isEmpty(activeTabDomain)
                                 ? recentlyClosedWindow.getActiveTabTitle()
                                 : activeTabDomain;
-                int inactiveTabCount = recentlyClosedWindow.getTabCount() - 1;
+                int inactiveTabCount = tabCount - 1;
                 final String description;
                 if (inactiveTabCount > 0) {
                     description =

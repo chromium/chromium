@@ -416,11 +416,7 @@ public class HistoryItemBuilder implements Destroyable {
                         mContext,
                         mAppMenuItemTheme,
                         R.id.recent_entry_menu_item,
-                        getRecentEntrySubmenuTitle(
-                                window.getTitle().equals(RecentlyClosedWindow.WINDOW_DEFAULT_TITLE)
-                                        ? null
-                                        : window.getTitle(),
-                                window.getTabCount()),
+                        getRecentEntrySubmenuTitle(window.getTitle(), window.getTabCount()),
                         mShouldShowIconBeforeItem ? R.drawable.ic_window_24dp : Resources.ID_NULL,
                         submenuItemsSupplier,
                         mIsMenuIconAtStart);
