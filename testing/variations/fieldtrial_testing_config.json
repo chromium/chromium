@@ -12729,6 +12729,21 @@
             ]
         }
     ],
+    "OmniboxPrerenderOnTouchDown": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OmniboxPrerenderOnTouchDown"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxSearchPrefetchOnEnterKeyDown": [
         {
             "platforms": [
