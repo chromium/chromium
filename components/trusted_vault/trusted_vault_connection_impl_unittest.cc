@@ -223,6 +223,29 @@ signin::AccessTokenInfo MakeAccessTokenInfo(const std::string& access_token) {
       /*id_token=*/std::string());
 }
 
+const trusted_vault_pb::RotatedSharedMemberKey* FindRotatedSharedMemberKey(
+    const trusted_vault_pb::RotateSharedKeyRequest& request,
+    const SecureBoxPublicKey& public_key) {
+  std::string encoded_public_key;
+  base::Base64UrlEncode(public_key.ExportToBytes(),
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &encoded_public_key);
+  const std::string member_name =
+      kSecurityDomainMemberNamePrefix + encoded_public_key;
+  auto it = std::ranges::find_if(
+      request.rotated_shared_member_keys(),
+      [&member_name](const auto& rotated_key) {
+        return rotated_key.security_domain_member() == member_name;
+      });
+  return it != request.rotated_shared_member_keys().end() ? &*it : nullptr;
+}
+
+const trusted_vault_pb::RotatedSharedMemberKey* FindRotatedSharedMemberKey(
+    const trusted_vault_pb::RotateSharedKeyRequest& request,
+    const SecureBoxKeyPair& key_pair) {
+  return FindRotatedSharedMemberKey(request, key_pair.public_key());
+}
+
 // TODO(crbug.com/40143544): revisit this tests suite and determine what
 // actually should be tested on the Connection level and what should be done on
 // lower levels (DownloadKeysResponseHandler and
@@ -1772,21 +1795,52 @@ TEST_P(TrustedVaultConnectionImplTest,
 }
 
 TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeySuccess) {
-  trusted_vault_pb::RotateSharedKeyRequest request_proto;
-  request_proto.set_security_domain("test_security_domain");
+  const TrustedVaultKeyAndVersion last_key_and_version(/*key=*/{1, 2, 3, 4},
+                                                       /*version=*/200);
+  const std::vector<uint8_t> new_key = {4, 5, 6};
+  const int new_epoch = 201;
 
-  int new_epoch = 123;
+  std::unique_ptr<SecureBoxKeyPair> member_key_pair_1 =
+      SecureBoxKeyPair::GenerateRandom();
+  std::unique_ptr<SecureBoxKeyPair> member_key_pair_2 =
+      SecureBoxKeyPair::GenerateRandom();
+  const std::vector<const SecureBoxKeyPair*> member_key_pairs = {
+      member_key_pair_1.get(), member_key_pair_2.get()};
+
   trusted_vault_pb::RotateSharedKeyResponse response_proto;
   response_proto.set_new_epoch(new_epoch);
 
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->RotateSharedKey(CoreAccountInfo(), security_domain(),
-                                    request_proto, future.GetCallback());
+                                    last_key_and_version, new_key,
+                                    future.GetCallback());
   ASSERT_THAT(request, NotNull());
 
-  // Verify request sent.
+  // 1. Respond to ListSecurityDomainMembers request with two distinct members.
+  ASSERT_TRUE(RespondToListSecurityDomainMembersRequest(
+      /*security_domain_filter=*/{security_domain()},
+      /*member_filter=*/{}, /*force_strong_read=*/true,
+      /*next_page_token=*/std::nullopt, net::HTTP_OK,
+      MakeSecurityDomainMembers(
+          {{
+               .member_type = Member::MemberType::kPhysical,
+               .security_domains = {security_domain()},
+               .public_key = member_key_pair_1->public_key().ExportToBytes(),
+               .key_and_version = last_key_and_version,
+           },
+           {
+               .member_type = Member::MemberType::kUsableVirtual,
+               .security_domains = {"other_security_domain", security_domain()},
+               .public_key = member_key_pair_2->public_key().ExportToBytes(),
+               .key_and_version = last_key_and_version,
+           }},
+          /*next_page_token=*/std::nullopt)
+          .SerializeAsString()));
+
+  // 2. Verify RotateSharedKey POST request sent.
   const network::TestURLLoaderFactory::PendingRequest* pending_request =
       GetPendingHTTPRequest();
   ASSERT_THAT(pending_request, NotNull());
@@ -1798,9 +1852,144 @@ TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeySuccess) {
   trusted_vault_pb::RotateSharedKeyRequest deserialized_body;
   EXPECT_TRUE(deserialized_body.ParseFromString(
       network::GetUploadData(resource_request)));
-  EXPECT_THAT(deserialized_body.security_domain(), Eq("test_security_domain"));
+  EXPECT_THAT(deserialized_body.security_domain(),
+              Eq(GetSecurityDomainPath(security_domain())));
+  EXPECT_THAT(deserialized_body.base_epoch(), Eq(last_key_and_version.version));
+  ASSERT_THAT(deserialized_body.rotated_shared_member_keys(),
+              SizeIs(member_key_pairs.size()));
+  for (const auto* key_pair : member_key_pairs) {
+    const trusted_vault_pb::RotatedSharedMemberKey* rotated_key =
+        FindRotatedSharedMemberKey(deserialized_body, *key_pair);
+    ASSERT_THAT(rotated_key, NotNull());
+    EXPECT_THAT(DecryptTrustedVaultWrappedKey(
+                    key_pair->private_key(),
+                    ProtoStringToBytes(rotated_key->wrapped_key())),
+                Eq(new_key));
+    EXPECT_TRUE(
+        VerifyMemberProof(key_pair->public_key(), new_key,
+                          ProtoStringToBytes(rotated_key->member_proof())));
+  }
+  EXPECT_TRUE(VerifyRotationProof(
+      new_key, last_key_and_version.key,
+      ProtoStringToBytes(deserialized_body.rotation_proof())));
 
-  // Respond
+  // 3. Respond to RotateSharedKey request.
+  EXPECT_TRUE(RespondToRotateSharedKeyRequest(
+      net::HTTP_OK, response_proto.SerializeAsString()));
+
+  EXPECT_THAT(future.Get<0>(), Eq(TrustedVaultKeyRotationStatus::kSuccess));
+  EXPECT_THAT(future.Get<1>(), Eq(new_epoch));
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/"TrustedVault.KeyRotationStatus." + security_domain_name_uma(),
+      /*sample=*/TrustedVaultKeyRotationStatus::kSuccess,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/
+      "TrustedVault.SecurityDomainServiceURLFetchResponse."
+      "DownloadRecoveryFactorsForKeyRotation." +
+          security_domain_name_uma(),
+      /*sample=*/net::HTTP_OK,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/
+      "TrustedVault.SecurityDomainServiceURLFetchResponse."
+      "RotateSharedKey." +
+          security_domain_name_uma(),
+      /*sample=*/net::HTTP_OK,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeySuccessWithPagination) {
+  const TrustedVaultKeyAndVersion last_key_and_version(/*key=*/{1, 2, 3, 4},
+                                                       /*version=*/200);
+  const std::vector<uint8_t> new_key = {4, 5, 6};
+  const int new_epoch = 201;
+
+  std::unique_ptr<SecureBoxKeyPair> member_key_pair_1 =
+      SecureBoxKeyPair::GenerateRandom();
+  std::unique_ptr<SecureBoxKeyPair> member_key_pair_2 =
+      SecureBoxKeyPair::GenerateRandom();
+
+  trusted_vault_pb::RotateSharedKeyResponse response_proto;
+  response_proto.set_new_epoch(new_epoch);
+
+  base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RotateSharedKey(CoreAccountInfo(), security_domain(),
+                                    last_key_and_version, new_key,
+                                    future.GetCallback());
+  ASSERT_THAT(request, NotNull());
+
+  // Page 1: valid member of `security_domain()`, with next_page_token =
+  // "page2".
+  ASSERT_TRUE(RespondToListSecurityDomainMembersRequest(
+      /*security_domain_filter=*/{security_domain()},
+      /*member_filter=*/{}, /*force_strong_read=*/true,
+      /*next_page_token=*/std::nullopt, net::HTTP_OK,
+      MakeSecurityDomainMembers(
+          {{
+              .member_type = Member::MemberType::kPhysical,
+              .security_domains = {security_domain()},
+              .public_key = member_key_pair_1->public_key().ExportToBytes(),
+              .key_and_version = last_key_and_version,
+          }},
+          "page2")
+          .SerializeAsString()));
+
+  // Page 2: member of another domain, with next_page_token = "page3".
+  ASSERT_TRUE(RespondToListSecurityDomainMembersRequest(
+      /*security_domain_filter=*/{security_domain()},
+      /*member_filter=*/{}, /*force_strong_read=*/true,
+      /*next_page_token=*/"page2", net::HTTP_OK,
+      MakeSecurityDomainMembers(
+          {{
+              .member_type = Member::MemberType::kPhysical,
+              .security_domains = {"other_security_domain"},
+              .public_key = GenerateRandomPublicKey(),
+              .key_and_version =
+                  TrustedVaultKeyAndVersion(/*key=*/{9, 9}, /*version=*/100),
+          }},
+          "page3")
+          .SerializeAsString()));
+
+  // Page 3: second valid member of `security_domain()`, no next_page_token.
+  ASSERT_TRUE(RespondToListSecurityDomainMembersRequest(
+      /*security_domain_filter=*/{security_domain()},
+      /*member_filter=*/{}, /*force_strong_read=*/true,
+      /*next_page_token=*/"page3", net::HTTP_OK,
+      MakeSecurityDomainMembers(
+          {{
+              .member_type = Member::MemberType::kUsableVirtual,
+              .security_domains = {security_domain()},
+              .public_key = member_key_pair_2->public_key().ExportToBytes(),
+              .key_and_version = last_key_and_version,
+          }},
+          /*next_page_token=*/std::nullopt)
+          .SerializeAsString()));
+
+  const network::TestURLLoaderFactory::PendingRequest* pending_request =
+      GetPendingHTTPRequest();
+  ASSERT_THAT(pending_request, NotNull());
+  trusted_vault_pb::RotateSharedKeyRequest deserialized_body;
+  ASSERT_TRUE(deserialized_body.ParseFromString(
+      network::GetUploadData(pending_request->request)));
+  ASSERT_THAT(deserialized_body.rotated_shared_member_keys(), SizeIs(2));
+  const trusted_vault_pb::RotatedSharedMemberKey* rotated_key_1 =
+      FindRotatedSharedMemberKey(deserialized_body, *member_key_pair_1);
+  ASSERT_THAT(rotated_key_1, NotNull());
+  EXPECT_THAT(DecryptTrustedVaultWrappedKey(
+                  member_key_pair_1->private_key(),
+                  ProtoStringToBytes(rotated_key_1->wrapped_key())),
+              Eq(new_key));
+
+  const trusted_vault_pb::RotatedSharedMemberKey* rotated_key_2 =
+      FindRotatedSharedMemberKey(deserialized_body, *member_key_pair_2);
+  ASSERT_THAT(rotated_key_2, NotNull());
+  EXPECT_THAT(DecryptTrustedVaultWrappedKey(
+                  member_key_pair_2->private_key(),
+                  ProtoStringToBytes(rotated_key_2->wrapped_key())),
+              Eq(new_key));
+
   EXPECT_TRUE(RespondToRotateSharedKeyRequest(
       net::HTTP_OK, response_proto.SerializeAsString()));
 
@@ -1808,15 +1997,423 @@ TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeySuccess) {
   EXPECT_THAT(future.Get<1>(), Eq(new_epoch));
 }
 
+TEST_P(TrustedVaultConnectionImplTest,
+       RotateSharedKeySuccessWithDuplicateMembersAcrossPages) {
+  const TrustedVaultKeyAndVersion last_key_and_version(/*key=*/{1, 2, 3, 4},
+                                                       /*version=*/200);
+  const std::vector<uint8_t> new_key = {4, 5, 6};
+  const int new_epoch = 201;
+
+  std::unique_ptr<SecureBoxKeyPair> member_key_pair_1 =
+      SecureBoxKeyPair::GenerateRandom();
+  std::unique_ptr<SecureBoxKeyPair> member_key_pair_2 =
+      SecureBoxKeyPair::GenerateRandom();
+
+  trusted_vault_pb::RotateSharedKeyResponse response_proto;
+  response_proto.set_new_epoch(new_epoch);
+
+  base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RotateSharedKey(CoreAccountInfo(), security_domain(),
+                                    last_key_and_version, new_key,
+                                    future.GetCallback());
+  ASSERT_THAT(request, NotNull());
+
+  // Page 1: contains member 1.
+  ASSERT_TRUE(RespondToListSecurityDomainMembersRequest(
+      /*security_domain_filter=*/{security_domain()},
+      /*member_filter=*/{}, /*force_strong_read=*/true,
+      /*next_page_token=*/std::nullopt, net::HTTP_OK,
+      MakeSecurityDomainMembers(
+          {{
+              .member_type = Member::MemberType::kPhysical,
+              .security_domains = {security_domain()},
+              .public_key = member_key_pair_1->public_key().ExportToBytes(),
+              .key_and_version = last_key_and_version,
+          }},
+          "page2")
+          .SerializeAsString()));
+
+  // Page 2: returns member 1 again (duplicate across pages) and member 2.
+  ASSERT_TRUE(RespondToListSecurityDomainMembersRequest(
+      /*security_domain_filter=*/{security_domain()},
+      /*member_filter=*/{}, /*force_strong_read=*/true,
+      /*next_page_token=*/"page2", net::HTTP_OK,
+      MakeSecurityDomainMembers(
+          {{
+               .member_type = Member::MemberType::kPhysical,
+               .security_domains = {security_domain()},
+               .public_key = member_key_pair_1->public_key().ExportToBytes(),
+               .key_and_version = last_key_and_version,
+           },
+           {
+               .member_type = Member::MemberType::kUsableVirtual,
+               .security_domains = {security_domain()},
+               .public_key = member_key_pair_2->public_key().ExportToBytes(),
+               .key_and_version = last_key_and_version,
+           }},
+          /*next_page_token=*/std::nullopt)
+          .SerializeAsString()));
+
+  const network::TestURLLoaderFactory::PendingRequest* pending_request =
+      GetPendingHTTPRequest();
+  ASSERT_THAT(pending_request, NotNull());
+  trusted_vault_pb::RotateSharedKeyRequest deserialized_body;
+  ASSERT_TRUE(deserialized_body.ParseFromString(
+      network::GetUploadData(pending_request->request)));
+  // Verify member 1 was deduplicated and only 2 rotated keys were generated.
+  ASSERT_THAT(deserialized_body.rotated_shared_member_keys(), SizeIs(2));
+  const trusted_vault_pb::RotatedSharedMemberKey* rotated_key_1 =
+      FindRotatedSharedMemberKey(deserialized_body, *member_key_pair_1);
+  ASSERT_THAT(rotated_key_1, NotNull());
+  EXPECT_THAT(DecryptTrustedVaultWrappedKey(
+                  member_key_pair_1->private_key(),
+                  ProtoStringToBytes(rotated_key_1->wrapped_key())),
+              Eq(new_key));
+
+  const trusted_vault_pb::RotatedSharedMemberKey* rotated_key_2 =
+      FindRotatedSharedMemberKey(deserialized_body, *member_key_pair_2);
+  ASSERT_THAT(rotated_key_2, NotNull());
+  EXPECT_THAT(DecryptTrustedVaultWrappedKey(
+                  member_key_pair_2->private_key(),
+                  ProtoStringToBytes(rotated_key_2->wrapped_key())),
+              Eq(new_key));
+
+  EXPECT_TRUE(RespondToRotateSharedKeyRequest(
+      net::HTTP_OK, response_proto.SerializeAsString()));
+
+  EXPECT_THAT(future.Get<0>(), Eq(TrustedVaultKeyRotationStatus::kSuccess));
+  EXPECT_THAT(future.Get<1>(), Eq(new_epoch));
+}
+
+TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeyListMembersFailed) {
+  const TrustedVaultKeyAndVersion last_key_and_version(/*key=*/{1, 2, 3, 4},
+                                                       /*version=*/200);
+  const std::vector<uint8_t> new_key = {4, 5, 6};
+
+  base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RotateSharedKey(CoreAccountInfo(), security_domain(),
+                                    last_key_and_version, new_key,
+                                    future.GetCallback());
+  ASSERT_THAT(request, NotNull());
+
+  ASSERT_TRUE(RespondToListSecurityDomainMembersRequest(
+      /*security_domain_filter=*/{security_domain()},
+      /*member_filter=*/{}, /*force_strong_read=*/true,
+      /*next_page_token=*/std::nullopt, net::HTTP_INTERNAL_SERVER_ERROR, ""));
+
+  EXPECT_THAT(future.Get<0>(), Eq(TrustedVaultKeyRotationStatus::kOtherError));
+  EXPECT_THAT(future.Get<1>(), Eq(0));
+}
+
+TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeyEmptySecurityDomain) {
+  const TrustedVaultKeyAndVersion last_key_and_version(/*key=*/{1, 2, 3, 4},
+                                                       /*version=*/200);
+  const std::vector<uint8_t> new_key = {4, 5, 6};
+
+  base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RotateSharedKey(CoreAccountInfo(), security_domain(),
+                                    last_key_and_version, new_key,
+                                    future.GetCallback());
+  ASSERT_THAT(request, NotNull());
+
+  ASSERT_TRUE(RespondToListSecurityDomainMembersRequest(
+      /*security_domain_filter=*/{security_domain()},
+      /*member_filter=*/{}, /*force_strong_read=*/true,
+      /*next_page_token=*/std::nullopt, net::HTTP_OK,
+      MakeSecurityDomainMembers(
+          {{
+              .member_type = Member::MemberType::kPhysical,
+              .security_domains = {"other_security_domain"},
+              .public_key = GenerateRandomPublicKey(),
+              .key_and_version = last_key_and_version,
+          }},
+          /*next_page_token=*/std::nullopt)
+          .SerializeAsString()));
+
+  EXPECT_THAT(future.Get<0>(),
+              Eq(TrustedVaultKeyRotationStatus::kEmptySecurityDomain));
+  EXPECT_THAT(future.Get<1>(), Eq(0));
+}
+
+TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeyInvalidMemberProof) {
+  const int epoch = 200;
+  const TrustedVaultKeyAndVersion wrong_key_and_version(/*key=*/{9, 9, 9},
+                                                        epoch);
+  const std::vector<uint8_t> new_key = {4, 5, 6};
+
+  base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RotateSharedKey(CoreAccountInfo(), security_domain(),
+                                    wrong_key_and_version, new_key,
+                                    future.GetCallback());
+  ASSERT_THAT(request, NotNull());
+
+  ASSERT_TRUE(RespondToListSecurityDomainMembersRequest(
+      /*security_domain_filter=*/{security_domain()},
+      /*member_filter=*/{}, /*force_strong_read=*/true,
+      /*next_page_token=*/std::nullopt, net::HTTP_OK,
+      MakeSecurityDomainMembers(
+          {{
+              .member_type = Member::MemberType::kPhysical,
+              .security_domains = {security_domain()},
+              .public_key = GenerateRandomPublicKey(),
+              .key_and_version =
+                  TrustedVaultKeyAndVersion(/*key=*/{1, 2, 3, 4}, epoch),
+          }},
+          /*next_page_token=*/std::nullopt)
+          .SerializeAsString()));
+
+  EXPECT_THAT(future.Get<0>(),
+              Eq(TrustedVaultKeyRotationStatus::kKeyProofsVerificationFailed));
+  EXPECT_THAT(future.Get<1>(), Eq(0));
+}
+
+TEST_P(TrustedVaultConnectionImplTest,
+       RotateSharedKeyListMembersCorruptedProto) {
+  const TrustedVaultKeyAndVersion last_key_and_version(/*key=*/{1, 2, 3, 4},
+                                                       /*version=*/200);
+  const std::vector<uint8_t> new_key = {4, 5, 6};
+
+  base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RotateSharedKey(CoreAccountInfo(), security_domain(),
+                                    last_key_and_version, new_key,
+                                    future.GetCallback());
+  ASSERT_THAT(request, NotNull());
+
+  ASSERT_TRUE(RespondToListSecurityDomainMembersRequest(
+      /*security_domain_filter=*/{security_domain()},
+      /*member_filter=*/{}, /*force_strong_read=*/true,
+      /*next_page_token=*/std::nullopt, net::HTTP_OK, "corrupted_proto_bytes"));
+
+  EXPECT_THAT(future.Get<0>(), Eq(TrustedVaultKeyRotationStatus::kOtherError));
+  EXPECT_THAT(future.Get<1>(), Eq(0));
+}
+
+TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeyInvalidMemberPublicKey) {
+  const TrustedVaultKeyAndVersion last_key_and_version(/*key=*/{1, 2, 3, 4},
+                                                       /*version=*/200);
+  const std::vector<uint8_t> new_key = {4, 5, 6};
+
+  base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RotateSharedKey(CoreAccountInfo(), security_domain(),
+                                    last_key_and_version, new_key,
+                                    future.GetCallback());
+  ASSERT_THAT(request, NotNull());
+
+  trusted_vault_pb::ListSecurityDomainMembersResponse members_response =
+      MakeSecurityDomainMembers(
+          {{
+               .member_type = Member::MemberType::kPhysical,
+               .security_domains = {security_domain()},
+               .public_key = GenerateRandomPublicKey(),
+               .key_and_version = last_key_and_version,
+           },
+           {
+               .member_type = Member::MemberType::kPhysical,
+               .security_domains = {security_domain()},
+               .public_key = GenerateRandomPublicKey(),
+               .key_and_version = last_key_and_version,
+           }},
+          /*next_page_token=*/std::nullopt);
+  members_response.mutable_security_domain_members(1)->set_public_key(
+      "invalid-public-key");
+
+  ASSERT_TRUE(RespondToListSecurityDomainMembersRequest(
+      /*security_domain_filter=*/{security_domain()},
+      /*member_filter=*/{}, /*force_strong_read=*/true,
+      /*next_page_token=*/std::nullopt, net::HTTP_OK,
+      members_response.SerializeAsString()));
+
+  EXPECT_THAT(future.Get<0>(),
+              Eq(TrustedVaultKeyRotationStatus::kKeyProofsVerificationFailed));
+  EXPECT_THAT(future.Get<1>(), Eq(0));
+}
+
+TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeyMissingMemberEpochKey) {
+  const std::vector<uint8_t> key = {1, 2, 3, 4};
+  const TrustedVaultKeyAndVersion different_epoch_key_and_version(
+      key, /*version=*/201);
+  const std::vector<uint8_t> new_key = {4, 5, 6};
+
+  base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RotateSharedKey(CoreAccountInfo(), security_domain(),
+                                    different_epoch_key_and_version, new_key,
+                                    future.GetCallback());
+  ASSERT_THAT(request, NotNull());
+
+  ASSERT_TRUE(RespondToListSecurityDomainMembersRequest(
+      /*security_domain_filter=*/{security_domain()},
+      /*member_filter=*/{}, /*force_strong_read=*/true,
+      /*next_page_token=*/std::nullopt, net::HTTP_OK,
+      MakeSecurityDomainMembers(
+          {{
+              .member_type = Member::MemberType::kPhysical,
+              .security_domains = {security_domain()},
+              .public_key = GenerateRandomPublicKey(),
+              .key_and_version =
+                  TrustedVaultKeyAndVersion(key, /*version=*/200),
+          }},
+          /*next_page_token=*/std::nullopt)
+          .SerializeAsString()));
+
+  EXPECT_THAT(GetPendingHTTPRequest(), IsNull());
+  EXPECT_THAT(future.Get<0>(),
+              Eq(TrustedVaultKeyRotationStatus::kKeyProofsVerificationFailed));
+  EXPECT_THAT(future.Get<1>(), Eq(0));
+}
+
+TEST_P(TrustedVaultConnectionImplTest,
+       RotateSharedKeyMemberEpochGreaterThanLocalVersion) {
+  const std::vector<uint8_t> key = {1, 2, 3, 4};
+  const TrustedVaultKeyAndVersion last_key_and_version(key, /*version=*/200);
+  const std::vector<uint8_t> new_key = {4, 5, 6};
+
+  base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RotateSharedKey(CoreAccountInfo(), security_domain(),
+                                    last_key_and_version, new_key,
+                                    future.GetCallback());
+  ASSERT_THAT(request, NotNull());
+
+  ASSERT_TRUE(RespondToListSecurityDomainMembersRequest(
+      /*security_domain_filter=*/{security_domain()},
+      /*member_filter=*/{}, /*force_strong_read=*/true,
+      /*next_page_token=*/std::nullopt, net::HTTP_OK,
+      MakeSecurityDomainMembers(
+          {{
+              .member_type = Member::MemberType::kPhysical,
+              .security_domains = {security_domain()},
+              .public_key = GenerateRandomPublicKey(),
+              .key_and_version =
+                  TrustedVaultKeyAndVersion(key, /*version=*/201),
+          }},
+          /*next_page_token=*/std::nullopt)
+          .SerializeAsString()));
+
+  EXPECT_THAT(GetPendingHTTPRequest(), IsNull());
+  EXPECT_THAT(future.Get<0>(),
+              Eq(TrustedVaultKeyRotationStatus::kLocalDataObsolete));
+  EXPECT_THAT(future.Get<1>(), Eq(0));
+}
+
+TEST_P(TrustedVaultConnectionImplTest,
+       RotateSharedKeyMemberHasNewerEpochAlongsideBaseEpoch) {
+  const TrustedVaultKeyAndVersion last_key_and_version(/*key=*/{1, 2, 3, 4},
+                                                       /*version=*/200);
+  const std::vector<uint8_t> newer_key = {7, 8, 9};
+  const std::vector<uint8_t> new_key = {4, 5, 6};
+
+  std::unique_ptr<SecureBoxKeyPair> member_key_pair =
+      SecureBoxKeyPair::GenerateRandom();
+  trusted_vault_pb::ListSecurityDomainMembersResponse members_response =
+      MakeSecurityDomainMembers(
+          {{
+              .member_type = Member::MemberType::kPhysical,
+              .security_domains = {security_domain()},
+              .public_key = member_key_pair->public_key().ExportToBytes(),
+              .key_and_version = last_key_and_version,
+          }},
+          /*next_page_token=*/std::nullopt);
+  trusted_vault_pb::SharedMemberKey* newer_shared_key =
+      members_response.mutable_security_domain_members(0)
+          ->mutable_memberships(0)
+          ->add_keys();
+  newer_shared_key->set_epoch(last_key_and_version.version + 1);
+  AssignBytesToProtoString(
+      ComputeTrustedVaultWrappedKey(member_key_pair->public_key(), newer_key),
+      newer_shared_key->mutable_wrapped_key());
+  AssignBytesToProtoString(
+      ComputeMemberProof(member_key_pair->public_key(), newer_key),
+      newer_shared_key->mutable_member_proof());
+
+  base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RotateSharedKey(CoreAccountInfo(), security_domain(),
+                                    last_key_and_version, new_key,
+                                    future.GetCallback());
+  ASSERT_THAT(request, NotNull());
+
+  ASSERT_TRUE(RespondToListSecurityDomainMembersRequest(
+      /*security_domain_filter=*/{security_domain()},
+      /*member_filter=*/{}, /*force_strong_read=*/true,
+      /*next_page_token=*/std::nullopt, net::HTTP_OK,
+      members_response.SerializeAsString()));
+
+  EXPECT_THAT(GetPendingHTTPRequest(), IsNull());
+  EXPECT_THAT(future.Get<0>(),
+              Eq(TrustedVaultKeyRotationStatus::kLocalDataObsolete));
+  EXPECT_THAT(future.Get<1>(), Eq(0));
+}
+
+TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeyEmptyMemberKeys) {
+  const TrustedVaultKeyAndVersion last_key_and_version(/*key=*/{1, 2, 3, 4},
+                                                       /*version=*/200);
+  const std::vector<uint8_t> new_key = {4, 5, 6};
+
+  trusted_vault_pb::ListSecurityDomainMembersResponse members_response =
+      MakeSecurityDomainMembers(
+          {{
+              .member_type = Member::MemberType::kPhysical,
+              .security_domains = {security_domain()},
+              .public_key = GenerateRandomPublicKey(),
+              .key_and_version = last_key_and_version,
+          }},
+          /*next_page_token=*/std::nullopt);
+  members_response.mutable_security_domain_members(0)
+      ->mutable_memberships(0)
+      ->clear_keys();
+
+  base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RotateSharedKey(CoreAccountInfo(), security_domain(),
+                                    last_key_and_version, new_key,
+                                    future.GetCallback());
+  ASSERT_THAT(request, NotNull());
+
+  ASSERT_TRUE(RespondToListSecurityDomainMembersRequest(
+      /*security_domain_filter=*/{security_domain()},
+      /*member_filter=*/{}, /*force_strong_read=*/true,
+      /*next_page_token=*/std::nullopt, net::HTTP_OK,
+      members_response.SerializeAsString()));
+
+  EXPECT_THAT(GetPendingHTTPRequest(), IsNull());
+  EXPECT_THAT(future.Get<0>(),
+              Eq(TrustedVaultKeyRotationStatus::kKeyProofsVerificationFailed));
+  EXPECT_THAT(future.Get<1>(), Eq(0));
+}
+
 TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeyNetworkError) {
-  trusted_vault_pb::RotateSharedKeyRequest request_proto;
+  const TrustedVaultKeyAndVersion last_key_and_version(/*key=*/{1, 2, 3, 4},
+                                                       /*version=*/200);
+  const std::vector<uint8_t> new_key = {4, 5, 6};
 
   base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->RotateSharedKey(CoreAccountInfo(), security_domain(),
-                                    request_proto, future.GetCallback());
+                                    last_key_and_version, new_key,
+                                    future.GetCallback());
   ASSERT_THAT(request, NotNull());
+
+  ASSERT_TRUE(RespondToListSecurityDomainMembersRequest(
+      /*security_domain_filter=*/{security_domain()},
+      /*member_filter=*/{}, /*force_strong_read=*/true,
+      /*next_page_token=*/std::nullopt, net::HTTP_OK,
+      MakeSecurityDomainMembers(
+          {{
+              .member_type = Member::MemberType::kPhysical,
+              .security_domains = {security_domain()},
+              .public_key = GenerateRandomPublicKey(),
+              .key_and_version = last_key_and_version,
+          }},
+          /*next_page_token=*/std::nullopt)
+          .SerializeAsString()));
 
   // Advance time to bypass retry logic.
   task_environment().FastForwardBy(
@@ -1830,32 +2427,70 @@ TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeyNetworkError) {
 }
 
 TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeyBadRequest) {
-  trusted_vault_pb::RotateSharedKeyRequest request_proto;
+  const TrustedVaultKeyAndVersion last_key_and_version(/*key=*/{1, 2, 3, 4},
+                                                       /*version=*/200);
+  const std::vector<uint8_t> new_key = {4, 5, 6};
+  const std::string members_response =
+      MakeSecurityDomainMembers(
+          {{
+              .member_type = Member::MemberType::kPhysical,
+              .security_domains = {security_domain()},
+              .public_key = GenerateRandomPublicKey(),
+              .key_and_version = last_key_and_version,
+          }},
+          /*next_page_token=*/std::nullopt)
+          .SerializeAsString();
 
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->RotateSharedKey(CoreAccountInfo(), security_domain(),
-                                    request_proto, future.GetCallback());
+                                    last_key_and_version, new_key,
+                                    future.GetCallback());
   ASSERT_THAT(request, NotNull());
 
+  ASSERT_TRUE(RespondToListSecurityDomainMembersRequest(
+      /*security_domain_filter=*/{security_domain()},
+      /*member_filter=*/{}, /*force_strong_read=*/true,
+      /*next_page_token=*/std::nullopt, net::HTTP_OK, members_response));
   EXPECT_TRUE(RespondToRotateSharedKeyRequest(net::HTTP_BAD_REQUEST, ""));
 
   EXPECT_THAT(future.Get<0>(),
               Eq(TrustedVaultKeyRotationStatus::kMembershipMismatch));
   EXPECT_THAT(future.Get<1>(), Eq(0));
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/"TrustedVault.KeyRotationStatus." + security_domain_name_uma(),
+      /*sample=*/TrustedVaultKeyRotationStatus::kMembershipMismatch,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeyNotFound) {
-  trusted_vault_pb::RotateSharedKeyRequest request_proto;
+  const TrustedVaultKeyAndVersion last_key_and_version(/*key=*/{1, 2, 3, 4},
+                                                       /*version=*/200);
+  const std::vector<uint8_t> new_key = {4, 5, 6};
 
   base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->RotateSharedKey(CoreAccountInfo(), security_domain(),
-                                    request_proto, future.GetCallback());
+                                    last_key_and_version, new_key,
+                                    future.GetCallback());
   ASSERT_THAT(request, NotNull());
 
+  ASSERT_TRUE(RespondToListSecurityDomainMembersRequest(
+      /*security_domain_filter=*/{security_domain()},
+      /*member_filter=*/{}, /*force_strong_read=*/true,
+      /*next_page_token=*/std::nullopt, net::HTTP_OK,
+      MakeSecurityDomainMembers(
+          {{
+              .member_type = Member::MemberType::kPhysical,
+              .security_domains = {security_domain()},
+              .public_key = GenerateRandomPublicKey(),
+              .key_and_version = last_key_and_version,
+          }},
+          /*next_page_token=*/std::nullopt)
+          .SerializeAsString()));
   EXPECT_TRUE(RespondToRotateSharedKeyRequest(net::HTTP_NOT_FOUND, ""));
 
   EXPECT_THAT(future.Get<0>(),
@@ -1864,32 +2499,69 @@ TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeyNotFound) {
 }
 
 TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeyConflict) {
-  trusted_vault_pb::RotateSharedKeyRequest request_proto;
+  const TrustedVaultKeyAndVersion last_key_and_version(/*key=*/{1, 2, 3, 4},
+                                                       /*version=*/200);
+  const std::vector<uint8_t> new_key = {4, 5, 6};
 
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->RotateSharedKey(CoreAccountInfo(), security_domain(),
-                                    request_proto, future.GetCallback());
+                                    last_key_and_version, new_key,
+                                    future.GetCallback());
   ASSERT_THAT(request, NotNull());
 
+  ASSERT_TRUE(RespondToListSecurityDomainMembersRequest(
+      /*security_domain_filter=*/{security_domain()},
+      /*member_filter=*/{}, /*force_strong_read=*/true,
+      /*next_page_token=*/std::nullopt, net::HTTP_OK,
+      MakeSecurityDomainMembers(
+          {{
+              .member_type = Member::MemberType::kPhysical,
+              .security_domains = {security_domain()},
+              .public_key = GenerateRandomPublicKey(),
+              .key_and_version = last_key_and_version,
+          }},
+          /*next_page_token=*/std::nullopt)
+          .SerializeAsString()));
   EXPECT_TRUE(RespondToRotateSharedKeyRequest(net::HTTP_CONFLICT, ""));
 
   EXPECT_THAT(future.Get<0>(),
               Eq(TrustedVaultKeyRotationStatus::kLocalDataObsolete));
   EXPECT_THAT(future.Get<1>(), Eq(0));
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/"TrustedVault.KeyRotationStatus." + security_domain_name_uma(),
+      /*sample=*/TrustedVaultKeyRotationStatus::kLocalDataObsolete,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeyInternalServerError) {
-  trusted_vault_pb::RotateSharedKeyRequest request_proto;
+  const TrustedVaultKeyAndVersion last_key_and_version(/*key=*/{1, 2, 3, 4},
+                                                       /*version=*/200);
+  const std::vector<uint8_t> new_key = {4, 5, 6};
 
   base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->RotateSharedKey(CoreAccountInfo(), security_domain(),
-                                    request_proto, future.GetCallback());
+                                    last_key_and_version, new_key,
+                                    future.GetCallback());
   ASSERT_THAT(request, NotNull());
 
+  ASSERT_TRUE(RespondToListSecurityDomainMembersRequest(
+      /*security_domain_filter=*/{security_domain()},
+      /*member_filter=*/{}, /*force_strong_read=*/true,
+      /*next_page_token=*/std::nullopt, net::HTTP_OK,
+      MakeSecurityDomainMembers(
+          {{
+              .member_type = Member::MemberType::kPhysical,
+              .security_domains = {security_domain()},
+              .public_key = GenerateRandomPublicKey(),
+              .key_and_version = last_key_and_version,
+          }},
+          /*next_page_token=*/std::nullopt)
+          .SerializeAsString()));
   EXPECT_TRUE(
       RespondToRotateSharedKeyRequest(net::HTTP_INTERNAL_SERVER_ERROR, ""));
 
@@ -1898,20 +2570,92 @@ TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeyInternalServerError) {
 }
 
 TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeyParsingError) {
-  trusted_vault_pb::RotateSharedKeyRequest request_proto;
+  const TrustedVaultKeyAndVersion last_key_and_version(/*key=*/{1, 2, 3, 4},
+                                                       /*version=*/200);
+  const std::vector<uint8_t> new_key = {4, 5, 6};
 
   base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection()->RotateSharedKey(CoreAccountInfo(), security_domain(),
-                                    request_proto, future.GetCallback());
+                                    last_key_and_version, new_key,
+                                    future.GetCallback());
   ASSERT_THAT(request, NotNull());
 
+  ASSERT_TRUE(RespondToListSecurityDomainMembersRequest(
+      /*security_domain_filter=*/{security_domain()},
+      /*member_filter=*/{}, /*force_strong_read=*/true,
+      /*next_page_token=*/std::nullopt, net::HTTP_OK,
+      MakeSecurityDomainMembers(
+          {{
+              .member_type = Member::MemberType::kPhysical,
+              .security_domains = {security_domain()},
+              .public_key = GenerateRandomPublicKey(),
+              .key_and_version = last_key_and_version,
+          }},
+          /*next_page_token=*/std::nullopt)
+          .SerializeAsString()));
   EXPECT_TRUE(
       RespondToRotateSharedKeyRequest(net::HTTP_OK, "corrupted_proto_bytes"));
 
   EXPECT_THAT(future.Get<0>(), Eq(TrustedVaultKeyRotationStatus::kOtherError));
   EXPECT_THAT(future.Get<1>(), Eq(0));
+}
+
+TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeyInvalidNewEpoch) {
+  const TrustedVaultKeyAndVersion last_key_and_version(/*key=*/{1, 2, 3, 4},
+                                                       /*version=*/200);
+  const std::vector<uint8_t> new_key = {4, 5, 6};
+  const std::string members_response =
+      MakeSecurityDomainMembers(
+          {{
+              .member_type = Member::MemberType::kPhysical,
+              .security_domains = {security_domain()},
+              .public_key = GenerateRandomPublicKey(),
+              .key_and_version = last_key_and_version,
+          }},
+          /*next_page_token=*/std::nullopt)
+          .SerializeAsString();
+
+  // Case 1: Empty response body (proto3 `new_epoch` defaults to 0).
+  {
+    base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
+    std::unique_ptr<TrustedVaultConnection::Request> request =
+        connection()->RotateSharedKey(CoreAccountInfo(), security_domain(),
+                                      last_key_and_version, new_key,
+                                      future.GetCallback());
+    ASSERT_THAT(request, NotNull());
+    ASSERT_TRUE(RespondToListSecurityDomainMembersRequest(
+        /*security_domain_filter=*/{security_domain()},
+        /*member_filter=*/{}, /*force_strong_read=*/true,
+        /*next_page_token=*/std::nullopt, net::HTTP_OK, members_response));
+    EXPECT_TRUE(RespondToRotateSharedKeyRequest(net::HTTP_OK, ""));
+    EXPECT_THAT(future.Get<0>(),
+                Eq(TrustedVaultKeyRotationStatus::kOtherError));
+    EXPECT_THAT(future.Get<1>(), Eq(0));
+  }
+
+  // Case 2: Non-advancing `new_epoch` (`new_epoch == base_epoch`).
+  {
+    trusted_vault_pb::RotateSharedKeyResponse response_proto;
+    response_proto.set_new_epoch(last_key_and_version.version);
+
+    base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
+    std::unique_ptr<TrustedVaultConnection::Request> request =
+        connection()->RotateSharedKey(CoreAccountInfo(), security_domain(),
+                                      last_key_and_version, new_key,
+                                      future.GetCallback());
+    ASSERT_THAT(request, NotNull());
+    ASSERT_TRUE(RespondToListSecurityDomainMembersRequest(
+        /*security_domain_filter=*/{security_domain()},
+        /*member_filter=*/{}, /*force_strong_read=*/true,
+        /*next_page_token=*/std::nullopt, net::HTTP_OK, members_response));
+    EXPECT_TRUE(RespondToRotateSharedKeyRequest(
+        net::HTTP_OK, response_proto.SerializeAsString()));
+    EXPECT_THAT(future.Get<0>(),
+                Eq(TrustedVaultKeyRotationStatus::kOtherError));
+    EXPECT_THAT(future.Get<1>(), Eq(0));
+  }
 }
 
 TEST_P(TrustedVaultConnectionImplTest,
@@ -1920,13 +2664,17 @@ TEST_P(TrustedVaultConnectionImplTest,
       CreateConnectionWithAccessTokenError(
           TrustedVaultAccessTokenFetcher::FetchingError::kPersistentAuthError);
 
-  trusted_vault_pb::RotateSharedKeyRequest request_proto;
+  const TrustedVaultKeyAndVersion last_key_and_version(/*key=*/{1, 2, 3, 4},
+                                                       /*version=*/200);
+  const std::vector<uint8_t> new_key = {4, 5, 6};
 
+  base::HistogramTester histogram_tester;
   base::test::TestFuture<TrustedVaultKeyRotationStatus, int> future;
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
       connection->RotateSharedKey(CoreAccountInfo(), security_domain(),
-                                  request_proto, future.GetCallback());
+                                  last_key_and_version, new_key,
+                                  future.GetCallback());
   ASSERT_THAT(request, NotNull());
 
   // No requests should be sent to the network.
@@ -1936,6 +2684,58 @@ TEST_P(TrustedVaultConnectionImplTest,
       future.Get<0>(),
       Eq(TrustedVaultKeyRotationStatus::kPersistentAccessTokenFetchError));
   EXPECT_THAT(future.Get<1>(), Eq(0));
+  histogram_tester.ExpectUniqueSample(
+      /*name=*/"TrustedVault.KeyRotationStatus." + security_domain_name_uma(),
+      /*sample=*/
+      TrustedVaultKeyRotationStatus::kPersistentAccessTokenFetchError,
+      /*expected_bucket_count=*/1);
+}
+
+TEST_P(TrustedVaultConnectionImplTest, RotateSharedKeyCancellation) {
+  const TrustedVaultKeyAndVersion last_key_and_version(/*key=*/{1, 2, 3, 4},
+                                                       /*version=*/200);
+  const std::vector<uint8_t> new_key = {4, 5, 6};
+  const std::string members_response =
+      MakeSecurityDomainMembers(
+          {{
+              .member_type = Member::MemberType::kPhysical,
+              .security_domains = {security_domain()},
+              .public_key = GenerateRandomPublicKey(),
+              .key_and_version = last_key_and_version,
+          }},
+          /*next_page_token=*/std::nullopt)
+          .SerializeAsString();
+
+  base::HistogramTester histogram_tester;
+  base::MockCallback<TrustedVaultConnection::RotateSharedKeyCallback> callback;
+  EXPECT_CALL(callback, Run).Times(0);
+
+  // Cancel while ListSecurityDomainMembers is in flight.
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RotateSharedKey(CoreAccountInfo(), security_domain(),
+                                    last_key_and_version, new_key,
+                                    callback.Get());
+  ASSERT_THAT(request, NotNull());
+  request.reset();
+  RespondToListSecurityDomainMembersRequest(
+      /*security_domain_filter=*/{security_domain()},
+      /*member_filter=*/{}, /*force_strong_read=*/true,
+      /*next_page_token=*/std::nullopt, net::HTTP_OK, members_response);
+
+  // Cancel while RotateSharedKey POST is in flight.
+  request = connection()->RotateSharedKey(CoreAccountInfo(), security_domain(),
+                                          last_key_and_version, new_key,
+                                          callback.Get());
+  ASSERT_THAT(request, NotNull());
+  ASSERT_TRUE(RespondToListSecurityDomainMembersRequest(
+      /*security_domain_filter=*/{security_domain()},
+      /*member_filter=*/{}, /*force_strong_read=*/true,
+      /*next_page_token=*/std::nullopt, net::HTTP_OK, members_response));
+  request.reset();
+  RespondToRotateSharedKeyRequest(net::HTTP_OK, /*response_content=*/"");
+
+  histogram_tester.ExpectTotalCount(
+      "TrustedVault.KeyRotationStatus." + security_domain_name_uma(), 0);
 }
 
 }  // namespace

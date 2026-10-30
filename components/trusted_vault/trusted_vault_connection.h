@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_CONNECTION_H_
 #define COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_CONNECTION_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <set>
@@ -19,7 +20,6 @@ struct CoreAccountInfo;
 
 namespace trusted_vault_pb {
 enum SecurityDomainMember_MemberType : int;
-class RotateSharedKeyRequest;
 }  // namespace trusted_vault_pb
 
 namespace trusted_vault {
@@ -96,27 +96,34 @@ enum class TrustedVaultDownloadPasswordPublicKeyStatus {
   kOtherError,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(TrustedVaultKeyRotationStatus)
 enum class TrustedVaultKeyRotationStatus {
-  kSuccess,
+  kSuccess = 0,
   // Used when base epoch doesn't match current epoch of the security domain.
-  kLocalDataObsolete,
+  kLocalDataObsolete = 1,
   // Used when rotated shared member keys don't match current members.
-  kMembershipMismatch,
+  kMembershipMismatch = 2,
   // Used when security domain has no members.
-  kEmptySecurityDomain,
+  kEmptySecurityDomain = 3,
   // Used when request wasn't sent due to transient auth error that prevented
   // fetching an access token.
-  kTransientAccessTokenFetchError,
+  kTransientAccessTokenFetchError = 4,
   // Used when request wasn't sent due to persistent auth error that prevented
   // fetching an access token.
-  kPersistentAccessTokenFetchError,
+  kPersistentAccessTokenFetchError = 5,
   // Used when request wasn't sent because primary account changed meanwhile.
-  kPrimaryAccountChangeAccessTokenFetchError,
+  kPrimaryAccountChangeAccessTokenFetchError = 6,
   // Used for all network errors.
-  kNetworkError,
+  kNetworkError = 7,
+  // Used when member proof verification fails locally.
+  kKeyProofsVerificationFailed = 8,
   // Used for all http and protocol errors not covered by the above.
-  kOtherError,
+  kOtherError = 9,
+  kMaxValue = kOtherError,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/trusted_vault/enums.xml:TrustedVaultKeyRotationStatus)
 
 // This enum is used in histograms. These values are persisted to logs. Entries
 // should not be renumbered and numeric values should never be reused, only add
@@ -314,8 +321,12 @@ class TrustedVaultConnection {
   using DownloadGaiaPasswordPublicKeyCallback =
       base::OnceCallback<void(TrustedVaultDownloadPasswordPublicKeyStatus,
                               const std::vector<uint8_t>&)>;
+  // The result of attempting to rotate the shared key of a security domain. If
+  // the status is `kSuccess`, `new_key_version` carries the new version of the
+  // security domain, otherwise it's zero.
   using RotateSharedKeyCallback =
-      base::OnceCallback<void(TrustedVaultKeyRotationStatus, int)>;
+      base::OnceCallback<void(TrustedVaultKeyRotationStatus,
+                              /*new_key_version=*/int)>;
 
   // Used to control ongoing request lifetime, destroying Request object causes
   // request cancellation.
@@ -386,12 +397,17 @@ class TrustedVaultConnection {
       DownloadGaiaPasswordPublicKeyCallback callback) = 0;
 
   // Asynchronously attempts to rotate the shared key stored in a security
-  // domain. Caller should hold returned request object until |callback| call or
-  // until request needs to be cancelled.
+  // domain to `new_trusted_vault_key`. Fetches the current members of the
+  // security domain, verifies their member proofs against
+  // `last_trusted_vault_key_and_version` (whose `version` must be strictly
+  // positive), and sends the rotation request to the trusted vault server.
+  // Caller should hold returned request object until `callback` call or until
+  // request needs to be cancelled.
   [[nodiscard]] virtual std::unique_ptr<Request> RotateSharedKey(
       const CoreAccountInfo& account_info,
       SecurityDomainId security_domain,
-      const trusted_vault_pb::RotateSharedKeyRequest& request,
+      const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
+      const std::vector<uint8_t>& new_trusted_vault_key,
       RotateSharedKeyCallback callback) = 0;
 
   // Enumerates the members of the security domain and determines the

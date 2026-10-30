@@ -5,14 +5,19 @@
 #include "components/trusted_vault/trusted_vault_connection_impl.h"
 
 #include <algorithm>
+#include <cstdint>
+#include <map>
+#include <memory>
 #include <optional>
 #include <set>
 #include <string>
 #include <string_view>
 #include <utility>
 #include <variant>
+#include <vector>
 
 #include "base/base64url.h"
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/files/important_file_writer.h"
 #include "base/functional/bind.h"
@@ -125,23 +130,42 @@ GetLocalPhysicalDeviceType() {
 #endif
 }
 
+const trusted_vault_pb::SecurityDomainMember::SecurityDomainMembership*
+FindMembership(const trusted_vault_pb::SecurityDomainMember& member,
+               std::string_view security_domain_path) {
+  auto it = std::ranges::find_if(
+      member.memberships(), [&security_domain_path](const auto& membership) {
+        return membership.security_domain() == security_domain_path;
+      });
+  return it != member.memberships().end() ? &*it : nullptr;
+}
+
+const trusted_vault_pb::SharedMemberKey* FindKeyWithHighestEpoch(
+    const google::protobuf::RepeatedPtrField<trusted_vault_pb::SharedMemberKey>&
+        keys) {
+  if (keys.empty()) {
+    return nullptr;
+  }
+  return &*std::ranges::max_element(keys, {},
+                                    &trusted_vault_pb::SharedMemberKey::epoch);
+}
+
+std::string GetSecurityDomainMemberName(const SecureBoxPublicKey& public_key) {
+  std::string encoded_public_key;
+  base::Base64UrlEncode(public_key.ExportToBytes(),
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &encoded_public_key);
+  return kSecurityDomainMemberNamePrefix + encoded_public_key;
+}
+
 trusted_vault_pb::SecurityDomainMember CreateSecurityDomainMember(
     const SecureBoxPublicKey& public_key,
     AuthenticationFactorTypeAndRegistrationParams
         authentication_factor_type_and_registration_params) {
   trusted_vault_pb::SecurityDomainMember member;
-  std::string public_key_string;
-  AssignBytesToProtoString(public_key.ExportToBytes(), &public_key_string);
-
-  std::string encoded_public_key;
-  base::Base64UrlEncode(public_key_string,
-                        base::Base64UrlEncodePolicy::OMIT_PADDING,
-                        &encoded_public_key);
-
-  member.set_name(kSecurityDomainMemberNamePrefix + encoded_public_key);
-  // Note: |public_key_string| using here is intentional, encoding is required
-  // only to compute member name.
-  member.set_public_key(public_key_string);
+  member.set_name(GetSecurityDomainMemberName(public_key));
+  AssignBytesToProtoString(public_key.ExportToBytes(),
+                           member.mutable_public_key());
 
   std::visit(
       absl::Overload{
@@ -422,23 +446,18 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
     const std::string security_domain_name =
         GetSecurityDomainPath(security_domain_);
     for (const auto& member : response.security_domain_members()) {
-      bool is_member_of_domain = false;
-      for (const auto& membership : member.memberships()) {
-        if (membership.security_domain() == security_domain_name) {
-          is_member_of_domain = true;
-          for (const auto& key : membership.keys()) {
-            const int key_version = key.epoch();
-            if (key_version != 0 &&
-                (!result_.key_version.has_value() ||
-                 result_.key_version.value() < key_version)) {
-              result_.key_version = key_version;
-            }
-          }
-          break;
-        }
-      }
-      if (!is_member_of_domain) {
+      const trusted_vault_pb::SecurityDomainMember::SecurityDomainMembership*
+          membership = FindMembership(member, security_domain_name);
+      if (!membership) {
         continue;
+      }
+      if (const trusted_vault_pb::SharedMemberKey* max_key =
+              FindKeyWithHighestEpoch(membership->keys())) {
+        if (max_key->epoch() != 0 &&
+            (!result_.key_version.has_value() ||
+             result_.key_version.value() < max_key->epoch())) {
+          result_.key_version = max_key->epoch();
+        }
       }
 
       if (member.has_member_metadata() &&
@@ -479,12 +498,7 @@ class DownloadAuthenticationFactorsRegistrationStateRequest
         if (!public_key) {
           continue;
         }
-        const auto& membership = std::ranges::find_if(
-            member.memberships(),
-            [&security_domain_name](const auto& membership) {
-              return membership.security_domain() == security_domain_name;
-            });
-        CHECK(membership != member.memberships().end())
+        CHECK(membership)
             << "iCloud member should have been tested for membership above";
         std::vector<MemberKeys> member_keys;
         std::ranges::transform(
@@ -632,55 +646,290 @@ void ProcessDownloadGaiaPasswordPublicKeyResponse(
                           ProtoStringToBytes(key_str));
 }
 
-void ProcessRotateSharedKeyResponse(
-    TrustedVaultConnection::RotateSharedKeyCallback callback,
-    TrustedVaultRequest::HttpStatus http_status,
-    const std::string& response_body) {
-  switch (http_status) {
-    case TrustedVaultRequest::HttpStatus::kSuccess:
-      break;
-    case TrustedVaultRequest::HttpStatus::kNetworkError:
-      std::move(callback).Run(TrustedVaultKeyRotationStatus::kNetworkError, 0);
-      return;
-    case TrustedVaultRequest::HttpStatus::kOtherError:
-      std::move(callback).Run(TrustedVaultKeyRotationStatus::kOtherError, 0);
-      return;
-    case TrustedVaultRequest::HttpStatus::kTransientAccessTokenFetchError:
-      std::move(callback).Run(
-          TrustedVaultKeyRotationStatus::kTransientAccessTokenFetchError, 0);
-      return;
-    case TrustedVaultRequest::HttpStatus::kPersistentAccessTokenFetchError:
-      std::move(callback).Run(
-          TrustedVaultKeyRotationStatus::kPersistentAccessTokenFetchError, 0);
-      return;
-    case TrustedVaultRequest::HttpStatus::
-        kPrimaryAccountChangeAccessTokenFetchError:
-      std::move(callback).Run(TrustedVaultKeyRotationStatus::
-                                  kPrimaryAccountChangeAccessTokenFetchError,
-                              0);
-      return;
-    case TrustedVaultRequest::HttpStatus::kNotFound:
-      std::move(callback).Run(
-          TrustedVaultKeyRotationStatus::kEmptySecurityDomain, 0);
-      return;
-    case TrustedVaultRequest::HttpStatus::kBadRequest:
-      std::move(callback).Run(
-          TrustedVaultKeyRotationStatus::kMembershipMismatch, 0);
-      return;
-    case TrustedVaultRequest::HttpStatus::kConflict:
-      std::move(callback).Run(TrustedVaultKeyRotationStatus::kLocalDataObsolete,
-                              0);
-      return;
+// Coordinates rotating a security domain's shared key, which is performed
+// through the following stages:
+//
+// 1. Fetching members: Fetches current security domain members from the server
+//    with consistent reads and by iterating through all pages to ensure the
+//    returned list is up to date and complete.
+// 2. Validating members: Verifies each member's public key, checks that its
+//    latest key epoch matches the local key version, and validates its
+//    membership proof.
+// 3. Rotating the key: Wraps the new shared key for each validated member,
+//    computes the rotation proof, and sends a `rotateSharedKey` request.
+// 4. Processing response: Parses the new epoch on success, or maps server
+//    errors.
+class RotateSharedKeyRequest : public TrustedVaultConnection::Request {
+ public:
+  RotateSharedKeyRequest(
+      SecurityDomainId security_domain,
+      const GURL& trusted_vault_service_url,
+      const CoreAccountId& account_id,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<TrustedVaultAccessTokenFetcher> access_token_fetcher,
+      const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
+      const std::vector<uint8_t>& new_trusted_vault_key,
+      TrustedVaultConnection::RotateSharedKeyCallback callback)
+      : security_domain_(security_domain),
+        trusted_vault_service_url_(trusted_vault_service_url),
+        account_id_(account_id),
+        url_loader_factory_(std::move(url_loader_factory)),
+        access_token_fetcher_(std::move(access_token_fetcher)),
+        last_trusted_vault_key_and_version_(last_trusted_vault_key_and_version),
+        new_trusted_vault_key_(new_trusted_vault_key),
+        callback_(std::move(callback)) {
+    CHECK_GT(last_trusted_vault_key_and_version_.version, 0);
+    StartFetchingMembers();
   }
 
-  trusted_vault_pb::RotateSharedKeyResponse response;
-  if (!response.ParseFromString(response_body)) {
-    std::move(callback).Run(TrustedVaultKeyRotationStatus::kOtherError, 0);
-    return;
+ private:
+  void StartFetchingMembers() {
+    members_.clear();
+    FetchMembersPage(/*next_page_token=*/std::nullopt);
   }
-  std::move(callback).Run(TrustedVaultKeyRotationStatus::kSuccess,
-                          response.new_epoch());
-}
+
+  void FetchMembersPage(std::optional<std::string_view> next_page_token) {
+    request_ = std::make_unique<TrustedVaultRequest>(
+        account_id_, TrustedVaultRequest::HttpMethod::kGet,
+        GetListSecurityDomainMembersURL(trusted_vault_service_url_,
+                                        {security_domain_},
+                                        /*member_filter=*/{}, next_page_token,
+                                        /*force_strong_read=*/true),
+        /*serialized_request_proto=*/std::nullopt,
+        /*max_retry_duration=*/
+        TrustedVaultConnectionImpl::kMaxKeyRotationRetryDuration,
+        url_loader_factory_, access_token_fetcher_->Clone(),
+        MakeFetchStatusCallback(security_domain_,
+                                TrustedVaultURLFetchReasonForUMA::
+                                    kDownloadRecoveryFactorsForKeyRotation));
+
+    // Unretained: this object owns `request_`. When `request_` is deleted, so
+    // is the `SimpleURLLoader` and thus any callback is canceled.
+    request_->FetchAccessTokenAndSendRequest(
+        base::BindOnce(&RotateSharedKeyRequest::ProcessListMembersResponse,
+                       base::Unretained(this)));
+  }
+
+  void ProcessListMembersResponse(TrustedVaultRequest::HttpStatus http_status,
+                                  const std::string& response_body) {
+    switch (http_status) {
+      case TrustedVaultRequest::HttpStatus::kSuccess:
+        break;
+      case TrustedVaultRequest::HttpStatus::kNetworkError:
+        FinishWithStatus(TrustedVaultKeyRotationStatus::kNetworkError, 0);
+        return;
+      case TrustedVaultRequest::HttpStatus::kTransientAccessTokenFetchError:
+        FinishWithStatus(
+            TrustedVaultKeyRotationStatus::kTransientAccessTokenFetchError, 0);
+        return;
+      case TrustedVaultRequest::HttpStatus::kPersistentAccessTokenFetchError:
+        FinishWithStatus(
+            TrustedVaultKeyRotationStatus::kPersistentAccessTokenFetchError, 0);
+        return;
+      case TrustedVaultRequest::HttpStatus::
+          kPrimaryAccountChangeAccessTokenFetchError:
+        FinishWithStatus(TrustedVaultKeyRotationStatus::
+                             kPrimaryAccountChangeAccessTokenFetchError,
+                         0);
+        return;
+      case TrustedVaultRequest::HttpStatus::kNotFound:
+      case TrustedVaultRequest::HttpStatus::kBadRequest:
+      case TrustedVaultRequest::HttpStatus::kConflict:
+      case TrustedVaultRequest::HttpStatus::kOtherError:
+        FinishWithStatus(TrustedVaultKeyRotationStatus::kOtherError, 0);
+        return;
+    }
+
+    trusted_vault_pb::ListSecurityDomainMembersResponse response;
+    if (!response.ParseFromString(response_body)) {
+      FinishWithStatus(TrustedVaultKeyRotationStatus::kOtherError, 0);
+      return;
+    }
+
+    if (std::optional<TrustedVaultKeyRotationStatus> error =
+            ValidateAndAddMembers(response)) {
+      CHECK_NE(*error, TrustedVaultKeyRotationStatus::kSuccess);
+      FinishWithStatus(*error, 0);
+      return;
+    }
+
+    if (!response.next_page_token().empty()) {
+      FetchMembersPage(response.next_page_token());
+      return;
+    }
+
+    // If the security domain has no members at all, key rotation cannot
+    // proceed (the domain has to be created first).
+    if (members_.empty()) {
+      FinishWithStatus(TrustedVaultKeyRotationStatus::kEmptySecurityDomain, 0);
+      return;
+    }
+
+    SendRotateSharedKeyRequest();
+  }
+
+  // Validates members belonging to `security_domain_` in `response` (public
+  // key format, latest epoch matching `last_trusted_vault_key_and_version_`,
+  // and member proof) and adds their public keys to `members_`. Returns
+  // `std::nullopt` on success, or the failure status if any member fails
+  // validation. Duplicate members across pages are ignored.
+  std::optional<TrustedVaultKeyRotationStatus> ValidateAndAddMembers(
+      const trusted_vault_pb::ListSecurityDomainMembersResponse& response) {
+    const std::string security_domain_name =
+        GetSecurityDomainPath(security_domain_);
+    for (const auto& member : response.security_domain_members()) {
+      const trusted_vault_pb::SecurityDomainMember::SecurityDomainMembership*
+          membership = FindMembership(member, security_domain_name);
+      if (!membership) {
+        continue;
+      }
+
+      std::unique_ptr<SecureBoxPublicKey> public_key =
+          SecureBoxPublicKey::CreateByImport(
+              ProtoStringToBytes(member.public_key()));
+      if (!public_key) {
+        return TrustedVaultKeyRotationStatus::kKeyProofsVerificationFailed;
+      }
+
+      const trusted_vault_pb::SharedMemberKey* max_key =
+          FindKeyWithHighestEpoch(membership->keys());
+      if (!max_key) {
+        return TrustedVaultKeyRotationStatus::kKeyProofsVerificationFailed;
+      }
+
+      if (max_key->epoch() > last_trusted_vault_key_and_version_.version) {
+        // The server already has a newer key version than the client's current
+        // version, which indicates that another client has rotated the shared
+        // key. The local client must download the latest keys before rotating.
+        return TrustedVaultKeyRotationStatus::kLocalDataObsolete;
+      }
+      if (max_key->epoch() < last_trusted_vault_key_and_version_.version) {
+        // The member does not have a key for the current epoch, so verifying
+        // its member proof against the current shared key is impossible.
+        // While this state should not occur in practice (i.e. client having a
+        // higher epoch than the server), it indicates either server-side
+        // inconsistency or that client data is corrupt.
+        return TrustedVaultKeyRotationStatus::kKeyProofsVerificationFailed;
+      }
+
+      if (!VerifyMemberProof(*public_key,
+                             last_trusted_vault_key_and_version_.key,
+                             ProtoStringToBytes(max_key->member_proof()))) {
+        return TrustedVaultKeyRotationStatus::kKeyProofsVerificationFailed;
+      }
+
+      std::string member_name = GetSecurityDomainMemberName(*public_key);
+      if (members_.contains(member_name)) {
+        // Duplicate member across paginated responses; skip.
+        continue;
+      }
+      members_.emplace(std::move(member_name), std::move(public_key));
+    }
+    return std::nullopt;
+  }
+
+  void SendRotateSharedKeyRequest() {
+    trusted_vault_pb::RotateSharedKeyRequest proto_request;
+    proto_request.set_security_domain(GetSecurityDomainPath(security_domain_));
+    proto_request.set_base_epoch(last_trusted_vault_key_and_version_.version);
+
+    for (const auto& [member_name, member_public_key] : members_) {
+      trusted_vault_pb::RotatedSharedMemberKey* rotated_key =
+          proto_request.add_rotated_shared_member_keys();
+      rotated_key->set_security_domain_member(member_name);
+      AssignBytesToProtoString(ComputeTrustedVaultWrappedKey(
+                                   *member_public_key, new_trusted_vault_key_),
+                               rotated_key->mutable_wrapped_key());
+      AssignBytesToProtoString(
+          ComputeMemberProof(*member_public_key, new_trusted_vault_key_),
+          rotated_key->mutable_member_proof());
+    }
+
+    AssignBytesToProtoString(
+        ComputeRotationProof(new_trusted_vault_key_,
+                             last_trusted_vault_key_and_version_.key),
+        proto_request.mutable_rotation_proof());
+
+    request_ = std::make_unique<TrustedVaultRequest>(
+        account_id_, TrustedVaultRequest::HttpMethod::kPost,
+        GetRotateSharedKeyURL(trusted_vault_service_url_, security_domain_),
+        /*serialized_request_proto=*/proto_request.SerializeAsString(),
+        /*max_retry_duration=*/
+        TrustedVaultConnectionImpl::kMaxKeyRotationRetryDuration,
+        url_loader_factory_, access_token_fetcher_->Clone(),
+        MakeFetchStatusCallback(
+            security_domain_,
+            TrustedVaultURLFetchReasonForUMA::kRotateSharedKey));
+
+    request_->FetchAccessTokenAndSendRequest(
+        base::BindOnce(&RotateSharedKeyRequest::ProcessRotateResponse,
+                       base::Unretained(this)));
+  }
+
+  void ProcessRotateResponse(TrustedVaultRequest::HttpStatus http_status,
+                             const std::string& response_body) {
+    switch (http_status) {
+      case TrustedVaultRequest::HttpStatus::kSuccess:
+        break;
+      case TrustedVaultRequest::HttpStatus::kNetworkError:
+        FinishWithStatus(TrustedVaultKeyRotationStatus::kNetworkError, 0);
+        return;
+      case TrustedVaultRequest::HttpStatus::kOtherError:
+        FinishWithStatus(TrustedVaultKeyRotationStatus::kOtherError, 0);
+        return;
+      case TrustedVaultRequest::HttpStatus::kTransientAccessTokenFetchError:
+        FinishWithStatus(
+            TrustedVaultKeyRotationStatus::kTransientAccessTokenFetchError, 0);
+        return;
+      case TrustedVaultRequest::HttpStatus::kPersistentAccessTokenFetchError:
+        FinishWithStatus(
+            TrustedVaultKeyRotationStatus::kPersistentAccessTokenFetchError, 0);
+        return;
+      case TrustedVaultRequest::HttpStatus::
+          kPrimaryAccountChangeAccessTokenFetchError:
+        FinishWithStatus(TrustedVaultKeyRotationStatus::
+                             kPrimaryAccountChangeAccessTokenFetchError,
+                         0);
+        return;
+      case TrustedVaultRequest::HttpStatus::kNotFound:
+        FinishWithStatus(TrustedVaultKeyRotationStatus::kEmptySecurityDomain,
+                         0);
+        return;
+      case TrustedVaultRequest::HttpStatus::kBadRequest:
+        FinishWithStatus(TrustedVaultKeyRotationStatus::kMembershipMismatch, 0);
+        return;
+      case TrustedVaultRequest::HttpStatus::kConflict:
+        FinishWithStatus(TrustedVaultKeyRotationStatus::kLocalDataObsolete, 0);
+        return;
+    }
+
+    trusted_vault_pb::RotateSharedKeyResponse response;
+    if (!response.ParseFromString(response_body) ||
+        response.new_epoch() <= last_trusted_vault_key_and_version_.version ||
+        response.new_epoch() <= 0) {
+      FinishWithStatus(TrustedVaultKeyRotationStatus::kOtherError, 0);
+      return;
+    }
+    FinishWithStatus(TrustedVaultKeyRotationStatus::kSuccess,
+                     response.new_epoch());
+  }
+
+  void FinishWithStatus(TrustedVaultKeyRotationStatus status, int new_epoch) {
+    RecordTrustedVaultKeyRotationStatus(security_domain_, status);
+    std::move(callback_).Run(status, new_epoch);
+  }
+
+  const SecurityDomainId security_domain_;
+  const GURL trusted_vault_service_url_;
+  const CoreAccountId account_id_;
+  const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  const std::unique_ptr<TrustedVaultAccessTokenFetcher> access_token_fetcher_;
+  const TrustedVaultKeyAndVersion last_trusted_vault_key_and_version_;
+  const std::vector<uint8_t> new_trusted_vault_key_;
+  TrustedVaultConnection::RotateSharedKeyCallback callback_;
+  std::unique_ptr<TrustedVaultRequest> request_;
+  std::map<std::string, std::unique_ptr<SecureBoxPublicKey>> members_;
+};
 
 }  // namespace
 
@@ -815,21 +1064,14 @@ std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultConnectionImpl::RotateSharedKey(
     const CoreAccountInfo& account_info,
     SecurityDomainId security_domain,
-    const trusted_vault_pb::RotateSharedKeyRequest& request,
+    const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
+    const std::vector<uint8_t>& new_trusted_vault_key,
     RotateSharedKeyCallback callback) {
-  auto http_request = std::make_unique<TrustedVaultRequest>(
-      account_info.account_id, TrustedVaultRequest::HttpMethod::kPost,
-      GetRotateSharedKeyURL(trusted_vault_service_url_, security_domain),
-      /*serialized_request_proto=*/request.SerializeAsString(),
-      /*max_retry_duration=*/kMaxKeyRotationRetryDuration,
+  return std::make_unique<RotateSharedKeyRequest>(
+      security_domain, trusted_vault_service_url_, account_info.account_id,
       GetOrCreateURLLoaderFactory(), access_token_fetcher_->Clone(),
-      MakeFetchStatusCallback(
-          security_domain, TrustedVaultURLFetchReasonForUMA::kRotateSharedKey));
-
-  http_request->FetchAccessTokenAndSendRequest(
-      base::BindOnce(&ProcessRotateSharedKeyResponse, std::move(callback)));
-
-  return http_request;
+      last_trusted_vault_key_and_version, new_trusted_vault_key,
+      std::move(callback));
 }
 
 std::unique_ptr<TrustedVaultConnection::Request>

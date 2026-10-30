@@ -112,6 +112,23 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultHintDegradedRecoverabilityChangedReason) -->
 
+<!-- LINT.IfChange(TrustedVaultKeyRotationStatus) -->
+
+<enum name="TrustedVaultKeyRotationStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Local data obsolete"/>
+  <int value="2" label="Membership mismatch"/>
+  <int value="3" label="Empty security domain"/>
+  <int value="4" label="Transient access token fetching error"/>
+  <int value="5" label="Persistent access token fetching error"/>
+  <int value="6" label="Primary account changed access token fetching error"/>
+  <int value="7" label="Network error"/>
+  <int value="8" label="Key proofs verification failed"/>
+  <int value="9" label="Other error"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_connection.h:TrustedVaultKeyRotationStatus) -->
+
 <!-- LINT.IfChange(TrustedVaultListSecurityDomainMembersPinStatus) -->
 
 <enum name="TrustedVaultListSecurityDomainMembersPinStatus">

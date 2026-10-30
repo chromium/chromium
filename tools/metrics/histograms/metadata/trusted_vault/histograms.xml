@@ -144,6 +144,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TrustedVault.KeyRotationStatus{SecurityDomainId}"
+    enum="TrustedVaultKeyRotationStatus" expires_after="2027-04-11">
+  <owner>thomasth@google.com</owner>
+  <owner>src/components/trusted_vault/OWNERS</owner>
+  <summary>
+    Records the outcome of a shared key rotation request for {SecurityDomainId}
+    upon request completion or failure.
+  </summary>
+  <token key="SecurityDomainId" variants="SecurityDomainId"/>
+</histogram>
+
 <histogram
     name="TrustedVault.ListSecurityDomainMembersPinStatus{SecurityDomainId}"
     enum="TrustedVaultListSecurityDomainMembersPinStatus"
@@ -327,6 +338,8 @@ chromium-metrics-reviews@google.com.
     <variant name=".DownloadIsRecoverabilityDegraded"
         summary="Downloading of the recoverability-degraded state"/>
     <variant name=".DownloadKeys" summary="Downloading of keys"/>
+    <variant name=".DownloadRecoveryFactorsForKeyRotation"
+        summary="Downloading of recovery factors for key rotation"/>
     <variant name=".RegisterDevice" summary="Local device registration"/>
     <variant name=".RegisterGooglePasswordManagerPIN"
         summary="Google Password Manager PIN registration"/>

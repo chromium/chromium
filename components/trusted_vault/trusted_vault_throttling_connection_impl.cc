@@ -5,7 +5,9 @@
 #include "components/trusted_vault/trusted_vault_throttling_connection_impl.h"
 
 #include <cstddef>
+#include <cstdint>
 #include <memory>
+#include <vector>
 
 #include "base/memory/ptr_util.h"
 #include "base/time/clock.h"
@@ -134,10 +136,12 @@ std::unique_ptr<TrustedVaultConnection::Request>
 TrustedVaultThrottlingConnectionImpl::RotateSharedKey(
     const CoreAccountInfo& account_info,
     SecurityDomainId security_domain,
-    const trusted_vault_pb::RotateSharedKeyRequest& request,
+    const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
+    const std::vector<uint8_t>& new_trusted_vault_key,
     RotateSharedKeyCallback callback) {
-  return delegate_->RotateSharedKey(account_info, security_domain, request,
-                                    std::move(callback));
+  return delegate_->RotateSharedKey(account_info, security_domain,
+                                    last_trusted_vault_key_and_version,
+                                    new_trusted_vault_key, std::move(callback));
 }
 
 std::unique_ptr<TrustedVaultConnection::Request>

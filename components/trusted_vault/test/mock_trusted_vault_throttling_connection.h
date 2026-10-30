@@ -5,7 +5,9 @@
 #ifndef COMPONENTS_TRUSTED_VAULT_TEST_MOCK_TRUSTED_VAULT_THROTTLING_CONNECTION_H_
 #define COMPONENTS_TRUSTED_VAULT_TEST_MOCK_TRUSTED_VAULT_THROTTLING_CONNECTION_H_
 
+#include <cstdint>
 #include <memory>
+#include <vector>
 
 #include "base/functional/callback.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -57,13 +59,15 @@ class MockTrustedVaultThrottlingConnection
               (const CoreAccountInfo& account_info,
                DownloadGaiaPasswordPublicKeyCallback callback),
               (override));
-  MOCK_METHOD(std::unique_ptr<Request>,
-              RotateSharedKey,
-              (const CoreAccountInfo& account_info,
-               SecurityDomainId security_domain,
-               const trusted_vault_pb::RotateSharedKeyRequest& request,
-               RotateSharedKeyCallback callback),
-              (override));
+  MOCK_METHOD(
+      std::unique_ptr<Request>,
+      RotateSharedKey,
+      (const CoreAccountInfo& account_info,
+       SecurityDomainId security_domain,
+       const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
+       const std::vector<uint8_t>& new_trusted_vault_key,
+       RotateSharedKeyCallback callback),
+      (override));
   MOCK_METHOD(std::unique_ptr<Request>,
               DownloadAuthenticationFactorsRegistrationState,
               (const CoreAccountInfo& account_info,

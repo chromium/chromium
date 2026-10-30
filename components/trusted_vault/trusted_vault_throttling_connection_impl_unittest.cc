@@ -10,6 +10,7 @@
 #include "base/test/simple_test_clock.h"
 #include "components/trusted_vault/local_domains_storage.h"
 #include "components/trusted_vault/local_recovery_factor.h"
+#include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/test/fake_local_domains_storage_file_access.h"
 #include "components/trusted_vault/test/mock_trusted_vault_throttling_connection.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
@@ -273,7 +274,8 @@ TEST_F(TrustedVaultThrottlingConnectionImplTest, ShouldCallRotateSharedKey) {
   std::unique_ptr<TrustedVaultConnection::Request> request =
       throttling_connection()->RotateSharedKey(
           account_info(), SecurityDomainId::kChromeSync,
-          trusted_vault_pb::RotateSharedKeyRequest(), base::DoNothing());
+          TrustedVaultKeyAndVersion(std::vector<uint8_t>{1, 2, 3}, 1),
+          std::vector<uint8_t>{4, 5, 6}, base::DoNothing());
   EXPECT_THAT(request, NotNull());
 }
 

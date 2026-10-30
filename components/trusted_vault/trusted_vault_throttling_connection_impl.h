@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_THROTTLING_CONNECTION_IMPL_H_
 #define COMPONENTS_TRUSTED_VAULT_TRUSTED_VAULT_THROTTLING_CONNECTION_IMPL_H_
 
+#include <cstdint>
 #include <memory>
+#include <vector>
 
 #include "base/time/clock.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/standalone_trusted_vault_storage.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher.h"
 #include "components/trusted_vault/trusted_vault_connection.h"
@@ -72,7 +73,8 @@ class TrustedVaultThrottlingConnectionImpl
   std::unique_ptr<Request> RotateSharedKey(
       const CoreAccountInfo& account_info,
       SecurityDomainId security_domain,
-      const trusted_vault_pb::RotateSharedKeyRequest& request,
+      const TrustedVaultKeyAndVersion& last_trusted_vault_key_and_version,
+      const std::vector<uint8_t>& new_trusted_vault_key,
       RotateSharedKeyCallback callback) override;
 
   std::unique_ptr<TrustedVaultConnection::Request>

@@ -12,6 +12,7 @@
 namespace trusted_vault {
 
 enum class LocalRecoveryFactorType;
+enum class TrustedVaultKeyRotationStatus;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -69,6 +70,7 @@ enum class TrustedVaultURLFetchReasonForUMA {
   kRegisterGpmPin,
   kRegisterICloudKeychain,
   kDownloadGaiaPasswordPublicKey,
+  kDownloadRecoveryFactorsForKeyRotation,
   kRotateSharedKey,
 };
 
@@ -243,6 +245,9 @@ void RecordTrustedVaultDownloadKeysStatus(
 // downstream) and delete this one.
 void RecordTrustedVaultDownloadKeysStatus(
     TrustedVaultDownloadKeysStatusForUMA status);
+
+void RecordTrustedVaultKeyRotationStatus(SecurityDomainId security_domain_id,
+                                         TrustedVaultKeyRotationStatus status);
 
 void RecordTrustedVaultRecoverKeysOutcome(
     SecurityDomainId security_domain_id,
