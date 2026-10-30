@@ -26,7 +26,7 @@ ScreenAIDownloaderNonChromeOS::ScreenAIDownloaderNonChromeOS() = default;
 ScreenAIDownloaderNonChromeOS::~ScreenAIDownloaderNonChromeOS() = default;
 
 void ScreenAIDownloaderNonChromeOS::DownloadComponentInternal() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   // Proactive defense to ensure calls do not crash in early browser
   // startup, late browser shutdown after `BrowserProcessImpl` teardown, or in
   // unit tests without `TestingBrowserProcess`.
@@ -55,7 +55,7 @@ void ScreenAIDownloaderNonChromeOS::OnStateOrObserversChanged() {
 }
 
 void ScreenAIDownloaderNonChromeOS::SetLastUsageTime() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   // Proactive defense to ensure calls do not crash in early browser
   // startup, late browser shutdown after `BrowserProcessImpl` teardown, or in
   // unit tests without `TestingBrowserProcess` / `ScopedTestingLocalState`.

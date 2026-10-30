@@ -89,7 +89,7 @@ void SyncEngineContext::SetMetadataDatabase(
 void SyncEngineContext::SetRemoteChangeProcessor(
     RemoteChangeProcessor* remote_change_processor) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(remote_change_processor);
+  CHECK(remote_change_processor, base::NotFatalUntil::M163);
   remote_change_processor_ = remote_change_processor;
 }
 

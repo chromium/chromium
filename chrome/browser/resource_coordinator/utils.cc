@@ -24,10 +24,10 @@
 namespace resource_coordinator {
 
 TabLifecycleUnitSource* GetTabLifecycleUnitSource() {
-  DCHECK(g_browser_process);
+  CHECK(g_browser_process, base::NotFatalUntil::M163);
   auto* source = g_browser_process->resource_coordinator_parts()
                      ->tab_lifecycle_unit_source();
-  DCHECK(source);
+  CHECK(source, base::NotFatalUntil::M163);
   return source;
 }
 

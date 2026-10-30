@@ -74,7 +74,7 @@ OpticalCharacterRecognizer::OpticalCharacterRecognizer(
           content::GetUIThreadTaskRunner()),
       profile_(profile),
       client_type_(client_type) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   // Tests may pass an empty profile.
   if (profile_) {
     profile_observer_.Observe(profile_);
@@ -110,7 +110,7 @@ void OpticalCharacterRecognizer::OnOCRInitializationCallback(
     ready_ = false;
   } else {
     // This should be called only once.
-    DCHECK(!is_ready());
+    CHECK(!is_ready(), base::NotFatalUntil::M163);
     ready_ = successful;
   }
 
@@ -210,7 +210,7 @@ void OpticalCharacterRecognizer::PerformOCR(
 void OpticalCharacterRecognizer::PerformOCR(
     const SkBitmap& image,
     base::OnceCallback<void(const ui::AXTreeUpdate&)> callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   if (!is_ready()) {
     VLOG(0)
@@ -235,7 +235,7 @@ void OpticalCharacterRecognizer::SetOCRLightMode(bool enabled) {
     return;
   }
 
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   if (!is_ready()) {
     return;
   }
@@ -256,7 +256,7 @@ void OpticalCharacterRecognizer::IsOCRBusy(
     return;
   }
 
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   if (!is_ready()) {
     std::move(callback).Run(false);
     return;
@@ -281,7 +281,7 @@ void OpticalCharacterRecognizer::DisconnectAnnotator() {
     return;
   }
 
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   screen_ai_annotator_->reset();
 }
 
@@ -292,7 +292,7 @@ void OpticalCharacterRecognizer::SetDisconnectedCallback(
 
 void OpticalCharacterRecognizer::GetMaxImageDimension(
     base::OnceCallback<void(uint32_t)> callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   if (!is_ready()) {
     std::move(callback).Run(0);
     return;

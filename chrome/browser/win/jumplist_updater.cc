@@ -118,7 +118,7 @@ bool JumpListUpdater::IsEnabled() {
 
 bool JumpListUpdater::BeginUpdate() {
   // This instance is expected to be one-time-use only.
-  DCHECK(!destination_list_.Get());
+  CHECK(!destination_list_.Get(), base::NotFatalUntil::M163);
 
   // Check preconditions.
   if (!JumpListUpdater::IsEnabled() || app_user_model_id_.empty())

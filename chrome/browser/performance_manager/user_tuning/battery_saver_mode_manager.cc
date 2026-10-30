@@ -357,7 +357,7 @@ class DesktopBatterySaverProvider
       // multiple batteries connected (in which case their units may not match
       // so they don't report a charge). We're not under the threshold for any
       // battery.
-      DCHECK_NE(1, battery_state->battery_count);
+      CHECK_NE(1, battery_state->battery_count, base::NotFatalUntil::M163);
 
       is_below_low_battery_threshold_ = false;
       return;
@@ -505,12 +505,12 @@ bool BatterySaverModeManager::HasInstance() {
 
 // static
 BatterySaverModeManager* BatterySaverModeManager::GetInstance() {
-  DCHECK(g_battery_saver_mode_manager);
+  CHECK(g_battery_saver_mode_manager, base::NotFatalUntil::M163);
   return g_battery_saver_mode_manager;
 }
 
 BatterySaverModeManager::~BatterySaverModeManager() {
-  DCHECK_EQ(this, g_battery_saver_mode_manager);
+  CHECK_EQ(this, g_battery_saver_mode_manager, base::NotFatalUntil::M163);
   g_battery_saver_mode_manager = nullptr;
   observers_.Notify(&Observer::OnBatterySaverModeManagerDestroyed);
 }
@@ -586,7 +586,7 @@ BatterySaverModeManager::BatterySaverModeManager(
       freezing_delegate_(freezing_delegate
                              ? std::move(freezing_delegate)
                              : std::make_unique<FreezingDelegateImpl>()) {
-  DCHECK(!g_battery_saver_mode_manager);
+  CHECK(!g_battery_saver_mode_manager, base::NotFatalUntil::M163);
   g_battery_saver_mode_manager = this;
 
   pref_change_registrar_.Init(local_state);

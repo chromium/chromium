@@ -102,10 +102,10 @@ bool RegisterUninstallationViaOsSettings(
     const std::wstring& publisher,
     const base::CommandLine& uninstall_command,
     const base::FilePath& icon_path) {
-  DCHECK(!key.empty());
-  DCHECK(!display_name.empty());
-  DCHECK(!publisher.empty());
-  DCHECK(!uninstall_command.GetProgram().empty());
+  CHECK(!key.empty(), base::NotFatalUntil::M163);
+  CHECK(!display_name.empty(), base::NotFatalUntil::M163);
+  CHECK(!publisher.empty(), base::NotFatalUntil::M163);
+  CHECK(!uninstall_command.GetProgram().empty(), base::NotFatalUntil::M163);
 
   base::win::RegKey uninstall_reg_key;
   LONG result = uninstall_reg_key.Open(HKEY_CURRENT_USER, kUninstallRegistryKey,

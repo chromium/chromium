@@ -63,7 +63,7 @@ std::optional<bool> BrandcodedDefaultSettings::GetShowHomeButton() const {
 
 bool BrandcodedDefaultSettings::GetExtensions(
     std::vector<std::string>* extension_ids) const {
-  DCHECK(extension_ids);
+  CHECK(extension_ids, base::NotFatalUntil::M163);
   const base::DictValue* extensions = master_dictionary_.FindDictByDottedPath(
       installer::initial_preferences::kExtensionsBlock);
   if (extensions) {

@@ -55,19 +55,19 @@ void AddPair(base::ListValue& list,
 ResettableSettingsSnapshot::ResettableSettingsSnapshot(Profile* profile)
     : startup_(SessionStartupPref::GetStartupPref(profile)),
       shortcuts_determined_(false) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   // URLs are always stored sorted.
   std::sort(startup_.urls.begin(), startup_.urls.end());
 
   PrefService* prefs = profile->GetPrefs();
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M163);
   homepage_ = prefs->GetString(prefs::kHomePage);
   homepage_is_ntp_ = prefs->GetBoolean(prefs::kHomePageIsNewTabPage);
   show_home_button_ = prefs->GetBoolean(prefs::kShowHomeButton);
 
   TemplateURLService* service =
       TemplateURLServiceFactory::GetForProfile(profile);
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M163);
   const TemplateURL* dse = service->GetDefaultSearchProvider();
   if (dse)
     dse_url_ = dse->url();
@@ -88,14 +88,14 @@ ResettableSettingsSnapshot::ResettableSettingsSnapshot(Profile* profile)
 }
 
 ResettableSettingsSnapshot::~ResettableSettingsSnapshot() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   if (cancellation_flag_.get())
     cancellation_flag_->data.Set();
 }
 
 void ResettableSettingsSnapshot::Subtract(
     const ResettableSettingsSnapshot& snapshot) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   ExtensionList extensions = base::STLSetDifference<ExtensionList>(
       enabled_extensions_, snapshot.enabled_extensions_);
   enabled_extensions_.swap(extensions);
@@ -103,7 +103,7 @@ void ResettableSettingsSnapshot::Subtract(
 
 int ResettableSettingsSnapshot::FindDifferentFields(
     const ResettableSettingsSnapshot& snapshot) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   int bit_mask = 0;
 
   if (startup_.type != snapshot.startup_.type ||
@@ -131,8 +131,9 @@ int ResettableSettingsSnapshot::FindDifferentFields(
 }
 
 void ResettableSettingsSnapshot::RequestShortcuts(base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(!cancellation_flag_.get() && !shortcuts_determined());
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
+  CHECK(!cancellation_flag_.get() && !shortcuts_determined(),
+        base::NotFatalUntil::M163);
 
   cancellation_flag_ = new SharedCancellationFlag;
 #if BUILDFLAG(IS_WIN)
@@ -157,7 +158,7 @@ void ResettableSettingsSnapshot::RequestShortcuts(base::OnceClosure callback) {
 void ResettableSettingsSnapshot::SetShortcutsAndReport(
     base::OnceClosure callback,
     const std::vector<ShortcutCommand>& shortcuts) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   shortcuts_ = shortcuts;
   shortcuts_determined_ = true;
   cancellation_flag_.reset();
@@ -169,7 +170,7 @@ void ResettableSettingsSnapshot::SetShortcutsAndReport(
 std::unique_ptr<reset_report::ChromeResetReport> SerializeSettingsReportToProto(
     const ResettableSettingsSnapshot& snapshot,
     int field_mask) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   std::unique_ptr<reset_report::ChromeResetReport> report(
       new reset_report::ChromeResetReport());
 
@@ -236,8 +237,8 @@ void SendSettingsFeedbackProto(const reset_report::ChromeResetReport& report,
 base::ListValue GetReadableFeedbackForSnapshot(
     Profile* profile,
     const ResettableSettingsSnapshot& snapshot) {
-  DCHECK(profile);
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(profile, base::NotFatalUntil::M163);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   base::ListValue list;
   AddPair(list,
           l10n_util::GetStringUTF16(IDS_RESET_PROFILE_SETTINGS_LOCALE),
@@ -312,7 +313,7 @@ base::ListValue GetReadableFeedbackForSnapshot(
 
   TemplateURLService* service =
       TemplateURLServiceFactory::GetForProfile(profile);
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M163);
   const TemplateURL* dse = service->GetDefaultSearchProvider();
   if (dse) {
     AddPair(list, l10n_util::GetStringUTF16(IDS_RESET_PROFILE_SETTINGS_DSE),

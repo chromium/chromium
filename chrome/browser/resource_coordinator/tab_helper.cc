@@ -38,7 +38,7 @@ ResourceCoordinatorTabHelper::ResourceCoordinatorTabHelper(
   TabLoadTracker::Get()->StartTracking(web_contents);
   if (memory_instrumentation::MemoryInstrumentation::GetInstance()) {
     auto* rc_parts = g_browser_process->resource_coordinator_parts();
-    DCHECK(rc_parts);
+    CHECK(rc_parts, base::NotFatalUntil::M163);
     rc_parts->tab_memory_metrics_reporter()->StartReporting(
         TabLoadTracker::Get());
   }

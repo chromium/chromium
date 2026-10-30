@@ -59,7 +59,7 @@ void DiscardMetricsLifecycleUnitObserver::OnDiscard(
 }
 
 void DiscardMetricsLifecycleUnitObserver::OnReload() {
-  DCHECK(!discard_time_.is_null());
+  CHECK(!discard_time_.is_null(), base::NotFatalUntil::M163);
   reload_time_ = NowTicks();
 
   static int reload_count = 0;

@@ -59,6 +59,9 @@ bool IsBatterySaverModeManagedByOS() {
 }
 
 base::ByteSize GetDiscardedMemoryEstimateForPage(const PageNode* node) {
+  // CHECK-exclusion: the DCHECKON_GRAPH_SEQUENCE() depends on
+  // SEQUENCE_CHECKER(sequence_checker_). If we convert it, need to enable
+  // SEQUENCE_CHECKER(sequence_checker_) independent of DCHECK_IS_ON().
   DCHECK_ON_GRAPH_SEQUENCE(node->GetGraph());
 
   return node->EstimatePrivateFootprintSize();

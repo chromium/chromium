@@ -59,14 +59,15 @@ scoped_refptr<base::SequencedTaskRunner> ModuleDatabase::GetTaskRunner() {
 
 // static
 ModuleDatabase* ModuleDatabase::GetInstance() {
-  DCHECK(GetTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(GetTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M163);
   return g_module_database;
 }
 
 // static
 void ModuleDatabase::SetInstance(
     std::unique_ptr<ModuleDatabase> module_database) {
-  DCHECK_EQ(nullptr, g_module_database);
+  CHECK_EQ(nullptr, g_module_database, base::NotFatalUntil::M163);
   // This is deliberately leaked. It can be cleaned up by manually deleting the
   // ModuleDatabase.
   g_module_database = module_database.release();
@@ -92,7 +93,7 @@ void ModuleDatabase::OnShellExtensionEnumerated(const base::FilePath& path,
 
 void ModuleDatabase::OnShellExtensionEnumerationFinished() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!shell_extensions_enumerated_);
+  CHECK(!shell_extensions_enumerated_, base::NotFatalUntil::M163);
 
   shell_extensions_enumerated_ = true;
 
@@ -114,7 +115,7 @@ void ModuleDatabase::OnImeEnumerated(const base::FilePath& path,
 
 void ModuleDatabase::OnImeEnumerationFinished() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!ime_enumerated_);
+  CHECK(!ime_enumerated_, base::NotFatalUntil::M163);
 
   ime_enumerated_ = true;
 

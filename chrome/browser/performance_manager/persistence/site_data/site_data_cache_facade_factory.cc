@@ -35,7 +35,7 @@ SiteDataCacheFacadeFactory::EnableForTesting() {
   // Only one AutoReset served by this function can exists, otherwise the first
   // one being released would set g_enable_for_testing to false while there's
   // other AutoReset still existing.
-  DCHECK(!g_enable_for_testing);
+  CHECK(!g_enable_for_testing, base::NotFatalUntil::M163);
   return std::make_unique<base::AutoReset<bool>>(&g_enable_for_testing, true);
 }
 
@@ -68,7 +68,7 @@ SiteDataCacheFacadeFactory::~SiteDataCacheFacadeFactory() = default;
 std::unique_ptr<KeyedService>
 SiteDataCacheFacadeFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   return std::make_unique<SiteDataCacheFacade>(context);
 }
 
@@ -84,9 +84,9 @@ bool SiteDataCacheFacadeFactory::ServiceIsNULLWhileTesting() const {
 
 void SiteDataCacheFacadeFactory::OnBeforeFacadeCreated(
     base::PassKey<SiteDataCacheFacade>) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   if (service_instance_count_ == 0U) {
-    DCHECK(!cache_factory_);
+    CHECK(!cache_factory_, base::NotFatalUntil::M163);
     cache_factory_ = std::make_unique<SiteDataCacheFactory>();
   }
   ++service_instance_count_;
@@ -94,8 +94,8 @@ void SiteDataCacheFacadeFactory::OnBeforeFacadeCreated(
 
 void SiteDataCacheFacadeFactory::OnFacadeDestroyed(
     base::PassKey<SiteDataCacheFacade>) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_GT(service_instance_count_, 0U);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
+  CHECK_GT(service_instance_count_, 0U, base::NotFatalUntil::M163);
   // Destroy the cache factory if there's no more SiteDataCacheFacade needing
   // it.
   if (--service_instance_count_ == 0) {

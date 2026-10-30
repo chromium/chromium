@@ -15,7 +15,7 @@
 namespace {
 
 void SetLastUsageTimeToNow() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   // Proactive defense to ensure calls do not crash in early browser
   // startup, late browser shutdown after `BrowserProcessImpl` teardown, or in
   // unit tests without `TestingBrowserProcess` / `ScopedTestingLocalState`.
@@ -40,7 +40,7 @@ ScreenAIDownloaderChromeOS::ScreenAIDownloaderChromeOS() = default;
 ScreenAIDownloaderChromeOS::~ScreenAIDownloaderChromeOS() = default;
 
 void ScreenAIDownloaderChromeOS::DownloadComponentInternal() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   screen_ai::dlc_installer::Install();
 }
 

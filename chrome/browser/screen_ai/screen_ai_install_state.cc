@@ -207,7 +207,8 @@ void ScreenAIInstallState::SetState(State state) {
     // `kDownloadFailed` state can be repeated as download can be retriggered.
     // `kDownloading` can be repeated in ChromeOS tests that call
     // LoginManagerTest::AddUser() and reset UserSessionInitializer.
-    DCHECK(state == State::kDownloadFailed || state == State::kDownloading);
+    CHECK(state == State::kDownloadFailed || state == State::kDownloading,
+          base::NotFatalUntil::M163);
     return;
   }
 

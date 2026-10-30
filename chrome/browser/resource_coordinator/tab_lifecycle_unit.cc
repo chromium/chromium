@@ -96,8 +96,8 @@ TabLifecycleUnitSource::TabLifecycleUnit::TabLifecycleUnit(
                                      content::Visibility::VISIBLE
                                  ? base::TimeTicks::Max()
                                  : NowTicks()) {
-  DCHECK(web_contents);
-  DCHECK(tab_strip_model_);
+  CHECK(web_contents, base::NotFatalUntil::M163);
+  CHECK(tab_strip_model_, base::NotFatalUntil::M163);
 
   // Attach the ResourceCoordinatorTabHelper. In production code this has
   // already been attached by now due to AttachTabHelpers, but there's a long
@@ -137,7 +137,7 @@ void TabLifecycleUnitSource::TabLifecycleUnit::SetTabStripModel(
 
 void TabLifecycleUnitSource::TabLifecycleUnit::SetWebContents(
     content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M163);
   Observe(web_contents);
 
   recently_audible_subscription_ = base::CallbackListSubscription();
@@ -318,7 +318,7 @@ void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
   std::unique_ptr<content::WebContents> old_contents_deleter =
       tab_strip_model_->DiscardWebContents(old_contents,
                                            std::move(null_contents));
-  DCHECK_EQ(web_contents(), raw_null_contents);
+  CHECK_EQ(web_contents(), raw_null_contents, base::NotFatalUntil::M163);
 
   // Discard the old tab's renderer.
   // TODO(jamescook): This breaks script connections with other tabs. Find a
@@ -328,7 +328,8 @@ void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
 
   is_discarded_ = true;
   RecomputeLifecycleUnitState();
-  DCHECK_EQ(GetLoadingState(), LifecycleUnitLoadingState::UNLOADED);
+  CHECK_EQ(GetLoadingState(), LifecycleUnitLoadingState::UNLOADED,
+           base::NotFatalUntil::M163);
 
   web_contents()->NotifyWasDiscarded();
   tab_strip_model_->UpdateWebContentsState(web_contents(), TabChangeType::kAll);

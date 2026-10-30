@@ -98,7 +98,7 @@ WebContents* TabManager::DiscardTabByExtension(content::WebContents* contents) {
   if (contents) {
     TabLifecycleUnitExternal* tab_lifecycle_unit_external =
         TabLifecycleUnitExternal::FromWebContents(contents);
-    DCHECK(tab_lifecycle_unit_external);
+    CHECK(tab_lifecycle_unit_external, base::NotFatalUntil::M163);
     if (tab_lifecycle_unit_external->DiscardTab(
             LifecycleUnitDiscardReason::EXTERNAL)) {
       return tab_lifecycle_unit_external->GetWebContents();
@@ -134,7 +134,7 @@ bool TabManager::IsInternalPage(const GURL& url) {
 content::WebContents* TabManager::DiscardTabImpl(
     LifecycleUnitDiscardReason reason,
     bool ignore_recent_visibility) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
 
   performance_manager::Graph* graph =
       performance_manager::PerformanceManager::GetGraph();

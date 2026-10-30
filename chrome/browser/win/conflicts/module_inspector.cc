@@ -155,8 +155,8 @@ void ModuleInspector::EnsureUtilWinServiceBound() {
 void ModuleInspector::OnInspectionResultsCacheRead(
     InspectionResultsCache inspection_results_cache) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(is_started_);
-  DCHECK(!inspection_results_cache_read_);
+  CHECK(is_started_, base::NotFatalUntil::M163);
+  CHECK(!inspection_results_cache_read_, base::NotFatalUntil::M163);
 
   inspection_results_cache_read_ = true;
   inspection_results_cache_ = std::move(inspection_results_cache);
@@ -187,8 +187,8 @@ void ModuleInspector::OnUtilWinServiceConnectionError() {
 
 void ModuleInspector::StartInspectingModule() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(inspection_results_cache_read_);
-  DCHECK(!queue_.empty());
+  CHECK(inspection_results_cache_read_, base::NotFatalUntil::M163);
+  CHECK(!queue_.empty(), base::NotFatalUntil::M163);
 
   const ModuleInfoKey& module_key = queue_.front();
 
@@ -239,8 +239,8 @@ void ModuleInspector::OnInspectionFinished(
     ModuleInspectionResult inspection_result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DCHECK(!queue_.empty());
-  DCHECK(queue_.front() == module_key);
+  CHECK(!queue_.empty(), base::NotFatalUntil::M163);
+  CHECK(queue_.front() == module_key, base::NotFatalUntil::M163);
 
   // Pop first, because the callback may want to know if there is any work left
   // to be done, which is caracterized by a non-empty queue.

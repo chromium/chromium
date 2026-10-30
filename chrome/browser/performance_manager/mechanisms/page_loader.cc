@@ -30,8 +30,8 @@ namespace performance_manager {
 namespace mechanism {
 
 void PageLoader::LoadPageNode(const PageNode* page_node) {
-  DCHECK(page_node);
-  DCHECK_EQ(page_node->GetType(), PageType::kTab);
+  CHECK(page_node, base::NotFatalUntil::M163);
+  CHECK_EQ(page_node->GetType(), PageType::kTab, base::NotFatalUntil::M163);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(
                      [](base::WeakPtr<content::WebContents> contents) {

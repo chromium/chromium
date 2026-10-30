@@ -29,7 +29,7 @@ using PassKey = base::PassKey<SiteDataCacheFacade>;
 SiteDataCacheFacade::SiteDataCacheFacade(
     content::BrowserContext* browser_context)
     : browser_context_(browser_context) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   SiteDataCacheFacadeFactory::GetInstance()->OnBeforeFacadeCreated(PassKey());
 
   std::optional<base::UnguessableToken> parent_context_id;
@@ -53,7 +53,7 @@ SiteDataCacheFacade::SiteDataCacheFacade(
 }
 
 SiteDataCacheFacade::~SiteDataCacheFacade() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   SiteDataCacheFacadeFactory::GetInstance()
       ->cache_factory()
       ->OnBrowserContextDestroyed(browser_context_->UniqueToken());
@@ -61,7 +61,7 @@ SiteDataCacheFacade::~SiteDataCacheFacade() {
 }
 
 bool SiteDataCacheFacade::IsDataCacheRecordingForTesting() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   return SiteDataCacheFacadeFactory::GetInstance()
       ->cache_factory()
       ->IsDataCacheRecordingForTesting(  // IN-TEST
@@ -69,7 +69,7 @@ bool SiteDataCacheFacade::IsDataCacheRecordingForTesting() {
 }
 
 void SiteDataCacheFacade::WaitUntilCacheInitializedForTesting() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   base::RunLoop run_loop;
 
   auto* cache =
@@ -87,7 +87,7 @@ void SiteDataCacheFacade::WaitUntilCacheInitializedForTesting() {
 void SiteDataCacheFacade::OnHistoryDeletions(
     history::HistoryService* history_service,
     const history::DeletionInfo& deletion_info) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   if (deletion_info.IsAllHistory()) {
     ClearAllSiteData();
     return;
@@ -100,7 +100,7 @@ void SiteDataCacheFacade::OnHistoryDeletions(
     const int remaining_visits_in_history = it.second.first;
 
     // If the origin is no longer exists in history, clear the site data.
-    DCHECK_GE(remaining_visits_in_history, 0);
+    CHECK_GE(remaining_visits_in_history, 0, base::NotFatalUntil::M163);
     if (remaining_visits_in_history == 0) {
       origins_to_remove.emplace_back(origin);
     }
@@ -122,13 +122,14 @@ void SiteDataCacheFacade::OnHistoryDeletions(
 
 void SiteDataCacheFacade::HistoryServiceBeingDeleted(
     history::HistoryService* history_service) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(history_observation_.IsObservingSource(history_service));
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
+  CHECK(history_observation_.IsObservingSource(history_service),
+        base::NotFatalUntil::M163);
   history_observation_.Reset();
 }
 
 void SiteDataCacheFacade::ClearAllSiteData() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   auto* cache =
       SiteDataCacheFacadeFactory::GetInstance()

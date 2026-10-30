@@ -256,7 +256,7 @@ JumpList::JumpList(Profile* profile)
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
                base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {
-  DCHECK(Enabled());
+  CHECK(Enabled(), base::NotFatalUntil::M163);
   // To update JumpList when a tab is added or removed, we add this object to
   // the observer list of the TabRestoreService class.
   // When we add this object to the observer list, we save the pointer to this
@@ -533,7 +533,7 @@ void JumpList::AddWindow(const sessions::tab_restore::Window& window,
                          const base::FilePath& cmd_line_profile_dir,
                          size_t max_items) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!window.tabs.empty());
+  CHECK(!window.tabs.empty(), base::NotFatalUntil::M163);
 
   for (const auto& tab : window.tabs) {
     if (!AddTab(*tab, cmd_line_profile_dir, max_items))
@@ -545,7 +545,7 @@ void JumpList::AddGroup(const sessions::tab_restore::Group& group,
                         const base::FilePath& cmd_line_profile_dir,
                         size_t max_items) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!group.tabs.empty());
+  CHECK(!group.tabs.empty(), base::NotFatalUntil::M163);
 
   for (const auto& tab : group.tabs) {
     if (!AddTab(*tab, cmd_line_profile_dir, max_items))
@@ -557,7 +557,7 @@ void JumpList::AddSplit(const sessions::tab_restore::Split& split,
                         const base::FilePath& cmd_line_profile_dir,
                         size_t max_items) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!split.tabs.empty());
+  CHECK(!split.tabs.empty(), base::NotFatalUntil::M163);
 
   for (const auto& tab : split.tabs) {
     if (!AddTab(*tab, cmd_line_profile_dir, max_items)) {
@@ -747,7 +747,7 @@ void JumpList::RunUpdateJumpList(
     policy::IncognitoModeAvailability incognito_availability,
     IncognitoModePrefs::IncognitoModeType incognito_type,
     UpdateTransaction* update_transaction) {
-  DCHECK(update_transaction);
+  CHECK(update_transaction, base::NotFatalUntil::M163);
 
   base::FilePath most_visited_icon_dir = GenerateJumplistIconDirName(
       profile_dir, FILE_PATH_LITERAL("MostVisited"));
@@ -784,7 +784,7 @@ void JumpList::CreateNewJumpListAndNotifyOS(
     policy::IncognitoModeAvailability incognito_availability,
     IncognitoModePrefs::IncognitoModeType incognito_type,
     UpdateTransaction* update_transaction) {
-  DCHECK(update_transaction);
+  CHECK(update_transaction, base::NotFatalUntil::M163);
 
   JumpListUpdater jumplist_updater(app_id);
 
@@ -899,8 +899,8 @@ int JumpList::UpdateIconFiles(const base::FilePath& icon_dir,
                               size_t max_items,
                               URLIconCache* icon_cur,
                               URLIconCache* icon_next) {
-  DCHECK(icon_cur);
-  DCHECK(icon_next);
+  CHECK(icon_cur, base::NotFatalUntil::M163);
+  CHECK(icon_next, base::NotFatalUntil::M163);
 
   // Clear the JumpList icon folder at |icon_dir| and the caches when
   // 1) |icon_cur| is empty. This happens when "Most visited" or "Recently
@@ -926,7 +926,7 @@ int JumpList::CreateIconFiles(const base::FilePath& icon_dir,
                               size_t max_items,
                               const URLIconCache& icon_cur,
                               URLIconCache* icon_next) {
-  DCHECK(icon_next);
+  CHECK(icon_next, base::NotFatalUntil::M163);
 
   int icons_created = 0;
 

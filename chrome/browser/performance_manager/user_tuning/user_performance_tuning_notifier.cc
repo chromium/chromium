@@ -50,7 +50,7 @@ void UserPerformanceTuningNotifier::OnPageNodeAdded(const PageNode* page_node) {
 void UserPerformanceTuningNotifier::OnBeforePageNodeRemoved(
     const PageNode* page_node) {
   if (page_node->GetType() == PageType::kTab) {
-    DCHECK_GT(tab_count_, 0);
+    CHECK_GT(tab_count_, 0, base::NotFatalUntil::M163);
     --tab_count_;
   }
 }
@@ -58,8 +58,8 @@ void UserPerformanceTuningNotifier::OnBeforePageNodeRemoved(
 void UserPerformanceTuningNotifier::OnTypeChanged(const PageNode* page_node,
                                                   PageType previous_type) {
   if (previous_type == PageType::kTab) {
-    DCHECK_GT(tab_count_, 0);
-    DCHECK_NE(page_node->GetType(), PageType::kTab);
+    CHECK_GT(tab_count_, 0, base::NotFatalUntil::M163);
+    CHECK_NE(page_node->GetType(), PageType::kTab, base::NotFatalUntil::M163);
     --tab_count_;
   } else {
     MaybeAddTabAndNotify(page_node);

@@ -58,7 +58,7 @@ std::unique_ptr<gfx::ImageFamily> GetAppIconImageFamily() {
   HMODULE module = GetModuleHandle(chrome::kBrowserResourcesDll);
   if (!module)
     module = GetModuleHandle(nullptr);
-  DCHECK(module);
+  CHECK(module, base::NotFatalUntil::M163);
 
   return IconUtil::CreateImageFamilyFromIconResource(module, icon_id);
 }

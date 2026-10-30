@@ -34,7 +34,7 @@ TabLoadTracker::~TabLoadTracker() = default;
 
 // static
 TabLoadTracker* TabLoadTracker::Get() {
-  DCHECK(g_browser_process);
+  CHECK(g_browser_process, base::NotFatalUntil::M163);
   return g_browser_process->resource_coordinator_parts()->tab_load_tracker();
 }
 
@@ -93,7 +93,7 @@ TabLoadTracker::TabLoadTracker() = default;
 
 void TabLoadTracker::StartTracking(content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!tabs_.contains(web_contents));
+  CHECK(!tabs_.contains(web_contents), base::NotFatalUntil::M163);
 
   LoadingState loading_state = DetermineLoadingState(web_contents);
 
@@ -114,7 +114,8 @@ void TabLoadTracker::StopTracking(content::WebContents* web_contents) {
   CHECK(it != tabs_.end());
 
   auto loading_state = it->second.loading_state;
-  DCHECK_NE(0u, state_counts_[static_cast<size_t>(it->second.loading_state)]);
+  CHECK_NE(0u, state_counts_[static_cast<size_t>(it->second.loading_state)],
+           base::NotFatalUntil::M163);
   --state_counts_[static_cast<size_t>(it->second.loading_state)];
   tabs_.erase(it);
 

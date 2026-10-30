@@ -36,7 +36,7 @@ void TabManagerResourceCoordinatorSignalObserver::OnTakenFromGraph(
 // static
 void TabManagerResourceCoordinatorSignalObserver::OnPageStoppedLoadingOnUi(
     base::WeakPtr<content::WebContents> contents) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   if (contents) {
     TabLoadTracker::Get()->OnPageStoppedLoading(contents.get());
   }

@@ -103,7 +103,7 @@ ProfileResetter::ProfileResetter(Profile* profile)
       pending_reset_flags_(0),
       cookies_remover_(nullptr) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(profile_);
+  CHECK(profile_, base::NotFatalUntil::M163);
 
   google_brand::GetBrand(&brandcode_);
   if (brandcode_.empty()) {
@@ -119,7 +119,7 @@ ProfileResetter::ProfileResetter(Profile* profile)
 
 void ProfileResetter::OnDefaultSettingsFetched() {
   CHECK(config_fetcher_);
-  DCHECK(!config_fetcher_->IsActive());
+  CHECK(!config_fetcher_->IsActive(), base::NotFatalUntil::M163);
 }
 
 ProfileResetter::~ProfileResetter() {
@@ -134,7 +134,7 @@ void ProfileResetter::ResetSettings(
     base::OnceClosure callback) {
   // TODO(b/364615847) remove master_settings parameter, it is only used in
   // tests.
-  DCHECK(brandcode_.empty() || config_fetcher_);
+  CHECK(brandcode_.empty() || config_fetcher_, base::NotFatalUntil::M163);
   if (config_fetcher_ && config_fetcher_->IsActive()) {
     // Reset once the prefs are fetched.
     config_fetcher_->SetCallback(base::BindOnce(
@@ -144,11 +144,11 @@ void ProfileResetter::ResetSettings(
   }
   if (!master_settings) {
     if (config_fetcher_) {
-      DCHECK(!config_fetcher_->IsActive());
+      CHECK(!config_fetcher_->IsActive(), base::NotFatalUntil::M163);
       master_settings = config_fetcher_->GetSettings();
       config_fetcher_.reset();
     } else {
-      DCHECK(brandcode_.empty());
+      CHECK(brandcode_.empty(), base::NotFatalUntil::M163);
     }
 
     // If failed to fetch BrandcodedDefaultSettings or this is an organic
@@ -167,7 +167,7 @@ void ProfileResetter::ResetSettingsImpl(
     std::unique_ptr<BrandcodedDefaultSettings> master_settings,
     base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(master_settings);
+  CHECK(master_settings, base::NotFatalUntil::M163);
 
   // We should never be called with unknown flags.
   CHECK_EQ(static_cast<ResettableFlags>(0), resettable_flags & ~ALL);
@@ -220,7 +220,8 @@ void ProfileResetter::ResetSettingsImpl(
     }
   }
 
-  DCHECK_EQ(resettable_flags, reset_triggered_for_flags);
+  CHECK_EQ(resettable_flags, reset_triggered_for_flags,
+           base::NotFatalUntil::M163);
 }
 
 bool ProfileResetter::IsActive() const {
@@ -246,12 +247,12 @@ void ProfileResetter::MarkAsDone(Resettable resettable) {
 
 void ProfileResetter::ResetDefaultSearchEngine() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(template_url_service_);
+  CHECK(template_url_service_, base::NotFatalUntil::M163);
   // If TemplateURLServiceFactory is ready we can clean it right now.
   // Otherwise, load it and continue from ProfileResetter::Observe.
   if (template_url_service_->loaded()) {
     PrefService* prefs = profile_->GetPrefs();
-    DCHECK(prefs);
+    CHECK(prefs, base::NotFatalUntil::M163);
     TemplateURLPrepopulateData::ClearPrepopulatedEnginesInPrefs(
         profile_->GetPrefs());
     std::optional<base::ListValue> search_engines(
@@ -284,7 +285,7 @@ void ProfileResetter::ResetDefaultSearchEngine() {
 void ProfileResetter::ResetHomepage() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PrefService* prefs = profile_->GetPrefs();
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M163);
   std::string homepage;
 
   if (master_settings_->GetHomepage(&homepage))
@@ -340,14 +341,14 @@ void ProfileResetter::ResetContentSettings() {
 
 void ProfileResetter::ResetCookiesAndSiteData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!cookies_remover_);
+  CHECK(!cookies_remover_, base::NotFatalUntil::M163);
 
   cookies_remover_ = profile_->GetBrowsingDataRemover();
   cookies_remover_->AddObserver(this);
   uint64_t remove_mask = chrome_browsing_data_remover::DATA_TYPE_SITE_DATA |
                          content::BrowsingDataRemover::DATA_TYPE_CACHE;
   PrefService* prefs = profile_->GetPrefs();
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M163);
 
   cookies_remover_->RemoveAndReply(
       base::Time(), base::Time::Max(), remove_mask,
@@ -362,7 +363,7 @@ void ProfileResetter::ResetExtensions() {
 
   extensions::ExtensionService* extension_service =
       extensions::ExtensionSystem::Get(profile_)->extension_service();
-  DCHECK(extension_service);
+  CHECK(extension_service, base::NotFatalUntil::M163);
   extension_service->DisableUserExtensionsExcept(brandcode_extensions);
 
   // Reenable all disabled external component extensions.
@@ -373,7 +374,7 @@ void ProfileResetter::ResetExtensions() {
   // registry anyway.
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(profile_);
-  DCHECK(extension_registry);
+  CHECK(extension_registry, base::NotFatalUntil::M163);
   std::vector<extensions::ExtensionId> extension_ids_to_reenable;
   for (const auto& extension : extension_registry->disabled_extensions()) {
     if (extension->location() ==
@@ -391,7 +392,7 @@ void ProfileResetter::ResetExtensions() {
 void ProfileResetter::ResetStartupPages() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PrefService* prefs = profile_->GetPrefs();
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M163);
   std::optional<base::ListValue> url_list(
       master_settings_->GetUrlsToRestoreOnStartup());
   if (url_list.has_value()) {
@@ -450,7 +451,7 @@ void ProfileResetter::ResetNtpCustomizations() {
 void ProfileResetter::ResetLanguages() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   PrefService* prefs = profile_->GetPrefs();
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M163);
 
   auto translate_prefs = ChromeTranslateClient::CreateTranslatePrefs(prefs);
   translate_prefs->ResetToDefaults();

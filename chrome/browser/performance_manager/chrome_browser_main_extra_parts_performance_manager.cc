@@ -138,13 +138,13 @@ ChromeBrowserMainExtraPartsPerformanceManager::
               performance_manager::PerformanceManagerFeatureObserverClient>()),
       global_performance_scenario_memory_(
           std::make_unique<performance_manager::ScopedGlobalScenarioMemory>()) {
-  DCHECK(!g_instance);
+  CHECK(!g_instance, base::NotFatalUntil::M163);
   g_instance = this;
 }
 
 ChromeBrowserMainExtraPartsPerformanceManager::
     ~ChromeBrowserMainExtraPartsPerformanceManager() {
-  DCHECK_EQ(this, g_instance);
+  CHECK_EQ(this, g_instance, base::NotFatalUntil::M163);
   g_instance = nullptr;
 }
 
@@ -360,7 +360,8 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
           g_browser_process->local_state());
 
   // There are no existing loaded profiles.
-  DCHECK(g_browser_process->profile_manager()->GetLoadedProfiles().empty());
+  CHECK(g_browser_process->profile_manager()->GetLoadedProfiles().empty(),
+        base::NotFatalUntil::M163);
 
   g_browser_process->profile_manager()->AddObserver(this);
 

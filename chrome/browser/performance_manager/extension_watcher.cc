@@ -69,16 +69,17 @@ void ExtensionWatcher::OnProfileAdded(Profile* profile) {
 
   extensions::ProcessManager* process_manager =
       extensions::ProcessManager::Get(profile);
-  DCHECK(process_manager);
+  CHECK(process_manager, base::NotFatalUntil::M163);
   extension_process_manager_observation_.AddObservation(process_manager);
 }
 
 void ExtensionWatcher::OnBackgroundHostCreated(
     extensions::ExtensionHost* host) {
-  DCHECK_EQ(host->extension_host_type(),
-            extensions::mojom::ViewType::kExtensionBackgroundPage);
+  CHECK_EQ(host->extension_host_type(),
+           extensions::mojom::ViewType::kExtensionBackgroundPage,
+           base::NotFatalUntil::M163);
   auto* registry = PerformanceManagerRegistry::GetInstance();
-  DCHECK(registry);
+  CHECK(registry, base::NotFatalUntil::M163);
   registry->SetPageType(host->host_contents(), PageType::kExtension);
   RecordBackgroundHostCreatedForExtension(host->extension_id());
 }

@@ -19,8 +19,9 @@ size_t CalculateMaxSimultaneousTabLoads(size_t lower_bound,
                                         size_t upper_bound,
                                         size_t cores_per_load,
                                         size_t num_cores) {
-  DCHECK(upper_bound == 0 || lower_bound <= upper_bound);
-  DCHECK(num_cores > 0);
+  CHECK(upper_bound == 0 || lower_bound <= upper_bound,
+        base::NotFatalUntil::M163);
+  CHECK(num_cores > 0, base::NotFatalUntil::M163);
 
   size_t loads = 0;
 
@@ -54,7 +55,7 @@ float CalculateAgeScore(double last_visibility_change_seconds) {
     else
       score = -1;
   }
-  DCHECK_LE(1.0f, fabs(score));
+  CHECK_LE(1.0f, fabs(score), base::NotFatalUntil::M163);
 
   // Invert the score (1 / score).
   // Really old (infinity) maps to 0 (lowest priority).
@@ -68,15 +69,15 @@ float CalculateAgeScore(double last_visibility_change_seconds) {
   } else {
     score = 1.0 / score;
   }
-  DCHECK_LE(0.0, score);
-  DCHECK_GE(2.0, score);
+  CHECK_LE(0.0, score, base::NotFatalUntil::M163);
+  CHECK_GE(2.0, score, base::NotFatalUntil::M163);
 
   // Rescale the age score to the range [0, 1] so that it can be added to the
   // category scores already calculated. Divide by 2 + epsilon so that no
   // score will end up rounding up to 1.0, but instead be capped at 0.999.
   score /= 2.002;
-  DCHECK_LE(0.0, score);
-  DCHECK_GT(1.0, score);
+  CHECK_LE(0.0, score, base::NotFatalUntil::M163);
+  CHECK_GT(1.0, score, base::NotFatalUntil::M163);
 
   return score;
 }

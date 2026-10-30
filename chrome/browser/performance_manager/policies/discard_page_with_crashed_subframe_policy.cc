@@ -30,7 +30,7 @@ void DiscardPageWithCrashedSubframePolicy::
     OnCrossProcessSubframeRenderProcessGone(const FrameNode* frame_node) {
   DiscardEligibilityPolicy* eligiblity_policy =
       DiscardEligibilityPolicy::GetFromGraph(GetOwningGraph());
-  DCHECK(eligiblity_policy);
+  CHECK(eligiblity_policy, base::NotFatalUntil::M163);
   // Whether the page will be reloaded after the subframe crash by
   // ReloadHiddenTabsWithCrashedSubframes feature.
   bool will_reload = !frame_node->GetPageNode()->IsVisible() &&

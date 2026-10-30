@@ -40,11 +40,11 @@ const char kPostXml[] =
 // Returns the query to the server which can be used to retrieve the config.
 // |brand| is a brand code, it mustn't be empty.
 std::string GetUploadData(const std::string& brand) {
-  DCHECK(!brand.empty());
+  CHECK(!brand.empty(), base::NotFatalUntil::M163);
   std::string data(kPostXml);
   const std::string placeholder("__BRANDCODE_PLACEHOLDER__");
   size_t placeholder_pos = data.find(placeholder);
-  DCHECK(placeholder_pos != std::string::npos);
+  CHECK(placeholder_pos != std::string::npos, base::NotFatalUntil::M163);
   data.replace(placeholder_pos, placeholder.size(), brand);
   return data;
 }
@@ -57,7 +57,7 @@ BrandcodeConfigFetcher::BrandcodeConfigFetcher(
     const GURL& url,
     const std::string& brandcode)
     : fetch_callback_(std::move(callback)), weak_ptr_factory_(this) {
-  DCHECK(!brandcode.empty());
+  CHECK(!brandcode.empty(), base::NotFatalUntil::M163);
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("brandcode_config", R"(
         semantics {

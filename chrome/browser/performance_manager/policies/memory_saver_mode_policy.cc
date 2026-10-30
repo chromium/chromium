@@ -21,12 +21,12 @@ using user_tuning::prefs::MemorySaverModeAggressiveness;
 }  // namespace
 
 MemorySaverModePolicy::MemorySaverModePolicy() {
-  DCHECK(!g_memory_saver_mode_policy);
+  CHECK(!g_memory_saver_mode_policy, base::NotFatalUntil::M163);
   g_memory_saver_mode_policy = this;
 }
 
 MemorySaverModePolicy::~MemorySaverModePolicy() {
-  DCHECK_EQ(this, g_memory_saver_mode_policy);
+  CHECK_EQ(this, g_memory_saver_mode_policy, base::NotFatalUntil::M163);
   g_memory_saver_mode_policy = nullptr;
 }
 
@@ -105,7 +105,7 @@ void MemorySaverModePolicy::OnMemorySaverModeChanged(bool enabled) {
   memory_saver_mode_enabled_ = enabled;
 
   if (memory_saver_mode_enabled_) {
-    DCHECK(active_discard_timers_.empty());
+    CHECK(active_discard_timers_.empty(), base::NotFatalUntil::M163);
     StartAllDiscardTimers();
   } else {
     active_discard_timers_.clear();
@@ -196,7 +196,7 @@ void MemorySaverModePolicy::DiscardPageTimerCallback(
 
   // Turning off Memory Saver Mode would delete the timer, so it's not
   // possible to get here and for Memory Saver Mode to be off.
-  DCHECK(IsMemorySaverDiscardingEnabled());
+  CHECK(IsMemorySaverDiscardingEnabled(), base::NotFatalUntil::M163);
 
   // If the time elapsed according to `LiveTicks` is shorter than
   // `requested_time_before_discard`, it means that the device was in a

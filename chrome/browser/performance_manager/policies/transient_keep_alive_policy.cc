@@ -36,7 +36,7 @@ bool HasMainFrames(const ProcessNode* process_node) {
 // can trigger Cleanup() -> process destruction -> OnProcessNodeRemoved(), which
 // would re-enter the policy while its data structures are being modified.
 void DecrementPendingReuseRefCountById(content::ChildProcessId rph_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   content::RenderProcessHost* rph = content::RenderProcessHost::FromID(rph_id);
   if (rph && !rph->IsDeletingSoon() && !rph->AreRefCountsDisabled()) {
     rph->DecrementPendingReuseRefCount();
@@ -140,8 +140,8 @@ void TransientKeepAlivePolicy::OnFrameNodeRemoved(
   }
 
   // Verify the process was a renderer, as expected for a frame.
-  DCHECK_EQ(previous_process_node->GetProcessType(),
-            content::PROCESS_TYPE_RENDERER);
+  CHECK_EQ(previous_process_node->GetProcessType(),
+           content::PROCESS_TYPE_RENDERER, base::NotFatalUntil::M163);
 
   // We only care about processes that are in our "active" set.
   auto tracked_it = tracked_processes_with_frames_.find(previous_process_node);
@@ -206,7 +206,8 @@ void TransientKeepAlivePolicy::EnforceKeepAliveCountLimit() {
     return;
   }
   // Otherwise, we must be exactly at the limit. Evict the oldest.
-  DCHECK_EQ(empty_kept_alive_processes_.size(), limit);
+  CHECK_EQ(empty_kept_alive_processes_.size(), limit,
+           base::NotFatalUntil::M163);
   ReleaseOldestProcessKeptAlive();
 }
 

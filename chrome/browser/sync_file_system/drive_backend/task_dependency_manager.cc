@@ -65,9 +65,9 @@ TaskDependencyManager::TaskDependencyManager()
       running_exclusive_task_(false) {}
 
 TaskDependencyManager::~TaskDependencyManager() {
-  DCHECK(paths_by_app_id_.empty());
-  DCHECK(file_ids_.empty());
-  DCHECK(tracker_ids_.empty());
+  CHECK(paths_by_app_id_.empty(), base::NotFatalUntil::M163);
+  CHECK(file_ids_.empty(), base::NotFatalUntil::M163);
+  CHECK(tracker_ids_.empty(), base::NotFatalUntil::M163);
 }
 
 bool TaskDependencyManager::Insert(const TaskBlocker* task_blocker) {
@@ -118,16 +118,16 @@ bool TaskDependencyManager::Insert(const TaskBlocker* task_blocker) {
 
 void TaskDependencyManager::Erase(const TaskBlocker* task_blocker) {
   --running_task_count_;
-  DCHECK_LE(0, running_task_count_);
+  CHECK_LE(0, running_task_count_, base::NotFatalUntil::M163);
   if (!task_blocker)
     return;
 
   if (task_blocker->exclusive) {
-    DCHECK(running_exclusive_task_);
-    DCHECK(paths_by_app_id_.empty());
-    DCHECK(file_ids_.empty());
-    DCHECK(tracker_ids_.empty());
-    DCHECK_EQ(0, running_task_count_);
+    CHECK(running_exclusive_task_, base::NotFatalUntil::M163);
+    CHECK(paths_by_app_id_.empty(), base::NotFatalUntil::M163);
+    CHECK(file_ids_.empty(), base::NotFatalUntil::M163);
+    CHECK(tracker_ids_.empty(), base::NotFatalUntil::M163);
+    CHECK_EQ(0, running_task_count_, base::NotFatalUntil::M163);
 
     running_exclusive_task_ = false;
     return;

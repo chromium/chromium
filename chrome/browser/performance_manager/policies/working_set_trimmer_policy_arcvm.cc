@@ -62,13 +62,13 @@ WorkingSetTrimmerPolicyArcVm* WorkingSetTrimmerPolicyArcVm::Get() {
 }
 
 WorkingSetTrimmerPolicyArcVm::WorkingSetTrimmerPolicyArcVm() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   DCHECK(arc::IsArcVmEnabled()) << "This is only for ARCVM builds";
 
   auto* arc_session_manager = arc::ArcSessionManager::Get();
   // ArcSessionManager is created very early in
   // `ChromeBrowserMainPartsAsh::PreMainMessageLoopRun()`.
-  DCHECK(arc_session_manager);
+  CHECK(arc_session_manager, base::NotFatalUntil::M163);
   arc_session_manager->AddObserver(this);
 
   if (exo::WMHelper::HasInstance()) {  // for unit tests
@@ -87,13 +87,13 @@ WorkingSetTrimmerPolicyArcVm::WorkingSetTrimmerPolicyArcVm() {
   auto* arc_service_manager = arc::ArcServiceManager::Get();
   // ArcServiceManager and objects owned by the manager are created very early
   // in `ChromeBrowserMainPartsAsh::PreMainMessageLoopRun()` too.
-  DCHECK(arc_service_manager);
+  CHECK(arc_service_manager, base::NotFatalUntil::M163);
   arc_service_manager->arc_bridge_service()->app()->AddObserver(this);
   arc_service_manager->arc_bridge_service()->intent_helper()->AddObserver(this);
 }
 
 WorkingSetTrimmerPolicyArcVm::~WorkingSetTrimmerPolicyArcVm() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   content::BrowserContext* context =
       context_for_testing_ ? context_for_testing_.get() : GetContext();
@@ -121,7 +121,7 @@ mechanism::ArcVmReclaimType WorkingSetTrimmerPolicyArcVm::IsEligibleForReclaim(
     const base::TimeDelta& arcvm_inactivity_time,
     mechanism::ArcVmReclaimType trim_once_type_after_arcvm_boot,
     bool* is_first_trim_post_boot) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   if (is_first_trim_post_boot)
     *is_first_trim_post_boot = false;  // Unless proven otherwise, below.
   if (!is_boot_complete_and_connected_)
@@ -142,13 +142,13 @@ mechanism::ArcVmReclaimType WorkingSetTrimmerPolicyArcVm::IsEligibleForReclaim(
 
 void WorkingSetTrimmerPolicyArcVm::OnUserInteraction(
     arc::UserInteractionType type) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   last_user_interaction_ = base::TimeTicks::Now();
 }
 
 void WorkingSetTrimmerPolicyArcVm::OnArcSessionStopped(
     arc::ArcStopReason stop_reason) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   // OnConnectionReadyInternal() shouldn't be called anymore.
   timer_.Stop();
@@ -158,7 +158,7 @@ void WorkingSetTrimmerPolicyArcVm::OnArcSessionStopped(
 }
 
 void WorkingSetTrimmerPolicyArcVm::OnArcSessionRestarting() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   // OnConnectionReadyInternal() shouldn't be called anymore.
   timer_.Stop();
@@ -168,7 +168,7 @@ void WorkingSetTrimmerPolicyArcVm::OnArcSessionRestarting() {
 }
 
 void WorkingSetTrimmerPolicyArcVm::OnConnectionReady() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   // Check if both mojo connections are established.
   auto* arc_service_manager = arc::ArcServiceManager::Get();
@@ -191,7 +191,7 @@ void WorkingSetTrimmerPolicyArcVm::OnConnectionReady() {
 }
 
 void WorkingSetTrimmerPolicyArcVm::OnConnectionReadyInternal() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   is_boot_complete_and_connected_ = true;
   // Now the user is able to interact with ARCVM. Reset the value.
   last_user_interaction_ = base::TimeTicks::Now();
@@ -205,7 +205,7 @@ void WorkingSetTrimmerPolicyArcVm::OnWindowActivated(
     wm::ActivationChangeObserver::ActivationReason reason,
     aura::Window* gained_active,
     aura::Window* lost_active) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   bool was_focused = is_focused_;
   is_focused_ = ash::IsArcWindow(gained_active);
   if (was_focused && !is_focused_) {
@@ -221,11 +221,11 @@ WorkingSetTrimmerPolicyArcVm::GetArcVmBootDelayForTesting() {
 }
 
 void WorkingSetTrimmerPolicyArcVm::StartObservingUserInteractions() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   content::BrowserContext* context =
       context_for_testing_ ? context_for_testing_.get() : GetContext();
-  DCHECK(context);
+  CHECK(context, base::NotFatalUntil::M163);
 
   // ArcMetricsService is created in OnPrimaryUserProfilePrepared() in
   // ArcServiceLauncher which also initializes objects that are needed to start
@@ -233,8 +233,8 @@ void WorkingSetTrimmerPolicyArcVm::StartObservingUserInteractions() {
   // is started, e.g. from OnConnectionReady(), the DCHECK below should never
   // fail.
   auto* metrics_service = arc::ArcMetricsService::GetForBrowserContext(context);
-  DCHECK(metrics_service);
-  DCHECK(!observing_user_interactions_);
+  CHECK(metrics_service, base::NotFatalUntil::M163);
+  CHECK(!observing_user_interactions_, base::NotFatalUntil::M163);
   metrics_service->AddUserInteractionObserver(this);
 }
 

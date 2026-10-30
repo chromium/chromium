@@ -160,7 +160,7 @@ void ModuleEventSinkImpl::Create(
     content::ProcessType process_type,
     const OnModuleLoadCallback& on_module_load_callback,
     mojo::PendingReceiver<mojom::ModuleEventSink> receiver) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   base::Process process = get_process.Run();
   if (!process.IsValid())
     return;
@@ -172,7 +172,7 @@ void ModuleEventSinkImpl::Create(
 
 void ModuleEventSinkImpl::OnModuleEvents(
     const std::vector<uint64_t>& module_load_addresses) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   for (uint64_t load_address : module_load_addresses) {
     // Handle the event on a background sequence. `process_` is shared with the

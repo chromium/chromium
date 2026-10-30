@@ -74,7 +74,7 @@ void ReadShellExtensions(
   std::wstring path =
       GetShellExtensionTypePath(shell_extension_type, shell_object_type);
 
-  DCHECK_NE(path.back(), L'\\');
+  CHECK_NE(path.back(), L'\\', base::NotFatalUntil::M163);
 
   std::wstring guid;
   for (base::win::RegistryKeyIterator iter(HKEY_CLASSES_ROOT, path.c_str());

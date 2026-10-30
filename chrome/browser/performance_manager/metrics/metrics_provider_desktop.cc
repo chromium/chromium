@@ -336,17 +336,17 @@ class ScopedTimeInModeTracker {
 
 // static
 MetricsProviderDesktop* MetricsProviderDesktop::GetInstance() {
-  DCHECK(g_metrics_provider);
+  CHECK(g_metrics_provider, base::NotFatalUntil::M163);
   return g_metrics_provider;
 }
 
 MetricsProviderDesktop::~MetricsProviderDesktop() {
-  DCHECK_EQ(this, g_metrics_provider);
+  CHECK_EQ(this, g_metrics_provider, base::NotFatalUntil::M163);
   g_metrics_provider = nullptr;
 }
 
 void MetricsProviderDesktop::Initialize() {
-  DCHECK(!initialized_);
+  CHECK(!initialized_, base::NotFatalUntil::M163);
 
   pref_change_registrar_.Init(local_state_);
   pref_change_registrar_.Add(
@@ -397,7 +397,7 @@ void MetricsProviderDesktop::ProvideCurrentSessionData(
 
 MetricsProviderDesktop::MetricsProviderDesktop(PrefService* local_state)
     : local_state_(local_state) {
-  DCHECK(!g_metrics_provider);
+  CHECK(!g_metrics_provider, base::NotFatalUntil::M163);
   g_metrics_provider = this;
 
 #if SHOULD_COLLECT_CPU_FREQUENCY_METRICS()

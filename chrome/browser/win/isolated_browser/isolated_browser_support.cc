@@ -91,7 +91,7 @@ void CompleteRegistryPersistence(
     IsolationState state,
     base::OnceCallback<void(base::expected<IsolationState, HRESULT>)> completed,
     std::unique_ptr<ScopedKeepAlive> keep_alive) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   auto regkey = GetIsolatedBrowserRegistryKey(KEY_READ | KEY_WRITE);
   if (!regkey.has_value()) {
     if (completed) {
@@ -430,7 +430,7 @@ void SetIsolationState(
     PrefService* local_state,
     base::OnceCallback<void(base::expected<IsolationState, HRESULT>)>
         completed) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   // Process isolation is only supported when using the default user data
   // directory. Custom user data directories (e.g. specified via
   // --user-data-dir) run unisolated, so avoid writing isolation state to

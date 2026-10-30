@@ -121,7 +121,7 @@ void TabMemoryMetricsReporter::UpdateTimerCallback() {
     if (data.state < EMITTED_ALL_METRICS) {
       data.next_emit_time =
           data.page_loaded_time + NextEmitTimeAfterPageLoaded(data.state);
-      DCHECK(data.next_emit_time > current_time);
+      CHECK(data.next_emit_time > current_time, base::NotFatalUntil::M163);
       monitored_contents_.insert(data);
     }
     renderers_memory_dumped.pop_front();
@@ -169,7 +169,8 @@ base::TimeDelta TabMemoryMetricsReporter::NextEmitTimeAfterPageLoaded(
           base::Minutes(10),
           base::Minutes(15),
       });
-  DCHECK(NO_METRICS_EMITTED <= state && state < EMITTED_ALL_METRICS);
+  CHECK(NO_METRICS_EMITTED <= state && state < EMITTED_ALL_METRICS,
+        base::NotFatalUntil::M163);
   return next_emit_time_after_page_loaded[state];
 }
 

@@ -83,7 +83,7 @@ void WorkingSetTrimmerChromeOS::TrimArcVmWorkingSet(
     TrimArcVmWorkingSetCallback callback,
     ArcVmReclaimType reclaim_type,
     int page_limit) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   arc::ArcVmWorkingSetTrimExecutor::Trim(
       context_for_testing_ ? context_for_testing_.get() : GetContext(),

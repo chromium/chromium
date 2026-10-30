@@ -20,12 +20,13 @@ FrameThrottlingPolicy::~FrameThrottlingPolicy() = default;
 void FrameThrottlingPolicy::OnFrameNodeAdded(const FrameNode* frame_node) {
   // A frame is always important upon being added. The current implementation of
   // this class is based on the fact.
-  DCHECK(frame_node->IsImportant());
+  CHECK(frame_node->IsImportant(), base::NotFatalUntil::M163);
 }
 
 void FrameThrottlingPolicy::OnBeforeFrameNodeRemoved(
     const FrameNode* frame_node) {
-  DCHECK(frame_node->GetRenderFrameHostProxy().is_valid());
+  CHECK(frame_node->GetRenderFrameHostProxy().is_valid(),
+        base::NotFatalUntil::M163);
   const content::GlobalRenderFrameHostId id =
       frame_node->GetRenderFrameHostProxy().global_frame_routing_id();
   if (!frame_node->IsImportant()) {
@@ -34,7 +35,8 @@ void FrameThrottlingPolicy::OnBeforeFrameNodeRemoved(
 }
 
 void FrameThrottlingPolicy::OnIsImportantChanged(const FrameNode* frame_node) {
-  DCHECK(frame_node->GetRenderFrameHostProxy().is_valid());
+  CHECK(frame_node->GetRenderFrameHostProxy().is_valid(),
+        base::NotFatalUntil::M163);
   const content::GlobalRenderFrameHostId id =
       frame_node->GetRenderFrameHostProxy().global_frame_routing_id();
   if (!frame_node->IsImportant()) {
@@ -62,7 +64,7 @@ void FrameThrottlingPolicy::EnableFrameSinkThrottle(
   // Only called when a frame goes from important to unimportant, so the frame
   // should not be in the throttled set before insertion.
   bool inserted = throttled_frames_.insert(id).second;
-  DCHECK(inserted);
+  CHECK(inserted, base::NotFatalUntil::M163);
   content::UpdateThrottlingFrameSinks(throttled_frames_, throttle_interval_);
 }
 
@@ -72,7 +74,7 @@ void FrameThrottlingPolicy::DisableFrameSinkThrottle(
   // unimportant frame is to be removed, the frame should be in the set before
   // erasing.
   size_t removed = throttled_frames_.erase(id);
-  DCHECK_EQ(removed, 1u);
+  CHECK_EQ(removed, 1u, base::NotFatalUntil::M163);
   content::UpdateThrottlingFrameSinks(throttled_frames_, throttle_interval_);
 }
 

@@ -50,8 +50,9 @@ bool IsMicrosoftIme(const wchar_t* ime_guid) {
     return base::CompareCaseInsensitiveASCII(lhs, rhs) == -1;
   };
 
-  DCHECK(std::is_sorted(std::begin(kMicrosoftImeGuids),
-                        std::end(kMicrosoftImeGuids), comp));
+  CHECK(std::is_sorted(std::begin(kMicrosoftImeGuids),
+                       std::end(kMicrosoftImeGuids), comp),
+        base::NotFatalUntil::M163);
 
   return std::binary_search(std::begin(kMicrosoftImeGuids),
                             std::end(kMicrosoftImeGuids), ime_guid, comp);

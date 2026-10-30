@@ -34,8 +34,8 @@ const base::TickClock* GetTickClock() {
 ScopedSetClocksForTesting::ScopedSetClocksForTesting(
     const base::Clock* clock,
     const base::TickClock* tick_clock) {
-  DCHECK(!g_tick_clock_for_testing);
-  DCHECK(!g_clock_for_testing);
+  CHECK(!g_tick_clock_for_testing, base::NotFatalUntil::M163);
+  CHECK(!g_clock_for_testing, base::NotFatalUntil::M163);
 
   g_tick_clock_for_testing = tick_clock;
   g_clock_for_testing = clock;

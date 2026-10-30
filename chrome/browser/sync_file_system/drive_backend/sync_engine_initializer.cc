@@ -60,7 +60,7 @@ SyncEngineInitializer::SyncEngineInitializer(
       database_path_(database_path),
       find_sync_root_retry_count_(0),
       largest_change_id_(0) {
-  DCHECK(sync_context);
+  CHECK(sync_context, base::NotFatalUntil::M163);
 }
 
 SyncEngineInitializer::~SyncEngineInitializer() {
@@ -70,8 +70,8 @@ SyncEngineInitializer::~SyncEngineInitializer() {
 
 void SyncEngineInitializer::RunPreflight(std::unique_ptr<SyncTaskToken> token) {
   util::Log(logging::LOGGING_VERBOSE, FROM_HERE, "[Initialize] Start.");
-  DCHECK(sync_context_);
-  DCHECK(sync_context_->GetDriveService());
+  CHECK(sync_context_, base::NotFatalUntil::M163);
+  CHECK(sync_context_->GetDriveService(), base::NotFatalUntil::M163);
 
   // The metadata seems to have been already initialized. Just return with OK.
   if (sync_context_->GetMetadataDatabase()) {
@@ -92,7 +92,7 @@ void SyncEngineInitializer::RunPreflight(std::unique_ptr<SyncTaskToken> token) {
     return;
   }
 
-  DCHECK(metadata_database);
+  CHECK(metadata_database, base::NotFatalUntil::M163);
   metadata_database_ = std::move(metadata_database);
   if (metadata_database_->HasSyncRoot() &&
       !metadata_database_->NeedsSyncRootRevalidation()) {
@@ -132,11 +132,11 @@ void SyncEngineInitializer::DidGetAboutResource(
     return;
   }
 
-  DCHECK(about_resource);
+  CHECK(about_resource, base::NotFatalUntil::M163);
   root_folder_id_ = about_resource->root_folder_id();
   largest_change_id_ = about_resource->largest_change_id();
 
-  DCHECK(!root_folder_id_.empty());
+  CHECK(!root_folder_id_.empty(), base::NotFatalUntil::M163);
   FindSyncRoot(std::move(token));
 }
 
@@ -183,7 +183,7 @@ void SyncEngineInitializer::DidFindSyncRoot(
 
     // Pick an orphaned folder or a direct child of the root folder and
     // ignore others.
-    DCHECK(!root_folder_id_.empty());
+    CHECK(!root_folder_id_.empty(), base::NotFatalUntil::M163);
     if (!HasNoParents(*entry) && !HasFolderAsParent(*entry, root_folder_id_))
       continue;
 
@@ -220,7 +220,7 @@ void SyncEngineInitializer::DidFindSyncRoot(
 
 void SyncEngineInitializer::CreateSyncRoot(
     std::unique_ptr<SyncTaskToken> token) {
-  DCHECK(!sync_root_folder_);
+  CHECK(!sync_root_folder_, base::NotFatalUntil::M163);
   set_used_network(true);
   drive::AddNewDirectoryOptions options;
   options.visibility = google_apis::drive::FILE_VISIBILITY_PRIVATE;
@@ -234,7 +234,7 @@ void SyncEngineInitializer::DidCreateSyncRoot(
     std::unique_ptr<SyncTaskToken> token,
     google_apis::ApiErrorCode error,
     std::unique_ptr<google_apis::FileResource> entry) {
-  DCHECK(!sync_root_folder_);
+  CHECK(!sync_root_folder_, base::NotFatalUntil::M163);
   std::move(cancel_callback_).Reset();
 
   SyncStatusCode status = ApiErrorCodeToSyncStatusCode(error);
@@ -250,7 +250,7 @@ void SyncEngineInitializer::DidCreateSyncRoot(
 
 void SyncEngineInitializer::DetachSyncRoot(
     std::unique_ptr<SyncTaskToken> token) {
-  DCHECK(sync_root_folder_);
+  CHECK(sync_root_folder_, base::NotFatalUntil::M163);
   set_used_network(true);
   cancel_callback_ =
       sync_context_->GetDriveService()->RemoveResourceFromDirectory(
@@ -277,7 +277,7 @@ void SyncEngineInitializer::DidDetachSyncRoot(
 
 void SyncEngineInitializer::ListAppRootFolders(
     std::unique_ptr<SyncTaskToken> token) {
-  DCHECK(sync_root_folder_);
+  CHECK(sync_root_folder_, base::NotFatalUntil::M163);
   set_used_network(true);
   cancel_callback_ = sync_context_->GetDriveService()->GetFileListInDirectory(
       sync_root_folder_->file_id(),
@@ -324,7 +324,7 @@ void SyncEngineInitializer::DidListAppRootFolders(
 
 void SyncEngineInitializer::PopulateDatabase(
     std::unique_ptr<SyncTaskToken> token) {
-  DCHECK(sync_root_folder_);
+  CHECK(sync_root_folder_, base::NotFatalUntil::M163);
   SyncStatusCode status = metadata_database_->PopulateInitialData(
       largest_change_id_, *sync_root_folder_, app_root_folders_);
   if (status != SYNC_STATUS_OK) {

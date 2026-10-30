@@ -39,7 +39,7 @@ void LifecycleUnitSourceBase::NotifyLifecycleUnitCreated(
 
 void LifecycleUnitSourceBase::NotifyLifecycleUnitBeingDestroyed(
     LifecycleUnitBase* lifecycle_unit) {
-  DCHECK_LT(0u, lifecycle_unit_count_);
+  CHECK_LT(0u, lifecycle_unit_count_, base::NotFatalUntil::M163);
   --lifecycle_unit_count_;
   if (lifecycle_unit_count_ == 0)
     OnAllLifecycleUnitsDestroyed();

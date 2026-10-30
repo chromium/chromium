@@ -42,7 +42,7 @@ HWND FindRunningChromeWindow(const base::FilePath& user_data_dir) {
 NotifyChromeResult AttemptToNotifyRunningChrome(HWND remote_window) {
   TRACE_EVENT0("startup", "AttemptToNotifyRunningChrome");
 
-  DCHECK(remote_window);
+  CHECK(remote_window, base::NotFatalUntil::M163);
   DWORD process_id = 0;
   DWORD thread_id = GetWindowThreadProcessId(remote_window, &process_id);
   if (!thread_id || !process_id) {
