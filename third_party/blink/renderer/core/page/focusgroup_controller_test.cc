@@ -1351,6 +1351,549 @@ TEST_F(FocusgroupControllerTest, GetFocusgroupOwnerOfItem) {
   EXPECT_FALSE(utils::IsFocusgroupItemWithOwner(nullptr, fg));
 }
 
+TEST_F(FocusgroupControllerTest, IndependentNestedFocusgroupOwnerFor) {
+  ScopedFocusgroupV2ForTest v2_enabled{true};
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id=outer focusgroup=toolbar>
+      <div id=opt_out focusgroup=none><span id=outer_descendant></span></div>
+      <div id=inner focusgroup=toolbar>
+        <div focusgroup=none><button id=inner_descendant></button></div>
+      </div>
+    </div>
+    <div id=outside></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* outer = GetElementById("outer");
+  Element* inner = GetElementById("inner");
+
+  EXPECT_EQ(utils::IndependentNestedFocusgroupOwnerFor(*outer), outer);
+  EXPECT_EQ(utils::IndependentNestedFocusgroupOwnerFor(*inner), inner);
+  EXPECT_EQ(
+      utils::IndependentNestedFocusgroupOwnerFor(*GetElementById("opt_out")),
+      outer);
+  EXPECT_EQ(utils::IndependentNestedFocusgroupOwnerFor(
+                *GetElementById("outer_descendant")),
+            outer);
+  EXPECT_EQ(utils::IndependentNestedFocusgroupOwnerFor(
+                *GetElementById("inner_descendant")),
+            inner);
+  EXPECT_EQ(
+      utils::IndependentNestedFocusgroupOwnerFor(*GetElementById("outside")),
+      nullptr);
+}
+
+TEST_F(FocusgroupControllerTest,
+       IndependentNestedFocusgroupOwnerStopsAtTopLayer) {
+  ScopedFocusgroupV2ForTest v2_enabled{true};
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id=outer focusgroup=toolbar>
+      <div id=popover popover>
+        <button id=control></button>
+        <div id=inner focusgroup=toolbar><button id=inner_control></button></div>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* outer = GetElementById("outer");
+  auto* popover = To<HTMLElement>(GetElementById("popover"));
+  Element* control = GetElementById("control");
+  Element* inner = GetElementById("inner");
+  EXPECT_EQ(utils::IndependentNestedFocusgroupOwnerFor(*control), outer);
+
+  NonThrowableExceptionState exception_state;
+  popover->showPopover(exception_state);
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(popover->IsInTopLayer());
+
+  EXPECT_EQ(utils::IndependentNestedFocusgroupOwnerFor(*popover), nullptr);
+  EXPECT_EQ(utils::IndependentNestedFocusgroupOwnerFor(*control), nullptr);
+  EXPECT_EQ(utils::IndependentNestedFocusgroupOwnerFor(
+                *GetElementById("inner_control")),
+            inner);
+}
+
+TEST_F(FocusgroupControllerTest, IsLinearItemControlsOwner) {
+  ScopedFocusgroupV2ForTest v2_enabled{true};
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id=explicit_owner focusgroup="toolbar itemcontrols"></div>
+    <div id=default_owner focusgroup=feed></div>
+    <div id=disabled_owner focusgroup="feed noitemcontrols"></div>
+    <div id=ordinary_owner focusgroup=toolbar></div>
+    <div id=grid_owner focusgroup=grid></div>
+    <div id=opt_out focusgroup=none></div>
+    <div id=non_owner></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(
+      utils::IsLinearItemControlsOwner(GetElementById("explicit_owner")));
+  EXPECT_TRUE(
+      utils::HasEffectiveItemControls(*GetElementById("default_owner")));
+  EXPECT_TRUE(
+      utils::IsLinearItemControlsOwner(GetElementById("default_owner")));
+  EXPECT_FALSE(
+      utils::HasEffectiveItemControls(*GetElementById("disabled_owner")));
+  EXPECT_FALSE(
+      utils::IsLinearItemControlsOwner(GetElementById("disabled_owner")));
+  EXPECT_FALSE(
+      utils::IsLinearItemControlsOwner(GetElementById("ordinary_owner")));
+  EXPECT_TRUE(utils::HasEffectiveItemControls(*GetElementById("grid_owner")));
+  EXPECT_FALSE(utils::IsLinearItemControlsOwner(GetElementById("grid_owner")));
+  EXPECT_FALSE(utils::IsLinearItemControlsOwner(GetElementById("opt_out")));
+  EXPECT_FALSE(utils::IsLinearItemControlsOwner(GetElementById("non_owner")));
+  EXPECT_FALSE(utils::IsLinearItemControlsOwner(nullptr));
+}
+
+TEST_F(FocusgroupControllerTest, GridOwnerBypassesLinearItemControls) {
+  ScopedFocusgroupV2ForTest v2_enabled{true};
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id=owner focusgroup=grid>
+      <div id=item tabindex=0>
+        <div focusgroup=none><button id=control></button></div>
+        <div id=nested_owner focusgroup=toolbar></div>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* owner = GetElementById("owner");
+  Element* item = GetElementById("item");
+  Element* control = GetElementById("control");
+  Element* nested_owner = GetElementById("nested_owner");
+  ASSERT_EQ(owner->GetFocusgroupData().behavior, FocusgroupBehavior::kGrid);
+  ASSERT_TRUE(utils::HasEffectiveItemControls(*owner));
+  ASSERT_TRUE(utils::IsFocusgroupItemWithOwner(item, owner));
+  ASSERT_EQ(utils::FindItemControlsOwner(control), owner);
+
+  EXPECT_FALSE(utils::IsLinearItemControlsOwner(owner));
+  EXPECT_EQ(utils::GetAssociatedLinearFocusgroupItem(control), nullptr);
+  EXPECT_EQ(utils::ContainingItemForNestedOwner(*nested_owner, *owner),
+            nullptr);
+  HeapVector<Member<Element>> owners =
+      utils::EnclosingItemControlsOwners(*nested_owner);
+  ASSERT_EQ(owners.size(), 1u);
+  EXPECT_EQ(owners[0], owner);
+
+  item->Focus();
+  ASSERT_EQ(GetDocument().FocusedElement(), item);
+  EXPECT_EQ(utils::GetActiveLinearFocusgroupItem(*owner), nullptr);
+  control->Focus();
+  ASSERT_EQ(GetDocument().FocusedElement(), control);
+  EXPECT_EQ(utils::GetActiveLinearFocusgroupItem(*owner), nullptr);
+}
+
+TEST_F(FocusgroupControllerTest, AssociatedLinearFocusgroupItem) {
+  ScopedFocusgroupV2ForTest v2_enabled{true};
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id=owner focusgroup="toolbar itemcontrols">
+      <div id=outer_item tabindex=0>
+        <div id=inner_item tabindex=0>
+          <div focusgroup=none>
+            <span><button id=deep_control></button></span>
+            <button id=negative_control tabindex=-1></button>
+          </div>
+        </div>
+      </div>
+      <div id=other_item tabindex=0>
+        <div focusgroup=none><button id=direct_control></button></div>
+      </div>
+      <div focusgroup=none><button id=no_item_control></button></div>
+      <div tabindex=0><button id=ordinary_descendant></button></div>
+    </div>
+    <div id=disabled_owner focusgroup="toolbar noitemcontrols">
+      <div tabindex=0>
+        <div focusgroup=none><button id=disabled_control></button></div>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* owner = GetElementById("owner");
+  Element* inner_item = GetElementById("inner_item");
+  Element* other_item = GetElementById("other_item");
+  Element* deep_control = GetElementById("deep_control");
+  Element* negative_control = GetElementById("negative_control");
+  Element* direct_control = GetElementById("direct_control");
+  Element* no_item_control = GetElementById("no_item_control");
+  Element* ordinary_descendant = GetElementById("ordinary_descendant");
+  Element* disabled_owner = GetElementById("disabled_owner");
+  Element* disabled_control = GetElementById("disabled_control");
+
+  EXPECT_TRUE(utils::HasEffectiveItemControls(*owner));
+  EXPECT_FALSE(utils::HasEffectiveItemControls(*disabled_owner));
+  EXPECT_EQ(utils::FindItemControlsOwner(deep_control), owner);
+  EXPECT_EQ(utils::GetAssociatedLinearFocusgroupItem(deep_control), inner_item);
+  EXPECT_EQ(utils::GetAssociatedLinearFocusgroupItem(negative_control),
+            inner_item);
+  EXPECT_EQ(utils::GetAssociatedLinearFocusgroupItem(direct_control),
+            other_item);
+  EXPECT_EQ(utils::GetAssociatedLinearFocusgroupItem(no_item_control), nullptr);
+  EXPECT_EQ(utils::FindItemControlsOwner(ordinary_descendant), nullptr);
+  EXPECT_EQ(utils::FindItemControlsOwner(disabled_control), nullptr);
+}
+
+TEST_F(FocusgroupControllerTest, ActiveLinearFocusgroupItem) {
+  ScopedFocusgroupV2ForTest v2_enabled{true};
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id=owner focusgroup="toolbar itemcontrols">
+      <div id=item tabindex=0>
+        <div focusgroup=none><button id=control></button></div>
+      </div>
+    </div>
+    <div focusgroup="toolbar itemcontrols">
+      <button id=other_item></button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* owner = GetElementById("owner");
+  Element* item = GetElementById("item");
+  Element* control = GetElementById("control");
+  Element* other_item = GetElementById("other_item");
+
+  item->Focus();
+  ASSERT_EQ(GetDocument().FocusedElement(), item);
+  EXPECT_EQ(utils::GetActiveLinearFocusgroupItem(*owner), item);
+  control->Focus();
+  ASSERT_EQ(GetDocument().FocusedElement(), control);
+  EXPECT_EQ(utils::GetActiveLinearFocusgroupItem(*owner), item);
+  other_item->Focus();
+  ASSERT_EQ(GetDocument().FocusedElement(), other_item);
+  EXPECT_EQ(utils::GetActiveLinearFocusgroupItem(*owner), nullptr);
+}
+
+TEST_F(FocusgroupControllerTest,
+       ItemControlsAssociationPreservesIndependentBoundaries) {
+  ScopedFocusgroupV2ForTest v2_enabled{true};
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div focusgroup="toolbar itemcontrols">
+      <div tabindex=0>
+        <div id=nested_owner tabindex=0 focusgroup=toolbar>
+          <div focusgroup=none><button id=nested_control></button></div>
+        </div>
+      </div>
+      <div tabindex=0>
+        <div id=popover popover>
+          <div focusgroup=none><button id=popover_control></button></div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* nested_owner = GetElementById("nested_owner");
+  Element* nested_control = GetElementById("nested_control");
+  Element* popover_control = GetElementById("popover_control");
+  auto* popover = To<HTMLElement>(GetElementById("popover"));
+  NonThrowableExceptionState exception_state;
+  popover->showPopover(exception_state);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(utils::FindItemControlsOwner(nested_owner), nullptr);
+  EXPECT_EQ(utils::FindItemControlsOwner(nested_control), nullptr);
+  EXPECT_EQ(utils::FindItemControlsOwner(popover_control), nullptr);
+}
+
+TEST_F(FocusgroupControllerTest, NestedFocusgroupContainedByOuterItem) {
+  ScopedFocusgroupV2ForTest v2_enabled{true};
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id=outer focusgroup="toolbar itemcontrols">
+      <div id=outer_item tabindex=0>
+        <div focusgroup=none>
+          <div id=inner focusgroup=toolbar>
+            <button></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* outer = GetElementById("outer");
+  Element* outer_item = GetElementById("outer_item");
+  Element* inner = GetElementById("inner");
+
+  HeapVector<Member<Element>> owners =
+      utils::EnclosingItemControlsOwners(*inner);
+  ASSERT_EQ(owners.size(), 1u);
+  EXPECT_EQ(owners[0], outer);
+  EXPECT_EQ(utils::ContainingItemForNestedOwner(*inner, *outer), outer_item);
+}
+
+TEST_F(FocusgroupControllerTest, NestedOwnerContainmentIsInclusive) {
+  ScopedFocusgroupV2ForTest v2_enabled{true};
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id=outer focusgroup="toolbar itemcontrols">
+      <div id=inner tabindex=0 focusgroup=toolbar>
+        <button></button>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* outer = GetElementById("outer");
+  Element* inner = GetElementById("inner");
+
+  EXPECT_EQ(utils::ContainingItemForNestedOwner(*inner, *outer), inner);
+}
+
+TEST_F(FocusgroupControllerTest,
+       InterveningNestedFocusgroupsDoNotStopOwnerRelativeLookup) {
+  ScopedFocusgroupV2ForTest v2_enabled{true};
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id=outer focusgroup="toolbar itemcontrols">
+      <div id=outer_item tabindex=0>
+        <div id=middle focusgroup=toolbar>
+          <div id=middle_item tabindex=0>
+            <div id=inner focusgroup=toolbar>
+              <button></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* outer = GetElementById("outer");
+  Element* outer_item = GetElementById("outer_item");
+  Element* inner = GetElementById("inner");
+
+  HeapVector<Member<Element>> owners =
+      utils::EnclosingItemControlsOwners(*inner);
+  ASSERT_EQ(owners.size(), 1u);
+  EXPECT_EQ(owners[0], outer);
+  EXPECT_EQ(utils::ContainingItemForNestedOwner(*inner, *outer), outer_item);
+}
+
+TEST_F(FocusgroupControllerTest, NestedOwnerContainmentRequiresItemControls) {
+  ScopedFocusgroupV2ForTest v2_enabled{true};
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id=outer focusgroup="toolbar itemcontrols">
+      <div id=item tabindex=0>
+        <div id=non_owner></div>
+        <div id=nested_owner focusgroup=toolbar></div>
+      </div>
+    </div>
+    <div id=disabled_owner focusgroup="toolbar noitemcontrols">
+      <div tabindex=0><div id=disabled_nested_owner focusgroup=toolbar></div></div>
+    </div>
+    <div id=unrelated_owner focusgroup="toolbar itemcontrols"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* outer = GetElementById("outer");
+  Element* nested_owner = GetElementById("nested_owner");
+  Element* non_owner = GetElementById("non_owner");
+  Element* disabled_owner = GetElementById("disabled_owner");
+  Element* disabled_nested_owner = GetElementById("disabled_nested_owner");
+
+  EXPECT_TRUE(utils::EnclosingItemControlsOwners(*non_owner).empty());
+  EXPECT_EQ(utils::ContainingItemForNestedOwner(*non_owner, *outer), nullptr);
+  EXPECT_TRUE(
+      utils::EnclosingItemControlsOwners(*disabled_nested_owner).empty());
+  EXPECT_EQ(utils::ContainingItemForNestedOwner(*disabled_nested_owner,
+                                                *disabled_owner),
+            nullptr);
+  EXPECT_EQ(utils::ContainingItemForNestedOwner(
+                *nested_owner, *GetElementById("unrelated_owner")),
+            nullptr);
+}
+
+TEST_F(FocusgroupControllerTest, NestedOwnerContainmentStopsAtTopLayer) {
+  ScopedFocusgroupV2ForTest v2_enabled{true};
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id=outer focusgroup="toolbar itemcontrols">
+      <div id=outer_item tabindex=0>
+        <div id=popover popover focusgroup="toolbar itemcontrols">
+          <div id=inner_item tabindex=0>
+            <div id=nested_owner focusgroup=toolbar></div>
+            <span id=popover_descendant></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* outer = GetElementById("outer");
+  Element* nested_owner = GetElementById("nested_owner");
+  auto* popover = To<HTMLElement>(GetElementById("popover"));
+  HeapVector<Member<Element>> owners =
+      utils::EnclosingItemControlsOwners(*nested_owner);
+  ASSERT_EQ(owners.size(), 2u);
+  EXPECT_EQ(owners[0], popover);
+  EXPECT_EQ(owners[1], outer);
+
+  NonThrowableExceptionState exception_state;
+  popover->showPopover(exception_state);
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(popover->IsInTopLayer());
+
+  owners = utils::EnclosingItemControlsOwners(*nested_owner);
+  ASSERT_EQ(owners.size(), 1u);
+  EXPECT_EQ(owners[0], popover);
+  EXPECT_EQ(utils::ContainingItemForNestedOwner(*nested_owner, *popover),
+            GetElementById("inner_item"));
+  EXPECT_EQ(utils::ContainingItemForNestedOwner(*nested_owner, *outer),
+            nullptr);
+  EXPECT_TRUE(utils::EnclosingItemControlsOwners(*popover).empty());
+  EXPECT_EQ(utils::ContainingItemForNestedOwner(*popover, *outer), nullptr);
+  EXPECT_EQ(utils::IndependentNestedFocusgroupOwnerFor(*popover), popover);
+  EXPECT_EQ(utils::IndependentNestedFocusgroupOwnerFor(
+                *GetElementById("popover_descendant")),
+            popover);
+}
+
+TEST_F(FocusgroupControllerTest, RecursiveOwnersEachResolveContainment) {
+  ScopedFocusgroupV2ForTest v2_enabled{true};
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id=outer focusgroup="toolbar itemcontrols">
+      <div id=outer_item tabindex=0>
+        <div id=middle focusgroup="toolbar itemcontrols">
+          <div id=middle_item tabindex=0>
+            <div id=inner focusgroup=toolbar>
+              <button></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* outer = GetElementById("outer");
+  Element* outer_item = GetElementById("outer_item");
+  Element* middle = GetElementById("middle");
+  Element* middle_item = GetElementById("middle_item");
+  Element* inner = GetElementById("inner");
+
+  HeapVector<Member<Element>> owners =
+      utils::EnclosingItemControlsOwners(*inner);
+  ASSERT_EQ(owners.size(), 2u);
+  EXPECT_EQ(owners[0], middle);
+  EXPECT_EQ(owners[1], outer);
+  EXPECT_EQ(utils::ContainingItemForNestedOwner(*inner, *middle), middle_item);
+  EXPECT_EQ(utils::ContainingItemForNestedOwner(*inner, *outer), outer_item);
+}
+
+TEST_F(FocusgroupControllerTest, ItemControlsAssociationUsesFlatTreeForSlots) {
+  ScopedFocusgroupV2ForTest v2_enabled{true};
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <div focusgroup="toolbar itemcontrols">
+      <div id=item tabindex=0>
+        <div focusgroup=none>
+          <div id=host>
+            <button id=slotted_control slot=controls></button>
+            <template shadowrootmode=open>
+              <slot name=controls>
+                <button id=fallback_control></button>
+              </slot>
+            </template>
+          </div>
+        </div>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* item = GetElementById("item");
+  Element* slotted_control = GetElementById("slotted_control");
+  Element* host = GetElementById("host");
+  Element* fallback_control =
+      host->GetShadowRoot()->getElementById(AtomicString("fallback_control"));
+
+  EXPECT_EQ(utils::GetAssociatedLinearFocusgroupItem(slotted_control), item);
+  slotted_control->remove();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(utils::GetAssociatedLinearFocusgroupItem(fallback_control), item);
+}
+
+TEST_F(FocusgroupControllerTest, ItemControlsOwnerLocalFocusContentDetection) {
+  ScopedFocusgroupV2ForTest v2_enabled{true};
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id=owner focusgroup="toolbar itemcontrols">
+      <div tabindex=0>
+        <div id=associated_subtree focusgroup=none>
+          <span><button></button></span>
+        </div>
+        <div id=nested_subtree focusgroup=none>
+          <div focusgroup=toolbar><button></button></div>
+        </div>
+        <div id=empty_subtree focusgroup=none><span></span></div>
+      </div>
+      <div id=owner_boundary focusgroup=none><button></button></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* owner = GetElementById("owner");
+  Element* associated_subtree = GetElementById("associated_subtree");
+  Element* nested_subtree = GetElementById("nested_subtree");
+  Element* owner_boundary = GetElementById("owner_boundary");
+  Element* empty_subtree = GetElementById("empty_subtree");
+
+  EXPECT_FALSE(utils::ContainsUnassociatedFocusContentForItemControls(
+      *empty_subtree, *owner));
+  EXPECT_FALSE(utils::ContainsUnassociatedFocusContentForItemControls(
+      *associated_subtree, *owner));
+  EXPECT_TRUE(utils::ContainsUnassociatedFocusContentForItemControls(
+      *nested_subtree, *owner));
+  EXPECT_TRUE(utils::ContainsUnassociatedFocusContentForItemControls(
+      *owner_boundary, *owner));
+}
+
+TEST_F(FocusgroupControllerTest, ItemControlsFocusedNegativeTabindexIsBarrier) {
+  ScopedFocusgroupV2ForTest v2_enabled{true};
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id=owner focusgroup="toolbar itemcontrols">
+      <div id=subtree focusgroup=none>
+        <button id=control tabindex=-1></button>
+      </div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* owner = GetElementById("owner");
+  Element* subtree = GetElementById("subtree");
+  Element* control = GetElementById("control");
+
+  ASSERT_FALSE(control->IsKeyboardFocusableSlow());
+  ASSERT_NE(GetDocument().FocusedElement(), control);
+  ASSERT_EQ(utils::FindItemControlsOwner(control), owner);
+  ASSERT_EQ(utils::GetAssociatedLinearFocusgroupItem(control), nullptr);
+  EXPECT_FALSE(
+      utils::ContainsUnassociatedFocusContentForItemControls(*subtree, *owner));
+
+  control->Focus();
+  ASSERT_EQ(GetDocument().FocusedElement(), control);
+  ASSERT_FALSE(control->IsKeyboardFocusableSlow());
+  EXPECT_TRUE(
+      utils::ContainsUnassociatedFocusContentForItemControls(*subtree, *owner));
+}
+
+TEST_F(FocusgroupControllerTest, ItemControlsFocusableSubtreeRootIsBarrier) {
+  ScopedFocusgroupV2ForTest v2_enabled{true};
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id=owner focusgroup="toolbar itemcontrols">
+      <div id=subtree focusgroup=none tabindex=0></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* owner = GetElementById("owner");
+  Element* subtree = GetElementById("subtree");
+
+  ASSERT_FALSE(subtree->hasChildren());
+  ASSERT_TRUE(subtree->IsKeyboardFocusableSlow());
+  ASSERT_EQ(utils::FindItemControlsOwner(subtree), owner);
+  ASSERT_EQ(utils::GetAssociatedLinearFocusgroupItem(subtree), nullptr);
+  EXPECT_TRUE(
+      utils::ContainsUnassociatedFocusContentForItemControls(*subtree, *owner));
+}
+
 TEST_F(FocusgroupControllerTest, SegmentDetectionBasic) {
   ScopedFocusgroupForTest focusgroup_enabled(true);
 

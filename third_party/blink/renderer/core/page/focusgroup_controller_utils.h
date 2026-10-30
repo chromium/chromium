@@ -8,6 +8,8 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -163,6 +165,56 @@ class CORE_EXPORT FocusgroupControllerUtils {
 
   static bool IsFocusgroupItemWithOwner(const Element* element,
                                         const Element* focusgroup_owner);
+
+  // Returns the nearest focusgroup containing |element|, including |element|
+  // itself if it is a focusgroup. Skips focusgroup="none" ancestors. Stops at
+  // a top-layer element, unless that element is itself a focusgroup.
+  static const Element* IndependentNestedFocusgroupOwnerFor(
+      const Element& element);
+
+  // Returns true if |owner| has itemcontrols, either explicitly or by default
+  // for its behavior.
+  static bool HasEffectiveItemControls(const Element& owner);
+
+  // Returns true if |owner| has itemcontrols and is not a grid. Null returns
+  // false.
+  static bool IsLinearItemControlsOwner(const Element* owner);
+
+  // Returns the nearest focusgroup ancestor if it has itemcontrols and
+  // |control| is focusable and inside a focusgroup="none" subtree. Does not
+  // cross nested focusgroups or top-layer boundaries.
+  static Element* FindItemControlsOwner(const Element* control);
+
+  // Returns the nearest item containing |control| in its itemcontrols owner's
+  // linear focusgroup. Returns nullptr for grids or unassociated controls.
+  static Element* GetAssociatedLinearFocusgroupItem(const Element* control);
+
+  // Returns the itemcontrols ancestors of |nested_owner|, nearest first.
+  // |nested_owner| must be a focusgroup. Skips intervening focusgroups and
+  // focusgroup="none" markers. Stops after visiting a top-layer ancestor;
+  // returns empty if |nested_owner| itself is in the top layer.
+  static HeapVector<Member<Element>> EnclosingItemControlsOwners(
+      const Element& nested_owner);
+
+  // Returns the nearest item of |enclosing_owner| containing |nested_owner|,
+  // including |nested_owner| itself if it is an item. |nested_owner| must be
+  // a focusgroup and |enclosing_owner| must have linear itemcontrols. Returns
+  // nullptr if no such item exists or a top-layer boundary separates them.
+  static Element* ContainingItemForNestedOwner(const Element& nested_owner,
+                                               const Element& enclosing_owner);
+
+  // Returns |owner|'s focused item, or the item associated with the focused
+  // control. Returns nullptr if neither exists or |owner| has no linear
+  // itemcontrols.
+  static Element* GetActiveLinearFocusgroupItem(const Element& owner);
+
+  // Returns true if |subtree|, including its root, has keyboard-focusable or
+  // currently focused content that is not associated with an item of |owner|.
+  // Such content forms a barrier between segments; associated controls do not.
+  static bool ContainsUnassociatedFocusContentForItemControls(
+      const Element& subtree,
+      const Element& owner);
+
   static bool IsGridFocusgroupItem(const Element* element);
 
   // Determines the guaranteed tab stop (entry element) for sequential focus

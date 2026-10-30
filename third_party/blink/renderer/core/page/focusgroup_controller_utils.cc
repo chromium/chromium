@@ -442,6 +442,164 @@ bool FocusgroupControllerUtils::IsFocusgroupItemWithOwner(
   return GetFocusgroupOwnerOfItem(element) == focusgroup_owner;
 }
 
+const Element* FocusgroupControllerUtils::IndependentNestedFocusgroupOwnerFor(
+    const Element& element) {
+  for (const Element* current = &element; current;
+       current = FlatTreeTraversal::ParentElement(*current)) {
+    if (IsActualFocusgroup(current->GetFocusgroupData())) {
+      return current;
+    }
+    if (current->IsInTopLayer()) {
+      return nullptr;
+    }
+  }
+  return nullptr;
+}
+
+bool FocusgroupControllerUtils::HasEffectiveItemControls(const Element& owner) {
+  const FocusgroupData data = owner.GetFocusgroupData();
+  return IsActualFocusgroup(data) &&
+         (data.flags & FocusgroupFlags::kItemControls);
+}
+
+bool FocusgroupControllerUtils::IsLinearItemControlsOwner(
+    const Element* owner) {
+  return owner && HasEffectiveItemControls(*owner) &&
+         owner->GetFocusgroupData().behavior != FocusgroupBehavior::kGrid;
+}
+
+Element* FocusgroupControllerUtils::FindItemControlsOwner(
+    const Element* control) {
+  if (!control || !control->IsFocusable() || control->IsInTopLayer() ||
+      IsActualFocusgroup(control->GetFocusgroupData())) {
+    return nullptr;
+  }
+
+  bool is_in_opted_out_subtree = HasExplicitOptOut(control);
+  for (Element* ancestor = FlatTreeTraversal::ParentElement(*control); ancestor;
+       ancestor = FlatTreeTraversal::ParentElement(*ancestor)) {
+    const FocusgroupData data = ancestor->GetFocusgroupData();
+    if (IsActualFocusgroup(data)) {
+      if (!is_in_opted_out_subtree || !HasEffectiveItemControls(*ancestor)) {
+        return nullptr;
+      }
+      return ancestor;
+    }
+    if (ancestor->IsInTopLayer()) {
+      return nullptr;
+    }
+    is_in_opted_out_subtree |= HasExplicitOptOut(ancestor);
+  }
+  return nullptr;
+}
+
+Element* FocusgroupControllerUtils::GetAssociatedLinearFocusgroupItem(
+    const Element* control) {
+  Element* owner = FindItemControlsOwner(control);
+  if (!owner ||
+      owner->GetFocusgroupData().behavior == FocusgroupBehavior::kGrid) {
+    return nullptr;
+  }
+
+  for (Element* ancestor = FlatTreeTraversal::ParentElement(*control);
+       ancestor && ancestor != owner;
+       ancestor = FlatTreeTraversal::ParentElement(*ancestor)) {
+    if (IsFocusgroupItemWithOwner(ancestor, owner)) {
+      return ancestor;
+    }
+  }
+  return nullptr;
+}
+
+HeapVector<Member<Element>>
+FocusgroupControllerUtils::EnclosingItemControlsOwners(
+    const Element& nested_owner) {
+  HeapVector<Member<Element>> owners;
+  if (!IsActualFocusgroup(nested_owner.GetFocusgroupData()) ||
+      nested_owner.IsInTopLayer()) {
+    return owners;
+  }
+
+  for (Element* ancestor = FlatTreeTraversal::ParentElement(nested_owner);
+       ancestor; ancestor = FlatTreeTraversal::ParentElement(*ancestor)) {
+    if (HasEffectiveItemControls(*ancestor)) {
+      owners.push_back(ancestor);
+    }
+    if (ancestor->IsInTopLayer()) {
+      break;
+    }
+  }
+  return owners;
+}
+
+Element* FocusgroupControllerUtils::ContainingItemForNestedOwner(
+    const Element& nested_owner,
+    const Element& enclosing_owner) {
+  if (!IsActualFocusgroup(nested_owner.GetFocusgroupData()) ||
+      !HasEffectiveItemControls(enclosing_owner) ||
+      enclosing_owner.GetFocusgroupData().behavior ==
+          FocusgroupBehavior::kGrid ||
+      nested_owner.IsInTopLayer()) {
+    return nullptr;
+  }
+
+  for (Element* current = const_cast<Element*>(&nested_owner);
+       current && current != &enclosing_owner;
+       current = FlatTreeTraversal::ParentElement(*current)) {
+    if (current->IsInTopLayer()) {
+      return nullptr;
+    }
+    if (IsFocusgroupItemWithOwner(current, &enclosing_owner)) {
+      return current;
+    }
+  }
+  return nullptr;
+}
+
+Element* FocusgroupControllerUtils::GetActiveLinearFocusgroupItem(
+    const Element& owner) {
+  if (!HasEffectiveItemControls(owner) ||
+      owner.GetFocusgroupData().behavior == FocusgroupBehavior::kGrid) {
+    return nullptr;
+  }
+
+  Element* focused = owner.GetDocument().FocusedElement();
+  if (!focused) {
+    return nullptr;
+  }
+  if (IsFocusgroupItemWithOwner(focused, &owner)) {
+    return focused;
+  }
+  Element* associated_item = GetAssociatedLinearFocusgroupItem(focused);
+  return associated_item && GetFocusgroupOwnerOfItem(associated_item) == &owner
+             ? associated_item
+             : nullptr;
+}
+
+bool FocusgroupControllerUtils::ContainsUnassociatedFocusContentForItemControls(
+    const Element& subtree,
+    const Element& owner) {
+  auto IsUnassociatedFocusContent = [&owner](const Element& element) {
+    if (!element.IsKeyboardFocusableSlow() &&
+        !element.IsFocusedElementInDocument()) {
+      return false;
+    }
+    return FindItemControlsOwner(&element) != &owner ||
+           !GetAssociatedLinearFocusgroupItem(&element);
+  };
+
+  if (IsUnassociatedFocusContent(subtree)) {
+    return true;
+  }
+  for (Node& node : FlatTreeTraversal::DescendantsOf(subtree)) {
+    const Element* element = DynamicTo<Element>(node);
+    if (element && IsUnassociatedFocusContent(*element)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool FocusgroupControllerUtils::IsGridFocusgroupItem(const Element* element) {
   CHECK(element);
   CHECK(RuntimeEnabledFeatures::FocusgroupV2Enabled(
