@@ -21,7 +21,10 @@ source_set("reporting") {
     ]
 
     if (enterprise_cdp_attribution) {
-      sources += [ "tab_cdp_actor_tracker.h" ]
+      sources += [
+        "cdp_actor_session_tracker.h",
+        "tab_cdp_actor_tracker.h",
+      ]
     }
   }
 
@@ -76,7 +79,10 @@ source_set("impl") {
     ]
 
     if (enterprise_cdp_attribution) {
-      sources += [ "tab_cdp_actor_tracker.cc" ]
+      sources += [
+        "cdp_actor_session_tracker.cc",
+        "tab_cdp_actor_tracker.cc",
+      ]
     }
   }
 
@@ -140,7 +146,10 @@ source_set("unit_tests") {
   ]
 
   if (enterprise_cdp_attribution) {
-    sources += [ "tab_cdp_actor_tracker_unittest.cc" ]
+    sources += [
+      "cdp_actor_session_tracker_unittest.cc",
+      "tab_cdp_actor_tracker_unittest.cc",
+    ]
   }
 
   if (enterprise_cloud_content_analysis && enable_extensions_core) {
