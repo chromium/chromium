@@ -35,6 +35,37 @@
 // additional test helpers. Category method names must be unique.
 @interface ChromeEarlGreyUIImpl : BaseEGTestHelperImpl
 
+#pragma mark - Navigation, Omnibox, and Page Interaction
+
+// Replaces the content of the omnibox with the given `text`.
+- (void)replaceTextInOmnibox:(NSString*)text;
+
+// Focuses the omnibox by tapping and replaces its content with `text`.
+// The '\n' symbol can be passed in order to commit the string.
+// If `text` is empty or nil, the omnibox is just focused.
+- (void)focusOmniboxAndReplaceText:(NSString*)text;
+
+// Focuses the omnibox by tapping it.
+- (void)focusOmnibox;
+
+// Reloads the page via the reload button, and does not wait for the page to
+// finish loading.
+- (void)reload;
+
+// Opens the share menu via the share button.
+// This method requires that there is at least one tab open.
+- (void)openShareMenu;
+
+// Waits for toolbar to become visible if `isVisible` is YES, otherwise waits
+// for it to disappear. If the condition is not met within a timeout, a
+// GREYAssert is induced.
+- (void)waitForToolbarVisible:(BOOL)isVisible;
+
+// Opens pageInfo via the tools menu.
+- (void)openPageInfo;
+
+#pragma mark - Tools Menu and Settings Navigation
+
 // Makes the toolbar visible by swiping downward, if necessary. Then taps on
 // the Tools menu button. At least one tab needs to be open and visible when
 // calling this method.
@@ -54,11 +85,6 @@
 // Settings button. There will be a GREYAssert if the tools menu is open when
 // calling this method.
 - (void)openSettingsMenu;
-
-// Makes the toolbar visible by swiping downward, if necessary. Then long-
-// presses on the New Tab menu button. At least one tab needs to be open and
-// visible when calling this method.
-- (void)openNewTabMenu;
 
 // Scrolls to find the button in the Tools menu with the corresponding
 // `buttonMatcher`, and then taps it. If `buttonMatcher` is not found, or
@@ -86,17 +112,24 @@
 // there will be a GREYAssert.
 - (void)tapPrivacySafeBrowsingMenuButton:(id<GREYMatcher>)buttonMatcher;
 
-// Scrolls to find the button in the Price Notifications menu with the
-// corresponding `buttonMatcher`, and then taps it. If `buttonMatcher` is not
-// found, or the Price Notifications menu is not open when this is called
-// there will be a GREYAssert.
-- (void)tapPriceNotificationsMenuButton:(id<GREYMatcher>)buttonMatcher;
-
 // Scrolls to find the button in the Clear Browsing Data menu with the
 // corresponding `buttonMatcher`, and then taps it. If `buttonMatcher` is
 // not found, or the Clear Browsing Data menu is not open when this is called
 // there will be a GREYAssert.
 - (void)tapClearBrowsingDataMenuButton:(id<GREYMatcher>)buttonMatcher;
+
+#pragma mark - Tabs, Sign-In Prompts, and History
+
+// Makes the toolbar visible by swiping downward, if necessary. Then long-
+// presses on the New Tab menu button. At least one tab needs to be open and
+// visible when calling this method.
+- (void)openNewTabMenu;
+
+// Scrolls to find the button in the Price Notifications menu with the
+// corresponding `buttonMatcher`, and then taps it. If `buttonMatcher` is not
+// found, or the Price Notifications menu is not open when this is called
+// there will be a GREYAssert.
+- (void)tapPriceNotificationsMenuButton:(id<GREYMatcher>)buttonMatcher;
 
 // Focuses the omnibox by tapping and types `text` into it. The '\n' symbol can
 // be passed in order to commit the string.
@@ -109,17 +142,6 @@
 
 // Simulates the physical keyboard event.
 - (void)pressEnter;
-
-// Replaces the content of the omnibox with the given text.
-- (void)replaceTextInOmnibox:(NSString*)text;
-
-// Focuses the omnibox by tapping and replaces its content with `text`.
-// The '\n' symbol can be passed in order to commit the string.
-// If `text` is empty or nil, the omnibox is just focused.
-- (void)focusOmniboxAndReplaceText:(NSString*)text;
-
-// Focuses the omnibox by tapping it.
-- (void)focusOmnibox;
 
 // Opens a new tab via the tools menu.
 - (void)openNewTab;
@@ -136,28 +158,12 @@
 // Asserts that history is empty.
 - (void)assertHistoryHasNoEntries;
 
-// Reloads the page via the reload button, and does not wait for the page to
-// finish loading.
-- (void)reload;
-
-// Opens the share menu via the share button.
-// This method requires that there is at least one tab open.
-- (void)openShareMenu;
-
 // Shares the current page. It taps the share button on the toolbar if visible,
 // or opens the tools menu and taps the share action.
 - (void)shareCurrentPage;
 
-// Waits for toolbar to become visible if `isVisible` is YES, otherwise waits
-// for it to disappear. If the condition is not met within a timeout, a
-// GREYAssert is induced.
-- (void)waitForToolbarVisible:(BOOL)isVisible;
-
 // Waits for the app to idle.
 - (void)waitForAppToIdle;
-
-// Opens pageInfo via the tools menu.
-- (void)openPageInfo;
 
 // Tries to dismiss any presented native context menu.
 // Returns `YES` if a context menu was dismissed, otherwise returns `NO`.
@@ -173,10 +179,10 @@
 // dismissable by tapping.
 - (void)dismissByTappingOnTheWindowOfPopover:(id<GREYMatcher>)matcher;
 
-// Long presses on selector.
+// Long presses on `selector`.
 - (void)longPressElementOnWebView:(ElementSelector*)selector;
 
-// Convenient function to trigger the Edit Menu on selector.
+// Convenient function to trigger the Edit Menu on `selector`.
 - (void)triggerEditMenu:(ElementSelector*)selector;
 
 // Clears the search bar text and dismisses the search bar.

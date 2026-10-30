@@ -22,6 +22,8 @@ enum class TipsNotificationType;
 @property(readonly, nonatomic) BOOL success;
 @property(readonly, nonatomic) NSString* result;
 
+// Initializes with execution `result` and `outcome`. Returns initialized
+// instance.
 - (instancetype)initWithResult:(NSString*)result
            successfulExecution:(BOOL)outcome;
 
@@ -82,8 +84,8 @@ enum class TipsNotificationType;
 // the operation failed.
 + (NSError*)clearAllWebStateBrowsingData;
 
-// Returns the number of entries in the history database. Returns -1 if there
-// was an error.
+// Returns count of browsing history entries in the current profile.
+// Sets `error` if reading history failed.
 + (NSInteger)browsingHistoryEntryCountWithError:
     (NSError* __autoreleasing*)error;
 
@@ -97,10 +99,10 @@ enum class TipsNotificationType;
 // Persists the current list of tabs to disk immediately.
 + (void)saveSessionImmediately;
 
-// Opens `URL` using some connected scene.
+// Opens a scene with URL `spec`.
 + (void)sceneOpenURL:(NSString*)spec;
 
-// Continues `userActivity` using some connected scene with a specific URL.
+// Continues user activity in active scene with `activityType` and `urlString`.
 + (void)sceneContinueUserActivityWithType:(NSString*)activityType
                                       url:(NSString*)urlString;
 
@@ -152,8 +154,7 @@ enum class TipsNotificationType;
 // internal framework (should only be used by performance tests)
 + (void)primesStopLogging;
 
-// Takes a snapshot of memory usage by calling into the internal
-// framework (should only be used by performance tests)
+// Takes a memory snapshot with Primes using `eventName`.
 + (void)primesTakeMemorySnapshot:(NSString*)eventName;
 
 #pragma mark - Profile Utilities (EG2)
@@ -175,12 +176,10 @@ enum class TipsNotificationType;
 
 #pragma mark - Tab Utilities (EG2)
 
-// Selects tab with given index in current mode (incognito or main
-// (non-incognito)).
+// Selects tab at `index`.
 + (void)selectTabAtIndex:(NSUInteger)index;
 
-// Closes tab with the given index in current mode (incognito or main
-// (non-incognito)).
+// Closes tab at `index`.
 + (void)closeTabAtIndex:(NSUInteger)index;
 
 // Returns YES if the browser is in incognito mode, and NO otherwise.
@@ -222,18 +221,16 @@ enum class TipsNotificationType;
 // Opens a new tab, and does not wait for animations to complete.
 + (void)openNewTab;
 
-// Opens a new tab with the given URL and attaches the text fragment to its
-// internal NavigationItem to trigger scroll restoration upon page load.
+// Opens a new tab with `url` and `textFragment`.
 + (void)openNewTabWithURL:(NSString*)url textFragment:(NSString*)textFragment;
 
-// Opens a new tab with the given URL, text fragment, and marks it as
-// originating from Send Tab To Self with the given entry GUID.
+// Opens Send Tab to Self new tab with `url`, `textFragment`, and `guid`.
 + (void)openSendTabToSelfNewTabWithURL:(NSString*)url
                           textFragment:(NSString*)textFragment
                              entryGUID:(NSString*)guid;
 
-// Opens a new background tab with the given URL, text fragment, and marks it
-// as originating from Send Tab To Self with the given entry GUID.
+// Opens Send Tab to Self new background tab with `url`, `textFragment`, and
+// `guid`.
 + (void)openSendTabToSelfNewBackgroundTabWithURL:(NSString*)url
                                     textFragment:(NSString*)textFragment
                                        entryGUID:(NSString*)guid;
@@ -330,34 +327,32 @@ enum class TipsNotificationType;
 // Open a new window. Returns an error if multiwindow is not supported.
 + (NSError*)openNewWindow;
 
-// Opens a new tab in window with given number, and does not wait for animations
-// to complete.
+// Opens a new tab in window with number `windowNumber`.
 + (void)openNewTabInWindowWithNumber:(int)windowNumber;
 
-// Closes the window with given number.
+// Closes window with number `windowNumber`.
 + (void)closeWindowWithNumber:(int)windowNumber;
 
-// Renumbers given window with current number to new number.
+// Changes window with number `windowNumber` to `newWindowNumber`.
 + (void)changeWindowWithNumber:(int)windowNumber
                    toNewNumber:(int)newWindowNumber;
 
-// Loads the URL `spec` in the current WebState in window with given number with
+// Loads the URL `spec` in the current WebState in window `windowNumber` with
 // transition type ui::PAGE_TRANSITION_TYPED and returns without waiting for the
 // page to load.
 + (void)startLoadingURL:(NSString*)spec inWindowWithNumber:(int)windowNumber;
 
-// Returns YES if the current WebState in window with given number is loading.
+// Returns YES if current WebState is loading in window `windowNumber`.
 + (BOOL)isLoadingInWindowWithNumber:(int)windowNumber [[nodiscard]];
 
-// Returns YES if the current WebState in window with given number contains
-// `text`.
+// Returns YES if the current WebState in window `windowNumber` contains `text`.
 + (BOOL)webStateContainsText:(NSString*)text
           inWindowWithNumber:(int)windowNumber;
 
-// Returns the number of open non-incognito tabs, in window with given number.
+// Returns count of non-incognito tabs in window with number `windowNumber`.
 + (NSUInteger)mainTabCountInWindowWithNumber:(int)windowNumber;
 
-// Returns the number of open incognito tabs, in window with given number.
+// Returns count of incognito tabs in window with number `windowNumber`.
 + (NSUInteger)incognitoTabCountInWindowWithNumber:(int)windowNumber;
 
 // Prepares an in-app wait for `windowCount` to equal `count`. Returns YES if a
@@ -370,35 +365,28 @@ enum class TipsNotificationType;
 // or NO immediately if already equal.
 + (BOOL)prepareConditionForForegroundWindowCount:(NSUInteger)count;
 
-// Prepares an in-app wait for the current WebState in `windowNumber` to finish
-// loading. Returns YES if a wait was needed and prepared for
-// `startPendingWaitWithCompletion:`, or NO immediately if already not loading.
+// Prepares an in-app wait for page in window `windowNumber` to finish loading.
+// Returns YES if a wait was needed, or NO immediately if already satisfied.
 + (BOOL)prepareConditionForPageToFinishLoadingInWindowWithNumber:
     (int)windowNumber;
 
-// Prepares an in-app wait for `mainTabCountInWindowWithNumber:` to equal
-// `count`. Returns YES if a wait was needed and prepared for
-// `startPendingWaitWithCompletion:`, or NO immediately if already equal.
+// Prepares an in-app wait for main tab `count` in window `windowNumber`.
+// Returns YES if a wait was needed, or NO immediately if already satisfied.
 + (BOOL)prepareConditionForMainTabCount:(NSUInteger)count
                      inWindowWithNumber:(int)windowNumber;
 
-// Prepares an in-app wait for `incognitoTabCountInWindowWithNumber:` to equal
-// `count`. Returns YES if a wait was needed and prepared for
-// `startPendingWaitWithCompletion:`, or NO immediately if already equal.
+// Prepares an in-app wait for incognito tab `count` in window `windowNumber`.
+// Returns YES if a wait was needed, or NO immediately if already satisfied.
 + (BOOL)prepareConditionForIncognitoTabCount:(NSUInteger)count
                           inWindowWithNumber:(int)windowNumber;
 
 // Returns a key window from the connected scenes.
 + (UIWindow*)keyWindow;
 
-// Opens the settings menu directly (not via the UI) in the window with the
-// given number. EarlGrey + Multiwindow + SwiftUI (the tools menu) do not play
-// well together, so EG often fails to interact with the tools menu in secondary
-// windows.
+// Opens settings in window with number `windowNumber`.
 + (void)openSettingsInWindowWithNumber:(int)windowNumber;
 
-// Shows the tab switcher directly (not via the UI) in the window with the
-// given number.
+// Shows tab switcher in window with number `windowNumber`.
 + (void)showTabSwitcherInWindowWithNumber:(int)windowNumber;
 
 // Returns the interface orientation of the scene.
@@ -407,14 +395,14 @@ enum class TipsNotificationType;
 // Returns YES if running on an iPhone Duo simulator.
 + (BOOL)isDuoSimulator;
 
-// Sends a simulated hinge angle event (0.0 = Closed, 130.0 = Book,
-// 180.0 = Open).
+// Dispatches simulated Duo hinge angle `angleInDegrees`. Returns YES on
+// success.
 + (BOOL)dispatchSimulatedDuoHingeAngle:(double)angleInDegrees;
 
 // Returns YES if the window and hinge posture match `angleInDegrees`.
 + (BOOL)isSimulatedDuoHingePostureSettled:(double)angleInDegrees;
 
-// Sends a simulated device orientation event.
+// Dispatches simulated Duo orientation `orientation`. Returns YES on success.
 + (BOOL)dispatchSimulatedDuoOrientation:(UIDeviceOrientation)orientation;
 
 // Returns YES if the scene and window orientation match `orientation`.
@@ -422,10 +410,7 @@ enum class TipsNotificationType;
 
 #pragma mark - WebState Utilities (EG2)
 
-// Attempts to tap the element with `element_id` within window.frames[0] of the
-// current WebState using a JavaScript click() event. This only works on
-// same-origin iframes. If not succeed returns an NSError indicating why the
-// operation failed, otherwise nil.
+// Taps element with `elementID` in iFrame. Returns nil on success.
 + (NSError*)tapWebStateElementInIFrameWithID:(NSString*)elementID;
 
 // Taps html element with `elementID` in the current web state.
@@ -460,9 +445,8 @@ enum class TipsNotificationType;
 // Returns YES if the current WebState's zoom scale is close to `scale`.
 + (BOOL)webStateZoomScaleCloseTo:(CGFloat)scale;
 
-// Prepares an in-app wait for `webStateZoomScaleCloseTo:scale` to become true.
-// Returns YES if a wait was needed and prepared for
-// `startPendingWaitWithCompletion:`, or NO immediately if already satisfied.
+// Prepares an in-app wait for WebState zoom scale to equal `scale`.
+// Returns YES if a wait was needed, or NO immediately if already satisfied.
 + (BOOL)prepareConditionForWebStateZoomScale:(CGFloat)scale;
 
 // Prepares an in-app wait for the current WebState's visible URL to equal
@@ -470,11 +454,7 @@ enum class TipsNotificationType;
 // `startPendingWaitWithCompletion:`, or NO immediately if already equal.
 + (BOOL)prepareConditionForWebStateVisibleURL:(NSString*)spec;
 
-// Signs the user out from Chrome and then starts clearing the identities.
-//
-// Note: The idendities & browsing data cleanings are executed asynchronously.
-// The completion block should be used if there's a need to wait the end of
-// those operations.
+// Signs out and clears identities, calling `completion` block when finished.
 + (void)signOutAndClearIdentitiesWithCompletion:(ProceduralBlock)completion;
 
 // Returns YES if there is at at least identity in the ChromeIdentityService.
@@ -486,10 +466,7 @@ enum class TipsNotificationType;
 // Returns the current WebState's last committed URL.
 + (NSString*)webStateLastCommittedURL;
 
-// Purges cached web view pages in the current web state, so the next time back
-// navigation will not use a cached page. Browsers don't have to use a fresh
-// version for back/forward navigation for HTTP pages and may serve a version
-// from the cache even if the Cache-Control response header says otherwise.
+// Purges cached web view pages. Returns nil on success, or NSError on failure.
 + (NSError*)purgeCachedWebViewPages;
 
 // Stops any pending navigations in all WebStates which are loading.
@@ -503,17 +480,15 @@ enum class TipsNotificationType;
 
 #pragma mark - Sync Utilities (EG2)
 
-// Waits for sync to become fully active; see
-// SyncService::TransportState::ACTIVE for details. If not succeeded a
-// GREYAssert is induced.
+// Waits up to `timeout` for sync transport state to become active.
+// Returns nil on success, or NSError on timeout.
 + (NSError*)waitForSyncTransportStateActiveWithTimeout:(base::TimeDelta)timeout;
 
 // Returns the current sync cache GUID. The sync server must be running when
 // calling this.
 + (NSString*)syncCacheGUID;
 
-// Waits for sync invalidation field presence in the DeviceInfo data type on the
-// server.
+// Waits for sync invalidation fields to be received. Returns nil on success.
 + (NSError*)waitForSyncInvalidationFields;
 
 // Whether or not the fake sync server has been setup.
@@ -546,75 +521,70 @@ enum class TipsNotificationType;
 // Injects a bookmark into the fake sync server with `URL` and `title`.
 + (void)addFakeSyncServerBookmarkWithURL:(NSString*)URL title:(NSString*)title;
 
-// Injects a legacy bookmark into the fake sync server. The legacy bookmark
-// means 2015 and earlier, prior to the adoption of GUIDs for originator client
-// item ID.
+// Injects a legacy bookmark to sync FakeServer with `URL`, `title`, and
+// `originator_client_item_id`.
 + (void)addFakeSyncServerLegacyBookmarkWithURL:(NSString*)URL
                                          title:(NSString*)title
                      originator_client_item_id:
                          (NSString*)originator_client_item_id;
 
-// Injects a HISTORY visit to the sync FakeServer.
+// Injects a HISTORY visit for `URL` to the sync FakeServer.
 + (void)addFakeSyncServerHistoryVisit:(NSURL*)URL;
 
-// Injects device info to sync FakeServer.
+// Injects device info with `deviceName` and `lastUpdatedTimestamp` to sync
+// FakeServer.
 + (void)addFakeSyncServerDeviceInfo:(NSString*)deviceName
                lastUpdatedTimestamp:(base::Time)lastUpdatedTimestamp;
 
-// Injects a send tab to self entry to sync FakeServer.
+// Injects Send Tab To Self entry with `URL`, `title`, `deviceName`, and
+// `targetDeviceGUID` to sync FakeServer.
 + (void)addFakeSyncServerSendTabToSelfEntryWithURL:(NSString*)URL
                                              title:(NSString*)title
                                         deviceName:(NSString*)deviceName
                                   targetDeviceGUID:(NSString*)targetDeviceGUID;
 
-// Adds a fake Send Tab To Self entry to the fake sync server and returns its
-// GUID. `formFieldData` is a dictionary where keys are form control names and
-// values are the values to fill.
+// Adds fake Send Tab To Self entry with `url`, `title`, and `formFieldData`
+// to fake sync server. Returns its GUID.
 + (NSString*)addFakeSendTabToSelfEntryWithURL:(NSString*)url
                                         title:(NSString*)title
                                 formFieldData:
                                     (NSDictionary<NSString*, NSString*>*)
                                         formFieldData;
 
-// Adds a fake Send Tab To Self entry with the given text fragment to the fake
-// sync server and returns its GUID.
+// Adds fake Send Tab To Self entry with `url`, `title`, and `textFragment`
+// to fake sync server. Returns its GUID.
 + (NSString*)addFakeSendTabToSelfEntryWithURL:(NSString*)url
                                         title:(NSString*)title
                                  textFragment:(NSString*)textFragment;
 
-// Checks if the local Send Tab To Self model contains an entry with the given
-// GUID.
+// Returns YES if local Send Tab To Self model contains entry with `guid`.
 + (BOOL)hasSendTabToSelfEntryWithGUID:(NSString*)guid;
 
-// Checks if the local Send Tab To Self model is ready and contains a target
-// device with the given `deviceName`.
+// Returns YES if local Send Tab To Self model contains target `deviceName`.
 + (BOOL)hasSendTabToSelfTargetDevice:(NSString*)deviceName;
 
-// Prepares an in-app wait for `hasSendTabToSelfEntryWithGUID:guid` to become
-// true. Returns YES if a wait was needed and prepared for
-// `startPendingWaitWithCompletion:`, or NO immediately if already present.
+// Prepares an in-app wait for entry with `guid` to be present.
+// Returns YES if a wait was needed, or NO immediately if already present.
 + (BOOL)prepareConditionForSendTabToSelfEntryWithGUID:(NSString*)guid;
 
-// Prepares an in-app wait for `hasSendTabToSelfTargetDevice:deviceName` to
-// become true. Returns YES if a wait was needed and prepared for
-// `startPendingWaitWithCompletion:`, or NO immediately if already present.
+// Prepares an in-app wait for target device `deviceName` to be present.
+// Returns YES if a wait was needed, or NO immediately if already present.
 + (BOOL)prepareConditionForSendTabToSelfTargetDevice:(NSString*)deviceName;
 
-// Returns the generated text fragment for the given URL, or nil if no entry
-// exists or no fragment is set.
+// Returns generated text fragment for `URL`, or nil if no entry exists.
 + (NSString*)textFragmentForSendTabToSelfEntryWithURL:(NSString*)URL;
 
-// Adds typed URL into HistoryService.
+// Adds typed `URL` into HistoryService.
 + (void)addHistoryServiceTypedURL:(NSString*)URL;
 
-// Adds typed URL into HistoryService at timestamp `visitTimestamp`.
+// Adds typed `URL` into HistoryService at timestamp `visitTimestamp`.
 + (void)addHistoryServiceTypedURL:(NSString*)URL
                    visitTimestamp:(base::Time)visitTimestamp;
 
 // Sets the page `title` for `URL` in the History Service.
 + (void)setHistoryServiceTitle:(NSString*)title forPage:(NSString*)URL;
 
-// Deletes typed URL from HistoryService.
+// Deletes typed `URL` from HistoryService.
 + (void)deleteHistoryServiceTypedURL:(NSString*)URL;
 
 // If the provided URL `spec` is either present or not present in HistoryService
@@ -623,7 +593,7 @@ enum class TipsNotificationType;
 + (BOOL)isURL:(NSString*)spec presentOnClient:(BOOL)expectPresent;
 
 // Injects user demographics into the fake sync server. `rawBirthYear` is the
-// true birth year, pre-noise, and the gender corresponds to the proto enum
+// true birth year, pre-noise, and `gender` corresponds to the proto enum
 // UserDemographicsProto::Gender.
 + (void)
     addUserDemographicsToSyncServerWithBirthYear:(int)rawBirthYear
@@ -634,13 +604,11 @@ enum class TipsNotificationType;
 // Clears the autofill profile for the given `GUID`.
 + (void)clearAutofillProfileWithGUID:(NSString*)GUID;
 
-// Injects an autofill profile into the fake sync server with `GUID` and
-// `full_name`.
+// Injects autofill profile into fake sync server with `GUID` and `fullName`.
 + (void)addAutofillProfileToFakeSyncServerWithGUID:(NSString*)GUID
                                autofillProfileName:(NSString*)fullName;
 
-// Returns YES if there is an autofilll profile with the corresponding `GUID`
-// and `full_name`.
+// Returns YES if there is an autofill profile with `GUID` and `fullName`.
 + (BOOL)isAutofillProfilePresentWithGUID:(NSString*)GUID
                      autofillProfileName:(NSString*)fullName;
 
@@ -650,9 +618,7 @@ enum class TipsNotificationType;
 // SessionsHierarchy class for documentation regarding the verification.
 + (NSError*)verifySessionsOnSyncServerWithSpecs:(NSArray<NSString*>*)specs;
 
-// Verifies the URLs (in the HISTORY data type) on the Sync FakeServer.
-// `specs` is the collection of expected URLs. On failure, returns a NSError
-// describing the failure.
+// Verifies expected `URLs` on Sync FakeServer. Returns nil on success.
 + (NSError*)verifyHistoryOnSyncServerWithURLs:(NSArray<NSURL*>*)URLs;
 
 // Verifies that `count` entities of the given `type` and `name` exist on the
@@ -662,19 +628,16 @@ enum class TipsNotificationType;
                                           name:(NSString*)name
                                          count:(NSUInteger)count;
 
-// Prepares an in-app wait for `verifyNumberOfSyncEntitiesWithType:name:count:`
-// to succeed (return nil error). Returns YES if a wait was needed and prepared
-// for `startPendingWaitWithCompletion:`, or NO immediately if already
-// satisfied.
+// Prepares in-app wait for sync entities with `type`, `name`, and `count`.
+// Returns YES if a wait was needed, or NO immediately if already satisfied.
 + (BOOL)prepareConditionForSyncServerEntitiesWithType:(NSUInteger)type
                                                  name:(NSString*)name
                                                 count:(NSUInteger)count;
 
-// Adds a bookmark with a sync passphrase. The sync server will need the sync
-// passphrase to start.
+// Adds bookmark requiring `syncPassphrase` to sync.
 + (void)addBookmarkWithSyncPassphrase:(NSString*)syncPassphrase;
 
-// Add a sync passphrase requirement to start the sync server.
+// Adds `syncPassphrase` requirement to start sync server.
 + (void)addSyncPassphrase:(NSString*)syncPassphrase;
 
 // Returns whether UserSelectableType::kHistory is among the selected types.
@@ -682,10 +645,8 @@ enum class TipsNotificationType;
 
 #pragma mark - JavaScript Utilities (EG2)
 
-// Executes JavaScript through the WebState's WebFrame and waits for either the
-// completion or timeout. If execution does not complete within a timeout or
-// JavaScript exception is thrown, `success` is NO.
-// otherwise returns object representing execution result.
+// Executes `javaScript` through the WebState WebFrame and returns execution
+// result.
 + (JavaScriptExecutionResult*)executeJavaScript:(NSString*)javaScript;
 
 // Returns the user agent that should be used for the mobile version.
@@ -693,8 +654,8 @@ enum class TipsNotificationType;
 
 #pragma mark - Accessibility Utilities (EG2)
 
-// Verifies that all interactive elements on screen (or at least one of their
-// descendants) are accessible.
+// Verifies that interactive elements on screen are accessible. Returns nil
+// on success or an NSError describing accessibility issues.
 + (NSError*)verifyAccessibilityForCurrentScreen [[nodiscard]];
 
 #pragma mark - Check features (EG2)
@@ -706,7 +667,7 @@ enum class TipsNotificationType;
 // Returns YES if `variationID` is enabled.
 + (BOOL)isVariationEnabled:(int)variationID;
 
-// Returns YES if a variation triggering server-side behavior is enabled.
+// Returns YES if `variationID` triggering server-side behavior is enabled.
 + (BOOL)isTriggerVariationEnabled:(int)variationID;
 
 // Returns YES if UKM feature is enabled.
@@ -768,19 +729,18 @@ enum class TipsNotificationType;
 
 #pragma mark - ContentSettings
 
-// Gets the current value of the popup content setting preference for the
-// original profile.
+// Returns the current popup ContentSetting preference value for original
+// profile.
 + (ContentSetting)popupPrefValue;
 
-// Sets the popup content setting preference to the given value for the original
-// profile.
+// Sets popup ContentSetting preference `value` for original profile.
 + (void)setPopupPrefValue:(ContentSetting)value;
 
 // Resets the desktop content setting to its default value.
 + (void)resetDesktopContentSetting;
 
-// Sets the preference value of a content settings type for the original browser
-// state.
+// Sets ContentSetting `setting` for ContentSettingsType `type` in original
+// profile.
 + (void)setContentSetting:(ContentSetting)setting
     forContentSettingsType:(ContentSettingsType)type;
 
@@ -794,22 +754,19 @@ enum class TipsNotificationType;
 // synchronizes changes immediately.
 + (void)removeUserDefaultsObjectForKey:(NSString*)key;
 
-// Returns the value for provided key from NSUserDefaults.
+// Returns the value for `key` from NSUserDefaults.
 + (id)userDefaultsObjectForKey:(NSString*)key;
 
-// Creates a `AppGroupCommand` based on the provided text and writes it the
-// shared NSUserDefaults.
+// Creates AppGroupCommand based on `text` and writes to shared NSUserDefaults.
 + (void)setAppGroupCommandToSearchText:(NSString*)text;
 
-// Creates an incognito `AppGroupCommand` based on the provided text and writes
-// it the shared NSUserDefaults.
+// Creates incognito AppGroupCommand with `text` and writes to shared
+// NSUserDefaults.
 + (void)setAppGroupCommandToIncognitoSearchText:(NSString*)text;
 
 #pragma mark - Pref Utilities (EG2)
 
-// Gets the value of a local state pref. Returns a
-// base::Value encoded as a JSON string. If the pref was not registered,
-// returns a Value of type NONE.
+// Returns the value of local state pref `prefName` as a JSON string.
 + (NSString*)localStatePrefValue:(NSString*)prefName;
 
 // Sets the integer value for the local state pref with `prefName`. `value`
@@ -817,45 +774,38 @@ enum class TipsNotificationType;
 // contains the preferences that are shared between all profiles.
 + (void)setIntegerValue:(int)value forLocalStatePref:(NSString*)prefName;
 
-// Sets the time value for the local state pref with `prefName`. Local State
-// contains the preferences that are shared between all profiles.
+// Sets time `value` for local state pref `prefName`.
 + (void)setTimeValue:(base::Time)value forLocalStatePref:(NSString*)prefName;
 
-// Sets the time value for the user pref with `prefName` in the original
-// profile.
+// Sets time `value` for user pref `prefName` in original profile.
 + (void)setTimeValue:(base::Time)value forUserPref:(NSString*)prefName;
 
-// Sets the string value for the local state pref with `prefName`. Local State
+// Sets string `value` for the local state pref with `prefName`. Local State
 // contains the preferences that are shared between all profiles.
 + (void)setStringValue:(NSString*)value forLocalStatePref:(NSString*)prefName;
 
-// Sets the value of a string user pref in the original profile.
+// Sets string `value` for user pref `prefName` in original profile.
 + (void)setStringValue:(NSString*)value forUserPref:(NSString*)prefName;
 
-// Sets the bool value for the local state pref with `prefName`. Local State
-// contains the preferences that are shared between all profiles.
+// Sets bool `value` for local state pref `prefName`.
 + (void)setBoolValue:(BOOL)value forLocalStatePref:(NSString*)prefName;
 
-// Gets the value of a user pref in the original profile. Returns a
-// base::Value encoded as a JSON string. If the pref was not registered,
-// returns a Value of type NONE.
+// Returns value of user pref `prefName` in original profile as JSON string.
 + (NSString*)userPrefValue:(NSString*)prefName;
 
-// Sets the value of a boolean user pref in the original profile.
+// Sets boolean `value` for user pref `prefName` in original profile.
 + (void)setBoolValue:(BOOL)value forUserPref:(NSString*)prefName;
 
-// Sets the value of a integer user pref in the original profile.
+// Sets integer `value` for user pref `prefName` in original profile.
 + (void)setIntegerValue:(int)value forUserPref:(NSString*)prefName;
 
-// Sets the value of a double user pref in the original profile.
+// Sets double `value` for user pref `prefName` in original profile.
 + (void)setDoubleValue:(double)value forUserPref:(NSString*)prefName;
 
-// Returns true if the LocalState Preference is currently using its default
-// value, and has not been set by any higher-priority source (even with the same
-// value).
+// Returns true if local state pref `prefName` uses default value.
 + (BOOL)prefWithNameIsDefaultValue:(NSString*)prefName;
 
-// Clears the user pref of |prefName|.
+// Clears user pref `prefName` in original profile.
 + (void)clearUserPrefWithName:(NSString*)prefName;
 
 // Commit synchronously the pending user prefs write. Waits until the disk write
@@ -871,7 +821,7 @@ enum class TipsNotificationType;
 
 #pragma mark - Unified Consent utilities
 
-// Enables or disables URL-keyed anonymized data collection.
+// Sets whether URL-keyed anonymized data collection is `enabled`.
 + (void)setURLKeyedAnonymizedDataCollectionEnabled:(BOOL)enabled;
 
 #pragma mark - Keyboard Command utilities
@@ -882,8 +832,9 @@ enum class TipsNotificationType;
 // Simulates a physical keyboard event.
 // The input is similar to UIKeyCommand parameters, and is designed for testing
 // keyboard shortcuts.
-// Accepts any strings and also UIKeyInput{Up|Down|Left|Right}Arrow and
-// UIKeyInputEscape constants as `input`. `flags` must be set to
+// Accepts any strings and also `UIKeyInputUpArrow`, `UIKeyInputDownArrow`,
+// `UIKeyInputLeftArrow`, `UIKeyInputRightArrow`, and `UIKeyInputEscape`
+// constants as `input`. `flags` must be set to
 // UIKeyModifierShift for things like capital letters or characters like !@#$%
 // etc.
 + (void)simulatePhysicalKeyboardEvent:(NSString*)input
@@ -900,12 +851,10 @@ enum class TipsNotificationType;
 // Returns YES if general pasteboard images property contains a nonempty array.
 + (BOOL)pasteboardHasImages;
 
-// Retrieves the currently stored strings on the pasteboard from the tested
-// app's perspective.
+// Returns stored strings on the pasteboard from tested app perspective.
 + (NSArray<NSString*>*)pasteboardStrings;
 
-// Retrieves the currently stored URL on the pasteboard from the tested app's
-// perspective.
+// Returns stored URL string on the pasteboard from tested app perspective.
 + (NSString*)pasteboardURLSpec;
 
 // Copies `text` into the clipboard from the app's perspective.
@@ -914,7 +863,7 @@ enum class TipsNotificationType;
 // Copies `link` into pasteboard as a NSURL.
 + (void)copyLinkAsURLToPasteBoard:(NSString*)link;
 
-// Copies png `data` as image into pasteboard.
+// Copies image `imageData` into pasteboard.
 + (void)copyImageToPasteboard:(NSData*)imageData;
 
 #pragma mark - Watcher utilities
@@ -950,21 +899,20 @@ enum class TipsNotificationType;
 
 #pragma mark - Notification Utilities
 
+// Requests a tips notification of the specified `type`.
 + (void)requestTipsNotification:(TipsNotificationType)type;
 
 #pragma mark - Shared Tab Groups Utilities
 
-// Waits for the MessagingBackendService to be initialized.
+// Waits for MessagingBackendService to initialize. Returns nil on success.
 + (NSError*)waitForMessagingBackendServiceInitialized;
 
 // Returns YES if the view with `accessibilityID` or any of its ancestors is
 // animating.
 + (BOOL)isViewAnimatingWithAccessibilityID:(NSString*)accessibilityID;
 
-// Prepares an in-app wait for `isViewAnimatingWithAccessibilityID:` to become
-// NO. Returns YES if a wait was needed and prepared for
-// `startPendingWaitWithCompletion:`, or NO immediately if already not
-// animating.
+// Prepares an in-app wait for view with `accessibilityID` to stop animating.
+// Returns YES if a wait was needed, or NO immediately if already satisfied.
 + (BOOL)prepareConditionForViewToStopAnimatingWithAccessibilityID:
     (NSString*)accessibilityID;
 

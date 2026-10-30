@@ -60,10 +60,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // will properly synchronize the UI for Earl Grey tests.
 @interface ChromeEarlGreyImpl : BaseEGTestHelperImpl
 
-#pragma mark - Test Utilities
-
-// Wait until `matcher` is accessible (not nil) on the device.
-- (void)waitForMatcher:(id<GREYMatcher>)matcher;
+#pragma mark - Test Diagnostics, Tracing, and App Lifecycle
 
 // Stops startup tracing, flushes trace file to disk, and returns trace file
 // path.
@@ -91,10 +88,139 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Removes the trace file at `filePath`. Returns YES if successfully deleted.
 - (BOOL)removeTraceFileAtPath:(NSString*)filePath;
 
+// Stops primes performance metrics logging by calling into the
+// internal framework (should only be used by performance tests)
+- (void)primesStopLogging;
+
+// Takes a snapshot of memory usage for `eventName` by calling into the internal
+// framework (should only be used by performance tests)
+- (void)primesTakeMemorySnapshot:(NSString*)eventName;
+
+// Returns the name (as in `ProfileIOS::GetProfileName()`) of the current
+// profile, more precisely the profile associated with the foreground active
+// scene.
+- (NSString*)currentProfileName;
+
+// Returns the name (as in `ProfileIOS::GetProfileName()`) of the personal
+// profile (as opposed to managed profiles), as per
+// `ProfileAttributesStorageIOS::GetPersonalProfileName()`.
+- (NSString*)personalProfileName;
+
+// Waits for the current profile name to match `profileName`.
+- (void)waitForCurrentProfileName:(NSString*)profileName;
+
+// Simulates opening `url` from another application and waits until it is
+// opened.
+- (void)simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:(GURL)url;
+
+#pragma mark - UI Element Waiting and Interaction
+
+// Wait until `matcher` is accessible (not nil) on the device.
+- (void)waitForMatcher:(id<GREYMatcher>)matcher;
+
 // Returns YES if `matcher` is sufficiently_visible;
 - (BOOL)isMatcherSufficientlyVisible:(id<GREYMatcher>)matcher;
 
-#pragma mark - Device Utilities
+// Waits for `matcher` to return an element that is sufficiently visible.
+- (void)waitForSufficientlyVisibleElementWithMatcher:(id<GREYMatcher>)matcher;
+
+// Waits for `matcher` to return an element that is not sufficiently visible
+// (or nil).
+- (void)waitForNotSufficientlyVisibleElementWithMatcher:
+    (id<GREYMatcher>)matcher;
+
+// Waits for `matcher` to return an element.
+- (void)waitForUIElementToAppearWithMatcher:(id<GREYMatcher>)matcher;
+
+// Waits for `matcher` to return an element. Returns whether the element did
+// appear in the delay.
+- (BOOL)testUIElementAppearanceWithMatcher:(id<GREYMatcher>)matcher;
+
+// Waits for `matcher` to not return any elements.
+- (void)waitForUIElementToDisappearWithMatcher:(id<GREYMatcher>)matcher;
+
+// Performs a tap on `button` with a timeout, or a GREYAssert is induced.
+// Occasionally EG doesn't sync up properly to the animations of tab switcher,
+// so it is necessary to poll.
+- (void)waitForAndTapButton:(id<GREYMatcher>)button;
+
+// Taps on the Copy Link context menu action and verifies that the `text` has
+// been copied to the pasteboard.
+- (void)verifyCopyLinkActionWithText:(NSString*)text;
+
+// Taps on the Open in New Tab context menu action and waits for the `URL` to be
+// present the URL of the current tab.
+- (void)verifyOpenInNewTabActionWithURL:(const GURL&)URL;
+
+// Taps on the Open in New Window context menu action and waits for the
+// `content` to be present in webview.
+- (void)verifyOpenInNewWindowActionWithContent:(const std::string&)content;
+
+// Taps on the Open in Incognito context menu action and waits for the `URL` to
+// be present the URL of the current tab.
+- (void)verifyOpenInIncognitoActionWithURL:(const GURL&)URL;
+
+// Taps on the Share context menu action and validates that the ActivityView
+// was brought up with the correct title in its header. The title starts as the
+// host of the loaded `URL` and is then updated to the page title `pageTitle`.
+- (void)verifyShareActionWithURL:(const GURL&)URL
+                       pageTitle:(NSString*)pageTitle;
+
+// Induces a GREYAssert if the activity sheet is not visible.
+- (void)verifyActivitySheetVisible;
+
+// Induces a GREYAssert if the activity sheet is visible.
+- (void)verifyActivitySheetNotVisible;
+
+// Induces a GREYAssert if `text` is visible the activity sheet.
+- (void)verifyTextNotVisibleInActivitySheetWithID:(NSString*)text;
+
+// Induces a GREYAssert if `text` is not visible the activity sheet.
+- (void)verifyTextVisibleInActivitySheetWithID:(NSString*)text;
+
+// Closes the activity sheet. Induces a GREYAssert if the activity sheet cannot
+// be closed, either if the 'Close' button is not visible on a phone, or if the
+// share button cannot be tapped on a tablet.
+- (void)closeActivitySheet;
+
+// Taps the element with `buttonText` within the activity sheet. A GREYAssert
+// is induced on failure.
+- (void)tapButtonInActivitySheetWithID:(NSString*)buttonText;
+
+// Taps the `more` or `view more` button in the activity sheet that allows users
+// to expand the sheet to see all available actions on iOS 26+. Example:
+// https://screenshot.googleplex.com/8QGvXx4q2LNYoVJ
+- (void)tapMoreOptionButtonInActivitySheet;
+
+#pragma mark - Keyboard, VoiceOver, and Accessibility Watchers
+
+// Verifies that all interactive elements on screen (or at least one of their
+// descendants) are accessible.
+// A GREYAssert is induced if not all elements are accessible.
+- (void)verifyAccessibilityForCurrentScreen;
+
+// The count of key commands registered with the currently active BVC.
+- (NSInteger)registeredKeyCommandCount;
+
+// Simulates a physical keyboard event with modifier `flags`.
+// The input is similar to UIKeyCommand parameters, and is designed for testing
+// keyboard shortcuts.
+// Accepts any strings and also `UIKeyInputUpArrow`, `UIKeyInputDownArrow`,
+// `UIKeyInputLeftArrow`, `UIKeyInputRightArrow`, and `UIKeyInputEscape`
+// constants as `input`.
+- (void)simulatePhysicalKeyboardEvent:(NSString*)input
+                                flags:(UIKeyModifierFlags)flags;
+
+// Waits for the keyboard to appear;
+- (void)waitForKeyboardToAppear;
+
+// Waits for the keyboard to disappear;
+- (void)waitForKeyboardToDisappear;
+
+// Clear the watcher list, stopping monitoring.
+- (void)stopWatcher;
+
+#pragma mark - Device, Hardware, and Pasteboard
 
 // Returns YES if running on an iPad.
 - (BOOL)isIPadIdiom;
@@ -124,14 +250,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns YES if the application window is in windowed mode (multitasking).
 - (BOOL)isWindowedMode;
 
-// Stops primes performance metrics logging by calling into the
-// internal framework (should only be used by performance tests)
-- (void)primesStopLogging;
-
-// Takes a snapshot of memory usage by calling into the internal
-// framework (should only be used by performance tests)
-- (void)primesTakeMemorySnapshot:(NSString*)eventName;
-
 // Returns whether the bottom omnibox steady state feature is enabled.
 - (BOOL)isBottomOmniboxAvailable;
 
@@ -150,62 +268,40 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns YES if running on an iPhone Duo simulator.
 - (BOOL)isDuoSimulator;
 
-// Sets the simulated hinge posture on an iPhone Duo simulator.
+// Sets the simulated `hingeStatus` posture on an iPhone Duo simulator.
 - (void)setSimulatedDuoHingeStatus:(UIHingeStatus)hingeStatus
     API_AVAILABLE(ios(27.1));
 
-// Sets the simulated device orientation on an iPhone Duo simulator.
+// Sets the simulated device `orientation` on an iPhone Duo simulator.
 - (void)setSimulatedDuoOrientation:(UIDeviceOrientation)orientation;
 
-#pragma mark - Profile Utilities (EG2)
+// Verifies that `text` was copied to the pasteboard.
+- (void)verifyStringCopied:(NSString*)text;
 
-// Returns the name (as in `ProfileIOS::GetProfileName()`) of the current
-// profile, more precisely the profile associated with the foreground active
-// scene.
-- (NSString*)currentProfileName;
+// Returns YES if general pasteboard images property contains a nonempty array.
+- (BOOL)pasteboardHasImages;
 
-// Returns the name (as in `ProfileIOS::GetProfileName()`) of the personal
-// profile (as opposed to managed profiles), as per
-// `ProfileAttributesStorageIOS::GetPersonalProfileName()`.
-- (NSString*)personalProfileName;
+// Retrieves the GURL stored in the Pasteboard. Returns an empty GURL if no
+// URL is currently in the pasteboard.
+- (GURL)pasteboardURL;
 
-// Waits for the current profile name to match `profileName`.
-- (void)waitForCurrentProfileName:(NSString*)profileName;
+// Clears the pasteboard.
+- (void)clearPasteboard;
 
-#pragma mark - History Utilities (EG2)
+// Copies `text` into the clipboard from the app's perspective.
+- (void)copyTextToPasteboard:(NSString*)text;
 
-// Clears browsing history. Raises an EarlGrey exception if history is not
-// cleared within a timeout.
-- (void)clearBrowsingHistory;
+// Copies `link` as NSURL into the clipboard from the app's perspective.
+- (void)copyLinkAsURLToPasteBoard:(NSString*)link;
 
-// Shuts down the network process. Uses a
-// private WebKit API and should be refactored or removed in the event that
-// there's a different way to address hanging.
-- (void)killWebKitNetworkProcess;
+// Copies `image` as NSData with PNG representation into the clipboard from the
+// app's perspective.
+- (void)copyImageToPasteboard:(UIImage*)image;
 
-// Gets the number of entries in the browsing history database. GREYAssert is
-// induced on error.
-- (NSInteger)browsingHistoryEntryCount;
+// Requests a Tips notification of the given `type`.
+- (void)requestTipsNotification:(TipsNotificationType)type;
 
-// Gets the number of items in the back list.
-- (NSInteger)navigationBackListItemsCount;
-
-// Clears browsing cache. Raises an EarlGrey exception if history is not
-// cleared within a timeout.
-- (void)removeBrowsingCache;
-
-// Persists the current list of tabs to disk immediately.
-- (void)saveSessionImmediately;
-
-#pragma mark - Navigation Utilities (EG2)
-
-// Instructs some connected scene to open `URL` with default opening
-// options.
-- (void)sceneOpenURL:(const GURL&)URL;
-
-// Continues `userActivity` using some connected scene with a specific URL.
-- (void)sceneContinueUserActivityWithType:(NSString*)activityType
-                                      url:(NSString*)urlString;
+#pragma mark - Navigation and Loading
 
 // Loads `URL` in the current WebState with transition type
 // ui::PAGE_TRANSITION_TYPED, and waits for the loading to complete within a
@@ -224,7 +320,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
     timeoutWithError:(base::TimeDelta)timeout [[nodiscard]];
 
 // Loads `URL` in the current WebState with transition type
-// ui::PAGE_TRANSITION_TYPED, and if waitForCompletion is YES
+// ui::PAGE_TRANSITION_TYPED, and if `wait` is YES
 // waits for the loading to complete within a timeout.
 - (void)loadURL:(const GURL&)URL waitForCompletion:(BOOL)wait;
 
@@ -268,38 +364,22 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // on success, or else an NSError indicating why the operation failed.
 - (NSError*)waitForPageToFinishLoadingWithTimeout:(base::TimeDelta)timeout;
 
-// Waits for the matcher to return an element that is sufficiently visible.
-- (void)waitForSufficientlyVisibleElementWithMatcher:(id<GREYMatcher>)matcher;
-
-// Waits for the matcher to return an element that is not sufficiently visible
-// (or nil).
-- (void)waitForNotSufficientlyVisibleElementWithMatcher:
-    (id<GREYMatcher>)matcher;
-
-// Waits for the matcher to return an element.
-- (void)waitForUIElementToAppearWithMatcher:(id<GREYMatcher>)matcher;
-
-// Waits for the matcher to return an element. Returns whether the element did
-// appear in the delay.
-- (BOOL)testUIElementAppearanceWithMatcher:(id<GREYMatcher>)matcher;
-
-// Waits for the matcher to return an element. If the condition is not met
+// Waits for `matcher` to return an element. If the condition is not met
 // within the given `timeout` a GREYAssert is induced.
 - (void)waitForUIElementToAppearWithMatcher:(id<GREYMatcher>)matcher
                                     timeout:(base::TimeDelta)timeout;
 
-// Waits for the matcher to return an element. Returns wheher the condition is
+// Waits for `matcher` to return an element. Returns whether the condition is
 // met within the given `timeout`.
 - (BOOL)testUIElementAppearanceWithMatcher:(id<GREYMatcher>)matcher
                                    timeout:(base::TimeDelta)timeout;
 
-// Waits for the matcher to not return any elements.
-- (void)waitForUIElementToDisappearWithMatcher:(id<GREYMatcher>)matcher;
-
-// Waits for the matcher to not return any elements. If the condition is not met
+// Waits for `matcher` to not return any elements. If the condition is not met
 // within the given `timeout` a GREYAssert is induced.
 - (void)waitForUIElementToDisappearWithMatcher:(id<GREYMatcher>)matcher
                                        timeout:(base::TimeDelta)timeout;
+
+#pragma mark - Tab Management
 
 // Waits for there to be `count` number of non-incognito, active, tabs within a
 // timeout, or a GREYAssert is induced.
@@ -313,181 +393,12 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // GREYAssert is induced.
 - (void)waitForIncognitoTabCount:(NSUInteger)count;
 
-// Programmatically dismisses settings screen.
-- (void)dismissSettings;
-
-#pragma mark - Sync Utilities (EG2)
-
-- (BOOL)isFakeSyncServerSetUp;
-
-// Undoes the effects of disconnectFakeSyncServerNetwork.
-- (void)connectFakeSyncServerNetwork;
-
-// Forces every request to fail in a way that simulates a network failure.
-- (void)disconnectFakeSyncServerNetwork;
-
-// Injects user demographics into the fake sync server. `rawBirthYear` is the
-// true birth year, pre-noise, and the gender corresponds to the proto enum
-// UserDemographicsProto::Gender.
-- (void)
-    addUserDemographicsToSyncServerWithBirthYear:(int)rawBirthYear
-                                          gender:
-                                              (metrics::UserDemographicsProto::
-                                                   Gender)gender;
-
-// Clears the autofill profile for the given `GUID`.
-- (void)clearAutofillProfileWithGUID:(const std::string&)GUID;
-
-// Injects an autofill profile into the fake sync server with `GUID` and
-// `full_name`.
-- (void)addAutofillProfileToFakeSyncServerWithGUID:(const std::string&)GUID
-                               autofillProfileName:(const std::string&)fullName;
-
-// Returns YES if there is an autofilll profile with the corresponding `GUID`
-// and `full_name`.
-- (BOOL)isAutofillProfilePresentWithGUID:(const std::string&)GUID
-                     autofillProfileName:(const std::string&)fullName
-    [[nodiscard]];
-
-// Sets up a fake sync server to be used by the SyncServiceImpl.
-- (void)setUpFakeSyncServer;
-
-// Tears down the fake sync server used by the SyncServiceImpl and restores the
-// real one.
-- (void)tearDownFakeSyncServer;
-
-// Clears fake sync server data if the server is running.
-- (void)clearFakeSyncServerData;
-
-// Ensures that all of the FakeServer's data is persisted to disk. This is
-// useful before app restarts, where otherwise the FakeServer may not get to do
-// its usual on-destruction flush.
-- (void)flushFakeSyncServerToDisk;
-
-// Gets the number of entities of the given `type`.
-- (int)numberOfSyncEntitiesWithType:(syncer::DataType)type [[nodiscard]];
-
-// Adds typed URL into HistoryService.
-- (void)addHistoryServiceTypedURL:(const GURL&)URL;
-
-// Adds typed URL into HistoryService at timestamp `visitTimestamp`.
-- (void)addHistoryServiceTypedURL:(const GURL&)URL
-                   visitTimestamp:(base::Time)visitTimestamp;
-
-// Sets the page `title` for `URL` in the History Service.
-- (void)setHistoryServiceTitle:(const std::string_view&)title
-                       forPage:(const GURL&)URL;
-
-// Deletes typed URL from HistoryService.
-- (void)deleteHistoryServiceTypedURL:(const GURL&)URL;
-
-// Injects a bookmark with `URL` and `title` into the fake sync server.
-- (void)addFakeSyncServerBookmarkWithURL:(const GURL&)URL
-                                   title:(const std::string&)title;
-
-// Injects a legacy bookmark into the fake sync server. The legacy bookmark
-// means 2015 and earlier, prior to the adoption of GUIDs for originator client
-// item ID.
-- (void)addFakeSyncServerLegacyBookmarkWithURL:(const GURL&)URL
-                                         title:(const std::string&)title
-                     originator_client_item_id:
-                         (const std::string&)originator_client_item_id;
-
-// Injects a HISTORY visit to the sync FakeServer.
-- (void)addFakeSyncServerHistoryVisit:(const GURL&)URL;
-
-// Injects device info to sync FakeServer.
-- (void)addFakeSyncServerDeviceInfo:(NSString*)deviceName
-               lastUpdatedTimestamp:(base::Time)lastUpdatedTimestamp;
-
-// Injects a send tab to self entry to sync FakeServer.
-- (void)addFakeSyncServerSendTabToSelfEntryWithURL:(NSString*)URL
-                                             title:(NSString*)title
-                                        deviceName:(NSString*)deviceName
-                                  targetDeviceGUID:(NSString*)targetDeviceGUID;
-
-// Adds a fake Send Tab To Self entry to the local model and returns its GUID.
-// `formFieldData` is a dictionary where keys are form control names and
-// values are the values to fill.
-- (NSString*)addFakeSendTabToSelfEntryWithURL:(NSString*)url
-                                        title:(NSString*)title
-                                formFieldData:
-                                    (NSDictionary<NSString*, NSString*>*)
-                                        formFieldData;
-
-// Adds a fake Send Tab To Self entry with the given text fragment to the local
-// model and returns its GUID.
-- (NSString*)addFakeSendTabToSelfEntryWithURL:(NSString*)url
-                                        title:(NSString*)title
-                                 textFragment:(NSString*)textFragment;
-
-// Waits for the local Send Tab To Self model to contain an entry with the
-// given GUID.
-- (void)waitForSendTabToSelfEntryWithGUID:(NSString*)guid;
-
-// Waits for the local Send Tab To Self model to contain a target device with
-// the given `deviceName`.
-- (void)waitForSendTabToSelfTargetDevice:(NSString*)deviceName;
-
-// Returns the generated text fragment for the given URL, or nil if no entry
-// exists or no fragment is set.
-- (NSString*)textFragmentForSendTabToSelfEntryWithURL:(NSString*)URL;
-
-// Opens a new tab with the given URL and attaches the text fragment to its
-// internal NavigationItem to trigger scroll restoration upon page load.
-- (void)openNewTabWithURL:(NSString*)url textFragment:(NSString*)textFragment;
-
-// Opens a new tab with the given URL, text fragment, and marks it as
-// originating from Send Tab To Self with the given entry GUID.
-- (void)openSendTabToSelfNewTabWithURL:(NSString*)url
-                          textFragment:(NSString*)textFragment
-                             entryGUID:(NSString*)guid;
-
-// Opens a new background tab with the given URL, text fragment, and marks it
-// as originating from Send Tab To Self with the given entry GUID.
-- (void)openSendTabToSelfNewBackgroundTabWithURL:(NSString*)url
-                                    textFragment:(NSString*)textFragment
-                                       entryGUID:(NSString*)guid;
-
-// Verifies the sessions hierarchy on the Sync FakeServer. `URLs` is
-// the collection of URLs that are to be expected for a single window. A
-// GREYAssert is induced on failure. See the SessionsHierarchy class for
-// documentation regarding the verification.
-- (void)verifySyncServerSessionURLs:(NSArray<NSString*>*)URLs;
-
-// Waits until sync server contains `count` entities of the given `type` and
-// `name`. Folders are not included in this count.
-// If the condition is not met within a timeout a GREYAssert is induced.
-- (void)waitForSyncServerEntitiesWithType:(syncer::DataType)type
-                                     name:(const std::string&)UTF8Name
-                                    count:(size_t)count
-                                  timeout:(base::TimeDelta)timeout;
-
-- (void)waitForSyncServerHistoryURLs:(NSArray<NSURL*>*)URLs
-                             timeout:(base::TimeDelta)timeout;
-
-// Induces a GREYAssert if `expectPresent` is YES and the provided `URL` is
-// not present in the history DB, or vice versa.
-- (void)waitForHistoryURL:(const GURL&)URL
-            expectPresent:(BOOL)expectPresent
-                  timeout:(base::TimeDelta)timeout;
-
-// Waits for sync invalidation field presence in the DeviceInfo data type on the
-// server.
-- (void)waitForSyncInvalidationFields;
-
-// Returns whether UserSelectableType::kHistory is among the selected types.
-- (BOOL)isSyncHistoryDataTypeSelected;
-
-#pragma mark - Tab Utilities (EG2)
-
 // Opens a new tab and waits for the new tab animation to complete within a
 // timeout, or a GREYAssert is induced.
 - (void)openNewTab;
 
 // Simulates opening `url` from another application.
 - (void)simulateExternalAppURLOpeningWithURL:(NSURL*)url;
-- (void)simulateExternalAppURLOpeningAndWaitUntilOpenedWithGURL:(GURL)url;
 
 // Closes the current tab and waits for the UI to complete.
 - (void)closeCurrentTab;
@@ -516,11 +427,11 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // be switched to main (non-incognito) after closing the incognito tabs.
 - (void)closeAllTabs;
 
-// Selects tab with given index in current mode (incognito or main
+// Selects tab with given `index` in current mode (incognito or main
 // (non-incognito)).
 - (void)selectTabAtIndex:(NSUInteger)index;
 
-// Closes tab with the given index in current mode (incognito or main
+// Closes tab with the given `index` in current mode (incognito or main
 // (non-incognito)).
 - (void)closeTabAtIndex:(NSUInteger)index;
 
@@ -578,11 +489,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns a unique identifier for the next Tab.
 - (NSString*)nextTabID;
 
-// Perform a tap with a timeout, or a GREYAssert is induced. Occasionally EG
-// doesn't sync up properly to the animations of tab switcher, so it is
-// necessary to poll.
-- (void)waitForAndTapButton:(id<GREYMatcher>)button;
-
 // Shows the tab switcher by tapping the switcher button.  Works on both phone
 // and tablet.
 - (void)showTabSwitcher;
@@ -590,7 +496,16 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Hides the tab switcher.
 - (void)hideTabSwitcher;
 
-#pragma mark - Window utilities (EG2)
+#pragma mark - Multiwindow and Scene
+
+// Instructs some connected scene to open `URL` with default opening
+// options.
+- (void)sceneOpenURL:(const GURL&)URL;
+
+// Continues user activity with `activityType` using some connected scene with
+// a specific `urlString`.
+- (void)sceneContinueUserActivityWithType:(NSString*)activityType
+                                      url:(NSString*)urlString;
 
 // Returns screen position of the given `windowNumber`
 - (CGRect)screenPositionOfScreenWithNumber:(int)windowNumber;
@@ -611,27 +526,28 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)openNewWindow;
 
 // After opening a new window (through openNewWindow or otherwise) a call
-// to this should be made to make sure the new window is ready to interact
-// or to be closed. Closing while setting up leads to crashes.
+// to this should be made to make sure the new window with `windowNumber` is
+// ready to interact or to be closed. Closing while setting up leads to crashes.
 - (void)waitUntilReadyWindowWithNumber:(int)windowNumber;
 
-// Opens a new tab in window with given number and waits for the new tab
+// Opens a new tab in window with given `windowNumber` and waits for the new tab
 // animation to complete within a timeout, or a GREYAssert is induced.
 - (void)openNewTabInWindowWithNumber:(int)windowNumber;
 
-// Closes the window with given number. Note that numbering doesn't change and
-// if a new window is to be added in a test, a renumbering might be needed.
+// Closes the window with given `windowNumber`. Note that numbering doesn't
+// change and if a new window is to be added in a test, a renumbering might be
+// needed.
 - (void)closeWindowWithNumber:(int)windowNumber;
 
-// Renumbers given window with current number to new number. For example, if
-// you have windows 0 and 1, close window 0, the add new window, then both
-// windows would be 1. Therefore you should renumber the remaining ones
-// before adding new ones.
+// Renumbers given window with current `windowNumber` to `newWindowNumber`. For
+// example, if you have windows 0 and 1, close window 0, then add new window,
+// then both windows would be 1. Therefore you should renumber the remaining
+// ones before adding new ones.
 - (void)changeWindowWithNumber:(int)windowNumber
                    toNewNumber:(int)newWindowNumber;
 
-// Loads `URL` in the current WebState for window with given number, with
-// transition type ui::PAGE_TRANSITION_TYPED, and if waitForCompletion is YES
+// Loads `URL` in the current WebState for window with given `windowNumber`,
+// with transition type ui::PAGE_TRANSITION_TYPED, and if `wait` is YES
 // waits for the loading to complete within a timeout.
 // Returns nil on success, or else an NSError indicating why the operation
 // failed.
@@ -639,82 +555,61 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
     inWindowWithNumber:(int)windowNumber
      waitForCompletion:(BOOL)wait;
 
-// Loads `URL` in the current WebState for window with given number, with
-// transition type ui::PAGE_TRANSITION_TYPED, and waits for the loading to
+// Loads `URL` in the current WebState for window with given `windowNumber`,
+// with transition type ui::PAGE_TRANSITION_TYPED, and waits for the loading to
 // complete within a timeout. If the condition is not met within a timeout
 // returns an NSError indicating why the operation failed, otherwise nil.
 - (void)loadURL:(const GURL&)URL inWindowWithNumber:(int)windowNumber;
 
-// Waits for the page to finish loading for window with given number, within a
-// timeout, or a GREYAssert is induced.
+// Waits for the page to finish loading for window with given `windowNumber`,
+// within a timeout, or a GREYAssert is induced.
 - (void)waitForPageToFinishLoadingInWindowWithNumber:(int)windowNumber;
 
-// Returns YES if the window with given number's current WebState is loading.
+// Returns YES if the window with given `windowNumber`'s current WebState is
+// loading.
 - (BOOL)isLoadingInWindowWithNumber:(int)windowNumber [[nodiscard]];
 
 // Waits for the current web state for window to be visible.
 - (void)waitForWebStateVisible;
 
-// Waits for the current web state for window with given number, to contain
-// `UTF8Text`. If the condition is not met within a timeout a GREYAssert is
-// induced.
+// Waits for the current web state for window with given `windowNumber` to
+// contain `UTF8Text`. If the condition is not met within a timeout a
+// GREYAssert is induced.
 - (void)waitForWebStateContainingText:(const std::string&)UTF8Text
                    inWindowWithNumber:(int)windowNumber;
 
-// Waits for the current web state for window with given number, to contain
-// `UTF8Text`. If the condition is not met within the given `timeout` a
+// Waits for the current web state for window with given `windowNumber` to
+// contain `UTF8Text`. If the condition is not met within the given `timeout` a
 // GREYAssert is induced.
 - (void)waitForWebStateContainingText:(const std::string&)UTF8Text
                               timeout:(base::TimeDelta)timeout
                    inWindowWithNumber:(int)windowNumber;
 
-// Waits for there to be `count` number of non-incognito tabs within a timeout,
-// or a GREYAssert is induced.
+// Waits for there to be `count` number of non-incognito tabs in window with
+// `windowNumber` within a timeout, or a GREYAssert is induced.
 - (void)waitForMainTabCount:(NSUInteger)count
          inWindowWithNumber:(int)windowNumber;
 
-// Waits for there to be `count` number of incognito tabs within a timeout, or a
-// GREYAssert is induced.
+// Waits for there to be `count` number of incognito tabs in window with
+// `windowNumber` within a timeout, or a GREYAssert is induced.
 - (void)waitForIncognitoTabCount:(NSUInteger)count
               inWindowWithNumber:(int)windowNumber;
 
 // Opens the settings menu directly (not via the UI) in the window with the
-// given number. EarlGrey + Multiwindow + SwiftUI (the tools menu) do not
-// play well together, so EG often fails to interact with the tools menu in
+// given `windowNumber`. EarlGrey + Multiwindow + SwiftUI (the tools menu) do
+// not play well together, so EG often fails to interact with the tools menu in
 // secondary windows.
 - (void)openSettingsInWindowWithNumber:(int)windowNumber;
 
 // Shows the tab switcher directly (not via the UI) in the window with the
-// given number.
+// given `windowNumber`.
 - (void)showTabSwitcherInWindowWithNumber:(int)windowNumber;
 
-#pragma mark - SignIn Utilities (EG2)
+// Returns whether the app is configured to, and running in an environment which
+// can, open multiple windows.
+- (BOOL)areMultipleWindowsSupported;
 
-// Signs the user out, clears the known accounts & browsing data, and wait for
-// the completion of those steps. Induces a GREYAssert if the operation fails or
-// timeouts.
-- (void)signOutAndClearIdentities;
-
-#pragma mark - Sync Utilities (EG2)
-
-// Waits for sync to become fully active; see
-// SyncService::TransportState::ACTIVE for details. If not succeeded a
-// GREYAssert is induced.
-- (void)waitForSyncTransportStateActiveWithTimeout:(base::TimeDelta)timeout;
-
-// Returns the current sync cache GUID. The sync server must be running when
-// calling this.
-- (std::string)syncCacheGUID;
-
-// Adds a bookmark with a sync passphrase. The sync server will need the sync
-// passphrase to start. In order to work, this need to be called before the
-// primary user is signed-in.
-- (void)addBookmarkWithSyncPassphrase:(NSString*)syncPassphrase;
-
-// Add a sync passphrase requirement to start the sync server.
-- (void)addSyncPassphrase:(NSString*)syncPassphrase;
-
-#pragma mark - WebState Utilities (EG2)
+#pragma mark - WebState Content and JavaScript
 
 // Scrolls the HTML element with `elementID` into view in the current WebState.
 // A GREYAssert is induced on failure.
@@ -724,7 +619,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // A GREYAssert is induced on failure.
 - (void)tapWebStateElementWithID:(NSString*)elementID;
 
-// Attempts to tap the element with `element_id` within window.frames[0] of the
+// Attempts to tap the element with `elementID` within window.frames[0] of the
 // current WebState using a JavaScript click() event. This only works on
 // same-origin iframes.
 // A GREYAssert is induced on failure.
@@ -768,20 +663,20 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // If the condition is not met within a timeout a GREYAssert is induced.
 - (void)waitForWebStateNotContainingText:(const std::string&)UTF8Text;
 
-// Waits for there to be a web state containing a blocked `imageID`.  When
+// Waits for there to be a web state containing a blocked `UTF8ImageID`. When
 // blocked, the image element will be smaller than the actual image size.
 // If the condition is not met within a timeout a GREYAssert is induced.
 - (void)waitForWebStateContainingBlockedImageElementWithID:
     (const std::string&)UTF8ImageID;
 
-// Waits for there to be a web state containing loaded image with `imageID`.
+// Waits for there to be a web state containing loaded image with `UTF8ImageID`.
 // When loaded, the image element will have the same size as actual image.
 // If the condition is not met within a timeout a GREYAssert is induced.
 - (void)waitForWebStateContainingLoadedImageElementWithID:
     (const std::string&)UTF8ImageID;
 
 // Waits for the web state's scroll view zoom scale to be suitably close (within
-// 0.05) of the expected scale. Returns nil if the condition is met within a
+// 0.05) of the expected `scale`. Returns nil if the condition is met within a
 // timeout, or else an NSError indicating why the operation failed.
 - (void)waitForWebStateZoomScale:(CGFloat)scale;
 
@@ -809,13 +704,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // `ForceRelaunchByKilling.
 - (void)clearAllWebStateBrowsingData:(AppLaunchConfiguration)config;
 
-#pragma mark - URL Utilities (EG2)
-
 // Returns the title string to be used for a page with `URL` if that page
 // doesn't specify a title.
 - (NSString*)displayTitleForURL:(const GURL&)URL;
-
-#pragma mark - JavaScript Utilities (EG2)
 
 // Waits for the JavaScript query `javaScriptCondition` to return `boolValue`
 // YES. If the condition is not met within kWaitForActionTimeout a GREYAssert is
@@ -823,19 +714,19 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Fails if the execution causes an error.
 - (void)waitForJavaScriptCondition:(NSString*)javaScriptCondition;
 
-// Executes JavaScript on current WebState, and waits for either the completion
-// or timeout. If execution does not complete within a timeout a GREYAssert is
-// induced.
-// Fails if the execution causes an error.
+// Executes `javaScript` on current WebState, and waits for either the
+// completion or timeout. Returns the evaluation result as a `base::Value`. If
+// execution does not complete within a timeout or causes an error, a
+// GREYAssert is induced.
 - (base::Value)evaluateJavaScript:(NSString*)javaScript [[nodiscard]];
 
-// Executes JavaScript on current WebState, and waits for either the completion
-// or timeout. If execution does not complete within a timeout a GREYAssert is
-// induced.
+// Executes `javaScript` on current WebState, and waits for either the
+// completion or timeout. Returns the `JavaScriptExecutionResult*`. If
+// execution does not complete within a timeout a GREYAssert is induced.
 - (JavaScriptExecutionResult*)evaluateJavaScriptWithPotentialError:
     (NSString*)javaScript;
 
-// Executes JavaScript on current WebState. This function should be used in
+// Executes `javaScript` on current WebState. This function should be used in
 // place -evaluateJavaScript when the executed JavaScript's return value will
 // not be used.
 // Fails if the execution causes an error.
@@ -844,26 +735,292 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns the user agent that should be used for the mobile version.
 - (NSString*)mobileUserAgentString;
 
-#pragma mark - Cookie Utilities (EG2)
+#pragma mark - History, Bookmarks, Reading List, and Cookies
+
+// Clears browsing history. Raises an EarlGrey exception if history is not
+// cleared within a timeout.
+- (void)clearBrowsingHistory;
+
+// Shuts down the network process. Uses a
+// private WebKit API and should be refactored or removed in the event that
+// there's a different way to address hanging.
+- (void)killWebKitNetworkProcess;
+
+// Gets the number of entries in the browsing history database. GREYAssert is
+// induced on error.
+- (NSInteger)browsingHistoryEntryCount;
+
+// Gets the number of items in the back list.
+- (NSInteger)navigationBackListItemsCount;
+
+// Clears browsing cache. Raises an EarlGrey exception if history is not
+// cleared within a timeout.
+- (void)removeBrowsingCache;
+
+// Persists the current list of tabs to disk immediately.
+- (void)saveSessionImmediately;
+
+// Adds typed `URL` into HistoryService.
+- (void)addHistoryServiceTypedURL:(const GURL&)URL;
+
+// Deletes typed `URL` from HistoryService.
+- (void)deleteHistoryServiceTypedURL:(const GURL&)URL;
 
 // Returns cookies as key value pairs, where key is a cookie name and value is a
 // cookie value.
 // If cookies can not be returned, returns nil and induces a GREYAssert.
 - (NSDictionary*)cookies;
 
-#pragma mark - Accessibility Utilities (EG2)
+#pragma mark - Authentication, Sign-In, and Sync
 
-// Verifies that all interactive elements on screen (or at least one of their
-// descendants) are accessible.
-// A GREYAssert is induced if not all elements are accessible.
-- (void)verifyAccessibilityForCurrentScreen;
+// Returns YES if the fake sync server is set up.
+- (BOOL)isFakeSyncServerSetUp;
 
-#pragma mark - Feature enables checkers (EG2)
+// Undoes the effects of disconnectFakeSyncServerNetwork.
+- (void)connectFakeSyncServerNetwork;
+
+// Forces every request to fail in a way that simulates a network failure.
+- (void)disconnectFakeSyncServerNetwork;
+
+// Injects user demographics into the fake sync server. `rawBirthYear` is the
+// true birth year, pre-noise, and `gender` corresponds to the proto enum
+// UserDemographicsProto::Gender.
+- (void)
+    addUserDemographicsToSyncServerWithBirthYear:(int)rawBirthYear
+                                          gender:
+                                              (metrics::UserDemographicsProto::
+                                                   Gender)gender;
+
+// Sets up a fake sync server to be used by the SyncServiceImpl.
+- (void)setUpFakeSyncServer;
+
+// Tears down the fake sync server used by the SyncServiceImpl and restores the
+// real one.
+- (void)tearDownFakeSyncServer;
+
+// Clears fake sync server data if the server is running.
+- (void)clearFakeSyncServerData;
+
+// Ensures that all of the FakeServer's data is persisted to disk. This is
+// useful before app restarts, where otherwise the FakeServer may not get to do
+// its usual on-destruction flush.
+- (void)flushFakeSyncServerToDisk;
+
+// Gets the number of entities of the given `type`.
+- (int)numberOfSyncEntitiesWithType:(syncer::DataType)type [[nodiscard]];
+
+// Adds typed `URL` into HistoryService at timestamp `visitTimestamp`.
+- (void)addHistoryServiceTypedURL:(const GURL&)URL
+                   visitTimestamp:(base::Time)visitTimestamp;
+
+// Sets the page `title` for `URL` in the History Service.
+- (void)setHistoryServiceTitle:(const std::string_view&)title
+                       forPage:(const GURL&)URL;
+
+// Injects a bookmark with `URL` and `title` into the fake sync server.
+- (void)addFakeSyncServerBookmarkWithURL:(const GURL&)URL
+                                   title:(const std::string&)title;
+
+// Injects a legacy bookmark with `URL`, `title`, and
+// `originator_client_item_id` into the fake sync server. The legacy bookmark
+// means 2015 and earlier, prior to the adoption of GUIDs for originator client
+// item ID.
+- (void)addFakeSyncServerLegacyBookmarkWithURL:(const GURL&)URL
+                                         title:(const std::string&)title
+                     originator_client_item_id:
+                         (const std::string&)originator_client_item_id;
+
+// Injects a HISTORY visit for `URL` to the sync FakeServer.
+- (void)addFakeSyncServerHistoryVisit:(const GURL&)URL;
+
+// Injects device info for `deviceName` with `lastUpdatedTimestamp` to sync
+// FakeServer.
+- (void)addFakeSyncServerDeviceInfo:(NSString*)deviceName
+               lastUpdatedTimestamp:(base::Time)lastUpdatedTimestamp;
+
+// Injects a send tab to self entry with `URL`, `title`, `deviceName`, and
+// `targetDeviceGUID` to sync FakeServer.
+- (void)addFakeSyncServerSendTabToSelfEntryWithURL:(NSString*)URL
+                                             title:(NSString*)title
+                                        deviceName:(NSString*)deviceName
+                                  targetDeviceGUID:(NSString*)targetDeviceGUID;
+
+// Adds a fake Send Tab To Self entry with `url` and `title` to the local model
+// and returns its GUID. `formFieldData` is a dictionary where keys are form
+// control names and values are the values to fill.
+- (NSString*)addFakeSendTabToSelfEntryWithURL:(NSString*)url
+                                        title:(NSString*)title
+                                formFieldData:
+                                    (NSDictionary<NSString*, NSString*>*)
+                                        formFieldData;
+
+// Adds a fake Send Tab To Self entry with `url`, `title`, and `textFragment`
+// to the local model and returns its GUID.
+- (NSString*)addFakeSendTabToSelfEntryWithURL:(NSString*)url
+                                        title:(NSString*)title
+                                 textFragment:(NSString*)textFragment;
+
+// Waits for the local Send Tab To Self model to contain an entry with the
+// given `guid`.
+- (void)waitForSendTabToSelfEntryWithGUID:(NSString*)guid;
+
+// Waits for the local Send Tab To Self model to contain a target device with
+// the given `deviceName`.
+- (void)waitForSendTabToSelfTargetDevice:(NSString*)deviceName;
+
+// Opens a new tab with the given `url` and attaches `textFragment` to its
+// internal NavigationItem to trigger scroll restoration upon page load.
+- (void)openNewTabWithURL:(NSString*)url textFragment:(NSString*)textFragment;
+
+// Verifies the sessions hierarchy on the Sync FakeServer. `URLs` is
+// the collection of URLs that are to be expected for a single window. A
+// GREYAssert is induced on failure. See the SessionsHierarchy class for
+// documentation regarding the verification.
+- (void)verifySyncServerSessionURLs:(NSArray<NSString*>*)URLs;
+
+// Waits until sync server contains `count` entities of the given `type` and
+// `UTF8Name`. Folders are not included in this count.
+// If the condition is not met within `timeout` a GREYAssert is induced.
+- (void)waitForSyncServerEntitiesWithType:(syncer::DataType)type
+                                     name:(const std::string&)UTF8Name
+                                    count:(size_t)count
+                                  timeout:(base::TimeDelta)timeout;
+
+// Waits until the sync server contains the expected history `URLs` within
+// `timeout`.
+- (void)waitForSyncServerHistoryURLs:(NSArray<NSURL*>*)URLs
+                             timeout:(base::TimeDelta)timeout;
+
+// Induces a GREYAssert if `expectPresent` is YES and the provided `URL` is
+// not present in the history DB within `timeout`, or vice versa.
+- (void)waitForHistoryURL:(const GURL&)URL
+            expectPresent:(BOOL)expectPresent
+                  timeout:(base::TimeDelta)timeout;
+
+// Waits for sync invalidation field presence in the DeviceInfo data type on the
+// server.
+- (void)waitForSyncInvalidationFields;
+
+// Returns whether UserSelectableType::kHistory is among the selected types.
+- (BOOL)isSyncHistoryDataTypeSelected;
+
+// Signs the user out, clears the known accounts & browsing data, and wait for
+// the completion of those steps. Induces a GREYAssert if the operation fails or
+// timeouts.
+- (void)signOutAndClearIdentities;
+
+// Waits for sync to become fully active within `timeout`; see
+// SyncService::TransportState::ACTIVE for details. If not succeeded a
+// GREYAssert is induced.
+- (void)waitForSyncTransportStateActiveWithTimeout:(base::TimeDelta)timeout;
+
+// Returns the current sync cache GUID. The sync server must be running when
+// calling this.
+- (std::string)syncCacheGUID;
+
+// Adds a bookmark with `syncPassphrase`. The sync server will need the sync
+// passphrase to start. In order to work, this need to be called before the
+// primary user is signed-in.
+- (void)addBookmarkWithSyncPassphrase:(NSString*)syncPassphrase;
+
+// Adds a `syncPassphrase` requirement to start the sync server.
+- (void)addSyncPassphrase:(NSString*)syncPassphrase;
+
+// Enables or disables URL-keyed anonymized data collection according to
+// `enabled`.
+- (void)setURLKeyedAnonymizedDataCollectionEnabled:(BOOL)enabled;
+
+#pragma mark - Autofill, Send Tab To Self, and Shared Tab Groups
+
+// Clears the autofill profile for the given `GUID`.
+- (void)clearAutofillProfileWithGUID:(const std::string&)GUID;
+
+// Injects an autofill profile into the fake sync server with `GUID` and
+// `fullName`.
+- (void)addAutofillProfileToFakeSyncServerWithGUID:(const std::string&)GUID
+                               autofillProfileName:(const std::string&)fullName;
+
+// Returns YES if there is an autofill profile with the corresponding `GUID`
+// and `fullName`.
+- (BOOL)isAutofillProfilePresentWithGUID:(const std::string&)GUID
+                     autofillProfileName:(const std::string&)fullName
+    [[nodiscard]];
+
+// Returns the generated text fragment for the given `URL`, or nil if no entry
+// exists or no fragment is set.
+- (NSString*)textFragmentForSendTabToSelfEntryWithURL:(NSString*)URL;
+
+// Opens a new tab with the given `url` and `textFragment`, and marks it as
+// originating from Send Tab To Self with the given entry `guid`.
+- (void)openSendTabToSelfNewTabWithURL:(NSString*)url
+                          textFragment:(NSString*)textFragment
+                             entryGUID:(NSString*)guid;
+
+// Opens a new background tab with the given `url` and `textFragment`, and
+// marks it as originating from Send Tab To Self with the given entry `guid`.
+- (void)openSendTabToSelfNewBackgroundTabWithURL:(NSString*)url
+                                    textFragment:(NSString*)textFragment
+                                       entryGUID:(NSString*)guid;
+
+// Waits for the MessagingBackendService to be initialized. Returns nil on
+// success, or an NSError on failure.
+- (NSError*)waitForMessagingBackendServiceInitialized;
+
+#pragma mark - Content Settings, Variations, and Browser Features
+
+// Programmatically dismisses settings screen.
+- (void)dismissSettings;
+
+// Returns the current value of the popup content setting preference for the
+// original profile.
+- (ContentSetting)popupPrefValue;
+
+// Sets the popup content setting preference to the given `value` for the
+// original profile.
+- (void)setPopupPrefValue:(ContentSetting)value;
+
+// Resets the desktop content setting to its default value.
+- (void)resetDesktopContentSetting;
+
+// Sets the preference value of a content settings `type` to `setting` for the
+// original browser state.
+- (void)setContentSetting:(ContentSetting)setting
+    forContentSettingsType:(ContentSettingsType)type;
+
+// Clears default browser promo data to restart capping for the promos.
+- (void)clearDefaultBrowserPromoData;
+
+// Writes the First Run Sentinel file, used to record that First Run has
+// completed.
+- (void)writeFirstRunSentinel;
+
+// Removes the FirstRun sentinel file.
+- (void)removeFirstRunSentinel;
+
+// Whether the first run sentinel exists.
+- (bool)hasFirstRunSentinel;
+
+// Writes the `BackedUpSentinel` file, used to simulate that an iOS device
+// backup/restore state has occurred prior to app launch.
+- (void)writeDeviceRestoreSentinel;
+
+// Removes the `BackedUpSentinel` and `NotBackedUpSentinel` files.
+- (void)removeDeviceRestoreSentinel;
+
+// Shows Reader mode in the current tab and waits for the Reader mode WebState
+// to be ready. Returns YES on success.
+- (BOOL)showReaderModeAndWaitUntilReaderModeWebStateIsReady;
+
+// Hides Reader mode in the current tab.
+- (void)hideReaderMode;
+
+#pragma mark - Feature Enable Checkers
 
 // Returns YES if `variationID` is enabled.
 - (BOOL)isVariationEnabled:(int)variationID;
 
-// Returns YES if a variation triggering server-side behavior is enabled.
+// Returns YES if a variation `variationID` triggering server-side behavior is
+// enabled.
 - (BOOL)isTriggerVariationEnabled:(int)variationID;
 
 // Returns YES if UKM feature is enabled.
@@ -892,10 +1049,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns whether the mobile version of the websites are requested by default.
 - (BOOL)isMobileModeByDefault [[nodiscard]];
 
-// Returns whether the app is configured to, and running in an environment which
-// can, open multiple windows.
-- (BOOL)areMultipleWindowsSupported;
-
 // Returns whether the UseLensToSearchForImage feature is enabled;
 - (BOOL)isUseLensToSearchForImageEnabled;
 
@@ -921,44 +1074,7 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)waitForViewToStopAnimatingWithAccessibilityID:(NSString*)accessibilityID
                                               timeout:(base::TimeDelta)timeout;
 
-#pragma mark - ContentSettings
-
-// Gets the current value of the popup content setting preference for the
-// original profile.
-- (ContentSetting)popupPrefValue;
-
-// Sets the popup content setting preference to the given value for the original
-// profile.
-- (void)setPopupPrefValue:(ContentSetting)value;
-
-// Resets the desktop content setting to its default value.
-- (void)resetDesktopContentSetting;
-
-// Sets the preference value of a content settings type for the original browser
-// state.
-- (void)setContentSetting:(ContentSetting)setting
-    forContentSettingsType:(ContentSettingsType)type;
-
-#pragma mark - Keyboard utilities
-
-// The count of key commands registered with the currently active BVC.
-- (NSInteger)registeredKeyCommandCount;
-
-// Simulates a physical keyboard event.
-// The input is similar to UIKeyCommand parameters, and is designed for testing
-// keyboard shortcuts.
-// Accepts any strings and also UIKeyInput{Up|Down|Left|Right}Arrow and
-// UIKeyInputEscape constants as `input`.
-- (void)simulatePhysicalKeyboardEvent:(NSString*)input
-                                flags:(UIKeyModifierFlags)flags;
-
-// Waits for the keyboard to appear;
-- (void)waitForKeyboardToAppear;
-
-// Waits for the keyboard to disappear;
-- (void)waitForKeyboardToDisappear;
-
-#pragma mark - Default Utilities (EG2)
+#pragma mark - Local State Preferences and User Defaults
 
 // Stores `value` for the provided `defaultName` in `NSUserDefaults` and
 // synchronizes it immediately.
@@ -971,22 +1087,22 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns the object for `key` in NSUserDefault.
 - (id)userDefaultsObjectForKey:(NSString*)key;
 
-// Creates a `AppGroupCommand` based on the provided text and writes it the
-// shared NSUserDefaults.
+// Creates an `AppGroupCommand` based on the provided `text` and writes it to
+// the shared NSUserDefaults.
 - (void)setAppGroupCommandToSearchText:(NSString*)text;
 
-// Creates an incognito `AppGroupCommand` based on the provided text and writes
-// it the shared NSUserDefaults.
+// Creates an incognito `AppGroupCommand` based on the provided `text` and
+// writes it to the shared NSUserDefaults.
 - (void)setAppGroupCommandToIncognitoSearchText:(NSString*)text;
-
-#pragma mark - Pref Utilities (EG2)
 
 // Commit synchronously the pending user prefs write. Waits until the disk write
 // operation is done.
 - (void)commitPendingUserPrefsWrite;
 
-// Gets the value of a local state pref.
+// Returns the boolean value of the local state pref with `prefName`.
 - (bool)localStateBooleanPref:(const std::string&)prefName;
+
+// Returns the integer value of the local state pref with `prefName`.
 - (int)localStateIntegerPref:(const std::string&)prefName;
 
 // Sets the integer value for the local state pref with `prefName`. `value`
@@ -1000,7 +1116,8 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)setTimeValue:(base::Time)value
     forLocalStatePref:(const std::string&)prefName;
 
-// Sets the time value for the user pref in the original profile.
+// Sets the time `value` for the user pref `UTF8PrefName` in the original
+// profile.
 - (void)setTimeValue:(base::Time)value
          forUserPref:(const std::string&)UTF8PrefName;
 
@@ -1009,27 +1126,47 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 - (void)setStringValue:(const std::string&)value
      forLocalStatePref:(const std::string&)prefName;
 
-// Sets the bool value for the local state pref with `prefName`. Local
+// Sets the bool `value` for the local state pref with `prefName`. Local
 // State contains the preferences that are shared between all profiles.
 - (void)setBoolValue:(BOOL)value forLocalStatePref:(const std::string&)prefName;
 
-// Gets the value of a user pref in the original profile.
+// Returns the boolean value of the user pref `prefName` in the original
+// profile.
 - (bool)userBooleanPref:(const std::string&)prefName;
+
+// Returns the integer value of the user pref `prefName` in the original
+// profile.
 - (int)userIntegerPref:(const std::string&)prefName;
+
+// Returns the double value of the user pref `prefName` in the original
+// profile.
 - (double)userDoublePref:(const std::string&)prefName;
+
+// Returns the string value of the user pref `prefName` in the original
+// profile.
 - (std::string)userStringPref:(const std::string&)prefName;
 
-// Sets the value of a user pref in the original profile.
+// Sets the string `value` of the user pref `UTF8PrefName` in the original
+// profile.
 - (void)setStringValue:(NSString*)value
            forUserPref:(const std::string&)UTF8PrefName;
+
+// Sets the boolean `value` of the user pref `UTF8PrefName` in the original
+// profile.
 - (void)setBoolValue:(BOOL)value forUserPref:(const std::string&)UTF8PrefName;
+
+// Sets the integer `value` of the user pref `UTF8PrefName` in the original
+// profile.
 - (void)setIntegerValue:(int)value forUserPref:(const std::string&)UTF8PrefName;
+
+// Sets the double `value` of the user pref `UTF8PrefName` in the original
+// profile.
 - (void)setDoubleValue:(double)value
            forUserPref:(const std::string&)UTF8PrefName;
 
-// Returns true if the LocaState Preference is currently using its default
-// value, and has not been set by any higher-priority source (even with the same
-// value).
+// Returns true if the LocalState Preference `prefName` is currently using its
+// default value, and has not been set by any higher-priority source (even with
+// the same value).
 - (bool)prefWithNameIsDefaultValue:(const std::string&)prefName;
 
 // Clears the user pref of `prefName` in the original profile.
@@ -1041,137 +1178,6 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 
 // Resets data for the local state pref with `prefName`.
 - (void)resetDataForLocalStatePref:(const std::string&)prefName;
-
-#pragma mark - Pasteboard Utilities (EG2)
-
-// Verifies that `text` was copied to the pasteboard.
-- (void)verifyStringCopied:(NSString*)text;
-
-// Returns YES if general pasteboard images property contains a nonempty array.
-- (BOOL)pasteboardHasImages;
-
-// Retrieves the GURL stored in the Pasteboard. Returns an empty GURL if no
-// URL is currently in the pasteboard.
-- (GURL)pasteboardURL;
-
-// Clears the pasteboard.
-- (void)clearPasteboard;
-
-// Copies `text` into the clipboard from the app's perspective.
-- (void)copyTextToPasteboard:(NSString*)text;
-
-// Copies `link` as NSURL into the clipboard from the app's perspective.
-- (void)copyLinkAsURLToPasteBoard:(NSString*)link;
-
-// Copies `image` as NSData with PNG representation into the clipboard from the
-// app's perspective.
-- (void)copyImageToPasteboard:(UIImage*)image;
-
-#pragma mark - Context Menus Utilities (EG2)
-
-// Taps on the Copy Link context menu action and verifies that the `text` has
-// been copied to the pasteboard.
-- (void)verifyCopyLinkActionWithText:(NSString*)text;
-
-// Taps on the Open in New Tab context menu action and waits for the `URL` to be
-// present the URL of the current tab.
-- (void)verifyOpenInNewTabActionWithURL:(const GURL&)URL;
-
-// Taps on the Open in New Window context menu action and waits for the
-// `content` to be present in webview.
-- (void)verifyOpenInNewWindowActionWithContent:(const std::string&)content;
-
-// Taps on the Open in Incognito context menu action and waits for the `URL` to
-// be present the URL of the current tab.
-- (void)verifyOpenInIncognitoActionWithURL:(const GURL&)URL;
-
-// Taps on the Share context menu action and validates that the ActivityView
-// was brought up with the correct title in its header. The title starts as the
-// host of the loaded `URL` and is then updated to the page title `pageTitle`.
-- (void)verifyShareActionWithURL:(const GURL&)URL
-                       pageTitle:(NSString*)pageTitle;
-
-#pragma mark - Unified Consent utilities
-
-// Enables or disables URL-keyed anonymized data collection.
-- (void)setURLKeyedAnonymizedDataCollectionEnabled:(BOOL)enabled;
-
-#pragma mark - Watcher utilities
-
-// Clear the watcher list, stopping monitoring.
-- (void)stopWatcher;
-
-#pragma mark - Default Browser Promo Utilities
-
-// Clears default browser promo data to restart capping for the promos.
-- (void)clearDefaultBrowserPromoData;
-
-#pragma mark - ActivitySheet utilities
-
-// Induces a GREYAssert if the activity sheet is not visible.
-- (void)verifyActivitySheetVisible;
-
-// Induces a GREYAssert if the activity sheet is visible.
-- (void)verifyActivitySheetNotVisible;
-
-// Induces a GREYAssert if `text` is visible the activity sheet.
-- (void)verifyTextNotVisibleInActivitySheetWithID:(NSString*)text;
-
-// Induces a GREYAssert if `text` is not visible the activity sheet.
-- (void)verifyTextVisibleInActivitySheetWithID:(NSString*)text;
-
-// Closes the activity sheet. Induces a GREYAssert if the activity sheet cannot
-// be closed, either if the 'Close' button is not visible on a phone, or if the
-// share button cannot be tapped on a tablet.
-- (void)closeActivitySheet;
-
-// Taps the element with `buttonText` within the activity sheet. A GREYAssert
-// is induced on failure.
-- (void)tapButtonInActivitySheetWithID:(NSString*)buttonText;
-
-// Taps the `more` or `view more` button in the activity sheet that allows users
-// to expand the sheet to see all available actions on iOS 26+. Example:
-// https://screenshot.googleplex.com/8QGvXx4q2LNYoVJ
-- (void)tapMoreOptionButtonInActivitySheet;
-
-#pragma mark - First Run Utilities
-
-// Writes the First Run Sentinel file, used to record that First Run has
-// completed.
-- (void)writeFirstRunSentinel;
-
-// Removes the FirstRun sentinel file.
-- (void)removeFirstRunSentinel;
-
-// Whether the first run sentinel exists.
-- (bool)hasFirstRunSentinel;
-
-#pragma mark - Post Restore Utilities
-
-// Writes the `BackedUpSentinel` file, used to simulate that an iOS device
-// backup/restore state has occurred prior to app launch.
-- (void)writeDeviceRestoreSentinel;
-
-// Removes the `BackedUpSentinel` and `NotBackedUpSentinel` files.
-- (void)removeDeviceRestoreSentinel;
-
-#pragma mark - Notification Utilities
-
-- (void)requestTipsNotification:(TipsNotificationType)type;
-
-#pragma mark - Shared Tab Groups Utilities
-
-// Waits for the MessagingBackendService to be initialized.
-- (NSError*)waitForMessagingBackendServiceInitialized;
-
-#pragma mark - Reader mode Utilities
-
-// Shows Reader mode in the current tab and wait for the Reader mode WebState to
-// be ready.
-- (BOOL)showReaderModeAndWaitUntilReaderModeWebStateIsReady;
-
-// Hides Reader mode in the current tab.
-- (void)hideReaderMode;
 
 @end
 

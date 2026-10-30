@@ -41,10 +41,10 @@
 // if the content does not show up within a timeout.
 - (void)waitForWebStateContainingText:(NSString*)text;
 
-// Waits for the matcher to not return any elements.
+// Waits for `matcher` to not return any elements.
 - (void)waitForUIElementToDisappearWithMatcher:(id<GREYMatcher>)matcher;
 
-// Waits for the matcher to not return any elements. If the condition is not met
+// Waits for `matcher` to not return any elements. If the condition is not met
 // within the given `timeout` a GREYAssert is induced.
 - (void)waitForUIElementToDisappearWithMatcher:(id<GREYMatcher>)matcher
                                        timeout:(base::TimeDelta)timeout;

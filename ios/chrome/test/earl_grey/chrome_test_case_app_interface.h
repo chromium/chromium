@@ -18,7 +18,7 @@
 // Resets mock authentication and signin promo settings.
 + (void)resetAuthentication;
 
-// Removes all infobars and clears any presented state.
+// Removes all infobars and clears any presented state with `completionUUID`.
 // See +[ChromeTestCaseAppInterface isCompletionInvokedWithUUID:] to know when
 // all views are dismissed.
 + (void)removeInfoBarsAndPresentedStateWithCompletionUUID:
