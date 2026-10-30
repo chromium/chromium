@@ -307,7 +307,7 @@ source_set("loggable") {
   deps = [ "//base" ]
 }
 
-source_set("session_policies") {
+static_library("session_policies") {
   public = [
     "port_range.h",
     "session_policies.h",
@@ -351,7 +351,7 @@ static_library("authorization") {
   ]
 }
 
-source_set("logging") {
+static_library("logging") {
   public = [ "logging.h" ]
 
   sources = [

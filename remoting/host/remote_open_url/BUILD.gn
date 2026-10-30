@@ -4,7 +4,7 @@
 
 import("//remoting/build/config/remoting_build.gni")
 
-source_set("common") {
+static_library("common") {
   sources = [
     "remote_open_url_client.cc",
     "remote_open_url_client.h",

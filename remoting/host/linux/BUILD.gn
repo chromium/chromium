@@ -109,7 +109,7 @@ if (enable_me2me_host) {
   }
 }
 
-source_set("gvariant") {
+static_library("gvariant") {
   sources = [
     "gvariant_dict_builder.cc",
     "gvariant_dict_builder.h",
@@ -405,7 +405,7 @@ static_library("platform_impls") {
   libs = [ "systemd" ]
 }
 
-source_set("x11_display_utils") {
+static_library("x11_display_utils") {
   sources = [
     "gnome_display_config.cc",
     "gnome_display_config.h",

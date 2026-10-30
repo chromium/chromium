@@ -4,7 +4,7 @@
 
 import("//remoting/build/config/remoting_build.gni")
 
-source_set("base") {
+static_library("base") {
   visibility = [
     "//remoting/host/*",
     "//remoting/test/*",
