@@ -5,15 +5,21 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_DEVTOOLS_MHTML_HELPER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_DEVTOOLS_MHTML_HELPER_H_
 
+#include <optional>
+#include <string>
+
+#include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "content/browser/devtools/protocol/page_handler.h"
-#include "storage/browser/blob/shareable_file_reference.h"
+
+namespace base {
+class SequencedTaskRunner;
+}
 
 namespace content {
 namespace protocol {
 
-class DevToolsMHTMLHelper
-    : public base::RefCountedThreadSafe<DevToolsMHTMLHelper> {
+class DevToolsMHTMLHelper : public base::RefCounted<DevToolsMHTMLHelper> {
  public:
   static void Capture(
       const WebContents::Getter& web_contents_getter,
@@ -25,20 +31,19 @@ class DevToolsMHTMLHelper
       std::unique_ptr<PageHandler::CaptureSnapshotCallback> callback);
   ~DevToolsMHTMLHelper();
 
-  void CreateTemporaryFile();
-  void TemporaryFileCreatedOnIO();
-  void TemporaryFileCreatedOnUI();
+  static base::FilePath CreateTemporaryFile();
+  void TemporaryFileCreated(base::FilePath path);
   void MHTMLGeneratedOnUI(int64_t mhtml_file_size);
-  void ReadMHTML();
+  static std::optional<std::string> ReadMHTML(const base::FilePath& path);
   void ReportFailure(const std::string& message);
-  void ReportSuccess(std::unique_ptr<std::string> mhtml_snapshot);
+  void MHTMLRead(std::optional<std::string> mhtml_snapshot);
 
   WebContents::Getter web_contents_getter_;
   std::unique_ptr<PageHandler::CaptureSnapshotCallback> callback_;
-  scoped_refptr<storage::ShareableFileReference> mhtml_file_;
-  base::FilePath mhtml_snapshot_path_;
+  scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
+  base::FilePath mhtml_path_;
 
-  friend class base::RefCountedThreadSafe<DevToolsMHTMLHelper>;
+  friend class base::RefCounted<DevToolsMHTMLHelper>;
 };
 
 }  // namespace protocol

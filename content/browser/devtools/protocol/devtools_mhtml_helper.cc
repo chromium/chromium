@@ -6,34 +6,27 @@
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/mhtml_generation_params.h"
-#include "storage/browser/blob/shareable_file_reference.h"
 
 namespace content {
 namespace protocol {
-
-namespace {
-
-void ClearFileReferenceOnIOThread(
-    scoped_refptr<storage::ShareableFileReference>) {}
-
-}  // namespace
 
 DevToolsMHTMLHelper::DevToolsMHTMLHelper(
     const WebContents::Getter& web_contents_getter,
     std::unique_ptr<PageHandler::CaptureSnapshotCallback> callback)
     : web_contents_getter_(web_contents_getter),
-      callback_(std::move(callback)) {}
+      callback_(std::move(callback)),
+      file_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})) {}
 
 DevToolsMHTMLHelper::~DevToolsMHTMLHelper() {
-  if (mhtml_file_.get()) {
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ClearFileReferenceOnIOThread, std::move(mhtml_file_)));
+  if (!mhtml_path_.empty()) {
+    file_task_runner_->PostTask(FROM_HERE,
+                                base::GetDeleteFileCallback(mhtml_path_));
   }
 }
 
@@ -43,60 +36,34 @@ void DevToolsMHTMLHelper::Capture(
     std::unique_ptr<PageHandler::CaptureSnapshotCallback> callback) {
   scoped_refptr<DevToolsMHTMLHelper> helper =
       new DevToolsMHTMLHelper(web_contents_getter, std::move(callback));
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      {// Requires IO.
-       base::MayBlock(),
-
-       // TaskShutdownBehavior: use SKIP_ON_SHUTDOWN so that the helper's
-       // fields do not suddenly become invalid.
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&DevToolsMHTMLHelper::CreateTemporaryFile, helper));
+  helper->file_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&DevToolsMHTMLHelper::CreateTemporaryFile),
+      base::BindOnce(&DevToolsMHTMLHelper::TemporaryFileCreated, helper));
 }
 
-void DevToolsMHTMLHelper::CreateTemporaryFile() {
-  if (!base::CreateTemporaryFile(&mhtml_snapshot_path_)) {
+// static
+base::FilePath DevToolsMHTMLHelper::CreateTemporaryFile() {
+  base::FilePath path;
+  if (!base::CreateTemporaryFile(&path)) {
+    return {};
+  }
+  return path;
+}
+
+void DevToolsMHTMLHelper::TemporaryFileCreated(base::FilePath path) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  mhtml_path_ = std::move(path);
+  if (mhtml_path_.empty()) {
     ReportFailure("Unable to create temporary file");
     return;
   }
-  GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&DevToolsMHTMLHelper::TemporaryFileCreatedOnIO, this));
-}
-
-void DevToolsMHTMLHelper::TemporaryFileCreatedOnIO() {
-  CHECK_CURRENTLY_ON(BrowserThread::IO, base::NotFatalUntil::M159);
-
-  // Setup a ShareableFileReference so the temporary file gets deleted
-  // once it is no longer used.
-  mhtml_file_ = storage::ShareableFileReference::GetOrCreate(
-      mhtml_snapshot_path_,
-      storage::ShareableFileReference::DELETE_ON_FINAL_RELEASE,
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {// Requires IO.
-           base::MayBlock(),
-
-           // Because we are using DELETE_ON_FINAL_RELEASE here, the
-           // storage::ScopedFile inside ShareableFileReference requires
-           // a shutdown blocking task runner to ensure that its deletion
-           // task runs.
-           base::TaskShutdownBehavior::BLOCK_SHUTDOWN})
-          .get());
-
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&DevToolsMHTMLHelper::TemporaryFileCreatedOnUI, this));
-}
-
-void DevToolsMHTMLHelper::TemporaryFileCreatedOnUI() {
-  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
   WebContents* web_contents = web_contents_getter_.Run();
   if (!web_contents) {
     ReportFailure("No web contents");
     return;
   }
   web_contents->GenerateMHTML(
-      content::MHTMLGenerationParams(mhtml_snapshot_path_),
+      content::MHTMLGenerationParams(mhtml_path_),
       base::BindOnce(&DevToolsMHTMLHelper::MHTMLGeneratedOnUI, this));
 }
 
@@ -107,48 +74,35 @@ void DevToolsMHTMLHelper::MHTMLGeneratedOnUI(int64_t mhtml_file_size) {
     ReportFailure("Failed to generate MHTML");
     return;
   }
-  base::ThreadPool::PostTask(
-      FROM_HERE,
-      {// Requires IO.
-       base::MayBlock(),
-
-       // TaskShutdownBehavior: use SKIP_ON_SHUTDOWN so that the
-       // helper's fields do not suddenly become invalid.
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&DevToolsMHTMLHelper::ReadMHTML, this));
+  file_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&DevToolsMHTMLHelper::ReadMHTML, mhtml_path_),
+      base::BindOnce(&DevToolsMHTMLHelper::MHTMLRead, this));
 }
 
-void DevToolsMHTMLHelper::ReadMHTML() {
+// static
+std::optional<std::string> DevToolsMHTMLHelper::ReadMHTML(
+    const base::FilePath& path) {
   std::string buffer;
-  if (!base::ReadFileToString(mhtml_snapshot_path_, &buffer)) {
-    LOG(ERROR) << "Failed to read " << mhtml_snapshot_path_;
-    ReportFailure("Failed to read MHTML file");
-    return;
+  if (!base::ReadFileToString(path, &buffer)) {
+    LOG(ERROR) << "Failed to read " << path;
+    return std::nullopt;
   }
-  std::unique_ptr<std::string> buffer_ptr =
-      std::make_unique<std::string>(buffer);
-  ReportSuccess(std::move(buffer_ptr));
+  return buffer;
 }
 
 void DevToolsMHTMLHelper::ReportFailure(const std::string& message) {
-  if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&DevToolsMHTMLHelper::ReportFailure, this, message));
-    return;
-  }
-  if (message.empty())
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  if (message.empty()) {
     callback_->sendFailure(Response::InternalError());
-  else
+  } else {
     callback_->sendFailure(Response::ServerError(message));
+  }
 }
 
-void DevToolsMHTMLHelper::ReportSuccess(
-    std::unique_ptr<std::string> mhtml_snapshot) {
-  if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&DevToolsMHTMLHelper::ReportSuccess, this,
-                                  std::move(mhtml_snapshot)));
+void DevToolsMHTMLHelper::MHTMLRead(std::optional<std::string> mhtml_snapshot) {
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M159);
+  if (!mhtml_snapshot) {
+    ReportFailure("Failed to read MHTML file");
     return;
   }
   callback_->sendSuccess(*mhtml_snapshot);
