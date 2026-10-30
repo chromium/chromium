@@ -42,6 +42,13 @@ cr-menu-selector > a[disabled] {
 
 #footer {
   color: var(--sidebar-footer-text-color);
+<if expr="is_android">
+  --sidebar-footer-text-color: var(--color-sys-on-surface-variant,
+      var(--cr-secondary-text-color));
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+</if>
   width: var(--side-bar-width);
 }
 
@@ -90,3 +97,51 @@ cr-icon {
   margin-inline-end: 0;
   margin-inline-start: 9px;
 }
+
+<if expr="is_android">
+.cr-nav-menu-item {
+  --cr-nav-menu-item-background-color-hover:
+      var(--color-nav-menu-item-background-hover,
+          var(--cr-hover-background-color));
+  --cr-nav-menu-item-background-color-selected:
+      var(--color-sys-secondary-container,
+          var(--cr-fallback-color-secondary-container));
+  --cr-nav-menu-item-color:
+      var(--color-nav-menu-item, var(--cr-primary-text-color));
+  --cr-nav-menu-item-color-selected:
+      var(--color-sys-on-secondary-container,
+          var(--cr-fallback-color-on-secondary-container));
+  --cr-nav-menu-item-icon-color:
+      var(--color-sys-on-surface-variant, var(--cr-secondary-text-color));
+  --cr-nav-menu-item-icon-color-hover:
+      var(--color-sys-on-surface-variant, var(--cr-secondary-text-color));
+  --cr-nav-menu-item-icon-color-selected:
+      var(--color-sys-on-secondary-container,
+          var(--cr-fallback-color-on-secondary-container));
+  border-radius: 100px;
+  line-height: 20px;
+  margin-inline: 12px;
+  min-height: 56px;
+  /* A narrower end padding leaves labels more room before they wrap. */
+  padding-inline: 16px 8px;
+}
+
+.cr-nav-menu-item:active {
+  background-image: linear-gradient(var(--cr-active-background-color),
+      var(--cr-active-background-color));
+}
+
+/* Hide the default (non-refresh) focus outline on mouse focus. */
+.cr-nav-menu-item:focus {
+  outline: none;
+}
+
+.cr-nav-menu-item:focus-visible {
+  outline: 2px solid var(--cr-focus-outline-color);
+  outline-offset: -2px;
+}
+
+.cr-nav-menu-item cr-icon {
+  margin-inline-end: 16px;
+}
+</if>

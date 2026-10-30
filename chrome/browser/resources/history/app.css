@@ -126,3 +126,10 @@ cr-history-embeddings-filter-chips ~ #tabsContent {
 cr-history-embeddings {
   margin-block-end: var(--card-padding-between);
 }
+
+<if expr="is_android">
+cr-drawer {
+  --cr-drawer-background-color: var(--color-sys-surface-container,
+      var(--md-background-color));
+}
+</if>
