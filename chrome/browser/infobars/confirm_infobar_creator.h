@@ -7,7 +7,9 @@
 
 #include <memory>
 
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
+#include "chrome/browser/infobars/confirm_infobar_creation_allowlist.h"
 
 class ConfirmInfoBarDelegate;
 
@@ -19,19 +21,25 @@ namespace views {
 class View;
 }
 
-// Cross-platform method for creating a confirm infobar.
-// Note: Do not add new Desktop callers; use infobars::BrowserInfoBarManager and
-// infobars::InfoBarSpec instead.
-// TODO(https://crbug.com/567121669): Gate with base::PassKey once all desktop
-// infobar migrations complete, and update //chrome/browser/infobars/README.md
-// and GEMINI.md.
+// Gated methods for creating a confirm infobar on Desktop.
+//
+// New Desktop infobars MUST use the centralized BrowserInfoBarManager framework
+// (via InfoBarSpec) rather than directly subclassing ConfirmInfoBarDelegate or
+// calling CreateConfirmInfoBar().
 std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
+    base::PassKey<ConfirmInfoBarCreationAllowlist> pass_key,
     std::unique_ptr<ConfirmInfoBarDelegate> delegate);
 
 #if !BUILDFLAG(IS_ANDROID)
 std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
+    base::PassKey<ConfirmInfoBarCreationAllowlist> pass_key,
     std::unique_ptr<ConfirmInfoBarDelegate> delegate,
     std::unique_ptr<views::View> custom_message_view);
 #endif
+
+// Deprecated: Transitional non-PassKey overload for legacy callers.
+// Will be removed in Part 2 once all call sites are migrated to base::PassKey.
+std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
+    std::unique_ptr<ConfirmInfoBarDelegate> delegate);
 
 #endif  // CHROME_BROWSER_INFOBARS_CONFIRM_INFOBAR_CREATOR_H_

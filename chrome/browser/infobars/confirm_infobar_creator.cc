@@ -18,21 +18,29 @@
 #endif
 
 std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
+    base::PassKey<ConfirmInfoBarCreationAllowlist> pass_key,
     std::unique_ptr<ConfirmInfoBarDelegate> delegate) {
 #if BUILDFLAG(IS_ANDROID)
   // TODO(https://crbug.com/518840663): remove android support once
   // extension dev tools infobar is migrated to other Android UI.
   return std::make_unique<infobars::InfoBar>(std::move(delegate));
 #else
-  return ConfirmInfoBar::Create(std::move(delegate));
+  return ConfirmInfoBar::Create(pass_key, std::move(delegate));
 #endif
 }
 
 #if !BUILDFLAG(IS_ANDROID)
 std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
+    base::PassKey<ConfirmInfoBarCreationAllowlist> pass_key,
     std::unique_ptr<ConfirmInfoBarDelegate> delegate,
     std::unique_ptr<views::View> custom_message_view) {
-  return ConfirmInfoBar::Create(std::move(delegate),
+  return ConfirmInfoBar::Create(pass_key, std::move(delegate),
                                 std::move(custom_message_view));
 }
 #endif
+
+std::unique_ptr<infobars::InfoBar> CreateConfirmInfoBar(
+    std::unique_ptr<ConfirmInfoBarDelegate> delegate) {
+  return CreateConfirmInfoBar(ConfirmInfoBarCreationAllowlist::GetPassKey(),
+                              std::move(delegate));
+}

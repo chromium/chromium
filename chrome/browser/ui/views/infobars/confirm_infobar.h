@@ -9,9 +9,12 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/ui/views/infobars/infobar_view.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "ui/base/interaction/element_identifier.h"
+
+class ConfirmInfoBarCreationAllowlist;
 
 namespace views {
 class Label;
@@ -31,15 +34,22 @@ class ConfirmInfoBar : public InfoBarView {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kExtraButtonElementId);
 
   // Creates the appropriate ConfirmInfoBar subclass depending on whether the
-  // delegate uses inline links.
-  // Note: Do not add new direct callers; use infobars::BrowserInfoBarManager
-  // and infobars::InfoBarSpec instead.
-  // TODO(https://crbug.com/567121669): Gate with base::PassKey once all desktop
-  // infobar migrations complete, and update //chrome/browser/infobars/README.md
-  // and GEMINI.md.
+  // delegate uses inline links or a custom view.
+  //
+  // New Desktop infobars MUST use infobars::BrowserInfoBarManager and
+  // infobars::InfoBarSpec instead of calling ConfirmInfoBar::Create() directly.
+  static std::unique_ptr<ConfirmInfoBar> Create(
+      base::PassKey<ConfirmInfoBarCreationAllowlist> pass_key,
+      std::unique_ptr<ConfirmInfoBarDelegate> delegate);
+  static std::unique_ptr<ConfirmInfoBar> Create(
+      base::PassKey<ConfirmInfoBarCreationAllowlist> pass_key,
+      std::unique_ptr<ConfirmInfoBarDelegate> delegate,
+      std::unique_ptr<views::View> custom_message_view);
+
+  // Deprecated: Transitional non-PassKey overloads for legacy callers.
+  // Will be removed in Part 2 once callers are migrated to base::PassKey.
   static std::unique_ptr<ConfirmInfoBar> Create(
       std::unique_ptr<ConfirmInfoBarDelegate> delegate);
-
   static std::unique_ptr<ConfirmInfoBar> Create(
       std::unique_ptr<ConfirmInfoBarDelegate> delegate,
       std::unique_ptr<views::View> custom_message_view);

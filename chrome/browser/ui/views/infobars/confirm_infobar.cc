@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/infobars/confirm_infobar_creation_allowlist.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar_with_custom_view.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar_with_normal_label.h"
@@ -29,6 +30,7 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ConfirmInfoBar, kExtraButtonElementId);
 
 // static
 std::unique_ptr<ConfirmInfoBar> ConfirmInfoBar::Create(
+    base::PassKey<ConfirmInfoBarCreationAllowlist>,
     std::unique_ptr<ConfirmInfoBarDelegate> delegate) {
   if (!delegate->GetMessageTextTemplate().empty()) {
     return std::make_unique<ConfirmInfoBarWithStyledLabel>(std::move(delegate));
@@ -38,13 +40,29 @@ std::unique_ptr<ConfirmInfoBar> ConfirmInfoBar::Create(
 
 // static
 std::unique_ptr<ConfirmInfoBar> ConfirmInfoBar::Create(
+    base::PassKey<ConfirmInfoBarCreationAllowlist> pass_key,
     std::unique_ptr<ConfirmInfoBarDelegate> delegate,
     std::unique_ptr<views::View> custom_message_view) {
   if (custom_message_view) {
     return std::make_unique<ConfirmInfoBarWithCustomView>(
         std::move(delegate), std::move(custom_message_view));
   }
-  return Create(std::move(delegate));
+  return Create(pass_key, std::move(delegate));
+}
+
+// static
+std::unique_ptr<ConfirmInfoBar> ConfirmInfoBar::Create(
+    std::unique_ptr<ConfirmInfoBarDelegate> delegate) {
+  return Create(ConfirmInfoBarCreationAllowlist::GetPassKey(),
+                std::move(delegate));
+}
+
+// static
+std::unique_ptr<ConfirmInfoBar> ConfirmInfoBar::Create(
+    std::unique_ptr<ConfirmInfoBarDelegate> delegate,
+    std::unique_ptr<views::View> custom_message_view) {
+  return Create(ConfirmInfoBarCreationAllowlist::GetPassKey(),
+                std::move(delegate), std::move(custom_message_view));
 }
 
 template <typename T>

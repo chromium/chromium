@@ -14,6 +14,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 
 void CreateSimpleAlertInfoBar(
+    base::PassKey<ConfirmInfoBarCreationAllowlist> pass_key,
     infobars::ContentInfoBarManager* infobar_manager,
     infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier,
     const gfx::VectorIcon* vector_icon,
@@ -23,9 +24,24 @@ void CreateSimpleAlertInfoBar(
     bool closeable,
     infobars::InfoBarDelegate::InfobarPriority infobar_priority) {
 #if !BUILDFLAG(IS_ANDROID)
-  infobar_manager->AddInfoBar(
-      CreateConfirmInfoBar(std::make_unique<SimpleAlertInfoBarDelegate>(
-          infobar_identifier, vector_icon, message, auto_expire, should_animate,
-          closeable, infobar_priority)));
+  infobar_manager->AddInfoBar(CreateConfirmInfoBar(
+      pass_key, std::make_unique<SimpleAlertInfoBarDelegate>(
+                    infobar_identifier, vector_icon, message, auto_expire,
+                    should_animate, closeable, infobar_priority)));
 #endif
+}
+
+void CreateSimpleAlertInfoBar(
+    infobars::ContentInfoBarManager* infobar_manager,
+    infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier,
+    const gfx::VectorIcon* vector_icon,
+    const std::u16string& message,
+    bool auto_expire,
+    bool should_animate,
+    bool closeable,
+    infobars::InfoBarDelegate::InfobarPriority infobar_priority) {
+  CreateSimpleAlertInfoBar(ConfirmInfoBarCreationAllowlist::GetPassKey(),
+                           infobar_manager, infobar_identifier, vector_icon,
+                           message, auto_expire, should_animate, closeable,
+                           infobar_priority);
 }

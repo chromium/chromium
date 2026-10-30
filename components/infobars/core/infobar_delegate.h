@@ -64,6 +64,11 @@ class InfoBarDelegate {
     PAGE_ACTION_TYPE,
   };
 
+  // NOTE FOR DESKTOP INFOBARS:
+  // All new desktop infobars MUST use the centralized BrowserInfoBarManager
+  // framework (via InfoBarSpec) rather than directly subclassing
+  // ConfirmInfoBarDelegate or calling CreateConfirmInfoBar().
+  //
   // Unique identifier for every InfoBarDelegate subclass.  Use suffixes to mark
   // infobars specific to particular OSes/platforms.
   // NEW VALUES MUST BE APPENDED AND AVOID CHANGING ANY PRE-EXISTING VALUES.

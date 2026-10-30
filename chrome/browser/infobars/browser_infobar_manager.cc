@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/infobars/confirm_infobar_creation_allowlist.h"
 #include "chrome/browser/infobars/confirm_infobar_creator.h"
 #include "chrome/browser/infobars/infobar_spec.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -433,6 +434,7 @@ class RegistryInfoBarDelegate final : public ConfirmInfoBarDelegate,
 namespace {
 
 std::unique_ptr<infobars::InfoBar> CreateInfoBarForSpec(
+    ConfirmInfoBarCreationAllowlist::PassKey pass_key,
     const InfoBarSpec& spec,
     content::WebContents* contents,
     InfoBarShowParams params,
@@ -442,7 +444,8 @@ std::unique_ptr<infobars::InfoBar> CreateInfoBarForSpec(
                                   : spec.custom_view_callback();
   std::unique_ptr<views::View> custom_view =
       custom_view_callback ? custom_view_callback.Run(contents) : nullptr;
-  return CreateConfirmInfoBar(std::make_unique<RegistryInfoBarDelegate>(
+  return CreateConfirmInfoBar(pass_key,
+                              std::make_unique<RegistryInfoBarDelegate>(
                                   spec, contents, std::move(params), manager),
                               std::move(custom_view));
 }
@@ -531,7 +534,8 @@ infobars::InfoBar* BrowserInfoBarManager::Show(
     return nullptr;
   }
   if (auto* added_infobar = manager->AddInfoBar(CreateInfoBarForSpec(
-          it->second, contents, std::move(params), *this))) {
+          ConfirmInfoBarCreationAllowlist::GetPassKey(), it->second, contents,
+          std::move(params), *this))) {
     static_cast<RegistryInfoBarDelegate*>(added_infobar->delegate())
         ->set_shown();
     TrackTabInstance(added_infobar);
@@ -567,8 +571,9 @@ infobars::InfoBar* BrowserInfoBarManager::Replace(
   static_cast<RegistryInfoBarDelegate*>(old_infobar->delegate())
       ->suppress_result();
   if (auto* replaced_infobar = manager->ReplaceInfoBar(
-          old_infobar, CreateInfoBarForSpec(it->second, contents,
-                                            std::move(params), *this))) {
+          old_infobar, CreateInfoBarForSpec(
+                           ConfirmInfoBarCreationAllowlist::GetPassKey(),
+                           it->second, contents, std::move(params), *this))) {
     static_cast<RegistryInfoBarDelegate*>(replaced_infobar->delegate())
         ->set_shown();
     TrackTabInstance(replaced_infobar);
@@ -614,8 +619,9 @@ bool BrowserInfoBarManager::ShowGlobally(
           auto* manager =
               ContentInfoBarManager::FromWebContents(active_contents);
           if (manager) {
-            auto infobar = CreateInfoBarForSpec(context.spec, active_contents,
-                                                context.params, *this);
+            auto infobar = CreateInfoBarForSpec(
+                ConfirmInfoBarCreationAllowlist::GetPassKey(), context.spec,
+                active_contents, context.params, *this);
             auto* added_infobar = manager->AddInfoBar(std::move(infobar));
             if (added_infobar) {
               active_global_infobars_[identifier].active_instances[manager] =
@@ -863,8 +869,9 @@ void BrowserInfoBarManager::OnActiveTabChanged(
         context.active_instances[new_manager] = *existing;
         continue;
       }
-      auto infobar = CreateInfoBarForSpec(context.spec, active_contents,
-                                          context.params, *this);
+      auto infobar = CreateInfoBarForSpec(
+          ConfirmInfoBarCreationAllowlist::GetPassKey(), context.spec,
+          active_contents, context.params, *this);
       auto* added_infobar = new_manager->AddInfoBar(std::move(infobar));
       if (added_infobar) {
         context.active_instances[new_manager] = added_infobar;

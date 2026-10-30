@@ -7,6 +7,7 @@ import("//extensions/buildflags/buildflags.gni")
 
 source_set("infobars") {
   public = [
+    "confirm_infobar_creation_allowlist.h",
     "confirm_infobar_creator.h",
     "infobar_features.h",
     "infobar_spec.h",

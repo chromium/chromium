@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/types/pass_key.h"
+#include "chrome/browser/infobars/confirm_infobar_creation_allowlist.h"
 #include "components/infobars/core/infobar_delegate.h"
 
 namespace gfx {
@@ -17,14 +19,28 @@ namespace infobars {
 class ContentInfoBarManager;
 }
 
+// Gated method for creating a simple alert infobar on Desktop.
+//
 // Creates a simple alert infobar and delegate and adds the infobar to
 // |infobar_manager|. If |vector_icon| is not null, it will be shown.
 // |infobar_identifier| names what class triggered the infobar for metrics.
-// Note: Do not add new Desktop callers; use infobars::BrowserInfoBarManager and
-// infobars::InfoBarSpec instead.
-// TODO(https://crbug.com/567121669): Gate with base::PassKey once all desktop
-// infobar migrations complete, and update //chrome/browser/infobars/README.md
-// and GEMINI.md.
+//
+// New Desktop infobars MUST use the centralized BrowserInfoBarManager framework
+// (via InfoBarSpec) rather than calling CreateSimpleAlertInfoBar().
+void CreateSimpleAlertInfoBar(
+    base::PassKey<ConfirmInfoBarCreationAllowlist> pass_key,
+    infobars::ContentInfoBarManager* infobar_manager,
+    infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier,
+    const gfx::VectorIcon* vector_icon,
+    const std::u16string& message,
+    bool auto_expire = true,
+    bool should_animate = true,
+    bool closeable = true,
+    infobars::InfoBarDelegate::InfobarPriority infobar_priority =
+        infobars::InfoBarDelegate::InfobarPriority::kDefault);
+
+// Deprecated: Transitional non-PassKey overload for legacy callers.
+// Will be removed in Part 2 once callers are migrated to base::PassKey.
 void CreateSimpleAlertInfoBar(
     infobars::ContentInfoBarManager* infobar_manager,
     infobars::InfoBarDelegate::InfoBarIdentifier infobar_identifier,
