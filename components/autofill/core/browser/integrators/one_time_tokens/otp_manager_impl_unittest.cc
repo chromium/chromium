@@ -182,6 +182,20 @@ class OtpManagerImplTest
     autofill_client().set_otp_field_detector(std::move(detector));
   }
 
+  void SetUpGmailOtpRetrieval() {
+    prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(),
+                                             true);
+    SetUpOtpFieldDetector();
+    autofill_client().set_affiliation_service(&mock_affiliation_service_);
+    autofill_client().set_gmail_otp_backend(
+        std::make_unique<one_time_tokens::FakeGmailOtpBackend>());
+  }
+
+  void TearDown() override {
+    task_environment_.RunUntilIdle();
+    autofill_client().set_affiliation_service(nullptr);
+  }
+
   one_time_tokens::GmailOtpRetriever::Result CreateSampleGmailOtpResult(
       std::string_view value = "987654") {
     return {
@@ -197,6 +211,7 @@ class OtpManagerImplTest
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   one_time_tokens::FakeSmsOtpService sms_otp_service_;
+  NiceMock<affiliations::MockAffiliationService> mock_affiliation_service_;
   base::HistogramTester histogram_tester_;
   FormFieldData test_field_;
   std::unique_ptr<
@@ -3678,6 +3693,65 @@ TEST_F(OtpManagerImplTest,
                            Optional(std::string("otp@mail.example.test"))))));
 
   autofill_client().set_affiliation_service(nullptr);
+}
+
+// Tests that disabling `kAutofillGmailOtpFillingEnabled` stops an in-flight
+// `GmailOtpRetriever` and clears any cached Gmail OTP.
+TEST_F(OtpManagerImplTest,
+       PrefChangeToDisabled_StopsInFlightRetrieverAndClearsCachedOtp) {
+  SetUpGmailOtpRetrieval();
+  OtpManagerImpl otp_manager(autofill_manager(), &sms_otp_service_);
+  ASSERT_TRUE(AddFormWithOtpField());
+  ASSERT_NE(test_api(otp_manager).gmail_otp_retriever(), nullptr);
+
+  test_api(otp_manager)
+      .set_last_retrieved_gmail_otp(CreateSampleGmailOtpResult("654321").token);
+  ASSERT_TRUE(test_api(otp_manager).SelectMostRecentToken().has_value());
+
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), false);
+
+  EXPECT_EQ(test_api(otp_manager).gmail_otp_retriever(), nullptr);
+  EXPECT_FALSE(test_api(otp_manager).SelectMostRecentToken().has_value());
+}
+
+// Tests that if the user opts out while an asynchronous PhishGuard check is in
+// flight, the Gmail OTP is not cached or delivered when PhishGuard completes,
+// while an active SMS OTP subscription can still fulfill the pending request.
+TEST_F(OtpManagerImplTest,
+       OptOutDuringInFlightPhishGuard_SuppressesDeliveryAndClearsCache) {
+  SetUpGmailOtpRetrieval();
+  OtpManagerImpl otp_manager(autofill_manager(), &sms_otp_service_);
+  const FormStructure* form = AddFormWithOtpField();
+  ASSERT_TRUE(form);
+  test_api(otp_manager)
+      .set_last_retrieved_gmail_otp(CreateSampleGmailOtpResult("654321").token);
+
+  base::OnceCallback<void(bool)> gmail_phish_guard_callback;
+  EXPECT_CALL(otp_phish_guard_delegate(),
+              StartOtpPhishGuardCheck(form->field(0)->host_frame(), _))
+      .WillOnce([&](LocalFrameToken, base::OnceCallback<void(bool)> callback) {
+        gmail_phish_guard_callback = std::move(callback);
+      });
+
+  base::test::TestFuture<std::vector<one_time_tokens::OneTimeToken>> future;
+  otp_manager.GetOtpSuggestions(*form, *form->field(0), future.GetCallback());
+  ASSERT_TRUE(gmail_phish_guard_callback);
+
+  prefs::SetAutofillGmailOtpFillingEnabled(autofill_client().GetPrefs(), false);
+  std::move(gmail_phish_guard_callback).Run(/*is_phishing=*/false);
+
+  EXPECT_FALSE(test_api(otp_manager).SelectMostRecentToken().has_value());
+  EXPECT_FALSE(future.IsReady());
+
+  EXPECT_CALL(otp_phish_guard_delegate(),
+              StartOtpPhishGuardCheck(form->field(0)->host_frame(), _))
+      .WillOnce(RunOnceCallback<1>(/*is_phishing=*/false));
+  sms_otp_service_.SimulateOtpArrived(
+      one_time_tokens::OneTimeToken(one_time_tokens::OneTimeTokenType::kSmsOtp,
+                                    "123456", base::TimeTicks::Now()));
+  EXPECT_THAT(
+      future.Get(),
+      ElementsAre(Property(&one_time_tokens::OneTimeToken::value, "123456")));
 }
 
 }  // namespace autofill
