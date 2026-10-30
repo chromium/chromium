@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace selection {
@@ -33,6 +34,8 @@ class FeedbackZipBuilder {
   void SetMesScreenshot(EncodedImage mes_screenshot);
   void SetApc(optimization_guide::proto::AnnotatedPageContent apc);
   void SetSelectedText(std::u16string selected_text);
+  void SetRequest(
+      optimization_guide::proto::SmartSelectionSuggestionsRequest request);
 
   // Creates a ZIP file at `target_zip_path` (using `base::GetUniquePath` to
   // avoid overwriting an existing file) containing the artifacts recorded
@@ -42,6 +45,7 @@ class FeedbackZipBuilder {
   //   MES,
   // - `apc.pb`: the serialized AnnotatedPageContent proto,
   // - `selection.txt`: the UTF-8 text selection,
+  // - `request.pb`: the serialized SmartSelectionSuggestionsRequest proto,
   // and passes the created ZIP path to `callback` (or `std::nullopt` on
   // failure).
   void CreateZip(

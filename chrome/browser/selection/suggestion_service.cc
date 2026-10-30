@@ -524,6 +524,7 @@ void SuggestionService::SendServerSuggestionsRequest(
   if (processed_area.selected_text.has_value()) {
     feedback_zip_builder.SetSelectedText(*processed_area.selected_text);
   }
+  feedback_zip_builder.SetRequest(request);
 
   // TODO(crbug.com/561489586): Consider adding logging.
   remote_model_executor_->ExecuteModel(

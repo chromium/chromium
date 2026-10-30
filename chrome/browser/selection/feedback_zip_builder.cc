@@ -29,6 +29,8 @@ struct FeedbackZipBuilder::State {
   std::optional<EncodedImage> mes_screenshot;
   std::optional<optimization_guide::proto::AnnotatedPageContent> apc;
   std::optional<std::u16string> selected_text;
+  std::optional<optimization_guide::proto::SmartSelectionSuggestionsRequest>
+      request;
 };
 
 FeedbackZipBuilder::FeedbackZipBuilder() : state_(std::make_unique<State>()) {}
@@ -56,6 +58,12 @@ void FeedbackZipBuilder::SetApc(
 void FeedbackZipBuilder::SetSelectedText(std::u16string selected_text) {
   CHECK(state_);
   state_->selected_text = std::move(selected_text);
+}
+
+void FeedbackZipBuilder::SetRequest(
+    optimization_guide::proto::SmartSelectionSuggestionsRequest request) {
+  CHECK(state_);
+  state_->request = std::move(request);
 }
 
 void FeedbackZipBuilder::CreateZip(
@@ -105,7 +113,10 @@ std::optional<base::FilePath> FeedbackZipBuilder::CreateZipOnThreadPool(
                         state.apc->SerializeAsString())) ||
       (state.selected_text.has_value() &&
        !base::WriteFile(dir.AppendASCII("selection.txt"),
-                        base::UTF16ToUTF8(*state.selected_text)))) {
+                        base::UTF16ToUTF8(*state.selected_text))) ||
+      (state.request.has_value() &&
+       !base::WriteFile(dir.AppendASCII("request.pb"),
+                        state.request->SerializeAsString()))) {
     return std::nullopt;
   }
 

@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_callback_support.h"
@@ -1141,6 +1142,27 @@ TEST_F(SuggestionServiceUnitTest, CreateFeedbackZip) {
       extract_dir.GetPath().AppendASCII("selection.txt"), &selected_text));
   EXPECT_EQ(selected_text, "Selected feedback text");
 
+  std::string request_str;
+  ASSERT_TRUE(base::ReadFileToString(
+      extract_dir.GetPath().AppendASCII("request.pb"), &request_str));
+  optimization_guide::proto::SmartSelectionSuggestionsRequest request;
+  ASSERT_TRUE(request.ParseFromString(request_str));
+  EXPECT_THAT(
+      request.client_capabilities().available_tools(),
+      ElementsAre(ToolWithCapabilities(
+          optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME,
+          ElementsAre("youtube_tool", "workspace_tool"))));
+  ASSERT_EQ(request.areas_of_interest_size(), 1);
+  const optimization_guide::proto::AreaOfInterest& proto_aoi =
+      request.areas_of_interest(0);
+  EXPECT_EQ(proto_aoi.mime_type(), "image/png");
+  EXPECT_EQ(proto_aoi.image_bytes(), base::as_string_view(*mes_bytes));
+  EXPECT_EQ(proto_aoi.selection().x(), 10);
+  EXPECT_EQ(proto_aoi.selection().y(), 15);
+  EXPECT_EQ(proto_aoi.selection().width(), 30);
+  EXPECT_EQ(proto_aoi.selection().height(), 40);
+  EXPECT_THAT(proto_aoi.annotated_page_content(), EqualsProto(aoi.apc));
+
   service().UnregisterTool(&gemini_tool);
 }
 
@@ -1209,6 +1231,16 @@ TEST_F(SuggestionServiceUnitTest, CreateFeedbackZipWithJpeg) {
   EXPECT_EQ(mes_screenshot.width(), 50);
   EXPECT_EQ(mes_screenshot.height(), 40);
 
+  std::string request_str;
+  ASSERT_TRUE(base::ReadFileToString(
+      extract_dir.GetPath().AppendASCII("request.pb"), &request_str));
+  optimization_guide::proto::SmartSelectionSuggestionsRequest request;
+  ASSERT_TRUE(request.ParseFromString(request_str));
+  ASSERT_EQ(request.areas_of_interest_size(), 1);
+  EXPECT_EQ(request.areas_of_interest(0).mime_type(), "image/jpeg");
+  EXPECT_EQ(request.areas_of_interest(0).image_bytes(),
+            base::as_string_view(*mes_bytes));
+
   service().UnregisterTool(&gemini_tool);
 }
 
@@ -1259,6 +1291,8 @@ TEST_F(SuggestionServiceUnitTest,
   EXPECT_FALSE(base::PathExists(extract_dir.GetPath().AppendASCII("apc.pb")));
   EXPECT_FALSE(
       base::PathExists(extract_dir.GetPath().AppendASCII("selection.txt")));
+  EXPECT_FALSE(
+      base::PathExists(extract_dir.GetPath().AppendASCII("request.pb")));
 
   service().UnregisterTool(&gemini_tool);
 }
