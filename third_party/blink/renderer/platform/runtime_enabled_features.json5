@@ -2264,6 +2264,14 @@
       status: "experimental",
     },
     {
+      // Enable Unicode uppercasing to Mtavruli. Disable to restore the legacy
+      // mapping if font regressions are reported in the field.
+      // TODO(crbug.com/40127672): Remove this kill switch and the legacy mapping
+      // two milestones after the Stable launch, if rollback is no longer needed.
+      name: "CSSTextTransformGeorgianUppercase",
+      status: "stable",
+    },
+    {
       // crbug.com/41297237: Support multi-keyword values in CSS `text-transform`.
       name: "CSSTextTransformMultiKeyword",
       depends_on: ["CSSTextTransformFullWidth", "CSSTextTransformFullSizeKana"],

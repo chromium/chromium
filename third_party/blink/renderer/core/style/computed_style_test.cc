@@ -2704,6 +2704,23 @@ TEST_F(ComputedStyleTest, SingleAxisIsOverflowVisibleOrClip) {
   EXPECT_FALSE(builder.TakeStyle()->IsOverflowVisibleOrClip());
 }
 
+// TODO(crbug.com/40127672): Remove this test with the
+// CSSTextTransformGeorgianUppercase kill switch once rollback is no longer
+// needed.
+TEST_F(ComputedStyleTest, ApplyTextTransformGeorgianUppercaseFeature) {
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+  builder.SetTextTransform(ETextTransform::kUppercase);
+  const ComputedStyle* style = builder.TakeStyle();
+
+  for (bool enabled : {false, true}) {
+    SCOPED_TRACE(enabled);
+    ScopedCSSTextTransformGeorgianUppercaseForTest scoped_feature(enabled);
+    // Rollback also lowercases Mtavruli capitals already present in the input.
+    EXPECT_EQ(String(enabled ? u"\u1C90\u1CBD" : u"\u10D0\u10FD"),
+              style->ApplyTextTransform(String(u"\u10D0\u1CBD")));
+  }
+}
+
 TEST_F(ComputedStyleTest, ApplyTextTransformUpdateOffsetMap) {
   using Entry = TextOffsetMap::Entry;
 

@@ -1852,27 +1852,21 @@ ETextAlign ComputedStyle::GetTextAlign(bool is_last_line) const {
   NOTREACHED();
 }
 
-// Unicode 11 introduced Georgian capital letters (U+1C90 - U+1CBA,
-// U+1CB[D-F]), but virtually no font covers them. For now map them back
-// to their lowercase counterparts (U+10D0 - U+10FA, U+10F[D-F]).
-// https://www.unicode.org/charts/PDF/U10A0.pdf
-// https://www.unicode.org/charts/PDF/U1C90.pdf
-// See https://crbug.com/865427 .
-// TODO(jshin): Make this platform-dependent. For instance, turn this
-// off when CrOS gets new Georgian fonts covering capital letters.
-// ( https://crbug.com/880144 ).
-static String DisableNewGeorgianCapitalLetters(const String& text) {
+namespace {
+
+// Disabling CSSTextTransformGeorgianUppercase restores the legacy mapping so we
+// can roll back if missing-glyph regressions appear after launch.
+// Original workaround: https://crrev.com/c/1205712.
+// TODO(crbug.com/40127672): Remove this helper and its character utilities with
+// the kill switch two milestones after the Stable launch, if rollback is no
+// longer needed.
+String ApplyLegacyGeorgianUppercaseWorkaround(const String& text) {
   if (text.IsNull() || text.Is8Bit()) {
     return text;
   }
-  unsigned length = text.length();
-  const StringImpl& input = *(text.Impl());
   StringBuilder result;
-  result.ReserveCapacity(length);
-  // |input| must be well-formed UTF-16 so that there's no worry
-  // about surrogate handling.
-  for (unsigned i = 0; i < length; ++i) {
-    UChar character = UNSAFE_TODO(input[i]);
+  result.ReserveCapacity(text.length());
+  for (UChar character : text.Span16()) {
     if (unicode::IsModernGeorgianUppercase(character)) {
       result.Append(unicode::LowercaseModernGeorgianUppercase(character));
     } else {
@@ -1881,8 +1875,6 @@ static String DisableNewGeorgianCapitalLetters(const String& text) {
   }
   return result.ToString();
 }
-
-namespace {
 
 String ApplyFullwidthTransform(const String& text,
                                TextOffsetMap* offset_map,
@@ -1995,8 +1987,10 @@ String ComputedStyle::ApplyTextTransform(const String& text,
   } else if (EnumHasFlags(transform, ETextTransform::kUppercase)) {
     const LayoutLocale* locale = GetFontDescription().Locale();
     CaseMap case_map(locale ? locale->CaseMapLocale() : CaseMap::Locale());
-    result =
-        DisableNewGeorgianCapitalLetters(case_map.ToUpper(result, offset_map));
+    result = case_map.ToUpper(result, offset_map);
+    if (!RuntimeEnabledFeatures::CSSTextTransformGeorgianUppercaseEnabled()) {
+      result = ApplyLegacyGeorgianUppercaseWorkaround(result);
+    }
   } else if (EnumHasFlags(transform, ETextTransform::kLowercase)) {
     const LayoutLocale* locale = GetFontDescription().Locale();
     CaseMap case_map(locale ? locale->CaseMapLocale() : CaseMap::Locale());
