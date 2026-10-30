@@ -33,7 +33,6 @@ source_set("remote_actor") {
     "//components/sync/protocol",
     "//content/public/browser",
     "//google_apis",
-    "//net",
     "//url",
   ]
 }
@@ -83,7 +82,6 @@ source_set("browser_tests") {
     "//chrome/common:mojo_bindings",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
-    "//components/autofill/core/common:test_support",
     "//components/password_manager/core/common:features",
     "//content/public/browser",
     "//content/public/common",

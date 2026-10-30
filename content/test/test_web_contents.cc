@@ -39,7 +39,6 @@
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace content {
 
@@ -387,11 +386,6 @@ void TestWebContents::SetOpener(WebContents* opener) {
 void TestWebContents::SetOriginalOpener(WebContents* opener) {
   primary_frame_tree_.root()->SetOriginalOpener(
       static_cast<WebContentsImpl*>(opener)->GetPrimaryFrameTree().root());
-}
-
-void TestWebContents::SetOriginalWindowOpenDisposition(
-    WindowOpenDisposition disposition) {
-  original_window_open_disposition_ = disposition;
 }
 
 void TestWebContents::SetIsCrashed(base::TerminationStatus status,

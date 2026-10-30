@@ -25,7 +25,6 @@
 #include "content/test/test_render_view_host.h"
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 class GURL;
 class SkBitmap;
@@ -93,8 +92,6 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   void TestSetIsLoading(bool value) override;
   void SetOpener(WebContents* opener) override;
   void SetOriginalOpener(WebContents* opener) override;
-  void SetOriginalWindowOpenDisposition(
-      WindowOpenDisposition disposition) override;
   void SetIsCrashed(base::TerminationStatus status, int error_code) override;
   const std::string& GetSaveFrameHeaders() override;
   const std::u16string& GetSuggestedFileName() override;

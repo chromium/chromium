@@ -84,11 +84,6 @@ class RemoteActorCredentialSharingImpl
                                     const std::string& domain,
                                     const std::string& task_id);
 
-  // Returns true if the request is allowed via either transient user activation
-  // on `render_frame_host()` or a one-time fallback for a popup with a
-  // same-site opener whose navigation was initiated by a user gesture.
-  bool HasValidUserActivation();
-
   // Checks if enterprise policy (GeminiSparkSettings) permits remote actor
   // credential sharing.
   bool IsAllowedByPolicy(Profile* profile);
@@ -115,10 +110,6 @@ class RemoteActorCredentialSharingImpl
       receiver_;
 
   DialogFactory dialog_factory_;
-
-  // Tracks whether the one-time popup activation fallback for this document has
-  // already been consumed.
-  bool popup_activation_consumed_ = false;
 
   std::unique_ptr<RemoteActorCredentialSharingController> controller_;
   std::unique_ptr<RemoteActorSelectionDialogController> dialog_controller_;
