@@ -135,7 +135,7 @@ void SessionController::DidGetUserInteraction(
     if (attached_stream_provider_) {
       EndDictationStream(DictationStreamEndTrigger::kEscapeKey);
     } else {
-      FinalizeAndShutdown();
+      FinalizeAndShutdown(DictationStreamEndTrigger::kEscapeKey);
     }
     return;
   }
@@ -289,11 +289,11 @@ void SessionController::UiRequestEndActiveStream() {
   EndDictationStream(DictationStreamEndTrigger::kDoneButton);
 }
 
-void SessionController::FinalizeAndShutdown() {
+void SessionController::FinalizeAndShutdown(DictationStreamEndTrigger trigger) {
   VT_LOG(GetBrowserContext()) << __func__;
   is_shutting_down_ = true;
   if (attached_stream_provider_) {
-    EndDictationStream(DictationStreamEndTrigger::kShutdown);
+    EndDictationStream(trigger);
   } else if (state_ == SessionState::kInactive) {
     // EndSession will destroy `this` which owns other objects that call into
     // here so PostTask to avoid destroying objects in the callstack.

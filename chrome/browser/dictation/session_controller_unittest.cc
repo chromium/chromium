@@ -656,7 +656,7 @@ TEST_F(DictationSessionControllerTest,
                                     base::TimeTicks::Now());
 
   EXPECT_CALL(*stream_provider_1_ptr, Stop(_));
-  controller_->FinalizeAndShutdown();
+  controller_->FinalizeAndShutdown(DictationStreamEndTrigger::kTest);
   EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
 
   // The session is pending shutdown with a finalizing stream. We cannot create
@@ -758,7 +758,7 @@ TEST_F(DictationSessionControllerTest,
       *stream_provider, StreamProvider::StreamState::kInitializing);
   EXPECT_EQ(controller_->GetState(), SessionState::kTranscribing);
 
-  controller_->FinalizeAndShutdown();
+  controller_->FinalizeAndShutdown(DictationStreamEndTrigger::kTest);
   EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
 
   // Complete stream finalization and verify EndSession is called on delegate.
@@ -794,7 +794,7 @@ TEST_F(DictationSessionControllerTest,
   EXPECT_EQ(controller_->GetState(), SessionState::kTranscribing);
 
   // Call FinalizeAndShutdown, placing stream 1 in finalization.
-  controller_->FinalizeAndShutdown();
+  controller_->FinalizeAndShutdown(DictationStreamEndTrigger::kTest);
   EXPECT_EQ(controller_->GetState(), SessionState::kFinalizing);
 
   // While stream 1 is finalizing, start a new stream (stream 2).

@@ -11,6 +11,8 @@
 
 namespace dictation {
 
+enum class DictationStreamEndTrigger;
+
 // Interface for the UI to communicate back to the session controller.
 class SessionUiDelegate {
  public:
@@ -26,7 +28,7 @@ class SessionUiDelegate {
 
   // Requests that the session be finalized and shut down. This will stop the
   // active stream and end the session once finalization is complete.
-  virtual void FinalizeAndShutdown() = 0;
+  virtual void FinalizeAndShutdown(DictationStreamEndTrigger trigger) = 0;
 
   // Called to start a new stream from the UI. Must only be called if the
   // session is inactive. Starts a new stream on the last used Target.

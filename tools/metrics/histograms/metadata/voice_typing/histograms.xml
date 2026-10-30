@@ -67,7 +67,8 @@ found in the LICENSE file.
   <owner>src/chrome/browser/dictation/OWNERS</owner>
   <summary>
     Records the reason why a Voice Typing stream concluded, including both
-    user-initiated and system-triggered exit conditions.
+    user-initiated and system-triggered exit conditions. Prior to M159, usage of
+    the Done button was incorrectly recorded as Auto Done.
   </summary>
 </histogram>
 

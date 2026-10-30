@@ -136,7 +136,7 @@ void SessionUiImpl::OnError(StreamType stream_type, StreamErrorReason reason) {
   if (stream_type == StreamType::kAttached) {
     // If the attached stream failed, we still want to let any finalizing
     // streams finish before ending the session.
-    controller_->FinalizeAndShutdown();
+    controller_->FinalizeAndShutdown(DictationStreamEndTrigger::kShutdown);
   }
 }
 
@@ -195,7 +195,7 @@ void SessionUiImpl::OnToggleActiveStreamClicked() {
   if (kSessionEndsOnStreamEnd.Get()) {
     // This configuration does not start new streams within a session. We just
     // end the session.
-    controller_->FinalizeAndShutdown();
+    controller_->FinalizeAndShutdown(DictationStreamEndTrigger::kDoneButton);
     return;
   }
 
@@ -250,7 +250,8 @@ void SessionUiImpl::OnTabWillDeactivate(tabs::TabInterface* tab) {
                   state == SessionState::kStreamInitializing;
               tab_weak->GetTabFeatures()->tab_dialog_manager()->CloseDialog();
               self->overlay_view_.reset();
-              self->controller_->FinalizeAndShutdown();
+              self->controller_->FinalizeAndShutdown(
+                  DictationStreamEndTrigger::kShutdown);
               if (was_actively_listening) {
                 BrowserWindowInterface* const window =
                     tab_weak->GetBrowserWindowInterface();

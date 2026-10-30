@@ -49,7 +49,7 @@ class SessionController : public SessionUiDelegate,
   // SessionUiDelegate:
   void UiRequestEndSession() override;
   void UiRequestEndActiveStream() override;
-  void FinalizeAndShutdown() override;
+  void FinalizeAndShutdown(DictationStreamEndTrigger trigger) override;
   void UiRequestStartStream() override;
   SessionState GetState() const override;
   base::CallbackListSubscription AddSessionStateChangedCallback(
