@@ -2284,6 +2284,90 @@ def _NormalizeCommittedWorktreeFiles(checkout: _CheckoutPaths,
                        input_bytes=nul_paths)
 
 
+@dataclasses.dataclass(frozen=True)
+class NewPatchResult:
+    """Outcome of creating and committing a new patches/*.patch file."""
+
+    patch_name: str
+    patch_path: str
+    commit: str
+    changed_files: tuple[str, ...]
+    touches_generator: bool
+
+    def ToDictionary(self) -> dict[str, object]:
+        return {
+            'patch': self.patch_name,
+            'patch_path': self.patch_path,
+            'commit': self.commit,
+            'changed_files': list(self.changed_files),
+            'touches_generator': self.touches_generator,
+        }
+
+
+def NewPatch(patch_spec: str,
+             protobuf_directory: str = _PROTOBUF_DIRECTORY) -> NewPatchResult:
+    """Commits uncommitted src/ and python/ edits as a new patches/*.patch."""
+    checkout = _ResolveCheckoutPaths(protobuf_directory)
+    if _IsGitOperationInProgress(checkout):
+        raise RollProtobufError(
+            'Cannot run `roll_protobuf.py new-patch` while a git rebase, '
+            'merge, or cherry-pick is in progress.')
+    state = LoadRollState(checkout)
+    current_head = _ResolveCommitHash(checkout.repository_root, 'HEAD')
+    if (state is not None and state.phase in ('prepared', 'conflict')
+            and (current_head == state.expected_head
+                 or _IsRollBranchHead(checkout, state))):
+        raise RollProtobufError(
+            f'Cannot create a new patch while roll phase is {state.phase!r}; '
+            'finish replaying patches first.')
+    patch_name = _NormalizeNewPatchName(patch_spec,
+                                        checkout.protobuf_directory)
+    _CollectUncommittedPatchPaths(checkout, 'roll_protobuf.py new-patch')
+    _RunScratchGit(checkout.repository_root, '-c', 'core.safecrlf=false',
+                   'add', '--all', '--', checkout.protobuf_prefix or '.')
+    staged = tuple(
+        sorted(
+            _ProtobufPathsFromGit(checkout, 'diff', '--cached', '--no-renames',
+                                  '--name-only', '-z')))
+    if not staged:
+        raise RollProtobufError(
+            'No uncommitted changes under src/ or python/ for '
+            '`roll_protobuf.py new-patch`.')
+    no_hooks = os.path.join(checkout.roll_state_directory, 'no-hooks')
+    _RunScratchGit(checkout.repository_root, '-c',
+                   f'core.hooksPath={no_hooks}', 'commit', '--quiet',
+                   '--no-gpg-sign', '--no-verify', '-m',
+                   f'Apply patches/{patch_name}')
+    _RefreshPatchFileFromHeadCommit(checkout, patch_name)
+    _NormalizeCommittedWorktreeFiles(checkout, staged)
+    new_head = _RunScratchGit(checkout.repository_root, 'rev-parse',
+                              'HEAD').stdout.decode().strip()
+    if (state is not None and state.phase == 'replayed'
+            and _IsRollBranchHead(checkout, state)):
+        _SaveRollState(checkout,
+                       dataclasses.replace(state, expected_head=new_head))
+    patch_path = os.path.join(checkout.protobuf_directory, 'patches',
+                              patch_name)
+    touches_generator = any(IsBootstrapGeneratorInput(p) for p in staged)
+    return NewPatchResult(patch_name, patch_path, new_head, staged,
+                          touches_generator)
+
+
+def FormatNewPatchReport(result: NewPatchResult) -> str:
+    lines = [
+        f'Created patches/{result.patch_name} at {result.commit}:',
+        *[f'  {path}' for path in result.changed_files],
+        f'Add "- {result.patch_name}" under "Description of the patches:" '
+        f'in {_README_FILENAME}.',
+    ]
+    if result.touches_generator:
+        lines.append(
+            'Patch modifies bootstrap generator inputs; run '
+            '`roll_protobuf.py generate -C <out_dir>` to update bootstrap '
+            'files.')
+    return '\n'.join(lines)
+
+
 def _FindLocalHygieneErrors(checkout: _CheckoutPaths) -> tuple[str, ...]:
     """Lists leftover .rej/.orig files, conflict markers, or unmerged paths."""
     errors = [

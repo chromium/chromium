@@ -4534,6 +4534,397 @@ class RollProtobufStartTest(unittest.TestCase):
         self.assertEqual(b'// helper\n',
                          pathlib.Path(crlf_helper).read_bytes())
 
+    def testNewPatchCommitsSrcAndPythonChangesAndUpdatesRollState(self):
+        self._StartCleanRoll()
+        _WriteFilesToDirectory(self.repository_root,
+                               {'OTHER_CHROMIUM_FILE': 'keep unstaged\n'})
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory, {
+                'src/google/protobuf/chromium_helper.h': '// helper\n',
+                'python/google/protobuf/chromium_util.py': '# util\n',
+            })
+
+        first = roll_protobuf.NewPatch('0006-add-helper',
+                                       self.fixture.protobuf_directory)
+        first_report = roll_protobuf.FormatNewPatchReport(first)
+
+        self.assertEqual('0006-add-helper.patch', first.patch_name)
+        self.assertFalse(first.touches_generator)
+        self.assertEqual(('python/google/protobuf/chromium_util.py',
+                          'src/google/protobuf/chromium_helper.h'),
+                         first.changed_files)
+        self.assertEqual(
+            'Apply patches/0006-add-helper.patch',
+            _RunGitCommand(self.repository_root, ['log', '-1', '--format=%s']))
+        checkout = roll_protobuf._ResolveCheckoutPaths(
+            self.fixture.protobuf_directory)
+        self.assertEqual(
+            roll_protobuf._BuildPatchDiffFromCommit(checkout, first.commit),
+            pathlib.Path(first.patch_path).read_bytes())
+        self.assertEqual(
+            first.commit,
+            roll_protobuf.LoadRollState(
+                self.fixture.protobuf_directory).expected_head)
+        self.assertIn('Add "- 0006-add-helper.patch"', first_report)
+        self.assertNotIn('bootstrap generator inputs', first_report)
+        self.assertIn(
+            'OTHER_CHROMIUM_FILE',
+            _RunGitCommand(self.repository_root, ['diff', '--name-only']))
+
+        _WriteFilesToDirectory(
+            self.fixture.protobuf_directory,
+            {'src/google/protobuf/compiler/cpp/enum.h': '// compiler edit\n'})
+        second = roll_protobuf.NewPatch('patches/0007-compiler-enum.patch',
+                                        self.fixture.protobuf_directory)
+        second_report = roll_protobuf.FormatNewPatchReport(second)
+        self.assertTrue(second.touches_generator)
+        self.assertIn('bootstrap generator inputs', second_report)
+        self.assertEqual('0007-compiler-enum.patch',
+                         second.ToDictionary()['patch'])
+
+        readme_path = pathlib.Path(self.fixture.protobuf_directory,
+                                   'README.chromium')
+        readme_text = readme_path.read_text(encoding='utf-8')
+        readme_path.write_text(
+            readme_text + '\nDescription of the patches:\n'
+            f'- {_PLAN_CLEAN_PATCH}\n'
+            f'- {_PLAN_STACKED_PATCH}\n',
+            encoding='utf-8',
+            newline='\n',
+        )
+        check_before_readme = roll_protobuf.CheckRoll(
+            protobuf_directory=self.fixture.protobuf_directory,
+            upstream_repository_path=self.fixture.upstream_directory,
+        )
+        self.assertTrue(check_before_readme.tree_result.IsClean())
+        self.assertTrue(
+            any('0006-add-helper.patch' in e
+                for e in check_before_readme.patch_inventory_errors))
+        self.assertIn('src/google/protobuf/compiler/cpp/enum.h',
+                      check_before_readme.stale_bootstrap_triggers)
+
+        readme_path.write_text(
+            readme_path.read_text(encoding='utf-8') +
+            '- 0006-add-helper.patch\n- 0007-compiler-enum.patch\n',
+            encoding='utf-8',
+            newline='\n',
+        )
+        check_after_readme = roll_protobuf.CheckRoll(
+            protobuf_directory=self.fixture.protobuf_directory,
+            upstream_repository_path=self.fixture.upstream_directory,
+        )
+        self.assertEqual((), check_after_readme.patch_inventory_errors)
+
+        # CRLF working-tree edits normalized by .gitattributes are normalized on
+        # disk too, and NewPatch on an unrelated branch off origin/main must not
+        # overwrite state.expected_head for the active roll branch.
+        _RunGitCommand(
+            self.repository_root,
+            ['checkout', '--', 'third_party/protobuf/README.chromium'])
+        _WriteFilesToDirectory(self.repository_root,
+                               {'.gitattributes': '*.h text eol=lf\n'})
+        _RunGitCommand(self.repository_root, ['add', '.gitattributes'])
+        _RunGitCommand(self.repository_root,
+                       ['commit', '--quiet', '-m', 'Add .gitattributes'])
+        crlf_hdr = pathlib.Path(self.fixture.protobuf_directory, 'src',
+                                'google', 'protobuf', 'crlf[1].h')
+        crlf_hdr.parent.mkdir(parents=True, exist_ok=True)
+        crlf_hdr.write_bytes(b'// crlf line\r\n')
+        crlf_patch = roll_protobuf.NewPatch('0008-crlf',
+                                            self.fixture.protobuf_directory)
+        self.assertEqual(b'// crlf line\n', crlf_hdr.read_bytes())
+        self.assertTrue(
+            roll_protobuf.CheckTreeMatchesPatchedUpstream(
+                self.fixture.protobuf_directory,
+                self.fixture.upstream_directory).IsClean())
+
+        _RunGitCommand(
+            self.repository_root,
+            ['checkout', '--quiet', '-b', 'side-branch', 'origin/main'])
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'src/side.h': '// side\n'})
+        side_patch = roll_protobuf.NewPatch('0006-side',
+                                            self.fixture.protobuf_directory)
+        self.assertEqual('0006-side.patch', side_patch.patch_name)
+        self.assertEqual(
+            crlf_patch.commit,
+            roll_protobuf.LoadRollState(
+                self.fixture.protobuf_directory).expected_head)
+
+        # Creating the very first patch in a root-level repo with hostile
+        # repo-local git config (`diff.noprefix`, `commit.gpgsign`,
+        # `core.autocrlf`, `core.safecrlf`), `.git/info/exclude` (`*.patch`),
+        # and a failing `prepare-commit-msg` hook succeeds, scopes stat-cache
+        # updates to drifted paths, and passes check.
+        root_repo = os.path.join(self.temporary_directory, 'root_new_patch')
+        _InitializeGitRepositoryWithFiles(
+            root_repo, {
+                'README.chromium': f'Revision: {self.fixture.old_commit}\n',
+                **_PLAN_OLD_UPSTREAM_FILES,
+            })
+        for key, val in (('diff.noprefix', 'true'), ('commit.gpgsign', 'true'),
+                         ('core.autocrlf', 'true'), ('core.safecrlf', 'true')):
+            _RunGitCommand(root_repo, ['config', key, val])
+        info_excl = pathlib.Path(root_repo, '.git', 'info', 'exclude')
+        info_excl.parent.mkdir(parents=True, exist_ok=True)
+        info_excl.write_text('*.patch\n', encoding='utf-8', newline='\n')
+        info_attrs = pathlib.Path(root_repo, '.git', 'info', 'attributes')
+        info_attrs.write_text('*.h text eol=crlf\n',
+                              encoding='utf-8',
+                              newline='\n')
+        if sys.platform != 'win32':
+            hook = pathlib.Path(root_repo, '.git', 'hooks',
+                                'prepare-commit-msg')
+            hook.parent.mkdir(parents=True, exist_ok=True)
+            hook.write_text('#!/bin/sh\nexit 1\n',
+                            encoding='utf-8',
+                            newline='\n')
+            hook.chmod(0o755)
+        pathlib.Path(
+            root_repo,
+            *_PLAN_CLEAN_PATH.split('/')).write_bytes(b'// clean modified\r\n')
+        pathlib.Path(root_repo, 'src', 'google', 'protobuf',
+                     'first.h').write_bytes(b'// first\r\n')
+        initial = roll_protobuf.NewPatch('0001-initial', root_repo)
+        self.assertEqual('0001-initial.patch', initial.patch_name)
+        self.assertEqual(
+            b'// first\n',
+            pathlib.Path(root_repo, 'src', 'google', 'protobuf',
+                         'first.h').read_bytes())
+        patch_bytes = pathlib.Path(initial.patch_path).read_bytes()
+        self.assertIn(f'--- a/{_PLAN_CLEAN_PATH}\n'.encode('utf-8'),
+                      patch_bytes)
+        self.assertIn(b'+++ b/src/google/protobuf/first.h\n', patch_bytes)
+        self.assertEqual(
+            roll_protobuf._BuildPatchDiffFromCommit(
+                roll_protobuf._ResolveCheckoutPaths(root_repo),
+                initial.commit), patch_bytes)
+        self.assertEqual('',
+                         _RunGitCommand(root_repo, ['status', '--porcelain']))
+        self.assertFalse(
+            os.path.exists(os.path.join(root_repo, '.git', 'protobuf-roll')))
+        if sys.platform != 'win32':
+            hook.unlink()
+        info_attrs.write_text(
+            '*.u16 text working-tree-encoding=UTF-16LE eol=lf\n',
+            encoding='utf-8',
+            newline='\n')
+        u16_path = pathlib.Path(root_repo, 'src', 'google', 'protobuf',
+                                'enc.u16')
+        u16_path.write_bytes('// u16!\n'.encode('utf-16-le'))
+        _RunGitCommand(root_repo, [
+            '-c', 'core.safecrlf=false', 'add', '--force', '--',
+            'src/google/protobuf/enc.u16'
+        ])
+        _RunGitCommand(root_repo, [
+            'commit', '--quiet', '--no-gpg-sign', '--no-verify', '-m',
+            'Add enc.u16'
+        ])
+        readme_stat = os.stat(os.path.join(root_repo, 'README.chromium'))
+        os.utime(os.path.join(root_repo, 'README.chromium'),
+                 (readme_stat.st_atime + 20, readme_stat.st_mtime + 20))
+        roll_protobuf._NormalizeCommittedWorktreeFiles(
+            roll_protobuf._ResolveCheckoutPaths(root_repo),
+            ('src/google/protobuf/enc.u16', ))
+        self.assertEqual(b'// u16!\n', u16_path.read_bytes())
+        self.assertEqual(
+            'README.chromium',
+            _RunGitCommand(
+                root_repo,
+                ['diff-files', '--name-only', '--', 'README.chromium']))
+        self.assertEqual(
+            '', _RunGitCommand(root_repo, ['diff', '--cached', '--name-only']))
+        info_attrs.unlink()
+        _RunGitCommand(root_repo, ['config', '--unset', 'core.safecrlf'])
+        _RunGitCommand(root_repo,
+                       ['reset', '--quiet', '--hard', initial.commit])
+        self.assertTrue(
+            roll_protobuf.CheckTreeMatchesPatchedUpstream(
+                root_repo, self.fixture.upstream_directory).IsClean())
+        # Upstream Bazel compatibility subdirectories (`patches/protobuf_v25/*`)
+        # are preserved by `_BuildPatchDiffFromCommit` while top-level
+        # `patches/*.{patch,md}` files are excluded.
+        _WriteFilesToDirectory(
+            root_repo, {
+                'patches/protobuf_v25/bazel.patch': '// upstream subpatch\n',
+                'patches/0002-note.md': 'companion note\n',
+            })
+        _RunGitCommand(root_repo, [
+            'add', '--force', '--', 'patches/protobuf_v25/bazel.patch',
+            'patches/0002-note.md'
+        ])
+        _RunGitCommand(root_repo, [
+            'commit', '--quiet', '--no-gpg-sign', '--no-verify', '-m',
+            'Apply patches/0002-sub.patch'
+        ])
+        sub_diff = roll_protobuf._BuildPatchDiffFromCommit(
+            roll_protobuf._ResolveCheckoutPaths(root_repo), 'HEAD')
+        self.assertIn(b'patches/protobuf_v25/bazel.patch\n', sub_diff)
+        self.assertNotIn(b'0002-note.md', sub_diff)
+
+    def testNewPatchRejectsInvalidNamesStatesAndDisallowedFiles(self):
+        unborn = os.path.join(self.temporary_directory, 'unborn_new_patch')
+        _WriteFilesToDirectory(unborn, {'src/a.h': '// a\n'})
+        _RunGitCommand(unborn, ['init', '--quiet'])
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'no commits'):
+            roll_protobuf.NewPatch('0006-unborn', unborn)
+
+        for invalid in ('', 'bad-name', '007-short', '0006-', '0006-a..b',
+                        '0006-sub/dir', '\u0660006-arabic'):
+            with self.subTest(invalid=invalid):
+                with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                            r'Invalid patch name'):
+                    roll_protobuf.NewPatch(invalid,
+                                           self.fixture.protobuf_directory)
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'already exists'):
+            roll_protobuf.NewPatch(_PLAN_CLEAN_PATCH,
+                                   self.fixture.protobuf_directory)
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'already used by patches/0001-'):
+            roll_protobuf.NewPatch('0001-duplicate-num',
+                                   self.fixture.protobuf_directory)
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'must sort after existing'):
+            roll_protobuf.NewPatch('0000-before-first',
+                                   self.fixture.protobuf_directory)
+
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'No uncommitted changes'):
+            roll_protobuf.NewPatch('0006-empty',
+                                   self.fixture.protobuf_directory)
+
+        roll_protobuf.PrepareRoll(
+            to_revision='v37.0',
+            protobuf_directory=self.fixture.protobuf_directory,
+            upstream_repository_path=self.fixture.upstream_directory,
+        )
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r"while roll phase is 'prepared'"):
+            roll_protobuf.NewPatch('0006-prep',
+                                   self.fixture.protobuf_directory)
+        self._StartDefaultConflictRoll()
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r"while roll phase is 'conflict'"):
+            roll_protobuf.NewPatch('0006-conflict',
+                                   self.fixture.protobuf_directory)
+        roll_protobuf.AbortRoll(self.fixture.protobuf_directory)
+
+        checkout = roll_protobuf._ResolveCheckoutPaths(
+            self.fixture.protobuf_directory)
+        merge_head = os.path.join(
+            os.path.dirname(checkout.roll_state_directory), 'MERGE_HEAD')
+        pathlib.Path(merge_head).write_text('deadbeef\n', encoding='utf-8')
+        try:
+            with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                        r'rebase, merge, or cherry-pick'):
+                roll_protobuf.NewPatch('0006-merge',
+                                       self.fixture.protobuf_directory)
+        finally:
+            os.remove(merge_head)
+
+        _WriteFilesToDirectory(self.repository_root,
+                               {'OTHER_CHROMIUM_FILE': 'staged outside\n'})
+        _RunGitCommand(self.repository_root, ['add', 'OTHER_CHROMIUM_FILE'])
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'Staged changes outside'):
+            roll_protobuf.NewPatch('0006-outside',
+                                   self.fixture.protobuf_directory)
+        _RunGitCommand(self.repository_root,
+                       ['reset', '--quiet', 'HEAD', 'OTHER_CHROMIUM_FILE'])
+        _RunGitCommand(self.repository_root,
+                       ['checkout', '--', 'OTHER_CHROMIUM_FILE'])
+
+        outside_body = pathlib.Path(
+            self.repository_root,
+            'OTHER_CHROMIUM_FILE').read_text(encoding='utf-8')
+        _RunGitCommand(self.repository_root,
+                       ['rm', '-q', 'OTHER_CHROMIUM_FILE'])
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'src/moved_in.h': outside_body})
+        _RunGitCommand(self.repository_root,
+                       ['add', 'third_party/protobuf/src/moved_in.h'])
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'Staged changes outside.*OTHER_CHROMIUM'):
+            roll_protobuf.NewPatch('0006-outside-rename',
+                                   self.fixture.protobuf_directory)
+        _RunGitCommand(self.repository_root, ['reset', '--quiet', '--hard'])
+
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'src/bad.rej': 'rej\n'})
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'\.rej and \.orig'):
+            roll_protobuf.NewPatch('0006-rej', self.fixture.protobuf_directory)
+        os.remove(
+            os.path.join(self.fixture.protobuf_directory, 'src', 'bad.rej'))
+
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'src/marked.h': '<<<<<<< HEAD\n'})
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'conflict markers'):
+            roll_protobuf.NewPatch('0006-markers',
+                                   self.fixture.protobuf_directory)
+        os.remove(
+            os.path.join(self.fixture.protobuf_directory, 'src', 'marked.h'))
+
+        for bad_path in ('BUILD.gn', 'CMakeLists.txt',
+                         'src/google/protobuf/descriptor.pb.h',
+                         'src/google/protobuf/any.pb.h'):
+            with self.subTest(bad_path=bad_path):
+                _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                                       {bad_path: '// disallowed\n'})
+                with self.assertRaisesRegex(
+                        roll_protobuf.RollProtobufError,
+                        r'Only non-bootstrap regular files under src/'):
+                    roll_protobuf.NewPatch('0006-disallowed',
+                                           self.fixture.protobuf_directory)
+                _RunGitCommand(self.repository_root,
+                               ['checkout', '--', 'third_party/protobuf'])
+                _RunGitCommand(self.repository_root,
+                               ['clean', '-fdq', '--', 'third_party/protobuf'])
+
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'src/staged_diverged.h': '// staged v1\n'})
+        _RunGitCommand(self.repository_root,
+                       ['add', 'third_party/protobuf/src/staged_diverged.h'])
+        _WriteFilesToDirectory(self.fixture.protobuf_directory,
+                               {'src/staged_diverged.h': '// unstaged v2\n'})
+        with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
+                                    r'differ from the working tree'):
+            roll_protobuf.NewPatch('0006-diverged',
+                                   self.fixture.protobuf_directory)
+        self.assertEqual(
+            'third_party/protobuf/src/staged_diverged.h',
+            _RunGitCommand(self.repository_root,
+                           ['diff', '--cached', '--name-only']))
+        _RunGitCommand(
+            self.repository_root,
+            ['rm', '-fq', '--', 'third_party/protobuf/src/staged_diverged.h'])
+
+        if sys.platform != 'win32':
+            symlink_path = os.path.join(self.fixture.protobuf_directory, 'src',
+                                        'symlink.h')
+            os.symlink('google/protobuf/clean.h', symlink_path)
+            try:
+                with self.assertRaisesRegex(
+                        roll_protobuf.RollProtobufError,
+                        r'Only non-bootstrap regular files under src/'):
+                    roll_protobuf.NewPatch('0006-symlink',
+                                           self.fixture.protobuf_directory)
+            finally:
+                os.unlink(symlink_path)
+
+        nested_git = os.path.join(self.fixture.protobuf_directory, 'src',
+                                  'subrepo')
+        _InitializeGitRepositoryWithFiles(nested_git, {'sub.h': '// sub\n'})
+        with self.assertRaisesRegex(
+                roll_protobuf.RollProtobufError,
+                r'Only non-bootstrap regular files under src/'):
+            roll_protobuf.NewPatch('0006-subrepo',
+                                   self.fixture.protobuf_directory)
+
+
 
 if __name__ == '__main__':
     unittest.main()
