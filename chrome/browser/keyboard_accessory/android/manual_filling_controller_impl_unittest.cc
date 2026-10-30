@@ -27,8 +27,12 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace {
 using autofill::AccessoryAction;
@@ -134,6 +138,14 @@ class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
   void NotifyAtMemorySourceObserver(IsFillingSourceAvailable source_available) {
     at_memory_source_observer_.Run(&mock_at_memory_controller_,
                                    source_available);
+  }
+
+  content::RenderFrameHost* CreateAndNavigateSubframe(const GURL& url) {
+    content::RenderFrameHost* subframe =
+        content::RenderFrameHostTester::For(main_rfh())
+            ->AppendChild("subframe");
+    return content::NavigationSimulator::NavigateAndCommitFromDocument(
+        url, subframe);
   }
 
  protected:
@@ -743,6 +755,140 @@ TEST_F(ManualFillingControllerTest, DoesNotUpdateViewWhenWebContentsIsHidden) {
   NotifyCreditCardSourceObserver(IsFillingSourceAvailable(true));
   controller()->NotifyFocusedInputChanged(
       kFocusedFieldId, FocusedFieldType::kFillableNonSearchField);
+}
+
+TEST_F(ManualFillingControllerTest, ResetsFocusWhenFocusedFrameDeleted) {
+  NavigateAndCommit(GURL("https://example.com"));
+  content::RenderFrameHost* subframe =
+      CreateAndNavigateSubframe(GURL("https://sub.example.com"));
+
+  const autofill::FieldGlobalId subframe_field_id{
+      autofill::LocalFrameToken(subframe->GetFrameToken().value()),
+      autofill::FieldRendererId(123)};
+
+  controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
+                                         /*has_suggestions=*/true);
+  controller()->NotifyFocusedInputChanged(
+      subframe_field_id, FocusedFieldType::kFillableUsernameField);
+  EXPECT_EQ(controller()->GetLastFocusedFieldId(), subframe_field_id);
+  testing::Mock::VerifyAndClearExpectations(view());
+
+  EXPECT_CALL(*view(), CloseAccessorySheet());
+  EXPECT_CALL(*view(), Hide());
+  content::RenderFrameHostTester::For(subframe)->Detach();
+
+  EXPECT_EQ(controller()->GetLastFocusedFieldId(), autofill::FieldGlobalId());
+}
+
+TEST_F(ManualFillingControllerTest,
+       DoesNotResetFocusWhenUnrelatedFrameDeleted) {
+  NavigateAndCommit(GURL("https://example.com"));
+  content::RenderFrameHost* subframe =
+      CreateAndNavigateSubframe(GURL("https://sub.example.com"));
+
+  const autofill::FieldGlobalId main_frame_field_id{
+      autofill::LocalFrameToken(main_rfh()->GetFrameToken().value()),
+      autofill::FieldRendererId(123)};
+
+  controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
+                                         /*has_suggestions=*/true);
+  controller()->NotifyFocusedInputChanged(
+      main_frame_field_id, FocusedFieldType::kFillableUsernameField);
+  testing::Mock::VerifyAndClearExpectations(view());
+
+  EXPECT_CALL(*view(), CloseAccessorySheet()).Times(0);
+  EXPECT_CALL(*view(), Hide()).Times(0);
+  content::RenderFrameHostTester::For(subframe)->Detach();
+
+  EXPECT_EQ(controller()->GetLastFocusedFieldId(), main_frame_field_id);
+}
+
+TEST_F(ManualFillingControllerTest, ResetsFocusWhenFocusedFrameSwapped) {
+  NavigateAndCommit(GURL("https://example.com"));
+  content::RenderFrameHost* subframe =
+      CreateAndNavigateSubframe(GURL("https://sub.example.com"));
+
+  const autofill::FieldGlobalId subframe_field_id{
+      autofill::LocalFrameToken(subframe->GetFrameToken().value()),
+      autofill::FieldRendererId(123)};
+
+  controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
+                                         /*has_suggestions=*/true);
+  controller()->NotifyFocusedInputChanged(
+      subframe_field_id, FocusedFieldType::kFillableUsernameField);
+  EXPECT_EQ(controller()->GetLastFocusedFieldId(), subframe_field_id);
+  testing::Mock::VerifyAndClearExpectations(view());
+
+  EXPECT_CALL(*view(), CloseAccessorySheet());
+  EXPECT_CALL(*view(), Hide());
+  static_cast<content::WebContentsObserver*>(controller())
+      ->RenderFrameHostChanged(subframe, main_rfh());
+
+  EXPECT_EQ(controller()->GetLastFocusedFieldId(), autofill::FieldGlobalId());
+}
+
+TEST_F(ManualFillingControllerTest,
+       ResetsFocusOnPrimaryMainFrameCrossDocumentNavigation) {
+  NavigateAndCommit(GURL("https://example.com/1"));
+
+  controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
+                                         /*has_suggestions=*/true);
+  controller()->NotifyFocusedInputChanged(
+      kFocusedFieldId, FocusedFieldType::kFillableUsernameField);
+  EXPECT_EQ(controller()->GetLastFocusedFieldId(), kFocusedFieldId);
+  testing::Mock::VerifyAndClearExpectations(view());
+
+  EXPECT_CALL(*view(), CloseAccessorySheet());
+  EXPECT_CALL(*view(), Hide());
+  NavigateAndCommit(GURL("https://example.com/2"));
+
+  EXPECT_EQ(controller()->GetLastFocusedFieldId(), autofill::FieldGlobalId());
+}
+
+TEST_F(ManualFillingControllerTest,
+       ResetsFocusOnFocusedSubframeCrossDocumentNavigation) {
+  NavigateAndCommit(GURL("https://example.com"));
+  content::RenderFrameHost* subframe =
+      CreateAndNavigateSubframe(GURL("https://sub.example.com/1"));
+
+  const autofill::FieldGlobalId subframe_field_id{
+      autofill::LocalFrameToken(subframe->GetFrameToken().value()),
+      autofill::FieldRendererId(123)};
+
+  controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
+                                         /*has_suggestions=*/true);
+  controller()->NotifyFocusedInputChanged(
+      subframe_field_id, FocusedFieldType::kFillableUsernameField);
+  testing::Mock::VerifyAndClearExpectations(view());
+
+  EXPECT_CALL(*view(), CloseAccessorySheet());
+  EXPECT_CALL(*view(), Hide());
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://sub.example.com/2"), subframe);
+
+  EXPECT_EQ(controller()->GetLastFocusedFieldId(), autofill::FieldGlobalId());
+}
+
+TEST_F(ManualFillingControllerTest, DoesNotResetFocusOnSameDocumentNavigation) {
+  NavigateAndCommit(GURL("https://example.com/page"));
+
+  const autofill::FieldGlobalId main_frame_field_id{
+      autofill::LocalFrameToken(main_rfh()->GetFrameToken().value()),
+      autofill::FieldRendererId(123)};
+
+  controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
+                                         /*has_suggestions=*/true);
+  controller()->NotifyFocusedInputChanged(
+      main_frame_field_id, FocusedFieldType::kFillableUsernameField);
+  testing::Mock::VerifyAndClearExpectations(view());
+
+  EXPECT_CALL(*view(), CloseAccessorySheet()).Times(0);
+  EXPECT_CALL(*view(), Hide()).Times(0);
+  content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://example.com/page#section"), main_rfh())
+      ->CommitSameDocument();
+
+  EXPECT_EQ(controller()->GetLastFocusedFieldId(), main_frame_field_id);
 }
 
 }  // namespace
