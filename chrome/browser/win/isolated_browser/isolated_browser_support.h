@@ -23,9 +23,12 @@ class PrefService;
 namespace chrome {
 
 // Encapsulates the isolated browser process handle along with its Job Object
-// and I/O Completion Port. This ensures the stub process can wait for all
-// child/helper processes in the job object to terminate cleanly before exiting,
-// while maintaining the JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE guarantee.
+// and I/O Completion Port. The stub process and the main isolated browser
+// process are placed in this Job Object, while child processes spawned by the
+// isolated browser break away automatically via
+// `JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK`. This guarantees that the stub
+// outlives the isolated browser (`JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE`) without
+// hanging on surviving descendants such as externally launched applications.
 class IsolatedBrowserProcess {
  public:
   // Attempt to launch an isolated browser process with the command line
@@ -39,10 +42,14 @@ class IsolatedBrowserProcess {
   IsolatedBrowserProcess(IsolatedBrowserProcess&&);
   IsolatedBrowserProcess& operator=(IsolatedBrowserProcess&&);
 
-  // Waits for the main isolated browser process and all child/helper processes
-  // in the job object to fully exit before returning the exit code of the main
+  // Waits for the main isolated browser process to exit and for its kernel job
+  // accounting entry to clear before returning the exit code of the main
   // isolated browser, or std::nullopt if waiting failed.
   std::optional<int> WaitForExit() const;
+
+  // Test-only accessors. `job_` only carries `JOB_OBJECT_QUERY` access.
+  HANDLE job_for_testing() const { return job_.get(); }
+  const base::Process& process_for_testing() const { return process_; }
 
  private:
   IsolatedBrowserProcess(base::Process process,

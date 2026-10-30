@@ -15,11 +15,14 @@
 #include "base/base64.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
@@ -36,6 +39,7 @@
 #include "base/win/elevation_util.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_com_initializer.h"
+#include "base/win/scoped_handle.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/os_crypt/app_bound_encryption_provider_win.h"
@@ -797,6 +801,322 @@ MULTIPROCESS_TEST_MAIN(RunIsolatedChromeLaunchUnisolatedInGreatGrandchild) {
   if (chrome::IsRunningIsolated()) {
     return -102;
   }
+  return 0;
+}
+
+constexpr char kStubReadyEventSwitch[] = "stub-ready-event";
+constexpr char kGrandchildStartedEventSwitch[] = "grandchild-started-event";
+constexpr char kStubCheckedJobsEventSwitch[] = "stub-checked-jobs-event";
+constexpr char kPingGrandchildEventSwitch[] = "ping-grandchild-event";
+constexpr char kPongGrandchildEventSwitch[] = "pong-grandchild-event";
+constexpr char kGrandchildPidFileSwitch[] = "grandchild-pid-file";
+constexpr int kExpectedIsolatedBrowserExitCode = 42;
+
+// Verifies that `IsolatedBrowserProcess::Launch()` places the isolated browser
+// process inside the stub's Job Object while configuring
+// `JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK` so child processes spawned by the
+// isolated browser automatically break away from the stub's Job Object:
+// 1. Querying `::IsProcessInJob` against the stub's explicit Job Object handle
+//    confirms that both the stub and the isolated browser ARE in the job, while
+//    the child process spawned by the isolated browser is NOT in the job.
+// 2. `IsolatedBrowserProcess::WaitForExit()` returns the isolated browser's
+//    exit code as soon as the isolated browser exits, without blocking on a
+//    surviving child process spawned by the isolated browser.
+// 3. When the stub process subsequently exits (closing its Job Object handle
+//    and triggering `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE`), the surviving child
+//    process is not terminated and continues running until explicitly signaled.
+TEST_F(IsolatedBrowserSupportLaunchTest, ChildProcessesBreakAwayFromJob) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  const base::FilePath grandchild_pid_file =
+      temp_dir.GetPath().AppendASCII("grandchild.pid");
+
+  const std::string stub_ready_name =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  const std::string grandchild_started_name =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  const std::string stub_checked_jobs_name =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  const std::string ping_grandchild_name =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+  const std::string pong_grandchild_name =
+      base::Uuid::GenerateRandomV4().AsLowercaseString();
+
+  base::win::ScopedHandle stub_ready_handle(::CreateEventA(
+      /*lpEventAttributes=*/nullptr, /*bManualReset=*/TRUE,
+      /*bInitialState=*/FALSE, /*lpName=*/stub_ready_name.c_str()));
+  ASSERT_TRUE(stub_ready_handle.is_valid());
+  base::WaitableEvent stub_ready(std::move(stub_ready_handle));
+
+  base::win::ScopedHandle grandchild_started_handle(::CreateEventA(
+      /*lpEventAttributes=*/nullptr, /*bManualReset=*/TRUE,
+      /*bInitialState=*/FALSE, /*lpName=*/grandchild_started_name.c_str()));
+  ASSERT_TRUE(grandchild_started_handle.is_valid());
+  base::WaitableEvent grandchild_started(std::move(grandchild_started_handle));
+
+  base::win::ScopedHandle stub_checked_jobs_handle(::CreateEventA(
+      /*lpEventAttributes=*/nullptr, /*bManualReset=*/TRUE,
+      /*bInitialState=*/FALSE, /*lpName=*/stub_checked_jobs_name.c_str()));
+  ASSERT_TRUE(stub_checked_jobs_handle.is_valid());
+  base::WaitableEvent stub_checked_jobs(std::move(stub_checked_jobs_handle));
+
+  base::win::ScopedHandle ping_grandchild_handle(::CreateEventA(
+      /*lpEventAttributes=*/nullptr, /*bManualReset=*/TRUE,
+      /*bInitialState=*/FALSE, /*lpName=*/ping_grandchild_name.c_str()));
+  ASSERT_TRUE(ping_grandchild_handle.is_valid());
+  base::WaitableEvent ping_grandchild(std::move(ping_grandchild_handle));
+
+  // Ensure waiting child processes are always unblocked on scope exit even if
+  // an assertion fails early.
+  absl::Cleanup unblock_children = [&] {
+    stub_checked_jobs.Signal();
+    ping_grandchild.Signal();
+  };
+
+  base::win::ScopedHandle pong_grandchild_handle(::CreateEventA(
+      /*lpEventAttributes=*/nullptr, /*bManualReset=*/TRUE,
+      /*bInitialState=*/FALSE, /*lpName=*/pong_grandchild_name.c_str()));
+  ASSERT_TRUE(pong_grandchild_handle.is_valid());
+  base::WaitableEvent pong_grandchild(std::move(pong_grandchild_handle));
+
+  base::CommandLine stub_cmd = base::GetMultiProcessTestChildBaseCommandLine();
+  stub_cmd.RemoveSwitch(switches::kTestChildProcess);
+  stub_cmd.AppendSwitchASCII(kStubReadyEventSwitch, stub_ready_name);
+  stub_cmd.AppendSwitchASCII(kGrandchildStartedEventSwitch,
+                             grandchild_started_name);
+  stub_cmd.AppendSwitchASCII(kStubCheckedJobsEventSwitch,
+                             stub_checked_jobs_name);
+  stub_cmd.AppendSwitchASCII(kPingGrandchildEventSwitch, ping_grandchild_name);
+  stub_cmd.AppendSwitchASCII(kPongGrandchildEventSwitch, pong_grandchild_name);
+  stub_cmd.AppendSwitchPath(kGrandchildPidFileSwitch, grandchild_pid_file);
+
+  base::LaunchOptions options;
+  options.start_hidden = true;
+  base::Process stub_process = base::SpawnMultiProcessTestChild(
+      "JobBreakawayStubProcess", stub_cmd, options);
+  ASSERT_TRUE(stub_process.IsValid());
+
+  // Wait for the grandchild (spawned by the isolated browser) to confirm it is
+  // running before the isolated browser and stub exit.
+  ASSERT_TRUE(grandchild_started.TimedWait(TestTimeouts::action_timeout()));
+
+  // Inside `JobBreakawayStubProcess`, the stub directly queries
+  // `::IsProcessInJob` against its explicit Job Object handle for both the
+  // isolated browser (`true`) and the grandchild (`false`), then signals the
+  // isolated browser to exit with `kExpectedIsolatedBrowserExitCode` while the
+  // grandchild remains blocked on `ping_grandchild`. Verify that all job
+  // membership checks succeeded and `WaitForExit()` returned promptly.
+  int stub_exit_code = -1;
+  ASSERT_TRUE(base::WaitForMultiprocessTestChildExit(
+      stub_process, TestTimeouts::action_timeout(), &stub_exit_code));
+  EXPECT_EQ(stub_exit_code, kExpectedIsolatedBrowserExitCode);
+
+  // Both the isolated browser and the stub process have now exited, closing the
+  // stub's Job Object (`JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE`). Verify that the
+  // grandchild process survived job closure and responds to `ping_grandchild`.
+  ping_grandchild.Signal();
+  EXPECT_TRUE(pong_grandchild.TimedWait(TestTimeouts::action_timeout()));
+}
+
+MULTIPROCESS_TEST_MAIN(JobBreakawayStubProcess) {
+  install_static::ScopedInstallDetails install_details(
+      std::make_unique<os_crypt::FakeInstallDetails>());
+
+  const auto* cmd_line = base::CommandLine::ForCurrentProcess();
+  base::win::ScopedHandle stub_ready_handle(::OpenEventA(
+      EVENT_MODIFY_STATE, /*bInheritHandle=*/FALSE,
+      cmd_line->GetSwitchValueASCII(kStubReadyEventSwitch).c_str()));
+  if (!stub_ready_handle.is_valid()) {
+    return -101;
+  }
+  base::WaitableEvent stub_ready(std::move(stub_ready_handle));
+
+  base::win::ScopedHandle grandchild_started_handle(::OpenEventA(
+      SYNCHRONIZE, /*bInheritHandle=*/FALSE,
+      cmd_line->GetSwitchValueASCII(kGrandchildStartedEventSwitch).c_str()));
+  if (!grandchild_started_handle.is_valid()) {
+    return -102;
+  }
+  base::WaitableEvent grandchild_started(std::move(grandchild_started_handle));
+
+  base::win::ScopedHandle stub_checked_jobs_handle(::OpenEventA(
+      EVENT_MODIFY_STATE, /*bInheritHandle=*/FALSE,
+      cmd_line->GetSwitchValueASCII(kStubCheckedJobsEventSwitch).c_str()));
+  if (!stub_checked_jobs_handle.is_valid()) {
+    return -103;
+  }
+  base::WaitableEvent stub_checked_jobs(std::move(stub_checked_jobs_handle));
+
+  base::CommandLine isolated_cmd =
+      base::GetMultiProcessTestChildBaseCommandLine();
+  isolated_cmd.RemoveSwitch(switches::kTestChildProcess);
+  isolated_cmd.AppendSwitchASCII(switches::kTestChildProcess,
+                                 "JobBreakawayIsolatedBrowserProcess");
+
+  auto isolated_process = chrome::IsolatedBrowserProcess::Launch(isolated_cmd);
+  if (!isolated_process.has_value()) {
+    return -104;
+  }
+
+  // Verify via `::IsProcessInJob` against the explicit stub Job Object handle
+  // that both the stub itself and the newly launched isolated browser process
+  // ARE members of the stub's Job Object.
+  BOOL stub_in_job = FALSE;
+  if (::IsProcessInJob(::GetCurrentProcess(),
+                       isolated_process->job_for_testing(),
+                       &stub_in_job) != TRUE ||
+      stub_in_job != TRUE) {
+    return -105;
+  }
+  BOOL browser_in_job = FALSE;
+  if (::IsProcessInJob(isolated_process->process_for_testing().Handle(),
+                       isolated_process->job_for_testing(),
+                       &browser_in_job) != TRUE ||
+      browser_in_job != TRUE) {
+    return -106;
+  }
+
+  // Signal after `Launch()` has configured
+  // `JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK` on the stub's Job Object so the
+  // isolated browser spawns its child deterministically after the flag is set.
+  stub_ready.Signal();
+
+  // Wait for the grandchild to write its PID and confirm it is running.
+  if (!grandchild_started.TimedWait(TestTimeouts::action_timeout())) {
+    return -107;
+  }
+
+  std::string pid_str;
+  if (!base::ReadFileToString(
+          cmd_line->GetSwitchValuePath(kGrandchildPidFileSwitch), &pid_str)) {
+    return -108;
+  }
+  unsigned int grandchild_pid = 0;
+  if (!base::StringToUint(pid_str, &grandchild_pid) || grandchild_pid == 0) {
+    return -109;
+  }
+
+  base::Process grandchild = base::Process::OpenWithAccess(
+      static_cast<base::ProcessId>(grandchild_pid),
+      PROCESS_QUERY_LIMITED_INFORMATION);
+  if (!grandchild.IsValid()) {
+    return -110;
+  }
+
+  // Verify directly via `::IsProcessInJob` against the explicit stub Job Object
+  // handle that the child spawned by the isolated browser is NOT in the stub's
+  // Job Object.
+  BOOL grandchild_in_job = TRUE;
+  if (::IsProcessInJob(grandchild.Handle(), isolated_process->job_for_testing(),
+                       &grandchild_in_job) != TRUE ||
+      grandchild_in_job != FALSE) {
+    return -111;
+  }
+  grandchild.Close();
+
+  // Allow the isolated browser process to exit while the grandchild stays
+  // running.
+  stub_checked_jobs.Signal();
+
+  auto exit_code = isolated_process->WaitForExit();
+  if (!exit_code.has_value()) {
+    return -112;
+  }
+
+  return *exit_code;
+}
+
+MULTIPROCESS_TEST_MAIN(JobBreakawayIsolatedBrowserProcess) {
+  const auto* cmd_line = base::CommandLine::ForCurrentProcess();
+  if (!cmd_line->HasSwitch(::switches::kIsolated)) {
+    return -201;
+  }
+
+  base::win::ScopedHandle stub_ready_handle(::OpenEventA(
+      SYNCHRONIZE, /*bInheritHandle=*/FALSE,
+      cmd_line->GetSwitchValueASCII(kStubReadyEventSwitch).c_str()));
+  if (!stub_ready_handle.is_valid()) {
+    return -202;
+  }
+  base::WaitableEvent stub_ready(std::move(stub_ready_handle));
+  if (!stub_ready.TimedWait(TestTimeouts::action_timeout())) {
+    return -203;
+  }
+
+  base::win::ScopedHandle stub_checked_jobs_handle(::OpenEventA(
+      SYNCHRONIZE, /*bInheritHandle=*/FALSE,
+      cmd_line->GetSwitchValueASCII(kStubCheckedJobsEventSwitch).c_str()));
+  if (!stub_checked_jobs_handle.is_valid()) {
+    return -204;
+  }
+  base::WaitableEvent stub_checked_jobs(std::move(stub_checked_jobs_handle));
+
+  // Spawn a child process using default `LaunchOptions` (without
+  // `force_breakaway_from_job_`), matching how external applications and
+  // downloads are launched without explicit breakaway flags.
+  base::CommandLine grandchild_cmd =
+      base::GetMultiProcessTestChildBaseCommandLine();
+  grandchild_cmd.RemoveSwitch(::switches::kIsolated);
+  grandchild_cmd.RemoveSwitch(switches::kTestChildProcess);
+  base::LaunchOptions options;
+  options.start_hidden = true;
+  base::Process grandchild = base::SpawnMultiProcessTestChild(
+      "JobBreakawayGrandchildProcess", grandchild_cmd, options);
+  if (!grandchild.IsValid()) {
+    return -205;
+  }
+
+  // Stay alive until the stub has queried `::IsProcessInJob` on both this
+  // isolated browser process and `grandchild`, then exit while `grandchild`
+  // remains running.
+  if (!stub_checked_jobs.TimedWait(TestTimeouts::action_timeout())) {
+    return -206;
+  }
+
+  return kExpectedIsolatedBrowserExitCode;
+}
+
+MULTIPROCESS_TEST_MAIN(JobBreakawayGrandchildProcess) {
+  const auto* cmd_line = base::CommandLine::ForCurrentProcess();
+
+  base::win::ScopedHandle grandchild_started_handle(::OpenEventA(
+      EVENT_MODIFY_STATE, /*bInheritHandle=*/FALSE,
+      cmd_line->GetSwitchValueASCII(kGrandchildStartedEventSwitch).c_str()));
+  if (!grandchild_started_handle.is_valid()) {
+    return -301;
+  }
+  base::WaitableEvent grandchild_started(std::move(grandchild_started_handle));
+
+  base::win::ScopedHandle ping_grandchild_handle(::OpenEventA(
+      SYNCHRONIZE, /*bInheritHandle=*/FALSE,
+      cmd_line->GetSwitchValueASCII(kPingGrandchildEventSwitch).c_str()));
+  if (!ping_grandchild_handle.is_valid()) {
+    return -302;
+  }
+  base::WaitableEvent ping_grandchild(std::move(ping_grandchild_handle));
+
+  base::win::ScopedHandle pong_grandchild_handle(::OpenEventA(
+      EVENT_MODIFY_STATE, /*bInheritHandle=*/FALSE,
+      cmd_line->GetSwitchValueASCII(kPongGrandchildEventSwitch).c_str()));
+  if (!pong_grandchild_handle.is_valid()) {
+    return -303;
+  }
+  base::WaitableEvent pong_grandchild(std::move(pong_grandchild_handle));
+
+  // Publish this grandchild's PID before signaling `grandchild_started` so the
+  // stub can open a query handle and pass it to `::IsProcessInJob`.
+  if (!base::WriteFile(cmd_line->GetSwitchValuePath(kGrandchildPidFileSwitch),
+                       base::NumberToString(::GetCurrentProcessId()))) {
+    return -304;
+  }
+
+  grandchild_started.Signal();
+
+  if (!ping_grandchild.TimedWait(TestTimeouts::action_timeout())) {
+    return -305;
+  }
+
+  pong_grandchild.Signal();
   return 0;
 }
 

@@ -156,14 +156,16 @@ std::optional<int> IsolatedBrowserProcess::WaitForExit() const {
   }
 
   // Stage 2: The main isolated browser process handle has signaled ExitProcess.
-  // Now drain process exit completion messages until all isolated processes
-  // inside the job object have completed kernel process termination.
+  // Drain process exit completion messages until the isolated browser has
+  // completed kernel job teardown.
   //
   // Note: The stub process itself is assigned to the Job Object (to guarantee
   // that if the stub process is killed or crashes,
-  // JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE terminates all isolated child
-  // processes). Therefore, the stub process counts as 1 active process inside
-  // the job.
+  // `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE` terminates the isolated browser
+  // process). Child processes spawned by the isolated browser break away from
+  // this job via `JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK` and have their
+  // lifetimes managed by the browser's own child Job Objects where appropriate.
+  // Therefore, the stub process counts as 1 active process inside the job.
   //
   // Checking `accounting_info.ActiveProcesses == 1` guarantees that ONLY the
   // stub process remains inside the Job Object.
@@ -242,8 +244,8 @@ base::expected<IsolatedBrowserProcess, HRESULT> IsolatedBrowserProcess::Launch(
 
   // Create an I/O Completion Port and associate it with the Job Object.
   // This allows the stub process to monitor process exit events
-  // (`JOB_OBJECT_MSG_EXIT_PROCESS`) and wait until all isolated browser
-  // processes in the job tree have fully terminated.
+  // (`JOB_OBJECT_MSG_EXIT_PROCESS`) and confirm the isolated browser process
+  // in the job has fully terminated at the kernel accounting level.
   base::win::ScopedHandle iocp;
   iocp.Set(::CreateIoCompletionPort(INVALID_HANDLE_VALUE, nullptr, 0, 1));
   if (!iocp.is_valid()) {
@@ -259,11 +261,14 @@ base::expected<IsolatedBrowserProcess, HRESULT> IsolatedBrowserProcess::Launch(
   }
 
   // Assign the stub process to the job object BEFORE launching the isolated
-  // browser. The elevator creates Chrome with the stub as
-  // PROC_THREAD_ATTRIBUTE_PARENT_PROCESS, so Chrome inherits this job. Chrome
-  // descendants then inherit the job by default. Note: Stub's Crashpad was
-  // initialized prior to this call during early startup, so Crashpad processes
-  // remain outside this Job Object.
+  // browser, while the job still has no breakaway limits configured. The
+  // elevator creates the isolated browser with the stub specified as
+  // `PROC_THREAD_ATTRIBUTE_PARENT_PROCESS`, so the isolated browser inherits
+  // this job at creation time. Once `JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK` is
+  // configured below after `RunIsolatedChrome` succeeds, subsequent child
+  // processes spawned by the isolated browser will automatically break away
+  // from this job. Note: Stub's Crashpad was initialized prior to this call
+  // during early startup, so Crashpad processes remain outside this Job Object.
   if (!::AssignProcessToJobObject(job.get(), ::GetCurrentProcess())) {
     return base::unexpected(HRESULT_FROM_WIN32(::GetLastError()));
   }
@@ -290,16 +295,41 @@ base::expected<IsolatedBrowserProcess, HRESULT> IsolatedBrowserProcess::Launch(
   }
   base::win::ScopedHandle query_job(query_job_handle);
 
-  // Configure `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE` only after
-  // `RunIsolatedChrome` and `DuplicateHandle` have succeeded. Because the stub
-  // process was already assigned to `job` via `AssignProcessToJobObject`,
-  // setting `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE` prior to `RunIsolatedChrome`
-  // would cause `ScopedHandle` destruction of `job` on an early failure return
-  // to terminate the stub process itself instead of allowing it to fall back to
-  // running as the unisolated browser.
+  // Configure the job limits only after `RunIsolatedChrome` and
+  // `DuplicateHandle` have succeeded, for two critical ordering reasons:
+  // 1. Because the stub process was already assigned to `job` via
+  //    `AssignProcessToJobObject`, setting `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE`
+  //    prior to `RunIsolatedChrome` would cause `ScopedHandle` destruction of
+  //    `job` on an early failure return to terminate the stub process itself
+  //    instead of allowing it to fall back to running as the unisolated
+  //    browser.
+  // 2. `RunIsolatedChrome` creates the isolated browser with the stub as its
+  //    parent (`PROC_THREAD_ATTRIBUTE_PARENT_PROCESS`) without an explicit job
+  //    list. Setting `JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK` prior to
+  //    `RunIsolatedChrome` would cause the isolated browser process itself to
+  //    break away at creation time instead of inheriting `job`.
+  //
+  // Enabling `JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK` now (once the isolated
+  // browser is already in `job`) ensures that all child processes subsequently
+  // spawned by the isolated browser automatically break away from the stub's
+  // Job Object:
+  // - External processes (such as downloaded files or folders opened via
+  //   `ShellExecuteExW`) do not remain inside `job` and therefore cannot keep
+  //   the stub process alive in `WaitForExit()` or block browser restarts after
+  //   the isolated browser exits.
+  // - Chrome's own internal child processes (renderers, GPU, utilities) still
+  //   terminate when the isolated browser exits because the isolated browser
+  //   places them into its own `sandbox::Job` and unsandboxed child Job Objects
+  //   configured with `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE`.
+  //
+  // `JOB_OBJECT_LIMIT_BREAKAWAY_OK` is also retained alongside
+  // `JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK` so callers that explicitly specify
+  // `CREATE_BREAKAWAY_FROM_JOB` (such as `upgrade_util::RelaunchChromeBrowser`
+  // when the stub spawns a new stub on restart) continue to succeed.
   JOBOBJECT_EXTENDED_LIMIT_INFORMATION limit_information = {};
   limit_information.BasicLimitInformation.LimitFlags =
-      JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE | JOB_OBJECT_LIMIT_BREAKAWAY_OK;
+      JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE | JOB_OBJECT_LIMIT_BREAKAWAY_OK |
+      JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK;
 
   if (!::SetInformationJobObject(job.get(), JobObjectExtendedLimitInformation,
                                  &limit_information,
@@ -310,9 +340,9 @@ base::expected<IsolatedBrowserProcess, HRESULT> IsolatedBrowserProcess::Launch(
   // Intentionally leak the primary job handle so that ScopedHandle destruction
   // when IsolatedBrowserProcess goes out of scope does not close the final job
   // handle while the stub/test process is executing. When the stub/test process
-  // terminates or crashes, Windows kernel automatically closes all process
-  // handles, triggering JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE to kill any
-  // surviving browser processes.
+  // terminates or crashes, the Windows kernel automatically closes all process
+  // handles, triggering `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE` to terminate the
+  // isolated browser process if it is still running.
   std::ignore = job.release();
 
   return IsolatedBrowserProcess(std::move(process), std::move(query_job),

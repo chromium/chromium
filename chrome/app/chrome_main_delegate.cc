@@ -1386,9 +1386,10 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
             upgrade_util::GetRelaunchCommandLine(command_line, restart_mode);
         // Feature state cannot be queried this early in browser startup, so
         // hard-code `wait_for_parent` to false. Because the stub already waits
-        // until all child processes have terminated before reaching this code
-        // (contained within a job monitored by `WaitForExit`), waiting for
-        // parent handle is not strictly necessary here.
+        // until the isolated browser process has fully terminated before
+        // reaching this code (via `WaitForExit`), and the stub process itself
+        // never opens the user data directory, waiting for the stub's process
+        // handle is not strictly necessary here.
         // TODO(crbug.com/526636718): Enable `wait_for_parent` by default once
         // the feature is fully launched.
         upgrade_util::RelaunchChromeBrowser(new_cl,

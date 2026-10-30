@@ -12,12 +12,12 @@ entities:
 |  - Non-isolated entry trampoline                                |
 |  - Creates Job Object & I/O Completion Port (IOCP)              |
 |  - Requests launch from Elevated Service via COM IPC            |
-|  - Monitors IOCP until main browser and all children terminate  |
+|  - Monitors process handle & IOCP until main browser terminates |
 |  - Handles breakaway relaunch on relaunch exit codes            |
 +-------------------+-----------------------------+---------------+
                     |                             ^
    (1) Launch IPC   |                             | (3) IOCP monitors exit of
-       via COM      v                             |     main & child processes
+       via COM      v                             |     isolated browser
 +---------------------------------------------+   |
 |              Elevated Service               |   |
 |  - High-privilege Windows service broker    |   |
@@ -50,22 +50,33 @@ evaluates whether isolation is enabled via
 [`chrome::IsIsolationEnabled()`](isolated_browser_support.h). If active and the
 process is not already running with `--isolated`:
 
-1.  **Job Object Creation**: Instantiates a Windows Job Object configured with:
-    -   `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE`: Guarantees all descendant
-        processes are terminated if the job is closed.
-    -   `JOB_OBJECT_LIMIT_BREAKAWAY_OK`: Permits authorized breakaway for child
-        process management.
+1.  **Job Object Creation**: Instantiates a Windows Job Object containing the
+    stub process and the main isolated browser process, configured (after the
+    isolated browser has inherited the job) with:
+    -   `JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE`: Guarantees the isolated browser
+        process is terminated if the stub's job handle is closed, ensuring the
+        stub always outlives the isolated browser.
+    -   `JOB_OBJECT_LIMIT_SILENT_BREAKAWAY_OK`: Ensures child processes spawned
+        by the isolated browser (such as externally launched applications or
+        downloads) automatically break away from the stub's Job Object so they
+        neither block stub exit nor get terminated prematurely when the stub
+        exits.
+    -   `JOB_OBJECT_LIMIT_BREAKAWAY_OK`: Permits explicit
+        `CREATE_BREAKAWAY_FROM_JOB` launches (such as spawning a new stub
+        process on browser restart).
 2.  **I/O Completion Port (IOCP)**: Associates the Job Object with an IOCP to
-    monitor process exit events deterministically, allowing the stub to track
-    when the main isolated browser and all child/helper processes have fully
-    terminated.
+    monitor process exit events deterministically, allowing the stub to confirm
+    when the main isolated browser process has fully completed kernel job
+    teardown.
 3.  **Child Launch Delegation**: Calls the Elevated Service via COM IPC to
     launch the actual browser process with `--isolated` under the restricted
-    token and places it into the configured Job Object.
-4.  **Lifecycle Monitoring**: Blocks on
-    [`IsolatedBrowserProcess::WaitForExit()`](isolated_browser_support.h#L45)
-    until the main isolated browser and all child/helper processes in the job
-    object have terminated.
+    token so it inherits the stub's Job Object prior to enabling silent
+    breakaway.
+4.  **Lifecycle Monitoring**: Lowers its OS shutdown priority (`0x27E` via
+    `SetProcessShutdownParameters`) below the isolated browser (`0x280`) and
+    Chrome child processes (`0x27F`), then blocks on
+    [`IsolatedBrowserProcess::WaitForExit()`](isolated_browser_support.h)
+    until the main isolated browser process has terminated.
 
 ### 2.2. The Isolated Browser Process
 
@@ -73,10 +84,13 @@ The isolated browser process runs with the `--isolated` switch and restricted
 security token capabilities:
 
 -   Standard browser features operate within the sandbox / Job Object
-    constraints.
+    constraints; although child processes break away from the stub's Job Object,
+    Chrome's internal child processes (renderers, GPU, utilities) remain bound
+    to the isolated browser's lifetime via the browser's own `sandbox::Job` and
+    unsandboxed child Job Objects (`JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE`).
 -   Any un-isolated operation (e.g., launching un-sandboxed external helpers)
     must explicitly request an un-isolated token via
-    [`chrome::GetUnisolatedAccessToken()`](isolated_browser_support.h#L71) and
+    [`chrome::GetUnisolatedAccessToken()`](isolated_browser_support.h) and
     supply it to `base::LaunchOptions` via `options.using_token` in
     `base::LaunchProcess()`.
 
@@ -171,7 +185,7 @@ Users can disable process isolation via a designated UI setting in Chrome:
 
 -   **Dynamic Re-encryption**: Disabling isolation through the approved user
     interface invokes
-    [`chrome::SetIsolationState()`](isolated_browser_support.h#L85), which
+    [`chrome::SetIsolationState()`](isolated_browser_support.h), which
     dynamically re-encrypts all stored secrets (cookies, passwords, tokens)
     using a non-isolation-bound key prior to restarting into un-isolated mode.
 -   **Inaccessibility on Unauthorized Transitions**: This explicit in-browser
