@@ -18,7 +18,7 @@
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 ChromeOmniboxNavigationObserver::ChromeOmniboxNavigationObserver(
@@ -75,7 +75,7 @@ void ChromeOmniboxNavigationObserver::ShowAlternativeNavInfoBar(
     params.inline_link_callback = base::BindRepeating(
         [](const std::u16string& text, const AutocompleteMatch& match,
            const GURL& search_url, content::WebContents* contents,
-           size_t /*index*/, WindowOpenDisposition disposition) {
+           size_t /*index*/, ui::mojom::WindowOpenDisposition disposition) {
           if (!contents) {
             return false;
           }

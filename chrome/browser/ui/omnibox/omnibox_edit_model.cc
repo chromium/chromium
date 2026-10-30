@@ -111,10 +111,10 @@
 #include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
@@ -907,7 +907,7 @@ void OmniboxEditModel::OpenLensSearch() {
     OpenMatch(
         OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch),
         provider->CreateLensEntrypointMatch(autocomplete_controller()->input()),
-        WindowOpenDisposition::kCurrentTab, GURL(), std::u16string(),
+        ui::mojom::WindowOpenDisposition::kCurrentTab, GURL(), std::u16string(),
         base::TimeTicks::Now());
   }
 }
@@ -915,13 +915,13 @@ void OmniboxEditModel::OpenLensSearch() {
 void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
                                      bool via_keyboard) {
   OpenSelection(selection, base::TimeTicks(),
-                WindowOpenDisposition::kCurrentTab, via_keyboard);
+                ui::mojom::WindowOpenDisposition::kCurrentTab, via_keyboard);
 }
 
 void OmniboxEditModel::OpenSelection(
     OmniboxPopupSelection selection,
     base::TimeTicks timestamp,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     bool via_keyboard,
     const searchbox::AutocompleteSnapshot* snapshot) {
   controller_->StopAutocomplete(/*clear_result=*/false);
@@ -1019,9 +1019,10 @@ void OmniboxEditModel::OpenSelection(
   }
 }
 
-void OmniboxEditModel::OpenCurrentSelection(base::TimeTicks timestamp,
-                                            WindowOpenDisposition disposition,
-                                            bool via_keyboard) {
+void OmniboxEditModel::OpenCurrentSelection(
+    base::TimeTicks timestamp,
+    ui::mojom::WindowOpenDisposition disposition,
+    bool via_keyboard) {
   if (popup_view_ && popup_view_->IsSelectionPopupControlled()) {
     // The webui popup handles its own selection state. Opening there might
     // result in a call back to the native code to open a specified selection
@@ -2450,7 +2451,7 @@ void OmniboxEditModel::StepPopupSelection(
                      NavigationPredictor::kUpOrDownArrowButton);
 }
 
-void OmniboxEditModel::AcceptInput(WindowOpenDisposition disposition,
+void OmniboxEditModel::AcceptInput(ui::mojom::WindowOpenDisposition disposition,
                                    base::TimeTicks match_selection_timestamp) {
   TRACE_EVENT("omnibox", "OmniboxEditModel::AcceptInput");
   // Get the URL and transition type for the selected entry.
@@ -2516,7 +2517,7 @@ void OmniboxEditModel::AcceptInput(WindowOpenDisposition disposition,
 void OmniboxEditModel::OnDefaultSearchExtensionDialogDone(
     OmniboxPopupSelection selection,
     AutocompleteMatch match,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const GURL& alternate_nav_url,
     const std::u16string& pasted_text,
     base::TimeTicks match_selection_timestamp,
@@ -2569,7 +2570,7 @@ void OmniboxEditModel::OnDefaultSearchExtensionDialogDone(
 void OmniboxEditModel::OpenMatch(
     OmniboxPopupSelection selection,
     AutocompleteMatch match,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const GURL& alternate_nav_url,
     const std::u16string& pasted_text,
     base::TimeTicks match_selection_timestamp,
@@ -2636,7 +2637,7 @@ void OmniboxEditModel::OpenMatch(
   bool is_tab_switch_action =
       action && action->ActionId() == OmniboxActionId::TAB_SWITCH;
   if (is_open_tab_match || is_tab_switch_action) {
-    disposition = WindowOpenDisposition::kSwitchToTab;
+    disposition = ui::mojom::WindowOpenDisposition::kSwitchToTab;
   }
 
   TRACE_EVENT("omnibox", "OmniboxEditModel::OpenMatch", "match", match,
@@ -2755,7 +2756,7 @@ void OmniboxEditModel::OpenMatch(
   log.ukm_source_id = controller_->client()->GetUKMSourceId();
   log.input_state = input.input_state();
 
-  if ((disposition == WindowOpenDisposition::kCurrentTab) &&
+  if ((disposition == ui::mojom::WindowOpenDisposition::kCurrentTab) &&
       controller_->client()->CurrentPageExists()) {
     // If we know the destination is being opened in the current tab,
     // we can easily get the tab ID.  (If it's being opened in a new
@@ -2777,7 +2778,7 @@ void OmniboxEditModel::OpenMatch(
   // the Full WebUI popup and reverts the box to its unedited state. Background
   // tab navigations leave the session intact, since the omnibox keeps focus.
   auto end_edit_session = [&] {
-    if (disposition == WindowOpenDisposition::kNewBackgroundTab) {
+    if (disposition == ui::mojom::WindowOpenDisposition::kNewBackgroundTab) {
       return;
     }
     if (view_ && view_->IsFullWebUIOmnibox()) {
@@ -3293,7 +3294,7 @@ void OmniboxEditModel::NavigateToAiModeWithContextualizer(
       &OmniboxEditModel::
           NavigateToAiModeWithContextualizerOnContextualizationComplete,
       weak_factory_.GetWeakPtr(), query_text,
-      WindowOpenDisposition::kCurrentTab);
+      ui::mojom::WindowOpenDisposition::kCurrentTab);
   if (contextual_tasks::GetIsContextualTasksNonBlockingUrlNavigationEnabled()) {
     params.on_uploads_started_callback = std::move(on_contextualized_callback);
     params.complete_callback = base::DoNothing();
@@ -3307,7 +3308,7 @@ void OmniboxEditModel::NavigateToAiModeWithContextualizer(
 void OmniboxEditModel::
     NavigateToAiModeWithContextualizerOnContextualizationComplete(
         const std::u16string& query_text,
-        WindowOpenDisposition disposition,
+        ui::mojom::WindowOpenDisposition disposition,
         base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
             session_handle) {
 #if !BUILDFLAG(IS_ANDROID)
@@ -3365,7 +3366,7 @@ void OmniboxEditModel::
         base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
             session_handle,
         const std::u16string& query_text,
-        WindowOpenDisposition disposition,
+        ui::mojom::WindowOpenDisposition disposition,
         GURL url) {
 #if !BUILDFLAG(IS_ANDROID)
   auto* chrome_omnibox_client =

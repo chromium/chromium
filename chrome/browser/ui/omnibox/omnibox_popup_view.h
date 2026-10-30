@@ -19,7 +19,7 @@
 #include "base/time/time.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class OmniboxController;
 class OmniboxPopupPresenterBase;
@@ -76,7 +76,8 @@ class OmniboxPopupView {
                              OmniboxPopupSelection::Step step) {}
 
   // Informs the popup of user intent to open its current selection.
-  virtual void OpenCurrentSelection(WindowOpenDisposition disposition) {}
+  virtual void OpenCurrentSelection(
+      ui::mojom::WindowOpenDisposition disposition) {}
 
   // Saves state to the given tab.
   virtual void SaveStateToTab(content::WebContents* contents) {}

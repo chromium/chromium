@@ -47,8 +47,8 @@
 #include "skia/ext/image_operations.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/webp_codec.h"
 #include "ui/gfx/image/image_util.h"
@@ -573,7 +573,7 @@ void CoreTabHelper::PostContentToURL(TemplateURLRef::PostContent post_content,
   }
   content::OpenURLParams open_url_params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::kNewForegroundTab,
+          url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK);
   const std::string& content_type = post_content.first;
   const std::string& post_data = post_content.second;

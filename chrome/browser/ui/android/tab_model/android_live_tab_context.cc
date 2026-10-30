@@ -27,8 +27,8 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/restore_type.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
-#include "ui/base/window_open_disposition.h"
 
 AndroidLiveTabContext::AndroidLiveTabContext(TabModel* tab_model)
     : tab_model_(tab_model) {}
@@ -256,7 +256,7 @@ sessions::LiveTab* AndroidLiveTabContext::ReplaceRestoredTab(
   // This is called only on replacement of the current tab.
   content::WebContents* web_contents = tab_model_->GetActiveWebContents();
   web_contents = SessionRestore::RestoreForeignSessionTab(
-      web_contents, session_tab, WindowOpenDisposition::kCurrentTab);
+      web_contents, session_tab, ui::mojom::WindowOpenDisposition::kCurrentTab);
   web_contents->GetController().LoadIfNecessary();
   return sessions::ContentLiveTab::GetOrCreateForWebContents(web_contents);
 }

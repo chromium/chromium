@@ -19,8 +19,8 @@
 #include "components/sync/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 class OmniboxPedalImplementationsTest : public testing::Test {
  protected:
@@ -62,7 +62,7 @@ class OmniboxPedalImplementationsTest : public testing::Test {
 
   void OnAutocompleteAccept(const GURL& destination_url,
                             TemplateURLRef::PostContent* post_content,
-                            WindowOpenDisposition disposition,
+                            ui::mojom::WindowOpenDisposition disposition,
                             ui::PageTransition transition,
                             omnibox::AutocompleteMatchType match_type,
                             base::TimeTicks match_selection_timestamp,
@@ -79,7 +79,7 @@ class OmniboxPedalImplementationsTest : public testing::Test {
         autocomplete_provider_client_,
         base::BindOnce(&OmniboxPedalImplementationsTest::OnAutocompleteAccept,
                        base::Unretained(this)),
-        {}, WindowOpenDisposition::kCurrentTab);
+        {}, ui::mojom::WindowOpenDisposition::kCurrentTab);
     pedal->Execute(context);
     return last_destination_url_;
   }

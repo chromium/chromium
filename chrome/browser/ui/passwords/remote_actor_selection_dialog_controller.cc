@@ -13,7 +13,7 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace password_manager {
@@ -97,7 +97,8 @@ void RemoteActorSelectionDialogController::OnSubtitleLinkClicked() {
   }
   content::OpenURLParams params(
       GURL(kRemoteActorDataHandlingHelpUrl), content::Referrer(),
-      WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+      ui::PAGE_TRANSITION_LINK,
       /*is_renderer_initiated=*/false);
   web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
 }

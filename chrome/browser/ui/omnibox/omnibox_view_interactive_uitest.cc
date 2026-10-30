@@ -88,8 +88,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
@@ -825,7 +825,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, ClearUserTextAfterBackgroundCommit) {
   GURL url2("data:text/html,page2");
   NavigateParams params(browser(), url2, ui::PAGE_TRANSITION_LINK);
   params.source_contents = contents;
-  params.disposition = WindowOpenDisposition::kCurrentTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
   ui_test_utils::NavigateToURL(&params);
 
   // Switch back to the first tab.  The user text should be cleared, and the

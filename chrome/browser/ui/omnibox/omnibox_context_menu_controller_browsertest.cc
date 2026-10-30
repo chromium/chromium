@@ -58,9 +58,9 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -300,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxContextMenuControllerBrowserTest,
   browser()->GetTabStripModel()->ActivateTabAt(1);
   GURL url3(embedded_test_server()->GetURL("/title3.html"));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url3, WindowOpenDisposition::kNewBackgroundTab,
+      browser(), url3, ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   OmniboxContextMenuController controller(omnibox_popup_file_selector.get(),

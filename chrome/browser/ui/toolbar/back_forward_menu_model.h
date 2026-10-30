@@ -17,7 +17,6 @@
 #include "components/favicon/core/favicon_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/models/menu_model.h"
-#include "ui/base/window_open_disposition.h"
 
 class BrowserWindowInterface;
 class Profile;

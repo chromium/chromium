@@ -35,8 +35,8 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/base_window.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
@@ -287,15 +287,16 @@ void OmniboxEverywhereService::OnHotkeyDropdownClosed() {
   }
 }
 
-void OmniboxEverywhereService::OpenUrl(const GURL& url,
-                                       WindowOpenDisposition disposition,
-                                       ui::PageTransition transition) {
+void OmniboxEverywhereService::OpenUrl(
+    const GURL& url,
+    ui::mojom::WindowOpenDisposition disposition,
+    ui::PageTransition transition) {
   OpenUrl(url, disposition, transition, base::NullCallback());
 }
 
 void OmniboxEverywhereService::OpenUrl(
     const GURL& url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     ui::PageTransition transition,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
@@ -309,7 +310,7 @@ void OmniboxEverywhereService::OpenUrl(
 void OmniboxEverywhereService::NavigateInBrowserWindow(
     BrowserWindowInterface* bwi,
     const GURL& url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     ui::PageTransition transition,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
@@ -318,11 +319,12 @@ void OmniboxEverywhereService::NavigateInBrowserWindow(
   params.should_trigger_session_restore = false;
 
   if (!bwi) {
-    params.disposition = WindowOpenDisposition::kNewWindow;
+    params.disposition = ui::mojom::WindowOpenDisposition::kNewWindow;
   } else {
-    params.disposition = (disposition == WindowOpenDisposition::kCurrentTab)
-                             ? WindowOpenDisposition::kNewForegroundTab
-                             : disposition;
+    params.disposition =
+        (disposition == ui::mojom::WindowOpenDisposition::kCurrentTab)
+            ? ui::mojom::WindowOpenDisposition::kNewForegroundTab
+            : disposition;
   }
   params.window_action = NavigateParams::WindowAction::kShowWindow;
 
@@ -390,6 +392,7 @@ void OmniboxEverywhereService::OpenUrlWithInPlaceWindow(
     bwi = CreateBrowserWindow(std::move(browser_params));
   }
 
-  NavigateInBrowserWindow(bwi, url, WindowOpenDisposition::kNewForegroundTab,
+  NavigateInBrowserWindow(bwi, url,
+                          ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                           transition, std::move(navigation_handle_callback));
 }

@@ -38,7 +38,7 @@
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "url/gurl.h"
 
@@ -771,15 +771,16 @@ content::WebContents* ReadAnythingController::OpenURLFromTab(
     // strictly allow-list dispositions that open new windows/tabs, and demote
     // all others.
     switch (modified_params.disposition) {
-      case WindowOpenDisposition::kNewForegroundTab:
-      case WindowOpenDisposition::kNewBackgroundTab:
-      case WindowOpenDisposition::kNewPopup:
-      case WindowOpenDisposition::kNewWindow:
-      case WindowOpenDisposition::kSaveToDisk:
-      case WindowOpenDisposition::kOffTheRecord:
+      case ui::mojom::WindowOpenDisposition::kNewForegroundTab:
+      case ui::mojom::WindowOpenDisposition::kNewBackgroundTab:
+      case ui::mojom::WindowOpenDisposition::kNewPopup:
+      case ui::mojom::WindowOpenDisposition::kNewWindow:
+      case ui::mojom::WindowOpenDisposition::kSaveToDisk:
+      case ui::mojom::WindowOpenDisposition::kOffTheRecord:
         break;
       default:
-        modified_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+        modified_params.disposition =
+            ui::mojom::WindowOpenDisposition::kNewForegroundTab;
         break;
     }
 

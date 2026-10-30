@@ -74,8 +74,8 @@
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -1888,9 +1888,10 @@ void OmniboxEverywhereUIManager::ExecuteCommand(int command_id,
                   if (auto* service =
                           OmniboxEverywhereServiceFactory::GetForProfile(
                               profile)) {
-                    service->OpenUrl(match.destination_url,
-                                     WindowOpenDisposition::kNewForegroundTab,
-                                     ui::PAGE_TRANSITION_GENERATED);
+                    service->OpenUrl(
+                        match.destination_url,
+                        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                        ui::PAGE_TRANSITION_GENERATED);
                   }
                 }
               },
@@ -1907,7 +1908,7 @@ void OmniboxEverywhereUIManager::ExecuteCommand(int command_id,
       auto* service = OmniboxEverywhereServiceFactory::GetForProfile(profile_);
       if (service) {
         service->OpenUrl(chrome::GetSettingsUrl(chrome::kSearchEnginesSubPage),
-                         WindowOpenDisposition::kNewForegroundTab,
+                         ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                          ui::PAGE_TRANSITION_AUTO_BOOKMARK);
       }
       break;
@@ -1939,7 +1940,7 @@ void OmniboxEverywhereUIManager::ExecuteCommand(int command_id,
       auto* service = OmniboxEverywhereServiceFactory::GetForProfile(profile_);
       if (service) {
         service->OpenUrl(chrome::GetSettingsUrl(chrome::kSearchSubPage),
-                         WindowOpenDisposition::kNewForegroundTab,
+                         ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                          ui::PAGE_TRANSITION_AUTO_BOOKMARK);
       }
       break;
@@ -1948,7 +1949,7 @@ void OmniboxEverywhereUIManager::ExecuteCommand(int command_id,
       auto* service = OmniboxEverywhereServiceFactory::GetForProfile(profile_);
       if (service) {
         service->OpenUrl(chrome::GetSettingsUrl(chrome::kSearchSubPage),
-                         WindowOpenDisposition::kNewForegroundTab,
+                         ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                          ui::PAGE_TRANSITION_AUTO_BOOKMARK);
       }
       break;

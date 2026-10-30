@@ -17,7 +17,7 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "url/gurl.h"
 
 class TestOmniboxEditModel : public OmniboxEditModel {
@@ -47,7 +47,7 @@ class TestOmniboxEditModel : public OmniboxEditModel {
   // tests, and for non-test code, use `OpenSelection`.
   void OpenMatchForTesting(
       AutocompleteMatch match,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const GURL& alternate_nav_url,
       const std::u16string& pasted_text,
       size_t index,
@@ -64,7 +64,7 @@ class TestOmniboxEditModel : public OmniboxEditModel {
 
   void NavigateToAiModeWithContextualizerOnContextualizationCompleteForTesting(
       const std::u16string& query_text,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
           session_handle);
 

@@ -13,8 +13,8 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension.h"
 #include "net/base/url_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -38,10 +38,11 @@ void ShowExtensionSiteSettings(content::WebContents* web_contents,
           {chrome::kChromeUISettingsURL, chrome::kAndroidSiteDetailsSubpage})),
       "site", Extension::CreateOriginFromExtensionId(extension_id).Serialize());
 
-  web_contents->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                            url, WindowOpenDisposition::kNewForegroundTab,
-                            ui::PAGE_TRANSITION_LINK),
-                        /*navigation_handle_callback=*/{});
+  web_contents->OpenURL(
+      content::OpenURLParams::CreateBrowserInitiated(
+          url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+          ui::PAGE_TRANSITION_LINK),
+      /*navigation_handle_callback=*/{});
 }
 
 }  // namespace extensions

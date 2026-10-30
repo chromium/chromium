@@ -17,8 +17,8 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 
 AlternateNavInfoBarDelegate::~AlternateNavInfoBarDelegate() = default;
 
@@ -61,7 +61,7 @@ GURL AlternateNavInfoBarDelegate::GetLinkURL() const {
 }
 
 bool AlternateNavInfoBarDelegate::LinkClicked(
-    WindowOpenDisposition disposition) {
+    ui::mojom::WindowOpenDisposition disposition) {
   CHECK(match_, base::NotFatalUntil::M162);
   ChromeOmniboxNavigationObserverBase::OpenAlternativeNavMatch(
       infobars::ContentInfoBarManager::WebContentsFromInfoBar(infobar()), text_,
@@ -88,7 +88,7 @@ AlternateNavInfoBarDelegate::GetMessageSubstitutions() const {
 
 bool AlternateNavInfoBarDelegate::InlineSubstitutionLinkClicked(
     size_t index,
-    WindowOpenDisposition disposition) {
+    ui::mojom::WindowOpenDisposition disposition) {
   CHECK_EQ(index, 0u);
   return LinkClicked(disposition);
 }

@@ -61,8 +61,8 @@
 #include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 #include "ui/base/base_window.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/range/range.h"
 #include "url/android/gurl_android.h"
 #include "url/origin.h"
@@ -369,12 +369,13 @@ void TabModelJniBridge::HandlePopupNavigation(TabAndroid* parent,
   CHECK(!params->contents_to_insert, base::NotFatalUntil::M162);
   CHECK(!params->switch_to_singleton_tab, base::NotFatalUntil::M162);
 
-  WindowOpenDisposition disposition = params->disposition;
-  bool supported = disposition == WindowOpenDisposition::kNewPopup ||
-                   disposition == WindowOpenDisposition::kNewForegroundTab ||
-                   disposition == WindowOpenDisposition::kNewBackgroundTab ||
-                   disposition == WindowOpenDisposition::kNewWindow ||
-                   disposition == WindowOpenDisposition::kOffTheRecord;
+  ui::mojom::WindowOpenDisposition disposition = params->disposition;
+  bool supported =
+      disposition == ui::mojom::WindowOpenDisposition::kNewPopup ||
+      disposition == ui::mojom::WindowOpenDisposition::kNewForegroundTab ||
+      disposition == ui::mojom::WindowOpenDisposition::kNewBackgroundTab ||
+      disposition == ui::mojom::WindowOpenDisposition::kNewWindow ||
+      disposition == ui::mojom::WindowOpenDisposition::kOffTheRecord;
   if (!supported) {
     NOTIMPLEMENTED();
     return;

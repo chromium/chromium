@@ -30,8 +30,8 @@
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
 #include "services/device/public/mojom/serial.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/webui/settings/public/constants/routes.mojom.h"
@@ -310,7 +310,7 @@ void SerialChooserController::OpenHelpCenterUrl() const {
 
   web_contents->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
                             GURL(chrome::kChooserSerialOverviewUrl),
-                            WindowOpenDisposition::kNewForegroundTab,
+                            ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL),
                         /*navigation_handle_callback=*/{});
 }
@@ -533,7 +533,7 @@ void SerialChooserController::OpenBluetoothHelpUrl() const {
   content::OpenURLParams open_url_params =
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(chrome::kBluetoothAdapterOffHelpURL),
-          WindowOpenDisposition::kNewForegroundTab,
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
 #if BUILDFLAG(IS_ANDROID)
   auto* rfh = initiator_document_.AsRenderFrameHostIfValid();

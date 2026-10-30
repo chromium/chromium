@@ -29,7 +29,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 using metrics::OmniboxEventProto;
 using ui_test_utils::WaitForAutocompleteDone;
@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxMetricsTest, LogSearchEngineUsed) {
   base::HistogramTester histogram_tester;
   model()->SetPopupSelection(OmniboxPopupSelection(0));
   model()->OpenCurrentSelection(base::TimeTicks(),
-                                WindowOpenDisposition::kCurrentTab);
+                                ui::mojom::WindowOpenDisposition::kCurrentTab);
   WaitForAutocompleteDone(browser());
   EXPECT_TRUE(controller()->done());
 
@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxMetricsTest, LogSearchEngineUsed_PostNavigation) {
   base::HistogramTester histogram_tester;
   model()->SetPopupSelection(OmniboxPopupSelection(0));
   model()->OpenCurrentSelection(base::TimeTicks(),
-                                WindowOpenDisposition::kCurrentTab);
+                                ui::mojom::WindowOpenDisposition::kCurrentTab);
 
   content::WaitForLoadStop(
       browser()->GetTabStripModel()->GetActiveWebContents());

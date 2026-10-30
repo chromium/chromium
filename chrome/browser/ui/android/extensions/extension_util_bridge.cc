@@ -16,7 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/base/url_util.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
@@ -100,11 +100,12 @@ void JNI_ExtensionUtilBridge_OnOmniboxExtensionInputEntered(
     input_text.clear();
   }
 
-  WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab;
+  ui::mojom::WindowOpenDisposition disposition =
+      ui::mojom::WindowOpenDisposition::kCurrentTab;
   if (open_in_new_window) {
-    disposition = WindowOpenDisposition::kNewWindow;
+    disposition = ui::mojom::WindowOpenDisposition::kNewWindow;
   } else if (open_in_new_tab) {
-    disposition = WindowOpenDisposition::kNewForegroundTab;
+    disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   }
 
   extensions::ExtensionOmniboxEventRouter::OnInputEntered(

@@ -25,8 +25,8 @@
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/android/java_bitmap.h"
 
 // Must come after headers that provide symbols used by @JniType.
@@ -134,7 +134,7 @@ void ExtensionInstallDialogViewAndroid::OnStoreLinkClicked(
   GURL gurl(url);
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          gurl, WindowOpenDisposition::kNewForegroundTab,
+          gurl, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK);
   web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
 }

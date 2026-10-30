@@ -65,7 +65,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -260,7 +260,7 @@ class ReadAnythingPrintingTestBase : public InProcessBrowserTest {
   void NavigateToArticleInNewTab() {
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), embedded_test_server()->GetURL(kArticlePath),
-        WindowOpenDisposition::kNewForegroundTab,
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   }
 
