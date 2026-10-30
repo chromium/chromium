@@ -128,6 +128,7 @@ class KEYED_SERVICE_EXPORT KeyedServiceBaseFactory : public DependencyNode {
   SEQUENCE_CHECKER(sequence_checker_);
 
  private:
+  friend class BrowserContextDependencyManager;
   friend class DependencyManager;
 
   // The DependencyManager used. In real code, this will be a singleton used
@@ -137,6 +138,11 @@ class KEYED_SERVICE_EXPORT KeyedServiceBaseFactory : public DependencyNode {
   // Registers any preferences used by this service. This should be overridden
   // by any services that want to register context-specific preferences.
   virtual void RegisterPrefs(user_prefs::PrefRegistrySyncable* registry) {}
+
+  // Returns true if the service should be created once startup is complete.
+  // Only exposed to subclasses via BrowserContextKeyedServiceFactory and
+  // RefcountedBrowserContextKeyedServiceFactory.
+  virtual bool ServiceIsCreatedAfterStartup() const;
 
   // Create the service associated with |context|.
   virtual void CreateServiceNow(void* context) = 0;

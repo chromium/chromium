@@ -96,6 +96,16 @@ class KEYED_SERVICE_EXPORT RefcountedBrowserContextKeyedServiceFactory
   // created as soon as the BrowserContext has been brought up.
   virtual bool ServiceIsCreatedWithBrowserContext() const;
 
+  // Services that need to exist for a BrowserContext (e.g. to observe prefs or
+  // sync state) but do no work required during browser startup should override
+  // this method to return true instead of
+  // ServiceIsCreatedWithBrowserContext(). Such services are created by
+  // BrowserContextDependencyManager::CreateBrowserContextServicesAfterStartup()
+  // once startup is complete, or earlier on demand if GetForBrowserContext()
+  // is called first. Must not return true when
+  // ServiceIsCreatedWithBrowserContext() also returns true.
+  bool ServiceIsCreatedAfterStartup() const override;
+
   // By default, TestingBrowserContexts will be treated like normal contexts.
   // You can override this so that by default, the service associated with the
   // TestingBrowserContext is NULL. (This is just a shortcut around

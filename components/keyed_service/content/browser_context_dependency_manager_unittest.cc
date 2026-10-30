@@ -4,8 +4,17 @@
 
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "components/keyed_service/content/refcounted_browser_context_keyed_service_factory.h"
+#include "components/keyed_service/core/keyed_service.h"
+#include "components/keyed_service/core/refcounted_keyed_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -187,4 +196,223 @@ TEST_F(BrowserContextDependencyManagerUnittests, ServicesDisabledByDefault) {
       manager()->AreBrowserContextServicesDisabledByDefault(&disabled_context));
   EXPECT_FALSE(
       manager()->AreBrowserContextServicesDisabledByDefault(&other_context));
+}
+
+namespace {
+
+enum class CreationTiming {
+  kOnDemand,
+  kWithContext,
+  kAfterStartup,
+};
+
+// A factory whose creation timing is configurable and that records when its
+// service was built.
+class CreationTimingTestFactory : public BrowserContextKeyedServiceFactory {
+ public:
+  CreationTimingTestFactory(CreationTiming timing,
+                            BrowserContextDependencyManager* manager,
+                            const char* name = "CreationTimingTestFactory",
+                            std::vector<std::string>* build_order = nullptr)
+      : BrowserContextKeyedServiceFactory(name, manager),
+        timing_(timing),
+        name_(name),
+        build_order_(build_order) {}
+
+  int build_count() const { return build_count_; }
+
+  KeyedService* GetForContext(content::BrowserContext* context) {
+    return GetServiceForBrowserContext(context, /*create=*/true);
+  }
+
+  void set_dependency_to_request_on_build(
+      CreationTimingTestFactory* dependency) {
+    dependency_to_request_on_build_ = dependency;
+  }
+
+ private:
+  // BrowserContextKeyedServiceFactory:
+  bool ServiceIsCreatedWithBrowserContext() const override {
+    return timing_ == CreationTiming::kWithContext;
+  }
+  bool ServiceIsCreatedAfterStartup() const override {
+    return timing_ == CreationTiming::kAfterStartup;
+  }
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override {
+    return context;
+  }
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
+      content::BrowserContext* context) const override {
+    if (dependency_to_request_on_build_) {
+      EXPECT_TRUE(dependency_to_request_on_build_->GetForContext(context));
+    }
+    ++build_count_;
+    if (build_order_) {
+      build_order_->push_back(name_);
+    }
+    return std::make_unique<KeyedService>();
+  }
+
+  const CreationTiming timing_;
+  const std::string name_;
+  raw_ptr<std::vector<std::string>> build_order_;
+  raw_ptr<CreationTimingTestFactory> dependency_to_request_on_build_ = nullptr;
+  mutable int build_count_ = 0;
+};
+
+class TestRefcountedService : public RefcountedKeyedService {
+ public:
+  TestRefcountedService() = default;
+  void ShutdownOnUIThread() override {}
+
+ private:
+  ~TestRefcountedService() override = default;
+};
+
+class RefcountedAfterStartupTestFactory
+    : public RefcountedBrowserContextKeyedServiceFactory {
+ public:
+  explicit RefcountedAfterStartupTestFactory(
+      BrowserContextDependencyManager* manager)
+      : RefcountedBrowserContextKeyedServiceFactory(
+            "RefcountedAfterStartupTestFactory",
+            manager) {}
+
+  int build_count() const { return build_count_; }
+
+ private:
+  // RefcountedBrowserContextKeyedServiceFactory:
+  bool ServiceIsCreatedAfterStartup() const override { return true; }
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override {
+    return context;
+  }
+  scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
+      content::BrowserContext* context) const override {
+    ++build_count_;
+    return base::MakeRefCounted<TestRefcountedService>();
+  }
+
+  mutable int build_count_ = 0;
+};
+
+}  // namespace
+
+// Reuses BrowserContextDependencyManagerUnittests for its (friend-constructed)
+// BrowserContextDependencyManager and adds a real BrowserContext.
+class BrowserContextDependencyManagerCreationPolicyTest
+    : public BrowserContextDependencyManagerUnittests {
+ protected:
+  content::BrowserContext* context() { return &browser_context_; }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  content::TestBrowserContext browser_context_;
+};
+
+// Tests that ServiceIsCreatedWithBrowserContext() and
+// ServiceIsCreatedAfterStartup() are honored by CreateBrowserContextServices()
+// and CreateBrowserContextServicesAfterStartup().
+TEST_F(BrowserContextDependencyManagerCreationPolicyTest, PolicyIsHonored) {
+  CreationTimingTestFactory on_demand(CreationTiming::kOnDemand, manager());
+  CreationTimingTestFactory with_context(CreationTiming::kWithContext,
+                                         manager());
+  CreationTimingTestFactory after_startup(CreationTiming::kAfterStartup,
+                                          manager());
+  RefcountedAfterStartupTestFactory refcounted_after_startup(manager());
+
+  manager()->MarkBrowserContextLive(context());
+  manager()->CreateBrowserContextServices(context());
+
+  EXPECT_EQ(0, on_demand.build_count());
+  EXPECT_EQ(1, with_context.build_count());
+  EXPECT_EQ(0, after_startup.build_count());
+  EXPECT_EQ(0, refcounted_after_startup.build_count());
+
+  manager()->CreateBrowserContextServicesAfterStartup(context());
+
+  EXPECT_EQ(0, on_demand.build_count());
+  EXPECT_EQ(1, with_context.build_count());
+  EXPECT_EQ(1, after_startup.build_count());
+  EXPECT_EQ(1, refcounted_after_startup.build_count());
+
+  manager()->DestroyBrowserContextServices(context());
+}
+
+// Tests that a ServiceIsCreatedAfterStartup() service already created on demand
+// is not built a second time by CreateBrowserContextServicesAfterStartup().
+TEST_F(BrowserContextDependencyManagerCreationPolicyTest,
+       AfterStartupServiceCreatedOnDemandFirst) {
+  CreationTimingTestFactory after_startup(CreationTiming::kAfterStartup,
+                                          manager());
+
+  manager()->MarkBrowserContextLive(context());
+  manager()->CreateBrowserContextServices(context());
+  EXPECT_EQ(0, after_startup.build_count());
+
+  KeyedService* service = after_startup.GetForContext(context());
+  ASSERT_TRUE(service);
+  EXPECT_EQ(1, after_startup.build_count());
+
+  manager()->CreateBrowserContextServicesAfterStartup(context());
+  EXPECT_EQ(1, after_startup.build_count());
+  EXPECT_EQ(service, after_startup.GetForContext(context()));
+
+  manager()->DestroyBrowserContextServices(context());
+}
+
+// Tests that CreateBrowserContextServicesAfterStartup() builds services in
+// dependency order: when A DependsOn(B), B is built before A.
+TEST_F(BrowserContextDependencyManagerCreationPolicyTest,
+       AfterStartupDependencyOrder) {
+  std::vector<std::string> build_order;
+  CreationTimingTestFactory service_a(CreationTiming::kAfterStartup, manager(),
+                                      "A", &build_order);
+  CreationTimingTestFactory service_b(CreationTiming::kAfterStartup, manager(),
+                                      "B", &build_order);
+  DependOn(&service_a, &service_b);
+
+  manager()->MarkBrowserContextLive(context());
+  manager()->CreateBrowserContextServices(context());
+  EXPECT_TRUE(build_order.empty());
+
+  manager()->CreateBrowserContextServicesAfterStartup(context());
+  ASSERT_EQ(2u, build_order.size());
+  EXPECT_EQ("B", build_order[0]);
+  EXPECT_EQ("A", build_order[1]);
+
+  manager()->DestroyBrowserContextServices(context());
+}
+
+// Tests that a ServiceIsCreatedWithBrowserContext() service that DependsOn() a
+// ServiceIsCreatedAfterStartup() service and calls GetForContext() at build
+// time pulls the dependency in during CreateBrowserContextServices(), and that
+// CreateBrowserContextServicesAfterStartup() does not build it a second time.
+TEST_F(BrowserContextDependencyManagerCreationPolicyTest,
+       AfterStartupDependencyPulledInEarlyByWithContextService) {
+  std::vector<std::string> build_order;
+  CreationTimingTestFactory after_startup_dep(CreationTiming::kAfterStartup,
+                                              manager(), "after_startup_dep",
+                                              &build_order);
+  CreationTimingTestFactory with_context_service(
+      CreationTiming::kWithContext, manager(), "with_context_service",
+      &build_order);
+  DependOn(&with_context_service, &after_startup_dep);
+  with_context_service.set_dependency_to_request_on_build(&after_startup_dep);
+
+  manager()->MarkBrowserContextLive(context());
+  manager()->CreateBrowserContextServices(context());
+
+  EXPECT_EQ(1, after_startup_dep.build_count());
+  EXPECT_EQ(1, with_context_service.build_count());
+  ASSERT_EQ(2u, build_order.size());
+  EXPECT_EQ("after_startup_dep", build_order[0]);
+  EXPECT_EQ("with_context_service", build_order[1]);
+
+  manager()->CreateBrowserContextServicesAfterStartup(context());
+  EXPECT_EQ(1, after_startup_dep.build_count());
+  EXPECT_EQ(1, with_context_service.build_count());
+
+  manager()->DestroyBrowserContextServices(context());
 }

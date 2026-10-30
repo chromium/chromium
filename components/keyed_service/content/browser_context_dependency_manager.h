@@ -50,6 +50,16 @@ class KEYED_SERVICE_EXPORT BrowserContextDependencyManager
   // ServiceIsNULLWhileTesting().
   void CreateBrowserContextServicesForTest(content::BrowserContext* context);
 
+  // Called by the embedder once browser startup is complete (and, for
+  // contexts created later, shortly after their creation) to create the
+  // services whose factory overrides
+  // BrowserContextKeyedServiceFactory::ServiceIsCreatedAfterStartup() (or the
+  // refcounted equivalent) to return true. Services already created on demand
+  // are left untouched. Not called for test BrowserContexts; tests that need
+  // such a service should request it explicitly.
+  void CreateBrowserContextServicesAfterStartup(
+      content::BrowserContext* context);
+
   // Called by each BrowserContext to alert us that we should destroy services
   // associated with it.
   void DestroyBrowserContextServices(content::BrowserContext* context);

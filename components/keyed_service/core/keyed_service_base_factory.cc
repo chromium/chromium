@@ -63,6 +63,10 @@ bool KeyedServiceBaseFactory::ServiceIsCreatedWithContext() const {
   return false;
 }
 
+bool KeyedServiceBaseFactory::ServiceIsCreatedAfterStartup() const {
+  return false;
+}
+
 bool KeyedServiceBaseFactory::ServiceIsNULLWhileTesting() const {
   return false;
 }

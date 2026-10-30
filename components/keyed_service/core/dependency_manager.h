@@ -110,9 +110,6 @@ class KEYED_SERVICE_EXPORT DependencyManager {
   // |context|.
   bool AreContextServicesDisabledByDefault(void* context) const;
 
- private:
-  friend class KeyedServiceBaseFactory;
-
   // An ordered container of pointers to KeyedServiceBaseFactory. The order
   // depends on the operation to perform (initialisation, destruction, ...).
   using OrderedFactories =
@@ -120,6 +117,9 @@ class KEYED_SERVICE_EXPORT DependencyManager {
 
   // Returns the list of factories in the order they should be initialised.
   OrderedFactories GetConstructionOrder();
+
+ private:
+  friend class KeyedServiceBaseFactory;
 
   // Returns the list of factories in the order they should be destroyed.
   OrderedFactories GetDestructionOrder();

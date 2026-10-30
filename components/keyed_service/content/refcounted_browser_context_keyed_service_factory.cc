@@ -77,6 +77,11 @@ bool RefcountedBrowserContextKeyedServiceFactory::
   return KeyedServiceBaseFactory::ServiceIsCreatedWithContext();
 }
 
+bool RefcountedBrowserContextKeyedServiceFactory::ServiceIsCreatedAfterStartup()
+    const {
+  return false;
+}
+
 bool RefcountedBrowserContextKeyedServiceFactory::ServiceIsNULLWhileTesting()
     const {
   return KeyedServiceBaseFactory::ServiceIsNULLWhileTesting();
@@ -108,7 +113,11 @@ void* RefcountedBrowserContextKeyedServiceFactory::GetContextToUse(
 
 bool RefcountedBrowserContextKeyedServiceFactory::ServiceIsCreatedWithContext()
     const {
-  return ServiceIsCreatedWithBrowserContext();
+  if (ServiceIsCreatedWithBrowserContext()) {
+    DCHECK(!ServiceIsCreatedAfterStartup());
+    return true;
+  }
+  return false;
 }
 
 void RefcountedBrowserContextKeyedServiceFactory::ContextShutdown(

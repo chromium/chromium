@@ -77,6 +77,10 @@ bool BrowserContextKeyedServiceFactory::ServiceIsCreatedWithBrowserContext()
   return KeyedServiceBaseFactory::ServiceIsCreatedWithContext();
 }
 
+bool BrowserContextKeyedServiceFactory::ServiceIsCreatedAfterStartup() const {
+  return false;
+}
+
 bool BrowserContextKeyedServiceFactory::ServiceIsNULLWhileTesting() const {
   return KeyedServiceBaseFactory::ServiceIsNULLWhileTesting();
 }
@@ -105,7 +109,11 @@ void* BrowserContextKeyedServiceFactory::GetContextToUse(void* context) const {
 }
 
 bool BrowserContextKeyedServiceFactory::ServiceIsCreatedWithContext() const {
-  return ServiceIsCreatedWithBrowserContext();
+  if (ServiceIsCreatedWithBrowserContext()) {
+    DCHECK(!ServiceIsCreatedAfterStartup());
+    return true;
+  }
+  return false;
 }
 
 void BrowserContextKeyedServiceFactory::ContextShutdown(void* context) {
