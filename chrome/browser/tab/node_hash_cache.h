@@ -14,6 +14,9 @@
 
 namespace tabs {
 
+class StorageIdMapping;
+class TabCollection;
+
 struct NodeHashes {
   // Constant representing an empty or uninitialized hash value.
   static constexpr size_t kEmptyHash = 0;
@@ -60,6 +63,19 @@ class NodeHashCache {
 
   // Returns true if the cache is empty.
   bool empty() const;
+
+  // Computes both payload and children hashes for the collection.
+  static NodeHashes ComputeHashes(const TabCollection* collection,
+                                  StorageIdMapping& mapping);
+
+  // Computes the payload hash for the collection. Returns
+  // NodeHashes::kEmptyHash for PINNED, UNPINNED, and TABSTRIP collections as
+  // their payload state is either invariant or tracked externally.
+  static size_t ComputePayloadHash(const TabCollection* collection);
+
+  // Computes the children hash for direct children of the collection.
+  static size_t ComputeChildrenHash(const TabCollection* collection,
+                                    StorageIdMapping& mapping);
 
  private:
   absl::flat_hash_map<StorageId, NodeHashes> node_hashes_;

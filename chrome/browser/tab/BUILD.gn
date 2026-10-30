@@ -327,6 +327,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/tab/protocol",
     "//components/tabs:public",
+    "//components/tabs:test_support",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }
