@@ -13,6 +13,7 @@
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
@@ -806,6 +807,76 @@ TEST_F(HTMLCanvasAccessibilityManagerTest,
     EXPECT_TRUE(offscreen->HasPlaceholderCanvas());
     EXPECT_FALSE(offscreen->ShouldCaptureRenderedText());
   }
+}
+
+TEST_F(HTMLCanvasAccessibilityManagerTest,
+       DisabledFeatureDoesNotCaptureTextOrMarkDirtyOnFrame) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(::features::kAccessibilityCanvas);
+  base::HistogramTester histogram_tester;
+
+  AXContext ax_context(GetDocument(), ui::kAXModeComplete);
+  AXObjectCache* cache = GetDocument().ExistingAXObjectCache();
+  ASSERT_NE(cache, nullptr);
+
+  SetUpCanvas("<body><canvas id='c' width=300 height=200></canvas></body>");
+  canvas_element_->OnAxObjectIgnoredStateChanged(/*is_ignored=*/false);
+  WaitForAccessibilityManagerUpdate();
+
+  HTMLCanvasAccessibilityManager* manager =
+      canvas_element_->GetAccessibilityManagerForTesting();
+  ASSERT_NE(manager, nullptr);
+  // Heuristic evaluation and UMA still run when the feature flag is disabled.
+  EXPECT_TRUE(manager->NeedsA11ySupport());
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.Canvas.HeuristicResult",
+      HTMLCanvasAccessibilityManager::HeuristicResult::kNeedsA11ySupport, 1);
+
+  // Text capture and frame-end annotation updates must be suppressed when the
+  // feature flag is disabled.
+  EXPECT_FALSE(manager->ShouldCaptureRenderedTextForTesting());
+
+  cache->UpdateAXForAllDocuments();
+  ASSERT_FALSE(cache->IsDirty());
+
+  canvas_element_->PostFinalizeFrame(FlushReason::kOther);
+  EXPECT_FALSE(cache->IsDirty());
+}
+
+TEST_F(HTMLCanvasAccessibilityManagerCaptureTest,
+       UpdateAnnotationMarksDirtyOnlyWhenChanged) {
+  AXContext ax_context(GetDocument(), ui::kAXModeComplete);
+  AXObjectCache* cache = GetDocument().ExistingAXObjectCache();
+  ASSERT_NE(cache, nullptr);
+
+  cache->UpdateAXForAllDocuments();
+  ASSERT_FALSE(cache->IsDirty());
+
+  // Updating with empty text runs when the annotation is already empty should
+  // not mark the accessibility cache dirty.
+  manager_->UpdateAnnotation();
+  EXPECT_FALSE(cache->IsDirty());
+
+  // Updating with a new text run changes the annotation and marks the element
+  // dirty.
+  manager_->RecordRenderedText("Hello", gfx::RectF(0, 0, 100, 20), 12.0f);
+  manager_->UpdateAnnotation();
+  EXPECT_EQ(manager_->CanvasAnnotation(), "Hello");
+  EXPECT_TRUE(cache->IsDirty());
+
+  // Subsequent updates with identical text runs should not mark the element
+  // dirty again.
+  cache->UpdateAXForAllDocuments();
+  ASSERT_FALSE(cache->IsDirty());
+  manager_->UpdateAnnotation();
+  EXPECT_FALSE(cache->IsDirty());
+
+  // Clearing text runs transitions the annotation back to empty and marks the
+  // element dirty.
+  manager_->ClearRenderedText();
+  manager_->UpdateAnnotation();
+  EXPECT_TRUE(manager_->CanvasAnnotation().empty());
+  EXPECT_TRUE(cache->IsDirty());
 }
 
 }  // namespace blink

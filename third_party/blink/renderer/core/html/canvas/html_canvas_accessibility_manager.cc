@@ -140,6 +140,11 @@ void HTMLCanvasAccessibilityManager::OnUpdate() {
 }
 
 bool HTMLCanvasAccessibilityManager::ShouldCaptureRenderedText() const {
+  // Do not capture text runs or update annotations when the canvas
+  // accessibility feature is disabled.
+  if (!base::FeatureList::IsEnabled(::features::kAccessibilityCanvas)) {
+    return false;
+  }
   // Capture speculatively before AXObject provides ignored state, or when
   // accessibility support is determined to be needed.
   return !is_ignored_.has_value() || NeedsA11ySupport();
@@ -239,9 +244,8 @@ void HTMLCanvasAccessibilityManager::ClearRenderedText() {
 }
 
 void HTMLCanvasAccessibilityManager::UpdateAnnotation() {
-  if (text_runs_.empty()) {
-    canvas_annotation_ = String();
-  } else {
+  String new_annotation;
+  if (!text_runs_.empty()) {
     // Sort runs: Y (top to bottom), then X (left to right)
     // TODO(crbug.com/498093320): Add language direction (LTR/RTL) to TextRuns
     // tests.
@@ -269,12 +273,18 @@ void HTMLCanvasAccessibilityManager::UpdateAnnotation() {
       }
       builder.Append(run.text);
     }
-    canvas_annotation_ = builder.ToString();
+    new_annotation = builder.ToString();
   }
 
-  if (AXObjectCache* cache =
-          canvas_element_->GetDocument().ExistingAXObjectCache()) {
-    cache->MarkElementDirty(canvas_element_);
+  // Only mark the canvas element dirty when the synthesized annotation changes
+  // to avoid triggering redundant accessibility tree serialization on every
+  // frame.
+  if (canvas_annotation_ != new_annotation) {
+    canvas_annotation_ = std::move(new_annotation);
+    if (AXObjectCache* cache =
+            canvas_element_->GetDocument().ExistingAXObjectCache()) {
+      cache->MarkElementDirty(canvas_element_);
+    }
   }
 
   ScheduleOCRIfNeeded();
