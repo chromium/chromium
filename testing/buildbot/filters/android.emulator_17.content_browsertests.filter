@@ -1,0 +1,34 @@
+# crbug.com/579553791: Video decode fails (MEDIA_ERR_DECODE) on the
+# Android 17 emulator since Chrome targets SDK 37.
+-Default/MediaTest.HLSMultivariantBitrateBear/1
+-Default/MediaTest.HLSSingleFileBear/1
+-Default/MediaTest.HLSSingleWithoutExtension/1
+-Default/MediaTest.Navigate/1
+-Default/MediaTest.VideoBear3gpAacH264/1
+-Default/MediaTest.VideoBearMp4/1
+-Default/MediaTest.VideoBearMp4Hevc8bit/1
+-Default/MediaTest.VideoBearMp4Vp9/1
+-Default/MediaTest.VideoBearRotated0/1
+-Default/MediaTest.VideoBearRotated180/1
+-Default/MediaTest.VideoBearRotated270/1
+-Default/MediaTest.VideoBearRotated90/1
+-Default/MediaTest.VideoBearSilentMp4/1
+-Default/MediaTest.VideoBearSilentWebm/1
+-Default/MediaTest.VideoBearWebm/1
+-Default/MediaTest.VideoBearWebm_FileProtocol/1
+-Default/MediaTest.VideoEbu3213Primary/1
+-Default/MediaTest.VideoTulipWebm/1
+-MSE_ClearKey/EncryptedMediaTest.ConfigChangeVideo_ClearToClear/0
+-MSE_ExternalClearKey/EncryptedMediaTest.ConfigChangeVideo_ClearToClear/0
+-MediaColorTest.Yuv420pH264
+-MediaColorTest.Yuv420pRec709H264
+-MediaColorTest.Yuv420pVp8
+-MediaRedirectTest.CanPlayHiddenWebm
+-MediaSourceTest.ConfigChangeVideo
+-MediaSourceTest.ConfigChangeVideo_MP4
+-MediaSourceTest.Playback_AudioVideo_Mp2t
+-MediaSourceTest.Playback_VideoAudio_WebM
+-MediaSourceTest.Playback_VideoOnly_WebM
+-MediaSourceTest.Playback_Video_MP4_Audio_WEBM
+-MediaSourceTest.Playback_Video_WEBM_Audio_MP4
+-MediaSuspendTest.ForcedSrcSuspend

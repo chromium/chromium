@@ -451,13 +451,48 @@ ci.builder(
                     shards = 30,
                 ),
             ),
+            "base_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14_15_16.base_unittests.filter;../../testing/buildbot/filters/android.emulator_17.base_unittests.filter",
+                ],
+            ),
             "content_browsertests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_17.content_browsertests.filter",
+                ],
                 swarming = targets.swarming(
                     shards = 30,
                 ),
             ),
             "content_shell_crash_test": targets.remove(
                 reason = "crbug.com/40131701",
+            ),
+            "content_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_16.content_unittests.filter",
+                ],
+            ),
+            "gl_tests_validating": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12_12l_13.gl_tests.filter",
+                ],
+            ),
+            "gwp_asan_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15_16.gwp_asan_unittests.filter",
+                ],
+            ),
+            "media_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.media_unittests.filter;../../testing/buildbot/filters/android.emulator_17.media_unittests.filter",
+                ],
+            ),
+            "perfetto_unittests": targets.mixin(
+                args = [
+                    # TODO(crbug.com/40201873): Fix ScopedDirTest.CloseOutOfScope.
+                    # TODO(crbug.com/579554079): Fix PosixSharedMemoryTest.CreateAndMap.
+                    "--gtest_filter=-ScopedDirTest.CloseOutOfScope:PosixSharedMemoryTest.CreateAndMap",
+                ],
             ),
         },
     ),

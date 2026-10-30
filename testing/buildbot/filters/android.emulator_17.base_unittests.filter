@@ -1,0 +1,5 @@
+# crbug.com/579552789
+-LinkerTest.CreatedRegionIsSealed
+
+# crbug.com/579554199
+-FilePathTest.CompareIgnoreCase
