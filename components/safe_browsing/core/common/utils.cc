@@ -5,6 +5,7 @@
 #include "components/safe_browsing/core/common/utils.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
@@ -45,16 +46,17 @@ const int kUnsetHttpResponseCode = 0;
 }  // namespace
 
 std::string ShortURLForReporting(const GURL& url) {
-  std::string spec(url.spec());
+  std::string_view spec(url.spec());
   if (url.SchemeIs(url::kDataScheme)) {
     size_t comma_pos = spec.find(',');
-    if (comma_pos != std::string::npos && comma_pos != spec.size() - 1) {
+    if (comma_pos != std::string_view::npos && comma_pos != spec.size() - 1) {
       std::string hash_value = crypto::SHA256HashString(spec);
-      spec.erase(comma_pos + 1);
-      spec += base::HexEncode(hash_value);
+      // Build a new string so the result doesn't keep the payload's capacity.
+      return base::StrCat(
+          {spec.substr(0, comma_pos + 1), base::HexEncode(hash_value)});
     }
   }
-  return spec;
+  return std::string(spec);
 }
 
 ChromeUserPopulation::ProfileManagementStatus GetProfileManagementStatus(
