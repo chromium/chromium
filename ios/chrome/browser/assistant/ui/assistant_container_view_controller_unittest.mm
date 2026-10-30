@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
 
 #import "base/test/ios/wait_util.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
@@ -17,6 +18,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/test/app/uikit_test_util.h"
@@ -156,14 +158,16 @@ TEST_F(AssistantContainerViewControllerTest, UpdatesMinimizedDetentHeight) {
   EXPECT_EQ(view_controller_.heightConstraint.constant, new_min_height);
 }
 
-// Test that updating the `mediumDetentHeight` property in points dynamically
-// updates the medium detent height and resets to default when `std::nullopt`.
+// Tests that updating the `mediumDetentHeight` property in points dynamically
+// updates the medium detent height, clamps values strictly between
+// `minimizedDetentHeight` and `absoluteMaxHeight`, and resets to default when
+// `std::nullopt`.
 TEST_F(AssistantContainerViewControllerTest, UpdatesMediumDetentHeight) {
   [view_controller_ setDetents:{AssistantContainerDetent::kMedium}];
 
+  NSInteger max_height = [view_controller_ absoluteMaxHeight];
   constexpr CGFloat kDefaultMediumRatio = 0.5;
-  NSInteger default_medium_height =
-      [view_controller_ absoluteMaxHeight] * kDefaultMediumRatio;
+  NSInteger default_medium_height = max_height * kDefaultMediumRatio;
   EXPECT_EQ(
       [view_controller_ heightForDetent:AssistantContainerDetent::kMedium],
       default_medium_height);
@@ -174,10 +178,92 @@ TEST_F(AssistantContainerViewControllerTest, UpdatesMediumDetentHeight) {
       [view_controller_ heightForDetent:AssistantContainerDetent::kMedium],
       kCustomMediumHeight);
 
+  // Heights at or below `minimizedDetentHeight` clamp to
+  // `minimizedDetentHeight + 1` so `kMedium` remains strictly above
+  // `kMinimized`.
+  view_controller_.mediumDetentHeight = view_controller_.minimizedDetentHeight;
+  EXPECT_EQ(
+      [view_controller_ heightForDetent:AssistantContainerDetent::kMedium],
+      view_controller_.minimizedDetentHeight + 1);
+
+  // Heights at or above `max_height` clamp to `max_height - 1` so `kMedium`
+  // remains strictly below `kLarge`.
+  view_controller_.mediumDetentHeight = max_height;
+  EXPECT_EQ(
+      [view_controller_ heightForDetent:AssistantContainerDetent::kMedium],
+      max_height - 1);
+
   view_controller_.mediumDetentHeight = std::nullopt;
   EXPECT_EQ(
       [view_controller_ heightForDetent:AssistantContainerDetent::kMedium],
       default_medium_height);
+}
+
+// Tests that updating the `mediumDetentPercentage` property dynamically updates
+// the medium detent height, clamps the computed height strictly between
+// `minimizedDetentHeight` and `absoluteMaxHeight`, is overridden when
+// `mediumDetentHeight` (in points) is set, and resets to the default 50% ratio
+// when `std::nullopt`.
+TEST_F(AssistantContainerViewControllerTest, UpdatesMediumDetentPercentage) {
+  [view_controller_ setDetents:{AssistantContainerDetent::kMedium}];
+
+  CGFloat max_height = [view_controller_ absoluteMaxHeight];
+  NSInteger default_medium_height = max_height * 0.5;
+  EXPECT_EQ(
+      [view_controller_ heightForDetent:AssistantContainerDetent::kMedium],
+      default_medium_height);
+
+  // Setting 60% updates the medium detent height to 60% of `max_height`.
+  view_controller_.mediumDetentPercentage = 60;
+  EXPECT_EQ(
+      [view_controller_ heightForDetent:AssistantContainerDetent::kMedium],
+      static_cast<NSInteger>(max_height * 0.6));
+
+  // Setting 80% updates the medium detent height to 80% of `max_height`.
+  view_controller_.mediumDetentPercentage = 80;
+  EXPECT_EQ(
+      [view_controller_ heightForDetent:AssistantContainerDetent::kMedium],
+      static_cast<NSInteger>(max_height * 0.8));
+
+  // Percentages that produce a height at or below `minimizedDetentHeight` clamp
+  // the height to `minimizedDetentHeight + 1`, and percentages at or above 100%
+  // clamp the height to `max_height - 1`.
+  view_controller_.mediumDetentPercentage = 5;
+  EXPECT_EQ(5, view_controller_.mediumDetentPercentage);
+  EXPECT_EQ(
+      [view_controller_ heightForDetent:AssistantContainerDetent::kMedium],
+      view_controller_.minimizedDetentHeight + 1);
+
+  view_controller_.mediumDetentPercentage = 100;
+  EXPECT_EQ(100, view_controller_.mediumDetentPercentage);
+  EXPECT_EQ(
+      [view_controller_ heightForDetent:AssistantContainerDetent::kMedium],
+      static_cast<NSInteger>(max_height) - 1);
+
+  // Explicit `mediumDetentHeight` in points takes precedence over percentage.
+  view_controller_.mediumDetentPercentage = 60;
+  view_controller_.mediumDetentHeight = 350;
+  EXPECT_EQ(
+      [view_controller_ heightForDetent:AssistantContainerDetent::kMedium],
+      350);
+
+  // Clearing both restores the default 50% ratio.
+  view_controller_.mediumDetentHeight = std::nullopt;
+  view_controller_.mediumDetentPercentage = std::nullopt;
+  EXPECT_EQ(
+      [view_controller_ heightForDetent:AssistantContainerDetent::kMedium],
+      default_medium_height);
+
+  // The `kAssistantContainer` feature parameter overrides
+  // `mediumDetentPercentage`.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kAssistantContainer,
+      {{kAssistantContainerMediumDetentPercentParam, "80"}});
+  view_controller_.mediumDetentPercentage = 60;
+  EXPECT_EQ(
+      [view_controller_ heightForDetent:AssistantContainerDetent::kMedium],
+      static_cast<NSInteger>(max_height * 0.8));
 }
 
 // Tests that specific limits are respected.

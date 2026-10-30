@@ -1137,16 +1137,16 @@ constexpr FeatureEntry::FeatureVariation kPageActionMenuIconVariations[] = {
 constexpr FeatureEntry::FeatureParam kAssistantContainerParamDebugMode[] = {
     {kAssistantContainerParam, kAssistantContainerParamDebug}};
 
-constexpr FeatureEntry::FeatureParam kAssistantContainer30[] = {
-    {kAssistantContainerMediumDetentPercentParam, "30"}};
-
 constexpr FeatureEntry::FeatureParam kAssistantContainer60[] = {
     {kAssistantContainerMediumDetentPercentParam, "60"}};
 
+constexpr FeatureEntry::FeatureParam kAssistantContainer80[] = {
+    {kAssistantContainerMediumDetentPercentParam, "80"}};
+
 constexpr FeatureEntry::FeatureVariation kAssistantContainerVariations[] = {
     {"with debug enabled", kAssistantContainerParamDebugMode, nullptr},
-    {"30% medium detent", kAssistantContainer30, nullptr},
-    {"60% medium detent", kAssistantContainer60, nullptr}};
+    {"60% medium detent", kAssistantContainer60, nullptr},
+    {"80% medium detent", kAssistantContainer80, nullptr}};
 
 constexpr FeatureEntry::FeatureParam kAimCobrowseWithAddTabEntrypoint[] = {
     {kAimCobrowseAddTabEntrypointParam, "true"}};

@@ -482,6 +482,18 @@ inline LayoutStateAssistantPassKey PassKey() {
   }
 }
 
+- (void)setMediumDetentPercentage:
+    (std::optional<NSInteger>)mediumDetentPercentage {
+  if (_mediumDetentPercentage == mediumDetentPercentage) {
+    return;
+  }
+  _mediumDetentPercentage = mediumDetentPercentage;
+  [self updateDetentHeights];
+  if (_activeDetent == AssistantContainerDetent::kMedium && _hasAppeared) {
+    [self animateToDetent:AssistantContainerDetent::kMedium];
+  }
+}
+
 - (void)setGuideName:(GuideName*)guideName {
   if ([_guideName isEqualToString:guideName]) {
     return;
@@ -1363,16 +1375,37 @@ inline LayoutStateAssistantPassKey PassKey() {
 }
 
 // Computes the height for the medium detent, taking into account optional
-// custom height and experimental setting percentage.
+// custom height, experimental setting percentage, and custom percentage.
+// Clamps the returned height strictly between `minimizedDetentHeight` and
+// `absoluteMaxHeight` so `kMedium` never collides with `kMinimized` or
+// `kLarge`.
 - (NSInteger)computeMediumDetentHeight {
   NSInteger absoluteMax = [self absoluteMaxHeight];
+  NSInteger height = 0;
   if (self.mediumDetentHeight.has_value()) {
-    return std::clamp(self.mediumDetentHeight.value(),
-                      self.minimizedDetentHeight, absoluteMax);
+    height = self.mediumDetentHeight.value();
+  } else {
+    // Prioritize the Finch / `chrome://flags` parameter override if set
+    // (`GetAssistantMediumDetentPercentage()` returns 0 when unset). Otherwise,
+    // fall back to the caller-provided `mediumDetentPercentage` (e.g. 60% for
+    // Cobrowse) or the container's default (50%).
+    NSInteger percentage = GetAssistantMediumDetentPercentage();
+    if (percentage <= 0) {
+      percentage =
+          self.mediumDetentPercentage.value_or(kDefaultMediumDetentPercentage);
+    }
+    height = absoluteMax * (percentage / 100.0);
   }
-  NSInteger percentage =
-      GetAssistantMediumDetentPercentage() ?: kDefaultMediumDetentPercentage;
-  return absoluteMax * (percentage / 100.0);
+  NSInteger minMediumHeight = self.minimizedDetentHeight + 1;
+  NSInteger maxMediumHeight = absoluteMax - 1;
+  // Before the view has been laid out (e.g. when properties are configured
+  // before presentation and `self.view.frame` is `CGRectZero`), `absoluteMax`
+  // can be smaller than `minimizedDetentHeight`. Guard against passing an
+  // inverted range to `std::clamp`, which asserts `lo <= hi` in libc++.
+  if (minMediumHeight > maxMediumHeight) {
+    return height;
+  }
+  return std::clamp(height, minMediumHeight, maxMediumHeight);
 }
 
 // Recomputes and caches the heights for all active detents.

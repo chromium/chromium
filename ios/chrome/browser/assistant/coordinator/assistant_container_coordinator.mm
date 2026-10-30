@@ -71,6 +71,8 @@ enum class TransitionState {
   AssistantContainerDetent _largestUndimmedDetent;
   // The height for the minimized detent.
   NSInteger _minimizedDetentHeight;
+  // The percentage for the medium detent height.
+  std::optional<NSInteger> _mediumDetentPercentage;
   // Whether the grabber button is hidden.
   BOOL _grabberHidden;
   // The tab grid state being observed.
@@ -146,6 +148,7 @@ enum class TransitionState {
   _containerViewController.delegate = _delegate;
   _containerViewController.largestUndimmedDetent = _largestUndimmedDetent;
   _containerViewController.minimizedDetentHeight = _minimizedDetentHeight;
+  _containerViewController.mediumDetentPercentage = _mediumDetentPercentage;
   [_containerViewController setGrabberHidden:_grabberHidden animated:NO];
   if (!_detents.empty()) {
     _containerViewController.detents = _detents;
@@ -290,6 +293,13 @@ enum class TransitionState {
   }
 }
 
+- (void)setAssistantContainerMediumDetentPercentage:(NSInteger)percentage {
+  _mediumDetentPercentage = percentage;
+  if (_containerViewController) {
+    _containerViewController.mediumDetentPercentage = percentage;
+  }
+}
+
 - (void)setAssistantContainerGrabberHidden:(BOOL)hidden
                                   animated:(BOOL)animated {
   _grabberHidden = hidden;
@@ -409,6 +419,7 @@ enum class TransitionState {
   _delegate = nil;
   _detents.clear();
   _largestUndimmedDetent = kDefaultLargestUndimmedDetent;
+  _mediumDetentPercentage = std::nullopt;
   _grabberHidden = NO;
 
   if (_dismissalCompletion) {
