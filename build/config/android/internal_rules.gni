@@ -1183,6 +1183,7 @@ if (enable_java_templates) {
       script = "//build/android/gyp/tracereferences.py"
       inputs = java_paths_for_inputs + [
                  _r8_path,
+                 _chrome_r8_binary_path,
                  invoker.tracerefs_json,
                ]
       depfile = "$target_gen_dir/$target_name.d"

@@ -13,6 +13,7 @@ import json
 import logging
 import os
 import pathlib
+import platform
 import re
 import shutil
 import sys
@@ -24,6 +25,11 @@ from util import server_utils
 import action_helpers  # build_utils adds //build to sys.path.
 
 _DUMP_DIR_NAME = 'r8inputs_tracerefs'
+_CHROME_R8_BINARY_PATH = os.path.join(
+    build_utils.DIR_SOURCE_ROOT,
+    'third_party/r8/cipd/bin/chrome_r8',
+)
+_CHROME_R8_MAX_CPUS = 32
 _SINGLEJAR_PATH = os.path.join(
     build_utils.DIR_SOURCE_ROOT,
     'third_party/android_build_tools/bazel_tools/cipd/singlejar',
@@ -239,15 +245,39 @@ def _CreateDisallowedReferencesMessage(violations, disallowed_classes):
 
 
 def _RunTraceReferences(error_title, r8jar, libs, dex_files, options):
-    cmd = build_utils.JavaCmd(xmx='2G')
+    use_chrome_r8_binary = (
+        sys.platform == 'linux' and platform.machine() == 'x86_64'
+    )
+    if use_chrome_r8_binary:
+        cmd = [
+            _CHROME_R8_BINARY_PATH,
+            f'-Djava.home={build_utils.JAVA_HOME}',
+            '-Xmx2G',
+            # Default initial heap size is based on total RAM. Pin it to a
+            # consistent value for better determinism and to avoid slow-downs
+            # by having it start too low.
+            '-Xms1G',
+        ]
+        # Limit R8 worker threads and G1 GC threads on many-core machines.
+        # For chrome_public_apk on a 96-core machine, this reduced CPU time by
+        # 40% (5.95s -> 3.53s) and wall time by 4% (879ms -> 847ms).
+        if (os.cpu_count() or 0) > _CHROME_R8_MAX_CPUS:
+            cmd += [f'-XX:ActiveProcessorCount={_CHROME_R8_MAX_CPUS}']
+    else:
+        cmd = build_utils.JavaCmd(xmx='2G')
 
     if options.dump_inputs:
         cmd += [f'-Dcom.android.tools.r8.dumpinputtodirectory={_DUMP_DIR_NAME}']
 
+    if use_chrome_r8_binary:
+        cmd += ['--tracereferences']
+    else:
+        cmd += [
+            '-cp',
+            r8jar,
+            'com.android.tools.r8.tracereferences.TraceReferences',
+        ]
     cmd += [
-        '-cp',
-        r8jar,
-        'com.android.tools.r8.tracereferences.TraceReferences',
         '--map-diagnostics:MissingDefinitionsDiagnostic',
         'error',
         'warning',
