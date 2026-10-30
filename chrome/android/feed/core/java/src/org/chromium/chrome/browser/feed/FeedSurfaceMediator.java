@@ -342,12 +342,16 @@ public class FeedSurfaceMediator
     /** Restores a previously saved state. */
     void restoreSavedInstanceState(@Nullable String json) {
         FeedScrollState state = FeedScrollState.fromJson(json);
-        if (state == null) {
+        if (state == null
+                || state.position == RecyclerView.NO_POSITION
+                || (state.position == 0 && state.offset == 0)) {
             mPositionToRestore = RecyclerView.NO_POSITION;
+            mRestoreScrollState = null;
             mGetRestoringStateSupplier.set(RestoringState.NO_STATE_TO_RESTORE);
             return;
         }
         mPositionToRestore = state.position;
+        mGetRestoringStateSupplier.set(RestoringState.WAITING_TO_RESTORE);
         if (mCurrentStream == null) {
             mRestoreScrollState = state;
         } else {
@@ -422,7 +426,11 @@ public class FeedSurfaceMediator
         assumeNonNull(mStreamContentChangedListener);
         mCurrentStream.addOnContentChangedListener(mStreamContentChangedListener);
 
-        mGetRestoringStateSupplier.set(RestoringState.WAITING_TO_RESTORE);
+        if (mRestoreScrollState != null || mPositionToRestore != RecyclerView.NO_POSITION) {
+            mGetRestoringStateSupplier.set(RestoringState.WAITING_TO_RESTORE);
+        } else {
+            mGetRestoringStateSupplier.set(RestoringState.NO_STATE_TO_RESTORE);
+        }
         FeedReliabilityLogger reliabilityLogger = mCoordinator.getReliabilityLogger();
         mCurrentStream.bind(
                 mCoordinator.getRecyclerView(),

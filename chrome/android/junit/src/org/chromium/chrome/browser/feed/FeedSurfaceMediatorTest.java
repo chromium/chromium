@@ -15,6 +15,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -540,6 +541,48 @@ public class FeedSurfaceMediatorTest {
         recyclerView.scrollAndRunScrollCallback();
 
         assertEquals(originalAnimator, recyclerView.getItemAnimator());
+    }
+
+    @Test
+    public void testScrollRestore_noSavedStateDuringUpdateContent_keepsNoStateToRestore() {
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
+        mFeedSurfaceMediator = createMediator();
+        doAnswer(
+                        invocation -> {
+                            mFeedSurfaceMediator.restoreSavedInstanceState(null);
+                            return null;
+                        })
+                .when(mFeedSurfaceCoordinator)
+                .setupHeaders(true);
+
+        mFeedSurfaceMediator.updateContent();
+
+        assertEquals(RestoringState.NO_STATE_TO_RESTORE, getRestoringState());
+    }
+
+    @Test
+    public void testScrollRestore_topPositionZeroOffset_setsNoStateToRestore() {
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS)).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
+        mFeedSurfaceMediator = createMediator();
+        doAnswer(
+                        invocation -> {
+                            FeedScrollState state = new FeedScrollState();
+                            state.position = 0;
+                            state.lastPosition = 1;
+                            state.offset = 0;
+                            mFeedSurfaceMediator.restoreSavedInstanceState(state.toJson());
+                            return null;
+                        })
+                .when(mFeedSurfaceCoordinator)
+                .setupHeaders(true);
+
+        mFeedSurfaceMediator.updateContent();
+
+        assertEquals(RestoringState.NO_STATE_TO_RESTORE, getRestoringState());
     }
 
     /**
