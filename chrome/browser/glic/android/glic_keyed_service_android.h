@@ -55,6 +55,7 @@ class GlicKeyedServiceAndroid : public base::SupportsUserData::Data {
 
   bool InvokeWithPrompt(JNIEnv* env,
                         TabAndroid* tab,
+                        content::RenderFrameHost* frame,
                         std::string text,
                         int32_t source);
 

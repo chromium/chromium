@@ -89,18 +89,24 @@ public final class GlicKeyedServiceHandler {
      *
      * @param profile The current profile.
      * @param tab The {@link Tab} to target.
+     * @param frame The {@link RenderFrameHost} the prompt was taken from.
      * @param text The text prompt to populate.
      * @param invocationSource How the UI was triggered.
-     * @return true if Glic was successfully invoked with the prompt.
+     * @return true if Glic was invoked with the prompt attached. Enterprise policy checks run
+     *     afterwards and may still fail the invocation.
      */
     public static boolean invokeWithPrompt(
-            Profile profile, Tab tab, String text, @GlicInvocationSource int invocationSource) {
+            Profile profile,
+            Tab tab,
+            @Nullable RenderFrameHost frame,
+            String text,
+            @GlicInvocationSource int invocationSource) {
         GlicKeyedService service = GlicKeyedServiceFactory.getForProfile(profile);
         if (service == null) {
             return false;
         }
 
-        return service.invokeWithPrompt(tab, text, invocationSource);
+        return service.invokeWithPrompt(tab, frame, text, invocationSource);
     }
 
     /**

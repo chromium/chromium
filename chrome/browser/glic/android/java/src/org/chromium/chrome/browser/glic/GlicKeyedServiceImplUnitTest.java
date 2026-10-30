@@ -10,6 +10,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -125,6 +127,63 @@ public class GlicKeyedServiceImplUnitTest {
 
         mService.shareContextImage(mTabMock, mRenderFrameHostMock, url);
         verify(mNativesMock).shareContextImage(NATIVE_PTR, mTabMock, mRenderFrameHostMock, url);
+    }
+
+    @Test
+    public void testInvokeWithPrompt() {
+        when(mNativesMock.invokeWithPrompt(
+                        NATIVE_PTR,
+                        mTabMock,
+                        mRenderFrameHostMock,
+                        "prompt",
+                        GlicInvocationSource.UNSUPPORTED))
+                .thenReturn(true);
+        assertTrue(
+                mService.invokeWithPrompt(
+                        mTabMock,
+                        mRenderFrameHostMock,
+                        "prompt",
+                        GlicInvocationSource.UNSUPPORTED));
+        verify(mNativesMock)
+                .invokeWithPrompt(
+                        NATIVE_PTR,
+                        mTabMock,
+                        mRenderFrameHostMock,
+                        "prompt",
+                        GlicInvocationSource.UNSUPPORTED);
+
+        when(mNativesMock.invokeWithPrompt(
+                        eq(NATIVE_PTR),
+                        eq(mTabMock),
+                        /* frame= */ isNull(),
+                        eq("prompt"),
+                        eq(GlicInvocationSource.UNSUPPORTED)))
+                .thenReturn(false);
+        assertFalse(
+                mService.invokeWithPrompt(
+                        mTabMock, /* frame= */ null, "prompt", GlicInvocationSource.UNSUPPORTED));
+        verify(mNativesMock)
+                .invokeWithPrompt(
+                        NATIVE_PTR,
+                        mTabMock,
+                        /* frame= */ null,
+                        "prompt",
+                        GlicInvocationSource.UNSUPPORTED);
+
+        mService.onNativeDestroyed();
+        assertFalse(
+                mService.invokeWithPrompt(
+                        mTabMock,
+                        mRenderFrameHostMock,
+                        "after_destroy",
+                        GlicInvocationSource.UNSUPPORTED));
+        verify(mNativesMock, never())
+                .invokeWithPrompt(
+                        NATIVE_PTR,
+                        mTabMock,
+                        mRenderFrameHostMock,
+                        "after_destroy",
+                        GlicInvocationSource.UNSUPPORTED);
     }
 
     @Test

@@ -138,15 +138,21 @@ bool GlicKeyedServiceAndroid::InvokeWithAutoSubmit(JNIEnv* env,
 
 bool GlicKeyedServiceAndroid::InvokeWithPrompt(JNIEnv* env,
                                                TabAndroid* tab,
+                                               content::RenderFrameHost* frame,
                                                std::string text,
                                                int32_t source) {
-  if (!tab) {
+  // The prompt is page data, so it must pass the same enterprise clipboard
+  // policy checks as a copy/paste into Glic. Those require the source frame
+  // and non-empty text.
+  if (!tab || !frame || text.empty()) {
     return false;
   }
 
   GlicInvokeOptions options(Target(*tab),
                             static_cast<mojom::InvocationSource>(source));
   options.prompts.push_back(std::move(text));
+  options.prompt_policy =
+      PromptPolicy{frame->GetGlobalId(), PolicyCheck::kClipboard};
   // Invoke() returns a null WeakPtr if the Glic instance could not be created,
   // which means the prompt was never delivered.
   return !!service_->Invoke(std::move(options));

@@ -100,11 +100,17 @@ public interface GlicKeyedService {
      * Invokes the Glic service with a prompt prepopulated in the input box.
      *
      * @param tab The {@link Tab} to target.
+     * @param frame The {@link RenderFrameHost} the prompt was taken from.
      * @param text The text prompt to populate.
      * @param invocationSource How the UI was triggered.
-     * @return true if Glic was successfully invoked with the prompt.
+     * @return true if Glic was invoked with the prompt attached. Enterprise policy checks run
+     *     afterwards and may still fail the invocation.
      */
-    boolean invokeWithPrompt(Tab tab, String text, @GlicInvocationSource int invocationSource);
+    boolean invokeWithPrompt(
+            Tab tab,
+            @Nullable RenderFrameHost frame,
+            String text,
+            @GlicInvocationSource int invocationSource);
 
     /**
      * Invokes the Glic service, opening the panel attached to the given tab without

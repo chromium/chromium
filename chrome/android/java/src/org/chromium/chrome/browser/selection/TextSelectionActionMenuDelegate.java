@@ -196,6 +196,9 @@ public class TextSelectionActionMenuDelegate implements SelectionActionMenuDeleg
                             GlicKeyedServiceHandler.invokeWithPrompt(
                                     profile,
                                     mTab,
+                                    webContents.isDestroyed()
+                                            ? null
+                                            : webContents.getFocusedFrame(),
                                     text,
                                     GlicInvocationSource.WEB_CONTENTS_CONTEXT_MENU);
                     GlicMetrics.recordSendSelectedTextSucceeded(profile, sent);
