@@ -912,6 +912,26 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/chrome/browser/web_applications/web_app_database_serialization.h:ProtoParseResult) -->
 
+<!-- LINT.IfChange(WebAppShareTargetWaitForServiceWorkerOutcome) -->
+
+<enum name="WebAppShareTargetWaitForServiceWorkerOutcome">
+  <int value="0" label="Service worker already registered: POST sent"/>
+  <int value="1" label="Service worker without a fetch handler: POST sent"/>
+  <int value="2"
+      label="Origin has another service worker registration: POST sent"/>
+  <int value="3" label="Service worker activated: POST sent"/>
+  <int value="4" label="Bootstrap load failed: POST sent"/>
+  <int value="5" label="Timed out: POST sent"/>
+  <int value="6" label="Service worker context destroyed: POST sent"/>
+  <int value="7" label="Dropped for a browser-initiated navigation"/>
+  <int value="8" label="Dropped for a newer share"/>
+  <int value="9" label="Dropped for a direct share target POST"/>
+  <int value="10" label="Dropped at the maximum wait while on another origin"/>
+  <int value="11" label="WebContents destroyed: dropped"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/android/webapk/webapk_post_share_target_navigator.h:WebAppShareTargetWaitForServiceWorkerOutcome) -->
+
 <enum name="WebAppStorageKeyParseResult">
   <int value="0" label="Success"/>
   <int value="1" label="No Start URL"/>

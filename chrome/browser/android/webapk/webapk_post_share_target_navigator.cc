@@ -15,9 +15,11 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversion_utils.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/android/webapk/webapk_features.h"
 #include "chrome/browser/web_share_target/target_util.h"
@@ -75,6 +77,8 @@ void NavigateShareTargetPostInternal(
   web_contents->OpenURL(open_url_params, /*navigation_handle_callback=*/{});
 }
 
+using Outcome = ShareTargetWaitForServiceWorkerOutcome;
+
 // Holds a POST share target navigation for a WebContents until a service
 // worker controlling the share target action URL is available, so that the
 // POST is handled by the service worker (which typically stashes the shared
@@ -117,7 +121,11 @@ class PendingShareTargetPost
  public:
   PendingShareTargetPost(const PendingShareTargetPost&) = delete;
   PendingShareTargetPost& operator=(const PendingShareTargetPost&) = delete;
-  ~PendingShareTargetPost() override = default;
+  ~PendingShareTargetPost() override {
+    base::UmaHistogramEnumeration(
+        kShareTargetWaitForServiceWorkerOutcomeHistogram,
+        outcome_.value_or(Outcome::kWebContentsDestroyed));
+  }
 
   static void Start(
       content::WebContents* web_contents,
@@ -126,15 +134,22 @@ class PendingShareTargetPost
       const GURL& share_target_gurl,
       const GURL& bootstrap_gurl) {
     // A newer share replaces any share that is still waiting.
-    Cancel(web_contents);
+    Cancel(web_contents, Outcome::kDroppedForNewShare);
     CreateForWebContents(web_contents, post_data, header_list,
                          share_target_gurl, bootstrap_gurl);
     FromWebContents(web_contents)->CheckForServiceWorker();
   }
 
-  // Drops any pending POST for |web_contents|.
-  static void Cancel(content::WebContents* web_contents) {
-    web_contents->RemoveUserData(UserDataKey());
+  // Drops any pending POST for |web_contents|, with |outcome|, which is
+  // recorded when the pending POST is destroyed.
+  static void Cancel(content::WebContents* web_contents, Outcome outcome) {
+    PendingShareTargetPost* pending = FromWebContents(web_contents);
+    if (!pending) {
+      return;
+    }
+    CHECK(!pending->outcome_);
+    pending->outcome_ = outcome;
+    web_contents->RemoveUserData(UserDataKey());  // Deletes |pending|.
   }
 
  private:
@@ -157,7 +172,7 @@ class PendingShareTargetPost
                                     ->GetServiceWorkerContext()) {
     // Observe from the start, so that OnDestruct() clears
     // |service_worker_context_| even while CheckHasServiceWorker() is in
-    // flight, and so that no activation is missed.
+    // flight.
     service_worker_context_observation_.Observe(service_worker_context_);
   }
 
@@ -177,9 +192,19 @@ class PendingShareTargetPost
   }
 
   void OnCheckHasServiceWorker(content::ServiceWorkerCapability capability) {
-    if (capability != content::ServiceWorkerCapability::NO_SERVICE_WORKER ||
-        !service_worker_context_) {
-      SendPostAndDestroy();
+    if (capability ==
+        content::ServiceWorkerCapability::SERVICE_WORKER_NO_FETCH_HANDLER) {
+      // The POST will not be intercepted, but loading the start URL cannot
+      // help either.
+      SendPostAndDestroy(Outcome::kServiceWorkerWithoutFetchHandler);
+      return;
+    }
+    if (capability != content::ServiceWorkerCapability::NO_SERVICE_WORKER) {
+      SendPostAndDestroy(Outcome::kServiceWorkerAlreadyRegistered);
+      return;
+    }
+    if (!service_worker_context_) {
+      SendPostAndDestroy(Outcome::kServiceWorkerContextDestroyed);
       return;
     }
 
@@ -193,7 +218,7 @@ class PendingShareTargetPost
     // conservative "true" for the cold start case this is meant to handle.
     if (service_worker_context_->MaybeHasRegistrationForStorageKey(
             GetStorageKey())) {
-      SendPostAndDestroy();
+      SendPostAndDestroy(Outcome::kOriginHasOtherRegistration);
       return;
     }
 
@@ -215,6 +240,7 @@ class PendingShareTargetPost
     // browser-initiated navigation.
     base::WeakPtr<PendingShareTargetPost> weak_this =
         weak_factory_.GetWeakPtr();
+    bootstrap_start_time_ = base::TimeTicks::Now();
     starting_bootstrap_ = true;
     base::WeakPtr<content::NavigationHandle> handle =
         GetWebContents().GetController().LoadURLWithParams(params);
@@ -225,7 +251,7 @@ class PendingShareTargetPost
     if (!handle) {
       // The bootstrap navigation did not start, or already finished.
       if (!bootstrap_navigation_id_) {
-        SendPostAndDestroy();
+        SendPostAndDestroy(Outcome::kBootstrapFailed);
       }
       return;
     }
@@ -251,7 +277,8 @@ class PendingShareTargetPost
         handle->IsRendererInitiated()) {
       return;
     }
-    Cancel(&GetWebContents());  // Deletes |this|.
+    // Deletes |this|.
+    Cancel(&GetWebContents(), Outcome::kDroppedForNavigation);
   }
 
   void DidFinishNavigation(content::NavigationHandle* handle) override {
@@ -282,13 +309,13 @@ class PendingShareTargetPost
       }
       if (!handle->HasCommitted() || handle->IsErrorPage()) {
         // The page will not register a service worker; do not wait for it.
-        SendPostAndDestroy();
+        SendPostAndDestroy(Outcome::kBootstrapFailed);
         return;
       }
     }
     if (handle->HasCommitted()) {
       if (service_worker_activated_ && IsOnAppOrigin()) {
-        SendPostAndDestroy();
+        SendPostAndDestroy(Outcome::kServiceWorkerActivated);
         return;
       }
       UpdateTimeoutTimer(handle->GetURL());
@@ -325,14 +352,20 @@ class PendingShareTargetPost
                                                      share_target_gurl_)) {
       return;
     }
-    // Once the bootstrap has started, do not navigate away from a page of
-    // another origin (e.g. a sign-in page) that the user may be using. Send the
-    // POST once a page of the app's origin commits instead.
-    if (bootstrap_navigation_id_ && !IsOnAppOrigin()) {
+    // Until the bootstrap starts, CheckHasServiceWorker() (which waits for an
+    // installing worker) decides. An activation seen before then may be a late
+    // notification for a service worker that it will find anyway.
+    if (!bootstrap_navigation_id_) {
+      return;
+    }
+    // Do not navigate away from a page of another origin (e.g. a sign-in page)
+    // that the user may be using. Send the POST once a page of the app's origin
+    // commits instead.
+    if (!IsOnAppOrigin()) {
       service_worker_activated_ = true;
       return;
     }
-    SendPostAndDestroy();
+    SendPostAndDestroy(Outcome::kServiceWorkerActivated);
   }
 
   void OnDestruct(content::ServiceWorkerContext* context) override {
@@ -345,7 +378,7 @@ class PendingShareTargetPost
   void OnTimeout() {
     // Preserve the previous behavior: send the POST even though there is no
     // service worker to handle it.
-    SendPostAndDestroy();
+    SendPostAndDestroy(Outcome::kTimedOut);
   }
 
   void OnMaxWait() {
@@ -353,10 +386,10 @@ class PendingShareTargetPost
     // send it into a page of another origin that the user has stayed on for
     // this long (e.g. an abandoned sign-in); drop it instead.
     if (IsOnAppOrigin()) {
-      SendPostAndDestroy();
+      SendPostAndDestroy(Outcome::kTimedOut);
       return;
     }
-    Cancel(&GetWebContents());  // Deletes |this|.
+    Cancel(&GetWebContents(), Outcome::kDroppedForMaxWait);  // Deletes |this|.
   }
 
   // Whether the POST should replace the current history entry: only if that
@@ -371,8 +404,16 @@ class PendingShareTargetPost
     return entry && entry->GetUniqueID() == *bootstrap_entry_id_;
   }
 
-  // Sends the POST navigation. Deletes |this|.
-  void SendPostAndDestroy() {
+  // Sends the POST navigation, recording |outcome|. Deletes |this|.
+  void SendPostAndDestroy(Outcome outcome) {
+    // Recorded when the POST is sent rather than when the service worker
+    // activates, so that it includes any time spent on another origin, and is
+    // not recorded if the POST is then dropped.
+    if (outcome == Outcome::kServiceWorkerActivated && bootstrap_start_time_) {
+      base::UmaHistogramMediumTimes(
+          kShareTargetWaitForServiceWorkerTimeToActivationHistogram,
+          base::TimeTicks::Now() - *bootstrap_start_time_);
+    }
     content::WebContents* web_contents = &GetWebContents();
     const bool should_replace_current_entry = ShouldReplaceCurrentEntry();
     scoped_refptr<network::ResourceRequestBody> post_data =
@@ -380,7 +421,7 @@ class PendingShareTargetPost
     std::string header_list = std::move(header_list_);
     GURL share_target_gurl = share_target_gurl_;
 
-    Cancel(web_contents);  // Deletes |this|.
+    Cancel(web_contents, outcome);  // Deletes |this|.
 
     NavigateShareTargetPostInternal(post_data, header_list, share_target_gurl,
                                     should_replace_current_entry, web_contents);
@@ -406,6 +447,10 @@ class PendingShareTargetPost
   std::optional<int64_t> bootstrap_navigation_id_;
   // The history entry committed by the bootstrap navigation.
   std::optional<int> bootstrap_entry_id_;
+  // When the bootstrap navigation was started.
+  std::optional<base::TimeTicks> bootstrap_start_time_;
+  // How the POST was handled, recorded when |this| is destroyed.
+  std::optional<Outcome> outcome_;
   base::WeakPtrFactory<PendingShareTargetPost> weak_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
@@ -421,7 +466,7 @@ void NavigateShareTargetPost(
     const GURL& share_target_gurl,
     content::WebContents* web_contents) {
   // A direct POST supersedes any POST still waiting for a service worker.
-  PendingShareTargetPost::Cancel(web_contents);
+  PendingShareTargetPost::Cancel(web_contents, Outcome::kDroppedForDirectPost);
   NavigateShareTargetPostInternal(post_data, header_list, share_target_gurl,
                                   /*should_replace_current_entry=*/false,
                                   web_contents);

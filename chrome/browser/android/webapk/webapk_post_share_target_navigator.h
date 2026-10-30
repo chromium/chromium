@@ -16,6 +16,36 @@ class GURL;
 
 namespace webapk {
 
+inline constexpr char kShareTargetWaitForServiceWorkerOutcomeHistogram[] =
+    "WebApp.ShareTarget.WaitForServiceWorker.Outcome";
+inline constexpr char
+    kShareTargetWaitForServiceWorkerTimeToActivationHistogram[] =
+        "WebApp.ShareTarget.WaitForServiceWorker.TimeToActivation";
+
+// How a POST share target waiting for a service worker (see
+// NavigateShareTargetPostWhenServiceWorkerReady()) was handled.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(WebAppShareTargetWaitForServiceWorkerOutcome)
+enum class ShareTargetWaitForServiceWorkerOutcome {
+  // The POST was sent:
+  kServiceWorkerAlreadyRegistered = 0,
+  kServiceWorkerWithoutFetchHandler = 1,
+  kOriginHasOtherRegistration = 2,
+  kServiceWorkerActivated = 3,
+  kBootstrapFailed = 4,
+  kTimedOut = 5,
+  kServiceWorkerContextDestroyed = 6,
+  // The POST was dropped:
+  kDroppedForNavigation = 7,
+  kDroppedForNewShare = 8,
+  kDroppedForDirectPost = 9,
+  kDroppedForMaxWait = 10,
+  kWebContentsDestroyed = 11,
+  kMaxValue = kWebContentsDestroyed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebAppShareTargetWaitForServiceWorkerOutcome)
+
 // Navigate to share target gurl with |post_data| and |header_list|.
 void NavigateShareTargetPost(
     const scoped_refptr<network::ResourceRequestBody>& post_data,

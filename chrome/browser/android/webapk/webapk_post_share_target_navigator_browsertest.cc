@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
@@ -181,6 +182,10 @@ constexpr char kHungStartPath[] = "/app/hung";
 // `kShareTargetPath`.
 constexpr char kOtherScopeStartPath[] = "/other/start.html";
 constexpr char kOtherScopeServiceWorkerPath[] = "/other/sw.js";
+// Registers `kNoFetchServiceWorkerPath`, whose scope (`/app/`) includes
+// `kShareTargetPath`, but which has no fetch handler.
+constexpr char kNoFetchStartPath[] = "/app/no_fetch.html";
+constexpr char kNoFetchServiceWorkerPath[] = "/app/no_fetch_sw.js";
 // Redirects to `kNoServiceWorkerStartPath` on `kCrossSiteHost`, like a start
 // URL that redirects to a sign-in page.
 constexpr char kRedirectToCrossSitePath[] = "/app/redirect";
@@ -190,9 +195,20 @@ constexpr char kRedirectToCrossSitePath[] = "/app/redirect";
 constexpr char16_t kInterceptedTitle[] = u"intercepted";
 constexpr char16_t kNetworkTitle[] = u"network";
 
+using Outcome = ShareTargetWaitForServiceWorkerOutcome;
+constexpr const char* kOutcomeHistogram =
+    kShareTargetWaitForServiceWorkerOutcomeHistogram;
+constexpr const char* kTimeToActivationHistogram =
+    kShareTargetWaitForServiceWorkerTimeToActivationHistogram;
+
 constexpr char kStartHtml[] =
     "<!doctype html><title>start</title>"
     "<script>navigator.serviceWorker.register('sw.js');</script>";
+constexpr char kNoFetchStartHtml[] =
+    "<!doctype html><title>start</title>"
+    "<script>navigator.serviceWorker.register('no_fetch_sw.js');</script>";
+constexpr char kNoFetchServiceWorkerJs[] =
+    "self.addEventListener('install', () => {});";
 constexpr char kNoServiceWorkerStartHtml[] =
     "<!doctype html><title>start</title>";
 constexpr char kServiceWorkerJs[] = R"(
@@ -308,6 +324,14 @@ class WebApkPostShareTargetWaitForServiceWorkerBrowserTest
     return false;
   }
 
+ protected:
+  // Expects that exactly one share was recorded, with |outcome|.
+  void ExpectOutcome(Outcome outcome) {
+    histograms_.ExpectUniqueSample(kOutcomeHistogram, outcome, 1);
+  }
+
+  base::HistogramTester histograms_;
+
  private:
   // Runs on the embedded test server's thread.
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
@@ -317,6 +341,12 @@ class WebApkPostShareTargetWaitForServiceWorkerBrowserTest
     if (path == kStartPath || path == kOtherScopeStartPath) {
       response->set_content_type("text/html");
       response->set_content(kStartHtml);
+    } else if (path == kNoFetchStartPath) {
+      response->set_content_type("text/html");
+      response->set_content(kNoFetchStartHtml);
+    } else if (path == kNoFetchServiceWorkerPath) {
+      response->set_content_type("text/javascript");
+      response->set_content(kNoFetchServiceWorkerJs);
     } else if (path == kNoServiceWorkerStartPath) {
       response->set_content_type("text/html");
       response->set_content(kNoServiceWorkerStartHtml);
@@ -364,6 +394,8 @@ IN_PROC_BROWSER_TEST_F(WebApkPostShareTargetWaitForServiceWorkerBrowserTest,
   EXPECT_EQ(1, RequestCount(kStartPath));
   EXPECT_EQ(0, RequestCount(kShareTargetPath));
   EXPECT_FALSE(HistoryContains(AppUrl(kStartPath)));
+  ExpectOutcome(Outcome::kServiceWorkerActivated);
+  histograms_.ExpectTotalCount(kTimeToActivationHistogram, 1);
 }
 
 // With a service worker already registered, the POST is sent straight away,
@@ -381,16 +413,38 @@ IN_PROC_BROWSER_TEST_F(WebApkPostShareTargetWaitForServiceWorkerBrowserTest,
   EXPECT_EQ(AppUrl(kShareTargetPath), web_contents()->GetLastCommittedURL());
   EXPECT_EQ(1, RequestCount(kStartPath));
   EXPECT_EQ(0, RequestCount(kShareTargetPath));
+  ExpectOutcome(Outcome::kServiceWorkerAlreadyRegistered);
+  histograms_.ExpectTotalCount(kTimeToActivationHistogram, 0);
+}
+
+// A registered service worker without a fetch handler will not intercept the
+// POST, but loading the start URL cannot help either, so the POST is sent
+// straight away.
+IN_PROC_BROWSER_TEST_F(WebApkPostShareTargetWaitForServiceWorkerBrowserTest,
+                       ServiceWorkerWithoutFetchHandlerPostsImmediately) {
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), AppUrl(kNoFetchStartPath)));
+  ASSERT_EQ("ready", content::EvalJs(
+                         web_contents(),
+                         "navigator.serviceWorker.ready.then(() => 'ready')"));
+
+  EXPECT_EQ(kNetworkTitle, Share(AppUrl(kNoFetchStartPath)));
+
+  EXPECT_EQ(1, RequestCount(kNoFetchStartPath));
+  EXPECT_EQ(1, RequestCount(kShareTargetPath));
+  ExpectOutcome(Outcome::kServiceWorkerWithoutFetchHandler);
+  histograms_.ExpectTotalCount(kTimeToActivationHistogram, 0);
 }
 
 // A bootstrap URL that is not same-origin with the share target is ignored and
-// the POST is sent straight away, as before.
+// the POST is sent straight away, as before. Nothing is recorded.
 IN_PROC_BROWSER_TEST_F(WebApkPostShareTargetWaitForServiceWorkerBrowserTest,
                        CrossOriginBootstrapUrlIsIgnored) {
   EXPECT_EQ(kNetworkTitle, Share(CrossSiteUrl(kStartPath)));
 
   EXPECT_EQ(0, RequestCount(kStartPath));
   EXPECT_EQ(1, RequestCount(kShareTargetPath));
+  histograms_.ExpectTotalCount(kOutcomeHistogram, 0);
 }
 
 class WebApkPostShareTargetWaitForServiceWorkerDisabledBrowserTest
@@ -412,6 +466,7 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_EQ(0, RequestCount(kStartPath));
   EXPECT_EQ(1, RequestCount(kShareTargetPath));
+  histograms_.ExpectTotalCount(kOutcomeHistogram, 0);
 }
 
 class WebApkPostShareTargetWaitForServiceWorkerTimeoutBrowserTest
@@ -436,6 +491,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(AppUrl(kShareTargetPath), web_contents()->GetLastCommittedURL());
   EXPECT_EQ(1, RequestCount(kShareTargetPath));
   EXPECT_FALSE(HistoryContains(AppUrl(kNoServiceWorkerStartPath)));
+  ExpectOutcome(Outcome::kTimedOut);
+  histograms_.ExpectTotalCount(kTimeToActivationHistogram, 0);
 }
 
 // If the tab already shows the start URL's document (e.g. a warm start) and the
@@ -456,6 +513,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(1, RequestCount(kShareTargetPath));
   EXPECT_TRUE(HistoryContains(AppUrl(kNoServiceWorkerStartPath)));
   EXPECT_FALSE(HistoryContains(bootstrap_url));
+  ExpectOutcome(Outcome::kTimedOut);
 }
 
 // The timeout does not run while a page of another origin is committed, e.g. a
@@ -491,6 +549,7 @@ IN_PROC_BROWSER_TEST_F(WebApkPostShareTargetWaitForServiceWorkerBrowserTest,
 
   EXPECT_EQ(0, RequestCount(kStartPath));
   EXPECT_EQ(1, RequestCount(kShareTargetPath));
+  ExpectOutcome(Outcome::kOriginHasOtherRegistration);
 }
 
 // If the bootstrap load fails, the page cannot register a service worker, so
@@ -504,6 +563,8 @@ IN_PROC_BROWSER_TEST_F(WebApkPostShareTargetWaitForServiceWorkerBrowserTest,
   EXPECT_LE(1, RequestCount(kFailingStartPath));
   EXPECT_EQ(1, RequestCount(kShareTargetPath));
   EXPECT_FALSE(HistoryContains(AppUrl(kFailingStartPath)));
+  ExpectOutcome(Outcome::kBootstrapFailed);
+  histograms_.ExpectTotalCount(kTimeToActivationHistogram, 0);
 }
 
 // Navigations started by the page while waiting (e.g. a sign-in redirect chain
@@ -526,6 +587,8 @@ IN_PROC_BROWSER_TEST_F(WebApkPostShareTargetWaitForServiceWorkerBrowserTest,
   EXPECT_EQ(0, RequestCount(kShareTargetPath));
   EXPECT_TRUE(HistoryContains(AppUrl(kNoServiceWorkerStartPath)));
   EXPECT_TRUE(HistoryContains(AppUrl(kStartPath)));
+  ExpectOutcome(Outcome::kServiceWorkerActivated);
+  histograms_.ExpectTotalCount(kTimeToActivationHistogram, 1);
 }
 
 // A browser-initiated navigation while waiting (e.g. a new intent, or Back)
@@ -542,6 +605,7 @@ IN_PROC_BROWSER_TEST_F(WebApkPostShareTargetWaitForServiceWorkerBrowserTest,
   EXPECT_EQ(AppUrl(kStartPath), web_contents()->GetLastCommittedURL());
   EXPECT_EQ(0, RequestCount(kShareTargetPath));
   EXPECT_FALSE(HistoryContains(AppUrl(kShareTargetPath)));
+  ExpectOutcome(Outcome::kDroppedForNavigation);
 }
 
 // A direct NavigateShareTargetPost() supersedes a POST that is still waiting,
@@ -562,6 +626,24 @@ IN_PROC_BROWSER_TEST_F(WebApkPostShareTargetWaitForServiceWorkerBrowserTest,
 
   EXPECT_EQ(AppUrl(kStartPath), web_contents()->GetLastCommittedURL());
   EXPECT_EQ(1, RequestCount(kShareTargetPath));
+  ExpectOutcome(Outcome::kDroppedForDirectPost);
+}
+
+// A newer share while one is still waiting replaces it: only the newer one is
+// sent.
+IN_PROC_BROWSER_TEST_F(WebApkPostShareTargetWaitForServiceWorkerBrowserTest,
+                       NewShareDropsPendingPost) {
+  ASSERT_NO_FATAL_FAILURE(
+      StartShareAndWaitForBootstrap(AppUrl(kNoServiceWorkerStartPath)));
+
+  EXPECT_EQ(kInterceptedTitle, Share(AppUrl(kStartPath)));
+
+  EXPECT_EQ(0, RequestCount(kShareTargetPath));
+  histograms_.ExpectBucketCount(kOutcomeHistogram, Outcome::kDroppedForNewShare,
+                                1);
+  histograms_.ExpectBucketCount(kOutcomeHistogram,
+                                Outcome::kServiceWorkerActivated, 1);
+  histograms_.ExpectTotalCount(kOutcomeHistogram, 2);
 }
 
 // If the service worker activates (e.g. in another tab) while a page of
@@ -593,6 +675,8 @@ IN_PROC_BROWSER_TEST_F(WebApkPostShareTargetWaitForServiceWorkerBrowserTest,
 
   EXPECT_EQ(AppUrl(kShareTargetPath), web_contents()->GetLastCommittedURL());
   EXPECT_EQ(0, RequestCount(kShareTargetPath));
+  ExpectOutcome(Outcome::kServiceWorkerActivated);
+  histograms_.ExpectTotalCount(kTimeToActivationHistogram, 1);
 }
 
 class WebApkPostShareTargetWaitForServiceWorkerMaxWaitBrowserTest
@@ -630,6 +714,8 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_EQ(AppUrl(kStartPath), web_contents()->GetLastCommittedURL());
   EXPECT_FALSE(HistoryContains(AppUrl(kShareTargetPath)));
+  ExpectOutcome(Outcome::kDroppedForMaxWait);
+  histograms_.ExpectTotalCount(kTimeToActivationHistogram, 0);
 }
 
 // If the WebContents is destroyed while the bootstrap navigation is in flight,
@@ -653,6 +739,7 @@ IN_PROC_BROWSER_TEST_F(WebApkPostShareTargetWaitForServiceWorkerBrowserTest,
   // Give a POST, had one been sent, time to reach the server.
   ASSERT_TRUE(content::NavigateToURL(web_contents(), AppUrl(kStartPath)));
   EXPECT_EQ(0, RequestCount(kShareTargetPath));
+  ExpectOutcome(Outcome::kWebContentsDestroyed);
 }
 
 }  // namespace webapk
