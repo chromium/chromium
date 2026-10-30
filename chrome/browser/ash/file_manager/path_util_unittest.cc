@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "ash/constants/ash_paths.h"
 #include "base/command_line.h"
 #include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
@@ -19,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_path_override.h"
 #include "base/test/scoped_running_on_chromeos.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
@@ -64,6 +66,7 @@
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -154,6 +157,83 @@ TEST_F(FileManagerPathUtilTest, GetMyFilesFolderForProfile) {
   // Still the same: /home/u-{hash}/MyFiles.
   EXPECT_EQ("/home/chronos/u-0123456789abcdef/MyFiles",
             GetMyFilesFolderForProfile(profile_.get()).value());
+}
+
+TEST_F(FileManagerPathUtilTest, GetFoldersForUser) {
+  base::ScopedPathOverride user_data_dir_override(
+      ash::DIR_USER_DATA, FilePath("/home/chronos"), /*is_absolute=*/true,
+      /*create=*/false);
+  const AccountId account_id =
+      AccountId::FromUserEmailGaiaId("user@example.com", GaiaId("12345"));
+  user_manager_->AddUser(account_id);
+  user_manager_->UserLoggedIn(account_id, "0123456789abcdef");
+  const user_manager::User* user = user_manager_->FindUser(account_id);
+  ASSERT_TRUE(user);
+
+  // When running outside ChromeOS, it should return $HOME/Downloads for both
+  // MyFiles and Downloads for the primary user.
+  EXPECT_EQ(DownloadPrefs::GetDefaultDownloadDirectory(),
+            GetMyFilesFolder(*user));
+  EXPECT_EQ(DownloadPrefs::GetDefaultDownloadDirectory(),
+            GetDownloadsFolder(*user));
+
+  // When running inside ChromeOS, it should return /home/u-{hash}/MyFiles.
+  base::test::ScopedRunningOnChromeOS running_on_chromeos;
+  EXPECT_EQ(FilePath("/home/chronos/u-0123456789abcdef/MyFiles"),
+            GetMyFilesFolder(*user));
+  EXPECT_EQ(FilePath("/home/chronos/u-0123456789abcdef/MyFiles/Downloads"),
+            GetDownloadsFolder(*user));
+
+  // The deprecated variants should return the same paths.
+  EXPECT_EQ(GetMyFilesFolder(*user),
+            GetMyFilesFolderForProfile(profile_.get()));
+  EXPECT_EQ(GetDownloadsFolder(*user),
+            GetDownloadsFolderForProfile(profile_.get()));
+
+  // Mount the volume to test the return from mount_points.
+  storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+      GetDownloadsMountPointName(*user), storage::kFileSystemTypeLocal,
+      storage::FileSystemMountOption(), FilePath("/media/test/MyFiles"));
+  EXPECT_EQ(FilePath("/media/test/MyFiles"), GetMyFilesFolder(*user));
+  EXPECT_EQ(FilePath("/media/test/MyFiles/Downloads"),
+            GetDownloadsFolder(*user));
+}
+
+TEST_F(FileManagerPathUtilTest, GetMountPointNamesForUser) {
+  const AccountId account_id =
+      AccountId::FromUserEmailGaiaId("user@example.com", GaiaId("12345"));
+  user_manager_->AddUser(account_id);
+  user_manager_->UserLoggedIn(account_id, "0123456789abcdef");
+  const user_manager::User* user = user_manager_->FindUser(account_id);
+  ASSERT_TRUE(user);
+
+  EXPECT_EQ("Downloads-0123456789abcdef", GetDownloadsMountPointName(*user));
+  EXPECT_EQ("ShareCache-0123456789abcdef", GetShareCacheMountPointName(*user));
+  EXPECT_EQ("crostini_0123456789abcdef_termina_penguin",
+            GetCrostiniMountPointName(*user));
+
+  guest_os::GuestId arcvm(guest_os::VmType::ARCVM, "arcvm", "");
+  EXPECT_EQ("android_files", GetGuestOsMountPointName(*user, arcvm));
+  guest_os::GuestId penguin(guest_os::VmType::TERMINA, "termina", "penguin");
+  EXPECT_EQ("crostini_0123456789abcdef_termina_penguin",
+            GetGuestOsMountPointName(*user, penguin));
+  guest_os::GuestId other(guest_os::VmType::TERMINA, "termina", "other");
+  EXPECT_EQ("guestos+0123456789abcdef+termina+other",
+            GetGuestOsMountPointName(*user, other));
+  guest_os::GuestId bru(guest_os::VmType::BRUSCHETTA, "bru", "penguin");
+  EXPECT_EQ("guestos+0123456789abcdef+bru+penguin",
+            GetGuestOsMountPointName(*user, bru));
+
+  // The deprecated variants should return the same names, because `profile_`
+  // is associated with the `user`.
+  EXPECT_EQ(GetDownloadsMountPointName(*user),
+            GetDownloadsMountPointName(profile_.get()));
+  EXPECT_EQ(GetShareCacheMountPointName(*user),
+            GetShareCacheMountPointName(profile_.get()));
+  EXPECT_EQ(GetCrostiniMountPointName(*user),
+            GetCrostiniMountPointName(profile_.get()));
+  EXPECT_EQ(GetGuestOsMountPointName(*user, other),
+            GetGuestOsMountPointName(profile_.get(), other));
 }
 
 TEST_F(FileManagerPathUtilTest, GetPathDisplayTextForSettings) {
@@ -411,8 +491,12 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
       storage::ExternalMountPoints::GetSystemInstance();
 
   // Setup for DriveFS.
-  user_manager_->AddUser(AccountId::FromUserEmailGaiaId(
-      profile_->GetProfileUserName(), GaiaId("12345")));
+  const AccountId account_id = AccountId::FromUserEmailGaiaId(
+      profile_->GetProfileUserName(), GaiaId("12345"));
+  user_manager_->AddUser(account_id);
+  // Log in the user with the hash matching to `profile_`'s path, so that
+  // `profile_` is associated with the user.
+  user_manager_->UserLoggedIn(account_id, "0123456789abcdef");
   profile_->GetPrefs()->SetString(drive::prefs::kDriveFsProfileSalt, "a");
 
   // Initialize D-Bus clients.
@@ -478,7 +562,7 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
 
   Test tests[] = {
       {
-          "Downloads-testing_profile%40test-hash",
+          "Downloads-0123456789abcdef",
           "path/in/myfiles",
           "/mnt/chromeos/MyFiles/path/in/myfiles",
       },
@@ -596,7 +680,7 @@ TEST_F(FileManagerPathUtilTest, ConvertBetweenFileSystemURLAndPathInsideVM) {
   EXPECT_TRUE(ConvertPathInsideVMToFileSystemURL(
       profile_.get(), FilePath("//chromeos/MyFiles/path/in/shared"),
       FilePath("//ChromeOS"), /*map_crostini_home=*/false, &url));
-  EXPECT_EQ("Downloads-testing_profile%40test-hash/path/in/shared",
+  EXPECT_EQ("Downloads-0123456789abcdef/path/in/shared",
             url.virtual_path().value());
 
   profile_.reset();

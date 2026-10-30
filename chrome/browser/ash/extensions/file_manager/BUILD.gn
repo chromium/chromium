@@ -207,6 +207,7 @@ source_set("unit_tests") {
     "//components/services/unzip/content",
     "//components/services/unzip/public/cpp",
     "//components/user_manager",
+    "//components/user_manager:test_support",
     "//storage/browser",
     "//storage/browser:test_support",
     "//testing/gmock",

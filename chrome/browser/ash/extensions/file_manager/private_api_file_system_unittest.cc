@@ -15,6 +15,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/pickle.h"
+#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -27,6 +28,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -71,15 +73,17 @@ class FileManagerPrivateGrantAccessUnitTest : public testing::Test {
     user_manager_->AddUserWithAffiliationAndTypeAndProfile(
         account_id_a, /*is_affiliated=*/false, user_manager::UserType::kRegular,
         profile_a_);
-    user_manager_->UserLoggedIn(account_id_a,
-                                "1111111111111111111111111111111111111111");
+    user_manager_->UserLoggedIn(
+        account_id_a,
+        user_manager::TestHelper::GetFakeUsernameHash(account_id_a));
     user_manager_->SimulateUserProfileLoad(account_id_a);
 
     user_manager_->AddUserWithAffiliationAndTypeAndProfile(
         account_id_b, /*is_affiliated=*/false, user_manager::UserType::kRegular,
         profile_b_);
-    user_manager_->UserLoggedIn(account_id_b,
-                                "2222222222222222222222222222222222222222");
+    user_manager_->UserLoggedIn(
+        account_id_b,
+        user_manager::TestHelper::GetFakeUsernameHash(account_id_b));
     user_manager_->SimulateUserProfileLoad(account_id_b);
 
     ASSERT_TRUE(downloads_dir_a_.CreateUniqueTempDir());
@@ -154,9 +158,11 @@ class FileManagerPrivateGrantAccessUnitTest : public testing::Test {
 
   std::string BuildExternalFileSystemUrl(const std::string& mount_name,
                                          const std::string& relative_path) {
+    // `mount_name` may contain '%' (e.g. "%40" for '@' in the fake username
+    // hash), so it needs to be escaped.
     return base::StrCat(
         {"filesystem:", ash::file_manager::kChromeUIFileManagerURL, "external/",
-         mount_name, "/", relative_path});
+         base::EscapePath(mount_name), "/", relative_path});
   }
 
   void SetClipboardFileSystemSources(const std::string& sources_urls) {
