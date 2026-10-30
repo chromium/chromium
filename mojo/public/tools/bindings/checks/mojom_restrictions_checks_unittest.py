@@ -185,6 +185,36 @@ class MojoBindingsCheckTest(MojomParserTestCase):
     """
     self._testThrows('b.mojom', contents, 'not a valid enum value')
 
+  def testNotAnEnumInRequire(self):
+    contents = """
+      module b;
+      import "level.mojom";
+      // err: misspelled enum value.
+      [RequireContext=level.Level.kHighst]
+      interface Misspelled {};
+    """
+    self._testThrows(
+      'b.mojom', contents, 'RequireContext=level.Level.kHighst.*not a valid'
+    )
+
+  def testNotAnEnumInRequireWhenPassed(self):
+    contents = """
+      module b;
+      import "level.mojom";
+      // Declared first so the error is raised while checking the passed
+      // parameter, rather than while checking Misspelled itself.
+      interface PassesMisspelled {
+        [AllowedContext=level.Level.kHighest]
+        DoPass(pending_receiver<Misspelled> m);
+      };
+      // err: misspelled enum value.
+      [RequireContext=level.Level.kHighst]
+      interface Misspelled {};
+    """
+    self._testThrows(
+      'b.mojom', contents, 'RequireContext=level.Level.kHighst.*not a valid'
+    )
+
   def testMissingAllowedForNestedStructs(self):
     contents = """
       module b;

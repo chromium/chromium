@@ -25,9 +25,24 @@ class Check(check.Check):
       return True
     return False
 
+  def _CheckRequireContext(self, interface):
+    if interface.require_context is None:
+      return
+    # If a string was provided (e.g. a misspelled enum value), or if an enum
+    # was not imported, this will not be an EnumValue and cannot be validated.
+    if not isinstance(interface.require_context, module.EnumValue):
+      raise check.CheckException(
+        self.module,
+        "interface `{}` has RequireContext={} which is not a valid enum "
+        "value.".format(interface.mojom_name, interface.require_context),
+      )
+
   def _CheckInterface(self, method, param):
     # |param| is a pending_x<Interface> so need .kind.kind to get Interface.
     interface = param.kind.kind
+    # CheckModule() only validates interfaces defined in this module; this
+    # also covers interfaces defined in imported modules.
+    self._CheckRequireContext(interface)
     if interface.require_context:
       if method.allowed_context is None:
         raise check.CheckException(
@@ -112,5 +127,6 @@ class Check(check.Check):
 
   def CheckModule(self):
     for interface in self.module.interfaces:
+      self._CheckRequireContext(interface)
       for method in interface.methods:
         self._CheckMethod(method)
