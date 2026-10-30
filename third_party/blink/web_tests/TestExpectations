@@ -6269,10 +6269,6 @@ crbug.com/42204365 virtual/javascript-source-phase-imports/wpt_internal/js/sourc
 # Wide arithmetic proposal staging: https://crbug.com/552767209
 crbug.com/552767209 external/wpt/wasm/proposals/wide-arithmetic/core/wide-arithmetic.wast.js.tentative.html [ Failure Pass ]
 
-# --harmony-struct is deprecated and disabled in https://crrev.com/c/8576591.
-crbug.com/572988458 virtual/js-shared-memory/wpt_internal/js/shared_memory/shared-struct-postMessage-no-coop-coep.html [ Failure Pass ]
-crbug.com/572988458 virtual/js-shared-memory/wpt_internal/js/shared_memory/shared-struct-postMessage.https.html [ Failure Pass ]
-
 # Sheriff 2022-10-19
 crbug.com/1376307 [ Fuchsia ] tables/mozilla_expected_failures/bugs/bug1055-2.html [ Failure ]
 

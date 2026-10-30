@@ -16,7 +16,6 @@ virtual/forced-high-contrast-colors/wpt_internal/*
 virtual/trust-tokens/wpt_internal/*
 virtual/task-tracking/wpt_internal/*
 virtual/fenced-frame-mparch-internal/wpt_internal/*
-virtual/js-shared-memory/wpt_internal/*
 virtual/text-size-adjust/wpt_internal/*
 virtual/generic-sensor-extra-classes/wpt_internal/*
 virtual/unload-allowed/wpt_internal/*

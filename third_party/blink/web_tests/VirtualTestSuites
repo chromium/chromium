@@ -1830,25 +1830,6 @@
     "expires": "Apr 4, 2027"
   },
   {
-    "prefix": "js-shared-memory",
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "wpt_internal/js/shared_memory"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--js-flags=--harmony-struct"
-    ],
-    "owners": [
-      "syg@chromium.org"
-    ],
-    "expires": "Jul 1, 2025"
-  },
-  {
     "prefix": "lcp-script-observer",
     "platforms": [
       "Linux",
