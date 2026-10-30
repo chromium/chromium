@@ -9,6 +9,7 @@
 #include <memory>
 #include <sstream>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/borealis/borealis_app_launcher.h"
@@ -19,10 +20,11 @@
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_launcher.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_wayland_server.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/vm_launch/launch.pb.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/vm_launch/dbus-constants.h"
 
@@ -127,14 +129,13 @@ void VmLaunchServiceProvider::ProvideVmToken(
     launch = true;
   }
 
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  if (!profile) {
-    std::move(response_sender)
-        .Run(dbus::ErrorResponse::FromMethodCall(
-            method_call, DBUS_ERROR_FAILED,
-            "Unable to determine primary profile"));
-    return;
-  }
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  Profile* profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id()));
+  CHECK(profile);
 
   // TODO(b/317157600): Tokens are no longer required so we have the option to
   // remove this dbus method entirely.

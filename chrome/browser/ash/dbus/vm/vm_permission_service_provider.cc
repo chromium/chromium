@@ -12,19 +12,19 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/chrome_pref_names.h"
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/vm_permission_service/vm_permission_service.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "dbus/message.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -349,35 +349,38 @@ void VmPermissionServiceProvider::UpdateVmPermissions(VmInfo* vm) {
 }
 
 void VmPermissionServiceProvider::UpdateBorealisPermissions(VmInfo* vm) {
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  if (!profile ||
-      ProfileHelper::GetUserIdHashFromProfile(profile) != vm->owner_id) {
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  const user_manager::User& primary_user =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+          primary_session->account_id()));
+  if (primary_user.username_hash() != vm->owner_id) {
     return;
   }
 
-  const PrefService* prefs = profile->GetPrefs();
-  if (prefs->GetBoolean(ash::chrome_prefs::kAudioCaptureAllowed)) {
+  const PrefService& prefs = CHECK_DEREF(primary_user.GetProfilePrefs());
+  if (prefs.GetBoolean(ash::chrome_prefs::kAudioCaptureAllowed)) {
     vm->permission_to_enabled_map[VmInfo::PermissionMicrophone] =
-        prefs->GetBoolean(borealis::prefs::kBorealisMicAllowed);
+        prefs.GetBoolean(borealis::prefs::kBorealisMicAllowed);
   }
 }
 
 void VmPermissionServiceProvider::UpdateBruschettaPermissions(VmInfo* vm) {
-  Profile* profile = Profile::FromBrowserContext(
-      BrowserContextHelper::Get()->GetBrowserContextByAccountId(
-          session_manager::SessionManager::Get()
-              ->GetPrimarySession()
-              ->account_id()));
-
-  if (!profile ||
-      ProfileHelper::GetUserIdHashFromProfile(profile) != vm->owner_id) {
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  const user_manager::User& primary_user =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+          primary_session->account_id()));
+  if (primary_user.username_hash() != vm->owner_id) {
     return;
   }
 
-  const PrefService* prefs = profile->GetPrefs();
-  if (prefs->GetBoolean(ash::chrome_prefs::kAudioCaptureAllowed)) {
+  const PrefService& prefs = CHECK_DEREF(primary_user.GetProfilePrefs());
+  if (prefs.GetBoolean(ash::chrome_prefs::kAudioCaptureAllowed)) {
     vm->permission_to_enabled_map[VmInfo::PermissionMicrophone] =
-        prefs->GetBoolean(bruschetta::prefs::kBruschettaMicAllowed);
+        prefs.GetBoolean(bruschetta::prefs::kBruschettaMicAllowed);
   }
 }
 

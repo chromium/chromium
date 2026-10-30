@@ -29,14 +29,17 @@
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_file_destination.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_service.pb.h"
 #include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
 #include "components/enterprise/data_controls/core/browser/component.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -155,7 +158,12 @@ void VmApplicationsServiceProvider::UpdateApplicationList(
     return;
   }
 
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  Profile* profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id()));
   auto* registry_service =
       guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
   if (!registry_service) {
@@ -186,7 +194,12 @@ void VmApplicationsServiceProvider::LaunchTerminal(
     return;
   }
 
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  Profile* profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id()));
   if (crostini::CrostiniFeatures::Get()->IsEnabled(profile) &&
       request.owner_id() == crostini::CryptohomeIdForProfile(profile)) {
     // kInvalidDisplayId will launch terminal on the current active display.
@@ -218,7 +231,12 @@ void VmApplicationsServiceProvider::UpdateMimeTypes(
     return;
   }
 
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  Profile* profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id()));
   auto* mime_types_service =
       guest_os::GuestOsMimeTypesServiceFactory::GetForProfile(profile);
   if (!mime_types_service) {
@@ -250,7 +268,12 @@ void VmApplicationsServiceProvider::SelectFile(
   }
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  Profile* profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id()));
 
   // Match strings used by FilesApp GetDialogTypeAsString().
   ui::SelectFileDialog::Type type = ui::SelectFileDialog::SELECT_OPEN_FILE;

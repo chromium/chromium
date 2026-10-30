@@ -6,6 +6,7 @@
 
 #include <sstream>
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
@@ -19,9 +20,11 @@
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/vm_launch/launch.pb.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 
 namespace guest_os::launcher {
 
@@ -97,9 +100,15 @@ void EnsureLaunched(const vm_tools::launch::EnsureVmLaunchedRequest& request,
     return;
   }
 
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  if (!profile || ash::ProfileHelper::GetUserIdHashFromProfile(profile) !=
-                      request.owner_id()) {
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id()));
+  CHECK(profile);
+  if (ash::BrowserContextHelper::GetUserIdHashFromBrowserContext(profile) !=
+      request.owner_id()) {
     std::move(response_callback)
         .Run(base::unexpected(
             "Provided owner_id does not match the primary profile"));

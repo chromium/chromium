@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -13,8 +14,11 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/guest_os/vm_sk_forwarding_native_message_host.h"
-#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/vm_sk_forwarding/sk_forwarding.pb.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -63,7 +67,12 @@ void VmSKForwardingServiceProvider::ForwardSecurityKeyMessage(
     return;
   }
 
-  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  const session_manager::Session* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  CHECK(primary_session);
+  Profile* profile = Profile::FromBrowserContext(
+      BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          primary_session->account_id()));
   if (request.owner_id() != crostini::CryptohomeIdForProfile(profile)) {
     constexpr char error_message[] = "Primary user is not the owner of the VM";
     std::move(response_sender)
