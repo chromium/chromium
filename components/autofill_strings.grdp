@@ -998,6 +998,11 @@
      =1 {+ 1 other source}
      other {+ # other sources}}
   </message>
+  <if expr="not is_android and not is_ios">
+    <message name="IDS_AUTOFILL_AI_SOURCE_ATTRIBUTION_A11Y_INSTRUCTIONS" is_accessibility_with_no_ui="true" desc="Accessibility instructions for navigating the citation links in the Autofill AI source attribution row in the desktop popup using left or right arrow keys.">
+      Use left or right arrow keys to navigate the source links.
+    </message>
+  </if>
   <message name="IDS_AUTOFILL_AI_SOURCE_APP_PHOTOS" desc="App name for Google Photos." formatter_data="android_java">
     Photos
   </message>

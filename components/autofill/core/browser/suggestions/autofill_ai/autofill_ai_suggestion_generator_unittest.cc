@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/suggestions/autofill_ai/autofill_ai_suggestion_generator.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/check.h"
 #include "base/containers/span.h"
@@ -107,6 +108,19 @@ Matcher<Suggestion> HasAcceptability(Suggestion::Acceptability acceptability) {
   return Field("Suggestion::acceptability", &Suggestion::acceptability,
                acceptability);
 }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Matches the screen reader text of a desktop source attribution suggestion:
+// the visible text followed by the arrow key instructions.
+Matcher<Suggestion> HasSourceAttributionVoiceOver(
+    const std::u16string& visible_text) {
+  return Field("Suggestion::voice_over", &Suggestion::voice_over,
+               std::optional<std::u16string>(
+                   visible_text + u". " +
+                   l10n_util::GetStringUTF16(
+                       IDS_AUTOFILL_AI_SOURCE_ATTRIBUTION_A11Y_INSTRUCTIONS)));
+}
+#endif
 
 Matcher<Suggestion> SuggestionTypeHasTextAndAcceptability(
     SuggestionType type,
@@ -704,7 +718,8 @@ TEST_F(AutofillAiSuggestionGeneratorTest,
                                       GURL("https://photos.example.com"),
                                       gfx::Range(40, 43))})),
                           HasAcceptability(Suggestion::Acceptability::
-                                               kSelectableButUnacceptable)),
+                                               kSelectableButUnacceptable),
+                          HasSourceAttributionVoiceOver(expected_source_label)),
                     EqualsSuggestion(SuggestionType::kSeparator),
                     EqualsSuggestion(SuggestionType::kManageEnhancedAutofill,
                                      l10n_util::GetStringUTF16(
