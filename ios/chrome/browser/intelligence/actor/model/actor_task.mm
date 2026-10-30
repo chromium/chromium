@@ -10,6 +10,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/location.h"
+#import "base/notreached.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
@@ -336,31 +337,66 @@ void ActorTask::SetInterventionDelegate(
 
 void ActorTask::Interrupt(ActorTaskInterruptReason interrupt_reason,
                           std::string_view message) {
-  if (state_ != ActorTaskState::kInit &&
-      state_ != ActorTaskState::kReflecting &&
-      state_ != ActorTaskState::kActing) {
-    // TODO(crbug.com/548051839): Enforce valid state transitions with a CHECK
-    // or log a signal when an unexpected interrupt occurs.
+  if (!CanBeInterrupted()) {
     return;
   }
-
-  engine_->PauseOngoingActions();
-  SetState(ActorTaskState::kWaitingOnUser);
+  EnterWaitingOnUser();
 
   switch (interrupt_reason) {
     case ActorTaskInterruptReason::kWaitingUserConfirmation:
       RequestInterruptConfirmation(message);
       break;
+    case ActorTaskInterruptReason::kUnknownReason:
     case ActorTaskInterruptReason::kWaitingUserClarification:
     case ActorTaskInterruptReason::kWaitingUserTakeover:
     case ActorTaskInterruptReason::kWaitingIrrelevantUserInput:
       // TODO(crbug.com/548051839): Support additional interrupt reasons.
       Stop(ActorTaskStoppedReason::kBrowserFailure);
       break;
-    case ActorTaskInterruptReason::kUnknownReason:
-      // Internal or tool-level interrupts do not request user confirmation.
-      break;
   }
+}
+
+void ActorTask::InterruptForTool(base::PassKey<ActorEngine> pass_key) {
+  if (!CanBeInterrupted()) {
+    return;
+  }
+  EnterWaitingOnUser();
+}
+
+void ActorTask::UninterruptForTool(base::PassKey<ActorEngine> pass_key) {
+  ExitWaitingOnUser(ActorTaskState::kActing);
+}
+
+bool ActorTask::CanBeInterrupted() const {
+  // TODO(crbug.com/578539528): Enforce valid state transitions with a CHECK or
+  // log a signal when an unexpected interrupt occurs.
+  switch (state_) {
+    case ActorTaskState::kInit:
+    case ActorTaskState::kActing:
+    case ActorTaskState::kReflecting:
+      return true;
+    case ActorTaskState::kPausedByActor:
+    case ActorTaskState::kPausedByUser:
+    case ActorTaskState::kCancelled:
+    case ActorTaskState::kFinished:
+    case ActorTaskState::kWaitingOnUser:
+    case ActorTaskState::kFailed:
+      return false;
+  }
+  NOTREACHED();
+}
+
+void ActorTask::EnterWaitingOnUser() {
+  engine_->PauseOngoingActions();
+  SetState(ActorTaskState::kWaitingOnUser);
+}
+
+void ActorTask::ExitWaitingOnUser(ActorTaskState resumed_state) {
+  if (state_ != ActorTaskState::kWaitingOnUser) {
+    return;
+  }
+  SetState(resumed_state);
+  engine_->DidUninterruptTask();
 }
 
 void ActorTask::RequestInterruptConfirmation(std::string_view message) {
@@ -404,19 +440,11 @@ void ActorTask::OnInterruptConfirmationResolved() {
     // state transitions and async intervention cancellation are fully audited.
     return;
   }
-  Uninterrupt(ActorTaskState::kReflecting);
+  ExitWaitingOnUser(ActorTaskState::kReflecting);
   const ActorTaskId task_id = task_id_;
   [observers_ postNotification:^(id<ActorTaskUpdatesObserver> observers) {
     [observers actorTaskDidResolveConfirmationInterruptWithID:task_id];
   }];
-}
-
-void ActorTask::Uninterrupt(ActorTaskState resumed_state) {
-  if (state_ != ActorTaskState::kWaitingOnUser) {
-    return;
-  }
-  SetState(resumed_state);
-  engine_->DidUninterruptTask();
 }
 
 bool ActorTask::IsControllingWebState(web::WebState* web_state) const {

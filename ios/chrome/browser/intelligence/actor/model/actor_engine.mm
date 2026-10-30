@@ -4,9 +4,13 @@
 
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 
+#import <string>
+#import <utility>
+
 #import "base/check_op.h"
 #import "base/functional/bind.h"
 #import "base/strings/stringprintf.h"
+#import "base/types/pass_key.h"
 #import "components/actor/core/safety_list_manager.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/origin_gating/core/decision_source.h"
@@ -229,14 +233,12 @@ ActorTaskFormFillingHandler* ActorEngine::GetActorTaskFormFillingHandler() {
 
 void ActorEngine::InterruptFromTool() {
   CHECK(owner_task_);
-  // TODO(crbug.com/566215654): Add an explicit `ActorTaskInterruptReason` for
-  // tool interrupts.
-  owner_task_->Interrupt(ActorTaskInterruptReason::kUnknownReason);
+  owner_task_->InterruptForTool(base::PassKey<ActorEngine>());
 }
 
 void ActorEngine::UninterruptFromTool() {
   CHECK(owner_task_);
-  owner_task_->Uninterrupt(ActorTaskState::kActing);
+  owner_task_->UninterruptForTool(base::PassKey<ActorEngine>());
 }
 
 bool ActorEngine::IsWindowIdValid(int32_t window_id) {

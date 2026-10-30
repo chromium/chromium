@@ -1904,6 +1904,46 @@ TEST_F(ActorTaskTest, InterruptWithUnsupportedReasonStopsTask) {
   EXPECT_EQ(observer.finalState, ActorTaskState::kCancelled);
 }
 
+// Tests that interrupting with `kUnknownReason` stops the task, as nothing
+// could uninterrupt it.
+TEST_F(ActorTaskTest, InterruptWithUnknownReasonStopsTask) {
+  FakeActorTaskUpdatesObserver* observer =
+      [[FakeActorTaskUpdatesObserver alloc] init];
+  task_->AddObserver(observer);
+
+  SetTaskState(ActorTaskState::kActing);
+
+  task_->Interrupt(ActorTaskInterruptReason::kUnknownReason);
+  EXPECT_EQ(task_->GetState(), ActorTaskState::kCancelled);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return observer.didStopCalled; }));
+
+  EXPECT_EQ(observer.finalState, ActorTaskState::kCancelled);
+}
+
+// Tests that a tool interrupt transitions the task to `kWaitingOnUser` without
+// prompting.
+TEST_F(ActorTaskTest, InterruptForToolWaitsOnUserWithoutPrompting) {
+  FakeActorTaskInterventionDelegate* delegate =
+      [[FakeActorTaskInterventionDelegate alloc] init];
+  task_->SetInterventionDelegate(delegate);
+  SetTaskState(ActorTaskState::kActing);
+
+  task_->engine().InterruptFromTool();
+  FlushCurrentSequence();
+
+  EXPECT_EQ(task_->GetState(), ActorTaskState::kWaitingOnUser);
+  EXPECT_FALSE(delegate.requestConfirmationCalled);
+}
+
+// Tests that a tool interrupt leaves a task outside executing states unchanged.
+TEST_F(ActorTaskTest, InterruptForToolIgnoredWhenNotExecuting) {
+  SetTaskState(ActorTaskState::kPausedByUser);
+
+  task_->engine().InterruptFromTool();
+
+  EXPECT_EQ(task_->GetState(), ActorTaskState::kPausedByUser);
+}
+
 // Test that interrupting a task which has not started acting yet (kInit)
 // transitions it to kWaitingOnUser and invokes the intervention delegate.
 TEST_F(ActorTaskTest, InterruptWaitingUserConfirmationFromInit) {

@@ -96,13 +96,11 @@ GeminiActuationResponse* MakeRequestInProgressResponse() {
                          "this task."];
 }
 
-// Returned when the task rejects a request.
-// TODO(crbug.com/578539528): Map rejection causes to dedicated result codes
-// and error messages.
-GeminiActuationResponse* MakeTaskRejectedResponse() {
+// Returned when the yield reason is not supported yet.
+GeminiActuationResponse* MakeUnsupportedYieldResponse() {
   return [[GeminiActuationResponse alloc]
-      initWithResultCode:actor::mojom::ActionResultCode::kInvalidTaskStateForAct
-            errorMessage:"Task rejected the request."];
+      initWithResultCode:actor::mojom::ActionResultCode::kNotImplemented
+            errorMessage:"The yield reason is not supported yet."];
 }
 
 // Maps PageContextWrapperError enums to the corresponding TabObservationResult
@@ -435,7 +433,7 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
         // once `ActorTask` supports takeover.
         // TODO(crbug.com/496163986): Pause the task until the user resumes it
         // once `ActorTask` supports pausing.
-        completionBlock(MakeTaskRejectedResponse());
+        completionBlock(MakeUnsupportedYieldResponse());
         break;
       case GeminiYieldReason::kTaskComplete:
         [self handleStopTaskWithID:taskID

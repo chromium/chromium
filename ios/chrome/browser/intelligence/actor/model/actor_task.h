@@ -17,6 +17,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/timer/timer.h"
+#import "base/types/pass_key.h"
 #import "components/actor/core/task_source_info.h"
 #import "components/actor/public/mojom/actor_types.mojom-forward.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
@@ -151,9 +152,11 @@ class ActorTask : public web::WebStateObserver,
   void Interrupt(ActorTaskInterruptReason interrupt_reason,
                  std::string_view message = "");
 
-  // Uninterrupts the task from waiting on user input, resuming execution into
-  // the given `resumed_state`.
-  void Uninterrupt(ActorTaskState resumed_state);
+  // Interrupts the task while a tool waits on the user, without prompting.
+  void InterruptForTool(base::PassKey<ActorEngine> pass_key);
+
+  // Resumes acting once the tool no longer waits on the user.
+  void UninterruptForTool(base::PassKey<ActorEngine> pass_key);
 
   // Returns whether this task's underlying engine is actively controlling
   // or observing the given WebState.
@@ -269,6 +272,16 @@ class ActorTask : public web::WebStateObserver,
   // Handles an implicit navigation on a controlled WebState being
   // blocked by origin gating policy.
   void OnNavigationBlocked(mojom::ActionResultCode code);
+
+  // Returns whether the task is in a state that can be interrupted.
+  bool CanBeInterrupted() const;
+
+  // Suspends ongoing actions and transitions to `kWaitingOnUser`.
+  void EnterWaitingOnUser();
+
+  // Transitions from `kWaitingOnUser` to `resumed_state` and resumes the
+  // engine. No-op if the task is not waiting on the user.
+  void ExitWaitingOnUser(ActorTaskState resumed_state);
 
   // Validates the confirmation request synchronously, so that a rejected
   // request stops the task before `Interrupt()` returns, where `ActorService`
