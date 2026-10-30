@@ -20,19 +20,23 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.ui.accessibility.AccessibilityState;
 
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BooleanSupplier;
 
 /** Unit tests for the {@link CompositorAnimator} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class CompositorAnimatorTest {
+    /** AnimatorSet needs at most 2 frames today. 10 leaves room for platform changes. */
+    private static final int MAX_FRAMES = 10;
+
     /** An animation update listener that counts calls to its methods. */
     private static class TestUpdateListener implements CompositorAnimator.AnimatorUpdateListener {
         private final CallbackHelper mUpdateCallbackHelper = new CallbackHelper();
@@ -538,7 +542,6 @@ public final class CompositorAnimatorTest {
                 listener2.mEndCallbackHelper.getCallCount());
     }
 
-    @DisabledTest(message = "crbug.com/40544586")
     @Test
     public void testAnimatorSet_playSequentially() {
         CompositorAnimator animator = new CompositorAnimator(mHandler);
@@ -577,6 +580,7 @@ public final class CompositorAnimatorTest {
                 listener2.mStartCallbackHelper.getCallCount());
 
         mHandler.pushUpdate(15);
+        runFramesUntil(() -> listener2.mStartCallbackHelper.getCallCount() > 0);
 
         assertEquals(
                 "There should be one active animation.", 1, mHandler.getActiveAnimationCount());
@@ -594,6 +598,7 @@ public final class CompositorAnimatorTest {
                 listener2.mStartCallbackHelper.getCallCount());
 
         mHandler.pushUpdate(15);
+        runFramesUntil(() -> setListener.mEndCallbackHelper.getCallCount() > 0);
 
         assertEquals(
                 "There should be no active animations.", 0, mHandler.getActiveAnimationCount());
@@ -605,5 +610,16 @@ public final class CompositorAnimatorTest {
                 "The 'end' event should have been called for the second listener.",
                 1,
                 listener2.mEndCallbackHelper.getCallCount());
+    }
+
+    /**
+     * Runs frames one at a time until {@code condition} holds. idle() never returns while an
+     * AnimatorSet runs, because another frame is always due.
+     */
+    private static void runFramesUntil(BooleanSupplier condition) {
+        ShadowLooper looper = shadowOf(Looper.getMainLooper());
+        for (int i = 0; i < MAX_FRAMES && !condition.getAsBoolean(); i++) {
+            looper.runOneTask();
+        }
     }
 }
