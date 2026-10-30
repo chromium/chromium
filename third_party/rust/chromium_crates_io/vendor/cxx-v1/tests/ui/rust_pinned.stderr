@@ -7,10 +7,11 @@ error[E0277]: `PhantomPinned` cannot be unpinned
    = note: consider using the `pin!` macro
            consider using `Box::pin` if you need to access the pinned value outside of the current scope
 note: required because it appears within the type `Pinned`
-  --> tests/ui/rust_pinned.rs:10:12
+  --> tests/ui/rust_pinned.rs:11:5
    |
 10 | pub struct Pinned {
-   |            ^^^^^^
+11 |     _pinned: PhantomPinned,
+   |     ^^^^^^^^^^^^^^^^^^^^^^ required by this field
 note: required by a bound in `cxx::private::require_unpin`
   --> src/rust_type.rs
    |

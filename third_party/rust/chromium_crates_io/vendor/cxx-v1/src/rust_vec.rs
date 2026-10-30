@@ -55,6 +55,10 @@ impl<T> RustVec<T> {
         self.as_vec().as_ptr()
     }
 
+    pub fn as_mut_ptr(&mut self) -> *mut T {
+        self.as_mut_vec().as_mut_ptr()
+    }
+
     pub fn reserve_total(&mut self, new_cap: usize) {
         let vec = self.as_mut_vec();
         if new_cap > vec.capacity() {

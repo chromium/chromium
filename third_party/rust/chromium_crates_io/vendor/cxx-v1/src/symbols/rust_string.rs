@@ -85,9 +85,14 @@ unsafe extern "C" fn string_drop(this: &mut ManuallyDrop<String>) {
     unsafe { ManuallyDrop::drop(this) }
 }
 
-#[unsafe(export_name = "cxxbridge1$string$ptr")]
-unsafe extern "C" fn string_ptr(this: &String) -> *const u8 {
+#[unsafe(export_name = "cxxbridge1$string$ptr_const")]
+unsafe extern "C" fn string_ptr_const(this: &String) -> *const u8 {
     this.as_ptr()
+}
+
+#[unsafe(export_name = "cxxbridge1$string$ptr_mut")]
+unsafe extern "C" fn string_ptr_mut(this: &mut String) -> *mut u8 {
+    this.as_mut_ptr()
 }
 
 #[unsafe(export_name = "cxxbridge1$string$len")]

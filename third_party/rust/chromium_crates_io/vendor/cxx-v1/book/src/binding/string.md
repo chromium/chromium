@@ -45,6 +45,8 @@ public:
 
   // Note: no null terminator.
   const char *data() const noexcept;
+  char *data() noexcept;
+
   // Length in bytes.
   size_t size() const noexcept;
   // Length in bytes, same as size().

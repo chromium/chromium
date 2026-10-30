@@ -72,6 +72,8 @@ public:
 
   // Note: no null terminator.
   const char *data() const noexcept;
+  char *data() noexcept;
+
   std::size_t size() const noexcept;
   std::size_t length() const noexcept;
   bool empty() const noexcept;
@@ -901,11 +903,6 @@ Vec<T> &Vec<T>::operator=(const Vec &other) & {
 template <typename T>
 bool Vec<T>::empty() const noexcept {
   return this->size() == 0;
-}
-
-template <typename T>
-T *Vec<T>::data() noexcept {
-  return const_cast<T *>(const_cast<const Vec<T> *>(this)->data());
 }
 
 template <typename T>

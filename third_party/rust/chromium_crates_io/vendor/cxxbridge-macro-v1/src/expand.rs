@@ -1714,7 +1714,8 @@ fn expand_rust_vec(
     let link_drop = format!("{}drop", link_prefix);
     let link_len = format!("{}len", link_prefix);
     let link_capacity = format!("{}capacity", link_prefix);
-    let link_data = format!("{}data", link_prefix);
+    let link_data_const = format!("{}data_const", link_prefix);
+    let link_data_mut = format!("{}data_mut", link_prefix);
     let link_reserve_total = format!("{}reserve_total", link_prefix);
     let link_set_len = format!("{}set_len", link_prefix);
     let link_truncate = format!("{}truncate", link_prefix);
@@ -1777,10 +1778,18 @@ fn expand_rust_vec(
 
         #cfg
         #[doc(hidden)]
-        #[unsafe(export_name = #link_data)]
-        unsafe extern "C" fn __data #impl_generics(this: *const ::cxx::private::RustVec<#inner_with_generics>) -> *const #inner_with_generics {
+        #[unsafe(export_name = #link_data_const)]
+        unsafe extern "C" fn __data_const #impl_generics(this: *const ::cxx::private::RustVec<#inner_with_generics>) -> *const #inner_with_generics {
             // No prevent_unwind: cannot panic.
             unsafe { (*this).as_ptr() }
+        }
+
+        #cfg
+        #[doc(hidden)]
+        #[unsafe(export_name = #link_data_mut)]
+        unsafe extern "C" fn __data_mut #impl_generics(this: *mut ::cxx::private::RustVec<#inner_with_generics>) -> *mut #inner_with_generics {
+            // No prevent_unwind: cannot panic.
+            unsafe { (*this).as_mut_ptr() }
         }
 
         #cfg

@@ -78,31 +78,24 @@ CXX_RS_EXPORT void cxxbridge1$cxx_string$push(std::string &s,
 // rust::String
 CXX_RS_EXPORT void cxxbridge1$string$new(rust::String *self) noexcept;
 CXX_RS_EXPORT void cxxbridge1$string$clone(rust::String *self,
-                                           const rust::String &other) noexcept;
-CXX_RS_EXPORT bool cxxbridge1$string$from_utf8(rust::String *self,
-                                               const char *ptr,
-                                               std::size_t len) noexcept;
-CXX_RS_EXPORT void cxxbridge1$string$from_utf8_lossy(rust::String *self,
-                                                     const char *ptr,
-                                                     std::size_t len) noexcept;
-CXX_RS_EXPORT bool cxxbridge1$string$from_utf16(rust::String *self,
-                                                const char16_t *ptr,
-                                                std::size_t len) noexcept;
-CXX_RS_EXPORT void cxxbridge1$string$from_utf16_lossy(rust::String *self,
-                                                      const char16_t *ptr,
-                                                      std::size_t len) noexcept;
+                             const rust::String &other) noexcept;
+CXX_RS_EXPORT bool cxxbridge1$string$from_utf8(rust::String *self, const char *ptr,
+                                 std::size_t len) noexcept;
+CXX_RS_EXPORT void cxxbridge1$string$from_utf8_lossy(rust::String *self, const char *ptr,
+                                       std::size_t len) noexcept;
+CXX_RS_EXPORT bool cxxbridge1$string$from_utf16(rust::String *self, const char16_t *ptr,
+                                  std::size_t len) noexcept;
+CXX_RS_EXPORT void cxxbridge1$string$from_utf16_lossy(rust::String *self, const char16_t *ptr,
+                                        std::size_t len) noexcept;
 CXX_RS_EXPORT void cxxbridge1$string$drop(rust::String *self) noexcept;
-CXX_RS_EXPORT const char *
-cxxbridge1$string$ptr(const rust::String *self) noexcept;
-CXX_RS_EXPORT std::size_t
-cxxbridge1$string$len(const rust::String *self) noexcept;
-CXX_RS_EXPORT std::size_t
-cxxbridge1$string$capacity(const rust::String *self) noexcept;
-CXX_RS_EXPORT void
-cxxbridge1$string$reserve_additional(rust::String *self,
-                                     size_t additional) noexcept;
+CXX_RS_EXPORT const char *cxxbridge1$string$ptr_const(const rust::String *self) noexcept;
+CXX_RS_EXPORT char *cxxbridge1$string$ptr_mut(rust::String *self) noexcept;
+CXX_RS_EXPORT std::size_t cxxbridge1$string$len(const rust::String *self) noexcept;
+CXX_RS_EXPORT std::size_t cxxbridge1$string$capacity(const rust::String *self) noexcept;
+CXX_RS_EXPORT void cxxbridge1$string$reserve_additional(rust::String *self,
+                                          size_t additional) noexcept;
 CXX_RS_EXPORT void cxxbridge1$string$reserve_total(rust::String *self,
-                                                   size_t new_cap) noexcept;
+                                     size_t new_cap) noexcept;
 
 // rust::Str
 CXX_RS_EXPORT void cxxbridge1$str$new(rust::Str *self) noexcept;
@@ -262,8 +255,10 @@ String::operator std::string() const {
 }
 
 const char *String::data() const noexcept {
-  return cxxbridge1$string$ptr(this);
+  return cxxbridge1$string$ptr_const(this);
 }
+
+char *String::data() noexcept { return cxxbridge1$string$ptr_mut(this); }
 
 std::size_t String::size() const noexcept {
   return cxxbridge1$string$len(this);
@@ -279,7 +274,7 @@ const char *String::c_str() noexcept {
   auto len = this->length();
   cxxbridge1$string$reserve_additional(this, 1);
   auto ptr = this->data();
-  const_cast<char *>(ptr)[len] = '\0';
+  ptr[len] = '\0';
   return ptr;
 }
 
@@ -291,13 +286,9 @@ void String::reserve(std::size_t new_cap) noexcept {
   cxxbridge1$string$reserve_total(this, new_cap);
 }
 
-String::iterator String::begin() noexcept {
-  return const_cast<char *>(this->data());
-}
+String::iterator String::begin() noexcept { return this->data(); }
 
-String::iterator String::end() noexcept {
-  return const_cast<char *>(this->data()) + this->size();
-}
+String::iterator String::end() noexcept { return this->data() + this->size(); }
 
 String::const_iterator String::begin() const noexcept { return this->cbegin(); }
 
@@ -748,8 +739,10 @@ static_assert(sizeof(std::string) <= kMaxExpectedWordsInString * sizeof(void *),
       const rust::Vec<CXX_TYPE> *ptr) noexcept;                                \
   CXX_RS_EXPORT std::size_t cxxbridge1$rust_vec$##RUST_TYPE##$capacity(                      \
       const rust::Vec<CXX_TYPE> *ptr) noexcept;                                \
-  CXX_RS_EXPORT const CXX_TYPE *cxxbridge1$rust_vec$##RUST_TYPE##$data(                      \
+  CXX_RS_EXPORT const CXX_TYPE *cxxbridge1$rust_vec$##RUST_TYPE##$data_const(                \
       const rust::Vec<CXX_TYPE> *ptr) noexcept;                                \
+  CXX_RS_EXPORT CXX_TYPE *cxxbridge1$rust_vec$##RUST_TYPE##$data_mut(                        \
+      rust::Vec<CXX_TYPE> *ptr) noexcept;                                      \
   CXX_RS_EXPORT void cxxbridge1$rust_vec$##RUST_TYPE##$reserve_total(                        \
       rust::Vec<CXX_TYPE> *ptr, std::size_t new_cap) noexcept;                 \
   CXX_RS_EXPORT void cxxbridge1$rust_vec$##RUST_TYPE##$set_len(rust::Vec<CXX_TYPE> *ptr,     \
@@ -776,7 +769,11 @@ static_assert(sizeof(std::string) <= kMaxExpectedWordsInString * sizeof(void *),
   }                                                                            \
   template <>                                                                  \
   const CXX_TYPE *Vec<CXX_TYPE>::data() const noexcept {                       \
-    return cxxbridge1$rust_vec$##RUST_TYPE##$data(this);                       \
+    return cxxbridge1$rust_vec$##RUST_TYPE##$data_const(this);                 \
+  }                                                                            \
+  template <>                                                                  \
+  CXX_TYPE *Vec<CXX_TYPE>::data() noexcept {                                   \
+    return cxxbridge1$rust_vec$##RUST_TYPE##$data_mut(this);                   \
   }                                                                            \
   template <>                                                                  \
   void Vec<CXX_TYPE>::reserve_total(std::size_t new_cap) noexcept {            \

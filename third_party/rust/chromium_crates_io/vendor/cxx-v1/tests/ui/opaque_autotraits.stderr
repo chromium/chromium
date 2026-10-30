@@ -12,15 +12,19 @@ note: required because it appears within the type `cxx::private::Opaque`
    | pub struct Opaque {
    |            ^^^^^^
 note: required because it appears within the type `ffi::Opaque`
-  --> tests/ui/opaque_autotraits.rs:4:14
+  --> tests/ui/opaque_autotraits.rs:1:1
    |
+ 1 | #[cxx::bridge]
+   | ^^^^^^^^^^^^^^ required by this field
+...
  4 |         type Opaque;
-   |              ^^^^^^
+   |
 note: required by a bound in `assert_send`
   --> tests/ui/opaque_autotraits.rs:8:19
    |
  8 | fn assert_send<T: Send>() {}
    |                   ^^^^ required by this bound in `assert_send`
+   = note: this error originates in the attribute macro `cxx::bridge` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: `*const cxx::void` cannot be shared between threads safely
   --> tests/ui/opaque_autotraits.rs:14:19
@@ -36,15 +40,19 @@ note: required because it appears within the type `cxx::private::Opaque`
    | pub struct Opaque {
    |            ^^^^^^
 note: required because it appears within the type `ffi::Opaque`
-  --> tests/ui/opaque_autotraits.rs:4:14
+  --> tests/ui/opaque_autotraits.rs:1:1
    |
+ 1 | #[cxx::bridge]
+   | ^^^^^^^^^^^^^^ required by this field
+...
  4 |         type Opaque;
-   |              ^^^^^^
+   |
 note: required by a bound in `assert_sync`
   --> tests/ui/opaque_autotraits.rs:9:19
    |
  9 | fn assert_sync<T: Sync>() {}
    |                   ^^^^ required by this bound in `assert_sync`
+   = note: this error originates in the attribute macro `cxx::bridge` (in Nightly builds, run with -Z macro-backtrace for more info)
 
 error[E0277]: `PhantomPinned` cannot be unpinned
   --> tests/ui/opaque_autotraits.rs:15:20
@@ -65,12 +73,16 @@ note: required because it appears within the type `cxx::private::Opaque`
    | pub struct Opaque {
    |            ^^^^^^
 note: required because it appears within the type `ffi::Opaque`
-  --> tests/ui/opaque_autotraits.rs:4:14
+  --> tests/ui/opaque_autotraits.rs:1:1
    |
+ 1 | #[cxx::bridge]
+   | ^^^^^^^^^^^^^^ required by this field
+...
  4 |         type Opaque;
-   |              ^^^^^^
+   |
 note: required by a bound in `assert_unpin`
   --> tests/ui/opaque_autotraits.rs:10:20
    |
 10 | fn assert_unpin<T: Unpin>() {}
    |                    ^^^^^ required by this bound in `assert_unpin`
+   = note: this error originates in the attribute macro `cxx::bridge` (in Nightly builds, run with -Z macro-backtrace for more info)

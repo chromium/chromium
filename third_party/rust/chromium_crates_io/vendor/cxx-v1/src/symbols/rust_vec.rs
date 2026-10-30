@@ -30,9 +30,13 @@ macro_rules! rust_vec_shims {
             unsafe extern "C" fn __capacity(this: *const RustVec<$ty>) -> usize {
                 unsafe { &*this }.capacity()
             }
-            #[unsafe(export_name = concat!("cxxbridge1$rust_vec$", $segment, "$data"))]
-            unsafe extern "C" fn __data(this: *const RustVec<$ty>) -> *const $ty {
+            #[unsafe(export_name = concat!("cxxbridge1$rust_vec$", $segment, "$data_const"))]
+            unsafe extern "C" fn __data_const(this: *const RustVec<$ty>) -> *const $ty {
                 unsafe { &*this }.as_ptr()
+            }
+            #[unsafe(export_name = concat!("cxxbridge1$rust_vec$", $segment, "$data_mut"))]
+            unsafe extern "C" fn __data_mut(this: *mut RustVec<$ty>) -> *mut $ty {
+                unsafe { &mut *this }.as_mut_ptr()
             }
             #[unsafe(export_name = concat!("cxxbridge1$rust_vec$", $segment, "$reserve_total"))]
             unsafe extern "C" fn __reserve_total(this: *mut RustVec<$ty>, new_cap: usize) {

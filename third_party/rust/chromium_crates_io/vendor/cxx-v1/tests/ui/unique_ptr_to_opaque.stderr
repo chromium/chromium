@@ -14,8 +14,9 @@ note: expected this to be `Trivial`
 note: required by a bound in `UniquePtr::<T>::new`
   --> src/unique_ptr.rs
    |
+   | impl<T> UniquePtr<T>
+...
    |     pub fn new(value: T) -> Self
-   |            --- required by a bound in this associated function
    |     where
    |         T: ExternType<Kind = Trivial>,
    |                       ^^^^^^^^^^^^^^ required by this bound in `UniquePtr::<T>::new`

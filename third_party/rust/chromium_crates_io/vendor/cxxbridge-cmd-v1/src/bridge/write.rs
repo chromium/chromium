@@ -1635,7 +1635,12 @@ fn write_rust_vec_extern(out: &mut OutFile, key: &NamedImplKey) {
     );
     writeln!(
         out,
-        "{} const *cxxbridge1$rust_vec${}$data(::rust::Vec<{0}> const *ptr) noexcept;",
+        "{} const *cxxbridge1$rust_vec${}$data_const(::rust::Vec<{0}> const *ptr) noexcept;",
+        inner, instance,
+    );
+    writeln!(
+        out,
+        "{} *cxxbridge1$rust_vec${}$data_mut(::rust::Vec<{0}> *ptr) noexcept;",
         inner, instance,
     );
     writeln!(
@@ -1734,7 +1739,21 @@ fn write_rust_vec_impl(out: &mut OutFile, key: &NamedImplKey) {
     writeln!(out, "template <>");
     begin_function_definition(out);
     writeln!(out, "{} const *Vec<{0}>::data() const noexcept {{", inner);
-    writeln!(out, "  return cxxbridge1$rust_vec${}$data(this);", instance);
+    writeln!(
+        out,
+        "  return cxxbridge1$rust_vec${}$data_const(this);",
+        instance,
+    );
+    writeln!(out, "}}");
+
+    writeln!(out, "template <>");
+    begin_function_definition(out);
+    writeln!(out, "{} *Vec<{0}>::data() noexcept {{", inner);
+    writeln!(
+        out,
+        "  return cxxbridge1$rust_vec${}$data_mut(this);",
+        instance,
+    );
     writeln!(out, "}}");
 
     writeln!(out, "template <>");

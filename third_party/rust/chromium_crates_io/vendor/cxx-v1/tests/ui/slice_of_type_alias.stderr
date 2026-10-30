@@ -7,5 +7,7 @@ error[E0271]: type mismatch resolving `<&[ElementOpaque] as SliceOfExternType>::
 note: required by a bound in `cxx::private::Without::check_slice`
   --> src/rust_type.rs
    |
+   | impl Without {
+   |     #[allow(clippy::unused_self)]
    |     pub const fn check_slice<U: SliceOfExternType<Kind = Trivial>>(&self) {}
    |                                                   ^^^^^^^^^^^^^^ required by this bound in `Without::check_slice`

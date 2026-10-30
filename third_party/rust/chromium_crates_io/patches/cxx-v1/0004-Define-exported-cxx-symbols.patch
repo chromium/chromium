@@ -1,18 +1,18 @@
-From 8700a32ee081c7256f7e87979ae818e7353e4904 Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Jing Ying Qiu <jingyingqiu@google.com>
 Date: Wed, 16 Sep 2026 09:20:59 +0000
-Subject: [PATCH] Define exported cxx symbols
+Subject: [PATCH 4/4] Define exported cxx symbols
 
 Change-Id: I05c0cd24c607c543856ed0b021fe037fd8186b1f
 ---
- .../vendor/cxx-v1/src/cxx.cc                  | 177 ++++++++++--------
- 1 file changed, 99 insertions(+), 78 deletions(-)
+ .../vendor/cxx-v1/src/cxx.cc                  | 159 ++++++++++--------
+ 1 file changed, 86 insertions(+), 73 deletions(-)
 
 diff --git a/third_party/rust/chromium_crates_io/vendor/cxx-v1/src/cxx.cc b/third_party/rust/chromium_crates_io/vendor/cxx-v1/src/cxx.cc
-index 9251c946e15d5..8bb23260a983b 100644
+index 1598c3e97c852..759789834b91e 100644
 --- a/third_party/rust/chromium_crates_io/vendor/cxx-v1/src/cxx.cc
 +++ b/third_party/rust/chromium_crates_io/vendor/cxx-v1/src/cxx.cc
-@@ -34,71 +34,90 @@
+@@ -34,72 +34,83 @@
  #pragma clang diagnostic ignored "-Wdollar-in-identifier-extension"
  #endif
  
@@ -70,50 +70,37 @@ index 9251c946e15d5..8bb23260a983b 100644
  // rust::String
 -void cxxbridge1$string$new(rust::String *self) noexcept;
 -void cxxbridge1$string$clone(rust::String *self,
--                             const rust::String &other) noexcept;
++CXX_RS_EXPORT void cxxbridge1$string$new(rust::String *self) noexcept;
++CXX_RS_EXPORT void cxxbridge1$string$clone(rust::String *self,
+                              const rust::String &other) noexcept;
 -bool cxxbridge1$string$from_utf8(rust::String *self, const char *ptr,
--                                 std::size_t len) noexcept;
++CXX_RS_EXPORT bool cxxbridge1$string$from_utf8(rust::String *self, const char *ptr,
+                                  std::size_t len) noexcept;
 -void cxxbridge1$string$from_utf8_lossy(rust::String *self, const char *ptr,
--                                       std::size_t len) noexcept;
++CXX_RS_EXPORT void cxxbridge1$string$from_utf8_lossy(rust::String *self, const char *ptr,
+                                        std::size_t len) noexcept;
 -bool cxxbridge1$string$from_utf16(rust::String *self, const char16_t *ptr,
--                                  std::size_t len) noexcept;
++CXX_RS_EXPORT bool cxxbridge1$string$from_utf16(rust::String *self, const char16_t *ptr,
+                                   std::size_t len) noexcept;
 -void cxxbridge1$string$from_utf16_lossy(rust::String *self, const char16_t *ptr,
--                                        std::size_t len) noexcept;
++CXX_RS_EXPORT void cxxbridge1$string$from_utf16_lossy(rust::String *self, const char16_t *ptr,
+                                         std::size_t len) noexcept;
 -void cxxbridge1$string$drop(rust::String *self) noexcept;
--const char *cxxbridge1$string$ptr(const rust::String *self) noexcept;
+-const char *cxxbridge1$string$ptr_const(const rust::String *self) noexcept;
+-char *cxxbridge1$string$ptr_mut(rust::String *self) noexcept;
 -std::size_t cxxbridge1$string$len(const rust::String *self) noexcept;
 -std::size_t cxxbridge1$string$capacity(const rust::String *self) noexcept;
 -void cxxbridge1$string$reserve_additional(rust::String *self,
--                                          size_t additional) noexcept;
--void cxxbridge1$string$reserve_total(rust::String *self,
--                                     size_t new_cap) noexcept;
-+CXX_RS_EXPORT void cxxbridge1$string$new(rust::String *self) noexcept;
-+CXX_RS_EXPORT void cxxbridge1$string$clone(rust::String *self,
-+                                           const rust::String &other) noexcept;
-+CXX_RS_EXPORT bool cxxbridge1$string$from_utf8(rust::String *self,
-+                                               const char *ptr,
-+                                               std::size_t len) noexcept;
-+CXX_RS_EXPORT void cxxbridge1$string$from_utf8_lossy(rust::String *self,
-+                                                     const char *ptr,
-+                                                     std::size_t len) noexcept;
-+CXX_RS_EXPORT bool cxxbridge1$string$from_utf16(rust::String *self,
-+                                                const char16_t *ptr,
-+                                                std::size_t len) noexcept;
-+CXX_RS_EXPORT void cxxbridge1$string$from_utf16_lossy(rust::String *self,
-+                                                      const char16_t *ptr,
-+                                                      std::size_t len) noexcept;
 +CXX_RS_EXPORT void cxxbridge1$string$drop(rust::String *self) noexcept;
-+CXX_RS_EXPORT const char *
-+cxxbridge1$string$ptr(const rust::String *self) noexcept;
-+CXX_RS_EXPORT std::size_t
-+cxxbridge1$string$len(const rust::String *self) noexcept;
-+CXX_RS_EXPORT std::size_t
-+cxxbridge1$string$capacity(const rust::String *self) noexcept;
-+CXX_RS_EXPORT void
-+cxxbridge1$string$reserve_additional(rust::String *self,
-+                                     size_t additional) noexcept;
++CXX_RS_EXPORT const char *cxxbridge1$string$ptr_const(const rust::String *self) noexcept;
++CXX_RS_EXPORT char *cxxbridge1$string$ptr_mut(rust::String *self) noexcept;
++CXX_RS_EXPORT std::size_t cxxbridge1$string$len(const rust::String *self) noexcept;
++CXX_RS_EXPORT std::size_t cxxbridge1$string$capacity(const rust::String *self) noexcept;
++CXX_RS_EXPORT void cxxbridge1$string$reserve_additional(rust::String *self,
+                                           size_t additional) noexcept;
+-void cxxbridge1$string$reserve_total(rust::String *self,
 +CXX_RS_EXPORT void cxxbridge1$string$reserve_total(rust::String *self,
-+                                                   size_t new_cap) noexcept;
+                                      size_t new_cap) noexcept;
  
  // rust::Str
 -void cxxbridge1$str$new(rust::Str *self) noexcept;
@@ -142,7 +129,7 @@ index 9251c946e15d5..8bb23260a983b 100644
  } // extern "C"
  
  namespace rust {
-@@ -521,7 +540,8 @@ static const char *errorCopy(const char *ptr, std::size_t len) {
+@@ -520,7 +531,8 @@ static const char *errorCopy(const char *ptr, std::size_t len) {
  }
  
  extern "C" {
@@ -152,7 +139,7 @@ index 9251c946e15d5..8bb23260a983b 100644
    return errorCopy(ptr, len);
  }
  } // extern "C"
-@@ -581,7 +601,7 @@ struct PtrLen final {
+@@ -580,7 +592,7 @@ struct PtrLen final {
  } // namespace repr
  
  extern "C" {
@@ -161,7 +148,7 @@ index 9251c946e15d5..8bb23260a983b 100644
  }
  
  namespace detail {
-@@ -632,23 +652,24 @@ void destroy(T *ptr) {
+@@ -631,23 +643,24 @@ void destroy(T *ptr) {
  } // namespace
  
  extern "C" {
@@ -192,7 +179,7 @@ index 9251c946e15d5..8bb23260a983b 100644
      std::unique_ptr<std::string> *ptr) noexcept {
    ptr->~unique_ptr();
  }
-@@ -663,77 +684,77 @@ static_assert(sizeof(std::string) <= kMaxExpectedWordsInString * sizeof(void *),
+@@ -662,79 +675,79 @@ static_assert(sizeof(std::string) <= kMaxExpectedWordsInString * sizeof(void *),
  } // namespace
  
  #define STD_VECTOR_OPS(RUST_TYPE, CXX_TYPE)                                    \
@@ -276,9 +263,12 @@ index 9251c946e15d5..8bb23260a983b 100644
 -  std::size_t cxxbridge1$rust_vec$##RUST_TYPE##$capacity(                      \
 +  CXX_RS_EXPORT std::size_t cxxbridge1$rust_vec$##RUST_TYPE##$capacity(                      \
        const rust::Vec<CXX_TYPE> *ptr) noexcept;                                \
--  const CXX_TYPE *cxxbridge1$rust_vec$##RUST_TYPE##$data(                      \
-+  CXX_RS_EXPORT const CXX_TYPE *cxxbridge1$rust_vec$##RUST_TYPE##$data(                      \
+-  const CXX_TYPE *cxxbridge1$rust_vec$##RUST_TYPE##$data_const(                \
++  CXX_RS_EXPORT const CXX_TYPE *cxxbridge1$rust_vec$##RUST_TYPE##$data_const(                \
        const rust::Vec<CXX_TYPE> *ptr) noexcept;                                \
+-  CXX_TYPE *cxxbridge1$rust_vec$##RUST_TYPE##$data_mut(                        \
++  CXX_RS_EXPORT CXX_TYPE *cxxbridge1$rust_vec$##RUST_TYPE##$data_mut(                        \
+       rust::Vec<CXX_TYPE> *ptr) noexcept;                                      \
 -  void cxxbridge1$rust_vec$##RUST_TYPE##$reserve_total(                        \
 +  CXX_RS_EXPORT void cxxbridge1$rust_vec$##RUST_TYPE##$reserve_total(                        \
        rust::Vec<CXX_TYPE> *ptr, std::size_t new_cap) noexcept;                 \
@@ -290,7 +280,7 @@ index 9251c946e15d5..8bb23260a983b 100644
                                                    std::size_t len) noexcept;
  
  #define RUST_VEC_OPS(RUST_TYPE, CXX_TYPE)                                      \
-@@ -773,56 +794,56 @@ static_assert(sizeof(std::string) <= kMaxExpectedWordsInString * sizeof(void *),
+@@ -778,56 +791,56 @@ static_assert(sizeof(std::string) <= kMaxExpectedWordsInString * sizeof(void *),
  #define SHARED_PTR_OPS(RUST_TYPE, CXX_TYPE)                                    \
    static_assert(sizeof(std::shared_ptr<CXX_TYPE>) == 2 * sizeof(void *), "");  \
    static_assert(alignof(std::shared_ptr<CXX_TYPE>) == alignof(void *), "");    \
@@ -358,6 +348,3 @@ index 9251c946e15d5..8bb23260a983b 100644
        const std::weak_ptr<CXX_TYPE> *self) noexcept {                          \
      self->~weak_ptr();                                                         \
    }
--- 
-2.55.0.1032.g73a4cd73de-goog
-

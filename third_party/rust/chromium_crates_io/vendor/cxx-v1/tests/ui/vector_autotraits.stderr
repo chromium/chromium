@@ -12,10 +12,12 @@ note: required because it appears within the type `cxx::private::Opaque`
    | pub struct Opaque {
    |            ^^^^^^
 note: required because it appears within the type `NotThreadSafe`
-  --> tests/ui/vector_autotraits.rs:7:14
+  --> tests/ui/vector_autotraits.rs:3:1
    |
+ 3 | #[cxx::bridge]
+   | ^^^^^^^^^^^^^^ required by this field
+...
  7 |         type NotThreadSafe;
-   |              ^^^^^^^^^^^^^
    = note: required because it appears within the type `[NotThreadSafe]`
 note: required because it appears within the type `PhantomData<[NotThreadSafe]>`
   --> $RUST/core/src/marker.rs
@@ -32,3 +34,4 @@ note: required by a bound in `assert_send`
    |
 16 | fn assert_send<T: Send>() {}
    |                   ^^^^ required by this bound in `assert_send`
+   = note: this error originates in the attribute macro `cxx::bridge` (in Nightly builds, run with -Z macro-backtrace for more info)
