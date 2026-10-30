@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -13,19 +14,34 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/strings/strcat.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/selection/suggestion_service.h"
 #include "third_party/zlib/google/zip.h"
 
 namespace selection {
 
-struct FeedbackZipBuilder::State {};
+struct FeedbackZipBuilder::State {
+  SkBitmap screenshot;
+  std::optional<EncodedImage> mes_screenshot;
+};
 
 FeedbackZipBuilder::FeedbackZipBuilder() : state_(std::make_unique<State>()) {}
 FeedbackZipBuilder::FeedbackZipBuilder(FeedbackZipBuilder&&) noexcept = default;
 FeedbackZipBuilder& FeedbackZipBuilder::operator=(
     FeedbackZipBuilder&&) noexcept = default;
 FeedbackZipBuilder::~FeedbackZipBuilder() = default;
+
+void FeedbackZipBuilder::SetScreenshot(SkBitmap screenshot) {
+  CHECK(state_);
+  state_->screenshot = std::move(screenshot);
+}
+
+void FeedbackZipBuilder::SetMesScreenshot(EncodedImage mes_screenshot) {
+  CHECK(state_);
+  state_->mes_screenshot = std::move(mes_screenshot);
+}
 
 void FeedbackZipBuilder::CreateZip(
     base::FilePath target_zip_path,
@@ -51,6 +67,24 @@ std::optional<base::FilePath> FeedbackZipBuilder::CreateZipOnThreadPool(
 
   base::ScopedTempDir temp_dir;
   if (!temp_dir.CreateUniqueTempDir()) {
+    return std::nullopt;
+  }
+
+  const base::FilePath dir = temp_dir.GetPath();
+  auto get_image_path = [&](std::string_view prefix,
+                            const EncodedImage& image) {
+    CHECK(image.mime_type == "image/jpeg" || image.mime_type == "image/png");
+    std::string_view ext = image.mime_type == "image/jpeg" ? "jpg" : "png";
+    return dir.AppendASCII(base::StrCat({prefix, ".", ext}));
+  };
+  const std::optional<EncodedImage> full_screenshot =
+      EncodedImage::Create(state.screenshot);
+  if ((full_screenshot.has_value() &&
+       !base::WriteFile(get_image_path("screenshot", *full_screenshot),
+                        full_screenshot->bytes)) ||
+      (state.mes_screenshot.has_value() &&
+       !base::WriteFile(get_image_path("mes_screenshot", *state.mes_screenshot),
+                        state.mes_screenshot->bytes))) {
     return std::nullopt;
   }
 

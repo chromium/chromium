@@ -1057,15 +1057,45 @@ TEST_F(SuggestionServiceMetricsTest, RecordsUkmMetricsOnSuccess) {
       1);
 }
 
-// Tests that `FeedbackZipBuilder::CreateZip` creates a valid ZIP archive at the
-// target path.
+// Tests that `FeedbackZipBuilder::CreateZip` creates a valid ZIP archive
+// containing the uncropped and MES cropped screenshots.
 TEST_F(SuggestionServiceUnitTest, CreateFeedbackZip) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kSmartSelectionServerSuggestions,
+      {{kSmartSelectionServerCropPadding.name, "15"}});
+
+  CustomTestTool gemini_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME,
+      {"youtube_tool", "workspace_tool"});
+  service().RegisterTool(&gemini_tool);
+
+  EXPECT_CALL(mock_model_executor(),
+              ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
+                               kSmartSelectionSuggestions,
+                           _, _, _))
+      .WillOnce(RunOnceCallback<3>(
+          optimization_guide::OptimizationGuideModelExecutionResult(
+              base::ok(optimization_guide::AnyWrapProto(
+                  optimization_guide::proto::
+                      SmartSelectionSuggestionsResponse())),
+              /*execution_info=*/nullptr),
+          /*log_entry=*/nullptr));
+
+  AreaOfInterest aoi;
+  aoi.screenshot.allocN32Pixels(100, 100);
+  aoi.screenshot.eraseColor(SK_ColorGREEN);
+  aoi.bounds = gfx::Rect(10, 20, 30, 40);
+
+  SuggestionsFuture suggestions_future;
+  service().RequestSuggestions(aoi, suggestions_future.GetCallback());
+  auto [suggestions, zip_builder] = suggestions_future.Take();
+
   base::ScopedTempDir zip_dir;
   ASSERT_TRUE(zip_dir.CreateUniqueTempDir());
   const base::FilePath target_zip_path =
       zip_dir.GetPath().AppendASCII("smart_selection_feedback.zip");
 
-  FeedbackZipBuilder zip_builder;
   TestFuture<std::optional<base::FilePath>> future;
   zip_builder.CreateZip(target_zip_path, future.GetCallback());
 
@@ -1077,7 +1107,138 @@ TEST_F(SuggestionServiceUnitTest, CreateFeedbackZip) {
   base::ScopedTempDir extract_dir;
   ASSERT_TRUE(extract_dir.CreateUniqueTempDir());
   EXPECT_TRUE(zip::Unzip(*zip_path, extract_dir.GetPath()));
-  EXPECT_TRUE(base::DeleteFile(*zip_path));
+
+  std::optional<std::vector<uint8_t>> screenshot_bytes = base::ReadFileToBytes(
+      extract_dir.GetPath().AppendASCII("screenshot.png"));
+  ASSERT_TRUE(screenshot_bytes.has_value());
+  SkBitmap screenshot = gfx::PNGCodec::Decode(*screenshot_bytes);
+  EXPECT_FALSE(screenshot.isNull());
+  EXPECT_EQ(screenshot.width(), 100);
+  EXPECT_EQ(screenshot.height(), 100);
+
+  std::optional<std::vector<uint8_t>> mes_bytes = base::ReadFileToBytes(
+      extract_dir.GetPath().AppendASCII("mes_screenshot.png"));
+  ASSERT_TRUE(mes_bytes.has_value());
+  SkBitmap mes_screenshot = gfx::PNGCodec::Decode(*mes_bytes);
+  EXPECT_FALSE(mes_screenshot.isNull());
+  EXPECT_EQ(mes_screenshot.width(), 55);
+  EXPECT_EQ(mes_screenshot.height(), 70);
+
+  service().UnregisterTool(&gemini_tool);
+}
+
+// Tests that `FeedbackZipBuilder::CreateZip` writes JPEG screenshots when JPEG
+// encoding is configured.
+TEST_F(SuggestionServiceUnitTest, CreateFeedbackZipWithJpeg) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kSmartSelectionServerSuggestions,
+      {{kSmartSelectionServerJpegQuality.name, "80"}});
+
+  CustomTestTool gemini_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  service().RegisterTool(&gemini_tool);
+
+  EXPECT_CALL(mock_model_executor(),
+              ExecuteModel(optimization_guide::ModelBasedCapabilityKey::
+                               kSmartSelectionSuggestions,
+                           _, _, _))
+      .WillOnce(RunOnceCallback<3>(
+          optimization_guide::OptimizationGuideModelExecutionResult(
+              base::ok(optimization_guide::AnyWrapProto(
+                  optimization_guide::proto::
+                      SmartSelectionSuggestionsResponse())),
+              /*execution_info=*/nullptr),
+          /*log_entry=*/nullptr));
+
+  AreaOfInterest aoi;
+  aoi.screenshot.allocN32Pixels(50, 40);
+  aoi.screenshot.eraseColor(SK_ColorBLUE);
+  aoi.bounds = gfx::Rect(10, 15, 20, 25);
+
+  SuggestionsFuture suggestions_future;
+  service().RequestSuggestions(aoi, suggestions_future.GetCallback());
+  auto [suggestions, zip_builder] = suggestions_future.Take();
+
+  base::ScopedTempDir zip_dir;
+  ASSERT_TRUE(zip_dir.CreateUniqueTempDir());
+  const base::FilePath target_zip_path =
+      zip_dir.GetPath().AppendASCII("smart_selection_feedback.zip");
+
+  TestFuture<std::optional<base::FilePath>> future;
+  zip_builder.CreateZip(target_zip_path, future.GetCallback());
+
+  std::optional<base::FilePath> zip_path = future.Take();
+  ASSERT_TRUE(zip_path.has_value());
+  EXPECT_EQ(*zip_path, target_zip_path);
+
+  base::ScopedTempDir extract_dir;
+  ASSERT_TRUE(extract_dir.CreateUniqueTempDir());
+  EXPECT_TRUE(zip::Unzip(*zip_path, extract_dir.GetPath()));
+
+  std::optional<std::vector<uint8_t>> screenshot_bytes = base::ReadFileToBytes(
+      extract_dir.GetPath().AppendASCII("screenshot.jpg"));
+  ASSERT_TRUE(screenshot_bytes.has_value());
+  SkBitmap screenshot = gfx::JPEGCodec::Decode(*screenshot_bytes);
+  EXPECT_FALSE(screenshot.isNull());
+  EXPECT_EQ(screenshot.width(), 50);
+  EXPECT_EQ(screenshot.height(), 40);
+
+  std::optional<std::vector<uint8_t>> mes_bytes = base::ReadFileToBytes(
+      extract_dir.GetPath().AppendASCII("mes_screenshot.jpg"));
+  ASSERT_TRUE(mes_bytes.has_value());
+  SkBitmap mes_screenshot = gfx::JPEGCodec::Decode(*mes_bytes);
+  EXPECT_FALSE(mes_screenshot.isNull());
+  EXPECT_EQ(mes_screenshot.width(), 50);
+  EXPECT_EQ(mes_screenshot.height(), 40);
+
+  service().UnregisterTool(&gemini_tool);
+}
+
+// Tests that when server suggestions are disabled, `RequestSuggestions`
+// returns a `FeedbackZipBuilder` with no recorded screenshots.
+TEST_F(SuggestionServiceUnitTest,
+       CreateFeedbackZipWhenServerSuggestionsDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kSmartSelectionServerSuggestions);
+
+  CustomTestTool gemini_tool(
+      optimization_guide::proto::SMART_SELECTION_TOOL_GEMINI_IN_CHROME);
+  service().RegisterTool(&gemini_tool);
+
+  EXPECT_CALL(mock_model_executor(), ExecuteModel).Times(0);
+
+  AreaOfInterest aoi;
+  aoi.screenshot.allocN32Pixels(60, 40);
+  aoi.screenshot.eraseColor(SK_ColorRED);
+
+  SuggestionsFuture suggestions_future;
+  service().RequestSuggestions(aoi, suggestions_future.GetCallback());
+  auto [suggestions, zip_builder] = suggestions_future.Take();
+  EXPECT_THAT(suggestions, IsEmpty());
+
+  base::ScopedTempDir zip_dir;
+  ASSERT_TRUE(zip_dir.CreateUniqueTempDir());
+  const base::FilePath target_zip_path =
+      zip_dir.GetPath().AppendASCII("smart_selection_feedback.zip");
+
+  TestFuture<std::optional<base::FilePath>> future;
+  zip_builder.CreateZip(target_zip_path, future.GetCallback());
+
+  std::optional<base::FilePath> zip_path = future.Take();
+  ASSERT_TRUE(zip_path.has_value());
+  EXPECT_TRUE(base::PathExists(*zip_path));
+
+  base::ScopedTempDir extract_dir;
+  ASSERT_TRUE(extract_dir.CreateUniqueTempDir());
+  EXPECT_TRUE(zip::Unzip(*zip_path, extract_dir.GetPath()));
+
+  EXPECT_FALSE(
+      base::PathExists(extract_dir.GetPath().AppendASCII("screenshot.png")));
+  EXPECT_FALSE(base::PathExists(
+      extract_dir.GetPath().AppendASCII("mes_screenshot.png")));
+
+  service().UnregisterTool(&gemini_tool);
 }
 
 }  // namespace

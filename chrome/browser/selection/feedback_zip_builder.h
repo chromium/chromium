@@ -10,8 +10,11 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace selection {
+
+struct EncodedImage;
 
 // Collects artifacts from a Smart Selection request and packages them into a
 // dogfood feedback ZIP archive on demand.
@@ -24,9 +27,17 @@ class FeedbackZipBuilder {
   FeedbackZipBuilder& operator=(FeedbackZipBuilder&&) noexcept;
   ~FeedbackZipBuilder();
 
+  void SetScreenshot(SkBitmap screenshot);
+  void SetMesScreenshot(EncodedImage mes_screenshot);
+
   // Creates a ZIP file at `target_zip_path` (using `base::GetUniquePath` to
-  // avoid overwriting an existing file) and passes the created ZIP path to
-  // `callback` (or `std::nullopt` on failure).
+  // avoid overwriting an existing file) containing the artifacts recorded
+  // from the `RequestSuggestions()` call:
+  // - `screenshot.{png,jpg}`: the full uncropped screenshot,
+  // - `mes_screenshot.{png,jpg}`: the cropped/downscaled screenshot sent to
+  //   MES,
+  // and passes the created ZIP path to `callback` (or `std::nullopt` on
+  // failure).
   void CreateZip(
       base::FilePath target_zip_path,
       base::OnceCallback<void(std::optional<base::FilePath>)> callback) const;

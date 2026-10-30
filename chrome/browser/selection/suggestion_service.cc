@@ -392,12 +392,23 @@ void LogLatencyMetrics(content::WebContents* web_contents,
 
 }  // namespace
 
-DEFINE_USER_DATA(SuggestionService);
+// static
+std::optional<EncodedImage> EncodedImage::Create(const SkBitmap& image) {
+  if (const int jpeg_quality = kSmartSelectionServerJpegQuality.Get();
+      0 <= jpeg_quality && jpeg_quality <= 100) {
+    return gfx::JPEGCodec::Encode(image, jpeg_quality)
+        .transform([](std::vector<uint8_t> bytes) {
+          return EncodedImage{std::move(bytes), "image/jpeg"};
+        });
+  }
+  return gfx::PNGCodec::EncodeBGRASkBitmap(image,
+                                           /*discard_transparency=*/false)
+      .transform([](std::vector<uint8_t> bytes) {
+        return EncodedImage{std::move(bytes), "image/png"};
+      });
+}
 
-struct SuggestionService::EncodedImage {
-  std::vector<uint8_t> bytes;
-  std::string mime_type;
-};
+DEFINE_USER_DATA(SuggestionService);
 
 // static
 SuggestionService* SuggestionService::From(tabs::TabInterface* tab) {
@@ -467,7 +478,7 @@ void SuggestionService::RequestSuggestions(AreaOfInterest processed_area,
       FROM_HERE,
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&EncodeScreenshot, std::move(screenshot)),
+      base::BindOnce(&EncodedImage::Create, std::move(screenshot)),
       base::BindOnce(&SuggestionService::SendServerSuggestionsRequest,
                      weak_factory_.GetWeakPtr(), std::move(processed_area),
                      std::move(callback), request_start_time,
@@ -479,23 +490,6 @@ bool SuggestionService::IsFeatureGroupEnabled(
   return google_groups_manager_
              ? google_groups_manager_->IsFeatureEnabledForProfile(feature)
              : base::FeatureList::IsEnabled(feature);
-}
-
-// static
-std::optional<SuggestionService::EncodedImage>
-SuggestionService::EncodeScreenshot(const SkBitmap& screenshot) {
-  if (const int jpeg_quality = kSmartSelectionServerJpegQuality.Get();
-      0 <= jpeg_quality && jpeg_quality <= 100) {
-    return gfx::JPEGCodec::Encode(screenshot, jpeg_quality)
-        .transform([](std::vector<uint8_t> bytes) {
-          return EncodedImage{std::move(bytes), "image/jpeg"};
-        });
-  }
-  return gfx::PNGCodec::EncodeBGRASkBitmap(screenshot,
-                                           /*discard_transparency=*/false)
-      .transform([](std::vector<uint8_t> bytes) {
-        return EncodedImage{std::move(bytes), "image/png"};
-      });
 }
 
 void SuggestionService::SendServerSuggestionsRequest(
@@ -522,7 +516,10 @@ void SuggestionService::SendServerSuggestionsRequest(
                                          .ByteSizeLong();
 
   FeedbackZipBuilder feedback_zip_builder;
-  // TODO(crbug.com/578362056): Populate the ZIP builder.
+  if (image) {
+    feedback_zip_builder.SetMesScreenshot(*std::move(image));
+  }
+  feedback_zip_builder.SetScreenshot(processed_area.screenshot);
 
   // TODO(crbug.com/561489586): Consider adding logging.
   remote_model_executor_->ExecuteModel(
