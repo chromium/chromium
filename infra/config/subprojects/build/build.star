@@ -278,10 +278,14 @@ cq_build_perf_builder(
         # Only the baseline clean and incremental build times matter here.
         "enable_missing_deps_check": False,
     },
+    # Link locally on 384 vCPUs + NVMe RAID-0 instead of downloading linked
+    # binaries back from CAS, and race local compilation against RBE.
+    siso_configs = ["builder"],
     # On 384 vCPUs siso exhausts the Cloud Trace write quota within minutes,
     # and the backed-up exporter then blocks every clog call behind its
     # bundler mutex, which stalls the build (http://b/575633282).
     siso_enable_cloud_trace = False,
+    siso_experiments = ["no-fallback", "racing"],
     siso_profile_mode = "local",
 )
 
@@ -320,6 +324,10 @@ cq_build_perf_builder(
         # Only the baseline clean and incremental build times matter here.
         "enable_missing_deps_check": False,
     },
+    # Link locally on 192 vCPUs + local SSDs. Leave "racing" off until Siso's
+    # runStrategy honors strict_remote on clang-cl/cxx_module
+    # (https://crbug.com/477762548).
+    siso_configs = ["builder"],
     # Enabling local profiler hangs windows builders (http://b/476821630). So set cloud explicitly here.
     siso_profile_mode = "cloud",
 )
