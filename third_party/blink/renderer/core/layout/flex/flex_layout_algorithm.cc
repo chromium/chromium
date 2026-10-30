@@ -2166,14 +2166,25 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
       is_column_ ? container_builder_.BorderScrollbarPadding().block_end
                  : container_builder_.BorderScrollbarPadding().inline_end;
 
-  for (auto entry = item_iterator.NextItem(broke_before_row);
-       FlexItemData* flex_item = entry.flex_item;
-       entry = item_iterator.NextItem(broke_before_row)) {
+  for (auto entry = item_iterator.NextEntry(broke_before_row); !entry.IsNull();
+       entry = item_iterator.NextEntry(broke_before_row)) {
+    FlexItemData* flex_item = entry.flex_item;
+    const auto* item_break_token = To<BlockBreakToken>(entry.token);
+    if (!flex_item) {
+      // Resumed OOFs are found by the iterator, but they are not flex items.
+      // All we have to do now is making sure that it gets handled by OOF layout
+      // after regular in-flow layout.
+      DCHECK(item_break_token);
+      DCHECK(item_break_token->InputNode().IsOutOfFlowPositioned());
+      container_builder_.AddOutOfFlowChildCandidate(
+          item_break_token->InputNode(), LogicalStaticPosition(),
+          item_break_token);
+      continue;
+    }
     wtf_size_t flex_item_idx = entry.flex_item_idx;
     wtf_size_t flex_line_idx = entry.flex_line_idx;
 
     FlexLine& flex_line = (*flex_lines)[flex_line_idx];
-    const auto* item_break_token = To<BlockBreakToken>(entry.token);
     bool is_last_item_in_line =
         flex_item_idx == flex_line.line_items_data.size() - 1;
 
@@ -2741,7 +2752,7 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
   }
 
   if (!container_builder_.HasInflowChildBreakInside() &&
-      !item_iterator.NextItem(broke_before_row).flex_item) {
+      item_iterator.NextEntry(broke_before_row).IsNull()) {
     container_builder_.SetHasSeenAllChildren();
   }
 

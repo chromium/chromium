@@ -36,7 +36,7 @@ FlexItemIterator::FlexItemIterator(const FlexLineVector& flex_lines,
   }
 }
 
-FlexItemIterator::Entry FlexItemIterator::NextItem(bool broke_before_row) {
+FlexItemIterator::Entry FlexItemIterator::NextEntry(bool broke_before_row) {
   DCHECK(!is_column_ || !broke_before_row);
 
   const BlockBreakToken* current_child_break_token = nullptr;
@@ -55,6 +55,10 @@ FlexItemIterator::Entry FlexItemIterator::NextItem(bool broke_before_row) {
       current_child_break_token =
           To<BlockBreakToken>(child_break_tokens[child_token_idx_++].Get());
       DCHECK(current_child_break_token);
+      if (current_child_break_token->InputNode().IsOutOfFlowPositioned()) {
+        // This is a resumed OOF, not a flex item.
+        return Entry(current_child_break_token);
+      }
       current_item = FindNextItem(current_child_break_token);
 
       if (is_column_) {

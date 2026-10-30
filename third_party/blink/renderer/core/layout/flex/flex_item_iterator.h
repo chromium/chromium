@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_FLEX_FLEX_ITEM_ITERATOR_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/flex/flex_line.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -38,7 +39,7 @@ class CORE_EXPORT FlexItemIterator {
   // flex row broke before, represented by its first child's break token.
   // |broke_before_row| should always be false for column flex containers.
   struct Entry;
-  Entry NextItem(bool broke_before_row);
+  Entry NextEntry(bool broke_before_row);
 
   bool HasMoreBreakTokens() const { return break_token_; }
 
@@ -89,12 +90,16 @@ struct FlexItemIterator::Entry {
         flex_item_idx(flex_item_idx),
         flex_line_idx(flex_line_idx),
         token(token) {}
+  explicit Entry(const BlockBreakToken* token) : token(token) {
+    DCHECK(token->InputNode().IsOutOfFlowPositioned());
+  }
 
-  FlexItemData* flex_item;
-  wtf_size_t flex_item_idx;
-  wtf_size_t flex_line_idx;
+  FlexItemData* flex_item = nullptr;
+  wtf_size_t flex_item_idx = 0u;
+  wtf_size_t flex_line_idx = 0u;
   const BlockBreakToken* token;
 
+  bool IsNull() const { return !flex_item && !token; }
   bool operator==(const FlexItemIterator::Entry& other) const {
     return flex_item == other.flex_item &&
            flex_item_idx == other.flex_item_idx &&
