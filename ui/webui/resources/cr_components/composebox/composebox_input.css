@@ -123,17 +123,6 @@
   word-break: break-word;
 }
 
-:host([entrypoint-name='ContextualTasks']) #textContainer {
-  padding-inline-end: var(--text-input-inline-end-spacing, 0);
-}
-
-:host([entrypoint-name='ContextualTasks']) #input,
-:host([entrypoint-name='ContextualTasks']) #mirror,
-:host([entrypoint-name='ContextualTasks']) #smartCompose {
-  padding-block: 12px;
-  padding-inline: 0;
-}
-
 :host-context(:not([searchbox-next-enabled])) #input {
   transition: padding var(--height-expand-duration) var(--standard-curve);
 }
