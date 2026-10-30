@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <unordered_map>
 #include <vector>
 
@@ -197,7 +198,7 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
   base::CurrentThread mojo_thread_message_loop_;
   scoped_refptr<base::SingleThreadTaskRunner> mojo_thread_task_runner_;
 
-  base::MemoryConsumerRegistration memory_consumer_registration_;
+  std::optional<base::MemoryConsumerRegistration> memory_consumer_registration_;
 
   // A task runner to process memory consumer notifications on worker threads so
   // that `OnUpdateMemoryLimit` and `OnReleaseMemory` work happens on the worker

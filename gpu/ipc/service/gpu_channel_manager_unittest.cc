@@ -285,6 +285,7 @@ TEST_F(GpuChannelManagerTest, GetPeakMemoryUsageCalculatedPerSequence) {
   EXPECT_EQ(localized_peak_memory, GetManagersPeakMemoryUsage(sequence_num_2));
 }
 
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 namespace {
 
 // Helper class to enable `base::kStatefulMemoryPressure` before
@@ -317,6 +318,7 @@ TEST_F(GpuChannelManagerStatefulTest, OnUpdateMemoryLimitStateful) {
   EXPECT_EQ(channel_manager()->memory_limit(),
             base::MemoryLimit::FromPercent(50));
 }
+#endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 
 class GpuChannelManagerProgramCacheDisabledTest : public GpuChannelTestCommon {
  public:

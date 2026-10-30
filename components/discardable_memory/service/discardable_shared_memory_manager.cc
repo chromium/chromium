@@ -223,6 +223,11 @@ constexpr base::MemoryConsumerTraits kMemoryConsumerTraits(
     base::MemoryConsumerTraits::ExecutionType::kSynchronous,
     base::MemoryConsumerTraits::IsStateful::kYes);
 
+// The SuppressMemoryListeners experiment showed that reacting to memory
+// pressure is not beneficial on Mac and Windows.
+constexpr bool kRegisterMemoryConsumer =
+    !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN);
+
 // Global atomic to generate unique discardable shared memory IDs.
 base::AtomicSequenceNumber g_next_discardable_shared_memory_id;
 
@@ -247,13 +252,13 @@ DiscardableSharedMemoryManager::DiscardableSharedMemoryManager()
           base::SingleThreadTaskRunner::GetCurrentDefault()),
       enforce_memory_policy_pending_(false),
       mojo_thread_message_loop_(base::CurrentThread::GetNull()),
-      memory_consumer_registration_(
-          "DiscardableSharedMemoryManager",
-          kMemoryConsumerTraits,
-          this,
-          base::MemoryConsumerRegistration::CheckUnregister::kDisabled),
       memory_pressure_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::WithBaseSyncPrimitives()})) {
+  if (kRegisterMemoryConsumer) {
+    memory_consumer_registration_.emplace(
+        "DiscardableSharedMemoryManager", kMemoryConsumerTraits, this,
+        base::MemoryConsumerRegistration::CheckUnregister::kDisabled);
+  }
   DCHECK(!g_instance)
       << "A DiscardableSharedMemoryManager already exists in this process.";
   g_instance = this;

@@ -140,7 +140,8 @@ class NET_EXPORT SSLClientSessionCache : public base::MemoryConsumer {
   Config config_;
   base::LRUCache<Key, Entry> cache_;
   size_t lookups_since_flush_ = 0;
-  base::AsyncMemoryConsumerRegistration memory_consumer_registration_;
+  std::optional<base::AsyncMemoryConsumerRegistration>
+      memory_consumer_registration_;
 };
 
 }  // namespace net

@@ -76,6 +76,10 @@ constexpr base::MemoryConsumerTraits kPrerenderHostRegistryTraits(
     base::MemoryConsumerTraits::ExecutionType::kAsynchronous,
     base::MemoryConsumerTraits::IsStateful::kYes);
 
+// The SuppressMemoryListeners experiment showed that reacting to memory
+// pressure is not beneficial on Android.
+constexpr bool kRegisterMemoryConsumer = !BUILDFLAG(IS_ANDROID);
+
 bool IsBackground(Visibility visibility) {
   // PrerenderHostRegistry treats HIDDEN and OCCLUDED as background.
   switch (visibility) {
@@ -506,7 +510,8 @@ const base::FeatureParam<bool> kPrerenderScaleEmbedder{
 
 PrerenderHostRegistry::PrerenderHostRegistry(WebContents& web_contents) {
   if (base::FeatureList::IsEnabled(
-          blink::features::kPrerender2MemoryControls)) {
+          blink::features::kPrerender2MemoryControls) &&
+      kRegisterMemoryConsumer) {
     memory_consumer_registration_.emplace(
         "PrerenderHostRegistry", kPrerenderHostRegistryTraits, this,
         base::MemoryConsumerRegistration::CheckUnregister::kDisabled);

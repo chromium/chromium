@@ -101,6 +101,11 @@ constexpr base::MemoryConsumerTraits kGpuChannelManagerTraits(
     // Asynchronous since AsyncMemoryConsumerRegistration is used.
     base::MemoryConsumerTraits::ExecutionType::kAsynchronous);
 
+// The SuppressMemoryListeners experiment showed that reacting to memory
+// pressure is not beneficial on Mac and Windows.
+constexpr bool kRegisterMemoryConsumer =
+    !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN);
+
 #if BUILDFLAG(IS_WIN)
 void TrimD3DResources(const scoped_refptr<SharedContextState>& context_state) {
   // Graphics drivers periodically allocate internal memory buffers in
@@ -379,11 +384,6 @@ GpuChannelManager::GpuChannelManager(
       default_offscreen_surface_(std::move(default_offscreen_surface)),
       gpu_feature_info_(gpu_feature_info),
       use_shader_cache_shm_count_(use_shader_cache_shm_count),
-      memory_consumer_registration_(
-          "GpuChannelManager",
-          kGpuChannelManagerTraits,
-          this,
-          base::AsyncMemoryConsumerRegistration::CheckUnregister::kDisabled),
       dawn_caching_interface_factory_(dawn_caching_interface_factory),
       vulkan_context_provider_(vulkan_context_provider),
       dawn_context_provider_(dawn_context_provider),
@@ -396,6 +396,12 @@ GpuChannelManager::GpuChannelManager(
   DCHECK(task_runner->BelongsToCurrentThread());
   DCHECK(io_task_runner);
   DCHECK(scheduler);
+
+  if (kRegisterMemoryConsumer) {
+    memory_consumer_registration_.emplace(
+        "GpuChannelManager", kGpuChannelManagerTraits, this,
+        base::AsyncMemoryConsumerRegistration::CheckUnregister::kDisabled);
+  }
 
   const bool enable_gr_shader_cache =
       (gpu_feature_info_

@@ -14,6 +14,7 @@
 #include "base/memory_coordinator/utils.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
+#include "build/build_config.h"
 #include "net/base/features.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
@@ -38,6 +39,11 @@ constexpr base::MemoryConsumerTraits kSSLClientSessionCacheTraits(
     // Cache trimming runs synchronously on the calling thread.
     base::MemoryConsumerTraits::ExecutionType::kSynchronous);
 
+// The SuppressMemoryListeners experiment showed that reacting to memory
+// pressure is not beneficial on Mac and Windows.
+constexpr bool kRegisterMemoryConsumer =
+    !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN);
+
 }  // namespace
 
 SSLClientSessionCache::Key::Key() = default;
@@ -60,12 +66,13 @@ bool SSLClientSessionCache::Key::operator<(const Key& other) const {
 SSLClientSessionCache::SSLClientSessionCache(const Config& config)
     : clock_(base::DefaultClock::GetInstance()),
       config_(config),
-      cache_(config.max_entries),
-      memory_consumer_registration_(
-          "SSLClientSessionCache",
-          kSSLClientSessionCacheTraits,
-          this,
-          base::AsyncMemoryConsumerRegistration::CheckUnregister::kDisabled) {}
+      cache_(config.max_entries) {
+  if (kRegisterMemoryConsumer) {
+    memory_consumer_registration_.emplace(
+        "SSLClientSessionCache", kSSLClientSessionCacheTraits, this,
+        base::AsyncMemoryConsumerRegistration::CheckUnregister::kDisabled);
+  }
+}
 
 SSLClientSessionCache::~SSLClientSessionCache() {
   Flush();
