@@ -8,7 +8,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -457,14 +457,14 @@ void SpellCheckProvider::OnRespondSpellingService(
 
 bool SpellCheckProvider::HasWordCharacters(const std::u16string& text,
                                            size_t index) const {
-  const char16_t* data = text.data();
-  size_t length = text.length();
-  while (index < length) {
+  base::span<const char16_t> text_span(text);
+  while (index < text_span.size()) {
     uint32_t code = 0;
-    UNSAFE_TODO(U16_NEXT(data, index, length, code));
+    U16_NEXT(text_span, index, text_span.size(), code);
     UErrorCode error = U_ZERO_ERROR;
-    if (uscript_getScript(code, &error) != USCRIPT_COMMON)
+    if (uscript_getScript(code, &error) != USCRIPT_COMMON) {
       return true;
+    }
   }
   return false;
 }
