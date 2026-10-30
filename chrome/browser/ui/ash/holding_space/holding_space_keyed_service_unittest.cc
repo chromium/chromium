@@ -2839,7 +2839,7 @@ TEST_P(HoldingSpaceKeyedServiceAddAndRemoveItemTest, AddAndRemoveItem) {
   }
 
   // Attempt to add a holding space item of the same type and `file_path`.
-  const std::string& id2 = AddItem(profile, GetType(), file_path);
+  const std::string id2 = AddItem(profile, GetType(), file_path);
 
   ASSERT_EQ(model->items().size(), 1u);
 
