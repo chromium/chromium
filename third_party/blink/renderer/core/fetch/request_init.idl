@@ -22,7 +22,6 @@ dictionary RequestInit {
     DOMString integrity;
     boolean keepalive;
     FetchPriority priority;
-    [RuntimeEnabled=AdInterestGroupAPI, Exposed=Window] boolean adAuctionHeaders;
     AbortSignal? signal;
     [RuntimeEnabled=FetchUploadStreaming] RequestDuplex duplex;
     [RuntimeEnabled=LocalNetworkAccessPermissionPolicy] IPAddressSpace targetAddressSpace;

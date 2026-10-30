@@ -4549,7 +4549,6 @@ interface HTMLHtmlElement : HTMLElement
     setter version
 interface HTMLIFrameElement : HTMLElement
     attribute @@toStringTag
-    getter adAuctionHeaders
     getter align
     getter allow
     getter allowFullscreen
@@ -4578,7 +4577,6 @@ interface HTMLIFrameElement : HTMLElement
     getter width
     method constructor
     method getSVGDocument
-    setter adAuctionHeaders
     setter align
     setter allow
     setter allowFullscreen
@@ -8153,10 +8151,6 @@ interface Proofreader
     method constructor
     method destroy
     method proofread
-interface ProtectedAudience
-    attribute @@toStringTag
-    method constructor
-    method queryFeatureSupport
 interface PublicKeyCredential : Credential
     static method getClientCapabilities
     static method isUserVerifyingPlatformAuthenticatorAvailable

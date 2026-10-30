@@ -316,13 +316,6 @@
       status: "experimental",
       implied_by: ["CorsRFC1918"],
     },
-    {
-      // Interest Group JS API/runtimeflag.
-      name: "AdInterestGroupAPI",
-      origin_trial_feature_name: "AdInterestGroupAPI",
-      implied_by: ["Fledge", "Parakeet"],
-      public: true,
-    },
     // Adjust the end of the next paragraph if the end position for the
     // paragraph is updated while moving the paragraph. See
     // https://crbug.com/329121649
@@ -2899,10 +2892,6 @@
       name: "EndpointInclusiveCommitStyles",
       status: "stable",
     },
-    {
-      name: "EnforceAnonymityExposure",
-      status: "stable",
-    },
     // When enabled, the LCP algorithm ignores image entropy for the first
     // video frame. See crbug.com/434659232.
     {
@@ -3334,95 +3323,6 @@
     // OOPIFs.
     {
       name: "FixVisualRectRemoteViewportTransform",
-      status: "stable",
-    },
-    {
-      name: "Fledge",
-      public: true,
-    },
-    {
-      // Enables deal support within auctions.
-      name: "FledgeAuctionDealSupport",
-      status: "test",
-    },
-    {
-      name: "FledgeBiddingAndAuctionServerAPI",
-      origin_trial_feature_name: "FledgeBiddingAndAuctionServer",
-      origin_trial_allows_third_party: true,
-      base_feature: "none",
-      status: "stable",
-    },
-    {
-      name: "FledgeBiddingAndAuctionServerAPIMultiSeller",
-      status: "stable",
-    },
-    {
-      name: "FledgeClickiness",
-      status: "test",
-    },
-    {
-      name: "FledgeCustomMaxAuctionAdComponents",
-      status: "stable",
-    },
-    {
-      // Enables using a 'deprecatedRenderURLReplacements' field within the
-      // Protected Audience ad auction config.
-      name: "FledgeDeprecatedRenderURLReplacements",
-      public: true,
-      status: "stable",
-    },
-    {
-      name: "FledgeDirectFromSellerSignalsHeaderAdSlot",
-      status: "stable",
-    },
-    {
-      // Feature flag to control removal, in case we run into unexpected
-      // breakage.
-      //
-      // TODO(crbug.com/384481095): Remove in a few milestones, along with the
-      // implementation code.
-      name: "FledgeDirectFromSellerSignalsWebBundles",
-    },
-    {
-      name: "FledgeMultiBid",
-      public: true,
-      status: "stable",
-    },
-    {
-      // Enables the private model training API in Protected Audience.
-      // https://github.com/WICG/turtledove/blob/main/PA_private_model_training.md
-      name: "FledgePrivateModelTraining",
-      status: "test",
-    },
-    {
-      // Enables real time reporting API in Protected Audience.
-      // https://github.com/WICG/turtledove/blob/main/PA_real_time_monitoring.md
-      name: "FledgeRealTimeReporting",
-      public: true,
-      status: "stable",
-    },
-    {
-      // Enables the ability to set seller nonces on the header response and
-      // use bidNonce in bids.
-      name: "FledgeSellerNonce",
-      status: "stable",
-    },
-    {
-      // Enables having `executionMode` in the auctionConfig to use for seller scripts.
-      name: "FledgeSellerScriptExecutionMode",
-      status: "test",
-    },
-    {
-      name: "FledgeTrustedSignalsKVv1CreativeScanning",
-      status: "test",
-    },
-    {
-      name: "FledgeTrustedSignalsKVv2ContextualData",
-      depends_on: ["FledgeTrustedSignalsKVv2Support"],
-      status: "test",
-    },
-    {
-      name: "FledgeTrustedSignalsKVv2Support",
       status: "stable",
     },
     {
@@ -5073,11 +4973,6 @@
     {
       name: "PaintUnderInvalidationChecking",
       settable_from_internals: true,
-    },
-    {
-      // PARAKEET ad serving runtime flag/JS API.
-      name: "Parakeet",
-      origin_trial_feature_name: "Parakeet",
     },
     {
       name: "PartitionVisitedLinkDatabaseWithSelfLinks",

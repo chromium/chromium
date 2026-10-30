@@ -81,8 +81,7 @@ class PrivacySandboxAdsAPIsM1OverrideBrowserTest
   PrivacySandboxAdsAPIsM1OverrideBrowserTest() {
     feature_list_.InitWithFeatures(
         {features::kPrivacySandboxAdsAPIsM1Override,
-         network::features::kBrowsingTopics, blink::features::kFledge,
-         blink::features::kAdInterestGroupAPI, blink::features::kFencedFrames},
+         network::features::kBrowsingTopics, blink::features::kFencedFrames},
         /*disabled_features=*/{});
   }
 
@@ -99,9 +98,6 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsM1OverrideBrowserTest,
                          "browsing-topics')"));
 
   EXPECT_EQ(true, EvalJs(shell(), "document.browsingTopics !== undefined"));
-  EXPECT_EQ(true, EvalJs(shell(), "navigator.runAdAuction !== undefined"));
-  EXPECT_EQ(true,
-            EvalJs(shell(), "navigator.joinAdInterestGroup !== undefined"));
   EXPECT_EQ(true,
             EvalJs(shell(), "window.HTMLFencedFrameElement !== undefined"));
 }
@@ -112,9 +108,7 @@ class PrivacySandboxAdsAPIsM1OverrideNoFeatureBrowserTest
   PrivacySandboxAdsAPIsM1OverrideNoFeatureBrowserTest() {
     feature_list_.InitWithFeatures(
         {features::kPrivacySandboxAdsAPIsM1Override},
-        {network::features::kBrowsingTopics,
-         blink::features::kAdInterestGroupAPI, blink::features::kFledge,
-         blink::features::kFencedFrames});
+        {network::features::kBrowsingTopics, blink::features::kFencedFrames});
   }
 
  private:

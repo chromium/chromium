@@ -208,9 +208,9 @@ static bool AreAnyMembersPresent(const RequestInit* init) {
          init->hasReferrer() || init->hasReferrerPolicy() || init->hasMode() ||
          init->hasTargetAddressSpace() || init->hasCredentials() ||
          init->hasCache() || init->hasRedirect() || init->hasIntegrity() ||
-         init->hasKeepalive() || init->hasAdAuctionHeaders() ||
-         init->hasPriority() || init->hasSignal() || init->hasDuplex() ||
-         init->hasPrivateToken() || init->hasRetryOptions();
+         init->hasKeepalive() || init->hasPriority() || init->hasSignal() ||
+         init->hasDuplex() || init->hasPrivateToken() ||
+         init->hasRetryOptions();
 }
 
 static BodyStreamBuffer* ExtractBody(ScriptState* script_state,
@@ -690,17 +690,6 @@ Request* Request::CreateRequestWithRequestOrString(
         retry_options->retryOnlyIfServerUnreached();
     request->SetRetryOptions(options);
   }
-
-  if (init->hasAdAuctionHeaders()) {
-    if (!execution_context->IsSecureContext()) {
-      exception_state.ThrowDOMException(
-          DOMExceptionCode::kNotAllowedError,
-          "adAuctionHeaders: ad auction operations are only available in "
-          "secure contexts.");
-      return nullptr;
-    }
-  }
-
 
   // "If |init|'s method member is present, let |method| be it and run these
   // substeps:"

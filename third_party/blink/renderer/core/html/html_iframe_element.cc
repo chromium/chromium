@@ -364,23 +364,6 @@ void HTMLIFrameElement::ParseAttribute(
         should_call_did_change_attributes = true;
       }
     }
-  } else if (name == html_names::kAdauctionheadersAttr &&
-             GetExecutionContext()) {
-    if (!GetExecutionContext()->IsSecureContext()) {
-      GetDocument().AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
-          mojom::blink::ConsoleMessageSource::kOther,
-          mojom::blink::ConsoleMessageLevel::kError,
-          String("adAuctionHeaders: Protected Audience APIs "
-                 "are only available in secure contexts.")));
-    } else {
-      if (params.new_value.IsNull() != params.old_value.IsNull()) {
-        should_call_did_change_attributes = true;
-      }
-      if (!params.new_value.IsNull()) {
-        UseCounter::Count(GetDocument(),
-                          WebFeature::kIframeAdAuctionHeadersAttribute);
-      }
-    }
   } else if (name == html_names::kCredentiallessAttr &&
              RuntimeEnabledFeatures::AnonymousIframeEnabled()) {
     bool new_value = !value.IsNull();

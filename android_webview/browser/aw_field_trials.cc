@@ -136,10 +136,6 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // Disable fenced frames on WebView.
   aw_feature_overrides.DisableFeature(blink::features::kFencedFrames);
 
-  // Disable FLEDGE on WebView.
-  aw_feature_overrides.DisableFeature(blink::features::kAdInterestGroupAPI);
-  aw_feature_overrides.DisableFeature(blink::features::kFledge);
-
   // DISABLED_OTHER: Disable low latency overlay for WebView. There is
   // currently no plan to enable these optimizations in WebView though they are
   // not fundamentally impossible.

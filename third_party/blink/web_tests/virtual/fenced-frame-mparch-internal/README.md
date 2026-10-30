@@ -8,9 +8,6 @@ suite:
     FencedFrames:implementation_type/mparch,
     PrivacySandboxAdsAPIsOverride,
     NoncedPartitionedCookies,
-    Fledge,
-    InterestGroupStorage,
-    AdInterestGroupAPI,
     AllowURNsInIframes,
 --enable-blink-features=
     FencedFramesAPIChanges

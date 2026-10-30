@@ -7,11 +7,7 @@ the flags:
     FencedFrames:implementation_type/mparch,
     PrivacySandboxAdsAPIsOverride,
     NoncedPartitionedCookies,
-    Fledge,
-    InterestGroupStorage,
-    AdInterestGroupAPI,
     AllowURNsInIframes,
-    BiddingAndScoringDebugReportingAPI,
 --enable-blink-features=
     FencedFramesAPIChanges
 ```
