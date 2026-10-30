@@ -504,15 +504,8 @@ void ReadAnythingAppController::SetDistillationState(
 
   page_handler_->OnDistillationStateChanged(state);
   model_.set_distillation_state(state);
-  // Ensure that we always clear the AXTree anchors when a new
-  // distillation occurs.
   if (state == read_anything::mojom::ReadAnythingDistillationState::
-                   kDistillationInProgress) {
-    model_.set_should_extract_anchors_from_tree_for_readability(false);
-    model_.set_should_map_rendered_text_to_tree_for_readability(false);
-    model_.ResetAXTreeAnchors();
-  } else if (state == read_anything::mojom::ReadAnythingDistillationState::
-                          kDistillationWithContent) {
+                   kDistillationWithContent) {
     model_.set_page_start_time(base::TimeTicks::Now());
   }
 }
@@ -629,8 +622,12 @@ void ReadAnythingAppController::PrepareForNewContentDistillation() {
   readability_title_.clear();
   readability_content_html_.clear();
 
-  // Reset mapping state for the new page. Since no readability distillation is
-  // displayed yet, the mapping algorithm is not yet in progress.
+  // Reset anchor and mapping state for the new distillation. Since no
+  // readability distillation is displayed yet, the mapping algorithm is not
+  // yet in progress.
+  model_.set_should_extract_anchors_from_tree_for_readability(false);
+  model_.set_should_map_rendered_text_to_tree_for_readability(false);
+  model_.ResetAXTreeAnchors();
   model_.set_is_readability_mapping_in_progress(false);
   model_.set_has_logged_early_selection(false);
 }

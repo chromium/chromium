@@ -6971,6 +6971,24 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
 }
 
 TEST_F(ReadAnythingAppControllerReadabilityTest,
+       OnActiveAXTreeIDChanged_ResetsReadabilityAnchorsAndMappingState) {
+  SendUpdateWithNodes({test::LinkNode(kId1, "https://www.google.com")});
+  model().set_should_extract_anchors_from_tree_for_readability(true);
+  ASSERT_TRUE(model().ProcessAXTreeAnchors());
+  ASSERT_FALSE(model().ax_tree_anchors().empty());
+  model().set_should_extract_anchors_from_tree_for_readability(true);
+  model().set_should_map_rendered_text_to_tree_for_readability(true);
+
+  controller().OnActiveAXTreeIDChanged(ui::AXTreeID::CreateNewAXTreeID(),
+                                       ukm::kInvalidSourceId,
+                                       /*is_pdf=*/false);
+
+  EXPECT_TRUE(model().ax_tree_anchors().empty());
+  EXPECT_FALSE(model().should_extract_anchors_from_tree_for_readability());
+  EXPECT_FALSE(model().should_map_rendered_text_to_tree_for_readability());
+}
+
+TEST_F(ReadAnythingAppControllerReadabilityTest,
        MappingTriggered_OnTreeUpdate_IfBlocksAlreadyAvailable) {
   // Setup a new tree ID to simulate a navigation/new distillation pass.
   ui::AXTreeID new_tree_id = ui::AXTreeID::CreateNewAXTreeID();
