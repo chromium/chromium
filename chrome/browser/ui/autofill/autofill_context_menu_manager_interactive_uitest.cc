@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/autofill/autofill_context_menu_manager.h"
 
+#include <vector>
+
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -19,9 +21,12 @@
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/test_autofill_manager_injector.h"
 #include "components/autofill/core/browser/autofill_feedback_data.h"
+#include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
@@ -31,6 +36,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
 
 namespace autofill {
@@ -73,6 +79,10 @@ class AutofillContextMenuManagerFeedbackUIBrowserTest
   AutofillContextMenuManagerFeedbackUIBrowserTest() = default;
 
   void SetUpOnMainThread() override {
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/empty.html")));
+
     render_view_context_menu_ = std::make_unique<TestRenderViewContextMenu>(
         *web_contents()->GetPrimaryMainFrame(), content::ContextMenuParams());
     render_view_context_menu_->Init();
@@ -224,22 +234,21 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
                        IncludesTriggerFormAndFieldSignatures) {
-  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
-  LocalFrameToken frame_token(rfh->GetFrameToken().value());
-  FormData form = test::CreateFormDataForFrame(
-      test::CreateTestAddressFormData(), frame_token);
-  GetAutofillManager()->OnFormsSeen(
-      /*updated_forms=*/{form},
-      /*removed_forms=*/{}, autofill::AutofillManagerTestApi::pass_key());
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      R"(document.body.innerHTML = '<form><input name="name"></form>';)"));
   ASSERT_TRUE(GetAutofillManager()->WaitForFormsSeen(1));
-  ASSERT_TRUE(GetAutofillManager()->FindCachedFormById(form.global_id()));
+  std::vector<const FormStructure*> forms =
+      test_api(*GetAutofillManager()).form_structures();
+  ASSERT_EQ(forms.size(), 1u);
+  const FormStructure& form_structure = *forms[0];
+  ASSERT_EQ(form_structure.field_count(), 1u);
 
   // Set up expected trigger form and field signatures.
   base::DictValue extra_logs;
-  auto form_structure = std::make_unique<FormStructure>(form);
-  extra_logs.Set("triggerFormSignature", form_structure->FormSignatureAsStr());
+  extra_logs.Set("triggerFormSignature", form_structure.FormSignatureAsStr());
   extra_logs.Set("triggerFieldSignature",
-                 form_structure->field(0)->FieldSignatureAsStr());
+                 form_structure.field(0)->FieldSignatureAsStr());
   std::string expected_metadata =
       base::WriteJson(data_logs::FetchAutofillFeedbackData(
                           GetAutofillManager(), std::move(extra_logs)))
@@ -247,8 +256,9 @@ IN_PROC_BROWSER_TEST_F(AutofillContextMenuManagerFeedbackUIBrowserTest,
 
   // Set up context menu params with the correct trigger form and field.
   autofill_context_menu_manager_->set_params_for_testing(
-      CreateContextMenuParams(form.global_id().renderer_id,
-                              form.fields()[0].global_id().renderer_id));
+      CreateContextMenuParams(
+          form_structure.global_id().renderer_id,
+          form_structure.field(0)->global_id().renderer_id));
   // Display feedback dialog.
   autofill_context_menu_manager_->ExecuteCommand(
       IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK);
