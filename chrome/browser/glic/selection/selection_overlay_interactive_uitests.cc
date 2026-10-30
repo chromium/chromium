@@ -1203,8 +1203,20 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, OverlayDismissedOnEsc) {
       // glic-selection-overlay is expected to be displayed.
       WaitForElementVisible(kOverlayWebContentsId, {"selection-overlay-app",
                                                     "glic-selection-overlay"}),
+      CheckViewProperty(OverlayBaseController::kOverlayId,
+                        &views::View::HasFocus, true),
       SendKeyPress(OverlayBaseController::kOverlayId, ui::VKEY_ESCAPE),
-      WaitForHide(OverlayBaseController::kOverlayId));
+      WaitForHide(OverlayBaseController::kOverlayId),
+      CheckResult(
+          [this]() {
+            auto* web_contents =
+                browser()->tab_strip_model()->GetActiveWebContents();
+            return web_contents && web_contents->GetRenderWidgetHostView() &&
+                   web_contents->GetRenderWidgetHostView()->HasFocus();
+          },
+          true),
+      CheckViewProperty(ContentsWebView::kContentsWebViewElementId,
+                        &views::View::HasFocus, true));
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
@@ -1224,6 +1236,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
       FocusElement(kGlicContentsElementId),
       SendKeyPress(kGlicContentsElementId, ui::VKEY_ESCAPE),
       WaitForHide(OverlayBaseController::kOverlayId),
+      CheckViewProperty(ContentsWebView::kContentsWebViewElementId,
+                        &views::View::HasFocus, false),
       EnsurePresent(kGlicHostElementId),
       SendKeyPress(kGlicContentsElementId, ui::VKEY_ESCAPE),
       WaitForHide(kGlicContentsElementId));

@@ -759,10 +759,16 @@ void SelectionOverlayController::CloseUI() {
   if (state() == State::kOff) {
     return;
   }
+  const bool had_focus =
+      (overlay_web_view_ && overlay_web_view_->HasFocus()) ||
+      (preselection_widget_ && preselection_widget_->IsActive());
   CloseReason close_reason =
       session_->close_reason.value_or(CloseReason::kOther);
   Reset();
   OverlayBaseController::CloseUI();
+  if (had_focus && tab_->GetContents()) {
+    tab_->GetContents()->Focus();
+  }
   overlay_closed_callbacks_.Notify(close_reason);
 }
 
