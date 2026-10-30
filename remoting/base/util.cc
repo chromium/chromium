@@ -8,10 +8,15 @@
 #include <string>
 #include <string_view>
 
-#include "base/i18n/time_formatting.h"
-#include "base/time/time.h"
+#include "build/build_config.h"
 #include "remoting/base/cpu_utils.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_region.h"
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "base/strings/string_number_conversions.h"
+#include "crypto/obsolete/md5.h"
+#include "net/base/network_interfaces.h"
+#endif
 
 namespace remoting {
 
@@ -70,5 +75,12 @@ bool DoesRectContain(const webrtc::DesktopRect& a,
   intersection.IntersectWith(b);
   return intersection.equals(b);
 }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+std::string GetHostHash() {
+  return "host#" +
+         base::HexEncodeLower(crypto::obsolete::Md5::Hash(net::GetHostName()));
+}
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace remoting

@@ -11,13 +11,6 @@
 
 namespace remoting {
 
-// Returns a string that can be used to construct a host config file name, e.g.
-// "host#1234567890aabbccddeeff1234567890".
-// DEPRECATED: This should only be used for the single-process host for
-// compatibility reasons. New config/setting files should not have the host hash
-// in the filename.
-std::string GetHostHash();
-
 // Returns the directory where the multi-process host's persistent variable
 // state data is stored.
 base::FilePath GetVarLibDir();

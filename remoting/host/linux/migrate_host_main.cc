@@ -38,6 +38,7 @@
 #include "remoting/base/logging.h"
 #include "remoting/base/passwd_utils.h"
 #include "remoting/base/username.h"
+#include "remoting/base/util.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/host_config.h"
 #include "remoting/host/linux/host_types.h"

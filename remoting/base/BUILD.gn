@@ -70,6 +70,34 @@ if (is_posix) {
   }
 }
 
+static_library("os_utils") {
+  sources = [
+    "branding.cc",
+    "branding.h",
+    "username.cc",
+    "username.h",
+  ]
+  public_deps = [
+    ":loggable",
+    "//base",
+  ]
+  deps = [ "//build:branding_buildflags" ]
+
+  if (is_posix) {
+    sources += [
+      "passwd_utils.cc",
+      "passwd_utils.h",
+    ]
+  }
+
+  if (is_linux || is_chromeos) {
+    sources += [
+      "file_path_util_linux.cc",
+      "file_path_util_linux.h",
+    ]
+  }
+}
+
 source_set("base") {
   sources = [
     "async_file_util.cc",
@@ -78,8 +106,6 @@ source_set("base") {
     "auto_thread.h",
     "auto_thread_task_runner.cc",
     "auto_thread_task_runner.h",
-    "branding.cc",
-    "branding.h",
     "capabilities.cc",
     "capabilities.h",
     "certificate_helpers.cc",
@@ -173,8 +199,6 @@ source_set("base") {
     "url_loader_network_service_observer.h",
     "url_request_context_getter.cc",
     "url_request_context_getter.h",
-    "username.cc",
-    "username.h",
     "util.cc",
     "util.h",
     "vlog_net_log.cc",
@@ -190,6 +214,7 @@ source_set("base") {
     ":buildflags",
     ":http_status",
     ":loggable",
+    ":os_utils",
     "//base",
     "//net",
     "//remoting/proto",
@@ -233,13 +258,6 @@ source_set("base") {
     ]
   }
 
-  if (is_posix) {
-    sources += [
-      "passwd_utils.cc",
-      "passwd_utils.h",
-    ]
-  }
-
   if (is_win) {
     sources += [
       "registry_util_win.cc",
@@ -247,11 +265,6 @@ source_set("base") {
       "scoped_sc_handle_win.h",
     ]
     libs = [ "crypt32.lib" ]  # For CryptoAPI functions in certificate_helpers
-  } else if (is_linux || is_chromeos) {
-    sources += [
-      "file_path_util_linux.cc",
-      "file_path_util_linux.h",
-    ]
   }
 }
 

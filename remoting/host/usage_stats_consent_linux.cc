@@ -19,6 +19,7 @@
 #include "remoting/base/branding.h"
 #include "remoting/base/file_path_util_linux.h"
 #include "remoting/base/is_google_email.h"
+#include "remoting/base/util.h"
 #include "remoting/host/config_file_watcher.h"
 #include "remoting/host/host_config.h"
 

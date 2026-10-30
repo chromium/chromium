@@ -18,20 +18,20 @@ source_set("crash") {
 }
 
 if (is_linux || is_win) {
-  source_set("crashpad_db_mgr") {
+  static_library("crashpad_db_mgr") {
     sources = [
       "crashpad_database_manager.cc",
       "crashpad_database_manager.h",
     ]
     deps = [
       "//base",
-      "//remoting/base",
+      "//remoting/base:os_utils",
       "//third_party/crashpad/crashpad/util",
     ]
     public_deps = [ "//third_party/crashpad/crashpad/client" ]
   }
 
-  source_set("crashpad") {
+  static_library("crashpad") {
     sources = [
       "crash_reporting_crashpad.cc",
       "crash_reporting_crashpad.h",
@@ -54,7 +54,7 @@ if (is_linux || is_win) {
     deps = [
       ":crashpad_db_mgr",
       "//base",
-      "//remoting/base",
+      "//remoting/base:os_utils",
       "//remoting/base:logging",
       "//remoting/base:remoting_base_version",
       "//third_party/crashpad/crashpad/client",

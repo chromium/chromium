@@ -5,7 +5,7 @@
 #include "remoting/base/file_host_settings.h"
 
 #include "remoting/base/branding.h"
-#include "remoting/base/file_path_util_linux.h"
+#include "remoting/base/util.h"
 
 namespace remoting {
 
