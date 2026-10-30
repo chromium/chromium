@@ -830,7 +830,9 @@ void DownloadTargetDeterminer::RequestConfirmationDone(
 DownloadTargetDeterminer::Result
     DownloadTargetDeterminer::DoDetermineLocalPath() {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M161);
-  CHECK(!virtual_path_.empty(), base::NotFatalUntil::M161);
+  // TODO(crbug.com/578820126): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(!virtual_path_.empty());
   CHECK(local_path_.empty(), base::NotFatalUntil::M161);
 
   next_state_ = STATE_DETERMINE_MIME_TYPE;
