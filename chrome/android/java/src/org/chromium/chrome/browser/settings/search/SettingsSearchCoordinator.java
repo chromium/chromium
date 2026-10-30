@@ -132,6 +132,20 @@ public class SettingsSearchCoordinator
     private final Callback<Integer> mUpdateFirstVisibleTitle;
     private final MonotonicObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final boolean mShownInTab;
+    private final RecyclerView.OnScrollListener mListScrollListener =
+            new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                    updateCollapsedStateFromList();
+                }
+
+                @Override
+                public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                    if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                        maybeSnapSearchHeader(recyclerView);
+                    }
+                }
+            };
 
     private @Nullable Runnable mSearchRunnable;
 
@@ -183,6 +197,13 @@ public class SettingsSearchCoordinator
     private @Nullable View mSearchLensButton;
     private boolean mSearchLensButtonVisible;
     private @Nullable Transition mSearchLensButtonFadeTransition;
+
+    // True when the single-column search box is fully collapsed behind the toolbar and the
+    // toolbar search lens button is shown in its place.
+    private boolean mSearchBoxCollapsed;
+
+    private @Nullable MainSettings mObservedMainSettings;
+    private @Nullable RecyclerView mObservedList;
 
     // Used for histogram that logs the user behavior for search.
     // LINT.IfChange(ExitReason)
@@ -513,6 +534,9 @@ public class SettingsSearchCoordinator
         View searchBox = findViewById(R.id.search_box);
         if (searchBox == null) return;
 
+        if (!isShowingMainSettings()) {
+            resetSearchBoxScrollState();
+        }
         searchBox.setVisibility(singleColumnSearchBoxVisibility(isShowingMainSettings()));
     }
 
@@ -673,6 +697,12 @@ public class SettingsSearchCoordinator
                             @Nullable Bundle savedInstanceState) {
                         if (f instanceof MainSettings) refreshListSearchHeader();
                     }
+
+                    @Override
+                    @SuppressWarnings("ReferenceEquality")
+                    public void onFragmentViewDestroyed(FragmentManager fm, Fragment f) {
+                        if (f == mObservedMainSettings) observeMainSettingsListScroll(null, null);
+                    }
                 },
                 false);
 
@@ -827,6 +857,142 @@ public class SettingsSearchCoordinator
                             }
                             : null);
         }
+        MainSettings observed = show ? ms : null;
+        observeMainSettingsListScroll(observed, observed != null ? observed.getListView() : null);
+        if (show) {
+            postSyncCollapsedState();
+        } else {
+            setSearchBoxCollapsed(false);
+        }
+    }
+
+    /**
+     * Moves the scroll listener that collapses the search box onto {@code list}, the list of {@code
+     * mainSettings}. Passing null stops observing.
+     */
+    private void observeMainSettingsListScroll(
+            @Nullable MainSettings mainSettings, @Nullable RecyclerView list) {
+        mObservedMainSettings = list != null ? mainSettings : null;
+        if (mObservedList == list) return;
+
+        if (mObservedList != null) {
+            mObservedList.removeOnScrollListener(mListScrollListener);
+        }
+        mObservedList = list;
+        if (mObservedList != null) {
+            mObservedList.addOnScrollListener(mListScrollListener);
+        }
+    }
+
+    private void postSyncCollapsedState() {
+        mHandler.post(this::updateCollapsedStateFromList);
+    }
+
+    private void updateCollapsedStateFromList() {
+        if (!canCollapseSearchBox() || mObservedList == null) return;
+
+        setSearchBoxCollapsed(isHeaderScrolledAway(mObservedList));
+    }
+
+    @VisibleForTesting
+    static boolean isHeaderScrolledAway(RecyclerView list) {
+        if (!(list.getAdapter() instanceof PreferencePositionCallback cb)) return false;
+
+        int pos = cb.getPreferenceAdapterPosition(MainSettings.PREF_SEARCH_HEADER);
+        if (pos < 0 || list.getChildCount() == 0 || list.getLayoutManager() == null) return false;
+
+        View item = list.getLayoutManager().findViewByPosition(pos);
+        if (item == null) return list.getChildAdapterPosition(list.getChildAt(0)) > pos;
+
+        View pill = item.findViewById(R.id.search_header_box);
+        // The header may be queried before it has been measured/laid out.
+        View target = pill != null ? pill : item;
+        if (target.getHeight() <= 0) return false;
+
+        int pillBottom = item.getTop() + (pill != null ? pill.getBottom() : item.getHeight());
+        int visibleTop = list.getClipToPadding() ? list.getPaddingTop() : 0;
+        return pillBottom <= visibleTop;
+    }
+
+    /**
+     * When a scroll stops with the search header pill partially hidden, scrolls it to fully shown
+     * or fully hidden, so it is clear whether the header or the toolbar lens button is the search
+     * entry point.
+     */
+    private void maybeSnapSearchHeader(RecyclerView list) {
+        if (!canCollapseSearchBox()) return;
+
+        int dy = getSearchHeaderSnapDelta(list);
+        if (dy == 0) return;
+
+        if (AccessibilityState.prefersReducedMotion()) {
+            list.scrollBy(0, dy);
+        } else {
+            list.smoothScrollBy(0, dy);
+        }
+    }
+
+    /**
+     * Returns how far to scroll {@code list} vertically so that a partially hidden search header
+     * pill ends up fully shown (negative, when at most half of it is hidden) or fully hidden
+     * (positive). Returns 0 if the pill is fully shown, fully hidden, missing, or not laid out.
+     */
+    @VisibleForTesting
+    static int getSearchHeaderSnapDelta(RecyclerView list) {
+        if (!(list.getAdapter() instanceof PreferencePositionCallback cb)
+                || list.getLayoutManager() == null) {
+            return 0;
+        }
+
+        int pos = cb.getPreferenceAdapterPosition(MainSettings.PREF_SEARCH_HEADER);
+        if (pos < 0) return 0;
+
+        View item = list.getLayoutManager().findViewByPosition(pos);
+        if (item == null) return 0;
+
+        View pill = item.findViewById(R.id.search_header_box);
+        View target = pill != null ? pill : item;
+        if (target.getHeight() <= 0) return 0;
+
+        int top = item.getTop() + (pill != null ? pill.getTop() : 0);
+        int bottom = top + target.getHeight();
+        int visibleTop = list.getClipToPadding() ? list.getPaddingTop() : 0;
+        if (top >= visibleTop || bottom <= visibleTop) return 0;
+
+        int hidden = visibleTop - top;
+        return hidden * 2 <= target.getHeight() ? top - visibleTop : bottom - visibleTop;
+    }
+
+    private boolean canCollapseSearchBox() {
+        if (!isCollapsibleSearchBoxEnabled()
+                || mUseMultiColumnSupplier.getAsBoolean()
+                || mFragmentState != FS_SETTINGS) {
+            return false;
+        }
+        if (mMultiColumnSettings != null) {
+            return isShowingMainSettings();
+        }
+        return findAttachedMainSettings() != null;
+    }
+
+    /**
+     * Updates the collapsed state of the single-column search box and the toolbar search lens
+     * button (including when reset via {@link #resetSearchBoxScrollState()}).
+     */
+    @VisibleForTesting
+    void setSearchBoxCollapsed(boolean collapsed) {
+        if (!isCollapsibleSearchBoxEnabled()
+                || (collapsed && !canCollapseSearchBox())
+                || mSearchBoxCollapsed == collapsed) {
+            return;
+        }
+
+        mSearchBoxCollapsed = collapsed;
+        setSearchLensButtonVisible(collapsed);
+    }
+
+    private void resetSearchBoxScrollState() {
+        setSearchBoxCollapsed(/* collapsed= */ false);
     }
 
     private @Nullable View findListSearchHeaderRow() {
@@ -850,6 +1016,9 @@ public class SettingsSearchCoordinator
     }
 
     private @Nullable View getSingleColumnFocusTarget(View searchBox) {
+        if (mSearchBoxCollapsed && mSearchLensButton != null) {
+            return mSearchLensButton;
+        }
         if (usesListSearchHeader()) {
             return findListSearchHeaderRow();
         }
@@ -857,8 +1026,17 @@ public class SettingsSearchCoordinator
     }
 
     private void showUiInSingleColumn(View searchBox, boolean show) {
+        if (!show) {
+            resetSearchBoxScrollState();
+        }
         if (usesListSearchHeader()) {
             searchBox.setVisibility(View.GONE);
+            if (show) {
+                // Resolve the collapsed state now (it was reset when leaving MainSettings) so the
+                // focus target below is the lens button when the header is scrolled away.
+                updateCollapsedStateFromList();
+                postSyncCollapsedState();
+            }
             if (show && shouldAutoFocusSearchBox()) {
                 requestAccessibilityFocus(getSingleColumnFocusTarget(searchBox));
             }
@@ -1073,6 +1251,7 @@ public class SettingsSearchCoordinator
     public void enterSearchState(boolean isRestored) {
         initIndex();
 
+        resetSearchBoxScrollState();
         View searchBox = requireViewById(R.id.search_box);
         View queryContainer = requireViewById(R.id.search_query_container);
         searchBox.setVisibility(View.GONE);
@@ -1704,6 +1883,7 @@ public class SettingsSearchCoordinator
         View searchBox = requireViewById(R.id.search_box);
         UiUtils.removeViewFromParent(searchBox);
         View query = requireViewById(R.id.search_query_container);
+        resetSearchBoxScrollState();
         refreshListSearchHeader();
         if (mUseMultiColumn) {
             ViewGroup actionBar = requireViewById(R.id.action_bar);
@@ -2068,6 +2248,8 @@ public class SettingsSearchCoordinator
     }
 
     public void destroy() {
+        resetSearchBoxScrollState();
+        observeMainSettingsListScroll(null, null);
         if (mBackActionCallback != null) {
             mBackActionCallback.remove();
             mBackActionCallback = null;

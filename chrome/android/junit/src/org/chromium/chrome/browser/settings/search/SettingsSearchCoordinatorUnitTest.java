@@ -2088,4 +2088,449 @@ public class SettingsSearchCoordinatorUnitTest {
         assertTrue(headerRowFocused[0]);
         assertFalse(searchBoxFocused[0]);
     }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.SETTINGS_SEARCH_COLLAPSIBLE_SEARCH_BOX)
+    public void testSetSearchBoxCollapsed_whenCollapsibleSearchBoxDisabled_isNoOp() {
+        setUpMultiColumnSettings();
+        mUseMultiColumn = false;
+        when(mMultiColumnSettings.isLayoutOpen()).thenReturn(false);
+
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        mCoordinator.setSearchBoxCollapsed(/* collapsed= */ true);
+        assertEquals(View.VISIBLE, searchBox.getVisibility());
+        assertNull(mActivity.findViewById(R.id.search_lens_button));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_SEARCH_COLLAPSIBLE_SEARCH_BOX)
+    public void testSetSearchBoxCollapsed_updatesLensButtonAndResetsOnEnterSearch() {
+        SettingsIndexData.createInstance().resetNeedsIndexing();
+        setUpMultiColumnSettings();
+        mUseMultiColumn = false;
+        when(mMultiColumnSettings.isLayoutOpen()).thenReturn(false);
+
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        View lensButton = mActivity.findViewById(R.id.search_lens_button);
+        View queryContainer = mActivity.findViewById(R.id.search_query_container);
+
+        mCoordinator.setSearchBoxCollapsed(/* collapsed= */ true);
+        assertEquals(View.VISIBLE, lensButton.getVisibility());
+
+        lensButton.performClick();
+        ShadowLooper.idleMainLooper();
+
+        assertEquals(View.GONE, lensButton.getVisibility());
+        assertEquals(View.GONE, searchBox.getVisibility());
+        assertEquals(View.VISIBLE, queryContainer.getVisibility());
+        assertTrue(mCoordinator.isSearchOpen());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_SEARCH_COLLAPSIBLE_SEARCH_BOX)
+    public void testSearchBoxCollapsed_onSlideStateUpdated_preservesOnMainAndResetsOnSub() {
+        setUpMultiColumnSettings();
+        mUseMultiColumn = false;
+        when(mMultiColumnSettings.isLayoutOpen()).thenReturn(false);
+
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        View lensButton = mActivity.findViewById(R.id.search_lens_button);
+        mCoordinator.setSearchBoxCollapsed(/* collapsed= */ true);
+        assertEquals(View.VISIBLE, lensButton.getVisibility());
+
+        // Updating slide state while still on main settings preserves the collapsed state.
+        mCoordinator.onSlideStateUpdated(0);
+        assertEquals(View.VISIBLE, lensButton.getVisibility());
+
+        // Open detail pane (sub-settings) in single-column mode -> resets collapsed state.
+        when(mMultiColumnSettings.isLayoutOpen()).thenReturn(true);
+        mCoordinator.onSlideStateUpdated(0);
+        assertEquals(View.GONE, lensButton.getVisibility());
+        assertEquals(View.GONE, searchBox.getVisibility());
+
+        // Attempting to collapse while on a sub-setting (canCollapseSearchBox() == false) is a
+        // no-op.
+        mCoordinator.setSearchBoxCollapsed(/* collapsed= */ true);
+        assertEquals(View.GONE, lensButton.getVisibility());
+        assertEquals(View.GONE, searchBox.getVisibility());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_SEARCH_COLLAPSIBLE_SEARCH_BOX)
+    public void testSearchBoxCollapsed_panelSlideAndLayoutSwitchAndDestroy_resetsState() {
+        setUpMultiColumnSettings();
+        mUseMultiColumn = false;
+        when(mMultiColumnSettings.isLayoutOpen()).thenReturn(false);
+        SlidingPaneLayout.PanelSlideListener[] capturedListener =
+                new SlidingPaneLayout.PanelSlideListener[1];
+        SlidingPaneLayout slidingPane =
+                new SlidingPaneLayout(mActivity) {
+                    @Override
+                    public void addPanelSlideListener(PanelSlideListener listener) {
+                        capturedListener[0] = listener;
+                        super.addPanelSlideListener(listener);
+                    }
+                };
+        when(mMultiColumnSettings.getSlidingPaneLayoutOrNull()).thenReturn(slidingPane);
+
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+
+        SlidingPaneLayout.PanelSlideListener slideListener = capturedListener[0];
+        assertNotNull(slideListener);
+
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        View lensButton = mActivity.findViewById(R.id.search_lens_button);
+        View detailPane = mActivity.findViewById(R.id.preferences_detail);
+
+        // 1. Opening the detail pane via SlidingPaneLayout listener (showUiInSingleColumn(false))
+        // resets the collapsed state.
+        mCoordinator.setSearchBoxCollapsed(/* collapsed= */ true);
+        assertEquals(View.VISIBLE, lensButton.getVisibility());
+        slideListener.onPanelOpened(detailPane);
+        assertEquals(View.GONE, lensButton.getVisibility());
+        assertEquals(View.GONE, searchBox.getVisibility());
+
+        // 2. Switching to multi-column layout (switchSearchUiLayout) resets the collapsed state,
+        // and attempting to collapse in multi-column mode is a no-op.
+        slideListener.onPanelClosed(detailPane);
+        mCoordinator.setSearchBoxCollapsed(/* collapsed= */ true);
+        assertEquals(View.VISIBLE, lensButton.getVisibility());
+        mUseMultiColumn = true;
+        mCoordinator.onHeaderLayoutUpdated();
+        ShadowLooper.idleMainLooper();
+        assertEquals(View.GONE, lensButton.getVisibility());
+        assertEquals(View.VISIBLE, searchBox.getVisibility());
+        mCoordinator.setSearchBoxCollapsed(/* collapsed= */ true);
+        assertEquals(View.GONE, lensButton.getVisibility());
+        assertEquals(View.VISIBLE, searchBox.getVisibility());
+
+        // 3. Switching back to single-column, collapsing, and calling destroy() resets lens button.
+        mUseMultiColumn = false;
+        mCoordinator.onHeaderLayoutUpdated();
+        ShadowLooper.idleMainLooper();
+        mCoordinator.setSearchBoxCollapsed(/* collapsed= */ true);
+        assertEquals(View.VISIBLE, lensButton.getVisibility());
+        mCoordinator.destroy();
+        assertEquals(View.GONE, lensButton.getVisibility());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_SEARCH_COLLAPSIBLE_SEARCH_BOX)
+    public void testSingleColumnFlagOn_scrollsHeaderAndTogglesLensButton() {
+        setUpMultiColumnSettings();
+        mUseMultiColumn = false;
+        when(mMultiColumnSettings.isLayoutOpen()).thenReturn(false);
+        HeaderTestMainSettings mainSettings =
+                attachHeaderTestMainSettings(
+                        mActivity.getSupportFragmentManager(), R.id.preferences_header, mProfile);
+
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+        layoutRootView();
+
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        View lensButton = mActivity.findViewById(R.id.search_lens_button);
+        RecyclerView list = mainSettings.getListView();
+
+        assertTrue(mainSettings.findPreference(MainSettings.PREF_SEARCH_HEADER).isVisible());
+        assertEquals(View.GONE, searchBox.getVisibility());
+        assertEquals(View.GONE, lensButton.getVisibility());
+
+        View item = list.getLayoutManager().findViewByPosition(0);
+        View pill = item.findViewById(R.id.search_header_box);
+        int visibleTop = list.getClipToPadding() ? list.getPaddingTop() : 0;
+        int collapseThreshold = item.getTop() + pill.getBottom() - visibleTop;
+        assertTrue(collapseThreshold > 1);
+
+        // Scrolling by collapseThreshold - 1 keeps 1px of the pill visible -> lens stays hidden.
+        list.scrollBy(0, collapseThreshold - 1);
+        assertFalse(SettingsSearchCoordinator.isHeaderScrolledAway(list));
+        assertEquals(View.GONE, lensButton.getVisibility());
+
+        // Scrolling 2px more pushes the pill completely past visibleTop -> lens becomes visible.
+        list.scrollBy(0, 2);
+        assertTrue(SettingsSearchCoordinator.isHeaderScrolledAway(list));
+        assertEquals(View.VISIBLE, lensButton.getVisibility());
+
+        // Scrolling back to the top hides the lens button.
+        list.scrollBy(0, -(collapseThreshold + 100));
+        assertFalse(SettingsSearchCoordinator.isHeaderScrolledAway(list));
+        assertEquals(View.GONE, lensButton.getVisibility());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_SEARCH_COLLAPSIBLE_SEARCH_BOX)
+    public void testSearchHeaderSnapDelta_snapsPartiallyHiddenPillToNearestEdge() {
+        setUpMultiColumnSettings();
+        mUseMultiColumn = false;
+        when(mMultiColumnSettings.isLayoutOpen()).thenReturn(false);
+        HeaderTestMainSettings mainSettings =
+                attachHeaderTestMainSettings(
+                        mActivity.getSupportFragmentManager(), R.id.preferences_header, mProfile);
+
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+        layoutRootView();
+
+        RecyclerView list = mainSettings.getListView();
+        View item = list.getLayoutManager().findViewByPosition(0);
+        View pill = item.findViewById(R.id.search_header_box);
+        int visibleTop = list.getClipToPadding() ? list.getPaddingTop() : 0;
+        int pillTop = item.getTop() + pill.getTop();
+        int pillHeight = pill.getHeight();
+        assertTrue(pillHeight > 4);
+
+        // Fully visible: no snap.
+        list.scrollBy(0, pillTop - visibleTop);
+        assertEquals(0, SettingsSearchCoordinator.getSearchHeaderSnapDelta(list));
+
+        // Less than half hidden: snap back down to fully shown.
+        int smallHide = pillHeight / 4;
+        list.scrollBy(0, smallHide);
+        assertEquals(-smallHide, SettingsSearchCoordinator.getSearchHeaderSnapDelta(list));
+
+        // More than half hidden: snap up to fully hidden.
+        int largeHide = pillHeight * 3 / 4;
+        list.scrollBy(0, largeHide - smallHide);
+        assertEquals(
+                pillHeight - largeHide, SettingsSearchCoordinator.getSearchHeaderSnapDelta(list));
+
+        // Fully hidden: no snap.
+        list.scrollBy(0, pillHeight - largeHide);
+        assertEquals(0, SettingsSearchCoordinator.getSearchHeaderSnapDelta(list));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_SEARCH_COLLAPSIBLE_SEARCH_BOX)
+    public void testSingleColumnFlagOn_adapterSwap_resyncsCollapsedState() {
+        setUpMultiColumnSettings();
+        mUseMultiColumn = false;
+        when(mMultiColumnSettings.isLayoutOpen()).thenReturn(false);
+        HeaderTestMainSettings mainSettings =
+                attachHeaderTestMainSettings(
+                        mActivity.getSupportFragmentManager(), R.id.preferences_header, mProfile);
+
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+        layoutRootView();
+
+        RecyclerView list = mainSettings.getListView();
+        list.scrollBy(0, 300);
+        assertTrue(SettingsSearchCoordinator.isHeaderScrolledAway(list));
+        assertTrue(mCoordinator.isSearchLensButtonVisibleForTesting());
+
+        // Swapping the adapter resets the RecyclerView layout to position 0 (unscrolled), which
+        // must re-sync the collapsed state to false.
+        var adapter = list.getAdapter();
+        list.setAdapter(null);
+        list.setAdapter(adapter);
+        layoutRootView();
+        ShadowLooper.idleMainLooper();
+
+        assertFalse(SettingsSearchCoordinator.isHeaderScrolledAway(list));
+        assertFalse(mCoordinator.isSearchLensButtonVisibleForTesting());
+
+        // Scrolling down after the adapter swap must collapse and show the lens button again.
+        list.scrollBy(0, 300);
+        assertTrue(SettingsSearchCoordinator.isHeaderScrolledAway(list));
+        assertTrue(mCoordinator.isSearchLensButtonVisibleForTesting());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_SEARCH_COLLAPSIBLE_SEARCH_BOX)
+    public void testEnterSearchFromLens_resetsLensAndResyncsOnPanelClosed() {
+        SettingsIndexData.createInstance().resetNeedsIndexing();
+        setUpMultiColumnSettings();
+        mUseMultiColumn = false;
+        when(mMultiColumnSettings.isLayoutOpen()).thenReturn(false);
+        SlidingPaneLayout.PanelSlideListener[] capturedListener =
+                new SlidingPaneLayout.PanelSlideListener[1];
+        SlidingPaneLayout slidingPane =
+                new SlidingPaneLayout(mActivity) {
+                    @Override
+                    public void addPanelSlideListener(PanelSlideListener listener) {
+                        capturedListener[0] = listener;
+                        super.addPanelSlideListener(listener);
+                    }
+                };
+        when(mMultiColumnSettings.getSlidingPaneLayoutOrNull()).thenReturn(slidingPane);
+        HeaderTestMainSettings mainSettings =
+                attachHeaderTestMainSettings(
+                        mActivity.getSupportFragmentManager(), R.id.preferences_header, mProfile);
+
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+        layoutRootView();
+
+        View lensButton = mActivity.findViewById(R.id.search_lens_button);
+        View detailPane = mActivity.findViewById(R.id.preferences_detail);
+        RecyclerView list = mainSettings.getListView();
+
+        // Scroll down so lens shows, then tap lens -> enters search and resets lens to GONE.
+        list.scrollBy(0, 300);
+        assertEquals(View.VISIBLE, lensButton.getVisibility());
+        lensButton.performClick();
+        ShadowLooper.idleMainLooper();
+        assertTrue(mCoordinator.isSearchOpen());
+        assertEquals(View.GONE, lensButton.getVisibility());
+
+        // Close detail pane -> re-syncs from scrolled list position and shows lens again.
+        capturedListener[0].onPanelClosed(detailPane);
+        ShadowLooper.idleMainLooper();
+        assertFalse(mCoordinator.isSearchOpen());
+        assertEquals(View.VISIBLE, lensButton.getVisibility());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_SEARCH_COLLAPSIBLE_SEARCH_BOX)
+    public void testRecreation_observesAttachedFragmentScrollAndIgnoresDetachedListView() {
+        setUpMultiColumnSettings();
+        mUseMultiColumn = false;
+        when(mMultiColumnSettings.isLayoutOpen()).thenReturn(false);
+
+        MainSettings detachedMainSettings = mock(MainSettings.class);
+        when(mMultiColumnSettings.getMainSettings()).thenReturn(detachedMainSettings);
+
+        HeaderTestMainSettings attachedMainSettings =
+                attachHeaderTestMainSettings(
+                        mActivity.getSupportFragmentManager(), R.id.preferences_header, mProfile);
+
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+        layoutRootView();
+        attachedMainSettings.getListView().scrollBy(0, 300);
+
+        View lensButton = mActivity.findViewById(R.id.search_lens_button);
+        assertEquals(View.VISIBLE, lensButton.getVisibility());
+        verify(detachedMainSettings, never()).setSearchHeaderClickListener(any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_SEARCH_COLLAPSIBLE_SEARCH_BOX)
+    public void testDestroy_removesListenerHidesLensAndCancelsPostedSync() {
+        setUpMultiColumnSettings();
+        mUseMultiColumn = false;
+        when(mMultiColumnSettings.isLayoutOpen()).thenReturn(false);
+        SlidingPaneLayout.PanelSlideListener[] capturedListener =
+                new SlidingPaneLayout.PanelSlideListener[1];
+        SlidingPaneLayout slidingPane =
+                new SlidingPaneLayout(mActivity) {
+                    @Override
+                    public void addPanelSlideListener(PanelSlideListener listener) {
+                        capturedListener[0] = listener;
+                        super.addPanelSlideListener(listener);
+                    }
+                };
+        when(mMultiColumnSettings.getSlidingPaneLayoutOrNull()).thenReturn(slidingPane);
+        HeaderTestMainSettings mainSettings =
+                attachHeaderTestMainSettings(
+                        mActivity.getSupportFragmentManager(), R.id.preferences_header, mProfile);
+
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+        layoutRootView();
+
+        View lensButton = mActivity.findViewById(R.id.search_lens_button);
+        View detailPane = mActivity.findViewById(R.id.preferences_detail);
+        RecyclerView list = mainSettings.getListView();
+
+        list.scrollBy(0, 300);
+        assertEquals(View.VISIBLE, lensButton.getVisibility());
+
+        // Queue a posted sync via onPanelClosed, then immediately destroy before looper idles.
+        capturedListener[0].onPanelClosed(detailPane);
+        mCoordinator.destroy();
+        assertEquals(View.GONE, lensButton.getVisibility());
+
+        ShadowLooper.idleMainLooper();
+        list.scrollBy(0, 200);
+        assertEquals(View.GONE, lensButton.getVisibility());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.SETTINGS_SEARCH_COLLAPSIBLE_SEARCH_BOX)
+    public void testShownInTab_whenCollapsed_routesAccessibilityFocusToLensButton() {
+        setUpMultiColumnSettings();
+        mUseMultiColumn = false;
+        when(mMultiColumnSettings.isLayoutOpen()).thenReturn(false);
+        SlidingPaneLayout.PanelSlideListener[] capturedListener =
+                new SlidingPaneLayout.PanelSlideListener[1];
+        SlidingPaneLayout slidingPane =
+                new SlidingPaneLayout(mActivity) {
+                    @Override
+                    public void addPanelSlideListener(PanelSlideListener listener) {
+                        capturedListener[0] = listener;
+                        super.addPanelSlideListener(listener);
+                    }
+                };
+        when(mMultiColumnSettings.getSlidingPaneLayoutOrNull()).thenReturn(slidingPane);
+        HeaderTestMainSettings mainSettings =
+                attachHeaderTestMainSettings(
+                        mActivity.getSupportFragmentManager(), R.id.preferences_header, mProfile);
+
+        mCoordinator = createCoordinator(/* shownInTab= */ true);
+        mCoordinator.initializeSearchUi(null);
+        ShadowLooper.idleMainLooper();
+        layoutRootView();
+
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        View lensButton = mActivity.findViewById(R.id.search_lens_button);
+        View detailPane = mActivity.findViewById(R.id.preferences_detail);
+        RecyclerView list = mainSettings.getListView();
+        View headerRow = list.getLayoutManager().findViewByPosition(0);
+
+        boolean[] searchBoxFocused = new boolean[1];
+        boolean[] lensFocused = new boolean[1];
+        boolean[] headerRowFocused = new boolean[1];
+        searchBox.setAccessibilityDelegate(
+                new View.AccessibilityDelegate() {
+                    @Override
+                    public boolean performAccessibilityAction(
+                            View host, int action, @Nullable Bundle args) {
+                        if (action == AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS) {
+                            searchBoxFocused[0] = true;
+                        }
+                        return super.performAccessibilityAction(host, action, args);
+                    }
+                });
+        lensButton.setAccessibilityDelegate(
+                new View.AccessibilityDelegate() {
+                    @Override
+                    public boolean performAccessibilityAction(
+                            View host, int action, @Nullable Bundle args) {
+                        if (action == AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS) {
+                            lensFocused[0] = true;
+                        }
+                        return super.performAccessibilityAction(host, action, args);
+                    }
+                });
+        headerRow.setAccessibilityDelegate(
+                new View.AccessibilityDelegate() {
+                    @Override
+                    public boolean performAccessibilityAction(
+                            View host, int action, @Nullable Bundle args) {
+                        if (action == AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS) {
+                            headerRowFocused[0] = true;
+                        }
+                        return super.performAccessibilityAction(host, action, args);
+                    }
+                });
+
+        list.scrollBy(0, 300);
+        assertEquals(View.VISIBLE, lensButton.getVisibility());
+        capturedListener[0].onPanelClosed(detailPane);
+        assertTrue(lensFocused[0]);
+        assertFalse(headerRowFocused[0]);
+        assertFalse(searchBoxFocused[0]);
+    }
 }
