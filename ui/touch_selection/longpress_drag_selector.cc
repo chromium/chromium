@@ -102,8 +102,10 @@ bool LongPressDragSelector::WillHandleTouchEvent(const MotionEvent& event) {
 
   gfx::PointF extent = extend_selection_start ? selection_start : selection_end;
   longpress_drag_selection_offset_ = extent - position;
-  client_->OnDragBegin(*this, extent);
+  // Set first, as OnDragBegin() can synchronously deactivate the selection,
+  // which resets the state.
   SetState(SelectionState::kDragging);
+  client_->OnDragBegin(*this, extent);
   return true;
 }
 

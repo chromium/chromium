@@ -2067,5 +2067,98 @@ TEST_F(TouchSelectionControllerHideInCalloutTest, HideOnInsertionCleared) {
             controller().active_status());
 }
 
+// Hides the selection from the client's move calls, as
+// TouchSelectionControllerClientChildFrame does when it can't convert a point
+// into the child frame.
+class TouchSelectionControllerHideOnMoveTest
+    : public TouchSelectionControllerTest {
+ public:
+  void MoveCaret(const gfx::PointF& position) override {
+    TouchSelectionControllerTest::MoveCaret(position);
+    controller().HideAndDisallowShowingAutomatically();
+  }
+
+  void SelectBetweenCoordinates(const gfx::PointF& base,
+                                const gfx::PointF& extent) override {
+    TouchSelectionControllerTest::SelectBetweenCoordinates(base, extent);
+    controller().HideAndDisallowShowingAutomatically();
+  }
+
+  void OnDragUpdate(const TouchSelectionDraggable::Type type,
+                    const gfx::PointF& position) override {
+    TouchSelectionControllerTest::OnDragUpdate(type, position);
+    ++drag_update_count_;
+  }
+
+ protected:
+  int drag_update_count_ = 0;
+};
+
+TEST_F(TouchSelectionControllerHideOnMoveTest, SelectionDragBegin) {
+  OnLongPressEvent();
+  ChangeSelection(gfx::RectF(0, 0, 0, 10), true, gfx::RectF(50, 0, 0, 10),
+                  true);
+  EXPECT_THAT(GetAndResetEvents(), ElementsAre(SELECTION_HANDLES_SHOWN));
+
+  SetDraggingEnabled(true);
+  base::TimeTicks event_time = base::TimeTicks::Now();
+  EXPECT_TRUE(controller().WillHandleTouchEvent(
+      MockMotionEvent(MockMotionEvent::Action::DOWN, event_time, 0, 0)));
+  EXPECT_THAT(GetAndResetEvents(), ElementsAre(SELECTION_HANDLE_DRAG_STARTED,
+                                               SELECTION_HANDLE_DRAG_STOPPED,
+                                               SELECTION_HANDLES_CLEARED));
+  EXPECT_EQ(TouchSelectionController::ActiveStatus::kInactive,
+            controller().active_status());
+
+  EXPECT_TRUE(controller().WillHandleTouchEvent(
+      MockMotionEvent(MockMotionEvent::Action::UP, event_time, 0, 0)));
+  EXPECT_THAT(GetAndResetEvents(), IsEmpty());
+}
+
+TEST_F(TouchSelectionControllerHideOnMoveTest, LongPressDragBegin) {
+  TouchSelectionController::Config config = kDefaultConfig;
+  config.enable_longpress_drag_selection = true;
+  InitializeControllerWithConfig(config);
+
+  MockMotionEvent event;
+  EXPECT_FALSE(controller().WillHandleTouchEvent(event.PressPoint(0, 0)));
+  OnLongPressEvent();
+  ChangeSelection(gfx::RectF(-50, 0, 0, 10), true, gfx::RectF(50, 0, 0, 10),
+                  true);
+  EXPECT_THAT(GetAndResetEvents(), ElementsAre(SELECTION_HANDLES_SHOWN));
+  EXPECT_TRUE(controller().WillHandleTouchEvent(event.MovePoint(0, 0, 0)));
+  EXPECT_TRUE(controller().WillHandleTouchEvent(
+      event.MovePoint(0, 0, kDefaultTapSlop)));
+  EXPECT_THAT(GetAndResetEvents(), ElementsAre(SELECTION_HANDLE_DRAG_STARTED,
+                                               SELECTION_HANDLE_DRAG_STOPPED,
+                                               SELECTION_HANDLES_CLEARED));
+
+  // The drag selector was reset, so the rest of the sequence isn't consumed.
+  EXPECT_FALSE(controller().WillHandleTouchEvent(
+      event.MovePoint(0, 0, 2 * kDefaultTapSlop)));
+  EXPECT_FALSE(controller().WillHandleTouchEvent(event.ReleasePoint()));
+  EXPECT_THAT(GetAndResetEvents(), IsEmpty());
+}
+
+TEST_F(TouchSelectionControllerHideOnMoveTest, InsertionDragUpdate) {
+  OnTapEvent();
+  ChangeInsertion(gfx::RectF(10, 0, 0, 10), true);
+  EXPECT_THAT(GetAndResetEvents(), ElementsAre(INSERTION_HANDLE_SHOWN));
+
+  SetDraggingEnabled(true);
+  base::TimeTicks event_time = base::TimeTicks::Now();
+  EXPECT_TRUE(controller().WillHandleTouchEvent(
+      MockMotionEvent(MockMotionEvent::Action::DOWN, event_time, 0, 0)));
+  EXPECT_THAT(GetAndResetEvents(), ElementsAre(INSERTION_HANDLE_DRAG_STARTED));
+
+  EXPECT_TRUE(controller().WillHandleTouchEvent(
+      MockMotionEvent(MockMotionEvent::Action::MOVE, event_time, 0, 5)));
+  EXPECT_TRUE(GetAndResetCaretMoved());
+  EXPECT_THAT(GetAndResetEvents(), ElementsAre(INSERTION_HANDLE_DRAG_STOPPED,
+                                               INSERTION_HANDLE_CLEARED));
+  // No magnifier update after the insertion was hidden.
+  EXPECT_EQ(0, drag_update_count_);
+}
+
 }  // namespace
 }  // namespace ui

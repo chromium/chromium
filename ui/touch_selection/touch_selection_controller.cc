@@ -489,10 +489,13 @@ void TouchSelectionController::OnDragBegin(
     base::RecordAction(base::UserMetricsAction("SelectionChanged"));
   selection_handle_dragged_ = true;
 
+  // Queued first, as SelectBetweenCoordinates() can synchronously hide the
+  // selection and its DRAG_STOPPED and HANDLES_CLEARED must follow this.
+  NotifySelectionEvent(SELECTION_HANDLE_DRAG_STARTED);
+
   // When moving the handle we want to move only the extent point. Before doing
   // so we must make sure that the base point is set correctly.
   client_->SelectBetweenCoordinates(base, extent);
-  NotifySelectionEvent(SELECTION_HANDLE_DRAG_STARTED);
 }
 
 void TouchSelectionController::OnDragUpdate(
@@ -508,6 +511,11 @@ void TouchSelectionController::OnDragUpdate(
     client_->MoveCaret(line_position);
   else
     client_->MoveRangeSelectionExtent(line_position);
+
+  // The move can synchronously hide the selection, which ends the drag.
+  if (active_status_ == ActiveStatus::kInactive) {
+    return;
+  }
 
   // We use the bound middle point to restrict the ability to move up and
   // down, but let user move it more freely in horizontal direction.
