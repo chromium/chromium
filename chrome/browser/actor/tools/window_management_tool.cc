@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
@@ -14,6 +15,7 @@
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/sessions/core/session_id.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/base_window.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -147,9 +149,7 @@ void WindowManagementTool::Invoke(ToolCallback callback) {
                        "Failed to create a new tab in new window."));
         return;
       }
-      tabs::TabInterface* tab =
-          tabs::TabInterface::GetFromContents(web_contents);
-      created_tab_handle_ = tab->GetHandle();
+      created_actor_surface_handle_ = ActorSurfaceHandle::From(web_contents);
       browser->GetWindow()->Show();
       break;
     }
@@ -273,7 +273,7 @@ void WindowManagementTool::UpdateTaskBeforeInvoke(ActorTask& task,
         browser ? TabListInterface::From(browser) : nullptr;
     if (tab_list) {
       for (tabs::TabInterface* tab : tab_list->GetAllTabs()) {
-        task.RemoveTab(tab->GetHandle());
+        task.RemoveActorSurface(ActorSurfaceHandle::From(tab->GetHandle()));
       }
     }
   }
@@ -288,9 +288,9 @@ void WindowManagementTool::UpdateTaskAfterInvoke(ActorTask& task,
   // this is needed because GetTabForObservation assumes only a single tab is
   // acting.
   if (action_ == Action::kCreate && task.GetTabs().empty()) {
-    CHECK(created_tab_handle_.has_value());
-    task.AddTab(*created_tab_handle_, /*stop_task_on_detach=*/true,
-                std::move(callback));
+    CHECK(!created_actor_surface_handle_.is_null());
+    task.AddActorSurface(created_actor_surface_handle_,
+                         /*stop_task_on_detach=*/true, std::move(callback));
   } else {
     std::move(callback).Run(std::move(result));
   }

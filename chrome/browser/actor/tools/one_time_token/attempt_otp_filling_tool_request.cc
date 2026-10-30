@@ -77,9 +77,10 @@ ToolRequest::CreateToolResult AttemptOtpFillingToolRequest::CreateTool(
     ToolDelegate& tool_delegate) const {
   ActorSurface* actor_surface = GetActorSurfaceHandle().Get();
   if (!actor_surface) {
-    return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kTabWentAway,
-                                         /*requires_page_stabilization=*/false,
-                                         "The tab is no longer present.")};
+    return {/*tool=*/nullptr,
+            MakeResult(mojom::ActionResultCode::kTabWentAway,
+                       /*requires_page_stabilization=*/false,
+                       "The target surface is no longer present.")};
   }
 
   auto* affiliation_service =

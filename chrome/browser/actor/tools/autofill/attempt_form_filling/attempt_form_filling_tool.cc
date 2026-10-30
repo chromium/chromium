@@ -29,7 +29,6 @@
 #include "components/autofill/core/browser/actor/actor_form_filling_service.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 

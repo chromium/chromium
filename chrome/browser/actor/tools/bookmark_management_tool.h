@@ -9,7 +9,6 @@
 #include <string>
 
 #include "chrome/browser/actor/tools/tool.h"
-#include "components/tabs/public/tab_interface.h"
 #include "url/gurl.h"
 
 namespace actor {

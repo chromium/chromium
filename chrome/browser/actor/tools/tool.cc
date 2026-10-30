@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/core/aggregated_journal.h"
-#include "components/tabs/public/tab_interface.h"
 
 namespace actor {
 

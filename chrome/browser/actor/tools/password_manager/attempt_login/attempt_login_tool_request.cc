@@ -17,7 +17,6 @@
 #include "components/actor/core/actor_features.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/tabs/public/tab_interface.h"
 #include "content/public/common/content_features.h"
 
 namespace actor {
@@ -57,9 +56,10 @@ ToolRequest::CreateToolResult AttemptLoginToolRequest::CreateTool(
     ToolDelegate& tool_delegate) const {
   ActorSurface* actor_surface = GetActorSurfaceHandle().Get();
   if (!actor_surface) {
-    return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kTabWentAway,
-                                         /*requires_page_stabilization=*/false,
-                                         "The tab is no longer present.")};
+    return {/*tool=*/nullptr,
+            MakeResult(mojom::ActionResultCode::kTabWentAway,
+                       /*requires_page_stabilization=*/false,
+                       "The target surface is no longer present.")};
   }
 
   return {std::make_unique<AttemptLoginTool>(

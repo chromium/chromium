@@ -24,7 +24,6 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/sessions/core/session_id.h"
-#include "components/tabs/public/tab_interface.h"
 #include "url/gurl.h"
 
 namespace actor {

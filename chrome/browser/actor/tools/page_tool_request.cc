@@ -53,9 +53,10 @@ ToolRequest::CreateToolResult PageToolRequest::CreateTool(
     TaskId task_id,
     ToolDelegate& tool_delegate) const {
   if (!GetActorSurfaceHandle().Get()) {
-    return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kTabWentAway,
-                                         /*requires_page_stabilization=*/false,
-                                         "The tab is no longer present.")};
+    return {/*tool=*/nullptr,
+            MakeResult(mojom::ActionResultCode::kTabWentAway,
+                       /*requires_page_stabilization=*/false,
+                       "The target surface is no longer present.")};
   }
 
   return {std::make_unique<PageTool>(task_id, tool_delegate, *this),

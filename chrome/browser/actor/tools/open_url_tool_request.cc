@@ -82,9 +82,10 @@ ToolRequest::CreateToolResult OpenUrlToolRequest::CreateTool(
 
   ActorSurface* actor_surface = GetActorSurfaceHandle().Get();
   if (!actor_surface) {
-    return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kTabWentAway,
-                                         /*requires_page_stabilization=*/false,
-                                         "The tab is no longer present.")};
+    return {/*tool=*/nullptr,
+            MakeResult(mojom::ActionResultCode::kTabWentAway,
+                       /*requires_page_stabilization=*/false,
+                       "The target surface is no longer present.")};
   }
 
   return {std::make_unique<OpenUrlTool>(task_id, tool_delegate, *actor_surface,

@@ -56,9 +56,10 @@ ToolRequest::CreateToolResult TranslatePageToolRequest::CreateTool(
     ToolDelegate& tool_delegate) const {
   ActorSurface* actor_surface = GetActorSurfaceHandle().Get();
   if (!actor_surface) {
-    return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kTabWentAway,
-                                         /*requires_page_stabilization=*/false,
-                                         "The tab is no longer present.")};
+    return {/*tool=*/nullptr,
+            MakeResult(mojom::ActionResultCode::kTabWentAway,
+                       /*requires_page_stabilization=*/false,
+                       "The target surface is no longer present.")};
   }
   return {std::make_unique<TranslatePageTool>(task_id, tool_delegate,
                                               *actor_surface, target_language_),

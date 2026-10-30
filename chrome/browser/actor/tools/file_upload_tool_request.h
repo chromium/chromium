@@ -14,7 +14,6 @@
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "components/actor/core/shared_types.h"
-#include "components/tabs/public/tab_interface.h"
 #include "url/gurl.h"
 
 namespace actor {

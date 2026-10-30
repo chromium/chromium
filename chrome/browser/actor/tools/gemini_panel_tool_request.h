@@ -12,7 +12,6 @@
 #include "chrome/browser/actor/actor_surface_handle.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"  // nogncheck
-#include "components/tabs/public/tab_interface.h"
 
 namespace actor {
 

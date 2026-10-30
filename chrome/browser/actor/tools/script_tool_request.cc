@@ -92,9 +92,10 @@ ToolRequest::CreateToolResult ScriptToolRequest::CreateTool(
 
   ActorSurfaceHandle actor_surface_handle = GetActorSurfaceHandle();
   if (!actor_surface_handle.Get()) {
-    return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kTabWentAway,
-                                         /*requires_page_stabilization=*/false,
-                                         "The tab is no longer present.")};
+    return {/*tool=*/nullptr,
+            MakeResult(mojom::ActionResultCode::kTabWentAway,
+                       /*requires_page_stabilization=*/false,
+                       "The target surface is no longer present.")};
   }
 
   // The tool ID, if any, is resolved against the last observation at time of

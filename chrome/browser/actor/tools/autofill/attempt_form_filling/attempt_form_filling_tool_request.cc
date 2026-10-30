@@ -20,7 +20,6 @@
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
-#include "components/tabs/public/tab_interface.h"
 #include "ui/gfx/geometry/point.h"
 
 namespace actor {
@@ -87,9 +86,10 @@ ToolRequest::CreateToolResult AttemptFormFillingToolRequest::CreateTool(
     ToolDelegate& tool_delegate) const {
   ActorSurface* actor_surface = GetActorSurfaceHandle().Get();
   if (!actor_surface) {
-    return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kTabWentAway,
-                                         /*requires_page_stabilization=*/false,
-                                         "The tab is no longer present.")};
+    return {/*tool=*/nullptr,
+            MakeResult(mojom::ActionResultCode::kTabWentAway,
+                       /*requires_page_stabilization=*/false,
+                       "The target surface is no longer present.")};
   }
 
   return {std::make_unique<AttemptFormFillingTool>(

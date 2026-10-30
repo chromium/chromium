@@ -19,7 +19,6 @@
 #include "components/actor/public/mojom/actor_types.mojom-forward.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
-#include "components/tabs/public/tab_interface.h"
 #include "url/gurl.h"
 
 class Profile;

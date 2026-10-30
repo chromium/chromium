@@ -18,7 +18,6 @@
 #include "chrome/common/actor.mojom.h"
 #include "components/actor/core/task_id.h"
 #include "components/sessions/core/session_id.h"
-#include "components/tabs/public/tab_interface.h"
 #include "url/gurl.h"
 
 class BrowserWindowInterface;
