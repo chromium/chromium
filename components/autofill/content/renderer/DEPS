@@ -18,6 +18,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "custom_form_control_script_executor\\.(h|cc)": [
+    "+v8/include",
+  ],
   ".*test.*": [
     "+components/ukm",
     "+v8/include",

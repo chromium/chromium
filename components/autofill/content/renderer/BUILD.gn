@@ -10,6 +10,8 @@ static_library("renderer") {
     "at_memory_handler.h",
     "autofill_agent.cc",
     "autofill_agent.h",
+    "custom_form_control_script_executor.cc",
+    "custom_form_control_script_executor.h",
     "email_verification_handler.cc",
     "email_verification_handler.h",
     "form_autofill_issues.cc",
@@ -70,6 +72,7 @@ static_library("renderer") {
     "//third_party/re2",
     "//ui/base",
     "//ui/events/blink",
+    "//v8",
   ]
 }
 
@@ -131,6 +134,7 @@ source_set("browser_tests") {
     "at_memory_handler_browsertest.cc",
     "autofill_agent_browsertest.cc",
     "autofill_agent_form_interaction_browsertest.cc",
+    "custom_form_control_script_executor_browsertest.cc",
     "dom_label_browsertest.cc",
     "email_verification_handler_browsertest.cc",
     "form_autofill_issues_browsertest.cc",
