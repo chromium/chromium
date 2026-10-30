@@ -34,6 +34,7 @@ import {getHtml} from './history_item.html.js';
 
 export interface HistoryItemElement {
   $: {
+    cardCollapseButton: CrIconButtonElement,
     checkbox: CrCheckboxElement,
     icon: HTMLElement,
     link: HTMLElement,
@@ -78,6 +79,28 @@ export class HistoryItemElement extends HistoryItemElementBase {
         reflect: true,
       },
 
+      isCardCollapsed: {
+        type: Boolean,
+        reflect: true,
+      },
+
+      isDomainGroupStart: {
+        type: Boolean,
+        reflect: true,
+      },
+
+      isDomainGroupCollapsed: {
+        type: Boolean,
+        reflect: true,
+      },
+
+      isDomainCollapsed: {
+        type: Boolean,
+        reflect: true,
+      },
+
+      domainGroupSize: {type: Number},
+
       selectionNotAllowed_: {type: Boolean},
 
       hasTimeGap: {type: Boolean},
@@ -113,6 +136,11 @@ export class HistoryItemElement extends HistoryItemElementBase {
   accessor searchTerm: string = '';
   accessor isCardStart: boolean = false;
   accessor isCardEnd: boolean = false;
+  accessor isCardCollapsed: boolean = false;
+  accessor isDomainGroupStart: boolean = false;
+  accessor isDomainGroupCollapsed: boolean = false;
+  accessor isDomainCollapsed: boolean = false;
+  accessor domainGroupSize: number = 0;
   accessor numberOfItems: number = 0;
   accessor selected: boolean = false;
   accessor isExpanded_: boolean = false;
@@ -267,6 +295,46 @@ export class HistoryItemElement extends HistoryItemElementBase {
       return false;
     }
     return !!this.item?.isActorVisit;
+  }
+
+  protected onCardHeadingClick_(e: Event) {
+    e.stopPropagation();
+    this.fire('toggle-card-collapse', {
+      index: this.index,
+    });
+  }
+
+  protected getCardCollapseIcon_(): string {
+    return this.isCardCollapsed ? 'cr:keyboard-arrow-down' :
+                                  'cr:keyboard-arrow-up';
+  }
+
+  protected getCardCollapseTitle_(): string {
+    return loadTimeData.getString(
+        this.isCardCollapsed ? 'expandSessionButton' :
+                               'collapseSessionButton');
+  }
+
+  protected hasDomainGroup_(): boolean {
+    return this.isDomainGroupStart && this.domainGroupSize > 1;
+  }
+
+  protected onDomainCollapseClick_(e: Event) {
+    e.stopPropagation();
+    this.fire('toggle-domain-collapse', {
+      index: this.index,
+    });
+  }
+
+  protected getDomainCollapseIcon_(): string {
+    return this.isDomainGroupCollapsed ? 'cr:keyboard-arrow-down' :
+                                         'cr:keyboard-arrow-up';
+  }
+
+  protected getDomainCollapseTitle_(): string {
+    return loadTimeData.getString(
+        this.isDomainGroupCollapsed ? 'expandSessionButton' :
+                                      'collapseSessionButton');
   }
 
   protected isExpandable_(): boolean {

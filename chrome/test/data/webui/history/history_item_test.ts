@@ -538,4 +538,127 @@ suite('<history-item> integration test', function() {
             items[0]!.shadowRoot.querySelectorAll('.critical-action-row');
         assertEquals(1, actionRows.length);
       });
+
+  test('collapse and expand day card', async function() {
+    element.addNewResults(TEST_HISTORY_RESULTS, false, true);
+    await microtasksFinished();
+
+    const items = element.shadowRoot.querySelectorAll('history-item');
+    assertEquals(TEST_HISTORY_RESULTS.length, items.length);
+
+    assertTrue(items[0]!.isCardStart);
+    assertFalse(items[0]!.isCardEnd);
+    assertFalse(items[0]!.isCardCollapsed);
+    assertTrue(items[4]!.isCardEnd);
+
+    const dateAccessed =
+        items[0]!.shadowRoot.querySelector<HTMLElement>('#date-accessed')!;
+    assertEquals('true', dateAccessed.getAttribute('aria-expanded'));
+    const collapseBtn = items[0]!.$.cardCollapseButton;
+    assertEquals('cr:keyboard-arrow-up', collapseBtn.ironIcon);
+    const cardCollapse =
+        items[0]!.shadowRoot.querySelector<HTMLElement>('#card-collapse')!;
+    assertTrue(cardCollapse.hasAttribute('opened'));
+    assertTrue(isVisible(items[1]!));
+    assertTrue(isVisible(items[4]!));
+
+    // Collapse the 2016-03-16 card via the header collapse button.
+    collapseBtn.click();
+    await microtasksFinished();
+
+    assertTrue(items[0]!.isCardCollapsed);
+    assertTrue(items[0]!.isCardEnd);
+    assertEquals('false', dateAccessed.getAttribute('aria-expanded'));
+    assertEquals('cr:keyboard-arrow-down', collapseBtn.ironIcon);
+    assertFalse(cardCollapse.hasAttribute('opened'));
+    assertFalse(isVisible(
+        items[0]!.shadowRoot.querySelector<HTMLElement>('#item-container')));
+    assertFalse(isVisible(items[1]!));
+    assertFalse(isVisible(items[2]!));
+    assertFalse(isVisible(items[3]!));
+    assertFalse(isVisible(items[4]!));
+
+    // The 2016-03-15 card remains visible and expanded.
+    assertFalse(items[5]!.isCardCollapsed);
+    assertTrue(isVisible(items[5]!));
+
+    // Re-expand the 2016-03-16 card by clicking the card header.
+    dateAccessed.click();
+    await microtasksFinished();
+
+    assertFalse(items[0]!.isCardCollapsed);
+    assertFalse(items[0]!.isCardEnd);
+    assertTrue(items[4]!.isCardEnd);
+    assertEquals('true', dateAccessed.getAttribute('aria-expanded'));
+    assertEquals('cr:keyboard-arrow-up', collapseBtn.ironIcon);
+    assertTrue(cardCollapse.hasAttribute('opened'));
+    assertTrue(isVisible(items[1]!));
+    assertTrue(isVisible(items[4]!));
+  });
+
+  test(
+      'collapse and expand website domain group within a day',
+      async function() {
+    element.addNewResults(TEST_HISTORY_RESULTS, false, true);
+    await microtasksFinished();
+
+    const items = element.shadowRoot.querySelectorAll('history-item');
+    assertEquals(TEST_HISTORY_RESULTS.length, items.length);
+
+    // Single-visit domains within a day do not show a domain collapse button.
+    assertTrue(items[0]!.isDomainGroupStart);
+    assertEquals(1, items[0]!.domainGroupSize);
+    assertEquals(
+        null, items[0]!.shadowRoot.querySelector('#domainCollapseButton'));
+    assertTrue(items[1]!.isDomainGroupStart);
+    assertEquals(1, items[1]!.domainGroupSize);
+    assertEquals(
+        null, items[1]!.shadowRoot.querySelector('#domainCollapseButton'));
+
+    // Repeated visits to www.website.com on 2016-03-16 (items[3] and items[4])
+    // form a collapsible domain group on items[3].
+    assertTrue(items[3]!.isDomainGroupStart);
+    assertEquals(2, items[3]!.domainGroupSize);
+    assertFalse(items[4]!.isDomainGroupStart);
+    assertEquals(0, items[4]!.domainGroupSize);
+
+    const domainBtn = items[3]!.shadowRoot.querySelector<HTMLElement>(
+        '#domainCollapseButton');
+    assertTrue(!!domainBtn);
+    assertTrue(isVisible(domainBtn));
+    assertEquals(
+        'cr:keyboard-arrow-up', domainBtn.getAttribute('iron-icon'));
+    assertEquals('true', domainBtn.getAttribute('aria-expanded'));
+    assertEquals(
+        null, items[4]!.shadowRoot.querySelector('#domainCollapseButton'));
+    assertTrue(items[3]!.hasTimeGap);
+    assertFalse(items[3]!.isCardEnd);
+    assertTrue(items[4]!.isCardEnd);
+
+    // Collapse the www.website.com group.
+    domainBtn.click();
+    await microtasksFinished();
+
+    assertTrue(items[3]!.isDomainGroupCollapsed);
+    assertFalse(items[3]!.isDomainCollapsed);
+    assertTrue(items[4]!.isDomainCollapsed);
+    assertTrue(isVisible(items[3]!));
+    assertFalse(isVisible(items[4]!));
+    assertTrue(items[3]!.isCardEnd);
+    assertFalse(items[3]!.hasTimeGap);
+    assertEquals(
+        'cr:keyboard-arrow-down', domainBtn.getAttribute('iron-icon'));
+    assertEquals('false', domainBtn.getAttribute('aria-expanded'));
+
+    // Re-expand the www.website.com group.
+    domainBtn.click();
+    await microtasksFinished();
+
+    assertFalse(items[3]!.isDomainGroupCollapsed);
+    assertFalse(items[4]!.isDomainCollapsed);
+    assertTrue(isVisible(items[4]!));
+    assertFalse(items[3]!.isCardEnd);
+    assertTrue(items[4]!.isCardEnd);
+    assertTrue(items[3]!.hasTimeGap);
+  });
 });

@@ -45,7 +45,31 @@
 }
 
 :host([is-card-start]) #date-accessed {
-  display: block;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: auto;
+  user-select: none;
+}
+
+:host([is-card-start][is-card-collapsed]) #date-accessed {
+  padding-bottom: 23px;
+}
+
+:host([is-card-collapsed]:not([is-card-start])),
+:host([is-domain-collapsed]) {
+  display: none;
+}
+
+#cardCollapseButton {
+  --cr-icon-button-margin-end: 0;
+  --cr-icon-button-margin-start: 0;
+}
+
+#domainCollapseButton {
+  --cr-icon-button-icon-size: 16px;
+  --cr-icon-button-margin-start: 12px;
+  --cr-icon-button-size: 32px;
 }
 
 #item-container {
