@@ -677,10 +677,11 @@ struct CreateNewWindowReply {
 
   // Token used to deterministically generate the opaque origin for the initial
   // empty document of a sandboxed popup (e.g., `window.open()` with sandbox
-  // flags). Generated in the browser by `SetOriginDependentStateOfNewFrame()`
-  // and sent here so both browser and renderer derive the same origin.
-  // TODO(crbug.com/486082219): Once the fallback logic for popups escaping
-  // sandbox is removed, this will only be set for truly sandboxed cases.
+  // flags, or a popup opened from a CSP-sandboxed document with
+  // allow-popups-to-escape-sandbox). Generated in the browser by
+  // `SetOriginDependentStateOfNewFrame()` and sent here so both browser and
+  // renderer derive the same origin. Only set when the popup's initial empty
+  // document is sandboxed.
   mojo_base.mojom.UnguessableToken? sandbox_origin_token;
 
   // Token used to retrieve the InitiatorNavigationState for navigations
