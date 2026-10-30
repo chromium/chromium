@@ -1290,4 +1290,45 @@ TEST_F(VideoDecoderPipelineTest, RebuildFramePoolsOnStateLost) {
                                  base::Unretained(this)));
   task_environment_.RunUntilIdle();
 }
+
+// Verifies that VideoDecoderPipeline::Create() fails after the limit of created
+// instances exceeds the threshold, and that releasing the reservations allows
+// creating a decoder again.
+TEST(VideoDecoderPipelineReservationTest, TooManyDecoderInstances) {
+  base::test::TaskEnvironment task_environment;
+  gpu::GpuDriverBugWorkarounds workarounds;
+  workarounds.max_num_hw_video_decoders_10 = true;
+  constexpr int kMaxNumOfInstances = 10;
+
+  std::vector<std::unique_ptr<VideoDecoderPipeline::DecoderReservation>>
+      reservations(kMaxNumOfInstances);
+  for (auto& reservation : reservations) {
+    reservation =
+        VideoDecoderPipeline::DecoderReservation::Take(kMaxNumOfInstances);
+    EXPECT_TRUE(reservation);
+  }
+
+  // Next one fails:
+  auto decoder = VideoDecoderPipeline::Create(
+      workarounds, base::SingleThreadTaskRunner::GetCurrentDefault(),
+      std::make_unique<MockVideoFramePool>(),
+      FakeFrameResourceConverter::Create(),
+      VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
+      std::make_unique<MockMediaLog>(),
+      /*oop_video_decoder=*/{},
+      /*in_video_decoder_process=*/true);
+  EXPECT_FALSE(decoder);
+
+  // Release the reservations and verify that creating a decoder succeeds.
+  reservations.clear();
+  decoder = VideoDecoderPipeline::Create(
+      workarounds, base::SingleThreadTaskRunner::GetCurrentDefault(),
+      std::make_unique<MockVideoFramePool>(),
+      FakeFrameResourceConverter::Create(),
+      VideoDecoderPipeline::DefaultPreferredRenderableFourccs(),
+      std::make_unique<MockMediaLog>(),
+      /*oop_video_decoder=*/{},
+      /*in_video_decoder_process=*/true);
+  EXPECT_TRUE(decoder);
+}
 }  // namespace media

@@ -273,6 +273,8 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
 
  private:
   friend class VideoDecoderPipelineTest;
+  FRIEND_TEST_ALL_PREFIXES(VideoDecoderPipelineReservationTest,
+                           TooManyDecoderInstances);
 #if BUILDFLAG(USE_VAAPI)
   FRIEND_TEST_ALL_PREFIXES(VideoDecoderPipelineTest,
                            PickDecoderOutputFormatLinearModifier);
