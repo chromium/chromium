@@ -1759,4 +1759,34 @@ IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest, EphemeralTabGroupFilteredOut) {
   handler()->GetProfileData(std::move(callback2));
 }
 
+// Verify that New Tab Page favicons (which require theming via
+// ShouldThemifyFavicon()) always populate `favicon_url` as a themed data URI,
+// even when kTabSearchPerformanceImprovements is enabled.
+IN_PROC_BROWSER_TEST_P(TabSearchPageHandlerTest,
+                       NewTabPageFaviconUrlPopulated) {
+  chrome::AddTabAt(browser1(), GURL(chrome::kChromeUINewTabURL), 0, true);
+  content::WaitForLoadStop(
+      browser1()->tab_strip_model()->GetActiveWebContents());
+  BrowserUiController::From(browser1())->ProcessPendingUIUpdates();
+  page_.receiver_.FlushForTesting();
+
+  base::test::TestFuture<tab_search::mojom::ProfileDataPtr> future;
+  handler()->GetProfileData(future.GetCallback());
+  tab_search::mojom::ProfileDataPtr profile_tabs = future.Take();
+
+  const tab_search::mojom::Window* host_window = nullptr;
+  for (const auto& window : profile_tabs->windows) {
+    if (window->is_host_window) {
+      host_window = window.get();
+      break;
+    }
+  }
+  ASSERT_TRUE(host_window);
+  ASSERT_FALSE(host_window->tabs.empty());
+  const tab_search::mojom::Tab* ntp_tab = host_window->tabs[0].get();
+  EXPECT_TRUE(ntp_tab->favicon_url.has_value());
+  EXPECT_TRUE(ntp_tab->favicon_url->SchemeIs(url::kDataScheme));
+  EXPECT_FALSE(ntp_tab->is_default_favicon);
+}
+
 }  // namespace

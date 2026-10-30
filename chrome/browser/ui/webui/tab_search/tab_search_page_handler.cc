@@ -793,10 +793,14 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
     // because chrome://favicon2 is not available. In regular profiles, we used
     // to do the same but kTabSearchPerformanceImprovements makes it so we
     // instead don't pass a favicon and let the tab search webui use
-    // chrome://favicon2 lazily.
+    // chrome://favicon2 lazily. Favicons that require theming (such as the New
+    // Tab Page and internal chrome:// pages) or tabs whose URL is hidden (such
+    // as uncommitted NTPs) must still be rasterized and themed here because
+    // chrome://favicon2 serves raw unthemed resource bytes.
     if (!base::FeatureList::IsEnabled(
             tabs::kTabSearchPerformanceImprovements) ||
-        profile_->IsOffTheRecord()) {
+        profile_->IsOffTheRecord() || tab_ui_helper->ShouldThemifyFavicon() ||
+        !tab_ui_helper->ShouldDisplayURL()) {
       const ui::ColorProvider& provider =
           web_ui_->GetWebContents()->GetColorProvider();
       const gfx::ImageSkia default_favicon =
