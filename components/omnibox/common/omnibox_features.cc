@@ -365,6 +365,12 @@ BASE_FEATURE(kWebUISearchboxWithoutModelController, DISABLED);
 // Enabled by default; retained as a kill switch.
 BASE_FEATURE(kOmniboxDebounceKeyboardVisibility, ENABLED);
 
+// When enabled, skips redundant pre-tab omnibox/location-bar updates during
+// `LocationBarView::Init()`, coalesces redundant `LocationBarView::OnChanged()`
+// and `LocationIconView::Update()` calls during `LocationBarView::Update()`,
+// and avoids the duplicate `TextChanged()` call in `OmniboxView::RevertAll()`.
+BASE_FEATURE(kOmniboxSkipRedundantLocationBarUpdates, ENABLED);
+
 // Feature used to default typed navigations to use HTTPS instead of HTTP.
 // This only applies to navigations that don't have a scheme such as
 // "example.com". Presently, typing "example.com" in a clean browsing profile

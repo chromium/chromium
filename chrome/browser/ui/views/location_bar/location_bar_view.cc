@@ -1052,19 +1052,32 @@ bool LocationBarView::HasSecurityStateChanged() {
 void LocationBarView::Update(WebContents* contents) {
   TRACE_EVENT("omnibox", "LocationBarView::Update");
 
+  const bool skip_redundant_updates = base::FeatureList::IsEnabled(
+      omnibox::kOmniboxSkipRedundantLocationBarUpdates);
+  if (skip_redundant_updates && !is_initialized_ && browser_ && !contents &&
+      !GetWebContents()) {
+    OnChangedImpl(/*suppress_animations=*/true);
+    return;
+  }
+
   RefreshContentSettingViews();
   RefreshPageActionIconViews();
-  location_icon_view_->Update(/*suppress_animations=*/contents,
-                              ShouldUsePopupOpenAppearance());
+  if (!skip_redundant_updates) {
+    location_icon_view_->Update(/*suppress_animations=*/contents,
+                                ShouldUsePopupOpenAppearance());
+  }
 
-  if (contents) {
-    omnibox_view_->OnTabChanged(contents);
-    if (is_full_webui_omnibox_ &&
-        !omnibox::IsWebUIOmniboxInBrowserViewEnabled()) {
-      omnibox_popup_view_->OnTabChanged(contents);
+  {
+    base::AutoReset<bool> in_update(&in_update_, skip_redundant_updates);
+    if (contents) {
+      omnibox_view_->OnTabChanged(contents);
+      if (is_full_webui_omnibox_ &&
+          !omnibox::IsWebUIOmniboxInBrowserViewEnabled()) {
+        omnibox_popup_view_->OnTabChanged(contents);
+      }
+    } else {
+      omnibox_view_->Update();
     }
-  } else {
-    omnibox_view_->Update();
   }
 
   // Ensures that the page action updates is performed after the omnibox update.
@@ -1072,7 +1085,8 @@ void LocationBarView::Update(WebContents* contents) {
   RefreshPageActionContainerViewAndIconsVisibility(
       /*should_hide_page_actions=*/ShouldHidePageActionIcons());
 
-  OnChanged();  // NOTE: Triggers layout.
+  OnChangedImpl(/*suppress_animations=*/skip_redundant_updates &&
+                contents != nullptr);  // NOTE: Triggers layout.
 
   // A permission prompt may be suspended due to an invalid state (empty or
   // editing location bar). Restore the suspended prompt if possible.
@@ -2101,11 +2115,18 @@ void LocationBarView::OnChildViewRemoved(View* observed_view, View* child) {
 }
 
 void LocationBarView::OnChanged() {
+  if (in_update_) {
+    return;
+  }
+  OnChangedImpl(/*suppress_animations=*/false);
+}
+
+void LocationBarView::OnChangedImpl(bool suppress_animations) {
   TRACE_EVENT("omnibox", "LocationBarView::OnChanged");
   // Ensure that background colors get updated on tab-switch.
   RefreshBackground();
 
-  location_icon_view_->Update(/*suppress_animations=*/false,
+  location_icon_view_->Update(suppress_animations,
                               ShouldUsePopupOpenAppearance());
   clear_all_button_->SetVisible(
       omnibox_view_ &&

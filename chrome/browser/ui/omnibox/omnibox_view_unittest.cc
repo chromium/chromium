@@ -53,6 +53,12 @@ using testing::SaveArgPointee;
 
 namespace {
 
+class MockTestOmniboxView : public TestOmniboxView {
+ public:
+  using TestOmniboxView::TestOmniboxView;
+  MOCK_METHOD(void, EmphasizeURLComponents, (), (override));
+};
+
 class OmniboxViewTest : public testing::Test {
  public:
   OmniboxViewTest()
@@ -73,10 +79,11 @@ class OmniboxViewTest : public testing::Test {
         std::make_unique<TestOmniboxEditModel>(
             omnibox_controller_.get(),
             /*pref_service=*/pref_service_.get()));
-    view_ = std::make_unique<TestOmniboxView>(omnibox_controller_.get());
+    view_ = std::make_unique<testing::NiceMock<MockTestOmniboxView>>(
+        omnibox_controller_.get());
   }
 
-  TestOmniboxView* view() { return view_.get(); }
+  MockTestOmniboxView* view() { return view_.get(); }
 
   TestOmniboxEditModel* model() {
     return static_cast<TestOmniboxEditModel*>(
@@ -93,7 +100,7 @@ class OmniboxViewTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<OmniboxController> omnibox_controller_;
-  std::unique_ptr<TestOmniboxView> view_;
+  std::unique_ptr<testing::NiceMock<MockTestOmniboxView>> view_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
   raw_ptr<TestOmniboxClient> omnibox_client_;
 };
@@ -357,5 +364,26 @@ TEST_F(OmniboxViewTest, GetStateChanges_DeletedText) {
     auto state_changes =
         TestOmniboxView::GetStateChanges(state_before, state_after);
     EXPECT_FALSE(state_changes.just_deleted_text);
+  }
+}
+
+// Tests `RevertAll()` does not invoke `TextChanged()` a second time when
+// `kOmniboxSkipRedundantLocationBarUpdates` is enabled.
+TEST_F(OmniboxViewTest, RevertAllSkipsDuplicateTextChanged) {
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        omnibox::kOmniboxSkipRedundantLocationBarUpdates);
+    EXPECT_CALL(*view(), EmphasizeURLComponents()).Times(1);
+    view()->RevertAll();
+    testing::Mock::VerifyAndClearExpectations(view());
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        omnibox::kOmniboxSkipRedundantLocationBarUpdates);
+    EXPECT_CALL(*view(), EmphasizeURLComponents()).Times(2);
+    view()->RevertAll();
+    testing::Mock::VerifyAndClearExpectations(view());
   }
 }

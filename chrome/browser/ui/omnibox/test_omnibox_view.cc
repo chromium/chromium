@@ -33,6 +33,9 @@ void TestOmniboxView::SetWindowTextAndCaretPos(const std::u16string& text,
                                                bool notify_text_changed) {
   text_ = text;
   selection_ = gfx::Range(caret_pos);
+  if (notify_text_changed) {
+    TextChanged();
+  }
 }
 
 bool TestOmniboxView::IsSelectAll() const {

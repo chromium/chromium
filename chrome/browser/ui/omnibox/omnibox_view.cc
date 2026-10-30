@@ -12,6 +12,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
@@ -27,6 +28,7 @@
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search/search.h"
 #include "components/search_engines/template_url_service.h"
 #include "extensions/buildflags/buildflags.h"
@@ -214,7 +216,10 @@ void OmniboxView::RevertAll() {
   TRACE_EVENT("omnibox", "OmniboxView::RevertAll");
   // This will clear the model's `user_input_in_progress_`.
   controller()->edit_model()->Revert();
-  TextChanged();
+  if (!base::FeatureList::IsEnabled(
+          omnibox::kOmniboxSkipRedundantLocationBarUpdates)) {
+    TextChanged();
+  }
 }
 
 bool OmniboxView::IsImeShowingPopup() const {

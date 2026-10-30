@@ -481,6 +481,8 @@ class LocationBarView
   void AnimationCanceled(const gfx::Animation* animation) override;
   void OnChildViewRemoved(View* observed_view, View* child) override;
 
+  void OnChangedImpl(bool suppress_animations);
+
   void OnTouchUiChanged();
 
   // Determines whether the location icon should be overridden while a chip is
@@ -627,6 +629,10 @@ class LocationBarView
   const bool is_full_webui_omnibox_;
 
   bool is_initialized_ = false;
+
+  // True while `Update()` is updating the omnibox view, used to suppress
+  // intermediate `OnChanged()` calls before the final `OnChangedImpl()` call.
+  bool in_update_ = false;
 
   SkColor background_color_ = gfx::kPlaceholderColor;
 
