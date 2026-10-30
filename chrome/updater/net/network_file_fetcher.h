@@ -5,10 +5,14 @@
 #ifndef CHROME_UPDATER_NET_NETWORK_FILE_FETCHER_H_
 #define CHROME_UPDATER_NET_NETWORK_FILE_FETCHER_H_
 
+#include <memory>
+
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
+#include "chrome/updater/net/mac/mojom/updater_fetcher.mojom-forward.h"
 #include "components/update_client/network.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 
 class GURL;
@@ -38,6 +42,13 @@ class NetworkStreamFetcher
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
+
+// Creates an out-of-process network fetcher that uses `remote_for_testing`
+// instead of launching a net-worker process. If `remote_for_testing` is not
+// valid, connecting to the fetch service fails.
+std::unique_ptr<update_client::NetworkFetcher>
+CreateOutOfProcessNetworkFetcherForTesting(
+    mojo::PendingRemote<mojom::FetchService> remote_for_testing);
 
 }  // namespace updater
 

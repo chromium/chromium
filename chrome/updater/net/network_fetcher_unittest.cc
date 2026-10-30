@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/flat_map.h"
@@ -17,6 +18,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "chrome/updater/net/network.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/test/unit_test_util.h"
@@ -24,6 +26,26 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_MAC)
+#include <cstddef>
+#include <vector>
+
+#include "base/containers/span.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/notreached.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/bind.h"
+#include "chrome/updater/constants.h"
+#include "chrome/updater/ipc/ipc_support.h"
+#include "chrome/updater/net/mac/mojom/updater_fetcher.mojom.h"
+#include "chrome/updater/net/network_file_fetcher.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/system/data_pipe.h"
+#endif
 
 namespace updater {
 namespace {
@@ -301,6 +323,275 @@ TEST_F(LoggingNetworkFetcherTest, PropagatesDownloadError) {
           run_loop.QuitClosure()));
   run_loop.Run();
 }
+
+#if BUILDFLAG(IS_MAC)
+class FakeFetchService : public mojom::FetchService {
+ public:
+  using DownloadHandler =
+      base::OnceCallback<void(mojo::ScopedDataPipeProducerHandle,
+                              mojo::Remote<mojom::FileDownloadObserver>)>;
+
+  explicit FakeFetchService(DownloadHandler on_download)
+      : on_download_(std::move(on_download)) {}
+  ~FakeFetchService() override = default;
+
+  mojo::PendingRemote<mojom::FetchService> BindNewPipeAndPassRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  void PostRequest(const GURL& url,
+                   const std::string& post_data,
+                   const std::string& content_type,
+                   std::vector<mojom::HttpHeaderPtr> additional_headers,
+                   PostRequestCallback callback) override {
+    NOTREACHED();
+  }
+
+  void DownloadToStream(const GURL& url,
+                        mojo::ScopedDataPipeProducerHandle response_stream,
+                        DownloadToStreamCallback callback) override {
+    mojo::Remote<mojom::FileDownloadObserver> observer;
+    std::move(callback).Run(observer.BindNewPipeAndPassReceiver());
+    std::move(on_download_)
+        .Run(std::move(response_stream), std::move(observer));
+  }
+
+ private:
+  DownloadHandler on_download_;
+  mojo::Receiver<mojom::FetchService> receiver_{this};
+};
+
+class OutOfProcessNetworkFetcherTest : public ::testing::Test {
+ protected:
+  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+
+  base::test::TaskEnvironment task_environment_;
+  ScopedIPCSupportWrapper ipc_support_;
+  base::ScopedTempDir temp_dir_;
+};
+
+// `OnDownloadComplete` over the Mojo pipe may arrive before `DataPipeDrainer`
+// finishes reading and sees the data pipe close on its background sequence.
+TEST_F(OutOfProcessNetworkFetcherTest,
+       DownloadToFile_MojoCompleteBeforeDataComplete) {
+  static constexpr std::string_view kPayload = "test download payload";
+  const base::FilePath dest_path =
+      temp_dir_.GetPath().AppendASCII("downloaded.bin");
+
+  FakeFetchService service(base::BindLambdaForTesting(
+      [&](mojo::ScopedDataPipeProducerHandle response_stream,
+          mojo::Remote<mojom::FileDownloadObserver> observer) {
+        observer->OnResponseStarted(200, kPayload.size());
+        observer->OnDownloadComplete(0, kPayload.size());
+        observer.FlushForTesting();
+
+        size_t actually_written = 0;
+        ASSERT_EQ(response_stream->WriteData(base::as_byte_span(kPayload),
+                                             MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
+                                             actually_written),
+                  MOJO_RESULT_OK);
+        EXPECT_EQ(actually_written, kPayload.size());
+        response_stream.reset();
+      }));
+
+  std::unique_ptr<update_client::NetworkFetcher> fetcher =
+      CreateOutOfProcessNetworkFetcherForTesting(
+          service.BindNewPipeAndPassRemote());
+
+  base::RunLoop run_loop;
+  int response_code = 0;
+  fetcher->DownloadToFile(
+      GURL("http://example.com/payload.bin"), dest_path,
+      base::BindLambdaForTesting(
+          [&](int code, int64_t /*content_length*/) { response_code = code; }),
+      base::DoNothing(),
+      base::BindLambdaForTesting([&](int net_error, int64_t content_size) {
+        EXPECT_EQ(net_error, 0);
+        EXPECT_EQ(content_size, static_cast<int64_t>(kPayload.size()));
+        fetcher.reset();
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  EXPECT_EQ(response_code, 200);
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(dest_path, &contents));
+  EXPECT_EQ(contents, kPayload);
+}
+
+TEST_F(OutOfProcessNetworkFetcherTest,
+       DownloadToFile_DataCompleteBeforeMojoComplete) {
+  static constexpr std::string_view kPayload = "payload drained first";
+  const base::FilePath dest_path =
+      temp_dir_.GetPath().AppendASCII("downloaded.bin");
+
+  mojo::Remote<mojom::FileDownloadObserver> saved_observer;
+  FakeFetchService service(base::BindLambdaForTesting(
+      [&](mojo::ScopedDataPipeProducerHandle response_stream,
+          mojo::Remote<mojom::FileDownloadObserver> observer) {
+        observer->OnResponseStarted(200, kPayload.size());
+        size_t actually_written = 0;
+        ASSERT_EQ(response_stream->WriteData(base::as_byte_span(kPayload),
+                                             MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
+                                             actually_written),
+                  MOJO_RESULT_OK);
+        EXPECT_EQ(actually_written, kPayload.size());
+        response_stream.reset();
+        saved_observer = std::move(observer);
+      }));
+
+  std::unique_ptr<update_client::NetworkFetcher> fetcher =
+      CreateOutOfProcessNetworkFetcherForTesting(
+          service.BindNewPipeAndPassRemote());
+
+  base::RunLoop progress_loop;
+  base::RunLoop complete_loop;
+  fetcher->DownloadToFile(
+      GURL("http://example.com/payload.bin"), dest_path, base::DoNothing(),
+      base::BindLambdaForTesting([&](int64_t current) {
+        if (current == static_cast<int64_t>(kPayload.size())) {
+          progress_loop.Quit();
+        }
+      }),
+      base::BindLambdaForTesting([&](int net_error, int64_t content_size) {
+        EXPECT_EQ(net_error, 0);
+        EXPECT_EQ(content_size, static_cast<int64_t>(kPayload.size()));
+        fetcher.reset();
+        complete_loop.Quit();
+      }));
+
+  progress_loop.Run();
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  ASSERT_TRUE(saved_observer.is_bound());
+  saved_observer->OnDownloadComplete(0, kPayload.size());
+  complete_loop.Run();
+
+  std::string contents;
+  ASSERT_TRUE(base::ReadFileToString(dest_path, &contents));
+  EXPECT_EQ(contents, kPayload);
+}
+
+TEST_F(OutOfProcessNetworkFetcherTest, DownloadToFile_FileOpenError) {
+  static constexpr std::string_view kPayload = "payload for failed open";
+  const base::FilePath dest_path =
+      temp_dir_.GetPath().AppendASCII("missing_dir").AppendASCII("file.bin");
+
+  FakeFetchService service(base::BindLambdaForTesting(
+      [&](mojo::ScopedDataPipeProducerHandle response_stream,
+          mojo::Remote<mojom::FileDownloadObserver> observer) {
+        observer->OnResponseStarted(200, kPayload.size());
+        size_t actually_written = 0;
+        const MojoResult rv = response_stream->WriteData(
+            base::as_byte_span(kPayload), MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
+            actually_written);
+        EXPECT_TRUE(rv == MOJO_RESULT_OK ||
+                    rv == MOJO_RESULT_FAILED_PRECONDITION);
+        response_stream.reset();
+        observer->OnDownloadComplete(0, kPayload.size());
+      }));
+
+  std::unique_ptr<update_client::NetworkFetcher> fetcher =
+      CreateOutOfProcessNetworkFetcherForTesting(
+          service.BindNewPipeAndPassRemote());
+
+  base::RunLoop run_loop;
+  fetcher->DownloadToFile(
+      GURL("http://example.com/payload.bin"), dest_path, base::DoNothing(),
+      base::DoNothing(),
+      base::BindLambdaForTesting([&](int net_error, int64_t content_size) {
+        EXPECT_EQ(net_error, kErrorFailedToWriteFile);
+        EXPECT_EQ(content_size, -1);
+        fetcher.reset();
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(OutOfProcessNetworkFetcherTest,
+       DownloadToFile_DisconnectBeforeComplete) {
+  const base::FilePath dest_path =
+      temp_dir_.GetPath().AppendASCII("downloaded.bin");
+
+  FakeFetchService service(base::BindLambdaForTesting(
+      [](mojo::ScopedDataPipeProducerHandle response_stream,
+         mojo::Remote<mojom::FileDownloadObserver> observer) {
+        response_stream.reset();
+        observer.reset();
+      }));
+
+  std::unique_ptr<update_client::NetworkFetcher> fetcher =
+      CreateOutOfProcessNetworkFetcherForTesting(
+          service.BindNewPipeAndPassRemote());
+
+  base::RunLoop run_loop;
+  fetcher->DownloadToFile(
+      GURL("http://example.com/payload.bin"), dest_path, base::DoNothing(),
+      base::DoNothing(),
+      base::BindLambdaForTesting([&](int net_error, int64_t /*content_size*/) {
+        EXPECT_EQ(net_error, kErrorIpcDisconnect);
+        fetcher.reset();
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// Destroying the fetcher cancels the download: the completion callback must
+// not run, even if the fetch service completes the download afterwards.
+TEST_F(OutOfProcessNetworkFetcherTest,
+       DownloadToFile_FetcherDestroyedMidDownload) {
+  static constexpr std::string_view kPayload = "payload after destruction";
+  const base::FilePath dest_path =
+      temp_dir_.GetPath().AppendASCII("downloaded.bin");
+
+  mojo::ScopedDataPipeProducerHandle saved_stream;
+  mojo::Remote<mojom::FileDownloadObserver> saved_observer;
+  FakeFetchService service(base::BindLambdaForTesting(
+      [&](mojo::ScopedDataPipeProducerHandle response_stream,
+          mojo::Remote<mojom::FileDownloadObserver> observer) {
+        observer->OnResponseStarted(200, kPayload.size());
+        saved_stream = std::move(response_stream);
+        saved_observer = std::move(observer);
+      }));
+
+  std::unique_ptr<update_client::NetworkFetcher> fetcher =
+      CreateOutOfProcessNetworkFetcherForTesting(
+          service.BindNewPipeAndPassRemote());
+
+  base::RunLoop response_started_loop;
+  bool download_completed = false;
+  fetcher->DownloadToFile(
+      GURL("http://example.com/payload.bin"), dest_path,
+      base::BindLambdaForTesting(
+          [&](int /*response_code*/, int64_t /*content_length*/) {
+            response_started_loop.Quit();
+          }),
+      base::DoNothing(),
+      base::BindLambdaForTesting(
+          [&](int /*net_error*/, int64_t /*content_size*/) {
+            download_completed = true;
+          }));
+  response_started_loop.Run();
+  fetcher.reset();
+
+  // Complete the download after the fetcher is gone. The write fails if the
+  // reader has already closed its end of the pipe.
+  size_t actually_written = 0;
+  const MojoResult rv = saved_stream->WriteData(
+      base::as_byte_span(kPayload), MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
+      actually_written);
+  EXPECT_TRUE(rv == MOJO_RESULT_OK || rv == MOJO_RESULT_FAILED_PRECONDITION);
+  saved_stream.reset();
+  saved_observer->OnDownloadComplete(0, kPayload.size());
+  saved_observer.FlushForTesting();
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  base::RunLoop main_thread_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, main_thread_loop.QuitClosure());
+  main_thread_loop.Run();
+
+  EXPECT_FALSE(download_completed);
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
 }  // namespace updater

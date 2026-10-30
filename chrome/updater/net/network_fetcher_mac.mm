@@ -26,6 +26,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
@@ -586,6 +587,9 @@ class DownloadStreamReader : public mojo::DataPipeDrainer::Client {
   // mojo::DataPipeDrainer::Client overrides:
   void OnDataAvailable(base::span<const uint8_t> data) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (!file_.IsValid()) {
+      return;
+    }
     if (!file_.WriteAtCurrentPosAndCheck(data)) {
       ClosePipeAndSignalMojoError();
       return;
@@ -597,18 +601,28 @@ class DownloadStreamReader : public mojo::DataPipeDrainer::Client {
 
   void OnDataComplete() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    // Defer resetting the drainer to avoid UAF in DataPipeDrainer::ReadData().
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::DoNothingWithBoundArgs(std::move(drainer_)));
+    data_complete_ = true;
+    DeferResetDrainer();
     MaybeSignalComplete();
   }
 
  private:
-  void ClosePipeAndSignalMojoError() {
+  void ResetDrainer() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    drainer_.reset();
+  }
+
+  void DeferResetDrainer() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // Defer resetting the drainer to avoid UAF in DataPipeDrainer::ReadData().
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::DoNothingWithBoundArgs(std::move(drainer_)));
+        FROM_HERE, base::BindOnce(&DownloadStreamReader::ResetDrainer,
+                                  weak_factory_.GetWeakPtr()));
+  }
+
+  void ClosePipeAndSignalMojoError() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    DeferResetDrainer();
     file_.Close();
     if (completion_callback_) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -623,10 +637,10 @@ class DownloadStreamReader : public mojo::DataPipeDrainer::Client {
   void MaybeSignalComplete() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    // The presence of `net_error_` indicates the Mojo call has completed. The
-    // absence of `drainer_` indicates the pipe is closed. The presence of
+    // The presence of `net_error_` indicates the Mojo call has completed.
+    // `data_complete_` indicates the pipe is closed. The presence of
     // `completion_callback_` indicates this isn't a duplicate call.
-    if (net_error_.has_value() && !drainer_ && completion_callback_) {
+    if (net_error_.has_value() && data_complete_ && completion_callback_) {
       file_.Close();
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(std::move(completion_callback_),
@@ -641,6 +655,8 @@ class DownloadStreamReader : public mojo::DataPipeDrainer::Client {
   std::unique_ptr<mojo::DataPipeDrainer> drainer_;
   int64_t total_bytes_written_ = 0;
   std::optional<int32_t> net_error_;
+  bool data_complete_ = false;
+  base::WeakPtrFactory<DownloadStreamReader> weak_factory_{this};
 };
 
 // Wraps a callback pair for PostRequest to log a network event.
@@ -879,9 +895,12 @@ class OutOfProcessNetworkFetcher : public update_client::NetworkFetcher {
  public:
   explicit OutOfProcessNetworkFetcher(
       scoped_refptr<UpdaterEventLogger> event_logger);
+  explicit OutOfProcessNetworkFetcher(
+      mojo::PendingRemote<mojom::FetchService> remote_for_testing);
   OutOfProcessNetworkFetcher& operator=(const OutOfProcessNetworkFetcher&) =
       delete;
-  OutOfProcessNetworkFetcher(const NetworkFetcher&) = delete;
+  OutOfProcessNetworkFetcher(const OutOfProcessNetworkFetcher&) = delete;
+  ~OutOfProcessNetworkFetcher() override;
 
   // NetworkFetcher overrides.
   void PostRequest(
@@ -904,19 +923,43 @@ class OutOfProcessNetworkFetcher : public update_client::NetworkFetcher {
   // Launches a Mojo net worker process and connects to it. Returns the
   // connection result.
   int DialFetchService();
+  void OnMojoDownloadComplete(int32_t net_error, int64_t content_size);
+  void OnStreamReadComplete(DownloadCompleteCallback callback,
+                            int net_error,
+                            int64_t content_size);
 
   SEQUENCE_CHECKER(sequence_checker_);
   scoped_refptr<UpdaterEventLogger> event_logger_;
+  // If set, `DialFetchService()` binds this instead of launching a net-worker.
+  std::optional<mojo::PendingRemote<mojom::FetchService>> remote_for_testing_;
   mojo::Remote<mojom::FetchService> remote_;
+  base::SequenceBound<DownloadStreamReader> reader_;
+  base::WeakPtrFactory<OutOfProcessNetworkFetcher> weak_factory_{this};
 };
 
 OutOfProcessNetworkFetcher::OutOfProcessNetworkFetcher(
     scoped_refptr<UpdaterEventLogger> event_logger)
     : event_logger_(event_logger) {}
 
+OutOfProcessNetworkFetcher::OutOfProcessNetworkFetcher(
+    mojo::PendingRemote<mojom::FetchService> remote_for_testing)
+    : remote_for_testing_(std::move(remote_for_testing)) {}
+
+OutOfProcessNetworkFetcher::~OutOfProcessNetworkFetcher() = default;
+
 int OutOfProcessNetworkFetcher::DialFetchService() {
   VLOG(2) << __func__;
   CHECK(!remote_.is_bound()) << "Fetcher cannot be reused.";
+
+  if (remote_for_testing_) {
+    mojo::PendingRemote<mojom::FetchService> pending_remote =
+        std::move(*remote_for_testing_);
+    if (!pending_remote) {
+      return kErrorMojoConnectionFailure;
+    }
+    remote_.Bind(std::move(pending_remote));
+    return kErrorOk;
+  }
 
   // Gets the uid of the console user.
   std::optional<uid_t> user_id = [] -> std::optional<uid_t> {
@@ -1043,14 +1086,16 @@ base::OnceClosure OutOfProcessNetworkFetcher::DownloadToFile(
           response_started_callback, std::move(download_complete_callback), url,
           event_logger_);
 
-  auto reader = base::SequenceBound<DownloadStreamReader>(
+  reader_ = base::SequenceBound<DownloadStreamReader>(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
       std::move(consumer), file_path,
       base::BindPostTaskToCurrentDefault(progress_callback),
       base::BindPostTaskToCurrentDefault(
-          std::move(wrapped_download_complete_callback)));
+          base::BindOnce(&OutOfProcessNetworkFetcher::OnStreamReadComplete,
+                         weak_factory_.GetWeakPtr(),
+                         std::move(wrapped_download_complete_callback))));
 
   if (const int dial_result = DialFetchService(); dial_result != kErrorOk) {
     LOG(ERROR) << "Failed to dial the fetch service: " << dial_result;
@@ -1064,17 +1109,38 @@ base::OnceClosure OutOfProcessNetworkFetcher::DownloadToFile(
           wrapped_response_started_callback,
           mojo::WrapCallbackWithDefaultInvokeIfNotRun(
               base::BindOnce(
-                  [](base::SequenceBound<DownloadStreamReader> reader,
-                     int32_t net_error, int64_t content_size) {
-                    reader.AsyncCall(&DownloadStreamReader::OnMojoComplete)
-                        .WithArgs(net_error, content_size);
-                  },
-                  std::move(reader)),
+                  &OutOfProcessNetworkFetcher::OnMojoDownloadComplete,
+                  weak_factory_.GetWeakPtr()),
               kErrorIpcDisconnect, -1)));
   return base::DoNothing();
 }
 
+void OutOfProcessNetworkFetcher::OnMojoDownloadComplete(int32_t net_error,
+                                                        int64_t content_size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (reader_) {
+    reader_.AsyncCall(&DownloadStreamReader::OnMojoComplete)
+        .WithArgs(net_error, content_size);
+  }
+}
+
+void OutOfProcessNetworkFetcher::OnStreamReadComplete(
+    DownloadCompleteCallback callback,
+    int net_error,
+    int64_t content_size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  reader_.Reset();
+  std::move(callback).Run(net_error, content_size);
+}
+
 }  // namespace
+
+std::unique_ptr<update_client::NetworkFetcher>
+CreateOutOfProcessNetworkFetcherForTesting(
+    mojo::PendingRemote<mojom::FetchService> remote_for_testing) {
+  return std::make_unique<OutOfProcessNetworkFetcher>(
+      std::move(remote_for_testing));
+}
 
 NetworkStreamFetcher::NetworkStreamFetcher() = default;
 NetworkStreamFetcher::~NetworkStreamFetcher() = default;
