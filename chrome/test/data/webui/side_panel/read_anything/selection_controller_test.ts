@@ -464,6 +464,75 @@ suite('SelectionController', () => {
           assertEquals(0, actualFocusOffset);
         });
 
+    test(
+        'backward selection with anchor on ancestor element is normalized',
+        async () => {
+          for (let i = 0; i < textNodes.length; i++) {
+            const node = getNodeAt(i);
+            nodeStore.setDomNode(node.node, node.id);
+          }
+
+          // Drag backward from the gap between node 1 and node 2 into the
+          // middle of node 1. The browser reports the anchor on the parent
+          // element, which contains the focus text node.
+          const node1 = getNodeAt(1);
+          const parent = node1.node.parentNode;
+          assertTrue(!!parent);
+          selection.setBaseAndExtent(parent, 2, node1.node, 5);
+          selectionController.onSelectionChange(selection);
+
+          // The anchor is the end of the selection, so it should resolve to the
+          // end of node 1, not the start of node 2.
+          await onSelectionChanged();
+          assertEquals(node1.id, actualAnchorId);
+          assertEquals(node1.text.length, actualAnchorOffset);
+          assertEquals(node1.id, actualFocusId);
+          assertEquals(5, actualFocusOffset);
+        });
+
+    test(
+        'backward selection with focus on ancestor element is normalized',
+        async () => {
+          for (let i = 0; i < textNodes.length; i++) {
+            const node = getNodeAt(i);
+            nodeStore.setDomNode(node.node, node.id);
+          }
+
+          // Drag backward from the middle of node 2 to the gap between node 0
+          // and node 1. The browser reports the focus on the parent element,
+          // which contains the anchor text node.
+          const node1 = getNodeAt(1);
+          const node2 = getNodeAt(2);
+          const parent = node2.node.parentNode;
+          assertTrue(!!parent);
+          selection.setBaseAndExtent(node2.node, 3, parent, 1);
+          selectionController.onSelectionChange(selection);
+
+          // The focus is the start of the selection, so it should resolve to
+          // the start of node 1, not leak backward into the end of node 0.
+          await onSelectionChanged();
+          assertEquals(node2.id, actualAnchorId);
+          assertEquals(3, actualAnchorOffset);
+          assertEquals(node1.id, actualFocusId);
+          assertEquals(0, actualFocusOffset);
+        });
+
+    test('current selection start with anchor on ancestor element', () => {
+      const node1 = getNodeAt(1);
+      nodeStore.setDomNode(node1.node, node1.id);
+
+      // Backward drag with the anchor on the parent element after node 1.
+      const parent = node1.node.parentNode;
+      assertTrue(!!parent);
+      selection.setBaseAndExtent(parent, 2, node1.node, 5);
+      selectionController.onSelectionChange(selection);
+      const selectionStart = selectionController.getCurrentSelectionStart();
+
+      assertTrue(!!selectionStart);
+      assertEquals(node1.node, selectionStart.node);
+      assertEquals(5, selectionStart.offset);
+    });
+
     test('selection in node with axNodeOffset', async () => {
       const node = getNodeAt(1);
       const axNodeOffset = 10;

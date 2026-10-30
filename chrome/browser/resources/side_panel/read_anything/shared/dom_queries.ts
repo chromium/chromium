@@ -66,12 +66,21 @@ export function getRectsForSegments(segments: Segment[]): DOMRect[] {
 export function isBackwardSelection(
     anchorNode: Node, anchorOffset: number, focusNode: Node,
     focusOffset: number): boolean {
-  const position = anchorNode.compareDocumentPosition(focusNode);
-  if (position === Node.DOCUMENT_POSITION_PRECEDING) {
-    return true;
+  if (anchorNode === focusNode) {
+    return focusOffset < anchorOffset;
   }
-  // If the focus and anchor are the same node, compare the offsets.
-  return position === 0 && focusOffset < anchorOffset;
+  // Compare the boundary points rather than the nodes. When one endpoint's node
+  // contains the other's (e.g. the anchor is on a <p> and the focus is in a
+  // text node inside it), compareDocumentPosition() can't tell which comes
+  // first; that depends on the offsets, which comparePoint() accounts for.
+  try {
+    const range = new Range();
+    range.setStart(anchorNode, anchorOffset);
+    return range.comparePoint(focusNode, focusOffset) < 0;
+  } catch (err) {
+    // The nodes are in different trees, or an offset is out of range.
+    return false;
+  }
 }
 
 // Normalizes a raw DOM selection boundary point (node, offset) into a clean,
