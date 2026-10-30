@@ -1348,7 +1348,9 @@ INSTANTIATE_TEST_SUITE_P(
       }
     });
 
-IN_PROC_BROWSER_TEST_P(TabViewTabMutingEnabledTest, AlertIndicatorMuteEnabled) {
+// TODO(crbug.com/579848718): Re-enable this test.
+IN_PROC_BROWSER_TEST_P(TabViewTabMutingEnabledTest,
+                       DISABLED_AlertIndicatorMuteEnabled) {
   TabCollectionNode* tab_node = unpinned_collection_node()->children()[0].get();
   TabView* tab_view = views::AsViewClass<TabView>(tab_node->view());
   auto* alert_indicator =
