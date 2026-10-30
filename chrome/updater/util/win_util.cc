@@ -767,7 +767,20 @@ HResultOr<DWORD> RunElevated(const base::FilePath& file_path,
 }
 
 HRESULT RunDeElevatedCmdLine(const std::wstring& cmd_line) {
-  if (!IsElevatedWithUACOn()) {
+  // Directly launch the process only when the caller is not an admin, or when
+  // the caller is an admin (other than LocalSystem) and UAC is off by both
+  // system policy and the runtime check. `IsUACOn()` alone is not sufficient
+  // when the caller is elevated with a non-split token (e.g., built-in
+  // Administrator in an over-the-shoulder elevation) because an unprivileged
+  // interactive user can terminate or re-DACL their own `explorer.exe`.
+  if (!::IsUserAnAdmin() ||
+      (!base::win::UserAccountControlIsEnabled() && !IsUACOn() && [] {
+        const std::optional<base::win::AccessToken> token =
+            base::win::AccessToken::FromCurrentProcess();
+        return token &&
+               token->User() !=
+                   base::win::Sid(base::win::WellKnownSid::kLocalSystem);
+      }())) {
     auto process = base::LaunchProcess(cmd_line, {});
     return process.IsValid() ? S_OK : HRESULTFromLastError();
   }
