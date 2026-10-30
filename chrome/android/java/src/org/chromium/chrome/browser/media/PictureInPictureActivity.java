@@ -29,6 +29,7 @@ import android.util.Rational;
 import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
@@ -800,6 +801,15 @@ public class PictureInPictureActivity extends VideoOverlayActivity {
     public void setPlaybackState(@PlaybackState int playbackState) {
         mMediaActionsButtonsManager.updatePlaybackState(playbackState);
         updatePictureInPictureParams();
+
+        // The video's own wake lock is applied to the opener tab's view, which no longer keeps the
+        // screen on after a tab switch or while Chrome is hidden. Keep the screen on from the PiP
+        // window while the video plays.
+        if (playbackState == PlaybackState.PLAYING) {
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        } else {
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        }
     }
 
     @Override

@@ -22,6 +22,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.util.Rational;
 import android.view.View;
+import android.view.WindowManager;
 
 import androidx.lifecycle.Lifecycle;
 import androidx.test.filters.MediumTest;
@@ -203,12 +204,12 @@ public class PictureInPictureActivityTest {
                 activity.mMediaActionsButtonsManager;
 
         activity.updateVisibleActions(new int[] {MediaSessionAction.PLAY});
-        activity.setPlaybackState(PlaybackState.PAUSED);
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.setPlaybackState(PlaybackState.PAUSED));
         ArrayList<RemoteAction> actions = manager.getActionsForPictureInPictureParams();
         Assert.assertEquals(1, actions.size());
         Assert.assertEquals(manager.mPlay, actions.get(0));
 
-        activity.setPlaybackState(PlaybackState.PLAYING);
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.setPlaybackState(PlaybackState.PLAYING));
         actions = manager.getActionsForPictureInPictureParams();
         Assert.assertEquals(manager.mPause, actions.get(0));
 
@@ -241,6 +242,28 @@ public class PictureInPictureActivityTest {
         actions = manager.getActionsForPictureInPictureParams();
         Assert.assertEquals(1, actions.size());
         Assert.assertFalse(actions.get(0).isEnabled());
+        testExitOn(activity, () -> activity.close());
+    }
+
+    @Test
+    @MediumTest
+    public void testKeepScreenOnWhilePlaying() throws Throwable {
+        PictureInPictureActivity activity = startPictureInPictureActivity();
+        Assert.assertFalse(isKeepScreenOnSet(activity));
+
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.setPlaybackState(PlaybackState.PLAYING));
+        Assert.assertTrue(isKeepScreenOnSet(activity));
+
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.setPlaybackState(PlaybackState.PAUSED));
+        Assert.assertFalse(isKeepScreenOnSet(activity));
+
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.setPlaybackState(PlaybackState.PLAYING));
+        Assert.assertTrue(isKeepScreenOnSet(activity));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> activity.setPlaybackState(PlaybackState.END_OF_VIDEO));
+        Assert.assertFalse(isKeepScreenOnSet(activity));
+
         testExitOn(activity, () -> activity.close());
     }
 
@@ -434,7 +457,7 @@ public class PictureInPictureActivityTest {
                     MediaSessionAction.PLAY,
                     MediaSessionAction.NEXT_TRACK
                 });
-        activity.setPlaybackState(PlaybackState.PLAYING);
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.setPlaybackState(PlaybackState.PLAYING));
         actions = manager.getActionsForPictureInPictureParams();
         Assert.assertEquals("Should be trimmed to 3 actions", 3, actions.size());
         Assert.assertEquals(manager.mHide, actions.get(0));
@@ -469,7 +492,7 @@ public class PictureInPictureActivityTest {
         PictureInPictureActivity.MediaActionButtonsManager manager =
                 activity.mMediaActionsButtonsManager;
 
-        activity.setPlaybackState(PlaybackState.PLAYING);
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.setPlaybackState(PlaybackState.PLAYING));
         activity.setMicrophoneMuted(false);
         activity.setCameraState(true);
 
@@ -499,7 +522,7 @@ public class PictureInPictureActivityTest {
                 .togglePlayPause(eq(NATIVE_OVERLAY), eq(false));
         histogramWatcher.assertExpected();
 
-        activity.setPlaybackState(PlaybackState.PAUSED);
+        ThreadUtils.runOnUiThreadBlocking(() -> activity.setPlaybackState(PlaybackState.PAUSED));
         activity.setMicrophoneMuted(true);
         activity.setCameraState(false);
 
@@ -574,6 +597,14 @@ public class PictureInPictureActivityTest {
 
     private WebContents getWebContents() {
         return mActivityTestRule.getWebContents();
+    }
+
+    private static boolean isKeepScreenOnSet(Activity activity) {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        (activity.getWindow().getAttributes().flags
+                                        & WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                                != 0);
     }
 
     private void testExitOn(Activity activity, Runnable runnable) throws Throwable {
