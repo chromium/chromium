@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './error_page.js';
+
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './ghost_loader.css.js';
@@ -52,3 +54,18 @@ declare global {
 
 customElements.define(
     GhostLoaderElement.is, GhostLoaderElement);
+
+function updateScrimMode() {
+  const showErrorPage = window.location.hash === '#error';
+  const ghostLoader = document.querySelector<HTMLElement>('ghost-loader');
+  const errorPage = document.querySelector<HTMLElement>('error-page');
+  if (ghostLoader) {
+    ghostLoader.hidden = showErrorPage;
+  }
+  if (errorPage) {
+    errorPage.hidden = !showErrorPage;
+  }
+}
+
+window.addEventListener('hashchange', updateScrimMode);
+updateScrimMode();

@@ -5217,6 +5217,10 @@ TEST_F(ContextualTasksUiTest,
   EXPECT_TRUE(dict.FindBool("isUserFeedbackAllowed").has_value());
   EXPECT_TRUE(dict.FindBool("contextualTasksUnboundedMenuEnabled").has_value());
   EXPECT_EQ(dict.FindBool("isSignedIn"), false);
+  ASSERT_NE(dict.FindString("protectedErrorPageTopLine"), nullptr);
+  EXPECT_FALSE(dict.FindString("protectedErrorPageTopLine")->empty());
+  ASSERT_NE(dict.FindString("protectedErrorPageBottomLine"), nullptr);
+  EXPECT_FALSE(dict.FindString("protectedErrorPageBottomLine")->empty());
 }
 
 TEST_F(ContextualTasksUiTest,

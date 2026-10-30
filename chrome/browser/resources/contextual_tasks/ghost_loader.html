@@ -12,8 +12,12 @@
 </if>
     <style>
       :root {
+        --error-bottom-line-color: #70757A;
+        --error-top-line-color: #202124;
         --ghost-loader-base: #F3F5F6;
         --ghost-loader-highlight: #DEE1E3;
+        --protected-icon-background-color: #535353;
+        --search-background-color: #FFFFFF;
       }
 
       html, body {
@@ -28,8 +32,12 @@
 
       @media (prefers-color-scheme: dark) {
         :root {
+          --error-bottom-line-color: #9AA0A6;
+          --error-top-line-color: #E8EAED;
           --ghost-loader-base: #333438;
           --ghost-loader-highlight: #3A3F50;
+          --protected-icon-background-color: #E8EAED;
+          --search-background-color: rgba(34, 36, 43, 1);
         }
 
         html, body {
@@ -51,10 +59,21 @@
         padding-right: 20px;
         width: 100%;
       }
+
+      error-page {
+        flex: 1;
+        width: 100%;
+      }
+
+      ghost-loader[hidden],
+      error-page[hidden] {
+        display: none;
+      }
     </style>
   </head>
   <body>
     <ghost-loader></ghost-loader>
+    <error-page hidden></error-page>
     <script type="module" src="ghost_loader.js"></script>
   </body>
 </html>
