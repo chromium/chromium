@@ -177,7 +177,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/events/test/test_event.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
@@ -1443,7 +1443,7 @@ void WebAppIntegrationTestDriver::CreateShortcut(Site site,
   if (open_in_window && browser()->GetTabStripModel()->count() == 1) {
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(url::kAboutBlankURL),
-        WindowOpenDisposition::kNewBackgroundTab,
+        ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   }
   MaybeNavigateTabbedBrowserInScope(site);
@@ -1484,7 +1484,7 @@ void WebAppIntegrationTestDriver::InstallMenuOption(Site site) {
   if (browser()->GetTabStripModel()->count() == 1) {
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(url::kAboutBlankURL),
-        WindowOpenDisposition::kNewBackgroundTab,
+        ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   }
   MaybeNavigateTabbedBrowserInScope(site);
@@ -1542,7 +1542,7 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(InstallableSite site) {
   if (browser()->GetTabStripModel()->count() == 1) {
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(url::kAboutBlankURL),
-        WindowOpenDisposition::kNewBackgroundTab,
+        ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   }
   MaybeNavigateTabbedBrowserInScope(InstallableSiteToSite(site));
@@ -1679,7 +1679,7 @@ void WebAppIntegrationTestDriver::InstallIsolatedApp(Site site) {
   }
 
   LaunchWebAppBrowserAndWait(profile(), app_id,
-                             WindowOpenDisposition::kNewWindow);
+                             ui::mojom::WindowOpenDisposition::kNewWindow);
   active_app_id_ = app_id;
   AfterStateChangeAction();
 }
@@ -2476,13 +2476,13 @@ void WebAppIntegrationTestDriver::NavigateAppHome() {
     return;
   }
   GURL app_home_url = GURL(chrome::kChromeUIAppsURL);
-  WindowOpenDisposition win_disposition;
+  ui::mojom::WindowOpenDisposition win_disposition;
   content::TestNavigationObserver url_observer(app_home_url);
   if (IsOffTheRecordBrowserInUse(browser()->GetProfile())) {
-    win_disposition = WindowOpenDisposition::kOffTheRecord;
+    win_disposition = ui::mojom::WindowOpenDisposition::kOffTheRecord;
     url_observer.StartWatchingNewWebContents();
   } else {
-    win_disposition = WindowOpenDisposition::kCurrentTab;
+    win_disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
     url_observer.WatchExistingWebContents();
   }
   ui_test_utils::NavigateToURLWithDisposition(
@@ -4803,10 +4803,10 @@ void WebAppIntegrationTestDriver::NavigateTabbedBrowserToSite(
     url_observer.StartWatchingNewWebContents();
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(url::kAboutBlankURL),
-        WindowOpenDisposition::kNewForegroundTab,
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL(url), WindowOpenDisposition::kCurrentTab,
+        browser(), GURL(url), ui::mojom::WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   } else {
     url_observer.WatchExistingWebContents();

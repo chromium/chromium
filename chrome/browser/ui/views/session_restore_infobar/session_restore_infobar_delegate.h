@@ -16,7 +16,7 @@
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class Profile;
 
@@ -53,7 +53,7 @@ class SessionRestoreInfoBarDelegate : public ConfirmInfoBarDelegate {
   int GetLinkSpacingWhenPositionedBeforeButton() const override;
   void InfoBarDismissed() override;
   GURL GetLinkURL() const override;
-  bool LinkClicked(WindowOpenDisposition disposition) override;
+  bool LinkClicked(ui::mojom::WindowOpenDisposition disposition) override;
   std::optional<std::u16string> GetLinkAccessibleText() const override;
 
  private:

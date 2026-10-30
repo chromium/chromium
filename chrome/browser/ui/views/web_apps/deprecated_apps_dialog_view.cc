@@ -30,10 +30,10 @@
 #include "ui/base/models/table_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image_skia.h"
@@ -220,7 +220,8 @@ void DeprecatedAppsDialogView::InitDialog() {
             content::OpenURLParams::CreateBrowserInitiated(
                 GURL(chrome::kChromeAppsDeprecationLearnMoreURL),
                 ui::DispositionFromEventFlags(
-                    event.flags(), WindowOpenDisposition::kNewForegroundTab),
+                    event.flags(),
+                    ui::mojom::WindowOpenDisposition::kNewForegroundTab),
                 ui::PAGE_TRANSITION_LINK),
             /*navigation_handle_callback=*/{});
       },

@@ -10,7 +10,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/webui_url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
@@ -159,7 +159,7 @@ class WebAppNavigationCapturingIphUiTest : public InteractiveFeaturePromoTest {
                 provider->scheduler().LaunchAppWithCustomParams(
                     apps::AppLaunchParams(
                         app_id, apps::LaunchContainer::kLaunchContainerWindow,
-                        WindowOpenDisposition::kCurrentTab,
+                        ui::mojom::WindowOpenDisposition::kCurrentTab,
                         apps::LaunchSource::kFromTest),
                     base::DoNothing());
               }),

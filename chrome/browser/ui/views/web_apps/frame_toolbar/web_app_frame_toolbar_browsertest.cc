@@ -151,6 +151,7 @@
 #include "ui/actions/action_id.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -4340,7 +4341,8 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_ScopeExtensionsOriginText,
       out_of_extended_scope_host_, "/ssl/blank_page.html");
   content::TestNavigationManager navigation_manager(contents, out_of_scope_url);
   ui_test_utils::NavigateToURLWithDisposition(
-      popup_browser, out_of_scope_url, WindowOpenDisposition::kCurrentTab,
+      popup_browser, out_of_scope_url,
+      ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
   ASSERT_TRUE(navigation_manager.WaitForRequestStart());
   ASSERT_EQ(about_blank_url, contents->GetLastCommittedURL());

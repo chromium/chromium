@@ -96,12 +96,12 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model_utils.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -1420,7 +1420,7 @@ bool BookmarkBarView::OnMenuButtonAccessibleAction(
     const BookmarkParentFolder& folder,
     const ui::AXActionData& action_data) {
   if (action_data.action == ax::mojom::Action::kExpand) {
-    OnFolderPressed(folder, WindowOpenDisposition::kCurrentTab);
+    OnFolderPressed(folder, ui::mojom::WindowOpenDisposition::kCurrentTab);
     return true;
   }
   if (action_data.action == ax::mojom::Action::kCollapse) {
@@ -1430,11 +1430,12 @@ bool BookmarkBarView::OnMenuButtonAccessibleAction(
   return false;
 }
 
-void BookmarkBarView::OnFolderPressed(const BookmarkParentFolder& folder,
-                                      WindowOpenDisposition disposition) {
+void BookmarkBarView::OnFolderPressed(
+    const BookmarkParentFolder& folder,
+    ui::mojom::WindowOpenDisposition disposition) {
   // Clicking the middle mouse button or clicking with Control/Command key down
   // opens all bookmarks in the folder in new tabs.
-  if (disposition == WindowOpenDisposition::kCurrentTab) {
+  if (disposition == ui::mojom::WindowOpenDisposition::kCurrentTab) {
     std::ignore = controller_->RecordFolderOpened();
     ShowFolderMenuForFolder(folder);
     return;

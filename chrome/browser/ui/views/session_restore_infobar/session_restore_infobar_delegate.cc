@@ -23,8 +23,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace session_restore_infobar {
@@ -166,7 +166,7 @@ GURL SessionRestoreInfoBarDelegate::GetLinkURL() const {
 }
 
 bool SessionRestoreInfoBarDelegate::LinkClicked(
-    WindowOpenDisposition disposition) {
+    ui::mojom::WindowOpenDisposition disposition) {
   action_taken_ = true;
   SessionRestoreInfoBarManager::GetInstance()->set_action_taken_for_session(
       true);

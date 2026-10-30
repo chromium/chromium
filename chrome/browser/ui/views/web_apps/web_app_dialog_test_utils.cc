@@ -7,8 +7,8 @@
 #include "base/run_loop.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace web_app {
 
@@ -29,11 +29,11 @@ class PopupObserver : public content::WebContentsObserver {
                            content::RenderFrameHost* source_render_frame_host,
                            const GURL& url,
                            const content::Referrer& referrer,
-                           WindowOpenDisposition disposition,
+                           ui::mojom::WindowOpenDisposition disposition,
                            ui::PageTransition transition,
                            bool started_from_context_menu,
                            bool renderer_initiated) override {
-    if (!popup_ && disposition == WindowOpenDisposition::kNewPopup) {
+    if (!popup_ && disposition == ui::mojom::WindowOpenDisposition::kNewPopup) {
       popup_ = new_contents;
       run_loop_.Quit();
     }

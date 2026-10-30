@@ -30,6 +30,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "ui/base/interaction/interactive_test.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kShoppingTab);
@@ -251,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
       Do(base::BindLambdaForTesting([&]() {
         ui_test_utils::NavigateToURLWithDisposition(
             browser(), embedded_test_server()->GetURL(kEmptyDocumentURL),
-            WindowOpenDisposition::kCurrentTab,
+            ui::mojom::WindowOpenDisposition::kCurrentTab,
             ui_test_utils::BROWSER_TEST_NO_WAIT);
       })),
 

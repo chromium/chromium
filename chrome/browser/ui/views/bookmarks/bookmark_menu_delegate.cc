@@ -53,8 +53,8 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -353,14 +353,14 @@ void BookmarkMenuDelegate::ExecuteCommand(int id, int mouse_event_flags) {
 
   bookmarks::OpenAllBookmarksContext context =
       bookmarks::OpenAllBookmarksContext::kNone;
-  WindowOpenDisposition initial_disposition =
+  ui::mojom::WindowOpenDisposition initial_disposition =
       ui::DispositionFromEventFlags(mouse_event_flags);
 
   if (id == IDC_BOOKMARK_BAR_OPEN_ALL) {
-    initial_disposition = WindowOpenDisposition::kNewBackgroundTab;
+    initial_disposition = ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
   } else if (id == IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP) {
     context = bookmarks::OpenAllBookmarksContext::kInGroup;
-    initial_disposition = WindowOpenDisposition::kNewBackgroundTab;
+    initial_disposition = ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
   }
 
   RecordBookmarkLaunch(location_,
@@ -388,7 +388,7 @@ bool BookmarkMenuDelegate::ShouldExecuteCommandWithoutClosingMenu(
     return false;
   }
   if (ui::DispositionFromEventFlags(event.flags()) ==
-      WindowOpenDisposition::kNewBackgroundTab) {
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab) {
     auto menu_id_to_node = menu_id_to_node_map_.find(id);
     CHECK(menu_id_to_node != menu_id_to_node_map_.end());
     // Close the menu before opening a folder since this may pop up a dialog

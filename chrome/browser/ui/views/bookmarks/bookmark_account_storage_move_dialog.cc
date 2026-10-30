@@ -34,8 +34,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/image_view.h"
@@ -210,11 +210,11 @@ void OpenDialogInOriginalProfileBookmarksManager(
 
   CHECK(!browser->GetProfile()->IsOffTheRecord());
   // Open BookmarksManager page.
-  browser->OpenURL(
-      content::OpenURLParams::CreateBrowserInitiated(
-          GURL(chrome::kChromeUIBookmarksURL),
-          WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK),
-      /*navigation_handle_callback=*/{});
+  browser->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                       GURL(chrome::kChromeUIBookmarksURL),
+                       ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                       ui::PAGE_TRANSITION_LINK),
+                   /*navigation_handle_callback=*/{});
 
   ShowDialogOnRegularProfile(browser, node, target_folder, index, dialog_type,
                              std::move(closed_callback));

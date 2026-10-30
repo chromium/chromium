@@ -22,8 +22,8 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -308,7 +308,7 @@ std::unique_ptr<ui::DialogModel> OnboardingDialogController::CreateDialogModel(
 void OnboardingDialogController::OnLearnMoreLinkClicked() {
   tab_->GetBrowserWindowInterface()->OpenGURL(
       GURL("https://support.google.com/chrome?p=voice_typing"),
-      WindowOpenDisposition::kNewForegroundTab);
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 }
 
 void OnboardingDialogController::OnDialogAccepted(

@@ -24,6 +24,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 // Template to be used as a mixin class for vertical tabs tests extending
 // InProcessBrowserTest.
@@ -122,7 +123,7 @@ class VerticalTabsBrowserTestMixin : public T {
   void AppendTab() {
     NavigateToURLWithDisposition(
         T::browser(), GURL(url::kAboutBlankURL),
-        WindowOpenDisposition::kNewForegroundTab,
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 

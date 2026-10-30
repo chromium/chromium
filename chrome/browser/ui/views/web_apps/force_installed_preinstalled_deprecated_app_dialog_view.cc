@@ -27,9 +27,9 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/events/event.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -130,10 +130,11 @@ void ForceInstalledPreinstalledDeprecatedAppDialogView::CreateAndShowDialog(
          Site site) {
         base::UmaHistogramEnumeration(
             "Extensions.ForceInstalledPreInstalledDeprecatedAppOpenUrl", site);
-        web_contents->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                                  url, WindowOpenDisposition::kNewForegroundTab,
-                                  ui::PAGE_TRANSITION_LINK),
-                              /*navigation_handle_callback=*/{});
+        web_contents->OpenURL(
+            content::OpenURLParams::CreateBrowserInitiated(
+                url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                ui::PAGE_TRANSITION_LINK),
+            /*navigation_handle_callback=*/{});
       },
       web_contents->GetWeakPtr(), link_config.link, link_config.site));
   delegate->SetContentsView(
@@ -192,7 +193,7 @@ ForceInstalledPreinstalledDeprecatedAppDialogView::
                     url,
                     ui::DispositionFromEventFlags(
                         event.flags(),
-                        WindowOpenDisposition::kNewForegroundTab),
+                        ui::mojom::WindowOpenDisposition::kNewForegroundTab),
                     ui::PAGE_TRANSITION_LINK),
                 /*navigation_handle_callback=*/{});
           },
@@ -210,7 +211,8 @@ ForceInstalledPreinstalledDeprecatedAppDialogView::
             content::OpenURLParams::CreateBrowserInitiated(
                 GURL(chrome::kChromeAppsDeprecationLearnMoreURL),
                 ui::DispositionFromEventFlags(
-                    event.flags(), WindowOpenDisposition::kNewForegroundTab),
+                    event.flags(),
+                    ui::mojom::WindowOpenDisposition::kNewForegroundTab),
                 ui::PAGE_TRANSITION_LINK),
             /*navigation_handle_callback=*/{});
       },

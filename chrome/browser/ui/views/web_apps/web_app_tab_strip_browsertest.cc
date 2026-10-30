@@ -80,8 +80,8 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/views/view_utils.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -240,7 +240,7 @@ class WebAppTabStripBrowserTestBase : public WebAppBrowserTestBase {
 
     NavigateParams params(app_browser, url,
                           ui::PageTransition::PAGE_TRANSITION_LINK);
-    params.disposition = WindowOpenDisposition::kCurrentTab;
+    params.disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
     ui_test_utils::NavigateToURL(&params);
   }
 
@@ -460,9 +460,10 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest,
                          apps::LaunchContainer>
       future;
   provider->scheduler().LaunchAppWithCustomParams(
-      apps::AppLaunchParams(
-          app_id, apps::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::kCurrentTab, apps::LaunchSource::kFromTest),
+      apps::AppLaunchParams(app_id,
+                            apps::LaunchContainer::kLaunchContainerWindow,
+                            ui::mojom::WindowOpenDisposition::kCurrentTab,
+                            apps::LaunchSource::kFromTest),
       future.GetCallback());
   content::WebContents* web_contents = future.template Get<1>().get();
   ASSERT_TRUE(web_contents);
@@ -987,7 +988,8 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest,
   EXPECT_EQ(tab_strip->active_index(), 1);
 
   // Navigate to home tab using the same URL.
-  app_browser->OpenGURL(start_url, WindowOpenDisposition::kCurrentTab);
+  app_browser->OpenGURL(start_url,
+                        ui::mojom::WindowOpenDisposition::kCurrentTab);
 
   // Expect the JS variable to still be set, meaning the page was not navigated.
   EXPECT_EQ(true, EvalJs(tab_strip->GetWebContentsAt(0), "test == 5"));
@@ -1057,7 +1059,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, DontCreateThrottleForReload) {
   // Reload.
   content::TestNavigationObserver reload_nav_observer(
       tab_strip->GetActiveWebContents(), 1);
-  chrome::Reload(app_browser, WindowOpenDisposition::kCurrentTab);
+  chrome::Reload(app_browser, ui::mojom::WindowOpenDisposition::kCurrentTab);
   reload_nav_observer.Wait();
 
   // Expect the reload did not cause a new tab to open.
@@ -1484,7 +1486,8 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, MiddleClickHomeTabLink) {
   EXPECT_EQ(tab_strip->active_index(), 0);
 
   // Middle click home tab link from the home tab.
-  app_browser->OpenGURL(start_url, WindowOpenDisposition::kNewBackgroundTab);
+  app_browser->OpenGURL(start_url,
+                        ui::mojom::WindowOpenDisposition::kNewBackgroundTab);
 
   // Check we stayed in the home tab.
   EXPECT_EQ(tab_strip->count(), 1);
@@ -1495,7 +1498,8 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, MiddleClickHomeTabLink) {
   chrome::NewTab(app_browser, NewTabTypes::kNoUserAction);
 
   // Middle click home tab link from a different tab.
-  app_browser->OpenGURL(start_url, WindowOpenDisposition::kNewBackgroundTab);
+  app_browser->OpenGURL(start_url,
+                        ui::mojom::WindowOpenDisposition::kNewBackgroundTab);
 
   // Check it was opened in the home tab.
   EXPECT_EQ(tab_strip->count(), 2);

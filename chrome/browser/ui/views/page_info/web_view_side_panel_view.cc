@@ -27,8 +27,8 @@
 #include "content/public/common/referrer.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/loader/loader_constants.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -140,7 +140,7 @@ void WebViewSidePanelView::DidOpenRequestedURL(
     content::RenderFrameHost* source_render_frame_host,
     const GURL& url,
     const content::Referrer& referrer,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     ui::PageTransition transition,
     bool started_from_context_menu,
     bool renderer_initiated) {

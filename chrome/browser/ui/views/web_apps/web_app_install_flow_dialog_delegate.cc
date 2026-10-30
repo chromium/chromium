@@ -78,9 +78,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
@@ -411,11 +411,11 @@ void WebAppInstallFlowDialogDelegate::OnLearnMoreButtonClicked() {
   CloseDialogAsIgnored();
 
   if (contents) {
-    contents->OpenURL(
-        content::OpenURLParams::CreateBrowserInitiated(
-            GURL(chrome::kInstallDialogFlowLearnMoreURL),
-            WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK),
-        base::DoNothing());
+    contents->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
+                          GURL(chrome::kInstallDialogFlowLearnMoreURL),
+                          ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                          ui::PAGE_TRANSITION_LINK),
+                      base::DoNothing());
   }
 }
 

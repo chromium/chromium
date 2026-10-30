@@ -34,8 +34,8 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace {
@@ -73,13 +73,13 @@ class FooterControllerExtensionTestBase
 
   void NavigateCurrentTab(const GURL& url) {
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::kCurrentTab,
+        browser(), url, ui::mojom::WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
   void OpenNewTab(const GURL& url) {
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::kNewForegroundTab,
+        browser(), url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
@@ -489,7 +489,7 @@ IN_PROC_BROWSER_TEST_F(FooterControllerSplitViewTest, OpenUrlFromTabInSplit) {
   const GURL kTargetUrl("https://www.google.com/");
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          kTargetUrl, WindowOpenDisposition::kCurrentTab,
+          kTargetUrl, ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_LINK);
   content::TestNavigationObserver nav_observer(ntp_tab_contents);
   ntp_footer->OpenURLFromTab(ntp_footer->GetWebContents(), params, {});

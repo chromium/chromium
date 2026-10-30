@@ -14,8 +14,8 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/display/screen.h"
 
 namespace save_to_drive {
@@ -208,7 +208,8 @@ void AccountChooserController::ShowAddAccountDialog() {
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           signin::GetAddAccountURLForDice("", GURL()),
-          WindowOpenDisposition::kNewPopup, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+          ui::mojom::WindowOpenDisposition::kNewPopup,
+          ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   add_account_popup_ = source_window->GetDelegate()->OpenURLFromTab(
       source_window, params, /*navigation_handle_callback=*/{});
   ResizeAndFocusAddAccountPopup();

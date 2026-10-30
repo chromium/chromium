@@ -15,7 +15,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace session_restore_infobar {
 
@@ -89,7 +89,8 @@ TEST_P(SessionRestoreInfoBarDelegateTest, DismissedHistogram) {
 // When the link is clicked, the "link clicked" histogram should be recorded.
 TEST_P(SessionRestoreInfoBarDelegateTest, LinkClickedHistogram) {
   infobars::InfoBar* infobar = CreateDelegate();
-  infobar->delegate()->LinkClicked(WindowOpenDisposition::kCurrentTab);
+  infobar->delegate()->LinkClicked(
+      ui::mojom::WindowOpenDisposition::kCurrentTab);
   histogram_tester().ExpectBucketCount(GetParam().histogram_name,
                                        InfobarAction::kLinkClicked, 1);
 }
