@@ -26,6 +26,7 @@ if (is_android && dfmify_dev_ui) {
       "//base",
       "//chrome/android/modules/dev_ui/provider:native",
       "//chrome/browser:resources",
+      "//chrome/browser/browser_actuator/internals",
       "//chrome/common",
       "//components/commerce/core:commerce_constants",
       "//components/history_clusters/history_clusters_internals/webui:constants",

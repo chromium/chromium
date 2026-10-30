@@ -32,6 +32,8 @@ const char* const kNonDevUiUrls[] = {
 const char* const kDevUiUrls[] = {
     "chrome://bluetooth-internals",
     "chrome://bluetooth-internals/path?query#frag",
+    "chrome://browser-actuator-internals",
+    "chrome://browser-actuator-internals/path?query#frag",
     "chrome://chrome-finds-internals",
     "chrome://chrome-finds-internals/path?query#frag",
     "chrome://connectors-internals",
