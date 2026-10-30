@@ -5,13 +5,16 @@
 #include "net/dns/dns_task_results_manager.h"
 
 #include <algorithm>
+#include <iterator>
 #include <map>
 #include <memory>
-#include <set>
 #include <string>
+#include <string_view>
+#include <utility>
 #include <variant>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/map_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
@@ -169,13 +172,12 @@ void DnsTaskResultsManager::ProcessDnsTransactionResults(
     }
   }
 
-  // Track whether new aliases are added.
-  bool aliases_updated = false;
+  std::vector<std::string_view> new_aliases;
 
   for (const auto& result : results) {
-    const bool updated_domain_name =
-        aliases_.insert(result->domain_name()).second;
-    aliases_updated |= updated_domain_name;
+    if (!aliases_.contains(result->domain_name())) {
+      new_aliases.emplace_back(result->domain_name());
+    }
 
     switch (result->type()) {
       case HostResolverInternalResult::Type::kData: {
@@ -244,9 +246,9 @@ void DnsTaskResultsManager::ProcessDnsTransactionResults(
         break;
       }
       case net::HostResolverInternalResult::Type::kAlias: {
-        const bool updated_alias =
-            aliases_.insert(result->AsAlias().alias_target()).second;
-        aliases_updated |= updated_alias;
+        if (!aliases_.contains(result->AsAlias().alias_target())) {
+          new_aliases.emplace_back(result->AsAlias().alias_target());
+        }
 
         break;
       }
@@ -270,9 +272,19 @@ void DnsTaskResultsManager::ProcessDnsTransactionResults(
     }
   }
 
-  // Only fix up aliases if new ones were added.
-  if (aliases_updated) {
-    aliases_ = dns_alias_utility::FixUpDnsAliases(aliases_);
+  // Only fix up and insert aliases if new ones were added.
+  if (!new_aliases.empty()) {
+    base::flat_set<std::string> fixed_up_aliases =
+        dns_alias_utility::FixUpDnsAliases(
+            base::flat_set<std::string_view>(std::move(new_aliases)));
+    if (aliases_.empty()) {
+      aliases_ = std::move(fixed_up_aliases);
+    } else if (!fixed_up_aliases.empty()) {
+      std::vector<std::string> extracted_aliases =
+          std::move(fixed_up_aliases).extract();
+      aliases_.insert(std::make_move_iterator(extracted_aliases.begin()),
+                      std::make_move_iterator(extracted_aliases.end()));
+    }
   }
 
   should_update_endpoints |= (has_new_ipv4_hints && Ipv4HintsUsable()) ||
@@ -335,7 +347,7 @@ const std::vector<ServiceEndpoint>& DnsTaskResultsManager::GetCurrentEndpoints()
   return current_endpoints_;
 }
 
-const std::set<std::string>& DnsTaskResultsManager::GetAliases() const {
+const base::flat_set<std::string>& DnsTaskResultsManager::GetAliases() const {
   return aliases_;
 }
 

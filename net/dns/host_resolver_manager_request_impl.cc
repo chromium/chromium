@@ -6,10 +6,10 @@
 
 #include <deque>
 #include <optional>
-#include <set>
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/linked_list.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -126,7 +126,7 @@ HostResolverManager::RequestImpl::GetHostnameResults() const {
   return results_ ? results_->hostnames() : base::span<const HostPortPair>();
 }
 
-const std::set<std::string>&
+const base::flat_set<std::string>&
 HostResolverManager::RequestImpl::GetDnsAliasResults() const {
   DCHECK(complete_);
 
@@ -135,9 +135,8 @@ HostResolverManager::RequestImpl::GetDnsAliasResults() const {
 #if DCHECK_IS_ON()
   if (parameters().include_canonical_name) {
     DCHECK_LE(fixed_up_dns_alias_results_.size(), 1u);
-    std::set<std::string> address_list_aliases_set(
-        GetAddressResults().dns_aliases().begin(),
-        GetAddressResults().dns_aliases().end());
+    base::flat_set<std::string> address_list_aliases_set(
+        GetAddressResults().dns_aliases());
     DCHECK(address_list_aliases_set == fixed_up_dns_alias_results_);
   }
 #endif  // DCHECK_IS_ON()

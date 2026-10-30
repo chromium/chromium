@@ -12,6 +12,7 @@
 
 #include "base/check_deref.h"
 #include "base/compiler_specific.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -49,6 +50,7 @@
 #include "net/cert/signed_certificate_timestamp_and_status.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
+#include "net/dns/dns_alias_utility.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/net_log_event_type.h"
@@ -732,12 +734,11 @@ bool QuicChromiumClientSession::Handle::WasEverUsed() const {
   return session_->WasConnectionEverUsed();
 }
 
-const std::set<std::string>&
+const base::flat_set<std::string>&
 QuicChromiumClientSession::Handle::GetDnsAliasesForSessionKey(
     const QuicSessionKey& key) const {
-  static const base::NoDestructor<std::set<std::string>> emptyset_result;
   return session_ ? session_->GetDnsAliasesForSessionKey(key)
-                  : *emptyset_result;
+                  : dns_alias_utility::EmptyDnsAliases();
 }
 
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
@@ -4613,12 +4614,11 @@ void QuicChromiumClientSession::SendPing() {
   return connection()->SendPing();
 }
 
-const std::set<std::string>&
+const base::flat_set<std::string>&
 QuicChromiumClientSession::GetDnsAliasesForSessionKey(
     const QuicSessionKey& key) const {
-  static const base::NoDestructor<std::set<std::string>> emptyset_result;
   return session_pool_ ? session_pool_->GetDnsAliasesForSessionKey(key)
-                       : *emptyset_result;
+                       : dns_alias_utility::EmptyDnsAliases();
 }
 
 quic::QuicPacketLength

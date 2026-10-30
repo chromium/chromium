@@ -7,19 +7,18 @@
 #include <stdint.h>
 
 #include <algorithm>
-#include <set>
 #include <string>
 #include <string_view>
 #include <utility>
 
 #include "base/byte_size.h"
 #include "base/compiler_specific.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -28,6 +27,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/mock_cert_verifier.h"
+#include "net/dns/dns_alias_utility.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_server_properties.h"
 #include "net/http/http_stream.h"
@@ -153,9 +153,8 @@ class MockHttpStream : public HttpStream {
 
   void SetPriority(RequestPriority priority) override {}
 
-  const std::set<std::string>& GetDnsAliases() const override {
-    static const base::NoDestructor<std::set<std::string>> nullset_result;
-    return *nullset_result;
+  const base::flat_set<std::string>& GetDnsAliases() const override {
+    return dns_alias_utility::EmptyDnsAliases();
   }
 
   std::string_view GetAcceptChViaAlps() const override { return {}; }

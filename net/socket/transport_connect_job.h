@@ -134,7 +134,7 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
 
   struct NET_EXPORT_PRIVATE EndpointResultOverride {
     EndpointResultOverride(HostResolverEndpointResult result,
-                           std::set<std::string> dns_aliases);
+                           base::flat_set<std::string> dns_aliases);
     EndpointResultOverride(EndpointResultOverride&&);
     EndpointResultOverride(const EndpointResultOverride&);
     ~EndpointResultOverride();
@@ -142,7 +142,7 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
     EndpointResultOverride& operator=(const EndpointResultOverride&) = default;
 
     HostResolverEndpointResult result;
-    std::set<std::string> dns_aliases;
+    base::flat_set<std::string> dns_aliases;
   };
 
   TransportConnectJob(RequestPriority priority,
@@ -232,7 +232,7 @@ class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
   std::unique_ptr<HostResolver::ResolveHostRequest> request_;
   std::vector<HostResolverEndpointResult> endpoint_results_;
   size_t current_endpoint_result_ = 0;
-  std::set<std::string> dns_aliases_;
+  base::flat_set<std::string> dns_aliases_;
   bool has_dns_override_ = false;
 
   State next_state_ = STATE_NONE;

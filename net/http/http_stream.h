@@ -15,10 +15,11 @@
 
 #include <memory>
 #include <optional>
-#include <set>
+#include <string>
 #include <string_view>
 
 #include "base/byte_size.h"
+#include "base/containers/flat_set.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/connection_migration_information.h"
 #include "net/base/idempotency.h"
@@ -208,7 +209,7 @@ class NET_EXPORT_PRIVATE HttpStream {
   // Retrieves any DNS aliases for the remote endpoint. Includes all known
   // aliases, e.g. from A, AAAA, or HTTPS, not just from the address used for
   // the connection, in no particular order.
-  virtual const std::set<std::string>& GetDnsAliases() const = 0;
+  virtual const base::flat_set<std::string>& GetDnsAliases() const = 0;
 
   // The value in the ACCEPT_CH frame received during TLS handshake via the
   // ALPS extension, or the empty string if the server did not send one.  Unlike

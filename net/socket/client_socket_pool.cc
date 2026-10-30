@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
@@ -53,7 +54,7 @@ OnHostResolutionCallbackResult OnHostResolution(
     bool is_for_websockets,
     const HostPortPair& host_port_pair,
     const HostResolverEndpointsOrServiceEndpoints& endpoint_results,
-    const std::set<std::string>& aliases) {
+    const base::flat_set<std::string>& aliases) {
   DCHECK(host_port_pair == spdy_session_key.host_port_pair());
 
   auto host_resolver_endpoints =

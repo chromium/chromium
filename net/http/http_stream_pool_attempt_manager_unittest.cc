@@ -14,6 +14,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -732,7 +733,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, ResolveErrorInfo) {
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, DnsAliases) {
-  const std::set<std::string> kAliases = {"alias1", "alias2"};
+  const base::flat_set<std::string> kAliases = {"alias1", "alias2"};
   base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
       resolver()->AddFakeRequest();
   endpoint_request

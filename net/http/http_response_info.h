@@ -6,10 +6,10 @@
 #define NET_HTTP_HTTP_RESPONSE_INFO_H_
 
 #include <optional>
-#include <set>
 #include <string>
 
 #include "base/byte_size.h"
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "net/base/auth.h"
 #include "net/base/ip_endpoint.h"
@@ -200,7 +200,7 @@ class NET_EXPORT HttpResponseInfo {
   // Any DNS aliases for the remote endpoint. Includes all known aliases, e.g.
   // from A, AAAA, or HTTPS, not just from the address used for the connection,
   // in no particular order.
-  std::set<std::string> dns_aliases;
+  base::flat_set<std::string> dns_aliases;
 
   // True if the request matched a shared dictionary and advertised it as being
   // available with an "Available-Dictionary" request header.

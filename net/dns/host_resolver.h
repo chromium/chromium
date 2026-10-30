@@ -17,6 +17,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/values.h"
 #include "net/base/address_family.h"
@@ -177,7 +178,7 @@ class NET_EXPORT HostResolver {
     // system resolver without URL hostname canonicalization (or an empty set or
     // `nullptr` in the unusual case that the system resolver did not give a
     // canonical name).
-    virtual const std::set<std::string>& GetDnsAliasResults() const = 0;
+    virtual const base::flat_set<std::string>& GetDnsAliasResults() const = 0;
 
     // Error info for the request.
     //
@@ -246,7 +247,7 @@ class NET_EXPORT HostResolver {
     // addresses and HTTPS queries. These can be changed over time while
     // resolution is still ongoing. See also the comment on
     // Request::GetDnsAliasResults() for details.
-    virtual const std::set<std::string>& GetDnsAliasResults() = 0;
+    virtual const base::flat_set<std::string>& GetDnsAliasResults() = 0;
 
     // True if the client of this request can attempt cryptographic handshakes.
     // If false, the provided service endpoints via GetEndpointResults() are not
@@ -647,7 +648,7 @@ class NET_EXPORT HostResolver {
   // in `HostResolver` and results.
   static AddressList EndpointResultToAddressList(
       base::span<const HostResolverEndpointResult> endpoints,
-      const std::set<std::string>& aliases);
+      const base::flat_set<std::string>& aliases);
 
   // Returns whether there is at least one alternative endpoint in `endpoints`,
   // and all such endpoints have ECH parameters. This can be used to implement

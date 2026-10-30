@@ -7,9 +7,9 @@
 
 #include <stdint.h>
 
-#include <set>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -88,13 +88,13 @@ class NET_EXPORT Socket {
 
   // DNS aliases must be stored in sockets in case of socket reuse.
   // Sets the field storing the aliases. Empty if using a proxy.
-  virtual void SetDnsAliases(std::set<std::string> aliases);
+  virtual void SetDnsAliases(base::flat_set<std::string> aliases);
 
   // Retrieves any DNS aliases for the socket's remote endpoint.
-  virtual const std::set<std::string>& GetDnsAliases() const;
+  virtual const base::flat_set<std::string>& GetDnsAliases() const;
 
  protected:
-  std::set<std::string> dns_aliases_;
+  base::flat_set<std::string> dns_aliases_;
 };
 
 }  // namespace net

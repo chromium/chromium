@@ -4,10 +4,10 @@
 
 #include "net/http/http_basic_stream.h"
 
-#include <set>
 #include <string_view>
 #include <utility>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_raw_request_headers.h"
@@ -177,7 +177,7 @@ void HttpBasicStream::SetRequestHeadersCallback(
   request_headers_callback_ = std::move(callback);
 }
 
-const std::set<std::string>& HttpBasicStream::GetDnsAliases() const {
+const base::flat_set<std::string>& HttpBasicStream::GetDnsAliases() const {
   return state_.GetDnsAliases();
 }
 

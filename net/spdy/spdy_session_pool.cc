@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -21,6 +22,7 @@
 #include "net/base/features.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/trace_constants.h"
+#include "net/dns/dns_alias_utility.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/host_resolver_source.h"
 #include "net/http/http_network_session.h"
@@ -163,7 +165,7 @@ int SpdySessionPool::CreateAvailableSessionFromSocketHandle(
   std::unique_ptr<SpdySession> new_session =
       CreateSession(key, net_log.net_log(), session_creation_initiator,
                     spdy_session_initiator, connection_management_config);
-  std::set<std::string> dns_aliases =
+  base::flat_set<std::string> dns_aliases =
       stream_socket_handle->socket()->GetDnsAliases();
 
   new_session->InitializeWithSocketHandle(std::move(stream_socket_handle),
@@ -192,7 +194,7 @@ SpdySessionPool::CreateAvailableSessionFromSocket(
   std::unique_ptr<SpdySession> new_session = CreateSession(
       key, net_log.net_log(), MultiplexedSessionCreationInitiator::kUnknown,
       spdy_session_initiator, std::nullopt);
-  std::set<std::string> dns_aliases = socket_stream->GetDnsAliases();
+  base::flat_set<std::string> dns_aliases = socket_stream->GetDnsAliases();
 
   new_session->InitializeWithSocket(std::move(socket_stream), connect_timing,
                                     this);
@@ -239,7 +241,7 @@ base::WeakPtr<SpdySession>
 SpdySessionPool::FindMatchingIpSessionForServiceEndpoint(
     const SpdySessionKey& key,
     const ServiceEndpoint& service_endpoint,
-    const std::set<std::string>& dns_aliases) {
+    const base::flat_set<std::string>& dns_aliases) {
   CHECK(!HasAvailableSession(key, /*enable_ip_based_pooling_for_h2=*/true,
                              /*is_websocket=*/false));
   CHECK(key.socket_tag() == SocketTag());
@@ -306,10 +308,11 @@ OnHostResolutionCallbackResult SpdySessionPool::OnHostResolutionComplete(
     const SpdySessionKey& key,
     bool is_websocket,
     base::span<const HostResolverEndpointResult> endpoint_results,
-    const std::set<std::string>& aliases) {
+    const base::flat_set<std::string>& aliases) {
   // If there are no pending requests for that alias, nothing to do.
-  if (spdy_session_request_map_.find(key) == spdy_session_request_map_.end())
+  if (spdy_session_request_map_.find(key) == spdy_session_request_map_.end()) {
     return OnHostResolutionCallbackResult::kContinue;
+  }
 
   // Check if there's already a matching session. If so, there may already
   // be a pending task to inform consumers of the alias. In this case, do
@@ -338,7 +341,7 @@ OnHostResolutionCallbackResult SpdySessionPool::OnHostResolutionComplete(
     const SpdySessionKey& key,
     bool is_websocket,
     base::span<const ServiceEndpoint> endpoint_results,
-    const std::set<std::string>& aliases) {
+    const base::flat_set<std::string>& aliases) {
   // If there are no pending requests for that alias, nothing to do.
   if (spdy_session_request_map_.find(key) == spdy_session_request_map_.end()) {
     return OnHostResolutionCallbackResult::kContinue;
@@ -519,11 +522,12 @@ void SpdySessionPool::OnSSLConfigForServersChanged(
   }
 }
 
-std::set<std::string> SpdySessionPool::GetDnsAliasesForSessionKey(
+const base::flat_set<std::string>& SpdySessionPool::GetDnsAliasesForSessionKey(
     const SpdySessionKey& key) const {
   auto it = dns_aliases_by_session_key_.find(key);
-  if (it == dns_aliases_by_session_key_.end())
-    return {};
+  if (it == dns_aliases_by_session_key_.end()) {
+    return dns_alias_utility::EmptyDnsAliases();
+  }
 
   return it->second;
 }
@@ -563,7 +567,7 @@ bool SpdySessionPool::IsSessionAvailable(
 void SpdySessionPool::MapKeyToAvailableSession(
     const SpdySessionKey& key,
     const base::WeakPtr<SpdySession>& session,
-    std::set<std::string> dns_aliases) {
+    base::flat_set<std::string> dns_aliases) {
   DCHECK(sessions_.contains(session.get()));
   std::pair<AvailableSessionMap::iterator, bool> result =
       available_sessions_.emplace(key, session);
@@ -676,7 +680,7 @@ base::expected<base::WeakPtr<SpdySession>, int> SpdySessionPool::InsertSession(
     const SpdySessionKey& key,
     std::unique_ptr<SpdySession> new_session,
     const NetLogWithSource& source_net_log,
-    std::set<std::string> dns_aliases,
+    base::flat_set<std::string> dns_aliases,
     bool perform_post_insertion_checks) {
   base::WeakPtr<SpdySession> available_session = new_session->GetWeakPtr();
   sessions_.insert(new_session.release());
@@ -697,8 +701,9 @@ base::expected<base::WeakPtr<SpdySession>, int> SpdySessionPool::InsertSession(
   // to see if this is a direct connection.
   if (key.proxy_chain().is_direct()) {
     IPEndPoint address;
-    if (available_session->GetPeerAddress(&address) == OK)
+    if (available_session->GetPeerAddress(&address) == OK) {
       aliases_.insert(AliasMap::value_type(address, key));
+    }
   }
 
   if (!perform_post_insertion_checks) {
@@ -808,7 +813,7 @@ void SpdySessionPool::RemoveRequestInternal(
 base::WeakPtr<SpdySession> SpdySessionPool::FindMatchingIpSession(
     const SpdySessionKey& key,
     const std::vector<IPEndPoint>& ip_endpoints,
-    const std::set<std::string>& dns_aliases) {
+    const base::flat_set<std::string>& dns_aliases) {
   for (const auto& endpoint : ip_endpoints) {
     auto range = aliases_.equal_range(endpoint);
     for (auto alias_it = range.first; alias_it != range.second; ++alias_it) {
@@ -901,7 +906,7 @@ bool SpdySessionPool::OnHostResolutionCompleteShared(
     bool is_websocket,
     const ConnectionEndpointMetadata& metadata,
     base::span<const IPEndPoint> ip_endpoints,
-    const std::set<std::string>& aliases) {
+    const base::flat_set<std::string>& aliases) {
   // If there are no associated ALPN protocols, it is TCP-based and thus would
   // have been eligible for connecting with HTTP/2.
   if (!metadata.supported_protocol_alpns.empty() &&
@@ -974,7 +979,7 @@ bool SpdySessionPool::OnHostResolutionCompleteShared(
         }
 
         // Remap main session key.
-        std::set<std::string> main_session_old_dns_aliases =
+        base::flat_set<std::string> main_session_old_dns_aliases =
             GetDnsAliasesForSessionKey(old_key);
         UnmapKey(old_key);
         MapKeyToAvailableSession(new_key, available_session,
@@ -994,7 +999,7 @@ bool SpdySessionPool::OnHostResolutionCompleteShared(
             continue;
           }
 
-          std::set<std::string> pooled_alias_old_dns_aliases =
+          base::flat_set<std::string> pooled_alias_old_dns_aliases =
               GetDnsAliasesForSessionKey(*it);
           UnmapKey(*it);
           SpdySessionKey new_pool_alias_key = SpdySessionKey(

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "net/http/http_stream_factory.h"
 
 #include <stdint.h>
@@ -18,6 +17,7 @@
 
 #include "base/byte_size.h"
 #include "base/compiler_specific.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
@@ -41,6 +41,7 @@
 #include "net/base/test_proxy_delegate.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/multi_log_ct_verifier.h"
+#include "net/dns/dns_alias_utility.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/bidirectional_stream_impl.h"
@@ -189,9 +190,8 @@ class MockWebSocketHandshakeStream : public WebSocketHandshakeStreamBase {
       LoadTimingInternalInfo* load_timing_internal_info) const override {}
   void SetPriority(RequestPriority priority) override {}
   std::unique_ptr<HttpStream> RenewStreamForAuth() override { return nullptr; }
-  const std::set<std::string>& GetDnsAliases() const override {
-    static const base::NoDestructor<std::set<std::string>> nullset_result;
-    return *nullset_result;
+  const base::flat_set<std::string>& GetDnsAliases() const override {
+    return dns_alias_utility::EmptyDnsAliases();
   }
   std::string_view GetAcceptChViaAlps() const override { return {}; }
 
@@ -408,12 +408,12 @@ class WebSocketStreamCreateHelper
   }
   std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp2Stream(
       base::WeakPtr<SpdySession> session,
-      std::set<std::string> dns_aliases) override {
+      base::flat_set<std::string> dns_aliases) override {
     NOTREACHED();
   }
   std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp3Stream(
       std::unique_ptr<QuicChromiumClientSession::Handle> session,
-      std::set<std::string> dns_aliases) override {
+      base::flat_set<std::string> dns_aliases) override {
     NOTREACHED();
   }
 };
@@ -3756,8 +3756,8 @@ TEST_P(HttpStreamFactoryTest, MultiIPAliases) {
 TEST_P(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   SpdySessionDependencies session_deps;
 
-  const std::set<std::string> kDnsAliasesA({"alias1", "alias2"});
-  const std::set<std::string> kDnsAliasesB({"b.com", "b.org", "b.net"});
+  const base::flat_set<std::string> kDnsAliasesA({"alias1", "alias2"});
+  const base::flat_set<std::string> kDnsAliasesB({"b.com", "b.org", "b.net"});
   const std::string kHostnameC("c.example.org");
 
   session_deps.host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
@@ -3765,7 +3765,8 @@ TEST_P(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   session_deps.host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
       "b.example.org", "127.0.0.1", kDnsAliasesB);
   session_deps.host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
-      "c.example.org", "127.0.0.1", /*dns_aliases=*/std::set<std::string>());
+      "c.example.org", "127.0.0.1",
+      /*dns_aliases=*/base::flat_set<std::string>());
 
   // Prepare for an HTTPS connect.
   MockRead mock_read(SYNCHRONOUS, ERR_IO_PENDING);
@@ -4110,8 +4111,8 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
   const GURL kUrlA("https://a.example.org");
   const GURL kUrlB("https://b.example.org");
   const GURL kUrlC("https://c.example.org");
-  const std::set<std::string> kDnsAliasesA({"alias1", "alias2"});
-  const std::set<std::string> kDnsAliasesB({"b.com", "b.org", "b.net"});
+  const base::flat_set<std::string> kDnsAliasesA({"alias1", "alias2"});
+  const base::flat_set<std::string> kDnsAliasesB({"b.com", "b.org", "b.net"});
 
   host_resolver()->rules()->AddIPLiteralRuleWithDnsAliases(
       kUrlA.GetHost(), "127.0.0.1", kDnsAliasesA);
@@ -4119,7 +4120,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
       kUrlB.GetHost(), "127.0.0.1", kDnsAliasesB);
   host_resolver()->rules()->AddIPLiteralRuleWithDnsAliases(
       kUrlC.GetHost(), "127.0.0.1",
-      /*dns_aliases=*/std::set<std::string>());
+      /*dns_aliases=*/base::flat_set<std::string>());
 
   // Prepare mock QUIC data for a first session establishment.
   MockQuicData mock_quic_data(version());

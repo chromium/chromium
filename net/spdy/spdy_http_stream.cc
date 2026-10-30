@@ -6,12 +6,12 @@
 
 #include <algorithm>
 #include <list>
-#include <set>
 #include <string>
 #include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -41,7 +41,7 @@ const size_t SpdyHttpStream::kRequestBodyBufferSize = kMaxSpdyFrameChunkSize;
 
 SpdyHttpStream::SpdyHttpStream(const base::WeakPtr<SpdySession>& spdy_session,
                                NetLogSource source_dependency,
-                               std::set<std::string> dns_aliases)
+                               base::flat_set<std::string> dns_aliases)
     : MultiplexedHttpStream(
           std::make_unique<MultiplexedSessionHandle>(spdy_session)),
       spdy_session_(spdy_session),
@@ -638,7 +638,7 @@ void SpdyHttpStream::SetPriority(RequestPriority priority) {
   }
 }
 
-const std::set<std::string>& SpdyHttpStream::GetDnsAliases() const {
+const base::flat_set<std::string>& SpdyHttpStream::GetDnsAliases() const {
   return dns_aliases_;
 }
 

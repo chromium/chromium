@@ -5,6 +5,7 @@
 #include "net/quic/quic_session_attempt.h"
 
 #include "base/auto_reset.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -64,7 +65,7 @@ QuicSessionAttempt::QuicSessionAttempt(
     std::optional<ResolutionDetails> resolution_details,
     bool retry_on_alternate_network_before_handshake,
     bool use_dns_aliases,
-    std::set<std::string> dns_aliases,
+    base::flat_set<std::string> dns_aliases,
     std::unique_ptr<QuicCryptoClientConfigHandle> crypto_client_config_handle,
     MultiplexedSessionCreationInitiator session_creation_initiator,
     QuicConnectionReuseDetails quic_connection_reuse_details,
@@ -442,9 +443,9 @@ int QuicSessionAttempt::DoConfirmConnection(int rv) {
   }
   QuicSessionPool::LogConnectionIpPooling(false);
 
-  pool()->ActivateSession(
-      key(), session_,
-      use_dns_aliases_ ? std::move(dns_aliases_) : std::set<std::string>());
+  pool()->ActivateSession(key(), session_,
+                          use_dns_aliases_ ? std::move(dns_aliases_)
+                                           : base::flat_set<std::string>());
 
   return OK;
 }

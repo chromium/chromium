@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/privacy_mode.h"
@@ -199,7 +200,8 @@ void QuicSessionPoolPeer::ActivateAndMapSessionToAliasKey(
     QuicSessionPool* pool,
     const QuicSessionAliasKey& key,
     QuicChromiumClientSession* session) {
-  pool->ActivateAndMapSessionToAliasKey(session, key, std::set<std::string>());
+  pool->ActivateAndMapSessionToAliasKey(session, key,
+                                        base::flat_set<std::string>());
 }
 
 void QuicSessionPoolPeer::SetAlarmFactory(

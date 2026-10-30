@@ -4,15 +4,15 @@
 
 #include "net/http/http_basic_state.h"
 
-#include <set>
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/no_destructor.h"
+#include "base/containers/flat_set.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
+#include "net/dns/dns_alias_utility.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_body_drainer.h"
 #include "net/http/http_stream_parser.h"
@@ -116,11 +116,10 @@ int HttpBasicState::GetRemoteEndpoint(IPEndPoint* endpoint) {
   return connection_->socket()->GetPeerAddress(endpoint);
 }
 
-const std::set<std::string>& HttpBasicState::GetDnsAliases() const {
-  static const base::NoDestructor<std::set<std::string>> emptyset_result;
+const base::flat_set<std::string>& HttpBasicState::GetDnsAliases() const {
   return (connection_ && connection_->socket())
              ? connection_->socket()->GetDnsAliases()
-             : *emptyset_result;
+             : dns_alias_utility::EmptyDnsAliases();
 }
 
 }  // namespace net

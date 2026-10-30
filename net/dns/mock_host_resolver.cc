@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -89,7 +90,7 @@ std::variant<url::SchemeHostPort, std::string> GetCacheHost(
 std::optional<HostCache::Entry> CreateCacheEntry(
     std::string_view canonical_name,
     const std::vector<HostResolverEndpointResult>& endpoint_results,
-    const std::set<std::string>& aliases) {
+    const base::flat_set<std::string>& aliases) {
   std::optional<std::vector<net::IPEndPoint>> ip_endpoints;
   std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>
       endpoint_metadatas;
@@ -183,7 +184,7 @@ class MockHostResolverBase::RequestBase {
   // Also sets `error` to OK.
   void SetEndpointResults(
       std::vector<HostResolverEndpointResult> endpoint_results,
-      std::set<std::string> aliases,
+      base::flat_set<std::string> aliases,
       std::optional<HostCache::EntryStaleness> staleness) {
     DCHECK(!complete_);
     DCHECK(endpoint_results_.empty());
@@ -277,9 +278,10 @@ class MockHostResolverBase::RequestBase {
     return corrected;
   }
 
-  std::set<std::string> FixupAliases(const std::set<std::string> aliases) {
+  base::flat_set<std::string> FixupAliases(
+      const base::flat_set<std::string> aliases) {
     if (aliases.empty()) {
-      return std::set<std::string>{
+      return base::flat_set<std::string>{
           std::string(request_endpoint_.GetHostnameWithoutBrackets())};
     }
     return aliases;
@@ -297,7 +299,7 @@ class MockHostResolverBase::RequestBase {
 
   AddressList address_results_;
   std::vector<HostResolverEndpointResult> endpoint_results_;
-  std::set<std::string> fixed_up_dns_alias_results_;
+  base::flat_set<std::string> fixed_up_dns_alias_results_;
   std::optional<HostCache::EntryStaleness> staleness_;
   ResolveErrorInfo resolve_error_info_;
 
@@ -372,7 +374,7 @@ class MockHostResolverBase::RequestImpl
     return {};
   }
 
-  const std::set<std::string>& GetDnsAliasResults() const override {
+  const base::flat_set<std::string>& GetDnsAliasResults() const override {
     DCHECK(complete_);
     return fixed_up_dns_alias_results_;
   }
@@ -449,7 +451,7 @@ class MockHostResolverBase::ServiceEndpointRequestImpl
     return service_endpoint_results_;
   }
 
-  const std::set<std::string>& GetDnsAliasResults() override {
+  const base::flat_set<std::string>& GetDnsAliasResults() override {
     return fixed_up_dns_alias_results_;
   }
 
@@ -617,7 +619,7 @@ MockHostResolverBase::RuleResolver::RuleResult::RuleResult() = default;
 
 MockHostResolverBase::RuleResolver::RuleResult::RuleResult(
     std::vector<HostResolverEndpointResult> endpoints,
-    std::set<std::string> aliases)
+    base::flat_set<std::string> aliases)
     : endpoints(std::move(endpoints)), aliases(std::move(aliases)) {}
 
 MockHostResolverBase::RuleResolver::RuleResult::~RuleResult() = default;
@@ -769,9 +771,10 @@ void MockHostResolverBase::RuleResolver::AddIPLiteralRule(
   RuleKey key;
   key.hostname_pattern = std::string(hostname_pattern);
 
-  std::set<std::string> aliases;
-  if (!canonical_name.empty())
+  base::flat_set<std::string> aliases;
+  if (!canonical_name.empty()) {
     aliases.emplace(canonical_name);
+  }
 
   std::vector<HostResolverEndpointResult> endpoints;
   endpoints.emplace_back();
@@ -787,15 +790,14 @@ void MockHostResolverBase::RuleResolver::AddIPLiteralRuleWithDnsAliases(
   endpoints.emplace_back();
   CHECK_EQ(ParseAddressList(ip_literal, &endpoints[0].ip_endpoints), OK);
   AddRule(hostname_pattern,
-          RuleResult(
-              std::move(endpoints),
-              std::set<std::string>(dns_aliases.begin(), dns_aliases.end())));
+          RuleResult(std::move(endpoints),
+                     base::flat_set<std::string>(std::move(dns_aliases))));
 }
 
 void MockHostResolverBase::RuleResolver::AddIPLiteralRuleWithDnsAliases(
     std::string_view hostname_pattern,
     std::string_view ip_literal,
-    std::set<std::string> dns_aliases) {
+    base::flat_set<std::string> dns_aliases) {
   std::vector<std::string> aliases_vector;
   std::ranges::move(dns_aliases, std::back_inserter(aliases_vector));
 
@@ -821,9 +823,9 @@ void MockHostResolverBase::RuleResolver::AddRuleWithFlags(
   std::vector<HostResolverEndpointResult> endpoints;
   endpoints.emplace_back();
   CHECK_EQ(ParseAddressList(ip_literal, &endpoints[0].ip_endpoints), OK);
-  AddRule(host_pattern, RuleResult(std::move(endpoints),
-                                   std::set<std::string>(dns_aliases.begin(),
-                                                         dns_aliases.end())));
+  AddRule(host_pattern,
+          RuleResult(std::move(endpoints),
+                     base::flat_set<std::string>(std::move(dns_aliases))));
 }
 
 MockHostResolverBase::State::State() = default;
@@ -931,7 +933,7 @@ int MockHostResolverBase::LoadIntoCache(
       optional_parameters.value_or(ResolveHostParameters());
 
   std::vector<HostResolverEndpointResult> endpoints;
-  std::set<std::string> aliases;
+  base::flat_set<std::string> aliases;
   std::optional<HostCache::EntryStaleness> stale_info;
   int rv = ResolveFromIPLiteralOrCache(
       endpoint, network_anonymization_key, parameters.dns_query_type,
@@ -1090,7 +1092,7 @@ int MockHostResolverBase::Resolve(RequestBase* request) {
   last_secure_dns_policy_ = request->parameters().secure_dns_policy;
   state_->IncrementNumResolve();
   std::vector<HostResolverEndpointResult> endpoints;
-  std::set<std::string> aliases;
+  base::flat_set<std::string> aliases;
   std::optional<HostCache::EntryStaleness> stale_info;
   // TODO(crbug.com/40203587): Allow caching `ConnectionEndpoint` results.
   int rv = ResolveFromIPLiteralOrCache(
@@ -1144,7 +1146,7 @@ int MockHostResolverBase::ResolveFromIPLiteralOrCache(
     HostResolverSource source,
     HostResolver::ResolveHostParameters::CacheUsage cache_usage,
     std::vector<HostResolverEndpointResult>* out_endpoints,
-    std::set<std::string>* out_aliases,
+    base::flat_set<std::string>* out_aliases,
     std::optional<HostCache::EntryStaleness>* out_stale_info) {
   DCHECK(out_endpoints);
   DCHECK(out_aliases);
@@ -1168,8 +1170,9 @@ int MockHostResolverBase::ResolveFromIPLiteralOrCache(
     *out_endpoints = std::vector<HostResolverEndpointResult>(1);
     (*out_endpoints)[0].ip_endpoints.emplace_back(ip_address,
                                                   endpoint.GetPort());
-    if (flags & HOST_RESOLVER_CANONNAME)
+    if (flags & HOST_RESOLVER_CANONNAME) {
       *out_aliases = {ip_address.ToString()};
+    }
     return OK;
   }
 
@@ -1405,8 +1408,9 @@ void RuleBasedHostResolverProc::AddIPLiteralRuleWithDnsAliases(
   IPAddress ip_address;
   DCHECK(!ip_address.AssignFromIPLiteral(host_pattern));
   HostResolverFlags flags = HOST_RESOLVER_LOOPBACK_ONLY;
-  if (!dns_aliases.empty())
+  if (!dns_aliases.empty()) {
     flags |= HOST_RESOLVER_CANONNAME;
+  }
 
   Rule rule(Rule::kResolverTypeIPLiteral, host_pattern,
             ADDRESS_FAMILY_UNSPECIFIED, flags, ip_literal,
@@ -1536,8 +1540,9 @@ int RuleBasedHostResolverProc::Resolve(const std::string& host,
           }
           addrlist->SetDnsAliases(aliases);
 
-          if (result == OK && addrlist->empty())
+          if (result == OK && addrlist->empty()) {
             return ERR_NAME_NOT_RESOLVED;
+          }
           return result;
         }
         default:
@@ -1617,9 +1622,8 @@ class HangingHostResolver::ServiceEndpointRequestImpl
 
   base::span<const ServiceEndpoint> GetEndpointResults() override { return {}; }
 
-  const std::set<std::string>& GetDnsAliasResults() override {
-    static const base::NoDestructor<std::set<std::string>> kEmpty;
-    return *kEmpty;
+  const base::flat_set<std::string>& GetDnsAliasResults() override {
+    return dns_alias_utility::EmptyDnsAliases();
   }
 
   bool EndpointsCryptoReady() override { return false; }
@@ -1685,7 +1689,7 @@ class HangingHostResolver::RequestImpl
     NOTREACHED();
   }
 
-  const std::set<std::string>& GetDnsAliasResults() const override {
+  const base::flat_set<std::string>& GetDnsAliasResults() const override {
     NOTREACHED();
   }
 

@@ -8,10 +8,10 @@
 #include <list>
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/test_future.h"
@@ -47,7 +47,7 @@ class FakeServiceEndpointResolution {
 
   int start_result() const { return start_result_; }
   const std::vector<ServiceEndpoint>& endpoints() const { return endpoints_; }
-  const std::set<std::string>& aliases() const { return aliases_; }
+  const base::flat_set<std::string>& aliases() const { return aliases_; }
   bool endpoints_crypto_ready() const { return endpoints_crypto_ready_; }
   ResolveErrorInfo resolve_error_info() const { return resolve_error_info_; }
   RequestPriority priority() const { return priority_; }
@@ -57,7 +57,8 @@ class FakeServiceEndpointResolution {
   FakeServiceEndpointResolution& set_endpoints(
       std::vector<ServiceEndpoint> endpoints);
   FakeServiceEndpointResolution& add_endpoint(ServiceEndpoint endpoint);
-  FakeServiceEndpointResolution& set_aliases(std::set<std::string> aliases);
+  FakeServiceEndpointResolution& set_aliases(
+      base::flat_set<std::string> aliases);
   FakeServiceEndpointResolution& set_crypto_ready(bool endpoints_crypto_ready);
   FakeServiceEndpointResolution& set_resolve_error_info(
       ResolveErrorInfo resolve_error_info);
@@ -66,7 +67,7 @@ class FakeServiceEndpointResolution {
  private:
   int start_result_ = ERR_IO_PENDING;
   std::vector<ServiceEndpoint> endpoints_;
-  std::set<std::string> aliases_;
+  base::flat_set<std::string> aliases_;
   bool endpoints_crypto_ready_ = false;
   ResolveErrorInfo resolve_error_info_;
   RequestPriority priority_ = RequestPriority::IDLE;
@@ -84,7 +85,7 @@ class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
   FakeServiceEndpointRequest& set_endpoints(
       std::vector<ServiceEndpoint> endpoints);
   FakeServiceEndpointRequest& add_endpoint(ServiceEndpoint endpoint);
-  FakeServiceEndpointRequest& set_aliases(std::set<std::string> aliases);
+  FakeServiceEndpointRequest& set_aliases(base::flat_set<std::string> aliases);
   FakeServiceEndpointRequest& set_crypto_ready(bool endpoints_crypto_ready);
   FakeServiceEndpointRequest& set_resolve_error_info(
       ResolveErrorInfo resolve_error_info);
@@ -130,7 +131,7 @@ class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
   // HostResolver::ServiceEndpointRequest methods:
   int Start(Delegate* delegate) override;
   base::span<const ServiceEndpoint> GetEndpointResults() override;
-  const std::set<std::string>& GetDnsAliasResults() override;
+  const base::flat_set<std::string>& GetDnsAliasResults() override;
   bool EndpointsCryptoReady() override;
   ResolveErrorInfo GetResolveErrorInfo() override;
   const HostCache::EntryStaleness* GetStaleInfo() const override;

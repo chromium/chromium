@@ -760,6 +760,51 @@ TEST_F(DnsTaskResultsManagerTest,
               manager->GetAliases().end());
 }
 
+TEST_F(DnsTaskResultsManagerTest, AliasesAcrossMultipleTransactions) {
+  std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
+
+  // HTTPS arrives first with initial alias chain and mixed-case alias.
+  std::unique_ptr<HostResolverInternalResult> https_alias1 =
+      CreateAlias(kHostName, DnsQueryType::HTTPS, kAliasTarget1);
+  std::unique_ptr<HostResolverInternalResult> https_alias2 =
+      CreateAlias(kAliasTarget1, DnsQueryType::HTTPS, "GOOGLE.TeSt");
+  std::unique_ptr<HostResolverInternalResult> https_metadata =
+      CreateMetadata(kHostName, kMetadatas);
+  manager->ProcessDnsTransactionResults(
+      DnsQueryType::HTTPS,
+      {https_alias1.get(), https_alias2.get(), https_metadata.get()});
+  EXPECT_THAT(manager->GetAliases(),
+              UnorderedElementsAre(kHostName, kAliasTarget1, "google.test"));
+
+  // A arrives with overlapping aliases, a new valid alias, and an invalid
+  // alias.
+  std::unique_ptr<HostResolverInternalResult> a_alias1 =
+      CreateAlias(kHostName, DnsQueryType::A, kAliasTarget1);
+  std::unique_ptr<HostResolverInternalResult> a_alias2 =
+      CreateAlias(kAliasTarget1, DnsQueryType::A, kAliasTarget2);
+  std::unique_ptr<HostResolverInternalResult> a_bad_alias =
+      CreateAlias(kAliasTarget2, DnsQueryType::A, "bad_alias.1");
+  std::unique_ptr<HostResolverInternalResult> a_data = CreateDataResult(
+      kAliasTarget2, {MakeIPEndPoint("192.0.2.1")}, DnsQueryType::A);
+  manager->ProcessDnsTransactionResults(
+      DnsQueryType::A,
+      {a_alias1.get(), a_alias2.get(), a_bad_alias.get(), a_data.get()});
+  EXPECT_THAT(manager->GetAliases(),
+              UnorderedElementsAre(kHostName, kAliasTarget1, kAliasTarget2,
+                                   "google.test"));
+
+  // AAAA arrives with only already-known aliases.
+  std::unique_ptr<HostResolverInternalResult> aaaa_alias =
+      CreateAlias(kHostName, DnsQueryType::AAAA, kAliasTarget1);
+  std::unique_ptr<HostResolverInternalResult> aaaa_data = CreateDataResult(
+      kAliasTarget1, {MakeIPEndPoint("2001:db8::1")}, DnsQueryType::AAAA);
+  manager->ProcessDnsTransactionResults(DnsQueryType::AAAA,
+                                        {aaaa_alias.get(), aaaa_data.get()});
+  EXPECT_THAT(manager->GetAliases(),
+              UnorderedElementsAre(kHostName, kAliasTarget1, kAliasTarget2,
+                                   "google.test"));
+}
+
 TEST_F(DnsTaskResultsManagerTest, AddressHintsFirst) {
   std::unique_ptr<DnsTaskResultsManager> manager = factory().Create();
 

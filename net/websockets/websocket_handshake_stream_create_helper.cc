@@ -4,10 +4,10 @@
 
 #include "net/websockets/websocket_handshake_stream_create_helper.h"
 
-#include <set>
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/websockets/websocket_basic_handshake_stream.h"
@@ -51,7 +51,7 @@ WebSocketHandshakeStreamCreateHelper::CreateBasicStream(
 std::unique_ptr<WebSocketHandshakeStreamBase>
 WebSocketHandshakeStreamCreateHelper::CreateHttp2Stream(
     base::WeakPtr<SpdySession> session,
-    std::set<std::string> dns_aliases) {
+    base::flat_set<std::string> dns_aliases) {
   std::vector<std::string> extensions(
       1, "permessage-deflate; client_max_window_bits");
   auto stream = std::make_unique<WebSocketHttp2HandshakeStream>(
@@ -64,7 +64,7 @@ WebSocketHandshakeStreamCreateHelper::CreateHttp2Stream(
 std::unique_ptr<WebSocketHandshakeStreamBase>
 WebSocketHandshakeStreamCreateHelper::CreateHttp3Stream(
     std::unique_ptr<QuicChromiumClientSession::Handle> session,
-    std::set<std::string> dns_aliases) {
+    base::flat_set<std::string> dns_aliases) {
   std::vector<std::string> extensions(
       1, "permessage-deflate; client_max_window_bits");
   auto stream = std::make_unique<WebSocketHttp3HandshakeStream>(

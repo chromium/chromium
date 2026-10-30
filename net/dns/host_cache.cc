@@ -20,9 +20,11 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -378,6 +380,10 @@ HostCache::Entry::Entry(
   }
 
   if (!data_results.empty()) {
+    std::vector<std::string> aliases;
+    aliases.reserve(base::CheckAdd(data_results.size(),
+                                   base::CheckMul(alias_results.size(), 2u))
+                        .ValueOrDie());
     for (const HostResolverInternalResult* data_result : data_results) {
       DCHECK(!data_result->AsData().endpoints().empty() ||
              !data_result->AsData().strings().empty() ||
@@ -390,13 +396,14 @@ HostCache::Entry::Entry(
       MergeLists(text_records_, data_result->AsData().strings());
       MergeLists(hostnames_, data_result->AsData().hosts());
       canonical_names_.insert(data_result->domain_name());
-      aliases_.insert(data_result->domain_name());
+      aliases.push_back(data_result->domain_name());
     }
 
     for (const auto* alias_result : alias_results) {
-      aliases_.insert(alias_result->domain_name());
-      aliases_.insert(alias_result->AsAlias().alias_target());
+      aliases.push_back(alias_result->domain_name());
+      aliases.push_back(alias_result->AsAlias().alias_target());
     }
+    aliases_ = base::flat_set<std::string>(std::move(aliases));
   }
 
   if (metadata_result) {
@@ -575,7 +582,7 @@ HostCache::Entry& HostCache::Entry::operator=(Entry&& entry) = default;
 
 HostCache::Entry::Entry(int error,
                         std::vector<IPEndPoint> ip_endpoints,
-                        std::set<std::string> aliases,
+                        base::flat_set<std::string> aliases,
                         Source source,
                         std::optional<base::TimeDelta> ttl)
     : error_(error),
@@ -608,7 +615,7 @@ HostCache::Entry::Entry(
     std::vector<IPEndPoint> ip_endpoints,
     std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>
         endpoint_metadatas,
-    std::set<std::string> aliases,
+    base::flat_set<std::string> aliases,
     std::vector<std::string>&& text_records,
     std::vector<HostPortPair>&& hostnames,
     Source source,
@@ -1197,12 +1204,14 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
       }
     }
 
-    std::set<std::string> aliases;
+    std::vector<std::string> aliases;
     if (aliases_list) {
+      aliases.reserve(aliases_list->size());
       for (const base::Value& alias_value : *aliases_list) {
-        if (!alias_value.is_string())
+        if (!alias_value.is_string()) {
           return false;
-        aliases.insert(alias_value.GetString());
+        }
+        aliases.push_back(alias_value.GetString());
       }
     }
 
@@ -1266,11 +1275,11 @@ bool HostCache::RestoreFromListValue(const base::ListValue& old_cache) {
     // replace the entry.
     auto found = entries_.find(key);
     if (found == entries_.end()) {
-      Entry new_entry(error, std::move(ip_endpoints),
-                      std::move(endpoint_metadatas), std::move(aliases),
-                      std::move(text_records), std::move(hostname_records),
-                      Entry::SOURCE_UNKNOWN, expiration_time,
-                      network_changes_ - 1);
+      Entry new_entry(
+          error, std::move(ip_endpoints), std::move(endpoint_metadatas),
+          base::flat_set<std::string>(std::move(aliases)),
+          std::move(text_records), std::move(hostname_records),
+          Entry::SOURCE_UNKNOWN, expiration_time, network_changes_ - 1);
       new_entry.set_pinning(maybe_pinned.value_or(false));
       new_entry.set_canonical_names(std::move(canonical_names));
       AddEntry(key, std::move(new_entry));

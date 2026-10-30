@@ -4,11 +4,11 @@
 
 #include "net/websockets/websocket_basic_handshake_stream.h"
 
-#include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "net/base/address_list.h"
 #include "net/base/ip_address.h"
@@ -110,7 +110,7 @@ TEST(WebSocketBasicHandshakeStreamTest, DnsAliasesCanBeAccessed) {
   const int connect_result = socket->Connect(CompletionOnceCallback());
   EXPECT_EQ(connect_result, OK);
 
-  std::set<std::string> aliases({"alias1", "alias2", "www.example.org"});
+  base::flat_set<std::string> aliases({"alias1", "alias2", "www.example.org"});
   socket->SetDnsAliases(aliases);
   EXPECT_THAT(
       socket->GetDnsAliases(),

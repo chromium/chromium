@@ -14,6 +14,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -18179,7 +18180,7 @@ void QuicSessionPoolTest::TestRequireDnsHttpsAlpn(
       kDefaultServerHostName,
       MockHostResolverBase::RuleResolver::RuleResult(
           std::move(endpoints),
-          /*aliases=*/std::set<std::string>{kDefaultServerHostName}));
+          /*aliases=*/base::flat_set<std::string>{kDefaultServerHostName}));
 
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -18211,13 +18212,13 @@ namespace {
 struct DnsAliasPoolingTestParams {
   quic::ParsedQuicVersion version;
   bool use_dns_aliases;
-  std::set<std::string> dns_aliases1;
-  std::set<std::string> dns_aliases2;
-  std::set<std::string> expected_dns_aliases1;
-  std::set<std::string> expected_dns_aliases2;
+  base::flat_set<std::string> dns_aliases1;
+  base::flat_set<std::string> dns_aliases2;
+  base::flat_set<std::string> expected_dns_aliases1;
+  base::flat_set<std::string> expected_dns_aliases2;
 };
 
-std::string PrintToString(const std::set<std::string>& set) {
+std::string PrintToString(const base::flat_set<std::string>& set) {
   std::string joined;
   for (const std::string& str : set) {
     if (!joined.empty()) {
@@ -18316,10 +18317,10 @@ class QuicSessionPoolDnsAliasPoolingTest
         expected_dns_aliases2_(GetParam().expected_dns_aliases2) {}
 
   const bool use_dns_aliases_;
-  const std::set<std::string> dns_aliases1_;
-  const std::set<std::string> dns_aliases2_;
-  const std::set<std::string> expected_dns_aliases1_;
-  const std::set<std::string> expected_dns_aliases2_;
+  const base::flat_set<std::string> dns_aliases1_;
+  const base::flat_set<std::string> dns_aliases2_;
+  const base::flat_set<std::string> expected_dns_aliases1_;
+  const base::flat_set<std::string> expected_dns_aliases2_;
 };
 
 INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,

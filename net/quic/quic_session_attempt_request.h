@@ -6,10 +6,10 @@
 #define NET_QUIC_QUIC_SESSION_ATTEMPT_REQUEST_H_
 
 #include <optional>
-#include <set>
 #include <string>
 
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_error_details.h"
@@ -44,7 +44,7 @@ class NET_EXPORT_PRIVATE QuicSessionAttemptRequest {
       base::TimeTicks dns_resolution_end_time,
       std::optional<ResolutionDetails> dns_resolution_details,
       bool use_dns_aliases,
-      std::set<std::string> dns_aliases,
+      base::flat_set<std::string> dns_aliases,
       MultiplexedSessionCreationInitiator session_creation_initiator,
       std::optional<ConnectionManagementConfig> connection_management_config,
       const NetLogWithSource& net_log,

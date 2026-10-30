@@ -86,7 +86,7 @@ class NET_EXPORT_PRIVATE TcpConnectJob
 
   struct NET_EXPORT_PRIVATE ServiceEndpointOverride {
     ServiceEndpointOverride(ServiceEndpoint endpoint,
-                            std::set<std::string> dns_aliases);
+                            base::flat_set<std::string> dns_aliases);
     ServiceEndpointOverride(ServiceEndpointOverride&&);
     ServiceEndpointOverride(const ServiceEndpointOverride&);
     ~ServiceEndpointOverride();
@@ -98,7 +98,7 @@ class NET_EXPORT_PRIVATE TcpConnectJob
     // easily be converted to a span.
     std::vector<ServiceEndpoint> endpoints;
 
-    std::set<std::string> dns_aliases;
+    base::flat_set<std::string> dns_aliases;
   };
 
   TcpConnectJob(RequestPriority priority,
@@ -354,7 +354,7 @@ class NET_EXPORT_PRIVATE TcpConnectJob
   // from `endpoint_override_` instead, if populated.
   base::span<const ServiceEndpoint> GetEndpointResults() const;
   bool EndpointsCryptoReady() const;
-  const std::set<std::string>& GetDnsAliasResults() const;
+  const base::flat_set<std::string>& GetDnsAliasResults() const;
 
   // If `result` is not ERR_IO_PENDING, calls NotifyDelegateOfCompletion() with
   // the result. There are a lot of asynchronous callbacks in this class that

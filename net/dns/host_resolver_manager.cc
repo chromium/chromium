@@ -127,11 +127,13 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <Winsock2.h>
+
 #include "net/base/winsock_init.h"
 #endif
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <net/if.h>
+
 #include "net/base/sys_addrinfo.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include <ifaddrs.h>
@@ -1062,7 +1064,7 @@ HostCache::Entry HostResolverManager::ResolveAsIP(DnsQueryTypeSet query_types,
                             HostCache::Entry::SOURCE_UNKNOWN);
   }
 
-  std::set<std::string> aliases;
+  base::flat_set<std::string> aliases;
   if (resolve_canonname) {
     aliases = {ip_address.ToString()};
   }

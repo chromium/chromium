@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/byte_size.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -725,12 +726,12 @@ class FakeWebSocketHandshakeStreamCreateHelper
   }
   std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp2Stream(
       base::WeakPtr<SpdySession> session,
-      std::set<std::string> dns_aliases) override {
+      base::flat_set<std::string> dns_aliases) override {
     NOTREACHED();
   }
   std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp3Stream(
       std::unique_ptr<QuicChromiumClientSession::Handle> session,
-      std::set<std::string> dns_aliases) override {
+      base::flat_set<std::string> dns_aliases) override {
     NOTREACHED();
   }
 };

@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -237,7 +238,7 @@ class NET_EXPORT SpdySessionPool
   base::WeakPtr<SpdySession> FindMatchingIpSessionForServiceEndpoint(
       const SpdySessionKey& key,
       const ServiceEndpoint& service_endpoint,
-      const std::set<std::string>& dns_aliases);
+      const base::flat_set<std::string>& dns_aliases);
 
   // Returns true if there is an available session for `key`. Otherwise, if
   // there is a session to pool to based on IP address, returns true if
@@ -291,14 +292,14 @@ class NET_EXPORT SpdySessionPool
       const SpdySessionKey& key,
       bool is_websocket,
       base::span<const HostResolverEndpointResult> endpoint_results,
-      const std::set<std::string>& aliases);
+      const base::flat_set<std::string>& aliases);
 
   // Overload of above function that takes a ServiceEndpoint.
   OnHostResolutionCallbackResult OnHostResolutionComplete(
       const SpdySessionKey& key,
       bool is_websocket,
       base::span<const ServiceEndpoint> endpoint_results,
-      const std::set<std::string>& aliases);
+      const base::flat_set<std::string>& aliases);
 
   // Remove all mappings and aliases for the given session, which must
   // still be available. Except for in tests, this must be called by
@@ -366,7 +367,7 @@ class NET_EXPORT SpdySessionPool
   }
 
   // Returns the stored DNS aliases for the session key.
-  std::set<std::string> GetDnsAliasesForSessionKey(
+  const base::flat_set<std::string>& GetDnsAliasesForSessionKey(
       const SpdySessionKey& key) const;
 
   // Adds the connection management config to
@@ -381,7 +382,7 @@ class NET_EXPORT SpdySessionPool
   using WeakSessionList = std::vector<base::WeakPtr<SpdySession>>;
   using AliasMap = std::multimap<IPEndPoint, SpdySessionKey>;
   using DnsAliasesBySessionKeyMap =
-      std::map<SpdySessionKey, std::set<std::string>>;
+      std::map<SpdySessionKey, base::flat_set<std::string>>;
   using RequestSet = std::set<raw_ptr<SpdySessionRequest>>;
 
   struct RequestInfoForKey {
@@ -412,7 +413,7 @@ class NET_EXPORT SpdySessionPool
   // given key, replaces them.
   void MapKeyToAvailableSession(const SpdySessionKey& key,
                                 const base::WeakPtr<SpdySession>& session,
-                                std::set<std::string> dns_aliases);
+                                base::flat_set<std::string> dns_aliases);
 
   // Returns an iterator into |available_sessions_| for the given key,
   // which may be equal to |available_sessions_.end()|.
@@ -452,7 +453,7 @@ class NET_EXPORT SpdySessionPool
       const SpdySessionKey& key,
       std::unique_ptr<SpdySession> new_session,
       const NetLogWithSource& source_net_log,
-      std::set<std::string> dns_aliases,
+      base::flat_set<std::string> dns_aliases,
       bool perform_post_insertion_checks);
 
   // If a session with the specified |key| exists, invokes
@@ -477,7 +478,7 @@ class NET_EXPORT SpdySessionPool
   base::WeakPtr<SpdySession> FindMatchingIpSession(
       const SpdySessionKey& key,
       const std::vector<IPEndPoint>& ip_endpoints,
-      const std::set<std::string>& dns_aliases);
+      const base::flat_set<std::string>& dns_aliases);
 
   // Methods to notify the ConnectionChangeObserver about connection changing
   // events. `NotifyOnNetworkEvent` will notify all of the notifiers on network
@@ -500,7 +501,7 @@ class NET_EXPORT SpdySessionPool
       bool is_websocket,
       const ConnectionEndpointMetadata& metadata,
       base::span<const IPEndPoint> ip_endpoints,
-      const std::set<std::string>& aliases);
+      const base::flat_set<std::string>& aliases);
 
   raw_ptr<HttpServerProperties> http_server_properties_;
 

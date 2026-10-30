@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -626,7 +627,7 @@ TEST_F(ContextHostResolverTest, ResolveFromCache) {
                      0 /* host_resolver_flags */, HostResolverSource::ANY,
                      NetworkAnonymizationKey(), handles::kInvalidNetworkHandle),
       HostCache::Entry(OK, expected,
-                       /*aliases=*/std::set<std::string>({"example.com"}),
+                       /*aliases=*/base::flat_set<std::string>({"example.com"}),
                        HostCache::Entry::SOURCE_DNS, base::Days(1)),
       clock.NowTicks(), base::Days(1));
   resolver->SetTickClockForTesting(&clock);

@@ -4,6 +4,7 @@
 
 #include "net/quic/quic_session_pool_direct_job.h"
 
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "net/base/completion_once_callback.h"
@@ -211,9 +212,9 @@ int QuicSessionPool::DirectJob::DoAttemptSession() {
     return ERR_DNS_NO_MATCHING_SUPPORTED_ALPN;
   }
 
-  std::set<std::string> dns_aliases =
+  base::flat_set<std::string> dns_aliases =
       use_dns_aliases_ ? resolve_host_request_->GetDnsAliasResults()
-                       : std::set<std::string>();
+                       : base::flat_set<std::string>();
   // Passing an empty `crypto_client_config_handle` is safe because this job
   // already owns a handle.
   session_attempt_ = std::make_unique<QuicSessionAttempt>(

@@ -13,6 +13,7 @@
 
 #include "base/byte_size.h"
 #include "base/compiler_specific.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -3748,7 +3749,7 @@ TEST_P(QuicNetworkTransactionTest,
       "mail.example.org",
       MockHostResolverBase::RuleResolver::RuleResult(
           std::move(endpoints),
-          /*aliases=*/std::set<std::string>{"mail.example.org"}));
+          /*aliases=*/base::flat_set<std::string>{"mail.example.org"}));
 
   CreateSession();
 
@@ -10235,7 +10236,7 @@ TEST_P(QuicNetworkTransactionTest,
       "mail.example.org",
       MockHostResolverBase::RuleResolver::RuleResult(
           std::move(endpoints),
-          /*aliases=*/std::set<std::string>{"mail.example.org"}));
+          /*aliases=*/base::flat_set<std::string>{"mail.example.org"}));
 
   CreateSession();
   AddQuicAlternateProtocolMapping(MockCryptoClientStream::CONFIRM_HANDSHAKE);

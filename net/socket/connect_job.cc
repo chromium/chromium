@@ -4,9 +4,11 @@
 
 #include "net/socket/connect_job.h"
 
-#include <set>
+#include <optional>
+#include <string>
 #include <utility>
 
+#include "base/containers/flat_set.h"
 #include "base/trace_event/trace_event.h"
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/net_errors.h"
@@ -177,8 +179,9 @@ bool ConnectJob::IsConnectedViaStaleDns() const {
   return false;
 }
 
-void ConnectJob::SetSocket(std::unique_ptr<StreamSocket> socket,
-                           std::optional<std::set<std::string>> dns_aliases) {
+void ConnectJob::SetSocket(
+    std::unique_ptr<StreamSocket> socket,
+    std::optional<base::flat_set<std::string>> dns_aliases) {
   if (socket) {
     net_log().AddEventReferencingSource(NetLogEventType::CONNECT_JOB_SET_SOCKET,
                                         socket->NetLog().source());

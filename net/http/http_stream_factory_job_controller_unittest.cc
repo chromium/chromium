@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -6289,7 +6290,7 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
         "www.example.org",
         MockHostResolverBase::RuleResolver::RuleResult(
             std::move(endpoints),
-            /*aliases=*/std::set<std::string>{"www.example.org"}));
+            /*aliases=*/base::flat_set<std::string>{"www.example.org"}));
   }
 
   void CreateJobController(const HttpRequestInfo& request_info) {
@@ -6414,7 +6415,7 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
 
     std::unique_ptr<QuicChromiumClientSession::Handle> session =
         quic_request.ReleaseSessionHandle();
-    std::set<std::string> dns_aliases =
+    base::flat_set<std::string> dns_aliases =
         session->GetDnsAliasesForSessionKey(quic_request.session_key());
     auto stream = std::make_unique<QuicHttpStream>(std::move(session),
                                                    std::move(dns_aliases));

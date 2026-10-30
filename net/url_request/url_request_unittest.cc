@@ -19,6 +19,7 @@
 #include "base/base64url.h"
 #include "base/byte_size.h"
 #include "base/compiler_specific.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -12791,7 +12792,8 @@ TEST_F(URLRequestDnsAliasTest, WithDnsAliases) {
 TEST_F(URLRequestDnsAliasTest, NoAdditionalDnsAliases) {
   GURL url(test_server_.GetURL("www.example.test", "/echo"));
   host_resolver().rules()->AddIPLiteralRuleWithDnsAliases(
-      "www.example.test", "127.0.0.1", /*dns_aliases=*/std::set<std::string>());
+      "www.example.test", "127.0.0.1",
+      /*dns_aliases=*/base::flat_set<std::string>());
 
   std::unique_ptr<URLRequest> request(context().CreateRequest(
       url, DEFAULT_PRIORITY, &test_delegate_, TRAFFIC_ANNOTATION_FOR_TESTS,

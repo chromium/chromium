@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/lru_cache.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/memory/memory_pressure_listener.h"
@@ -378,7 +379,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   QuicChromiumClientSession* HasMatchingIpSessionForServiceEndpoint(
       const QuicSessionAliasKey& session_alias_key,
       const ServiceEndpoint& service_endpoint,
-      const std::set<std::string>& dns_aliases,
+      const base::flat_set<std::string>& dns_aliases,
       bool use_dns_aliases,
       bool log_negative_result);
 
@@ -422,7 +423,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       base::TimeTicks dns_resolution_end_time,
       std::optional<ResolutionDetails> dns_resolution_details,
       bool use_dns_aliases,
-      std::set<std::string> dns_aliases,
+      base::flat_set<std::string> dns_aliases,
       MultiplexedSessionCreationInitiator session_creation_initiator,
       std::optional<ConnectionManagementConfig> connection_management_config,
       bool is_stale = false);
@@ -567,7 +568,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   handles::NetworkHandle default_network() const { return default_network_; }
 
   // Returns the stored DNS aliases for the session key.
-  const std::set<std::string>& GetDnsAliasesForSessionKey(
+  const base::flat_set<std::string>& GetDnsAliasesForSessionKey(
       const QuicSessionKey& key) const;
 
   size_t CountActiveSessions() { return active_sessions_.size(); }
@@ -625,7 +626,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   using SessionPeerIPMap = std::map<QuicChromiumClientSession*, IPEndPoint>;
   using JobMap = std::map<QuicSessionKey, std::unique_ptr<Job>>;
   using DnsAliasesBySessionKeyMap =
-      std::map<QuicSessionKey, std::set<std::string>>;
+      std::map<QuicSessionKey, base::flat_set<std::string>>;
   using QuicCryptoClientConfigMap =
       std::map<QuicCryptoClientConfigKey,
                std::unique_ptr<QuicCryptoClientConfigOwner>>;
@@ -639,7 +640,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   QuicChromiumClientSession* HasMatchingIpSession(
       const QuicSessionAliasKey& key,
       const std::vector<IPEndPoint>& ip_endpoints,
-      const std::set<std::string>& aliases,
+      const base::flat_set<std::string>& aliases,
       bool use_dns_aliases,
       bool log_negative_result = true);
   // Returns true if IP matching can be waived when trying to send requests to
@@ -780,7 +781,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // Called when the Job for the given key has created and confirmed a session.
   void ActivateSession(const QuicSessionAliasKey& key,
                        QuicChromiumClientSession* session,
-                       std::set<std::string> dns_aliases);
+                       base::flat_set<std::string> dns_aliases);
 
   // Go away all active sessions. May disable session's connectivity monitoring
   // based on the |reason|.
@@ -846,7 +847,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // `dns_aliases_by_session_key_`.
   void ActivateAndMapSessionToAliasKey(QuicChromiumClientSession* session,
                                        QuicSessionAliasKey key,
-                                       std::set<std::string> dns_aliases);
+                                       base::flat_set<std::string> dns_aliases);
 
   // For all alias keys for `session` in `session_aliases_`, erase the
   // corresponding DNS aliases in `dns_aliases_by_session_key_`. Then erase

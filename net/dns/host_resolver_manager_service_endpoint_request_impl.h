@@ -7,10 +7,10 @@
 
 #include <deque>
 #include <optional>
-#include <set>
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/linked_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/safe_ref.h"
@@ -54,7 +54,7 @@ class HostResolverManager::ServiceEndpointRequestImpl
   // HostResolver::ServiceEndpointRequest implementations:
   int Start(Delegate* delegate) override;
   base::span<const ServiceEndpoint> GetEndpointResults() override;
-  const std::set<std::string>& GetDnsAliasResults() override;
+  const base::flat_set<std::string>& GetDnsAliasResults() override;
   bool EndpointsCryptoReady() override;
   ResolveErrorInfo GetResolveErrorInfo() override;
   const HostCache::EntryStaleness* GetStaleInfo() const override;
@@ -129,14 +129,14 @@ class HostResolverManager::ServiceEndpointRequestImpl
   // Holds the finalized results.
   struct FinalizedResult {
     FinalizedResult(std::vector<ServiceEndpoint> endpoints,
-                    std::set<std::string> dns_aliases);
+                    base::flat_set<std::string> dns_aliases);
     ~FinalizedResult();
 
     FinalizedResult(FinalizedResult&&);
     FinalizedResult& operator=(FinalizedResult&&);
 
     std::vector<ServiceEndpoint> endpoints;
-    std::set<std::string> dns_aliases;
+    base::flat_set<std::string> dns_aliases;
   };
 
   // Set when the endpoint results are finalized.

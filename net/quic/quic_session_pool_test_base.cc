@@ -13,6 +13,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -264,7 +265,7 @@ std::unique_ptr<HttpStream> QuicSessionPoolTestBase::CreateStream(
     return nullptr;
   }
 
-  std::set<std::string> dns_aliases =
+  base::flat_set<std::string> dns_aliases =
       session->GetDnsAliasesForSessionKey(request->session_key());
   return std::make_unique<QuicHttpStream>(std::move(session),
                                           std::move(dns_aliases));

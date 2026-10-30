@@ -4,9 +4,13 @@
 
 #include "net/dns/dns_alias_utility.h"
 
-#include <set>
 #include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
 
+#include "base/containers/flat_set.h"
+#include "base/no_destructor.h"
 #include "net/base/url_util.h"
 #include "net/dns/dns_names_util.h"
 #include "net/dns/public/dns_protocol.h"
@@ -16,10 +20,15 @@
 
 namespace net::dns_alias_utility {
 
-std::set<std::string> FixUpDnsAliases(const std::set<std::string>& aliases) {
-  std::set<std::string> fixed_aliases;
+namespace {
 
-  for (const std::string& alias : aliases) {
+template <typename StringType>
+base::flat_set<std::string> FixUpDnsAliasesImpl(
+    const base::flat_set<StringType>& aliases) {
+  std::vector<std::string> fixed_aliases;
+  fixed_aliases.reserve(aliases.size());
+
+  for (std::string_view alias : aliases) {
     if (!dns_names_util::IsValidDnsRecordName(alias)) {
       continue;
     }
@@ -39,10 +48,27 @@ std::set<std::string> FixUpDnsAliases(const std::set<std::string>& aliases) {
     DCHECK_NE(host_info.family, url::CanonHostInfo::Family::IPV6);
 
     output.Complete();
-    fixed_aliases.insert(std::move(canonicalized_alias));
+    fixed_aliases.push_back(std::move(canonicalized_alias));
   }
 
-  return fixed_aliases;
+  return base::flat_set<std::string>(std::move(fixed_aliases));
+}
+
+}  // namespace
+
+const base::flat_set<std::string>& EmptyDnsAliases() {
+  static const base::NoDestructor<base::flat_set<std::string>> kEmptyAliases;
+  return *kEmptyAliases;
+}
+
+base::flat_set<std::string> FixUpDnsAliases(
+    const base::flat_set<std::string>& aliases) {
+  return FixUpDnsAliasesImpl(aliases);
+}
+
+base::flat_set<std::string> FixUpDnsAliases(
+    const base::flat_set<std::string_view>& aliases) {
+  return FixUpDnsAliasesImpl(aliases);
 }
 
 }  // namespace net::dns_alias_utility

@@ -10,10 +10,10 @@
 
 #include <stddef.h>
 
-#include <set>
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -285,7 +285,7 @@ TEST_P(TCPClientSocketTest, DnsAliasesPersistForReuse) {
   EXPECT_TRUE(socket.GetDnsAliases().empty());
 
   // Set the aliases.
-  std::set<std::string> dns_aliases({"alias1", "alias2", "host"});
+  base::flat_set<std::string> dns_aliases({"alias1", "alias2", "host"});
   socket.SetDnsAliases(dns_aliases);
 
   // Verify that the aliases are set.

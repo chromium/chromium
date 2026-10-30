@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/test/bind.h"
@@ -397,7 +398,7 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, NoEndpointUsableForQuic) {
       kDefaultServerHostName,
       MockHostResolverBase::RuleResolver::RuleResult(
           std::move(endpoints),
-          /*aliases=*/std::set<std::string>{kDefaultServerHostName}));
+          /*aliases=*/base::flat_set<std::string>{kDefaultServerHostName}));
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
   crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
@@ -428,7 +429,7 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, SkipsEndpointsWithoutAlpn) {
       kDefaultServerHostName,
       MockHostResolverBase::RuleResolver::RuleResult(
           std::move(endpoints),
-          /*aliases=*/std::set<std::string>{kDefaultServerHostName}));
+          /*aliases=*/base::flat_set<std::string>{kDefaultServerHostName}));
 
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -4286,7 +4287,7 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, SkipsEndpointsWithoutIpAddresses) {
       kDefaultServerHostName,
       MockHostResolverBase::RuleResolver::RuleResult(
           std::move(endpoints),
-          /*aliases=*/std::set<std::string>{kDefaultServerHostName}));
+          /*aliases=*/base::flat_set<std::string>{kDefaultServerHostName}));
 
   Initialize();
   ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
@@ -4333,7 +4334,7 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, FailsWhenEndpointsLackIpAddresses) {
       kDefaultServerHostName,
       MockHostResolverBase::RuleResolver::RuleResult(
           std::move(endpoints),
-          /*aliases=*/std::set<std::string>{kDefaultServerHostName}));
+          /*aliases=*/base::flat_set<std::string>{kDefaultServerHostName}));
 
   Initialize();
 
@@ -4358,7 +4359,7 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, SvcbOptionalWhenEchDisabled) {
       kDefaultServerHostName,
       MockHostResolverBase::RuleResolver::RuleResult(
           {endpoint},
-          /*aliases=*/std::set<std::string>{kDefaultServerHostName}));
+          /*aliases=*/base::flat_set<std::string>{kDefaultServerHostName}));
 
   ssl_config_service_.SetEchModeGetter(
       std::make_unique<TestStaticEchModeGetter>(EchMode::kDisabled,

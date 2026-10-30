@@ -9,9 +9,9 @@
 #define NET_HTTP_HTTP_BASIC_STATE_H_
 
 #include <memory>
-#include <set>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
@@ -90,7 +90,7 @@ class NET_EXPORT_PRIVATE HttpBasicState {
   // Retrieves any DNS aliases for the remote endpoint. Includes all known
   // aliases, e.g. from A, AAAA, or HTTPS, not just from the address used for
   // the connection, in no particular order.
-  const std::set<std::string>& GetDnsAliases() const;
+  const base::flat_set<std::string>& GetDnsAliases() const;
 
  private:
   scoped_refptr<GrowableIOBuffer> read_buf_;

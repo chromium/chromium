@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -98,7 +99,7 @@ void HttpStreamPool::QuicAttempt::Start() {
           ? base::TimeTicks::Now()
           : manager_->dns_resolution_end_time();
 
-  std::set<std::string> dns_aliases =
+  base::flat_set<std::string> dns_aliases =
       manager_->service_endpoint_request()->GetDnsAliasResults();
   int rv = request_->RequestSession(
       quic_endpoint_, cert_verify_flags, dns_resolution_start_time,

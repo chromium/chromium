@@ -4,8 +4,10 @@
 
 #include "net/socket/socket.h"
 
-#include <set>
+#include <string>
+#include <utility>
 
+#include "base/containers/flat_set.h"
 #include "net/base/net_errors.h"
 
 namespace net {
@@ -24,8 +26,8 @@ int Socket::CancelReadIfReady() {
   return ERR_READ_IF_READY_NOT_IMPLEMENTED;
 }
 
-void Socket::SetDnsAliases(std::set<std::string> aliases) {
-  if (aliases == std::set<std::string>({""})) {
+void Socket::SetDnsAliases(base::flat_set<std::string> aliases) {
+  if (aliases.size() == 1 && aliases.begin()->empty()) {
     // Reset field to empty vector. Necessary because some tests and other
     // inputs still use a trivial canonical name of std::string().
     dns_aliases_.clear();
@@ -35,7 +37,7 @@ void Socket::SetDnsAliases(std::set<std::string> aliases) {
   dns_aliases_ = std::move(aliases);
 }
 
-const std::set<std::string>& Socket::GetDnsAliases() const {
+const base::flat_set<std::string>& Socket::GetDnsAliases() const {
   return dns_aliases_;
 }
 

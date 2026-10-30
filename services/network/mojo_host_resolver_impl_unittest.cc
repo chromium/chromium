@@ -6,11 +6,11 @@
 
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -171,7 +171,7 @@ class DestructionHookHostResolver : public net::MockHostResolver {
     base::span<const net::HostPortPair> GetHostnameResults() const override {
       return request_->GetHostnameResults();
     }
-    const std::set<std::string>& GetDnsAliasResults() const override {
+    const base::flat_set<std::string>& GetDnsAliasResults() const override {
       return request_->GetDnsAliasResults();
     }
     net::ResolveErrorInfo GetResolveErrorInfo() const override {

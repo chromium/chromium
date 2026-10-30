@@ -8,9 +8,9 @@
 #include <stdint.h>
 
 #include <memory>
-#include <set>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/socket/next_proto.h"
@@ -56,8 +56,8 @@ class NET_EXPORT WebSocketStreamSocket final : public StreamSocket {
             const NetworkTrafficAnnotationTag& traffic_annotation) override;
   int SetReceiveBufferSize(int32_t size) override;
   int SetSendBufferSize(int32_t size) override;
-  void SetDnsAliases(std::set<std::string> aliases) override;
-  const std::set<std::string>& GetDnsAliases() const override;
+  void SetDnsAliases(base::flat_set<std::string> aliases) override;
+  const base::flat_set<std::string>& GetDnsAliases() const override;
 
   // StreamSocket implementation:
   int Connect(CompletionOnceCallback callback) override;

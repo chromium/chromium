@@ -4,6 +4,7 @@
 
 #include "net/http/http_stream_pool_test_util.h"
 
+#include "base/containers/flat_set.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -66,7 +67,7 @@ FakeServiceEndpointResolution& FakeServiceEndpointResolution::add_endpoint(
 }
 
 FakeServiceEndpointResolution& FakeServiceEndpointResolution::set_aliases(
-    std::set<std::string> aliases) {
+    base::flat_set<std::string> aliases) {
   aliases_ = std::move(aliases);
   return *this;
 }
@@ -107,7 +108,7 @@ FakeServiceEndpointRequest& FakeServiceEndpointRequest::add_endpoint(
 }
 
 FakeServiceEndpointRequest& FakeServiceEndpointRequest::set_aliases(
-    std::set<std::string> aliases) {
+    base::flat_set<std::string> aliases) {
   resolution_.set_aliases(std::move(aliases));
   return *this;
 }
@@ -181,7 +182,8 @@ FakeServiceEndpointRequest::GetEndpointResults() {
   return resolution_.endpoints();
 }
 
-const std::set<std::string>& FakeServiceEndpointRequest::GetDnsAliasResults() {
+const base::flat_set<std::string>&
+FakeServiceEndpointRequest::GetDnsAliasResults() {
   return resolution_.aliases();
 }
 

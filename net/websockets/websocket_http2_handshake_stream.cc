@@ -4,12 +4,12 @@
 
 #include "net/websockets/websocket_http2_handshake_stream.h"
 
-#include <set>
 #include <string_view>
 #include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -50,7 +50,7 @@ WebSocketHttp2HandshakeStream::WebSocketHttp2HandshakeStream(
     std::vector<std::string> requested_sub_protocols,
     std::vector<std::string> requested_extensions,
     WebSocketStreamRequestAPI* request,
-    std::set<std::string> dns_aliases)
+    base::flat_set<std::string> dns_aliases)
     : session_(std::move(session)),
       connect_delegate_(connect_delegate),
       requested_sub_protocols_(std::move(requested_sub_protocols)),
@@ -249,8 +249,8 @@ WebSocketHttp2HandshakeStream::RenewStreamForAuth() {
   return nullptr;
 }
 
-const std::set<std::string>& WebSocketHttp2HandshakeStream::GetDnsAliases()
-    const {
+const base::flat_set<std::string>&
+WebSocketHttp2HandshakeStream::GetDnsAliases() const {
   return dns_aliases_;
 }
 

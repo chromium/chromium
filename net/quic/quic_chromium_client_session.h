@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -302,7 +303,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     // in `session_pool_`. Includes all known aliases, e.g. from A, AAAA, or
     // HTTPS, not just from the address used for the connection, in no
     // particular order.
-    const std::set<std::string>& GetDnsAliasesForSessionKey(
+    const base::flat_set<std::string>& GetDnsAliasesForSessionKey(
         const QuicSessionKey& key) const;
 
     // Returns the largest payload that will fit into a single MESSAGE frame at
@@ -995,7 +996,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // in `session_pool_`. Includes all known aliases, e.g. from A, AAAA, or
   // HTTPS, not just from the address used for the connection, in no particular
   // order.
-  const std::set<std::string>& GetDnsAliasesForSessionKey(
+  const base::flat_set<std::string>& GetDnsAliasesForSessionKey(
       const QuicSessionKey& key) const;
 
   const std::set<url::SchemeHostPort>& received_origins() const {

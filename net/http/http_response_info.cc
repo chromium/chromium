@@ -5,7 +5,10 @@
 #include "net/http/http_response_info.h"
 
 #include <optional>
+#include <utility>
+#include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
@@ -350,15 +353,20 @@ bool HttpResponseInfo::InitFromPickle(base::PickleIterator iter,
   // Read DNS aliases.
   if (flags & RESPONSE_INFO_HAS_DNS_ALIASES) {
     int num_aliases;
-    if (!iter.ReadInt(&num_aliases))
+    if (!iter.ReadInt(&num_aliases) || num_aliases < 0) {
       return false;
-
-    std::string alias;
-    for (int i = 0; i < num_aliases; i++) {
-      if (!iter.ReadString(&alias))
-        return false;
-      dns_aliases.insert(alias);
     }
+
+    std::vector<std::string> aliases;
+    aliases.reserve(static_cast<size_t>(num_aliases));
+    for (int i = 0; i < num_aliases; i++) {
+      std::string alias;
+      if (!iter.ReadString(&alias)) {
+        return false;
+      }
+      aliases.push_back(std::move(alias));
+    }
+    dns_aliases = base::flat_set<std::string>(std::move(aliases));
   }
 
   ssl_info.encrypted_client_hello =
@@ -474,12 +482,15 @@ std::unique_ptr<base::Pickle> HttpResponseInfo::MakePickleImpl(
   // RESPONSE_INFO_UNUSED_WAS_SINGLE_KEYED_CACHE_ENTRY_UNUSABLE is not used.
   if (ssl_info.pkp_bypassed)
     flags |= RESPONSE_INFO_PKP_BYPASSED;
-  if (!stale_revalidate_timeout.is_null())
+  if (!stale_revalidate_timeout.is_null()) {
     flags |= RESPONSE_INFO_HAS_STALENESS;
-  if (!dns_aliases.empty())
+  }
+  if (!dns_aliases.empty()) {
     flags |= RESPONSE_INFO_HAS_DNS_ALIASES;
-  if (ssl_info.encrypted_client_hello)
+  }
+  if (ssl_info.encrypted_client_hello) {
     flags |= RESPONSE_INFO_ENCRYPTED_CLIENT_HELLO;
+  }
 
   if (proxy_chain.IsValid()) {
     extra_flags |= RESPONSE_EXTRA_INFO_HAS_PROXY_CHAIN;
@@ -549,8 +560,9 @@ std::unique_ptr<base::Pickle> HttpResponseInfo::MakePickleImpl(
 
   if (!dns_aliases.empty()) {
     pickle->WriteInt(dns_aliases.size());
-    for (const auto& alias : dns_aliases)
+    for (const auto& alias : dns_aliases) {
       pickle->WriteString(alias);
+    }
   }
 
   if (proxy_chain.IsValid()) {

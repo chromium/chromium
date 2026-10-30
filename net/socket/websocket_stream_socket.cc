@@ -5,9 +5,10 @@
 #include "net/socket/websocket_stream_socket.h"
 
 #include <memory>
-#include <set>
 #include <string>
+#include <utility>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_helpers.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
@@ -63,11 +64,12 @@ int WebSocketStreamSocket::SetSendBufferSize(int32_t size) {
   return wrapped_socket_->SetSendBufferSize(size);
 }
 
-void WebSocketStreamSocket::SetDnsAliases(std::set<std::string> aliases) {
+void WebSocketStreamSocket::SetDnsAliases(base::flat_set<std::string> aliases) {
   wrapped_socket_->SetDnsAliases(std::move(aliases));
 }
 
-const std::set<std::string>& WebSocketStreamSocket::GetDnsAliases() const {
+const base::flat_set<std::string>& WebSocketStreamSocket::GetDnsAliases()
+    const {
   return wrapped_socket_->GetDnsAliases();
 }
 

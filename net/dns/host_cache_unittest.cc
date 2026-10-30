@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -1844,7 +1845,7 @@ TEST(HostCacheTest, SerializeAndDeserializeEndpointResult) {
   std::string other_alias = "other_alias.test";
   std::vector<IPEndPoint> ip_endpoints = {ipv6_endpoint, ipv4_endpoint1,
                                           ipv4_endpoint2, other_ipv4_endpoint};
-  std::set<std::string> aliases = {ipv6_alias, ipv4_alias, other_alias};
+  base::flat_set<std::string> aliases = {ipv6_alias, ipv4_alias, other_alias};
   HostCache::Entry entry(OK, ip_endpoints, aliases,
                          HostCache::Entry::SOURCE_DNS, ttl);
 
@@ -2499,7 +2500,7 @@ TEST(HostCacheTest, MergeEntries_bothEmpty) {
 
 TEST(HostCacheTest, MergeEntries_frontWithAliasesNoAddressesBackWithBoth) {
   HostCache::Entry front(ERR_NAME_NOT_RESOLVED, HostCache::Entry::SOURCE_DNS);
-  std::set<std::string> aliases_front({"alias0", "alias1", "alias2"});
+  base::flat_set<std::string> aliases_front({"alias0", "alias1", "alias2"});
   front.set_aliases(aliases_front);
 
   const IPAddress kAddressBack(0x20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -2524,7 +2525,7 @@ TEST(HostCacheTest, MergeEntries_frontWithAliasesNoAddressesBackWithBoth) {
 
 TEST(HostCacheTest, MergeEntries_backWithAliasesNoAddressesFrontWithBoth) {
   HostCache::Entry back(ERR_NAME_NOT_RESOLVED, HostCache::Entry::SOURCE_DNS);
-  std::set<std::string> aliases_back({"alias1", "alias2", "alias3"});
+  base::flat_set<std::string> aliases_back({"alias1", "alias2", "alias3"});
   back.set_aliases(aliases_back);
 
   const IPAddress kAddressFront(0x20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

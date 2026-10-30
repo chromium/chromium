@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -48,6 +49,7 @@
 #include "net/base/trace_constants.h"
 #include "net/base/url_util.h"
 #include "net/cert/cert_verifier.h"
+#include "net/dns/dns_alias_utility.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_proxy_connect_job.h"
@@ -878,7 +880,7 @@ QuicChromiumClientSession*
 QuicSessionPool::HasMatchingIpSessionForServiceEndpoint(
     const QuicSessionAliasKey& session_alias_key,
     const ServiceEndpoint& service_endpoint,
-    const std::set<std::string>& dns_aliases,
+    const base::flat_set<std::string>& dns_aliases,
     bool use_dns_aliases,
     bool log_negative_result) {
   if (QuicChromiumClientSession* session = HasMatchingIpSession(
@@ -954,7 +956,7 @@ int QuicSessionPool::RequestSession(
     LogUsingExistingSession(net_log, existing_session, destination);
     if (!HasActiveSession(session_key)) {
       QuicSessionAliasKey key(destination, session_key);
-      std::set<std::string> dns_aliases;
+      base::flat_set<std::string> dns_aliases;
       ActivateAndMapSessionToAliasKey(existing_session, key,
                                       std::move(dns_aliases));
     }
@@ -1053,7 +1055,7 @@ std::unique_ptr<QuicSessionAttempt> QuicSessionPool::CreateSessionAttempt(
     base::TimeTicks dns_resolution_end_time,
     std::optional<ResolutionDetails> dns_resolution_details,
     bool use_dns_aliases,
-    std::set<std::string> dns_aliases,
+    base::flat_set<std::string> dns_aliases,
     MultiplexedSessionCreationInitiator session_creation_initiator,
     std::optional<ConnectionManagementConfig> connection_management_config,
     bool is_stale) {
@@ -1678,13 +1680,12 @@ base::TimeDelta QuicSessionPool::GetTimeDelayForWaitingJob(
   return base::Microseconds(srtt) + GetAdditionalDelayForMainJob();
 }
 
-const std::set<std::string>& QuicSessionPool::GetDnsAliasesForSessionKey(
+const base::flat_set<std::string>& QuicSessionPool::GetDnsAliasesForSessionKey(
     const QuicSessionKey& key) const {
   auto it = dns_aliases_by_session_key_.find(key);
 
   if (it == dns_aliases_by_session_key_.end()) {
-    static const base::NoDestructor<std::set<std::string>> emptyvector_result;
-    return *emptyvector_result;
+    return dns_alias_utility::EmptyDnsAliases();
   }
 
   return it->second;
@@ -1695,7 +1696,7 @@ void QuicSessionPool::ActivateSessionForTesting(
   QuicChromiumClientSession* session = new_session.get();
   all_sessions_.insert(std::move(new_session));
   ActivateSession(session->session_alias_key(), session,
-                  std::set<std::string>());
+                  base::flat_set<std::string>());
 }
 
 void QuicSessionPool::DeactivateSessionForTesting(
@@ -1756,7 +1757,7 @@ void QuicSessionPool::LogConnectionIpPooling(bool pooled) {
 QuicChromiumClientSession* QuicSessionPool::HasMatchingIpSession(
     const QuicSessionAliasKey& key,
     const std::vector<IPEndPoint>& ip_endpoints,
-    const std::set<std::string>& aliases,
+    const base::flat_set<std::string>& aliases,
     bool use_dns_aliases,
     bool log_negative_result) {
   const quic::QuicServerId& server_id(key.server_id());
@@ -1782,7 +1783,7 @@ QuicChromiumClientSession* QuicSessionPool::HasMatchingIpSession(
       if (!session->CanPool(server_id.host(), key.session_key())) {
         continue;
       }
-      std::set<std::string> dns_aliases;
+      base::flat_set<std::string> dns_aliases;
       if (use_dns_aliases) {
         dns_aliases = aliases;
       }
@@ -1811,7 +1812,7 @@ QuicChromiumClientSession* QuicSessionPool::HasMatchingIpSession(
         (ignore_ip_matching_when_finding_existing_sessions_ &&
          quic::ContainsQuicTag(session->received_connection_options(),
                                quic::kNOIP))) {
-      std::set<std::string> dns_aliases;
+      base::flat_set<std::string> dns_aliases;
       if (use_dns_aliases) {
         dns_aliases = aliases;
       }
@@ -2587,7 +2588,7 @@ QuicSessionPool::CreateSessionHelper(
 
 void QuicSessionPool::ActivateSession(const QuicSessionAliasKey& key,
                                       QuicChromiumClientSession* session,
-                                      std::set<std::string> dns_aliases) {
+                                      base::flat_set<std::string> dns_aliases) {
   DCHECK(!HasActiveSession(key.session_key()));
   UMA_HISTOGRAM_COUNTS_1M("Net.QuicActiveSessions", active_sessions_.size());
   ActivateAndMapSessionToAliasKey(session, key, std::move(dns_aliases));
@@ -2888,7 +2889,7 @@ void QuicSessionPool::ProcessGoingAwaySession(
 void QuicSessionPool::ActivateAndMapSessionToAliasKey(
     QuicChromiumClientSession* session,
     QuicSessionAliasKey key,
-    std::set<std::string> dns_aliases) {
+    base::flat_set<std::string> dns_aliases) {
   active_sessions_[key.session_key()] = session;
   dns_aliases_by_session_key_[key.session_key()] = std::move(dns_aliases);
   session_aliases_[session].insert(std::move(key));

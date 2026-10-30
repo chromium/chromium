@@ -12,11 +12,11 @@
 #include <stdint.h>
 
 #include <memory>
-#include <set>
 #include <string>
 #include <string_view>
 
 #include "base/byte_size.h"
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
@@ -99,7 +99,7 @@ class NET_EXPORT_PRIVATE HttpBasicStream : public HttpStream {
 
   void SetRequestHeadersCallback(RequestHeadersCallback callback) override;
 
-  const std::set<std::string>& GetDnsAliases() const override;
+  const base::flat_set<std::string>& GetDnsAliases() const override;
 
   std::string_view GetAcceptChViaAlps() const override;
 

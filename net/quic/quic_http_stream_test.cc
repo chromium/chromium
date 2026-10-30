@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -449,7 +450,7 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
     stream_ = std::make_unique<QuicHttpStream>(
         session_->CreateHandle(
             url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443)),
-        /*dns_aliases=*/std::set<std::string>());
+        /*dns_aliases=*/base::flat_set<std::string>());
   }
 
   void SetRequest(const string& method,
@@ -1084,7 +1085,7 @@ TEST_P(QuicHttpStreamTest, ElideHeadersInNetLog) {
   auto stream = std::make_unique<QuicHttpStream>(
       session_->CreateHandle(
           url::SchemeHostPort(url::kHttpsScheme, "www.example.org/foo", 443)),
-      /*dns_aliases=*/std::set<std::string>());
+      /*dns_aliases=*/base::flat_set<std::string>());
   stream->RegisterRequest(&request_);
   EXPECT_THAT(
       stream->InitializeStream(true, DEFAULT_PRIORITY, net_log_with_source_,

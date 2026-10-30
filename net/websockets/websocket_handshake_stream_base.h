@@ -10,11 +10,11 @@
 // this file must not introduce any link-time dependencies on websockets.
 
 #include <memory>
-#include <set>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "net/base/net_export.h"
@@ -129,14 +129,14 @@ class NET_EXPORT WebSocketHandshakeStreamBase : public HttpStream {
     // has been opened.  This cannot be called more than once.
     virtual std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp2Stream(
         base::WeakPtr<SpdySession> session,
-        std::set<std::string> dns_aliases) = 0;
+        base::flat_set<std::string> dns_aliases) = 0;
 
     // Create a WebSocketHttp3HandshakeStream. This is called after the
     // underlying HTTP/3 connection has been established but before the stream
     // has been opened.  This cannot be called more than once.
     virtual std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp3Stream(
         std::unique_ptr<QuicChromiumClientSession::Handle> session,
-        std::set<std::string> dns_aliases) = 0;
+        base::flat_set<std::string> dns_aliases) = 0;
   };
 
   // After the handshake has completed, this method creates a WebSocketStream

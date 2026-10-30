@@ -21,6 +21,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/clamped_math.h"
@@ -159,7 +160,7 @@ class NET_EXPORT HostCache {
     // Use for address entries.
     Entry(int error,
           std::vector<IPEndPoint> ip_endpoints,
-          std::set<std::string> aliases,
+          base::flat_set<std::string> aliases,
           Source source,
           std::optional<base::TimeDelta> ttl = std::nullopt);
 
@@ -216,8 +217,8 @@ class NET_EXPORT HostCache {
     }
     std::vector<ConnectionEndpointMetadata> GetMetadatas() const;
     void ClearMetadatas() { endpoint_metadatas_.clear(); }
-    const std::set<std::string>& aliases() const { return aliases_; }
-    void set_aliases(std::set<std::string> aliases) {
+    const base::flat_set<std::string>& aliases() const { return aliases_; }
+    void set_aliases(base::flat_set<std::string> aliases) {
       aliases_ = std::move(aliases);
     }
     const std::vector<std::string>& text_records() const {
@@ -294,7 +295,7 @@ class NET_EXPORT HostCache {
           std::vector<IPEndPoint> ip_endpoints,
           std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>
               endpoint_metadatas,
-          std::set<std::string> aliases,
+          base::flat_set<std::string> aliases,
           std::vector<std::string>&& text_results,
           std::vector<HostPortPair>&& hostnames,
           Source source,
@@ -329,7 +330,7 @@ class NET_EXPORT HostCache {
     std::vector<IPEndPoint> ip_endpoints_;
     std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>
         endpoint_metadatas_;
-    std::set<std::string> aliases_;
+    base::flat_set<std::string> aliases_;
     std::vector<std::string> text_records_;
     std::vector<HostPortPair> hostnames_;
 

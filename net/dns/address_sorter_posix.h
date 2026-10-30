@@ -6,6 +6,7 @@
 #define NET_DNS_ADDRESS_SORTER_POSIX_H_
 
 #include <map>
+#include <set>
 #include <tuple>
 #include <vector>
 

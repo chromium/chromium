@@ -9,12 +9,12 @@
 
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/byte_size.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -55,7 +55,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp3HandshakeStream final
       std::vector<std::string> requested_sub_protocols,
       std::vector<std::string> requested_extensions,
       WebSocketStreamRequestAPI* request,
-      std::set<std::string> dns_aliases);
+      base::flat_set<std::string> dns_aliases);
 
   WebSocketHttp3HandshakeStream(const WebSocketHttp3HandshakeStream&) = delete;
   WebSocketHttp3HandshakeStream& operator=(
@@ -94,7 +94,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp3HandshakeStream final
       LoadTimingInternalInfo* load_timing_internal_info) const override;
   void PopulateNetErrorDetails(NetErrorDetails* details) override;
   std::unique_ptr<HttpStream> RenewStreamForAuth() override;
-  const std::set<std::string>& GetDnsAliases() const override;
+  const base::flat_set<std::string>& GetDnsAliases() const override;
   std::string_view GetAcceptChViaAlps() const override;
 
   // WebSocketHandshakeStreamBase methods.
@@ -188,7 +188,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp3HandshakeStream final
   // The extension parameters negotiated during the handshake.
   std::unique_ptr<WebSocketExtensionParams> extension_params_;
 
-  std::set<std::string> dns_aliases_;
+  base::flat_set<std::string> dns_aliases_;
 
   base::WeakPtrFactory<WebSocketHttp3HandshakeStream> weak_ptr_factory_{this};
 };

@@ -949,11 +949,11 @@ int DelayedStreamSocket::SetSendBufferSize(int32_t size) {
   return wrapped_socket_->SetSendBufferSize(size);
 }
 
-void DelayedStreamSocket::SetDnsAliases(std::set<std::string> aliases) {
+void DelayedStreamSocket::SetDnsAliases(base::flat_set<std::string> aliases) {
   wrapped_socket_->SetDnsAliases(std::move(aliases));
 }
 
-const std::set<std::string>& DelayedStreamSocket::GetDnsAliases() const {
+const base::flat_set<std::string>& DelayedStreamSocket::GetDnsAliases() const {
   return wrapped_socket_->GetDnsAliases();
 }
 

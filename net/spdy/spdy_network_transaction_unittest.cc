@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -3138,7 +3139,7 @@ TEST_P(SpdyNetworkTransactionTest, SocketTagChangeSessionTagWithDnsAliases) {
                                      std::move(session_deps));
 
   GURL url = request_.url;
-  std::set<std::string> dns_aliases({"alias1", "alias2", "alias3"});
+  base::flat_set<std::string> dns_aliases({"alias1", "alias2", "alias3"});
   helper.session_deps()->host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
       url.GetHost(), "127.0.0.1", dns_aliases);
 
@@ -3267,9 +3268,9 @@ TEST_P(SpdyNetworkTransactionTest,
   NormalSpdyTransactionHelper helper(request_, DEFAULT_PRIORITY, log_,
                                      std::move(session_deps));
   GURL url1 = request_.url;
-  std::set<std::string> dns_aliases1({"alias1", "alias2", "alias3"});
+  base::flat_set<std::string> dns_aliases1({"alias1", "alias2", "alias3"});
   GURL url2("https://example.test/");
-  std::set<std::string> dns_aliases2({"example.net", "example.com"});
+  base::flat_set<std::string> dns_aliases2({"example.net", "example.com"});
 
   helper.session_deps()->host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
       url1.GetHost(), "127.0.0.1", dns_aliases1);

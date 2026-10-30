@@ -9,12 +9,12 @@
 
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/byte_size.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
@@ -58,7 +58,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
       std::vector<std::string> requested_sub_protocols,
       std::vector<std::string> requested_extensions,
       WebSocketStreamRequestAPI* request,
-      std::set<std::string> dns_aliases);
+      base::flat_set<std::string> dns_aliases);
 
   WebSocketHttp2HandshakeStream(const WebSocketHttp2HandshakeStream&) = delete;
   WebSocketHttp2HandshakeStream& operator=(
@@ -97,7 +97,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
       LoadTimingInternalInfo* load_timing_internal_info) const override;
   void PopulateNetErrorDetails(NetErrorDetails* details) override;
   std::unique_ptr<HttpStream> RenewStreamForAuth() override;
-  const std::set<std::string>& GetDnsAliases() const override;
+  const base::flat_set<std::string>& GetDnsAliases() const override;
   std::string_view GetAcceptChViaAlps() const override;
   void SetHTTP11Required() override;
 
@@ -199,7 +199,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
   // e.g. from A, AAAA, or HTTPS, not just from the address used for the
   // connection, in no particular order. These are stored in the stream instead
   // of the session due to complications related to IP-pooling.
-  std::set<std::string> dns_aliases_;
+  base::flat_set<std::string> dns_aliases_;
 
   base::WeakPtrFactory<WebSocketHttp2HandshakeStream> weak_ptr_factory_{this};
 };

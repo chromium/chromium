@@ -12,6 +12,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/linked_list.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
@@ -801,8 +802,7 @@ void HostResolverManager::Job::OnSystemTaskComplete(
     ttl = base::Seconds(kCacheEntryTTLSeconds);
   }
 
-  auto aliases = std::set<std::string>(addr_list.dns_aliases().begin(),
-                                       addr_list.dns_aliases().end());
+  auto aliases = base::flat_set<std::string>(addr_list.dns_aliases());
 
   // Source unknown because the system resolver could have gotten it from a
   // hosts file, its own cache, a DNS lookup or somewhere else.

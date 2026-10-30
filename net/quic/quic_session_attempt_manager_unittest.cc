@@ -6,8 +6,8 @@
 
 #include <memory>
 #include <optional>
-#include <set>
 
+#include "base/containers/flat_set.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -178,7 +178,7 @@ class SessionRequester {
   int cert_verify_flags_ = 0;
   base::TimeTicks dns_resolution_start_time_ = base::TimeTicks::Now();
   base::TimeTicks dns_resolution_end_time_ = base::TimeTicks::Now();
-  std::set<std::string> dns_aliases_;
+  base::flat_set<std::string> dns_aliases_;
   MultiplexedSessionCreationInitiator session_creation_initiator_ =
       MultiplexedSessionCreationInitiator::kUnknown;
   std::optional<ConnectionManagementConfig> connection_management_config_;

@@ -18,6 +18,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/safe_ref.h"
@@ -144,7 +145,7 @@ class MockHostResolverBase : public HostResolver {
       RuleResult();
       explicit RuleResult(
           std::vector<HostResolverEndpointResult> endpoints,
-          std::set<std::string> aliases = std::set<std::string>());
+          base::flat_set<std::string> aliases = base::flat_set<std::string>());
 
       ~RuleResult();
 
@@ -154,7 +155,7 @@ class MockHostResolverBase : public HostResolver {
       RuleResult& operator=(RuleResult&&);
 
       std::vector<HostResolverEndpointResult> endpoints;
-      std::set<std::string> aliases;
+      base::flat_set<std::string> aliases;
     };
 
     using ErrorResult = Error;
@@ -196,9 +197,10 @@ class MockHostResolverBase : public HostResolver {
     void AddIPLiteralRuleWithDnsAliases(std::string_view hostname_pattern,
                                         std::string_view ip_literal,
                                         std::vector<std::string> dns_aliases);
-    void AddIPLiteralRuleWithDnsAliases(std::string_view hostname_pattern,
-                                        std::string_view ip_literal,
-                                        std::set<std::string> dns_aliases);
+    void AddIPLiteralRuleWithDnsAliases(
+        std::string_view hostname_pattern,
+        std::string_view ip_literal,
+        base::flat_set<std::string> dns_aliases);
     void AddSimulatedFailure(std::string_view hostname_pattern);
     void AddSimulatedTimeoutFailure(std::string_view hostname_pattern);
     void AddRuleWithFlags(std::string_view host_pattern,
@@ -469,7 +471,7 @@ class MockHostResolverBase : public HostResolver {
       HostResolverSource source,
       HostResolver::ResolveHostParameters::CacheUsage cache_usage,
       std::vector<HostResolverEndpointResult>* out_endpoints,
-      std::set<std::string>* out_aliases,
+      base::flat_set<std::string>* out_aliases,
       std::optional<HostCache::EntryStaleness>* out_stale_info);
   int DoSynchronousResolution(RequestBase& request);
 

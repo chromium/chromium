@@ -7,11 +7,11 @@
 
 #include <map>
 #include <memory>
-#include <set>
 #include <string>
 #include <variant>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -95,7 +95,7 @@ class NET_EXPORT_PRIVATE DnsTaskResultsManager {
 
   // Returns all DNS record aliases, found as a result of A, AAAA, and HTTPS
   // queries. The results could change over time.
-  const std::set<std::string>& GetAliases() const;
+  const base::flat_set<std::string>& GetAliases() const;
 
   // True when a HTTP response is received. When true, call sites can start
   // cryptographic handshakes since Chrome doesn't support HTTPS follow-up
@@ -158,7 +158,7 @@ class NET_EXPORT_PRIVATE DnsTaskResultsManager {
   // results).
   bool aaaa_response_received_ = false;
 
-  std::set<std::string> aliases_;
+  base::flat_set<std::string> aliases_;
 
   std::map</*domain_name=*/std::string, std::unique_ptr<PerDomainResult>>
       per_domain_results_;

@@ -6,10 +6,10 @@
 
 #include <sstream>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/memory/safe_ref.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/types/optional_util.h"
 #include "net/base/features.h"
@@ -30,7 +30,7 @@ namespace net {
 
 HostResolverManager::ServiceEndpointRequestImpl::FinalizedResult::
     FinalizedResult(std::vector<ServiceEndpoint> endpoints,
-                    std::set<std::string> dns_aliases)
+                    base::flat_set<std::string> dns_aliases)
     : endpoints(std::move(endpoints)), dns_aliases(std::move(dns_aliases)) {}
 
 HostResolverManager::ServiceEndpointRequestImpl::FinalizedResult::
@@ -142,7 +142,7 @@ HostResolverManager::ServiceEndpointRequestImpl::GetEndpointResults() {
   return {};
 }
 
-const std::set<std::string>&
+const base::flat_set<std::string>&
 HostResolverManager::ServiceEndpointRequestImpl::GetDnsAliasResults() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -154,8 +154,7 @@ HostResolverManager::ServiceEndpointRequestImpl::GetDnsAliasResults() {
     return job_.value()->dns_task_results_manager()->GetAliases();
   }
 
-  static const base::NoDestructor<std::set<std::string>> kEmptyDnsAliases;
-  return *kEmptyDnsAliases.get();
+  return dns_alias_utility::EmptyDnsAliases();
 }
 
 bool HostResolverManager::ServiceEndpointRequestImpl::EndpointsCryptoReady() {

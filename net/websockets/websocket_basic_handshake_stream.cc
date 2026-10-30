@@ -7,7 +7,6 @@
 #include <stddef.h>
 
 #include <array>
-#include <set>
 #include <string_view>
 #include <type_traits>
 #include <utility>
@@ -15,6 +14,7 @@
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -396,8 +396,8 @@ WebSocketBasicHandshakeStream::RenewStreamForAuth() {
   return handshake_stream;
 }
 
-const std::set<std::string>& WebSocketBasicHandshakeStream::GetDnsAliases()
-    const {
+const base::flat_set<std::string>&
+WebSocketBasicHandshakeStream::GetDnsAliases() const {
   return state_.GetDnsAliases();
 }
 

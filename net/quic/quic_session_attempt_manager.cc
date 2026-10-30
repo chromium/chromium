@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -76,7 +77,7 @@ class QuicSessionAttemptManager::Job : public QuicSessionAttempt::Delegate {
       base::TimeTicks dns_resolution_end_time,
       std::optional<ResolutionDetails> dns_resolution_details,
       bool use_dns_aliases,
-      std::set<std::string> dns_aliases,
+      base::flat_set<std::string> dns_aliases,
       MultiplexedSessionCreationInitiator session_creation_initiator,
       std::optional<ConnectionManagementConfig> connection_management_config) {
     AddRequest(request);
@@ -268,7 +269,7 @@ int QuicSessionAttemptManager::RequestSession(
     base::TimeTicks dns_resolution_end_time,
     std::optional<ResolutionDetails> dns_resolution_details,
     bool use_dns_aliases,
-    std::set<std::string> dns_aliases,
+    base::flat_set<std::string> dns_aliases,
     MultiplexedSessionCreationInitiator session_creation_initiator,
     std::optional<ConnectionManagementConfig> connection_management_config,
     const NetLogWithSource& net_log) {

@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
@@ -31,6 +32,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/task/task_runner.h"
 #include "net/dns/context_host_resolver.h"
+#include "net/dns/dns_alias_utility.h"
 #include "net/dns/dns_client.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/host_cache.h"
@@ -93,9 +95,8 @@ class FailingRequestImpl : public HostResolver::ResolveHostRequest,
     return {};
   }
 
-  const std::set<std::string>& GetDnsAliasResults() const override {
-    static const base::NoDestructor<std::set<std::string>> kEmptyResult;
-    return *kEmptyResult;
+  const base::flat_set<std::string>& GetDnsAliasResults() const override {
+    return dns_alias_utility::EmptyDnsAliases();
   }
 
   ResolveErrorInfo GetResolveErrorInfo() const override {
@@ -133,9 +134,8 @@ class FailingServiceEndpointRequestImpl
 
   base::span<const ServiceEndpoint> GetEndpointResults() override { return {}; }
 
-  const std::set<std::string>& GetDnsAliasResults() override {
-    static const base::NoDestructor<std::set<std::string>> kEmptyResult;
-    return *kEmptyResult.get();
+  const base::flat_set<std::string>& GetDnsAliasResults() override {
+    return dns_alias_utility::EmptyDnsAliases();
   }
 
   bool EndpointsCryptoReady() override { return false; }
@@ -588,7 +588,7 @@ int HostResolver::SquashErrorCode(int error) {
 // static
 AddressList HostResolver::EndpointResultToAddressList(
     base::span<const HostResolverEndpointResult> endpoints,
-    const std::set<std::string>& aliases) {
+    const base::flat_set<std::string>& aliases) {
   AddressList list;
 
   auto authority_endpoint = std::ranges::find_if_not(

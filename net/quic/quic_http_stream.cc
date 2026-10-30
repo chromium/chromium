@@ -4,11 +4,11 @@
 
 #include "net/quic/quic_http_stream.h"
 
-#include <set>
 #include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
@@ -38,7 +38,7 @@ namespace net {
 
 QuicHttpStream::QuicHttpStream(
     std::unique_ptr<QuicChromiumClientSession::Handle> session,
-    std::set<std::string> dns_aliases)
+    base::flat_set<std::string> dns_aliases)
     : MultiplexedHttpStream(std::move(session)),
       dns_aliases_(std::move(dns_aliases)) {}
 
@@ -335,7 +335,7 @@ void QuicHttpStream::OnReadResponseHeadersComplete(int rv) {
   }
 }
 
-const std::set<std::string>& QuicHttpStream::GetDnsAliases() const {
+const base::flat_set<std::string>& QuicHttpStream::GetDnsAliases() const {
   return dns_aliases_;
 }
 

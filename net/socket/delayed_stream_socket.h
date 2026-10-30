@@ -9,12 +9,12 @@
 
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
 #include <string_view>
 
 #include "base/cancelable_callback.h"
 #include "base/containers/circular_deque.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -143,8 +143,8 @@ class NET_EXPORT DelayedStreamSocket : public StreamSocket {
             const NetworkTrafficAnnotationTag& traffic_annotation) override;
   int SetReceiveBufferSize(int32_t size) override;
   int SetSendBufferSize(int32_t size) override;
-  void SetDnsAliases(std::set<std::string> aliases) override;
-  const std::set<std::string>& GetDnsAliases() const override;
+  void SetDnsAliases(base::flat_set<std::string> aliases) override;
+  const base::flat_set<std::string>& GetDnsAliases() const override;
 
   // StreamSocket implementation:
   int Connect(CompletionOnceCallback callback) override;

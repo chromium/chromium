@@ -91,7 +91,7 @@ bool IsEndpointInFreshList(const IPEndPoint& endpoint,
 
 TcpConnectJob::ServiceEndpointOverride::ServiceEndpointOverride(
     ServiceEndpoint endpoint,
-    std::set<std::string> dns_aliases)
+    base::flat_set<std::string> dns_aliases)
     : endpoints({std::move(endpoint)}), dns_aliases(std::move(dns_aliases)) {}
 TcpConnectJob::ServiceEndpointOverride::ServiceEndpointOverride(
     ServiceEndpointOverride&&) = default;
@@ -986,7 +986,7 @@ bool TcpConnectJob::EndpointsCryptoReady() const {
   return true;
 }
 
-const std::set<std::string>& TcpConnectJob::GetDnsAliasResults() const {
+const base::flat_set<std::string>& TcpConnectJob::GetDnsAliasResults() const {
   if (dns_request_) {
     DCHECK(!endpoint_override_);
     return dns_request_->GetDnsAliasResults();

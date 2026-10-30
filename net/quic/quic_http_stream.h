@@ -8,11 +8,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <set>
 #include <string>
 #include <string_view>
 
 #include "base/byte_size.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -44,7 +44,7 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
  public:
   explicit QuicHttpStream(
       std::unique_ptr<QuicChromiumClientSession::Handle> session,
-      std::set<std::string> dns_aliases);
+      base::flat_set<std::string> dns_aliases);
 
   QuicHttpStream(const QuicHttpStream&) = delete;
   QuicHttpStream& operator=(const QuicHttpStream&) = delete;
@@ -77,7 +77,7 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
       LoadTimingInternalInfo* load_timing_internal_info) const override;
   void SetPriority(RequestPriority priority) override;
   void SetRequestIdempotency(Idempotency idempotency) override;
-  const std::set<std::string>& GetDnsAliases() const override;
+  const base::flat_set<std::string>& GetDnsAliases() const override;
   std::string_view GetAcceptChViaAlps() const override;
   std::optional<QuicConnectionDetails> GetQuicConnectionDetails()
       const override;
@@ -237,7 +237,7 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
   // aliases, e.g. from A, AAAA, or HTTPS, not just from the address used for
   // the connection, in no particular order. These are stored in the stream
   // instead of the session due to complications related to IP-pooling.
-  std::set<std::string> dns_aliases_;
+  base::flat_set<std::string> dns_aliases_;
 
   base::WeakPtrFactory<QuicHttpStream> weak_factory_{this};
 };

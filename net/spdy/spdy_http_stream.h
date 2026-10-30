@@ -8,10 +8,11 @@
 #include <stdint.h>
 
 #include <memory>
-#include <set>
+#include <string>
 #include <string_view>
 
 #include "base/byte_size.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
@@ -43,7 +44,7 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
   // |spdy_session| must not be NULL.
   SpdyHttpStream(const base::WeakPtr<SpdySession>& spdy_session,
                  NetLogSource source_dependency,
-                 std::set<std::string> dns_aliases);
+                 base::flat_set<std::string> dns_aliases);
 
   SpdyHttpStream(const SpdyHttpStream&) = delete;
   SpdyHttpStream& operator=(const SpdyHttpStream&) = delete;
@@ -93,7 +94,7 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
   int GetRemoteEndpoint(IPEndPoint* endpoint) override;
   void PopulateNetErrorDetails(NetErrorDetails* details) override;
   void SetPriority(RequestPriority priority) override;
-  const std::set<std::string>& GetDnsAliases() const override;
+  const base::flat_set<std::string>& GetDnsAliases() const override;
   std::string_view GetAcceptChViaAlps() const override;
   void SetHTTP11Required() override;
 
@@ -220,7 +221,7 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
   // e.g. from A, AAAA, or HTTPS, not just from the address used for the
   // connection, in no particular order. These are stored in the stream instead
   // of the session due to complications related to IP-pooling.
-  std::set<std::string> dns_aliases_;
+  base::flat_set<std::string> dns_aliases_;
 
   // Keep track of the priority of the request for setting the priority header
   // right before sending the request.

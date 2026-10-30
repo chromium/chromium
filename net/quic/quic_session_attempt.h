@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <set>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -79,7 +79,7 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
       std::optional<ResolutionDetails> resolution_details,
       bool retry_on_alternate_network_before_handshake,
       bool use_dns_aliases,
-      std::set<std::string> dns_aliases,
+      base::flat_set<std::string> dns_aliases,
       std::unique_ptr<QuicCryptoClientConfigHandle> crypto_client_config_handle,
       MultiplexedSessionCreationInitiator session_creation_initiator,
       QuicConnectionReuseDetails quic_connection_reuse_details,
@@ -182,7 +182,7 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
   const bool was_alternative_service_recently_broken_;
   const bool retry_on_alternate_network_before_handshake_;
   const bool use_dns_aliases_;
-  std::set<std::string> dns_aliases_;
+  base::flat_set<std::string> dns_aliases_;
   std::unique_ptr<QuicCryptoClientConfigHandle> crypto_client_config_handle_;
 
   // Fields only used for session attempts to a proxy.

@@ -128,7 +128,7 @@ std::unique_ptr<ConnectJob> TransportConnectJob::Factory::CreateJob(
 
 TransportConnectJob::EndpointResultOverride::EndpointResultOverride(
     HostResolverEndpointResult result,
-    std::set<std::string> dns_aliases)
+    base::flat_set<std::string> dns_aliases)
     : result(std::move(result)), dns_aliases(std::move(dns_aliases)) {}
 TransportConnectJob::EndpointResultOverride::EndpointResultOverride(
     EndpointResultOverride&&) = default;

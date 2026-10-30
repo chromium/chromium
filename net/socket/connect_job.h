@@ -7,10 +7,10 @@
 
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
 #include <variant>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
@@ -145,7 +145,7 @@ using OnHostResolutionCallback =
     base::RepeatingCallback<OnHostResolutionCallbackResult(
         const HostPortPair& host_port_pair,
         const HostResolverEndpointsOrServiceEndpoints& endpoint_results,
-        const std::set<std::string>& aliases)>;
+        const base::flat_set<std::string>& aliases)>;
 
 using OnConnectJobCompleteCallback = base::OnceCallback<void(int)>;
 
@@ -317,7 +317,7 @@ class NET_EXPORT_PRIVATE ConnectJob {
   }
 
   void SetSocket(std::unique_ptr<StreamSocket> socket,
-                 std::optional<std::set<std::string>> dns_aliases);
+                 std::optional<base::flat_set<std::string>> dns_aliases);
   void NotifyDelegateOfCompletion(int rv);
   void NotifyDelegateOfProxyAuth(const HttpResponseInfo& response,
                                  HttpAuthController* auth_controller,

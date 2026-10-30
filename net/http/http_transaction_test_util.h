@@ -8,13 +8,13 @@
 #include <stdint.h>
 
 #include <optional>
-#include <set>
 #include <string>
 #include <string_view>
 #include <vector>
 
 #include "base/byte_size.h"
 #include "base/compiler_specific.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -96,7 +96,7 @@ struct MockTransaction {
   // Any aliases for the requested URL, as read from DNS records. Includes all
   // known aliases, e.g. from A, AAAA, or HTTPS, not just from the address used
   // for the connection, in no particular order.
-  std::set<std::string> dns_aliases;
+  base::flat_set<std::string> dns_aliases;
   int test_mode;
   MockTransactionHandler handler;
   MockTransactionReadHandler read_handler;

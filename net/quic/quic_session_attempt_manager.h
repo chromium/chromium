@@ -7,7 +7,6 @@
 
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
 
 #include "base/containers/flat_map.h"
@@ -69,7 +68,7 @@ class NET_EXPORT_PRIVATE QuicSessionAttemptManager {
       base::TimeTicks dns_resolution_end_time,
       std::optional<ResolutionDetails> dns_resolution_details,
       bool use_dns_aliases,
-      std::set<std::string> dns_aliases,
+      base::flat_set<std::string> dns_aliases,
       MultiplexedSessionCreationInitiator session_creation_initiator,
       std::optional<ConnectionManagementConfig> connection_management_config,
       const NetLogWithSource& net_log);

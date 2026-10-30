@@ -9,10 +9,10 @@
 
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
@@ -216,7 +216,7 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
   // in no particular order. Stored because `nested_connect_job_` has a limited
   // lifetime and the aliases can no longer be retrieved from there by the
   // time that the aliases are needed to be passed in SetSocket.
-  std::set<std::string> dns_aliases_;
+  base::flat_set<std::string> dns_aliases_;
 
   // The endpoint result used by `nested_connect_job_`. Stored because
   // `nested_connect_job_` has a limited lifetime.

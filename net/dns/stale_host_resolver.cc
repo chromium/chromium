@@ -6,12 +6,12 @@
 
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notimplemented.h"
@@ -54,7 +54,7 @@ class StaleHostResolver::RequestImpl : public HostResolver::ResolveHostRequest {
       const override;
   base::span<const std::string> GetTextResults() const override;
   base::span<const HostPortPair> GetHostnameResults() const override;
-  const std::set<std::string>& GetDnsAliasResults() const override;
+  const base::flat_set<std::string>& GetDnsAliasResults() const override;
   ResolveErrorInfo GetResolveErrorInfo() const override;
   const std::optional<HostCache::EntryStaleness>& GetStaleInfo() const override;
   void ChangeRequestPriority(RequestPriority priority) override;
@@ -225,7 +225,7 @@ StaleHostResolver::RequestImpl::GetHostnameResults() const {
   return cache_request_->GetHostnameResults();
 }
 
-const std::set<std::string>&
+const base::flat_set<std::string>&
 StaleHostResolver::RequestImpl::GetDnsAliasResults() const {
   if (network_request_) {
     return network_request_->GetDnsAliasResults();
