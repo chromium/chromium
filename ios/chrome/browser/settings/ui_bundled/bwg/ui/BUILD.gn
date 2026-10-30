@@ -38,3 +38,21 @@ source_set("ui") {
     "//url",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "gemini_settings_view_controller_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/settings/ui_bundled/bwg/coordinator:protocols",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:test_support",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/test/app:test_support",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
