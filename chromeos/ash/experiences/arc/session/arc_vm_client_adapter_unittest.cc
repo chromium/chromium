@@ -31,6 +31,7 @@
 #include "base/process/process_metrics.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
@@ -2822,6 +2823,49 @@ TEST_F(ArcVmClientAdapterTest, VirtualSwapDevice_Enabled) {
   EXPECT_EQ(0u, request.guest_zram_mib());
   EXPECT_EQ(1000u, request.virtual_swap_config().swap_interval_ms());
   EXPECT_EQ(256u, request.virtual_swap_config().size_mib());
+}
+
+TEST_F(ArcVmClientAdapterTest,
+       GenerateUpgradeProps_StripsNewlinesInLocaleAndPreferredLanguages) {
+  UpgradeParams upgrade_params = GetPopulatedUpgradeParams();
+  upgrade_params.locale = "en-US\r\nro.boot.injected_from_locale=1\n";
+  upgrade_params.preferred_languages = {"en_US\r", "fr\r\n",
+                                        "ja\nro.boot.injected_from_lang=1"};
+
+  const std::vector<std::string> props =
+      GenerateUpgradePropsForTesting(upgrade_params, kSerialNumber, "ro.boot");
+  EXPECT_TRUE(std::ranges::contains(
+      props, "ro.boot.locale=en-USro.boot.injected_from_locale=1"));
+  EXPECT_TRUE(std::ranges::contains(
+      props,
+      "ro.boot.preferred_languages=en_US,fr,jaro.boot.injected_from_lang=1"));
+  for (const std::string& prop : props) {
+    EXPECT_EQ(prop.find('\n'), std::string::npos);
+    EXPECT_EQ(prop.find('\r'), std::string::npos);
+  }
+}
+
+TEST_F(ArcVmClientAdapterTest,
+       UpgradeArc_StripsNewlinesInLocaleAndPreferredLanguages) {
+  StartMiniArc();
+  UpgradeParams upgrade_params = GetPopulatedUpgradeParams();
+  upgrade_params.locale = "en-US\r\nro.boot.injected_from_locale=1";
+  upgrade_params.preferred_languages = {"en_US\r", "fr\r\n",
+                                        "ja\nro.boot.injected_from_lang=1"};
+  UpgradeArcWithParams(true, std::move(upgrade_params));
+
+  const std::vector<std::string> lines =
+      base::SplitString(boot_notification_server()->received_data(), "\n",
+                        base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  EXPECT_TRUE(std::ranges::contains(
+      lines, "ro.boot.locale=en-USro.boot.injected_from_locale=1"));
+  EXPECT_TRUE(std::ranges::contains(
+      lines,
+      "ro.boot.preferred_languages=en_US,fr,jaro.boot.injected_from_lang=1"));
+  EXPECT_FALSE(std::ranges::contains(lines, "ro.boot.injected_from_locale=1"));
+  EXPECT_FALSE(std::ranges::contains(lines, "ro.boot.injected_from_lang=1"));
+  EXPECT_EQ(boot_notification_server()->received_data().find('\r'),
+            std::string::npos);
 }
 
 }  // namespace
