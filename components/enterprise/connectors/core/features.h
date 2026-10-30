@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 
 namespace enterprise_connectors {
 
@@ -74,6 +75,13 @@ BASE_DECLARE_FEATURE(kEnterpriseExtensionActorAttribution);
 // identifying the local OS process tree of an external Chrome DevTools
 // Protocol (CDP) automation actor. See crbug.com/575478024.
 BASE_DECLARE_FEATURE(kEventReportingCdpAttribution);
+
+// Maximum number of concurrent or recently-detached external CDP actors
+// tracked per tab.
+BASE_DECLARE_FEATURE_PARAM(int, kCdpAttributionMaxActorsPerTab);
+
+// Post-detach TTL retention window for external CDP actors on a tab.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kCdpAttributionDetachedActorTtl);
 
 }  // namespace enterprise_connectors
 

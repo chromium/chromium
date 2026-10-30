@@ -5,12 +5,14 @@
 #include "chrome/browser/enterprise/connectors/reporting/tab_cdp_actor_tracker.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <optional>
 #include <utility>
 #include <vector>
 
 #include "base/feature_list.h"
 #include "base/process/process_handle.h"
+#include "base/time/time.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/process_extractor.h"
@@ -27,6 +29,14 @@ base::ProcessId GetLeafPid(const ProcessTree& process_tree) {
   return process_tree.process_nodes.empty()
              ? base::kNullProcessId
              : process_tree.process_nodes.front().process_id;
+}
+
+size_t GetMaxActorsPerTab() {
+  return static_cast<size_t>(std::max(1, kCdpAttributionMaxActorsPerTab.Get()));
+}
+
+base::TimeDelta GetDetachedActorTtl() {
+  return std::max(base::TimeDelta(), kCdpAttributionDetachedActorTtl.Get());
 }
 
 }  // namespace
@@ -69,10 +79,14 @@ void CdpActorBuffer::OnExternalActorAttached(
     return;
   }
 
+  const base::TimeTicks now = base::TimeTicks::Now();
+  PruneExpiredEntries(now);
+
   const base::ProcessId leaf_pid = GetLeafPid(process_tree);
   auto it = FindMatchingActor(transport_type, peer_endpoint, leaf_pid);
   if (it != external_actors_.end()) {
     ++it->active_sessions;
+    it->detached_at.reset();
     if (peer_endpoint.has_value() && !it->peer_endpoint.has_value()) {
       it->peer_endpoint = std::move(peer_endpoint);
     }
@@ -81,6 +95,11 @@ void CdpActorBuffer::OnExternalActorAttached(
       it->process_tree = std::move(process_tree);
     }
     return;
+  }
+
+  const size_t max_actors = GetMaxActorsPerTab();
+  while (external_actors_.size() >= max_actors) {
+    EvictOneEntryForInsert();
   }
 
   external_actors_.emplace_back(transport_type, std::move(peer_endpoint),
@@ -97,6 +116,9 @@ void CdpActorBuffer::OnExternalActorDetached(
     TransportType transport_type,
     std::optional<net::IPEndPoint> peer_endpoint,
     base::ProcessId pid) {
+  const base::TimeTicks now = base::TimeTicks::Now();
+  PruneExpiredEntries(now);
+
   auto it = FindMatchingActor(transport_type, peer_endpoint, pid);
   if (it == external_actors_.end() && !peer_endpoint.has_value() &&
       pid == base::kNullProcessId) {
@@ -117,7 +139,7 @@ void CdpActorBuffer::OnExternalActorDetached(
 
   --it->active_sessions;
   if (it->active_sessions == 0) {
-    external_actors_.erase(it);
+    it->detached_at = now;
   }
 }
 
@@ -130,6 +152,8 @@ void CdpActorBuffer::UpdateExternalActorProcessTree(
     TransportType transport_type,
     std::optional<net::IPEndPoint> peer_endpoint,
     ProcessTree process_tree) {
+  const base::TimeTicks now = base::TimeTicks::Now();
+  PruneExpiredEntries(now);
   if (process_tree.empty()) {
     return;
   }
@@ -145,10 +169,13 @@ void CdpActorBuffer::UpdateExternalActorProcessTree(
 }
 
 std::optional<chrome::cros::reporting::proto::EventInitiatorInfo>
-CdpActorBuffer::BuildEventInitiatorInfo() const {
+CdpActorBuffer::BuildEventInitiatorInfo() {
   if (!base::FeatureList::IsEnabled(kEventReportingCdpAttribution)) {
     return std::nullopt;
   }
+
+  const base::TimeTicks now = base::TimeTicks::Now();
+  PruneExpiredEntries(now);
 
   if (external_actors_.empty()) {
     return std::nullopt;
@@ -175,8 +202,18 @@ CdpActorBuffer::BuildEventInitiatorInfo() const {
 }
 
 const std::vector<CdpActorBuffer::ExternalActorEntry>&
-CdpActorBuffer::GetExternalActorsForTesting() const {
+CdpActorBuffer::GetExternalActorsForTesting() {
+  PruneExpiredEntries(base::TimeTicks::Now());
   return external_actors_;
+}
+
+void CdpActorBuffer::PruneExpiredEntries(base::TimeTicks now) {
+  const base::TimeDelta ttl = GetDetachedActorTtl();
+
+  std::erase_if(external_actors_, [&](const ExternalActorEntry& entry) {
+    return !entry.IsAttached() && entry.detached_at.has_value() &&
+           (now - *entry.detached_at >= ttl);
+  });
 }
 
 std::vector<CdpActorBuffer::ExternalActorEntry>::iterator
@@ -218,6 +255,21 @@ CdpActorBuffer::FindMatchingActor(TransportType transport_type,
     }
   }
   return external_actors_.end();
+}
+
+void CdpActorBuffer::EvictOneEntryForInsert() {
+  if (external_actors_.empty()) {
+    return;
+  }
+
+  // Evict the oldest detached entry first; if all entries are still attached,
+  // all map to `(true, std::nullopt)` so `min_element` selects `begin()` (the
+  // oldest attached entry).
+  auto victim = std::ranges::min_element(
+      external_actors_, {}, [](const ExternalActorEntry& entry) {
+        return std::make_pair(entry.IsAttached(), entry.detached_at);
+      });
+  external_actors_.erase(victim);
 }
 
 }  // namespace enterprise_connectors

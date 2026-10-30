@@ -10,6 +10,8 @@
 
 #include "base/process/process_handle.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/process_extractor.h"
@@ -50,8 +52,11 @@ class CdpActorBufferTest : public testing::Test {
   ~CdpActorBufferTest() override = default;
 
   CdpActorBuffer* buffer() { return &buffer_; }
+  base::test::TaskEnvironment* task_environment() { return &task_environment_; }
 
  protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list_;
   CdpActorBuffer buffer_;
 };
@@ -67,6 +72,11 @@ TEST_F(CdpActorBufferTest, FeatureDisabledReturnsNullopt) {
   buffer()->OnExternalActorAttached(ExternalProcessInfo::TRANSPORT_TYPE_PIPE,
                                     MakeProcessTree(1001, 500));
   EXPECT_EQ(std::nullopt, buffer()->BuildEventInitiatorInfo());
+}
+
+TEST_F(CdpActorBufferTest, FeatureParamsDefaultValues) {
+  EXPECT_EQ(5, kCdpAttributionMaxActorsPerTab.Get());
+  EXPECT_EQ(base::Seconds(30), kCdpAttributionDetachedActorTtl.Get());
 }
 
 TEST_F(CdpActorBufferTest, ExternalPipeAndWebSocketProtoSerialization) {
@@ -110,7 +120,8 @@ TEST_F(CdpActorBufferTest, ExternalPipeAndWebSocketProtoSerialization) {
             processes[1].process_nodes(0).script_path());
 }
 
-TEST_F(CdpActorBufferTest, MultiTargetRefCounting) {
+TEST_F(CdpActorBufferTest,
+       MultiTargetRefCountingAndDetachedActorTtlExpiration) {
   const net::IPEndPoint endpoint = MakeLoopbackEndpoint(52000);
   const ProcessTree tree = MakeProcessTree(3001, 100);
 
@@ -128,20 +139,99 @@ TEST_F(CdpActorBufferTest, MultiTargetRefCounting) {
   EXPECT_TRUE(buffer()->GetExternalActorsForTesting()[0].IsAttached());
 
   // Detaching two child sessions leaves the actor actively attached (refcount
-  // 1).
+  // 1), so advancing time past 30s does not expire it.
   buffer()->OnExternalActorDetached(
       ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, endpoint);
   buffer()->OnExternalActorDetached(
       ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, endpoint);
-  EXPECT_EQ(1u, buffer()->GetExternalActorsForTesting().size());
   EXPECT_EQ(1u, buffer()->GetExternalActorsForTesting()[0].active_sessions);
+
+  task_environment()->FastForwardBy(base::Seconds(60));
   EXPECT_TRUE(buffer()->BuildEventInitiatorInfo().has_value());
 
-  // Detaching the final session removes the active actor.
+  // Detaching the final session starts the 30s post-detach grace window.
   buffer()->OnExternalActorDetached(
       ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, endpoint);
+  ASSERT_EQ(1u, buffer()->GetExternalActorsForTesting().size());
+  EXPECT_EQ(0u, buffer()->GetExternalActorsForTesting()[0].active_sessions);
+  EXPECT_FALSE(buffer()->GetExternalActorsForTesting()[0].IsAttached());
+
+  // At 29 seconds post-detach, the actor is still reported.
+  task_environment()->FastForwardBy(base::Seconds(29));
+  EXPECT_TRUE(buffer()->BuildEventInitiatorInfo().has_value());
+
+  // At 30 seconds post-detach, the entry is lazily pruned.
+  task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_EQ(std::nullopt, buffer()->BuildEventInitiatorInfo());
   EXPECT_TRUE(buffer()->GetExternalActorsForTesting().empty());
+}
+
+TEST_F(CdpActorBufferTest,
+       CircularBufferCapacityEvictsOldestDetachedBeforeActive) {
+  // Attach 5 distinct WebSocket actors (reaching the default capacity of 5).
+  for (int i = 1; i <= 5; ++i) {
+    buffer()->OnExternalActorAttached(
+        ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET,
+        MakeLoopbackEndpoint(53000 + i), MakeProcessTree(4000 + i, 1));
+    task_environment()->FastForwardBy(base::Seconds(1));
+  }
+  ASSERT_EQ(5u, buffer()->GetExternalActorsForTesting().size());
+
+  // Detach actor 3 first, then detach actor 2 one second later. Actors 1, 4, 5
+  // remain actively attached.
+  buffer()->OnExternalActorDetached(
+      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET,
+      MakeLoopbackEndpoint(53003));
+  task_environment()->FastForwardBy(base::Seconds(1));
+  buffer()->OnExternalActorDetached(
+      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET,
+      MakeLoopbackEndpoint(53002));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  // Attach actor 6 while all 5 slots are within TTL. Actor 3 (oldest detached)
+  // must be evicted first, keeping actors {1, 2, 4, 5, 6}.
+  buffer()->OnExternalActorAttached(
+      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET,
+      MakeLoopbackEndpoint(53006), MakeProcessTree(4006, 1));
+  {
+    const auto& actors = buffer()->GetExternalActorsForTesting();
+    ASSERT_EQ(5u, actors.size());
+    EXPECT_EQ(4001, actors[0].leaf_pid);
+    EXPECT_EQ(4002, actors[1].leaf_pid);
+    EXPECT_EQ(4004, actors[2].leaf_pid);
+    EXPECT_EQ(4005, actors[3].leaf_pid);
+    EXPECT_EQ(4006, actors[4].leaf_pid);
+  }
+
+  // Attach actor 7. Actor 2 (the remaining detached entry) must be evicted
+  // before any active entry, leaving active actors {1, 4, 5, 6, 7}.
+  buffer()->OnExternalActorAttached(
+      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET,
+      MakeLoopbackEndpoint(53007), MakeProcessTree(4007, 1));
+  {
+    const auto& actors = buffer()->GetExternalActorsForTesting();
+    ASSERT_EQ(5u, actors.size());
+    EXPECT_EQ(4001, actors[0].leaf_pid);
+    EXPECT_EQ(4004, actors[1].leaf_pid);
+    EXPECT_EQ(4005, actors[2].leaf_pid);
+    EXPECT_EQ(4006, actors[3].leaf_pid);
+    EXPECT_EQ(4007, actors[4].leaf_pid);
+  }
+
+  // Now all 5 slots are actively attached. Attaching actor 8 must evict the
+  // oldest attached entry (actor 1), leaving {4, 5, 6, 7, 8}.
+  buffer()->OnExternalActorAttached(
+      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET,
+      MakeLoopbackEndpoint(53008), MakeProcessTree(4008, 1));
+  {
+    const auto& actors = buffer()->GetExternalActorsForTesting();
+    ASSERT_EQ(5u, actors.size());
+    EXPECT_EQ(4004, actors[0].leaf_pid);
+    EXPECT_EQ(4005, actors[1].leaf_pid);
+    EXPECT_EQ(4006, actors[2].leaf_pid);
+    EXPECT_EQ(4007, actors[3].leaf_pid);
+    EXPECT_EQ(4008, actors[4].leaf_pid);
+  }
 }
 
 TEST_F(CdpActorBufferTest, UpdateExternalActorProcessTreeInPlace) {
@@ -209,9 +299,13 @@ TEST_F(CdpActorBufferTest, PipeRefCountingUpdateAndDetach) {
   EXPECT_EQ(1u, buffer()->GetExternalActorsForTesting()[0].active_sessions);
   EXPECT_TRUE(buffer()->BuildEventInitiatorInfo().has_value());
 
-  // Detach final session with the resolved `pid` -> removes the active actor.
+  // Detach final session with the resolved `pid` -> transitions to detached and
+  // expires after the 30s TTL.
   buffer()->OnExternalActorDetached(ExternalProcessInfo::TRANSPORT_TYPE_PIPE,
                                     4001);
+  ASSERT_EQ(1u, buffer()->GetExternalActorsForTesting().size());
+  EXPECT_FALSE(buffer()->GetExternalActorsForTesting()[0].IsAttached());
+  task_environment()->FastForwardBy(base::Seconds(30));
   EXPECT_EQ(std::nullopt, buffer()->BuildEventInitiatorInfo());
   EXPECT_TRUE(buffer()->GetExternalActorsForTesting().empty());
 }
@@ -229,11 +323,76 @@ TEST_F(CdpActorBufferTest, EndpointlessWebSocketsDoNotConflateOnAttach) {
 
   buffer()->OnExternalActorDetached(
       ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET);
-  ASSERT_EQ(1u, buffer()->GetExternalActorsForTesting().size());
+  ASSERT_EQ(2u, buffer()->GetExternalActorsForTesting().size());
+  EXPECT_EQ(0u, buffer()->GetExternalActorsForTesting()[0].active_sessions);
+  EXPECT_EQ(1u, buffer()->GetExternalActorsForTesting()[1].active_sessions);
 
   buffer()->OnExternalActorDetached(
       ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET);
+  EXPECT_EQ(0u, buffer()->GetExternalActorsForTesting()[1].active_sessions);
+  task_environment()->FastForwardBy(base::Seconds(30));
   EXPECT_TRUE(buffer()->GetExternalActorsForTesting().empty());
+}
+
+TEST_F(
+    CdpActorBufferTest,
+    SameProcessSecondWebSocketUpdatesExactEndpointAndNulloptWebSocketDetaches) {
+  const net::IPEndPoint ep1 = MakeLoopbackEndpoint(54321);
+  const net::IPEndPoint ep2 = MakeLoopbackEndpoint(54322);
+
+  // First WebSocket connection from PID 2000 resolves immediately.
+  buffer()->OnExternalActorAttached(
+      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, ep1,
+      MakeProcessTree(2000, 1000));
+  // Second WebSocket connection from the same process attaches as a placeholder
+  // before its background extraction finishes.
+  buffer()->OnExternalActorAttached(
+      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, ep2, ProcessTree{});
+  ASSERT_EQ(2u, buffer()->GetExternalActorsForTesting().size());
+  EXPECT_TRUE(buffer()->GetExternalActorsForTesting()[1].process_tree.empty());
+
+  // When extraction for ep2 finishes with the same leaf_pid = 2000, the exact
+  // peer_endpoint match updates ep2's placeholder rather than stopping at ep1.
+  buffer()->UpdateExternalActorProcessTree(
+      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, ep2,
+      MakeProcessTree(2000, 1000));
+  EXPECT_EQ(2000, buffer()->GetExternalActorsForTesting()[1].leaf_pid);
+  EXPECT_FALSE(buffer()->GetExternalActorsForTesting()[1].process_tree.empty());
+
+  // Detach both ep1 and ep2 by endpoint only (without passing PID), then
+  // attach and detach a nullopt-endpoint WebSocket session to verify that both
+  // distinct endpoints and nullopt-endpoint WebSocket entries detach cleanly
+  // and expire after the 30s TTL without leaking active_sessions.
+  buffer()->OnExternalActorDetached(
+      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, ep1);
+  buffer()->OnExternalActorDetached(
+      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, ep2);
+  buffer()->OnExternalActorAttached(
+      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, std::nullopt,
+      ProcessTree{});
+  buffer()->OnExternalActorDetached(
+      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, std::nullopt);
+
+  task_environment()->FastForwardBy(base::Seconds(30));
+  EXPECT_EQ(std::nullopt, buffer()->BuildEventInitiatorInfo());
+
+  // Also verify that if two distinct WebSocket endpoints from the same process
+  // both attach with a resolved ProcessTree (e.g. from the endpoint cache),
+  // they do not merge into a single endpoint entry and both detach cleanly by
+  // endpoint.
+  buffer()->OnExternalActorAttached(
+      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, ep1,
+      MakeProcessTree(2000, 1000));
+  buffer()->OnExternalActorAttached(
+      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, ep2,
+      MakeProcessTree(2000, 1000));
+  ASSERT_EQ(2u, buffer()->GetExternalActorsForTesting().size());
+  buffer()->OnExternalActorDetached(
+      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, ep1);
+  buffer()->OnExternalActorDetached(
+      ExternalProcessInfo::TRANSPORT_TYPE_WEBSOCKET, ep2);
+  task_environment()->FastForwardBy(base::Seconds(30));
+  EXPECT_EQ(std::nullopt, buffer()->BuildEventInitiatorInfo());
 }
 
 }  // namespace

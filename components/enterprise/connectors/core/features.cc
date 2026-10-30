@@ -4,6 +4,7 @@
 
 #include "components/enterprise/connectors/core/features.h"
 
+#include "base/time/time.h"
 #include "build/build_config.h"
 
 namespace enterprise_connectors {
@@ -79,5 +80,15 @@ BASE_FEATURE(kEnterpriseExtensionActorAttribution,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEventReportingCdpAttribution, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(int,
+                   kCdpAttributionMaxActorsPerTab,
+                   &kEventReportingCdpAttribution,
+                   /*default_value=*/5);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kCdpAttributionDetachedActorTtl,
+                   &kEventReportingCdpAttribution,
+                   /*default_value=*/base::Seconds(30));
 
 }  // namespace enterprise_connectors

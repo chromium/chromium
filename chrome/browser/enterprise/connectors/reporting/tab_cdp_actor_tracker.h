@@ -10,15 +10,20 @@
 #include <vector>
 
 #include "base/process/process_handle.h"
+#include "base/time/time.h"
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/process_extractor.h"
 #include "net/base/ip_endpoint.h"
 
 namespace enterprise_connectors {
 
-// Buffer of active external CDP actors (`TRANSPORT_TYPE_PIPE` or
-// `TRANSPORT_TYPE_WEBSOCKET`) for a target tab, deduplicated by transport +
-// endpoint or leaf PID with session reference counting.
+// Bounded buffer of active and recently detached external CDP actors
+// (`TRANSPORT_TYPE_PIPE` or `TRANSPORT_TYPE_WEBSOCKET`) for a target tab, with
+// detached entries evicted first when at capacity.
+//
+// Maintains up to `kCdpAttributionMaxActorsPerTab` unique actors, deduplicated
+// by transport + endpoint or leaf PID, with session reference counting and
+// post-detach retention for `kCdpAttributionDetachedActorTtl`.
 class CdpActorBuffer {
  public:
   // Represents a tracked external CDP actor in the buffer, holding its
@@ -45,6 +50,7 @@ class CdpActorBuffer {
     base::ProcessId leaf_pid = base::kNullProcessId;
     ProcessTree process_tree;
     size_t active_sessions = 0;
+    std::optional<base::TimeTicks> detached_at;
   };
 
   CdpActorBuffer();
@@ -55,7 +61,8 @@ class CdpActorBuffer {
 
   // Records an external CDP session attachment (`PIPE` or `WEBSOCKET`).
   // Deduplicates against existing entries and increments `active_sessions`, or
-  // appends a new entry.
+  // inserts a new entry (evicting the oldest detached entry first, or oldest
+  // attached entry if full).
   void OnExternalActorAttached(
       chrome::cros::reporting::proto::ExternalProcessInfo::TransportType
           transport_type,
@@ -69,8 +76,9 @@ class CdpActorBuffer {
           transport_type,
       ProcessTree process_tree);
 
-  // Decrements `active_sessions` for the matching external actor and removes
-  // the entry when `active_sessions` reaches 0.
+  // Decrements `active_sessions` for the matching external actor; when the
+  // count reaches 0, records `detached_at = base::TimeTicks::Now()` for the
+  // post-detach grace window.
   void OnExternalActorDetached(
       chrome::cros::reporting::proto::ExternalProcessInfo::TransportType
           transport_type,
@@ -92,15 +100,18 @@ class CdpActorBuffer {
       std::optional<net::IPEndPoint> peer_endpoint,
       ProcessTree process_tree);
 
-  // Builds `EventInitiatorInfo` from active external CDP actors (`PIPE` or
-  // `WEBSOCKET`). Returns `std::nullopt` if no actor is currently attached.
+  // Lazily prunes expired detached entries and builds `EventInitiatorInfo`.
+  // Returns `std::nullopt` if no actor is currently attached or within the
+  // post-detach TTL window.
   std::optional<chrome::cros::reporting::proto::EventInitiatorInfo>
-  BuildEventInitiatorInfo() const;
+  BuildEventInitiatorInfo();
 
-  // Returns the current external actor entries.
-  const std::vector<ExternalActorEntry>& GetExternalActorsForTesting() const;
+  // Prunes expired entries and returns the current external actor entries.
+  const std::vector<ExternalActorEntry>& GetExternalActorsForTesting();
 
  private:
+  void PruneExpiredEntries(base::TimeTicks now);
+
   // Returns an iterator to the entry matching `transport_type`,
   // `peer_endpoint`, or `leaf_pid`, or `external_actors_.end()` if no match is
   // found.
@@ -109,6 +120,7 @@ class CdpActorBuffer {
           transport_type,
       std::optional<net::IPEndPoint> peer_endpoint,
       base::ProcessId leaf_pid);
+  void EvictOneEntryForInsert();
 
   std::vector<ExternalActorEntry> external_actors_;
 };
