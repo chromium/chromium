@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.CloseWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
@@ -329,18 +328,14 @@ public class MultiWindowUtils implements ActivityStateListener {
      * Determines whether moving a tab to another window should be allowed.
      *
      * @param activity that is initiating tab move.
-     * @param tabModelSelector {@link TabModelSelector} to get total tab count. Returns whether the
-     *     given activity currently supports moving tabs to the other window.
+     * @param tabModelSelector {@link TabModelSelector} to check the selected tab model.
+     * @return whether the given activity currently supports moving tabs to the other window.
      */
     public boolean isMoveToOtherWindowSupported(
             Activity activity, TabModelSelector tabModelSelector) {
         // Not supported on automotive devices.
         if (DeviceInfo.isAutomotive()) return false;
 
-        // Do not allow move for last tab when homepage enabled and is set to a custom url.
-        if (hasAtMostOneTabWithHomepageEnabled(tabModelSelector)) {
-            return false;
-        }
         if (isMultiInstanceApi31Enabled()) {
             @PersistedInstanceType int instanceType = PersistedInstanceType.ACTIVE;
             if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
@@ -376,62 +371,6 @@ public class MultiWindowUtils implements ActivityStateListener {
     /* package */ static boolean isWithinInstanceLimit(Set<Integer> appTaskIds) {
         if (!isMultiInstanceApi31Enabled()) return false;
         return getInstanceCount(PersistedInstanceType.ACTIVE, appTaskIds) < getMaxInstances();
-    }
-
-    /**
-     * @param tabModelSelector Used to pull total tab count.
-     * @return whether it is last tab with homepage enabled and set to an custom url.
-     */
-    public boolean hasAtMostOneTabWithHomepageEnabled(TabModelSelector tabModelSelector) {
-        boolean hasAtMostOneTab = tabModelSelector.getTotalTabCount() <= 1;
-
-        // Chrome app is set to close with zero tabs when homepage is enabled and set to a custom
-        // url other than the NTP. We should not allow dragging the last tab or display 'Move to
-        // other window' in this scenario as the source window might be closed before drag n drop
-        // completes properly and thus cause other complications.
-        boolean shouldAppCloseWithZeroTabs =
-                HomepageManager.getInstance().shouldCloseAppWithZeroTabs();
-        return hasAtMostOneTab && shouldAppCloseWithZeroTabs;
-    }
-
-    /**
-     * @param tabModelSelector Used to pull total tab count and selected tab count.
-     * @return whether it is last tab with homepage enabled and set to an custom url.
-     */
-    public boolean hasAllTabsSelectedWithHomepageEnabled(TabModelSelector tabModelSelector) {
-        boolean hasAllTabsSelected =
-                tabModelSelector.getTotalTabCount()
-                        <= tabModelSelector.getCurrentModel().getMultiSelectedTabsCount();
-
-        // Chrome app is set to close with zero tabs when homepage is enabled and set to a custom
-        // url other than the NTP. We should not allow dragging the last tab or display 'Move to
-        // other window' in this scenario as the source window might be closed before drag n drop
-        // completes properly and thus cause other complications.
-        boolean shouldAppCloseWithZeroTabs =
-                HomepageManager.getInstance().shouldCloseAppWithZeroTabs();
-        return hasAllTabsSelected && shouldAppCloseWithZeroTabs;
-    }
-
-    /**
-     * @param tabModelSelector Used to pull total tab count.
-     * @param tabModel Used to pull tab group info.
-     * @return whether it is last tab group with homepage enabled and set to an custom url.
-     */
-    public boolean hasAtMostOneTabGroupWithHomepageEnabled(
-            TabModelSelector tabModelSelector, TabModel tabModel) {
-        int numOfTabs = tabModelSelector.getTotalTabCount();
-        Tab firstTab =
-                assumeNonNull(tabModelSelector.getCurrentTabModelSupplier().get()).getTabAt(0);
-        if (firstTab == null) return true;
-        int numOfTabsInGroup = tabModel.getTabCountForGroup(firstTab.getTabGroupId());
-
-        // Chrome app is set to close with zero tabs when homepage is enabled and set to a custom
-        // url other than the NTP. We should not allow dragging the last tab group in this scenario
-        // as the source window might be closed before drag n drop completes properly and thus cause
-        // other complications.
-        boolean shouldAppCloseWithZeroTabs =
-                HomepageManager.getInstance().shouldCloseAppWithZeroTabs();
-        return numOfTabs == numOfTabsInGroup && shouldAppCloseWithZeroTabs;
     }
 
     /**

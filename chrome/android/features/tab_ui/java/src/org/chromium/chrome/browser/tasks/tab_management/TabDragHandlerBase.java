@@ -215,14 +215,7 @@ public abstract class TabDragHandlerBase
             return false;
         }
 
-        // Block drag for last tab when homepage enabled and is set to a custom url.
-        if (MultiWindowUtils.getInstance()
-                .hasAtMostOneTabWithHomepageEnabled(getTabModelSelector())) {
-            return false;
-        }
-
         return true;
-
     }
 
     protected boolean canStartMultiTabDrag() {
@@ -233,12 +226,6 @@ public abstract class TabDragHandlerBase
         // Block drag for last tab in single-window mode if feature is not supported.
         if (!MultiWindowUtils.getInstance().isInMultiWindowMode(getActivity())
                 && !shouldAllowMultiTabDragToCreateInstance()) {
-            return false;
-        }
-
-        // Block drag for last tab when homepage enabled and is set to a custom url.
-        if (MultiWindowUtils.getInstance()
-                .hasAllTabsSelectedWithHomepageEnabled(getTabModelSelector())) {
             return false;
         }
 
@@ -254,13 +241,6 @@ public abstract class TabDragHandlerBase
         boolean allowDragToCreateInstance = shouldAllowGroupDragToCreateInstance(tabGroupId);
         if (!MultiWindowUtils.getInstance().isInMultiWindowMode(getActivity())
                 && !allowDragToCreateInstance) {
-            return false;
-        }
-
-        // Block drag for last tab group when homepage enabled and is set to a custom url.
-        if (MultiWindowUtils.getInstance()
-                .hasAtMostOneTabGroupWithHomepageEnabled(
-                        getTabModelSelector(), getCurrentModel())) {
             return false;
         }
 
