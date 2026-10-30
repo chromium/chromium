@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 
-#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
@@ -210,9 +209,10 @@ VideoFrameAcceleratedSnapshotPool::Create(const CanvasSnapshotInfo& info) {
   auto provider = base::WrapUnique(new CanvasNon2DResourceProvider(
       pool_info.size, pool_info.format, pool_info.alpha_type,
       pool_info.color_space, pool_info.hdr_metadata, context_provider_wrapper,
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, base::DoNothing(),
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, /*context_lost_callback=*/{},
       /*register_flush_for_image_observer=*/false,
-      /*register_destruction_observer=*/false));
+      /*register_destruction_observer=*/false,
+      /*register_context_lost_observer=*/false));
   auto pool = base::WrapUnique(new VideoFrameAcceleratedSnapshotPool(
       pool_info, std::move(context_provider_wrapper), std::move(provider)));
   return pool->IsValid() ? std::move(pool) : nullptr;
@@ -228,7 +228,14 @@ VideoFrameAcceleratedSnapshotPool::VideoFrameAcceleratedSnapshotPool(
   CHECK(provider_);
   if (context_provider_wrapper_) {
     context_provider_wrapper_->AddObserver(this);
+    raster_context_provider_ = base::WrapRefCounted(
+        context_provider_wrapper_->ContextProvider().RasterContextProvider());
   }
+
+  if (raster_context_provider_) {
+    raster_context_provider_->AddObserver(this);
+  }
+
   FlushForImageListener::Get()->AddObserver(this);
 }
 
@@ -236,7 +243,14 @@ VideoFrameAcceleratedSnapshotPool::~VideoFrameAcceleratedSnapshotPool() {
   if (context_provider_wrapper_) {
     context_provider_wrapper_->RemoveObserver(this);
   }
+  if (raster_context_provider_) {
+    raster_context_provider_->RemoveObserver(this);
+  }
   FlushForImageListener::Get()->RemoveObserver(this);
+}
+
+void VideoFrameAcceleratedSnapshotPool::OnContextLost() {
+  ClearUnusedResources();
 }
 
 void VideoFrameAcceleratedSnapshotPool::OnContextDestroyed() {
@@ -247,6 +261,12 @@ void VideoFrameAcceleratedSnapshotPool::OnContextDestroyed() {
 
 void VideoFrameAcceleratedSnapshotPool::OnFlushForImage(
     cc::PaintImage::ContentId content_id) {}
+
+void VideoFrameAcceleratedSnapshotPool::ClearUnusedResources() {
+  if (provider_->image_pool_) {
+    provider_->image_pool_->Clear();
+  }
+}
 
 gpu::raster::RasterInterface*
 VideoFrameAcceleratedSnapshotPool::RasterInterface() const {

@@ -234,7 +234,8 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
     gpu::SharedImageUsageSet shared_image_usage_flags,
     base::OnceClosure context_lost_callback,
     bool register_flush_for_image_observer,
-    bool register_destruction_observer)
+    bool register_destruction_observer,
+    bool register_context_lost_observer)
     : size_(size),
       format_(format),
       alpha_type_(alpha_type),
@@ -244,6 +245,7 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
       is_software_(false),
       register_flush_for_image_observer_(register_flush_for_image_observer),
       register_destruction_observer_(register_destruction_observer),
+      register_context_lost_observer_(register_context_lost_observer),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()),
       recorder_for_external_draws_(
           std::make_unique<MemoryManagedPaintRecorder>(Size(),
@@ -258,7 +260,7 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
         context_provider_wrapper_->ContextProvider().RasterContextProvider());
   }
 
-  if (raster_context_provider_) {
+  if (raster_context_provider_ && register_context_lost_observer_) {
     raster_context_provider_->AddObserver(this);
   }
 
@@ -365,7 +367,7 @@ CanvasNon2DResourceProvider::~CanvasNon2DResourceProvider() {
   if (context_provider_wrapper_ && register_destruction_observer_) {
     context_provider_wrapper_->RemoveObserver(this);
   }
-  if (raster_context_provider_) {
+  if (raster_context_provider_ && register_context_lost_observer_) {
     raster_context_provider_->RemoveObserver(this);
   }
   if (shared_image_interface_provider_) {

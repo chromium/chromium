@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_record.h"
+#include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "media/base/video_transformation.h"
@@ -46,7 +47,8 @@ class StaticBitmapImage;
 // snapshots from media::VideoFrames.
 class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool
     : public FlushForImageObserver,
-      public WebGraphicsContext3DProviderWrapper::DestructionObserver {
+      public WebGraphicsContext3DProviderWrapper::DestructionObserver,
+      public viz::ContextLostObserver {
  public:
   static std::unique_ptr<VideoFrameAcceleratedSnapshotPool> Create(
       const CanvasSnapshotInfo& info);
@@ -77,6 +79,10 @@ class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool
   // WebGraphicsContext3DProviderWrapper::DestructionObserver:
   void OnContextDestroyed() override;
 
+  // viz::ContextLostObserver:
+  void OnContextLost() override;
+
+  void ClearUnusedResources();
   void FlushRecording(cc::PaintRecord last_recording);
   void EnsureResourceReadyForDraw();
   bool ShouldReplaceTargetBuffer(cc::PaintImage::ContentId content_id);
@@ -85,6 +91,7 @@ class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool
 
   const CanvasSnapshotInfo info_;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
+  scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
   std::unique_ptr<CanvasNon2DResourceProvider> provider_;
 };
 
