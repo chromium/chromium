@@ -219,9 +219,15 @@ def evaluate_results(
         Benjamini-Hochberg q-value of p_imp (p_reg) across the m subtests is
         < alpha, controlling the FDR separately in each direction.
       - Raw p < alpha hits that fail the correction are reported as noise.
-      - Keep the CL iff `Score` or a subtest improved, neither `Score` nor a
-        subtest regressed, and `Score` shows no weak evidence of a drop
-        (p < 0.20 and a drop larger than 0.05%).
+      - Keep the CL if `Score` improved (`p < alpha`), even if one or more
+        subtests regressed, since `Score` is the primary endpoint and already
+        aggregates all subtests (confirmed subtest regressions are still
+        surfaced so avoidable collateral overhead can be refined on a follow-up
+        patchset without abandoning the CL).
+      - When `Score` is not significantly improved, keep the CL iff at least
+        one subtest improved, neither `Score` nor any subtest regressed, and
+        `Score` shows no weak evidence of a drop (p < 0.20 and a drop larger
+        than 0.05%).
 
     Caveats: The corrections assume calibrated p-values. `pp s` reports
     Mann-Whitney U p-values over runs pooled across bots, while directions
@@ -388,8 +394,8 @@ def evaluate_results(
     has_significant_regression = score_regressed_sig or bool(
         confirmed_regressions
     )
-    should_keep = (
-        has_significant_improvement
+    should_keep = score_improved_sig or (
+        bool(confirmed_improvements)
         and not has_significant_regression
         and not score_vetoed
     )
@@ -414,6 +420,11 @@ def evaluate_results(
             "confirmed subtest regression(s): "
             + ", ".join(s.name for s in confirmed_regressions)
         )
+        if score_improved_sig:
+            reasons.append(
+                "overall Score improved despite subtest regression(s); "
+                "consider refining before landing"
+            )
     if score_vetoed and not score_regressed_sig:
         reasons.append(f"vetoed by weak evidence of a drop: {score_desc}")
     if should_keep and not score_improved_sig:

@@ -201,6 +201,26 @@ class EvaluateResultsTest(unittest.TestCase):
         self.assertEqual(res["confirmed_improvements"], [])
         self.assertEqual(res["reasons"], ["Score +0.30% (p=0.0100) improved"])
 
+    def test_score_improvement_keeps_despite_subtest_regression(self):
+        res = pinpoint_evaluator.evaluate_results(
+            _table(
+                overrides={
+                    "Subtest-00": _row("Subtest-00", 50.0, 48.0, 0.0001),
+                    "Subtest-01": _row("Subtest-01", 50.0, 51.5, 0.0001),
+                },
+                score=_row("Score", 30.0, 30.13, 0.0001, "bigger-better"),
+            )
+        )
+        self.assertTrue(res["keep"])
+        self.assertTrue(res["score_improved_sig"])
+        self.assertTrue(res["regressed"])
+        self.assertEqual(_names(res["confirmed_improvements"]), ["Subtest-00"])
+        self.assertEqual(_names(res["confirmed_regressions"]), ["Subtest-01"])
+        self.assertIn(
+            "confirmed subtest regression(s): Subtest-01", res["reasons"]
+        )
+        self.assertIn("consider refining", res["reasons"][-1])
+
     def test_no_improvement_abandons(self):
         res = pinpoint_evaluator.evaluate_results(_table())
         self.assertFalse(res["keep"])

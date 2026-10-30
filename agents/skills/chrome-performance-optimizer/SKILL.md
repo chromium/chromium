@@ -376,13 +376,19 @@ ______________________________________________________________________
    `alpha = 0.05`):
 
    - `Score` (`Total` for JetStream) is the primary endpoint: it counts as
-     improved or regressed at unadjusted `p < 0.05`.
+     improved or regressed at unadjusted `p < 0.05`. Because `Score` already
+     integrates all subtests, a statistically significant `Score` improvement
+     (`p < 0.05`) **always keeps the CL**, even if one or more individual
+     subtests regressed.
    - Subtests are corrected for testing all `m` of them at once: an improvement
      or a regression is confirmed by directional Benjamini-Hochberg
      (`q_BH < 0.05`, FDR), applied separately to each direction. Subtests with
      raw `p < 0.05` that fail the correction are listed as noise and ignored.
-   - Veto: a `Score` drop of more than 0.05% with `p < 0.20` rejects the CL even
-     if subtests improved.
+   - Subtest-only wins (when `Score` is not significantly improved) are kept
+     only if at least one subtest has a confirmed improvement (`q_BH < 0.05`),
+     zero subtests have a confirmed regression (`q_BH < 0.05`), `Score` did not
+     regress, and no `Score` veto fired (a `Score` drop of more than 0.05% with
+     `p < 0.20` rejects a subtest-only win).
    - The output includes 95% confidence intervals and the minimum detectable
      effect (`MDE`) at 80% power. A non-significant result does not rule out
      effects smaller than the `MDE`.
@@ -393,8 +399,16 @@ ______________________________________________________________________
 
 4. **Decision Actions**:
 
-   - ✅ **Keep** (`Decision: Propose / Keep CL`): `Score` or a subtest improved,
-     nothing regressed, and no `Score` veto.
+   - ✅ **Keep** (`Decision: Propose / Keep CL`): `Score` improved significantly
+     (`p < 0.05`), OR at least one subtest improved with zero confirmed
+     regressions and no `Score` veto.
+     - If `Score` improved significantly *and* one or more subtests had a
+       confirmed regression (`q_BH < 0.05`), **do NOT abandon or tag
+       `chrome-perf-opt-rejected`** (which would blocklist the files in
+       `check_candidate_novelty.py`). You may optionally upload a targeted
+       Patchset 2 refinement on the same CL to eliminate avoidable collateral
+       overhead on the regressed subtest(s), or accept the CL directly if the
+       tradeoff is inherent.
      - Mark the CL as accepted on Gerrit:
        ```bash
        vpython3 .agents/skills/chrome-performance-optimizer/scripts/pinpoint_evaluator.py --action accept
@@ -404,8 +418,9 @@ ______________________________________________________________________
        git cl upload -m "Add Pinpoint M1 benchmark results (+X.X% improvement)"
        ```
      - Propose the change to the user and reviewers.
-   - ❌ **Abandon** (`Decision: Abandon CL`): no improvement survives the
-     correction, `Score` or a subtest regressed, or the `Score` veto fired.
+   - ❌ **Abandon** (`Decision: Abandon CL`): `Score` did not significantly
+     improve AND either no subtest improvement survives the correction, `Score`
+     or a subtest regressed, or the `Score` veto fired.
      - Mark as rejected on Gerrit and abandon the CL:
        ```bash
        vpython3 .agents/skills/chrome-performance-optimizer/scripts/pinpoint_evaluator.py --action reject
