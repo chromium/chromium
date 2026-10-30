@@ -7,6 +7,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
+#include "third_party/blink/renderer/platform/heap/thread_state_scopes.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
@@ -1076,6 +1078,114 @@ TEST(ExclusionSpaceTest, MergeExclusionSpacesNoOutputExclusions) {
 
   ExclusionSpace expected;
   EXPECT_EQ(expected, new_output);
+}
+
+TEST(ExclusionSpaceTest, CopyOnWriteNoAllocationOnCopy) {
+  test::TaskEnvironment task_environment;
+  ScopedExclusionSpaceCopyOnWriteForTest cow_enabled(true);
+  ExclusionSpace original;
+  original.Add(
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(10), LayoutUnit(20)),
+                                    BfcOffset(LayoutUnit(60), LayoutUnit(90))),
+                            EFloat::kLeft));
+
+  // Populate `derived_geometry_` before sharing.
+  LayoutOpportunityVector original_opps = original.AllLayoutOpportunities(
+      {LayoutUnit(), LayoutUnit()}, LayoutUnit(100), TextDirection::kLtr);
+  ASSERT_EQ(3u, original_opps.size());
+
+  ExclusionSpace copy_constructed(static_cast<const ExclusionSpace&>(original));
+  ExclusionSpace copy_assigned;
+  ExclusionSpace copied_from;
+  {
+    // Copying a non-empty ExclusionSpace must not allocate on the Oilpan heap
+    // so that copying elements inside a HeapVector loop cannot trigger a GC
+    // safepoint before the deferred write barrier runs.
+    ThreadState::NoAllocationScope no_alloc(ThreadState::Current());
+    ExclusionSpace local_copy(original);
+    copy_assigned = local_copy;
+    copied_from.CopyFrom(original);
+    EXPECT_EQ(original, local_copy);
+  }
+
+  EXPECT_EQ(original, copy_constructed);
+  EXPECT_EQ(original, copy_assigned);
+  EXPECT_EQ(original, copied_from);
+
+  // Self-moving derived geometry when sharing an internal instance must not
+  // clear the cached geometry.
+  original.MoveDerivedGeometry(copy_constructed);
+  original.MoveAndUpdateDerivedGeometry(copy_constructed);
+
+  // Mutating `copy_constructed` via `Add()` must not mutate `original` or
+  // other copies.
+  copy_constructed.Add(
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(60), LayoutUnit(20)),
+                                    BfcOffset(LayoutUnit(90), LayoutUnit(90))),
+                            EFloat::kRight));
+  EXPECT_NE(original, copy_constructed);
+  EXPECT_EQ(original, copy_assigned);
+  EXPECT_EQ(original, copied_from);
+
+  // Mutating `copy_assigned` via `SetHasBreakBeforeFloat()` must not mutate
+  // `original` or `copied_from`.
+  copy_assigned.SetHasBreakBeforeFloat(EFloat::kLeft);
+  EXPECT_TRUE(copy_assigned.NeedsBreakBeforeFloat(EClear::kNone));
+  EXPECT_FALSE(original.NeedsBreakBeforeFloat(EClear::kNone));
+  EXPECT_FALSE(copied_from.NeedsBreakBeforeFloat(EClear::kNone));
+  EXPECT_NE(original, copy_assigned);
+
+  // Mutating `copied_from` via `SetHasBreakInsideFloat()` must not mutate
+  // `original`.
+  copied_from.SetHasBreakInsideFloat(EFloat::kLeft);
+  EXPECT_TRUE(copied_from.HasFragmentainerBreak());
+  EXPECT_FALSE(original.HasFragmentainerBreak());
+  EXPECT_NE(original, copied_from);
+
+  // `MergeExclusionSpaces()` starting from `original` as `new_input` must not
+  // mutate `original`.
+  ExclusionSpace old_input;
+  ExclusionSpace old_output;
+  old_output.Add(
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(0), LayoutUnit(100)),
+                                    BfcOffset(LayoutUnit(30), LayoutUnit(120))),
+                            EFloat::kLeft));
+  ExclusionSpace merged = ExclusionSpace::MergeExclusionSpaces(
+      old_output, old_input, original, {LayoutUnit(), LayoutUnit()});
+  EXPECT_NE(original, merged);
+
+  LayoutOpportunityVector opps_after = original.AllLayoutOpportunities(
+      {LayoutUnit(), LayoutUnit()}, LayoutUnit(100), TextDirection::kLtr);
+  EXPECT_EQ(original_opps, opps_after);
+}
+
+TEST(ExclusionSpaceTest, CopyOnWriteDisabledFallback) {
+  test::TaskEnvironment task_environment;
+  ScopedExclusionSpaceCopyOnWriteForTest cow_disabled(false);
+
+  ExclusionSpace original;
+  original.Add(
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(10), LayoutUnit(20)),
+                                    BfcOffset(LayoutUnit(60), LayoutUnit(90))),
+                            EFloat::kLeft));
+
+  ExclusionSpace copy_constructed(static_cast<const ExclusionSpace&>(original));
+  ExclusionSpace copy_assigned;
+  copy_assigned = original;
+  ExclusionSpace copied_from;
+  copied_from.CopyFrom(original);
+
+  EXPECT_EQ(original, copy_constructed);
+  EXPECT_EQ(original, copy_assigned);
+  EXPECT_EQ(original, copied_from);
+
+  copy_constructed.Add(
+      ExclusionArea::Create(BfcRect(BfcOffset(LayoutUnit(60), LayoutUnit(20)),
+                                    BfcOffset(LayoutUnit(90), LayoutUnit(90))),
+                            EFloat::kRight));
+  EXPECT_NE(original, copy_constructed);
+  EXPECT_EQ(original, copy_assigned);
+  EXPECT_EQ(original, copied_from);
 }
 
 }  // namespace

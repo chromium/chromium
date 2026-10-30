@@ -2934,6 +2934,11 @@
       status: "experimental",
     },
     {
+      // https://crbug.com/578672563
+      name: "ExclusionSpaceCopyOnWrite",
+      status: "stable",
+    },
+    {
       name: "ExperimentalContentSecurityPolicyFeatures",
       status: "experimental",
       base_feature: "none",

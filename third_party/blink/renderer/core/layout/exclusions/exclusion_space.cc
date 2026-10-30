@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/core/layout/exclusions/exclusion_area.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -192,6 +193,9 @@ ExclusionSpaceInternal::ExclusionSpaceInternal(
 
 ExclusionSpaceInternal& ExclusionSpaceInternal::operator=(
     const ExclusionSpaceInternal& other) {
+  if (this == &other) {
+    return *this;
+  }
   CopyFrom(other);
   derived_geometry_ = std::move(other.derived_geometry_);
   other.derived_geometry_ = nullptr;
@@ -216,8 +220,16 @@ void ExclusionSpaceInternal::CopyFrom(const ExclusionSpaceInternal& other) {
 }
 
 void ExclusionSpace::CopyFrom(const ExclusionSpace& other) {
+  if (this == &other) {
+    return;
+  }
   if (!other.exclusion_space_) {
     exclusion_space_ = nullptr;
+    return;
+  }
+  if (RuntimeEnabledFeatures::ExclusionSpaceCopyOnWriteEnabled()) {
+    other.exclusion_space_->MarkShared();
+    exclusion_space_ = other.exclusion_space_;
     return;
   }
   exclusion_space_ = MakeGarbageCollected<ExclusionSpaceInternal>();
@@ -815,6 +827,28 @@ bool ExclusionSpaceInternal::operator==(
          has_break_before_right_float_ == other.has_break_before_right_float_ &&
          has_break_inside_left_float_ == other.has_break_inside_left_float_ &&
          has_break_inside_right_float_ == other.has_break_inside_right_float_;
+}
+
+ExclusionSpaceInternal* ExclusionSpace::CopyInternal(
+    ExclusionSpaceInternal* other_internal) {
+  if (!other_internal) {
+    return nullptr;
+  }
+  if (RuntimeEnabledFeatures::ExclusionSpaceCopyOnWriteEnabled()) {
+    other_internal->MarkShared();
+    return other_internal;
+  }
+  return MakeGarbageCollected<ExclusionSpaceInternal>(*other_internal);
+}
+
+ExclusionSpaceInternal& ExclusionSpace::EnsureWritable() {
+  if (!exclusion_space_) {
+    exclusion_space_ = MakeGarbageCollected<ExclusionSpaceInternal>();
+  } else if (exclusion_space_->IsShared()) {
+    exclusion_space_ =
+        MakeGarbageCollected<ExclusionSpaceInternal>(*exclusion_space_);
+  }
+  return *exclusion_space_;
 }
 
 }  // namespace blink
