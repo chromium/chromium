@@ -19,6 +19,7 @@ namespace vr {
 
 enum class XrTestRequirement {
   DIRECTX_11_1,  // Only supported on machines with GPUs that support DX 11.1
+  DRI3,          // Only supported on X servers with DRI3
 };
 
 std::string CheckXrRequirements(

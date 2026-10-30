@@ -136,6 +136,10 @@ WebXrVrOpenXrBrowserTestBase::WebXrVrOpenXrBrowserTestBase() {
   forced_runtime_ = switches::kWebXrRuntimeOpenXr;
   enable_features_.push_back(device::features::kOpenXR);
   enable_features_.push_back(blink::features::kWebXRVisibilityMask);
+#if BUILDFLAG(IS_LINUX)
+  // Without a GPU-backed X server, as under Xvfb, WebGL and frame sharing fail.
+  runtime_requirements_.push_back(XrTestRequirement::DRI3);
+#endif
 }
 
 WebXrVrOpenXrBrowserTestBase::~WebXrVrOpenXrBrowserTestBase() = default;

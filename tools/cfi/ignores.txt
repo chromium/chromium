@@ -234,7 +234,7 @@ src:*third_party/angle/src/common/vulkan/vulkan_icd.cpp
 # destroy function an OpenXrExtensionHandle/ScopedOpenXrObject stores, or as a
 # PFN parameter in openxr_spatial_utils.cc). The unittests' mock runtime and
 # its trampoline dispatch through the same kind of pointers, and the mock's
-# xrCreateVulkanInstanceKHR side calls through vkGetInstanceProcAddr.
+# Vulkan calls go through vkGetInstanceProcAddr.
 src:*third_party/openxr/src/src/*
 src:*device/vr/openxr/linux/openxr_vulkan_context.cc
 src:*device/vr/openxr/msft/openxr_anchor_manager_msft.cc
@@ -252,6 +252,7 @@ src:*device/vr/openxr/openxr_visibility_mask_handler.cc
 src:*device/vr/openxr/scoped_openxr_object.h
 src:*device/vr/openxr/test/fake_openxr_impl_api.cc
 src:*device/vr/openxr/test/openxr_mock_helper.cc
+src:*device/vr/openxr/test/openxr_test_helper.cc
 
 # Calls to TFLiteDelegate functions in a shared library.
 src:*services/webnn/tflite/graph_impl_tflite.cc

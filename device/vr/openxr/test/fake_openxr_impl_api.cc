@@ -315,6 +315,9 @@ XrResult XRAPI_PTR xrCreateSession(XrInstance instance,
             "XrGraphicsBindingVulkan2KHR physicalDevice is VK_NULL_HANDLE");
   RETURN_IF(binding->device == VK_NULL_HANDLE, XR_ERROR_VALIDATION_FAILURE,
             "XrGraphicsBindingVulkan2KHR device is VK_NULL_HANDLE");
+  GetTestHelper().SetVulkanDevice(binding->physicalDevice, binding->device,
+                                  binding->queueFamilyIndex,
+                                  binding->queueIndex);
 #elif BUILDFLAG(IS_ANDROID)
   const XrGraphicsBindingOpenGLESAndroidKHR* binding =
       static_cast<const XrGraphicsBindingOpenGLESAndroidKHR*>(
@@ -823,15 +826,15 @@ xrEnumerateSwapchainImages(XrSwapchain swapchain,
   auto images_span = UNSAFE_BUFFERS(
       base::span(reinterpret_cast<XrSwapchainImageVulkan2KHR*>(images),
                  image_capacity_input));
+  const std::vector<VkImage>& vk_images =
+      GetTestHelper().GetSwapchainImages(swapchain);
+  DCHECK_EQ(vk_images.size(), image_capacity_input);
   for (uint32_t i = 0; i < image_capacity_input; i++) {
     XrSwapchainImageVulkan2KHR& image = images_span[i];
     RETURN_IF(image.type != XR_TYPE_SWAPCHAIN_IMAGE_VULKAN2_KHR,
               XR_ERROR_VALIDATION_FAILURE,
               "XrSwapchainImageVulkan2KHR type invalid");
-    // SwiftShader cannot create real VkImages in the mock without a full
-    // rendering setup. Return VK_NULL_HANDLE — EnumerateSwapchainImages and
-    // CreateSharedImages handle null images gracefully.
-    image.image = VK_NULL_HANDLE;
+    image.image = vk_images[i];
   }
 #endif
 

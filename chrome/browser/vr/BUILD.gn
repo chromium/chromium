@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/config/ozone.gni")
 import("//chrome/common/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
@@ -125,6 +126,11 @@ source_set("xr_browser_tests_common") {
 
   if (enable_cardboard) {
     deps += [ "//device/vr/android/cardboard:vr_cardboard" ]
+  }
+
+  deps += [ "//ui/base:ozone_buildflags" ]
+  if (ozone_platform_x11) {
+    deps += [ "//ui/gfx/x" ]
   }
 
   if (enable_vr && is_win) {
@@ -533,8 +539,8 @@ if (enable_vr) {
 
       data_deps = []
 
-      # Windows-only tests and dependencies.
-      if (is_win) {
+      # Windows and Linux tests and dependencies.
+      if (is_win || is_linux) {
         # Infrastructure.
         sources += [
           "test/ui_utils.cc",
@@ -545,25 +551,33 @@ if (enable_vr) {
         sources += [
           "webxr_vr_frame_loop_browser_test.cc",
           "webxr_vr_frame_pose_browser_test.cc",
-          "webxr_vr_indicators_browser_test.cc",
           "webxr_vr_input_browser_test.cc",
           "webxr_vr_isolated_device_service_test.cc",
           "webxr_vr_lifecycle_browser_test.cc",
           "webxr_vr_permission_browser_test.cc",
-          "webxr_vr_permission_request_browser_test.cc",
           "webxr_vr_pixel_browser_test.cc",
           "webxr_vr_secondary_views_browser_test.cc",
           "webxr_vr_tab_browser_test.cc",
           "webxr_vr_transition_browser_test.cc",
         ]
 
+        # These need the in-headset UI, which Linux doesn't have yet.
+        if (is_win) {
+          sources += [
+            "webxr_vr_indicators_browser_test.cc",
+            "webxr_vr_permission_request_browser_test.cc",
+          ]
+        }
+
         deps += [
           ":vr_common",
           "//chrome/browser/content_settings:content_settings_factory",
           "//components/content_settings/core/browser",
-          "//device/vr:directx_helpers",
           "//device/vr:openxr_data",
         ]
+        if (is_win) {
+          deps += [ "//device/vr:directx_helpers" ]
+        }
       }
 
       if (enable_openxr) {

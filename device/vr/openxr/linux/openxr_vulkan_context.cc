@@ -9,7 +9,6 @@
 
 #include <algorithm>
 #include <string_view>
-#include <tuple>
 #include <vector>
 
 #include "base/check.h"
@@ -597,6 +596,9 @@ bool OpenXrVulkanContext::ImportDmaBufImage(
   out_image->offset = handle.planes[0].offset;
   out_image->allocation_size = mem_reqs.size;
   out_image->dma_buf_fd.reset(HANDLE_EINTR(dup(handle.planes[0].fd.get())));
+  // The GPU process has already drawn into the image. A transition from
+  // UNDEFINED may discard that, e.g. RADV resets AMD's DCC metadata.
+  out_image->current_layout = VK_IMAGE_LAYOUT_GENERAL;
   return true;
 }
 
@@ -653,14 +655,15 @@ bool OpenXrVulkanContext::WaitOnWriteFence(const IntermediateImage& image) {
   import_info.fence = fence;
   import_info.flags = VK_FENCE_IMPORT_TEMPORARY_BIT;
   import_info.handleType = VK_EXTERNAL_FENCE_HANDLE_TYPE_SYNC_FD_BIT;
-  import_info.fd = sync_file.get();
+  // A successful import owns the FD and may close it before returning.
+  import_info.fd = sync_file.release();
 
   // A signaled fence says nothing: the writes may be done, or their driver may
   // not attach its fences to the DMA-BUF at all.
   bool pending = false;
-  if (import_fence_fd_(vk_device_, &import_info) == VK_SUCCESS) {
-    // The import took ownership of the FD.
-    std::ignore = sync_file.release();
+  if (import_fence_fd_(vk_device_, &import_info) != VK_SUCCESS) {
+    close(import_info.fd);
+  } else {
     pending = vkGetFenceStatus(vk_device_, fence) == VK_NOT_READY;
     if (pending) {
       vkWaitForFences(vk_device_, 1, &fence, VK_TRUE, UINT64_MAX);

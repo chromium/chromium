@@ -48,7 +48,9 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestDeviceServiceDisconnect) {
                                  WebXrVrBrowserTestBase::kPollTimeoutMedium);
 
   // One last check now that we have the device change that we can actually
-  // still enter an immersive session.
+  // still enter an immersive session. The restarted service needs a hook to
+  // produce frames.
+  MockXRDeviceHookBase restarted_device_hook;
   t->EnterSessionWithUserGestureOrFail();
 }
 }  // namespace vr

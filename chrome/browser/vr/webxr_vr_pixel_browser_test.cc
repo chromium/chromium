@@ -61,6 +61,9 @@ void TestPresentationPixelsImpl(WebXrVrBrowserTestBase* t,
 
   my_mock.WaitForTotalFrameCount(1);
 
+  // Keep late frames from reaching `my_mock` while it is destroyed.
+  my_mock.StopHooking();
+
   base::AutoLock lock(my_mock.color_lock);
   EXPECT_EQ(SK_ColorBLUE, my_mock.last_submitted_color_);
 }

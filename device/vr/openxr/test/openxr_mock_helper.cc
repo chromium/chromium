@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/base_paths.h"
+#include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -76,13 +77,19 @@ bool InitializeOpenXrMockTrampoline() {
 #elif BUILDFLAG(IS_LINUX)
   // :openxr_mock puts the trampoline next to its manifest, in the same
   // mock_vr_clients/bin/openxr/ directory the Windows runtime uses.
-  base::FilePath exe_dir;
-  if (!base::PathService::Get(base::DIR_EXE, &exe_dir)) {
+  // The sandboxed XR process can't get DIR_EXE, so try XR_RUNTIME_JSON first.
+  base::FilePath library_dir;
+  std::optional<std::string> manifest =
+      base::Environment::Create()->GetVar("XR_RUNTIME_JSON");
+  if (manifest && !manifest->empty()) {
+    library_dir = base::FilePath(*manifest).DirName();
+  } else if (base::PathService::Get(base::DIR_EXE, &library_dir)) {
+    library_dir = library_dir.AppendASCII("mock_vr_clients/bin/openxr");
+  } else {
     LOG(ERROR) << "Failed to get DIR_EXE path for OpenXR mock trampoline";
     return false;
   }
-  library_path =
-      exe_dir.AppendASCII("mock_vr_clients/bin/openxr/libmockopenxrruntime.so");
+  library_path = library_dir.AppendASCII("libmockopenxrruntime.so");
 #else
   NOTREACHED() << "Unsupported platform for OpenXR mock trampoline";
 #endif

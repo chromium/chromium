@@ -31,15 +31,16 @@ IN_PROC_BROWSER_TEST_F(WebXrVrOpenXrBrowserTestBase,
   // Open Tab 2 to a blank page from Tab 1 to ensure they share the same
   // process. We use window.open to guarantee SiteInstance (and process)
   // sharing.
-  content::WebContentsAddedObserver new_contents_observer;
   RunJavaScriptOrFail("window.open('about:blank', '_blank');");
-  content::WebContents* tab_2_contents = new_contents_observer.GetWebContents();
+  // Wait for the new tab to become active. The browser may create other web
+  // contents first, e.g. for its UI.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return GetCurrentWebContents() != tab_1_contents; }));
+  content::WebContents* tab_2_contents = GetCurrentWebContents();
 
-  // Verify they indeed share the process, and that the new tab is the active
-  // web contents.
+  // Verify they indeed share the process.
   ASSERT_EQ(render_process_host,
             tab_2_contents->GetPrimaryMainFrame()->GetProcess());
-  ASSERT_EQ(tab_2_contents, GetCurrentWebContents());
 
   // Load the test page in Tab 2 and wait for it to be fully initialized, then
   // start an immersive session.
