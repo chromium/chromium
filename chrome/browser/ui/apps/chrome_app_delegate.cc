@@ -44,7 +44,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "printing/buildflags/buildflags.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
@@ -73,16 +73,21 @@ content::WebContents* OpenURLFromTabInternal(
 
   // Force all links to open in a new tab, even if they were trying to open a
   // window.
-  if (params.disposition == WindowOpenDisposition::kNewBackgroundTab) {
-    new_tab_params.disposition = WindowOpenDisposition::kNewBackgroundTab;
-  } else if (params.disposition == WindowOpenDisposition::kOffTheRecord) {
+  if (params.disposition ==
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab) {
+    new_tab_params.disposition =
+        ui::mojom::WindowOpenDisposition::kNewBackgroundTab;
+  } else if (params.disposition ==
+             ui::mojom::WindowOpenDisposition::kOffTheRecord) {
     // Don't force this behaviour for requests for an incognito window, where
     // it would not be acceptable to open in a new tab of a non-incognito
     // window.
-    new_tab_params.disposition = WindowOpenDisposition::kOffTheRecord;
+    new_tab_params.disposition =
+        ui::mojom::WindowOpenDisposition::kOffTheRecord;
     new_tab_params.window_action = NavigateParams::WindowAction::kShowWindow;
   } else {
-    new_tab_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+    new_tab_params.disposition =
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab;
     new_tab_params.window_action = NavigateParams::WindowAction::kShowWindow;
   }
 
@@ -291,7 +296,7 @@ void ChromeAppDelegate::AddNewContents(
     content::BrowserContext* context,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture) {
   if (!disable_external_open_for_testing_) {
@@ -308,9 +313,10 @@ void ChromeAppDelegate::AddNewContents(
       Profile::FromBrowserContext(context));
   // Force all links to open in a new tab, even if they were trying to open a
   // new window.
-  disposition = disposition == WindowOpenDisposition::kNewBackgroundTab
-                    ? disposition
-                    : WindowOpenDisposition::kNewForegroundTab;
+  disposition =
+      disposition == ui::mojom::WindowOpenDisposition::kNewBackgroundTab
+          ? disposition
+          : ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   chrome::AddWebContents(displayer.browser_window_interface(), nullptr,
                          std::move(new_contents), target_url, disposition,
                          window_features);

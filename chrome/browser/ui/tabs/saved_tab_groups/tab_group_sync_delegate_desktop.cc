@@ -26,7 +26,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/gfx/range/range.h"
 
 namespace tab_groups {
@@ -125,7 +125,7 @@ tabs::TabInterface* MaybeOpenTabFromSavedTab(const SavedTabGroupTab& saved_tab,
   content::NavigationHandle* navigation_handle =
       SavedTabGroupUtils::OpenTabInBrowser(
           saved_tab.url(), browser, browser->GetProfile(),
-          WindowOpenDisposition::kNewBackgroundTab);
+          ui::mojom::WindowOpenDisposition::kNewBackgroundTab);
   if (!navigation_handle) {
     return nullptr;
   }

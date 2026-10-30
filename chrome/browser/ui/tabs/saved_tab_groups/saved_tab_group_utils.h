@@ -19,7 +19,7 @@
 #include "components/tabs/public/tab_group.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "url/gurl.h"
 
 class BrowserWindowInterface;
@@ -107,7 +107,7 @@ class SavedTabGroupUtils {
       const GURL& url,
       BrowserWindowInterface* browser,
       Profile* profile,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       std::optional<int> tabstrip_index = std::nullopt,
       std::optional<tab_groups::TabGroupId> local_group_id = std::nullopt);
 

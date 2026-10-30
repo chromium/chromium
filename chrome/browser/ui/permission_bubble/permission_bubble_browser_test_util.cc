@@ -18,7 +18,7 @@
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 PermissionBubbleBrowserTest::PermissionBubbleBrowserTest() = default;
 
@@ -42,7 +42,8 @@ content::WebContents* PermissionBubbleBrowserTest::OpenExtensionAppWindow() {
 
   apps::AppLaunchParams params(
       extension->id(), apps::LaunchContainer::kLaunchContainerPanelDeprecated,
-      WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest);
+      ui::mojom::WindowOpenDisposition::kNewWindow,
+      apps::LaunchSource::kFromTest);
 
   content::WebContents* app_contents =
       apps::AppServiceProxyFactory::GetForProfile(browser()->GetProfile())

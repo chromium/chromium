@@ -98,8 +98,8 @@
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/test_mime_handler_stream_manager.h"
@@ -2219,7 +2219,8 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
 
   GURL bar_app_url(embedded_test_server()->GetURL("bar.com", "/title2.html"));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), bar_app_url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), bar_app_url,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* bar_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
@@ -2228,7 +2229,8 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
 
   GURL foo_app_url2(embedded_test_server()->GetURL("foo.com", "/title3.html"));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), foo_app_url2, WindowOpenDisposition::kNewForegroundTab,
+      browser(), foo_app_url2,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* foo_contents2 =
       browser()->GetTabStripModel()->GetActiveWebContents();
@@ -2295,7 +2297,8 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
   // process-per-site.
   GURL bar_app_url2(embedded_test_server()->GetURL("bar.com", "/title3.html"));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), bar_app_url2, WindowOpenDisposition::kNewForegroundTab,
+      browser(), bar_app_url2,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* bar_contents2 =
       browser()->GetTabStripModel()->GetActiveWebContents();

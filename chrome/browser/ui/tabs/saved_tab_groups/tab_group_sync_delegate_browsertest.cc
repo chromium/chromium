@@ -61,7 +61,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/views/view_utils.h"
 #include "url/gurl.h"
 
@@ -274,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupSyncDelegateSessionRestoreBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), urls[0]));
   for (int i = 1; i < 6; ++i) {
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), urls[i], WindowOpenDisposition::kNewBackgroundTab,
+        browser(), urls[i], ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 

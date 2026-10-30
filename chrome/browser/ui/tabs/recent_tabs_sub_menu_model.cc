@@ -62,9 +62,9 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -344,8 +344,8 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
   sessions::LiveTabContext* context = BrowserLiveTabContext::From(browser_);
   CHECK(context);
 
-  WindowOpenDisposition disposition = ui::DispositionFromEventFlags(
-      event_flags, WindowOpenDisposition::kNewForegroundTab);
+  ui::mojom::WindowOpenDisposition disposition = ui::DispositionFromEventFlags(
+      event_flags, ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 
   if (IsCommandType(CommandType::Tab, command_id)) {
     const TabItems& tab_items = *GetTabVectorForCommandId(command_id);

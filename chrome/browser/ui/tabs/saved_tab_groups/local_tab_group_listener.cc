@@ -29,7 +29,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace tab_groups {
@@ -371,8 +371,8 @@ void LocalTabGroupListener::OpenWebContentsFromSync(
   content::NavigationHandle* navigation_handle =
       SavedTabGroupUtils::OpenTabInBrowser(
           url_to_open, browser, browser->GetProfile(),
-          WindowOpenDisposition::kNewBackgroundTab, index_in_tabstrip,
-          local_id_);
+          ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+          index_in_tabstrip, local_id_);
   content::WebContents* opened_contents =
       navigation_handle ? navigation_handle->GetWebContents() : nullptr;
 

@@ -10,7 +10,7 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/base_window.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/gfx/native_ui_types.h"
@@ -36,7 +36,7 @@ IN_PROC_BROWSER_TEST_F(ApplicationLaunchBrowserTest, CreateWindowInDisplay) {
   // Create browser2 on display 2.
   apps::AppLaunchParams params("app_id",
                                apps::LaunchContainer::kLaunchContainerWindow,
-                               WindowOpenDisposition::kNewWindow,
+                               ui::mojom::WindowOpenDisposition::kNewWindow,
                                apps::LaunchSource::kFromAppListGrid, display2);
   BrowserWindowInterface* browser2 =
       CreateApplicationWindow(browser()->GetProfile(), params, GURL());

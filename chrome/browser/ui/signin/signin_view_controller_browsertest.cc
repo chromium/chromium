@@ -74,7 +74,7 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
@@ -711,7 +711,7 @@ IN_PROC_BROWSER_TEST_F(
     ShowChromeSigninDialogForExtensionsPromptReuseInactiveOpenTab) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://www.google.com"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ASSERT_EQ(browser()->GetTabStripModel()->count(), 2);
   ASSERT_FALSE(SigninViewController::IsNTPTab(

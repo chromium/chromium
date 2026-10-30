@@ -30,8 +30,8 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -226,7 +226,8 @@ void ControlledHomeDialogController::OnBubbleClosed(CloseAction action) {
         CHECK(learn_more_url.is_valid());
         content::OpenURLParams params =
             content::OpenURLParams::CreateBrowserInitiated(
-                learn_more_url, WindowOpenDisposition::kNewForegroundTab,
+                learn_more_url,
+                ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                 ui::PAGE_TRANSITION_LINK);
         web_contents_->OpenURL(params, {});
       }

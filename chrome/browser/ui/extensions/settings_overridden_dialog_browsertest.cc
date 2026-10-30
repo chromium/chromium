@@ -37,7 +37,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/extension_features.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
@@ -207,7 +207,7 @@ class SettingsOverriddenDialogBrowserTest : public DialogBrowserTest {
   void NavigateToNewTab() {
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), chrome::ChromeUINewTabURLAsGURL(),
-        WindowOpenDisposition::kNewForegroundTab,
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 

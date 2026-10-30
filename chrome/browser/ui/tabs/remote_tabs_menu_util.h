@@ -11,7 +11,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync_device_info/device_info.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class BrowserWindowInterface;
 class GURL;
@@ -57,7 +57,7 @@ bool OpenForeignSessionTab(BrowserWindowInterface* browser,
                            sync_sessions::OpenTabsUIDelegate* open_tabs,
                            const std::string& session_tag,
                            SessionID tab_id,
-                           WindowOpenDisposition disposition,
+                           ui::mojom::WindowOpenDisposition disposition,
                            base::UserMetricsAction user_action);
 
 }  // namespace remote_tabs_menu_util

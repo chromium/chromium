@@ -28,6 +28,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/models/menu_model_delegate.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/favicon_size.h"
@@ -146,7 +147,7 @@ bool OpenForeignSessionTab(BrowserWindowInterface* browser,
                            sync_sessions::OpenTabsUIDelegate* open_tabs,
                            const std::string& session_tag,
                            SessionID tab_id,
-                           WindowOpenDisposition disposition,
+                           ui::mojom::WindowOpenDisposition disposition,
                            base::UserMetricsAction user_action) {
   if (!open_tabs) {
     return false;

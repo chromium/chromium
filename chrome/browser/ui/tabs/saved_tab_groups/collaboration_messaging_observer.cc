@@ -24,7 +24,7 @@
 #include "components/saved_tab_groups/public/types.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tabs/public/tab_group.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 using collaboration::messaging::MessagingBackendServiceFactory;
 using collaboration::messaging::PersistentNotificationType;
@@ -235,7 +235,7 @@ void CollaborationMessagingObserver::ReopenTabForCurrentInstantMessage() {
               group_id.value())) {
     SavedTabGroupUtils::OpenTabInBrowser(
         GURL(tab_url.value()), browser, profile_,
-        WindowOpenDisposition::kNewBackgroundTab, std::nullopt,
+        ui::mojom::WindowOpenDisposition::kNewBackgroundTab, std::nullopt,
         group_id.value());
   }
 }

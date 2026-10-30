@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 class MockBrowserWindowInterface : public BrowserWindowInterface {
@@ -49,7 +50,7 @@ class MockBrowserWindowInterface : public BrowserWindowInterface {
 #if !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void,
               OpenGURL,
-              (const GURL& gurl, WindowOpenDisposition disposition),
+              (const GURL& gurl, ui::mojom::WindowOpenDisposition disposition),
               (override));
   MOCK_METHOD(TabStripModel*, GetTabStripModel, (), (override));
   MOCK_METHOD(const TabStripModel*, GetTabStripModel, (), (const, override));

@@ -60,9 +60,9 @@
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/manifest_handlers/web_file_handlers_info.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/rect.h"
@@ -255,7 +255,7 @@ WebContents* OpenApplicationTab(Profile* profile,
                                 const GURL& url) {
   const Extension* extension = GetExtension(profile, launch_params);
   CHECK(extension);
-  WindowOpenDisposition disposition = launch_params.disposition;
+  ui::mojom::WindowOpenDisposition disposition = launch_params.disposition;
 
   BrowserWindowInterface* browser =
       FindTabbedBrowser(profile, launch_params.display_id);
@@ -277,7 +277,7 @@ WebContents* OpenApplicationTab(Profile* profile,
         BrowserWindowInterface::TYPE_NORMAL, profile, true));
     browser->GetWindow()->Show();
     // There's no current tab in this browser window, so add a new one.
-    disposition = WindowOpenDisposition::kNewForegroundTab;
+    disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   }
 
   extensions::LaunchType launch_type =
@@ -299,7 +299,7 @@ WebContents* OpenApplicationTab(Profile* profile,
         std::move(*nav_launch_params));
   }
 
-  if (disposition == WindowOpenDisposition::kCurrentTab) {
+  if (disposition == ui::mojom::WindowOpenDisposition::kCurrentTab) {
     WebContents* existing_tab =
         browser->GetTabStripModel()->GetActiveWebContents();
     TabStripModel* model = browser->GetTabStripModel();
@@ -514,7 +514,7 @@ BrowserWindowInterface* CreateApplicationWindow(
   // TODO(erg): AppLaunchParams should pass through the user_gesture from the
   // extension system here.
   BrowserWindowCreateParams browser_params(
-      params.disposition == WindowOpenDisposition::kNewPopup
+      params.disposition == ui::mojom::WindowOpenDisposition::kNewPopup
           ? BrowserWindowCreateParams::CreateForAppPopup(
                 app_name,
                 /*trusted_source=*/true, initial_bounds, profile,
@@ -530,10 +530,11 @@ BrowserWindowInterface* CreateApplicationWindow(
   return CreateBrowserWindow(std::move(browser_params));
 }
 
-WebContents* NavigateApplicationWindow(BrowserWindowInterface* browser,
-                                       const apps::AppLaunchParams& params,
-                                       const GURL& url,
-                                       WindowOpenDisposition disposition) {
+WebContents* NavigateApplicationWindow(
+    BrowserWindowInterface* browser,
+    const apps::AppLaunchParams& params,
+    const GURL& url,
+    ui::mojom::WindowOpenDisposition disposition) {
   const Extension* const extension =
       GetExtension(browser->GetProfile(), params);
   ui::PageTransition transition =
@@ -575,7 +576,8 @@ WebContents* OpenApplicationWindow(Profile* profile,
   BrowserWindowInterface* browser =
       CreateApplicationWindow(profile, params, url);
   WebContents* web_contents = NavigateApplicationWindow(
-      browser, params, url, WindowOpenDisposition::kNewForegroundTab);
+      browser, params, url,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 
   browser->GetWindow()->Show();
   return web_contents;
@@ -608,7 +610,8 @@ WebContents* OpenAppShortcutWindow(Profile* profile, const GURL& url) {
   apps::AppLaunchParams launch_params(
       std::string(),  // this is a URL app. No app id.
       apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromCommandLine);
+      ui::mojom::WindowOpenDisposition::kNewWindow,
+      apps::LaunchSource::kFromCommandLine);
   launch_params.override_url = url;
 
   return OpenApplicationWindow(profile, launch_params, url);

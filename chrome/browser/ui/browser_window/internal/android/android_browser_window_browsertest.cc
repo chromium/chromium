@@ -24,8 +24,8 @@
 #include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 class AndroidBrowserWindowBrowserTest
     : public BrowserWindowAndroidBrowserTestBase {
@@ -63,7 +63,8 @@ IN_PROC_BROWSER_TEST_F(AndroidBrowserWindowBrowserTest,
 
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_LINK);
+          url, ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_LINK);
 
   // We store GURL instead of NavigationHandle& to avoid storing an abstract
   // class.
@@ -92,7 +93,8 @@ IN_PROC_BROWSER_TEST_F(AndroidBrowserWindowBrowserTest,
   // NEW_WINDOW forces the asynchronous path in Android's Navigate().
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::kNewWindow, ui::PAGE_TRANSITION_LINK);
+          url, ui::mojom::WindowOpenDisposition::kNewWindow,
+          ui::PAGE_TRANSITION_LINK);
 
   base::test::TestFuture<GURL> future;
   content::WebContents* result = window->OpenURL(
@@ -124,7 +126,8 @@ IN_PROC_BROWSER_TEST_F(AndroidBrowserWindowBrowserTest,
   // Navigate() will fail internal validation and post a null result.
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::kNewWindow, ui::PAGE_TRANSITION_LINK);
+          url, ui::mojom::WindowOpenDisposition::kNewWindow,
+          ui::PAGE_TRANSITION_LINK);
 
   base::test::TestFuture<GURL> future;
   content::WebContents* result = window->OpenURL(
@@ -159,7 +162,8 @@ IN_PROC_BROWSER_TEST_F(AndroidBrowserWindowBrowserTest, OpenURL_PopupBlocked) {
   content::OpenURLParams source_params =
       content::OpenURLParams::CreateBrowserInitiated(
           embedded_test_server()->GetURL("/simple.html"),
-          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED);
+          ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_TYPED);
 
   base::test::TestFuture<GURL> source_future;
   content::WebContents* source_contents = window->OpenURL(
@@ -175,7 +179,8 @@ IN_PROC_BROWSER_TEST_F(AndroidBrowserWindowBrowserTest, OpenURL_PopupBlocked) {
   // 2. Create params for a popup without a user gesture.
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::kNewPopup, ui::PAGE_TRANSITION_LINK);
+          url, ui::mojom::WindowOpenDisposition::kNewPopup,
+          ui::PAGE_TRANSITION_LINK);
   params.user_gesture = false;
   params.source_render_process_id =
       source_rfh->GetProcess()->GetID().GetUnsafeValue();
@@ -209,7 +214,8 @@ IN_PROC_BROWSER_TEST_F(AndroidBrowserWindowBrowserTest, OpenURL_PopupAllowed) {
   content::OpenURLParams source_params =
       content::OpenURLParams::CreateBrowserInitiated(
           embedded_test_server()->GetURL("/simple.html"),
-          WindowOpenDisposition::kCurrentTab, ui::PAGE_TRANSITION_TYPED);
+          ui::mojom::WindowOpenDisposition::kCurrentTab,
+          ui::PAGE_TRANSITION_TYPED);
 
   base::test::TestFuture<GURL> source_future;
   content::WebContents* source_contents = window->OpenURL(
@@ -225,7 +231,8 @@ IN_PROC_BROWSER_TEST_F(AndroidBrowserWindowBrowserTest, OpenURL_PopupAllowed) {
   // 2. Create params for a popup WITH a user gesture.
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::kNewPopup, ui::PAGE_TRANSITION_LINK);
+          url, ui::mojom::WindowOpenDisposition::kNewPopup,
+          ui::PAGE_TRANSITION_LINK);
   params.user_gesture = true;
   params.source_render_process_id =
       source_rfh->GetProcess()->GetID().GetUnsafeValue();

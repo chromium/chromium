@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "extensions/browser/app_window/app_delegate.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/gfx/geometry/rect.h"
 
 class Profile;
@@ -59,7 +59,7 @@ class ChromeAppDelegate : public extensions::AppDelegate {
   void AddNewContents(content::BrowserContext* context,
                       std::unique_ptr<content::WebContents> new_contents,
                       const GURL& target_url,
-                      WindowOpenDisposition disposition,
+                      ui::mojom::WindowOpenDisposition disposition,
                       const blink::mojom::WindowFeatures& window_features,
                       bool user_gesture) override;
   void RunFileChooser(content::RenderFrameHost* render_frame_host,

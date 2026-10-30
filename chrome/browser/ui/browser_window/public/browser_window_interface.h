@@ -12,7 +12,7 @@
 #include "content/public/browser/page_navigator.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #endif
 
 // This is the public interface for a browser window. Most features in
@@ -228,7 +228,7 @@ class BrowserWindowInterface : public content::PageNavigator {
   // Opens a URL, with the given disposition. This is a convenience wrapper
   // around OpenURL from content::PageNavigator.
   virtual void OpenGURL(const GURL& gurl,
-                        WindowOpenDisposition disposition) = 0;
+                        ui::mojom::WindowOpenDisposition disposition) = 0;
 
   // Never nullptr.
   //

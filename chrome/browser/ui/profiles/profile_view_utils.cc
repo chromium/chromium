@@ -41,8 +41,8 @@
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/text_elider.h"
@@ -71,7 +71,7 @@ void NavigateToGoogleAccountPage(Profile* profile, const std::string& email) {
   url = net::AppendQueryParameter(url, "continue", google_account.spec());
 
   NavigateParams params(profile, url, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
 }
 

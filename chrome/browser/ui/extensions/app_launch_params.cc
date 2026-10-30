@@ -10,14 +10,14 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 using extensions::ExtensionPrefs;
 
 apps::AppLaunchParams CreateAppLaunchParamsUserContainer(
     Profile* profile,
     const extensions::Extension* extension,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     apps::LaunchSource launch_source) {
   // Look up the app preference to find out the right launch container. Default
   // is to launch as a regular tab.

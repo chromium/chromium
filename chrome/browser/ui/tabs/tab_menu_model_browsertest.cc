@@ -69,6 +69,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
@@ -429,7 +430,8 @@ class TabMenuModelMuteSitesBrowserTest : public TabMenuModelBrowserTest {
                                      const GURL& second_url) {
     EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
     EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), second_url, WindowOpenDisposition::kNewForegroundTab,
+        browser(), second_url,
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
     TabStripModel* tab_strip_model = browser()->tab_strip_model();

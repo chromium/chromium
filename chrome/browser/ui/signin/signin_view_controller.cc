@@ -54,8 +54,8 @@
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -219,7 +219,7 @@ void ShowTabOverwritingNTP(BrowserWindowInterface* browser,
                            TabStripModel* tab_strip_model,
                            const GURL& url) {
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   params.window_action = NavigateParams::WindowAction::kShowWindow;
   params.user_gesture = false;
   params.tabstrip_add_types |= AddTabTypes::ADD_INHERIT_OPENER;
@@ -229,7 +229,7 @@ void ShowTabOverwritingNTP(BrowserWindowInterface* browser,
     const GURL& contents_url = contents->GetVisibleURL();
     if (contents_url == chrome::ChromeUINewTabURLAsGURL() ||
         search::IsInstantNTP(contents) || contents_url == url::kAboutBlankURL) {
-      params.disposition = WindowOpenDisposition::kCurrentTab;
+      params.disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
     }
   }
 
@@ -544,7 +544,7 @@ void SigninViewController::MaybeShowChromeSigninDialogForExtensions(
   // Create a new tab page and wait for the navigation to complete.
   NavigateParams params(&browser_.get(), chrome::ChromeUINewTabURLAsGURL(),
                         ui::PAGE_TRANSITION_AUTO_BOOKMARK);
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   params.window_action = NavigateParams::WindowAction::kShowWindow;
   params.user_gesture = false;
   params.tabstrip_add_types |= AddTabTypes::ADD_INHERIT_OPENER;
