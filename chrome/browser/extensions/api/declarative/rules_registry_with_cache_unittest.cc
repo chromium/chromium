@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/test/values_test_util.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/extensions/extension_test_util.h"
@@ -26,6 +27,7 @@
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/rules_registry_ids.h"
+#include "extensions/browser/state_store.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature_channel.h"
@@ -418,6 +420,36 @@ TEST_F(RulesRegistryWithCacheTest, ConcurrentStoringOfRules) {
   env_.GetExtensionSystem()->SetReady();
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(write_count + 2, system->value_store()->write_count());
+}
+
+// Regression test for crbug.com/574640360: if persisted storage contains two
+// rules with the same (non-ASCII) rule ID, startup replay must reject the
+// batch without crashing in `AddRulesNoFill` or `ReportInternalError`.
+TEST_F(RulesRegistryWithCacheTest, RejectsDuplicatePersistedRuleIdsOnStartup) {
+  const Extension* extension = env_.MakeExtension(
+      base::test::ParseJsonDict(R"({"permissions": ["declarativeContent"]})"));
+  ASSERT_TRUE(extension);
+
+  StateStore* rules_store = env_.GetExtensionSystem()->rules_store();
+  ASSERT_TRUE(rules_store);
+  rules_store->SetExtensionValue(
+      extension->id(), "declarative_rules.declarativeContent.onPageChanged",
+      base::test::ParseJson(R"([
+        {"id": "\uFFFD\uFFFD\uFFFD", "priority": 100},
+        {"id": "\uFFFD\uFFFD\uFFFD", "priority": 100}
+      ])"));
+
+  env_.GetExtensionSystem()->SetReady();
+
+  auto cache_delegate = std::make_unique<RulesCacheDelegate>(
+      RulesCacheDelegate::Type::kPersistent);
+  scoped_refptr<TestRulesRegistry> registry(
+      new TestRulesRegistry(profile(), "declarativeContent.onPageChanged",
+                            cache_delegate.get(), kRulesRegistryID));
+
+  content::RunAllTasksUntilIdle();
+  EXPECT_TRUE(registry->ready().is_signaled());
+  EXPECT_EQ(0, GetNumberOfRules(extension->id(), registry.get()));
 }
 
 }  //  namespace extensions

@@ -805,4 +805,60 @@ TEST_F(WebRequestRulesRegistryTest, CheckOriginAndPathRegEx) {
   EXPECT_EQ(1u, deltas.size());
 }
 
+// Regression test for crbug.com/575087049: duplicate or non-UTF-8 rule IDs
+// passed to `WebRequestRulesRegistry::AddRulesImpl` must be rejected before
+// indexing pointers in `rule_triggers_`.
+TEST_F(WebRequestRulesRegistryTest, AddDuplicateRuleIdsRejected) {
+  constexpr char kCollapsedRuleJson[] = R"({
+    "id": "\uFFFD\uFFFD\uFFFD",
+    "priority": 100,
+    "conditions": [{
+      "instanceType": "declarativeWebRequest.RequestMatcher",
+      "url": {}
+    }],
+    "actions": [{
+      "instanceType": "declarativeWebRequest.CancelRequest"
+    }]
+  })";
+
+  auto rule1 = api::events::Rule::FromValue(
+      base::test::ParseJsonDict(kCollapsedRuleJson));
+  auto rule2 = api::events::Rule::FromValue(
+      base::test::ParseJsonDict(kCollapsedRuleJson));
+  ASSERT_TRUE(rule1.has_value());
+  ASSERT_TRUE(rule2.has_value());
+
+  scoped_refptr<TestWebRequestRulesRegistry> registry =
+      base::MakeRefCounted<TestWebRequestRulesRegistry>(&profile_);
+
+  // Intra-batch duplicate IDs must fail and leave no dangling trigger entries.
+  std::vector<const api::events::Rule*> dup_batch = {&rule1.value(),
+                                                     &rule2.value()};
+  EXPECT_FALSE(registry->AddRulesImpl(kExtensionId, dup_batch).empty());
+  EXPECT_TRUE(registry->IsEmpty());
+
+  GURL trigger_url("http://localhost:8080/trigger");
+  WebRequestInfo request_info(CreateRequestParams(trigger_url));
+  WebRequestData request_data(&request_info, ON_BEFORE_REQUEST);
+  EXPECT_TRUE(registry->GetMatches(request_data).empty());
+  EXPECT_TRUE(registry
+                  ->CreateDeltas(PermissionHelper::Get(&profile_), request_data,
+                                 /*crosses_incognito=*/false)
+                  .empty());
+
+  // Non-UTF-8 rule IDs (lone surrogate in WTF-8) must also be rejected.
+  auto invalid_utf8_rule = api::events::Rule::FromValue(
+      base::test::ParseJsonDict(kCollapsedRuleJson));
+  ASSERT_TRUE(invalid_utf8_rule.has_value());
+  invalid_utf8_rule->id = "\xED\xA0\x80";
+  EXPECT_FALSE(
+      registry->AddRulesImpl(kExtensionId, {&invalid_utf8_rule.value()})
+          .empty());
+  EXPECT_TRUE(registry->IsEmpty());
+
+  // Adding a single rule succeeds, and re-adding the same ID is rejected.
+  EXPECT_TRUE(registry->AddRulesImpl(kExtensionId, {&rule1.value()}).empty());
+  EXPECT_FALSE(registry->AddRulesImpl(kExtensionId, {&rule2.value()}).empty());
+}
+
 }  // namespace extensions

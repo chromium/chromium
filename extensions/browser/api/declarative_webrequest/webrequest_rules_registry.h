@@ -118,7 +118,7 @@ class WebRequestRulesRegistry : public RulesRegistry {
                            HostPermissionsChecker);
 
   using RuleTriggers =
-      std::map<base::MatcherStringPattern::ID, const WebRequestRule*>;
+      std::map<base::MatcherStringPattern::ID, raw_ptr<const WebRequestRule>>;
   using RulesMap =
       std::map<WebRequestRule::RuleId, std::unique_ptr<const WebRequestRule>>;
   using URLMatches = std::set<base::MatcherStringPattern::ID>;
@@ -160,8 +160,11 @@ class WebRequestRulesRegistry : public RulesRegistry {
                          const WebRequestCondition::MatchData& request_data,
                          RuleSet* result) const;
 
+  std::map<ExtensionId, RulesMap> webrequest_rules_;
+
   // Map that tells us which WebRequestRule may match under the condition that
   // the base::MatcherStringPattern::ID was returned by the `url_matcher_`.
+  // Declared after `webrequest_rules_` so owning pointers outlive `raw_ptr`s.
   RuleTriggers rule_triggers_;
 
   // These rules contain condition sets with conditions without URL attributes.
@@ -169,8 +172,6 @@ class WebRequestRulesRegistry : public RulesRegistry {
   // separately.
   std::set<raw_ptr<const WebRequestRule, SetExperimental>>
       rules_with_untriggered_conditions_;
-
-  std::map<ExtensionId, RulesMap> webrequest_rules_;
 
   url_matcher::URLMatcher url_matcher_;
 };

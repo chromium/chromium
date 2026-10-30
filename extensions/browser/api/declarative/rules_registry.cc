@@ -6,8 +6,10 @@
 
 #include <algorithm>
 #include <memory>
+#include <set>
 #include <utility>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
@@ -16,6 +18,8 @@
 #include "base/values.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/api/declarative/constants.h"
+#include "extensions/browser/api/declarative/declarative_utils.h"
 #include "extensions/browser/api/declarative/rules_cache_delegate.h"
 #include "extensions/browser/extension_error.h"
 #include "extensions/browser/extension_registry.h"
@@ -31,10 +35,7 @@ namespace extensions {
 
 namespace {
 
-const char kSuccess[] = "";
-const char kDuplicateRuleId[] = "Duplicate rule ID: %s";
-const char kErrorCannotRemoveManifestRules[] =
-    "Rules declared in the 'event_rules' manifest field cannot be removed";
+constexpr char kSuccess[] = "";
 
 base::ListValue RulesToValue(
     const std::vector<const api::events::Rule*>& rules) {
@@ -96,14 +97,21 @@ std::string RulesRegistry::AddRulesNoFill(
     std::vector<const api::events::Rule*>* rules_out) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Verify that all rule IDs are new.
+  // Verify that all rule IDs are valid UTF-8 and new (including within this
+  // batch, since deserialized rules bypass `CheckAndFillInOptionalRules`).
+  std::set<RuleId> new_rule_ids;
   for (const auto& rule : rules_in) {
+    if (!declarative::IsValidRuleId(rule.id)) {
+      return declarative::kInvalidRuleIdError;
+    }
     const RuleId& rule_id = *(rule.id);
     // Every rule should have a priority assigned.
     DCHECK(rule.priority);
     RulesDictionaryKey key(extension_id, rule_id);
-    if (rules_.contains(key) || manifest_rules_.contains(key)) {
-      return base::StringPrintf(kDuplicateRuleId, rule_id.c_str());
+    auto [_, inserted] = new_rule_ids.insert(rule_id);
+    if (rules_.contains(key) || manifest_rules_.contains(key) || !inserted) {
+      return base::StringPrintf(declarative::kDuplicateRuleIdError,
+                                rule_id.c_str());
     }
   }
 
@@ -124,7 +132,7 @@ std::string RulesRegistry::AddRulesNoFill(
 
     auto insert_result = destination->emplace(key, std::move(rule));
     // All rule IDs are new so insert had better not have failed.
-    DCHECK(insert_result.second);
+    CHECK(insert_result.second);
 
     if (rules_out)
       rule_ptrs.push_back(&(insert_result.first->second));
@@ -156,6 +164,9 @@ std::string RulesRegistry::AddRulesInternal(
     return error;
   FillInOptionalPriorities(&rules_in);
 
+  // TODO(crbug.com/40605870): `used_rule_identifiers_` is not rolled back if
+  // `AddRulesNoFill()` fails, and is not populated when stored rules are
+  // replayed in `DeserializeAndAddRules()`.
   return AddRulesNoFill(extension_id, std::move(rules_in), destination,
                         rules_out);
 }
@@ -180,7 +191,7 @@ std::string RulesRegistry::RemoveRules(
     RulesDictionaryKey lookup_key(extension_id, rule_id);
     auto itr = manifest_rules_.find(lookup_key);
     if (itr != manifest_rules_.end())
-      return kErrorCannotRemoveManifestRules;
+      return declarative::kErrorCannotRemoveManifestRules;
   }
 
   std::string error =
@@ -347,7 +358,7 @@ void RulesRegistry::DeserializeAndAddRules(const ExtensionId& extension_id,
 void RulesRegistry::ReportInternalError(const ExtensionId& extension_id,
                                         const std::string& error) {
   auto error_instance = std::make_unique<InternalError>(
-      extension_id, base::ASCIIToUTF16(error), logging::LOGGING_ERROR);
+      extension_id, base::UTF8ToUTF16(error), logging::LOGGING_ERROR);
   ExtensionsBrowserClient::Get()->ReportError(browser_context_,
                                               std::move(error_instance));
 }
@@ -407,25 +418,31 @@ std::string RulesRegistry::GenerateUniqueId(const ExtensionId& extension_id) {
 std::string RulesRegistry::CheckAndFillInOptionalRules(
     const ExtensionId& extension_id,
     std::vector<api::events::Rule>* rules) {
-  // IDs we have inserted, in case we need to rollback this operation.
-  // TODO(rdevlin.cronin, avi): Um, this variable is never inserted into; is
-  // this a bug? https://crbug.com/40605870
-  std::vector<std::string> rollback_log;
-
-  // First we insert all rules with existing identifier, so that generated
-  // identifiers cannot collide with identifiers passed by the caller.
+  // First verify that all explicit rule IDs are valid UTF-8 and unique (both
+  // against already-used IDs and within this batch) before mutating
+  // `used_rule_identifiers_`.
+  std::set<RuleIdentifier> seen_ids;
   for (const auto& rule : *rules) {
-    if (rule.id) {
-      std::string id = *(rule.id);
-      if (!IsUniqueId(extension_id, id)) {
-        RemoveUsedRuleIdentifiers(extension_id, rollback_log);
-        return "Id " + id + " was used multiple times.";
-      }
-      used_rule_identifiers_[extension_id].insert(id);
+    if (!rule.id) {
+      continue;
+    }
+    if (!declarative::IsValidRuleId(rule.id)) {
+      return declarative::kInvalidRuleIdError;
+    }
+    const std::string& id = *rule.id;
+    auto [_, inserted] = seen_ids.insert(id);
+    if (!IsUniqueId(extension_id, id) || !inserted) {
+      return "Id " + id + " was used multiple times.";
     }
   }
-  // Now we generate IDs in case they were not specified in the rules. This
-  // cannot fail so we do not need to keep track of a rollback log.
+
+  // Insert all rules with explicit identifiers first, so that generated
+  // identifiers cannot collide with identifiers passed by the caller.
+  for (const auto& id : seen_ids) {
+    used_rule_identifiers_[extension_id].insert(id);
+  }
+
+  // Now we generate IDs in case they were not specified in the rules.
   for (auto& rule : *rules) {
     if (!rule.id) {
       rule.id = GenerateUniqueId(extension_id);

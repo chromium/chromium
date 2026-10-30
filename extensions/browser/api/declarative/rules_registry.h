@@ -191,10 +191,11 @@ class RulesRegistry : public base::RefCountedThreadSafe<RulesRegistry> {
       RulesDictionary* destination,
       std::vector<const api::events::Rule*>* rules_out);
 
-  // The precondition for calling this method is that all rules have unique IDs.
-  // AddRules establishes this precondition and calls into this method.
-  // Stored rules already meet this precondition and so they avoid calling
-  // CheckAndFillInOptionalRules for improved performance.
+  // Adds `rules_in` to `destination` without filling in optional `id` or
+  // `priority` fields (`priority` must already be set). Validates that all
+  // rule IDs are present, valid UTF-8, and unique. `AddRulesInternal()` fills
+  // optional fields before calling this, whereas stored rules already have
+  // them populated and call this directly.
   //
   // Returns an empty string if the function is successful or an error
   // message otherwise. If the function is successful, and if the
