@@ -223,12 +223,28 @@ export abstract class LineFocusMoveMode {
       this.metricsBrowserProxy_.startLineFocusSession();
       this.model_.setSessionActive(true);
     }
+    this.model_.setInitiatedScroll(false);
+    // Update the scroll buffer first so bounds reflect any padding change.
+    this.updateScrollBuffer(container);
     this.updatePositions(container, height);
-    this.updateScrollBuffer();
+    const scrollTop = container.closest('.sp-scroller')?.scrollTop ?? null;
+    this.lastFrameScrollTop_ = scrollTop;
+    this.model_.setLastScrollTop(scrollTop ?? 0);
   }
 
-  protected updateScrollBuffer(): void {
+  protected updateScrollBuffer(container?: HTMLElement): void {
+    const scroller =
+        (container ?? this.textContentContainer_)?.closest('.sp-scroller');
+    const prevScrollTop = scroller?.scrollTop ?? 0;
     this.delegate_.notifyScrollBuffer(this.needsScrollBuffer());
+    const scrollDelta = (scroller?.scrollTop ?? 0) - prevScrollTop;
+    if (scrollDelta !== 0) {
+      this.model_.setLastScrollTop(
+          this.model_.getLastScrollTop() + scrollDelta);
+      if (this.lastFrameScrollTop_ !== null) {
+        this.lastFrameScrollTop_ += scrollDelta;
+      }
+    }
   }
 
   protected getCenterY(): number {
@@ -324,8 +340,8 @@ export class LineFocusStaticMoveMode extends LineFocusMoveMode {
     const previousMaxY = this.model_.getMaxY();
     const previousMinY = this.model_.getMinY();
     const previousBounds = this.model_.getTextBounds();
+    this.updateScrollBuffer(container);
     this.updatePositions(container, height);
-    this.updateScrollBuffer();
     const newBounds = this.model_.getTextBounds();
     const previousSpread = previousBounds.length > 0 ?
         (previousBounds.at(-1)!.bottom - previousBounds.at(0)!.top) :
@@ -373,8 +389,35 @@ export class LineFocusCursorMoveMode extends LineFocusMoveMode {
     const notificationType: LineFocusNotificationType = wasEnabled ?
         LineFocusNotificationType.VISUAL :
         LineFocusNotificationType.CONTENT;
+    const currentIndex = wasEnabled ? this.model_.getCurrentLineIndex() : null;
+    // Measured before setupEnabledMode() re-measures to get the content shift.
+    // Only runs on unsnapped mode/style switches, not on scroll or layout
+    // changes.
+    const firstLineTopBefore = wasEnabled && currentIndex === null ?
+        calculateTextBounds(container, height).bounds[0]?.top :
+        undefined;
     this.setupEnabledMode(container, height);
     this.model_.setAdaptMultiLineWindow(true);
+    let focalPoint = this.model_.getFocalPoint();
+    if (wasEnabled) {
+      if (currentIndex !== null) {
+        const clampedIndex = this.styleMode_.clampLineIndex(currentIndex);
+        this.model_.setCurrentLineIndex(clampedIndex);
+        if (this.model_.getTextBounds().length > 0) {
+          focalPoint = this.styleMode_.getDesiredCenter(clampedIndex);
+        }
+      } else {
+        // Removing the static scroll buffer near the top or bottom clamps
+        // scrollBy, shifting the text on screen; shift focalPoint with it.
+        const firstLineTopAfter = this.model_.getTextBounds()[0]?.top;
+        if (firstLineTopBefore !== undefined &&
+            firstLineTopAfter !== undefined) {
+          focalPoint = Math.min(
+              this.model_.getMaxY(),
+              focalPoint + firstLineTopAfter - firstLineTopBefore);
+        }
+      }
+    }
     // When switching Line Focus styles while active (wasEnabled === true), set
     // the focal point quietly without calling
     // notifyMoveWithContentPositionChange(). This prevents DOM hit-testing and
@@ -382,8 +425,7 @@ export class LineFocusCursorMoveMode extends LineFocusMoveMode {
     // highlight styling is updated via notifyMoveWithVisualPositionChange()
     // below.
     this.setFocalPoint(
-        Math.max(
-            this.getFirstVisibleFocalPoint_(), this.model_.getFocalPoint()),
+        Math.max(this.getFirstVisibleFocalPoint_(), focalPoint),
         notificationType);
     if (!wasEnabled && this.model_.getTextBounds().length > 0) {
       this.initializeSnapIndex(/*isForward=*/ true);
@@ -422,9 +464,9 @@ export class LineFocusCursorMoveMode extends LineFocusMoveMode {
   onTextLocationsChange(container: HTMLElement, height: number): void {
     const currentIndex = this.model_.getCurrentLineIndex();
 
+    this.updateScrollBuffer(container);
     this.updatePositions(container, height);
     this.updateScrollOffset_(container);
-    this.updateScrollBuffer();
     // If the user is focusing on a particular line when font size or spacing
     // changes, recenter that text line if it would go off screen to keep their
     // place.

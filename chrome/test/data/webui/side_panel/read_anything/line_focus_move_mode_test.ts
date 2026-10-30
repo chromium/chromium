@@ -177,11 +177,19 @@ suite('LineFocusMoveMode', () => {
       assertTrue(notifiedContentPositionChange);
     });
 
-    test('onActivated notifies delegate of scroll buffer', () => {
+    test('onActivated updates scroll buffer before positions', () => {
       const container = createShortContainer();
+      const unpaddedTop = container.getBoundingClientRect().top;
+      delegate.notifyScrollBuffer = (buffer) => {
+        bufferValReceived = buffer;
+        container.style.paddingTop = buffer ? '100px' : '0px';
+      };
+
       mode.onActivated(container, defaultHeight);
+
       // Need to do a direct compare since the starting value is undefined.
       assertTrue(bufferValReceived === true);
+      assertGT(model.getTextBounds()[0]!.top, unpaddedTop + 90);
     });
 
     test('onActivated does not restart active session', () => {
@@ -397,10 +405,18 @@ suite('LineFocusMoveMode', () => {
           assertTrue(notifiedContentPositionChange);
         });
 
-    test('onTextLocationsChange updates scroll buffer', () => {
+    test('onTextLocationsChange updates scroll buffer before positions', () => {
       const container = createShortContainer();
+      const unpaddedTop = container.getBoundingClientRect().top;
+      delegate.notifyScrollBuffer = (buffer) => {
+        bufferValReceived = buffer;
+        container.style.paddingTop = buffer ? '100px' : '0px';
+      };
+
       mode.onTextLocationsChange(container, defaultHeight);
+
       assertEquals(true, bufferValReceived);
+      assertGT(model.getTextBounds()[0]!.top, unpaddedTop + 90);
     });
 
     test('onTextLocationsChange updates positions', () => {
@@ -565,6 +581,79 @@ suite('LineFocusMoveMode', () => {
       assertEquals(focalPoint, model.getFocalPoint());
       assertEquals(null, model.getCurrentLineIndex());
       assertTrue(notifiedVisualPositionChange);
+    });
+
+    test(
+        'onActivated from static shifts focal point when buffer removal ' +
+            'shifts content',
+        () => {
+          const container = createShortContainer();
+          container.style.paddingTop = '200px';
+          const staticMode =
+              new LineFocusStaticMoveMode(model, styleMode, delegate);
+          staticMode.onTextLocationsChange(container, defaultHeight);
+          model.setSessionActive(true);
+          model.setCurrentLineIndex(null);
+          model.setFocalPoint(
+              styleMode.getFocalPointForRect(model.getTextBounds()[1]!));
+          notifiedVisualPositionChange = false;
+
+          delegate.notifyScrollBuffer = (buffer) => {
+            bufferValReceived = buffer;
+            container.style.paddingTop = buffer ? '200px' : '0px';
+          };
+
+          mode.onActivated(container, defaultHeight);
+
+          assertEquals(
+              styleMode.getFocalPointForRect(model.getTextBounds()[1]!),
+              model.getFocalPoint());
+          assertTrue(notifiedVisualPositionChange);
+        });
+
+    test(
+        'onActivated from static keeps snapped window line focused at top',
+        () => {
+          const container = createShortContainer();
+          container.style.paddingTop = '200px';
+          model.setSessionActive(true);
+          model.setAdaptMultiLineWindow(false);
+          model.setCurrentLineIndex(0);
+          model.setFocalPoint(500);
+          delegate.notifyScrollBuffer = (buffer) => {
+            bufferValReceived = buffer;
+            container.style.paddingTop = buffer ? '200px' : '0px';
+          };
+
+          const windowMoveMode = createWindowMode();
+          windowMoveMode.onActivated(container, defaultHeight);
+
+          assertEquals(1, model.getCurrentLineIndex());
+          assertEquals(model.getTextBounds()[0]!.top, model.getTop());
+          assertTrue(notifiedVisualPositionChange);
+        });
+
+    test('onActivated updates lastScrollTop and resets initiatedScroll', () => {
+      const scroller = document.createElement('div');
+      scroller.className = 'sp-scroller';
+      Object.defineProperty(scroller, 'scrollTop', {
+        value: 120,
+        writable: true,
+      });
+      const container = createShortContainer();
+      scroller.appendChild(container);
+      document.body.appendChild(scroller);
+      model.setSessionActive(true);
+      model.setInitiatedScroll(true);
+      delegate.notifyScrollBuffer = (buffer) => {
+        bufferValReceived = buffer;
+        scroller.scrollTop = 45;
+      };
+
+      mode.onActivated(container, defaultHeight);
+
+      assertFalse(model.getInitiatedScroll());
+      assertEquals(45, model.getLastScrollTop());
     });
 
     test('onActivated notifies delegate of no scroll buffer', () => {
