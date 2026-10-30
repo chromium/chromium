@@ -56,6 +56,12 @@ public class AutoAnimatorDrawable extends DrawableWrapperCompat {
     @Override
     public boolean setVisible(boolean visible, boolean restart) {
         boolean changed = super.setVisible(visible, restart);
+        Drawable wrapped = getDrawable();
+        if (wrapped != null) {
+            // DrawableWrapperCompat.setVisible short-circuits `||` when super.setVisible returns
+            // true, leaving the wrapped drawable's visibility stale when hiding.
+            changed |= wrapped.setVisible(visible, restart);
+        }
         if (visible) {
             if (changed || restart || !mGotVisibilityCall) {
                 AutoAnimatorDrawable.startAnimatedDrawables(this);

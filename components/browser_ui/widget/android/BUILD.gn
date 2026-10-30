@@ -533,6 +533,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/components/browser_ui/widget/RadioButtonWithDescriptionAndAuxButtonTest.java",
     "java/src/org/chromium/components/browser_ui/widget/RoundedCornerOutlineProviderUnitTest.java",
     "java/src/org/chromium/components/browser_ui/widget/StrictButtonPressControllerUnitTest.java",
+    "java/src/org/chromium/components/browser_ui/widget/async_image/AutoAnimatorDrawableTest.java",
     "java/src/org/chromium/components/browser_ui/widget/chips/ChipViewTest.java",
     "java/src/org/chromium/components/browser_ui/widget/containment/ContainmentItemControllerTest.java",
     "java/src/org/chromium/components/browser_ui/widget/containment/ContainmentItemDecorationUnitTest.java",

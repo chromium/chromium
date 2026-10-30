@@ -7,11 +7,16 @@ package org.chromium.chrome.test.memory_leaks;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.browser.customtabs.EngagementSignalsCallback;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.LargeTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -25,7 +30,9 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.TripBuilder;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
@@ -34,6 +41,8 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.ImportantFormFactors;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
+import org.chromium.chrome.browser.app.download.home.DownloadActivity;
+import org.chromium.chrome.browser.app.download.home.DownloadActivityLauncher;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchControllerFactory;
 import org.chromium.chrome.browser.auxiliary_search.AuxiliarySearchHooks;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
@@ -50,9 +59,13 @@ import org.chromium.chrome.test.transit.ChromeTriggers;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.transit.settings.SettingsStation;
+import org.chromium.chrome.test.util.ActivityTestUtils;
+import org.chromium.components.browser_ui.widget.R;
+import org.chromium.components.browser_ui.widget.async_image.AsyncImageView;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests the behavior of {@link ChromeFeatureList} in instrumentation tests. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -214,5 +227,56 @@ public class PublicTransitLeakTest {
                                 && ApplicationStatus.getStateForActivity(cta)
                                         == ActivityState.STOPPED);
         mChromeTabbedActivityTestRule.finishActivity();
+    }
+
+    @Test
+    @LargeTest
+    public void downloadActivityWithAsyncImageViewTest() throws Exception {
+        mChromeTabbedActivityTestRule.startOnBlankPage();
+        var cta = mChromeTabbedActivityTestRule.getActivity();
+        var downloadActivity =
+                ActivityTestUtils.waitForActivity(
+                        InstrumentationRegistry.getInstrumentation(),
+                        DownloadActivity.class,
+                        () ->
+                                ThreadUtils.runOnUiThreadBlocking(
+                                        () ->
+                                                DownloadActivityLauncher.getInstance()
+                                                        .showDownloadActivity(cta, null, false)));
+        try {
+            // Attach an AsyncImageView configured with an animated waiting drawable (wrapped by
+            // AutoAnimatorDrawable) and a pending async image request so the waiting animation
+            // starts and binds its RenderThread VectorDrawableAnimatorRT to DownloadActivity's
+            // RenderNode on first draw. Then hide the view and finish DownloadActivity;
+            // @EnableLeakChecks verifies after the test that stopping the hidden
+            // AutoAnimatorDrawable releases the activity rather than keeping it alive via a
+            // restarted animation callback.
+            CallbackHelper firstDraw = new CallbackHelper();
+            AtomicReference<AsyncImageView> viewRef = new AtomicReference<>();
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        AsyncImageView asyncImageView = new AsyncImageView(downloadActivity);
+                        viewRef.set(asyncImageView);
+                        asyncImageView.setWaitingDrawable(
+                                AppCompatResources.getDrawable(
+                                        downloadActivity, R.drawable.async_image_view_waiting));
+                        ViewGroup content = downloadActivity.findViewById(android.R.id.content);
+                        content.addView(asyncImageView, new ViewGroup.LayoutParams(100, 100));
+                        asyncImageView.setAsyncImageDrawable((consumer, w, h) -> () -> {}, "test");
+                        asyncImageView
+                                .getViewTreeObserver()
+                                .addOnDrawListener(
+                                        new ViewTreeObserver.OnDrawListener() {
+                                            @Override
+                                            public void onDraw() {
+                                                firstDraw.notifyCalled();
+                                            }
+                                        });
+                    });
+            firstDraw.waitForNext();
+            ThreadUtils.runOnUiThreadBlocking(() -> viewRef.get().setVisibility(View.GONE));
+        } finally {
+            ApplicationTestUtils.finishActivity(downloadActivity);
+        }
     }
 }
