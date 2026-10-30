@@ -16,6 +16,7 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
+import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Log;
@@ -637,11 +638,21 @@ public class XrImmersiveOverlay
 
     @Override // InsetObserver.WindowInsetsConsumer
     public WindowInsetsCompat onApplyWindowInsets(View view, WindowInsetsCompat insets) {
-        // The WebXR framebuffer is sized to the full display, so consume all insets to keep the
-        // View fullscreen. Any inset left unconsumed may cause the View to be padded (see
-        // EdgeToEdgeLayoutCoordinator), making it smaller than the framebuffer and distorting the
-        // WebXR content and the DOM overlay.
-        return WindowInsetsCompat.CONSUMED;
+        // The WebXR framebuffer is sized to the full display, so zero all insets that may cause the
+        // View to be padded (see EdgeToEdgeLayoutCoordinator) to keep it fullscreen. Padding would
+        // make it smaller than the framebuffer, distorting the WebXR content and the DOM overlay.
+        // Don't return CONSUMED though: that stops the insets being dispatched to the View
+        // hierarchy, so padding applied before the session started stays in place, e.g. the
+        // decor's fitsSystemWindows padding when edge-to-edge is off.
+        return new WindowInsetsCompat.Builder(insets)
+                .setInsets(
+                        WindowInsetsCompat.Type.systemBars()
+                                | WindowInsetsCompat.Type.ime()
+                                | WindowInsetsCompat.Type.mandatorySystemGestures()
+                                | WindowInsetsCompat.Type.tappableElement()
+                                | WindowInsetsCompat.Type.displayCutout(),
+                        Insets.NONE)
+                .build();
     }
 
     /**
