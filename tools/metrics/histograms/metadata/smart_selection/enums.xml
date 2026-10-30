@@ -1,0 +1,27 @@
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<histogram-configuration>
+
+<enums>
+
+<!-- LINT.IfChange(SmartSelectionEntryPoint) -->
+
+<enum name="SmartSelectionEntryPoint">
+  <int value="0" label="KeyboardShortcut"/>
+  <int value="1" label="ContextMenuText"/>
+  <int value="2" label="ContextMenuImage"/>
+  <int value="3" label="ContextMenuPage"/>
+  <int value="4" label="InlineCue"/>
+  <int value="5" label="CursorWiggle"/>
+  <int value="6" label="ToolbarButton"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/selection/metrics_logger.h:EntryPoint) -->
+
+</enums>
+
+</histogram-configuration>

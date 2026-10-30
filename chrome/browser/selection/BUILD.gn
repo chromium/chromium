@@ -8,6 +8,8 @@ source_set("selection") {
   sources = [
     "features.cc",
     "features.h",
+    "metrics_logger.cc",
+    "metrics_logger.h",
     "suggestion.cc",
     "suggestion.h",
     "suggestion_service.cc",
@@ -43,6 +45,7 @@ source_set("selection") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "metrics_logger_unittest.cc",
     "suggestion_service_unittest.cc",
     "suggestion_unittest.cc",
   ]

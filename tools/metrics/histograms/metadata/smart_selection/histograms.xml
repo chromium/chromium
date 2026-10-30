@@ -22,6 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="SmartSelection.Invocation.ByEntryPoint"
+    enum="SmartSelectionEntryPoint" expires_after="2027-04-14">
+  <owner>schwering@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <summary>
+    Records the entry point from which Smart Selection was invoked. Recorded
+    once per overlay session when the session is initialized.
+  </summary>
+</histogram>
+
 <histogram name="SmartSelection.Suggestions.Latency.{Stage}" units="ms"
     expires_after="2027-04-14">
   <owner>schwering@google.com</owner>

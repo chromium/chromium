@@ -122,6 +122,7 @@ common_enums_xml_files = [
   "//tools/metrics/histograms/metadata/skia/enums.xml",
   "//tools/metrics/histograms/metadata/skills/enums.xml",
   "//tools/metrics/histograms/metadata/smart_card/enums.xml",
+  "//tools/metrics/histograms/metadata/smart_selection/enums.xml",
   "//tools/metrics/histograms/metadata/sql/enums.xml",
   "//tools/metrics/histograms/metadata/stability/enums.xml",
   "//tools/metrics/histograms/metadata/startup/enums.xml",
