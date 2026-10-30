@@ -62,8 +62,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/sync/model",
-    "//ios/chrome/browser/welcome_back/coordinator:display_handler",
-    "//ios/chrome/browser/welcome_back/model:features",
     "//ios/chrome/browser/whats_new/coordinator:util",
     "//ios/chrome/browser/whats_new/coordinator/promo",
     "//ios/chrome/common/ui/confirmation_alert",

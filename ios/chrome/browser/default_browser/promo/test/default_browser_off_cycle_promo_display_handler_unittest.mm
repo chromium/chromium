@@ -52,9 +52,6 @@
 - (void)showFullscreenSigninPromo {
 }
 
-- (void)showWelcomeBackPromo {
-}
-
 - (void)showHomeBackgroundCustomizationPromo {
 }
 

@@ -35,9 +35,6 @@ enum class CredentialProviderPromoTrigger;
 // Shows the fullscreen sign-in promo.
 - (void)showFullscreenSigninPromo;
 
-// Shows the Welcome Back promo.
-- (void)showWelcomeBackPromo;
-
 // Shows the Home Background Customization Promo.
 - (void)showHomeBackgroundCustomizationPromo;
 

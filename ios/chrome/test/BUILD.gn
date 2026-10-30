@@ -743,7 +743,6 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/webui/model:unit_tests",
     "//ios/chrome/browser/webui/ui_bundled/actor_internals:unit_tests",
     "//ios/chrome/browser/webui/ui_bundled/connectors_internals:unit_tests",
-    "//ios/chrome/browser/welcome_back/coordinator:unit_tests",
     "//ios/chrome/browser/whats_new/coordinator/promo:unit_tests",
     "//ios/chrome/browser/whats_new/ui/cells:unit_tests",
     "//ios/chrome/browser/whats_new/ui/data_source:unit_tests",

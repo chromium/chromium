@@ -160,7 +160,6 @@
 #import "ios/chrome/browser/shared/public/commands/tips_passwords_commands.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
-#import "ios/chrome/browser/shared/public/commands/welcome_back_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/whats_new_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/layout_guide/layout_guide_swift.h"
@@ -184,7 +183,6 @@
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/browser/webauthn/coordinator/passkey_incognito_interstitial_coordinator.h"
 #import "ios/chrome/browser/webauthn/coordinator/passkey_welcome_screen_coordinator.h"
-#import "ios/chrome/browser/welcome_back/coordinator/welcome_back_coordinator.h"
 #import "ios/chrome/browser/whats_new/coordinator/whats_new_coordinator.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/public/provider/chrome/browser/cobalt/cobalt_api.h"
@@ -254,7 +252,6 @@ const char kContextPanelDismissedHistogram[] =
                                 TipsPasswordsCoordinatorDelegate,
                                 UnitConversionCommands,
                                 WebContentCommands,
-                                WelcomeBackPromoCommands,
                                 WhatsNewCommands>
 
 // The webState of the active tab.
@@ -339,7 +336,6 @@ const char kContextPanelDismissedHistogram[] =
   VirtualCardEnrollmentBottomSheetCoordinator*
       _virtualCardEnrollmentBottomSheetCoordinator;
   WalletReminderNoticeCoordinator* _walletReminderNoticeCoordinator;
-  WelcomeBackCoordinator* _welcomeBackCoordinator;
   WhatsNewCoordinator* _whatsNewCoordinator;
 }
 
@@ -437,7 +433,6 @@ const char kContextPanelDismissedHistogram[] =
   [self dismissPasswordsTip];
   [self hideUnitConversion];
   [self dismissWalletReminderNotice];
-  [self hideWelcomeBackPromo];
   [self dismissWhatsNew];
 }
 
@@ -674,7 +669,6 @@ const char kContextPanelDismissedHistogram[] =
     @protocol(TipsPasswordsCommands),
     @protocol(UnitConversionCommands),
     @protocol(WebContentCommands),
-    @protocol(WelcomeBackPromoCommands),
     @protocol(WhatsNewCommands),
   ];
 
@@ -2114,13 +2108,6 @@ const char kContextPanelDismissedHistogram[] =
       }];
 }
 
-- (void)showWelcomeBackPromo {
-  // TODO(crbug.com/557066085): Do not pass the promosUIHandler and directly
-  // call the command.
-  [HandlerForProtocol(self.dispatcher, WelcomeBackPromoCommands)
-      showWelcomeBackPromoWithPromosUIHandler:_promosManagerCoordinator];
-}
-
 - (void)showHomeBackgroundCustomizationPromo {
   // TODO(crbug.com/557066085): Do not pass the promosUIHandler and directly
   // call the command.
@@ -2624,23 +2611,6 @@ const char kContextPanelDismissedHistogram[] =
 - (void)dismissPassKitDialog {
   [_passKitCoordinator stop];
   _passKitCoordinator = nil;
-}
-
-#pragma mark - WelcomeBackPromoCommands
-
-- (void)showWelcomeBackPromoWithPromosUIHandler:
-    (id<PromosManagerUIHandler>)promosUIHandler {
-  [_welcomeBackCoordinator stop];
-  _welcomeBackCoordinator = [[WelcomeBackCoordinator alloc]
-      initWithBaseViewController:_baseViewController
-                         browser:_browser
-                 promosUIHandler:promosUIHandler];
-  [_welcomeBackCoordinator start];
-}
-
-- (void)hideWelcomeBackPromo {
-  [_welcomeBackCoordinator stop];
-  _welcomeBackCoordinator = nil;
 }
 
 #pragma mark - WhatsNewCommands

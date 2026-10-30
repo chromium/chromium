@@ -54,7 +54,6 @@
 #import "ios/chrome/app/profile/search_engine_choice_profile_agent.h"
 #import "ios/chrome/app/profile/session_metrics_profile_agent.h"
 #import "ios/chrome/app/profile/synced_set_up_profile_agent.h"
-#import "ios/chrome/app/profile/welcome_back_screen_profile_agent.h"
 #import "ios/chrome/app/spotlight/spotlight_manager.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/backend_promo/model/backend_promo_profile_agent.h"
@@ -100,7 +99,6 @@
 #import "ios/chrome/browser/web_extension/model/extension_service_factory.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/webauthn/model/device_authorization_profile_agent.h"
-#import "ios/chrome/browser/welcome_back/model/features.h"
 #import "ios/components/cookie_util/cookie_util.h"
 #import "ios/public/provider/chrome/browser/raccoon/raccoon_api.h"
 #import "ios/web/public/thread/web_task_traits.h"
@@ -617,9 +615,6 @@ void RemoveSessionsFromSessionsToDiscard(const SessionIds& session_ids,
   [_state addAgent:[[SearchEngineChoiceProfileAgent alloc] init]];
   [_state addAgent:[[SessionMetricsProfileAgent alloc] init]];
 
-  if (IsWelcomeBackEnabled()) {
-    [_state addAgent:[[WelcomeBackScreenProfileAgent alloc] init]];
-  }
 
   [_state addAgent:[[SyncedSetUpProfileAgent alloc] init]];
 
