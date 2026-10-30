@@ -231,6 +231,19 @@ class ContextualTasksUIBase
   void NotifySidePanelStateChanged();
 
  protected:
+  // Returns whether the pinning promo can be triggered for `url` and
+  // `panel_controller` (returns false if null). The pinning IPH should only be
+  // triggered when:
+  // 1. Results have fully loaded (finished streaming) for a contextual query
+  //    about a webpage/tab or PDF (excluding initial visual-selection-only
+  //    Lens Overlay queries, unless the user manually adds a webpage or PDF
+  //    later in the session).
+  // 2. The side panel is open & the ephemeral button is showing.
+  // 3. The user hasn't yet pinned the side panel.
+  static bool CanTriggerPinningPromoForAiPage(
+      const GURL& url,
+      ContextualTasksPanelController* panel_controller);
+
   // Helper to dynamically resolve the active tab's permission controller.
   virtual ContextualTasksPermissionController* GetActiveController();
 

@@ -1213,6 +1213,7 @@ void ContextualTasksUI::MaybeTriggerPinningPromo() {
 #if BUILDFLAG(IS_ANDROID)
   return;
 #else
+  // Side panel is open & pinning/ephemeral button eligibility is active.
   auto* panel_controller = GetPanelController();
   if (!panel_controller || !panel_controller->IsPanelOpenForContextualTask()) {
     return;
@@ -1229,9 +1230,8 @@ void ContextualTasksUI::MaybeTriggerPinningPromo() {
     return;
   }
 
-  // 1. Verify we are still in AI Mode (or on the SRP when pinning on SRP is
-  // enabled), and not in zero state (at least a first-turn query has been
-  // submitted).
+  // Results have fully loaded for a contextual query about a tab or PDF (or
+  // on SRP when enabled), with no active Lens overlay.
   const GURL& inner_frame_url = GetInnerFrameUrl();
   bool is_ai_page = ui_service_ && ui_service_->IsAiUrl(inner_frame_url);
   bool is_srp = contextual_tasks::IsContextualTasksPinButtonOnSrpEnabled() &&
@@ -1240,18 +1240,17 @@ void ContextualTasksUI::MaybeTriggerPinningPromo() {
     return;
   }
   if (is_ai_page &&
-      ContextualTasksUI::IsZeroState(inner_frame_url, ui_service_)) {
+      (IsLensOverlayShowing() ||
+       !CanTriggerPinningPromoForAiPage(inner_frame_url, panel_controller))) {
     return;
   }
 
-  // 2. Verify the button is not already pinned.
+  // User hasn't yet pinned the side panel.
   bool is_pinned = contextual_tasks::GetEffectivePinState(profile);
   if (is_pinned) {
     return;
   }
 
-  // 3. Verify we have reached the session count threshold after onboarding
-  // tooltip was dismissed.
   int post_onboarding_sessions = profile->GetPrefs()->GetInteger(
       contextual_tasks::kContextualTasksSessionCountPostOnboarding);
   if (post_onboarding_sessions <
@@ -1259,7 +1258,8 @@ void ContextualTasksUI::MaybeTriggerPinningPromo() {
     return;
   }
 
-  // 4. Attempt to show the IPH!
+  // Anchored to `kContextualTasksEphemeralToolbarButtonElementId`,
+  // so it only shows if the ephemeral button is visible.
   BrowserWindowInterface* browser_window = GetBrowser();
   if (!browser_window) {
     return;
@@ -1942,6 +1942,7 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
 
   std::string url_thread_id;
   if (!net::GetValueForKeyInQuery(url, "mtid", &url_thread_id)) {
+    task_info_delegate_->MaybeTriggerPinningPromo();
     OMNIBOX_LOG("nav_trace")
         << "ContextualTasks navigation trace: "
            "FrameNavObserver::DidFinishNavigation returning early, no "
@@ -2073,6 +2074,8 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
                                task_info_delegate_->IsShownInTab());
     task_info_delegate_->OnTaskChanged();
   }
+
+  task_info_delegate_->MaybeTriggerPinningPromo();
 }
 
 bool ContextualTasksUI::IsZeroState(
