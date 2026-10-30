@@ -354,10 +354,24 @@ TEST_F(GlicActivityListBubbleControllerTest,
   EXPECT_FALSE(controller_->IsBubbleShowing());
 }
 
-TEST_F(GlicActivityListBubbleControllerTest,
+class GlicActivityListBubbleControllerOsNotificationDisabledTest
+    : public GlicActivityListBubbleControllerTest {
+ public:
+  GlicActivityListBubbleControllerOsNotificationDisabledTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kGlicExperimentalTriggeringOsNotification);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(GlicActivityListBubbleControllerOsNotificationDisabledTest,
        ShowBubble_InactiveBrowserWindow_StartNotification_PanelShowing) {
-  // If the browser window is inactive, and it IS a start notification,
-  // and Glic panel IS showing, ShowBubble should show the bubble.
+  // If the browser window is inactive,
+  // kGlicExperimentalTriggeringOsNotification is disabled, and it IS a start
+  // notification with the Glic panel showing, ShowBubble should show the
+  // bubble.
   EXPECT_CALL(*browser_window_interface_, IsActive())
       .WillRepeatedly(testing::Return(false));
 
