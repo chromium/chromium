@@ -264,6 +264,8 @@ void TtcActuationHandler::DispatchActuationRequest(
   // The task can be stopped externally (e.g., if the user closes a controlled
   // tab or stops the task from the UI), in which case it is replaced by a new
   // one and any in-flight callback is failed with `kTaskWentAway`.
+  // TODO(crbug.com/517583120): Query the task state for `task_id_` directly on
+  // `ActorService` instead of assuming a single active task.
   if (!task_id_.is_null() &&
       !actor_service_->GetActiveTaskState().has_value()) {
     weak_ptr_factory_.InvalidateWeakPtrs();
@@ -328,7 +330,6 @@ void TtcActuationHandler::DispatchActuationRequest(
     actor_service_->SetTaskInterventionDelegate(task_id_,
                                                 intervention_delegate_);
   }
-  actor_service_->AddControlledWebState(task_id_, active_web_state);
 
   active_callback_ = std::move(callback);
   active_async_entry_ = BeginActuationAsyncEntry(actions);

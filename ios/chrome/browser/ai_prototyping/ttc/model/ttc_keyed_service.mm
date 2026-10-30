@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_websocket_backend.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/public/provider/chrome/browser/intelligence/ttc_api.h"
@@ -86,8 +87,11 @@ void TTCKeyedService::StartSession() {
     backend = std::make_unique<ttc::TtcMesClient>(optimization_guide_.get());
   }
 
-  auto actuation_handler =
-      std::make_unique<TtcActuationHandler>(actor_service_.get());
+  std::unique_ptr<TtcActuationHandler> actuation_handler;
+  if (actor_service_ && IsGeminiActorEnabled()) {
+    actuation_handler =
+        std::make_unique<TtcActuationHandler>(actor_service_.get());
+  }
 
   session_controller_ = std::make_unique<TtcSessionController>(
       std::move(backend), browser_list_, std::move(actuation_handler));

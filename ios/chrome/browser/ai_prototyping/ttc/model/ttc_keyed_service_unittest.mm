@@ -46,7 +46,8 @@ class TTCKeyedServiceTest : public PlatformTest {
     profile_.reset();
     if (enable_ttc) {
       scoped_feature_list_.Reset();
-      scoped_feature_list_.InitWithFeatures({kTTCEnabled, kActorTools}, {});
+      scoped_feature_list_.InitWithFeatures(
+          {kTTCEnabled, kPageActionMenu, kActorTools, kGeminiActor}, {});
       TTCKeyedServiceFactory::GetInstance();
     } else {
       scoped_feature_list_.Reset();

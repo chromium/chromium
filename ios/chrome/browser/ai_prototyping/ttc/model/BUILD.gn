@@ -53,6 +53,7 @@ source_set("model") {
     "//ios/chrome/browser/ai_prototyping/ttc/model/audio",
     "//ios/chrome/browser/intelligence/actor/model",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/intelligence/proto_wrappers:utils",
     "//ios/chrome/browser/optimization_guide/model",
