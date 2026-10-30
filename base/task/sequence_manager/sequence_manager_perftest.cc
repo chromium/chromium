@@ -250,6 +250,7 @@ class SameThreadTaskSource : public TaskSource {
     num_tasks_to_run_ = num_tasks_;
     // Post the initial task instead of running it synchronously to ensure that
     // all invocations happen on the same sequence.
+    --num_tasks_to_post_;
     PostTask(0);
   }
 
