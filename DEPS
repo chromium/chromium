@@ -2712,7 +2712,7 @@ deps = {
   },
 
   'src/third_party/mac_alias/src': {
-      'url': Var('chromium_git') + '/external/github.com/dmgbuild/mac_alias.git' + '@' + '5a96a796e55a040d7871bf9fa42a02716dac5003',
+      'url': Var('chromium_git') + '/external/github.com/dmgbuild/mac_alias.git' + '@' + '205e13a7656ca57ad9bd53300baa2bca374e328e',
   },
 
   'src/third_party/material_color_utilities/src': {
