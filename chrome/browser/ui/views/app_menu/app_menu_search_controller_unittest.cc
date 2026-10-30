@@ -167,6 +167,35 @@ TEST_F(AppMenuSearchControllerTest, FlattenHierarchyFiltering) {
   EXPECT_EQ(items[2]->GetType(), AppMenuSearchItem::Type::kAction);
 }
 
+TEST_F(AppMenuSearchControllerTest, FlattenHierarchyExcludesNotifications) {
+  auto notification_section = actions::ActionItem::Builder().Build();
+  notification_section->SetProperty(AppMenuActionItem::kDisplayTypeKey,
+                                    AppMenuActionItem::DisplayType::kSection);
+  auto notification = actions::ActionItem::Builder()
+                          .SetActionId(kActionUpgradeDialog)
+                          .SetText(u"Update Chrome")
+                          .SetVisible(true)
+                          .SetEnabled(true)
+                          .Build();
+  notification->SetProperty(AppMenuActionItem::kDisplayTypeKey,
+                            AppMenuActionItem::DisplayType::kNotification);
+  notification_section->AddChild(std::move(notification));
+  menu_root_->AddChild(std::move(notification_section));
+
+  menu_root_->AddChild(actions::ActionItem::Builder()
+                           .SetActionId(kActionNewTab)
+                           .SetText(u"New Tab")
+                           .SetVisible(true)
+                           .SetEnabled(true)
+                           .Build());
+
+  controller_->InitializeSearchIndex();
+
+  const auto& items = controller_->search_items_for_testing();
+  ASSERT_EQ(items.size(), 1u);
+  EXPECT_EQ(items[0]->GetTitle(), u"New Tab");
+}
+
 TEST_F(AppMenuSearchControllerTest,
        FlattenHierarchyIndexesChildrenOfUntitledRowContainer) {
   auto row = actions::ActionItem::Builder().Build();

@@ -31,7 +31,6 @@ class AppMenuActionItem {
     kBlock,
     kCustom,
     kFooter,
-    kNotification,
     kRow,
     kSection,
 
@@ -39,6 +38,7 @@ class AppMenuActionItem {
     kDivider,
     kHeader,
     kLabel,
+    kNotification,
     kSearch,
 
     // Exclusive boundary marker for searchable types.
