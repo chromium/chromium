@@ -61,6 +61,20 @@ class OmniboxPopupNativeWidgetMac : public views::NativeWidgetMac {
   return target;
 }
 
+// AppKit sends the View > Full Screen menu action (e.g. Ctrl+Cmd+F) to the key
+// window, and the borderless popup can't go fullscreen.
+- (void)toggleFullScreen:(id)sender {
+  NSWindow<CommandDispatchingWindow>* target = self;
+  while (target.commandDispatchParent) {
+    target = target.commandDispatchParent;
+  }
+  if (target == self) {
+    [super toggleFullScreen:sender];
+  } else {
+    [target toggleFullScreen:sender];
+  }
+}
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
