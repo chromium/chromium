@@ -20,6 +20,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -31,6 +32,7 @@
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -53,6 +55,7 @@
 namespace selection {
 namespace {
 
+using ::base::test::EqualsProto;
 using ::base::test::RunOnceCallback;
 using ::base::test::TestFuture;
 using ::testing::_;
@@ -1058,7 +1061,7 @@ TEST_F(SuggestionServiceMetricsTest, RecordsUkmMetricsOnSuccess) {
 }
 
 // Tests that `FeedbackZipBuilder::CreateZip` creates a valid ZIP archive
-// containing the uncropped and MES cropped screenshots.
+// containing the recorded artifacts.
 TEST_F(SuggestionServiceUnitTest, CreateFeedbackZip) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
@@ -1086,6 +1089,7 @@ TEST_F(SuggestionServiceUnitTest, CreateFeedbackZip) {
   aoi.screenshot.allocN32Pixels(100, 100);
   aoi.screenshot.eraseColor(SK_ColorGREEN);
   aoi.bounds = gfx::Rect(10, 20, 30, 40);
+  aoi.apc.mutable_main_frame_data()->set_title("Feedback Test Page");
 
   SuggestionsFuture suggestions_future;
   service().RequestSuggestions(aoi, suggestions_future.GetCallback());
@@ -1123,6 +1127,13 @@ TEST_F(SuggestionServiceUnitTest, CreateFeedbackZip) {
   EXPECT_FALSE(mes_screenshot.isNull());
   EXPECT_EQ(mes_screenshot.width(), 55);
   EXPECT_EQ(mes_screenshot.height(), 70);
+
+  std::string apc_str;
+  ASSERT_TRUE(base::ReadFileToString(
+      extract_dir.GetPath().AppendASCII("apc.pb"), &apc_str));
+  optimization_guide::proto::AnnotatedPageContent apc;
+  ASSERT_TRUE(apc.ParseFromString(apc_str));
+  EXPECT_THAT(apc, EqualsProto(aoi.apc));
 
   service().UnregisterTool(&gemini_tool);
 }
@@ -1196,7 +1207,7 @@ TEST_F(SuggestionServiceUnitTest, CreateFeedbackZipWithJpeg) {
 }
 
 // Tests that when server suggestions are disabled, `RequestSuggestions`
-// returns a `FeedbackZipBuilder` with no recorded screenshots.
+// returns a `FeedbackZipBuilder` with no recorded artifacts.
 TEST_F(SuggestionServiceUnitTest,
        CreateFeedbackZipWhenServerSuggestionsDisabled) {
   base::test::ScopedFeatureList feature_list;
@@ -1211,6 +1222,7 @@ TEST_F(SuggestionServiceUnitTest,
   AreaOfInterest aoi;
   aoi.screenshot.allocN32Pixels(60, 40);
   aoi.screenshot.eraseColor(SK_ColorRED);
+  aoi.apc.mutable_main_frame_data()->set_title("Disabled Server Test");
 
   SuggestionsFuture suggestions_future;
   service().RequestSuggestions(aoi, suggestions_future.GetCallback());
@@ -1237,6 +1249,7 @@ TEST_F(SuggestionServiceUnitTest,
       base::PathExists(extract_dir.GetPath().AppendASCII("screenshot.png")));
   EXPECT_FALSE(base::PathExists(
       extract_dir.GetPath().AppendASCII("mes_screenshot.png")));
+  EXPECT_FALSE(base::PathExists(extract_dir.GetPath().AppendASCII("apc.pb")));
 
   service().UnregisterTool(&gemini_tool);
 }

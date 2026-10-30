@@ -520,6 +520,7 @@ void SuggestionService::SendServerSuggestionsRequest(
     feedback_zip_builder.SetMesScreenshot(*std::move(image));
   }
   feedback_zip_builder.SetScreenshot(processed_area.screenshot);
+  feedback_zip_builder.SetApc(processed_area.apc);
 
   // TODO(crbug.com/561489586): Consider adding logging.
   remote_model_executor_->ExecuteModel(

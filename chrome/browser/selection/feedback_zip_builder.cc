@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -25,6 +26,7 @@ namespace selection {
 struct FeedbackZipBuilder::State {
   SkBitmap screenshot;
   std::optional<EncodedImage> mes_screenshot;
+  std::optional<optimization_guide::proto::AnnotatedPageContent> apc;
 };
 
 FeedbackZipBuilder::FeedbackZipBuilder() : state_(std::make_unique<State>()) {}
@@ -41,6 +43,12 @@ void FeedbackZipBuilder::SetScreenshot(SkBitmap screenshot) {
 void FeedbackZipBuilder::SetMesScreenshot(EncodedImage mes_screenshot) {
   CHECK(state_);
   state_->mes_screenshot = std::move(mes_screenshot);
+}
+
+void FeedbackZipBuilder::SetApc(
+    optimization_guide::proto::AnnotatedPageContent apc) {
+  CHECK(state_);
+  state_->apc = std::move(apc);
 }
 
 void FeedbackZipBuilder::CreateZip(
@@ -84,7 +92,10 @@ std::optional<base::FilePath> FeedbackZipBuilder::CreateZipOnThreadPool(
                         full_screenshot->bytes)) ||
       (state.mes_screenshot.has_value() &&
        !base::WriteFile(get_image_path("mes_screenshot", *state.mes_screenshot),
-                        state.mes_screenshot->bytes))) {
+                        state.mes_screenshot->bytes)) ||
+      (state.apc.has_value() &&
+       !base::WriteFile(dir.AppendASCII("apc.pb"),
+                        state.apc->SerializeAsString()))) {
     return std::nullopt;
   }
 

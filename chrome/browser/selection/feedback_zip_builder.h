@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace selection {
@@ -29,6 +30,7 @@ class FeedbackZipBuilder {
 
   void SetScreenshot(SkBitmap screenshot);
   void SetMesScreenshot(EncodedImage mes_screenshot);
+  void SetApc(optimization_guide::proto::AnnotatedPageContent apc);
 
   // Creates a ZIP file at `target_zip_path` (using `base::GetUniquePath` to
   // avoid overwriting an existing file) containing the artifacts recorded
@@ -36,6 +38,7 @@ class FeedbackZipBuilder {
   // - `screenshot.{png,jpg}`: the full uncropped screenshot,
   // - `mes_screenshot.{png,jpg}`: the cropped/downscaled screenshot sent to
   //   MES,
+  // - `apc.pb`: the serialized AnnotatedPageContent proto,
   // and passes the created ZIP path to `callback` (or `std::nullopt` on
   // failure).
   void CreateZip(
