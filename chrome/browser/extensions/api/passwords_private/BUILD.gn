@@ -69,7 +69,6 @@ source_set("passwords_private") {
     "//components/password_manager/core/browser/leak_detection",
     "//components/password_manager/core/browser/sharing",
     "//components/sync/service",
-    "//components/user_prefs",
     "//content/public/browser",
     "//extensions/browser",
   ]

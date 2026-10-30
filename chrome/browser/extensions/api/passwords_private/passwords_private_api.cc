@@ -16,10 +16,7 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate_factory.h"
 #include "chrome/common/extensions/api/passwords_private.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"
-#include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function_registry.h"
@@ -33,24 +30,11 @@ using ResponseAction = ExtensionFunction::ResponseAction;
 constexpr char kNoDelegateError[] =
     "Operation failed because PasswordsPrivateDelegate wasn't created.";
 
-constexpr char kPasswordManagerDisabledByPolicy[] =
-    "Operation failed because CredentialsEnableService policy is set to false "
-    "by admin.";
-
 scoped_refptr<PasswordsPrivateDelegate> GetDelegate(
     content::BrowserContext* browser_context) {
   return PasswordsPrivateDelegateFactory::GetForBrowserContext(
       browser_context,
       /*create=*/false);
-}
-
-bool IsPasswordManagerDisabledByPolicy(
-    content::BrowserContext* browser_context) {
-  PrefService* prefs = user_prefs::UserPrefs::Get(browser_context);
-  return !prefs->GetBoolean(
-             password_manager::prefs::kCredentialsEnableService) &&
-         prefs->IsManagedPreference(
-             password_manager::prefs::kCredentialsEnableService);
 }
 
 }  // namespace
@@ -255,10 +239,6 @@ ResponseAction PasswordsPrivateImportPasswordsFunction::Run() {
     return RespondNow(Error(kNoDelegateError));
   }
 
-  if (IsPasswordManagerDisabledByPolicy(browser_context())) {
-    return RespondNow(Error(kPasswordManagerDisabledByPolicy));
-  }
-
   auto parameters =
       api::passwords_private::ImportPasswords::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
@@ -420,10 +400,6 @@ ResponseAction PasswordsPrivateGetUrlCollectionFunction::Run() {
 ResponseAction PasswordsPrivateAddPasswordFunction::Run() {
   if (!GetDelegate(browser_context())) {
     return RespondNow(Error(kNoDelegateError));
-  }
-
-  if (IsPasswordManagerDisabledByPolicy(browser_context())) {
-    return RespondNow(Error(kPasswordManagerDisabledByPolicy));
   }
 
   auto parameters = api::passwords_private::AddPassword::Params::Create(args());

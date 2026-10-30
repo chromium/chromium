@@ -101,9 +101,10 @@ class PasswordsPrivateDelegate
 
   // Adds the |username| and |password| corresponding to the |url| to the
   // specified store and returns true if the operation succeeded. Fails and
-  // returns false if the data is invalid or an entry with such origin and
-  // username already exists. Updates the default store to the used one on
-  // success if account storage is enabled.
+  // returns false if the data is invalid, an entry with such origin and
+  // username already exists, or saving new passwords is blocked by mandatory
+  // policy. Updates the default store to the used one on success if account
+  // storage is enabled.
   // |url|: The url of the password entry, must be a valid http(s) ip/web
   //        address as is or after adding http(s) scheme.
   // |username|: The username to save, can be empty.
@@ -191,8 +192,10 @@ class PasswordsPrivateDelegate
   // |recipients|.
   virtual void SharePassword(int id, const ShareRecipients& recipients) = 0;
 
-  // Trigger the password import procedure, allowing the user to select a file
-  // containing passwords to import.
+  // Triggers the password import procedure, allowing the user to select a file
+  // containing passwords to import. Completes with `kUnknownError` without
+  // opening the file picker if saving new passwords is blocked by mandatory
+  // policy.
   // |to_store|: destination store (Device or Account) for imported passwords.
   // |results_callback|: Used to communicate the status and summary of the
   // import process.

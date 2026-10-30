@@ -32,6 +32,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/values.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/ui/passwords/settings/fake_password_import_controller.h"
 #include "chrome/browser/ui/passwords/settings/mock_password_import_controller.h"
@@ -510,6 +511,61 @@ TEST_F(PasswordsPrivateDelegateImplTest, AddPassword) {
                   PasswordUiEntryDataEquals(testing::ByRef(expected_entry1)),
                   PasswordUiEntryDataEquals(testing::ByRef(expected_entry2)))));
   delegate->GetSavedPasswordsList(callback.Get());
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest, AddPassword_BlockedByMandatoryPolicy) {
+  prefs()->SetManagedPref(password_manager::prefs::kCredentialsEnableService,
+                          base::Value(false));
+  scoped_refptr<PasswordsPrivateDelegateImpl> delegate = CreateDelegate();
+  RunUntilIdle();
+
+  EXPECT_FALSE(delegate->AddPassword(/*url=*/"example1.com",
+                                     /*username=*/u"username1",
+                                     /*password=*/u"password1", /*note=*/u"",
+                                     /*use_account_store=*/true));
+  RunUntilIdle();
+
+  EXPECT_THAT(GetCredentials(*delegate), IsEmpty());
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest,
+       ImportPasswords_BlockedByMandatoryPolicy) {
+  prefs()->SetManagedPref(password_manager::prefs::kCredentialsEnableService,
+                          base::Value(false));
+  scoped_refptr<PasswordsPrivateDelegateImpl> delegate = CreateDelegate();
+
+  auto mock_controller = std::make_unique<MockPasswordImportController>();
+  auto* mock_controller_ptr = mock_controller.get();
+  delegate->SetImportControllerForTesting(std::move(mock_controller));
+
+  EXPECT_CALL(*mock_controller_ptr, Import).Times(0);
+
+  base::MockCallback<PasswordsPrivateDelegate::ImportResultsCallback>
+      import_callback;
+  EXPECT_CALL(
+      import_callback,
+      Run(Field(&ImportResults::status,
+                api::passwords_private::ImportResultsStatus::kUnknownError)))
+      .Times(1);
+
+  delegate->ImportPasswords(api::passwords_private::PasswordStoreSet::kDevice,
+                            import_callback.Get(), /*web_contents=*/nullptr);
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest,
+       ImportPasswords_AllowedWhenDisabledByUser) {
+  prefs()->SetUserPref(password_manager::prefs::kCredentialsEnableService,
+                       base::Value(false));
+  scoped_refptr<PasswordsPrivateDelegateImpl> delegate = CreateDelegate();
+
+  auto mock_controller = std::make_unique<MockPasswordImportController>();
+  auto* mock_controller_ptr = mock_controller.get();
+  delegate->SetImportControllerForTesting(std::move(mock_controller));
+
+  EXPECT_CALL(*mock_controller_ptr, Import).Times(1);
+
+  delegate->ImportPasswords(api::passwords_private::PasswordStoreSet::kDevice,
+                            base::DoNothing(), /*web_contents=*/nullptr);
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, TestReauthFailedOnImport) {

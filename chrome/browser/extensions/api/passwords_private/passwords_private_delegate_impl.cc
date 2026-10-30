@@ -272,6 +272,15 @@ ToActionableApiError(password_manager::ActionableError error) {
   }
 }
 
+// `IsManagedPreference` checks only the mandatory policy store, excluding user,
+// extension (`passwordSavingEnabled`), and recommended policy values.
+bool IsPasswordSavingBlockedByMandatoryPolicy(const PrefService* prefs) {
+  return !prefs->GetBoolean(
+             password_manager::prefs::kCredentialsEnableService) &&
+         prefs->IsManagedPreference(
+             password_manager::prefs::kCredentialsEnableService);
+}
+
 }  // namespace
 
 namespace extensions {
@@ -429,6 +438,9 @@ bool PasswordsPrivateDelegateImpl::AddPassword(const std::string& url,
                                                const std::u16string& password,
                                                const std::u16string& note,
                                                bool use_account_store) {
+  if (IsPasswordSavingBlockedByMandatoryPolicy(prefs_)) {
+    return false;
+  }
   password_manager::PasswordForm::Store store_to_use =
       use_account_store ? password_manager::PasswordForm::Store::kAccountStore
                         : password_manager::PasswordForm::Store::kProfileStore;
@@ -729,6 +741,12 @@ void PasswordsPrivateDelegateImpl::ImportPasswords(
     api::passwords_private::PasswordStoreSet to_store,
     ImportResultsCallback results_callback,
     content::WebContents* web_contents) {
+  if (IsPasswordSavingBlockedByMandatoryPolicy(prefs_)) {
+    api::passwords_private::ImportResults results;
+    results.status = api::passwords_private::ImportResultsStatus::kUnknownError;
+    std::move(results_callback).Run(results);
+    return;
+  }
   CHECK_NE(api::passwords_private::PasswordStoreSet::kDeviceAndAccount,
            to_store, base::NotFatalUntil::M161);
   password_manager::PasswordForm::Store store_to_use =
