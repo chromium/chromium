@@ -60,8 +60,9 @@ public class AccessibilityState {
          *       obscuring, touch exploration, etc.)
          * </ul>
          *
-         * For a full list of triggers, see: {AccessibilityState#registerObservers} For a full list
-         * of tracked settings, see: {AccessibilityState.State}
+         * For a full list of triggers, see:
+         * {AccessibilityStateDelegateImpl#registerObserversOnBackgroundThread} For a full list of
+         * tracked settings, see: {AccessibilityState.State}
          *
          * <p>This method passes both the previous and new (old current vs. now current)
          * accessibility state. Clients that are only interested in a subset of the state should
@@ -362,10 +363,6 @@ public class AccessibilityState {
     @CalledByNative
     private static boolean[] getAccessibilityToolFlags() {
         return getDelegate().getAccessibilityToolFlags();
-    }
-
-    public static void registerObservers() {
-        getDelegate().registerObservers();
     }
 
     public static void initializeOnStartup(AccessibilityStateVisibilityManager visibilityManager) {

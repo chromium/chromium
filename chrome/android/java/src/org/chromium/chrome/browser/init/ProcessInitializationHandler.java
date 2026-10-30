@@ -443,8 +443,6 @@ public class ProcessInitializationHandler {
                     public void onProfileDestroyed(Profile profile) {}
                 });
 
-        AccessibilityState.registerObservers();
-
         boolean initialNightMode = GlobalNightModeStateProviderHolder.getInstance().isInNightMode();
         OsSettingsProviderAndroidBridge.setPreferredColorScheme(initialNightMode);
         GlobalNightModeStateProviderHolder.getInstance()

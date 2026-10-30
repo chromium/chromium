@@ -38,6 +38,9 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.SequencedTaskRunner;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.accessibility.AccessibilityState.Listener;
@@ -130,7 +133,11 @@ class AccessibilityStateDelegateImpl
 
     private @Nullable State mState;
 
-    private boolean mHasRegisteredObservers;
+    // Should only be read and written to on the UI thread.
+    private boolean mHasRegisteredObserversOnUiThread;
+
+    private final SequencedTaskRunner mRegisterObserverTaskRunner =
+            PostTask.createSequencedTaskRunner(TaskTraits.USER_VISIBLE);
     private @Nullable Boolean mPreInitCachedValuePerformGesturesEnabled;
 
     // A flag indicating whether the "extra state" values `mDisplayInversionEnabled`,
@@ -768,11 +775,24 @@ class AccessibilityStateDelegateImpl
         return flags;
     }
 
-    @Override
-    public void registerObservers() {
-        if (mHasRegisteredObservers) {
+    private void registerObserversOnUiThread() {
+        if (mVisibilityManager == null
+                || !mVisibilityManager.isApplicationForegrounded()
+                || mHasRegisteredObserversOnUiThread) {
             return;
         }
+
+        mHasRegisteredObserversOnUiThread = true;
+
+        mRegisterObserverTaskRunner.execute(
+                () -> {
+                    registerObserversOnBackgroundThread();
+                    ThreadUtils.postOnUiThread(() -> onObserversRegistered());
+                });
+    }
+
+    private void registerObserversOnBackgroundThread() {
+        ThreadUtils.assertOnBackgroundThread();
 
         ContentResolver contentResolver = ContextUtils.getApplicationContext().getContentResolver();
         mAnimationDurationScaleObserver =
@@ -852,56 +872,67 @@ class AccessibilityStateDelegateImpl
                         context.getMainExecutor(), mContrastChangeListener);
             }
         }
+    }
 
-        mHasRegisteredObservers = true;
+    private void onObserversRegistered() {
+        ThreadUtils.assertOnUiThread();
+
+        // It is possible for the observers to be currently unregistered if {@code
+        // unregisterObserversOnUiThread()} is called immediately after {@code
+        // registerObserversOnUiThread()}.
+        //
+        // If this function is called as part of startup, the state may have changed in between
+        // {@code mState} being initialized and the observers getting registered.
+        updateAccessibilityServices(/* recordHistograms= */ true);
+        updateExtraState();
+        notifyExtraStateListeners();
     }
 
     @Override
     public void initializeOnStartup(AccessibilityStateVisibilityManager visibilityManager) {
         mVisibilityManager = visibilityManager;
 
-        // This method is called as a deferred task during browser init. If no services are enabled,
-        // this will ensure the state is populated for any client queries later. If a service is
-        // enabled during startup, the current state may be queried before this method is called,
-        // in which case another state update is not needed. In either case, the state should be
-        // propagated to all listeners once during browser init.
-        if (mState == null) {
-            updateAccessibilityServices();
-        }
-        if (!mExtraStateInitialized) {
-            updateExtraState();
-        }
-        notifyExtraStateListeners();
-
         // We want to be notified whenever an Activity or Application state changes.
         mVisibilityManager.setObserver(this);
 
-        // Histograms are recorded once during startup, and any time services change afterwards.
-        AccessibilityStateJni.get().recordAccessibilityServiceInfoHistograms();
-        AccessibilityStateJni.get().onSamsungTalkBackStateChanged(isSamsungTalkBackEnabled());
+        registerObserversOnUiThread();
     }
 
     @Override
     public void onActivityOrApplicationForegrounded() {
-        registerObservers();
-
-        // AccessibilityStateDelegateImpl does not register an observer for properties such as
-        // {@link getFontWeightAdjustment()}. Recompute the properties now.
-        processServicesChange();
-        processExtraStateChange();
+        if (!mHasRegisteredObserversOnUiThread) {
+            registerObserversOnUiThread();
+        } else {
+            // AccessibilityStateDelegateImpl does not register an observer for properties such as
+            // {@link getFontWeightAdjustment()}. Recompute the properties now.
+            processServicesChange();
+            processExtraStateChange();
+        }
     }
 
     @Override
     public void onApplicationBackgrounded() {
         // If Chrome is sent to the background, we will unregister observers, and re-register the
         // observers when Chrome is brought back to the foreground.
-        unregisterObservers();
+        unregisterObserversOnUiThread();
     }
 
-    private void unregisterObservers() {
-        if (!mHasRegisteredObservers) {
+    private void unregisterObserversOnUiThread() {
+        if (!mHasRegisteredObserversOnUiThread) {
             return;
         }
+
+        mHasRegisteredObserversOnUiThread = false;
+
+        mRegisterObserverTaskRunner.execute(
+                () -> {
+                    unregisterObserversOnBackgroundThread();
+                    ThreadUtils.postOnUiThread(() -> onObserversUnregistered());
+                });
+    }
+
+    private void unregisterObserversOnBackgroundThread() {
+        ThreadUtils.assertOnBackgroundThread();
 
         assert mAccessibilityServicesObserver != null;
         assert mAnimationDurationScaleObserver != null;
@@ -923,9 +954,13 @@ class AccessibilityStateDelegateImpl
             }
             mContrastChangeListener = null;
         }
+    }
+
+    private void onObserversUnregistered() {
+        ThreadUtils.assertOnUiThread();
+
         mState = null;
         mPreInitCachedValuePerformGesturesEnabled = null;
-        mHasRegisteredObservers = false;
         mExtraStateInitialized = false;
         mDisplayInversionEnabled = false;
         mHighContrastEnabled = false;
@@ -972,7 +1007,7 @@ class AccessibilityStateDelegateImpl
 
     @Override
     public void uninitializeForTesting() {
-        unregisterObservers();
+        unregisterObserversOnUiThread();
         if (mVisibilityManager != null) {
             mVisibilityManager.setObserver(null);
         }

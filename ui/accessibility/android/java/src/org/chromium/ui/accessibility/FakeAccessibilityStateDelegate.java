@@ -207,9 +207,6 @@ public class FakeAccessibilityStateDelegate implements AccessibilityStateDelegat
     }
 
     @Override
-    public void registerObservers() {}
-
-    @Override
     public void initializeOnStartup(AccessibilityStateVisibilityManager visibilityManager) {}
 
     @Override

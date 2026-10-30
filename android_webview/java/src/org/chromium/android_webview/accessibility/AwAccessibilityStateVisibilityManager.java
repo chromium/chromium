@@ -23,9 +23,13 @@ public class AwAccessibilityStateVisibilityManager
     /** Starts observing Android OS accessibility setting changes. */
     public static void initializeOnStartup() {
         if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_OBSERVE_ACCESSIBILITY_STATE)) {
-            AccessibilityState.registerObservers();
             AccessibilityState.initializeOnStartup(new AwAccessibilityStateVisibilityManager());
         }
+    }
+
+    @Override
+    public boolean isApplicationForegrounded() {
+        return AwContentsLifecycleNotifier.getInstance().getAppState() == AppState.FOREGROUND;
     }
 
     @Override

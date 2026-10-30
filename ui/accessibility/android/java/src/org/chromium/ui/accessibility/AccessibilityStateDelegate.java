@@ -127,21 +127,10 @@ interface AccessibilityStateDelegate {
      */
     boolean[] getAccessibilityToolFlags();
 
-    /**
-     * Register observers of various system properties and initialize a state for clients.
-     *
-     * <p>Note: This should only be called once, and before any client queries of accessibility
-     * state. The first time any client queries the state, |this| will be initialized.
-     */
-    void registerObservers();
-
     void initializeOnStartup(AccessibilityStateVisibilityManager visibilityManager);
 
     void updateAccessibilityServices();
 
-    /**
-     * Unregisters all observers registered by the delegate, not just those registered by {@link
-     * #registerObservers()}.
-     */
+    /** Unregisters all observers registered by the delegate. */
     void uninitializeForTesting();
 }

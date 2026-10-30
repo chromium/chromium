@@ -22,6 +22,11 @@ public class ApplicationStatusAccessibilityStateVisibilityManager
     private boolean mHasVisibleActivities;
 
     @Override
+    public boolean isApplicationForegrounded() {
+        return ApplicationStatus.hasVisibleActivities();
+    }
+
+    @Override
     public void setObserver(@Nullable Observer observer) {
         if (mObserver != null) {
             ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);

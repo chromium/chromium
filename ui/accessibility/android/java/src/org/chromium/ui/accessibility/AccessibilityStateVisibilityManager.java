@@ -33,5 +33,7 @@ public interface AccessibilityStateVisibilityManager {
         void onApplicationBackgrounded();
     }
 
+    boolean isApplicationForegrounded();
+
     void setObserver(@Nullable Observer observer);
 }
