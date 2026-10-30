@@ -9,7 +9,9 @@
 #include <set>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 
@@ -29,7 +31,8 @@ class ColorRecipe;
 // mixers in the pipeline.
 class COMPONENT_EXPORT(COLOR) ColorMixer {
  public:
-  using MixerGetter = base::RepeatingCallback<const ColorMixer*(void)>;
+  using ColorMap = base::flat_map<ColorId, SkColor>;
+  using MixerGetter = base::RepeatingCallback<const ColorMixer*()>;
 
   // Having each ColorMixer know about the |previous mixer| in the pipeline
   // allows mixers to implement the pipeline directly and simplifies the API,
@@ -61,6 +64,13 @@ class COMPONENT_EXPORT(COLOR) ColorMixer {
   // Returns the ColorIds defined for this mixer.
   std::set<ColorId> GetDefinedColorIds() const;
 
+  // Attaches or detaches the externally-owned map used to cache evaluated
+  // result colors when this mixer is the head input mixer.
+  void SetResultColorCache(ColorMap* result_colors) const;
+
+  // Clears any cached result colors on this mixer.
+  void ClearResultColorCache() const;
+
  private:
   MixerGetter previous_mixer_getter_;
   MixerGetter input_mixer_getter_;
@@ -68,6 +78,10 @@ class COMPONENT_EXPORT(COLOR) ColorMixer {
   // This uses std::map instead of base::flat_map since the recipes are inserted
   // one at a time instead of all at once, and there may be a lot of them.
   std::map<ColorId, ColorRecipe> recipes_;
+
+  // Optional cache of evaluated result colors, owned by `ColorProvider` and
+  // attached only when this mixer is the head input mixer.
+  mutable raw_ptr<ColorMap> result_colors_ = nullptr;
 };
 
 }  // namespace ui

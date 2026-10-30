@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/color/color_recipe.h"
@@ -31,6 +32,14 @@ ColorMixer& ColorMixer::operator=(ColorMixer&&) noexcept = default;
 ColorMixer::~ColorMixer() = default;
 
 ColorRecipe& ColorMixer::operator[](ColorId id) {
+  // Modifying a recipe invalidates cached results on this mixer and, if
+  // chained, on the head input mixer where final results are memoized.
+  ClearResultColorCache();
+  if (input_mixer_getter_) {
+    if (const ColorMixer* input_mixer = input_mixer_getter_.Run()) {
+      input_mixer->ClearResultColorCache();
+    }
+  }
   return recipes_[id];
 }
 
@@ -52,6 +61,12 @@ SkColor ColorMixer::GetInputColor(ColorId id) const {
 }
 
 SkColor ColorMixer::GetResultColor(ColorId id) const {
+  if (result_colors_) {
+    if (const auto it = result_colors_->find(id); it != result_colors_->end()) {
+      return it->second;
+    }
+  }
+
   const auto i = recipes_.find(id);
   const bool recipe_in_mixer = i != recipes_.end();
 
@@ -62,13 +77,19 @@ SkColor ColorMixer::GetResultColor(ColorId id) const {
                                   ? gfx::kPlaceholderColor
                                   : GetInputColor(id);
 
-  if (!recipe_in_mixer) {
-    return input_color;
+  SkColor result_color = input_color;
+  if (recipe_in_mixer) {
+    const ColorMixer* const mixer =
+        input_mixer_getter_ ? input_mixer_getter_.Run() : nullptr;
+    result_color =
+        i->second.GenerateResult(input_color, *(mixer ? mixer : this));
   }
 
-  const ColorMixer* const mixer =
-      input_mixer_getter_ ? input_mixer_getter_.Run() : nullptr;
-  return i->second.GenerateResult(input_color, *(mixer ? mixer : this));
+  // Match `ColorProvider::GetColor()` in not caching placeholder misses.
+  if (result_colors_ && result_color != gfx::kPlaceholderColor) {
+    result_colors_->emplace(id, result_color);
+  }
+  return result_color;
 }
 
 std::set<ColorId> ColorMixer::GetDefinedColorIds() const {
@@ -77,6 +98,16 @@ std::set<ColorId> ColorMixer::GetDefinedColorIds() const {
                          &std::pair<const ColorId, ColorRecipe>::first);
 
   return color_ids;
+}
+
+void ColorMixer::SetResultColorCache(ColorMap* result_colors) const {
+  result_colors_ = result_colors;
+}
+
+void ColorMixer::ClearResultColorCache() const {
+  if (result_colors_) {
+    result_colors_->clear();
+  }
 }
 
 }  // namespace ui

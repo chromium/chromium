@@ -108,6 +108,26 @@ SkColor GetToolbarTopSeparatorColor(SkColor toolbar_color,
 
 ui::ColorTransform AdjustHighlightColorForContrast(ui::ColorTransform fg,
                                                    ui::ColorTransform bg) {
+  if (features::IsThemeChangeOptimizationV2Enabled()) {
+    // Evaluate `fg` and `bg` once per invocation rather than re-evaluating them
+    // across nested `PickGoogleColor()` and `AlphaBlend()` `ColorTransform`
+    // steps.
+    auto generator = [](const ui::ColorTransform& fg,
+                        const ui::ColorTransform& bg, SkColor input_color,
+                        const ui::ColorMixer& mixer) {
+      const SkColor fg_color = fg.Run(input_color, mixer);
+      const SkColor bg_color = bg.Run(input_color, mixer);
+      const SkColor candidate_fg = color_utils::PickGoogleColor(
+          fg_color, bg_color, color_utils::kMinimumReadableContrastRatio);
+      const SkColor candidate_bg = color_utils::AlphaBlend(
+          candidate_fg, bg_color, kToolbarInkDropHighlightVisibleAlpha);
+      return color_utils::PickGoogleColor(
+          candidate_fg, candidate_bg,
+          color_utils::kMinimumReadableContrastRatio * 1.05f);
+    };
+    return base::BindRepeating(generator, std::move(fg), std::move(bg));
+  }
+
   auto candidate_fg =
       ui::PickGoogleColor(fg, bg, color_utils::kMinimumReadableContrastRatio);
   // Setting highlight color will set the text to the highlight color, and the

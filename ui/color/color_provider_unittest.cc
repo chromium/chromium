@@ -4,7 +4,10 @@
 
 #include "ui/color/color_provider.h"
 
+#include "base/functional/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_test_ids.h"
 #include "ui/color/color_transform.h"
@@ -101,6 +104,60 @@ TEST(ColorProviderTest, SetColorForTesting) {
   EXPECT_EQ(gfx::kPlaceholderColor, provider.GetColor(kColorTest1));
   provider.SetColorForTesting(kColorTest1, SK_ColorBLUE);
   EXPECT_EQ(SK_ColorBLUE, provider.GetColor(kColorTest1));
+}
+
+TEST(ColorProviderTest, MemoizesSharedDependenciesAcrossMixers) {
+  base::test::ScopedFeatureList feature_list(
+      features::kThemeChangeOptimizationV2);
+
+  int base_eval_count = 0;
+  ColorProvider provider;
+  ColorMixer& mixer0 = provider.AddMixer();
+  mixer0[kColorTest0] = ColorTransform(base::BindRepeating(
+      [](int* count, SkColor, const ColorMixer&) {
+        ++(*count);
+        return SK_ColorWHITE;
+      },
+      &base_eval_count));
+  mixer0[kColorTest1] = GetColorWithMaxContrast(kColorTest0);
+
+  ColorMixer& mixer1 = provider.AddMixer();
+  mixer1[kColorTest2] = AlphaBlend(kColorTest0, kColorTest1, 0x80);
+
+  EXPECT_NE(gfx::kPlaceholderColor, provider.GetColor(kColorTest2));
+  EXPECT_EQ(1, base_eval_count);
+  EXPECT_TRUE(provider.color_map_for_testing().contains(kColorTest0));
+  EXPECT_EQ(SK_ColorWHITE, provider.GetColor(kColorTest0));
+  EXPECT_EQ(1, base_eval_count);
+}
+
+TEST(ColorProviderTest, PostprocessingDoesNotPolluteMemoizedRegularCache) {
+  base::test::ScopedFeatureList feature_list(
+      features::kThemeChangeOptimizationV2);
+
+  ColorProvider provider;
+  ColorMixer& mixer0 = provider.AddMixer();
+  mixer0[kColorTest0] = {SK_ColorBLACK};
+  mixer0[kColorTest1] = AlphaBlend(SK_ColorRED, kColorTest0, 0x01);
+  provider.AddMixer()[kColorTest0] = {SK_ColorWHITE};
+  provider.AddPostprocessingMixer()[kColorTest0] =
+      GetColorWithMaxContrast(FromTransformInput());
+
+  // Query the postprocessed color first, then verify an intermediate recipe
+  // referencing `kColorTest0` still sees the unprocessed regular mixer value.
+  EXPECT_EQ(color_utils::GetColorWithMaxContrast(SK_ColorWHITE),
+            provider.GetColor(kColorTest0));
+  EXPECT_FALSE(color_utils::IsDark(provider.GetColor(kColorTest1)));
+
+  // Also verify adding a postprocessing mixer before any regular mixer clears
+  // any pre-regular cached state once a regular mixer is added.
+  ColorProvider provider_post_first;
+  provider_post_first.AddPostprocessingMixer()[kColorTest0] =
+      GetColorWithMaxContrast(FromTransformInput());
+  EXPECT_EQ(color_utils::GetColorWithMaxContrast(gfx::kPlaceholderColor),
+            provider_post_first.GetColor(kColorTest0));
+  provider_post_first.AddMixer()[kColorTest0] = {SK_ColorBLACK};
+  EXPECT_EQ(SK_ColorWHITE, provider_post_first.GetColor(kColorTest0));
 }
 
 }  // namespace

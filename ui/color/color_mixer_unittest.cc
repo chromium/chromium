@@ -115,5 +115,55 @@ TEST(ColorMixerTest, GetDefinedColorIdsReturnsExpectedColorIds) {
             mixer.GetDefinedColorIds());
 }
 
+// Tests that `GetResultColor()` memoizes intermediate `ColorId` evaluations
+// when a result color cache is attached and invalidates on `operator[]`.
+TEST(ColorMixerTest, MemoizesIntermediateResultColors) {
+  int base_eval_count = 0;
+  ColorMixer::ColorMap cache;
+  ColorMixer mixer;
+  mixer.SetResultColorCache(&cache);
+  mixer[kColorTest0] = ColorTransform(base::BindRepeating(
+      [](int* count, SkColor, const ColorMixer&) {
+        ++(*count);
+        return SK_ColorBLUE;
+      },
+      &base_eval_count));
+  // Both `kColorTest1` and `kColorTest2` depend on `kColorTest0`, and
+  // `kColorTest2` also depends on `kColorTest1` (forming a diamond dependency
+  // on `kColorTest0`).
+  mixer[kColorTest1] = GetColorWithMaxContrast(kColorTest0);
+  mixer[kColorTest2] = AlphaBlend(kColorTest0, kColorTest1, 0x80);
+
+  const SkColor result = mixer.GetResultColor(kColorTest2);
+  EXPECT_EQ(1, base_eval_count);
+  EXPECT_EQ(result, mixer.GetResultColor(kColorTest2));
+  EXPECT_EQ(1, base_eval_count);
+
+  // Updating a recipe via `operator[]` invalidates the memoized cache.
+  mixer[kColorTest0] = {SK_ColorRED};
+  EXPECT_NE(result, mixer.GetResultColor(kColorTest2));
+}
+
+// Tests that mutating an earlier mixer via `operator[]` invalidates results
+// memoized on the head input mixer.
+TEST(ColorMixerTest, MutatingEarlierMixerInvalidatesHeadInputMixerCache) {
+  ColorMixer::ColorMap cache;
+  const ColorMixer* front_mixer = nullptr;
+  const auto getter = base::BindRepeating(
+      [](const ColorMixer** mixer) { return *mixer; }, &front_mixer);
+  ColorMixer mixer0(PassThrough(nullptr), getter);
+  ColorMixer mixer1(PassThrough(&mixer0), getter);
+  front_mixer = &mixer1;
+  mixer1.SetResultColorCache(&cache);
+
+  mixer0[kColorTest0] = {SK_ColorWHITE};
+  mixer0[kColorTest1] = GetColorWithMaxContrast(kColorTest0);
+  EXPECT_EQ(color_utils::GetColorWithMaxContrast(SK_ColorWHITE),
+            mixer1.GetResultColor(kColorTest1));
+
+  mixer0[kColorTest0] = {SK_ColorBLACK};
+  EXPECT_EQ(SK_ColorWHITE, mixer1.GetResultColor(kColorTest1));
+}
+
 }  // namespace
 }  // namespace ui

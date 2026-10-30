@@ -360,6 +360,12 @@ BASE_DECLARE_FEATURE(kUsePortalAccentColor);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 BASE_DECLARE_FEATURE(kThemeChangeOptimization);
 
+// Enables additional performance optimizations for theme and color changes,
+// including `ColorProvider` lookup caching, `ColorMixer` intermediate result
+// memoization, and scoped theme invalidation.
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+BASE_DECLARE_FEATURE(kThemeChangeOptimizationV2);
+
 // Kill switch for removing
 // RenderFrameHostManager::EnsureRenderFrameHostVisibilityConsistent.
 //
@@ -379,6 +385,8 @@ COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsWebUIRoundedIconsEnabled();
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 bool IsColorIdCssStyleSheetOptimizationEnabled();
+COMPONENT_EXPORT(UI_BASE_FEATURES)
+bool IsThemeChangeOptimizationV2Enabled();
 
 }  // namespace features
 
