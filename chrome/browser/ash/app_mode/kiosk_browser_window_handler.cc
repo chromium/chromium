@@ -31,8 +31,8 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/aura/window.h"
 #include "ui/base/base_window.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_observer.h"
@@ -266,7 +266,7 @@ void KioskBrowserWindowHandler::HandleNewSettingsWindow(
     // Create a new app browser.
     ash::BrowserController::GetInstance()->OpenUrl(
         account_id, GURL(url_string),
-        {.disposition = WindowOpenDisposition::kNewPopup,
+        {.disposition = ui::mojom::WindowOpenDisposition::kNewPopup,
          .transition = ui::PAGE_TRANSITION_AUTO_TOPLEVEL});
 
     // We do not save the newly created browser to the `settings_browser_` here

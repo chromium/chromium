@@ -23,7 +23,7 @@
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace ash {
 
@@ -225,7 +225,8 @@ void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
     apps::AppLaunchParams params(
         app_id,
         static_cast<apps::LaunchContainer>(it.second->container.value()),
-        static_cast<WindowOpenDisposition>(it.second->disposition.value()),
+        static_cast<ui::mojom::WindowOpenDisposition>(
+            it.second->disposition.value()),
         it.second->override_url.value_or(GURL()),
         apps::LaunchSource::kFromFullRestore, it.second->display_id.value(),
         it.second->file_paths,

@@ -27,7 +27,7 @@
 #include "components/services/app_service/public/cpp/types_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -61,9 +61,10 @@ apps::AppLaunchParams SystemWebAppBrowserTestBase::LaunchParamsForApp(
       GetManager().GetAppIdForSystemApp(system_app_type);
 
   CHECK(app_id.has_value());
-  return apps::AppLaunchParams(
-      *app_id, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::kCurrentTab, apps::LaunchSource::kFromAppListGrid);
+  return apps::AppLaunchParams(*app_id,
+                               apps::LaunchContainer::kLaunchContainerWindow,
+                               ui::mojom::WindowOpenDisposition::kCurrentTab,
+                               apps::LaunchSource::kFromAppListGrid);
 }
 
 content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(

@@ -35,7 +35,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "extensions/test/test_extension_dir.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 using ::testing::IsNull;
@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_P(BocaAppProviderIntegrationTest,
   // Trigger reload which will cause page handler to be recreated.
   ui_test_utils::NavigateToURLWithDisposition(
       boca_app_browser, GURL(ash::boca::kChromeBocaAppUntrustedIndexURL),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB);
 
   // Callback never executed.

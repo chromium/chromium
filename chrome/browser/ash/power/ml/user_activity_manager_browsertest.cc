@@ -31,8 +31,8 @@
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/viz/public/mojom/compositing/video_detector_observer.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/user_activity/user_activity_detector.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace ash::power::ml {
@@ -101,13 +101,14 @@ class UserActivityManagerBrowserTest : public InProcessBrowserTest {
   ukm::SourceId NavigateInBrowser(
       BrowserWindowInterface* target_browser,
       const GURL& url,
-      WindowOpenDisposition disposition = WindowOpenDisposition::kCurrentTab) {
+      ui::mojom::WindowOpenDisposition disposition =
+          ui::mojom::WindowOpenDisposition::kCurrentTab) {
     EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         target_browser, url, disposition,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
     TabStripModel* const tab_strip_model = target_browser->GetTabStripModel();
     content::WebContents* const contents =
-        disposition == WindowOpenDisposition::kNewBackgroundTab
+        disposition == ui::mojom::WindowOpenDisposition::kNewBackgroundTab
             ? tab_strip_model->GetWebContentsAt(tab_strip_model->count() - 1)
             : tab_strip_model->GetActiveWebContents();
     return contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
@@ -124,11 +125,12 @@ IN_PROC_BROWSER_TEST_F(UserActivityManagerBrowserTest, BasicTabs) {
   const GURL url1 = embedded_test_server()->GetURL("/title1.html");
   const GURL url2 = embedded_test_server()->GetURL("/title2.html");
 
-  const ukm::SourceId source_id1 =
-      NavigateInBrowser(browser(), url1, WindowOpenDisposition::kCurrentTab);
+  const ukm::SourceId source_id1 = NavigateInBrowser(
+      browser(), url1, ui::mojom::WindowOpenDisposition::kCurrentTab);
   site_engagement::SiteEngagementService::Get(GetProfile())
       ->ResetBaseScoreForURL(url1, 95);
-  NavigateInBrowser(browser(), url2, WindowOpenDisposition::kNewBackgroundTab);
+  NavigateInBrowser(browser(), url2,
+                    ui::mojom::WindowOpenDisposition::kNewBackgroundTab);
 
   IdleEventNotifier::ActivityData data;
   ReportIdleEvent(data);
@@ -158,13 +160,16 @@ IN_PROC_BROWSER_TEST_F(UserActivityManagerBrowserTest, MultiBrowsersAndTabs) {
   const GURL url3 = embedded_test_server()->GetURL("/title3.html");
   const GURL url4 = embedded_test_server()->GetURL("/title1.html?4");
 
-  NavigateInBrowser(browser1, url1, WindowOpenDisposition::kCurrentTab);
-  NavigateInBrowser(browser1, url2, WindowOpenDisposition::kNewForegroundTab);
+  NavigateInBrowser(browser1, url1,
+                    ui::mojom::WindowOpenDisposition::kCurrentTab);
+  NavigateInBrowser(browser1, url2,
+                    ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 
-  const ukm::SourceId source_id3 =
-      NavigateInBrowser(browser2, url3, WindowOpenDisposition::kCurrentTab);
+  const ukm::SourceId source_id3 = NavigateInBrowser(
+      browser2, url3, ui::mojom::WindowOpenDisposition::kCurrentTab);
 
-  NavigateInBrowser(browser3, url4, WindowOpenDisposition::kCurrentTab);
+  NavigateInBrowser(browser3, url4,
+                    ui::mojom::WindowOpenDisposition::kCurrentTab);
 
   browser3->GetWindow()->Activate();
   browser2->GetWindow()->Activate();
@@ -193,9 +198,9 @@ IN_PROC_BROWSER_TEST_F(UserActivityManagerBrowserTest, Incognito) {
   const GURL url1 = embedded_test_server()->GetURL("/title1.html");
   const GURL url2 = embedded_test_server()->GetURL("/title2.html");
   NavigateInBrowser(incognito_browser, url1,
-                    WindowOpenDisposition::kCurrentTab);
+                    ui::mojom::WindowOpenDisposition::kCurrentTab);
   NavigateInBrowser(incognito_browser, url2,
-                    WindowOpenDisposition::kNewBackgroundTab);
+                    ui::mojom::WindowOpenDisposition::kNewBackgroundTab);
   incognito_browser->GetWindow()->Activate();
 
   IdleEventNotifier::ActivityData data;

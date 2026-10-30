@@ -72,7 +72,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace ash {
 
@@ -928,7 +928,8 @@ IN_PROC_BROWSER_TEST_P(MergeSessionTest, PageThrottle) {
   // Try to open a page from google.com.
   BrowserWindowInterface* browser = FindOrCreateVisibleBrowser(GetProfile());
   ui_test_utils::NavigateToURLWithDisposition(
-      browser, fake_google_page_url_, WindowOpenDisposition::kCurrentTab,
+      browser, fake_google_page_url_,
+      ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   // JavaScript dialog wait setup.

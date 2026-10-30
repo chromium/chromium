@@ -97,8 +97,8 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/base_window.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/scoped_animation_duration_scale_mode.h"
@@ -346,8 +346,9 @@ class FullRestoreAppLaunchHandlerTestBase
         profile()->GetPath(),
         std::make_unique<::app_restore::AppLaunchInfo>(
             kAppId, kWindowId2, apps::LaunchContainer::kLaunchContainerWindow,
-            WindowOpenDisposition::kNewWindow, display::kDefaultDisplayId,
-            std::vector<base::FilePath>{}, nullptr));
+            ui::mojom::WindowOpenDisposition::kNewWindow,
+            display::kDefaultDisplayId, std::vector<base::FilePath>{},
+            nullptr));
   }
 
   void SaveBrowserAppLaunchInfo(int32_t window_id,
@@ -366,8 +367,9 @@ class FullRestoreAppLaunchHandlerTestBase
         profile()->GetPath(),
         std::make_unique<::app_restore::AppLaunchInfo>(
             app_id, apps::LaunchContainer::kLaunchContainerWindow,
-            WindowOpenDisposition::kNewWindow, display::kDefaultDisplayId,
-            std::vector<base::FilePath>{}, nullptr));
+            ui::mojom::WindowOpenDisposition::kNewWindow,
+            display::kDefaultDisplayId, std::vector<base::FilePath>{},
+            nullptr));
   }
 
   std::unique_ptr<::app_restore::WindowInfo> GetWindowInfo(

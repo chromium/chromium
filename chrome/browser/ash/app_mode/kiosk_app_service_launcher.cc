@@ -24,7 +24,7 @@
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
 #include "components/services/app_service/public/cpp/launch_result.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace chromeos {
@@ -150,7 +150,8 @@ void KioskAppServiceLauncher::LaunchAppInternal() {
 
   auto params = apps::AppLaunchParams(
       app_id_, apps::LaunchContainer::kLaunchContainerWindow,
-      WindowOpenDisposition::kNewPopup, apps::LaunchSource::kFromKiosk);
+      ui::mojom::WindowOpenDisposition::kNewPopup,
+      apps::LaunchSource::kFromKiosk);
   params.override_url = launch_url_.value_or(GURL());
 
   app_service_->LaunchAppWithParams(

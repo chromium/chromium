@@ -103,7 +103,6 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/gurl.h"

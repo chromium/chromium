@@ -33,7 +33,7 @@
 #include "pdf/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/base_window.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "pdf/pdf_features.h"
@@ -87,7 +87,8 @@ content::WebContents* OpenUrlInBrowser(GURL page_url) {
       CHECK_DEREF(CreateBrowserWindow(std::move(params)));
   new_browser.GetWindow()->Show();
   ui_test_utils::NavigateToURLWithDisposition(
-      &new_browser, page_url, WindowOpenDisposition::kNewForegroundTab,
+      &new_browser, page_url,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   return new_browser.GetTabStripModel()->GetActiveWebContents();
 }

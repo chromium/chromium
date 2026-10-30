@@ -172,7 +172,7 @@
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_util.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
@@ -1590,12 +1590,13 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, LastWindowClosedLogoutReminder) {
   // Start the platform app, causing it to open a window.
   run_loop_ = std::make_unique<base::RunLoop>();
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-  proxy->Launch(app->id(),
-                apps::GetEventFlags(WindowOpenDisposition::kNewWindow,
-                                    false /* preferred_containner */),
-                apps::LaunchSource::kFromChromeInternal,
-                std::make_unique<apps::WindowInfo>(
-                    display::Screen::Get()->GetPrimaryDisplay().id()));
+  proxy->Launch(
+      app->id(),
+      apps::GetEventFlags(ui::mojom::WindowOpenDisposition::kNewWindow,
+                          false /* preferred_containner */),
+      apps::LaunchSource::kFromChromeInternal,
+      std::make_unique<apps::WindowInfo>(
+          display::Screen::Get()->GetPrimaryDisplay().id()));
   run_loop_->Run();
   EXPECT_EQ(1U, app_window_registry->app_windows().size());
 
