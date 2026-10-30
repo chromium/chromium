@@ -16,7 +16,6 @@
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/shared_image_pool.h"
-#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/video_transformation.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_snapshot_info.h"
@@ -76,8 +75,7 @@ class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool
   VideoFrameAcceleratedSnapshotPool(
       const CanvasSnapshotInfo& info,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-          context_provider_wrapper,
-      gpu::SharedImageUsageSet shared_image_usage_flags);
+          context_provider_wrapper);
 
   // CanvasMemoryDumpClient:
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
@@ -105,7 +103,6 @@ class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool
   gpu::raster::RasterInterface* RasterInterface() const;
 
   const CanvasSnapshotInfo info_;
-  const bool is_software_ = false;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
   std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>> image_pool_;
