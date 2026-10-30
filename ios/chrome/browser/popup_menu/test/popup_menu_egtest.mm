@@ -3,12 +3,10 @@
 // found in the LICENSE file.
 
 #import "base/functional/bind.h"
-#import "base/ios/ios_util.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
-#import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -26,7 +24,6 @@
 #import "url/gurl.h"
 
 namespace {
-const char kPDFPath[] = "/testpage.pdf";
 
 // Handles responses for the test server.
 std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
@@ -209,30 +206,6 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 
   // Verify the second window.
   [ChromeEarlGrey waitForForegroundWindowCount:2];
-}
-
-// Navigates to a pdf page and verifies that the "Find in Page..." tool
-// is not enabled
-- (void)testNoSearchForPDF {
-  // Disabled for iOS 16.1.1+ since Native Find in Page supports PDFs.
-  if (base::ios::IsRunningOnOrLater(16, 1, 1)) {
-    return;
-  }
-  const GURL URL = self.testServer->GetURL(kPDFPath);
-
-  // Navigate to a mock pdf and verify that the find button is disabled.
-  [ChromeEarlGrey loadURL:URL];
-  [ChromeEarlGreyUI openToolsMenu];
-  id<GREYMatcher> tableViewMatcher =
-      grey_accessibilityID(kPopupMenuToolsMenuActionListId);
-  [[[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(kToolsMenuFindInPageId),
-                                   grey_sufficientlyVisible(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-      onElementWithMatcher:tableViewMatcher]
-      assertWithMatcher:grey_accessibilityTrait(
-                            UIAccessibilityTraitNotEnabled)];
 }
 
 // Open tools menu and verify elements are accessible.
