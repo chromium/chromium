@@ -28,7 +28,6 @@
 #include "build/config/linux/dbus/buildflags.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/component_updater/crl_set_component_installer.h"
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
 #include "chrome/browser/enterprise/encryption/cache_encryption_provider_impl.h"
 #include "chrome/browser/glic/public/glic_request_headers.h"
@@ -705,6 +704,12 @@ SystemNetworkContextManager::SystemNetworkContextManager(
       true, base::DoNothing());
 #endif
 
+  if (IsCertificateTransparencyEnabled()) {
+    content::GetCertVerifierServiceFactory()->UpdateCtLogList(
+        GetStaticCtLogListMojo(),
+        certificate_transparency::GetLogListTimestamp(), base::DoNothing());
+  }
+
   if (content::IsOutOfProcessNetworkService() &&
       base::FeatureList::IsEnabled(
           features::kRestartNetworkServiceUnsandboxedForFailedLaunch)) {
@@ -872,9 +877,6 @@ void SystemNetworkContextManager::OnNetworkServiceCreatedInternal(
   // before the PKIMetadataComponentInstallerService
   // ReconfigureAfterNetworkRestart call below.
   if (IsCertificateTransparencyEnabled()) {
-    content::GetCertVerifierServiceFactory()->UpdateCtLogList(
-        GetStaticCtLogListMojo(),
-        certificate_transparency::GetLogListTimestamp(), base::DoNothing());
     network_service->UpdateCtLogList(GetStaticCtLogListMojo(),
                                      base::DoNothing());
   }
