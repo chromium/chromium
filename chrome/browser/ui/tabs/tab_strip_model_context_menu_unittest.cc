@@ -557,3 +557,54 @@ TEST_F(NonGroupFocusDissolutionTest,
   EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(0), std::nullopt);
   EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(1), std::nullopt);
 }
+
+TEST_F(NonGroupFocusDissolutionTest,
+       FocusingAnotherGroupDissolvesEphemeralFocusedGroup) {
+  const tab_groups::TabGroupId ephemeral_group =
+      StartNonGroupFocus(/*tab_count=*/3, /*focused_tab_count=*/2);
+  const tab_groups::TabGroupId other_group =
+      tab_strip_model()->AddToNewGroup({2});
+
+  // Directly focus the other tab group (e.g. via Bookmarks Bar "Focus group")
+  // while in non-group focus mode.
+  tab_strip_model()->EnterFocusMode(other_group);
+  EXPECT_EQ(tab_strip_model()->GetFocusedGroup(), other_group);
+  EXPECT_FALSE(
+      tab_strip_model()->group_model()->ContainsTabGroup(ephemeral_group));
+  EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(0), std::nullopt);
+  EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(1), std::nullopt);
+
+  // Unfocusing the other tab group should leave the previously focused
+  // non-group tabs ungrouped.
+  tab_strip_model()->ExitFocusMode();
+  EXPECT_EQ(tab_strip_model()->GetFocusedGroup(), std::nullopt);
+  EXPECT_FALSE(
+      tab_strip_model()->group_model()->ContainsTabGroup(ephemeral_group));
+  EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(0), std::nullopt);
+  EXPECT_EQ(tab_strip_model()->GetTabGroupForTab(1), std::nullopt);
+}
+
+TEST_F(NonGroupFocusDissolutionTest,
+       ToggleGroupedDissolvesEphemeralGroupAndCreatesPermanentGroup) {
+  const tab_groups::TabGroupId ephemeral_group =
+      StartNonGroupFocus(/*tab_count=*/2, /*focused_tab_count=*/2);
+  base::HistogramTester histogram_tester;
+
+  tabs::TabHandle tab0 = tab_strip_model()->GetTabAtIndex(0)->GetHandle();
+  EXPECT_TRUE(tab_strip_model()->WillContextMenuGroup(tab0));
+
+  tab_strip_model()->ExecuteContextMenuCommand(
+      0, TabStripModel::ContextMenuCommand::CommandToggleGrouped);
+
+  EXPECT_EQ(tab_strip_model()->GetFocusedGroup(), std::nullopt);
+  EXPECT_FALSE(
+      tab_strip_model()->group_model()->ContainsTabGroup(ephemeral_group));
+
+  std::optional<tab_groups::TabGroupId> new_group =
+      tab_strip_model()->GetTabGroupForTab(0);
+  ASSERT_TRUE(new_group.has_value());
+  EXPECT_NE(new_group.value(), ephemeral_group);
+  EXPECT_FALSE(tab_strip_model()->IsEphemeralTabGroup(new_group.value()));
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Focus.ExitReason", TabGroupFocusExitReason::kGroupCreated, 1);
+}

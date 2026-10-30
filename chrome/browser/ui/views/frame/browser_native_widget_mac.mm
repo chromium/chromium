@@ -614,6 +614,15 @@ void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
           !model->WillContextMenuGroup(model->GetActiveTab()->GetHandle());
       break;
     }
+    case IDC_GROUP_TARGET_TAB: {
+      TabStripModel* model = browser->tab_strip_model();
+      std::optional<int> index = chrome::GetKeyboardFocusedTabIndex(browser);
+      result->new_toggle_state =
+          index.has_value() &&
+          !model->WillContextMenuGroup(
+              model->GetTabAtIndex(index.value())->GetHandle());
+      break;
+    }
   }
 }
 

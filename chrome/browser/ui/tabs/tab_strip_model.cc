@@ -1339,7 +1339,8 @@ void TabStripModel::CloseAllTabs() {
 }
 
 void TabStripModel::CloseAllTabsInGroup(const tab_groups::TabGroupId& group) {
-  if (!group_model_ || !group_model_->ContainsTabGroup(group)) {
+  if (!group_model_ || !group_model_->ContainsTabGroup(group) ||
+      IsEphemeralTabGroup(group)) {
     return;
   }
 
@@ -2331,6 +2332,15 @@ void TabStripModel::EnterFocusMode(const tab_groups::TabGroupId& group) {
     if (tab_group->is_ephemeral()) {
       tab_group->SetVisualData(*tab_group->visual_data(),
                                tab_group->IsCustomized());
+    }
+
+    if (!closing_all_ && old_focused_group.has_value() &&
+        IsEphemeralTabGroup(old_focused_group.value())) {
+      if (const gfx::Range tabs =
+              group_model_->GetTabGroup(old_focused_group.value())->ListTabs();
+          !tabs.is_empty()) {
+        RemoveFromGroupImpl(tabs.ToIntVector());
+      }
     }
   }
 }
@@ -3638,8 +3648,10 @@ bool TabStripModel::WillContextMenuGroup(tabs::TabHandle context_tab) {
     return false;
   }
 
-  // If all tabs are in the same group, then we ungroup, otherwise we group.
-  return !GetCommonGroupForTabs(tabs).has_value();
+  // If all tabs are in the same non-ephemeral group, then we ungroup,
+  // otherwise we group.
+  std::optional<tab_groups::TabGroupId> group = GetCommonGroupForTabs(tabs);
+  return !group.has_value() || IsEphemeralTabGroup(group.value());
 }
 
 std::optional<tab_groups::TabGroupId> TabStripModel::GetCommonGroupForTabs(

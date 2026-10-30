@@ -3340,6 +3340,25 @@ TEST_F(TabStripModelTest, RotateFocusedGroup_EphemeralGroup) {
   EXPECT_EQ(ephemeral_group, tabstrip()->GetFocusedGroup());
 }
 
+TEST_F(TabStripModelTest, CloseAllTabsInGroup_EphemeralGroup) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {features::kTabGroupsFocusing, features::kNonGroupFocus}, {});
+
+  PrepareTabs(tabstrip(), 2);
+  tab_groups::TabGroupId ephemeral_group =
+      tabstrip()->AddToNewGroup({0, 1}, /*is_ephemeral=*/true);
+  tabstrip()->EnterFocusMode(ephemeral_group);
+  ASSERT_EQ(ephemeral_group, tabstrip()->GetFocusedGroup());
+
+  // Closing a tab group should be a no-op for an ephemeral group in non-group
+  // focus mode.
+  tabstrip()->CloseAllTabsInGroup(ephemeral_group);
+  EXPECT_EQ(2, tabstrip()->count());
+  EXPECT_EQ(ephemeral_group, tabstrip()->GetFocusedGroup());
+  EXPECT_TRUE(tabstrip()->group_model()->ContainsTabGroup(ephemeral_group));
+}
+
 // Moving every tab of an ephemeral group to another window dissolves the group
 // rather than transplanting it, and is reported as its own exit reason instead
 // of looking like the group's last tab was closed.
@@ -4441,6 +4460,13 @@ TEST_F(TabStripModelTest, WillContextMenuGroup) {
 
   // Remove both from group so all selected tabs are ungrouped: will group.
   tabstrip()->RemoveFromGroup({0, 1});
+  tabstrip()->SelectTabAt(0);
+  tabstrip()->SelectTabAt(1);
+  EXPECT_TRUE(tabstrip()->WillContextMenuGroup(tab0));
+  EXPECT_TRUE(tabstrip()->WillContextMenuGroup(tab1));
+
+  // Put both tabs into an ephemeral group: will still group into a real group.
+  tabstrip()->AddToNewGroup({0, 1}, /*is_ephemeral=*/true);
   tabstrip()->SelectTabAt(0);
   tabstrip()->SelectTabAt(1);
   EXPECT_TRUE(tabstrip()->WillContextMenuGroup(tab0));

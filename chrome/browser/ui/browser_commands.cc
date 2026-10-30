@@ -1847,14 +1847,15 @@ void CreateNewTabGroup(BrowserWindowInterface* browser) {
 }
 
 void CloseTabGroup(BrowserWindowInterface* browser) {
-  const int index = browser->GetTabStripModel()->active_index();
+  TabStripModel* const tab_strip_model = browser->GetTabStripModel();
+  const int index = tab_strip_model->active_index();
   std::optional<tab_groups::TabGroupId> group_id =
-      browser->GetTabStripModel()->GetTabGroupForTab(index);
-  if (!group_id) {
+      tab_strip_model->GetTabGroupForTab(index);
+  if (!group_id || tab_strip_model->IsEphemeralTabGroup(group_id.value())) {
     return;
   }
 
-  browser->GetTabStripModel()->CloseAllTabsInGroup(group_id.value());
+  tab_strip_model->CloseAllTabsInGroup(group_id.value());
 }
 
 void FocusNextTabGroup(BrowserWindowInterface* browser) {
