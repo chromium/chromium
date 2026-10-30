@@ -71,7 +71,6 @@
 #import "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #import "components/regional_capabilities/regional_capabilities_prefs.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#import "components/safety_check/safety_check_pref_names.h"
 #import "components/safety_check/safety_check_prefs.h"
 #import "components/saved_tab_groups/public/pref_names.h"
 #import "components/search_engines/template_url_prepopulate_data.h"
@@ -247,29 +246,6 @@ inline constexpr char kTailoredSecuritySyncFlowLastUserInteractionState[] =
     "safebrowsing.aesb_sync_flow_last_user_interaction_state";
 inline constexpr char kTailoredSecuritySyncFlowObservedOutcomeUnsetTimestamp[] =
     "safebrowsing.aesb_sync_flow_observed_outcome_unset_timestamp";
-
-// Renames a boolean pref within a PrefService.
-void RenameBooleanPref(std::string_view target_pref_name,
-                       std::string_view source_pref_name,
-                       PrefService* pref_service) {
-  const PrefService::Preference* target_pref =
-      pref_service->FindPreference(target_pref_name);
-  CHECK(target_pref);
-
-  const PrefService::Preference* source_pref =
-      pref_service->FindPreference(source_pref_name);
-  CHECK(source_pref);
-
-  // Only migrate the pref if 1. it is not set in target,
-  // 2. it is not the default in source.
-  if (target_pref->IsDefaultValue() && !source_pref->IsDefaultValue()) {
-    pref_service->SetBoolean(target_pref_name,
-                             pref_service->GetBoolean(source_pref_name));
-  }
-
-  // In all cases, clear the pref from source.
-  pref_service->ClearPref(source_pref_name);
-}
 
 }  // namespace
 
@@ -887,10 +863,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterTimeDeltaPref(
       prefs::kDeviceAuthorizationStartupFetchBackoff, base::TimeDelta());
 
-  // Use `safety_check::prefs::kSafetyCheckHomeModuleEnabled` instead.
-  registry->RegisterBooleanPref(
-      prefs::kHomeCustomizationMagicStackSafetyCheckEnabled, true);
-
   registry->RegisterBooleanPref(prefs::kUniversalOptOutErrorToastShown, false);
 
   signin::RegisterAccountSwitchingPromoProfilePrefs(registry);
@@ -992,11 +964,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
   // Check MigrateDeprecatedAutofillPrefs() to see if this is safe to remove.
   autofill::prefs::MigrateDeprecatedAutofillPrefs(prefs);
-
-  // Added 10/2025.
-  RenameBooleanPref(safety_check::prefs::kSafetyCheckHomeModuleEnabled,
-                    prefs::kHomeCustomizationMagicStackSafetyCheckEnabled,
-                    prefs);
 
   // Added 12/2025.
   prefs->ClearPref(kAutofillStatesDataDir);

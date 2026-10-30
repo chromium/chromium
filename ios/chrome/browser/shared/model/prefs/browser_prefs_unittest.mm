@@ -10,7 +10,6 @@
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/personal_context/core/personal_context_prefs.h"
 #import "components/policy/core/common/policy_pref_names.h"
-#import "components/safety_check/safety_check_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
@@ -57,31 +56,6 @@ class BrowserPrefsTest : public PlatformTest {
 };
 
 // [1] Profile pref renaming (triggered by `MigrateObsoleteProfilePrefs()`).
-
-TEST_F(BrowserPrefsTest, RenameSafetyCheckModuleEnabledProfilePref) {
-  const bool test_value = false;  // Default is true
-
-  profile_prefs()->SetBoolean(
-      prefs::kHomeCustomizationMagicStackSafetyCheckEnabled, test_value);
-
-  ASSERT_EQ(profile_prefs()->GetBoolean(
-                prefs::kHomeCustomizationMagicStackSafetyCheckEnabled),
-            test_value);
-  ASSERT_TRUE(
-      profile_prefs()
-          ->FindPreference(safety_check::prefs::kSafetyCheckHomeModuleEnabled)
-          ->IsDefaultValue());
-
-  MigrateObsoleteProfilePrefs(profile_prefs());
-
-  EXPECT_TRUE(profile_prefs()
-                  ->FindPreference(
-                      prefs::kHomeCustomizationMagicStackSafetyCheckEnabled)
-                  ->IsDefaultValue());
-  EXPECT_EQ(profile_prefs()->GetBoolean(
-                safety_check::prefs::kSafetyCheckHomeModuleEnabled),
-            test_value);
-}
 
 // Tests renaming `kCustomLinksAiModeTileIndex` to
 // `prefs::kIosMostVisitedAiModeTileIndex`.
