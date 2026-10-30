@@ -51,6 +51,7 @@ class RecordReplayPageActionController {
   ~RecordReplayPageActionController();
 
   DECLARE_USER_DATA(RecordReplayPageActionController);
+  static RecordReplayPageActionController* From(tabs::TabInterface* tab);
 
   void ExecuteAction(actions::ActionItem* item);
 
@@ -68,6 +69,9 @@ class RecordReplayPageActionController {
   std::vector<record_replay::Recording> recent_recordings_;
 
   std::unique_ptr<views::Widget> bubble_widget_;
+
+  ui::ScopedUnownedUserData<RecordReplayPageActionController>
+      scoped_unowned_user_data_;
 
   base::WeakPtrFactory<RecordReplayPageActionController> weak_ptr_factory_{
       this};

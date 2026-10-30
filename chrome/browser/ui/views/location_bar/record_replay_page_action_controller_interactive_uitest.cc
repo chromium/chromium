@@ -62,7 +62,7 @@ IN_PROC_BROWSER_TEST_F(RecordReplayPageActionControllerInteractiveTest,
   manager.SetRecordingsForTesting(std::move(recordings));
 
   RecordReplayPageActionController* controller =
-      tab->GetTabFeatures()->record_replay_page_action_controller();
+      RecordReplayPageActionController::From(tab);
   ASSERT_TRUE(controller);
 
   // We need to wait for the recording metadata to be retrieved (UpdateState
@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(RecordReplayPageActionControllerInteractiveTest,
   manager.SetRecordingsForTesting({recording1, recording2});
 
   RecordReplayPageActionController* controller =
-      tab->GetTabFeatures()->record_replay_page_action_controller();
+      RecordReplayPageActionController::From(tab);
   ASSERT_TRUE(controller);
 
   base::RunLoop run_loop;

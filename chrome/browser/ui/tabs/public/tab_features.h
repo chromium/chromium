@@ -476,10 +476,6 @@ class TabFeatures {
   }
 #endif
 
-  RecordReplayPageActionController* record_replay_page_action_controller() {
-    return record_replay_page_action_controller_.get();
-  }
-
   InactiveWindowMouseEventController* inactive_window_mouse_event_controller() {
     return inactive_window_mouse_event_controller_.get();
   }

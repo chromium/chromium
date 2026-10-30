@@ -938,9 +938,8 @@ void BrowserActions::InitializePageActionIconActions() {
             base::BindRepeating(
                 [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                    actions::ActionInvocationContext context) {
-                  bwi->GetActiveTabInterface()
-                      ->GetTabFeatures()
-                      ->record_replay_page_action_controller()
+                  RecordReplayPageActionController::From(
+                      bwi->GetActiveTabInterface())
                       ->ExecuteAction(item);
                 },
                 bwi))

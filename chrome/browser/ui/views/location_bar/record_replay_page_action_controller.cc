@@ -58,7 +58,9 @@ views::BubbleAnchor GetAnchorForBubble(tabs::TabInterface& tab) {
 RecordReplayPageActionController::RecordReplayPageActionController(
     tabs::TabInterface& tab,
     page_actions::PageActionController& page_action_controller)
-    : tab_(tab), page_action_controller_(page_action_controller) {
+    : tab_(tab),
+      page_action_controller_(page_action_controller),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
   timer_.Start(
       FROM_HERE, base::Seconds(1),
       base::BindRepeating(&RecordReplayPageActionController::UpdateState,
@@ -67,6 +69,12 @@ RecordReplayPageActionController::RecordReplayPageActionController(
 }
 
 RecordReplayPageActionController::~RecordReplayPageActionController() = default;
+
+// static
+RecordReplayPageActionController* RecordReplayPageActionController::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
 
 void RecordReplayPageActionController::ExecuteAction(
     actions::ActionItem* item) {
