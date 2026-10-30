@@ -857,11 +857,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ash/app_list/arc/arc_app_list_prefs.cc:UninstallCounterReasonEnum) -->
 
-<enum name="VmmSwapOutState">
-  <int value="0" label="Not Swapped Out"/>
-  <int value="1" label="Swapped Out"/>
-</enum>
-
 <enum name="VpnServiceBuilderCompatApisList">
 <!-- Value from components/arc/mojom/metrics.mojom -->
 

@@ -10,19 +10,14 @@ static_library("vmm") {
     "arc_system_state_bridge.h",
     "arcvm_working_set_trim_executor.cc",
     "arcvm_working_set_trim_executor.h",
-    "vmm_metrics_provider.cc",
-    "vmm_metrics_provider.h",
   ]
 
   deps = [
     "//base",
     "//chrome/browser/ash/arc/session",
-    "//chromeos/ash/components/dbus/concierge",
-    "//chromeos/ash/components/dbus/concierge:concierge_proto",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc/mojom",
     "//components/keyed_service/core",
-    "//components/metrics",
     "//content/public/browser",
   ]
 }
