@@ -880,9 +880,10 @@ void StandaloneTrustedVaultBackend::FulfillFetchKeys(
 
   std::vector<std::vector<uint8_t>> vault_keys =
       storage_->GetVaultKeys(gaia_id, security_domain);
-  std::erase_if(vault_keys, [](const std::vector<uint8_t>& key) {
-    return key == GetConstantTrustedVaultKey();
-  });
+  if (!vault_keys.empty() &&
+      vault_keys.front() == GetConstantTrustedVaultKey()) {
+    vault_keys.erase(vault_keys.begin());
+  }
 
   std::move(callback).Run(vault_keys);
   NotifyIdleForTestingIfNecessary();

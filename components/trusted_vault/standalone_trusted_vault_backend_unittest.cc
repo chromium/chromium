@@ -684,6 +684,34 @@ TEST_F(StandaloneTrustedVaultBackendTest, ShouldFilterOutConstantKey) {
                        fetch_keys_callback.Get());
 }
 
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldNotFilterOutConstantKeyIfNotFirst) {
+  const CoreAccountInfo kAccountInfo = MakeAccountInfoWithGaiaId("user1");
+  const std::vector<uint8_t> kKey = {1, 2, 3, 4};
+
+  trusted_vault_pb::LocalDomainsData initial_data;
+  trusted_vault_pb::UserDomainData* user_data = initial_data.add_user();
+  user_data->set_gaia_id(kAccountInfo.gaia.ToString());
+  trusted_vault_pb::DomainData* domain_data = user_data->add_domain_data();
+  domain_data->set_domain_id(static_cast<int32_t>(security_domain_id()));
+  domain_data->add_vault_key()->set_key_material(kKey.data(), kKey.size());
+  domain_data->add_vault_key()->set_key_material(
+      GetConstantTrustedVaultKey().data(), GetConstantTrustedVaultKey().size());
+
+  file_access()->SetStoredLocalDomainsData(initial_data);
+  backend()->ReadDataFromDisk();
+
+  // Only the first key (the one with the lowest epoch) can be a pre-enrollment
+  // constant key, so a constant key at a later position must not be filtered
+  // out.
+  base::MockCallback<StandaloneTrustedVaultBackend::FetchKeysCallback>
+      fetch_keys_callback;
+  EXPECT_CALL(fetch_keys_callback,
+              Run(/*keys=*/ElementsAre(kKey, GetConstantTrustedVaultKey())));
+  backend()->FetchKeys(kAccountInfo, security_domain_id(),
+                       fetch_keys_callback.Get());
+}
+
 TEST_F(StandaloneTrustedVaultBackendTest, ShouldStoreKeys) {
   const GaiaId kGaiaId1("user1");
   const GaiaId kGaiaId2("user2");
