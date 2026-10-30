@@ -847,6 +847,11 @@ BASE_DECLARE_FEATURE(kProfilesReordering);
 // page.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kReauthSkipIdentifierPage);
+
+// Follow-up to `kReauthSkipIdentifierPage` covering supervised user
+// pending-state re-authentication (`ptc=1`) and split fallback metrics.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kReauthSkipIdentifierPageFollowup);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if !BUILDFLAG(IS_ANDROID)

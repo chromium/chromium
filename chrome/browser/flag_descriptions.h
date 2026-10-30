@@ -7033,6 +7033,13 @@ inline constexpr char kReauthSkipIdentifierPageDescription[] =
     "AccountChooser with ptc=1 instead of AddSession, skipping the email "
     "page.";
 
+inline constexpr char kReauthSkipIdentifierPageFollowupName[] =
+    "Skip identifier page on reauth follow-up";
+inline constexpr char kReauthSkipIdentifierPageFollowupDescription[] =
+    "Enables follow-up changes to skipping the identifier page on reauth, "
+    "including supervised user re-authentication in the pending state and "
+    "refined fallback metrics.";
+
 inline constexpr char kRealboxVirtualFocusNavigationName[] =
     "Enable Realbox Virtual Focus Navigation";
 inline constexpr char kRealboxVirtualFocusNavigationDescription[] =

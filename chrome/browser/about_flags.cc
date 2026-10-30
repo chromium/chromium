@@ -12067,6 +12067,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReauthSkipIdentifierPageName,
      flag_descriptions::kReauthSkipIdentifierPageDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(switches::kReauthSkipIdentifierPage)},
+    {"reauth-skip-identifier-page-followup",
+     flag_descriptions::kReauthSkipIdentifierPageFollowupName,
+     flag_descriptions::kReauthSkipIdentifierPageFollowupDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(switches::kReauthSkipIdentifierPageFollowup)},
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if !BUILDFLAG(IS_ANDROID)

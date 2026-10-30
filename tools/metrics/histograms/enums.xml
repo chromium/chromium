@@ -8422,6 +8422,7 @@ from previous Chrome versions.
   <int value="-1973106081" label="JupiterScreensaver:disabled"/>
   <int value="-1972935791"
       label="enable-account-preview-entity-previews:disabled"/>
+  <int value="-1972494992" label="ReauthSkipIdentifierPageFollowup:disabled"/>
   <int value="-1972383451" label="disable-pinch"/>
   <int value="-1972312724" label="OfflinePagesLoadSignalCollecting:enabled"/>
   <int value="-1972219399" label="NTPSaveToOffline:enabled"/>
@@ -8854,6 +8855,7 @@ from previous Chrome versions.
   <int value="-1844754731" label="Mash:disabled"/>
   <int value="-1844445413"
       label="NotificationsIgnoreRequireInteraction:disabled"/>
+  <int value="-1843814085" label="ReauthSkipIdentifierPageFollowup:enabled"/>
   <int value="-1843677118" label="TwoPanesStartSurfaceAndroid:disabled"/>
   <int value="-1843451369" label="NewTabPageCustomizationThemeSync:disabled"/>
   <int value="-1842511843" label="DiceWebSigninInterception:enabled"/>
