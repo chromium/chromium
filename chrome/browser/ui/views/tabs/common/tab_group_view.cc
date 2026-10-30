@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_line_view.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_style.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_unfocus_button.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view_horizontal_layout.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view_vertical_layout.h"
@@ -198,8 +199,17 @@ void TabGroupView::ToggleCollapsedState(
       int current_override =
           closing_helper->override_available_width_for_tabs().value_or(
               closing_helper->GetUnpinnedContainerWidth());
+      // Collapsing a trailing group adds trailing header padding; otherwise it
+      // reduces trailing overlap from `GetTabOverlap()` to header overlap.
+      const int collapsed_trailing_space =
+          IsGroupFocused() ||
+                  closing_helper->IsLastVisibleUnpinnedChild(collection_node_)
+              ? TabGroupStyle::GetTrailingGroupHeaderPadding()
+              : TabStyle::Get()->GetTabOverlap() -
+                    TabGroupStyle::GetTabGroupOverlapAdjustment();
       new_override = current_override - width() +
-                     group_header_->GetPreferredSize({}).width();
+                     group_header_->GetPreferredSize({}).width() +
+                     collapsed_trailing_space;
     } else {
       closing_helper->ExitTabClosingMode();
     }

@@ -14,9 +14,11 @@
 #include "chrome/browser/ui/tabs/tab_group_features.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/base_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/common/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
@@ -639,6 +641,57 @@ class HorizontalTabGroupViewBrowserTest : public InProcessBrowserTest {
 
   void ResetAnimationMode() { animation_mode_reset_.reset(); }
 
+  TabStripView* tab_strip_view() {
+    return views::AsViewClass<TabStripView>(
+        views::AsViewClass<BaseTabStripRegionView>(
+            BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view())
+            ->GetTabStripView());
+  }
+
+  TabGroupView* SetUpTrailingGroup(int ungrouped_tabs,
+                                   std::optional<int> window_width = {}) {
+    while (GetTabStripModel()->count() < ungrouped_tabs + 2) {
+      AppendTab();
+    }
+    GetTabStripModel()->ActivateTabAt(0);
+    tab_groups::TabGroupId group_id =
+        GetTabStripModel()->AddToNewGroup({ungrouped_tabs, ungrouped_tabs + 1});
+    auto* widget = tab_strip_view()->GetWidget();
+    if (window_width.has_value()) {
+      gfx::Rect bounds = widget->GetWindowBoundsInScreen();
+      bounds.set_width(*window_width);
+      widget->SetBounds(bounds);
+    }
+    widget->LayoutRootViewIfNecessary();
+    return views::AsViewClass<TabGroupView>(
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->tab_strip_view()
+            ->GetTabGroupAnchorView(group_id));
+  }
+
+  void ToggleCollapse(TabGroupView* group_view,
+                      bool expected_collapsed,
+                      ToggleTabGroupCollapsedStateOrigin origin =
+                          ToggleTabGroupCollapsedStateOrigin::kMouse) {
+    group_view->ToggleCollapsedState(origin);
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return group_view->IsCollapsed() == expected_collapsed; }));
+    tab_strip_view()->GetWidget()->LayoutRootViewIfNecessary();
+  }
+
+  void ExpectTrailingPadding(TabGroupView* group_view) {
+    const int expected_padding = TabGroupStyle::GetTrailingGroupHeaderPadding();
+    EXPECT_EQ(tab_strip_view()->GetUnpinnedTabsContainer()->width() -
+                  group_view->bounds().right(),
+              expected_padding);
+    EXPECT_EQ(BrowserElementsViews::From(browser())
+                      ->GetViewAs<views::View>(kNewTabButtonElementId)
+                      ->GetBoundsInScreen()
+                      .x() -
+                  group_view->group_header()->GetBoundsInScreen().right(),
+              expected_padding);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
@@ -1068,6 +1121,89 @@ IN_PROC_BROWSER_TEST_F(
   widget->LayoutRootViewIfNecessary();
   EXPECT_TRUE(group_view->group_line()->GetVisible());
   EXPECT_EQ(group_view->group_line()->width(), expanded_width);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    HorizontalTabGroupViewBrowserTest,
+    CollapsedTrailingGroupHeaderHasPaddingBeforeNewTabButton) {
+  auto* group_view = SetUpTrailingGroup(/*ungrouped_tabs=*/1);
+  auto* unpinned_container = tab_strip_view()->GetUnpinnedTabsContainer();
+  ASSERT_NE(group_view, nullptr);
+  ASSERT_FALSE(group_view->IsCollapsed());
+  EXPECT_EQ(unpinned_container->width(), group_view->bounds().right());
+
+  ToggleCollapse(group_view, /*expected_collapsed=*/true);
+
+  ExpectTrailingPadding(group_view);
+
+  ToggleCollapse(group_view, /*expected_collapsed=*/false);
+
+  EXPECT_EQ(unpinned_container->width(), group_view->bounds().right());
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabGroupViewBrowserTest,
+                       CollapsingConstrainedGroupMaintainsPrecedingTabWidths) {
+  auto* group_view =
+      SetUpTrailingGroup(/*ungrouped_tabs=*/5, /*window_width=*/800);
+  auto* unpinned_node =
+      root_node()->GetChildNodeOfType(TabCollectionNode::Type::UNPINNED);
+  ASSERT_NE(group_view, nullptr);
+  auto* first_tab_view =
+      views::AsViewClass<TabView>(unpinned_node->children().at(0)->view());
+  EXPECT_LT(first_tab_view->width(),
+            TabStyle::Get()->GetStandardWidth(/*is_split=*/false));
+  ASSERT_FALSE(tab_strip_view()
+                   ->unpinned_tabs_scroll_view()
+                   ->GetDrawOverflowIndicator());
+  const int tab_width_before = first_tab_view->width();
+  const int group_x_before = group_view->bounds().x();
+
+  ToggleCollapse(group_view, /*expected_collapsed=*/true);
+
+  EXPECT_EQ(first_tab_view->width(), tab_width_before);
+  EXPECT_EQ(group_view->bounds().x(), group_x_before);
+  ExpectTrailingPadding(group_view);
+
+  ToggleCollapse(group_view, /*expected_collapsed=*/false);
+  chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), /*index=*/-1,
+                   /*foreground=*/false);
+  tab_strip_view()->GetWidget()->LayoutRootViewIfNecessary();
+  const int non_trailing_tab_width = first_tab_view->width();
+  const int non_trailing_group_x = group_view->bounds().x();
+
+  ToggleCollapse(group_view, /*expected_collapsed=*/true);
+
+  EXPECT_EQ(first_tab_view->width(), non_trailing_tab_width);
+  EXPECT_EQ(group_view->bounds().x(), non_trailing_group_x);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    HorizontalTabGroupViewBrowserTest,
+    ClosingTabsBeforeCollapsedTrailingGroupPreservesPadding) {
+  auto* group_view =
+      SetUpTrailingGroup(/*ungrouped_tabs=*/5, /*window_width=*/800);
+  auto* unpinned_node =
+      root_node()->GetChildNodeOfType(TabCollectionNode::Type::UNPINNED);
+  ASSERT_NE(group_view, nullptr);
+  ToggleCollapse(group_view, /*expected_collapsed=*/true,
+                 ToggleTabGroupCollapsedStateOrigin::kMenuAction);
+  const std::vector<int> expected_widths = {
+      unpinned_node->children().at(0)->view()->width(),
+      unpinned_node->children().at(2)->view()->width(),
+      unpinned_node->children().at(3)->view()->width(),
+      unpinned_node->children().at(4)->view()->width(),
+  };
+
+  root_node()->GetController()->CloseTab(GetTabStripModel()->GetTabAtIndex(1),
+                                         CloseTabSource::kFromMouse);
+  tab_strip_view()->GetWidget()->LayoutRootViewIfNecessary();
+
+  ASSERT_EQ(unpinned_node->children().size(), 5u);
+  for (size_t i = 0; i < expected_widths.size(); ++i) {
+    EXPECT_EQ(unpinned_node->children().at(i)->view()->width(),
+              expected_widths[i]);
+  }
+  ExpectTrailingPadding(group_view);
 }
 
 // TODO(crbug.com/490428062): Create Tests to Verify Focus Order of Tab Group
