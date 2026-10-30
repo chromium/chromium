@@ -6,7 +6,6 @@
 #define COMPONENTS_HISTORY_CORE_BROWSER_HISTORY_DATABASE_H_
 
 #include <memory>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -27,6 +26,7 @@
 #include "sql/init_status.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace base {
 class FilePath;
@@ -235,7 +235,7 @@ class HistoryDatabase : public DownloadDatabase,
   // visit_time descending. Used to batch-fetch recent visits for multiple URLs
   // in a single query during startup rebuild, instead of issuing N separate
   // GetMostRecentVisitsForURL queries.
-  using RecentVisitsMap = std::unordered_map<
+  using RecentVisitsMap = absl::flat_hash_map<
       URLID,
       std::vector<std::pair<base::Time, ui::PageTransition>>>;
 

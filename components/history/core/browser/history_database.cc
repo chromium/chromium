@@ -25,6 +25,7 @@
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -705,7 +706,7 @@ HistoryDatabase::GetBatchRecentVisitsForSignificantURLs(
 
   while (statement.Step()) {
     URLID url_id = statement.ColumnInt64(0);
-    auto& visits = result[url_id];
+    auto& visits = result.try_emplace(url_id).first->second;
     if (static_cast<int>(visits.size()) >= max_visits_per_url) {
       continue;
     }
