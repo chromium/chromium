@@ -1711,6 +1711,7 @@ void ExtensionTelemetryService::StartOffstoreFileDataCollection() {
   offstore_file_data_collection_start_time_ = base::TimeTicks::Now();
   offstore_extension_dirs_.clear();
   offstore_extension_file_data_contexts_.clear();
+  offstore_file_data_collection_weak_factory_.InvalidateWeakPtrs();
   GetOffstoreExtensionDirs();
   RemoveStaleExtensionsFileDataFromPref();
 
@@ -1815,16 +1816,16 @@ void ExtensionTelemetryService::CollectOffstoreFileData() {
   }
 
   auto context = offstore_extension_file_data_contexts_.begin();
-  auto process_extension_callback =
-      base::BindOnce(&ExtensionTelemetryService::OnOffstoreFileDataCollected,
-                     weak_factory_.GetWeakPtr(), context);
+  auto process_extension_callback = base::BindOnce(
+      &ExtensionTelemetryService::OnOffstoreFileDataCollected,
+      offstore_file_data_collection_weak_factory_.GetWeakPtr(), *context);
   file_processor_.AsyncCall(&ExtensionTelemetryFileProcessor::ProcessExtension)
       .WithArgs(context->root_dir)
       .Then(std::move(process_extension_callback));
 }
 
 void ExtensionTelemetryService::OnOffstoreFileDataCollected(
-    base::flat_set<OffstoreExtensionFileDataContext>::iterator context,
+    const OffstoreExtensionFileDataContext& context,
     base::DictValue file_data) {
   // Save to Prefs
   base::DictValue extension_dict;
@@ -1834,7 +1835,7 @@ void ExtensionTelemetryService::OnOffstoreFileDataCollected(
 
   ScopedDictPrefUpdate pref_update(pref_service_,
                                    prefs::kExtensionTelemetryFileData);
-  pref_update->Set(context->extension_id, std::move(extension_dict));
+  pref_update->Set(context.extension_id, std::move(extension_dict));
 
   // Remove context and repeat.
   offstore_extension_file_data_contexts_.erase(context);
@@ -1890,6 +1891,7 @@ void ExtensionTelemetryService::StopOffstoreFileDataCollection() {
   offstore_file_data_collection_timer_.Stop();
   offstore_extension_dirs_.clear();
   offstore_extension_file_data_contexts_.clear();
+  offstore_file_data_collection_weak_factory_.InvalidateWeakPtrs();
   commandline_extensions_.Clear();
   collected_commandline_extension_info_ = false;
 }

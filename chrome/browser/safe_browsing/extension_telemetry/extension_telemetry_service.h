@@ -287,7 +287,7 @@ class ExtensionTelemetryService : public KeyedService {
   // Callback invoked when file data for an extension is completed. The data is
   // saved to Prefs and the next extension file data collection is initiated.
   void OnOffstoreFileDataCollected(
-      base::flat_set<OffstoreExtensionFileDataContext>::iterator context,
+      const OffstoreExtensionFileDataContext& context,
       base::DictValue file_data);
 
   // Stops and clears any offstore file data collection objects/contexts.
@@ -437,6 +437,11 @@ class ExtensionTelemetryService : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(ExtensionTelemetryServiceTest,
                            FileData_EnforcesCollectionDurationLimit);
 
+  // Invalidated when offstore file data collection is stopped or restarted
+  // so that in-flight file processor replies are dropped without affecting
+  // other callbacks bound to `weak_factory_`.
+  base::WeakPtrFactory<ExtensionTelemetryService>
+      offstore_file_data_collection_weak_factory_{this};
   base::WeakPtrFactory<ExtensionTelemetryService> weak_factory_{this};
 };
 
