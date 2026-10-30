@@ -19,7 +19,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "ui/base/base_window.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace {
 constexpr char kTabUrl1[] = "https://foo/1";
@@ -64,7 +64,7 @@ class ChromeTabStripDelegateBrowserTest
     for (const auto& url : urls) {
       // content::TestNavigationObserver navigation_observer(urls[i]);
       ui_test_utils::NavigateToURLWithDisposition(
-          browser, url, WindowOpenDisposition::kNewForegroundTab,
+          browser, url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     }
     return browser;

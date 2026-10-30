@@ -135,8 +135,8 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/window_destroyed_waiter.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -665,7 +665,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
   app_launch_info->container =
       static_cast<int32_t>(apps::LaunchContainer::kLaunchContainerWindow);
   app_launch_info->disposition =
-      static_cast<int32_t>(WindowOpenDisposition::kNewForegroundTab);
+      static_cast<int32_t>(ui::mojom::WindowOpenDisposition::kNewForegroundTab);
   app_launch_info->browser_extra_info.urls = {GURL(kExampleUrl1)};
   app_launch_info->browser_extra_info.tab_group_infos = {group_info};
 
@@ -816,7 +816,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureActiveDeskAsTemplateTest) {
 
   EXPECT_EQ(static_cast<int>(apps::LaunchContainer::kLaunchContainerWindow),
             data2->container.value());
-  EXPECT_EQ(static_cast<int>(WindowOpenDisposition::kNewWindow),
+  EXPECT_EQ(static_cast<int>(ui::mojom::WindowOpenDisposition::kNewWindow),
             data2->disposition.value());
   // Verify window info are correctly captured.
   EXPECT_THAT(data2->window_info.current_bounds, Optional(settings_app_bounds));
@@ -987,8 +987,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithChromeApp) {
       profile()->GetPath(),
       std::make_unique<app_restore::AppLaunchInfo>(
           extension_id, apps::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::kNewWindow, display::kDefaultDisplayId,
-          std::vector<base::FilePath>{}, nullptr));
+          ui::mojom::WindowOpenDisposition::kNewWindow,
+          display::kDefaultDisplayId, std::vector<base::FilePath>{}, nullptr));
 
   extensions::AppWindow* app_window = CreateAppWindow(profile(), extension);
   ASSERT_TRUE(app_window);
@@ -2189,7 +2189,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
 
   EXPECT_EQ(static_cast<int>(apps::LaunchContainer::kLaunchContainerWindow),
             data2->container.value());
-  EXPECT_EQ(static_cast<int>(WindowOpenDisposition::kNewWindow),
+  EXPECT_EQ(static_cast<int>(ui::mojom::WindowOpenDisposition::kNewWindow),
             data2->disposition.value());
   // Verify window info are correctly captured.
   EXPECT_THAT(data2->window_info.current_bounds, Optional(settings_app_bounds));
@@ -2213,8 +2213,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithChromeApp) {
       profile()->GetPath(),
       std::make_unique<app_restore::AppLaunchInfo>(
           extension_id, apps::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::kNewWindow, display::kDefaultDisplayId,
-          std::vector<base::FilePath>{}, nullptr));
+          ui::mojom::WindowOpenDisposition::kNewWindow,
+          display::kDefaultDisplayId, std::vector<base::FilePath>{}, nullptr));
 
   extensions::AppWindow* app_window = CreateAppWindow(profile(), extension);
   ASSERT_TRUE(app_window);

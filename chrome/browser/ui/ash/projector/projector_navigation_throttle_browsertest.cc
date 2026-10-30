@@ -36,8 +36,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationCapturingParameterizedTest,
   } else {
     // Simulate the user typing the url into the omnibox.
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), gurl, WindowOpenDisposition::kCurrentTab,
+        browser(), gurl, ui::mojom::WindowOpenDisposition::kCurrentTab,
         ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_WAIT_FOR_BROWSER);
     browser_destroyed_observer.Wait();
   }
@@ -287,7 +287,7 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleRedirectionParameterized,
   // servers to prevent flakiness.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(kChromeUIUntrustedProjectorPwaUrl),
-      WindowOpenDisposition::kCurrentTab,
+      ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_WAIT_FOR_BROWSER);
   browser_destroyed_observer.Wait();
   BrowserWindowInterface* const swa_browser = browser_created_observer.Wait();
@@ -320,7 +320,7 @@ IN_PROC_BROWSER_TEST_P(ProjectorNavigationThrottleRedirectionParameterized,
   GURL untrusted_url(kChromeUIUntrustedProjectorUrl);
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), untrusted_url, WindowOpenDisposition::kNewWindow,
+      browser(), untrusted_url, ui::mojom::WindowOpenDisposition::kNewWindow,
       ui_test_utils::BrowserTestWaitFlags::BROWSER_TEST_WAIT_FOR_BROWSER);
 
   ash::BrowserDelegate* app_browser = FindSystemWebAppBrowser(

@@ -174,9 +174,9 @@
 #include "ui/aura/window.h"
 #include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
@@ -1214,7 +1214,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, LaunchUnpinned) {
   int tab_count = tab_strip->count();
   LoadAndLaunchExtension(
       "app1_https",
-      apps::GetEventFlags(WindowOpenDisposition::kNewForegroundTab,
+      apps::GetEventFlags(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                           true /* prefer_containner */));
   EXPECT_EQ(++tab_count, tab_strip->count());
   ash::ShelfID shortcut_id = CreateShortcut("app1_https");
@@ -1231,8 +1231,9 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, LaunchUnpinned) {
 // an unpinned hosted app web contents.
 IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AppIDForUnpinnedHostedApp) {
   const extensions::Extension* extension = LoadAndLaunchExtension(
-      "app1", apps::GetEventFlags(WindowOpenDisposition::kNewForegroundTab,
-                                  true /* prefer_containner */));
+      "app1",
+      apps::GetEventFlags(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                          true /* prefer_containner */));
 
   int browser_index = GetIndexOfShelfItemType(ash::TYPE_BROWSER_SHORTCUT);
   ash::ShelfID browser_id = shelf_model()->items()[browser_index].id;
@@ -1373,8 +1374,9 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, LaunchInBackground) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
   int tab_count = tab_strip->count();
   LoadAndLaunchExtension(
-      "app1", apps::GetEventFlags(WindowOpenDisposition::kNewBackgroundTab,
-                                  true /* prefer_containner */));
+      "app1",
+      apps::GetEventFlags(ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+                          true /* prefer_containner */));
   EXPECT_EQ(++tab_count, tab_strip->count());
 
   apps::chrome_app_deprecation::ScopedAddAppToAllowlistForTesting allowlist(
@@ -1596,7 +1598,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, RefocusFilterLaunch) {
   // Create new tab.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("http://www.example2.com/path2/bar.html"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_EQ(++tab_count, tab_strip->count());
   WebContents* first_tab = tab_strip->GetActiveWebContents();
@@ -1627,7 +1629,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AsyncActivationStateCheck) {
   // Create new tab which would be the running app.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://www.example.com/path1/bar.html"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   EXPECT_EQ(ash::STATUS_RUNNING, shelf_model()->ItemByID(shortcut_id)->status);
@@ -1647,7 +1649,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AsyncActivationStateCheck) {
 IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AppWindowRestoreBehaviorTest) {
   // Open an App, maximized its window, and close it.
   const Extension* extension = LoadAndLaunchExtension(
-      "app1", apps::GetEventFlags(WindowOpenDisposition::kNewWindow,
+      "app1", apps::GetEventFlags(ui::mojom::WindowOpenDisposition::kNewWindow,
                                   false /* prefer_containner */));
   BrowserWindowInterface* app_browser = FindBrowserForApp(extension->id());
   ASSERT_TRUE(app_browser);
@@ -1659,7 +1661,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AppWindowRestoreBehaviorTest) {
 
   // Reopen the App. It should start maximized. Un-maximize it and close it.
   extension = LoadAndLaunchExtension(
-      "app1", apps::GetEventFlags(WindowOpenDisposition::kNewWindow,
+      "app1", apps::GetEventFlags(ui::mojom::WindowOpenDisposition::kNewWindow,
                                   false /* prefer_containner */));
   app_browser = FindBrowserForApp(extension->id());
   ASSERT_TRUE(app_browser);
@@ -1673,7 +1675,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AppWindowRestoreBehaviorTest) {
 
   // Reopen the App. It should start un-maximized.
   extension = LoadAndLaunchExtension(
-      "app1", apps::GetEventFlags(WindowOpenDisposition::kNewWindow,
+      "app1", apps::GetEventFlags(ui::mojom::WindowOpenDisposition::kNewWindow,
                                   false /* prefer_containner */));
   app_browser = FindBrowserForApp(extension->id());
   ASSERT_TRUE(app_browser);
@@ -1691,7 +1693,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
   EXPECT_EQ(0u, running_browser);
 
   const Extension* extension = LoadAndLaunchExtension(
-      "app1", apps::GetEventFlags(WindowOpenDisposition::kNewWindow,
+      "app1", apps::GetEventFlags(ui::mojom::WindowOpenDisposition::kNewWindow,
                                   false /* prefer_containner */));
   ASSERT_TRUE(extension);
 
@@ -1702,12 +1704,13 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
 
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile());
 
-  proxy->Launch(extension->id(),
-                apps::GetEventFlags(WindowOpenDisposition::kNewForegroundTab,
-                                    true /* prefer_containner */),
-                apps::LaunchSource::kFromTest,
-                std::make_unique<apps::WindowInfo>(
-                    display::Screen::Get()->GetPrimaryDisplay().id()));
+  proxy->Launch(
+      extension->id(),
+      apps::GetEventFlags(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                          true /* prefer_containner */),
+      apps::LaunchSource::kFromTest,
+      std::make_unique<apps::WindowInfo>(
+          display::Screen::Get()->GetPrimaryDisplay().id()));
 
   // A new browser should get detected and one more should be running.
   EXPECT_EQ(BrowserShortcutMenuItemCount(false), 1u);
@@ -1720,8 +1723,9 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
                        EnumerateAllBrowsersAndTabs) {
   // Create at least one browser.
   LoadAndLaunchExtension(
-      "app1", apps::GetEventFlags(WindowOpenDisposition::kNewForegroundTab,
-                                  true /* prefer_containner */));
+      "app1",
+      apps::GetEventFlags(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                          true /* prefer_containner */));
   size_t browsers = BrowserShortcutMenuItemCount(false);
   size_t tabs = BrowserShortcutMenuItemCount(true);
 
@@ -1732,17 +1736,19 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
   EXPECT_TRUE(extension);
 
   apps::AppServiceProxyFactory::GetForProfile(profile())->LaunchAppWithParams(
-      apps::AppLaunchParams(
-          extension->id(), apps::LaunchContainer::kLaunchContainerTab,
-          WindowOpenDisposition::kNewWindow, apps::LaunchSource::kFromTest));
+      apps::AppLaunchParams(extension->id(),
+                            apps::LaunchContainer::kLaunchContainerTab,
+                            ui::mojom::WindowOpenDisposition::kNewWindow,
+                            apps::LaunchSource::kFromTest));
 
   EXPECT_EQ(++browsers, BrowserShortcutMenuItemCount(false));
   EXPECT_EQ(++tabs, BrowserShortcutMenuItemCount(true));
 
   // Create only a tab.
   LoadAndLaunchExtension(
-      "app1", apps::GetEventFlags(WindowOpenDisposition::kNewForegroundTab,
-                                  true /* prefer_containner */));
+      "app1",
+      apps::GetEventFlags(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                          true /* prefer_containner */));
 
   EXPECT_EQ(browsers, BrowserShortcutMenuItemCount(false));
   EXPECT_EQ(++tabs, BrowserShortcutMenuItemCount(true));
@@ -1759,7 +1765,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AltNumberTabsTabbing) {
 
   // Create an application handled browser tab.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url), WindowOpenDisposition::kNewForegroundTab,
+      browser(), GURL(url), ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   content::WebContents* content1 = tab_strip->GetActiveWebContents();
@@ -1767,7 +1773,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AltNumberTabsTabbing) {
   // Create some other browser tab.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("http://www.test.com"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* content1a = tab_strip->GetActiveWebContents();
 
@@ -1783,7 +1789,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, AltNumberTabsTabbing) {
   EXPECT_EQ(content1, tab_strip->GetActiveWebContents());
 
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), GURL(url), WindowOpenDisposition::kNewForegroundTab,
+      browser(), GURL(url), ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   content::WebContents* content2 = tab_strip->GetActiveWebContents();
 
@@ -2105,9 +2111,9 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
   EXPECT_TRUE(browser1->GetWindow()->IsActive());
 
   // Create another app and make sure that none of our browsers is active.
-  LoadAndLaunchExtension("app1",
-                         apps::GetEventFlags(WindowOpenDisposition::kNewWindow,
-                                             false /* prefer_containner */));
+  LoadAndLaunchExtension(
+      "app1", apps::GetEventFlags(ui::mojom::WindowOpenDisposition::kNewWindow,
+                                  false /* prefer_containner */));
   EXPECT_FALSE(browser1->GetWindow()->IsActive());
   EXPECT_FALSE(browser2->GetWindow()->IsActive());
 
@@ -2131,7 +2137,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, ActivateAfterSessionRestore) {
   SetRefocusURL(shortcut_id, GURL("https://www.example.com/path/*"));
   std::string url = "https://www.example.com/path/bla";
   ui_test_utils::NavigateToURLWithDisposition(
-      browser2, GURL(url), WindowOpenDisposition::kNewForegroundTab,
+      browser2, GURL(url), ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Remember the number of tabs for each browser.
@@ -2383,7 +2389,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, DISABLED_V1AppNavigation) {
   // Create a windowed application.
   apps::AppServiceProxyFactory::GetForProfile(profile())->Launch(
       extensions::kWebStoreAppId,
-      apps::GetEventFlags(WindowOpenDisposition::kNewForegroundTab,
+      apps::GetEventFlags(ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                           true /* prefer_containner */),
       apps::LaunchSource::kFromTest,
       std::make_unique<apps::WindowInfo>(
@@ -2490,7 +2496,8 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, TabbedHostedAndWebApps) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), extensions::AppLaunchInfo::GetLaunchWebURL(hosted_app)));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), web_app_url, WindowOpenDisposition::kNewForegroundTab, 0);
+      browser(), web_app_url,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab, 0);
 
   // The apps should now be running.
   EXPECT_EQ(ash::STATUS_RUNNING,
@@ -2545,7 +2552,8 @@ IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, WindowedHostedAndWebApps) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), extensions::AppLaunchInfo::GetLaunchWebURL(hosted_app)));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), web_app_url, WindowOpenDisposition::kNewForegroundTab, 0);
+      browser(), web_app_url,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab, 0);
 
   // The apps should still be closed.
   EXPECT_EQ(ash::STATUS_CLOSED,

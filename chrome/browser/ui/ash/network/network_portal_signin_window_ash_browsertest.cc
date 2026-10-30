@@ -24,8 +24,8 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -91,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshBrowserTest,
   EXPECT_EQ(params.tabstrip_index, -1);
 
   // Navigate to a new tab. The contents should be opened in the same tab.
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
   EXPECT_EQ(params.browser, browser);
   EXPECT_EQ(params.tabstrip_index, -1);
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshGuestBrowserTest,
   // profile with the Guest browsing session.
   NavigateParams params(browser, GURL("http://www.google.com"),
                         ui::PageTransition::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  params.disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   Navigate(&params);
   EXPECT_EQ(params.browser, browser);
   EXPECT_EQ(params.tabstrip_index, -1);
@@ -151,7 +151,8 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshGuestBrowserTest,
   NavigateParams source_params(browser, GURL("http://www.google.com"),
                                ui::PageTransition::PAGE_TRANSITION_LINK);
   source_params.source_contents = web_contents;
-  source_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  source_params.disposition =
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   Navigate(&source_params);
   EXPECT_EQ(source_params.browser, browser);
   EXPECT_EQ(source_params.tabstrip_index, -1);

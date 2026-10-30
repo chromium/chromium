@@ -33,8 +33,8 @@
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 using ::ash::AuthenticationError;
@@ -361,7 +361,7 @@ void InSessionAuthDialogClient::OpenInSessionAuthHelpPage() const {
   // existing one.
   ash::BrowserController::GetInstance()->OpenUrl(
       session.account_id(), GURL(kInSessionAuthHelpPageUrl),
-      {.disposition = WindowOpenDisposition::kNewPopup,
+      {.disposition = ui::mojom::WindowOpenDisposition::kNewPopup,
        .transition = ui::PAGE_TRANSITION_AUTO_BOOKMARK,
        .popup_has_trusted_source = true});
 }

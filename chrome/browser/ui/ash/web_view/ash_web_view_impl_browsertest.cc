@@ -24,7 +24,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
@@ -84,7 +84,8 @@ using ash::AshWebViewFactory;
                                                                           \
     base::RunLoop run_loop;                                               \
     EXPECT_CALL(mock, DidSuppressNavigation)                              \
-        .WillOnce([&](const GURL& url, WindowOpenDisposition disposition, \
+        .WillOnce([&](const GURL& url,                                    \
+                      ui::mojom::WindowOpenDisposition disposition,       \
                       bool from_user_gesture) {                           \
           EXPECT_EQ(expected_url_, url);                                  \
           EXPECT_EQ(expected_disposition_, disposition);                  \
@@ -164,7 +165,7 @@ class MockAshWebViewObserver : public testing::NiceMock<AshWebView::Observer> {
   MOCK_METHOD(void,
               DidSuppressNavigation,
               (const GURL& url,
-               WindowOpenDisposition disposition,
+               ui::mojom::WindowOpenDisposition disposition,
                bool from_user_gesture),
               (override));
 
@@ -262,13 +263,13 @@ IN_PROC_BROWSER_TEST_F(AshWebViewImplBrowserTest,
   // Expect suppression of the first click event.
   EXPECT_DID_SUPPRESS_NAVIGATION(
       web_view, /*url=*/GURL("https://google.com/"),
-      /*disposition=*/WindowOpenDisposition::kCurrentTab,
+      /*disposition=*/ui::mojom::WindowOpenDisposition::kCurrentTab,
       /*from_user_gesture=*/false);
 
   // Expect suppression of the second click event.
   EXPECT_DID_SUPPRESS_NAVIGATION(
       web_view, /*url=*/GURL("https://assistant.google.com/"),
-      /*disposition=*/WindowOpenDisposition::kNewForegroundTab,
+      /*disposition=*/ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       /*from_user_gesture=*/true);
 }
 

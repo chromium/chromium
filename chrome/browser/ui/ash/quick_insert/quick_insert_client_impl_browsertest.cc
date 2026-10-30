@@ -35,7 +35,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace {
@@ -79,7 +79,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertClientImplBrowserTest, StartCrosSearch) {
   AddBookmarks(GetProfile(), u"Foobaz", GURL("https://foo.com/bookmarks"));
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("https://foo.com/tab"),
-      WindowOpenDisposition::kNewBackgroundTab,
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   browser()
       ->GetTabStripModel()

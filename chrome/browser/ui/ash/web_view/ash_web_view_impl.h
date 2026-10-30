@@ -11,6 +11,7 @@
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 
 namespace content {
@@ -97,7 +98,7 @@ class AshWebViewImpl : public ash::AshWebView,
   void InitLayout(Profile* profile);
 
   void NotifyDidSuppressNavigation(const GURL& url,
-                                   WindowOpenDisposition disposition,
+                                   ui::mojom::WindowOpenDisposition disposition,
                                    bool from_user_gesture);
 
   void UpdateCanGoBack();

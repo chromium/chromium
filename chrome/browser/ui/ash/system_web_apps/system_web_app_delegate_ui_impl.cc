@@ -21,10 +21,10 @@
 #include "components/user_manager/user.h"
 #include "components/webapps/browser/launch_queue/launch_queue.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -48,7 +48,8 @@ BrowserDelegate* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
     const apps::AppLaunchParams& params) const {
   // Always reuse an existing browser for popups. Otherwise let the app decide.
   // TODO(crbug.com/40679012): Allow apps to control whether popups are single.
-  const bool popup = params.disposition == WindowOpenDisposition::kNewPopup;
+  const bool popup =
+      params.disposition == ui::mojom::WindowOpenDisposition::kNewPopup;
   BrowserDelegate* browser =
       popup
           ? FindSystemWebAppBrowser(profile, GetType(), BrowserType::kAppPopup)

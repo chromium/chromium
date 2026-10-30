@@ -33,7 +33,6 @@
 #include "extensions/browser/extension_prefs.h"
 #include "ui/aura/window.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/types/event_type.h"

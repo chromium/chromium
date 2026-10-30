@@ -32,8 +32,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_utils.h"
@@ -184,7 +184,8 @@ IN_PROC_BROWSER_TEST_F(SunfishBrowserTest, OpensLinksOffTheRecord) {
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           GURL("https://assistant.google.com"),
-          WindowOpenDisposition::kOffTheRecord, ui::PAGE_TRANSITION_LINK);
+          ui::mojom::WindowOpenDisposition::kOffTheRecord,
+          ui::PAGE_TRANSITION_LINK);
   content::WebContents* new_contents =
       web_contents->OpenURL(params,
                             /*navigation_handle_callback=*/base::DoNothing());

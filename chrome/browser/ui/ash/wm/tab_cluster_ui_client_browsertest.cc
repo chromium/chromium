@@ -21,7 +21,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/aura/window.h"
 #include "ui/base/base_window.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace {
@@ -106,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(TabClusterUIClientBrowserTest, PendingNavigation) {
   // and stall it before it commits.
   const GURL slow_url = embedded_test_server()->GetURL("/slow");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), slow_url, WindowOpenDisposition::kCurrentTab,
+      browser(), slow_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
   response.WaitForRequest();
   ASSERT_EQ(web_contents->GetVisibleURL(), slow_url);

@@ -15,8 +15,8 @@
 #include "components/user_manager/user.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace ash {
 
@@ -49,23 +49,23 @@ content::WebContents* SearchResultsView::OpenURLFromTab(
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
   // Open the URL specified by `params` in a new tab.
-  WindowOpenDisposition disposition;
+  ui::mojom::WindowOpenDisposition disposition;
   switch (params.disposition) {
-    case WindowOpenDisposition::kUnknown:
-    case WindowOpenDisposition::kNewBackgroundTab:
-    case WindowOpenDisposition::kCurrentTab:
-    case WindowOpenDisposition::kSingletonTab:
-      disposition = WindowOpenDisposition::kNewForegroundTab;
+    case ui::mojom::WindowOpenDisposition::kUnknown:
+    case ui::mojom::WindowOpenDisposition::kNewBackgroundTab:
+    case ui::mojom::WindowOpenDisposition::kCurrentTab:
+    case ui::mojom::WindowOpenDisposition::kSingletonTab:
+      disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
       break;
-    case WindowOpenDisposition::kNewForegroundTab:
-    case WindowOpenDisposition::kNewPopup:
-    case WindowOpenDisposition::kNewWindow:
-    case WindowOpenDisposition::kSaveToDisk:
-    case WindowOpenDisposition::kOffTheRecord:
-    case WindowOpenDisposition::kIgnoreAction:
-    case WindowOpenDisposition::kSwitchToTab:
-    case WindowOpenDisposition::kNewPictureInPicture:
-    case WindowOpenDisposition::kNewSplitView:
+    case ui::mojom::WindowOpenDisposition::kNewForegroundTab:
+    case ui::mojom::WindowOpenDisposition::kNewPopup:
+    case ui::mojom::WindowOpenDisposition::kNewWindow:
+    case ui::mojom::WindowOpenDisposition::kSaveToDisk:
+    case ui::mojom::WindowOpenDisposition::kOffTheRecord:
+    case ui::mojom::WindowOpenDisposition::kIgnoreAction:
+    case ui::mojom::WindowOpenDisposition::kSwitchToTab:
+    case ui::mojom::WindowOpenDisposition::kNewPictureInPicture:
+    case ui::mojom::WindowOpenDisposition::kNewSplitView:
       // These other dispositions will open new windows / tabs, so use these
       // dispositions as-is.
       disposition = params.disposition;
@@ -106,7 +106,7 @@ bool SearchResultsView::IsWebContentsCreationOverridden(
               self->OpenURLFromTab(
                   self->web_contents(),
                   content::OpenURLParams::CreateBrowserInitiated(
-                      url, WindowOpenDisposition::kNewForegroundTab,
+                      url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                       ui::PAGE_TRANSITION_LINK),
                   /*navigation_handle_callback=*/{});
             }

@@ -60,7 +60,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/url_util.h"
 #include "storage/browser/file_system/file_system_context.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -314,17 +314,18 @@ void ArcOpenUrlDelegateImpl::OpenWebAppFromArc(const GURL& url) {
     return;
   }
 
-  int event_flags = apps::GetEventFlags(WindowOpenDisposition::kNewWindow,
-                                        /*prefer_container=*/false);
+  int event_flags =
+      apps::GetEventFlags(ui::mojom::WindowOpenDisposition::kNewWindow,
+                          /*prefer_container=*/false);
   apps::AppServiceProxy* proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile);
 
   proxy->AppRegistryCache().ForOneApp(
       *app_id, [&event_flags](const apps::AppUpdate& update) {
         if (update.WindowMode() == apps::WindowMode::kBrowser) {
-          event_flags =
-              apps::GetEventFlags(WindowOpenDisposition::kNewForegroundTab,
-                                  /*prefer_container=*/false);
+          event_flags = apps::GetEventFlags(
+              ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+              /*prefer_container=*/false);
         }
       });
 
@@ -440,11 +441,11 @@ void ArcOpenUrlDelegateImpl::OpenAppWithIntent(
 
   apps::IntentPtr intent = ConvertLaunchIntent(profile, arc_intent);
 
-  auto disposition = WindowOpenDisposition::kNewWindow;
+  auto disposition = ui::mojom::WindowOpenDisposition::kNewWindow;
   proxy->AppRegistryCache().ForOneApp(
       app_id, [&disposition](const apps::AppUpdate& update) {
         if (update.WindowMode() == apps::WindowMode::kBrowser) {
-          disposition = WindowOpenDisposition::kNewForegroundTab;
+          disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
         }
       });
 

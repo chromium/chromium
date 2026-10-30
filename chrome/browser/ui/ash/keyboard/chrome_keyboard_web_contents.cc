@@ -35,8 +35,8 @@
 #include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -279,7 +279,7 @@ void ChromeKeyboardWebContents::LoadContents(const GURL& url) {
   TRACE_EVENT0("vk", "LoadContents");
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::kSingletonTab,
+          url, ui::mojom::WindowOpenDisposition::kSingletonTab,
           ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   web_contents_->OpenURL(params, /*navigation_handle_callback=*/{});
 }

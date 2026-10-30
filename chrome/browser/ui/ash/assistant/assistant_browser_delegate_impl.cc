@@ -33,7 +33,7 @@
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace {
 
@@ -255,7 +255,7 @@ void AssistantBrowserDelegateImpl::OpenNewEntryPoint() {
   apps::AppServiceProxyFactory::GetForProfile(profile_for_new_entry_point_)
       ->LaunchAppWithParams(apps::AppLaunchParams(
           web_app->app_id(), apps::LaunchContainer::kLaunchContainerWindow,
-          WindowOpenDisposition::kNewWindow,
+          ui::mojom::WindowOpenDisposition::kNewWindow,
           // TODO(xiaohuic): maybe add new source
           apps::LaunchSource::kUnknown));
 }

@@ -37,7 +37,7 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 
 namespace ash {
@@ -111,8 +111,9 @@ void LaunchSystemWebAppAsyncContinue(Profile* profile_for_launch,
       apps::AppServiceProxyFactory::GetForProfile(profile_for_launch);
   CHECK(app_service, base::NotFatalUntil::M162);
 
-  auto event_flags = apps::GetEventFlags(WindowOpenDisposition::kNewWindow,
-                                         /* prefer_container */ false);
+  auto event_flags =
+      apps::GetEventFlags(ui::mojom::WindowOpenDisposition::kNewWindow,
+                          /* prefer_container */ false);
 
   if (!params.launch_paths.empty()) {
     DCHECK(!params.url.has_value())

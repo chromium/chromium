@@ -45,7 +45,7 @@
 #include "extensions/browser/extension_util.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/display/types/display_constants.h"
 
 namespace {
@@ -358,7 +358,7 @@ void ShelfControllerHelper::LaunchApp(const ash::ShelfID& id,
           // event_flags are ignored here because they control the disposition
           // which in this case has been overridden to always open a new window.
           proxy->LaunchAppWithParams(apps::AppLaunchParams(
-              app_id, container, WindowOpenDisposition::kNewWindow,
+              app_id, container, ui::mojom::WindowOpenDisposition::kNewWindow,
               ShelfLaunchSourceToAppsLaunchSource(source), display_id));
           return;
         case apps::LaunchContainer::kLaunchContainerPanelDeprecated:

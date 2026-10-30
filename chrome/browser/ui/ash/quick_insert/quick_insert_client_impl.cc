@@ -71,8 +71,8 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/aura/window.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/native_ui_types.h"
 #include "url/gurl.h"
 
@@ -124,7 +124,7 @@ AppListControllerDelegate* GetEmptyAppListControllerDelegate() {
     void OpenURL(Profile* profile,
                  const GURL& url,
                  ui::PageTransition transition,
-                 WindowOpenDisposition disposition) override {
+                 ui::mojom::WindowOpenDisposition disposition) override {
       NOTIMPLEMENTED_LOG_ONCE();
     }
   };
