@@ -5954,6 +5954,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarSynchronousStartupBrowserTest,
   EXPECT_TRUE(dict->contains("layoutConstantsVersion"));
   EXPECT_TRUE(dict->contains("touchUi"));
   EXPECT_TRUE(dict->contains("isFallbackPrewarming"));
+  EXPECT_TRUE(dict->contains("isProfileEligibleForGlic"));
+  EXPECT_TRUE(dict->contains("canShowAvatarForProfile"));
 }
 
 // Test fixture that enables all WebUI toolbar controls.

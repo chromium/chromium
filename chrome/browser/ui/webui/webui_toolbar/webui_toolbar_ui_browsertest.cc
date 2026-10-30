@@ -565,6 +565,8 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest,
   EXPECT_TRUE(dict->contains("layoutConstantsVersion"));
   EXPECT_TRUE(dict->contains("touchUi"));
   EXPECT_TRUE(dict->contains("isFallbackPrewarming"));
+  EXPECT_TRUE(dict->contains("isProfileEligibleForGlic"));
+  EXPECT_TRUE(dict->contains("canShowAvatarForProfile"));
 
   EXPECT_TRUE(dict->contains("initialWebUISurfaceSyncEnabled"));
 }

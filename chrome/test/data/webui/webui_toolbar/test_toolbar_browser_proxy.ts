@@ -11,6 +11,14 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 import {InitialStateReader, INVALID_FOCUS_REQUEST_HANDLE, INVALID_SHOW_SPLIT_TABS_CONTEXT_MENU_HANDLE, INVALID_TOOLBAR_STATE_LISTENER_HANDLE} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 import type {AdjustOmniboxTextForCopyResult, BrowserProxy, ContentSettingImageType, ContextMenuType, FocusRequestHandle, FocusRequestListener, InitialState, LhsChipIdentifier, OmniboxAction, PageActionId, PageActionTrigger, PinnedToolbarAction, ShowSplitTabsContextMenuHandle, ShowSplitTabsContextMenuListener, ToolbarFlatStateSchema, ToolbarStateListener, ToolbarStateListenerHandle, ToolbarUIServiceInterface} from 'chrome://webui-toolbar.top-chrome/webui_toolbar.js';
 
+// The values that WebUIToolbarUI sets in the initial state of each frame from
+// the user profile, so that the Glic and avatar buttons can be shown by
+// default.
+const DEFAULT_INITIAL_STATE: Partial<ToolbarFlatStateSchema> = {
+  isProfileEligibleForGlic: true,
+  canShowAvatarForProfile: true,
+};
+
 export class TestToolbarUiHandler extends TestBrowserProxy implements
     ToolbarUIServiceInterface {
   constructor() {
@@ -234,7 +242,8 @@ export class TestToolbarBrowserProxy extends TestBrowserProxy implements
     BrowserProxy {
   toolbarUIHandler: TestToolbarUiHandler;
   browserControlsHandler: any = null;
-  private initialState_: InitialStateReader = new InitialStateReader();
+  private initialState_: InitialStateReader =
+      new InitialStateReader({...DEFAULT_INITIAL_STATE});
 
   constructor() {
     super([
@@ -256,7 +265,8 @@ export class TestToolbarBrowserProxy extends TestBrowserProxy implements
   }
 
   setInitialState(state: Partial<ToolbarFlatStateSchema>) {
-    this.initialState_ = InitialStateReader.fromJson(JSON.stringify(state));
+    this.initialState_ = InitialStateReader.fromJson(
+        JSON.stringify({...DEFAULT_INITIAL_STATE, ...state}));
   }
 
   recordInHistogram(histogramName: string, value: number, maxValue: number) {

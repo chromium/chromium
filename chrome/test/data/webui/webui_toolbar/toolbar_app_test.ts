@@ -1179,4 +1179,30 @@ suite('ToolbarAppTest', () => {
 
     rootStyle.removeProperty('--color-label-foreground-disabled');
   });
+
+  test('GlicButtonNotRenderedWhenProfileIsNotEligible', async () => {
+    loadTimeData.overrideValues({enableGlicButton: true});
+    browserProxy.setInitialState({isProfileEligibleForGlic: false});
+
+    app = document.createElement('toolbar-app');
+    document.body.appendChild(app);
+    const state = createMockToolbarState();
+    state.glicButtonState.shouldShow = true;
+    browserProxy.fireToolbarStateListener([], state);
+    await microtasksFinished();
+
+    assertFalse(!!app.shadowRoot.querySelector('glic-button'));
+  });
+
+  test('AvatarButtonNotRenderedWhenProfileCannotShowIt', async () => {
+    loadTimeData.overrideValues({enableAvatarButton: true});
+    browserProxy.setInitialState({canShowAvatarForProfile: false});
+
+    app = document.createElement('toolbar-app');
+    document.body.appendChild(app);
+    browserProxy.fireToolbarStateListener([], createMockToolbarState());
+    await microtasksFinished();
+
+    assertFalse(!!app.shadowRoot.querySelector('avatar-button'));
+  });
 });
