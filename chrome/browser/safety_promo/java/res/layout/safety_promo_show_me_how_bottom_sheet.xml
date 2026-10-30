@@ -4,11 +4,69 @@ Copyright 2026 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<!-- TODO(crbug.com/534388538): This is a placeholder layout. Add the drag
-     handle, title, steps and "Got it" button. -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:minHeight="200dp"
-    android:orientation="vertical" />
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/safety_fre_bottom_sheet_padding_bottom">
+
+  <ImageView
+      android:id="@+id/safety_promo_bottom_sheet_drag_handle"
+      android:layout_width="@dimen/safety_fre_bottom_sheet_drag_handle_width"
+      android:layout_height="@dimen/safety_fre_bottom_sheet_drag_handle_height"
+      android:layout_gravity="center_horizontal"
+      android:layout_marginTop=
+          "@dimen/safety_fre_bottom_sheet_drag_handle_margin_top"
+      android:layout_marginBottom=
+          "@dimen/safety_fre_bottom_sheet_drag_handle_margin_bottom"
+      android:importantForAccessibility="no"
+      android:src="@drawable/drag_handlebar"
+      app:tint="@macro/drag_handle_color" />
+
+  <ScrollView
+      android:id="@+id/safety_promo_bottom_sheet_scroll_view"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal=
+            "@dimen/safety_fre_bottom_sheet_padding_horizontal">
+
+      <!-- TODO(crbug.com/534388538): Bind the title of the active carousel
+           item. -->
+      <org.chromium.ui.widget.TextViewWithLeading
+          android:id="@+id/safety_promo_bottom_sheet_title"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginBottom=
+              "@dimen/safety_fre_bottom_sheet_title_margin_bottom"
+          android:accessibilityHeading="true"
+          android:gravity="center_horizontal"
+          android:textAppearance="@style/TextAppearance.Headline.Primary" />
+
+      <!-- TODO(crbug.com/534388538): Add a row per step of the active
+           carousel item. -->
+      <LinearLayout
+          android:id="@+id/safety_promo_bottom_sheet_steps_container"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="vertical" />
+
+      <!-- TODO(crbug.com/534388538): Dismiss the sheet when the button is
+           clicked. -->
+      <org.chromium.ui.widget.ButtonCompat
+          android:id="@+id/safety_promo_bottom_sheet_got_it_button"
+          style="@style/FilledButton"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop=
+              "@dimen/safety_fre_bottom_sheet_button_margin_top"
+          android:text="@string/got_it" />
+    </LinearLayout>
+  </ScrollView>
+</LinearLayout>
