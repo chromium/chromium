@@ -41,7 +41,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/signin/public/identity_manager/tribool.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
@@ -158,13 +157,11 @@ void SyncConsentScreen::MaybeLaunchSyncConsentSettings(Profile* profile) {
               signin::IdentityManager* identity_manager =
                   ash::IdentityManagerProvider::Get().Find(account_id);
               chrome::ShowSettingsSubPageForProfile(
-                  profile, (identity_manager &&
-                            !identity_manager->HasPrimaryAccount(
-                                signin::ConsentLevel::kSync) &&
-                            base::FeatureList::IsEnabled(
-                                syncer::kReplaceSyncPromosWithSignInPromos))
-                               ? ash::chrome_urls::kAccountSubPage
-                               : ash::chrome_urls::kSyncSetupSubPage);
+                  profile,
+                  (identity_manager && !identity_manager->HasPrimaryAccount(
+                                           signin::ConsentLevel::kSync))
+                      ? ash::chrome_urls::kAccountSubPage
+                      : ash::chrome_urls::kSyncSetupSubPage);
             },
             base::Unretained(profile), user->GetAccountId()),
         kSyncConsentSettingsShowDelay);
@@ -205,9 +202,7 @@ void SyncConsentScreen::Finish(Result result) {
   profile_->GetPrefs()->SetBoolean(prefs::kSyncOobeCompleted, true);
   // Record whether the dialog was shown, skipped, etc.
   base::UmaHistogramEnumeration("OOBE.SyncConsentScreen.Behavior", behavior_);
-  if (!base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos) ||
-      GetIdentityManagerForUser(CHECK_DEREF(user_.get()))
+  if (GetIdentityManagerForUser(CHECK_DEREF(user_.get()))
           .HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     // Record the final state of the sync service.
     syncer::SyncService* service = GetSyncService(profile_);

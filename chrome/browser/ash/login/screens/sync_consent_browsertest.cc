@@ -46,7 +46,6 @@
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -250,8 +249,6 @@ class SyncConsentTest : public OobeBaseTest {
  protected:
   bool UseConsentLevelSigninForNewUsers() const {
     return base::FeatureList::IsEnabled(
-               syncer::kReplaceSyncPromosWithSignInPromos) &&
-           base::FeatureList::IsEnabled(
                ::switches::kChromeOsUseConsentLevelSigninForNewUsers) &&
            !base::FeatureList::IsEnabled(
                ::switches::kUndoChromeOsUseConsentLevelSignin);

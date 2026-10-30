@@ -13,7 +13,6 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -39,7 +38,6 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/base/features.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -152,10 +150,7 @@ EduCoexistenceLoginHandler::EduCoexistenceLoginHandler(
               &EduCoexistenceLoginHandler::OnOAuthAccessTokensFetched,
               base::Unretained(this)),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
-          base::FeatureList::IsEnabled(
-              syncer::kReplaceSyncPromosWithSignInPromos)
-              ? signin::ConsentLevel::kSignin
-              : signin::ConsentLevel::kSync);
+          signin::ConsentLevel::kSignin);
 }
 
 EduCoexistenceLoginHandler::~EduCoexistenceLoginHandler() {

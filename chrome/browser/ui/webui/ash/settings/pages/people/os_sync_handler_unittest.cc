@@ -364,9 +364,6 @@ class OsSyncHandlerTestWithoutSyncConsent : public OsSyncHandlerTest {
 TEST_F(
     OsSyncHandlerTestWithoutSyncConsent,
     NavigateToPageClearsSyncFeatureDisabledViaDashboardWhenFlagEnabledAndNoSyncConsent) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
-
   static_cast<syncer::TestSyncUserSettings*>(user_settings_)
       ->SetSyncFeatureDisabledViaDashboard();
   ASSERT_TRUE(user_settings_->IsSyncFeatureDisabledViaDashboard());
@@ -378,25 +375,7 @@ TEST_F(
 TEST_F(
     OsSyncHandlerTest,
     NavigateToPageDoesNotClearSyncFeatureDisabledViaDashboardWithSyncConsent) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
-
   // ConsentLevel::kSync is set by default in SetUp().
-  static_cast<syncer::TestSyncUserSettings*>(user_settings_)
-      ->SetSyncFeatureDisabledViaDashboard();
-  ASSERT_TRUE(user_settings_->IsSyncFeatureDisabledViaDashboard());
-
-  handler_->HandleDidNavigateToOsSyncPage(base::ListValue());
-  EXPECT_TRUE(user_settings_->IsSyncFeatureDisabledViaDashboard());
-}
-
-TEST_F(
-    OsSyncHandlerTestWithoutSyncConsent,
-    NavigateToPageDoesNotClearSyncFeatureDisabledViaDashboardWhenFlagDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      syncer::kReplaceSyncPromosWithSignInPromos);
-
   static_cast<syncer::TestSyncUserSettings*>(user_settings_)
       ->SetSyncFeatureDisabledViaDashboard();
   ASSERT_TRUE(user_settings_->IsSyncFeatureDisabledViaDashboard());

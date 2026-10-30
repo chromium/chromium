@@ -38,7 +38,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/known_user.h"
@@ -402,11 +401,9 @@ TEST_F(UserSessionManagerTest, InitializeDeviceIdForExistingUsers) {
 TEST_F(UserSessionManagerTest,
        MaybeMigrateConsentLevelToSync_UpgradeToSyncWhenRollbackFlagEnabled) {
   base::test::ScopedFeatureList features;
-  // Enable ReplaceSyncPromosWithSignInPromos and
-  // UndoChromeOsUseConsentLevelSignin.
+  // Enable UndoChromeOsUseConsentLevelSignin.
   features.InitWithFeatures(
-      /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
-                            ::switches::kUndoChromeOsUseConsentLevelSignin},
+      /*enabled_features=*/{::switches::kUndoChromeOsUseConsentLevelSignin},
       /*disabled_features=*/{});
 
   TestingProfile* profile = LoginGaiaTestUser();
@@ -433,10 +430,9 @@ TEST_F(UserSessionManagerTest,
 TEST_F(UserSessionManagerTest,
        MaybeMigrateConsentLevelToSync_KeepSigninWhenRollbackFlagDisabled) {
   base::test::ScopedFeatureList features;
-  // Enable ReplaceSyncPromosWithSignInPromos but disable
-  // UndoChromeOsUseConsentLevelSignin.
+  // Disable UndoChromeOsUseConsentLevelSignin.
   features.InitWithFeatures(
-      /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos},
+      /*enabled_features=*/{},
       /*disabled_features=*/{::switches::kUndoChromeOsUseConsentLevelSignin});
 
   TestingProfile* profile = LoginGaiaTestUser();

@@ -39,7 +39,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/fake_gaia.h"
 #include "rlz/buildflags/buildflags.h"
@@ -513,8 +512,7 @@ class ChromeSessionManagerConsentLevelMigrationTest
       // Enabling kChromeOsUseConsentLevelSigninForNewUsers ensures that the
       // initial login signs the user in at kSignin.
       feature_list_.InitWithFeatures(
-          /*enabled_features=*/{syncer::kReplaceSyncPromosWithSignInPromos,
-                                ::switches::
+          /*enabled_features=*/{::switches::
                                     kChromeOsUseConsentLevelSigninForNewUsers},
           /*disabled_features=*/{});
     } else {
@@ -523,8 +521,7 @@ class ChromeSessionManagerConsentLevelMigrationTest
       // the migration of the existing kSignin profile to kSync.
       feature_list_.InitWithFeatures(
           /*enabled_features=*/
-          {syncer::kReplaceSyncPromosWithSignInPromos,
-           ::switches::kUndoChromeOsUseConsentLevelSignin},
+          {::switches::kUndoChromeOsUseConsentLevelSignin},
           /*disabled_features=*/{
               ::switches::kChromeOsUseConsentLevelSigninForNewUsers});
     }

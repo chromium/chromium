@@ -10,7 +10,6 @@
 
 #include "base/check.h"
 #include "base/check_deref.h"
-#include "base/feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
@@ -27,7 +26,6 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/sync/base/features.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -109,11 +107,7 @@ void AddSupervisionHandler::GetOAuthToken(GetOAuthTokenCallback callback) {
 
   oauth2_access_token_fetcher_ =
       identity_manager_->CreateAccessTokenFetcherForAccount(
-          identity_manager_->GetPrimaryAccountId(
-              base::FeatureList::IsEnabled(
-                  syncer::kReplaceSyncPromosWithSignInPromos)
-                  ? signin::ConsentLevel::kSignin
-                  : signin::ConsentLevel::kSync),
+          identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
           signin::OAuthConsumerId::kAddSupervision,
           base::BindOnce(&AddSupervisionHandler::OnAccessTokenFetchComplete,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)),

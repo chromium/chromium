@@ -658,8 +658,6 @@ bool MaybeShowManagedTermsOfService(Profile* profile) {
 signin::ConsentLevel GetExpectedConsentLevel(
     signin::IdentityManager* identity_manager) {
   if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) ||
-      !base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos) ||
       base::FeatureList::IsEnabled(
           ::switches::kUndoChromeOsUseConsentLevelSignin)) {
     return signin::ConsentLevel::kSync;

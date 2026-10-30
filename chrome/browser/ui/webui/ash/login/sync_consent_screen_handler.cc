@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/login/screens/sync_consent_screen.h"
 #include "components/login/localized_values_builder.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "components/sync/base/features.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -112,8 +111,6 @@ void SyncConsentScreenHandler::DeclareLocalizedValues(
   RememberLocalizedValue(
       "syncConsentScreenChromeBrowserSyncTitle",
       (base::FeatureList::IsEnabled(
-           syncer::kReplaceSyncPromosWithSignInPromos) &&
-       base::FeatureList::IsEnabled(
            ::switches::kChromeOsUseConsentLevelSigninForNewUsers) &&
        !base::FeatureList::IsEnabled(
            ::switches::kUndoChromeOsUseConsentLevelSignin))

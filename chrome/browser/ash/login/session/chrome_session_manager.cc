@@ -64,7 +64,6 @@
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/sync/base/features.h"
 #include "components/user_manager/common_types.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
@@ -191,8 +190,6 @@ void UpsertStubUserToAccountManager(const user_manager::User& user,
   // 3. Set it as the Primary Account.
   const signin::ConsentLevel consent_level = [&]() {
     if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) ||
-        !base::FeatureList::IsEnabled(
-            syncer::kReplaceSyncPromosWithSignInPromos) ||
         base::FeatureList::IsEnabled(
             ::switches::kUndoChromeOsUseConsentLevelSignin)) {
       return signin::ConsentLevel::kSync;
