@@ -2558,11 +2558,15 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabViewPinnedStylingDisabledTest,
 class HorizontalTabViewDeclutterTest
     : public HorizontalTabViewPinnedStylingDisabledTest {
  public:
+  explicit HorizontalTabViewDeclutterTest(
+      base::FieldTrialParams declutter_params = {})
+      : declutter_params_(std::move(declutter_params)) {}
+
   const std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       override {
     auto enabled =
         HorizontalTabViewPinnedStylingDisabledTest::GetEnabledFeatures();
-    enabled.push_back({features::kTabStripDeclutter, {}});
+    enabled.emplace_back(features::kTabStripDeclutter, declutter_params_);
     return enabled;
   }
 
@@ -2574,6 +2578,9 @@ class HorizontalTabViewDeclutterTest
                                            std::move(contents), ADD_ACTIVE);
     ResetTabHoverStates();
   }
+
+ private:
+  const base::FieldTrialParams declutter_params_;
 };
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabViewDeclutterTest,
@@ -2671,4 +2678,305 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabViewDeclutterTest,
   EXPECT_TRUE(pinned_layer_test_api.damaged_region().Contains(tab1->bounds()));
   EXPECT_TRUE(
       unpinned_layer_test_api.damaged_region().Contains(tab2->bounds()));
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabViewDeclutterTest,
+                       CloseButtonVisibilityInDeclutteredState) {
+  AppendTab();
+  tab_strip_model()->ActivateTabAt(1);
+  TabView* tab = GetTabView(0);
+  ASSERT_TRUE(tab);
+  EXPECT_FALSE(tab->IsActive());
+
+  const int height = GetLayoutConstant(LayoutConstant::kTabHeight);
+  const int insets_width = tab->tab_styling()->GetContentsInsets().width();
+  const views::View* close = tab->close_button_for_testing();
+  tab->GetFocusManager()->ClearFocus();
+
+  // In non-decluttered state (available width > max), close button should be
+  // visible. We add favicon width because it's subtracted before the declutter
+  // check.
+  const int non_decluttered_width = insets_width + 150 + gfx::kFaviconSize;
+  tab->SetBounds(0, 0, non_decluttered_width, height);
+  LayoutTab(tab);
+  EXPECT_TRUE(close->GetVisible());
+
+  // In decluttered state (available width <= max), close button should be
+  // hidden for an inactive, unhovered tab.
+  const int decluttered_width = insets_width + 80 + gfx::kFaviconSize;
+  tab->SetBounds(0, 0, decluttered_width, height);
+  LayoutTab(tab);
+  EXPECT_FALSE(close->GetVisible());
+
+  // If hovered, it should be visible even in decluttered state.
+  tab->UpdateHovered(true);
+  LayoutTab(tab);
+  EXPECT_TRUE(close->GetVisible());
+
+  tab->UpdateHovered(false);
+  LayoutTab(tab);
+  EXPECT_FALSE(close->GetVisible());
+
+  // If the tab is focused, the close button becomes visible.
+  tab->GetFocusManager()->SetFocusedView(tab);
+  LayoutTab(tab);
+  EXPECT_TRUE(close->GetVisible());
+
+  // If focus moves to the close button, it should remain visible.
+  tab->GetFocusManager()->SetFocusedView(const_cast<views::View*>(close));
+  LayoutTab(tab);
+  EXPECT_TRUE(close->GetVisible());
+
+  tab->GetFocusManager()->ClearFocus();
+  LayoutTab(tab);
+  EXPECT_FALSE(close->GetVisible());
+
+  // Active tab should show close button at decluttered width.
+  tab_strip_model()->ActivateTabAt(0);
+  tab->SetBounds(0, 0, decluttered_width, height);
+  LayoutTab(tab);
+  EXPECT_TRUE(close->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabViewDeclutterTest,
+                       ActiveTabFaviconSwapWithCloseOnHover) {
+  TabView* active_tab = GetTabView(0);
+  ASSERT_TRUE(active_tab);
+  EXPECT_TRUE(active_tab->IsActive());
+
+  const int close_button_width =
+      GetLayoutConstant(LayoutConstant::kTabCloseButtonSize) +
+      GetLayoutConstant(LayoutConstant::kTabAfterTitlePadding);
+  const int favicon_width = gfx::kFaviconSize;
+
+  // Set width such that it can fit favicon OR close button, but not both.
+  const int insets_width =
+      active_tab->tab_styling()->GetContentsInsets().width();
+  const int total_width = insets_width + favicon_width + close_button_width - 1;
+  active_tab->SetBounds(0, 0, total_width,
+                        GetLayoutConstant(LayoutConstant::kTabHeight));
+  LayoutTab(active_tab);
+
+  // When not hovered, favicon is shown and close button is hidden.
+  EXPECT_TRUE(active_tab->GetTabIconForTesting()->GetVisible());
+  EXPECT_FALSE(active_tab->close_button_for_testing()->GetVisible());
+
+  // When hovered, close button replaces favicon.
+  active_tab->UpdateHovered(true);
+  LayoutTab(active_tab);
+  EXPECT_FALSE(active_tab->GetTabIconForTesting()->GetVisible());
+  EXPECT_TRUE(active_tab->close_button_for_testing()->GetVisible());
+
+  // On exit, it should swap back.
+  active_tab->UpdateHovered(false);
+  LayoutTab(active_tab);
+  EXPECT_TRUE(active_tab->GetTabIconForTesting()->GetVisible());
+  EXPECT_FALSE(active_tab->close_button_for_testing()->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabViewDeclutterTest,
+                       CloseButtonOnlyIconShowingOnHoverAndCentered) {
+  TabView* active_tab = GetTabView(0);
+  ASSERT_TRUE(active_tab);
+
+  // Make the tab small enough so that only the close button shows
+  // and it is centered.
+  const int max_width_to_center_icon =
+      GetLayoutConstant(LayoutConstant::kTabPreTitlePadding) +
+      GetLayoutConstant(LayoutConstant::kTabAfterTitlePadding);
+  const int total_width =
+      active_tab->tab_styling()->GetContentsInsets().width() +
+      GetLayoutConstant(LayoutConstant::kTabCloseButtonSize) +
+      max_width_to_center_icon - 1;
+  active_tab->SetBounds(0, 0, total_width,
+                        GetLayoutConstant(LayoutConstant::kTabHeight));
+
+  // On hover, it should show close button and hide favicon.
+  active_tab->UpdateHovered(true);
+  LayoutTab(active_tab);
+
+  EXPECT_FALSE(active_tab->GetTabIconForTesting()->GetVisible());
+  EXPECT_TRUE(active_tab->close_button_for_testing()->GetVisible());
+  // Close button should be centered.
+  EXPECT_NEAR(
+      active_tab->width() / 2,
+      active_tab->close_button_for_testing()->bounds().CenterPoint().x(), 1);
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabViewDeclutterTest, SingleElementCentering) {
+  AppendTab();
+  TabView* active_tab = GetTabView(0);
+  TabView* inactive_tab = GetTabView(1);
+  ASSERT_TRUE(active_tab);
+  ASSERT_TRUE(inactive_tab);
+  tab_strip_model()->ActivateTabAt(0);
+
+  const int height = GetLayoutConstant(LayoutConstant::kTabHeight);
+  const int min_inactive_width = TabStyle::Get()->GetMinimumInactiveWidth();
+  const int min_active_width =
+      TabStyle::Get()->GetMinimumActiveWidth(/*is_split=*/false);
+
+  {
+    SCOPED_TRACE("Favicon only");
+    // Inactive tab doesn't show close button by default if small.
+    // Minimum inactive width to hide title, but large enough for favicon.
+    inactive_tab->SetBounds(0, 0, min_inactive_width, height);
+    LayoutTab(inactive_tab);
+    EXPECT_TRUE(inactive_tab->GetTabIconForTesting()->GetVisible());
+    EXPECT_FALSE(GetAlertIndicator(inactive_tab)->GetVisible());
+    EXPECT_FALSE(inactive_tab->close_button_for_testing()->GetVisible());
+    EXPECT_FALSE(inactive_tab->title_for_testing()->GetVisible());
+    EXPECT_NEAR(
+        min_inactive_width / 2,
+        inactive_tab->GetTabIconForTesting()->bounds().CenterPoint().x(), 1);
+  }
+
+  {
+    SCOPED_TRACE("Alert indicator only");
+    tabs::TabData data = inactive_tab->data();
+    data.should_display_favicon = false;
+    data.alert_state = tabs::TabAlert::kAudioPlaying;
+    inactive_tab->SetDataForTesting(std::move(data));
+    StopFadeAnimationIfNecessary(inactive_tab);
+    inactive_tab->SetBounds(0, 0, min_inactive_width, height);
+    LayoutTab(inactive_tab);
+    EXPECT_FALSE(inactive_tab->GetTabIconForTesting()->GetVisible());
+    EXPECT_TRUE(GetAlertIndicator(inactive_tab)->GetVisible());
+    EXPECT_FALSE(inactive_tab->close_button_for_testing()->GetVisible());
+    EXPECT_NEAR(min_inactive_width / 2,
+                GetAlertIndicator(inactive_tab)->bounds().CenterPoint().x(), 1);
+  }
+
+  {
+    SCOPED_TRACE("Close button only");
+    tabs::TabData data = active_tab->data();
+    data.should_display_favicon = false;
+    active_tab->SetDataForTesting(std::move(data));
+    // Active tab shows close button on hover; width small enough that
+    // favicon/alert wouldn't fit, and title is hidden.
+    active_tab->SetBounds(0, 0, min_active_width, height);
+    active_tab->UpdateHovered(true);
+    LayoutTab(active_tab);
+    EXPECT_FALSE(active_tab->GetTabIconForTesting()->GetVisible());
+    EXPECT_FALSE(GetAlertIndicator(active_tab)->GetVisible());
+    EXPECT_TRUE(active_tab->close_button_for_testing()->GetVisible());
+    EXPECT_NEAR(
+        min_active_width / 2,
+        active_tab->close_button_for_testing()->bounds().CenterPoint().x(), 1);
+  }
+
+  {
+    SCOPED_TRACE("Title only (no icons or close button)");
+    tabs::TabData data = inactive_tab->data();
+    data.should_display_favicon = false;
+    data.alert_state = std::nullopt;
+    inactive_tab->SetDataForTesting(std::move(data));
+    StopFadeAnimationIfNecessary(inactive_tab);
+    inactive_tab->UpdateHovered(false);
+    inactive_tab->SetBounds(0, 0, 60, height);
+    LayoutTab(inactive_tab);
+    EXPECT_FALSE(inactive_tab->IsActive());
+    EXPECT_FALSE(inactive_tab->GetTabIconForTesting()->GetVisible());
+    EXPECT_FALSE(GetAlertIndicator(inactive_tab)->GetVisible());
+    EXPECT_FALSE(inactive_tab->close_button_for_testing()->GetVisible());
+    EXPECT_TRUE(inactive_tab->title_for_testing()->GetVisible());
+  }
+}
+
+class HorizontalTabViewDeclutterActiveCloseHideDisabledTest
+    : public HorizontalTabViewDeclutterTest {
+ public:
+  HorizontalTabViewDeclutterActiveCloseHideDisabledTest()
+      : HorizontalTabViewDeclutterTest(
+            {{features::kTabStripDeclutterActiveTabCloseHideEnabled.name,
+              "false"}}) {}
+};
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabViewDeclutterActiveCloseHideDisabledTest,
+                       ActiveTabCloseHideDisabledByParam) {
+  TabView* active_tab = GetTabView(0);
+  ASSERT_TRUE(active_tab);
+  EXPECT_TRUE(active_tab->IsActive());
+
+  const int close_button_width =
+      GetLayoutConstant(LayoutConstant::kTabCloseButtonSize) +
+      GetLayoutConstant(LayoutConstant::kTabAfterTitlePadding);
+  const int favicon_width = gfx::kFaviconSize;
+  const int insets_width =
+      active_tab->tab_styling()->GetContentsInsets().width();
+  const int total_width = insets_width + favicon_width + close_button_width - 1;
+
+  active_tab->SetBounds(0, 0, total_width,
+                        GetLayoutConstant(LayoutConstant::kTabHeight));
+  LayoutTab(active_tab);
+
+  // Even when not hovered and space is limited, active tab still shows close
+  // button and hides favicon when
+  // `tab_strip_declutter_active_tab_close_hide_enabled` is false.
+  EXPECT_TRUE(active_tab->close_button_for_testing()->GetVisible());
+  EXPECT_FALSE(active_tab->GetTabIconForTesting()->GetVisible());
+}
+
+class HorizontalTabViewDeclutterCustomMaxWidthTest
+    : public HorizontalTabViewDeclutterTest {
+ public:
+  HorizontalTabViewDeclutterCustomMaxWidthTest()
+      : HorizontalTabViewDeclutterTest(
+            {{features::kTabStripDeclutterMaxTabWidthForCloseHide.name,
+              "120"}}) {}
+};
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabViewDeclutterCustomMaxWidthTest,
+                       CloseButtonVisibilityCustomMaxTabWidthParam) {
+  AppendTab();
+  tab_strip_model()->ActivateTabAt(0);
+  TabView* inactive_tab = GetTabView(1);
+  ASSERT_TRUE(inactive_tab);
+  EXPECT_FALSE(inactive_tab->IsActive());
+  inactive_tab->GetFocusManager()->ClearFocus();
+
+  const int height = GetLayoutConstant(LayoutConstant::kTabHeight);
+  const int insets_width =
+      inactive_tab->tab_styling()->GetContentsInsets().width();
+
+  // At available width 110 (above default 100, but <= custom 120), close
+  // button should be hidden for an inactive, unhovered tab.
+  inactive_tab->SetBounds(0, 0, insets_width + 110 + gfx::kFaviconSize, height);
+  LayoutTab(inactive_tab);
+  EXPECT_FALSE(inactive_tab->close_button_for_testing()->GetVisible());
+
+  // At available width 130 (> custom 120), close button should be visible.
+  inactive_tab->SetBounds(0, 0, insets_width + 130 + gfx::kFaviconSize, height);
+  LayoutTab(inactive_tab);
+  EXPECT_TRUE(inactive_tab->close_button_for_testing()->GetVisible());
+}
+
+class HorizontalTabViewDeclutterInactiveCloseHideDisabledTest
+    : public HorizontalTabViewDeclutterTest {
+ public:
+  HorizontalTabViewDeclutterInactiveCloseHideDisabledTest()
+      : HorizontalTabViewDeclutterTest(
+            {{features::kTabStripDeclutterInactiveTabCloseHideEnabled.name,
+              "false"}}) {}
+};
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabViewDeclutterInactiveCloseHideDisabledTest,
+                       InactiveTabCloseHideDisabledByParam) {
+  AppendTab();
+  tab_strip_model()->ActivateTabAt(0);
+  TabView* inactive_tab = GetTabView(1);
+  ASSERT_TRUE(inactive_tab);
+  EXPECT_FALSE(inactive_tab->IsActive());
+  inactive_tab->GetFocusManager()->ClearFocus();
+
+  const int insets_width =
+      inactive_tab->tab_styling()->GetContentsInsets().width();
+
+  // At available width 80 (<= default 100, but >= minimum width for close
+  // buttons), close button should remain visible when inactive_tab_close_hide
+  // is false.
+  inactive_tab->SetBounds(0, 0, insets_width + 80 + gfx::kFaviconSize,
+                          GetLayoutConstant(LayoutConstant::kTabHeight));
+  LayoutTab(inactive_tab);
+  EXPECT_TRUE(inactive_tab->close_button_for_testing()->GetVisible());
 }
