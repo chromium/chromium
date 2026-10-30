@@ -33,7 +33,6 @@ class SelfKeepAliveCreationKey final {
   friend class MIDIAccessInitializer;
   friend class MojoWatcher;
   friend class PausableScriptExecutor;
-  friend class RefCountedAndGarbageCollected;
   friend class Responder;
   friend class RTCDataChannel;
   friend class SetMediaKeysHandler;
