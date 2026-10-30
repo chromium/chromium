@@ -58,10 +58,12 @@ struct PingInfo {
 };
 
 std::vector<AppInfo> GetRegisteredApps(
-    scoped_refptr<updater::PersistedData> persisted_data) {
+    scoped_refptr<updater::PersistedData> persisted_data,
+    base::RepeatingCallback<bool(const std::string&)> is_installing) {
   std::vector<AppInfo> apps;
   for (const std::string& app_id : persisted_data->GetAppIds()) {
-    if (!base::EqualsCaseInsensitiveASCII(app_id, kUpdaterAppId)) {
+    if (!base::EqualsCaseInsensitiveASCII(app_id, kUpdaterAppId) &&
+        !is_installing.Run(app_id)) {
       apps.emplace_back(app_id, persisted_data->GetProductVersion(app_id),
                         persisted_data->GetExistenceCheckerPath(app_id));
     }
@@ -98,7 +100,12 @@ void RemoveAppIDsAndSendUninstallPings(
     base::OnceClosure callback,
     scoped_refptr<PersistedData> persisted_data,
     scoped_refptr<update_client::UpdateClient> update_client,
-    const std::vector<PingInfo>& app_ids_to_remove) {
+    base::RepeatingCallback<bool(const std::string&)> is_installing,
+    std::vector<PingInfo> app_ids_to_remove) {
+  // Skip installs that started after `GetRegisteredApps`.
+  std::erase_if(app_ids_to_remove, [&](const PingInfo& app) {
+    return is_installing.Run(app.app_id_);
+  });
   if (app_ids_to_remove.empty()) {
     std::move(callback).Run();
     return;
@@ -141,15 +148,16 @@ void RemoveAppIDsAndSendUninstallPings(
   for (const PingInfo& app_to_remove : app_ids_to_remove) {
     const std::string& app_id = app_to_remove.app_id_;
     const int ping_reason = std::to_underlying(app_to_remove.ping_reason_);
+    // Read the ping data before `remove_app` deletes it.
+    update_client::CrxComponent crx_component;
+    crx_component.ap = persisted_data->GetAP(app_id);
+    crx_component.app_id = app_id;
+    crx_component.brand = persisted_data->GetBrandCode(app_id);
+    crx_component.version = app_to_remove.app_version_;
+    crx_component.requires_network_encryption = false;
     if (remove_app.Run(app_to_remove)) {
       VLOG(1) << "Uninstall ping for app id: " << app_id
               << ". Ping reason: " << ping_reason;
-      update_client::CrxComponent crx_component;
-      crx_component.ap = persisted_data->GetAP(app_id);
-      crx_component.app_id = app_id;
-      crx_component.brand = persisted_data->GetBrandCode(app_id);
-      crx_component.version = app_to_remove.app_version_;
-      crx_component.requires_network_encryption = false;
       update_client->SendPing(
           crx_component,
           {.event_type = update_client::protocol_request::kEventUninstall,
@@ -159,6 +167,7 @@ void RemoveAppIDsAndSendUninstallPings(
           base::BindOnce(&UninstallPingSent, barrier_closure));
     } else {
       VLOG(0) << "Could not remove registration of app " << app_id;
+      barrier_closure.Run();
     }
   }
 }
@@ -167,10 +176,12 @@ void RemoveAppIDsAndSendUninstallPings(
 
 RemoveUninstalledAppsTask::RemoveUninstalledAppsTask(
     scoped_refptr<Configurator> config,
-    UpdaterScope scope)
+    UpdaterScope scope,
+    base::RepeatingCallback<bool(const std::string&)> is_installing)
     : config_(config),
       update_client_(update_client::UpdateClientFactory(config_)),
-      scope_(scope) {}
+      scope_(scope),
+      is_installing_(std::move(is_installing)) {}
 
 RemoveUninstalledAppsTask::~RemoveUninstalledAppsTask() = default;
 
@@ -180,11 +191,12 @@ void RemoveUninstalledAppsTask::Run(base::OnceClosure callback) {
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(
           GetAppIDsToRemove,
-          GetRegisteredApps(config_->GetUpdaterPersistedData()),
+          GetRegisteredApps(config_->GetUpdaterPersistedData(), is_installing_),
           base::BindRepeating(&RemoveUninstalledAppsTask::GetUnregisterReason,
                               this)),
       base::BindOnce(&RemoveAppIDsAndSendUninstallPings, std::move(callback),
-                     config_->GetUpdaterPersistedData(), update_client_));
+                     config_->GetUpdaterPersistedData(), update_client_,
+                     is_installing_));
 }
 
 }  // namespace updater

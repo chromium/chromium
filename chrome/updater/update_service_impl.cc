@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -67,7 +68,9 @@ void UpdateServiceImpl::RunPeriodicTasks(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!IsEulaAccepted() || IsOemMode()) {
     VLOG(1) << __func__ << " rejected (EULA required or OEM mode).";
-    base::MakeRefCounted<RemoveUninstalledAppsTask>(config_, scope_)
+    base::MakeRefCounted<RemoveUninstalledAppsTask>(
+        config_, scope_,
+        base::BindRepeating(&UpdateServiceImplImpl::IsInstalling, delegate_))
         ->Run(std::move(callback));
     return;
   }

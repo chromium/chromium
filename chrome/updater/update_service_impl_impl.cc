@@ -721,13 +721,13 @@ void UpdateServiceImplImpl::MaybeInstallEnterpriseCompanionAppOTA(
                       /*new_install=*/false,
                       /*language=*/{},
                       /*callback=*/base::DoNothing()),
-                  MakeUpdateClientCallback(base::BindOnce([](Result result) {
-                                             VLOG(1)
-                                                 << "OTA installation of the "
-                                                    "enterprise companion app "
-                                                    "completed with result: "
-                                                 << result;
-                                           }).Then(std::move(callback)))))));
+                  MakeUpdateClientCallback(TrackInstall(
+                      enterprise_companion::kCompanionAppId,
+                      base::BindOnce([](Result result) {
+                        VLOG(1) << "OTA installation of the enterprise "
+                                   "companion app completed with result: "
+                                << result;
+                      }).Then(std::move(callback))))))));
 }
 
 void UpdateServiceImplImpl::FetchPolicies(
@@ -877,10 +877,11 @@ void UpdateServiceImplImpl::RunPeriodicTasks(base::OnceClosure callback) {
       base::BindOnce(&HandleInconsistentAppsTask::Run,
                      base::MakeRefCounted<HandleInconsistentAppsTask>(
                          config_, GetUpdaterScope())));
-  new_tasks.push_back(
-      base::BindOnce(&RemoveUninstalledAppsTask::Run,
-                     base::MakeRefCounted<RemoveUninstalledAppsTask>(
-                         config_, GetUpdaterScope())));
+  new_tasks.push_back(base::BindOnce(
+      &RemoveUninstalledAppsTask::Run,
+      base::MakeRefCounted<RemoveUninstalledAppsTask>(
+          config_, GetUpdaterScope(),
+          base::BindRepeating(&UpdateServiceImplImpl::IsInstalling, this))));
   new_tasks.push_back(MakeChangeOwnersTask(config_->GetUpdaterPersistedData(),
                                            GetUpdaterScope()));
 
@@ -1283,6 +1284,7 @@ void UpdateServiceImplImpl::Install(
           std::move(event), config_->GetUpdaterPersistedData(),
           registration.app_id)
           .Then(std::move(callback));
+  callback = TrackInstall(registration.app_id, std::move(callback));
 
   base::MakeRefCounted<HandleInconsistentAppsTask>(config_, GetUpdaterScope())
       ->Run(base::BindOnce(
@@ -1363,6 +1365,28 @@ void UpdateServiceImplImpl::InstallImpl(
               base::WrapRefCounted(this), pos)));
 }
 
+bool UpdateServiceImplImpl::IsInstalling(const std::string& app_id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return installing_app_ids_.contains(base::ToLowerASCII(app_id));
+}
+
+base::OnceCallback<void(UpdateService::Result)>
+UpdateServiceImplImpl::TrackInstall(const std::string& app_id,
+                                    base::OnceCallback<void(Result)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto pos = installing_app_ids_.insert(base::ToLowerASCII(app_id));
+  return base::BindOnce(&UpdateServiceImplImpl::InstallDone, this, pos)
+      .Then(std::move(callback));
+}
+
+UpdateService::Result UpdateServiceImplImpl::InstallDone(
+    std::multiset<std::string>::iterator pos,
+    Result result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  installing_app_ids_.erase(pos);
+  return result;
+}
+
 void UpdateServiceImplImpl::CancelInstalls(const std::string& app_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << __func__;
@@ -1396,6 +1420,7 @@ void UpdateServiceImplImpl::RunInstaller(
     return;
   }
 
+  callback = TrackInstall(app_id, std::move(callback));
   base::MakeRefCounted<HandleInconsistentAppsTask>(config_, GetUpdaterScope())
       ->Run(base::BindOnce(
           &UpdateServiceImplImpl::FetchPolicies, this,

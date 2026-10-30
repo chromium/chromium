@@ -8,7 +8,7 @@
 #include <optional>
 #include <string>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "chrome/updater/constants.h"
@@ -29,8 +29,12 @@ class Configurator;
 class RemoveUninstalledAppsTask
     : public base::RefCountedThreadSafe<RemoveUninstalledAppsTask> {
  public:
-  RemoveUninstalledAppsTask(scoped_refptr<Configurator> config,
-                            UpdaterScope scope);
+  // `is_installing` returns true for apps with an install in progress. Such
+  // apps are not removed.
+  RemoveUninstalledAppsTask(
+      scoped_refptr<Configurator> config,
+      UpdaterScope scope,
+      base::RepeatingCallback<bool(const std::string&)> is_installing);
   void Run(base::OnceClosure callback);
 
  private:
@@ -45,6 +49,7 @@ class RemoveUninstalledAppsTask
   scoped_refptr<Configurator> config_;
   scoped_refptr<update_client::UpdateClient> update_client_;
   UpdaterScope scope_;
+  base::RepeatingCallback<bool(const std::string&)> is_installing_;
 };
 
 }  // namespace updater

@@ -7,9 +7,12 @@
 #include <optional>
 #include <string>
 
+#include "base/barrier_closure.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -18,11 +21,15 @@
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
+#include "chrome/updater/external_constants_builder.h"
 #include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/prefs.h"
+#include "chrome/updater/registration_data.h"
+#include "chrome/updater/remove_uninstalled_apps_task.h"
 #include "chrome/updater/test/test_scope.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/util/util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/update_client/update_client_errors.h"
@@ -103,6 +110,83 @@ TEST(UpdateServiceImplTest, TestGetComponentsInOrder) {
   EXPECT_EQ(crxs[1]->app_id, "id2");
   EXPECT_EQ(crxs[2]->app_id, "id3");
   EXPECT_EQ(crxs[3]->app_id, "id4");
+}
+
+class UpdateServiceImplInstallTrackingTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+#if BUILDFLAG(IS_POSIX)
+    if (IsSystemInstall(scope_)) {
+      GTEST_SKIP();
+    }
+#endif  // BUILDFLAG(IS_POSIX)
+    // An empty update URL makes network requests fail immediately.
+    ASSERT_TRUE(ExternalConstantsBuilder()
+                    .SetUpdateURL(std::vector<std::string>{})
+                    .Overwrite());
+    scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope_);
+    ASSERT_TRUE(global_prefs);
+    config_ = base::MakeRefCounted<Configurator>(
+        global_prefs, CreateExternalConstants(), scope_);
+  }
+
+  void TearDown() override {
+    if (IsSkipped()) {
+      return;
+    }
+    config_ = nullptr;
+    base::DeletePathRecursively(*GetInstallDirectory(scope_));
+  }
+
+  base::test::TaskEnvironment task_environment_;
+  const UpdaterScope scope_ = GetUpdaterScopeForTesting();
+  scoped_refptr<Configurator> config_;
+};
+
+TEST_F(UpdateServiceImplInstallTrackingTest, IsInstalling) {
+  auto service = base::MakeRefCounted<UpdateServiceImplImpl>(config_);
+  base::RunLoop run_loop;
+  const auto done = base::BarrierClosure(2, run_loop.QuitClosure());
+  for (const char* app_id : {"app", "APP"}) {
+    service->RunInstaller(
+        app_id, base::FilePath(FILE_PATH_LITERAL("nonexistent_installer")),
+        /*install_args=*/{}, /*install_data=*/{}, /*install_settings=*/{},
+        /*language=*/{}, base::DoNothing(),
+        base::IgnoreArgs<UpdateService::Result>(done));
+  }
+  EXPECT_TRUE(service->IsInstalling("App"));
+  run_loop.Run();
+  EXPECT_FALSE(service->IsInstalling("app"));
+}
+
+TEST_F(UpdateServiceImplInstallTrackingTest,
+       RemoveUninstalledAppsTaskSkipsInstallingApps) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  scoped_refptr<PersistedData> persisted_data =
+      config_->GetUpdaterPersistedData();
+
+  // Both apps look uninstalled: no `Clients` key on Windows, and a missing
+  // existence checker path elsewhere.
+  for (const char* app_id : {"installing", "uninstalled"}) {
+    RegistrationRequest request;
+    request.app_id = app_id;
+    request.version = "1.0";
+    request.existence_checker_path = temp_dir.GetPath().AppendASCII(app_id);
+    persisted_data->RegisterApp(request);
+  }
+
+  base::RunLoop run_loop;
+  base::MakeRefCounted<RemoveUninstalledAppsTask>(
+      config_, scope_, base::BindRepeating([](const std::string& app_id) {
+        return app_id == "installing";
+      }))
+      ->Run(run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(persisted_data->HasApp("installing"));
+  EXPECT_FALSE(persisted_data->HasApp("uninstalled"));
+  persisted_data->RemoveApp("installing");
 }
 
 #if BUILDFLAG(IS_WIN)
