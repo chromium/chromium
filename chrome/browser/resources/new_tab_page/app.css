@@ -152,6 +152,15 @@ cr-most-visited {
   width: 100%;
 }
 
+/* With the LHS present, #rhsContent changes width on every frame of the LHS
+ * transition. Keep the OGB iframe at a constant width anchored to the far
+ * edge, so it is not re-laid out (and painted blank) while the LHS animates.
+ * The surplus width overflows under the LHS, where #rhsContent clips it. */
+:host([enable-threads-rail_]) #oneGoogleBar {
+  inset-inline-end: 0;
+  width: max(100%, 100vw);
+}
+
 #content {
   display: flex;
   flex-direction: row;

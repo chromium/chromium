@@ -341,7 +341,10 @@ export class AppElement extends AppElementBase {
       /**
        * Whether to show the AIM threads rail when composebox is open.
        */
-      enableThreadsRail_: {type: Boolean},
+      enableThreadsRail_: {
+        type: Boolean,
+        reflect: true,
+      },
 
       rhsWidth_: {type: Number},
 
