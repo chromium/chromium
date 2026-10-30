@@ -68,6 +68,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -173,6 +174,8 @@ class TestPasswordManagerClient
   const syncer::SyncService* GetSyncService() const override {
     return &sync_service_;
   }
+
+  syncer::TestSyncService& sync_service() { return sync_service_; }
 
  private:
   syncer::TestSyncService sync_service_;
@@ -375,6 +378,27 @@ class ManagePasswordsUIControllerTest : public ChromeRenderViewHostTestHarness {
   TestManagePasswordsUIController* controller() {
     return static_cast<TestManagePasswordsUIController*>(
         ManagePasswordsUIController::FromWebContents(web_contents()));
+  }
+
+  void SetUpPendingPasswordBlockedByTrustedVault() {
+    std::vector<PasswordForm> best_matches;
+    auto test_form_manager =
+        CreateFormManagerWithBestMatches(best_matches, &submitted_form());
+    EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+    EXPECT_CALL(*test_form_manager,
+                GetPasswordStoreForSaving(Eq(submitted_form())))
+        .WillRepeatedly(
+            Return(password_manager::PasswordForm::Store::kProfileStore));
+    EXPECT_CALL(*test_form_manager, Save()).Times(0);
+
+    EXPECT_CALL(*client().GetProfilePasswordStore(), GetError())
+        .WillRepeatedly(
+            Return(password_manager::ActionableError::kTrustedVaultKeyNeeded));
+
+    controller()->OnPasswordSubmitted(std::move(test_form_manager));
+    controller()->SavePasswordAfterTrustedVaultErrorResolution();
+    ASSERT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
+              controller()->GetState());
   }
 
   void WaitForPasswordStore();
@@ -719,6 +743,71 @@ TEST_F(ManagePasswordsUIControllerTest,
       client().GetProfilePasswordStore(),
       password_manager::ActionableError::kTrustedVaultKeyNeeded);
   EXPECT_FALSE(controller()->opened_automatic_bubble());
+}
+
+TEST_F(ManagePasswordsUIControllerTest,
+       PasswordNotSavedIfUserSignsOutAfterStartingErrorResolution) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      password_manager::features::kPasswordSaveInContextErrorResolution};
+  SetUpPendingPasswordBlockedByTrustedVault();
+
+  // User signs out instead of unlocking.
+  client().sync_service().SetSignedOut();
+
+  // The store reports that error cleared (e.g. sync error became `kNone`).
+  EXPECT_CALL(*client().GetProfilePasswordStore(), GetError())
+      .WillRepeatedly(Return(password_manager::ActionableError::kNoError));
+  controller()->OnErrorStateChanged(
+      client().GetProfilePasswordStore(),
+      password_manager::ActionableError::kNoError);
+
+  // Must remain in pending state and not automatically saved.
+  EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
+            controller()->GetState());
+}
+
+TEST_F(ManagePasswordsUIControllerTest,
+       PasswordNotSavedIfUserDisablesPasswordSyncAfterStartingErrorResolution) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      password_manager::features::kPasswordSaveInContextErrorResolution};
+  SetUpPendingPasswordBlockedByTrustedVault();
+
+  // User turns off password sync in settings instead of unlocking.
+  client().sync_service().GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, /*types=*/{});
+
+  EXPECT_CALL(*client().GetProfilePasswordStore(), GetError())
+      .WillRepeatedly(Return(password_manager::ActionableError::kNoError));
+  controller()->OnErrorStateChanged(
+      client().GetProfilePasswordStore(),
+      password_manager::ActionableError::kNoError);
+
+  EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
+            controller()->GetState());
+}
+
+TEST_F(ManagePasswordsUIControllerTest,
+       PasswordNotSavedIfUserSwitchesAccountAfterStartingErrorResolution) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      password_manager::features::kPasswordSaveInContextErrorResolution};
+  SetUpPendingPasswordBlockedByTrustedVault();
+
+  // User switches account instead of unlocking.
+  CoreAccountInfo other_account;
+  other_account.email = "other@bar.com";
+  other_account.gaia = GaiaId("other-gaia-id");
+  other_account.account_id = CoreAccountId::FromGaiaId(other_account.gaia);
+  client().sync_service().SetSignedIn(signin::ConsentLevel::kSignin,
+                                      other_account);
+
+  EXPECT_CALL(*client().GetProfilePasswordStore(), GetError())
+      .WillRepeatedly(Return(password_manager::ActionableError::kNoError));
+  controller()->OnErrorStateChanged(
+      client().GetProfilePasswordStore(),
+      password_manager::ActionableError::kNoError);
+
+  EXPECT_EQ(password_manager::ui::PENDING_PASSWORD_STATE,
+            controller()->GetState());
 }
 
 TEST_F(ManagePasswordsUIControllerTest, BackupPasswordSaved) {

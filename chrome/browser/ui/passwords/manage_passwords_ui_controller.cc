@@ -88,6 +88,7 @@
 #include "components/password_manager/core/browser/password_store/interactions_stats.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_string.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/password_manager/core/browser/undo_password_change_controller.h"
@@ -99,6 +100,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/service/sync_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/browser/navigation_handle.h"
@@ -246,7 +248,7 @@ ManagePasswordsUIController* ManagePasswordsUIController::FromWebContents(
 
 void ManagePasswordsUIController::OnPasswordSubmitted(
     std::unique_ptr<PasswordFormManagerForUI> form_manager) {
-  save_password_after_trusted_vault_error_resolution_ = false;
+  ResetAutoSaveAfterErrorResolution();
   bool password_change_ongoing = IsPasswordChangeOngoing();
 
   if (!password_change_ongoing) {
@@ -285,7 +287,7 @@ void ManagePasswordsUIController::OnPasswordSubmitted(
 
 void ManagePasswordsUIController::OnUpdatePasswordSubmitted(
     std::unique_ptr<PasswordFormManagerForUI> form_manager) {
-  save_password_after_trusted_vault_error_resolution_ = false;
+  ResetAutoSaveAfterErrorResolution();
   DestroyPopups();
   save_fallback_timer_.Stop();
   passwords_data_.OnUpdatePassword(std::move(form_manager));
@@ -451,7 +453,7 @@ void ManagePasswordsUIController::OnPromptEnableAutoSignin() {
 void ManagePasswordsUIController::OnAutomaticPasswordSave(
     std::unique_ptr<PasswordFormManagerForUI> form_manager,
     bool is_update_confirmation) {
-  save_password_after_trusted_vault_error_resolution_ = false;
+  ResetAutoSaveAfterErrorResolution();
   DestroyPopups();
   save_fallback_timer_.Stop();
   auto ui_state =
@@ -1408,7 +1410,7 @@ void ManagePasswordsUIController::PrimaryPageChanged(content::Page& page) {
   }
 
   // Otherwise, reset the password manager.
-  save_password_after_trusted_vault_error_resolution_ = false;
+  ResetAutoSaveAfterErrorResolution();
   DestroyPopups();
   ClearPopUpFlagForBubble();
   passwords_data_.OnInactive();
@@ -1629,11 +1631,26 @@ void ManagePasswordsUIController::
     SavePasswordAfterTrustedVaultErrorResolution() {
   if (IsSavingBlockedByTrustedVaultError()) {
     // Defer saving the password until the password store error is fixed.
+    const syncer::SyncService* sync_service =
+        passwords_data_.client()->GetSyncService();
+    CHECK(sync_service);
     save_password_after_trusted_vault_error_resolution_ = true;
+    account_id_for_trusted_vault_error_resolution_ =
+        sync_service->GetAccountInfo().account_id;
     return;
   }
+
+  if (save_password_after_trusted_vault_error_resolution_ &&
+      !IsAutoSaveAfterErrorResolutionValid()) {
+    ResetAutoSaveAfterErrorResolution();
+    if (IsShowingBubble()) {
+      HideBubble(/*initiated_by_bubble_manager=*/false);
+    }
+    return;
+  }
+
   // No trusted vault errors, so we can save the password immediately.
-  save_password_after_trusted_vault_error_resolution_ = false;
+  ResetAutoSaveAfterErrorResolution();
   if (PasswordFormManagerForUI* form_manager = passwords_data_.form_manager()) {
     password_manager::PasswordForm pending_credentials =
         form_manager->GetPendingCredentials();
@@ -1661,6 +1678,15 @@ void ManagePasswordsUIController::OnErrorStateChanged(
     password_manager::ActionableError new_state) {
   if (base::FeatureList::IsEnabled(
           password_manager::features::kPasswordSaveInContextErrorResolution)) {
+    if (save_password_after_trusted_vault_error_resolution_ &&
+        !IsAutoSaveAfterErrorResolutionValid()) {
+      ResetAutoSaveAfterErrorResolution();
+      if (IsShowingBubble()) {
+        HideBubble(/*initiated_by_bubble_manager=*/false);
+      }
+      return;
+    }
+
     if (!IsStoreUsedForSavingPendingCredentials(store)) {
       return;
     }
@@ -1702,6 +1728,24 @@ bool ManagePasswordsUIController::IsStoreUsedForSavingPendingCredentials(
     return (store_for_saving & kAccountStore) == kAccountStore;
   }
   return false;
+}
+
+bool ManagePasswordsUIController::IsAutoSaveAfterErrorResolutionValid() const {
+  if (!save_password_after_trusted_vault_error_resolution_ ||
+      account_id_for_trusted_vault_error_resolution_.empty()) {
+    return false;
+  }
+  const syncer::SyncService* sync_service =
+      passwords_data_.client()->GetSyncService();
+  return sync_service &&
+         password_manager::sync_util::HasChosenToSyncPasswords(sync_service) &&
+         sync_service->GetAccountInfo().account_id ==
+             account_id_for_trusted_vault_error_resolution_;
+}
+
+void ManagePasswordsUIController::ResetAutoSaveAfterErrorResolution() {
+  save_password_after_trusted_vault_error_resolution_ = false;
+  account_id_for_trusted_vault_error_resolution_ = CoreAccountId();
 }
 
 void ManagePasswordsUIController::QueueOrShowBubble(bool user_action) {

@@ -27,6 +27,7 @@
 #include "components/password_manager/core/browser/ui/post_save_compromised_helper.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "google_apis/gaia/core_account_id.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace base {
@@ -358,6 +359,14 @@ class ManagePasswordsUIController
   bool IsStoreUsedForSavingPendingCredentials(
       password_manager::PasswordStoreInterface* store) const;
 
+  // Returns true if the pending password should be (and can be) automatically
+  // saved after trusted vault error resolution.
+  bool IsAutoSaveAfterErrorResolutionValid() const;
+
+  // Resets the state tracking automatic password saving after trusted vault
+  // error resolution.
+  void ResetAutoSaveAfterErrorResolution();
+
   // Returns the timeout for the manual save fallback.
   static base::TimeDelta GetTimeoutForSaveFallback();
 
@@ -461,6 +470,11 @@ class ManagePasswordsUIController
   // the notification that the error state is fixed (and the trusted vault error
   // is resolved).
   bool save_password_after_trusted_vault_error_resolution_ = false;
+
+  // The account for which trusted vault error resolution was started. Used to
+  // verify that the primary account hasn't changed before automatically saving
+  // the password once the error is resolved.
+  CoreAccountId account_id_for_trusted_vault_error_resolution_;
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   bool was_biometric_authentication_for_filling_promo_shown_ = false;
