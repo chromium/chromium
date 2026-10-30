@@ -108,6 +108,7 @@ import './people_page/sync_page.js';
 // Sections
 import './a11y_page/a11y_page_index.js';
 import './downloads_page/downloads_page.js';
+import './general_page/general_page_index.js';
 // <if expr="is_chromeos">
 import './languages_page/languages_page_index_cros.js';
 // </if>
@@ -223,6 +224,7 @@ export {SettingsToggleButtonElement} from './controls/settings_toggle_button.js'
 export {DownloadsBrowserProxyImpl} from './downloads_page/downloads_browser_proxy.js';
 export type {DownloadsBrowserProxy} from './downloads_page/downloads_browser_proxy.js';
 export {SettingsDownloadsPageElement} from './downloads_page/downloads_page.js';
+export {SettingsGeneralPageIndexElement} from './general_page/general_page_index.js';
 export {SettingsGlicLoginPermissionsPageElement} from './glic_page/glic_login_permissions_page.js';
 // <if expr="not is_chromeos">
 export {SettingsAddLanguagesDialogElement} from './languages_page/add_languages_dialog.js';

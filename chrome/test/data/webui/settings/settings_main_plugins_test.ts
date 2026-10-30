@@ -267,6 +267,7 @@ suite('SettingsMain', function() {
         '.active[slot=view]');
     assertTrue(!!active);
     assertEquals('general', active.id);
+    assertTrue(!!active.querySelector('settings-general-page-index'));
 
     Router.getInstance().navigateTo(routes.PEOPLE);
     await settingsMain.whenViewSwitchingDone();

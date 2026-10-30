@@ -144,7 +144,12 @@ ${this.showResetProfileBanner_ ? html`
 
   ${cache(this.settingsRefresh2026Enabled_ &&
       this.showPage_(this.pageVisibility_?.general) ? html`
-    <div slot="view" id="general">General page placeholder</div>
+    <div slot="view" id="general">
+      ${cache(this.renderPlugin_(this.routes_.GENERAL) ? html`
+        <settings-general-page-index ?in-search-mode="${this.inSearchMode_}">
+        </settings-general-page-index>
+      ` : '')}
+    </div>
   ` : '')}
 
 <if expr="not is_chromeos">

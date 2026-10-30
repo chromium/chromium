@@ -65,6 +65,7 @@ build_webui_tests("build") {
     "focus_list_container_test.ts",
     "security/fingerprint_progress_arc_test.ts",
     "geic_subpage_test.ts",
+    "general_page_index_test.ts",
     "geolocation_page_test.ts",
     "glic_login_permissions_page_test.ts",
     "glic_page_test.ts",

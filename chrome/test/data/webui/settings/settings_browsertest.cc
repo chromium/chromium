@@ -287,6 +287,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, FileSystemSettingsListEntryItems) {
   RunTest("settings/file_system_site_entry_item_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, GeneralPageIndex) {
+  RunTest("settings/general_page_index_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, HelpPage) {
   RunTest("settings/help_page_test.js", "mocha.run()");
 }
