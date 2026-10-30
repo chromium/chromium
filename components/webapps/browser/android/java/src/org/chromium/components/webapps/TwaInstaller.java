@@ -35,8 +35,19 @@ import org.chromium.build.annotations.Nullable;
 public class TwaInstaller {
     private static final String TAG = "TwaInstaller";
 
+    /** Delegate interface for intercepting auto-minted TWA installation in tests. */
+    public interface InstallDelegateForTesting {
+        boolean installTwa(
+                String title,
+                String manifestUrl,
+                Runnable installSucceededCallback,
+                Runnable installFailedCallback,
+                Runnable installCancelledCallback);
+    }
+
     private static boolean sHasWebAppManagerForTesting;
     private static @Nullable WebAppManager sWebAppManagerForTesting;
+    private static @Nullable InstallDelegateForTesting sInstallDelegateForTesting;
 
     private final long mNativeInstaller;
 
@@ -52,6 +63,12 @@ public class TwaInstaller {
                     sHasWebAppManagerForTesting = false;
                     sWebAppManagerForTesting = null;
                 });
+    }
+
+    /** Overrides TWA installation behavior in tests. */
+    public static void setInstallDelegateForTesting(@Nullable InstallDelegateForTesting delegate) {
+        sInstallDelegateForTesting = delegate;
+        ResettersForTesting.register(() -> sInstallDelegateForTesting = null);
     }
 
     @RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
@@ -107,6 +124,14 @@ public class TwaInstaller {
             Runnable installSucceededCallback,
             Runnable installFailedCallback,
             Runnable installCancelledCallback) {
+        if (sInstallDelegateForTesting != null) {
+            return sInstallDelegateForTesting.installTwa(
+                    title,
+                    manifestUrl,
+                    installSucceededCallback,
+                    installFailedCallback,
+                    installCancelledCallback);
+        }
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.CINNAMON_BUN) {
             return false;
         }

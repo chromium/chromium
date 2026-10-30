@@ -17,6 +17,7 @@ import android.graphics.drawable.Icon;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 
 import org.jni_zero.CalledByNative;
@@ -58,6 +59,7 @@ public class WebappsUtils {
     private static final Object sLock = new Object();
 
     private static @TriState int sIsTwaInstallerPackage;
+    private static @Nullable Boolean sIsWebAppServiceEnabledForTesting;
 
     /**
      * Creates an intent that will add a shortcut to the home screen.
@@ -276,13 +278,27 @@ public class WebappsUtils {
     }
 
     @CalledByNative
-    private static boolean isWebAppServiceEnabled() {
+    @VisibleForTesting
+    static boolean isWebAppServiceEnabled() {
+        if (sIsWebAppServiceEnabledForTesting != null) {
+            return sIsWebAppServiceEnabledForTesting;
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CINNAMON_BUN) {
             Context context = ContextUtils.getApplicationContext();
             WebAppManager webAppManager = context.getSystemService(WebAppManager.class);
             return webAppManager != null;
         }
         return false;
+    }
+
+    /**
+     * Override whether the Android WebApp system service is considered enabled for testing.
+     *
+     * @param enabled Whether the service is enabled, or null to reset.
+     */
+    public static void setIsWebAppServiceEnabledForTesting(@Nullable Boolean enabled) {
+        sIsWebAppServiceEnabledForTesting = enabled;
+        ResettersForTesting.register(() -> sIsWebAppServiceEnabledForTesting = null);
     }
 
     public static void isTwaInstallerPackage(String title, Callback<Boolean> callback) {

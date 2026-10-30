@@ -283,4 +283,19 @@ public class WebappsUtilsTest {
 
         assertFalse(WebappsUtils.isAddToHomeIntentSupported());
     }
+
+    @Test
+    @Feature({"Webapp"})
+    public void testIsWebAppServiceEnabledForTesting() {
+        assertFalse(WebappsUtils.isWebAppServiceEnabled());
+
+        WebappsUtils.setIsWebAppServiceEnabledForTesting(true);
+        assertTrue(WebappsUtils.isWebAppServiceEnabled());
+
+        WebappsUtils.setIsWebAppServiceEnabledForTesting(false);
+        assertFalse(WebappsUtils.isWebAppServiceEnabled());
+
+        WebappsUtils.setIsWebAppServiceEnabledForTesting(null);
+        assertFalse(WebappsUtils.isWebAppServiceEnabled());
+    }
 }
