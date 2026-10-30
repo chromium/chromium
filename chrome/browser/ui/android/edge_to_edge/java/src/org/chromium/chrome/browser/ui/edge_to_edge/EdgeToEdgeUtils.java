@@ -212,9 +212,15 @@ public class EdgeToEdgeUtils {
         return !DeviceInfo.isAutomotive() && !hasTappableNavigationBar(activity.getWindow());
     }
 
-    /** Whether the edge-to-edge feature is enabled on automotive. */
+    /**
+     * Whether the edge-to-edge feature is enabled on automotive. Restricted to Android 16+, where
+     * edge-to-edge is enforced by the OS. Older automotive OS versions are excluded to avoid opting
+     * in to edge-to-edge where the OS does not require it, since OEM system bar configurations on
+     * those versions vary and are not covered by CI.
+     */
     public static boolean isEdgeToEdgeAutomotiveEnabled() {
-        return ChromeFeatureList.sEdgeToEdgeAutomotive.isEnabled();
+        return Build.VERSION.SDK_INT >= VERSION_CODES.BAKLAVA
+                && ChromeFeatureList.sEdgeToEdgeAutomotive.isEnabled();
     }
 
     /**
