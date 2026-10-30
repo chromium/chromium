@@ -8452,7 +8452,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SignInPromo.NonModal.Bookmark"
-    enum="NonModalSignInPromoAction" expires_after="2027-03-07">
+    enum="NonModalSignInPromoAction" expires_after="2027-05-01">
   <owner>kanouche@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -8463,7 +8463,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SignInPromo.NonModal.Password"
-    enum="NonModalSignInPromoAction" expires_after="2026-11-01">
+    enum="NonModalSignInPromoAction" expires_after="2027-05-01">
   <owner>kanouche@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
