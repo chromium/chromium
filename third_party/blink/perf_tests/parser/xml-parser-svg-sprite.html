@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<body>
+<script src="../resources/runner.js"></script>
+<script>
+// Generates a large, minified SVG icon sprite, modeled after real-world
+// sprite sheets such as the Material icon sprites used by Google Docs, Sheets
+// and Slides: roughly 800KB of markup in a single line, with ~3,700 elements
+// and most of the bytes in long path data attribute values.
+var seed = 1;
+function random() {
+    seed = (seed * 16807) % 2147483647;
+    return (seed - 1) / 2147483646;
+}
+
+function randomInt(n) {
+    return Math.floor(random() * n);
+}
+
+function randomNumber() {
+    var number = (random() * 40 - 10).toFixed(randomInt(4));
+    return number.replace(/^(-?)0\./, '$1.');
+}
+
+function randomPathData(length) {
+    var commands = 'MmLlHhVvCcSsQqTtAa';
+    var arity = {M: 2, L: 2, H: 1, V: 1, C: 6, S: 4, Q: 4, T: 2, A: 7};
+    var d = 'M' + randomNumber() + ' ' + randomNumber();
+    while (d.length < length) {
+        var command = commands[randomInt(commands.length)];
+        d += command;
+        var count = arity[command.toUpperCase()] * (1 + randomInt(3));
+        for (var i = 0; i < count; ++i) {
+            var number = randomNumber();
+            if (i > 0 && number[0] != '-')
+                d += ' ';
+            d += number;
+        }
+        if (random() < 0.1)
+            d += 'z';
+    }
+    return d;
+}
+
+function generateSprite() {
+    var parts = [];
+    var x = 0;
+    while (parts.length < 1540) {
+        var length = 100 + randomInt(600);
+        var kind = random();
+        if (kind < 0.4) {
+            parts.push('<g fill="none" fill-rule="evenodd"><path d="M' + x +
+                ' 0h20v20H' + x + 'z"/><path fill="#444746" fill-rule="nonzero" d="' +
+                randomPathData(length) + '"/></g>');
+        } else if (kind < 0.7) {
+            parts.push('<path fill="#444746" fill-rule="evenodd" d="' +
+                randomPathData(length) + '" clip-rule="evenodd"/>');
+        } else {
+            parts.push('<g fill="#444746" transform="translate(' + x + ')">' +
+                '<circle cx="9" cy="3" r="1.75"/><path d="' +
+                randomPathData(length) + '"/></g>');
+        }
+        x += 24;
+    }
+    return '<svg xmlns="http://www.w3.org/2000/svg" width="' + x +
+        '" height="338" x="0" y="0" preserveAspectRatio="none" version="1.1" ' +
+        'viewBox="0 0 ' + x + ' 338">' + parts.join('') + '</svg>';
+}
+
+var svgData = generateSprite();
+var domParser = new DOMParser();
+
+PerfTestRunner.measureRunsPerSecond({
+    description: "Measures performance of the XML parser on a large SVG sprite (" +
+        svgData.length + " bytes) dominated by long attribute values.",
+    run: function() {
+        domParser.parseFromString(svgData, "image/svg+xml");
+    }
+});
+</script>
+</body>

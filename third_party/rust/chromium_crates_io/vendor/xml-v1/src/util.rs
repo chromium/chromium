@@ -97,31 +97,144 @@ impl fmt::Display for Encoding {
     }
 }
 
+/// Size of the read-ahead buffer of `CharReader`.
+const READ_AHEAD_SIZE: usize = 4096;
+
+/// Classes of characters, based on productions of the XML grammar, that can be
+/// scanned in bulk with `CharReader::buffered_ascii_run`.
+///
+/// Each class contains only those ASCII characters of the production that the
+/// parser appends verbatim, without any further processing. `/` and `]` are
+/// excluded from all classes, because they start lexer lookahead sequences
+/// (`/>` and `]]>`).
+#[derive(Copy, Clone, Debug, PartialEq, Eq)]
+pub(crate) enum AsciiRunClass {
+    /// Characters of an `AttValue` ([10]), except for the quotes, `&` and `<`
+    /// (delimiters, references and markup), and whitespace other than the
+    /// space, which is normalized.
+    AttValue,
+    /// `NameChar` ([4a]), except for `:`, the namespace prefix separator.
+    NameChar,
+    /// `CharData` ([14]), except for whitespace other than the space.
+    CharData,
+}
+
+impl AsciiRunClass {
+    #[inline]
+    pub const fn contains(self, b: u8) -> bool {
+        match self {
+            Self::AttValue => matches!(b, b' '..=b'~') && !matches!(b, b'"' | b'\'' | b'&' | b'<' | b'/' | b']'),
+            Self::NameChar => matches!(b, b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9' | b'_' | b'-' | b'.'),
+            Self::CharData => matches!(b, b' '..=b'~') && !matches!(b, b'<' | b'&' | b'/' | b']'),
+        }
+    }
+}
+
 #[derive(Clone)]
 pub(crate) struct CharReader {
     pub encoding: Encoding,
+    /// Bytes that have been read from the source, but not consumed yet, are
+    /// `read_ahead[read_ahead_pos..read_ahead_len]`. Reading ahead avoids the
+    /// overhead of reading every single byte from the source, and allows
+    /// scanning runs of bytes at once (see `buffered_ascii_run`). The buffer
+    /// is allocated (with `READ_AHEAD_SIZE` bytes) on the first read.
+    read_ahead: Vec<u8>,
+    read_ahead_pos: usize,
+    read_ahead_len: usize,
 }
 
 impl CharReader {
     pub fn new(encoding: Encoding) -> Self {
         Self {
             encoding,
+            read_ahead: Vec::new(),
+            read_ahead_pos: 0,
+            read_ahead_len: 0,
+        }
+    }
+
+    /// Refills the read-ahead buffer once it has been fully consumed.
+    /// Returns `false` at the (possibly temporary) end of the source.
+    #[inline(never)]
+    fn fill_read_ahead<R: Read>(&mut self, source: &mut R) -> io::Result<bool> {
+        debug_assert_eq!(self.read_ahead_pos, self.read_ahead_len);
+        if self.read_ahead.is_empty() {
+            self.read_ahead.resize(READ_AHEAD_SIZE, 0);
+        }
+        self.read_ahead_pos = 0;
+        self.read_ahead_len = 0;
+        loop {
+            match source.read(&mut self.read_ahead[..]) {
+                Ok(n) => {
+                    // Don't trust `Read` implementations to stay in bounds.
+                    self.read_ahead_len = n.min(READ_AHEAD_SIZE);
+                    return Ok(n > 0);
+                },
+                Err(e) if e.kind() == io::ErrorKind::Interrupted => {},
+                Err(e) => return Err(e),
+            }
         }
     }
 
     #[inline]
+    fn next_byte_from<R: Read>(&mut self, source: &mut R) -> io::Result<Option<u8>> {
+        if self.read_ahead_pos == self.read_ahead_len && !self.fill_read_ahead(source)? {
+            return Ok(None);
+        }
+        let b = self.read_ahead[self.read_ahead_pos];
+        self.read_ahead_pos += 1;
+        Ok(Some(b))
+    }
+
+    /// Returns the length of the longest run of upcoming characters that all
+    /// belong to `class`, considering only bytes that are already buffered
+    /// (refilling the buffer first if it is empty). The run can be consumed
+    /// with `consume_ascii_run` after inspecting it with `ascii_run`. Returns
+    /// `None` if the current encoding does not map ASCII bytes to ASCII
+    /// characters one-to-one, or at the end of the source.
+    #[inline]
+    pub fn buffered_ascii_run<R: Read>(&mut self, source: &mut R, class: AsciiRunClass) -> Result<Option<usize>, CharReadError> {
+        if !matches!(self.encoding, Encoding::Utf8 | Encoding::Default | Encoding::Latin1 | Encoding::Ascii) {
+            return Ok(None);
+        }
+        if self.read_ahead_pos == self.read_ahead_len && !self.fill_read_ahead(source)? {
+            return Ok(None);
+        }
+        let available = &self.read_ahead[self.read_ahead_pos..self.read_ahead_len];
+        Ok(Some(available.iter().position(|&b| !class.contains(b)).unwrap_or(available.len())))
+    }
+
+    /// Returns the first `len` buffered bytes, which must have been checked to
+    /// be ASCII by `buffered_ascii_run`.
+    #[inline]
+    pub fn ascii_run(&self, len: usize) -> &str {
+        let run = &self.read_ahead[self.read_ahead_pos..self.read_ahead_pos + len];
+        debug_assert!(run.is_ascii());
+        // ASCII is always valid UTF-8.
+        str::from_utf8(run).unwrap_or_default()
+    }
+
+    /// Consumes the first `len` buffered bytes, which must have been checked to
+    /// belong to `class` by `buffered_ascii_run`.
+    #[inline]
+    pub fn consume_ascii_run(&mut self, len: usize, class: AsciiRunClass) {
+        debug_assert!(self.read_ahead_pos + len <= self.read_ahead_len);
+        debug_assert!(self.read_ahead[self.read_ahead_pos..self.read_ahead_pos + len].iter().all(|&b| class.contains(b)));
+        self.read_ahead_pos += len;
+    }
+
+    #[inline]
     pub fn next_char_from<R: Read>(&mut self, source: &mut R) -> Result<Option<char>, CharReadError> {
-        let mut bytes = source.bytes();
         const MAX_CODEPOINT_LEN: usize = 4;
 
         let mut buf = [0u8; MAX_CODEPOINT_LEN];
         let mut pos = 0;
         while pos < MAX_CODEPOINT_LEN {
-            let next = match bytes.next() {
-                Some(Ok(b)) => b,
-                Some(Err(e)) => return Err(e.into()),
-                None if pos == 0 => return Ok(None),
-                None => return Err(CharReadError::UnexpectedEof),
+            let next = match self.next_byte_from(source) {
+                Ok(Some(b)) => b,
+                Err(e) => return Err(e.into()),
+                Ok(None) if pos == 0 => return Ok(None),
+                Ok(None) => return Err(CharReadError::UnexpectedEof),
             };
 
             match self.encoding {

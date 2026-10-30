@@ -10,6 +10,7 @@ use crate::reader::error::{Error, ImmutableEntitiesError, SyntaxError};
 use crate::reader::events::XmlEvent;
 use crate::reader::lexer::{Lexer, Token};
 use crate::reader::DoctypeRef;
+use crate::util::AsciiRunClass;
 
 use std::collections::{HashMap, HashSet};
 use std::io::Read;
@@ -425,7 +426,11 @@ impl PullParser {
 
             // While lexer gives us Ok(maybe_token) -- we loop.
             // Upon having a complete XML-event -- we return from the whole function.
-            match self.lexer.next_token(r) {
+            let token = match self.read_plain_run(r) {
+                Ok(()) => self.lexer.next_token(r),
+                Err(e) => Err(e),
+            };
+            match token {
                 Ok(Token::Eof) => {
                     // Forward pos to the lexer head
                     self.next_pos();
@@ -452,6 +457,56 @@ impl PullParser {
                     return self.set_final_result(Err(lexer_error));
                 },
             }
+        }
+    }
+
+    /// Fast path for the most common runs of plain characters: attribute
+    /// values, the remainder of element and attribute names, and character
+    /// data.
+    ///
+    /// Tokenizing and dispatching every character individually is expensive,
+    /// and attribute values (e.g. SVG path data) or text content can make up
+    /// the majority of a document. Runs of ASCII characters that would have
+    /// been appended verbatim to the corresponding buffer by the per-token
+    /// state machine are appended directly instead. Any other character
+    /// (quotes, markup, references, non-ASCII, newlines, ...) ends the run and
+    /// is handled by the regular per-token path, as is the first character of
+    /// a name or text run, so that all validation and position bookkeeping
+    /// stays in one place.
+    ///
+    /// `/` and `]` are never part of a run, because they switch the lexer into
+    /// a lookahead state (for `/>` and `]]>`), which affects error reporting
+    /// at the end of the stream and error positions.
+    #[inline]
+    fn read_plain_run<R: Read>(&mut self, r: &mut R) -> std::result::Result<(), Error> {
+        match self.st {
+            State::InsideOpeningTag(OpeningTagSubstate::InsideAttributeValue) if self.data.quote.is_some() => {
+                // Every printable ASCII character except the quotes, `&` and `<` is
+                // appended as-is by `read_attribute_value()` (see above for `/`
+                // and `]`). The space is the only whitespace character that is not
+                // normalized.
+                self.lexer.read_plain_run(r, &mut self.buf, self.config.max_attribute_length, AsciiRunClass::AttValue)
+            },
+            State::InsideOpeningTag(OpeningTagSubstate::InsideName | OpeningTagSubstate::InsideAttributeName) |
+            State::InsideClosingTag(ClosingTagSubstate::CTInsideName) if !self.qualified_name_buf.is_empty() => {
+                // After the first character, `read_qualified_name()` appends every
+                // name character as-is, except for the prefix separator `:`.
+                self.lexer.read_plain_run(r, &mut self.qualified_name_buf, self.config.max_name_length, AsciiRunClass::NameChar)
+            },
+            State::OutsideTag if self.depth() > 0 && self.buf_has_data() => {
+                // Inside the root element, with a text run already started (so the
+                // event position has been recorded and whitespace trimming of
+                // leading whitespace no longer applies), `outside_tag()` appends
+                // every printable ASCII character as-is, except for `<` and `&`
+                // (markup and references; see above for `/` and `]`).
+                let start = self.buf.len();
+                let res = self.lexer.read_plain_run(r, &mut self.buf, self.config.max_data_length, AsciiRunClass::CharData);
+                if self.inside_whitespace && self.buf.as_bytes()[start..].iter().any(|&b| b != b' ') {
+                    self.inside_whitespace = false;
+                }
+                res
+            },
+            _ => Ok(()),
         }
     }
 

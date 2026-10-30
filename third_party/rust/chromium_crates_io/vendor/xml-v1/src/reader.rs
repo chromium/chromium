@@ -33,6 +33,9 @@ pub type Result<T, E = Error> = result::Result<T, E>;
 /// A wrapper around an `std::io::Read` instance which provides pull-based XML parsing.
 ///
 /// The reader should be wrapped in a `BufReader`, otherwise parsing may be very slow.
+///
+/// The parser reads ahead from the underlying reader, so the position of the
+/// underlying reader can be ahead of the last returned event.
 pub struct EventReader<R: Read> {
     source: R,
     parser: PullParser,

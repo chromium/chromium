@@ -5,7 +5,7 @@
 use crate::common::{is_name_char, is_whitespace_char, is_xml10_char, is_xml11_char, Position, TextPosition};
 use crate::reader::error::SyntaxError;
 use crate::reader::Error;
-use crate::util::{CharReader, Encoding};
+use crate::util::{AsciiRunClass, CharReader, Encoding};
 use std::collections::VecDeque;
 use std::io::Read;
 use std::{fmt, result};
@@ -284,6 +284,60 @@ impl Lexer {
     #[inline]
     pub fn reset_eof_handled(&mut self) {
         self.eof_handled = false;
+    }
+
+    /// Fast path that bypasses tokenization for runs of plain characters.
+    ///
+    /// Appends upcoming characters of `class` directly to `out` for as long as
+    /// `out` is not longer than `max_len` (mirroring the length checks done
+    /// before appending each character in the parser). In the lexer's `Normal`
+    /// state every character of an `AsciiRunClass` would otherwise have been
+    /// returned as a single `Token::Character` (or as a token whose
+    /// `push_to_string` text equals the character), without changing the lexer
+    /// state, so the caller must only use a class for which appending the
+    /// characters to `out` is exactly what the parser would have done with the
+    /// per-character tokens in its current state.
+    ///
+    /// Characters that are not in `class` are not consumed, so the next call to
+    /// `next_token` produces the same token, at the same position, as it would
+    /// have without this fast path.
+    ///
+    /// Does nothing unless the lexer is in the `Normal` state without any
+    /// pending (pushed back or reparsed) characters.
+    pub(crate) fn read_plain_run<B: Read>(
+        &mut self,
+        b: &mut B,
+        out: &mut String,
+        max_len: usize,
+        class: AsciiRunClass,
+    ) -> Result<()> {
+        if self.eof_handled || !self.char_queue.is_empty() || !matches!(self.st, State::Normal) {
+            return Ok(());
+        }
+        while out.len() <= max_len {
+            let Some(len) = self.reader.buffered_ascii_run(b, class)? else {
+                // Let `next_token` handle the end of the stream or other encodings.
+                return Ok(());
+            };
+            // The parser checks `out.len() > max_len` before appending each
+            // character, so it appends while `out.len() <= max_len`, i.e. up to
+            // `max_len + 1` bytes in total. Allow the same here, so that the
+            // next character still triggers the parser's limit error.
+            let len = len.min((max_len - out.len()).saturating_add(1));
+            if len == 0 {
+                return Ok(());
+            }
+            debug_assert!(!self.reader.ascii_run(len).contains(['\r', '\n']));
+            out.push_str(self.reader.ascii_run(len));
+            self.reader.consume_ascii_run(len, class);
+            self.head_pos.column += len as u64;
+            // Equivalent to having produced a sequence of complete
+            // single-character tokens from the source.
+            self.inside_token = false;
+            self.last_was_cr = false;
+            self.reparse_depth = 0;
+        }
+        Ok(())
     }
 
     /// Tries to read the next token from the buffer.
