@@ -103,6 +103,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/gfx/geometry/insets_conversions.h"
@@ -1230,11 +1231,11 @@ void Page::InvalidatePlatformColors() {
   for (Frame* frame = MainFrame(); frame;
        frame = frame->Tree().TraverseNext()) {
     if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
-      if (Document* document = local_frame->GetDocument()) {
-        document->PlatformColorsChanged();
-      }
-      if (LayoutView* view = local_frame->ContentLayoutObject()) {
-        view->InvalidatePaintForViewAndDescendants();
+      local_frame->GetDocument()->PlatformColorsChanged();
+      if (!::features::IsThemeChangeOptimizationV2Enabled()) {
+        if (LayoutView* view = local_frame->ContentLayoutObject()) {
+          view->InvalidatePaintForViewAndDescendants();
+        }
       }
     }
   }

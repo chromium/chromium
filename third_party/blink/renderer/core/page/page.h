@@ -165,6 +165,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // Should be called when |GetScrollbarTheme().UsesOverlayScrollbars()|
   // changes.
   static void UsesOverlayScrollbarsChanged();
+  // TODO(crbug.com/40280130): Remove once kThemeChangeOptimizationV2 launches.
   static void ForcedColorsChanged();
   static void PlatformColorsChanged();
   static void ColorSchemeChanged();
@@ -173,6 +174,8 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   void DisableEmulatedForcedColors();
   bool UpdateColorProviders(
       const ColorProviderColorMaps& color_provider_colors);
+  void InvalidateColorScheme();
+  void InvalidatePlatformColors();
   void UpdateColorProvidersForTest();
   const ui::ColorProvider* GetColorProviderForPainting(
       mojom::blink::ColorScheme color_scheme,
@@ -559,9 +562,6 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   void SettingsChanged(SettingsDelegate::ChangeType) override;
 
   void AcceptLanguagesChanged();
-
-  void InvalidateColorScheme();
-  void InvalidatePlatformColors();
 
   // Connect the Page to the `opener_`'s related pages, if those exist.
   void LinkRelatedPagesIfNeeded();
