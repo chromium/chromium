@@ -800,6 +800,9 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Created directory contents is corrupted"/>
   <int value="9" label="Created application menu shortcut is corrupted"/>
   <int value="10" label="Fail to install shortcut in application menu"/>
+  <int value="11"
+      label="DynamicLauncher portal install failed; fell back to legacy
+             install"/>
 </enum>
 
 <enum name="WebAppCreateShortcutMacResult">

@@ -61,6 +61,11 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_LINUX)
+#include "base/nix/xdg_util.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_linux.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
 namespace web_app {
 
 namespace {
@@ -1050,5 +1055,69 @@ TEST_P(FinalizeInstallOrUpdateJobShortcutReasonTest,
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     FinalizeInstallOrUpdateJobShortcutReasonTest);
+
+#if BUILDFLAG(IS_LINUX)
+class FinalizeInstallOrUpdateJobPortalPreflightTest
+    : public base::test::WithFeatureOverride,
+      public testing::Test {
+ public:
+  FinalizeInstallOrUpdateJobPortalPreflightTest()
+      : base::test::WithFeatureOverride(kWebAppsUseDynamicLauncherPortal) {}
+
+ private:
+  base::nix::ScopedAppSandboxOverrideForTesting app_sandbox_override_{
+      base::nix::AppSandbox::kFlatpak};
+};
+
+TEST_P(FinalizeInstallOrUpdateJobPortalPreflightTest, UserInstall) {
+  FinalizeJobOptions options(
+      webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
+  EXPECT_EQ(FinalizeInstallOrUpdateJob::ShouldRunPortalPreflight(options),
+            IsParamFeatureEnabled());
+}
+
+TEST_P(FinalizeInstallOrUpdateJobPortalPreflightTest, HostInstallSkipped) {
+  // Without an app sandbox, launchers are always written directly, regardless
+  // of the feature state.
+  base::nix::ScopedAppSandboxOverrideForTesting no_sandbox(
+      base::nix::AppSandbox::kNone);
+  FinalizeJobOptions options(
+      webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
+  EXPECT_FALSE(FinalizeInstallOrUpdateJob::ShouldRunPortalPreflight(options));
+}
+
+TEST_P(FinalizeInstallOrUpdateJobPortalPreflightTest, SnapInstallSkipped) {
+  // The DynamicLauncher portal doesn't support snaps, so snap installs keep
+  // using the legacy path regardless of the feature state.
+  base::nix::ScopedAppSandboxOverrideForTesting snap(
+      base::nix::AppSandbox::kSnap);
+  FinalizeJobOptions options(
+      webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
+  EXPECT_FALSE(FinalizeInstallOrUpdateJob::ShouldRunPortalPreflight(options));
+}
+
+TEST_P(FinalizeInstallOrUpdateJobPortalPreflightTest, SilentUpdateSkipped) {
+  // Silent updates can't show the portal dialog. They must not run the
+  // preflight, regardless of the feature state.
+  EXPECT_FALSE(FinalizeInstallOrUpdateJob::ShouldRunPortalPreflight(
+      FinalizeJobOptions::ForSilentUpdate()));
+}
+
+TEST_P(FinalizeInstallOrUpdateJobPortalPreflightTest, NonUserInstallSkipped) {
+  EXPECT_FALSE(FinalizeInstallOrUpdateJob::ShouldRunPortalPreflight(
+      FinalizeJobOptions(webapps::WebappInstallSource::EXTERNAL_POLICY)));
+}
+
+TEST_P(FinalizeInstallOrUpdateJobPortalPreflightTest,
+       InstallWithoutOsIntegrationSkipped) {
+  FinalizeJobOptions options(
+      webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
+  options.install_state = proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION;
+  EXPECT_FALSE(FinalizeInstallOrUpdateJob::ShouldRunPortalPreflight(options));
+}
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    FinalizeInstallOrUpdateJobPortalPreflightTest);
+#endif  // BUILDFLAG(IS_LINUX)
 
 }  // namespace web_app

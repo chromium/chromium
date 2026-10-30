@@ -265,6 +265,10 @@ void ShortcutSubManager::CreateShortcut(
   locations.applications_menu_location = APP_MENU_LOCATION_SUBDIR_CHROMEAPPS;
   locations.in_quick_launch_bar = options.add_to_quick_launch_bar;
 
+#if BUILDFLAG(IS_LINUX)
+  shortcut_info->portal_token = options.portal_token;
+#endif  // BUILDFLAG(IS_LINUX)
+
   base::FilePath shortcut_data_dir =
       internals::GetShortcutDataDir(*shortcut_info);
 

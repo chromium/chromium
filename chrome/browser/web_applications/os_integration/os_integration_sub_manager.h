@@ -6,8 +6,10 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_OS_INTEGRATION_SUB_MANAGER_H_
 
 #include <optional>
+#include <string>
 
 #include "base/functional/callback_forward.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/os_integration/shortcut_creation_reason.h"
 #include "components/webapps/common/web_app_id.h"
 
@@ -39,6 +41,10 @@ struct SynchronizeOsOptions {
   // The reason synchronize is called, used to possibly show the location of the
   // shortcut to the user (this happen on Mac).
   ShortcutCreationReason reason = SHORTCUT_CREATION_AUTOMATED;
+
+#if BUILDFLAG(IS_LINUX)
+  std::string portal_token;
+#endif  // BUILDFLAG(IS_LINUX)
 };
 
 class OsIntegrationSubManager {

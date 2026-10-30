@@ -150,6 +150,69 @@ the following steps:
      or Nemo) to recognize any file handler associations declared in the
      `.desktop` file.
 
+### DynamicLauncher Portal
+
+Inside a Flatpak sandbox, Chrome can't write `.desktop` files into the host's
+applications directory. In that case the applications menu launcher is installed
+through the
+[XDG DynamicLauncher portal](https://flatpak.github.io/xdg-desktop-portal/docs/doc-org.freedesktop.portal.DynamicLauncher.html)
+(`dynamic_launcher_portal.cc`) instead. The portal is used only when
+`kWebAppsUseDynamicLauncherPortal` is enabled and `base::nix::GetAppSandbox()`
+reports Flatpak (see `ShouldUseDynamicLauncherPortal()`). Host installs keep
+using the `xdg` utilities described above. So do snaps, since the portal doesn't
+support them
+([xdg-desktop-portal#2014](https://github.com/flatpak/xdg-desktop-portal/issues/2014)).
+
+The rest of this section calls that `xdg`-based implementation (see
+[Shortcuts](#shortcuts)) the *legacy path*. It is the only path outside a
+sandbox, and the fallback inside one whenever no portal token is available.
+Inside a sandbox it doesn't produce a usable launcher: the `xdg` utilities and
+the XDG data directory are those of the sandbox, not the host, so the `.desktop`
+file either isn't written or ends up in the sandbox's private data directory,
+and the app doesn't appear in the host's applications menu. The app itself is
+still installed and can be launched from Chrome (e.g. `chrome://apps`), since
+failing to create OS shortcuts doesn't fail the install.
+
+The portal flow has two steps:
+
+1. **`PrepareInstall` (preflight)**: The portal shows its own confirmation
+   dialog with the app's name and icon (Chrome passes `editable_name=false`, so
+   the name stays in sync with the app), and returns a token on approval. The
+   token has to come from a user-visible dialog, so
+   `FinalizeInstallOrUpdateJob::Start()` requests it before anything is
+   committed to the web app database (see `ShouldRunPortalPreflight()` and
+   `PreparePortalInstallOnUIThread()`). This preflight runs only for user
+   installs that get OS integration. If the user cancels, the install fails with
+   `kUserInstallDeclined` and nothing is written. If the portal is unavailable,
+   the token is empty and the legacy path is used.
+2. **`Install`**: The token is passed through `SynchronizeOsOptions` and
+   `ShortcutInfo` to `CreateShortcutInApplicationsMenu()`, which calls the
+   portal's `Install` with it. The desktop file ID is the shortcut filename
+   prefixed with Chrome's own application ID (`GetPortalDesktopFileId()`, e.g.
+   `org.chromium.Chromium.chrome-<app_id>-<profile>.desktop`), and the desktop
+   entry is stripped of `Name`, `Icon` and `Actions` (the portal takes the name
+   and icon from `PrepareInstall` and allows only a single `[Desktop Entry]`
+   group). The portal writes the launcher and its icon itself. Without a token,
+   the legacy path runs. If the portal's `Install` call fails, the legacy path
+   runs too, and `Apps.CreateShortcuts.Linux.Result` records
+   `kPortalInstallFailed`.
+
+**Silent updates skip the preflight.** Silent manifest updates (for example
+small icon changes, `FinalizeJobOptions::is_silent_update`) can't show a dialog,
+and `RequestInstallToken`, which issues tokens without a dialog, is limited to
+desktop-environment components and not available to Chrome. So these updates
+don't get a token: the rest of the app (file handlers, scope extensions, etc.)
+is still updated, but an existing portal-installed launcher is left untouched
+rather than being replaced by a legacy launcher, which wouldn't work in the
+sandbox. Other installs and updates that don't go through this job, such as
+forced migrations, still use the legacy path (https://crbug.com/543925322).
+
+**Uninstall**: `DeleteShortcutInApplicationsMenu()` calls the portal's
+`Uninstall`, which doesn't need a token. If the portal is unavailable or the
+call fails (for example for launchers installed before the portal was used), the
+legacy uninstall runs, which removes both the portal-named and the legacy
+`.desktop` files.
+
 ### File Handlers
 
 Registering file handlers on Linux (see

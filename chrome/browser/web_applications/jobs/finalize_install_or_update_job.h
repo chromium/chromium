@@ -138,6 +138,17 @@ class FinalizeInstallOrUpdateJob {
 
   static bool& DisableUserDisplayModeSyncMitigationsForTesting();
 
+#if BUILDFLAG(IS_LINUX)
+  // Returns whether a job with `options` asks the user to approve a launcher
+  // through the XDG DynamicLauncher portal before committing the app. This
+  // only happens when the portal is used at all (see
+  // ShouldUseDynamicLauncherPortal()). Silent updates never do, since they
+  // can't show a dialog; an existing portal-installed launcher is left
+  // untouched instead. See the "DynamicLauncher Portal" section of
+  // chrome/browser/web_applications/docs/os_integration.md.
+  static bool ShouldRunPortalPreflight(const FinalizeJobOptions& options);
+#endif  // BUILDFLAG(IS_LINUX)
+
  private:
   WebAppRegistrar& registrar() const;
   WebAppSyncBridge& sync_bridge() const;
@@ -183,6 +194,12 @@ class FinalizeInstallOrUpdateJob {
   void RunCallbackAndResetLock(webapps::AppId app_id,
                                webapps::InstallResultCode code);
 
+#if BUILDFLAG(IS_LINUX)
+  void OnPortalPreflightCompleted(std::optional<std::string> token);
+#endif  // BUILDFLAG(IS_LINUX)
+
+  void ContinueStartAfterPreflight();
+
   static void NotifyWebAppInstalledWithOsHooks(WebAppProvider* provider,
                                                webapps::AppId app_id);
 
@@ -199,6 +216,10 @@ class FinalizeInstallOrUpdateJob {
   FinalizeJobOptions options_;
   std::unique_ptr<FinalizerDelegate> finalizer_delegate_;
   InstallFinalizedCallback callback_;
+
+#if BUILDFLAG(IS_LINUX)
+  std::string portal_token_;
+#endif  // BUILDFLAG(IS_LINUX)
 
   base::WeakPtrFactory<FinalizeInstallOrUpdateJob> weak_ptr_factory_{this};
 };

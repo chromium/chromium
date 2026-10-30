@@ -343,6 +343,9 @@ void FetchManifestAndInstallCommand::Abort(webapps::InstallResultCode code,
                                            const base::Location& location) {
   Observe(nullptr);
   MeasureUserInstalledAppHistograms(code);
+  if (acceptance_result_callback_) {
+    std::move(acceptance_result_callback_).Run(false, base::DoNothing());
+  }
   CompleteAndSelfDestruct(CommandResult::kSuccess, webapps::AppId(), code,
                           location);
 }

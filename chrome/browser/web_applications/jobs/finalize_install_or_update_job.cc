@@ -73,6 +73,10 @@
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_data.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_linux.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
 namespace web_app {
 
 // Overwrite the user display mode if the install source indicates a
@@ -317,6 +321,56 @@ void FinalizeInstallOrUpdateJob::Start(InstallFinalizedCallback callback) {
     return;
   }
   callback_ = std::move(callback);
+
+#if BUILDFLAG(IS_LINUX)
+  if (ShouldRunPortalPreflight(options_)) {
+    gfx::ImageFamily image_family;
+    const IconBitmaps& icons = web_app_info_.trusted_icon_bitmaps.any.empty()
+                                   ? web_app_info_.icon_bitmaps
+                                   : web_app_info_.trusted_icon_bitmaps;
+    for (const auto& [size, bitmap] : icons.any) {
+      if (!bitmap.drawsNothing()) {
+        image_family.Add(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+      }
+    }
+    PreparePortalInstallOnUIThread(
+        base::UTF16ToUTF8(web_app_info_.title.value()),
+        GetShortcutIconBytes(image_family), web_app_info_.start_url(),
+        base::BindOnce(&FinalizeInstallOrUpdateJob::OnPortalPreflightCompleted,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+#endif  // BUILDFLAG(IS_LINUX)
+
+  ContinueStartAfterPreflight();
+}
+
+#if BUILDFLAG(IS_LINUX)
+// static
+bool FinalizeInstallOrUpdateJob::ShouldRunPortalPreflight(
+    const FinalizeJobOptions& options) {
+  return !options.is_silent_update &&
+         options.install_state ==
+             proto::InstallState::INSTALLED_WITH_OS_INTEGRATION &&
+         options.source == WebAppManagement::kUserInstalled &&
+         ShouldUseDynamicLauncherPortal();
+}
+
+void FinalizeInstallOrUpdateJob::OnPortalPreflightCompleted(
+    std::optional<std::string> token) {
+  if (!token.has_value()) {
+    LOG(ERROR)
+        << "Portal PrepareInstall returned nullopt (user cancelled prompt)";
+    RunCallbackAndResetLock(webapps::AppId(),
+                            webapps::InstallResultCode::kUserInstallDeclined);
+    return;
+  }
+  portal_token_ = token.value();
+  ContinueStartAfterPreflight();
+}
+#endif  // BUILDFLAG(IS_LINUX)
+
+void FinalizeInstallOrUpdateJob::ContinueStartAfterPreflight() {
   webapps::ManifestId manifest_id = web_app_info_.manifest_id();
 
   if (options_.is_silent_update) {
@@ -773,6 +827,9 @@ void FinalizeInstallOrUpdateJob::OnDatabaseCommitCompleted(
     synchronize_options->add_shortcut_to_desktop = options_.add_to_desktop;
     synchronize_options->add_to_quick_launch_bar =
         options_.add_to_quick_launch_bar;
+#if BUILDFLAG(IS_LINUX)
+    synchronize_options->portal_token = portal_token_;
+#endif  // BUILDFLAG(IS_LINUX)
 
     switch (options_.source) {
       case WebAppManagement::kSystem:

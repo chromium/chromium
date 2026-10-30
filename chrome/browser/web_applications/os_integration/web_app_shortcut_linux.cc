@@ -11,9 +11,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_callback.h"
 #include "base/base_paths.h"
 #include "base/check_is_test.h"
 #include "base/environment.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -32,22 +34,46 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/version_info/nix/version_extra_utils.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/shell_integration_linux.h"
+#include "chrome/browser/web_applications/os_integration/dynamic_launcher_portal.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/auto_start_linux.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/browser_thread.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_util.h"
 
 namespace web_app {
+
+BASE_FEATURE(kWebAppsUseDynamicLauncherPortal,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool ShouldUseDynamicLauncherPortal() {
+  // Host installs keep writing .desktop files directly, which also allows
+  // silent launcher updates. The portal is only needed in app sandboxes, where
+  // the host's .desktop files can't be written. Snaps keep using the legacy
+  // path, since the DynamicLauncher portal doesn't support them
+  // (https://github.com/flatpak/xdg-desktop-portal/issues/2014).
+  return base::nix::GetAppSandbox() == base::nix::AppSandbox::kFlatpak &&
+         base::FeatureList::IsEnabled(kWebAppsUseDynamicLauncherPortal);
+}
 
 namespace {
 
@@ -73,6 +99,78 @@ base::FilePath GetDesktopPath() {
 
 base::FilePath GetAutostartPath(base::Environment* env) {
   return AutoStart::GetAutostartDirectory(env);
+}
+
+constexpr int kMaxPortalIconSize = 512;
+
+}  // namespace
+
+std::vector<uint8_t> GetShortcutIconBytes(const gfx::ImageFamily& icon_images) {
+  // Prefer the smallest icon that is at least kMaxPortalIconSize, downscaled if
+  // needed, and otherwise the largest smaller icon, which isn't upscaled.
+  const gfx::Image* best_image =
+      icon_images.GetBest(kMaxPortalIconSize, kMaxPortalIconSize);
+  if (!best_image) {
+    return {};
+  }
+  gfx::Image resized = gfx::ResizedImageForMaxDimensions(
+      *best_image, kMaxPortalIconSize, kMaxPortalIconSize, /*max_area=*/0);
+  scoped_refptr<base::RefCountedMemory> best_png = resized.As1xPNGBytes();
+
+  if (!best_png || best_png->size() == 0) {
+    return {};
+  }
+  base::span<const uint8_t> span = *best_png;
+  return std::vector<uint8_t>(span.begin(), span.end());
+}
+
+// Strips Name=, Icon=, Actions=, and non-[Desktop Entry] groups from desktop
+// file. This is required because org.freedesktop.portal.DynamicLauncher
+// enforces that desktop entries passed to Install() must contain exactly one
+// group ([Desktop Entry]).
+std::string StripNameAndIconFromDesktopFile(std::string_view contents) {
+  std::vector<std::string_view> lines = base::SplitStringPiece(
+      contents, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  std::vector<std::string_view> filtered_lines;
+  bool in_main_group = false;
+  for (std::string_view line : lines) {
+    std::string_view trimmed =
+        base::TrimWhitespaceASCII(line, base::TRIM_LEADING);
+    if (trimmed.starts_with("[")) {
+      in_main_group = (trimmed == "[Desktop Entry]");
+    }
+    if (in_main_group) {
+      if (trimmed.starts_with("Name=") || trimmed.starts_with("Icon=") ||
+          trimmed.starts_with("Name[") || trimmed.starts_with("Icon[") ||
+          trimmed.starts_with("Actions=")) {
+        continue;
+      }
+      filtered_lines.push_back(line);
+    }
+  }
+  return base::JoinString(filtered_lines, "\n");
+}
+
+// Returns the portal desktop_file_id, formatted as <app_id>.<shortcut_filename>
+// as required by org.freedesktop.portal.DynamicLauncher (e.g.
+// org.chromium.Chromium.chrome-app_id-profile.desktop).
+std::string GetPortalDesktopFileId(base::Environment* env,
+                                   const base::FilePath& shortcut_filename) {
+  std::string name = shortcut_filename.BaseName().value();
+  std::unique_ptr<base::Environment> local_env;
+  if (!env) {
+    local_env = base::Environment::Create();
+    env = local_env.get();
+  }
+  std::string app_name = env ? version_info::nix::GetAppName(*env) : "";
+  if (app_name.empty()) {
+    return name;
+  }
+  std::string prefix = base::StrCat({app_name, "."});
+  if (base::StartsWith(name, prefix)) {
+    return name;
+  }
+  return base::StrCat({prefix, name});
 }
 
 // Result of creating app shortcut icon.
@@ -103,7 +201,8 @@ enum class CreateShortcutResult {
   kCorruptDirectoryContents = 8,
   kCorruptApplicationsMenuShortcut = 9,
   kFailToInstallShortcut = 10,
-  kMaxValue = kFailToInstallShortcut
+  kPortalInstallFailed = 11,
+  kMaxValue = kPortalInstallFailed
 };
 
 // Record UMA metric for creating shortcut icon.
@@ -118,11 +217,36 @@ void RecordCreateShortcut(CreateShortcutResult result) {
 
 bool LaunchXdgUtility(const std::vector<std::string>& argv, int* exit_code) {
   if (GetInstalledLaunchXdgUtilityForTesting()) {
-    return std::move(GetInstalledLaunchXdgUtilityForTesting())
-        .Run(argv, exit_code);
+    return GetInstalledLaunchXdgUtilityForTesting().Run(argv, exit_code);
   }
 
   return shell_integration_linux::LaunchXdgUtility(argv, exit_code);
+}
+
+bool DeleteShortcutInApplicationsMenuLegacy(
+    const base::FilePath& shortcut_filename,
+    const base::FilePath& directory_filename) {
+  // TODO(crbug.com/40808705): Support shortcut testing in Applications Menu.
+  DCHECK(!OsIntegrationTestOverride::Get() ||
+         GetInstalledLaunchXdgUtilityForTesting());  // IN-TEST
+  std::vector<std::string> argv;
+  argv.push_back("xdg-desktop-menu");
+  argv.push_back("uninstall");
+
+  // Uninstall in user mode, to match the install.
+  argv.push_back("--mode");
+  argv.push_back("user");
+
+  // The file does not need to exist anywhere - xdg-desktop-menu will uninstall
+  // items from the menu with a matching name.
+  // If |directory_filename| is supplied, this will also remove the item from
+  // the directory, and remove the directory if it is empty.
+  if (!directory_filename.empty()) {
+    argv.push_back(directory_filename.value());
+  }
+  argv.push_back(shortcut_filename.value());
+  int exit_code;
+  return LaunchXdgUtility(argv, &exit_code);
 }
 
 const char kDirectoryFilename[] = "chrome-apps.directory";
@@ -282,11 +406,12 @@ bool CreateShortcutInAutoStart(base::Environment* env,
 // applications menu. If |directory_filename| is non-empty, creates a sub-menu
 // with |directory_filename| and |directory_contents|, and stores the shortcut
 // under the sub-menu.
-bool CreateShortcutInApplicationsMenu(base::Environment* env,
-                                      const base::FilePath& shortcut_filename,
-                                      const std::string& contents,
-                                      const base::FilePath& directory_filename,
-                                      const std::string& directory_contents) {
+bool CreateShortcutInApplicationsMenuLegacy(
+    base::Environment* env,
+    const base::FilePath& shortcut_filename,
+    const std::string& contents,
+    const base::FilePath& directory_filename,
+    const std::string& directory_contents) {
   // Application menu shortcuts are not yet supported by
   // OsIntegrationTestOverride, so this function should only be called if it
   // isn't populated OR if the test has overridden
@@ -358,7 +483,169 @@ bool CreateShortcutInApplicationsMenu(base::Environment* env,
   return true;
 }
 
-}  // namespace
+// Runs on the shortcut sequence once the portal's Install call has finished.
+// If the portal failed, falls back to the legacy install, so the user still
+// gets a launcher where the legacy path works.
+void FinishPortalInstall(base::FilePath applications_dir,
+                         base::OnceCallback<bool()> legacy_install,
+                         base::OnceCallback<void(bool)> callback,
+                         bool portal_success) {
+  if (!portal_success) {
+    LOG(ERROR) << "Portal shortcut installation failed, falling back to the "
+                  "legacy install";
+    RecordCreateShortcut(CreateShortcutResult::kPortalInstallFailed);
+    bool success = std::move(legacy_install).Run();
+    std::move(callback).Run(success);
+    return;
+  }
+  if (!applications_dir.empty()) {
+    std::vector<std::string> argv = {"update-desktop-database",
+                                     applications_dir.value()};
+    int exit_code;
+    LaunchXdgUtility(argv, &exit_code);
+  }
+  std::move(callback).Run(true);
+}
+
+void OnPortalInstallResult(
+    std::unique_ptr<DynamicLauncherPortal> portal,
+    base::FilePath applications_dir,
+    base::OnceCallback<bool()> legacy_install,
+    base::OnceCallback<void(bool)> callback,
+    scoped_refptr<base::SequencedTaskRunner> origin_runner,
+    bool portal_success) {
+  origin_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&FinishPortalInstall, std::move(applications_dir),
+                     std::move(legacy_install), std::move(callback),
+                     portal_success));
+}
+
+void TryInstallPortalShortcutOnUIThread(
+    std::string portal_desktop_file_id,
+    std::string stripped_contents,
+    std::string token,
+    base::FilePath applications_dir,
+    base::OnceCallback<bool()> legacy_install,
+    base::OnceCallback<void(bool)> callback,
+    scoped_refptr<base::SequencedTaskRunner> origin_runner) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (token.empty()) {
+    origin_runner->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](base::OnceCallback<bool()> legacy_install,
+                          base::OnceCallback<void(bool)> callback) {
+                         bool success = std::move(legacy_install).Run();
+                         std::move(callback).Run(success);
+                       },
+                       std::move(legacy_install), std::move(callback)));
+    return;
+  }
+  auto portal = std::make_unique<DynamicLauncherPortal>();
+  auto* portal_ptr = portal.get();
+  portal_ptr->Install(
+      token, portal_desktop_file_id, stripped_contents,
+      base::BindOnce(&OnPortalInstallResult, std::move(portal),
+                     std::move(applications_dir), std::move(legacy_install),
+                     std::move(callback), origin_runner));
+}
+
+void CreateShortcutInApplicationsMenu(base::Environment* env,
+                                      const ShortcutInfo& shortcut_info,
+                                      const base::FilePath& shortcut_filename,
+                                      const std::string& contents,
+                                      const base::FilePath& directory_filename,
+                                      const std::string& directory_contents,
+                                      base::OnceCallback<void(bool)> callback) {
+  auto legacy_install = base::BindOnce(
+      [](base::Environment* env, base::FilePath shortcut_filename,
+         std::string contents, base::FilePath directory_filename,
+         std::string directory_contents) {
+        return CreateShortcutInApplicationsMenuLegacy(
+            env, shortcut_filename, contents, directory_filename,
+            directory_contents);
+      },
+      env, shortcut_filename, contents, directory_filename, directory_contents);
+
+  base::FilePath applications_dir =
+      env ? base::nix::GetXDGDataWriteLocation(env).AppendASCII("applications")
+          : base::FilePath();
+
+  if (GetInstalledLaunchXdgUtilityForTesting() ||
+      !ShouldUseDynamicLauncherPortal() || shortcut_info.portal_token.empty()) {
+    base::FilePath portal_filename(
+        GetPortalDesktopFileId(env, shortcut_filename));
+    if (portal_filename != shortcut_filename && !applications_dir.empty() &&
+        base::PathExists(applications_dir.Append(portal_filename))) {
+      if (ShouldUseDynamicLauncherPortal()) {
+        // The launcher was installed through the portal, and replacing it
+        // requires a new user-approved token. Without one (e.g. for silent
+        // manifest updates), leave the existing launcher untouched rather than
+        // replacing it with a legacy one, which wouldn't work in a sandbox.
+        std::move(callback).Run(true);
+        return;
+      }
+      // The feature was turned off: replace the portal launcher with a legacy
+      // one.
+      DeleteShortcutInApplicationsMenuLegacy(portal_filename,
+                                             directory_filename);
+    }
+    bool success = std::move(legacy_install).Run();
+    std::move(callback).Run(success);
+    return;
+  }
+
+  std::string portal_desktop_file_id =
+      GetPortalDesktopFileId(env, shortcut_filename);
+  std::string stripped_contents = StripNameAndIconFromDesktopFile(contents);
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&TryInstallPortalShortcutOnUIThread,
+                     portal_desktop_file_id, stripped_contents,
+                     shortcut_info.portal_token, std::move(applications_dir),
+                     std::move(legacy_install), std::move(callback),
+                     base::SequencedTaskRunner::GetCurrentDefault()));
+}
+
+void PreparePortalInstallOnUIThread(
+    std::string display_name,
+    std::vector<uint8_t> icon_bytes,
+    GURL target_url,
+    base::OnceCallback<void(std::optional<std::string> token)> callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (GetInstalledLaunchXdgUtilityForTesting() ||
+      !ShouldUseDynamicLauncherPortal()) {
+    std::move(callback).Run("");
+    return;
+  }
+  auto portal = std::make_unique<DynamicLauncherPortal>();
+  auto* portal_ptr = portal.get();
+  portal_ptr->IsAvailable(base::BindOnce(
+      [](std::unique_ptr<DynamicLauncherPortal> portal,
+         std::string display_name, std::vector<uint8_t> icon_bytes,
+         GURL target_url,
+         base::OnceCallback<void(std::optional<std::string> token)> callback,
+         bool available) {
+        if (!available) {
+          std::move(callback).Run("");
+          return;
+        }
+        auto* portal_ptr = portal.get();
+        portal_ptr->PrepareInstall(
+            display_name, icon_bytes, target_url,
+            base::BindOnce(
+                [](std::unique_ptr<DynamicLauncherPortal> portal,
+                   base::OnceCallback<void(std::optional<std::string> token)>
+                       callback,
+                   std::optional<std::string> token) {
+                  std::move(callback).Run(token);
+                },
+                std::move(portal), std::move(callback)));
+      },
+      std::move(portal), std::move(display_name), std::move(icon_bytes),
+      std::move(target_url), std::move(callback)));
+}
 
 DesktopActionInfo::DesktopActionInfo() = default;
 
@@ -432,30 +719,119 @@ bool DeleteShortcutInAutoStart(base::Environment* env,
   return base::DeleteFile(autostart_path.Append(shortcut_filename));
 }
 
-bool DeleteShortcutInApplicationsMenu(
-    const base::FilePath& shortcut_filename,
-    const base::FilePath& directory_filename) {
-  // TODO(crbug.com/40808705): Support shortcut testing in Applications Menu.
-  DCHECK(!OsIntegrationTestOverride::Get() ||
-         GetInstalledLaunchXdgUtilityForTesting());  // IN-TEST
-  std::vector<std::string> argv;
-  argv.push_back("xdg-desktop-menu");
-  argv.push_back("uninstall");
-
-  // Uninstall in user mode, to match the install.
-  argv.push_back("--mode");
-  argv.push_back("user");
-
-  // The file does not need to exist anywhere - xdg-desktop-menu will uninstall
-  // items from the menu with a matching name.
-  // If |directory_filename| is supplied, this will also remove the item from
-  // the directory, and remove the directory if it is empty.
-  if (!directory_filename.empty()) {
-    argv.push_back(directory_filename.value());
+void OnPortalUninstallResult(
+    std::unique_ptr<DynamicLauncherPortal> portal,
+    base::OnceCallback<bool()> legacy_uninstall,
+    base::OnceCallback<void(bool)> callback,
+    scoped_refptr<base::SequencedTaskRunner> origin_runner,
+    bool portal_success) {
+  if (portal_success) {
+    origin_runner->PostTask(FROM_HERE,
+                            base::BindOnce(std::move(callback), true));
+    return;
   }
-  argv.push_back(shortcut_filename.value());
-  int exit_code;
-  return LaunchXdgUtility(argv, &exit_code);
+  // Fall back to legacy uninstall if portal uninstallation failed or app was
+  // installed prior to portal availability.
+  origin_runner->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](base::OnceCallback<bool()> legacy_uninstall,
+                        base::OnceCallback<void(bool)> callback) {
+                       bool success = std::move(legacy_uninstall).Run();
+                       std::move(callback).Run(success);
+                     },
+                     std::move(legacy_uninstall), std::move(callback)));
+}
+
+void TryUninstallPortalShortcutOnUIThread(
+    std::string portal_desktop_file_id,
+    base::OnceCallback<bool()> legacy_uninstall,
+    base::OnceCallback<void(bool)> callback,
+    scoped_refptr<base::SequencedTaskRunner> origin_runner) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  auto portal = std::make_unique<DynamicLauncherPortal>();
+  auto* portal_ptr = portal.get();
+  portal_ptr->IsAvailable(base::BindOnce(
+      [](std::unique_ptr<DynamicLauncherPortal> portal,
+         std::string portal_desktop_file_id,
+         base::OnceCallback<bool()> legacy_uninstall,
+         base::OnceCallback<void(bool)> callback,
+         scoped_refptr<base::SequencedTaskRunner> origin_runner,
+         bool available) {
+        if (!available) {
+          origin_runner->PostTask(
+              FROM_HERE, base::BindOnce(
+                             [](base::OnceCallback<bool()> legacy_uninstall,
+                                base::OnceCallback<void(bool)> callback) {
+                               bool success = std::move(legacy_uninstall).Run();
+                               std::move(callback).Run(success);
+                             },
+                             std::move(legacy_uninstall), std::move(callback)));
+          return;
+        }
+        auto* portal_ptr = portal.get();
+        portal_ptr->Uninstall(
+            portal_desktop_file_id,
+            base::BindOnce(&OnPortalUninstallResult, std::move(portal),
+                           std::move(legacy_uninstall), std::move(callback),
+                           origin_runner));
+      },
+      std::move(portal), std::move(portal_desktop_file_id),
+      std::move(legacy_uninstall), std::move(callback), origin_runner));
+}
+
+void DeleteShortcutInApplicationsMenu(base::Environment* env,
+                                      const base::FilePath& shortcut_filename,
+                                      const base::FilePath& directory_filename,
+                                      base::OnceCallback<void(bool)> callback) {
+  auto legacy_uninstall = base::BindOnce(
+      [](base::Environment* env, base::FilePath shortcut_filename,
+         base::FilePath directory_filename) {
+        base::FilePath applications_dir =
+            env ? base::nix::GetXDGDataWriteLocation(env).AppendASCII(
+                      "applications")
+                : base::FilePath();
+        base::FilePath portal_filename(
+            GetPortalDesktopFileId(env, shortcut_filename));
+
+        bool success = true;
+        bool deleted_any = false;
+
+        if (!applications_dir.empty() &&
+            base::PathExists(applications_dir.Append(portal_filename))) {
+          success = DeleteShortcutInApplicationsMenuLegacy(
+                        portal_filename, directory_filename) &&
+                    success;
+          deleted_any = true;
+        }
+
+        if (portal_filename != shortcut_filename &&
+            ((!applications_dir.empty() &&
+              base::PathExists(applications_dir.Append(shortcut_filename))) ||
+             !deleted_any)) {
+          success = DeleteShortcutInApplicationsMenuLegacy(
+                        shortcut_filename, directory_filename) &&
+                    success;
+        }
+
+        return success;
+      },
+      env, shortcut_filename, directory_filename);
+
+  if (GetInstalledLaunchXdgUtilityForTesting() ||
+      !ShouldUseDynamicLauncherPortal()) {
+    bool success = std::move(legacy_uninstall).Run();
+    std::move(callback).Run(success);
+    return;
+  }
+
+  std::string portal_desktop_file_id =
+      GetPortalDesktopFileId(env, shortcut_filename);
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&TryUninstallPortalShortcutOnUIThread,
+                     portal_desktop_file_id, std::move(legacy_uninstall),
+                     std::move(callback),
+                     base::SequencedTaskRunner::GetCurrentDefault()));
 }
 
 // Removes temporary shortcut icons left over in `./local/share/icons/hicolor`
@@ -525,7 +901,8 @@ void CreateDesktopShortcut(const ShortcutInfo& shortcut_info,
     }
 
     if (applications_menu_location != APP_MENU_LOCATION_NONE) {
-      DeleteShortcutInApplicationsMenu(shortcut_filename, base::FilePath());
+      DeleteShortcutInApplicationsMenuLegacy(shortcut_filename,
+                                             base::FilePath());
     }
     if (!test_override && !GetInstalledLaunchXdgUtilityForTesting()) {
       base::FilePath icon_filename = GetAppIconShortcutFilename(
@@ -562,7 +939,7 @@ void CreateDesktopShortcut(const ShortcutInfo& shortcut_info,
     std::string contents = shell_integration_linux::GetDesktopFileContents(
         chrome_exe_path, app_name, shortcut_info.url, shortcut_info.app_id,
         shortcut_info.title, icon_name, shortcut_info.profile_path, "", "",
-        false, "", std::move(shortcut_info.actions));
+        false, "", shortcut_info.actions);
     success = CreateShortcutOnDesktop(shortcut_filename, contents);
   }
 
@@ -571,7 +948,7 @@ void CreateDesktopShortcut(const ShortcutInfo& shortcut_info,
     std::string contents = shell_integration_linux::GetDesktopFileContents(
         chrome_exe_path, app_name, shortcut_info.url, shortcut_info.app_id,
         shortcut_info.title, icon_name, shortcut_info.profile_path, "", "",
-        false, kRunOnOsLoginModeWindowed, std::move(shortcut_info.actions));
+        false, kRunOnOsLoginModeWindowed, shortcut_info.actions);
     success =
         CreateShortcutInAutoStart(env, shortcut_filename, contents) && success;
   }
@@ -586,6 +963,9 @@ void CreateDesktopShortcut(const ShortcutInfo& shortcut_info,
   }
 
   if (applications_menu_location == APP_MENU_LOCATION_NONE) {
+    if (success) {
+      RecordCreateShortcut(CreateShortcutResult::kSuccess);
+    }
     std::move(callback).Run(success);
     return;
   }
@@ -631,15 +1011,22 @@ void CreateDesktopShortcut(const ShortcutInfo& shortcut_info,
       shortcut_info.title, icon_name, shortcut_info.profile_path, "",
       base::JoinString(mime_types, ";"),
       creation_locations.applications_menu_location == APP_MENU_LOCATION_HIDDEN,
-      "", std::move(shortcut_info.actions));
-  success = CreateShortcutInApplicationsMenu(env, shortcut_filename, contents,
-                                             directory_filename,
-                                             directory_contents) &&
-            success;
-  if (success) {
-    RecordCreateShortcut(CreateShortcutResult::kSuccess);
-  }
-  std::move(callback).Run(success);
+      "", shortcut_info.actions);
+
+  CreateShortcutInApplicationsMenu(
+      env, shortcut_info, shortcut_filename, contents, directory_filename,
+      directory_contents,
+      // `owned_env` is bound to keep `env` alive until the operation finishes.
+      base::BindOnce(
+          [](std::unique_ptr<base::Environment> owned_env, bool success,
+             base::OnceCallback<void(bool)> callback, bool app_menu_success) {
+            bool result = success && app_menu_success;
+            if (result) {
+              RecordCreateShortcut(CreateShortcutResult::kSuccess);
+            }
+            std::move(callback).Run(result);
+          },
+          std::move(owned_env), success, std::move(callback)));
 }
 
 ShortcutLocations GetExistingShortcutLocations(
@@ -678,7 +1065,10 @@ ShortcutLocations GetExistingShortcutLocations(
   // Determine whether there is a shortcut in the applications directory.
   std::string shortcut_contents;
   if (shell_integration_linux::GetExistingShortcutContents(
-          env, shortcut_filename, &shortcut_contents)) {
+          env, shortcut_filename, &shortcut_contents) ||
+      shell_integration_linux::GetExistingShortcutContents(
+          env, base::FilePath(GetPortalDesktopFileId(env, shortcut_filename)),
+          &shortcut_contents)) {
     // If the shortcut contents contain NoDisplay=true, it should be hidden.
     // Otherwise since these shortcuts are for apps, they are always in the
     // "Chrome Apps" directory.
@@ -732,25 +1122,38 @@ void DeleteDesktopShortcuts(const base::FilePath& profile_path,
                                            std::vector<std::string>());
   }
 
+  bool initial_success = deleted_from_desktop && deleted_from_autostart;
+
+  // `owned_env` is bound to keep `env` alive until the operation finishes.
+  auto on_app_menu_deleted = base::BindOnce(
+      [](std::unique_ptr<base::Environment> owned_env,
+         base::FilePath profile_path, std::string extension_id,
+         scoped_refptr<OsIntegrationTestOverride> test_override,
+         bool initial_success, base::OnceCallback<void(bool)> callback,
+         bool deleted_from_application_menu) {
+        bool deleted_from_icon_storage = true;
+        if (!test_override && !GetInstalledLaunchXdgUtilityForTesting()) {
+          base::FilePath icon_filename =
+              GetAppIconShortcutFilename(profile_path, extension_id);
+          deleted_from_icon_storage = DeleteShortcutIcons(icon_filename);
+        }
+        std::move(callback).Run(initial_success &&
+                                deleted_from_application_menu &&
+                                deleted_from_icon_storage);
+      },
+      std::move(owned_env), profile_path, extension_id, test_override,
+      initial_success, std::move(callback));
+
   // Shortcuts items aren't fully supported with test_override, so don't fail if
   // it's populated.
   // TODO(https://crbug.com/332935566): Support this by saving the xdg calls.
-  bool deleted_from_application_menu = true;
   if (!test_override || GetInstalledLaunchXdgUtilityForTesting()) {
-    deleted_from_application_menu = DeleteShortcutInApplicationsMenu(
-        shortcut_filename, base::FilePath(kDirectoryFilename));
+    DeleteShortcutInApplicationsMenu(env, shortcut_filename,
+                                     base::FilePath(kDirectoryFilename),
+                                     std::move(on_app_menu_deleted));
+  } else {
+    std::move(on_app_menu_deleted).Run(/*deleted_from_application_menu=*/true);
   }
-
-  bool deleted_from_icon_storage = true;
-  if (!test_override && !GetInstalledLaunchXdgUtilityForTesting()) {
-    base::FilePath icon_filename =
-        GetAppIconShortcutFilename(profile_path, extension_id);
-    deleted_from_icon_storage = DeleteShortcutIcons(icon_filename);
-  }
-
-  std::move(callback).Run(deleted_from_desktop && deleted_from_autostart &&
-                          deleted_from_application_menu &&
-                          deleted_from_icon_storage);
 }
 
 void DeleteAllDesktopShortcuts(const base::FilePath& profile_path,
@@ -805,22 +1208,44 @@ void DeleteAllDesktopShortcuts(const base::FilePath& profile_path,
   std::vector<base::FilePath> shortcut_filenames_app_menu =
       shell_integration_linux::GetExistingProfileShortcutFilenames(
           profile_path, applications_menu);
+
+  // `owned_env` is bound to keep `env` alive until the operation finishes.
+  auto on_app_menu_deleted = base::BindOnce(
+      [](std::unique_ptr<base::Environment> owned_env,
+         std::vector<base::FilePath> icon_files_to_be_deleted,
+         scoped_refptr<OsIntegrationTestOverride> test_override,
+         bool initial_result, base::OnceCallback<void(bool)> callback,
+         const std::vector<bool>& results) {
+        bool overall =
+            initial_result && std::all_of(results.begin(), results.end(),
+                                          [](bool r) { return r; });
+        // Delete the shortcut icons from the staging area.
+        if (!test_override && !GetInstalledLaunchXdgUtilityForTesting()) {
+          for (const auto& icon_files : icon_files_to_be_deleted) {
+            overall = DeleteShortcutIcons(icon_files) && overall;
+          }
+        }
+        std::move(callback).Run(overall);
+      },
+      std::move(owned_env), icon_files_to_be_deleted, test_override, result,
+      std::move(callback));
+
+  if (shortcut_filenames_app_menu.empty() ||
+      (test_override && !GetInstalledLaunchXdgUtilityForTesting())) {
+    std::move(on_app_menu_deleted).Run(/*results=*/{});
+    return;
+  }
+
+  auto barrier_callback = base::BarrierCallback<bool>(
+      shortcut_filenames_app_menu.size(), std::move(on_app_menu_deleted));
+
   for (const auto& menu : shortcut_filenames_app_menu) {
     // Shortcut items aren't fully supported with test_override, so don't fail
     // if it's populated.
     // TODO(https://crbug.com/332935566): Support this by saving the xdg calls.
-    if (!test_override || GetInstalledLaunchXdgUtilityForTesting()) {
-      result = DeleteShortcutInApplicationsMenu(
-                   menu, base::FilePath(kDirectoryFilename)) &&
-               result;
-    }
+    DeleteShortcutInApplicationsMenu(
+        env, menu, base::FilePath(kDirectoryFilename), barrier_callback);
   }
-  // Delete the shortcut icons from the staging area.
-  for (const auto& icon_files : icon_files_to_be_deleted) {
-    result = DeleteShortcutIcons(icon_files) && result;
-  }
-
-  std::move(callback).Run(result);
 }
 
 void UpdateDesktopShortcuts(
@@ -966,7 +1391,26 @@ std::vector<base::FilePath> GetShortcutLocations(
     const base::FilePath& profile_path,
     const std::string& app_id) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  return GetShortcutLocations(env.get(), locations, profile_path, app_id);
+  return web_app::GetShortcutLocations(env.get(), locations, profile_path,
+                                       app_id);
+}
+
+std::string StripNameAndIconFromDesktopFile(std::string_view contents) {
+  return web_app::StripNameAndIconFromDesktopFile(contents);
+}
+
+std::string GetPortalDesktopFileId(base::Environment* env,
+                                   const base::FilePath& shortcut_filename) {
+  return web_app::GetPortalDesktopFileId(env, shortcut_filename);
+}
+
+void FinishPortalInstall(base::FilePath applications_dir,
+                         base::OnceCallback<bool()> legacy_install,
+                         base::OnceCallback<void(bool)> callback,
+                         bool portal_success) {
+  web_app::FinishPortalInstall(std::move(applications_dir),
+                               std::move(legacy_install), std::move(callback),
+                               portal_success);
 }
 
 }  // namespace internals

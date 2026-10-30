@@ -79,6 +79,7 @@ struct ShortcutInfo {
   bool is_diy_app = false;
 #if BUILDFLAG(IS_LINUX)
   std::set<DesktopActionInfo> actions;
+  std::string portal_token;
 #endif  // BUILDFLAG(IS_LINUX)
 
   // An app is multi-profile if there is a single shortcut and single app shim
