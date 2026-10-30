@@ -35,6 +35,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetView.SheetLayou
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetView.TouchHandler;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.TokenHolder;
@@ -95,6 +96,9 @@ class BottomSheetMediator implements TouchHandler {
     private @Px int mRequestedBottomMargin;
     private @Px int mBottomMargin;
     private @Nullable Callback<Integer> mContainerBottomMarginApplier;
+    private Supplier<Integer> mEdgeToEdgeBottomInsetSupplier = () -> 0;
+    private Supplier<Integer> mKeyboardInsetSupplier = () -> 0;
+    private final Resources mResources;
 
     /**
      * Creates a new BottomSheetMediator.
@@ -104,6 +108,7 @@ class BottomSheetMediator implements TouchHandler {
      */
     BottomSheetMediator(PropertyModel model, Resources resources) {
         mModel = model;
+        mResources = resources;
         mMinHalfFullDistance =
                 resources.getDimensionPixelSize(R.dimen.bottom_sheet_min_full_half_distance);
         mDesktopBottomMargin =
@@ -151,6 +156,8 @@ class BottomSheetMediator implements TouchHandler {
         mContainerBottomMarginApplier = null;
         mObservers.clear();
         mIsTouchEnabled = false;
+        mEdgeToEdgeBottomInsetSupplier = () -> 0;
+        mKeyboardInsetSupplier = () -> 0;
     }
 
     /**
@@ -293,6 +300,24 @@ class BottomSheetMediator implements TouchHandler {
         return SheetState.FULL;
     }
 
+    void setEdgeToEdgeBottomInsetSupplier(Supplier<Integer> edgeToEdgeBottomInsetSupplier) {
+        mEdgeToEdgeBottomInsetSupplier = edgeToEdgeBottomInsetSupplier;
+    }
+
+    void setKeyboardInsetSupplier(Supplier<Integer> keyboardInsetSupplier) {
+        mKeyboardInsetSupplier = keyboardInsetSupplier;
+    }
+
+    @Px
+    int getEdgeToEdgeBottomInset() {
+        if (mBottomMargin != 0) return 0;
+        Integer bottomInsetDp = mEdgeToEdgeBottomInsetSupplier.get();
+        assert bottomInsetDp != null;
+        @Px int bottomInset = ViewUtils.dpToPx(mResources.getDisplayMetrics(), bottomInsetDp);
+        @Px int keyboardInset = mKeyboardInsetSupplier.get();
+        return Math.max(0, bottomInset - keyboardInset);
+    }
+
     /**
      * Resolves the effective edge-to-edge bottom inset for the current content and target/current
      * state. Sheets that cover the bottom controls handle the bottom safe-area inset internally
@@ -300,7 +325,8 @@ class BottomSheetMediator implements TouchHandler {
      * inset is still applied.
      */
     @Px
-    int getEffectiveEdgeToEdgeBottomInset(@Px int rawE2eBottomInset) {
+    int getEffectiveEdgeToEdgeBottomInset() {
+        @Px int rawE2eBottomInset = getEdgeToEdgeBottomInset();
         if (mSheetContent == null) return rawE2eBottomInset;
         return mSheetContent.coversBottomControls() && getTargetOrCurrentState() != SheetState.PEEK
                 ? 0
@@ -859,7 +885,6 @@ class BottomSheetMediator implements TouchHandler {
      * Updates the vertical layout properties of the bottom sheet content container and background
      * in the model in a single pass.
      *
-     * @param e2eBottomInset The edge-to-edge bottom inset in pixels.
      * @param visibleViewportRect The visible viewport bounds.
      * @param decorHeight The window decor view height in pixels.
      * @param handlebarHeight The measured handlebar height in pixels.
@@ -868,7 +893,6 @@ class BottomSheetMediator implements TouchHandler {
      * @param stateHeightPx The sheet height for the target or current state in pixels.
      */
     void updateVerticalLayout(
-            @Px int e2eBottomInset,
             Rect visibleViewportRect,
             @Px int decorHeight,
             @Px int handlebarHeight,
@@ -883,7 +907,7 @@ class BottomSheetMediator implements TouchHandler {
                         visibleViewportRect,
                         stateHeightPx,
                         handlebarHeight));
-        setContentBottomPadding(calculateContentBottomPadding(e2eBottomInset));
+        setContentBottomPadding(calculateContentBottomPadding());
         setBackgroundHeight(calculateTargetBackgroundHeight(fullHeightPx));
         setKeyboardCurtainHeight(decorHeight);
         updateVisibleBackgroundHeight(currentOffsetPx, fullHeightPx);
@@ -894,13 +918,12 @@ class BottomSheetMediator implements TouchHandler {
      *
      * @param currentOffsetPx The current vertical offset of the sheet from the bottom in pixels.
      * @param browserControlsOffset The vertical offset from browser controls in pixels.
-     * @param e2eBottomInset The edge-to-edge bottom inset in pixels.
      * @return The non-negative vertical translation in pixels.
      */
-    float calculateSheetTranslationY(
-            float currentOffsetPx, float browserControlsOffset, @Px int e2eBottomInset) {
+    float calculateSheetTranslationY(float currentOffsetPx, float browserControlsOffset) {
         // The browser controls offset is added here so that the sheet's toolbar behaves like the
         // browser controls do.
+        @Px int e2eBottomInset = getEffectiveEdgeToEdgeBottomInset();
         float bottomInsetAdjustment =
                 currentOffsetPx <= 0 ? 0f : Math.min(currentOffsetPx, e2eBottomInset);
         float translationY =
@@ -930,8 +953,10 @@ class BottomSheetMediator implements TouchHandler {
     }
 
     @Px
-    int calculateContentBottomPadding(@Px int e2eBottomInset) {
-        return (isFullHeightResizeContent() || isLargeFormFactorUiEnabled()) ? 0 : e2eBottomInset;
+    int calculateContentBottomPadding() {
+        return (isFullHeightResizeContent() || isLargeFormFactorUiEnabled())
+                ? 0
+                : getEffectiveEdgeToEdgeBottomInset();
     }
 
     int calculateTargetBackgroundHeight(float fullHeightPx) {

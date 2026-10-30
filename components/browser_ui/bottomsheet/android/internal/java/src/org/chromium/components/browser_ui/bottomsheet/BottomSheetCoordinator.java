@@ -44,7 +44,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetView.SheetLayou
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.KeyboardVisibilityDelegate;
-import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsAnimationListener;
 import org.chromium.ui.interpolators.Interpolators;
@@ -137,9 +136,6 @@ class BottomSheetCoordinator
 
     /** The window for the bottom sheet. */
     private @MonotonicNonNull Window mWindow;
-
-    /** The supplier of the bottom inset when edge to edge is enabled. */
-    private Supplier<Integer> mEdgeToEdgeBottomInsetSupplier = () -> 0;
 
     /** Observer for inset changes. */
     private InsetObserver mInsetObserver;
@@ -253,8 +249,9 @@ class BottomSheetCoordinator
             InsetObserver insetObserver,
             boolean isLargeFormFactor) {
         mWindow = window;
-        mEdgeToEdgeBottomInsetSupplier = edgeToEdgeBottomInsetSupplier;
         mInsetObserver = insetObserver;
+        mMediator.setEdgeToEdgeBottomInsetSupplier(edgeToEdgeBottomInsetSupplier);
+        mMediator.setKeyboardInsetSupplier(mInsetObserver.getSupplierForKeyboardInset());
         mSheetContainer = (ViewGroup) mView.getParent();
         mMediator.setContainerBottomMarginApplier(this::applyContainerBottomMargin);
         onAppHeaderHeightChanged(appHeaderHeight);
@@ -321,19 +318,12 @@ class BottomSheetCoordinator
     @VisibleForTesting
     @Px
     int getContentBottomPadding() {
-        return mMediator.calculateContentBottomPadding(
-                mMediator.getEffectiveEdgeToEdgeBottomInset(getEdgeToEdgeBottomInset()));
+        return mMediator.calculateContentBottomPadding();
     }
 
     @Px
     int getEdgeToEdgeBottomInset() {
-        if (getContainerBottomMargin() != 0) return 0;
-        assert mEdgeToEdgeBottomInsetSupplier.get() != null;
-        @Px
-        int bottomInset =
-                ViewUtils.dpToPx(mView.getContext(), mEdgeToEdgeBottomInsetSupplier.get());
-        @Px int keyboardInset = mInsetObserver.getSupplierForKeyboardInset().get();
-        return Math.max(0, bottomInset - keyboardInset);
+        return mMediator.getEdgeToEdgeBottomInset();
     }
 
     private void onContainerLayoutChange(
@@ -383,8 +373,8 @@ class BottomSheetCoordinator
     }
 
     private boolean updateViewportAndBottomInset(@Px int previousHeight) {
+        updateViewport();
         @Px int e2eBottomInset = getEdgeToEdgeBottomInset();
-        updateViewport(e2eBottomInset);
         boolean insetOrHeightChanged =
                 previousHeight != mMediator.getSheetContainerHeight()
                         || mPreviousBottomInset != e2eBottomInset;
@@ -695,14 +685,12 @@ class BottomSheetCoordinator
             float offset, @StateChangeReason int reason, boolean reportOpenClosed) {
         mCurrentOffsetPx = offset;
 
-        @Px
-        int bottomInset = mMediator.getEffectiveEdgeToEdgeBottomInset(getEdgeToEdgeBottomInset());
         boolean isSheetOpen = isSheetOpen();
         float translationY =
                 mMediator.calculateSheetTranslationY(
-                        mCurrentOffsetPx, getOffsetFromBrowserControls(), bottomInset);
+                        mCurrentOffsetPx, getOffsetFromBrowserControls());
 
-        updateViewport(bottomInset);
+        updateViewport();
         if (isSheetOpen && !shouldUpdateSheetVerticalOffsetOrHeight(translationY)) {
             return;
         }
@@ -1322,13 +1310,9 @@ class BottomSheetCoordinator
 
     private void updateContentContainerHeight() {
         assert mWindow != null;
-        @Px
-        int e2eBottomInset =
-                mMediator.getEffectiveEdgeToEdgeBottomInset(getEdgeToEdgeBottomInset());
-        updateViewport(e2eBottomInset);
+        updateViewport();
 
         mMediator.updateVerticalLayout(
-                e2eBottomInset,
                 mVisibleViewportRect,
                 mWindow.getDecorView().getHeight(),
                 getHandlebarHeight(),
@@ -1358,17 +1342,17 @@ class BottomSheetCoordinator
         return content != null && content.coversBottomControls();
     }
 
-    private void updateViewport(@Px int e2eBottomInset) {
+    private void updateViewport() {
         assert mWindow != null;
 
         View decorView = mWindow.getDecorView();
         WindowInsetsCompat insets = mInsetObserver.getLastRawWindowInsets();
         if (insets == null) {
-            updateViewportFromDisplayFrame(decorView, e2eBottomInset);
+            updateViewportFromDisplayFrame(decorView, mMediator.getEdgeToEdgeBottomInset());
             return;
         }
 
-        updateViewportFromWindowInsets(decorView, insets, e2eBottomInset);
+        updateViewportFromWindowInsets(decorView, insets, mMediator.getEdgeToEdgeBottomInset());
     }
 
     private void updateViewportFromDisplayFrame(View decorView, @Px int e2eBottomInset) {
@@ -1541,7 +1525,7 @@ class BottomSheetCoordinator
 
     void setEdgeToEdgeBottomInsetSupplierForTesting(
             Supplier<Integer> edgeToEdgeBottomInsetSupplier) {
-        mEdgeToEdgeBottomInsetSupplier = edgeToEdgeBottomInsetSupplier;
+        mMediator.setEdgeToEdgeBottomInsetSupplier(edgeToEdgeBottomInsetSupplier);
     }
 
     Rect getVisibleViewportRectForTesting() {
