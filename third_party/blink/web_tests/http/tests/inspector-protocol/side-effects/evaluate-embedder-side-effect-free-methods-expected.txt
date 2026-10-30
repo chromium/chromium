@@ -131,6 +131,8 @@ Expression `performance.now()`
 has side effect: false, expected: false
 Expression `global_getSelection()`
 has side effect: false, expected: false
+Expression `window.matchMedia('(min-width: 100px)')`
+has side effect: false, expected: false
 Expression `htmlCollection[0]`
 has side effect: false, expected: false
 Expression `htmlCollection.item(0)`

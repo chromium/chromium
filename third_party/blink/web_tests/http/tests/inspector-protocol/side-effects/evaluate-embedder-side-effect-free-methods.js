@@ -119,6 +119,7 @@
 
   // Window
   await checkHasNoSideEffect(`global_getSelection()`);
+  await checkHasNoSideEffect(`window.matchMedia('(min-width: 100px)')`);
 
   // Collection getters (e.g. HTMLCollection, NodeList)
   var indexedCollections = [
