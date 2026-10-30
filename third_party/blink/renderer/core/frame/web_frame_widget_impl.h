@@ -941,7 +941,8 @@ class CORE_EXPORT WebFrameWidgetImpl
                          const gfx::Rect& window_screen_rect) override;
   void OrientationChanged() override;
   void DidUpdateSurfaceAndScreen(
-      const display::ScreenInfos& previous_original_screen_infos) override;
+      const display::ScreenInfos& previous_original_screen_infos,
+      const display::ScreenInfos& previous_effective_screen_infos) override;
   gfx::Rect ViewportVisibleRect() override;
   std::optional<display::mojom::blink::ScreenOrientation>
   ScreenOrientationOverride() override;

@@ -5686,7 +5686,8 @@ void WebFrameWidgetImpl::OrientationChanged() {
 }
 
 void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
-    const display::ScreenInfos& previous_original_screen_infos) {
+    const display::ScreenInfos& previous_original_screen_infos,
+    const display::ScreenInfos& previous_effective_screen_infos) {
   display::ScreenInfo screen_info = widget_base_->GetScreenInfo();
   View()->SetZoomFactorForDeviceScaleFactor(screen_info.device_scale_factor,
                                             screen_info.text_scale_multiplier);
@@ -5711,16 +5712,18 @@ void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
     View()->CancelPagePopup();
   }
 
+  // Keep a snapshot while dispatching script-visible change events.
+  const display::ScreenInfos effective_screen_infos = GetScreenInfos();
   const bool window_screen_has_changed =
       !Screen::AreWebExposedScreenPropertiesEqual(
-          previous_original_screen_infos.current(),
-          original_screen_infos.current());
+          previous_effective_screen_infos.current(),
+          effective_screen_infos.current());
 
   const bool color_gamut_changed =
       color_space_utilities::GetColorSpaceGamut(
-          previous_original_screen_infos.current()) !=
+          previous_effective_screen_infos.current()) !=
       color_space_utilities::GetColorSpaceGamut(
-          original_screen_infos.current());
+          effective_screen_infos.current());
 
   // Update Screens interface data before firing any events. The API is designed
   // to offer synchronous access to the most up-to-date cached screen
@@ -5729,12 +5732,12 @@ void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
   // window.screen events are fired as well.
   ForEachLocalFrameControlledByWidget(
       LocalRootImpl()->GetFrame(),
-      [&original_screen_infos, window_screen_has_changed,
+      [&effective_screen_infos, window_screen_has_changed,
        color_gamut_changed](WebLocalFrameImpl* local_frame) {
         auto* screen = local_frame->GetFrame()->DomWindow()->screen();
-        screen->UpdateDisplayId(original_screen_infos.current().display_id);
+        screen->UpdateDisplayId(effective_screen_infos.current().display_id);
         CoreInitializer::GetInstance().DidUpdateScreens(
-            *local_frame->GetFrame(), original_screen_infos);
+            *local_frame->GetFrame(), effective_screen_infos);
         if (window_screen_has_changed) {
           screen->DispatchEvent(*Event::Create(event_type_names::kChange));
         }
@@ -5745,12 +5748,12 @@ void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
         }
       });
 
-  if (previous_original_screen_infos != original_screen_infos) {
+  if (previous_effective_screen_infos != effective_screen_infos) {
     // Propagate changes down to child local root RenderWidgets and
     // BrowserPlugins in other frame trees/processes.
     ForEachRemoteFrameControlledByWidget(
-        [&original_screen_infos](RemoteFrame* remote_frame) {
-          remote_frame->DidChangeScreenInfos(original_screen_infos);
+        [&effective_screen_infos](RemoteFrame* remote_frame) {
+          remote_frame->DidChangeScreenInfos(effective_screen_infos);
         });
   }
 }

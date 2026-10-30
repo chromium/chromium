@@ -190,9 +190,12 @@ class WidgetBaseClient {
   // Return the original (non-emulated) screen infos.
   virtual const display::ScreenInfos& GetOriginalScreenInfos() = 0;
 
-  // Indication that the surface and screen were updated.
+  // Indication that the surface and screen were updated. The first argument
+  // excludes emulation; the second is the effective value previously held by
+  // the widget.
   virtual void DidUpdateSurfaceAndScreen(
-      const display::ScreenInfos& previous_original_screen_infos) {}
+      const display::ScreenInfos& previous_original_screen_infos,
+      const display::ScreenInfos& previous_effective_screen_infos) {}
 
   // Return the viewport visible rect.
   virtual gfx::Rect ViewportVisibleRect() = 0;

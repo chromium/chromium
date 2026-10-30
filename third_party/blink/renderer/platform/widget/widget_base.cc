@@ -1929,7 +1929,9 @@ void WidgetBase::UpdateSurfaceAndScreenInfo(
 
   // RenderWidgetHostImpl::SynchronizeVisualProperties uses similar logic to
   // detect orientation changes on the display currently showing the widget.
-  const display::ScreenInfo& previous_screen_info = screen_infos_.current();
+  const display::ScreenInfos previous_effective_screen_infos = screen_infos_;
+  const display::ScreenInfo& previous_screen_info =
+      previous_effective_screen_infos.current();
   bool orientation_changed =
       previous_screen_info.orientation_angle !=
           new_screen_info.orientation_angle ||
@@ -1976,7 +1978,8 @@ void WidgetBase::UpdateSurfaceAndScreenInfo(
     }
   }
 
-  client_->DidUpdateSurfaceAndScreen(previous_original_screen_infos);
+  client_->DidUpdateSurfaceAndScreen(previous_original_screen_infos,
+                                     previous_effective_screen_infos);
 }
 
 void WidgetBase::UpdateScreenInfo(

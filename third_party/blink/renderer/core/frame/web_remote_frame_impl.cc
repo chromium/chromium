@@ -353,7 +353,7 @@ void WebRemoteFrameImpl::InitializeFrameVisualProperties(
   visual_properties.page_scale_factor = ancestor_widget->PageScaleInMainFrame();
   visual_properties.is_pinch_gesture_active =
       ancestor_widget->PinchGestureActiveInMainFrame();
-  visual_properties.screen_infos = ancestor_widget->GetOriginalScreenInfos();
+  visual_properties.screen_infos = ancestor_widget->GetScreenInfos();
   visual_properties.visible_viewport_size =
       ancestor_widget->VisibleViewportSize();
   const std::vector<gfx::Rect>& viewport_segments =

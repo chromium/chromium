@@ -1,0 +1,5 @@
+Screen emulation updates local Screen and ScreenDetails change events.
+Apply event values: [[733,977],[733,977],[733,977]]
+Reset restores all event values: true
+Event counts after apply, identical update and reset: [2,2,2]
+
