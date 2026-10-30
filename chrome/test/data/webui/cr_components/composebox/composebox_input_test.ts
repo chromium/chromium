@@ -188,6 +188,27 @@ suite('ComposeboxInputTest', () => {
 
     assertEquals('', input.style.minHeight);
   });
+
+  test(
+      'enabling caret animation while input is focused shows caret',
+      async () => {
+        inputElement.disableCaretColorAnimation = true;
+        await inputElement.updateComplete;
+
+        assertEquals(null, inputElement.shadowRoot.querySelector('#caret'));
+
+        const input =
+            inputElement.shadowRoot.querySelector<HTMLElement>('#input')!;
+        input.focus();
+
+        inputElement.disableCaretColorAnimation = false;
+        await inputElement.updateComplete;
+
+        const caret =
+            inputElement.shadowRoot.querySelector<HTMLElement>('#caret');
+        assertTrue(!!caret);
+        assertTrue(caret.classList.contains('caret-visible'));
+      });
 });
 
 suite('ComposeboxScrollCaret', () => {

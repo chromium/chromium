@@ -198,6 +198,11 @@ export class ComposeboxInputElement extends I18nMixinLit
       if (!this.input) {
         this.resetHeight();
       }
+      if (changedProperties.has('disableCaretColorAnimation') &&
+          !this.disableCaretColorAnimation &&
+          this.shadowRoot?.activeElement === inputEl) {
+        this.shadowRoot.getElementById('caret')?.classList.add('caret-visible');
+      }
       this.updateMirrorAndCaret_();
     }
 

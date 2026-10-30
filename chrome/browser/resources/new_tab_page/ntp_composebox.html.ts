@@ -78,7 +78,8 @@ export function getHtml(this: NtpComposeboxElement) {
             class="${this.hasTabs() ? 'has-tabs' : ''}"
             exportparts="text-container, icon-container, mirror, input, smart-compose, cancel, action-icon, cancel-icon"
             .composeboxSkillsEnabled="${this.composeboxSkillsEnabled}"
-            .disableCaretColorAnimation="${this.disableCaretColorAnimation}"
+            .disableCaretColorAnimation="${
+                this.disableCaretColorAnimation || !this.willFulfillInAim}"
             .showDropdown="${this.showDropdown}"
             .inputPlaceholder="${this.inputPlaceholder}"
             .input="${this.input}"
