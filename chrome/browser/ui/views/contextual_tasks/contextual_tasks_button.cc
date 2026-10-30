@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
@@ -52,6 +53,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -72,7 +74,6 @@ const int kCircleShadowInset = 0;
 // is 34.
 const int kPillShapeShadowInset = 1;
 
-const int kGLogoCircularShapeIconSize = 16;
 const int kGLogoPillShapeIconSize = 15;
 
 // The flat edge's top corner radius is needed to avoid the toolbar upper
@@ -488,6 +489,32 @@ void ContextualTasksButton::UpdateIcon() {
   }
 }
 
+int ContextualTasksButton::GetIconSize() const {
+  if (contextual_tasks::ShouldUseSparkIconForPinButtons()) {
+    return ToolbarButton::GetIconSize();
+  }
+  const std::optional<VectorIcons>& icons = GetVectorIcons();
+  if (icons.has_value()) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    if (&icons->icon == &vector_icons::kGoogleGLogoIcon ||
+        &icons->icon == &vector_icons::kGoogleGLogoMonochromeIcon) {
+      return ToolbarButton::GetIconSize() - 2;
+    }
+#else
+    if (&icons->icon == &vector_icons::kGoogleColorIcon) {
+      return ToolbarButton::GetIconSize() - 2;
+    }
+#endif
+  }
+  if (contextual_tasks::ShouldUseSuperGIconForPinButtons() ||
+      contextual_tasks::ShouldUseGraySuperGIconForPinButtons() ||
+      contextual_tasks::kShowEntryPoint.Get() ==
+          contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+    return ToolbarButton::GetIconSize() - 2;
+  }
+  return ToolbarButton::GetIconSize();
+}
+
 void ContextualTasksButton::OnViewLayerBoundsSet(views::View* observed_view) {
   CHECK_EQ(observed_view, this);
   ToolbarButton::OnViewLayerBoundsSet(observed_view);
@@ -860,6 +887,21 @@ ui::ImageModel ContextualTasksButton::GetButtonImage() {
         GetShape() == EphemeralButtonShape::kCircle ? GetIconSize()
                                                     : kGLogoPillShapeIconSize);
   }
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (contextual_tasks::ShouldUseSuperGIconForPinButtons() ||
+      contextual_tasks::kShowEntryPoint.Get() ==
+          contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
+    const int icon_size = GetShape() == EphemeralButtonShape::kCircle
+                              ? GetIconSize()
+                              : kGLogoPillShapeIconSize;
+    return ui::ImageModel::FromImageSkia(
+        gfx::ImageSkiaOperations::CreateResizedImage(
+            *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+                IDR_GOOGLE_G_GRADIENT_20),
+            skia::ImageOperations::RESIZE_BEST,
+            gfx::Size(icon_size, icon_size)));
+  }
+#endif
   if (contextual_tasks::ShouldUseGraySuperGIconForPinButtons()) {
     const gfx::VectorIcon& gray_super_g_icon =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -873,15 +915,6 @@ ui::ImageModel ContextualTasksButton::GetButtonImage() {
         GetShape() == EphemeralButtonShape::kCircle ? GetIconSize()
                                                     : kGLogoPillShapeIconSize);
   }
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (contextual_tasks::ShouldUseSuperGIconForPinButtons() ||
-      contextual_tasks::kShowEntryPoint.Get() ==
-          contextual_tasks::EntryPointOption::kToolbarEphemeralBranded) {
-    return ui::ImageModel::FromImageSkia(
-        *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-            IDR_GOOGLE_G_GRADIENT_16_ALT));
-  }
-#endif
   const gfx::VectorIcon& contextual_tasks_icon =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       vector_icons::kGoogleGLogoIcon;
@@ -891,7 +924,7 @@ ui::ImageModel ContextualTasksButton::GetButtonImage() {
 #endif
   return ui::ImageModel::FromVectorIcon(
       contextual_tasks_icon, icon_color_id,
-      GetShape() == EphemeralButtonShape::kCircle ? kGLogoCircularShapeIconSize
+      GetShape() == EphemeralButtonShape::kCircle ? GetIconSize()
                                                   : kGLogoPillShapeIconSize);
 }
 

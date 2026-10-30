@@ -55,6 +55,7 @@ class ContextualTasksButton
   // ToolbarButton:
   void Layout(PassKey) override;
   void UpdateIcon() override;
+  int GetIconSize() const override;
 
   // contextual_tasks::ContextualTasksPanelController::Observer:
   void OnSurfaceStateChanged(

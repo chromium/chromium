@@ -251,6 +251,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/menus/simple_menu_model.h"
@@ -682,8 +684,10 @@ void BrowserActions::InitializeSidePanelActions() {
     if (contextual_tasks::ShouldUseSuperGIconForPinButtons()) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       contextual_tasks_image = ui::ImageModel::FromImageSkia(
-          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-              IDR_GOOGLE_G_GRADIENT_16_ALT));
+          gfx::ImageSkiaOperations::CreateResizedImage(
+              *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+                  IDR_GOOGLE_G_GRADIENT_20),
+              skia::ImageOperations::RESIZE_BEST, gfx::Size(18, 18)));
 #else
       contextual_tasks_image = ui::ImageModel::FromVectorIcon(
           vector_icons::kGoogleColorIcon, ui::kColorIcon);
