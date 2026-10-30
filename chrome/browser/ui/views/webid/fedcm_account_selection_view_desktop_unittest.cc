@@ -2774,14 +2774,10 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   EXPECT_TRUE(controller->IsDialogWidgetVisible());
 }
 
-// Tests that changing visibility from hidden to visible, also updates the
-// dialog position. This is needed in case the web contents was resized while
-// hidden.
-// TODO(https://crbug.com/441908440): Is this test really valid here since
-// visibility is controlled by the TabDialogManager rather than it the
-// controller handling all that work.
+// Tests that transitioning tab visibility updates the dialog position and
+// restores dialog visibility on `FedCmAccountSelectionView`.
 TEST_F(FedCmAccountSelectionViewDesktopTest,
-       DISABLED_VisibilityChangesUpdatesDialogPosition) {
+       VisibilityChangesUpdatesDialogPosition) {
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
       CreateAndShow(accounts_);
   controller->dialog_position_updated_ = false;
