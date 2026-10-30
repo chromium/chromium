@@ -23,7 +23,6 @@
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "components/autofill/core/common/autofill_clock.h"
@@ -373,39 +372,26 @@ bool ParseExpirationDate(std::u16string_view text,
     return false;
   }
 
-  std::u16string month_local;
-  std::u16string year_local;
-
-  // Check for a separator.
-  std::u16string_view found_separator;
-  constexpr std::u16string_view kSeparators[] = {u"-", u"/", u"|"};
-  for (std::u16string_view separator : kSeparators) {
-    if (text.find(separator) != std::u16string_view::npos) {
-      found_separator = separator;
-      break;
-    }
-  }
-
-  if (!found_separator.empty()) {
-    std::vector<std::u16string> month_year = base::SplitString(
-        text, found_separator, base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    if (month_year.size() != 2) {
-      return false;
-    }
-    month_local = month_year[0];
-    year_local = month_year[1];
+  const size_t separator_pos = text.find_first_of(u"-/|");
+  std::u16string_view month_result;
+  std::u16string_view year_result;
+  if (separator_pos != std::u16string_view::npos) {
+    month_result =
+        base::TrimWhitespace(text.substr(0, separator_pos), base::TRIM_ALL);
+    year_result =
+        base::TrimWhitespace(text.substr(separator_pos + 1), base::TRIM_ALL);
   } else if (text.size() % 2 == 0) {
-    month_local = text.substr(0, 2);
-    year_local = text.substr(2);
+    month_result = text.substr(0, 2);
+    year_result = text.substr(2);
   } else {
     return false;
   }
 
   if (month) {
-    *month = std::move(month_local);
+    *month = month_result;
   }
   if (year) {
-    *year = std::move(year_local);
+    *year = year_result;
   }
   return true;
 }
