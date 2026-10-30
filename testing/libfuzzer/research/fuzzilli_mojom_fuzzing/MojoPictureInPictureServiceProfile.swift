@@ -575,44 +575,6 @@ extension ObjectGroup {
 /// Structs
 ///
 extension ILType {
-    fileprivate static let jsMojoBaseMojomTimeDelta: ILType = .object(
-        ofGroup: "mojoBase.mojom.TimeDelta",
-        withProperties: [
-            "microseconds",
-        ])
-    fileprivate static let jsMojoBaseMojomTimeDeltaConstructor: ILType = .constructor([
-        .plain(.bigint),
-    ] => .jsMojoBaseMojomTimeDelta)
-    fileprivate static let jsGfxMojomSize: ILType = .object(
-        ofGroup: "gfx.mojom.Size",
-        withProperties: [
-            "width",
-            "height",
-        ])
-    fileprivate static let jsGfxMojomSizeConstructor: ILType = .constructor([
-        .plain(.jsInt32),
-        .plain(.jsInt32),
-    ] => .jsGfxMojomSize)
-    fileprivate static let jsMediaMojomAutoPipInfo: ILType = .object(
-        ofGroup: "media.mojom.AutoPipInfo",
-        withProperties: [
-            "autoPipReason",
-            "hasAudioFocus",
-            "isPlaying",
-            "wasRecentlyAudible",
-            "hasSafeUrl",
-            "meetsMediaEngagementConditions",
-            "blockedDueToContentSetting",
-        ])
-    fileprivate static let jsMediaMojomAutoPipInfoConstructor: ILType = .constructor([
-        .plain(.jsMediaMojomAutoPipReason),
-        .plain(.boolean),
-        .plain(.boolean),
-        .plain(.boolean),
-        .plain(.boolean),
-        .plain(.boolean),
-        .plain(.boolean),
-    ] => .jsMediaMojomAutoPipInfo)
     fileprivate static let jsVizMojomSurfaceId: ILType = .object(
         ofGroup: "viz.mojom.SurfaceId",
         withProperties: [
@@ -655,6 +617,16 @@ extension ILType {
         .plain(.bigint),
         .plain(.bigint),
     ] => .jsMojoBaseMojomUnguessableToken)
+    fileprivate static let jsGfxMojomSize: ILType = .object(
+        ofGroup: "gfx.mojom.Size",
+        withProperties: [
+            "width",
+            "height",
+        ])
+    fileprivate static let jsGfxMojomSizeConstructor: ILType = .constructor([
+        .plain(.jsInt32),
+        .plain(.jsInt32),
+    ] => .jsGfxMojomSize)
     fileprivate static let jsGfxMojomRect: ILType = .object(
         ofGroup: "gfx.mojom.Rect",
         withProperties: [
@@ -695,6 +667,14 @@ extension ILType {
         .plain(.jsMojoBaseMojomTimeTicks),
         .plain(.boolean),
     ] => .jsMediaSessionMojomMediaPosition)
+    fileprivate static let jsMojoBaseMojomTimeDelta: ILType = .object(
+        ofGroup: "mojoBase.mojom.TimeDelta",
+        withProperties: [
+            "microseconds",
+        ])
+    fileprivate static let jsMojoBaseMojomTimeDeltaConstructor: ILType = .constructor([
+        .plain(.bigint),
+    ] => .jsMojoBaseMojomTimeDelta)
     fileprivate static let jsMojoBaseMojomTimeTicks: ILType = .object(
         ofGroup: "mojoBase.mojom.TimeTicks",
         withProperties: [
@@ -703,6 +683,17 @@ extension ILType {
     fileprivate static let jsMojoBaseMojomTimeTicksConstructor: ILType = .constructor([
         .plain(.bigint),
     ] => .jsMojoBaseMojomTimeTicks)
+    fileprivate static let jsMediaMojomAutoPipInfo: ILType = .object(
+        ofGroup: "media.mojom.AutoPipInfo",
+        withProperties: [
+            "autoPipReason",
+            "hasAudioFocus",
+            "isPlaying",
+            "wasRecentlyAudible",
+            "hasSafeUrl",
+            "meetsMediaEngagementConditions",
+            "blockedDueToContentSetting",
+        ])
     fileprivate static let jsMediaMojomMediaPlayer_RequestVisibility_ResponseParams: ILType = .object(
         ofGroup: "media.mojom.MediaPlayer_RequestVisibility_ResponseParams",
         withProperties: [
@@ -721,37 +712,6 @@ extension ILType {
 }
 
 extension ObjectGroup {
-    fileprivate static let mojoBaseMojomTimeDelta = ObjectGroup(
-        name: "mojoBase.mojom.TimeDelta",
-        instanceType: .jsMojoBaseMojomTimeDelta,
-        properties: [
-            "microseconds": .bigint,
-        ],
-        methods: [:]
-    )
-    fileprivate static let gfxMojomSize = ObjectGroup(
-        name: "gfx.mojom.Size",
-        instanceType: .jsGfxMojomSize,
-        properties: [
-            "width": .jsInt32,
-            "height": .jsInt32,
-        ],
-        methods: [:]
-    )
-    fileprivate static let mediaMojomAutoPipInfo = ObjectGroup(
-        name: "media.mojom.AutoPipInfo",
-        instanceType: .jsMediaMojomAutoPipInfo,
-        properties: [
-            "autoPipReason": .jsMediaMojomAutoPipReason,
-            "hasAudioFocus": .boolean,
-            "isPlaying": .boolean,
-            "wasRecentlyAudible": .boolean,
-            "hasSafeUrl": .boolean,
-            "meetsMediaEngagementConditions": .boolean,
-            "blockedDueToContentSetting": .boolean,
-        ],
-        methods: [:]
-    )
     fileprivate static let vizMojomSurfaceId = ObjectGroup(
         name: "viz.mojom.SurfaceId",
         instanceType: .jsVizMojomSurfaceId,
@@ -789,6 +749,15 @@ extension ObjectGroup {
         ],
         methods: [:]
     )
+    fileprivate static let gfxMojomSize = ObjectGroup(
+        name: "gfx.mojom.Size",
+        instanceType: .jsGfxMojomSize,
+        properties: [
+            "width": .jsInt32,
+            "height": .jsInt32,
+        ],
+        methods: [:]
+    )
     fileprivate static let gfxMojomRect = ObjectGroup(
         name: "gfx.mojom.Rect",
         instanceType: .jsGfxMojomRect,
@@ -821,11 +790,33 @@ extension ObjectGroup {
         ],
         methods: [:]
     )
+    fileprivate static let mojoBaseMojomTimeDelta = ObjectGroup(
+        name: "mojoBase.mojom.TimeDelta",
+        instanceType: .jsMojoBaseMojomTimeDelta,
+        properties: [
+            "microseconds": .bigint,
+        ],
+        methods: [:]
+    )
     fileprivate static let mojoBaseMojomTimeTicks = ObjectGroup(
         name: "mojoBase.mojom.TimeTicks",
         instanceType: .jsMojoBaseMojomTimeTicks,
         properties: [
             "internalValue": .bigint,
+        ],
+        methods: [:]
+    )
+    fileprivate static let mediaMojomAutoPipInfo = ObjectGroup(
+        name: "media.mojom.AutoPipInfo",
+        instanceType: .jsMediaMojomAutoPipInfo,
+        properties: [
+            "autoPipReason": .jsMediaMojomAutoPipReason,
+            "hasAudioFocus": .boolean,
+            "isPlaying": .boolean,
+            "wasRecentlyAudible": .boolean,
+            "hasSafeUrl": .boolean,
+            "meetsMediaEngagementConditions": .boolean,
+            "blockedDueToContentSetting": .boolean,
         ],
         methods: [:]
     )
@@ -1014,17 +1005,17 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .blinkMojomPictureInPictureSessionObserverRemoteWrapper,
     .blinkMojomPictureInPictureSessionObserverOnWindowSizeChangedCallbackReceiver,
     .blinkMojomPictureInPictureSessionObserverOnStoppedCallbackReceiver,
-    .mojoBaseMojomTimeDelta,
-    .gfxMojomSize,
-    .mediaMojomAutoPipInfo,
     .vizMojomSurfaceId,
     .vizMojomFrameSinkId,
     .vizMojomLocalSurfaceId,
     .mojoBaseMojomUnguessableToken,
+    .gfxMojomSize,
     .gfxMojomRect,
     .mediaMojomVideoSpatialFormat,
     .mediaSessionMojomMediaPosition,
+    .mojoBaseMojomTimeDelta,
     .mojoBaseMojomTimeTicks,
+    .mediaMojomAutoPipInfo,
     .mediaMojomMediaPlayerRequestVisibilityResponseParams,
     .blinkMojomPictureInPictureServiceStartSessionResponseParams,
     .blinkMojomPictureInPictureSessionStopResponseParams,
@@ -1044,16 +1035,15 @@ private let mojoBuiltins: [String: ILType] = [
        .constructor([] => .jsMediaMojomMediaPlayerCallbackRouter),
     "blink.mojom.PictureInPictureSessionObserverCallbackRouter":
        .constructor([] => .jsBlinkMojomPictureInPictureSessionObserverCallbackRouter),
-    "mojoBase.mojom.TimeDelta": .jsMojoBaseMojomTimeDeltaConstructor,
-    "gfx.mojom.Size": .jsGfxMojomSizeConstructor,
-    "media.mojom.AutoPipInfo": .jsMediaMojomAutoPipInfoConstructor,
     "viz.mojom.SurfaceId": .jsVizMojomSurfaceIdConstructor,
     "viz.mojom.FrameSinkId": .jsVizMojomFrameSinkIdConstructor,
     "viz.mojom.LocalSurfaceId": .jsVizMojomLocalSurfaceIdConstructor,
     "mojoBase.mojom.UnguessableToken": .jsMojoBaseMojomUnguessableTokenConstructor,
+    "gfx.mojom.Size": .jsGfxMojomSizeConstructor,
     "gfx.mojom.Rect": .jsGfxMojomRectConstructor,
     "media.mojom.VideoSpatialFormat": .jsMediaMojomVideoSpatialFormatConstructor,
     "mediaSession.mojom.MediaPosition": .jsMediaSessionMojomMediaPositionConstructor,
+    "mojoBase.mojom.TimeDelta": .jsMojoBaseMojomTimeDeltaConstructor,
     "mojoBase.mojom.TimeTicks": .jsMojoBaseMojomTimeTicksConstructor,
 ]
 

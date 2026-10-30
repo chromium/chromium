@@ -279,26 +279,6 @@ extension ILType {
         .plain(.jsWebnnMojomDevice),
         .plain(.jsWebnnMojomCreateContextOptions_PowerPreference),
     ] => .jsWebnnMojomCreateContextOptions)
-    fileprivate static let jsWebnnMojomCreateContextSuccess: ILType = .object(
-        ofGroup: "webnn.mojom.CreateContextSuccess",
-        withProperties: [
-            "contextRemote",
-            "compilerContextRemote",
-            "contextProperties",
-            "contextHandle",
-            "writeTensorProducer",
-            "readTensorConsumer",
-            "commandBufferId",
-        ])
-    fileprivate static let jsWebnnMojomCreateContextSuccessConstructor: ILType = .constructor([
-        .either(.jsWebnnMojomWebNNContextRemote, .undefined),
-        .either(.jsWebnnMojomWebNNCompilerContextRemote, .undefined),
-        .plain(.jsWebnnMojomContextProperties),
-        .plain(.jsBlinkMojomWebNNContextToken),
-        .either(.jsMojoDataPipeProducerHandle, .undefined),
-        .either(.jsMojoDataPipeConsumerHandle, .undefined),
-        .plain(.bigint),
-    ] => .jsWebnnMojomCreateContextSuccess)
     fileprivate static let jsBlinkMojomWebNNPendingConstantToken: ILType = .object(
         ofGroup: "blink.mojom.WebNNPendingConstantToken",
         withProperties: [
@@ -1261,34 +1241,6 @@ extension ILType {
         .plain(.jsWebnnMojomOperandId),
         .plain(.string),
     ] => .jsWebnnMojomWhere)
-    fileprivate static let jsWebnnMojomCreateGraphSuccess: ILType = .object(
-        ofGroup: "webnn.mojom.CreateGraphSuccess",
-        withProperties: [
-            "graphToken",
-            "devices",
-        ])
-    fileprivate static let jsWebnnMojomCreateGraphSuccessConstructor: ILType = .constructor([
-        .plain(.jsBlinkMojomWebNNGraphToken),
-        .plain(.jsWebnnMojomDeviceMojoArray),
-    ] => .jsWebnnMojomCreateGraphSuccess)
-    fileprivate static let jsBlinkMojomWebNNGraphToken: ILType = .object(
-        ofGroup: "blink.mojom.WebNNGraphToken",
-        withProperties: [
-            "value",
-        ])
-    fileprivate static let jsBlinkMojomWebNNGraphTokenConstructor: ILType = .constructor([
-        .plain(.jsMojoBaseMojomUnguessableToken),
-    ] => .jsBlinkMojomWebNNGraphToken)
-    fileprivate static let jsWebnnMojomError: ILType = .object(
-        ofGroup: "webnn.mojom.Error",
-        withProperties: [
-            "code",
-            "message",
-        ])
-    fileprivate static let jsWebnnMojomErrorConstructor: ILType = .constructor([
-        .plain(.jsWebnnMojomError_Code),
-        .plain(.string),
-    ] => .jsWebnnMojomError)
     fileprivate static let jsWebnnMojomContextProperties: ILType = .object(
         ofGroup: "webnn.mojom.ContextProperties",
         withProperties: [
@@ -1615,16 +1567,6 @@ extension ILType {
         .plain(.boolean),
         .plain(.boolean),
     ] => .jsWebnnMojomTensorUsage)
-    fileprivate static let jsWebnnMojomCreateTensorSuccess: ILType = .object(
-        ofGroup: "webnn.mojom.CreateTensorSuccess",
-        withProperties: [
-            "tensorRemote",
-            "tensorHandle",
-        ])
-    fileprivate static let jsWebnnMojomCreateTensorSuccessConstructor: ILType = .constructor([
-        .plain(.jsWebnnMojomWebNNTensorRemote),
-        .plain(.jsBlinkMojomWebNNTensorToken),
-    ] => .jsWebnnMojomCreateTensorSuccess)
     fileprivate static let jsGpuMojomSyncToken: ILType = .object(
         ofGroup: "gpu.mojom.SyncToken",
         withProperties: [
@@ -1639,14 +1581,6 @@ extension ILType {
         .plain(.bigint),
         .plain(.bigint),
     ] => .jsGpuMojomSyncToken)
-    fileprivate static let jsBlinkMojomWebNNTensorToken: ILType = .object(
-        ofGroup: "blink.mojom.WebNNTensorToken",
-        withProperties: [
-            "value",
-        ])
-    fileprivate static let jsBlinkMojomWebNNTensorTokenConstructor: ILType = .constructor([
-        .plain(.jsMojoBaseMojomUnguessableToken),
-    ] => .jsBlinkMojomWebNNTensorToken)
     fileprivate static let jsGpuMojomMailbox: ILType = .object(
         ofGroup: "gpu.mojom.Mailbox",
         withProperties: [
@@ -1655,14 +1589,56 @@ extension ILType {
     fileprivate static let jsGpuMojomMailboxConstructor: ILType = .constructor([
         .plain(.jsInt8MojoArray),
     ] => .jsGpuMojomMailbox)
+    fileprivate static let jsBlinkMojomWebNNGraphToken: ILType = .object(
+        ofGroup: "blink.mojom.WebNNGraphToken",
+        withProperties: [
+            "value",
+        ])
+    fileprivate static let jsBlinkMojomWebNNGraphTokenConstructor: ILType = .constructor([
+        .plain(.jsMojoBaseMojomUnguessableToken),
+    ] => .jsBlinkMojomWebNNGraphToken)
+    fileprivate static let jsBlinkMojomWebNNTensorToken: ILType = .object(
+        ofGroup: "blink.mojom.WebNNTensorToken",
+        withProperties: [
+            "value",
+        ])
+    fileprivate static let jsBlinkMojomWebNNTensorTokenConstructor: ILType = .constructor([
+        .plain(.jsMojoBaseMojomUnguessableToken),
+    ] => .jsBlinkMojomWebNNTensorToken)
+    fileprivate static let jsWebnnMojomCreateContextSuccess: ILType = .object(
+        ofGroup: "webnn.mojom.CreateContextSuccess",
+        withProperties: [
+            "contextRemote",
+            "compilerContextRemote",
+            "contextProperties",
+            "contextHandle",
+            "writeTensorProducer",
+            "readTensorConsumer",
+            "commandBufferId",
+        ])
+    fileprivate static let jsWebnnMojomCreateGraphSuccess: ILType = .object(
+        ofGroup: "webnn.mojom.CreateGraphSuccess",
+        withProperties: [
+            "graphToken",
+            "devices",
+        ])
+    fileprivate static let jsWebnnMojomError: ILType = .object(
+        ofGroup: "webnn.mojom.Error",
+        withProperties: [
+            "code",
+            "message",
+        ])
+    fileprivate static let jsWebnnMojomCreateTensorSuccess: ILType = .object(
+        ofGroup: "webnn.mojom.CreateTensorSuccess",
+        withProperties: [
+            "tensorRemote",
+            "tensorHandle",
+        ])
     fileprivate static let jsBlinkMojomWebNNContextToken: ILType = .object(
         ofGroup: "blink.mojom.WebNNContextToken",
         withProperties: [
             "value",
         ])
-    fileprivate static let jsBlinkMojomWebNNContextTokenConstructor: ILType = .constructor([
-        .plain(.jsMojoBaseMojomUnguessableToken),
-    ] => .jsBlinkMojomWebNNContextToken)
     fileprivate static let jsWebnnMojomWebNNContextProvider_CreateWebNNContext_ResponseParams: ILType = .object(
         ofGroup: "webnn.mojom.WebNNContextProvider_CreateWebNNContext_ResponseParams",
         withProperties: [
@@ -1706,20 +1682,6 @@ extension ObjectGroup {
         properties: [
             "device": .jsWebnnMojomDevice,
             "powerPreference": .jsWebnnMojomCreateContextOptions_PowerPreference,
-        ],
-        methods: [:]
-    )
-    fileprivate static let webnnMojomCreateContextSuccess = ObjectGroup(
-        name: "webnn.mojom.CreateContextSuccess",
-        instanceType: .jsWebnnMojomCreateContextSuccess,
-        properties: [
-            "contextRemote": .jsWebnnMojomWebNNContextRemote,
-            "compilerContextRemote": .jsWebnnMojomWebNNCompilerContextRemote,
-            "contextProperties": .jsWebnnMojomContextProperties,
-            "contextHandle": .jsBlinkMojomWebNNContextToken,
-            "writeTensorProducer": .jsMojoDataPipeProducerHandle,
-            "readTensorConsumer": .jsMojoDataPipeConsumerHandle,
-            "commandBufferId": .bigint,
         ],
         methods: [:]
     )
@@ -2446,32 +2408,6 @@ extension ObjectGroup {
         ],
         methods: [:]
     )
-    fileprivate static let webnnMojomCreateGraphSuccess = ObjectGroup(
-        name: "webnn.mojom.CreateGraphSuccess",
-        instanceType: .jsWebnnMojomCreateGraphSuccess,
-        properties: [
-            "graphToken": .jsBlinkMojomWebNNGraphToken,
-            "devices": .jsWebnnMojomDeviceMojoArray,
-        ],
-        methods: [:]
-    )
-    fileprivate static let blinkMojomWebNNGraphToken = ObjectGroup(
-        name: "blink.mojom.WebNNGraphToken",
-        instanceType: .jsBlinkMojomWebNNGraphToken,
-        properties: [
-            "value": .jsMojoBaseMojomUnguessableToken,
-        ],
-        methods: [:]
-    )
-    fileprivate static let webnnMojomError = ObjectGroup(
-        name: "webnn.mojom.Error",
-        instanceType: .jsWebnnMojomError,
-        properties: [
-            "code": .jsWebnnMojomError_Code,
-            "message": .string,
-        ],
-        methods: [:]
-    )
     fileprivate static let webnnMojomContextProperties = ObjectGroup(
         name: "webnn.mojom.ContextProperties",
         instanceType: .jsWebnnMojomContextProperties,
@@ -2663,15 +2599,6 @@ extension ObjectGroup {
         ],
         methods: [:]
     )
-    fileprivate static let webnnMojomCreateTensorSuccess = ObjectGroup(
-        name: "webnn.mojom.CreateTensorSuccess",
-        instanceType: .jsWebnnMojomCreateTensorSuccess,
-        properties: [
-            "tensorRemote": .jsWebnnMojomWebNNTensorRemote,
-            "tensorHandle": .jsBlinkMojomWebNNTensorToken,
-        ],
-        methods: [:]
-    )
     fileprivate static let gpuMojomSyncToken = ObjectGroup(
         name: "gpu.mojom.SyncToken",
         instanceType: .jsGpuMojomSyncToken,
@@ -2683,6 +2610,22 @@ extension ObjectGroup {
         ],
         methods: [:]
     )
+    fileprivate static let gpuMojomMailbox = ObjectGroup(
+        name: "gpu.mojom.Mailbox",
+        instanceType: .jsGpuMojomMailbox,
+        properties: [
+            "name": .jsInt8MojoArray,
+        ],
+        methods: [:]
+    )
+    fileprivate static let blinkMojomWebNNGraphToken = ObjectGroup(
+        name: "blink.mojom.WebNNGraphToken",
+        instanceType: .jsBlinkMojomWebNNGraphToken,
+        properties: [
+            "value": .jsMojoBaseMojomUnguessableToken,
+        ],
+        methods: [:]
+    )
     fileprivate static let blinkMojomWebNNTensorToken = ObjectGroup(
         name: "blink.mojom.WebNNTensorToken",
         instanceType: .jsBlinkMojomWebNNTensorToken,
@@ -2691,11 +2634,44 @@ extension ObjectGroup {
         ],
         methods: [:]
     )
-    fileprivate static let gpuMojomMailbox = ObjectGroup(
-        name: "gpu.mojom.Mailbox",
-        instanceType: .jsGpuMojomMailbox,
+    fileprivate static let webnnMojomCreateContextSuccess = ObjectGroup(
+        name: "webnn.mojom.CreateContextSuccess",
+        instanceType: .jsWebnnMojomCreateContextSuccess,
         properties: [
-            "name": .jsInt8MojoArray,
+            "contextRemote": .jsWebnnMojomWebNNContextRemote,
+            "compilerContextRemote": .jsWebnnMojomWebNNCompilerContextRemote,
+            "contextProperties": .jsWebnnMojomContextProperties,
+            "contextHandle": .jsBlinkMojomWebNNContextToken,
+            "writeTensorProducer": .jsMojoDataPipeProducerHandle,
+            "readTensorConsumer": .jsMojoDataPipeConsumerHandle,
+            "commandBufferId": .bigint,
+        ],
+        methods: [:]
+    )
+    fileprivate static let webnnMojomCreateGraphSuccess = ObjectGroup(
+        name: "webnn.mojom.CreateGraphSuccess",
+        instanceType: .jsWebnnMojomCreateGraphSuccess,
+        properties: [
+            "graphToken": .jsBlinkMojomWebNNGraphToken,
+            "devices": .jsWebnnMojomDeviceMojoArray,
+        ],
+        methods: [:]
+    )
+    fileprivate static let webnnMojomError = ObjectGroup(
+        name: "webnn.mojom.Error",
+        instanceType: .jsWebnnMojomError,
+        properties: [
+            "code": .jsWebnnMojomError_Code,
+            "message": .string,
+        ],
+        methods: [:]
+    )
+    fileprivate static let webnnMojomCreateTensorSuccess = ObjectGroup(
+        name: "webnn.mojom.CreateTensorSuccess",
+        instanceType: .jsWebnnMojomCreateTensorSuccess,
+        properties: [
+            "tensorRemote": .jsWebnnMojomWebNNTensorRemote,
+            "tensorHandle": .jsBlinkMojomWebNNTensorToken,
         ],
         methods: [:]
     )
@@ -2781,10 +2757,10 @@ extension ILType {
         .createJsArrayType(ofElementType: .float)
     fileprivate static let jsWebnnMojomRangeMojoArray: ILType =
         .createJsArrayType(ofElementType: .jsWebnnMojomRange)
-    fileprivate static let jsWebnnMojomDeviceMojoArray: ILType =
-        .createJsArrayType(ofElementType: .jsWebnnMojomDevice)
     fileprivate static let jsInt8MojoArray: ILType =
         .createJsArrayType(ofElementType: .jsInt8)
+    fileprivate static let jsWebnnMojomDeviceMojoArray: ILType =
+        .createJsArrayType(ofElementType: .jsWebnnMojomDevice)
 }
 
 /// As Fuzzilli runs, the OperationMutator and VariadicInputReducer will modify
@@ -2858,15 +2834,6 @@ private let MojoWebnnMojomRangeMojoArrayGenerator = CodeGenerator(
     produces: [.jsWebnnMojomRangeMojoArray]
 ) { b, _ in
     let elem = b.findOrGenerateType(.jsWebnnMojomRange)
-    var elements: [Variable] = [elem]
-    b.createArray(with: elements)
-}
-private let MojoWebnnMojomDeviceMojoArrayGenerator = CodeGenerator(
-    "MojoWebnnMojomDeviceMojoArrayGenerator",
-    inputs: .one,
-    produces: [.jsWebnnMojomDeviceMojoArray]
-) { b, _ in
-    let elem = b.findOrGenerateType(.jsWebnnMojomDevice)
     var elements: [Variable] = [elem]
     b.createArray(with: elements)
 }
@@ -3000,16 +2967,6 @@ extension ILType {
 /// Unions
 ///
 extension ILType {
-    fileprivate static let jsWebnnMojomCreateContextResultUnion: ILType = .object(
-        ofGroup: "webnn.mojom.CreateContextResult",
-        withProperties: [
-            "success",
-            "error",
-        ])
-    fileprivate static let jsWebnnMojomCreateContextResultUnionSuccessConstructor: ILType = .constructor(
-        [.plain(.jsWebnnMojomCreateContextSuccess)] => .jsWebnnMojomCreateContextResultUnion)
-    fileprivate static let jsWebnnMojomCreateContextResultUnionErrorConstructor: ILType = .constructor(
-        [.plain(.jsWebnnMojomError)] => .jsWebnnMojomCreateContextResultUnion)
     fileprivate static let jsWebnnMojomOperationUnion: ILType = .object(
         ofGroup: "webnn.mojom.Operation",
         withProperties: [
@@ -3187,48 +3144,33 @@ extension ILType {
         [.plain(.jsWebnnMojomEdgePadding)] => .jsWebnnMojomPaddingModeUnion)
     fileprivate static let jsWebnnMojomPaddingModeUnionReflectionConstructor: ILType = .constructor(
         [.plain(.jsWebnnMojomReflectionPadding)] => .jsWebnnMojomPaddingModeUnion)
+    fileprivate static let jsWebnnMojomCreateContextResultUnion: ILType = .object(
+        ofGroup: "webnn.mojom.CreateContextResult",
+        withProperties: [
+            "success",
+            "error",
+        ])
     fileprivate static let jsWebnnMojomWebNNGraphBuilder_CreateGraph_ResponseParam_ResultUnion: ILType = .object(
         ofGroup: "webnn.mojom.WebNNGraphBuilder_CreateGraph_ResponseParam_Result",
         withProperties: [
             "success",
             "failure",
         ])
-    fileprivate static let jsWebnnMojomWebNNGraphBuilder_CreateGraph_ResponseParam_ResultUnionSuccessConstructor: ILType = .constructor(
-        [.plain(.jsWebnnMojomCreateGraphSuccess)] => .jsWebnnMojomWebNNGraphBuilder_CreateGraph_ResponseParam_ResultUnion)
-    fileprivate static let jsWebnnMojomWebNNGraphBuilder_CreateGraph_ResponseParam_ResultUnionFailureConstructor: ILType = .constructor(
-        [.plain(.jsWebnnMojomError)] => .jsWebnnMojomWebNNGraphBuilder_CreateGraph_ResponseParam_ResultUnion)
     fileprivate static let jsWebnnMojomCreateTensorResultUnion: ILType = .object(
         ofGroup: "webnn.mojom.CreateTensorResult",
         withProperties: [
             "success",
             "error",
         ])
-    fileprivate static let jsWebnnMojomCreateTensorResultUnionSuccessConstructor: ILType = .constructor(
-        [.plain(.jsWebnnMojomCreateTensorSuccess)] => .jsWebnnMojomCreateTensorResultUnion)
-    fileprivate static let jsWebnnMojomCreateTensorResultUnionErrorConstructor: ILType = .constructor(
-        [.plain(.jsWebnnMojomError)] => .jsWebnnMojomCreateTensorResultUnion)
     fileprivate static let jsWebnnMojomReadTensorResultUnion: ILType = .object(
         ofGroup: "webnn.mojom.ReadTensorResult",
         withProperties: [
             "buffer",
             "error",
         ])
-    fileprivate static let jsWebnnMojomReadTensorResultUnionBufferConstructor: ILType = .constructor(
-        [.plain(.jsMojoBaseMojomBigBufferUnion)] => .jsWebnnMojomReadTensorResultUnion)
-    fileprivate static let jsWebnnMojomReadTensorResultUnionErrorConstructor: ILType = .constructor(
-        [.plain(.jsWebnnMojomError)] => .jsWebnnMojomReadTensorResultUnion)
 }
 
 extension ObjectGroup {
-    fileprivate static let webnnMojomCreateContextResultUnion = ObjectGroup(
-        name: "webnn.mojom.CreateContextResult",
-        instanceType: .jsWebnnMojomCreateContextResultUnion,
-        properties: [
-            "success": .jsWebnnMojomCreateContextSuccess,
-            "error": .jsWebnnMojomError,
-        ],
-        methods: [:]
-    )
     fileprivate static let webnnMojomOperationUnion = ObjectGroup(
         name: "webnn.mojom.Operation",
         instanceType: .jsWebnnMojomOperationUnion,
@@ -3302,6 +3244,15 @@ extension ObjectGroup {
             "constant": .jsWebnnMojomConstantPadding,
             "edge": .jsWebnnMojomEdgePadding,
             "reflection": .jsWebnnMojomReflectionPadding,
+        ],
+        methods: [:]
+    )
+    fileprivate static let webnnMojomCreateContextResultUnion = ObjectGroup(
+        name: "webnn.mojom.CreateContextResult",
+        instanceType: .jsWebnnMojomCreateContextResultUnion,
+        properties: [
+            "success": .jsWebnnMojomCreateContextSuccess,
+            "error": .jsWebnnMojomError,
         ],
         methods: [:]
     )
@@ -3402,7 +3353,6 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .webnnMojomWebNNCompilerContextRemoteWrapper,
     .webnnMojomWebNNCompilerContextPendingReceiver,
     .webnnMojomCreateContextOptions,
-    .webnnMojomCreateContextSuccess,
     .blinkMojomWebNNPendingConstantToken,
     .mojoBaseMojomUnguessableToken,
     .webnnMojomGraphInfo,
@@ -3464,9 +3414,6 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .webnnMojomTranspose,
     .webnnMojomTriangular,
     .webnnMojomWhere,
-    .webnnMojomCreateGraphSuccess,
-    .blinkMojomWebNNGraphToken,
-    .webnnMojomError,
     .webnnMojomContextProperties,
     .webnnMojomDataTypeLimits,
     .webnnMojomSupportedTensors,
@@ -3474,10 +3421,14 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .webnnMojomSupportedRanks,
     .webnnMojomTensorInfo,
     .webnnMojomTensorUsage,
-    .webnnMojomCreateTensorSuccess,
     .gpuMojomSyncToken,
-    .blinkMojomWebNNTensorToken,
     .gpuMojomMailbox,
+    .blinkMojomWebNNGraphToken,
+    .blinkMojomWebNNTensorToken,
+    .webnnMojomCreateContextSuccess,
+    .webnnMojomCreateGraphSuccess,
+    .webnnMojomError,
+    .webnnMojomCreateTensorSuccess,
     .blinkMojomWebNNContextToken,
     .webnnMojomWebNNContextProviderCreateWebNNContextResponseParams,
     .webnnMojomWebNNGraphBuilderCreateGraphResponseParams,
@@ -3486,10 +3437,10 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .webnnMojomWebNNTensorReadTensorResponseParams,
     .webnnMojomWebNNTensorExportTensorSyncResponseParams,
     .webnnMojomWebNNContextCreateTensorFromMailboxResponseParams,
-    .webnnMojomCreateContextResultUnion,
     .webnnMojomOperationUnion,
     .webnnMojomNumberUnion,
     .webnnMojomPaddingModeUnion,
+    .webnnMojomCreateContextResultUnion,
     .webnnMojomWebNNGraphBuilderCreateGraphResponseParamResultUnion,
     .webnnMojomCreateTensorResultUnion,
     .webnnMojomReadTensorResultUnion,
@@ -3510,7 +3461,6 @@ private let mojoBuiltins: [String: ILType] = [
     "webnn.mojom.WebNNCompilerContextRemote":
        .constructor([] => .jsWebnnMojomWebNNCompilerContextRemote),
     "webnn.mojom.CreateContextOptions": .jsWebnnMojomCreateContextOptionsConstructor,
-    "webnn.mojom.CreateContextSuccess": .jsWebnnMojomCreateContextSuccessConstructor,
     "blink.mojom.WebNNPendingConstantToken": .jsBlinkMojomWebNNPendingConstantTokenConstructor,
     "mojoBase.mojom.UnguessableToken": .jsMojoBaseMojomUnguessableTokenConstructor,
     "webnn.mojom.GraphInfo": .jsWebnnMojomGraphInfoConstructor,
@@ -3572,9 +3522,6 @@ private let mojoBuiltins: [String: ILType] = [
     "webnn.mojom.Transpose": .jsWebnnMojomTransposeConstructor,
     "webnn.mojom.Triangular": .jsWebnnMojomTriangularConstructor,
     "webnn.mojom.Where": .jsWebnnMojomWhereConstructor,
-    "webnn.mojom.CreateGraphSuccess": .jsWebnnMojomCreateGraphSuccessConstructor,
-    "blink.mojom.WebNNGraphToken": .jsBlinkMojomWebNNGraphTokenConstructor,
-    "webnn.mojom.Error": .jsWebnnMojomErrorConstructor,
     "webnn.mojom.ContextProperties": .jsWebnnMojomContextPropertiesConstructor,
     "webnn.mojom.DataTypeLimits": .jsWebnnMojomDataTypeLimitsConstructor,
     "webnn.mojom.SupportedTensors": .jsWebnnMojomSupportedTensorsConstructor,
@@ -3582,13 +3529,10 @@ private let mojoBuiltins: [String: ILType] = [
     "webnn.mojom.SupportedRanks": .jsWebnnMojomSupportedRanksConstructor,
     "webnn.mojom.TensorInfo": .jsWebnnMojomTensorInfoConstructor,
     "webnn.mojom.TensorUsage": .jsWebnnMojomTensorUsageConstructor,
-    "webnn.mojom.CreateTensorSuccess": .jsWebnnMojomCreateTensorSuccessConstructor,
     "gpu.mojom.SyncToken": .jsGpuMojomSyncTokenConstructor,
-    "blink.mojom.WebNNTensorToken": .jsBlinkMojomWebNNTensorTokenConstructor,
     "gpu.mojom.Mailbox": .jsGpuMojomMailboxConstructor,
-    "blink.mojom.WebNNContextToken": .jsBlinkMojomWebNNContextTokenConstructor,
-    "webnn.mojom.CreateContextResult.success": .jsWebnnMojomCreateContextResultUnionSuccessConstructor,
-    "webnn.mojom.CreateContextResult.error": .jsWebnnMojomCreateContextResultUnionErrorConstructor,
+    "blink.mojom.WebNNGraphToken": .jsBlinkMojomWebNNGraphTokenConstructor,
+    "blink.mojom.WebNNTensorToken": .jsBlinkMojomWebNNTensorTokenConstructor,
     "webnn.mojom.Operation.argMinMax": .jsWebnnMojomOperationUnionArgMinMaxConstructor,
     "webnn.mojom.Operation.batchNormalization": .jsWebnnMojomOperationUnionBatchNormalizationConstructor,
     "webnn.mojom.Operation.clamp": .jsWebnnMojomOperationUnionClampConstructor,
@@ -3644,12 +3588,6 @@ private let mojoBuiltins: [String: ILType] = [
     "webnn.mojom.PaddingMode.constant": .jsWebnnMojomPaddingModeUnionConstantConstructor,
     "webnn.mojom.PaddingMode.edge": .jsWebnnMojomPaddingModeUnionEdgeConstructor,
     "webnn.mojom.PaddingMode.reflection": .jsWebnnMojomPaddingModeUnionReflectionConstructor,
-    "webnn.mojom.WebNNGraphBuilder_CreateGraph_ResponseParam_Result.success": .jsWebnnMojomWebNNGraphBuilder_CreateGraph_ResponseParam_ResultUnionSuccessConstructor,
-    "webnn.mojom.WebNNGraphBuilder_CreateGraph_ResponseParam_Result.failure": .jsWebnnMojomWebNNGraphBuilder_CreateGraph_ResponseParam_ResultUnionFailureConstructor,
-    "webnn.mojom.CreateTensorResult.success": .jsWebnnMojomCreateTensorResultUnionSuccessConstructor,
-    "webnn.mojom.CreateTensorResult.error": .jsWebnnMojomCreateTensorResultUnionErrorConstructor,
-    "webnn.mojom.ReadTensorResult.buffer": .jsWebnnMojomReadTensorResultUnionBufferConstructor,
-    "webnn.mojom.ReadTensorResult.error": .jsWebnnMojomReadTensorResultUnionErrorConstructor,
 ]
 
 private let keepGenerators = [
@@ -3719,7 +3657,6 @@ let mojoWebNNContextProviderProfile = Profile(
         (MojoWebnnMojomRecurrentNetworkActivationMojoArrayGenerator, 1),
         (MojoFloatMojoArrayGenerator, 1),
         (MojoWebnnMojomRangeMojoArrayGenerator, 1),
-        (MojoWebnnMojomDeviceMojoArrayGenerator, 1),
         (MojoInt8MojoArrayGenerator, 1),
         (MojoWebnnMojomOperandId_BlinkMojomWebNNPendingConstantTokenMojoMapGenerator, 1),
         (MojoString_BlinkMojomWebNNTensorTokenMojoMapGenerator, 1),

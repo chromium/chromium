@@ -244,96 +244,6 @@ extension ILType {
         .plain(.bigint),
         .plain(.bigint),
     ] => .jsMojoBaseMojomUnguessableToken)
-    fileprivate static let jsBlinkMojomMakeCredentialAuthenticatorResponse: ILType = .object(
-        ofGroup: "blink.mojom.MakeCredentialAuthenticatorResponse",
-        withProperties: [
-            "info",
-            "authenticatorAttachment",
-            "attestationObject",
-            "transports",
-            "echoHmacCreateSecret",
-            "hmacCreateSecret",
-            "echoPrf",
-            "prf",
-            "prfResults",
-            "echoCredBlob",
-            "credBlob",
-            "publicKeyDer",
-            "publicKeyAlgo",
-            "echoCredProps",
-            "hasCredPropsRk",
-            "credPropsRk",
-            "echoLargeBlob",
-            "supportsLargeBlob",
-            "payment",
-            "cmtgKey",
-            "echoRemoteClientDataJson",
-        ])
-    fileprivate static let jsBlinkMojomMakeCredentialAuthenticatorResponseConstructor: ILType = .constructor([
-        .plain(.jsBlinkMojomCommonCredentialInfo),
-        .plain(.jsBlinkMojomAuthenticatorAttachment),
-        .plain(.jsUint8MojoArray),
-        .plain(.jsBlinkMojomAuthenticatorTransportMojoArray),
-        .plain(.boolean),
-        .plain(.boolean),
-        .plain(.boolean),
-        .plain(.boolean),
-        .either(.jsBlinkMojomPRFValues, .undefined),
-        .plain(.boolean),
-        .plain(.boolean),
-        .either(.jsUint8MojoArray, .undefined),
-        .plain(.jsInt32),
-        .plain(.boolean),
-        .plain(.boolean),
-        .plain(.boolean),
-        .plain(.boolean),
-        .plain(.boolean),
-        .either(.jsBlinkMojomAuthenticationExtensionsPaymentResponse, .undefined),
-        .either(.jsBlinkMojomCmtgKeyResponse, .undefined),
-        .plain(.boolean),
-    ] => .jsBlinkMojomMakeCredentialAuthenticatorResponse)
-    fileprivate static let jsBlinkMojomCommonCredentialInfo: ILType = .object(
-        ofGroup: "blink.mojom.CommonCredentialInfo",
-        withProperties: [
-            "id",
-            "rawId",
-            "clientDataJson",
-            "authenticatorData",
-        ])
-    fileprivate static let jsBlinkMojomCommonCredentialInfoConstructor: ILType = .constructor([
-        .plain(.string),
-        .plain(.jsUint8MojoArray),
-        .plain(.jsUint8MojoArray),
-        .plain(.jsUint8MojoArray),
-    ] => .jsBlinkMojomCommonCredentialInfo)
-    fileprivate static let jsBlinkMojomAuthenticationExtensionsPaymentResponse: ILType = .object(
-        ofGroup: "blink.mojom.AuthenticationExtensionsPaymentResponse",
-        withProperties: [
-            "browserBoundSignature",
-        ])
-    fileprivate static let jsBlinkMojomAuthenticationExtensionsPaymentResponseConstructor: ILType = .constructor([
-        .plain(.jsUint8MojoArray),
-    ] => .jsBlinkMojomAuthenticationExtensionsPaymentResponse)
-    fileprivate static let jsBlinkMojomCmtgKeyResponse: ILType = .object(
-        ofGroup: "blink.mojom.CmtgKeyResponse",
-        withProperties: [
-            "cmtgKey",
-            "signature",
-        ])
-    fileprivate static let jsBlinkMojomCmtgKeyResponseConstructor: ILType = .constructor([
-        .plain(.jsUint8MojoArray),
-        .plain(.jsUint8MojoArray),
-    ] => .jsBlinkMojomCmtgKeyResponse)
-    fileprivate static let jsBlinkMojomWebAuthnDOMExceptionDetails: ILType = .object(
-        ofGroup: "blink.mojom.WebAuthnDOMExceptionDetails",
-        withProperties: [
-            "name",
-            "message",
-        ])
-    fileprivate static let jsBlinkMojomWebAuthnDOMExceptionDetailsConstructor: ILType = .constructor([
-        .plain(.string),
-        .plain(.string),
-    ] => .jsBlinkMojomWebAuthnDOMExceptionDetails)
     fileprivate static let jsBlinkMojomGetCredentialOptions: ILType = .object(
         ofGroup: "blink.mojom.GetCredentialOptions",
         withProperties: [
@@ -394,86 +304,6 @@ extension ILType {
         .plain(.boolean),
         .either(.jsUrlMojomUrl, .undefined),
     ] => .jsBlinkMojomAuthenticationExtensionsClientInputs)
-    fileprivate static let jsBlinkMojomGetAssertionResponse: ILType = .object(
-        ofGroup: "blink.mojom.GetAssertionResponse",
-        withProperties: [
-            "status",
-            "credential",
-            "domExceptionDetails",
-        ])
-    fileprivate static let jsBlinkMojomGetAssertionResponseConstructor: ILType = .constructor([
-        .plain(.jsBlinkMojomAuthenticatorStatus),
-        .either(.jsBlinkMojomGetAssertionAuthenticatorResponse, .undefined),
-        .either(.jsBlinkMojomWebAuthnDOMExceptionDetails, .undefined),
-    ] => .jsBlinkMojomGetAssertionResponse)
-    fileprivate static let jsBlinkMojomGetAssertionAuthenticatorResponse: ILType = .object(
-        ofGroup: "blink.mojom.GetAssertionAuthenticatorResponse",
-        withProperties: [
-            "info",
-            "authenticatorAttachment",
-            "signature",
-            "userHandle",
-            "extensions",
-        ])
-    fileprivate static let jsBlinkMojomGetAssertionAuthenticatorResponseConstructor: ILType = .constructor([
-        .plain(.jsBlinkMojomCommonCredentialInfo),
-        .plain(.jsBlinkMojomAuthenticatorAttachment),
-        .plain(.jsUint8MojoArray),
-        .either(.jsUint8MojoArray, .undefined),
-        .plain(.jsBlinkMojomAuthenticationExtensionsClientOutputs),
-    ] => .jsBlinkMojomGetAssertionAuthenticatorResponse)
-    fileprivate static let jsBlinkMojomAuthenticationExtensionsClientOutputs: ILType = .object(
-        ofGroup: "blink.mojom.AuthenticationExtensionsClientOutputs",
-        withProperties: [
-            "echoAppidExtension",
-            "appidExtension",
-            "echoPrf",
-            "prfResults",
-            "prfNotEvaluated",
-            "echoLargeBlob",
-            "largeBlob",
-            "echoLargeBlobWritten",
-            "largeBlobWritten",
-            "getCredBlob",
-            "payment",
-            "cmtgKey",
-            "crossDeviceFallbackUrl",
-            "echoRemoteClientDataJson",
-        ])
-    fileprivate static let jsBlinkMojomAuthenticationExtensionsClientOutputsConstructor: ILType = .constructor([
-        .plain(.boolean),
-        .plain(.boolean),
-        .plain(.boolean),
-        .either(.jsBlinkMojomPRFValues, .undefined),
-        .plain(.boolean),
-        .plain(.boolean),
-        .either(.jsUint8MojoArray, .undefined),
-        .plain(.boolean),
-        .plain(.boolean),
-        .either(.jsUint8MojoArray, .undefined),
-        .either(.jsBlinkMojomAuthenticationExtensionsPaymentResponse, .undefined),
-        .either(.jsBlinkMojomCmtgKeyResponse, .undefined),
-        .either(.boolean, .undefined),
-        .plain(.boolean),
-    ] => .jsBlinkMojomAuthenticationExtensionsClientOutputs)
-    fileprivate static let jsBlinkMojomCredentialInfo: ILType = .object(
-        ofGroup: "blink.mojom.CredentialInfo",
-        withProperties: [
-            "type",
-            "id",
-            "name",
-            "icon",
-            "password",
-            "federation",
-        ])
-    fileprivate static let jsBlinkMojomCredentialInfoConstructor: ILType = .constructor([
-        .plain(.jsBlinkMojomCredentialType),
-        .either(.jsMojoBaseMojomString16, .undefined),
-        .either(.jsMojoBaseMojomString16, .undefined),
-        .plain(.jsUrlMojomUrl),
-        .either(.jsMojoBaseMojomString16, .undefined),
-        .plain(.jsUrlMojomSchemeHostPort),
-    ] => .jsBlinkMojomCredentialInfo)
     fileprivate static let jsBlinkMojomPublicKeyCredentialReportOptions: ILType = .object(
         ofGroup: "blink.mojom.PublicKeyCredentialReportOptions",
         withProperties: [
@@ -510,16 +340,106 @@ extension ILType {
         .plain(.string),
         .plain(.string),
     ] => .jsBlinkMojomCurrentUserDetailsOptions)
+    fileprivate static let jsBlinkMojomMakeCredentialAuthenticatorResponse: ILType = .object(
+        ofGroup: "blink.mojom.MakeCredentialAuthenticatorResponse",
+        withProperties: [
+            "info",
+            "authenticatorAttachment",
+            "attestationObject",
+            "transports",
+            "echoHmacCreateSecret",
+            "hmacCreateSecret",
+            "echoPrf",
+            "prf",
+            "prfResults",
+            "echoCredBlob",
+            "credBlob",
+            "publicKeyDer",
+            "publicKeyAlgo",
+            "echoCredProps",
+            "hasCredPropsRk",
+            "credPropsRk",
+            "echoLargeBlob",
+            "supportsLargeBlob",
+            "payment",
+            "cmtgKey",
+            "echoRemoteClientDataJson",
+        ])
+    fileprivate static let jsBlinkMojomCommonCredentialInfo: ILType = .object(
+        ofGroup: "blink.mojom.CommonCredentialInfo",
+        withProperties: [
+            "id",
+            "rawId",
+            "clientDataJson",
+            "authenticatorData",
+        ])
+    fileprivate static let jsBlinkMojomAuthenticationExtensionsPaymentResponse: ILType = .object(
+        ofGroup: "blink.mojom.AuthenticationExtensionsPaymentResponse",
+        withProperties: [
+            "browserBoundSignature",
+        ])
+    fileprivate static let jsBlinkMojomCmtgKeyResponse: ILType = .object(
+        ofGroup: "blink.mojom.CmtgKeyResponse",
+        withProperties: [
+            "cmtgKey",
+            "signature",
+        ])
+    fileprivate static let jsBlinkMojomWebAuthnDOMExceptionDetails: ILType = .object(
+        ofGroup: "blink.mojom.WebAuthnDOMExceptionDetails",
+        withProperties: [
+            "name",
+            "message",
+        ])
+    fileprivate static let jsBlinkMojomGetAssertionResponse: ILType = .object(
+        ofGroup: "blink.mojom.GetAssertionResponse",
+        withProperties: [
+            "status",
+            "credential",
+            "domExceptionDetails",
+        ])
+    fileprivate static let jsBlinkMojomGetAssertionAuthenticatorResponse: ILType = .object(
+        ofGroup: "blink.mojom.GetAssertionAuthenticatorResponse",
+        withProperties: [
+            "info",
+            "authenticatorAttachment",
+            "signature",
+            "userHandle",
+            "extensions",
+        ])
+    fileprivate static let jsBlinkMojomAuthenticationExtensionsClientOutputs: ILType = .object(
+        ofGroup: "blink.mojom.AuthenticationExtensionsClientOutputs",
+        withProperties: [
+            "echoAppidExtension",
+            "appidExtension",
+            "echoPrf",
+            "prfResults",
+            "prfNotEvaluated",
+            "echoLargeBlob",
+            "largeBlob",
+            "echoLargeBlobWritten",
+            "largeBlobWritten",
+            "getCredBlob",
+            "payment",
+            "cmtgKey",
+            "crossDeviceFallbackUrl",
+            "echoRemoteClientDataJson",
+        ])
+    fileprivate static let jsBlinkMojomCredentialInfo: ILType = .object(
+        ofGroup: "blink.mojom.CredentialInfo",
+        withProperties: [
+            "type",
+            "id",
+            "name",
+            "icon",
+            "password",
+            "federation",
+        ])
     fileprivate static let jsBlinkMojomWebAuthnClientCapability: ILType = .object(
         ofGroup: "blink.mojom.WebAuthnClientCapability",
         withProperties: [
             "name",
             "supported",
         ])
-    fileprivate static let jsBlinkMojomWebAuthnClientCapabilityConstructor: ILType = .constructor([
-        .plain(.string),
-        .plain(.boolean),
-    ] => .jsBlinkMojomWebAuthnClientCapability)
     fileprivate static let jsBlinkMojomAuthenticator_MakeCredential_ResponseParams: ILType = .object(
         ofGroup: "blink.mojom.Authenticator_MakeCredential_ResponseParams",
         withProperties: [
@@ -684,6 +604,78 @@ extension ObjectGroup {
         ],
         methods: [:]
     )
+    fileprivate static let blinkMojomGetCredentialOptions = ObjectGroup(
+        name: "blink.mojom.GetCredentialOptions",
+        instanceType: .jsBlinkMojomGetCredentialOptions,
+        properties: [
+            "mediation": .jsBlinkMojomMediation,
+            "publicKey": .jsBlinkMojomPublicKeyCredentialRequestOptions,
+            "password": .boolean,
+        ],
+        methods: [:]
+    )
+    fileprivate static let blinkMojomPublicKeyCredentialRequestOptions = ObjectGroup(
+        name: "blink.mojom.PublicKeyCredentialRequestOptions",
+        instanceType: .jsBlinkMojomPublicKeyCredentialRequestOptions,
+        properties: [
+            "challenge": .jsUint8MojoArray,
+            "timeout": .jsMojoBaseMojomTimeDelta,
+            "relyingPartyId": .string,
+            "allowCredentials": .jsBlinkMojomPublicKeyCredentialDescriptorMojoArray,
+            "hints": .jsBlinkMojomHintMojoArray,
+            "userVerification": .jsBlinkMojomUserVerificationRequirement,
+            "extensions": .jsBlinkMojomAuthenticationExtensionsClientInputs,
+        ],
+        methods: [:]
+    )
+    fileprivate static let blinkMojomAuthenticationExtensionsClientInputs = ObjectGroup(
+        name: "blink.mojom.AuthenticationExtensionsClientInputs",
+        instanceType: .jsBlinkMojomAuthenticationExtensionsClientInputs,
+        properties: [
+            "appid": .string,
+            "prf": .boolean,
+            "prfInputs": .jsBlinkMojomPRFValuesMojoArray,
+            "largeBlobRead": .boolean,
+            "largeBlobWrite": .jsUint8MojoArray,
+            "getCredBlob": .boolean,
+            "remoteDesktopClientOverride": .jsBlinkMojomRemoteDesktopClientOverride,
+            "remoteClientDataJson": .string,
+            "paymentBrowserBoundKeyParameters": .jsBlinkMojomPublicKeyCredentialParametersMojoArray,
+            "cmtgKey": .boolean,
+            "crossDeviceFallbackUrl": .jsUrlMojomUrl,
+        ],
+        methods: [:]
+    )
+    fileprivate static let blinkMojomPublicKeyCredentialReportOptions = ObjectGroup(
+        name: "blink.mojom.PublicKeyCredentialReportOptions",
+        instanceType: .jsBlinkMojomPublicKeyCredentialReportOptions,
+        properties: [
+            "relyingPartyId": .string,
+            "unknownCredentialId": .jsUint8MojoArray,
+            "allAcceptedCredentials": .jsBlinkMojomAllAcceptedCredentialsOptions,
+            "currentUserDetails": .jsBlinkMojomCurrentUserDetailsOptions,
+        ],
+        methods: [:]
+    )
+    fileprivate static let blinkMojomAllAcceptedCredentialsOptions = ObjectGroup(
+        name: "blink.mojom.AllAcceptedCredentialsOptions",
+        instanceType: .jsBlinkMojomAllAcceptedCredentialsOptions,
+        properties: [
+            "userId": .jsUint8MojoArray,
+            "allAcceptedCredentialsIds": .jsUint8MojoArrayMojoArray,
+        ],
+        methods: [:]
+    )
+    fileprivate static let blinkMojomCurrentUserDetailsOptions = ObjectGroup(
+        name: "blink.mojom.CurrentUserDetailsOptions",
+        instanceType: .jsBlinkMojomCurrentUserDetailsOptions,
+        properties: [
+            "userId": .jsUint8MojoArray,
+            "name": .string,
+            "displayName": .string,
+        ],
+        methods: [:]
+    )
     fileprivate static let blinkMojomMakeCredentialAuthenticatorResponse = ObjectGroup(
         name: "blink.mojom.MakeCredentialAuthenticatorResponse",
         instanceType: .jsBlinkMojomMakeCredentialAuthenticatorResponse,
@@ -749,48 +741,6 @@ extension ObjectGroup {
         ],
         methods: [:]
     )
-    fileprivate static let blinkMojomGetCredentialOptions = ObjectGroup(
-        name: "blink.mojom.GetCredentialOptions",
-        instanceType: .jsBlinkMojomGetCredentialOptions,
-        properties: [
-            "mediation": .jsBlinkMojomMediation,
-            "publicKey": .jsBlinkMojomPublicKeyCredentialRequestOptions,
-            "password": .boolean,
-        ],
-        methods: [:]
-    )
-    fileprivate static let blinkMojomPublicKeyCredentialRequestOptions = ObjectGroup(
-        name: "blink.mojom.PublicKeyCredentialRequestOptions",
-        instanceType: .jsBlinkMojomPublicKeyCredentialRequestOptions,
-        properties: [
-            "challenge": .jsUint8MojoArray,
-            "timeout": .jsMojoBaseMojomTimeDelta,
-            "relyingPartyId": .string,
-            "allowCredentials": .jsBlinkMojomPublicKeyCredentialDescriptorMojoArray,
-            "hints": .jsBlinkMojomHintMojoArray,
-            "userVerification": .jsBlinkMojomUserVerificationRequirement,
-            "extensions": .jsBlinkMojomAuthenticationExtensionsClientInputs,
-        ],
-        methods: [:]
-    )
-    fileprivate static let blinkMojomAuthenticationExtensionsClientInputs = ObjectGroup(
-        name: "blink.mojom.AuthenticationExtensionsClientInputs",
-        instanceType: .jsBlinkMojomAuthenticationExtensionsClientInputs,
-        properties: [
-            "appid": .string,
-            "prf": .boolean,
-            "prfInputs": .jsBlinkMojomPRFValuesMojoArray,
-            "largeBlobRead": .boolean,
-            "largeBlobWrite": .jsUint8MojoArray,
-            "getCredBlob": .boolean,
-            "remoteDesktopClientOverride": .jsBlinkMojomRemoteDesktopClientOverride,
-            "remoteClientDataJson": .string,
-            "paymentBrowserBoundKeyParameters": .jsBlinkMojomPublicKeyCredentialParametersMojoArray,
-            "cmtgKey": .boolean,
-            "crossDeviceFallbackUrl": .jsUrlMojomUrl,
-        ],
-        methods: [:]
-    )
     fileprivate static let blinkMojomGetAssertionResponse = ObjectGroup(
         name: "blink.mojom.GetAssertionResponse",
         instanceType: .jsBlinkMojomGetAssertionResponse,
@@ -844,36 +794,6 @@ extension ObjectGroup {
             "icon": .jsUrlMojomUrl,
             "password": .jsMojoBaseMojomString16,
             "federation": .jsUrlMojomSchemeHostPort,
-        ],
-        methods: [:]
-    )
-    fileprivate static let blinkMojomPublicKeyCredentialReportOptions = ObjectGroup(
-        name: "blink.mojom.PublicKeyCredentialReportOptions",
-        instanceType: .jsBlinkMojomPublicKeyCredentialReportOptions,
-        properties: [
-            "relyingPartyId": .string,
-            "unknownCredentialId": .jsUint8MojoArray,
-            "allAcceptedCredentials": .jsBlinkMojomAllAcceptedCredentialsOptions,
-            "currentUserDetails": .jsBlinkMojomCurrentUserDetailsOptions,
-        ],
-        methods: [:]
-    )
-    fileprivate static let blinkMojomAllAcceptedCredentialsOptions = ObjectGroup(
-        name: "blink.mojom.AllAcceptedCredentialsOptions",
-        instanceType: .jsBlinkMojomAllAcceptedCredentialsOptions,
-        properties: [
-            "userId": .jsUint8MojoArray,
-            "allAcceptedCredentialsIds": .jsUint8MojoArrayMojoArray,
-        ],
-        methods: [:]
-    )
-    fileprivate static let blinkMojomCurrentUserDetailsOptions = ObjectGroup(
-        name: "blink.mojom.CurrentUserDetailsOptions",
-        instanceType: .jsBlinkMojomCurrentUserDetailsOptions,
-        properties: [
-            "userId": .jsUint8MojoArray,
-            "name": .string,
-            "displayName": .string,
         ],
         methods: [:]
     )
@@ -1046,15 +966,6 @@ private let MojoUint8MojoArrayMojoArrayGenerator = CodeGenerator(
     var elements: [Variable] = [elem]
     b.createArray(with: elements)
 }
-private let MojoBlinkMojomWebAuthnClientCapabilityMojoArrayGenerator = CodeGenerator(
-    "MojoBlinkMojomWebAuthnClientCapabilityMojoArrayGenerator",
-    inputs: .one,
-    produces: [.jsBlinkMojomWebAuthnClientCapabilityMojoArray]
-) { b, _ in
-    let elem = b.findOrGenerateType(.jsBlinkMojomWebAuthnClientCapability)
-    var elements: [Variable] = [elem]
-    b.createArray(with: elements)
-}
 
 ///
 /// Enumerations
@@ -1108,10 +1019,6 @@ extension ILType {
             "getAssertionResponse",
             "passwordResponse",
         ])
-    fileprivate static let jsBlinkMojomGetCredentialResponseUnionGetAssertionResponseConstructor: ILType = .constructor(
-        [.plain(.jsBlinkMojomGetAssertionResponse)] => .jsBlinkMojomGetCredentialResponseUnion)
-    fileprivate static let jsBlinkMojomGetCredentialResponseUnionPasswordResponseConstructor: ILType = .constructor(
-        [.plain(.jsBlinkMojomCredentialInfo)] => .jsBlinkMojomGetCredentialResponseUnion)
 }
 
 extension ObjectGroup {
@@ -1194,21 +1101,21 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .blinkMojomRemoteDesktopClientOverride,
     .urlMojomOrigin,
     .mojoBaseMojomUnguessableToken,
+    .blinkMojomGetCredentialOptions,
+    .blinkMojomPublicKeyCredentialRequestOptions,
+    .blinkMojomAuthenticationExtensionsClientInputs,
+    .blinkMojomPublicKeyCredentialReportOptions,
+    .blinkMojomAllAcceptedCredentialsOptions,
+    .blinkMojomCurrentUserDetailsOptions,
     .blinkMojomMakeCredentialAuthenticatorResponse,
     .blinkMojomCommonCredentialInfo,
     .blinkMojomAuthenticationExtensionsPaymentResponse,
     .blinkMojomCmtgKeyResponse,
     .blinkMojomWebAuthnDOMExceptionDetails,
-    .blinkMojomGetCredentialOptions,
-    .blinkMojomPublicKeyCredentialRequestOptions,
-    .blinkMojomAuthenticationExtensionsClientInputs,
     .blinkMojomGetAssertionResponse,
     .blinkMojomGetAssertionAuthenticatorResponse,
     .blinkMojomAuthenticationExtensionsClientOutputs,
     .blinkMojomCredentialInfo,
-    .blinkMojomPublicKeyCredentialReportOptions,
-    .blinkMojomAllAcceptedCredentialsOptions,
-    .blinkMojomCurrentUserDetailsOptions,
     .blinkMojomWebAuthnClientCapability,
     .blinkMojomAuthenticatorMakeCredentialResponseParams,
     .blinkMojomAuthenticatorGetCredentialResponseParams,
@@ -1240,24 +1147,12 @@ private let mojoBuiltins: [String: ILType] = [
     "blink.mojom.RemoteDesktopClientOverride": .jsBlinkMojomRemoteDesktopClientOverrideConstructor,
     "url.mojom.Origin": .jsUrlMojomOriginConstructor,
     "mojoBase.mojom.UnguessableToken": .jsMojoBaseMojomUnguessableTokenConstructor,
-    "blink.mojom.MakeCredentialAuthenticatorResponse": .jsBlinkMojomMakeCredentialAuthenticatorResponseConstructor,
-    "blink.mojom.CommonCredentialInfo": .jsBlinkMojomCommonCredentialInfoConstructor,
-    "blink.mojom.AuthenticationExtensionsPaymentResponse": .jsBlinkMojomAuthenticationExtensionsPaymentResponseConstructor,
-    "blink.mojom.CmtgKeyResponse": .jsBlinkMojomCmtgKeyResponseConstructor,
-    "blink.mojom.WebAuthnDOMExceptionDetails": .jsBlinkMojomWebAuthnDOMExceptionDetailsConstructor,
     "blink.mojom.GetCredentialOptions": .jsBlinkMojomGetCredentialOptionsConstructor,
     "blink.mojom.PublicKeyCredentialRequestOptions": .jsBlinkMojomPublicKeyCredentialRequestOptionsConstructor,
     "blink.mojom.AuthenticationExtensionsClientInputs": .jsBlinkMojomAuthenticationExtensionsClientInputsConstructor,
-    "blink.mojom.GetAssertionResponse": .jsBlinkMojomGetAssertionResponseConstructor,
-    "blink.mojom.GetAssertionAuthenticatorResponse": .jsBlinkMojomGetAssertionAuthenticatorResponseConstructor,
-    "blink.mojom.AuthenticationExtensionsClientOutputs": .jsBlinkMojomAuthenticationExtensionsClientOutputsConstructor,
-    "blink.mojom.CredentialInfo": .jsBlinkMojomCredentialInfoConstructor,
     "blink.mojom.PublicKeyCredentialReportOptions": .jsBlinkMojomPublicKeyCredentialReportOptionsConstructor,
     "blink.mojom.AllAcceptedCredentialsOptions": .jsBlinkMojomAllAcceptedCredentialsOptionsConstructor,
     "blink.mojom.CurrentUserDetailsOptions": .jsBlinkMojomCurrentUserDetailsOptionsConstructor,
-    "blink.mojom.WebAuthnClientCapability": .jsBlinkMojomWebAuthnClientCapabilityConstructor,
-    "blink.mojom.GetCredentialResponse.getAssertionResponse": .jsBlinkMojomGetCredentialResponseUnionGetAssertionResponseConstructor,
-    "blink.mojom.GetCredentialResponse.passwordResponse": .jsBlinkMojomGetCredentialResponseUnionPasswordResponseConstructor,
 ]
 
 private let keepGenerators = [
@@ -1328,7 +1223,6 @@ let mojoAuthenticatorProfile = Profile(
         (MojoStringMojoArrayGenerator, 1),
         (MojoBlinkMojomPRFValuesMojoArrayGenerator, 1),
         (MojoUint8MojoArrayMojoArrayGenerator, 1),
-        (MojoBlinkMojomWebAuthnClientCapabilityMojoArrayGenerator, 1),
     ] + commonMojoCodeGenerators,
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,

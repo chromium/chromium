@@ -200,11 +200,6 @@ extension ILType {
             "mode",
             "clientId",
         ])
-    fileprivate static let jsBlinkMojomLockInfoConstructor: ILType = .constructor([
-        .plain(.string),
-        .plain(.jsBlinkMojomLockMode),
-        .plain(.string),
-    ] => .jsBlinkMojomLockInfo)
     fileprivate static let jsBlinkMojomLockManager_QueryState_ResponseParams: ILType = .object(
         ofGroup: "blink.mojom.LockManager_QueryState_ResponseParams",
         withProperties: [
@@ -241,27 +236,6 @@ extension ObjectGroup {
 extension ILType {
     fileprivate static let jsBlinkMojomLockInfoMojoArray: ILType =
         .createJsArrayType(ofElementType: .jsBlinkMojomLockInfo)
-}
-
-/// As Fuzzilli runs, the OperationMutator and VariadicInputReducer will modify
-/// the `CreateArray` operation to increase or decrease the element count. This
-/// allows arrays to be arbitrarily long.
-///
-/// `findOrGenerateType` is preferred over specifying `inputs` because
-/// Fuzzilli only uses CodeGenerators to produce types in `inputs`, while
-/// `findOrGenerateType` uses a variety of sources (e.g. `builtins`, other
-/// method properties and methods). An input is specified (i.e. `.one`)
-/// to prevent the CodeGenerator from being scheduled first when there are
-/// no visible variables, as `findOrGenerateType` causes a crash if there
-/// are no visibile variables.
-private let MojoBlinkMojomLockInfoMojoArrayGenerator = CodeGenerator(
-    "MojoBlinkMojomLockInfoMojoArrayGenerator",
-    inputs: .one,
-    produces: [.jsBlinkMojomLockInfoMojoArray]
-) { b, _ in
-    let elem = b.findOrGenerateType(.jsBlinkMojomLockInfo)
-    var elements: [Variable] = [elem]
-    b.createArray(with: elements)
 }
 
 ///
@@ -387,7 +361,6 @@ private let mojoBuiltins: [String: ILType] = [
     "mojoAsyncFunctionPromises": .object(withMethods: ["push"]),
     "blink.mojom.LockRequestCallbackRouter":
        .constructor([] => .jsBlinkMojomLockRequestCallbackRouter),
-    "blink.mojom.LockInfo": .jsBlinkMojomLockInfoConstructor,
 ]
 
 private let keepGenerators = [
@@ -451,7 +424,6 @@ let mojoLockManagerProfile = Profile(
         (MojoMethodCallGenerator, 10000),
         (MojoPropertyRetrievalGenerator, 10000),
         (MojoBlinkMojomLockRequestRouterListenerGenerator, 5000),
-        (MojoBlinkMojomLockInfoMojoArrayGenerator, 1),
     ] + commonMojoCodeGenerators,
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,
