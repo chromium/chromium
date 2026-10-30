@@ -15,6 +15,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
@@ -40,7 +41,7 @@ using AddNewContentsCallback = base::RepeatingCallback<content::WebContents*(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture)>;
 
@@ -154,7 +155,7 @@ class ChromeWebUIDialog : public views::DialogDelegate,
       content::WebContents* source,
       std::unique_ptr<content::WebContents> new_contents,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override;

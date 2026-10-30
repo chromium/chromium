@@ -21,8 +21,8 @@
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -249,13 +249,14 @@ TEST_F(DrivePickerHostViewTest, OpenURLFromTab_ForwardsToBrowserWindow) {
   const GURL test_url("https://policies.google.com/terms");
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          test_url, WindowOpenDisposition::kCurrentTab,
+          test_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
           ui::PAGE_TRANSITION_LINK);
 
-  EXPECT_CALL(*browser_window_interface(),
-              OpenURL(testing::Field(&content::OpenURLParams::disposition,
-                                     WindowOpenDisposition::kNewWindow),
-                      testing::_));
+  EXPECT_CALL(
+      *browser_window_interface(),
+      OpenURL(testing::Field(&content::OpenURLParams::disposition,
+                             ui::mojom::WindowOpenDisposition::kNewWindow),
+              testing::_));
 
   view->OpenURLFromTab(view->GetWebContents(), params, base::NullCallback());
 }
@@ -271,7 +272,7 @@ TEST_F(DrivePickerHostViewTest, OpenURLFromTab_RejectsPrivilegedSchemes) {
     const GURL privileged_url(url_str);
     content::OpenURLParams params =
         content::OpenURLParams::CreateBrowserInitiated(
-            privileged_url, WindowOpenDisposition::kCurrentTab,
+            privileged_url, ui::mojom::WindowOpenDisposition::kCurrentTab,
             ui::PAGE_TRANSITION_LINK);
 
     EXPECT_CALL(*browser_window_interface(), OpenURL(testing::_, testing::_))
@@ -298,7 +299,7 @@ TEST_F(DrivePickerHostViewTest, AddNewContents_RejectsPrivilegedSchemes) {
     bool was_blocked = false;
     content::WebContents* result = view->AddNewContents(
         view->GetWebContents(), nullptr, privileged_url,
-        WindowOpenDisposition::kNewForegroundTab,
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         blink::mojom::WindowFeatures(), /*user_gesture=*/true, &was_blocked);
 
     EXPECT_EQ(result, nullptr);

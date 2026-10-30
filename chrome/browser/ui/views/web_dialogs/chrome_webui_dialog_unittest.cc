@@ -18,7 +18,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
@@ -402,11 +402,12 @@ TEST_F(ChromeWebUIDialogTest, AddNewContentsInvokesCallback) {
   spec.max_size = gfx::Size(kMaxSize, kMaxSize);
 
   GURL observed_url;
-  WindowOpenDisposition observed_disposition = WindowOpenDisposition::kUnknown;
+  ui::mojom::WindowOpenDisposition observed_disposition =
+      ui::mojom::WindowOpenDisposition::kUnknown;
   spec.add_new_contents_callback = base::BindLambdaForTesting(
       [&](content::WebContents* source,
           std::unique_ptr<content::WebContents> new_contents,
-          const GURL& target_url, WindowOpenDisposition disposition,
+          const GURL& target_url, ui::mojom::WindowOpenDisposition disposition,
           const blink::mojom::WindowFeatures& window_features,
           bool user_gesture) -> content::WebContents* {
         observed_url = target_url;
@@ -419,12 +420,14 @@ TEST_F(ChromeWebUIDialogTest, AddNewContentsInvokesCallback) {
 
   blink::mojom::WindowFeatures window_features;
   delegate->AddNewContents(/*source=*/nullptr, /*new_contents=*/nullptr,
-                           kTargetUrl, WindowOpenDisposition::kNewForegroundTab,
+                           kTargetUrl,
+                           ui::mojom::WindowOpenDisposition::kNewForegroundTab,
                            window_features, /*user_gesture=*/true,
                            /*was_blocked=*/nullptr);
 
   EXPECT_EQ(observed_url, kTargetUrl);
-  EXPECT_EQ(observed_disposition, WindowOpenDisposition::kNewForegroundTab);
+  EXPECT_EQ(observed_disposition,
+            ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 }
 
 TEST_F(ChromeWebUIDialogTest, AddNewContentsWithoutCallbackDropsRequest) {
@@ -436,12 +439,13 @@ TEST_F(ChromeWebUIDialogTest, AddNewContentsWithoutCallbackDropsRequest) {
   auto* delegate = static_cast<ChromeWebUIDialog*>(widget->widget_delegate());
 
   blink::mojom::WindowFeatures window_features;
-  EXPECT_EQ(delegate->AddNewContents(
-                /*source=*/nullptr, /*new_contents=*/nullptr,
-                GURL("https://example.test/"),
-                WindowOpenDisposition::kNewForegroundTab, window_features,
-                /*user_gesture=*/true, /*was_blocked=*/nullptr),
-            nullptr);
+  EXPECT_EQ(
+      delegate->AddNewContents(
+          /*source=*/nullptr, /*new_contents=*/nullptr,
+          GURL("https://example.test/"),
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab, window_features,
+          /*user_gesture=*/true, /*was_blocked=*/nullptr),
+      nullptr);
 }
 
 TEST_F(ChromeWebUIDialogTest, EscShouldCancelDialogOverride) {

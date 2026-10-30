@@ -16,8 +16,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -143,7 +143,8 @@ void OfferNotificationBubbleViews::OnOfferDetailsLinkClicked() {
   web_contents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           GURL(controller_->GetOffer()->GetOfferDetailsUrl()),
-          WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK),
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+          ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }
 

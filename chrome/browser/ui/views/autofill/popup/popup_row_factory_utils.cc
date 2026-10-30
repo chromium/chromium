@@ -52,9 +52,9 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
@@ -436,10 +436,11 @@ void OnCitationClicked(base::WeakPtr<AutofillPopupController> controller,
     return;
   }
   if (content::WebContents* web_contents = controller->GetWebContents()) {
-    content::OpenURLParams params(url, content::Referrer(),
-                                  WindowOpenDisposition::kNewForegroundTab,
-                                  ui::PAGE_TRANSITION_LINK,
-                                  /*is_renderer_initiated=*/false);
+    content::OpenURLParams params(
+        url, content::Referrer(),
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+        ui::PAGE_TRANSITION_LINK,
+        /*is_renderer_initiated=*/false);
     params.user_gesture = true;
     web_contents->OpenURL(params, /*navigation_handle_callback=*/{});
   }

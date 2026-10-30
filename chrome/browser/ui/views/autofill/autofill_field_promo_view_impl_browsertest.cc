@@ -22,7 +22,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(AutofillFieldPromoViewImplBrowserTest,
   // Open a second tab so that closing the first one keeps the browser alive.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(chrome::kChromeUINewTabURL),
-      WindowOpenDisposition::kNewBackgroundTab,
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   content::WebContentsDestroyedWatcher destroyed_watcher(web_contents());
   browser()->GetTabStripModel()->CloseWebContentsAt(

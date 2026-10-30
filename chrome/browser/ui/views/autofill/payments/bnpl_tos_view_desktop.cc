@@ -11,8 +11,8 @@
 #include "components/autofill/core/browser/ui/payments/bnpl_tos_controller.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 using tabs::TabInterface;
 
@@ -48,10 +48,11 @@ BnplTosViewDesktop::BnplTosViewDesktop(
 BnplTosViewDesktop::~BnplTosViewDesktop() = default;
 
 void BnplTosViewDesktop::OpenLink(const GURL& url) {
-  web_contents_->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                             url, WindowOpenDisposition::kNewForegroundTab,
-                             ui::PAGE_TRANSITION_LINK),
-                         /*navigation_handle_callback=*/{});
+  web_contents_->OpenURL(
+      content::OpenURLParams::CreateBrowserInitiated(
+          url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+          ui::PAGE_TRANSITION_LINK),
+      /*navigation_handle_callback=*/{});
 }
 
 }  // namespace autofill

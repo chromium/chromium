@@ -78,8 +78,8 @@
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/pointer/touch_ui_controller.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -296,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(LocationBarViewBrowserTest, ScriptBlockedIcon) {
       ->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT,
                                  CONTENT_SETTING_BLOCK);
   // Reload the page
-  chrome::Reload(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::Reload(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
 
   // Waits until the script blocked icon is visible, or aborts the tests
   // otherwise.

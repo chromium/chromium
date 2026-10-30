@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 class BrowserWindowInterface;
 
@@ -41,8 +41,8 @@ class BackForwardButton : public ToolbarButton {
   // be navigated, at the time of a mouse enter on the back button. This is only
   // for heuristic purposes. Only the modifiers of the actual click determine
   // which tab is navigated.
-  WindowOpenDisposition last_back_assumed_disposition_ =
-      WindowOpenDisposition::kCurrentTab;
+  ui::mojom::WindowOpenDisposition last_back_assumed_disposition_ =
+      ui::mojom::WindowOpenDisposition::kCurrentTab;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_BACK_FORWARD_BUTTON_H_

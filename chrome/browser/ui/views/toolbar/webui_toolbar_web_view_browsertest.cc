@@ -182,11 +182,11 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -924,7 +924,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
                                           "?.disabled ? 'true' : 'false'"})));
 
   // Go back to enable forward button.
-  chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
+  chrome::GoBack(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
 
   content::WaitForAccessibilityTreeToContainNodeWithName(
       web_view->GetWebContents(), "Forward");
@@ -1083,7 +1083,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
   {
     content::TestNavigationObserver back_nav_observer(
         browser()->GetTabStripModel()->GetActiveWebContents());
-    chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
+    chrome::GoBack(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
     back_nav_observer.Wait();
   }
 
@@ -3554,7 +3554,7 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewSplitTabsBrowserTest,
     // Ensure NOT in split view initially by opening a new tab.
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL("chrome://version/"),
-        WindowOpenDisposition::kNewForegroundTab,
+        ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     EXPECT_FALSE(tab_strip_model->GetActiveTab()->IsSplit());
 
@@ -5317,7 +5317,7 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarButtonPressAndDragTest, PressAndDragDown) {
     ASSERT_TRUE(
         ui_test_utils::NavigateToURL(browser(), GURL("chrome://newtab")));
     if (std::string(param.test_name) == "Forward") {
-      chrome::GoBack(browser(), WindowOpenDisposition::kCurrentTab);
+      chrome::GoBack(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
     }
   }
 
@@ -5464,7 +5464,8 @@ IN_PROC_BROWSER_TEST_P(WebUIToolbarAlreadyExistsForTheSameProfileOnInitTest,
   // new tab and navigating it to Tab Search.
   GURL tab_search_url("chrome://tab-search.top-chrome/");
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), tab_search_url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), tab_search_url,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Create a second browser window. This will trigger the creation of a new

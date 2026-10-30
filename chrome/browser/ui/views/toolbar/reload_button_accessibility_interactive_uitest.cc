@@ -28,9 +28,9 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/test/ui_controls.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -177,11 +177,12 @@ IN_PROC_BROWSER_TEST_P(ReloadButtonAccessibilityTest,
 
       // Start navigation to slow page
       InstrumentNextTab(kNewTabId), Do([&]() {
-        browser()->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
-                               embedded_test_server()->GetURL("/slow"),
-                               WindowOpenDisposition::kNewForegroundTab,
-                               ui::PAGE_TRANSITION_TYPED),
-                           /*navigation_handle_callback=*/{});
+        browser()->OpenURL(
+            content::OpenURLParams::CreateBrowserInitiated(
+                embedded_test_server()->GetURL("/slow"),
+                ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+                ui::PAGE_TRANSITION_TYPED),
+            /*navigation_handle_callback=*/{});
       }),
 
       // Wait for navigation to start and button to turn into Stop.

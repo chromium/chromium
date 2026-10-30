@@ -69,7 +69,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 using ::testing::_;
 using ::testing::AtLeast;
@@ -97,7 +97,7 @@ struct ContentInfo {
 
 ContentInfo NavigateAndGetInfo(BrowserWindowInterface* browser,
                                const GURL& url,
-                               WindowOpenDisposition disposition) {
+                               ui::mojom::WindowOpenDisposition disposition) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser, url, disposition,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
@@ -195,8 +195,9 @@ class InlineLoginUIBrowserTest : public InProcessBrowserTest {};
 
 // crbug.com/41136981
 IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, DSABLED_DifferentStorageId) {
-  ContentInfo info = NavigateAndGetInfo(browser(), GetSigninPromoURL(),
-                                        WindowOpenDisposition::kCurrentTab);
+  ContentInfo info =
+      NavigateAndGetInfo(browser(), GetSigninPromoURL(),
+                         ui::mojom::WindowOpenDisposition::kCurrentTab);
   WaitUntilUIReady(browser());
 
   // Make sure storage partition of embedded webview is different from
@@ -230,12 +231,13 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, OneProcessLimit) {
   // still be given its own process and storage partition.
   content::RenderProcessHost::SetMaxRendererProcessCount(1);
 
-  ContentInfo info1 = NavigateAndGetInfo(browser(), test_url_1,
-                                         WindowOpenDisposition::kCurrentTab);
-  ContentInfo info2 = NavigateAndGetInfo(browser(), test_url_2,
-                                         WindowOpenDisposition::kCurrentTab);
-  ContentInfo info3 = NavigateAndGetInfo(browser(), GetSigninPromoURL(),
-                                         WindowOpenDisposition::kCurrentTab);
+  ContentInfo info1 = NavigateAndGetInfo(
+      browser(), test_url_1, ui::mojom::WindowOpenDisposition::kCurrentTab);
+  ContentInfo info2 = NavigateAndGetInfo(
+      browser(), test_url_2, ui::mojom::WindowOpenDisposition::kCurrentTab);
+  ContentInfo info3 =
+      NavigateAndGetInfo(browser(), GetSigninPromoURL(),
+                         ui::mojom::WindowOpenDisposition::kCurrentTab);
 
   ASSERT_EQ(info1.pid, info2.pid);
   ASSERT_NE(info1.pid, info3.pid);

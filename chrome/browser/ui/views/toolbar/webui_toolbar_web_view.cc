@@ -102,7 +102,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -1338,10 +1338,12 @@ void WebUIToolbarWebView::OverflowButtonClicked(
   // For better or for worse, ignoring modifiers and instead doing everything in
   // the current tab matches the Views overflow menu behavior.
   if (identifier == kToolbarForwardButtonElementId) {
-    browser_controls_adapter_->Forward(WindowOpenDisposition::kCurrentTab);
+    browser_controls_adapter_->Forward(
+        ui::mojom::WindowOpenDisposition::kCurrentTab);
     return;
   } else if (identifier == kToolbarHomeButtonElementId) {
-    browser_controls_adapter_->NavigateHome(WindowOpenDisposition::kCurrentTab);
+    browser_controls_adapter_->NavigateHome(
+        ui::mojom::WindowOpenDisposition::kCurrentTab);
     return;
   } else if (identifier == kToolbarSplitTabsToolbarButtonElementId) {
     split_tabs_control_.HandleContextMenuOverflowClick();
@@ -1563,7 +1565,7 @@ void WebUIToolbarWebView::OnHomeButtonDropText(const std::string& text) {
 
 void WebUIToolbarWebView::OnToolbarDropFile(const gfx::PointF& drop_position) {
   if (std::optional<GURL> url = web_view_->ConsumeDroppedUrl(drop_position)) {
-    browser_->OpenGURL(*url, WindowOpenDisposition::kCurrentTab);
+    browser_->OpenGURL(*url, ui::mojom::WindowOpenDisposition::kCurrentTab);
   }
 }
 

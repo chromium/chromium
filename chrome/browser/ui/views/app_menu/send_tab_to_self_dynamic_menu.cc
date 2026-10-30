@@ -42,8 +42,8 @@
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
 #include "ui/menus/simple_menu_model.h"
 
@@ -261,11 +261,11 @@ void SendTabToSelfDynamicMenu::ExecuteDeviceSelection(
 void SendTabToSelfDynamicMenu::ExecuteManageDevices(
     actions::ActionItem* item,
     actions::ActionInvocationContext context) {
-  WindowOpenDisposition disposition =
+  ui::mojom::WindowOpenDisposition disposition =
       context.GetProperty(chrome::kDispositionKey);
-  if (disposition == WindowOpenDisposition::kCurrentTab ||
-      disposition == WindowOpenDisposition::kUnknown) {
-    disposition = WindowOpenDisposition::kNewForegroundTab;
+  if (disposition == ui::mojom::WindowOpenDisposition::kCurrentTab ||
+      disposition == ui::mojom::WindowOpenDisposition::kUnknown) {
+    disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   }
   send_tab_to_self::OpenManageDevicesPage(
       browser_window_interface_->GetProfile(), disposition);

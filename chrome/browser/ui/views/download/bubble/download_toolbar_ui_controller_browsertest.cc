@@ -34,7 +34,7 @@
 #include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_mode.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/views/controls/image_view.h"
 
 // This tests the download button view in the toolbar.
@@ -302,7 +302,8 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
           browser(), 1,
           content::DownloadTestObserver::ON_DANGEROUS_DOWNLOAD_QUIT));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), download_url, WindowOpenDisposition::kNewBackgroundTab,
+      browser(), download_url,
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
   dangerous_observer->WaitForFinished();
   std::vector<raw_ptr<download::DownloadItem, VectorExperimental>>
@@ -395,10 +396,10 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
 
   // Start two slow in progress downloads.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::kNewBackgroundTab,
+      browser(), url, ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::kNewBackgroundTab,
+      browser(), url, ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   observer->WaitForFinished();

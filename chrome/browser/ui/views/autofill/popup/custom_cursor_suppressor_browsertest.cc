@@ -25,7 +25,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace {
@@ -58,14 +58,14 @@ class CustomCursorSuppressorBrowserTest : public InProcessBrowserTest {
 
   [[nodiscard]] bool AddTab(BrowserWindowInterface* browser, const GURL& url) {
     return ui_test_utils::NavigateToURLWithDisposition(
-        browser, url, WindowOpenDisposition::kNewForegroundTab,
+        browser, url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 
   [[nodiscard]] bool AddBackgroundTab(BrowserWindowInterface* browser,
                                       const GURL& url) {
     return ui_test_utils::NavigateToURLWithDisposition(
-        browser, url, WindowOpenDisposition::kNewBackgroundTab,
+        browser, url, ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   }
 

@@ -32,7 +32,7 @@
 #include "ui/actions/actions.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
   // Creates first background tab.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GetUrl("www.merchantsite1.test", "/"),
-      WindowOpenDisposition::kNewBackgroundTab,
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   OfferNotificationBubbleControllerImpl* controller =
       static_cast<OfferNotificationBubbleControllerImpl*>(
@@ -228,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(OfferNotificationBubbleViewsInteractiveUiTest,
   // Creates another merchant website in a second background tab.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GetUrl("www.merchantsite2.test", "/"),
-      WindowOpenDisposition::kNewBackgroundTab,
+      ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   controller = static_cast<OfferNotificationBubbleControllerImpl*>(
       OfferNotificationBubbleController::GetOrCreate(

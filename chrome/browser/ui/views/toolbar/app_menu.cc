@@ -84,10 +84,10 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/themed_vector_icon.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -1494,7 +1494,7 @@ bool AppMenu::ShouldExecuteCommandWithoutClosingMenu(int command_id,
                                                      const ui::Event& event) {
   return (IsRecentTabsCommand(command_id) && event.IsMouseEvent() &&
           (ui::DispositionFromEventFlags(event.flags()) ==
-           WindowOpenDisposition::kNewBackgroundTab)) ||
+           ui::mojom::WindowOpenDisposition::kNewBackgroundTab)) ||
          (IsBookmarkCommand(command_id) &&
           bookmark_menu_delegate_->ShouldExecuteCommandWithoutClosingMenu(
               command_id, event)) ||

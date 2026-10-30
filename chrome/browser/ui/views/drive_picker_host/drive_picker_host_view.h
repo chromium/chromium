@@ -11,7 +11,7 @@
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom-forward.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/views/controls/webview/web_contents_delegate_views.h"
 #include "ui/views/view.h"
 #include "ui/views/view_tracker.h"
@@ -87,7 +87,7 @@ class DrivePickerHostView
       content::WebContents* source,
       std::unique_ptr<content::WebContents> new_contents,
       const GURL& target_url,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       const blink::mojom::WindowFeatures& window_features,
       bool user_gesture,
       bool* was_blocked) override;

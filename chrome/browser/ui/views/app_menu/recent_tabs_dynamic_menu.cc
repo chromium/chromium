@@ -36,7 +36,7 @@
 #include "components/sync_sessions/session_sync_service.h"
 #include "ui/actions/actions.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/color/color_id.h"
 
 namespace {
@@ -89,11 +89,11 @@ void RecentTabsDynamicMenu::ExecuteRecentTab(
     const RecentTabItem& recent_item,
     actions::ActionItem* item,
     actions::ActionInvocationContext context) {
-  WindowOpenDisposition disposition =
+  ui::mojom::WindowOpenDisposition disposition =
       context.GetProperty(chrome::kDispositionKey);
-  if (disposition == WindowOpenDisposition::kCurrentTab ||
-      disposition == WindowOpenDisposition::kUnknown) {
-    disposition = WindowOpenDisposition::kNewForegroundTab;
+  if (disposition == ui::mojom::WindowOpenDisposition::kCurrentTab ||
+      disposition == ui::mojom::WindowOpenDisposition::kUnknown) {
+    disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   }
   if (recent_item.is_local()) {
     base::RecordAction(
@@ -115,7 +115,7 @@ void RecentTabsDynamicMenu::ExecuteRecentTab(
 
 void RecentTabsDynamicMenu::ExecuteRestoreEntry(
     SessionID id,
-    WindowOpenDisposition disposition) {
+    ui::mojom::WindowOpenDisposition disposition) {
   sessions::TabRestoreService* service =
       TabRestoreServiceFactory::GetForProfile(
           browser_window_interface_->GetProfile());
@@ -148,11 +148,11 @@ void RecentTabsDynamicMenu::ExecuteRecentSplit(
     default:
       break;
   }
-  WindowOpenDisposition disposition =
+  ui::mojom::WindowOpenDisposition disposition =
       context.GetProperty(chrome::kDispositionKey);
-  if (disposition == WindowOpenDisposition::kCurrentTab ||
-      disposition == WindowOpenDisposition::kUnknown) {
-    disposition = WindowOpenDisposition::kNewForegroundTab;
+  if (disposition == ui::mojom::WindowOpenDisposition::kCurrentTab ||
+      disposition == ui::mojom::WindowOpenDisposition::kUnknown) {
+    disposition = ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   }
   ExecuteRestoreEntry(recent_item.session_id(), disposition);
 }

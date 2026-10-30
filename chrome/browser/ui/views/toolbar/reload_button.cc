@@ -25,10 +25,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/color_palette.h"
@@ -317,7 +317,7 @@ void ReloadButton::ButtonPressed(const ui::Event& event) {
   if (visible_mode_ == Mode::kStop) {
     if (command_updater_) {
       command_updater_->ExecuteCommandWithDisposition(
-          IDC_STOP, WindowOpenDisposition::kCurrentTab);
+          IDC_STOP, ui::mojom::WindowOpenDisposition::kCurrentTab);
     }
     // The user has clicked, so we can feel free to update the button, even if
     // the mouse is still hovering.

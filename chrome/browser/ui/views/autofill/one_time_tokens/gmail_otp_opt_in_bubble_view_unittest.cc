@@ -23,8 +23,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/events/test/test_event.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -171,12 +171,13 @@ TEST_F(GmailOtpOptInBubbleViewTest, FormatsDescriptionAndOpensSettingsLink) {
 
   EXPECT_CALL(
       web_contents_delegate(),
-      OpenURLFromTab(web_contents(),
-                     AllOf(Field(&content::OpenURLParams::url,
-                                 GURL("chrome://settings/contactInfo")),
-                           Field(&content::OpenURLParams::disposition,
-                                 WindowOpenDisposition::kNewForegroundTab)),
-                     _));
+      OpenURLFromTab(
+          web_contents(),
+          AllOf(Field(&content::OpenURLParams::url,
+                      GURL("chrome://settings/contactInfo")),
+                Field(&content::OpenURLParams::disposition,
+                      ui::mojom::WindowOpenDisposition::kNewForegroundTab)),
+          _));
   link_view->OnKeyPressed(
       ui::KeyEvent(ui::EventType::kKeyPressed, ui::VKEY_SPACE, ui::EF_NONE));
 }

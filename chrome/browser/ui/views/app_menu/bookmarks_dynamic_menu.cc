@@ -47,7 +47,7 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer_tree_owner.h"
 
@@ -630,10 +630,10 @@ actions::ActionItem* BookmarksDynamicMenu::AddBookmarkNodeAction(
         RecordBookmarkLaunch(
             BookmarkLaunchLocation::kAppMenu,
             profile_metrics::GetBrowserProfileType(browser->GetProfile()));
-        WindowOpenDisposition disposition =
+        ui::mojom::WindowOpenDisposition disposition =
             context.GetProperty(chrome::kDispositionKey);
-        if (disposition == WindowOpenDisposition::kUnknown) {
-          disposition = WindowOpenDisposition::kCurrentTab;
+        if (disposition == ui::mojom::WindowOpenDisposition::kUnknown) {
+          disposition = ui::mojom::WindowOpenDisposition::kCurrentTab;
         }
         bookmarks::BookmarkModel* model =
             BookmarkModelFactory::GetForBrowserContext(browser->GetProfile());

@@ -23,9 +23,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/text_constants.h"
@@ -178,7 +178,8 @@ void GmailOtpOptInBubbleView::OnLearnMoreLinkClicked() {
   web_contents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           chrome::GetSettingsUrl(chrome::kContactInfoSubPage),
-          WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK),
+          ui::mojom::WindowOpenDisposition::kNewForegroundTab,
+          ui::PAGE_TRANSITION_LINK),
       /*navigation_handle_callback=*/{});
 }
 

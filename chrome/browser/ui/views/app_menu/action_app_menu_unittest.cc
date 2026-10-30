@@ -99,6 +99,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -549,7 +550,7 @@ TEST_F(ActionAppMenuTest, PassesClickDisposition) {
       .WillOnce([](actions::ActionId, actions::ActionItem*,
                    actions::ActionInvocationContext context) {
         EXPECT_EQ(context.GetProperty(chrome::kDispositionKey),
-                  WindowOpenDisposition::kCurrentTab);
+                  ui::mojom::WindowOpenDisposition::kCurrentTab);
       });
   menu.ExecuteCommand(print_item->GetCommand(), ui::EF_NONE);
 
@@ -557,7 +558,7 @@ TEST_F(ActionAppMenuTest, PassesClickDisposition) {
       .WillOnce([](actions::ActionId, actions::ActionItem*,
                    actions::ActionInvocationContext context) {
         EXPECT_EQ(context.GetProperty(chrome::kDispositionKey),
-                  WindowOpenDisposition::kNewBackgroundTab);
+                  ui::mojom::WindowOpenDisposition::kNewBackgroundTab);
       });
   menu.ExecuteCommand(print_item->GetCommand(), ui::EF_MIDDLE_MOUSE_BUTTON);
 
@@ -565,7 +566,7 @@ TEST_F(ActionAppMenuTest, PassesClickDisposition) {
       .WillOnce([](actions::ActionId, actions::ActionItem*,
                    actions::ActionInvocationContext context) {
         EXPECT_EQ(context.GetProperty(chrome::kDispositionKey),
-                  WindowOpenDisposition::kNewWindow);
+                  ui::mojom::WindowOpenDisposition::kNewWindow);
       });
   menu.ExecuteCommand(print_item->GetCommand(), ui::EF_SHIFT_DOWN);
 
@@ -699,14 +700,16 @@ TEST_F(ActionAppMenuTest, PopulatesBookmarksSubmenu) {
       return nullptr;
     }
     GURL last_url;
-    WindowOpenDisposition last_disposition = WindowOpenDisposition::kUnknown;
+    ui::mojom::WindowOpenDisposition last_disposition =
+        ui::mojom::WindowOpenDisposition::kUnknown;
   } nav_wrapper;
   bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting(&nav_wrapper);
 
   base::HistogramTester histogram_tester;
   menu.ExecuteCommand(google_item->GetCommand(), ui::EF_NONE);
   EXPECT_EQ(nav_wrapper.last_url, GURL("https://www.google.com"));
-  EXPECT_EQ(nav_wrapper.last_disposition, WindowOpenDisposition::kCurrentTab);
+  EXPECT_EQ(nav_wrapper.last_disposition,
+            ui::mojom::WindowOpenDisposition::kCurrentTab);
   histogram_tester.ExpectUniqueSample("Bookmarks.LaunchLocation",
                                       BookmarkLaunchLocation::kAppMenu, 1);
   histogram_tester.ExpectTotalCount("Bookmarks.UsageCountPerProfileType", 1);
@@ -714,11 +717,12 @@ TEST_F(ActionAppMenuTest, PopulatesBookmarksSubmenu) {
   menu.ExecuteCommand(google_item->GetCommand(), ui::EF_MIDDLE_MOUSE_BUTTON);
   EXPECT_EQ(nav_wrapper.last_url, GURL("https://www.google.com"));
   EXPECT_EQ(nav_wrapper.last_disposition,
-            WindowOpenDisposition::kNewBackgroundTab);
+            ui::mojom::WindowOpenDisposition::kNewBackgroundTab);
 
   menu.ExecuteCommand(google_item->GetCommand(), ui::EF_SHIFT_DOWN);
   EXPECT_EQ(nav_wrapper.last_url, GURL("https://www.google.com"));
-  EXPECT_EQ(nav_wrapper.last_disposition, WindowOpenDisposition::kNewWindow);
+  EXPECT_EQ(nav_wrapper.last_disposition,
+            ui::mojom::WindowOpenDisposition::kNewWindow);
 
   bookmarks::BookmarkNavigationWrapper::SetInstanceForTesting(nullptr);
 
