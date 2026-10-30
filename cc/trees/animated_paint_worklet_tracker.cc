@@ -70,7 +70,9 @@ AnimatedPaintWorkletTracker::TakeAndResetAnimatedProperties() {
 PaintWorkletInput::PropertyValue
 AnimatedPaintWorkletTracker::GetPropertyAnimationValue(
     const PropertyKey& key) const {
-  return input_properties_.find(key)->second.animation_value;
+  const PropertyState& state = input_properties_.find(key)->second;
+  return state.animation_value.has_value() ? state.animation_value
+                                           : state.last_animation_value;
 }
 
 void AnimatedPaintWorkletTracker::UpdatePaintWorkletInputProperties(

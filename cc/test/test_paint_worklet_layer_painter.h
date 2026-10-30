@@ -21,9 +21,13 @@ class TestPaintWorkletLayerPainter : public PaintWorkletLayerPainter {
   bool HasOngoingDispatch() const override;
 
   DoneCallback TakeDoneCallback() { return std::move(done_callback_); }
+  const PaintWorkletJobMap& last_dispatched_jobs() const {
+    return last_dispatched_jobs_;
+  }
 
  private:
   DoneCallback done_callback_;
+  PaintWorkletJobMap last_dispatched_jobs_;
 };
 
 }  // namespace cc

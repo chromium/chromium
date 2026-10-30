@@ -14,7 +14,7 @@ TestPaintWorkletLayerPainter::TestPaintWorkletLayerPainter() = default;
 TestPaintWorkletLayerPainter::~TestPaintWorkletLayerPainter() = default;
 
 void TestPaintWorkletLayerPainter::DispatchWorklets(
-    PaintWorkletJobMap,
+    PaintWorkletJobMap jobs,
     DoneCallback done_callback) {
   // To enforce good behavior: the new callback should not be null, and the
   // saved one should be consumed (via |TakeDoneCallback|) before
@@ -22,6 +22,7 @@ void TestPaintWorkletLayerPainter::DispatchWorklets(
   DCHECK(!done_callback.is_null());
   DCHECK(done_callback_.is_null());
 
+  last_dispatched_jobs_ = std::move(jobs);
   done_callback_ = std::move(done_callback);
 }
 

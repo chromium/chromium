@@ -57,8 +57,9 @@ class CC_EXPORT AnimatedPaintWorkletTracker {
   // animation update.
   PropertyChangeMap TakeAndResetAnimatedProperties();
 
-  // Given a property, return its latest value if the property is animated.
-  // Otherwise return a PropertyValue with no value.
+  // Given a property, return its latest value if the property is animated or
+  // was previously animated and has not yet been removed. Otherwise return a
+  // PropertyValue with no value.
   PropertyValue GetPropertyAnimationValue(const PropertyKey& key) const;
 
   // Called right after Blink commit, clears the entries in |input_properties_|

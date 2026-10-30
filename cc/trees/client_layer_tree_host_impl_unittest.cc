@@ -67,6 +67,7 @@
 #include "cc/test/mock_latency_info_swap_promise_monitor.h"
 #include "cc/test/skia_common.h"
 #include "cc/test/test_layer_tree_frame_sink.h"
+#include "cc/test/test_paint_worklet_input.h"
 #include "cc/test/test_paint_worklet_layer_painter.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/clip_node.h"
@@ -3469,6 +3470,111 @@ TEST_P(PendingTreeLayerTreeHostImplTest, CommitWithNoDirtyPaintWorklets) {
   // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
   client_host_impl(host_impl_.get())->CommitComplete();
   EXPECT_TRUE(did_prepare_tiles_);
+}
+
+TEST_P(PendingTreeLayerTreeHostImplTest,
+       CommitPreservesLastAnimatedPaintWorkletValueAfterFinish) {
+  auto painter_owned = std::make_unique<TestPaintWorkletLayerPainter>();
+  TestPaintWorkletLayerPainter* painter = painter_owned.get();
+  host_impl_->SetPaintWorkletLayerPainter(std::move(painter_owned));
+
+  PaintWorkletInput::PropertyKey key(
+      PaintWorkletInput::NativePropertyType::kBackgroundColor, ElementId(1));
+  gfx::Size bounds(100, 100);
+
+  auto create_raster_source_with_input =
+      [&](scoped_refptr<TestPaintWorkletInput> input) {
+        FakeRecordingSource recording_source(bounds);
+        recording_source.add_draw_image(
+            CreatePaintWorkletPaintImage(std::move(input)), gfx::Point(0, 0));
+        recording_source.Rerecord();
+        return FakeRasterSource::CreateFromRecordingSource(recording_source);
+      };
+
+  auto complete_dispatched_worklet_job =
+      [&](scoped_refptr<const PaintWorkletInput> input) {
+        int worklet_id = input->WorkletId();
+        PaintWorkletJob painted_job(worklet_id, input, {});
+        painted_job.SetOutput(PaintRecord());
+        auto painted_job_vector = base::MakeRefCounted<PaintWorkletJobVector>();
+        painted_job_vector->data.push_back(std::move(painted_job));
+        PaintWorkletJobMap painted_job_map;
+        painted_job_map[worklet_id] = std::move(painted_job_vector);
+        std::move(painter->TakeDoneCallback()).Run(std::move(painted_job_map));
+      };
+
+  // 1. Initial commit before any compositor animation tick: no animated value
+  // should be present so the worklet seeds from the main thread value.
+  client_host_impl(host_impl_.get())->CreatePendingTree();
+  auto* root =
+      SetupRootLayer<PictureLayerImpl>(host_impl_->pending_tree(), bounds);
+  root->SetNeedsPushProperties();
+  auto input1 =
+      base::MakeRefCounted<TestPaintWorkletInput>(key, gfx::SizeF(bounds));
+  root->SetRasterSourceForTesting(create_raster_source_with_input(input1));
+  UpdateDrawProperties(host_impl_->pending_tree());
+
+  client_host_impl(host_impl_.get())->CommitComplete();
+  ASSERT_TRUE(painter->HasOngoingDispatch());
+  {
+    const auto& jobs =
+        painter->last_dispatched_jobs().at(input1->WorkletId())->data;
+    ASSERT_EQ(jobs.size(), 1u);
+    EXPECT_TRUE(jobs[0].GetAnimatedPropertyValues().empty());
+  }
+  complete_dispatched_worklet_job(input1);
+  host_impl_->ActivateSyncTree();
+
+  // 2. Compositor animation mutates the property to its finished value (1.0f).
+  auto args = viz::CreateBeginFrameArgsForTesting(
+      BEGINFRAME_FROM_HERE, viz::BeginFrameArgs::kManualSourceId, 1,
+      base::TimeTicks() + base::Milliseconds(1));
+  host_impl_->WillBeginImplFrame(args);
+  host_impl_->OnCustomPropertyMutated(key,
+                                      PaintWorkletInput::PropertyValue(1.0f));
+  client_host_impl(host_impl_.get())->InvalidateContentOnImplSide();
+  host_impl_->DidFinishImplFrame(args);
+  ASSERT_TRUE(painter->HasOngoingDispatch());
+  {
+    const auto& jobs =
+        painter->last_dispatched_jobs().at(input1->WorkletId())->data;
+    ASSERT_EQ(jobs.size(), 1u);
+    ASSERT_TRUE(jobs[0].GetAnimatedPropertyValues().contains(key));
+    ASSERT_TRUE(
+        jobs[0].GetAnimatedPropertyValues().at(key).float_value.has_value());
+    EXPECT_FLOAT_EQ(*jobs[0].GetAnimatedPropertyValues().at(key).float_value,
+                    1.0f);
+  }
+  complete_dispatched_worklet_job(input1);
+  host_impl_->ActivateSyncTree();
+
+  // 3. A subsequent commit provides a new PaintWorkletInput for the same key
+  // while the compositor animation is no longer mutating it (e.g., during
+  // teardown). The previous animated value (1.0f) must be preserved rather than
+  // falling back to an empty value.
+  client_host_impl(host_impl_.get())->CreatePendingTree();
+  auto* pending_root = static_cast<PictureLayerImpl*>(
+      host_impl_->pending_tree()->LayerById(root->id()));
+  auto input2 =
+      base::MakeRefCounted<TestPaintWorkletInput>(key, gfx::SizeF(bounds));
+  pending_root->SetRasterSourceForTesting(
+      create_raster_source_with_input(input2));
+  UpdateDrawProperties(host_impl_->pending_tree());
+
+  client_host_impl(host_impl_.get())->CommitComplete();
+  ASSERT_TRUE(painter->HasOngoingDispatch());
+  {
+    const auto& jobs =
+        painter->last_dispatched_jobs().at(input2->WorkletId())->data;
+    ASSERT_EQ(jobs.size(), 1u);
+    ASSERT_TRUE(jobs[0].GetAnimatedPropertyValues().contains(key));
+    ASSERT_TRUE(
+        jobs[0].GetAnimatedPropertyValues().at(key).float_value.has_value());
+    EXPECT_FLOAT_EQ(*jobs[0].GetAnimatedPropertyValues().at(key).float_value,
+                    1.0f);
+  }
+  complete_dispatched_worklet_job(input2);
+  host_impl_->ActivateSyncTree();
 }
 
 TEST_P(PendingTreeLayerTreeHostImplTest,
