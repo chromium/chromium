@@ -280,6 +280,13 @@ class LensOverlayQueryController : public lens::LensUploadChunker::Delegate {
   // if the parameter is not null.
   virtual void RunSuggestInputsCallback();
 
+  // Fetches the OAuth headers and calls the callback with the headers. If the
+  // OAuth cannot be retrieve (like if the user is not logged in), the callback
+  // will be called with an empty vector. Returns the access token fetcher
+  // making the request so it can be kept alive.
+  virtual std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
+  CreateOAuthHeadersAndContinue(OAuthHeadersCreatedCallback callback);
+
   // The callback for full image requests, including upon query flow start
   // and interaction retries.
   LensOverlayFullImageResponseCallback full_image_callback_;
@@ -384,6 +391,7 @@ class LensOverlayQueryController : public lens::LensUploadChunker::Delegate {
   // tried, just without the server session id.
   void ClusterInfoFetchResponseHandler(
       base::TimeTicks query_start_time,
+      std::vector<std::string> request_headers,
       std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
 
   // Processes the screenshot and fetches a full image request.
@@ -588,7 +596,7 @@ class LensOverlayQueryController : public lens::LensUploadChunker::Delegate {
       lens::LensOverlayServerRequest* request,
       std::vector<std::string>* request_headers,
       base::TimeDelta timeout,
-      base::OnceCallback<
+      base::RepeatingCallback<
           void(std::unique_ptr<endpoint_fetcher::EndpointFetcher>)>
           fetcher_created_callback,
       endpoint_fetcher::EndpointFetcherCallback response_received_callback,
@@ -602,22 +610,31 @@ class LensOverlayQueryController : public lens::LensUploadChunker::Delegate {
       std::string request_string,
       std::vector<std::string>* request_headers,
       base::TimeDelta timeout,
-      base::OnceCallback<
+      base::RepeatingCallback<
           void(std::unique_ptr<endpoint_fetcher::EndpointFetcher>)>
           fetcher_created_callback,
       endpoint_fetcher::EndpointFetcherCallback response_received_callback,
       UploadProgressCallback upload_progress_callback,
       GURL fetch_url);
 
+  // Handles the response from a fetch request, retrying once without the
+  // Authorization header if identity delegation is enabled and the server
+  // returns HTTP 401.
+  void OnFetchResponseReceived(
+      std::string request_string,
+      std::vector<std::string> request_headers,
+      std::vector<std::string> cors_exempt_headers,
+      GURL fetch_url,
+      base::TimeDelta timeout,
+      base::RepeatingCallback<
+          void(std::unique_ptr<endpoint_fetcher::EndpointFetcher>)>
+          fetcher_created_callback,
+      endpoint_fetcher::EndpointFetcherCallback response_received_callback,
+      UploadProgressCallback upload_progress_callback,
+      std::unique_ptr<endpoint_fetcher::EndpointResponse> response);
+
   // Creates a client context proto to be attached to a server request.
   lens::LensOverlayClientContext CreateClientContext();
-
-  // Fetches the OAuth headers and calls the callback with the headers. If the
-  // OAuth cannot be retrieve (like if the user is not logged in), the callback
-  // will be called with an empty vector. Returns the access token fetcher
-  // making the request so it can be kept alive.
-  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
-  CreateOAuthHeadersAndContinue(OAuthHeadersCreatedCallback callback);
 
   // Builds the LensOverlayVisualSearchInteractionData proto from the given
   // parameters.

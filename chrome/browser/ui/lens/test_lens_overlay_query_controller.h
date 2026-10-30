@@ -195,6 +195,15 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
     disable_page_upload_response_callback = disable;
   }
 
+  void set_fake_identity_delegation_headers(
+      std::optional<std::vector<std::string>> headers) {
+    fake_identity_delegation_headers_ = std::move(headers);
+  }
+
+  void set_reject_requests_with_auth_header_with_401(bool reject) {
+    reject_requests_with_auth_header_with_401_ = reject;
+  }
+
   void RunUploadProgressCallback() {
     std::move(last_upload_progress_callback_).Run(1, 1);
   }
@@ -204,6 +213,11 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
 
   const std::vector<std::string>& sent_request_headers() const {
     return sent_request_headers_;
+  }
+
+  const std::vector<std::vector<std::string>>& sent_request_headers_history()
+      const {
+    return sent_request_headers_history_;
   }
 
   const lens::LensOverlayClientLogs& sent_client_logs() const {
@@ -421,6 +435,9 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
 
   void RunSuggestInputsCallback() override;
 
+  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
+  CreateOAuthHeadersAndContinue(OAuthHeadersCreatedCallback callback) override;
+
   // The fake response to return for cluster info requests.
   lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response_;
 
@@ -584,6 +601,17 @@ class TestLensOverlayQueryController : public LensOverlayQueryController {
 
   // The last upload progress callback sent by the query controller.
   UploadProgressCallback last_upload_progress_callback_;
+
+  // Optional fake identity delegation headers to return from
+  // CreateOAuthHeadersAndContinue.
+  std::optional<std::vector<std::string>> fake_identity_delegation_headers_;
+
+  // If true, any request containing an Authorization header will return HTTP
+  // 401 Unauthorized.
+  bool reject_requests_with_auth_header_with_401_ = false;
+
+  // History of request headers sent across all requests.
+  std::vector<std::vector<std::string>> sent_request_headers_history_;
 };
 
 }  // namespace lens
