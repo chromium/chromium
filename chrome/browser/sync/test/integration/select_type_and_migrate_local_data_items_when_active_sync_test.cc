@@ -77,7 +77,6 @@ class SelectTypeAndMigrateLocalDataItemsWhenActiveTest : public SyncTest {
         /*enabled_features=*/
         {switches::kSyncEnableBookmarksInTransportMode,
          autofill::features::kAutofillSupportSplitZipCode,
-         syncer::kReplaceSyncPromosWithSignInPromos,
          syncer::kUnoPhase2FollowUp},
         /*disabled_features=*/{});
 

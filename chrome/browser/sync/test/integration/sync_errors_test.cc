@@ -125,8 +125,7 @@ class SyncErrorTest
   SyncErrorTest() : SyncTest(SINGLE_CLIENT) {
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
       scoped_feature_list_.InitWithFeatures(
-          {syncer::kReplaceSyncPromosWithSignInPromos,
-           switches::kSyncEnableBookmarksInTransportMode,
+          {switches::kSyncEnableBookmarksInTransportMode,
            switches::kEnablePreferencesAccountStorage,
            syncer::kSeparateLocalAndAccountSearchEngines},
           {});
