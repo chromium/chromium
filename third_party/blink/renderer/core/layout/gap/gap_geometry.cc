@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/css_gap_decoration_property_utils.h"
 #include "third_party/blink/renderer/core/layout/gap/flex_gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/gap/gap_utils.h"
+#include "third_party/blink/renderer/core/layout/gap/grid_gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/gap/multicol_gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -773,7 +774,8 @@ void GapGeometry::GenerateCrossIntersectionList(
     }
     case ContainerType::kGrid: {
       CHECK(!cross_gap_owner_index);
-      GenerateCrossIntersectionListForGrid(direction, intersections, cursor);
+      To<GridGapGeometry>(*this).GenerateCrossIntersectionListForGrid(
+          direction, intersections, cursor);
       break;
     }
     case ContainerType::kFlex: {
@@ -787,33 +789,6 @@ void GapGeometry::GenerateCrossIntersectionList(
           direction, gap_index, intersections, cursor);
       break;
   }
-}
-
-void GapGeometry::GenerateCrossIntersectionListForGrid(
-    GridTrackSizingDirection direction,
-    Vector<GapIntersection>& intersections,
-    GapSegmentStateCursor& cursor) const {
-  // For a grid cross gap:
-  // - Intersections include:
-  // 1. The content-start edge
-  // 2. The start offset of every main gap
-  // 3. The content-end edge
-  // - This works because grid main and cross gaps are aligned.
-  intersections.reserve(main_gaps_.size() + 2);
-  LayoutUnit content_start =
-      direction == kForColumns ? content_block_start_ : content_inline_start_;
-
-  intersections.emplace_back(content_start, cursor.GetNextGapSegmentState());
-
-  for (const auto& main_gap : GetMainGaps()) {
-    intersections.emplace_back(main_gap.GetGapOffset(),
-                               cursor.GetNextGapSegmentState());
-  }
-
-  LayoutUnit content_end =
-      direction == kForColumns ? content_block_end_ : content_inline_end_;
-
-  intersections.emplace_back(content_end, cursor.GetNextGapSegmentState());
 }
 
 LayoutUnit GapGeometry::GridAxisOffsetForLaneBoundary(
@@ -1158,20 +1133,6 @@ const GapSegmentStateRanges* GapGeometry::GetGapSegmentStateRangesForGap(
     }
   }
   return nullptr;
-}
-
-void GapGeometry::AdjustCrossGapsRangesForFragmentation(
-    wtf_size_t last_track_in_previous_fragment,
-    wtf_size_t first_track_in_next_fragment,
-    Vector<wtf_size_t>& column_gaps_segment_ranges_start_indices) {
-  for (wtf_size_t i = 0; i < cross_gaps_.size(); ++i) {
-    CrossGap& cross_gap = cross_gaps_[i];
-    if (cross_gap.HasGapSegmentStateRanges()) {
-      cross_gap.AdjustGapSegmentStateRangesForFragmentation(
-          last_track_in_previous_fragment, first_track_in_next_fragment,
-          column_gaps_segment_ranges_start_indices[i]);
-    }
-  }
 }
 
 }  // namespace blink
