@@ -5,6 +5,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -794,12 +795,13 @@ TEST_F(ContextualTasksWebViewTest, PropagatesAiPageAndThreadTitleOnNavigation) {
   EXPECT_TRUE(toolbar_ui->IsAiPage());
   EXPECT_EQ(toolbar_ui->GetThreadTitle(), "hello world");
 
-  // Follow-up AI navigation without  preserves the existing thread title.
+  // Navigating to an AI URL without q clears the thread title so stale titles
+  // from other threads do not persist.
   content::NavigationSimulator::NavigateAndCommitFromDocument(
       GURL("https://ai.google.com/search?mtid=1&mstk=2"),
       web_contents->GetPrimaryMainFrame());
   EXPECT_TRUE(toolbar_ui->IsAiPage());
-  EXPECT_EQ(toolbar_ui->GetThreadTitle(), "hello world");
+  EXPECT_EQ(toolbar_ui->GetThreadTitle(), std::nullopt);
 
   // Starting a navigation to a non-AI URL immediately sets IsAiPage to false,
   // and committing it clears the thread title.
@@ -882,12 +884,27 @@ TEST_F(ContextualTasksWebViewTest, SetWebContentsUpdatesAiPageAndThreadTitle) {
   content::NavigationSimulator::NavigateAndCommitFromDocument(
       GURL("https://ai.google.com/search"), wc3->GetPrimaryMainFrame());
 
+  // WebContents 4: AI thread without a query parameter (e.g. visual search).
+  std::unique_ptr<content::WebContents> wc4 =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("https://ai.google.com/search?mtid=2&mstk=1"),
+      wc4->GetPrimaryMainFrame());
+
   web_view_->SetWebContents(wc1.get());
   EXPECT_TRUE(toolbar_ui->IsAiPage());
   EXPECT_EQ(toolbar_ui->GetThreadTitle(), "first thread");
 
   web_view_->SetWebContents(wc2.get());
   EXPECT_FALSE(toolbar_ui->IsAiPage());
+  EXPECT_EQ(toolbar_ui->GetThreadTitle(), std::nullopt);
+
+  web_view_->SetWebContents(wc1.get());
+  EXPECT_TRUE(toolbar_ui->IsAiPage());
+  EXPECT_EQ(toolbar_ui->GetThreadTitle(), "first thread");
+
+  web_view_->SetWebContents(wc4.get());
+  EXPECT_TRUE(toolbar_ui->IsAiPage());
   EXPECT_EQ(toolbar_ui->GetThreadTitle(), std::nullopt);
 
   web_view_->SetWebContents(wc1.get());

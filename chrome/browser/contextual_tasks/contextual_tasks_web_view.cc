@@ -12,7 +12,6 @@
 #include "base/logging.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ghost_loader_view.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_base.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
@@ -55,7 +54,25 @@
 namespace contextual_tasks {
 
 namespace {
+
 constexpr SkColor kDarkModeBackgroundColor = SkColorSetRGB(34, 36, 43);
+
+void UpdateToolbarStateForUrl(const GURL& url,
+                              ContextualTasksUiService* ui_service,
+                              ContextualTasksUIBase* toolbar_ui) {
+  const bool is_ai_url = ui_service && ui_service->IsAiUrl(url);
+  toolbar_ui->SetIsAiPage(is_ai_url);
+  toolbar_ui->UpdateProfileIndicator(url);
+
+  std::string query_value;
+  if (is_ai_url && net::GetValueForKeyInQuery(url, "q", &query_value) &&
+      !query_value.empty()) {
+    toolbar_ui->SetThreadTitle(query_value);
+  } else {
+    toolbar_ui->SetThreadTitle(std::nullopt);
+  }
+}
+
 }  // namespace
 
 // static
@@ -401,20 +418,7 @@ void ContextualTasksWebView::DidFinishNavigation(
         browser_window_->GetProfile());
   }
 
-  const GURL& url = navigation_handle->GetURL();
-  const bool is_ai_url = ui_service && ui_service->IsAiUrl(url);
-  toolbar_ui->SetIsAiPage(is_ai_url);
-  toolbar_ui->UpdateProfileIndicator(url);
-
-  if (!is_ai_url || ContextualTasksUI::IsZeroState(url, ui_service)) {
-    toolbar_ui->SetThreadTitle(std::nullopt);
-  } else {
-    std::string query_value;
-    if (net::GetValueForKeyInQuery(url, "q", &query_value) &&
-        !query_value.empty()) {
-      toolbar_ui->SetThreadTitle(query_value);
-    }
-  }
+  UpdateToolbarStateForUrl(navigation_handle->GetURL(), ui_service, toolbar_ui);
   toolbar_ui->MaybeTriggerPinningPromo();
 
   if (ui_service) {
@@ -658,20 +662,7 @@ void ContextualTasksWebView::UpdateToolbarStateFromWebContents(
       browser_window_->GetProfile());
   const GURL& url =
       use_last_committed_url ? wc->GetLastCommittedURL() : wc->GetVisibleURL();
-  const bool is_ai_url = ui_service && ui_service->IsAiUrl(url);
-  toolbar_ui->SetIsAiPage(is_ai_url);
-  toolbar_ui->UpdateProfileIndicator(url);
-
-  if (!is_ai_url || ContextualTasksUI::IsZeroState(url, ui_service)) {
-    toolbar_ui->SetThreadTitle(std::nullopt);
-    return;
-  }
-
-  std::string query_value;
-  if (net::GetValueForKeyInQuery(url, "q", &query_value) &&
-      !query_value.empty()) {
-    toolbar_ui->SetThreadTitle(query_value);
-  }
+  UpdateToolbarStateForUrl(url, ui_service, toolbar_ui);
 }
 
 BEGIN_METADATA(ContextualTasksWebView)
