@@ -1437,17 +1437,17 @@
     {
         "name": "error_prone_annotations",
         "group": "com.google.errorprone",
-        "version": "2.30.0"
+        "version": "2.50.0"
     },
     {
         "name": "failureaccess",
         "group": "com.google.guava",
-        "version": "1.0.2"
+        "version": "1.0.3"
     },
     {
         "name": "guava",
         "group": "com.google.guava",
-        "version": "33.3.1-jre"
+        "version": "33.7.2-android"
     },
     {
         "name": "listenablefuture",
@@ -1457,7 +1457,7 @@
     {
         "name": "j2objc-annotations",
         "group": "com.google.j2objc",
-        "version": "3.0.0"
+        "version": "3.1"
     },
     {
         "name": "protobuf-lite",
@@ -1627,7 +1627,7 @@
     {
         "name": "jspecify",
         "group": "org.jspecify",
-        "version": "1.0.0"
+        "version": "1.0.1"
     },
     {
         "name": "asm",
