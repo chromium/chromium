@@ -70,9 +70,7 @@ TEST_P(PaintPropertyTreePrinterTest, SimpleTransformTreePath) {
       "<div id='transform' style='transform: translate3d(10px, 10px, 10px);'>"
       "</div>");
   LayoutObject* transformed_object =
-      GetDocument()
-          .getElementById(AtomicString("transform"))
-          ->GetLayoutObject();
+      GetElementById("transform")->GetLayoutObject();
   const auto* transformed_object_properties =
       transformed_object->FirstFragment().PaintProperties();
   String transform_path_as_string =
@@ -88,8 +86,7 @@ TEST_P(PaintPropertyTreePrinterTest, SimpleClipTreePath) {
   SetBodyInnerHTML(
       "<div id='clip' style='position: absolute; clip: rect(10px, 80px, 70px, "
       "40px);'></div>");
-  LayoutObject* clipped_object =
-      GetDocument().getElementById(AtomicString("clip"))->GetLayoutObject();
+  LayoutObject* clipped_object = GetElementById("clip")->GetLayoutObject();
   const auto* clipped_object_properties =
       clipped_object->FirstFragment().PaintProperties();
   String clip_path_as_string =
@@ -102,8 +99,7 @@ TEST_P(PaintPropertyTreePrinterTest, SimpleClipTreePath) {
 
 TEST_P(PaintPropertyTreePrinterTest, SimpleEffectTreePath) {
   SetBodyInnerHTML("<div id='effect' style='opacity: 0.9;'></div>");
-  LayoutObject* effect_object =
-      GetDocument().getElementById(AtomicString("effect"))->GetLayoutObject();
+  LayoutObject* effect_object = GetElementById("effect")->GetLayoutObject();
   const auto* effect_object_properties =
       effect_object->FirstFragment().PaintProperties();
   String effect_path_as_string =
@@ -119,8 +115,7 @@ TEST_P(PaintPropertyTreePrinterTest, SimpleScrollTreePath) {
       <div id='forceScroll' style='height: 4000px;'></div>
     </div>
   )HTML");
-  LayoutObject* scroll_object =
-      GetDocument().getElementById(AtomicString("scroll"))->GetLayoutObject();
+  LayoutObject* scroll_object = GetElementById("scroll")->GetLayoutObject();
   const auto* scroll_object_properties =
       scroll_object->FirstFragment().PaintProperties();
   String scroll_path_as_string = scroll_object_properties->ScrollTranslation()

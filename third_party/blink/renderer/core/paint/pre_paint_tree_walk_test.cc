@@ -70,8 +70,7 @@ TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithBorderInvalidation) {
     <div id='transformed'></div>
   )HTML");
 
-  auto* transformed_element =
-      GetDocument().getElementById(AtomicString("transformed"));
+  auto* transformed_element = GetElementById("transformed");
   const auto* transformed_properties =
       transformed_element->GetLayoutObject()->FirstFragment().PaintProperties();
   EXPECT_EQ(gfx::Vector2dF(100, 100),
@@ -113,8 +112,7 @@ TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithCSSTransformInvalidation) {
     <div id='transformed' class='transformA'></div>
   )HTML");
 
-  auto* transformed_element =
-      GetDocument().getElementById(AtomicString("transformed"));
+  auto* transformed_element = GetElementById("transformed");
   const auto* transformed_properties =
       transformed_element->GetLayoutObject()->FirstFragment().PaintProperties();
   EXPECT_EQ(gfx::Vector2dF(100, 100),
@@ -139,8 +137,7 @@ TEST_P(PrePaintTreeWalkTest, PropertyTreesRebuiltWithOpacityInvalidation) {
     <div id='transparent' class='opacityA'></div>
   )HTML");
 
-  auto* transparent_element =
-      GetDocument().getElementById(AtomicString("transparent"));
+  auto* transparent_element = GetElementById("transparent");
   const auto* transparent_properties =
       transparent_element->GetLayoutObject()->FirstFragment().PaintProperties();
   EXPECT_EQ(0.9f, transparent_properties->Effect()->Opacity());
@@ -167,7 +164,7 @@ TEST_P(PrePaintTreeWalkTest, ClearSubsequenceCachingClipChange) {
     </div>
   )HTML");
 
-  auto* parent = GetDocument().getElementById(AtomicString("parent"));
+  auto* parent = GetElementById("parent");
   auto* child_paint_layer = GetPaintLayerByElementId("child");
   EXPECT_FALSE(child_paint_layer->SelfNeedsRepaint());
   EXPECT_FALSE(child_paint_layer->NeedsPaintPhaseFloat());
@@ -191,7 +188,7 @@ TEST_P(PrePaintTreeWalkTest, ClearSubsequenceCachingClipChange2DTransform) {
     </div>
   )HTML");
 
-  auto* parent = GetDocument().getElementById(AtomicString("parent"));
+  auto* parent = GetElementById("parent");
   auto* child_paint_layer = GetPaintLayerByElementId("child");
   EXPECT_FALSE(child_paint_layer->SelfNeedsRepaint());
   EXPECT_FALSE(child_paint_layer->NeedsPaintPhaseFloat());
@@ -216,7 +213,7 @@ TEST_P(PrePaintTreeWalkTest, ClearSubsequenceCachingClipChangePosAbs) {
     </div>
   )HTML");
 
-  auto* parent = GetDocument().getElementById(AtomicString("parent"));
+  auto* parent = GetElementById("parent");
   auto* child_paint_layer = GetPaintLayerByElementId("child");
   EXPECT_FALSE(child_paint_layer->SelfNeedsRepaint());
   EXPECT_FALSE(child_paint_layer->NeedsPaintPhaseFloat());
@@ -243,7 +240,7 @@ TEST_P(PrePaintTreeWalkTest, ClearSubsequenceCachingClipChangePosFixed) {
     </div>
   )HTML");
 
-  auto* parent = GetDocument().getElementById(AtomicString("parent"));
+  auto* parent = GetElementById("parent");
   auto* child_paint_layer = GetPaintLayerByElementId("child");
   EXPECT_FALSE(child_paint_layer->SelfNeedsRepaint());
   EXPECT_FALSE(child_paint_layer->NeedsPaintPhaseFloat());
@@ -274,9 +271,8 @@ TEST_P(PrePaintTreeWalkTest, ClipChangeRepaintsDescendants) {
     </div>
   )HTML");
 
-  GetDocument()
-      .getElementById(AtomicString("parent"))
-      ->setAttribute(html_names::kStyleAttr, AtomicString("height: 100px"));
+  GetElementById("parent")->setAttribute(html_names::kStyleAttr,
+                                         AtomicString("height: 100px"));
   UpdateAllLifecyclePhasesExceptPaint();
 
   auto* paint_layer = GetPaintLayerByElementId("greatgrandchild");
@@ -297,7 +293,7 @@ TEST_P(PrePaintTreeWalkTest, ClipChangeHasRadius) {
     <div id='target'></div>
   )HTML");
 
-  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target = GetElementById("target");
   auto* target_object = To<LayoutBoxModelObject>(target->GetLayoutObject());
   target->setAttribute(html_names::kStyleAttr,
                        AtomicString("border-radius: 5px"));
@@ -343,7 +339,7 @@ TEST_P(PrePaintTreeWalkTest, InsideBlockingTouchEventHandlerUpdate) {
 
   PrePaintTreeWalkMockEventListener* callback =
       MakeGarbageCollected<PrePaintTreeWalkMockEventListener>();
-  auto* handler_element = GetDocument().getElementById(AtomicString("handler"));
+  auto* handler_element = GetElementById("handler");
   handler_element->addEventListener(event_type_names::kTouchstart, callback);
 
   EXPECT_FALSE(EffectiveAllowedTouchActionChanged(ancestor));
@@ -391,8 +387,7 @@ TEST_P(PrePaintTreeWalkTest, EffectiveTouchActionStyleUpdate) {
   EXPECT_FALSE(DescendantEffectiveAllowedTouchActionChanged(touchaction));
   EXPECT_FALSE(DescendantEffectiveAllowedTouchActionChanged(descendant));
 
-  GetDocument()
-      .getElementById(AtomicString("touchaction"))
+  GetElementById("touchaction")
       ->setAttribute(html_names::kClassAttr, AtomicString("touchaction"));
   GetDocument().View()->UpdateLifecycleToLayoutClean(
       DocumentUpdateReason::kTest);
@@ -441,7 +436,7 @@ TEST_P(PrePaintTreeWalkTest, InsideBlockingWheelEventHandlerUpdate) {
 
   PrePaintTreeWalkMockEventListener* callback =
       MakeGarbageCollected<PrePaintTreeWalkMockEventListener>();
-  auto* handler_element = GetDocument().getElementById(AtomicString("handler"));
+  auto* handler_element = GetElementById("handler");
   handler_element->addEventListener(event_type_names::kWheel, callback);
 
   EXPECT_FALSE(BlockingWheelEventHandlerChanged(ancestor));
@@ -478,18 +473,14 @@ TEST_P(PrePaintTreeWalkTest, CullRectUpdateOnSVGTransformChange) {
   EXPECT_EQ(gfx::Rect(0, 0, 200, 200),
             foreign.FirstFragment().GetCullRect().Rect());
 
-  GetDocument()
-      .getElementById(AtomicString("rect"))
-      ->setAttribute(html_names::kStyleAttr,
-                     AtomicString("transform: translateX(20px)"));
+  GetElementById("rect")->setAttribute(
+      html_names::kStyleAttr, AtomicString("transform: translateX(20px)"));
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_EQ(gfx::Rect(0, 0, 200, 200),
             foreign.FirstFragment().GetCullRect().Rect());
 
-  GetDocument()
-      .getElementById(AtomicString("g"))
-      ->setAttribute(html_names::kStyleAttr,
-                     AtomicString("transform: translateY(20px)"));
+  GetElementById("g")->setAttribute(
+      html_names::kStyleAttr, AtomicString("transform: translateY(20px)"));
   UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_EQ(gfx::Rect(0, -20, 200, 200),
             foreign.FirstFragment().GetCullRect().Rect());
@@ -506,8 +497,7 @@ TEST_P(PrePaintTreeWalkTest, InlineOutlineWithContinuationPaintInvalidation) {
   )HTML");
 
   // This test passes if the following doesn't crash.
-  GetDocument()
-      .getElementById(AtomicString("child-span"))
+  GetElementById("child-span")
       ->setAttribute(html_names::kStyleAttr, AtomicString("color: blue"));
   UpdateAllLifecyclePhasesForTest();
 }
@@ -520,7 +510,7 @@ TEST_P(PrePaintTreeWalkTest, ScrollTranslationNodeForNonZeroScrollPosition) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  auto* scroller = GetDocument().getElementById(AtomicString("div"));
+  auto* scroller = GetElementById("div");
   auto* object = To<LayoutBoxModelObject>(scroller->GetLayoutObject());
   auto* scrollable_area = object->GetScrollableArea();
 
@@ -692,7 +682,7 @@ TEST_F(ContainerTimingPrePaintTreeWalkTest,
 
   // Adding containertiming to #target dirties it and propagates the descendant
   // bit up to its ancestors, without touching the subtree below.
-  auto* target_element = GetDocument().getElementById(AtomicString("target"));
+  auto* target_element = GetElementById("target");
   target_element->setAttribute(html_names::kContainertimingAttr,
                                AtomicString("target"));
 

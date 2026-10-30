@@ -97,7 +97,7 @@ TEST_F(ObjectPaintInvalidatorTest, VisibilityHidden) {
     <div id="target"></div>
   )HTML");
 
-  auto* target_element = GetDocument().getElementById(AtomicString("target"));
+  auto* target_element = GetElementById("target");
   const auto* target = target_element->GetLayoutObject();
   ValidateDisplayItemClient(target);
   EXPECT_TRUE(IsValidDisplayItemClient(target));
@@ -134,7 +134,7 @@ TEST_F(ObjectPaintInvalidatorTest,
     <div id='target' style="color: rgb(80, 230, 175);">Text</div>
   )HTML");
 
-  auto* div = GetDocument().getElementById(AtomicString("target"));
+  auto* div = GetElementById("target");
   auto* text = div->firstChild();
   const auto* object = text->GetLayoutObject();
   ValidateDisplayItemClient(object);

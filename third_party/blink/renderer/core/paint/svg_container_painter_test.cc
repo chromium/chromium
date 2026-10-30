@@ -101,8 +101,8 @@ TEST_P(SVGContainerPainterTest, ScaleAnimationFrom0) {
                           IsPaintChunk(1, 1),  // Svg hit test.
                           IsPaintChunk(1, 2, rect2_id, rect2_properties)));
 
-  auto* rect1_element = GetDocument().getElementById(AtomicString("rect1"));
-  auto* rect2_element = GetDocument().getElementById(AtomicString("rect2"));
+  auto* rect1_element = GetElementById("rect1");
+  auto* rect2_element = GetElementById("rect2");
   rect1_element->setAttribute(html_names::kClassAttr, AtomicString("scale"));
   rect2_element->setAttribute(html_names::kClassAttr,
                               AtomicString("transform-scale"));

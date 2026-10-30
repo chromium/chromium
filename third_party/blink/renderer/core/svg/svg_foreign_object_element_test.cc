@@ -25,7 +25,7 @@ TEST_F(SVGForeignObjectElementTest, NoLayoutObjectInNonRendered) {
 
   UpdateAllLifecyclePhasesForTest();
 
-  Element* foreign_object = GetDocument().getElementById(AtomicString("fo"));
+  Element* foreign_object = GetElementById("fo");
   EXPECT_FALSE(foreign_object->GetLayoutObject());
 
   const ComputedStyle& style = GetDocument().GetStyleResolver().InitialStyle();

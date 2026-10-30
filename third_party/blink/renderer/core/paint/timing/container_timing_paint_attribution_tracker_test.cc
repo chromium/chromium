@@ -45,10 +45,10 @@ TEST_F(ContainerTimingPaintAttributionTrackerTest, SingleRoot) {
 
   auto* tracker = Tracker();
 
-  Element* root = GetDocument().getElementById(AtomicString("root"));
+  Element* root = GetElementById("root");
   ASSERT_TRUE(root);
 
-  Element* img = GetDocument().getElementById(AtomicString("img"));
+  Element* img = GetElementById("img");
   ASSERT_TRUE(img);
 
   // Image node should map to the container root.
@@ -68,12 +68,12 @@ TEST_F(ContainerTimingPaintAttributionTrackerTest, NestedRoots) {
 
   auto* tracker = Tracker();
 
-  Element* outer = GetDocument().getElementById(AtomicString("outer"));
-  Element* inner = GetDocument().getElementById(AtomicString("inner"));
+  Element* outer = GetElementById("outer");
+  Element* inner = GetElementById("inner");
   ASSERT_TRUE(outer);
   ASSERT_TRUE(inner);
 
-  Element* img = GetDocument().getElementById(AtomicString("img"));
+  Element* img = GetElementById("img");
   ASSERT_TRUE(img);
 
   // Image maps to innermost root.
@@ -101,7 +101,7 @@ TEST_F(ContainerTimingPaintAttributionTrackerTest, ContainerTimingIgnore) {
 
   auto* tracker = Tracker();
 
-  Element* img = GetDocument().getElementById(AtomicString("img"));
+  Element* img = GetElementById("img");
   ASSERT_TRUE(img);
 
   // Image is under an ignore node — should not be tracked.
@@ -120,8 +120,8 @@ TEST_F(ContainerTimingPaintAttributionTrackerTest, BothAttrsOnSameElement) {
   UpdateAllLifecyclePhasesForTest();
 
   auto* tracker = Tracker();
-  Element* outer = GetDocument().getElementById(AtomicString("outer"));
-  Element* both = GetDocument().getElementById(AtomicString("both"));
+  Element* outer = GetElementById("outer");
+  Element* both = GetElementById("both");
   ASSERT_TRUE(outer);
   ASSERT_TRUE(both);
 
@@ -131,7 +131,7 @@ TEST_F(ContainerTimingPaintAttributionTrackerTest, BothAttrsOnSameElement) {
   EXPECT_EQ(parent, nullptr);
 
   // Image inside "both" maps to "both" root.
-  Element* img = GetDocument().getElementById(AtomicString("img"));
+  Element* img = GetElementById("img");
   ASSERT_TRUE(img);
   Element* found = tracker->GetContainerRootFor(img);
   EXPECT_EQ(found, both);
@@ -146,8 +146,8 @@ TEST_F(ContainerTimingPaintAttributionTrackerTest, TextAggregationNodeTracked) {
   UpdateAllLifecyclePhasesForTest();
 
   auto* tracker = Tracker();
-  Element* root = GetDocument().getElementById(AtomicString("root"));
-  Element* box = GetDocument().getElementById(AtomicString("box"));
+  Element* root = GetElementById("root");
+  Element* box = GetElementById("box");
   ASSERT_TRUE(root);
   ASSERT_TRUE(box);
 
@@ -164,7 +164,7 @@ TEST_F(ContainerTimingPaintAttributionTrackerTest, ShadowTreeElementsExcluded) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* host = GetElementById("host");
   ASSERT_TRUE(host);
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
@@ -189,7 +189,7 @@ TEST_F(ContainerTimingPaintAttributionTrackerTest, ImageIsContainerRoot) {
   UpdateAllLifecyclePhasesForTest();
 
   auto* tracker = Tracker();
-  Element* img = GetDocument().getElementById(AtomicString("img"));
+  Element* img = GetElementById("img");
   ASSERT_TRUE(img);
 
   // The img maps to itself as the container root.
@@ -212,8 +212,8 @@ TEST_F(ContainerTimingPaintAttributionTrackerTest,
   UpdateAllLifecyclePhasesForTest();
 
   auto* tracker = Tracker();
-  Element* outer = GetDocument().getElementById(AtomicString("outer"));
-  Element* img = GetDocument().getElementById(AtomicString("img"));
+  Element* outer = GetElementById("outer");
+  Element* img = GetElementById("img");
   ASSERT_TRUE(outer);
   ASSERT_TRUE(img);
 
@@ -236,7 +236,7 @@ TEST_F(ContainerTimingPaintAttributionTrackerTest,
   UpdateAllLifecyclePhasesForTest();
 
   auto* tracker = Tracker();
-  Element* bg = GetDocument().getElementById(AtomicString("bg"));
+  Element* bg = GetElementById("bg");
   ASSERT_TRUE(bg);
 
   // The bg element is both the container root and the image node, so it maps
@@ -262,8 +262,8 @@ TEST_F(ContainerTimingPaintAttributionTrackerTest, AnonymousImageLayoutObject) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* root = GetDocument().getElementById(AtomicString("root"));
-  Element* bg = GetDocument().getElementById(AtomicString("bg"));
+  Element* root = GetElementById("root");
+  Element* bg = GetElementById("bg");
   ASSERT_TRUE(root);
   ASSERT_TRUE(bg);
 
@@ -298,8 +298,8 @@ TEST_F(ContainerTimingPaintAttributionTrackerTest, AnonymousTextLayoutObject) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Element* root = GetDocument().getElementById(AtomicString("root"));
-  Element* bg = GetDocument().getElementById(AtomicString("bg"));
+  Element* root = GetElementById("root");
+  Element* bg = GetElementById("bg");
   ASSERT_TRUE(root);
   ASSERT_TRUE(bg);
 
@@ -331,7 +331,7 @@ TEST_F(ContainerTimingPaintAttributionTrackerTest,
   UpdateAllLifecyclePhasesForTest();
 
   auto* tracker = Tracker();
-  Element* img = GetDocument().getElementById(AtomicString("img"));
+  Element* img = GetElementById("img");
   ASSERT_TRUE(img);
 
   ASSERT_EQ(tracker->GetContainerRootFor(img), img);
@@ -358,8 +358,8 @@ TEST_F(ContainerTimingPaintAttributionTrackerTest,
   UpdateAllLifecyclePhasesForTest();
 
   auto* tracker = Tracker();
-  Element* root = GetDocument().getElementById(AtomicString("root"));
-  Element* img = GetDocument().getElementById(AtomicString("img"));
+  Element* root = GetElementById("root");
+  Element* img = GetElementById("img");
   ASSERT_TRUE(root);
   ASSERT_TRUE(img);
 
@@ -385,8 +385,8 @@ TEST_F(ContainerTimingPaintAttributionTrackerTest,
   UpdateAllLifecyclePhasesForTest();
 
   auto* tracker = Tracker();
-  Element* outer = GetDocument().getElementById(AtomicString("outer"));
-  Element* inner = GetDocument().getElementById(AtomicString("inner"));
+  Element* outer = GetElementById("outer");
+  Element* inner = GetElementById("inner");
   ASSERT_TRUE(outer);
   ASSERT_TRUE(inner);
 
@@ -417,8 +417,8 @@ TEST_F(ContainerTimingPaintAttributionTrackerTest,
   UpdateAllLifecyclePhasesForTest();
 
   auto* tracker = Tracker();
-  Element* root = GetDocument().getElementById(AtomicString("root"));
-  Element* img = GetDocument().getElementById(AtomicString("img"));
+  Element* root = GetElementById("root");
+  Element* img = GetElementById("img");
   ASSERT_TRUE(root);
   ASSERT_TRUE(img);
 
@@ -446,9 +446,9 @@ TEST_F(ContainerTimingPaintAttributionTrackerTest,
   UpdateAllLifecyclePhasesForTest();
 
   auto* tracker = Tracker();
-  Element* root = GetDocument().getElementById(AtomicString("root"));
-  Element* mid = GetDocument().getElementById(AtomicString("mid"));
-  Element* img = GetDocument().getElementById(AtomicString("img"));
+  Element* root = GetElementById("root");
+  Element* mid = GetElementById("mid");
+  Element* img = GetElementById("img");
   ASSERT_TRUE(root);
   ASSERT_TRUE(mid);
   ASSERT_TRUE(img);
@@ -475,9 +475,9 @@ TEST_F(ContainerTimingPaintAttributionTrackerTest,
   UpdateAllLifecyclePhasesForTest();
 
   auto* tracker = Tracker();
-  Element* root = GetDocument().getElementById(AtomicString("root"));
-  Element* mid = GetDocument().getElementById(AtomicString("mid"));
-  Element* img = GetDocument().getElementById(AtomicString("img"));
+  Element* root = GetElementById("root");
+  Element* mid = GetElementById("mid");
+  Element* img = GetElementById("img");
   ASSERT_TRUE(root);
   ASSERT_TRUE(mid);
   ASSERT_TRUE(img);
@@ -502,9 +502,9 @@ TEST_F(ContainerTimingPaintAttributionTrackerTest, IgnoreAddedToExistingRoot) {
   UpdateAllLifecyclePhasesForTest();
 
   auto* tracker = Tracker();
-  Element* outer = GetDocument().getElementById(AtomicString("outer"));
-  Element* inner = GetDocument().getElementById(AtomicString("inner"));
-  Element* img = GetDocument().getElementById(AtomicString("img"));
+  Element* outer = GetElementById("outer");
+  Element* inner = GetElementById("inner");
+  Element* img = GetElementById("img");
   ASSERT_TRUE(outer);
   ASSERT_TRUE(inner);
   ASSERT_TRUE(img);
@@ -534,9 +534,9 @@ TEST_F(ContainerTimingPaintAttributionTrackerTest,
   UpdateAllLifecyclePhasesForTest();
 
   auto* tracker = Tracker();
-  Element* outer = GetDocument().getElementById(AtomicString("outer"));
-  Element* inner = GetDocument().getElementById(AtomicString("inner"));
-  Element* img = GetDocument().getElementById(AtomicString("img"));
+  Element* outer = GetElementById("outer");
+  Element* inner = GetElementById("inner");
+  Element* img = GetElementById("img");
   ASSERT_TRUE(outer);
   ASSERT_TRUE(inner);
   ASSERT_TRUE(img);
@@ -566,10 +566,10 @@ TEST_F(ContainerTimingPaintAttributionTrackerTest, SiblingSubtreeUnaffected) {
   UpdateAllLifecyclePhasesForTest();
 
   auto* tracker = Tracker();
-  Element* a = GetDocument().getElementById(AtomicString("a"));
-  Element* b = GetDocument().getElementById(AtomicString("b"));
-  Element* img_a = GetDocument().getElementById(AtomicString("img_a"));
-  Element* img_b = GetDocument().getElementById(AtomicString("img_b"));
+  Element* a = GetElementById("a");
+  Element* b = GetElementById("b");
+  Element* img_a = GetElementById("img_a");
+  Element* img_b = GetElementById("img_b");
   ASSERT_TRUE(a);
   ASSERT_TRUE(b);
   ASSERT_TRUE(img_a);
@@ -600,7 +600,7 @@ TEST_F(ContainerTimingPaintAttributionTrackerTest, IgnoreOnlyOnImageLeaf) {
   UpdateAllLifecyclePhasesForTest();
 
   auto* tracker = Tracker();
-  Element* img = GetDocument().getElementById(AtomicString("img"));
+  Element* img = GetElementById("img");
   ASSERT_TRUE(img);
 
   // CTI on the image means it must not be attributed to the ancestor root.
@@ -623,10 +623,10 @@ TEST_F(ContainerTimingPaintAttributionTrackerTest,
   UpdateAllLifecyclePhasesForTest();
 
   auto* tracker = Tracker();
-  Element* a = GetDocument().getElementById(AtomicString("a"));
-  Element* b = GetDocument().getElementById(AtomicString("b"));
-  Element* c = GetDocument().getElementById(AtomicString("c"));
-  Element* img = GetDocument().getElementById(AtomicString("img"));
+  Element* a = GetElementById("a");
+  Element* b = GetElementById("b");
+  Element* c = GetElementById("c");
+  Element* img = GetElementById("img");
   ASSERT_TRUE(a);
   ASSERT_TRUE(b);
   ASSERT_TRUE(c);

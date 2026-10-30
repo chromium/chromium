@@ -332,7 +332,7 @@ TEST_F(SelectionBoundsRecorderTest, BoundsHidden) {
   EXPECT_EQ(gfx::Point(80, 80), host->selection().end.edge_start);
   EXPECT_EQ(gfx::Point(80, 160), host->selection().end.edge_end);
 
-  auto* container = GetDocument().getElementById(AtomicString("container"));
+  auto* container = GetElementById("container");
   container->scrollToForTesting(0, 59);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(host->selection().start.hidden);
@@ -384,7 +384,7 @@ TEST_F(SelectionBoundsRecorderTest, BoundsVisibleWithLineHeightOverflow) {
     <input id="input" type="text" value="XXXX">
   )HTML");
 
-  auto* input = GetDocument().getElementById(AtomicString("input"));
+  auto* input = GetElementById("input");
   input->Focus();
   local_frame->Selection().SetHandleVisibleForTesting();
   local_frame->GetPage()->GetFocusController().SetFocusedFrame(local_frame);

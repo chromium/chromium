@@ -182,7 +182,7 @@ TEST_P(ElementTimingTest, ImageRemoved) {
   EXPECT_TRUE(IsRecorded("target", image));
   EXPECT_THAT(GetElementTimingEntries(), ElementsAre(ForId("target")));
 
-  GetDocument().getElementById(AtomicString("target"))->remove();
+  GetElementById("target")->remove();
   // `image` should no longer be part of `recorded_images_` since it will
   // be destroyed.
   EXPECT_EQ(RecordedImagesSize(), 0u);
@@ -200,7 +200,7 @@ TEST_P(ElementTimingTest, SVGImageRemoved) {
   EXPECT_TRUE(IsRecorded("target", image));
   EXPECT_THAT(GetElementTimingEntries(), ElementsAre(ForId("target")));
 
-  GetDocument().getElementById(AtomicString("target"))->remove();
+  GetElementById("target")->remove();
   // `image` should no longer be part of `recorded_images_` since it will be
   // destroyed.
   EXPECT_EQ(RecordedImagesSize(), 0u);
@@ -225,7 +225,7 @@ TEST_P(ElementTimingTest, BackgroundImageRemoved) {
   EXPECT_TRUE(IsRecorded(object, content));
   EXPECT_THAT(GetElementTimingEntries(), ElementsAre(ForId("target")));
 
-  GetDocument().getElementById(AtomicString("target"))->remove();
+  GetElementById("target")->remove();
   EXPECT_EQ(RecordedImagesSize(), 0u);
 }
 
@@ -388,7 +388,7 @@ TEST_P(ElementTimingTest, TextElementTimingInShadowTreeIgnored) {
   SetMainFrameBodyContent(R"HTML(
     <div id="host"></div>
   )HTML");
-  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* host = GetElementById("host");
   ShadowRoot& shadow_root =
       host->AttachShadowRootForTesting(ShadowRootMode::kOpen);
   shadow_root.SetInnerHTMLWithoutTrustedTypes(R"HTML(

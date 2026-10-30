@@ -202,7 +202,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, LargestImageRemoved) {
   EXPECT_EQ(CurrentLcpCandidate()->size(), 20000u);
   EXPECT_FLOAT_EQ(LcpDetailsForReporting().image_bpp, 0.08f);
 
-  GetDocument().getElementById(AtomicString("large"))->remove();
+  GetElementById("large")->remove();
   SimulateRenderingAndPresentationTime();
   // The LCP does not move after the image is removed.
   EXPECT_EQ(LcpCandidateCount(), 1u);
@@ -231,7 +231,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, LargestTextRemoved) {
   EXPECT_EQ(CurrentLcpCandidate()->element(), GetElementById("large"));
   EXPECT_GT(CurrentLcpCandidate()->size(), 50u);
 
-  GetDocument().getElementById(AtomicString("large"))->remove();
+  GetElementById("large")->remove();
   SimulateRenderingAndPresentationTime();
   // The LCP should not move after removal.
   EXPECT_EQ(LcpCandidateCount(), 1u);
@@ -469,7 +469,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, RemoveLargestPendingImage) {
   // Now remove the largest pending image. This should fall back to the largest
   // painted image, but it relies on another contentful paint to trigger the
   // LCP candidate update.
-  GetDocument().getElementById(AtomicString("large"))->remove();
+  GetElementById("large")->remove();
   GetLargestContentfulPaintCalculator()->MaybeFlushCandidates();
   EXPECT_EQ(CurrentLcpCandidate()->size(), 9u);
   EXPECT_EQ(LcpDetailsForReporting().image_paint_size, 9u);
@@ -510,7 +510,7 @@ TEST_F(LargestContentfulPaintCalculatorTest,
 
   AdvanceClock(base::Milliseconds(100));
 
-  GetDocument().getElementById(AtomicString("large"))->remove();
+  GetElementById("large")->remove();
   GetLargestContentfulPaintCalculator()->MaybeFlushCandidates();
   EXPECT_EQ(CurrentLcpCandidate()->size(), 9u);
   EXPECT_EQ(LcpDetailsForReporting().image_paint_size, 9u);
@@ -557,7 +557,7 @@ TEST_F(LargestContentfulPaintCalculatorTest, MulitiplePendingImages) {
   // Now remove the largest pending image. After triggering a candidate update,
   // this should fall back to the largest painted image, not the next largest
   // pending image, which isn't supported.
-  GetDocument().getElementById(AtomicString("largest"))->remove();
+  GetElementById("largest")->remove();
   GetLargestContentfulPaintCalculator()->MaybeFlushCandidates();
   EXPECT_EQ(CurrentLcpCandidate()->size(), 9u);
   EXPECT_EQ(LcpDetailsForReporting().image_paint_size, 9u);

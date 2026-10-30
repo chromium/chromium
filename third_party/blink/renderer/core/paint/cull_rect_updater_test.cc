@@ -96,9 +96,7 @@ TEST_F(CullRectUpdaterTest, VerticalRLWritingModeScrollDiv) {
     </div>
   )HTML");
 
-  GetDocument()
-      .getElementById(AtomicString("scroller"))
-      ->scrollToForTesting(-5000, 0);
+  GetElementById("scroller")->scrollToForTesting(-5000, 0);
   UpdateAllLifecyclePhasesForTest();
 
   // Similar to the previous test case.
@@ -183,10 +181,8 @@ TEST_F(CullRectUpdaterTest, OptimizeNonCompositedTransformUpdate) {
   EXPECT_EQ(gfx::Rect(0, 0, 800, 600), GetCullRect("target").Rect());
 
   // On subsequent paints, fall back to an infinite cull rect.
-  GetDocument()
-      .getElementById(AtomicString("target"))
-      ->setAttribute(html_names::kStyleAttr,
-                     AtomicString("transform: rotate(10deg);"));
+  GetElementById("target")->setAttribute(
+      html_names::kStyleAttr, AtomicString("transform: rotate(10deg);"));
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(GetCullRect("target").IsInfinite());
 }
@@ -486,9 +482,7 @@ TEST_F(CullRectUpdaterTest, AbsolutePositionUnderNonContainingStackingContext) {
 
   EXPECT_EQ(gfx::Rect(0, 0, 500, 500), GetCullRect("absolute").Rect());
 
-  GetDocument()
-      .getElementById(AtomicString("scroller"))
-      ->scrollToForTesting(200, 200);
+  GetElementById("scroller")->scrollToForTesting(200, 200);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(gfx::Rect(0, 0, 500, 500), GetCullRect("absolute").Rect());
 }
@@ -501,7 +495,7 @@ TEST_F(CullRectUpdaterTest, StackedChildOfNonStackingContextScroller) {
     </div>
   )HTML");
 
-  auto* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  auto* scroller = GetElementById("scroller");
 
   EXPECT_EQ(gfx::Rect(0, 0, 400, 4400), GetContentsCullRect("scroller").Rect());
   EXPECT_EQ(gfx::Rect(0, 0, 400, 4400), GetCullRect("child").Rect());
@@ -548,7 +542,7 @@ TEST_F(CullRectUpdaterTest, ContentsCullRectCoveringWholeContentsRect) {
   EXPECT_EQ(gfx::Rect(0, 0, 400, 4400), GetContentsCullRect("scroller").Rect());
   EXPECT_EQ(gfx::Rect(-4000, -7000, 8400, 4400), GetCullRect("child").Rect());
 
-  auto* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  auto* scroller = GetElementById("scroller");
   scroller->scrollToForTesting(0, 2500);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(gfx::Rect(0, 0, 400, 6900), GetContentsCullRect("scroller").Rect());
@@ -597,9 +591,7 @@ TEST_F(CullRectUpdaterTest, SVGForeignObject) {
   EXPECT_FALSE(foreign->DescendantNeedsCullRectUpdate());
   EXPECT_FALSE(svg->DescendantNeedsCullRectUpdate());
 
-  GetDocument()
-      .getElementById(AtomicString("scroller"))
-      ->scrollToForTesting(0, 500);
+  GetElementById("scroller")->scrollToForTesting(0, 500);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(child->NeedsCullRectUpdate());
   EXPECT_FALSE(foreign->DescendantNeedsCullRectUpdate());
@@ -628,9 +620,7 @@ TEST_F(CullRectUpdaterTest, LayerUnderSVGHiddenContainer) {
 
   EXPECT_FALSE(GetCullRect("svg1").Rect().IsEmpty());
 
-  GetDocument()
-      .getElementById(AtomicString("defs"))
-      ->appendChild(GetDocument().getElementById(AtomicString("div")));
+  GetElementById("defs")->appendChild(GetElementById("div"));
   // This should not crash.
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(GetLayoutObjectByElementId("svg1"));
@@ -660,7 +650,7 @@ TEST_F(CullRectUpdaterTest, UpdateOnCompositedScrollingStatusChange) {
 
   EXPECT_EQ(gfx::Rect(100, 1000), GetContentsCullRect("scroller").Rect());
 
-  auto* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  auto* scroller = GetElementById("scroller");
   scroller->SetInlineStyleProperty(CSSPropertyID::kBackgroundColor, "yellow");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(gfx::Rect(100, 1000), GetContentsCullRect("scroller").Rect());
@@ -693,7 +683,7 @@ TEST_F(CullRectUpdaterTest, StickyPositionInCompositedScroller) {
   // 2nd and the 4th scrolls, but not in the 1st and the 3rd scrolls). `sticky2`
   // always uses expanded cull rect from the contents cull rect of the
   // additional clip.
-  auto* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  auto* scroller = GetElementById("scroller");
   scroller->scrollByForTesting(0, 300);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(gfx::Rect(0, 0, 400, 4400), GetContentsCullRect("scroller").Rect());
@@ -748,7 +738,7 @@ TEST_F(CullRectUpdaterTest, StickyPositionInNonCompositedScroller) {
   // All cull rects should be updated on each non-composited scroll.
   // We always composite and expand cull rect for sticky elements regardless
   // whether the scroller is composited.
-  auto* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  auto* scroller = GetElementById("scroller");
   scroller->scrollByForTesting(0, 300);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(gfx::Rect(0, 0, 400, 4400), GetContentsCullRect("scroller").Rect());
@@ -998,7 +988,7 @@ class CullRectUpdateOnPaintPropertyChangeTest : public CullRectUpdaterTest {
                         bool expected_needs_cull_rect_update,
                         bool expected_needs_repaint_after_cull_rect_update) {
     SetBodyInnerHTML(html_);
-    auto* target = GetDocument().getElementById(AtomicString("target"));
+    auto* target = GetElementById("target");
     target->setAttribute(html_names::kStyleAttr, AtomicString(old_style));
     UpdateAllLifecyclePhasesForTest();
     target->setAttribute(html_names::kStyleAttr, AtomicString(new_style));
@@ -1013,7 +1003,7 @@ class CullRectUpdateOnPaintPropertyChangeTest : public CullRectUpdaterTest {
                        bool expected_needs_cull_rect_update,
                        bool expected_needs_repaint_after_cull_rect_update) {
     SetBodyInnerHTML(html_);
-    auto* child = GetDocument().getElementById(AtomicString("child"));
+    auto* child = GetElementById("child");
     child->setAttribute(html_names::kStyleAttr, AtomicString(old_style));
     UpdateAllLifecyclePhasesForTest();
     child->setAttribute(html_names::kStyleAttr, AtomicString(new_style));
@@ -1028,7 +1018,7 @@ class CullRectUpdateOnPaintPropertyChangeTest : public CullRectUpdaterTest {
                         bool expected_needs_cull_rect_update,
                         bool expected_needs_repaint_after_cull_rect_update) {
     SetBodyInnerHTML(html_);
-    auto* target = GetDocument().getElementById(AtomicString("target"));
+    auto* target = GetElementById("target");
     target->scrollToForTesting(old_scroll_offset.x(), old_scroll_offset.y());
     UpdateAllLifecyclePhasesForTest();
     target->scrollToForTesting(new_scroll_offset.x(), new_scroll_offset.y());

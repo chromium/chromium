@@ -571,7 +571,7 @@ TEST_F(PaintLayerClipperTest, ScrollbarClipBehaviorChildScrollBetween) {
     </div>
   )HTML");
 
-  Element* parent = GetDocument().getElementById(AtomicString("parent"));
+  Element* parent = GetElementById("parent");
   PaintLayer* root_paint_layer = parent->GetLayoutObject()->View()->Layer();
   PaintLayer* child_paint_layer = GetPaintLayerByElementId("child");
   parent->GetLayoutBox()->GetScrollableArea()->SetScrollbarsHiddenIfOverlay(

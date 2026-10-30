@@ -365,11 +365,9 @@ TEST_F(SVGElementTest, BaseComputedStyleForSMILWithContainerQueries) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  auto* rect1 =
-      To<SVGElement>(GetDocument().getElementById(AtomicString("rect1")));
-  auto* rect2 =
-      To<SVGElement>(GetDocument().getElementById(AtomicString("rect2")));
-  auto* g = To<SVGElement>(GetDocument().getElementById(AtomicString("g")));
+  auto* rect1 = To<SVGElement>(GetElementById("rect1"));
+  auto* rect2 = To<SVGElement>(GetElementById("rect2"));
+  auto* g = To<SVGElement>(GetElementById("g"));
 
   auto force_needs_override_style = [](SVGElement& svg_element) {
     svg_element.EnsureSVGRareData()->SetNeedsOverrideComputedStyleUpdate();
@@ -415,7 +413,7 @@ TEST_F(SVGElementTest, ContainerUnitContext) {
     </div>
   )HTML");
 
-  auto* svg = To<SVGElement>(GetDocument().getElementById(AtomicString("svg")));
+  auto* svg = To<SVGElement>(GetElementById("svg"));
   const auto* value = DynamicTo<CSSPrimitiveValue>(
       css_test_helpers::ParseValue(GetDocument(), "<length>", "100cqw"));
   const auto* length =
@@ -435,10 +433,8 @@ TEST_F(SVGElementTest, SynchronizeAttributeInShadowInstances) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  auto* target =
-      To<SVGElement>(GetDocument().getElementById(AtomicString("target")));
-  auto* standalone =
-      To<SVGElement>(GetDocument().getElementById(AtomicString("standalone")));
+  auto* target = To<SVGElement>(GetElementById("target"));
+  auto* standalone = To<SVGElement>(GetElementById("standalone"));
   ASSERT_TRUE(target);
   ASSERT_TRUE(standalone);
   EXPECT_FALSE(target->InstancesForElement().empty());
@@ -483,10 +479,8 @@ TEST_F(SVGElementTest, EventListenerSynchronization) {
   )HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  auto* target =
-      To<SVGElement>(GetDocument().getElementById(AtomicString("target")));
-  auto* standalone =
-      To<SVGElement>(GetDocument().getElementById(AtomicString("standalone")));
+  auto* target = To<SVGElement>(GetElementById("target"));
+  auto* standalone = To<SVGElement>(GetElementById("standalone"));
   ASSERT_TRUE(target);
   ASSERT_TRUE(standalone);
   EXPECT_FALSE(target->InstancesForElement().empty());

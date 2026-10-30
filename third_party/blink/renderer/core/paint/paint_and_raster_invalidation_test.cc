@@ -103,7 +103,7 @@ TEST_P(PaintAndRasterInvalidationTest, TrackingForTracing) {
     <style>#target { width: 100px; height: 100px; background: blue }</style>
     <div id="target"></div>
   )HTML");
-  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target = GetElementById("target");
   auto& cc_layer = *GetDocument()
                         .View()
                         ->GetPaintArtifactCompositor()
@@ -135,7 +135,7 @@ TEST_P(PaintAndRasterInvalidationTest, TrackingForTracing) {
 
 TEST_P(PaintAndRasterInvalidationTest, IncrementalInvalidationExpand) {
   SetUpHTML(*this);
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   auto* object = target->GetLayoutObject();
 
   GetDocument().View()->SetTracksRasterInvalidations(true);
@@ -156,7 +156,7 @@ TEST_P(PaintAndRasterInvalidationTest, IncrementalInvalidationExpand) {
 
 TEST_P(PaintAndRasterInvalidationTest, IncrementalInvalidationShrink) {
   SetUpHTML(*this);
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   auto* object = target->GetLayoutObject();
 
   GetDocument().View()->SetTracksRasterInvalidations(true);
@@ -177,7 +177,7 @@ TEST_P(PaintAndRasterInvalidationTest, IncrementalInvalidationShrink) {
 
 TEST_P(PaintAndRasterInvalidationTest, IncrementalInvalidationMixed) {
   SetUpHTML(*this);
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   auto* object = target->GetLayoutObject();
 
   GetDocument().View()->SetTracksRasterInvalidations(true);
@@ -198,7 +198,7 @@ TEST_P(PaintAndRasterInvalidationTest, IncrementalInvalidationMixed) {
 
 TEST_P(PaintAndRasterInvalidationTest, ResizeEmptyContent) {
   SetUpHTML(*this);
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   // Make the view not solid color so that we can track raster invalidations.
   GetDocument().body()->setAttribute(
       html_names::kStyleAttr,
@@ -217,7 +217,7 @@ TEST_P(PaintAndRasterInvalidationTest, ResizeEmptyContent) {
 
 TEST_P(PaintAndRasterInvalidationTest, SubpixelChange) {
   SetUpHTML(*this);
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   auto* object = target->GetLayoutObject();
 
   GetDocument().View()->SetTracksRasterInvalidations(true);
@@ -251,7 +251,7 @@ TEST_P(PaintAndRasterInvalidationTest, SubpixelChange) {
 
 TEST_P(PaintAndRasterInvalidationTest, SubpixelVisualRectChangeWithTransform) {
   SetUpHTML(*this);
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   auto* object = target->GetLayoutObject();
   target->setAttribute(html_names::kClassAttr, AtomicString("solid transform"));
   UpdateAllLifecyclePhasesForTest();
@@ -287,7 +287,7 @@ TEST_P(PaintAndRasterInvalidationTest, SubpixelVisualRectChangeWithTransform) {
 
 TEST_P(PaintAndRasterInvalidationTest, SubpixelWithinPixelsChange) {
   SetUpHTML(*this);
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   LayoutObject* object = target->GetLayoutObject();
 
   GetDocument().View()->SetTracksRasterInvalidations(true);
@@ -315,7 +315,7 @@ TEST_P(PaintAndRasterInvalidationTest, SubpixelWithinPixelsChange) {
 
 TEST_P(PaintAndRasterInvalidationTest, ResizeRotated) {
   SetUpHTML(*this);
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   auto* object = target->GetLayoutObject();
   target->setAttribute(html_names::kStyleAttr,
                        AtomicString("transform: rotate(45deg)"));
@@ -337,14 +337,14 @@ TEST_P(PaintAndRasterInvalidationTest, ResizeRotated) {
 
 TEST_P(PaintAndRasterInvalidationTest, ResizeRotatedChild) {
   SetUpHTML(*this);
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   target->setAttribute(html_names::kStyleAttr,
                        AtomicString("transform: rotate(45deg); width: 200px"));
   target->SetInnerHTMLWithoutTrustedTypes(
       "<div id=child style='width: 50px; height: 50px; background: "
       "red'></div>");
   UpdateAllLifecyclePhasesForTest();
-  Element* child = GetDocument().getElementById(AtomicString("child"));
+  Element* child = GetElementById("child");
   auto* child_object = child->GetLayoutObject();
 
   GetDocument().View()->SetTracksRasterInvalidations(true);
@@ -363,7 +363,7 @@ TEST_P(PaintAndRasterInvalidationTest, ResizeRotatedChild) {
 
 TEST_P(PaintAndRasterInvalidationTest, CompositedLayoutViewResize) {
   SetUpHTML(*this);
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   target->setAttribute(html_names::kClassAttr, g_empty_atom);
   target->setAttribute(html_names::kStyleAttr, AtomicString("height: 2000px"));
   // Make the scrolling contents layer not solid color so that we can track
@@ -398,7 +398,7 @@ TEST_P(PaintAndRasterInvalidationTest, CompositedLayoutViewGradientResize) {
   SetUpHTML(*this);
   GetDocument().body()->setAttribute(html_names::kClassAttr,
                                      AtomicString("gradient"));
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   target->setAttribute(html_names::kClassAttr, g_empty_atom);
   target->setAttribute(html_names::kStyleAttr, AtomicString("height: 2000px"));
   UpdateAllLifecyclePhasesForTest();
@@ -444,7 +444,7 @@ TEST_P(PaintAndRasterInvalidationTest, NonCompositedLayoutViewResize) {
     <div id='content' style='width: 200px; height: 200px'></div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  Element* iframe = GetDocument().getElementById(AtomicString("iframe"));
+  Element* iframe = GetElementById("iframe");
   LayoutView* iframe_layout_view = ChildDocument().View()->GetLayoutView();
   Element* content = ChildDocument().getElementById(AtomicString("content"));
   EXPECT_EQ(kBackgroundPaintInContentsSpace,
@@ -518,7 +518,7 @@ TEST_P(PaintAndRasterInvalidationTest, NonCompositedLayoutViewGradientResize) {
     <div id='content' style='width: 200px; height: 200px'></div>
   )HTML");
   UpdateAllLifecyclePhasesForTest();
-  Element* iframe = GetDocument().getElementById(AtomicString("iframe"));
+  Element* iframe = GetElementById("iframe");
   const auto* iframe_layout_view = ChildDocument().View()->GetLayoutView();
   Element* content = ChildDocument().getElementById(AtomicString("content"));
 
@@ -562,7 +562,7 @@ TEST_P(PaintAndRasterInvalidationTest, NonCompositedLayoutViewGradientResize) {
 TEST_P(PaintAndRasterInvalidationTest,
        CompositedBackgroundAttachmentLocalResize) {
   SetUpHTML(*this);
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   target->setAttribute(
       html_names::kClassAttr,
       AtomicString("solid composited scroll local-attachment border"));
@@ -570,7 +570,7 @@ TEST_P(PaintAndRasterInvalidationTest,
   target->SetInnerHTMLWithoutTrustedTypes(
       "<div id=child style='width: 500px; height: 500px'></div>",
       ASSERT_NO_EXCEPTION);
-  Element* child = GetDocument().getElementById(AtomicString("child"));
+  Element* child = GetElementById("child");
   UpdateAllLifecyclePhasesForTest();
 
   auto* target_obj = target->GetLayoutBox();
@@ -619,14 +619,14 @@ TEST_P(PaintAndRasterInvalidationTest,
 TEST_P(PaintAndRasterInvalidationTest,
        CompositedBackgroundAttachmentLocalGradientResize) {
   SetUpHTML(*this);
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   target->setAttribute(
       html_names::kClassAttr,
       AtomicString("gradient composited scroll local-attachment border"));
   target->SetInnerHTMLWithoutTrustedTypes(
       "<div id='child' style='width: 500px; height: 500px'></div>",
       ASSERT_NO_EXCEPTION);
-  Element* child = GetDocument().getElementById(AtomicString("child"));
+  Element* child = GetElementById("child");
   UpdateAllLifecyclePhasesForTest();
 
   auto* target_obj = target->GetLayoutBox();
@@ -676,14 +676,14 @@ TEST_P(PaintAndRasterInvalidationTest,
 TEST_P(PaintAndRasterInvalidationTest,
        NonCompositedBackgroundAttachmentLocalResize) {
   SetUpHTML(*this);
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   auto* object = target->GetLayoutBox();
   target->setAttribute(html_names::kClassAttr,
                        AtomicString("translucent local-attachment scroll"));
   target->SetInnerHTMLWithoutTrustedTypes(
       "<div id=child style='width: 500px; height: 500px'></div>",
       ASSERT_NO_EXCEPTION);
-  Element* child = GetDocument().getElementById(AtomicString("child"));
+  Element* child = GetElementById("child");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(kBackgroundPaintInContentsSpace,
             object->GetBackgroundPaintLocation());
@@ -714,7 +714,7 @@ TEST_P(PaintAndRasterInvalidationTest, CompositedSolidBackgroundResize) {
   SetPreferCompositingToLCDText(false);
 
   SetUpHTML(*this);
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   target->setAttribute(html_names::kClassAttr,
                        AtomicString("solid composited scroll"));
   target->SetInnerHTMLWithoutTrustedTypes(
@@ -772,7 +772,7 @@ TEST_P(PaintAndRasterInvalidationTest, RecalcOverflowInvalidatesBackground) {
   EXPECT_FALSE(
       GetDocument().GetLayoutView()->ShouldCheckForPaintInvalidation());
 
-  Element* container = GetDocument().getElementById(AtomicString("container"));
+  Element* container = GetElementById("container");
   container->setAttribute(html_names::kStyleAttr,
                           AtomicString("transform: translateY(1000px);"));
   GetDocument().UpdateStyleAndLayoutTree();
@@ -906,7 +906,7 @@ TEST_P(PaintAndRasterInvalidationTest, SVGWithMultipleFiltersNoOpStyleUpdate) {
 
 TEST_P(PaintAndRasterInvalidationTest, PaintPropertyChange) {
   SetUpHTML(*this);
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   auto* object = target->GetLayoutObject();
   target->setAttribute(html_names::kClassAttr, AtomicString("solid transform"));
   UpdateAllLifecyclePhasesForTest();
@@ -946,7 +946,7 @@ TEST_P(PaintAndRasterInvalidationTest, ResizeContainerOfFixedSizeSVG) {
     </div>
   )HTML");
 
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   LayoutObject* rect = GetLayoutObjectByElementId("rect");
   EXPECT_TRUE(static_cast<const DisplayItemClient*>(rect)->IsValid());
 
@@ -977,7 +977,7 @@ TEST_P(PaintAndRasterInvalidationTest, ScrollingInvalidatesStickyOffset) {
     </div>
   )HTML");
 
-  Element* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  Element* scroller = GetElementById("scroller");
   scroller->setScrollTop(100);
 
   const auto* sticky = GetLayoutObjectByElementId("sticky");
@@ -1035,7 +1035,7 @@ TEST_P(PaintAndRasterInvalidationTest, NoDamageDueToFloatingPointError) {
       </div>
   )HTML");
 
-  auto* canvas = GetDocument().getElementById(AtomicString("canvas"));
+  auto* canvas = GetElementById("canvas");
   for (double x = 0; x < 200; x += 1) {
     GetDocument().View()->SetTracksRasterInvalidations(true);
     canvas->setAttribute(
@@ -1064,7 +1064,7 @@ TEST_P(PaintAndRasterInvalidationTest, ResizeElementWhichHasNonCustomResizer) {
     <div id='target'></div>
   )HTML");
 
-  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target = GetElementById("target");
   auto* object = target->GetLayoutObject();
 
   GetDocument().View()->SetTracksRasterInvalidations(true);
@@ -1103,7 +1103,7 @@ TEST_P(PaintAndRasterInvalidationTest, VisibilityChange) {
     <div id="target"></div>
   )HTML");
 
-  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target = GetElementById("target");
   const DisplayItemClient* client = target->GetLayoutObject();
 
   GetDocument().View()->SetTracksRasterInvalidations(true);
@@ -1234,7 +1234,7 @@ TEST_P(PaintAndRasterInvalidationTest,
     </svg>
   )HTML");
 
-  auto* rect = GetDocument().getElementById(AtomicString("rect"));
+  auto* rect = GetElementById("rect");
   EXPECT_FALSE(rect->GetLayoutObject()->ShouldDoFullPaintInvalidation());
   rect->setAttribute(svg_names::kTransformAttr,
                      AtomicString("translate(200,100)"));
@@ -1259,7 +1259,7 @@ TEST_P(PaintAndRasterInvalidationTest, NonCompositedScrollAndRepaint) {
     After
   )HTML");
 
-  auto* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  auto* scroller = GetElementById("scroller");
   auto* child1 = GetLayoutBoxByElementId("child1");
   auto child1_id = child1->Layer()->Id();
   auto child1_name = child1->Layer()->DebugName();
@@ -1358,7 +1358,7 @@ TEST_P(PaintAndRasterInvalidationTest, NonCompositedScrollAndRepaintChild) {
     After
   )HTML");
 
-  auto* scroller = GetDocument().getElementById(AtomicString("scroller"));
+  auto* scroller = GetElementById("scroller");
   auto* child1 = GetLayoutBoxByElementId("child1");
   auto child1_id = child1->Layer()->Id();
   auto child1_name = child1->Layer()->DebugName();
@@ -1423,7 +1423,7 @@ TEST_F(PaintInvalidatorCustomClientTest,
   // be issued via InvalidateChromeClient.
   SetBodyInnerHTML("<div id=target style='opacity: 0.99'></div>");
 
-  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target = GetElementById("target");
   ASSERT_TRUE(target);
 
   ResetInvalidationRecorded();
@@ -1438,7 +1438,7 @@ TEST_F(PaintInvalidatorCustomClientTest,
        NoInvalidationRepeatedUpdateLifecyleExceptPaint) {
   SetBodyInnerHTML("<div id=target style='opacity: 0.99'></div>");
 
-  auto* target = GetDocument().getElementById(AtomicString("target"));
+  auto* target = GetElementById("target");
   ASSERT_TRUE(target);
   ResetInvalidationRecorded();
 

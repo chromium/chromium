@@ -407,7 +407,7 @@ TEST_P(CompositingReasonFinderTest, StaticBackdropFilterAnimation) {
     </style>
     <div id="target"></div>
   )HTML");
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  Element* target = GetElementById("target");
   auto has_backdrop_filter_animation = [&](const char* classes) {
     SCOPED_TRACE(classes);
     target->setAttribute(html_names::kClassAttr, AtomicString(classes));
@@ -466,8 +466,8 @@ TEST_P(CompositingReasonFinderTest, PromoteCrossOriginIframe) {
     <iframe id=iframe></iframe>
   )HTML");
 
-  HTMLFrameOwnerElement* iframe = To<HTMLFrameOwnerElement>(
-      GetDocument().getElementById(AtomicString("iframe")));
+  HTMLFrameOwnerElement* iframe =
+      To<HTMLFrameOwnerElement>(GetElementById("iframe"));
   ASSERT_TRUE(iframe);
   iframe->contentDocument()->OverrideIsInitialEmptyDocument();
   To<LocalFrame>(iframe->ContentFrame())->View()->BeginLifecycleUpdates();
@@ -487,8 +487,7 @@ TEST_P(CompositingReasonFinderTest, PromoteCrossOriginIframe) {
     <!DOCTYPE html>
     <iframe id=iframe sandbox></iframe>
   )HTML");
-  iframe = To<HTMLFrameOwnerElement>(
-      GetDocument().getElementById(AtomicString("iframe")));
+  iframe = To<HTMLFrameOwnerElement>(GetElementById("iframe"));
   iframe->contentDocument()->OverrideIsInitialEmptyDocument();
   To<LocalFrame>(iframe->ContentFrame())->View()->BeginLifecycleUpdates();
   UpdateAllLifecyclePhasesForTest();
@@ -721,9 +720,8 @@ TEST_P(CompositingReasonFinderTest, WillChangeScrollPosition) {
   EXPECT_EQ(CompositingReasons{},
             CompositingReasonFinder::DirectReasonsForPaintProperties(*target));
 
-  GetDocument()
-      .getElementById(AtomicString("target"))
-      ->RemoveInlineStyleProperty(CSSPropertyID::kWillChange);
+  GetElementById("target")->RemoveInlineStyleProperty(
+      CSSPropertyID::kWillChange);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
       *target, {}));
@@ -805,7 +803,7 @@ TEST_P(CompositingReasonFinderTest, UnboundedElementCompositingReason) {
     <div id="target" style="width: 100px; height: 100px;"></div>
   )HTML");
 
-  auto* element = GetDocument().getElementById(AtomicString("target"));
+  auto* element = GetElementById("target");
   auto* html_element = To<HTMLElement>(element);
 
   // 1. No attribute, inactive: kNone
