@@ -64,6 +64,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
       "Metadata: File name, file size, file type, etc."
       "ACCESS_TOKEN: Help identify if the user calling has access to the group"
     destination: GOOGLE_OWNED_SERVICE
+    api_service_name: "drive.googleapis.com"
     internal {
       contacts{email : "save-to-drive-eng-all@google.com"}
     }
@@ -73,7 +74,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
       type: OTHER
       type: ACCESS_TOKEN
     }
-    last_reviewed: "2025-08-27"
+    last_reviewed: "2026-10-29"
   }
   policy {
     cookies_allowed: NO
