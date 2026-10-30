@@ -895,8 +895,9 @@ class OutOfProcessNetworkFetcher : public update_client::NetworkFetcher {
  public:
   explicit OutOfProcessNetworkFetcher(
       scoped_refptr<UpdaterEventLogger> event_logger);
-  explicit OutOfProcessNetworkFetcher(
-      mojo::PendingRemote<mojom::FetchService> remote_for_testing);
+  OutOfProcessNetworkFetcher(
+      mojo::PendingRemote<mojom::FetchService> remote_for_testing,
+      scoped_refptr<UpdaterEventLogger> event_logger);
   OutOfProcessNetworkFetcher& operator=(const OutOfProcessNetworkFetcher&) =
       delete;
   OutOfProcessNetworkFetcher(const OutOfProcessNetworkFetcher&) = delete;
@@ -942,8 +943,10 @@ OutOfProcessNetworkFetcher::OutOfProcessNetworkFetcher(
     : event_logger_(event_logger) {}
 
 OutOfProcessNetworkFetcher::OutOfProcessNetworkFetcher(
-    mojo::PendingRemote<mojom::FetchService> remote_for_testing)
-    : remote_for_testing_(std::move(remote_for_testing)) {}
+    mojo::PendingRemote<mojom::FetchService> remote_for_testing,
+    scoped_refptr<UpdaterEventLogger> event_logger)
+    : event_logger_(event_logger),
+      remote_for_testing_(std::move(remote_for_testing)) {}
 
 OutOfProcessNetworkFetcher::~OutOfProcessNetworkFetcher() = default;
 
@@ -1045,7 +1048,7 @@ void OutOfProcessNetworkFetcher::PostRequest(
   VLOG(1) << __func__;
   if (const int dial_result = DialFetchService(); dial_result != kErrorOk) {
     LOG(ERROR) << "Failed to dial the fetch service: " << dial_result;
-    std::move(post_request_complete_callback)
+    std::move(wrapped_post_request_complete_callback)
         .Run(std::nullopt, dial_result, {}, {}, {}, -1);
     return;
   }
@@ -1059,7 +1062,7 @@ void OutOfProcessNetworkFetcher::PostRequest(
   remote_->PostRequest(
       url, post_data, content_type, std::move(headers),
       MakePostRequestObserver(
-          response_started_callback, progress_callback,
+          wrapped_response_started_callback, progress_callback,
           mojo::WrapCallbackWithDefaultInvokeIfNotRun(
               std::move(wrapped_post_request_complete_callback), std::nullopt,
               kErrorIpcDisconnect, "", "", "", -1)));
@@ -1086,6 +1089,12 @@ base::OnceClosure OutOfProcessNetworkFetcher::DownloadToFile(
           response_started_callback, std::move(download_complete_callback), url,
           event_logger_);
 
+  if (const int dial_result = DialFetchService(); dial_result != kErrorOk) {
+    LOG(ERROR) << "Failed to dial the fetch service: " << dial_result;
+    std::move(wrapped_download_complete_callback).Run(dial_result, -1);
+    return base::DoNothing();
+  }
+
   reader_ = base::SequenceBound<DownloadStreamReader>(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -1096,12 +1105,6 @@ base::OnceClosure OutOfProcessNetworkFetcher::DownloadToFile(
           base::BindOnce(&OutOfProcessNetworkFetcher::OnStreamReadComplete,
                          weak_factory_.GetWeakPtr(),
                          std::move(wrapped_download_complete_callback))));
-
-  if (const int dial_result = DialFetchService(); dial_result != kErrorOk) {
-    LOG(ERROR) << "Failed to dial the fetch service: " << dial_result;
-    std::move(download_complete_callback).Run(dial_result, -1);
-    return base::DoNothing();
-  }
 
   remote_->DownloadToStream(
       url, std::move(producer),
@@ -1137,9 +1140,10 @@ void OutOfProcessNetworkFetcher::OnStreamReadComplete(
 
 std::unique_ptr<update_client::NetworkFetcher>
 CreateOutOfProcessNetworkFetcherForTesting(
-    mojo::PendingRemote<mojom::FetchService> remote_for_testing) {
+    mojo::PendingRemote<mojom::FetchService> remote_for_testing,
+    scoped_refptr<UpdaterEventLogger> event_logger) {
   return std::make_unique<OutOfProcessNetworkFetcher>(
-      std::move(remote_for_testing));
+      std::move(remote_for_testing), event_logger);
 }
 
 NetworkStreamFetcher::NetworkStreamFetcher() = default;

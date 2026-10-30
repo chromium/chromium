@@ -9,7 +9,9 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "chrome/updater/event_logger.h"
 #include "chrome/updater/net/mac/mojom/updater_fetcher.mojom-forward.h"
 #include "components/update_client/network.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -48,7 +50,8 @@ class NetworkStreamFetcher
 // valid, connecting to the fetch service fails.
 std::unique_ptr<update_client::NetworkFetcher>
 CreateOutOfProcessNetworkFetcherForTesting(
-    mojo::PendingRemote<mojom::FetchService> remote_for_testing);
+    mojo::PendingRemote<mojom::FetchService> remote_for_testing,
+    scoped_refptr<UpdaterEventLogger> event_logger = nullptr);
 
 }  // namespace updater
 

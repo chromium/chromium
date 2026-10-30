@@ -34,17 +34,21 @@
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/notreached.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
+#include "base/time/time.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/event_logger.h"
 #include "chrome/updater/ipc/ipc_support.h"
 #include "chrome/updater/net/mac/mojom/updater_fetcher.mojom.h"
 #include "chrome/updater/net/network_file_fetcher.h"
+#include "chrome/updater/protos/omaha_usage_stats_event.pb.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "net/http/http_status_code.h"
 #endif
 
 namespace updater {
@@ -330,9 +334,13 @@ class FakeFetchService : public mojom::FetchService {
   using DownloadHandler =
       base::OnceCallback<void(mojo::ScopedDataPipeProducerHandle,
                               mojo::Remote<mojom::FileDownloadObserver>)>;
+  using PostRequestHandler =
+      base::OnceCallback<void(mojo::Remote<mojom::PostRequestObserver>)>;
 
   explicit FakeFetchService(DownloadHandler on_download)
       : on_download_(std::move(on_download)) {}
+  explicit FakeFetchService(PostRequestHandler on_post_request)
+      : on_post_request_(std::move(on_post_request)) {}
   ~FakeFetchService() override = default;
 
   mojo::PendingRemote<mojom::FetchService> BindNewPipeAndPassRemote() {
@@ -344,7 +352,9 @@ class FakeFetchService : public mojom::FetchService {
                    const std::string& content_type,
                    std::vector<mojom::HttpHeaderPtr> additional_headers,
                    PostRequestCallback callback) override {
-    NOTREACHED();
+    mojo::Remote<mojom::PostRequestObserver> observer;
+    std::move(callback).Run(observer.BindNewPipeAndPassReceiver());
+    std::move(on_post_request_).Run(std::move(observer));
   }
 
   void DownloadToStream(const GURL& url,
@@ -358,7 +368,42 @@ class FakeFetchService : public mojom::FetchService {
 
  private:
   DownloadHandler on_download_;
+  PostRequestHandler on_post_request_;
   mojo::Receiver<mojom::FetchService> receiver_{this};
+};
+
+// Collects the network events that the fetcher logs.
+class FakeEventLoggerDelegate : public UpdaterEventLogger::Delegate {
+ public:
+  explicit FakeEventLoggerDelegate(std::vector<proto::NetworkEvent>* events)
+      : events_(events) {}
+
+  // Overrides for UpdaterEventLogger::Delegate.
+  void StoreNextAllowedAttemptTime(base::Time /*time*/,
+                                   base::OnceClosure callback) override {
+    std::move(callback).Run();
+  }
+  void DoPostRequest(
+      const std::string& /*request_body*/,
+      base::OnceCallback<void(std::optional<int> http_status,
+                              std::optional<std::string> response_body)>
+          callback) override {
+    std::move(callback).Run(net::HTTP_OK, std::nullopt);
+  }
+  int GetLogIdentifier() const override { return 0; }
+  base::TimeDelta MinimumCooldownTime() const override {
+    return base::TimeDelta();
+  }
+  std::string AggregateAndSerializeEvents(
+      base::span<proto::Omaha4Metric> metrics) const override {
+    for (const proto::Omaha4Metric& metric : metrics) {
+      events_->push_back(metric.network_event());
+    }
+    return std::string();
+  }
+
+ private:
+  raw_ptr<std::vector<proto::NetworkEvent>> events_;
 };
 
 class OutOfProcessNetworkFetcherTest : public ::testing::Test {
@@ -590,6 +635,97 @@ TEST_F(OutOfProcessNetworkFetcherTest,
   main_thread_loop.Run();
 
   EXPECT_FALSE(download_completed);
+}
+
+TEST_F(OutOfProcessNetworkFetcherTest, DownloadToFile_DialFailure) {
+  const base::FilePath dest_path =
+      temp_dir_.GetPath().AppendASCII("downloaded.bin");
+  std::unique_ptr<update_client::NetworkFetcher> fetcher =
+      CreateOutOfProcessNetworkFetcherForTesting(
+          mojo::PendingRemote<mojom::FetchService>());
+
+  base::RunLoop run_loop;
+  fetcher->DownloadToFile(
+      GURL("http://example.com/payload.bin"), dest_path, base::DoNothing(),
+      base::DoNothing(),
+      base::BindLambdaForTesting([&](int net_error, int64_t content_size) {
+        EXPECT_EQ(net_error, kErrorMojoConnectionFailure);
+        EXPECT_EQ(content_size, -1);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  // A failed dial must not create the destination file.
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+  EXPECT_FALSE(base::PathExists(dest_path));
+}
+
+TEST_F(OutOfProcessNetworkFetcherTest, PostRequest_DialFailure) {
+  std::unique_ptr<update_client::NetworkFetcher> fetcher =
+      CreateOutOfProcessNetworkFetcherForTesting(
+          mojo::PendingRemote<mojom::FetchService>());
+
+  base::RunLoop run_loop;
+  fetcher->PostRequest(
+      GURL("http://example.com/update"), "data", "text/plain", {},
+      base::DoNothing(), base::DoNothing(),
+      base::BindLambdaForTesting(
+          [&](std::optional<std::string> response_body, int net_error,
+              const std::string& /*header_etag*/,
+              const std::string& /*header_x_cup_server_proof*/,
+              const std::string& /*header_set_cookie*/,
+              int64_t /*xheader_retry_after_sec*/) {
+            EXPECT_FALSE(response_body);
+            EXPECT_EQ(net_error, kErrorMojoConnectionFailure);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+}
+
+// The network event for an out-of-process POST records a non-2xx HTTP status.
+TEST_F(OutOfProcessNetworkFetcherTest, PostRequest_LogsHttpStatus) {
+  std::vector<proto::NetworkEvent> events;
+  scoped_refptr<UpdaterEventLogger> event_logger = UpdaterEventLogger::Create(
+      std::make_unique<FakeEventLoggerDelegate>(&events),
+      /*first_allowed_attempt_time=*/std::nullopt, /*auto_flush=*/false);
+  FakeFetchService service(base::BindLambdaForTesting(
+      [](mojo::Remote<mojom::PostRequestObserver> observer) {
+        observer->OnResponseStarted(net::HTTP_INTERNAL_SERVER_ERROR,
+                                    /*content_length=*/0u);
+        observer->OnRequestComplete(/*response_body=*/"", /*net_error=*/0,
+                                    /*header_etag=*/"",
+                                    /*header_x_cup_server_proof=*/"",
+                                    /*header_set_cookie=*/"",
+                                    /*xheader_retry_after_sec=*/std::nullopt);
+      }));
+  std::unique_ptr<update_client::NetworkFetcher> fetcher =
+      CreateOutOfProcessNetworkFetcherForTesting(
+          service.BindNewPipeAndPassRemote(), event_logger);
+
+  base::RunLoop run_loop;
+  fetcher->PostRequest(
+      GURL("http://example.com/update"), "data", "text/plain", {},
+      base::DoNothing(), base::DoNothing(),
+      base::BindLambdaForTesting(
+          [&](std::optional<std::string> /*response_body*/, int net_error,
+              const std::string& /*header_etag*/,
+              const std::string& /*header_x_cup_server_proof*/,
+              const std::string& /*header_set_cookie*/,
+              int64_t /*xheader_retry_after_sec*/) {
+            EXPECT_EQ(net_error, 0);
+            fetcher.reset();
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  base::RunLoop flush_loop;
+  event_logger->Flush(flush_loop.QuitClosure());
+  flush_loop.Run();
+  ASSERT_EQ(events.size(), 1u);
+  EXPECT_EQ(events[0].error_code(), net::HTTP_INTERNAL_SERVER_ERROR);
+
+  event_logger.reset();
+  base::ThreadPoolInstance::Get()->FlushForTesting();
 }
 #endif  // BUILDFLAG(IS_MAC)
 
