@@ -24,7 +24,6 @@ import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
-import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsCompat;
 
@@ -85,8 +84,10 @@ class BottomSheetCoordinator
     /** Coordinates sheet state transitions, lifecycle, and event dispatch. */
     private final BottomSheetMediator mMediator;
 
-    /** The visible rect for the screen taking the keyboard into account. */
-    private final Rect mVisibleViewportRect = new Rect();
+    /**
+     * Reusable rect for querying the window visible display frame without per-frame allocations.
+     */
+    private final Rect mTmpDisplayFrame = new Rect();
 
     /** The default peek height of the sheet. */
     private final @Px int mDefaultPeekHeight;
@@ -149,10 +150,7 @@ class BottomSheetCoordinator
     @Override
     public boolean shouldGestureMoveSheet(MotionEvent initialEvent, MotionEvent currentEvent) {
         return mMediator.shouldGestureMoveSheet(
-                currentEvent.getRawX(),
-                getOffsetFromBrowserControls(),
-                isHiding(),
-                mVisibleViewportRect);
+                currentEvent.getRawX(), getOffsetFromBrowserControls());
     }
 
     /**
@@ -785,7 +783,7 @@ class BottomSheetCoordinator
 
     private @Px int getResizingContentContainerHeight() {
         return mMediator.calculateContentContainerHeight(
-                getSheetHeightForState(SheetState.FULL), mCurrentOffsetPx, mVisibleViewportRect);
+                getSheetHeightForState(SheetState.FULL), mCurrentOffsetPx);
     }
 
     /** Returns the resolved PEEK height in pixels for the current content. */
@@ -1313,7 +1311,6 @@ class BottomSheetCoordinator
         updateViewport();
 
         mMediator.updateVerticalLayout(
-                mVisibleViewportRect,
                 mWindow.getDecorView().getHeight(),
                 getHandlebarHeight(),
                 mCurrentOffsetPx,
@@ -1337,53 +1334,19 @@ class BottomSheetCoordinator
         return (int) getSheetHeightForState(mMediator.getTargetOrCurrentState());
     }
 
-    private boolean contentCoversBottomControls() {
-        BottomSheetContent content = getCurrentSheetContent();
-        return content != null && content.coversBottomControls();
-    }
-
     private void updateViewport() {
         assert mWindow != null;
 
         View decorView = mWindow.getDecorView();
         WindowInsetsCompat insets = mInsetObserver.getLastRawWindowInsets();
         if (insets == null) {
-            updateViewportFromDisplayFrame(decorView, mMediator.getEdgeToEdgeBottomInset());
+            decorView.getWindowVisibleDisplayFrame(mTmpDisplayFrame);
+            mMediator.updateViewportFromDisplayFrame(mTmpDisplayFrame, decorView.getBottom());
             return;
         }
 
-        updateViewportFromWindowInsets(decorView, insets, mMediator.getEdgeToEdgeBottomInset());
-    }
-
-    private void updateViewportFromDisplayFrame(View decorView, @Px int e2eBottomInset) {
-        decorView.getWindowVisibleDisplayFrame(mVisibleViewportRect);
-        if (!contentCoversBottomControls()) {
-            mVisibleViewportRect.bottom =
-                    Math.min(mVisibleViewportRect.bottom, decorView.getBottom() - e2eBottomInset);
-        }
-        mVisibleViewportRect.bottom = Math.max(mVisibleViewportRect.bottom, 0);
-    }
-
-    private void updateViewportFromWindowInsets(
-            View decorView, WindowInsetsCompat insets, @Px int e2eBottomInset) {
-        @Px int decorWidth = decorView.getWidth();
-        @Px int decorHeight = decorView.getHeight();
-        int insetTypeMask = WindowInsetsCompat.Type.ime() | WindowInsetsCompat.Type.statusBars();
-        if (!contentCoversBottomControls()) {
-            insetTypeMask |= WindowInsetsCompat.Type.systemBars();
-        }
-        Insets combinedInsets = insets.getInsets(insetTypeMask);
-        @Px int bottomInset = combinedInsets.bottom;
-        if (!contentCoversBottomControls()) {
-            bottomInset = Math.max(bottomInset, e2eBottomInset);
-        }
-        bottomInset = Math.min(bottomInset, decorHeight);
-
-        mVisibleViewportRect.set(
-                combinedInsets.left,
-                combinedInsets.top,
-                decorWidth - combinedInsets.right,
-                decorHeight - bottomInset);
+        mMediator.updateViewportFromWindowInsets(
+                insets, decorView.getWidth(), decorView.getHeight());
     }
 
     /** Called when the sheet content layout changed. */
@@ -1529,7 +1492,7 @@ class BottomSheetCoordinator
     }
 
     Rect getVisibleViewportRectForTesting() {
-        return mVisibleViewportRect;
+        return mMediator.getVisibleViewportRectForTesting();
     }
 
     /** Ends settle animations until none is left, including ones started while ending another. */
