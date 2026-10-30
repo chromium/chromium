@@ -44,9 +44,6 @@ class StorageCollectionSynchronizer {
   StorageCollectionSynchronizer& operator=(
       const StorageCollectionSynchronizer&) = delete;
 
-  // Saves the entire collection and its descendants to the service.
-  void FullSave(base::OnceClosure callback);
-
   // Saves an authoritative structural snapshot of the collection tree.
   // Coalesces rapid mutations via a 0ms PostTask.
   void SaveStructureSnapshot(bool clear_unused_nodes,

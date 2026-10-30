@@ -281,43 +281,6 @@ TEST_F(TabStateStorageServiceTest, HighVolumeOperationCoalescing) {
   EXPECT_TRUE(batch_committed);
 }
 
-TEST_F(TabStateStorageServiceTest, FullSavePopulatesNodeHashCache) {
-  TabStripCollection tab_strip;
-  StorageCollectionSynchronizer synchronizer(&tab_strip, service());
-
-  split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
-  split_tabs::SplitTabVisualData visual_data(
-      split_tabs::SplitTabLayout::kSideBySide, 0.5);
-  auto split = std::make_unique<SplitTabCollection>(split_id, visual_data);
-  split->AddTab(std::make_unique<FakeTabInterface>(), 0);
-  SplitTabCollection* split_ptr = split.get();
-  tab_strip.unpinned_collection()->AddCollection(std::move(split), 0);
-
-  EXPECT_EQ(0u, synchronizer.hash_cache().size());
-
-  synchronizer.FullSave(base::NullCallback());
-  FlushOperations();
-
-  // Root tab strip, pinned collection, unpinned collection, and the split
-  // collection.
-  EXPECT_EQ(4u, synchronizer.hash_cache().size());
-  EXPECT_TRUE(
-      synchronizer.hash_cache().HasNode(service()->GetStorageId(&tab_strip)));
-  EXPECT_TRUE(synchronizer.hash_cache().HasNode(
-      service()->GetStorageId(tab_strip.pinned_collection())));
-  EXPECT_TRUE(synchronizer.hash_cache().HasNode(
-      service()->GetStorageId(tab_strip.unpinned_collection())));
-  EXPECT_TRUE(
-      synchronizer.hash_cache().HasNode(service()->GetStorageId(split_ptr)));
-
-  std::optional<NodeHashes> split_hashes =
-      synchronizer.hash_cache().GetNodeHashes(
-          service()->GetStorageId(split_ptr));
-  ASSERT_TRUE(split_hashes.has_value());
-  EXPECT_NE(NodeHashes::kEmptyHash, split_hashes->payload_hash);
-  EXPECT_NE(NodeHashes::kEmptyHash, split_hashes->children_hash);
-}
-
 TEST_F(TabStateStorageServiceTest, SaveStructureSnapshot_DeltaDiffing) {
   TabStripCollection tab_strip;
   StorageCollectionSynchronizer synchronizer(&tab_strip, service());
@@ -346,6 +309,10 @@ TEST_F(TabStateStorageServiceTest, SaveStructureSnapshot_DeltaDiffing) {
   EXPECT_EQ(4u, synchronizer.hash_cache().size());
   EXPECT_TRUE(synchronizer.hash_cache().HasNode(split_storage_id));
   EXPECT_TRUE(synchronizer.hash_cache().HasNode(tab_strip_storage_id));
+  EXPECT_TRUE(synchronizer.hash_cache().HasNode(
+      service()->GetStorageId(tab_strip.pinned_collection())));
+  EXPECT_TRUE(synchronizer.hash_cache().HasNode(
+      service()->GetStorageId(tab_strip.unpinned_collection())));
   // Root tab strip was packaged once for Save during initial snapshot.
   EXPECT_EQ(1, packager()->package_tab_strip_count());
 

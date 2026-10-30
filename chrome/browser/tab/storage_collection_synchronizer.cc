@@ -18,42 +18,12 @@
 #include "chrome/browser/tab/node_hash_cache.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "components/tabs/public/direct_child_walker.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/tabs/public/tab_strip_collection.h"
 
 namespace tabs {
-
-// Recursively crawls the entire tree and saves all descendants to the service.
-// The traversal order is determined by DirectChildWalker.
-class CollectionSaveCrawler : public DirectChildWalker::Processor {
- public:
-  CollectionSaveCrawler(TabStateStorageService* service,
-                        NodeHashCache& hash_cache)
-      : service_(service), hash_cache_(hash_cache) {}
-
-  void ProcessTab(const TabInterface* tab) override { service_->Save(tab); }
-
-  void ProcessCollection(const TabCollection* collection) override {
-    service_->Save(collection);
-    service_->SaveChildren(collection);
-    DirectChildWalker walker(collection, this);
-    walker.Walk();
-
-    RecordCollectionHashes(collection);
-  }
-
-  void RecordCollectionHashes(const TabCollection* collection) {
-    NodeHashes hashes = NodeHashCache::ComputeHashes(collection, *service_);
-    hash_cache_->SetNodeHashes(service_->GetStorageId(collection), hashes);
-  }
-
- private:
-  raw_ptr<TabStateStorageService> service_;
-  const raw_ref<NodeHashCache> hash_cache_;
-};
 
 // CollectionSynchronizerObserver implementation.
 void StorageCollectionSynchronizer::CollectionSynchronizerObserver::
@@ -108,19 +78,6 @@ StorageCollectionSynchronizer::StorageCollectionSynchronizer(
     TabStripCollection* collection,
     TabStateStorageService* service)
     : collection_(collection), service_(service) {}
-
-void StorageCollectionSynchronizer::FullSave(base::OnceClosure callback) {
-  auto batch = service_->CreateScopedBatch();
-  if (!callback.is_null()) {
-    batch.AddCallback(std::move(callback));
-  }
-  hash_cache_.Clear();
-  service_->Save(collection_);
-  CollectionSaveCrawler crawler(service_, hash_cache_);
-  DirectChildWalker walker(collection_, &crawler);
-  walker.Walk();
-  crawler.RecordCollectionHashes(collection_);
-}
 
 void StorageCollectionSynchronizer::CancelRestore() {
   is_snapshot_scheduled_ = false;

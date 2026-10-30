@@ -26,12 +26,6 @@ StorageCollectionSynchronizerAndroid::StorageCollectionSynchronizerAndroid(
 StorageCollectionSynchronizerAndroid::~StorageCollectionSynchronizerAndroid() =
     default;
 
-void StorageCollectionSynchronizerAndroid::FullSave(
-    JNIEnv* env,
-    base::OnceClosure callback) {
-  synchronizer_.FullSave(std::move(callback));
-}
-
 void StorageCollectionSynchronizerAndroid::SaveStructureSnapshot(
     JNIEnv* env,
     bool clear_unused_nodes,

@@ -27,7 +27,6 @@ class StorageCollectionSynchronizerAndroid {
   StorageCollectionSynchronizerAndroid& operator=(
       const StorageCollectionSynchronizerAndroid&) = delete;
 
-  void FullSave(JNIEnv* env, base::OnceClosure callback);
   void SaveStructureSnapshot(JNIEnv* env,
                              bool clear_unused_nodes,
                              base::OnceClosure callback);

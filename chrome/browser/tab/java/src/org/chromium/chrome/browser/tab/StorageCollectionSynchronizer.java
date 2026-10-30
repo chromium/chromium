@@ -53,12 +53,6 @@ public class StorageCollectionSynchronizer implements Destroyable {
                 .consumeCollectionObserverFactory(mNativePtr, factory);
     }
 
-    /** Fully synchronizes the state of the collection and descendants with the storage layer. */
-    public void fullSave(Runnable callback) {
-        assert mNativePtr != 0;
-        StorageCollectionSynchronizerJni.get().fullSave(mNativePtr, callback);
-    }
-
     /**
      * Saves a structural snapshot of the collection tree to storage.
      *
@@ -83,10 +77,6 @@ public class StorageCollectionSynchronizer implements Destroyable {
                 StorageCollectionSynchronizer self,
                 @JniType("Profile*") Profile profile,
                 JniPtr<TabStripCollection> collection);
-
-        void fullSave(
-                long nativeStorageCollectionSynchronizerAndroid,
-                @JniType("base::OnceClosure") Runnable callback);
 
         /** Native implementation of {@link #saveStructureSnapshot}. */
         void saveStructureSnapshot(
