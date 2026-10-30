@@ -351,8 +351,14 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
   [ChromeEarlGrey
       waitForUIElementToDisappearWithMatcher:SettingsProfileMatcher()];
 
-  // Verify the keyboard is not covered by the profiles view.
-  [ChromeEarlGrey waitForKeyboardToAppear];
+  // TODO(crbug.com/332956674): Keyboard and keyboard accessory are not present
+  // on iOS 17.4+, remove version check once fixed.
+  if (@available(iOS 17.4, *)) {
+    // Skip verifications.
+  } else {
+    // Verify the keyboard is not covered by the profiles view.
+    [ChromeEarlGrey waitForKeyboardToAppear];
+  }
 
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
                       manual_fill::ProfilesTableViewMatcher()];

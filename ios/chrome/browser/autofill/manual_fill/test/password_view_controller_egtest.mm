@@ -246,7 +246,12 @@ void CheckPasswordFillingOptionIsVisible(NSString* site) {
 // view.
 void CheckKeyboardIsUpAndNotCovered() {
   // Verify the keyboard is not covered by the profiles view.
-  [ChromeEarlGrey waitForKeyboardToAppear];
+  // TODO(crbug.com/332956674): Remove version check once fixed.
+  if (@available(iOS 17.4, *)) {
+    // Skip verification.
+  } else {
+    [ChromeEarlGrey waitForKeyboardToAppear];
+  }
 
   [ChromeEarlGrey waitForNotSufficientlyVisibleElementWithMatcher:
                       manual_fill::PasswordTableViewMatcher()];
