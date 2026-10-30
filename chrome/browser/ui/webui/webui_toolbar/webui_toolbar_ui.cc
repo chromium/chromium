@@ -182,6 +182,17 @@ void PopulateInitialState(base::DictValue& dict,
   dict.Set(kTouchUi, state->touch_ui);
 }
 
+// Adds the URL data sources of the toolbar to `profile`, the profile of the
+// WebUI. In TopChromeWebUIProfile, it is shared by the windows of all profiles.
+void AddURLDataSources(Profile* profile) {
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
+  if (features::IsWebUILocationBarEnabled()) {
+    content::URLDataSource::Add(
+        profile, std::make_unique<FaviconSource>(
+                     profile, chrome::FaviconUrlFormat::kFavicon2));
+  }
+}
+
 }  // namespace
 
 WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
@@ -201,8 +212,7 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
       web_ui->GetWebContents()->GetBrowserContext(),
       chrome::kChromeUIWebUIToolbarHost);
 
-  Profile* profile = Profile::FromWebUI(web_ui);
-  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
+  AddURLDataSources(Profile::FromWebUI(web_ui));
 
   static constexpr webui::LocalizedString kStrings[] = {
       // go/keep-sorted start
@@ -290,10 +300,6 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
     // names, e.g. charTypedToPaintMetricName, and has no dropdown, which
     // reports them.
     source->AddBoolean("reportMetrics", false);
-
-    content::URLDataSource::Add(
-        profile, std::make_unique<FaviconSource>(
-                     profile, chrome::FaviconUrlFormat::kFavicon2));
   }
 
   source->AddBoolean(
