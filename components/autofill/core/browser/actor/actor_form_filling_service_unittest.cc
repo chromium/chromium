@@ -69,6 +69,8 @@ using FillRequest = ActorFormFillingService::FillRequest;
 using GetSuggestionsFuture =
     base::test::TestFuture<base::expected<std::vector<ActorFormFillingRequest>,
                                           ActorFormFillingError>>;
+using RetrieveSuggestionFuture = base::test::TestFuture<
+    base::expected<ActorSuggestionId, ActorFormFillingError>>;
 using FillSuggestionsFuture =
     base::test::TestFuture<base::expected<std::string, ActorFormFillingError>>;
 
@@ -1142,24 +1144,19 @@ TEST_F(ActorFormFillingServiceTest,
               RetrieveCreditCardForOpaqueToken("opaque_token_xyz", _))
       .WillOnce(base::test::RunOnceCallback<1>(card));
 
-  GetSuggestionsFuture future;
+  RetrieveSuggestionFuture future;
   service().RetrieveSuggestionForCreditCardOpaqueToken(
       client(), {CreditCardFillRequest({form.fields()[0].global_id()})},
       "opaque_token_xyz", future.GetCallback());
-  ASSERT_THAT(future.Get(), HasValue());
-  std::vector<ActorFormFillingRequest> requests = future.Take().value();
-  ASSERT_EQ(requests.size(), 1u);
-  EXPECT_EQ(requests[0].requested_data,
-            ActorFormFillingRequest::RequestedData::kCreditCard);
-  ASSERT_EQ(requests[0].suggestions.size(), 1u);
-  EXPECT_EQ(requests[0].suggestions[0].id, ActorSuggestionId(1));
+  ASSERT_THAT(future.Get(), ValueIs(ActorSuggestionId(1)));
+  ActorSuggestionId suggestion_id = future.Take().value();
 
   ExpectGetSuggestionsOutcome(kActorFormFillingSuccessForMetrics,
                               histogram_tester);
 
   // Verify that FillForm succeeds without error now that field_ids are stored.
   service().FillForm(client(), /*form_index=*/0,
-                     ActorFormFillingSelection(requests[0].suggestions[0].id));
+                     ActorFormFillingSelection(suggestion_id));
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
   EXPECT_TRUE(test_api(service()).FillingErrors().empty());
   EXPECT_THAT(last_filled_values(),
@@ -1178,7 +1175,7 @@ TEST_F(ActorFormFillingServiceTest,
               RetrieveCreditCardForOpaqueToken("opaque_token_xyz", _))
       .WillOnce(base::test::RunOnceCallback<1>(std::nullopt));
 
-  GetSuggestionsFuture future;
+  RetrieveSuggestionFuture future;
   service().RetrieveSuggestionForCreditCardOpaqueToken(
       client(), {CreditCardFillRequest({form.fields()[0].global_id()})},
       "opaque_token_xyz", future.GetCallback());
@@ -1190,7 +1187,7 @@ TEST_F(ActorFormFillingServiceTest,
 TEST_F(ActorFormFillingServiceTest,
        RetrieveSuggestionForCreditCardOpaqueToken_EmptyFields) {
   base::HistogramTester histogram_tester;
-  GetSuggestionsFuture future;
+  RetrieveSuggestionFuture future;
   service().RetrieveSuggestionForCreditCardOpaqueToken(
       client(), {CreditCardFillRequest({})}, "opaque_token_xyz",
       future.GetCallback());
@@ -1203,7 +1200,7 @@ TEST_F(ActorFormFillingServiceTest,
        RetrieveSuggestionForCreditCardOpaqueToken_WithAddressRequest) {
   base::HistogramTester histogram_tester;
   FormData form = SeeForm({.fields = {{.server_type = ADDRESS_HOME_LINE1}}});
-  GetSuggestionsFuture future;
+  RetrieveSuggestionFuture future;
   service().RetrieveSuggestionForCreditCardOpaqueToken(
       client(), {AddressFillRequest({form.fields()[0].global_id()})},
       "opaque_token_xyz", future.GetCallback());
@@ -1220,15 +1217,15 @@ TEST_F(ActorFormFillingServiceTest,
               RetrieveCreditCardForOpaqueToken("opaque_token_xyz", _))
       .WillOnce(base::test::RunOnceCallback<1>(card));
 
-  GetSuggestionsFuture future;
+  RetrieveSuggestionFuture future;
   service().RetrieveSuggestionForCreditCardOpaqueToken(
       client(), {CreditCardFillRequest({form.fields()[0].global_id()})},
       "opaque_token_xyz", future.GetCallback());
   ASSERT_THAT(future.Get(), HasValue());
-  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+  ActorSuggestionId suggestion_id = future.Take().value();
 
   service().FillForm(client(), /*form_index=*/0,
-                     ActorFormFillingSelection(requests[0].suggestions[0].id));
+                     ActorFormFillingSelection(suggestion_id));
   EXPECT_TRUE(test_api(service()).FillingErrors().empty());
   EXPECT_TRUE(last_filled_values().empty());
 }

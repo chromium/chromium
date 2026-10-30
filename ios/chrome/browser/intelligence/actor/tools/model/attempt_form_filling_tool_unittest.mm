@@ -928,20 +928,10 @@ TEST_F(AttemptFormFillingToolTest, FillWithCreditCardOpaqueToken) {
   // GetSuggestions should NOT be called.
   EXPECT_CALL(*mock_form_filling_service(), GetSuggestions).Times(0);
 
-  autofill::ActorFormFillingRequest request;
-  request.requested_data = autofill::ActorFormFillingRequestedData::kCreditCard;
-  autofill::ActorSuggestion suggestion;
-  suggestion.id = autofill::ActorSuggestionId(1);
-  suggestion.title = "Mock Card";
-  suggestion.details = "•••• 1111";
-  request.suggestions.push_back(std::move(suggestion));
-  std::vector<autofill::ActorFormFillingRequest> requests;
-  requests.push_back(std::move(request));
-
   EXPECT_CALL(*mock_form_filling_service(),
               RetrieveSuggestionForCreditCardOpaqueToken(
                   testing::_, testing::_, "opaque_token_xyz", testing::_))
-      .WillOnce(RunOnceCallback<3>(std::move(requests)));
+      .WillOnce(RunOnceCallback<3>(autofill::ActorSuggestionId(1)));
 
   // FillForm and FillSuggestions should be directly called.
   EXPECT_CALL(*mock_form_filling_service(),

@@ -101,10 +101,10 @@ void RecordFillSuggestionsMetrics(
 
 // Records the latency and result of getting suggestions.
 // It returns the unmodified `result` to enable usage in chained callbacks.
-base::expected<std::vector<ActorFormFillingRequest>, ActorFormFillingError>
-RecordGetSuggestionsMetrics(base::TimeTicks start_time,
-                            base::expected<std::vector<ActorFormFillingRequest>,
-                                           ActorFormFillingError> result) {
+template <typename T>
+base::expected<T, ActorFormFillingError> RecordGetSuggestionsMetrics(
+    base::TimeTicks start_time,
+    base::expected<T, ActorFormFillingError> result) {
   RecordMetrics("Autofill.Actor.GetSuggestions", start_time,
                 result.error_or(kActorFormFillingSuccessForMetrics));
   return result;
@@ -487,7 +487,9 @@ void ActorFormFillingServiceImpl::GetSuggestions(
     base::span<const FillRequest> fill_requests,
     GetSuggestionsCallback callback) {
   auto callback_with_metrics =
-      base::BindOnce(&RecordGetSuggestionsMetrics, base::TimeTicks::Now())
+      base::BindOnce(
+          &RecordGetSuggestionsMetrics<std::vector<ActorFormFillingRequest>>,
+          base::TimeTicks::Now())
           .Then(std::move(callback));
 
   auto log_actor_error = [&](std::string_view error_message) {
@@ -676,9 +678,10 @@ void ActorFormFillingServiceImpl::RetrieveSuggestionForCreditCardOpaqueToken(
     AutofillClient& client,
     base::span<const FillRequest> fill_requests,
     const std::string& credit_card_opaque_token,
-    GetSuggestionsCallback callback) {
+    RetrieveSuggestionCallback callback) {
   auto callback_with_metrics =
-      base::BindOnce(&RecordGetSuggestionsMetrics, base::TimeTicks::Now())
+      base::BindOnce(&RecordGetSuggestionsMetrics<ActorSuggestionId>,
+                     base::TimeTicks::Now())
           .Then(std::move(callback));
 
   auto log_actor_error = [&](std::string_view error_message) {
@@ -795,7 +798,7 @@ void ActorFormFillingServiceImpl::RetrieveSuggestionForCreditCardOpaqueToken(
 void ActorFormFillingServiceImpl::OnRetrievedSuggestionForCreditCardOpaqueToken(
     base::WeakPtr<AutofillManager> weak_manager,
     std::optional<FormGlobalId> form_id,
-    GetSuggestionsCallback callback,
+    RetrieveSuggestionCallback callback,
     std::vector<FieldGlobalId> fields,
     std::string section_label,
     FieldGlobalId trigger_field_id,
@@ -820,19 +823,11 @@ void ActorFormFillingServiceImpl::OnRetrievedSuggestionForCreditCardOpaqueToken(
     return;
   }
 
-  sections_.emplace_back(trigger_field_id, section_label,
+  sections_.emplace_back(trigger_field_id, std::move(section_label),
                          ActorFormFillingRequestedData::kCreditCard);
 
-  ActorSuggestion suggestion;
-  suggestion.id = ActorSuggestionId(suggestion_id_generator_.GenerateNextId());
-
-  fill_data_[suggestion.id] = FillData(fields, *card);
-
-  ActorFormFillingRequest request;
-  request.requested_data = ActorFormFillingRequestedData::kCreditCard;
-  request.request_origin = origin;
-  request.section_label = std::move(section_label);
-  request.suggestions.push_back(std::move(suggestion));
+  ActorSuggestionId suggestion_id(suggestion_id_generator_.GenerateNextId());
+  fill_data_[suggestion_id] = FillData(std::move(fields), *std::move(card));
 
   if (weak_manager && form_id) {
     if (ActorAutofillManager* manager =
@@ -842,10 +837,7 @@ void ActorFormFillingServiceImpl::OnRetrievedSuggestionForCreditCardOpaqueToken(
     }
   }
 
-  std::vector<ActorFormFillingRequest> requests;
-  requests.push_back(std::move(request));
-
-  std::move(callback).Run(std::move(requests));
+  std::move(callback).Run(suggestion_id);
 }
 
 void ActorFormFillingServiceImpl::FillSuggestions(

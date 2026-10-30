@@ -76,10 +76,6 @@ class AttemptFormFillingTool : public WebActorTool {
   // Returns the AutofillClientIOS associated with the target WebState.
   autofill::AutofillClientIOS& GetAutofillClient() const;
 
-  // Directly fills the suggestions into the form without prompting the user.
-  void DirectlyFillSuggestions(
-      const std::vector<autofill::ActorFormFillingRequest>& requests);
-
   // Callback invoked when the target frame resolution for a request completes.
   void OnTargetFrameResolved(
       size_t request_idx,
@@ -104,6 +100,13 @@ class AttemptFormFillingTool : public WebActorTool {
   void OnSuggestionsRetrieved(
       base::expected<std::vector<autofill::ActorFormFillingRequest>,
                      autofill::ActorFormFillingError> suggestions_result);
+
+  // Callback invoked when the form filling service returns a credit card
+  // suggestion ID for an opaque token. Directly fills the suggestion into the
+  // form without prompting the user.
+  void OnCreditCardSuggestionRetrieved(
+      base::expected<autofill::ActorSuggestionId,
+                     autofill::ActorFormFillingError> suggestion_id_result);
 
   // Scrolls the web page to the form corresponding to the current request and
   // prompts the user to select a suggestion.

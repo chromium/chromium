@@ -420,7 +420,7 @@ void AttemptFormFillingTool::OnAllAutofillRendererIdsRetrieved() {
   if (!credit_card_opaque_token_.empty()) {
     form_filling_service->RetrieveSuggestionForCreditCardOpaqueToken(
         GetAutofillClient(), service_requests_, credit_card_opaque_token_,
-        base::BindOnce(&AttemptFormFillingTool::OnSuggestionsRetrieved,
+        base::BindOnce(&AttemptFormFillingTool::OnCreditCardSuggestionRetrieved,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
   }
@@ -434,10 +434,16 @@ void AttemptFormFillingTool::OnAllAutofillRendererIdsRetrieved() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void AttemptFormFillingTool::DirectlyFillSuggestions(
-    const std::vector<autofill::ActorFormFillingRequest>& requests) {
+void AttemptFormFillingTool::OnCreditCardSuggestionRetrieved(
+    base::expected<autofill::ActorSuggestionId, autofill::ActorFormFillingError>
+        suggestion_id_result) {
   if (!web_state_) {
     FailWithResult(ToolExecutionResult(mojom::ActionResultCode::kTabWentAway));
+    return;
+  }
+
+  if (!suggestion_id_result.has_value()) {
+    FailWithResult(FromServiceError(suggestion_id_result.error()));
     return;
   }
 
@@ -449,21 +455,11 @@ void AttemptFormFillingTool::DirectlyFillSuggestions(
   CHECK(service);
   autofill::AutofillClientIOS& client = GetAutofillClient();
 
-  selected_suggestions_.clear();
-  for (size_t i = 0; i < requests.size(); ++i) {
-    // `GetSuggestions` and `RetrieveSuggestionForCreditCardOpaqueToken` abort
-    // with `kNoSuggestions` if any form section has no suggestions. Therefore,
-    // every request is guaranteed to have suggestions.
-    CHECK_GT(requests[i].suggestions.size(), 0u);
-    autofill::ActorSuggestionId suggestion_id = requests[i].suggestions[0].id;
-    service->FillForm(client, static_cast<int>(i),
-                      autofill::ActorFormFillingSelection(suggestion_id));
-    selected_suggestions_.push_back(
-        autofill::ActorFormFillingSelection(suggestion_id));
-  }
+  autofill::ActorFormFillingSelection selection(*suggestion_id_result);
+  service->FillForm(client, /*form_index=*/0, selection);
 
   service->FillSuggestions(
-      client, std::move(selected_suggestions_),
+      client, {selection},
       base::BindOnce(&AttemptFormFillingTool::OnFormFillingComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -486,11 +482,6 @@ void AttemptFormFillingTool::OnSuggestionsRetrieved(
   if (suggestions_result_values.empty()) {
     FailWithResult(ToolExecutionResult(
         mojom::ActionResultCode::kFormFillingNoSuggestionsAvailable));
-    return;
-  }
-
-  if (!credit_card_opaque_token_.empty()) {
-    DirectlyFillSuggestions(suggestions_result_values);
     return;
   }
 

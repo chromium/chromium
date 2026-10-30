@@ -127,8 +127,9 @@ void AttemptFormFillingTool::Invoke(ToolCallback callback) {
           .GetActorFormFillingService()
           .RetrieveSuggestionForCreditCardOpaqueToken(
               *client, service_fill_requests_, credit_card_opaque_token_,
-              base::BindOnce(&AttemptFormFillingTool::OnSuggestionsRetrieved,
-                             weak_factory_.GetWeakPtr(), std::move(callback)));
+              base::BindOnce(
+                  &AttemptFormFillingTool::OnCreditCardSuggestionRetrieved,
+                  weak_factory_.GetWeakPtr(), std::move(callback)));
       return;
     }
 
@@ -251,10 +252,17 @@ void AttemptFormFillingTool::OnSuggestionsRetrieved(
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kAttemptFormFillingToolSkipsUI) ||
-      !credit_card_opaque_token_.empty()) {
-    DirectlyFillSuggestions(std::move(invoke_callback),
-                            suggestions_result.value());
+          switches::kAttemptFormFillingToolSkipsUI)) {
+    DirectlyFillSuggestions(
+        std::move(invoke_callback),
+        base::ToVector(suggestions_result.value(),
+                       [](const ActorFormFillingRequest& request) {
+                         // `GetSuggestions` aborts with `kNoSuggestions` if any
+                         // form section has no suggestions. Therefore, every
+                         // request is guaranteed to have suggestions.
+                         CHECK_GT(request.suggestions.size(), 0u);
+                         return request.suggestions[0].id;
+                       }));
     return;
   }
 
@@ -264,9 +272,25 @@ void AttemptFormFillingTool::OnSuggestionsRetrieved(
                      weak_factory_.GetWeakPtr(), std::move(invoke_callback)));
 }
 
+void AttemptFormFillingTool::OnCreditCardSuggestionRetrieved(
+    ToolCallback invoke_callback,
+    base::expected<ActorSuggestionId, ActorFormFillingError>
+        suggestion_id_result) {
+  form_fill_metrics::RecordOnSuggestionsRetrievedMetrics(
+      suggestion_id_result.has_value() ? 1 : 0);
+
+  if (!suggestion_id_result.has_value()) {
+    std::move(invoke_callback)
+        .Run(FromServiceError(suggestion_id_result.error()));
+    return;
+  }
+
+  DirectlyFillSuggestions(std::move(invoke_callback), {*suggestion_id_result});
+}
+
 void AttemptFormFillingTool::DirectlyFillSuggestions(
     ToolCallback invoke_callback,
-    const std::vector<ActorFormFillingRequest>& requests) {
+    base::span<const ActorSuggestionId> suggestion_ids) {
   if (!actor_surface_handle_.Get()) {
     std::move(invoke_callback)
         .Run(MakeResult(mojom::ActionResultCode::kTabWentAway));
@@ -284,20 +308,16 @@ void AttemptFormFillingTool::DirectlyFillSuggestions(
   }
 
   // Follow the Chat UI behavior of filling each form section one at a time.
-  for (size_t i = 0; i < requests.size(); ++i) {
-    // `GetSuggestions` and `RetrieveSuggestionForCreditCardOpaqueToken` abort
-    // with `kNoSuggestions` if any form section has no suggestions. Therefore,
-    // every request is guaranteed to have suggestions.
-    CHECK_GT(requests[i].suggestions.size(), 0u);
+  for (size_t i = 0; i < suggestion_ids.size(); ++i) {
     tool_delegate().GetActorFormFillingService().FillForm(
         *client, static_cast<int>(i),
-        ActorFormFillingSelection(requests[i].suggestions[0].id));
+        ActorFormFillingSelection(suggestion_ids[i]));
   }
 
   std::vector<webui::mojom::FormFillingResponsePtr> selected_suggestions =
-      base::ToVector(requests, [](const ActorFormFillingRequest& request) {
+      base::ToVector(suggestion_ids, [](ActorSuggestionId suggestion_id) {
         return webui::mojom::FormFillingResponse::New(
-            base::NumberToString(request.suggestions[0].id.value()));
+            base::NumberToString(suggestion_id.value()));
       });
 
   OnSuggestionsSelected(

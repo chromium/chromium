@@ -55,7 +55,7 @@ class ActorFormFillingServiceImpl : public ActorFormFillingService {
       AutofillClient& client,
       base::span<const FillRequest> fill_requests,
       const std::string& credit_card_opaque_token,
-      GetSuggestionsCallback callback) override;
+      RetrieveSuggestionCallback callback) override;
   void FillSuggestions(
       AutofillClient& client,
       base::span<const ActorFormFillingSelection> chosen_suggestions,
@@ -114,11 +114,11 @@ class ActorFormFillingServiceImpl : public ActorFormFillingService {
           skip_reasons);
 
   // Handles the retrieved credit card for an opaque token and populates the
-  // suggestions and fill data.
+  // fill data.
   void OnRetrievedSuggestionForCreditCardOpaqueToken(
       base::WeakPtr<AutofillManager> weak_manager,
       std::optional<FormGlobalId> form_id,
-      GetSuggestionsCallback callback,
+      RetrieveSuggestionCallback callback,
       std::vector<FieldGlobalId> fields,
       std::string section_label,
       FieldGlobalId trigger_field_id,

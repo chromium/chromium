@@ -31,7 +31,7 @@ class MockActorFormFillingService : public ActorFormFillingService {
               (AutofillClient&,
                base::span<const FillRequest>,
                const std::string&,
-               GetSuggestionsCallback),
+               RetrieveSuggestionCallback),
               (override));
 
   MOCK_METHOD(void,

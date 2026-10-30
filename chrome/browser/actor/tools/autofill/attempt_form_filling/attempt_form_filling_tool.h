@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "chrome/browser/actor/actor_surface_handle.h"
@@ -77,16 +78,19 @@ class AttemptFormFillingTool : public Tool,
       ToolCallback invoke_callback,
       base::expected<std::vector<autofill::ActorFormFillingRequest>,
                      autofill::ActorFormFillingError> suggestions_result);
+  void OnCreditCardSuggestionRetrieved(
+      ToolCallback invoke_callback,
+      base::expected<autofill::ActorSuggestionId,
+                     autofill::ActorFormFillingError> suggestion_id_result);
   void OnSuggestionsSelected(
       ToolCallback invoke_callback,
       webui::mojom::SelectAutofillSuggestionsDialogResponsePtr);
   // Directly fills the suggestions into the form without asking the user to
-  // select a suggestion. Called when
-  // `actor::switches::kAttemptFormFillingToolSkipsUI` is passed (for testing
-  // purposes) or when `credit_card_opaque_token_` is non-empty.
+  // select a suggestion. Each entry in `suggestion_ids` corresponds to a
+  // separate form filling request, in order.
   void DirectlyFillSuggestions(
       ToolCallback invoke_callback,
-      const std::vector<autofill::ActorFormFillingRequest>& requests);
+      base::span<const autofill::ActorSuggestionId> suggestion_ids);
   autofill::AutofillClient* GetAutofillClient();
   ActorSurfaceHandle actor_surface_handle_;
   std::vector<AttemptFormFillingToolRequest::FormFillingRequest>
