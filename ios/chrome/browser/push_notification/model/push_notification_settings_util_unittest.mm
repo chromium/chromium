@@ -87,10 +87,10 @@ class PushNotificationSettingsUtilTest : public PlatformTest {
   }
 
  protected:
-  raw_ptr<PrefService, DanglingUntriaged> pref_service_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
+  raw_ptr<PrefService> pref_service_;
   FakeSystemIdentity* fake_id_;
   PushNotificationAccountContextManager* manager_;
   base::test::ScopedFeatureList feature_list_;
