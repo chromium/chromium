@@ -19,6 +19,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ttc/TtcWaveformView.java",
   ]
   deps = [
+    ":entry_point_java",
     ":java_resources",
     "//base:base_java",
     "//base:supplier_java",
@@ -47,6 +48,17 @@ android_library("java") {
   resources_package = "org.chromium.chrome.browser.ttc"
 }
 
+# The TTC toolbar button's state, shared with the toolbar. Its own target so
+# that the toolbar doesn't depend on the rest of the TTC session UI.
+android_library("entry_point_java") {
+  sources = [ "java/src/org/chromium/chrome/browser/ttc/TtcEntryPoint.java" ]
+  deps = [
+    "//base:base_java",
+    "//build/android:build_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
 android_resources("java_resources") {
   sources = [
     "java/res/drawable/ttc_session_pill_background.xml",
@@ -68,6 +80,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/ttc/TtcWaveformViewTest.java",
   ]
   deps = [
+    ":entry_point_java",
     ":java",
     ":java_resources",
     "//base:base_java_test_support",

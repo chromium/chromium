@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -75,11 +76,13 @@ public class TtcSessionMediatorTest {
 
     private PropertyModel mModel;
     private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
+    private TtcEntryPoint mEntryPoint;
 
     @Before
     public void setUp() {
         mModel = new PropertyModel(TtcSessionProperties.ALL_KEYS);
         mProfileSupplier = ObservableSuppliers.createMonotonic();
+        mEntryPoint = new TtcEntryPoint();
         when(mService.isEnabled()).thenReturn(true);
         // A session that becomes active starts out connecting, as the native one does.
         when(mService.getSessionLifecycle()).thenReturn(SessionLifecycle.INITIALIZING);
@@ -103,7 +106,7 @@ public class TtcSessionMediatorTest {
     private TtcSessionMediator createMediator(boolean profileAvailable) {
         if (profileAvailable) mProfileSupplier.set(mProfile);
         return new TtcSessionMediator(
-                mModel, mWindowAndroid, mProfileSupplier, mLifecycleDispatcher);
+                mModel, mWindowAndroid, mProfileSupplier, mLifecycleDispatcher, mEntryPoint);
     }
 
     private TtcSessionMediator createMediator() {
@@ -118,7 +121,11 @@ public class TtcSessionMediatorTest {
             PropertyModel model, SettableMonotonicObservableSupplier<Profile> profileSupplier) {
         if (profileSupplier.get() == null) profileSupplier.set(mProfile);
         return new TtcSessionMediator(
-                model, mWindowAndroid, profileSupplier, mOtherLifecycleDispatcher);
+                model,
+                mWindowAndroid,
+                profileSupplier,
+                mOtherLifecycleDispatcher,
+                new TtcEntryPoint());
     }
 
     private TtcSessionMediator createOtherWindowMediator(
@@ -843,6 +850,93 @@ public class TtcSessionMediatorTest {
         // Nothing should touch the model once destroyed.
         ShadowLooper.idleMainLooper(TtcSessionMediator.ERROR_DISPLAY_MS, TimeUnit.MILLISECONDS);
         assertTrue(mModel.get(TtcSessionProperties.VISIBLE));
+    }
+
+    // Toolbar entry point.
+
+    @Test
+    public void testEntryPointShownAndHighlightedDuringSession() {
+        TtcSessionMediator mediator = createMediator();
+        assertTrue(mEntryPoint.shouldShow());
+        assertFalse(mEntryPoint.isActive());
+
+        mediator.onServiceStateChanged(ServiceState.SESSION_ACTIVE);
+        assertTrue(mEntryPoint.shouldShow());
+        assertTrue(mEntryPoint.isActive());
+
+        mediator.onServiceStateChanged(ServiceState.SESSION_INACTIVE);
+        assertTrue(mEntryPoint.shouldShow());
+        assertFalse(mEntryPoint.isActive());
+    }
+
+    @Test
+    public void testEntryPointHighlightedWhenSessionAlreadyActiveOnCreation() {
+        when(mService.isSessionActive()).thenReturn(true);
+        createMediator();
+
+        assertTrue(mEntryPoint.shouldShow());
+        assertTrue(mEntryPoint.isActive());
+    }
+
+    @Test
+    public void testEntryPointNotHighlightedWhileErrorShows() {
+        TtcSessionMediator mediator = createMediator();
+        mediator.onServiceStateChanged(ServiceState.SESSION_ACTIVE);
+
+        // The pill keeps showing the error, but the session is over.
+        mediator.onError(/* errorCode= */ 0);
+        mediator.onServiceStateChanged(ServiceState.SESSION_INACTIVE);
+        assertTrue(mModel.get(TtcSessionProperties.VISIBLE));
+        assertFalse(mEntryPoint.isActive());
+    }
+
+    @Test
+    public void testEntryPointTogglesSession() {
+        TtcSessionMediator mediator = createMediator();
+
+        mEntryPoint.toggleSession();
+        verify(mService).startSession();
+
+        // Without a mediator the entry point is hidden and inert.
+        mediator.destroy();
+        assertFalse(mEntryPoint.shouldShow());
+        mEntryPoint.toggleSession();
+        verify(mService).startSession();
+    }
+
+    @Test
+    public void testEntryPointHiddenWithoutService() {
+        when(mService.isEnabled()).thenReturn(false);
+        createMediator();
+        assertFalse(mEntryPoint.shouldShow());
+    }
+
+    @Test
+    public void testEntryPointHiddenAfterSwitchingToIncognito() {
+        createMediator();
+        assertTrue(mEntryPoint.shouldShow());
+
+        switchToIncognito(mProfileSupplier);
+        assertFalse(mEntryPoint.shouldShow());
+        assertFalse(mEntryPoint.isActive());
+    }
+
+    @Test
+    public void testEntryPointNotifiesObservers() {
+        TtcEntryPoint.Observer observer = mock(TtcEntryPoint.Observer.class);
+        mEntryPoint.addObserver(observer);
+        TtcSessionMediator mediator = createMediator();
+        verify(observer).onEntryPointStateChanged();
+
+        mediator.onServiceStateChanged(ServiceState.SESSION_ACTIVE);
+        verify(observer, times(2)).onEntryPointStateChanged();
+
+        // No change, no notification.
+        mediator.onServiceStateChanged(ServiceState.SESSION_ACTIVE);
+        verify(observer, times(2)).onEntryPointStateChanged();
+
+        mediator.destroy();
+        verify(observer, times(3)).onEntryPointStateChanged();
     }
 
     private void resolvePermissionRequest(int grantResult) {

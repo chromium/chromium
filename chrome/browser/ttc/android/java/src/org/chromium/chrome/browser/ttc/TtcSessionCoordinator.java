@@ -27,7 +27,8 @@ import java.util.List;
  * microphone permission, following the active profile) lives in {@link TtcSessionMediator} and is
  * form-factor agnostic; this class wires the mediator's model to a view. On small screens that view
  * is a floating pill shown over the content area while a session is live, see {@link
- * #usesMobileSessionUi(Context)}.
+ * #usesMobileSessionUi(Context)}. The mediator also keeps the window's {@link TtcEntryPoint}, the
+ * toolbar button where the toolbar offers one, in sync.
  */
 @NullMarked
 public class TtcSessionCoordinator {
@@ -92,7 +93,12 @@ public class TtcSessionCoordinator {
                     TtcSessionViewBinder::bind);
         }
         mMediator =
-                new TtcSessionMediator(model, windowAndroid, profileSupplier, lifecycleDispatcher);
+                new TtcSessionMediator(
+                        model,
+                        windowAndroid,
+                        profileSupplier,
+                        lifecycleDispatcher,
+                        TtcEntryPoint.from(windowAndroid));
     }
 
     public void destroy() {
