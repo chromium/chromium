@@ -97,6 +97,7 @@ class ActiveTaskContextProviderImpl : public ActiveTaskContextProvider,
   bool NotifyTabClosedOrNavigated(SessionID tab_session_id,
                                   std::optional<GURL> current_url,
                                   std::optional<std::string> current_title);
+  void UpdateTabPickerVisibility();
 
   // Callback for when GetContextForTask() completes.
   void OnGetContextForTask(int callback_id,

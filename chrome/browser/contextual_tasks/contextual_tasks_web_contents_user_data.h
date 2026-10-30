@@ -276,6 +276,10 @@ class ContextualTasksWebContentsUserData
 
   // Syncs the zero-state active-tab delayed attachment with panel/tab state.
   void UpdateImplicitTabContext();
+  // Injects `TAB_PICKER` (`is_active = true`) when eligible tabs exist, or
+  // sends `INJECT_INPUT` (`is_active = false`) to hide the tab picker when no
+  // eligible tabs exist.
+  void UpdateTabPickerVisibility();
   // Unblocks `url` and clears `implicit_tab_` when manually attaching a tab.
   void OnManualTabContextAdded(const GURL& url, SessionID tab_session_id);
   std::optional<tabs::TabHandle> GetAutoSuggestedTabHandle() const;
@@ -328,6 +332,7 @@ class ContextualTasksWebContentsUserData
   enum class InjectedInputType {
     kContextLibrary,
     kLensChip,
+    kTabPicker,
   };
   struct PageSearchState;
 
@@ -390,6 +395,9 @@ class ContextualTasksWebContentsUserData
   // (either because the session has tabs to show or Smart Tab Sharing is
   // active).
   bool ShouldMountContextLibrary();
+  // Returns true if any open tab in the browser window is eligible to be shown
+  // in the tab picker.
+  bool HasEligibleTabsForTabPicker() const;
 
   struct ImplicitTab {
     base::UnguessableToken token;

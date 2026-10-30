@@ -51,6 +51,7 @@
 #include "components/omnibox/common/input_state.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/util.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -309,6 +310,7 @@ struct ContextualTasksWebContentsUserData::PageSearchState
   bool is_lens_crop_mounted = false;
   std::string last_lens_crop_data_uri;
   bool context_library_is_active = false;
+  bool tab_picker_is_active = false;
   bool is_zero_state = false;
   std::vector<contextual_tasks::UrlResource> committed_url_resources;
   ContextState last_sent_context_state = ContextState::kNone;
@@ -579,6 +581,7 @@ void ContextualTasksWebContentsUserData::OnDocumentConnected(
   page_state.pending_search_messages.clear();
   page_state.is_lens_crop_mounted = false;
   page_state.context_library_is_active = false;
+  page_state.tab_picker_is_active = false;
   page_state.is_zero_state = false;
   page_state.committed_url_resources.clear();
   page_state.last_sent_context_state = ContextState::kNone;
@@ -712,6 +715,7 @@ void ContextualTasksWebContentsUserData::OnHandshakeComplete() {
   if (ShouldMountContextLibrary() && !page_state.context_library_is_active) {
     SendMountContextLibrary();
   }
+  UpdateTabPickerVisibility();
   if (auto model = GetOrCreateInputStateModel()) {
     if (model->lens_crop().has_value() && !page_state.is_lens_crop_mounted) {
       page_state.is_lens_crop_mounted = true;
@@ -753,6 +757,10 @@ void ContextualTasksWebContentsUserData::SendInjectChromeInput(
     case InjectedInputType::kLensChip:
       inject_input->set_input_type(
           lens::ClientToSearchMessage::InjectChromeInput::LENS_CHIP);
+      break;
+    case InjectedInputType::kTabPicker:
+      inject_input->set_input_type(
+          lens::ClientToSearchMessage::InjectChromeInput::TAB_PICKER);
       break;
   }
   inject_input->set_is_active(is_active);
@@ -2128,6 +2136,7 @@ void ContextualTasksWebContentsUserData::ClearInputPlateState() {
 }
 
 void ContextualTasksWebContentsUserData::UpdateImplicitTabContext() {
+  UpdateTabPickerVisibility();
   BrowserWindowInterface* browser_window = GetBrowserWindowInterface();
   auto* panel_controller =
       browser_window ? ContextualTasksPanelController::From(browser_window)
@@ -2260,6 +2269,21 @@ void ContextualTasksWebContentsUserData::UpdateImplicitTabContext() {
   }
   UpdateContextLibraryInputState();
   RefreshActiveTaskContext();
+}
+
+void ContextualTasksWebContentsUserData::UpdateTabPickerVisibility() {
+  auto* page_state =
+      PageSearchState::GetForPage(GetWebContents().GetPrimaryPage());
+  if (!page_state || !page_state->is_handshake_complete) {
+    return;
+  }
+  const bool should_show = HasEligibleTabsForTabPicker();
+  if (should_show == page_state->tab_picker_is_active) {
+    return;
+  }
+  page_state->tab_picker_is_active = should_show;
+  SendInjectChromeInput(InjectedInputType::kTabPicker,
+                        /*is_active=*/should_show);
 }
 
 void ContextualTasksWebContentsUserData::OnManualTabContextAdded(
@@ -2696,6 +2720,32 @@ const ContextualTasksWebContentsUserData::PageSearchState*
 ContextualTasksWebContentsUserData::GetPrimaryPageSearchState() const {
   return PageSearchState::GetForPage(
       const_cast<content::WebContents&>(GetWebContents()).GetPrimaryPage());
+}
+
+bool ContextualTasksWebContentsUserData::HasEligibleTabsForTabPicker() const {
+  BrowserWindowInterface* browser_window_interface =
+      GetBrowserWindowInterface();
+  if (!browser_window_interface) {
+    return false;
+  }
+  auto* tab_list = TabListInterface::From(browser_window_interface);
+  if (!tab_list) {
+    return false;
+  }
+  for (tabs::TabInterface* tab : tab_list->GetAllTabs()) {
+    if (!tab || tab->GetContents() == &GetWebContents()) {
+      continue;
+    }
+    GURL url = tab->GetURL();
+    if (url.is_empty() && tab->GetContents()) {
+      url = tab->GetContents()->GetLastCommittedURL();
+    }
+    if (IsUrlValidForContextSharing(url) && !IsAimURL(url) &&
+        !IsAimZeroStateURL(url)) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace contextual_tasks

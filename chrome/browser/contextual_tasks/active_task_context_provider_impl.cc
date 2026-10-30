@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <map>
+#include <set>
 
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
@@ -338,6 +339,7 @@ void ActiveTaskContextProviderImpl::OnTabAdded(TabListInterface& tab_list,
                                                tabs::TabInterface* tab,
                                                int index) {
   ObserveTab(tab);
+  UpdateTabPickerVisibility();
 }
 
 void ActiveTaskContextProviderImpl::OnActiveTabChanged(
@@ -371,6 +373,7 @@ void ActiveTaskContextProviderImpl::OnTabRemoved(
   }
 
   RefreshContext();
+  UpdateTabPickerVisibility();
 }
 
 void ActiveTaskContextProviderImpl::OnWebContentsReplaced(
@@ -387,6 +390,7 @@ void ActiveTaskContextProviderImpl::OnWebContentsReplaced(
   } else {
     ObserveTab(tab);
   }
+  UpdateTabPickerVisibility();
 }
 
 void ActiveTaskContextProviderImpl::OnTabListDestroyed(
@@ -438,6 +442,7 @@ void ActiveTaskContextProviderImpl::OnTabNavigated(tabs::TabInterface* tab,
   }
 
   RefreshContext();
+  UpdateTabPickerVisibility();
 }
 
 bool ActiveTaskContextProviderImpl::NotifyTabClosedOrNavigated(
@@ -511,6 +516,36 @@ bool ActiveTaskContextProviderImpl::NotifyTabClosedOrNavigated(
   notify_session_handle(session_handle_.get());
 
   return any_removed;
+}
+
+void ActiveTaskContextProviderImpl::UpdateTabPickerVisibility() {
+  std::set<content::WebContents*> notified_web_contents;
+  auto update_web_contents = [&](content::WebContents* wc) {
+    if (!wc || !notified_web_contents.insert(wc).second) {
+      return;
+    }
+    if (auto* user_data =
+            ContextualTasksWebContentsUserData::FromWebContents(wc)) {
+      user_data->UpdateTabPickerVisibility();
+    }
+  };
+
+  if (contextual_tasks_panel_controller_) {
+    for (content::WebContents* panel_wc :
+         contextual_tasks_panel_controller_->GetPanelWebContentsList()) {
+      update_web_contents(panel_wc);
+    }
+    update_web_contents(
+        contextual_tasks_panel_controller_->GetActiveWebContents());
+  }
+
+  if (auto* tab_list = TabListInterface::From(browser_window_)) {
+    for (int i = 0; i < tab_list->GetTabCount(); ++i) {
+      if (tabs::TabInterface* open_tab = tab_list->GetTab(i)) {
+        update_web_contents(open_tab->GetContents());
+      }
+    }
+  }
 }
 
 void ActiveTaskContextProviderImpl::PrimaryPageChanged(content::Page& page) {

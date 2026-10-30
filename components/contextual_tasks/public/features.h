@@ -676,7 +676,12 @@ extern bool IsContextualTasksUnboundedMenuEnabled();
 
 inline constexpr char kContextualTasksSearchCapabilitiesHeaderName[] =
     "Chrome-Search-Capabilities-Version";
-inline constexpr char kContextualTasksSearchCapabilitiesDefaultVersion[] = "1";
+// The default version for the `Chrome-Search-Capabilities-Version` HTTP header.
+// Version 1: Initial version/implementation.
+// Version 1.1: Adds `TAB_PICKER` `InjectChromeInput` support to show and hide
+//              the tab picker based on eligible open tabs.
+inline constexpr char kContextualTasksSearchCapabilitiesDefaultVersion[] =
+    "1.1";
 
 extern const base::FeatureParam<std::string>
     kContextualTasksSearchCapabilitiesVersion;
