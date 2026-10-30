@@ -204,6 +204,8 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   NSString* _aimAccessibilityLabel;
   // Whether AIM image generation is allowed.
   BOOL _aimImageGenerationAllowed;
+  // Whether attaching images to an AIM search query is allowed.
+  BOOL _aimAttachImagesAllowed;
   // Tracks whether the NTP was scrolled to the top before a size transition.
   BOOL _scrolledToTop;
   // Constraints for the feed top section promo.
@@ -258,10 +260,13 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   [_quickActionsViewController setAIMTitle:_aimTitle
                                       icon:_aimIcon
                         accessibilityLabel:_aimAccessibilityLabel];
-  if (GetAimButtonRefactorArm() ==
-      AimButtonRefactorArm::kImageGenerationQuickAction) {
+
+  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
+  if (arm == AimButtonRefactorArm::kImageGenerationQuickAction ||
+      arm == AimButtonRefactorArm::kAttachImageQuickAction) {
     [_quickActionsViewController
-        setAIMImageGenerationAllowed:_aimImageGenerationAllowed];
+        setAIMImageGenerationAllowed:_aimImageGenerationAllowed
+                 attachImagesAllowed:_aimAttachImagesAllowed];
   }
 
   // TODO(crbug.com/40799579): Remove this when bug is fixed.
@@ -940,11 +945,16 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   }
 }
 
-- (void)setAIMImageGenerationAllowed:(BOOL)allowed {
-  CHECK_EQ(GetAimButtonRefactorArm(),
-           AimButtonRefactorArm::kImageGenerationQuickAction);
-  _aimImageGenerationAllowed = allowed;
-  [_quickActionsViewController setAIMImageGenerationAllowed:allowed];
+- (void)setAIMImageGenerationAllowed:(BOOL)imageGenerationAllowed
+                 attachImagesAllowed:(BOOL)attachmentsAllowed {
+  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
+  CHECK(arm == AimButtonRefactorArm::kImageGenerationQuickAction ||
+        arm == AimButtonRefactorArm::kAttachImageQuickAction);
+  _aimImageGenerationAllowed = imageGenerationAllowed;
+  _aimAttachImagesAllowed = attachmentsAllowed;
+  [_quickActionsViewController
+      setAIMImageGenerationAllowed:imageGenerationAllowed
+               attachImagesAllowed:attachmentsAllowed];
 }
 
 - (void)setAIMTitle:(NSString*)title

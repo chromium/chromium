@@ -25,8 +25,9 @@
                   icon:(UIImage*)icon
     accessibilityLabel:(NSString*)accessibilityLabel;
 
-// Sets whether AIM image generation is allowed.
-- (void)setAIMImageGenerationAllowed:(BOOL)imageGenerationAllowed;
+// Sets whether AIM image generation and attaching images are allowed.
+- (void)setAIMImageGenerationAllowed:(BOOL)imageGenerationAllowed
+                 attachImagesAllowed:(BOOL)attachmentsAllowed;
 
 @end
 

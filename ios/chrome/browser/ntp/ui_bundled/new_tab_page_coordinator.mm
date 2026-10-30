@@ -365,8 +365,8 @@
       _contextualSearchSession;
   // Manages state for composebox inputs and limits.
   ComposeboxInputStateManager* _composeboxInputStateManager;
-  // Holds the active composebox mode.
-  ComposeboxModeHolder* _composeboxModeHolder;
+  // Shared URL loader factory for network requests.
+  scoped_refptr<network::SharedURLLoaderFactory> _sharedURLLoaderFactory;
   // Subscription for browser view visibility state changes.
   base::CallbackListSubscription _browserViewVisibilityStateChangedSubscription;
   // Whether the browser view is currently obscured by an overlay (such as the
@@ -467,38 +467,6 @@
       supervised_user::IsPrimaryAccountSubjectToParentalControls(
           _identityManager);
   [self updateFeedWithIsSupervisedUser:(capability == signin::Tribool::kTrue)];
-
-  // Create instance of composeboxInputStateManager to get
-  // remainingNumberOfImagesAllowed for compose box picker presenter if the
-  // Attach Image button is activated
-  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-  if (arm == AimButtonRefactorArm::kAttachImageQuickAction ||
-      arm == AimButtonRefactorArm::kImageGenerationQuickAction) {
-    ProfileIOS* profile = self.profile;
-    contextual_search::ContextualSearchService* service =
-        ContextualSearchServiceFactory::GetForProfile(profile);
-    if (service) {
-      auto configParams = std::make_unique<
-          contextual_search::ContextualSearchContextController::ConfigParams>();
-      _contextualSearchSession = service->CreateSession(
-          std::move(configParams),
-          contextual_search::ContextualSearchSource::kNewTabPage,
-          lens::LensOverlayInvocationSource::kNtpContextualQuery);
-    }
-
-    _composeboxModeHolder = [[ComposeboxModeHolder alloc] init];
-    _composeboxInputStateManager = [[ComposeboxInputStateManager alloc]
-         initWithWebStateList:self.browser->GetWebStateList()
-                   modeHolder:_composeboxModeHolder
-                  prefService:self.prefService
-        aimEligibilityService:_aimEligibilityService
-              identityManager:_identityManager
-           templateURLService:self.templateURLService
-                sessionHandle:_contextualSearchSession.get()
-                   entrypoint:ComposeboxEntrypoint::kNTPAttachImageButton
-                  isIncognito:profile->IsOffTheRecord()
-             urlLoaderFactory:profile->GetSharedURLLoaderFactory()];
-  }
 
   // Ensure the initial background is applied after all components have been
   // set up.
@@ -610,6 +578,7 @@
   _customizationButtonBubblePresenter = nil;
 
   _identityManager = nullptr;
+  _sharedURLLoaderFactory = nullptr;
 
   AimButtonRefactorArm arm = GetAimButtonRefactorArm();
 
@@ -619,7 +588,6 @@
     [_composeboxInputStateManager disconnect];
     _composeboxInputStateManager.delegate = nil;
     _composeboxInputStateManager = nil;
-    _composeboxModeHolder = nil;
     _contextualSearchSession.reset();
   }
 
@@ -889,15 +857,14 @@
       GoogleLogoServiceFactory::GetForProfile(profile);
   UrlLoadingBrowserAgent* URLLoadingBrowserAgent =
       UrlLoadingBrowserAgent::FromBrowser(browser);
-  scoped_refptr<network::SharedURLLoaderFactory> sharedURLLoaderFactory =
-      profile->GetSharedURLLoaderFactory();
+  _sharedURLLoaderFactory = profile->GetSharedURLLoaderFactory();
   BOOL offTheRecord = profile->IsOffTheRecord();
   _searchEngineLogoMediator =
       [[SearchEngineLogoMediator alloc] initWithWebState:webState
                                       templateURLService:templateURLService
                                              logoService:logoService
                                   URLLoadingBrowserAgent:URLLoadingBrowserAgent
-                                  sharedURLLoaderFactory:sharedURLLoaderFactory
+                                  sharedURLLoaderFactory:_sharedURLLoaderFactory
                                             offTheRecord:offTheRecord];
   id<NewTabPageComponentFactoryProtocol> componentFactory =
       self.componentFactory;
@@ -926,6 +893,46 @@
   if (IsPlusButtonInFakeboxEnabled()) {
     [self createMenuCoordinator];
   }
+
+  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
+  if (arm == AimButtonRefactorArm::kAttachImageQuickAction ||
+      arm == AimButtonRefactorArm::kImageGenerationQuickAction) {
+    [self createComposeboxInputStateManager];
+  }
+}
+
+// Create instance of composeboxInputStateManager for AIM quick actions.
+- (void)createComposeboxInputStateManager {
+  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
+  CHECK(arm == AimButtonRefactorArm::kAttachImageQuickAction ||
+        arm == AimButtonRefactorArm::kImageGenerationQuickAction);
+
+  ProfileIOS* profile = self.browser->GetProfile();
+
+  contextual_search::ContextualSearchService* service =
+      ContextualSearchServiceFactory::GetForProfile(profile);
+  if (service) {
+    auto configParams = std::make_unique<
+        contextual_search::ContextualSearchContextController::ConfigParams>();
+    _contextualSearchSession = service->CreateSession(
+        std::move(configParams),
+        contextual_search::ContextualSearchSource::kNewTabPage,
+        lens::LensOverlayInvocationSource::kNtpContextualQuery);
+  }
+
+  ComposeboxModeHolder* composeboxModeHolder =
+      [[ComposeboxModeHolder alloc] init];
+  _composeboxInputStateManager = [[ComposeboxInputStateManager alloc]
+       initWithWebStateList:self.browser->GetWebStateList()
+                 modeHolder:composeboxModeHolder
+                prefService:self.prefService
+      aimEligibilityService:_aimEligibilityService
+            identityManager:_identityManager
+         templateURLService:self.templateURLService
+              sessionHandle:_contextualSearchSession.get()
+                 entrypoint:ComposeboxEntrypoint::kOther
+                isIncognito:profile->IsOffTheRecord()
+           urlLoaderFactory:_sharedURLLoaderFactory];
 }
 
 #pragma mark - Configurators
@@ -1071,6 +1078,11 @@
     NTPMediator.imageUpdater = self.headerView;
   }
   NTPMediator.logoMediator = _searchEngineLogoMediator;
+  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
+  if (arm == AimButtonRefactorArm::kImageGenerationQuickAction ||
+      arm == AimButtonRefactorArm::kAttachImageQuickAction) {
+    NTPMediator.composeboxInputStateManager = _composeboxInputStateManager;
+  }
 
   [NTPMediator setUp];
 }

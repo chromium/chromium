@@ -36,6 +36,7 @@ class AIModeButtonServiceIOS;
 class AuthenticationService;
 class BrowserViewVisibilityNotifierBrowserAgent;
 class ChromeAccountManagerService;
+@class ComposeboxInputStateManager;
 class DiscoverFeedService;
 class DiscoverFeedVisibilityBrowserAgent;
 @protocol DiscoverFeedVisibilityObserver;
@@ -131,6 +132,9 @@ class UserUploadedImageManager;
 
 // Mediator for the search engine logo.
 @property(nonatomic, weak) SearchEngineLogoMediator* logoMediator;
+// Manager for the composebox input state.
+@property(nonatomic, strong)
+    ComposeboxInputStateManager* composeboxInputStateManager;
 
 // Indicates whether the feed header should be visible.
 - (BOOL)isFeedHeaderVisible;

@@ -143,9 +143,9 @@ UIButton* CreateQuickActionButton(UIImage* image, NSString* title) {
     return;
   }
   UIButtonConfiguration* configuration = button.configuration;
-  ConfigureButtonTitleAndIcon(configuration, icon, title);
+  ConfigureButtonTitleAndIcon(configuration, icon, [title copy]);
   button.configuration = configuration;
-  button.accessibilityLabel = accessibilityLabel;
+  button.accessibilityLabel = [accessibilityLabel copy];
 }
 
 + (UIButton*)aimImageGenerationButton {

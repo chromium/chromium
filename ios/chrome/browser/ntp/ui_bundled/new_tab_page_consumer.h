@@ -44,8 +44,9 @@
 // Whether AIM is allowed.
 - (void)setAIMAllowed:(BOOL)allowed;
 
-// Sets whether AIM image generation is allowed.
-- (void)setAIMImageGenerationAllowed:(BOOL)allowed;
+// Sets whether AIM image generation and attaching images are allowed.
+- (void)setAIMImageGenerationAllowed:(BOOL)imageGenerationAllowed
+                 attachImagesAllowed:(BOOL)attachmentsAllowed;
 
 // Sets the title, icon, and accessibility label for the AI Mode button.
 - (void)setAIMTitle:(NSString*)title
