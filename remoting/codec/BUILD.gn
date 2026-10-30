@@ -23,8 +23,7 @@ static_library("encoder") {
 
   deps = [
     ":vpx_codec",
-    "//remoting/base",
-    "//remoting/proto",
+    "//remoting/base:codec_utils",
     "//third_party/libvpx",
     "//third_party/libyuv",
     "//third_party/webrtc_overrides:webrtc_component",
@@ -57,7 +56,6 @@ static_library("vpx_codec") {
 
   deps = [
     "//base",
-    "//remoting/proto",
     "//third_party/libyuv",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
@@ -87,8 +85,7 @@ source_set("unit_tests") {
   deps = [
     ":encoder",
     "//base",
-    "//remoting/base",
-    "//remoting/proto",
+    "//remoting/base:codec_utils",
     "//testing/gtest",
     "//third_party/webrtc_overrides:webrtc_component",
     "//ui/gfx:color_space",

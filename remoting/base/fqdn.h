@@ -7,10 +7,21 @@
 
 #include <string>
 
+#include "build/build_config.h"
+
 namespace remoting {
 
 // Returns the FQDN (AKA "hostname" in net/base) of the machine.
 extern std::string GetFqdn();
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// Returns a string that can be used to construct a host config file name, e.g.
+// "host#1234567890aabbccddeeff1234567890".
+// DEPRECATED: This should only be used for the single-process host for
+// compatibility reasons. New config/setting files should not have the host hash
+// in the filename.
+std::string GetHostHash();
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace remoting
 

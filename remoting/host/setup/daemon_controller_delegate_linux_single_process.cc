@@ -27,7 +27,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "remoting/base/branding.h"
-#include "remoting/base/util.h"
+#include "remoting/base/fqdn.h"
 #include "remoting/host/host_config.h"
 #include "remoting/host/usage_stats_consent.h"
 

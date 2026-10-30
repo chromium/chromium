@@ -5,7 +5,7 @@
 #include "remoting/base/file_host_settings.h"
 
 #include "remoting/base/branding.h"
-#include "remoting/base/util.h"
+#include "remoting/base/fqdn.h"
 
 namespace remoting {
 
