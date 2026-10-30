@@ -11,6 +11,8 @@
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/barrier_closure.h"
 #include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/files/safe_base_name.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
@@ -251,6 +253,21 @@ int64_t GeneratePayloadId() {
   int64_t payload_id = 0;
   crypto::RandBytes(base::byte_span_from_ref(payload_id));
   return payload_id;
+}
+
+std::optional<base::SafeBaseName> GetSafeFileAttachmentBaseName(
+    const std::string& file_name) {
+  if (file_name.empty() || file_name.find('\0') != std::string::npos) {
+    return std::nullopt;
+  }
+
+  base::FilePath file_path(file_name);
+  if (file_path != file_path.BaseName() ||
+      file_path.value() == base::FilePath::kCurrentDirectory) {
+    return std::nullopt;
+  }
+
+  return base::SafeBaseName::Create(file_path);
 }
 
 // Wraps a call to OnTransferUpdate() to filter any updates after receiving a
@@ -2653,6 +2670,9 @@ void NearbySharingServiceImpl::ReceivePayloads(
       DownloadPrefs::FromDownloadManager(profile_->GetDownloadManager())
           ->DownloadPath();
 
+  auto aggregated_success = std::make_unique<bool>(true);
+  bool* aggregated_success_ptr = aggregated_success.get();
+
   // Register payload path for all valid file payloads.
   base::flat_map<int64_t, base::FilePath> valid_file_payloads;
   for (auto& file : share_target.file_attachments) {
@@ -2665,12 +2685,23 @@ void NearbySharingServiceImpl::ReceivePayloads(
       continue;
     }
 
-    base::FilePath file_path = download_path.Append(file.file_name());
+    std::optional<base::SafeBaseName> safe_file_name =
+        GetSafeFileAttachmentBaseName(file.file_name());
+    if (!safe_file_name) {
+      CD_LOG(WARNING, Feature::NS)
+          << __func__
+          << ": Failed to register payload path due to invalid file name for "
+             "attachment id - "
+          << file.id();
+      *aggregated_success = false;
+      OnPayloadPathsRegistered(share_target, std::move(aggregated_success),
+                               std::move(status_codes_callback));
+      return;
+    }
+
+    base::FilePath file_path = download_path.Append(*safe_file_name);
     valid_file_payloads.emplace(file.id(), std::move(file_path));
   }
-
-  auto aggregated_success = std::make_unique<bool>(true);
-  bool* aggregated_success_ptr = aggregated_success.get();
 
   if (valid_file_payloads.empty()) {
     OnPayloadPathsRegistered(share_target, std::move(aggregated_success),
@@ -3781,12 +3812,25 @@ void NearbySharingServiceImpl::OnReceivedIntroduction(
       return;
     }
 
+    std::optional<base::SafeBaseName> safe_file_name =
+        GetSafeFileAttachmentBaseName(file->name);
+    if (!safe_file_name) {
+      RecordNearbyShareError(
+          NearbyShareError::kReceivedIntroductionInvalidFrame);
+      Fail(share_target, TransferMetadata::Status::kUnsupportedAttachmentType);
+      CD_LOG(WARNING, Feature::NS)
+          << __func__
+          << ": Ignore introduction, due to invalid attachment file name";
+      return;
+    }
+
     CD_LOG(VERBOSE, Feature::NS)
         << __func__ << ": Found file attachment: id=" << file->id
         << ", type= " << file->type << ", size=" << file->size
         << ", payload_id=" << file->payload_id
         << ", mime_type=" << file->mime_type;
-    FileAttachment attachment(file->id, file->size, file->name, file->mime_type,
+    FileAttachment attachment(file->id, file->size,
+                              safe_file_name->path().value(), file->mime_type,
                               file->type);
     SetAttachmentPayloadId(attachment, file->payload_id);
     share_target.file_attachments.push_back(std::move(attachment));
