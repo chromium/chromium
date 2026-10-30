@@ -545,7 +545,26 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 
 - (web::WebState*)webState:(web::WebState*)webState
          openURLWithParams:(const web::WebState::OpenURLParams&)params {
-  return _browserWebStateDelegate->OpenURLFromWebState(webState, params);
+  switch (params.disposition) {
+    case WindowOpenDisposition::kNewForegroundTab:
+    case WindowOpenDisposition::kNewBackgroundTab:
+    case WindowOpenDisposition::kNewPopup: {
+      // `webState` is standalone and not part of any `WebStateList`, so
+      // `_browserWebStateDelegate->OpenURLFromWebState` cannot be used to open
+      // a new tab (it expects `webState` to be present in the `WebStateList` as
+      // the opener). Ask the delegate to open the URL in a new tab instead.
+      if (!params.url.SchemeIsHTTPOrHTTPS()) {
+        return nullptr;
+      }
+      [self.delegate lensResultPageOpenURLInNewTabRequested:params.url];
+      [self.delegate lensResultPageMediator:self
+                    didOpenNewTabFromSource:lens::LensOverlayNewTabSource::
+                                                kWebNavigation];
+      return nullptr;
+    }
+    default:
+      return _browserWebStateDelegate->OpenURLFromWebState(webState, params);
+  }
 }
 
 - (web::JavaScriptDialogPresenter*)javaScriptDialogPresenterForWebState:

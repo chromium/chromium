@@ -315,6 +315,35 @@ TEST_F(LensResultPageMediatorTest,
   EXPECT_TRUE(fake_delegate_.openInNewTabRequested);
 }
 
+// Tests that openURLWithParams: with kNewForegroundTab invokes
+// lensResultPageOpenURLInNewTabRequested: on the delegate and does not crash.
+TEST_F(LensResultPageMediatorTest, ShouldOpenURLInNewTabForNewForegroundTab) {
+  AttachFakeWebState();
+  id<CRWWebStateDelegate> web_state_delegate =
+      static_cast<id<CRWWebStateDelegate>>(mediator_);
+
+  EXPECT_FALSE(fake_delegate_.openInNewTabRequested);
+  web::WebState::OpenURLParams params(GURL("https://www.chromium.org"),
+                                      web::Referrer(),
+                                      WindowOpenDisposition::kNewForegroundTab,
+                                      ui::PAGE_TRANSITION_LINK, false);
+  web::WebState* new_web_state = [web_state_delegate webState:fake_web_state_
+                                            openURLWithParams:params];
+  EXPECT_EQ(new_web_state, nullptr);
+  EXPECT_TRUE(fake_delegate_.openInNewTabRequested);
+
+  // Non-HTTP/HTTPS URLs should not open in a new tab.
+  fake_delegate_.openInNewTabRequested = NO;
+  web::WebState::OpenURLParams non_http_params(
+      GURL("chrome://policy"), web::Referrer(),
+      WindowOpenDisposition::kNewForegroundTab, ui::PAGE_TRANSITION_LINK,
+      false);
+  new_web_state = [web_state_delegate webState:fake_web_state_
+                             openURLWithParams:non_http_params];
+  EXPECT_EQ(new_web_state, nullptr);
+  EXPECT_FALSE(fake_delegate_.openInNewTabRequested);
+}
+
 // Tests that any navigation that's not on main frame is allowed.
 TEST_F(LensResultPageMediatorTest, ShouldAllowAnyNavigationNotInMainFrame) {
   EXPECT_TRUE(TestShouldAllowRequest(@"https://www.chromium.com",
