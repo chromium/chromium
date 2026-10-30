@@ -941,9 +941,7 @@ bool ReadAnythingUntrustedPageHandler::IsObservingTree(
     return false;
   }
 
-  content::WebContents* contents = !!pdf_observer_
-                                       ? pdf_observer_->web_contents()
-                                       : main_observer_->web_contents();
+  content::WebContents* contents = GetWebContents();
 
   if (!contents) {
     return false;
@@ -1168,9 +1166,7 @@ void ReadAnythingUntrustedPageHandler::OnReadAloudAudioStateChange(
   }
   // Show the tab audio icon when read aloud is playing, and hide it when it
   // stops playing.
-  content::WebContents* contents = !!pdf_observer_
-                                       ? pdf_observer_->web_contents()
-                                       : main_observer_->web_contents();
+  content::WebContents* contents = GetWebContents();
   if (contents) {
     if (playing) {
       audible_closure_ = contents->MarkAudible();
@@ -1752,9 +1748,7 @@ void ReadAnythingUntrustedPageHandler::SetUpPdfObserver() {
 
 void ReadAnythingUntrustedPageHandler::CheckIfActiveAXTreeChangedToPdf() {
 #if BUILDFLAG(ENABLE_PDF)
-  content::WebContents* contents = !!pdf_observer_
-                                       ? pdf_observer_->web_contents()
-                                       : main_observer_->web_contents();
+  content::WebContents* contents = GetWebContents();
   if (!IsPdfContents(contents, !!pdf_observer_)) {
     return;
   }
@@ -1793,9 +1787,7 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
 
   is_pdf_with_frame_ = false;
 
-  content::WebContents* contents = !!pdf_observer_
-                                       ? pdf_observer_->web_contents()
-                                       : main_observer_->web_contents();
+  content::WebContents* contents = GetWebContents();
   if (!contents) {
     VLOG(1) << "Sending unknown tree because no contents. Used pdf: "
             << !!pdf_observer_;
