@@ -53,6 +53,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SmartSelection.Submission.Outcome"
+    enum="SmartSelectionSubmissionOutcome" expires_after="2027-04-14">
+  <owner>schwering@google.com</owner>
+  <owner>jkeitel@google.com</owner>
+  <summary>
+    Records the outcome of the submission stage in a Smart Selection UI session
+    (either a search bar prompt or suggestion chips). Only recorded if the
+    initial selection stage succeeded (preselected text or completed spatial
+    selection).
+  </summary>
+</histogram>
+
 <histogram name="SmartSelection.Suggestions.Latency.{Stage}" units="ms"
     expires_after="2027-04-14">
   <owner>schwering@google.com</owner>

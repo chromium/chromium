@@ -62,6 +62,14 @@ void MetricsLogger::RecordSpatialSelectionCompleted() {
                                 SelectionOutcome::kSpatialSelectionCompleted);
 }
 
+void MetricsLogger::RecordSuggestionAccepted(const Suggestion& suggestion) {
+  ++suggestion_acceptances_;
+}
+
+void MetricsLogger::RecordPromptSubmitted() {
+  prompt_submitted_ = true;
+}
+
 void MetricsLogger::RecordSessionEnd(bool cancelled_by_user) {
   if (session_end_recorded_) {
     return;
@@ -73,7 +81,23 @@ void MetricsLogger::RecordSessionEnd(bool cancelled_by_user) {
                                   cancelled_by_user
                                       ? SelectionOutcome::kCancelledByUser
                                       : SelectionOutcome::kAbandonedOrError);
+    return;
   }
+
+  SubmissionOutcome outcome;
+  if (prompt_submitted_) {
+    outcome = suggestion_acceptances_ > 0 ? SubmissionOutcome::kMultiple
+                                          : SubmissionOutcome::kPromptSubmitted;
+  } else if (suggestion_acceptances_ > 1) {
+    outcome = SubmissionOutcome::kMultiple;
+  } else if (suggestion_acceptances_ == 1) {
+    outcome = SubmissionOutcome::kSuggestionAccepted;
+  } else if (cancelled_by_user) {
+    outcome = SubmissionOutcome::kCancelledByUser;
+  } else {
+    outcome = SubmissionOutcome::kAbandonedOrError;
+  }
+  base::UmaHistogramEnumeration("SmartSelection.Submission.Outcome", outcome);
 }
 
 }  // namespace selection

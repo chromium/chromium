@@ -52,6 +52,22 @@ found in the LICENSE file.
 
 <!-- LINT.ThenChange(//chrome/browser/selection/metrics_logger.h:SelectionOutcome) -->
 
+<!-- LINT.IfChange(SmartSelectionSubmissionOutcome) -->
+
+<enum name="SmartSelectionSubmissionOutcome">
+  <int value="0" label="A prompt was submitted."/>
+  <int value="1" label="A suggestion was accepted."/>
+  <int value="2"
+      label="Multiple suggestions or a suggestion and a prompt were
+             submitted."/>
+  <int value="3" label="The user explicitly exited the mode."/>
+  <int value="4"
+      label="The mode was exited for other reasons - for example tab or
+             browser close."/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/selection/metrics_logger.h:SubmissionOutcome) -->
+
 </enums>
 
 </histogram-configuration>

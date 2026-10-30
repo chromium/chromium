@@ -9,6 +9,8 @@
 
 namespace selection {
 
+class Suggestion;
+
 // Entry point from which Smart Selection was invoked.
 //
 // These values are persisted to logs. Entries should not be renumbered and
@@ -63,6 +65,25 @@ enum class SelectionOutcome {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/smart_selection/enums.xml:SmartSelectionSelectionOutcome)
 
+// Outcome of the submission stage in a Smart Selection UI session.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SubmissionOutcome)
+enum class SubmissionOutcome {
+  kPromptSubmitted = 0,
+  kSuggestionAccepted = 1,
+  // Either multiple suggestions were accepted or a suggestion was accepted and
+  // a prompt submitted.
+  kMultiple = 2,
+  // Cancelled explicitly by the user (e.g., by pressing ESC).
+  kCancelledByUser = 3,
+  // Exited before a submission - for example tab or browser close.
+  kAbandonedOrError = 4,
+  kMaxValue = kAbandonedOrError,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/smart_selection/enums.xml:SmartSelectionSubmissionOutcome)
+
 // Logs UMA metrics for a single Smart Selection UI session.
 class MetricsLogger {
  public:
@@ -74,11 +95,15 @@ class MetricsLogger {
   ~MetricsLogger();
 
   void RecordSpatialSelectionCompleted();
+  void RecordSuggestionAccepted(const Suggestion& suggestion);
+  void RecordPromptSubmitted();
   void RecordSessionEnd(bool cancelled_by_user);
 
  private:
   const bool has_preselected_region_;
   bool spatial_selection_completed_ = false;
+  bool prompt_submitted_ = false;
+  int suggestion_acceptances_ = 0;
   bool session_end_recorded_ = false;
 };
 
