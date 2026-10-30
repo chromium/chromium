@@ -418,4 +418,10 @@ AHardwareBuffer* TestVideoImageRepresentation::GetAHardwareBuffer() const {
 }
 #endif
 
+#if BUILDFLAG(IS_APPLE)
+gfx::ScopedIOSurface TestVideoImageRepresentation::GetIOSurface() const {
+  return gfx::ScopedIOSurface();
+}
+#endif  // BUILDFLAG(IS_APPLE)
+
 }  // namespace gpu

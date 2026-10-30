@@ -160,6 +160,10 @@ class TestVideoImageRepresentation : public VideoImageRepresentation {
 #if BUILDFLAG(IS_ANDROID)
   AHardwareBuffer* GetAHardwareBuffer() const override;
 #endif
+
+#if BUILDFLAG(IS_APPLE)
+  gfx::ScopedIOSurface GetIOSurface() const override;
+#endif
 };
 
 }  // namespace gpu

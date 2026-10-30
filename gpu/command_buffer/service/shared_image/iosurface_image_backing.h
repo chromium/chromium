@@ -172,6 +172,7 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   class SkiaGraphiteDawnMetalRepresentation;
   class SkiaGaneshRepresentation;
   class OverlayRepresentation;
+  class VideoRepresentation;
 
   class DawnBufferCopyRepresentation final : public DawnBufferRepresentation {
    public:
@@ -211,6 +212,10 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
   std::unique_ptr<OverlayImageRepresentation> ProduceOverlay(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker) final;
+  std::unique_ptr<VideoImageRepresentation> ProduceVideo(
+      SharedImageManager* manager,
+      MemoryTypeTracker* tracker,
+      VideoDevice device) final;
   std::unique_ptr<DawnImageRepresentation> ProduceDawn(
       SharedImageManager* manager,
       MemoryTypeTracker* tracker,

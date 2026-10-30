@@ -220,7 +220,7 @@ bool OffscreenCanvasRenderingContext2D::InitializeBacking() {
     }
 #if BUILDFLAG(IS_MAC)
     // VideoToolbox encoding requires an image that can be reached via
-    // ProduceOverlay() and wrapped in a CVPixelBuffer, and the usage must be
+    // ProduceVideo() and wrapped in a CVPixelBuffer, and the usage must be
     // decided at allocation time. All SharedImages are IOSurface-backed on
     // macOS, so this flag only marks the image as eligible to be handed to
     // VideoToolbox rather than adding an allocation constraint.

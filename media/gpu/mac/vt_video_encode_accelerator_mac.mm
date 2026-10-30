@@ -77,8 +77,8 @@ struct SharedImageEncodeAccess
   // Destroyed in reverse declaration order so scoped_access ends first and the
   // helper-provided memory tracker outlives the representation.
   scoped_refptr<CommandBufferHelper> command_buffer_helper;
-  std::unique_ptr<gpu::OverlayImageRepresentation> representation;
-  std::unique_ptr<gpu::OverlayImageRepresentation::ScopedReadAccess>
+  std::unique_ptr<gpu::VideoImageRepresentation> representation;
+  std::unique_ptr<gpu::VideoImageRepresentation::ScopedReadAccess>
       scoped_access;
 
  private:
@@ -678,13 +678,14 @@ void CreatePixelBufferFromSharedImage(scoped_refptr<CommandBufferHelper> helper,
 
   auto access = base::MakeRefCounted<SharedImageEncodeAccess>();
   access->command_buffer_helper = helper;
-  access->representation = shared_image_manager->ProduceOverlay(
-      frame->shared_image()->mailbox(), helper->GetMemoryTypeTracker());
+  access->representation = shared_image_manager->ProduceVideo(
+      /*device=*/nullptr, frame->shared_image()->mailbox(),
+      helper->GetMemoryTypeTracker());
   if (!access->representation) {
     std::move(done_cb).Run(base::apple::ScopedCFTypeRef<CVPixelBufferRef>(),
                            nullptr,
                            {EncoderStatus::Codes::kEncoderFailedEncode,
-                            "ProduceOverlay failed for SharedImage"});
+                            "ProduceVideo failed for SharedImage"});
     return;
   }
 
@@ -1996,7 +1997,7 @@ bool VTVideoEncodeAccelerator::CanEncodeOpaqueSharedImage(
   }
   // SharedImages must have SCANOUT (e.g. WebGL, WebGPU) or
   // MACOS_VIDEO_TOOLBOX (e.g. canvas, camera capture, video decoders) usage so
-  // that ProduceOverlay succeeds on the GPU thread.
+  // that they are IOSurface-backed and ProduceVideo succeeds on the GPU thread.
   //
   // Note: For CPU memory sessions (such as I420),
   // `gpu_supported_pixel_formats_` is left empty in `Initialize()`, ensuring

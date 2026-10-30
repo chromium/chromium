@@ -920,6 +920,78 @@ TEST_F(IOSurfaceImageBackingFactoryTest, SkiaAccessFirstFails) {
   EXPECT_EQ(scoped_read_access, nullptr);
 }
 
+struct VideoUsageParam {
+  const char* name;
+  SharedImageUsageSet usage;
+};
+
+class IOSurfaceImageBackingFactoryVideoTest
+    : public IOSurfaceImageBackingFactoryTest,
+      public testing::WithParamInterface<VideoUsageParam> {};
+
+// Test that the video representation exposes the backing IOSurface for a
+// MACOS_VIDEO_TOOLBOX-only image (e.g. a 2D OffscreenCanvas handed to the
+// VideoToolbox encoder) and for a SCANOUT | MACOS_VIDEO_TOOLBOX image (e.g.
+// camera capture or video decoder output).
+TEST_P(IOSurfaceImageBackingFactoryVideoTest, ProduceVideo) {
+  const SharedImageUsageSet usage = GetParam().usage;
+  auto mailbox = Mailbox::Generate();
+  const auto format = viz::SinglePlaneFormat::kBGRA_8888;
+  const gfx::Size size(4, 4);
+  const auto color_space = gfx::ColorSpace::CreateSRGB();
+  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
+  SkAlphaType alpha_type = kOpaque_SkAlphaType;
+  const gpu::SurfaceHandle surface_handle = gpu::kNullSurfaceHandle;
+  ASSERT_TRUE(backing_factory_->CanCreateSharedImage(
+      usage, format, size, /*thread_safe=*/false, gfx::EMPTY_BUFFER,
+      GrContextType::kGL, /*pixel_data=*/{}));
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox,
+      {format, size, color_space, surface_origin, alpha_type, usage,
+       "TestLabel"},
+      surface_handle, /*is_thread_safe=*/false);
+  ASSERT_NE(backing, nullptr);
+  backing->SetCleared();
+  const gfx::ScopedIOSurface expected_io_surface =
+      backing->GetGpuMemoryBufferHandle().io_surface();
+  ASSERT_TRUE(expected_io_surface);
+
+  std::unique_ptr<SharedImageRepresentationFactoryRef> factory_ref =
+      shared_image_manager_.Register(std::move(backing), &memory_type_tracker_);
+
+  auto video_representation = shared_image_manager_.ProduceVideo(
+      /*device=*/nullptr, mailbox, &memory_type_tracker_);
+  ASSERT_NE(video_representation, nullptr);
+  EXPECT_EQ(video_representation->size(), size);
+
+  // The encoder only reads; writes are not supported.
+  EXPECT_EQ(video_representation->BeginScopedWriteAccess(), nullptr);
+
+  auto scoped_read_access = video_representation->BeginScopedReadAccess();
+  ASSERT_NE(scoped_read_access, nullptr);
+  EXPECT_EQ(scoped_read_access->GetIOSurface().get(),
+            expected_io_surface.get());
+  scoped_read_access.reset();
+
+  // A second read access after the first ended must succeed too.
+  scoped_read_access = video_representation->BeginScopedReadAccess();
+  EXPECT_NE(scoped_read_access, nullptr);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    IOSurfaceImageBackingFactoryVideoTest,
+    testing::Values(VideoUsageParam{"VideoToolbox",
+                                    {SHARED_IMAGE_USAGE_DISPLAY_READ,
+                                     SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX}},
+                    VideoUsageParam{"ScanoutVideoToolbox",
+                                    {SHARED_IMAGE_USAGE_DISPLAY_READ,
+                                     SHARED_IMAGE_USAGE_SCANOUT,
+                                     SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX}}),
+    [](const testing::TestParamInfo<VideoUsageParam>& info) {
+      return std::string(info.param.name);
+    });
+
 class MockProgressReporter : public gl::ProgressReporter {
  public:
   MockProgressReporter() = default;

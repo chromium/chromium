@@ -686,6 +686,72 @@ bool IOSurfaceImageBacking::OverlayRepresentation::IsInUseByWindowServer()
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// VideoRepresentation
+
+// Hands the IOSurface to a video consumer (VTVideoEncodeAccelerator) that
+// wraps it in a CVPixelBuffer. Read access is synchronized the same way as
+// OverlayRepresentation: VideoToolbox, like CoreAnimation, has no other way to
+// wait for pending GPU work on the IOSurface.
+class IOSurfaceImageBacking::VideoRepresentation final
+    : public VideoImageRepresentation {
+ public:
+  VideoRepresentation(SharedImageManager* manager,
+                      SharedImageBacking* backing,
+                      MemoryTypeTracker* tracker,
+                      gfx::ScopedIOSurface io_surface)
+      : VideoImageRepresentation(manager, backing, tracker),
+        io_surface_(std::move(io_surface)) {}
+  ~VideoRepresentation() override = default;
+
+ private:
+  bool BeginWriteAccess() override;
+  void EndWriteAccess() override;
+  bool BeginReadAccess() override;
+  void EndReadAccess() override;
+  gfx::ScopedIOSurface GetIOSurface() const override;
+
+  gfx::ScopedIOSurface io_surface_;
+};
+
+bool IOSurfaceImageBacking::VideoRepresentation::BeginWriteAccess() {
+  // The only video consumer on Apple platforms is the VideoToolbox encoder,
+  // which reads the IOSurface. Writes go through the GL, Skia or Dawn
+  // representations.
+  NOTIMPLEMENTED();
+  return false;
+}
+
+void IOSurfaceImageBacking::VideoRepresentation::EndWriteAccess() {
+  NOTREACHED();
+}
+
+bool IOSurfaceImageBacking::VideoRepresentation::BeginReadAccess() {
+  auto* iosurface_backing = static_cast<IOSurfaceImageBacking*>(backing());
+  AutoLock auto_lock(iosurface_backing);
+
+  if (!iosurface_backing->BeginAccess(/*readonly=*/true)) {
+    return false;
+  }
+
+  // This will transition the image to be accessed by VideoToolbox.
+  iosurface_backing->WaitForCommandsToBeScheduled();
+
+  return true;
+}
+
+void IOSurfaceImageBacking::VideoRepresentation::EndReadAccess() {
+  auto* iosurface_backing = static_cast<IOSurfaceImageBacking*>(backing());
+  AutoLock auto_lock(iosurface_backing);
+
+  iosurface_backing->EndAccess(/*readonly=*/true);
+}
+
+gfx::ScopedIOSurface IOSurfaceImageBacking::VideoRepresentation::GetIOSurface()
+    const {
+  return io_surface_;
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // DawnRepresentation
 
 class IOSurfaceImageBacking::DawnRepresentation final
@@ -1231,6 +1297,16 @@ IOSurfaceImageBacking::ProduceOverlay(SharedImageManager* manager,
                                       MemoryTypeTracker* tracker) {
   return std::make_unique<OverlayRepresentation>(manager, this, tracker,
                                                  io_surface_);
+}
+
+std::unique_ptr<VideoImageRepresentation> IOSurfaceImageBacking::ProduceVideo(
+    SharedImageManager* manager,
+    MemoryTypeTracker* tracker,
+    VideoDevice device) {
+  // `device` is a D3D concept; on Apple platforms VideoToolbox consumes the
+  // IOSurface directly, so there is no device to bind to and it is ignored.
+  return std::make_unique<VideoRepresentation>(manager, this, tracker,
+                                               io_surface_);
 }
 
 int IOSurfaceImageBacking::TrackBeginAccessToWGPUTexture(

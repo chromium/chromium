@@ -859,6 +859,11 @@ class WrappedVideoCompoundImageRepresentation
     return wrapped_->GetAHardwareBuffer();
   }
 #endif
+#if BUILDFLAG(IS_APPLE)
+  gfx::ScopedIOSurface GetIOSurface() const override {
+    return wrapped_->GetIOSurface();
+  }
+#endif
 
   void SetClearedRect(const gfx::Rect& cleared_rect) override {
     SharedImageRepresentation::SetClearedRect(cleared_rect);

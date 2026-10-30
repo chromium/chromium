@@ -1175,6 +1175,12 @@ class GPU_GLES2_EXPORT VideoImageRepresentation
       return representation()->GetAHardwareBuffer();
     }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_APPLE)
+    gfx::ScopedIOSurface GetIOSurface() const {
+      return representation()->GetIOSurface();
+    }
+#endif  // BUILDFLAG(IS_APPLE)
   };
 
   VideoImageRepresentation(SharedImageManager* manager,
@@ -1197,6 +1203,12 @@ class GPU_GLES2_EXPORT VideoImageRepresentation
 #if BUILDFLAG(IS_ANDROID)
   virtual AHardwareBuffer* GetAHardwareBuffer() const = 0;
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_APPLE)
+  // Returns the IOSurface backing the image, for consumers (e.g. the
+  // VideoToolbox encoder) that wrap it in a CVPixelBuffer.
+  virtual gfx::ScopedIOSurface GetIOSurface() const = 0;
+#endif  // BUILDFLAG(IS_APPLE)
 
   virtual bool BeginWriteAccess() = 0;
   virtual void EndWriteAccess() = 0;

@@ -211,28 +211,29 @@ class ErrorExpectingVEAClient : public BaseTestVEAClient {
   base::OnceClosure error_cb_;
 };
 
-class TestOverlayImageRepresentation : public gpu::OverlayImageRepresentation {
+class TestIOSurfaceVideoImageRepresentation
+    : public gpu::VideoImageRepresentation {
  public:
-  TestOverlayImageRepresentation(gpu::SharedImageManager* manager,
-                                 gpu::SharedImageBacking* backing,
-                                 gpu::MemoryTypeTracker* tracker,
-                                 gfx::ScopedIOSurface io_surface,
-                                 base::OnceClosure destroy_cb)
-      : gpu::OverlayImageRepresentation(manager, backing, tracker),
+  TestIOSurfaceVideoImageRepresentation(gpu::SharedImageManager* manager,
+                                        gpu::SharedImageBacking* backing,
+                                        gpu::MemoryTypeTracker* tracker,
+                                        gfx::ScopedIOSurface io_surface,
+                                        base::OnceClosure destroy_cb)
+      : gpu::VideoImageRepresentation(manager, backing, tracker),
         io_surface_(std::move(io_surface)),
         destroy_cb_(std::move(destroy_cb)) {}
 
-  ~TestOverlayImageRepresentation() override {
+  ~TestIOSurfaceVideoImageRepresentation() override {
     if (destroy_cb_) {
       std::move(destroy_cb_).Run();
     }
   }
 
  protected:
-  bool BeginReadAccess(gfx::GpuFenceHandle& acquire_fence) override {
-    return true;
-  }
-  void EndReadAccess(gfx::GpuFenceHandle release_fence) override {}
+  bool BeginWriteAccess() override { return false; }
+  void EndWriteAccess() override {}
+  bool BeginReadAccess() override { return true; }
+  void EndReadAccess() override {}
   gfx::ScopedIOSurface GetIOSurface() const override { return io_surface_; }
 
  private:
@@ -245,6 +246,7 @@ class TestIOSurfaceBacking : public gpu::SharedImageBacking {
   TestIOSurfaceBacking(const gpu::Mailbox& mailbox,
                        viz::SharedImageFormat format,
                        const gfx::Size& size,
+                       gpu::SharedImageUsageSet usage,
                        gfx::ScopedIOSurface io_surface,
                        base::OnceClosure representation_produced_cb,
                        base::OnceClosure representation_destroyed_cb)
@@ -255,7 +257,7 @@ class TestIOSurfaceBacking : public gpu::SharedImageBacking {
                                  gfx::ColorSpace::CreateSRGB(),
                                  kTopLeft_GrSurfaceOrigin,
                                  kOpaque_SkAlphaType,
-                                 gpu::SHARED_IMAGE_USAGE_SCANOUT,
+                                 usage,
                                  "TestIOSurfaceBacking"),
             format.EstimatedSizeInBytes(size),
             /*is_thread_safe=*/true),
@@ -271,13 +273,15 @@ class TestIOSurfaceBacking : public gpu::SharedImageBacking {
   void Update(gfx::GpuFenceHandle in_fence) override {}
 
  protected:
-  std::unique_ptr<gpu::OverlayImageRepresentation> ProduceOverlay(
+  std::unique_ptr<gpu::VideoImageRepresentation> ProduceVideo(
       gpu::SharedImageManager* manager,
-      gpu::MemoryTypeTracker* tracker) override {
+      gpu::MemoryTypeTracker* tracker,
+      gpu::VideoDevice device) override {
+    EXPECT_FALSE(device);
     if (representation_produced_cb_) {
       std::move(representation_produced_cb_).Run();
     }
-    return std::make_unique<TestOverlayImageRepresentation>(
+    return std::make_unique<TestIOSurfaceVideoImageRepresentation>(
         manager, this, tracker, io_surface_,
         std::move(representation_destroyed_cb_));
   }
@@ -671,8 +675,33 @@ TEST(VTVideoEncodeAcceleratorTest, EncodeOpaqueSharedImageRgbFrames) {
   base::test::TaskEnvironment task_environment;
   const gfx::Size frame_size(640, 480);
 
+  // Matches DrawingBuffer (WebGL) and WebGPUSwapBufferProvider (WebGPU)
+  // SharedImage usage flags. Notably omits
+  // SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX, verifying that SCANOUT
+  // allows encoding opaque SharedImages produced by general rendering
+  // pipelines that were not specifically tagged for VideoToolbox at
+  // allocation time.
+  const gpu::SharedImageUsageSet kScanoutUsage =
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
+      gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
+  // Matches a standalone 2D OffscreenCanvas under
+  // kWebRtcMacSharedImageEncode: MACOS_VIDEO_TOOLBOX without SCANOUT.
+  const gpu::SharedImageUsageSet kVideoToolboxUsage =
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+      gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX;
+  struct FrameCase {
+    VideoPixelFormat rgb_format;
+    gpu::SharedImageUsageSet usage;
+  };
+  const std::vector<FrameCase> frame_cases = {
+      {PIXEL_FORMAT_ARGB, kScanoutUsage},
+      {PIXEL_FORMAT_XRGB, kScanoutUsage},
+      {PIXEL_FORMAT_ARGB, kVideoToolboxUsage},
+      {PIXEL_FORMAT_XRGB, kVideoToolboxUsage},
+  };
+
   for (VideoCodecProfile profile : profiles) {
-    for (VideoPixelFormat rgb_format : {PIXEL_FORMAT_ARGB, PIXEL_FORMAT_XRGB}) {
+    for (const auto& [rgb_format, usage] : frame_cases) {
       gpu::SharedImageManager shared_image_manager;
       auto command_buffer_helper =
           base::MakeRefCounted<TestCommandBufferHelper>(
@@ -708,27 +737,18 @@ TEST(VTVideoEncodeAcceleratorTest, EncodeOpaqueSharedImageRgbFrames) {
           task_environment.GetMainThreadTaskRunner());
 
       // Create an opaque RGB SharedImage backed by an IOSurface in
-      // SharedImageManager, matching WebGPU/WebGL output.
+      // SharedImageManager, matching WebGPU/WebGL/canvas output.
       gfx::ScopedIOSurface io_surface =
           gfx::CreateIOSurface(frame_size, viz::SinglePlaneFormat::kBGRA_8888);
       ASSERT_TRUE(io_surface);
 
-      // Matches DrawingBuffer (WebGL) and WebGPUSwapBufferProvider (WebGPU)
-      // SharedImage usage flags. Notably omits
-      // SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX, verifying that SCANOUT
-      // allows encoding opaque SharedImages produced by general rendering
-      // pipelines that were not specifically tagged for VideoToolbox at
-      // allocation time.
       gpu::SharedImageMetadata metadata;
       metadata.format = viz::SinglePlaneFormat::kBGRA_8888;
       metadata.size = frame_size;
       metadata.color_space = gfx::ColorSpace::CreateSRGB();
       metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
       metadata.alpha_type = kOpaque_SkAlphaType;
-      metadata.usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                       gpu::SHARED_IMAGE_USAGE_SCANOUT |
-                       gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                       gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
+      metadata.usage = usage;
       auto shared_image = gpu::ClientSharedImage::CreateForTesting(metadata);
 
       bool representation_produced = false;
@@ -736,7 +756,7 @@ TEST(VTVideoEncodeAcceleratorTest, EncodeOpaqueSharedImageRgbFrames) {
       gpu::MemoryTypeTracker tracker(nullptr);
       auto backing = std::make_unique<TestIOSurfaceBacking>(
           shared_image->mailbox(), viz::SinglePlaneFormat::kBGRA_8888,
-          frame_size, std::move(io_surface),
+          frame_size, usage, std::move(io_surface),
           base::BindLambdaForTesting(
               [&representation_produced] { representation_produced = true; }),
           destroy_loop.QuitClosure());
