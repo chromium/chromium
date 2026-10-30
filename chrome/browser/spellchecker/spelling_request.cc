@@ -49,8 +49,8 @@ SpellingRequest::SpellingRequest(PlatformSpellChecker* platform_spell_checker,
       text_(text),
       callback_(std::move(callback)),
       destruction_callback_(std::move(destruction_callback)) {
-  DCHECK(!text_.empty());
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(!text_.empty(), base::NotFatalUntil::M163);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   completion_barrier_ =
       BarrierClosure(2, base::BindOnce(&SpellingRequest::OnCheckCompleted,
@@ -123,7 +123,7 @@ void SpellingRequest::RequestLocalCheck(
 }
 
 void SpellingRequest::OnCheckCompleted() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   std::vector<SpellCheckResult>* check_results = &local_results_;
   if (remote_success_) {
@@ -144,7 +144,7 @@ void SpellingRequest::OnRemoteCheckCompleted(
     bool success,
     const std::u16string& text,
     const std::vector<SpellCheckResult>& results) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   remote_success_ = success;
   remote_results_ = results;
 
@@ -212,7 +212,7 @@ void SpellingRequest::OnLocalCheckCompletedOnAnyThread(
 
 void SpellingRequest::OnLocalCheckCompleted(
     const std::vector<SpellCheckResult>& results) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   local_results_ = results;
   completion_barrier_.Run();
 }

@@ -164,8 +164,9 @@ bool UiElement::IsVisible() const {
   // Therefore, support reporting visibility even if an element sits in an
   // invisible portion of the tree.  We can infer that if the scene computed
   // opacities, but this element did not, it must be invisible.
-  DCHECK(update_phase_ >= kUpdatedComputedOpacity ||
-         FrameLifecycle::phase() >= kUpdatedComputedOpacity);
+  CHECK(update_phase_ >= kUpdatedComputedOpacity ||
+            FrameLifecycle::phase() >= kUpdatedComputedOpacity,
+        base::NotFatalUntil::M163);
   // TODO(crbug.com/41382805): we shouldn't need to check opacity() here.
   return update_phase_ >= kUpdatedComputedOpacity && opacity() > 0.0f &&
          computed_opacity() > 0.0f;
@@ -176,7 +177,7 @@ bool UiElement::IsOrWillBeLocallyVisible() const {
 }
 
 gfx::SizeF UiElement::size() const {
-  DCHECK_LE(kUpdatedSize, update_phase_);
+  CHECK_LE(kUpdatedSize, update_phase_, base::NotFatalUntil::M163);
   return size_;
 }
 
@@ -310,7 +311,8 @@ float UiElement::computed_opacity() const {
 }
 
 const gfx::Transform& UiElement::world_space_transform() const {
-  DCHECK_LE(kUpdatedWorldSpaceTransform, update_phase_);
+  CHECK_LE(kUpdatedWorldSpaceTransform, update_phase_,
+           base::NotFatalUntil::M163);
   return world_space_transform_;
 }
 
@@ -354,7 +356,7 @@ void UiElement::DumpHierarchy(std::vector<size_t> counts,
        ancestor = ancestor->parent()) {
     ancestors.push_back(ancestor);
   }
-  DCHECK_EQ(counts.size(), ancestors.size());
+  CHECK_EQ(counts.size(), ancestors.size(), base::NotFatalUntil::M163);
 
   *os << kBlue;
   for (size_t i = 0; i < counts.size(); ++i) {
@@ -443,13 +445,13 @@ std::unique_ptr<UiElement> UiElement::ReplaceChild(
     std::unique_ptr<UiElement> to_add) {
   for (UiElement* current = this; current; current = current->parent())
     current->set_descendants_updated(true);
-  DCHECK_EQ(this, to_remove->parent_);
+  CHECK_EQ(this, to_remove->parent_, base::NotFatalUntil::M163);
   to_remove->parent_ = nullptr;
   size_t old_size = children_.size();
 
   auto it =
       std::ranges::find(children_, to_remove, &std::unique_ptr<UiElement>::get);
-  DCHECK(it != std::end(children_));
+  CHECK(it != std::end(children_), base::NotFatalUntil::M163);
 
   std::unique_ptr<UiElement> removed(it->release());
   if (to_add) {
@@ -457,7 +459,7 @@ std::unique_ptr<UiElement> UiElement::ReplaceChild(
     *it = std::move(to_add);
   } else {
     children_.erase(it);
-    DCHECK_EQ(old_size - 1, children_.size());
+    CHECK_EQ(old_size - 1, children_.size(), base::NotFatalUntil::M163);
   }
   return removed;
 }
@@ -555,10 +557,10 @@ bool UiElement::SizeAndLayOut() {
     if (bounds.size() != GetTargetSize())
       SetSize(bounds.width(), bounds.height());
   } else {
-    DCHECK_EQ(0.0f, right_padding_);
-    DCHECK_EQ(0.0f, left_padding_);
-    DCHECK_EQ(0.0f, top_padding_);
-    DCHECK_EQ(0.0f, bottom_padding_);
+    CHECK_EQ(0.0f, right_padding_, base::NotFatalUntil::M163);
+    CHECK_EQ(0.0f, left_padding_, base::NotFatalUntil::M163);
+    CHECK_EQ(0.0f, top_padding_, base::NotFatalUntil::M163);
+    CHECK_EQ(0.0f, bottom_padding_, base::NotFatalUntil::M163);
   }
   set_update_phase(kUpdatedSize);
 
@@ -635,7 +637,7 @@ void UiElement::LayOutContributingChildren() {
 }
 
 void UiElement::LayOutNonContributingChildren() {
-  DCHECK_LE(kUpdatedSize, update_phase_);
+  CHECK_LE(kUpdatedSize, update_phase_, base::NotFatalUntil::M163);
   for (auto& child : children_) {
     if (!child->IsVisible() || child->contributes_to_parent_bounds())
       continue;

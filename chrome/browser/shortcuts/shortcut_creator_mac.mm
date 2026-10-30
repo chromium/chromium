@@ -94,7 +94,7 @@ void CreateShortcutOnUserDesktop(ShortcutMetadata shortcut_metadata,
   NSImage* icon_image = [[NSImage alloc] init];
   for (const gfx::Image& image : shortcut_metadata.shortcut_images) {
     NSArray<NSImageRep*>* image_reps = image.AsNSImage().representations;
-    DCHECK_GE(image_reps.count, 1u);
+    CHECK_GE(image_reps.count, 1u, base::NotFatalUntil::M163);
     for (NSImageRep* rep in image_reps) {
       [icon_image addRepresentation:rep];
     }

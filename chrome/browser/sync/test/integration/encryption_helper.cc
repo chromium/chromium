@@ -147,7 +147,7 @@ ServerNigoriKeyNameChecker::ServerNigoriKeyNameChecker(
 bool ServerNigoriKeyNameChecker::IsExitConditionSatisfied(std::ostream* os) {
   std::vector<sync_pb::SyncEntity> nigori_entities =
       fake_server()->GetPermanentSyncEntitiesByDataType(syncer::NIGORI);
-  DCHECK_EQ(nigori_entities.size(), 1U);
+  CHECK_EQ(nigori_entities.size(), 1U, base::NotFatalUntil::M163);
 
   const std::string given_key_name =
       nigori_entities[0].specifics().nigori().encryption_keybag().key_name();

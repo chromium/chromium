@@ -84,7 +84,7 @@ void GraphicsDelegateAndroid::Initialize(base::OnceClosure on_initialized) {
 
 void GraphicsDelegateAndroid::OnMailboxBridgeReady(
     base::OnceClosure on_initialized) {
-  DCHECK(mailbox_bridge_->IsConnected());
+  CHECK(mailbox_bridge_->IsConnected(), base::NotFatalUntil::M163);
   std::move(on_initialized).Run();
 }
 

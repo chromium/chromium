@@ -34,12 +34,12 @@ void UiTexture::OnInitialized() {
 }
 
 SkColor UiTexture::foreground_color() const {
-  DCHECK(foreground_color_);
+  CHECK(foreground_color_, base::NotFatalUntil::M163);
   return foreground_color_.value();
 }
 
 SkColor UiTexture::background_color() const {
-  DCHECK(background_color_);
+  CHECK(background_color_, base::NotFatalUntil::M163);
   return background_color_.value();
 }
 

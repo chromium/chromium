@@ -21,7 +21,7 @@ std::optional<base::TimeDelta> g_wait_timeout = kDefaultWaitTimeout;
 SyncStartupTracker::SyncStartupTracker(syncer::SyncService* sync_service,
                                        SyncStartupStateChangedCallback callback)
     : sync_startup_status_changed_callback_(std::move(callback)) {
-  DCHECK(sync_service);
+  CHECK(sync_service, base::NotFatalUntil::M163);
   sync_service_observation_.Observe(sync_service);
   if (g_wait_timeout.has_value()) {
     timeout_waiter_.Start(FROM_HERE, g_wait_timeout.value(),
@@ -62,7 +62,7 @@ void SyncStartupTracker::CheckServiceState() {
   timeout_waiter_.Stop();
   sync_service_observation_.Reset();
 
-  DCHECK(sync_startup_status_changed_callback_);
+  CHECK(sync_startup_status_changed_callback_, base::NotFatalUntil::M163);
   std::move(sync_startup_status_changed_callback_).Run(state);
 }
 
@@ -75,7 +75,7 @@ SyncStartupTracker::GetServiceStartupState(syncer::SyncService* sync_service) {
   }
 
   // Unrecoverable errors return false for CanSyncFeatureStart(), handled above.
-  DCHECK(!sync_service->HasUnrecoverableError());
+  CHECK(!sync_service->HasUnrecoverableError(), base::NotFatalUntil::M163);
 
   switch (sync_service->GetTransportState()) {
     case syncer::SyncService::TransportState::DISABLED:
@@ -91,7 +91,7 @@ SyncStartupTracker::GetServiceStartupState(syncer::SyncService* sync_service) {
     case syncer::SyncService::TransportState::PENDING_DESIRED_CONFIGURATION:
     case syncer::SyncService::TransportState::CONFIGURING:
     case syncer::SyncService::TransportState::ACTIVE:
-      DCHECK(sync_service->IsEngineInitialized());
+      CHECK(sync_service->IsEngineInitialized(), base::NotFatalUntil::M163);
       return ServiceStartupState::kComplete;
   }
 

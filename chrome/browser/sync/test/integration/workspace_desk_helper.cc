@@ -18,7 +18,7 @@ namespace workspace_desk_helper {
 DeskUuidChecker::DeskUuidChecker(desks_storage::DeskSyncService* service,
                                  const base::Uuid& uuid)
     : uuid_(uuid), service_(service) {
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M163);
   service->GetDeskModel()->AddObserver(this);
 }
 
@@ -59,7 +59,7 @@ DeskUuidDeletedChecker::DeskUuidDeletedChecker(
     desks_storage::DeskSyncService* service,
     const base::Uuid& uuid)
     : uuid_(uuid), service_(service) {
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M163);
   service->GetDeskModel()->AddObserver(this);
 }
 
@@ -99,7 +99,7 @@ void DeskUuidDeletedChecker::EntriesRemovedRemotely(
 DeskModelReadyChecker::DeskModelReadyChecker(
     desks_storage::DeskSyncService* service)
     : service_(service) {
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M163);
   service->GetDeskModel()->AddObserver(this);
 }
 

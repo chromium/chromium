@@ -98,7 +98,7 @@ bool CrossDevicePrefTrackerFactory::ServiceIsNULLWhileTesting() const {
 #if BUILDFLAG(IS_ANDROID)
 static base::android::ScopedJavaLocalRef<jobject>
 JNI_CrossDevicePrefTrackerFactory_GetForProfile(JNIEnv* env, Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M163);
 
   sync_preferences::CrossDevicePrefTracker* pref_tracker =
       CrossDevicePrefTrackerFactory::GetForProfile(profile);

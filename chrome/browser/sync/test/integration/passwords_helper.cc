@@ -67,7 +67,7 @@ class PasswordStoreConsumerHelper
   }
 
   std::vector<std::unique_ptr<PasswordForm>> WaitForResult() {
-    DCHECK(!run_loop_.running());
+    CHECK(!run_loop_.running(), base::NotFatalUntil::M163);
     run_loop_.Run();
     std::vector<std::unique_ptr<PasswordForm>> unique_results;
     unique_results.reserve(result_.size());
@@ -105,7 +105,7 @@ sync_pb::EntitySpecifics EncryptPasswordSpecifics(
   bool result = cryptographer->Encrypt(
       password_data,
       encrypted_specifics.mutable_password()->mutable_encrypted());
-  DCHECK(result);
+  CHECK(result, base::NotFatalUntil::M163);
   return encrypted_specifics;
 }
 
@@ -237,7 +237,7 @@ void InjectEncryptedServerPassword(
     const std::string& encryption_passphrase,
     const syncer::KeyDerivationParams& key_derivation_params,
     fake_server::FakeServer* fake_server) {
-  DCHECK(fake_server);
+  CHECK(fake_server, base::NotFatalUntil::M163);
   const sync_pb::EntitySpecifics encrypted_specifics = EncryptPasswordSpecifics(
       password_data, encryption_passphrase, key_derivation_params);
   fake_server->InjectEntity(

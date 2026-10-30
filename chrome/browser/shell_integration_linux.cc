@@ -421,7 +421,7 @@ std::string GetPerProfileDesktopId(const base::FilePath& profile_path) {
 
 std::string GetInstalledPerProfileDesktopId(
     const base::FilePath& profile_path) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   if (!base::FeatureList::IsEnabled(features::kLinuxPerProfileAppId) ||
       !ProfilesWithInstalledDesktopEntry().contains(profile_path)) {
     return std::string();
@@ -431,7 +431,7 @@ std::string GetInstalledPerProfileDesktopId(
 
 void SetPerProfileDesktopEntryInstalled(const base::FilePath& profile_path,
                                         bool installed) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   const bool changed =
       installed
           ? ProfilesWithInstalledDesktopEntry().insert(profile_path).second
@@ -443,13 +443,13 @@ void SetPerProfileDesktopEntryInstalled(const base::FilePath& profile_path,
 
 base::CallbackListSubscription RegisterPerProfileDesktopEntryChangedCallback(
     base::RepeatingCallback<void(const base::FilePath&)> callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   return PerProfileDesktopEntryChangedCallbacks().Add(std::move(callback));
 }
 
 void DetectInstalledPerProfileDesktopEntries(
     const std::vector<base::FilePath>& profile_paths) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   if (!base::FeatureList::IsEnabled(features::kLinuxPerProfileAppId)) {
     return;
   }

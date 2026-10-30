@@ -58,17 +58,17 @@ class CameraIndicationObserver : public content::BrowserXRRuntime::Observer {
              << num_runtimes_with_camera_in_use_ << ", ui_=" << ui_.get();
     // If `in_use` is true, we need to have a non-null `web_contents` to be able
     // to register the media stream:
-    DCHECK(!in_use || web_contents);
+    CHECK(!in_use || web_contents, base::NotFatalUntil::M163);
 
     if (in_use) {
       num_runtimes_with_camera_in_use_++;
     } else {
-      DCHECK_GT(num_runtimes_with_camera_in_use_, 0u);
+      CHECK_GT(num_runtimes_with_camera_in_use_, 0u, base::NotFatalUntil::M163);
       num_runtimes_with_camera_in_use_--;
     }
 
     if (num_runtimes_with_camera_in_use_ && !ui_) {
-      DCHECK(web_contents);
+      CHECK(web_contents, base::NotFatalUntil::M163);
 
       blink::mojom::StreamDevices devices;
       devices.video_device = blink::MediaStreamDevice(
@@ -78,7 +78,7 @@ class CameraIndicationObserver : public content::BrowserXRRuntime::Observer {
       ui_ = MediaCaptureDevicesDispatcher::GetInstance()
                 ->GetMediaStreamCaptureIndicator()
                 ->RegisterMediaStream(web_contents, devices);
-      DCHECK(ui_);
+      CHECK(ui_, base::NotFatalUntil::M163);
     }
 
     if (num_runtimes_with_camera_in_use_) {

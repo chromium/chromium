@@ -44,7 +44,7 @@ TexturedElement::~TexturedElement() = default;
 
 void TexturedElement::Initialize() {
   TRACE_EVENT0("gpu", "TexturedElement::Initialize");
-  DCHECK(GetTexture());
+  CHECK(GetTexture(), base::NotFatalUntil::M163);
   GetTexture()->OnInitialized();
   initialized_ = true;
 }
@@ -55,7 +55,7 @@ bool TexturedElement::PrepareToDraw() {
 
   texture_size_ = MeasureTextureSize();
   if (TextureDependsOnMeasurement())
-    DCHECK(GetTexture()->measured());
+    CHECK(GetTexture()->measured(), base::NotFatalUntil::M163);
 
   return true;
 }

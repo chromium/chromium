@@ -143,7 +143,7 @@ class FaviconChangeObserver : public bookmarks::BookmarkModelObserver {
   ~FaviconChangeObserver() override { model_->RemoveObserver(this); }
 
   void WaitUntilFaviconChangedToIconURL() {
-    DCHECK(!run_loop_.running());
+    CHECK(!run_loop_.running(), base::NotFatalUntil::M163);
     run_loop_.Run();
   }
 
@@ -329,8 +329,8 @@ bool FaviconsMatch(BookmarkModel* model_a,
                    BookmarkModel* model_b,
                    const BookmarkNode* node_a,
                    const BookmarkNode* node_b) {
-  DCHECK(!node_a->is_folder());
-  DCHECK(!node_b->is_folder());
+  CHECK(!node_a->is_folder(), base::NotFatalUntil::M163);
+  CHECK(!node_b->is_folder(), base::NotFatalUntil::M163);
 
   std::optional<FaviconData> favicon_data_a = GetFaviconData(model_a, node_a);
   std::optional<FaviconData> favicon_data_b = GetFaviconData(model_b, node_b);
@@ -1021,7 +1021,7 @@ BookmarkFaviconLoadedChecker::BookmarkFaviconLoadedChecker(int profile_index,
                                                            const GURL& page_url)
     : SingleBookmarkModelStatusChangeChecker(profile_index),
       bookmark_node_(GetUniqueNodeByURL(profile_index, page_url)) {
-  DCHECK_NE(nullptr, bookmark_node_);
+  CHECK_NE(nullptr, bookmark_node_, base::NotFatalUntil::M163);
 }
 
 bool BookmarkFaviconLoadedChecker::IsExitConditionSatisfied(std::ostream* os) {
@@ -1225,11 +1225,12 @@ bool BookmarkModelMatchesFakeServerChecker::CheckPermanentParentNode(
     std::ostream* os) const {
   // Parent node must be a permanent node.
   const BookmarkNode* parent_node = node->parent();
-  DCHECK(parent_node->is_permanent_node());
+  CHECK(parent_node->is_permanent_node(), base::NotFatalUntil::M163);
 
   // Matching server entity must exist.
-  DCHECK_EQ(node->uuid().AsLowercaseString(),
-            server_entity.specifics().bookmark().guid());
+  CHECK_EQ(node->uuid().AsLowercaseString(),
+           server_entity.specifics().bookmark().guid(),
+           base::NotFatalUntil::M163);
 
   const std::map<std::string, sync_pb::SyncEntity>
       permanent_nodes_by_server_id =
@@ -1258,7 +1259,8 @@ bool BookmarkModelMatchesFakeServerChecker::CheckParentNode(
     const std::map<base::Uuid, sync_pb::SyncEntity>& server_bookmarks_by_uuid,
     std::ostream* os) const {
   // Only one matching server entity must exist.
-  DCHECK_EQ(1u, server_bookmarks_by_uuid.count(node->uuid()));
+  CHECK_EQ(1u, server_bookmarks_by_uuid.count(node->uuid()),
+           base::NotFatalUntil::M163);
   auto iter = server_bookmarks_by_uuid.find(node->uuid());
   const sync_pb::SyncEntity& server_entity = iter->second;
 
@@ -1294,7 +1296,8 @@ BookmarkModelMatchesFakeServerChecker::
       fake_server_->GetPermanentSyncEntitiesByDataType(syncer::BOOKMARKS);
   std::map<std::string, sync_pb::SyncEntity> permanent_nodes_by_server_id;
   for (const sync_pb::SyncEntity& entity : server_permanent_bookmarks) {
-    DCHECK(!entity.server_defined_unique_tag().empty());
+    CHECK(!entity.server_defined_unique_tag().empty(),
+          base::NotFatalUntil::M163);
     permanent_nodes_by_server_id[entity.id_string()] = entity;
   }
   return permanent_nodes_by_server_id;

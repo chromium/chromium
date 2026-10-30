@@ -109,7 +109,8 @@ void RemoveKeyDontBlockForSync(int profile, const AutocompleteKey& key) {
 void GetAllAutocompleteEntriesOnDBSequence(
     AutofillWebDataService* wds,
     std::vector<AutocompleteEntry>* entries) {
-  DCHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M163);
   autofill::AutocompleteTable::FromWebDatabase(wds->GetDatabase())
       ->GetAllAutocompleteEntries(entries);
 }

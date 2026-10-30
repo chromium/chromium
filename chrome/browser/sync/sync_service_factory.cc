@@ -645,7 +645,7 @@ bool SyncServiceFactory::HasSyncService(Profile* profile) {
 
 // static
 bool SyncServiceFactory::IsSyncAllowed(Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M163);
 
   syncer::SyncService* sync_service = GetForProfile(profile);
   return sync_service &&
@@ -679,7 +679,7 @@ SyncServiceFactory::GetDefaultFactory(
 #if BUILDFLAG(IS_ANDROID)
 static base::android::ScopedJavaLocalRef<jobject>
 JNI_SyncServiceFactory_GetForProfile(JNIEnv* env, Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M163);
 
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);

@@ -25,7 +25,7 @@ const char kSigninCookieName[] = "SAPISID";
 }  // namespace
 
 void AddSigninCookie(Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M163);
   std::unique_ptr<net::CanonicalCookie> cookie =
       net::CanonicalCookie::CreateUnsafeCookieForTesting(
           kSigninCookieName, std::string(), ".google.com", "/",
@@ -39,7 +39,7 @@ void AddSigninCookie(Profile* profile) {
   network::mojom::CookieManager* cookie_manager =
       profile->GetDefaultStoragePartition()
           ->GetCookieManagerForBrowserProcess();
-  DCHECK(cookie_manager);
+  CHECK(cookie_manager, base::NotFatalUntil::M163);
 
   base::RunLoop run_loop;
   cookie_manager->SetCanonicalCookie(
@@ -51,11 +51,11 @@ void AddSigninCookie(Profile* profile) {
 }
 
 void DeleteSigninCookies(Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M163);
   network::mojom::CookieManager* cookie_manager =
       profile->GetDefaultStoragePartition()
           ->GetCookieManagerForBrowserProcess();
-  DCHECK(cookie_manager);
+  CHECK(cookie_manager, base::NotFatalUntil::M163);
 
   base::RunLoop run_loop;
   network::mojom::CookieDeletionFilterPtr filter =

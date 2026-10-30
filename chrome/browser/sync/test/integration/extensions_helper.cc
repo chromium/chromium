@@ -121,7 +121,7 @@ extensions::ExtensionId GetExtensionId(int index) {
 
 ExtensionsMatchChecker::ExtensionsMatchChecker()
     : profiles_(test()->GetAllProfiles()) {
-  DCHECK_GE(profiles_.size(), 2U);
+  CHECK_GE(profiles_.size(), 2U, base::NotFatalUntil::M163);
   for (Profile* profile : profiles_) {
     SyncExtensionHelper::GetInstance()->InstallExtensionsPendingForSync(
         profile);

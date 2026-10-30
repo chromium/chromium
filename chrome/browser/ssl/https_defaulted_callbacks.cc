@@ -16,7 +16,8 @@
 
 bool ShouldIgnoreSslInterstitialBecauseNavigationDefaultedToHttps(
     content::NavigationHandle* handle) {
-  DCHECK_EQ(url::kHttpsScheme, handle->GetURL().GetScheme());
+  CHECK_EQ(url::kHttpsScheme, handle->GetURL().GetScheme(),
+           base::NotFatalUntil::M163);
 
   // Check typed navigation upgrade status.
   if (base::FeatureList::IsEnabled(omnibox::kDefaultTypedNavigationsToHttps) &&

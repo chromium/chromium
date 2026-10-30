@@ -21,15 +21,15 @@ SSLClientAuthObserver::SSLClientAuthObserver(
     : browser_context_(browser_context),
       cert_request_info_(cert_request_info),
       delegate_(std::move(delegate)) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M163);
 }
 
 SSLClientAuthObserver::~SSLClientAuthObserver() {
   // The caller is required to explicitly stop observing, but call
   // StopObserving() anyway to avoid a dangling pointer. (StopObserving() is
   // idempotent, so it may be called multiple times.)
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK_EQ(0u, GetActiveObservers().count(this));
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
+  CHECK_EQ(0u, GetActiveObservers().count(this), base::NotFatalUntil::M163);
   StopObserving();
 }
 
@@ -70,7 +70,7 @@ void SSLClientAuthObserver::CertificateSelectedWithOtherObserver(
     net::X509Certificate* certificate,
     net::SSLPrivateKey* private_key) {
   DVLOG(1) << "SSLClientAuthObserver::Observe " << this;
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
 
   if (browser_context != browser_context_)
     return;
@@ -88,12 +88,12 @@ void SSLClientAuthObserver::CertificateSelectedWithOtherObserver(
 }
 
 void SSLClientAuthObserver::StartObserving() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   GetActiveObservers().insert(this);
 }
 
 void SSLClientAuthObserver::StopObserving() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   GetActiveObservers().erase(this);
 }
 

@@ -53,7 +53,7 @@ void OpenTabForSyncTrustedVaultUserAction(
     BrowserWindowInterface* browser,
     const GURL& url,
     std::optional<trusted_vault::TrustedVaultUserActionTriggerForUMA> trigger) {
-  DCHECK(browser);
+  CHECK(browser, base::NotFatalUntil::M163);
 
   NavigateParams params(GetSingletonTabNavigateParams(browser, url));
   // Allow the window to close itself.

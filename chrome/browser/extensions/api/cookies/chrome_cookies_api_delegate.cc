@@ -24,13 +24,13 @@ ChromeCookiesApiDelegate::GetCookieStoreContexts(
     bool include_incognito) {
   Profile* original_profile =
       Profile::FromBrowserContext(&context)->GetOriginalProfile();
-  DCHECK(original_profile);
+  CHECK(original_profile, base::NotFatalUntil::M163);
   Profile* incognito_profile = nullptr;
   if (include_incognito && original_profile->HasPrimaryOTRProfile()) {
     incognito_profile =
         original_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   }
-  DCHECK(original_profile != incognito_profile);
+  CHECK(original_profile != incognito_profile, base::NotFatalUntil::M163);
 
   // Iterate through all browser instances, and for each browser, add its tab
   // IDs to either the regular or incognito tab ID list depending whether the

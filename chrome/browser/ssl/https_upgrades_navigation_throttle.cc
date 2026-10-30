@@ -51,7 +51,7 @@ void HttpsUpgradesNavigationThrottle::MaybeCreateAndAdd(
     content::NavigationThrottleRegistry& registry,
     std::unique_ptr<SecurityBlockingPageFactory> blocking_page_factory,
     Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   // HTTPS-First Mode is only relevant for primary main-frame HTTP(S)
   // navigations.

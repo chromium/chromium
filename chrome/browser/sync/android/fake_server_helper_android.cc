@@ -124,7 +124,8 @@ tab_groups::SavedTabGroup CreateSavedGroup(
 }
 
 syncer::SyncServiceImpl* GetSyncServiceImpl() {
-  DCHECK(g_browser_process && g_browser_process->profile_manager());
+  CHECK(g_browser_process && g_browser_process->profile_manager(),
+        base::NotFatalUntil::M163);
   return SyncServiceFactory::GetAsSyncServiceImplForProfileForTesting(
       ProfileManager::GetLastUsedProfile());
 }

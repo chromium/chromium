@@ -32,7 +32,7 @@ void SpellCheckMockPanelHost::BindReceiver(
 
 // spellcheck::mojom::SpellCheckPanelHost:
 void SpellCheckMockPanelHost::ShowSpellingPanel(bool show) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   show_spelling_panel_called_ = true;
   spelling_panel_visible_ = show;
@@ -42,6 +42,6 @@ void SpellCheckMockPanelHost::ShowSpellingPanel(bool show) {
 
 void SpellCheckMockPanelHost::UpdateSpellingPanelWithMisspelledWord(
     const std::u16string& word) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 }
 }  // namespace spellcheck

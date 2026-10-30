@@ -2250,7 +2250,8 @@ ChromeSyncablePrefsDatabase::GetSyncablePrefMetadata(
     std::string_view pref_name) const {
   const auto it = kChromeSyncablePrefsAllowlist.find(pref_name);
   if (it != kChromeSyncablePrefsAllowlist.end()) {
-    DCHECK(!common_syncable_prefs_database_.GetSyncablePrefMetadata(pref_name));
+    CHECK(!common_syncable_prefs_database_.GetSyncablePrefMetadata(pref_name),
+          base::NotFatalUntil::M163);
     return &it->second;
   }
   // Check in `common_syncable_prefs_database_`.

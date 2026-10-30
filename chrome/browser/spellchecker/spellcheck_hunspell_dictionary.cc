@@ -143,7 +143,7 @@ SpellcheckHunspellDictionary::~SpellcheckHunspellDictionary() {
 }
 
 void SpellcheckHunspellDictionary::Load() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
 
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   if (spellcheck::UseBrowserSpellChecker() &&
@@ -164,7 +164,7 @@ void SpellcheckHunspellDictionary::Load() {
 
 void SpellcheckHunspellDictionary::RetryDownloadDictionary(
     content::BrowserContext* browser_context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   if (dictionary_file_.file.IsValid()) {
     NOTREACHED();
   }
@@ -204,12 +204,12 @@ bool SpellcheckHunspellDictionary::IsUsingPlatformChecker() const {
 }
 
 void SpellcheckHunspellDictionary::AddObserver(Observer* observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   observers_.AddObserver(observer);
 }
 
 void SpellcheckHunspellDictionary::RemoveObserver(Observer* observer) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   observers_.RemoveObserver(observer);
 }
 
@@ -223,7 +223,7 @@ bool SpellcheckHunspellDictionary::IsDownloadFailure() {
 
 void SpellcheckHunspellDictionary::OnSimpleLoaderComplete(
     std::optional<std::string> data) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
 
   bool is_success = simple_loader_->NetError() == net::OK;
   int response_code = -1;
@@ -275,7 +275,7 @@ GURL SpellcheckHunspellDictionary::GetDictionaryURL() {
   }
 
   std::string bdict_file = dictionary_file_.path.BaseName().MaybeAsASCII();
-  DCHECK(!bdict_file.empty());
+  CHECK(!bdict_file.empty(), base::NotFatalUntil::M163);
 
   static const char kDownloadServerUrl[] =
       "https://redirector.gvt1.com/edgedl/chrome/dict/";
@@ -285,8 +285,8 @@ GURL SpellcheckHunspellDictionary::GetDictionaryURL() {
 }
 
 void SpellcheckHunspellDictionary::DownloadDictionary(GURL url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(browser_context_);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
+  CHECK(browser_context_, base::NotFatalUntil::M163);
 
   download_status_ = DOWNLOAD_IN_PROGRESS;
   for (Observer& observer : observers_)
@@ -409,7 +409,7 @@ SpellcheckHunspellDictionary::InitializeDictionaryLocation(
 
 void SpellcheckHunspellDictionary::InitializeDictionaryLocationComplete(
     DictionaryFile file) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   dictionary_file_ = std::move(file);
 
   if (!dictionary_file_.file.IsValid()) {
@@ -435,7 +435,7 @@ void SpellcheckHunspellDictionary::InitializeDictionaryLocationComplete(
 
 void SpellcheckHunspellDictionary::SaveDictionaryDataComplete(
     bool dictionary_saved) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
 
   if (dictionary_saved) {
     download_status_ = DOWNLOAD_NONE;
@@ -461,7 +461,7 @@ void SpellcheckHunspellDictionary::InformListenersOfDownloadFailure() {
 
 void SpellcheckHunspellDictionary::PlatformSupportsLanguageComplete(
     bool platform_supports_language) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
 
   if (platform_supports_language) {
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
@@ -495,7 +495,7 @@ void SpellcheckHunspellDictionary::PlatformSupportsLanguageComplete(
 #if BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 void SpellcheckHunspellDictionary::SpellCheckPlatformSetLanguageComplete(
     bool result) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
 
   if (!result)
     return;

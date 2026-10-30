@@ -37,7 +37,7 @@ std::string GetTestPackageName(size_t id) {
 // static
 SyncArcPackageHelper* SyncArcPackageHelper::GetInstance() {
   SyncArcPackageHelper* instance = base::Singleton<SyncArcPackageHelper>::get();
-  DCHECK(sync_datatype_helper::test());
+  CHECK(sync_datatype_helper::test(), base::NotFatalUntil::M163);
   instance->test_ = sync_datatype_helper::test();
   return instance;
 }
@@ -84,7 +84,7 @@ void SyncArcPackageHelper::UninstallPackageWithIndex(Profile* profile,
 
 void SyncArcPackageHelper::ClearPackages(Profile* profile) {
   const ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile);
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M163);
   const std::vector<std::string> pref_packages = prefs->GetPackagesFromPrefs();
   for (const std::string& package : pref_packages) {
     UninstallPackage(profile, package);
@@ -94,7 +94,7 @@ void SyncArcPackageHelper::ClearPackages(Profile* profile) {
 bool SyncArcPackageHelper::HasOnlyTestPackages(Profile* profile,
                                                const std::vector<size_t>& ids) {
   const ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile);
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M163);
   if (prefs->GetPackagesFromPrefs().size() != ids.size()) {
     return false;
   }
@@ -151,8 +151,8 @@ bool SyncArcPackageHelper::AllProfilesHaveSamePackageDetails() {
 }
 
 void SyncArcPackageHelper::EnableArcService(Profile* profile) {
-  DCHECK(profile);
-  DCHECK(!instance_map_[profile]);
+  CHECK(profile, base::NotFatalUntil::M163);
+  CHECK(!instance_map_[profile], base::NotFatalUntil::M163);
 
   arc::SetArcPlayStoreEnabledForProfile(profile, true);
   // Usually ArcPlayStoreEnabledPreferenceHandler would take care of propagating
@@ -160,7 +160,7 @@ void SyncArcPackageHelper::EnableArcService(Profile* profile) {
   arc::ArcSessionManager::Get()->NotifyArcPlayStoreEnabledChanged(true);
 
   ArcAppListPrefs* arc_app_list_prefs = ArcAppListPrefs::Get(profile);
-  DCHECK(arc_app_list_prefs);
+  CHECK(arc_app_list_prefs, base::NotFatalUntil::M163);
 
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   arc_app_list_prefs->SetDefaultAppsReadyCallback(run_loop.QuitClosure());
@@ -168,7 +168,7 @@ void SyncArcPackageHelper::EnableArcService(Profile* profile) {
 
   instance_map_[profile] =
       std::make_unique<FakeAppInstance>(arc_app_list_prefs);
-  DCHECK(instance_map_[profile].get());
+  CHECK(instance_map_[profile].get(), base::NotFatalUntil::M163);
   arc_app_list_prefs->app_connection_holder()->SetInstance(
       instance_map_[profile].get());
   WaitForInstanceReady(arc_app_list_prefs->app_connection_holder());
@@ -182,8 +182,8 @@ void SyncArcPackageHelper::SendRefreshPackageList(Profile* profile) {
 }
 
 void SyncArcPackageHelper::DisableArcService(Profile* profile) {
-  DCHECK(profile);
-  DCHECK(instance_map_[profile]);
+  CHECK(profile, base::NotFatalUntil::M163);
+  CHECK(instance_map_[profile], base::NotFatalUntil::M163);
 
   arc::SetArcPlayStoreEnabledForProfile(profile, false);
   // Usually ArcPlayStoreEnabledPreferenceHandler would take care of propagating
@@ -191,7 +191,7 @@ void SyncArcPackageHelper::DisableArcService(Profile* profile) {
   arc::ArcSessionManager::Get()->NotifyArcPlayStoreEnabledChanged(false);
 
   ArcAppListPrefs* arc_app_list_prefs = ArcAppListPrefs::Get(profile);
-  DCHECK(arc_app_list_prefs);
+  CHECK(arc_app_list_prefs, base::NotFatalUntil::M163);
 
   arc_app_list_prefs->app_connection_holder()->CloseInstance(
       instance_map_[profile].get());
@@ -202,11 +202,11 @@ void SyncArcPackageHelper::InstallPackage(
     Profile* profile,
     const mojom::ArcPackageInfo& package) {
   ArcAppListPrefs* arc_app_list_prefs = ArcAppListPrefs::Get(profile);
-  DCHECK(arc_app_list_prefs);
+  CHECK(arc_app_list_prefs, base::NotFatalUntil::M163);
   mojom::AppInstance* app_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_app_list_prefs->app_connection_holder(), InstallPackage);
 
-  DCHECK(app_instance);
+  CHECK(app_instance, base::NotFatalUntil::M163);
   // After this function, new package should be added to local sync service
   // and install event should be sent to sync server.
   app_instance->InstallPackage(package.Clone());
@@ -215,10 +215,10 @@ void SyncArcPackageHelper::InstallPackage(
 void SyncArcPackageHelper::UninstallPackage(Profile* profile,
                                             const std::string& package_name) {
   ArcAppListPrefs* arc_app_list_prefs = ArcAppListPrefs::Get(profile);
-  DCHECK(arc_app_list_prefs);
+  CHECK(arc_app_list_prefs, base::NotFatalUntil::M163);
   mojom::AppInstance* app_instance = ARC_GET_INSTANCE_FOR_METHOD(
       arc_app_list_prefs->app_connection_holder(), UninstallPackage);
-  DCHECK(app_instance);
+  CHECK(app_instance, base::NotFatalUntil::M163);
   // After this function, package should be removed from local sync service
   // and uninstall event should be sent to sync server.
   app_instance->UninstallPackage(package_name);
@@ -231,8 +231,8 @@ bool SyncArcPackageHelper::ArcPackagesMatch(Profile* profile1,
                                             Profile* profile2) {
   const ArcAppListPrefs* prefs1 = ArcAppListPrefs::Get(profile1);
   const ArcAppListPrefs* prefs2 = ArcAppListPrefs::Get(profile2);
-  DCHECK(prefs1);
-  DCHECK(prefs2);
+  CHECK(prefs1, base::NotFatalUntil::M163);
+  CHECK(prefs2, base::NotFatalUntil::M163);
   const std::vector<std::string> pref1_packages =
       prefs1->GetPackagesFromPrefs();
   const std::vector<std::string> pref2_packages =
@@ -254,8 +254,8 @@ bool SyncArcPackageHelper::ArcPackageDetailsMatch(Profile* profile1,
                                                   Profile* profile2) {
   const ArcAppListPrefs* prefs1 = ArcAppListPrefs::Get(profile1);
   const ArcAppListPrefs* prefs2 = ArcAppListPrefs::Get(profile2);
-  DCHECK(prefs1);
-  DCHECK(prefs2);
+  CHECK(prefs1, base::NotFatalUntil::M163);
+  CHECK(prefs2, base::NotFatalUntil::M163);
   const std::vector<std::string> pref1_packages =
       prefs1->GetPackagesFromPrefs();
   for (const std::string& package : pref1_packages) {

@@ -56,16 +56,16 @@ void LinearLayout::LayOutContributingChildren() {
     float x_align_offset = 0.0f;
     float y_align_offset = 0.0f;
     if (Horizontal()) {
-      DCHECK_NE(RIGHT, child->x_anchoring());
-      DCHECK_NE(LEFT, child->x_anchoring());
+      CHECK_NE(RIGHT, child->x_anchoring(), base::NotFatalUntil::M163);
+      CHECK_NE(LEFT, child->x_anchoring(), base::NotFatalUntil::M163);
       if (child->y_anchoring() == TOP || child->y_anchoring() == BOTTOM) {
         y_align_offset = 0.5f * (minor_extent - child_minor_extent);
         if (child->y_anchoring() == BOTTOM)
           y_align_offset *= -1.0f;
       }
     } else {
-      DCHECK_NE(TOP, child->y_anchoring());
-      DCHECK_NE(BOTTOM, child->y_anchoring());
+      CHECK_NE(TOP, child->y_anchoring(), base::NotFatalUntil::M163);
+      CHECK_NE(BOTTOM, child->y_anchoring(), base::NotFatalUntil::M163);
       if (child->x_anchoring() == RIGHT || child->x_anchoring() == LEFT) {
         x_align_offset = 0.5f * (minor_extent - child_minor_extent);
         if (child->x_anchoring() == LEFT)

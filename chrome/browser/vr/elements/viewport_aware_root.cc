@@ -75,7 +75,7 @@ bool ViewportAwareRoot::AdjustTranslation(float head_in_world_x,
 
 bool ViewportAwareRoot::AdjustRotationForHeadPose(
     const gfx::Vector3dF& look_at) {
-  DCHECK(!look_at.IsZero());
+  CHECK(!look_at.IsZero(), base::NotFatalUntil::M163);
   bool rotated = false;
 
   bool has_visible_children = HasVisibleChildren();

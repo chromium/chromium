@@ -43,12 +43,12 @@ void SpellCheckPanelHostImpl::OverrideBinderForTesting(Binder binder) {
 }
 
 void SpellCheckPanelHostImpl::ShowSpellingPanel(bool show) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   spellcheck_platform::ShowSpellingPanel(show);
 }
 
 void SpellCheckPanelHostImpl::UpdateSpellingPanelWithMisspelledWord(
     const std::u16string& word) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   spellcheck_platform::UpdateSpellingPanelWithMisspelledWord(word);
 }

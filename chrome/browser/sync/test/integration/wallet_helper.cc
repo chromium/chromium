@@ -212,7 +212,8 @@ void WaitForPDMToRefresh(int profile) {
 
 void SetServerCardsOnDBSequence(AutofillWebDataService* wds,
                                 const std::vector<CreditCard>& credit_cards) {
-  DCHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M163);
   PaymentsAutofillTable::FromWebDatabase(wds->GetDatabase())
       ->SetServerCreditCards(credit_cards);
 }
@@ -220,7 +221,8 @@ void SetServerCardsOnDBSequence(AutofillWebDataService* wds,
 void SetPaymentsCustomerDataOnDBSequence(
     AutofillWebDataService* wds,
     const PaymentsCustomerData& customer_data) {
-  DCHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M163);
   PaymentsAutofillTable::FromWebDatabase(wds->GetDatabase())
       ->SetPaymentsCustomerData(&customer_data);
 }
@@ -228,7 +230,8 @@ void SetPaymentsCustomerDataOnDBSequence(
 void SetCreditCardCloudTokenDataOnDBSequence(
     AutofillWebDataService* wds,
     const std::vector<CreditCardCloudTokenData>& cloud_token_data) {
-  DCHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M163);
   PaymentsAutofillTable::FromWebDatabase(wds->GetDatabase())
       ->SetCreditCardCloudTokenData(cloud_token_data);
 }
@@ -236,7 +239,8 @@ void SetCreditCardCloudTokenDataOnDBSequence(
 void GetServerCardsMetadataOnDBSequence(
     AutofillWebDataService* wds,
     std::vector<PaymentsMetadata>* cards_metadata) {
-  DCHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M163);
   PaymentsAutofillTable::FromWebDatabase(wds->GetDatabase())
       ->GetServerCardsMetadata(*cards_metadata);
 }
@@ -244,7 +248,8 @@ void GetServerCardsMetadataOnDBSequence(
 void GetDataTypeStateOnDBSequence(syncer::DataType data_type,
                                   AutofillWebDataService* wds,
                                   sync_pb::DataTypeState* data_type_state) {
-  DCHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence());
+  CHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence(),
+        base::NotFatalUntil::M163);
   syncer::MetadataBatch metadata_batch;
   autofill::AutofillSyncMetadataTable::FromWebDatabase(wds->GetDatabase())
       ->GetAllSyncMetadata(data_type, &metadata_batch);
@@ -367,7 +372,7 @@ std::vector<PaymentsMetadata> GetServerCardsMetadata(int profile,
 sync_pb::DataTypeState GetWalletDataTypeState(syncer::DataType data_type,
                                               int profile,
                                               StoreType store_type) {
-  DCHECK_EQ(data_type, syncer::AUTOFILL_WALLET_DATA);
+  CHECK_EQ(data_type, syncer::AUTOFILL_WALLET_DATA, base::NotFatalUntil::M163);
   sync_pb::DataTypeState result;
   scoped_refptr<AutofillWebDataService> wds =
       GetWebDataService(profile, store_type);
@@ -616,7 +621,7 @@ bool FullUpdateTypeProgressMarkerChecker::IsExitConditionSatisfied(
 
   sync_pb::DataTypeProgressMarker progress_marker;
   bool success = progress_marker.ParseFromString(marker_it->second);
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M163);
 
   // If the token string has changed since this checker was created, a new
   // progress marker has arrived.

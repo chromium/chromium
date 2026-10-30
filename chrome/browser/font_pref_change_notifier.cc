@@ -20,7 +20,7 @@ FontPrefChangeNotifier::Registrar::~Registrar() {
 void FontPrefChangeNotifier::Registrar::Register(
     FontPrefChangeNotifier* notifier,
     FontPrefChangeNotifier::Callback cb) {
-  DCHECK(!is_registered());
+  CHECK(!is_registered(), base::NotFatalUntil::M163);
   notifier_ = notifier;
   callback_ = std::move(cb);
 
@@ -28,7 +28,7 @@ void FontPrefChangeNotifier::Registrar::Register(
 }
 
 void FontPrefChangeNotifier::Registrar::Unregister() {
-  DCHECK(is_registered());
+  CHECK(is_registered(), base::NotFatalUntil::M163);
   notifier_->RemoveRegistrar(this);
 
   notifier_ = nullptr;

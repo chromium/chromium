@@ -58,7 +58,7 @@ GURL GetHttpUrl(const GURL& url, int http_fallback_port_for_testing) {
   if (http_fallback_port_for_testing) {
     // We'll only get here in tests. Tests should always have a non-default
     // port on the input text.
-    DCHECK(!url.GetPort().empty());
+    CHECK(!url.GetPort().empty(), base::NotFatalUntil::M163);
     replacements.SetPortStr(port_str);
   }
   return url.ReplaceComponents(replacements);
@@ -69,7 +69,7 @@ GURL GetHttpUrl(const GURL& url, int http_fallback_port_for_testing) {
 // static
 void TypedNavigationUpgradeThrottle::MaybeCreateAndAdd(
     content::NavigationThrottleRegistry& registry) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   // Check if the omnibox added https as the default scheme for this navigation.
   // If not, no need to create the throttle.
@@ -78,7 +78,7 @@ void TypedNavigationUpgradeThrottle::MaybeCreateAndAdd(
     return;
   }
   // Typed main frame navigations can only be GET requests.
-  DCHECK(!handle.IsPost());
+  CHECK(!handle.IsPost(), base::NotFatalUntil::M163);
 
   registry.AddThrottle(
       base::WrapUnique(new TypedNavigationUpgradeThrottle(registry)));
@@ -111,7 +111,8 @@ TypedNavigationUpgradeThrottle::~TypedNavigationUpgradeThrottle() = default;
 
 content::NavigationThrottle::ThrottleCheckResult
 TypedNavigationUpgradeThrottle::WillStartRequest() {
-  DCHECK_EQ(url::kHttpsScheme, navigation_handle()->GetURL().GetScheme());
+  CHECK_EQ(url::kHttpsScheme, navigation_handle()->GetURL().GetScheme(),
+           base::NotFatalUntil::M163);
   RecordUMA(Event::kHttpsLoadStarted);
   timer_.Start(FROM_HERE, kFallbackDelay.Get(), this,
                &TypedNavigationUpgradeThrottle::OnHttpsLoadTimeout);
@@ -120,7 +121,8 @@ TypedNavigationUpgradeThrottle::WillStartRequest() {
 
 content::NavigationThrottle::ThrottleCheckResult
 TypedNavigationUpgradeThrottle::WillFailRequest() {
-  DCHECK_EQ(url::kHttpsScheme, navigation_handle()->GetURL().GetScheme());
+  CHECK_EQ(url::kHttpsScheme, navigation_handle()->GetURL().GetScheme(),
+           base::NotFatalUntil::M163);
   // Cancel the request, stop the timer and fall back to HTTP in case of SSL
   // errors or other net/ errors.
   timer_.Stop();
@@ -211,7 +213,7 @@ void TypedNavigationUpgradeThrottle::FallbackToHttp(bool stop_navigation) {
   content::WebContents* web_contents = navigation_handle()->GetWebContents();
   // According to crbug.com/40677892, web_contents could be null but we don't
   // want to speculatively handle that case here, so just DCHECK for now.
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M163);
 
   // Post a task to navigate to the fallback URL. We don't navigate
   // synchronously here, as starting a navigation within a navigation is

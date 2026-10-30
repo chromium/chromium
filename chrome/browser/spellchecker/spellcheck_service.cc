@@ -90,7 +90,7 @@ SpellcheckService::EventType g_status_type =
 
 SpellcheckService::SpellcheckService(content::BrowserContext* context)
     : context_(context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
 
 #if BUILDFLAG(IS_MAC)
   bool defer_spellcheck =
@@ -249,7 +249,7 @@ base::WeakPtr<SpellcheckService> SpellcheckService::GetWeakPtr() {
 #if BUILDFLAG(IS_MAC)
 void SpellcheckService::InitializePlatformLanguageMacWithLanguage(
     const std::string& platform_lang) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   PrefService* prefs = user_prefs::UserPrefs::Get(context_);
   StringListPrefMember dictionaries_pref;
   dictionaries_pref.Init(spellcheck::prefs::kSpellCheckDictionaries, prefs);
@@ -277,7 +277,7 @@ void SpellcheckService::InitializePlatformLanguageMacWithLanguage(
 //    LoadDictionaries() to perform the actual load.
 // 3. Load the custom dictionary database asynchronously.
 void SpellcheckService::InitMacDeferredSpellcheck() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   // 1. Initialize Hunspell dictionaries first to set up metrics.
   InitializeDictionaries(base::DoNothing());
 
@@ -341,7 +341,7 @@ void SpellcheckService::GetDictionaries(
 // static
 bool SpellcheckService::SignalStatusEvent(
     SpellcheckService::EventType status_type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
 
   if (!g_status_event)
     return false;
@@ -510,7 +510,7 @@ void SpellcheckService::InitForRenderer(content::RenderProcessHost* host) {
     return;
   }
 
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
 
   content::BrowserContext* context = host->GetBrowserContext();
   if (SpellcheckServiceFactory::GetForContext(context) != this)
@@ -552,7 +552,7 @@ void SpellcheckService::LoadDictionaries() {
   hunspell_dictionaries_.clear();
 
   PrefService* prefs = user_prefs::UserPrefs::Get(context_);
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M163);
 
   const base::ListValue& user_dictionaries =
       prefs->GetList(spellcheck::prefs::kSpellCheckDictionaries);
@@ -675,7 +675,7 @@ void SpellcheckService::OnCustomDictionaryLoaded() {
 
 void SpellcheckService::OnCustomDictionaryChanged(
     const SpellcheckCustomDictionary::Change& change) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
 
   const auto additions = base::ToVector(change.to_add());
   const auto deletions = base::ToVector(change.to_remove());
@@ -725,7 +725,7 @@ void SpellcheckService::InitializeDictionaries(base::OnceClosure done) {
 #endif  // BUILDFLAG(IS_WIN)
 
   PrefService* prefs = user_prefs::UserPrefs::Get(context_);
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M163);
 
   // Instantiates Metrics object for spellchecking to use.
   StartRecordingMetrics(
@@ -794,7 +794,7 @@ void SpellcheckService::InitWindowsDictionaryLanguages(
   // but it's now determined that there is neither Windows platform nor Hunspell
   // dictionary support for that language.
   PrefService* prefs = user_prefs::UserPrefs::Get(context_);
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M163);
   // When following object goes out of scope, preference change observers will
   // be notified (even if there is no preference change).
   ScopedListPrefUpdate update(prefs,
@@ -833,7 +833,7 @@ std::string SpellcheckService::GetLanguageAndScriptTag(
   std::vector<std::string> subtags = base::SplitString(
       full_tag, "-", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   // Language subtag is required, all others optional.
-  DCHECK_GE(subtags.size(), 1ULL);
+  CHECK_GE(subtags.size(), 1ULL, base::NotFatalUntil::M163);
   std::vector<std::string> subtag_tokens_to_pass;
   subtag_tokens_to_pass.push_back(subtags.front());
   subtags.erase(subtags.begin());
@@ -929,14 +929,14 @@ std::string SpellcheckService::GetTagToPassToWindowsSpellchecker(
 
 // static
 void SpellcheckService::AttachStatusEvent(base::WaitableEvent* status_event) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
 
   g_status_event = status_event;
 }
 
 // static
 SpellcheckService::EventType SpellcheckService::GetStatusEvent() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   return g_status_type;
 }
 
@@ -953,7 +953,7 @@ SpellcheckService::GetSpellCheckerForProcess(content::RenderProcessHost* host) {
 }
 
 void SpellcheckService::InitForAllRenderers() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   for (auto it = content::RenderProcessHost::AllHostsIterator(); !it.IsAtEnd();
        it.Advance()) {
     content::RenderProcessHost* process = it.GetCurrentValue();

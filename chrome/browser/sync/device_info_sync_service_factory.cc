@@ -46,7 +46,7 @@ DeviceInfoSyncServiceFactory* DeviceInfoSyncServiceFactory::GetInstance() {
 // static
 void DeviceInfoSyncServiceFactory::GetAllDeviceInfoTrackers(
     std::vector<const syncer::DeviceInfoTracker*>* trackers) {
-  DCHECK(trackers);
+  CHECK(trackers, base::NotFatalUntil::M163);
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   std::vector<Profile*> profile_list = profile_manager->GetLoadedProfiles();
   for (Profile* profile : profile_list) {

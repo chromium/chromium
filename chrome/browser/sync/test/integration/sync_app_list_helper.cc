@@ -35,7 +35,7 @@ SyncAppListHelper::~SyncAppListHelper() = default;
 
 void SyncAppListHelper::SetupIfNecessary(SyncTest* test) {
   if (setup_completed_) {
-    DCHECK_EQ(test, test_);
+    CHECK_EQ(test, test_, base::NotFatalUntil::M163);
     return;
   }
   test_ = test;
@@ -152,7 +152,7 @@ void SyncAppListHelper::PrintAppList(Profile* profile) {
     PrintItem(profile, item, label);
     // Print children if it has any.
     if (children.count(item->id())) {
-      DCHECK(item->is_folder());
+      CHECK(item->is_folder(), base::NotFatalUntil::M163);
       std::vector<ChromeAppListItem*>& child_items =
           children[item->folder_id()];
       for (size_t j = 0; j < child_items.size(); ++j) {

@@ -246,10 +246,11 @@ FakeServerPrefMatchesValueChecker::FakeServerPrefMatchesValueChecker(
     : data_type_(data_type),
       pref_name_(pref_name),
       expected_value_(expected_value) {
-  DCHECK(data_type_ == syncer::DataType::PREFERENCES ||
-         data_type_ == syncer::DataType::PRIORITY_PREFERENCES ||
-         data_type_ == syncer::DataType::OS_PREFERENCES ||
-         data_type_ == syncer::DataType::OS_PRIORITY_PREFERENCES);
+  CHECK(data_type_ == syncer::DataType::PREFERENCES ||
+            data_type_ == syncer::DataType::PRIORITY_PREFERENCES ||
+            data_type_ == syncer::DataType::OS_PREFERENCES ||
+            data_type_ == syncer::DataType::OS_PRIORITY_PREFERENCES,
+        base::NotFatalUntil::M163);
 }
 
 bool FakeServerPrefMatchesValueChecker::IsExitConditionSatisfied(

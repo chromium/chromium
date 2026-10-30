@@ -70,7 +70,7 @@ SendTabToSelfUrlChecker::SendTabToSelfUrlChecker(
     send_tab_to_self::SendTabToSelfSyncService* service,
     const GURL& url)
     : url_(url), service_(service) {
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M163);
   observation_.Observe(service->GetSendTabToSelfModel());
 }
 
@@ -103,7 +103,7 @@ SendTabToSelfUrlOpenedChecker::SendTabToSelfUrlOpenedChecker(
     send_tab_to_self::SendTabToSelfSyncService* service,
     const GURL& url)
     : url_(url), service_(service) {
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M163);
   observation_.Observe(service->GetSendTabToSelfModel());
 }
 
@@ -144,8 +144,8 @@ SendTabToSelfModelEqualityChecker::SendTabToSelfModelEqualityChecker(
     send_tab_to_self::SendTabToSelfSyncService* service0,
     send_tab_to_self::SendTabToSelfSyncService* service1)
     : service0_(service0), service1_(service1) {
-  DCHECK(service0);
-  DCHECK(service1);
+  CHECK(service0, base::NotFatalUntil::M163);
+  CHECK(service1, base::NotFatalUntil::M163);
   observation0_.Observe(service0->GetSendTabToSelfModel());
   observation1_.Observe(service1->GetSendTabToSelfModel());
 }
@@ -171,8 +171,8 @@ bool SendTabToSelfModelEqualityChecker::IsExitConditionSatisfied(
     const send_tab_to_self::SendTabToSelfEntry* entry1 =
         model1->GetEntryByGUID(guid);
 
-    DCHECK_NE(entry0, nullptr);
-    DCHECK_NE(entry1, nullptr);
+    CHECK_NE(entry0, nullptr, base::NotFatalUntil::M163);
+    CHECK_NE(entry1, nullptr, base::NotFatalUntil::M163);
 
     if (entry0->GetGUID() != entry1->GetGUID() ||
         entry0->GetURL() != entry1->GetURL() ||
@@ -198,7 +198,7 @@ void SendTabToSelfModelEqualityChecker::OnEntriesRemovedRemotely(
 SendTabToSelfActiveChecker::SendTabToSelfActiveChecker(
     send_tab_to_self::SendTabToSelfSyncService* service)
     : service_(service) {
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M163);
   observation_.Observe(service->GetSendTabToSelfModel());
 }
 
@@ -251,7 +251,7 @@ SendTabToSelfUrlDeletedChecker::SendTabToSelfUrlDeletedChecker(
     send_tab_to_self::SendTabToSelfSyncService* service,
     const GURL& url)
     : url_(url), service_(service) {
-  DCHECK(service);
+  CHECK(service, base::NotFatalUntil::M163);
   observation_.Observe(service->GetSendTabToSelfModel());
 }
 
@@ -263,7 +263,7 @@ bool SendTabToSelfUrlDeletedChecker::IsExitConditionSatisfied(
 
   send_tab_to_self::SendTabToSelfModel* model =
       service_->GetSendTabToSelfModel();
-  DCHECK(model);
+  CHECK(model, base::NotFatalUntil::M163);
   // Checks each URL in the model and returns passes if URL in question is not
   // found.
   for (const std::string& guid : model->GetAllGuids()) {

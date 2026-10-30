@@ -109,7 +109,8 @@ void ChromeBrowserContextLifetimeTracker::StartObserving(
   // root cause of the DumpWithoutCrashing in crbug.com/472076020. This
   // DCHECK guards against that class of bug being reintroduced, e.g. by a
   // caller invoking StartObserving() again on a reconnect.
-  DCHECK(watchers_.find(&observer) == watchers_.end());
+  CHECK(watchers_.find(&observer) == watchers_.end(),
+        base::NotFatalUntil::M163);
   Profile* profile = Profile::FromBrowserContext(&context);
   // `context` must be an original (non-off-the-record) profile. For an OTR
   // profile, HasPrimaryOTRProfile()/GetPrimaryOTRProfile() resolve to the

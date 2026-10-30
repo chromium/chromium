@@ -176,7 +176,7 @@ void TextTexture::PrepareDrawText(const std::u16string& text,
                                   const gfx::FontList& font_list,
                                   gfx::Rect* bounds,
                                   SkColor color) {
-  DCHECK(bounds);
+  CHECK(bounds, base::NotFatalUntil::M163);
   lines_.clear();
 
   gfx::Rect rect(*bounds);

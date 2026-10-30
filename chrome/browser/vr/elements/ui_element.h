@@ -153,7 +153,7 @@ class VR_UI_EXPORT UiElement : public gfx::FloatAnimationCurve::Target,
   void SetCornerRadii(const CornerRadii& radii);
 
   float corner_radius() const {
-    DCHECK(corner_radii_.AllEqual());
+    CHECK(corner_radii_.AllEqual(), base::NotFatalUntil::M163);
     return corner_radii_.upper_left;
   }
 
@@ -170,25 +170,29 @@ class VR_UI_EXPORT UiElement : public gfx::FloatAnimationCurve::Target,
 
   LayoutAlignment x_anchoring() const { return x_anchoring_; }
   void set_x_anchoring(LayoutAlignment x_anchoring) {
-    DCHECK(x_anchoring == LEFT || x_anchoring == RIGHT || x_anchoring == NONE);
+    CHECK(x_anchoring == LEFT || x_anchoring == RIGHT || x_anchoring == NONE,
+          base::NotFatalUntil::M163);
     x_anchoring_ = x_anchoring;
   }
 
   LayoutAlignment y_anchoring() const { return y_anchoring_; }
   void set_y_anchoring(LayoutAlignment y_anchoring) {
-    DCHECK(y_anchoring == TOP || y_anchoring == BOTTOM || y_anchoring == NONE);
+    CHECK(y_anchoring == TOP || y_anchoring == BOTTOM || y_anchoring == NONE,
+          base::NotFatalUntil::M163);
     y_anchoring_ = y_anchoring;
   }
 
   LayoutAlignment x_centering() const { return x_centering_; }
   void set_x_centering(LayoutAlignment x_centering) {
-    DCHECK(x_centering == LEFT || x_centering == RIGHT || x_centering == NONE);
+    CHECK(x_centering == LEFT || x_centering == RIGHT || x_centering == NONE,
+          base::NotFatalUntil::M163);
     x_centering_ = x_centering;
   }
 
   LayoutAlignment y_centering() const { return y_centering_; }
   void set_y_centering(LayoutAlignment y_centering) {
-    DCHECK(y_centering == TOP || y_centering == BOTTOM || y_centering == NONE);
+    CHECK(y_centering == TOP || y_centering == BOTTOM || y_centering == NONE,
+          base::NotFatalUntil::M163);
     y_centering_ = y_centering;
   }
 

@@ -69,7 +69,7 @@ void SpellCheckHostChromeImpl::OverrideBinderForTesting(Binder binder) {
 
 void SpellCheckHostChromeImpl::NotifyChecked(const std::u16string& word,
                                              bool misspelled) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   SpellcheckService* spellcheck = GetSpellcheckService();
   if (!spellcheck)
@@ -82,7 +82,7 @@ void SpellCheckHostChromeImpl::NotifyChecked(const std::u16string& word,
 void SpellCheckHostChromeImpl::CallSpellingService(
     const std::u16string& text,
     CallSpellingServiceCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   if (text.empty()) {
     std::move(callback).Run(false, std::vector<SpellCheckResult>());
@@ -110,7 +110,7 @@ void SpellCheckHostChromeImpl::CallSpellingServiceDone(
     bool success,
     const std::u16string& text,
     const std::vector<SpellCheckResult>& service_results) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   SpellcheckService* spellcheck = GetSpellcheckService();
   if (!spellcheck) {  // Teardown.
@@ -160,8 +160,8 @@ void SpellCheckHostChromeImpl::RequestTextCheck(
     const std::u16string& text,
     const std::vector<spellcheck::SpellingMarker>& spelling_markers,
     RequestTextCheckCallback callback) {
-  DCHECK(!text.empty());
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK(!text.empty(), base::NotFatalUntil::M163);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   // Initialize the spellcheck service if needed. The service will send the
   // language code for text breaking to the renderer. (Text breaking is required
@@ -185,7 +185,7 @@ void SpellCheckHostChromeImpl::RequestTextCheck(
 #if BUILDFLAG(IS_WIN)
 void SpellCheckHostChromeImpl::InitializeDictionaries(
     InitializeDictionariesCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   // Initialize the spellcheck service if needed. Initialization must
   // happen on UI thread.
@@ -205,7 +205,7 @@ void SpellCheckHostChromeImpl::InitializeDictionaries(
 }
 
 void SpellCheckHostChromeImpl::OnDictionariesInitialized() {
-  DCHECK(dictionaries_loaded_callback_);
+  CHECK(dictionaries_loaded_callback_, base::NotFatalUntil::M163);
   SpellcheckService* spellcheck = GetSpellcheckService();
 
   if (!spellcheck) {  // Teardown.

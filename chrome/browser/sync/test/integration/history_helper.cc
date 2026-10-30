@@ -343,7 +343,7 @@ std::vector<sync_pb::HistorySpecifics> SyncEntitiesToHistorySpecifics(
     std::vector<sync_pb::SyncEntity> entities) {
   std::vector<sync_pb::HistorySpecifics> history;
   for (sync_pb::SyncEntity& entity : entities) {
-    DCHECK(entity.specifics().has_history());
+    CHECK(entity.specifics().has_history(), base::NotFatalUntil::M163);
     history.push_back(std::move(entity.specifics().history()));
   }
   return history;

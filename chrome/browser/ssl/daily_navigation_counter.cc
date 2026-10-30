@@ -28,7 +28,7 @@ DailyNavigationCounter::DailyNavigationCounter(
       clock_(clock),
       rolling_window_duration_in_days_(rolling_window_duration_in_days),
       save_interval_(save_interval) {
-  DCHECK(save_interval_ > 0);
+  CHECK(save_interval_ > 0, base::NotFatalUntil::M163);
 
   // Load from the saved dict into the current map, discarding old entries.
   base::Time now = clock_->Now();

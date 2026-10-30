@@ -124,7 +124,7 @@ std::vector<std::string> CanonicalizeHostnamePatterns(
 }  // namespace
 
 SSLConfigServiceManager::SSLConfigServiceManager(PrefService* local_state) {
-  DCHECK(local_state);
+  CHECK(local_state, base::NotFatalUntil::M163);
 
   PrefChangeRegistrar::NamedChangeCallback local_state_callback =
       base::BindRepeating(&SSLConfigServiceManager::OnPreferenceChanged,
@@ -263,7 +263,7 @@ void SSLConfigServiceManager::FlushForTesting() {
 void SSLConfigServiceManager::OnPreferenceChanged(
     PrefService* prefs,
     const std::string& pref_name_in) {
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M163);
   if (pref_name_in == prefs::kCipherSuiteBlacklist)
     OnDisabledCipherSuitesChange(prefs);
 

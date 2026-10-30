@@ -27,7 +27,7 @@ void SpellCheckInitializationHostImpl::Create(
 }
 
 void SpellCheckInitializationHostImpl::RequestDictionary() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   auto* host = content::RenderProcessHost::FromID(render_process_id_);
   if (!host) {

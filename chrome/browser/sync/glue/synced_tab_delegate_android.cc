@@ -88,7 +88,7 @@ SyncedTabDelegateAndroid::ReadPlaceholderTabSnapshotIfItShouldSync(
 
   TabModel* tab_model = TabModelList::FindTabModelWithWindowSessionId(
       tab_android_data_provider_->GetWindowId());
-  DCHECK(tab_model);
+  CHECK(tab_model, base::NotFatalUntil::M163);
   Profile* profile = tab_model->GetProfile();
 
   return browser_sync::WebContentsStateSyncedTabDelegate::Create(

@@ -98,7 +98,7 @@ void StatusChangeChecker::CheckExitCondition() {
 }
 
 void StatusChangeChecker::StartBlockingWait(const base::Location& location) {
-  DCHECK(!run_loop_.running());
+  CHECK(!run_loop_.running(), base::NotFatalUntil::M163);
 
   base::OneShotTimer timer;
   timer.Start(FROM_HERE, timeout_,

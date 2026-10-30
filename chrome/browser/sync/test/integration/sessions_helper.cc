@@ -129,7 +129,7 @@ std::vector<sync_pb::SessionSpecifics> SyncEntitiesToSessionSpecifics(
     std::vector<sync_pb::SyncEntity> entities) {
   std::vector<sync_pb::SessionSpecifics> sessions;
   for (sync_pb::SyncEntity& entity : entities) {
-    DCHECK(entity.specifics().has_session());
+    CHECK(entity.specifics().has_session(), base::NotFatalUntil::M163);
     sessions.push_back(std::move(entity.specifics().session()));
   }
   return sessions;

@@ -128,7 +128,7 @@ GURL MakeURLWithPort(const std::string& url_without_scheme,
                      const std::string& scheme,
                      int port) {
   GURL url(scheme + "://" + url_without_scheme);
-  DCHECK(!url.GetPort().empty());
+  CHECK(!url.GetPort().empty(), base::NotFatalUntil::M163);
 
   GURL::Replacements replacements;
   const std::string port_str = base::NumberToString(port);
