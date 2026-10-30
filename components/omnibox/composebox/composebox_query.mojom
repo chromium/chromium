@@ -88,6 +88,26 @@ enum ModelMode {
   kGeminiProLatest = 6,
   // Uses Gemini Preview Model.
   kGeminiPreview = 7,
+  // Uses AIM Model Alfa.
+  kAimModelAlfa = 8,
+  // Uses AIM Model Bravo.
+  kAimModelBravo = 9,
+  // Uses AIM Model Charlie.
+  kAimModelCharlie = 10,
+  // Uses AIM Model Delta.
+  kAimModelDelta = 11,
+  // Uses AIM Model Echo.
+  kAimModelEcho = 12,
+  // Uses AIM Model Foxtrot.
+  kAimModelFoxtrot = 13,
+  // Uses AIM Model Golf.
+  kAimModelGolf = 14,
+  // Uses AIM Model Hotel.
+  kAimModelHotel = 15,
+  // Uses AIM Model India.
+  kAimModelIndia = 16,
+  // Uses AIM Model Juliett.
+  kAimModelJuliett = 17,
 };
 // LINT.ThenChange(//third_party/omnibox_proto/model_mode.proto:ModelMode)
 

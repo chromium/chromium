@@ -15,25 +15,58 @@ package omnibox;
 
 // The AIM model mode that is applied to a query (e.g. on the input plate or
 // fusebox).
-// Next ID: 8
+// Next ID: 18
 // LINT.IfChange(ModelMode)
 enum ModelMode {
   // Unspecified model mode.
   MODEL_MODE_UNSPECIFIED = 0;
-  // Gemini regular model mode.
+
+  /////////////////////////////////////////////////////////////////////////////
+  // Model types in the below section have client-hardcoded URL mappings and
+  // cannot be reused for other URL-based routing parameters.
+  /////////////////////////////////////////////////////////////////////////////
+
+  // Gemini regular model mode. This is client-hardcoded to be "udm=50" only.
   MODEL_MODE_GEMINI_REGULAR = 1;
-  // Gemini pro model mode.
+  // Gemini pro model mode. This is client-hardcoded to be "nem=143" only.
   MODEL_MODE_GEMINI_PRO = 2;
-  // Autoroute. Same URL mapping as regular but used for relabeling.
+  // Autoroute. Same URL mapping as regular but used for relabeling. This is
+  // client-hardcoded to be "udm=50" only.
   MODEL_MODE_GEMINI_PRO_AUTOROUTE = 3;
-  // Gemini Pro model without generative UI.
+  // Gemini Pro model without generative UI. This is client-hardcoded to be
+  // "udm=50,arv=1".
   MODEL_MODE_GEMINI_PRO_NO_GEN_UI = 4;
-  // Gemini Flash Latest model mode.
+  // Gemini Flash Latest model mode. This is client-hardcoded to be
+  // "udm=50,arv=2".
+  // Supported in Bling 152+.
   MODEL_MODE_GEMINI_FLASH_LATEST = 5;
   // Gemini Pro Latest model mode. Used for Barium (Gemini 4 Argon externally).
+  // This is client-hardcoded to be "udm=50,arv=3".
+  // Supported in Bling 157+ (and 156 respin).
   MODEL_MODE_GEMINI_PRO_LATEST = 6;
+
+  /////////////////////////////////////////////////////////////////////////////
+  // Unused model types.
+  /////////////////////////////////////////////////////////////////////////////
+
   // Gemini Preview model mode, could be XS, S or M (currently unused as of
-  // August 2026).
+  // Oct 2026).
+
+  // Merged into AGA 17.50, iGA 435, Chrome Desktop/Android 153, Bling 158.
   MODEL_MODE_GEMINI_PREVIEW = 7;
+
+  // Merged into AGA 17.67, iGA 443, Chrome Desktop/Android 157, Bling 158.
+  MODEL_MODE_AIM_MODEL_ALFA = 8;      // arv=4
+  MODEL_MODE_AIM_MODEL_BRAVO = 9;     // arv=5
+  MODEL_MODE_AIM_MODEL_CHARLIE = 10;  // arv=6
+  MODEL_MODE_AIM_MODEL_DELTA = 11;    // arv=7
+  MODEL_MODE_AIM_MODEL_ECHO = 12;     // arv=8
+
+  // Merged into AGA 17.70, iGA 445, Chrome 158.
+  MODEL_MODE_AIM_MODEL_FOXTROT = 13;  // arv=9
+  MODEL_MODE_AIM_MODEL_GOLF = 14;     // arv=10
+  MODEL_MODE_AIM_MODEL_HOTEL = 15;    // arv=11
+  MODEL_MODE_AIM_MODEL_INDIA = 16;    // arv=12
+  MODEL_MODE_AIM_MODEL_JULIETT = 17;  // arv=13
 }
 // LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:ModelMode, //components/omnibox/common/omnibox_metrics_utils.cc:ModelMode, //tools/metrics/histograms/metadata/omnibox/histograms.xml:OmniboxModelMode)

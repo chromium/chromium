@@ -20,7 +20,7 @@ import "section_config.proto";
 import "tool_config.proto";
 
 // Configuration for the AI searchbox (e.g. input plate and fusebox)
-// Next ID: 15
+// Next ID: 17
 message SearchboxConfig {
   // The rule set to use for the searchbox.
   // This message is mostly deprecated (with exception of the

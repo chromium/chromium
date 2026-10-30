@@ -265,6 +265,16 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(OmniboxModelMode) -->
 
 <variants name="OmniboxModelMode">
+  <variant name="AimModelAlfa" summary="AIM Model Alfa"/>
+  <variant name="AimModelBravo" summary="AIM Model Bravo"/>
+  <variant name="AimModelCharlie" summary="AIM Model Charlie"/>
+  <variant name="AimModelDelta" summary="AIM Model Delta"/>
+  <variant name="AimModelEcho" summary="AIM Model Echo"/>
+  <variant name="AimModelFoxtrot" summary="AIM Model Foxtrot"/>
+  <variant name="AimModelGolf" summary="AIM Model Golf"/>
+  <variant name="AimModelHotel" summary="AIM Model Hotel"/>
+  <variant name="AimModelIndia" summary="AIM Model India"/>
+  <variant name="AimModelJuliett" summary="AIM Model Juliett"/>
   <variant name="GeminiFlashLatest" summary="Gemini Flash Latest model"/>
   <variant name="GeminiPreview" summary="Gemini Preview model"/>
   <variant name="GeminiPro" summary="Gemini Pro model"/>

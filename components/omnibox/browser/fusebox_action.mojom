@@ -25,6 +25,7 @@ enum SuggestInventory {
   kAddFile = 13,
   kAddTab = 14,
   kAimImages = 15,
+  kImageGenSeasonalPromo = 16,
 };
 // LINT.ThenChange(//third_party/omnibox_proto/suggest_inventory.proto:SuggestInventory)
 
