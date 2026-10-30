@@ -5392,12 +5392,6 @@
       name: "RecheckParentDuringNodeVectorInsertion",
       status: "stable",
     },
-    // If enabled, both Accept-Language HTTP header and JavaScript getter will
-    // be reduced.
-    {
-      name: "ReduceAcceptLanguage",
-      base_feature: "none",
-    },
     // If enabled, the minor version of the User-Agent string will be reduced.
     // This User-Agent Reduction feature has been enabled starting from M101,
     // but we still keep this flag for future phase tests.

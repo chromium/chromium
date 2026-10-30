@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/frame/navigator_language.h"
 
-#include "services/network/public/cpp/features.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -78,12 +77,6 @@ void NavigatorLanguage::EnsureUpdatedLanguage() {
 
   if (languages_dirty_) {
     languages_ = ParseAndSanitize(GetAcceptLanguages());
-    // Reduce the Accept-Language if the feature flag ReduceAcceptLanguage is
-    // enabled.
-    if (base::FeatureList::IsEnabled(
-            network::features::kReduceAcceptLanguage)) {
-      languages_ = Vector<String>({languages_.front()});
-    }
     languages_dirty_ = false;
   }
 }

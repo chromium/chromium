@@ -399,15 +399,6 @@ IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,
   histograms.ExpectTotalCount("ReduceAcceptLanguage.FetchLatencyUs", 1);
   // Persist won't happen.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
-
-  // Verify that navigator.languages only returns an array of length 1 if
-  // ReduceAcceptLanguage is enabled. For the HTTP-only feature, it should
-  // be no change and return the full list of languages.
-  if (GetParam()) {
-    VerifyNavigatorLanguages({"zh"});
-  } else {
-    VerifyNavigatorLanguages({"zh", "en"});
-  }
 }
 
 IN_PROC_BROWSER_TEST_P(SameOriginReduceAcceptLanguageBrowserTest,

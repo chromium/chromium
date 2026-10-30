@@ -288,7 +288,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            webnn::mojom::features::kWebMachineLearningNeuralNetwork,
            kSetOnlyIfOverridden},
           {"OriginIsolationHeader", features::kOriginIsolationHeader},
-          {"ReduceAcceptLanguage", network::features::kReduceAcceptLanguage},
           {"RelatedWebsitePartitionAPI",
            net::features::kRelatedWebsitePartitionAPI},
           {"SerialPortConnected", features::kSerialPortConnected},
