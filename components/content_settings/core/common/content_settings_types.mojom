@@ -48,7 +48,6 @@ enum ContentSettingsType {
   MEDIASTREAM_MIC,
   MEDIASTREAM_CAMERA,
   PROTOCOL_HANDLERS,
-  DEPRECATED_PPAPI_BROKER,
   AUTOMATIC_DOWNLOADS,
 
   // Advanced device-specific functions on MIDI devices. MIDI-SysEx
@@ -102,14 +101,6 @@ enum ContentSettingsType {
   // accelerometer, gyroscope and magnetometer. These are all mapped to a single
   // ContentSettingsType.
   SENSORS,
-
-  // Content setting which stores whether or not the user has granted the site
-  // permission to respond to accessibility events, which can be used to
-  // provide a custom accessibility experience. Requires explicit user consent
-  // because some users may not want sites to know they're using assistive
-  // technology.
-  // Deprecated in M131.
-  DEPRECATED_ACCESSIBILITY_EVENTS,
 
   // Used to store whether to allow a website to install a payment handler.
   PAYMENT_HANDLER,
@@ -271,14 +262,6 @@ enum ContentSettingsType {
   // autofilled on a specific website.
   FORMFILL_METADATA,
 
-  // Setting to indicate that there is an active federated sign-in session
-  // between a specified relying party and a specified identity provider for
-  // a specified account. When this is present it allows access to session
-  // management capabilities between the sites. This setting is associated
-  // with the relying party's origin.
-  // Obsolete on Nov 2023.
-  DEPRECATED_FEDERATED_IDENTITY_ACTIVE_SESSION,
-
   // Setting to indicate whether Chrome should automatically apply darkening to
   // web content.
   AUTO_DARK_WEB_CONTENT,
@@ -412,11 +395,6 @@ enum ContentSettingsType {
   // Website setting to indicate whether user has opted in to allow web apps to
   // install other web apps.
   WEB_APP_INSTALLATION,
-
-  // Content settings for private network access in the context of the
-  // Direct Sockets API.
-  // Deprecated in M151.
-  DEPRECATED_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS,
 
   // Content settings for legacy cookie scope.
   // Checks whether cookies scope is handled according to origin-bound cookies

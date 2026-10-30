@@ -87,7 +87,6 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
       case ContentSettingsType::BACKGROUND_SYNC:
       case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:
       case ContentSettingsType::SENSORS:
-      case ContentSettingsType::DEPRECATED_ACCESSIBILITY_EVENTS:
       case ContentSettingsType::CLIPBOARD_READ_WRITE:
       case ContentSettingsType::CLIPBOARD_SANITIZED_WRITE:
       case ContentSettingsType::PAYMENT_HANDLER:
@@ -129,7 +128,6 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
       case ContentSettingsType::AUTO_SELECT_CERTIFICATE:
       case ContentSettingsType::MIXEDSCRIPT:
       case ContentSettingsType::PROTOCOL_HANDLERS:
-      case ContentSettingsType::DEPRECATED_PPAPI_BROKER:
       case ContentSettingsType::AUTOMATIC_DOWNLOADS:
       case ContentSettingsType::SSL_CERT_DECISIONS:
       case ContentSettingsType::APP_BANNER:
@@ -158,7 +156,6 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
       case ContentSettingsType::JAVASCRIPT_JIT:
       case ContentSettingsType::HTTP_ALLOWED:
       case ContentSettingsType::FORMFILL_METADATA:
-      case ContentSettingsType::DEPRECATED_FEDERATED_IDENTITY_ACTIVE_SESSION:
       case ContentSettingsType::AUTO_DARK_WEB_CONTENT:
       case ContentSettingsType::REQUEST_DESKTOP_SITE:
       case ContentSettingsType::FEDERATED_IDENTITY_API:
@@ -183,8 +180,6 @@ TEST_F(ControlledFramePermissionsTest, Verify) {
       case ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS:
       case ContentSettingsType::DISPLAY_MEDIA_SYSTEM_AUDIO:
       case ContentSettingsType::JAVASCRIPT_OPTIMIZER:
-      case ContentSettingsType::
-          DEPRECATED_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS:
       case ContentSettingsType::LEGACY_COOKIE_SCOPE:
       case ContentSettingsType::
           ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER:

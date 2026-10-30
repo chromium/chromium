@@ -86,10 +86,6 @@ ContentSettingsContentSettingClearFunction::Run() {
   std::optional<Clear::Params> params = Clear::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  if (content_type == ContentSettingsType::DEPRECATED_PPAPI_BROKER) {
-    NOTREACHED();
-  }
-
   ChromeSettingScope scope = ChromeSettingScope::kRegular;
   bool incognito = false;
   if (params->details.scope ==
@@ -123,10 +119,6 @@ ContentSettingsContentSettingGetFunction::Run() {
 
   std::optional<Get::Params> params = Get::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-
-  if (content_type == ContentSettingsType::DEPRECATED_PPAPI_BROKER) {
-    NOTREACHED();
-  }
 
   GURL primary_url(params->details.primary_url);
   if (!primary_url.is_valid()) {
@@ -198,10 +190,6 @@ ContentSettingsContentSettingSetFunction::Run() {
 
   std::optional<Set::Params> params = Set::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-
-  if (content_type == ContentSettingsType::DEPRECATED_PPAPI_BROKER) {
-    NOTREACHED();
-  }
 
   std::string primary_error;
   ContentSettingsPattern primary_pattern =

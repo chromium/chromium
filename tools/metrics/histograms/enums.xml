@@ -2246,7 +2246,7 @@ Called by update_net_error_codes.py.-->
   <int value="12" label="Media setting (mic)"/>
   <int value="13" label="Media setting (camera)"/>
   <int value="14" label="Protocol Handler setting"/>
-  <int value="15" label="PPAPI Broker setting"/>
+  <int value="15" label="(Obsolete) PPAPI Broker setting"/>
   <int value="16" label="Automatic downloads setting"/>
   <int value="17" label="MIDI sysex setting"/>
   <int value="18" label="Push messaging setting [removed]"/>
