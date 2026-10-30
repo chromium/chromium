@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/actions/actions_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -67,7 +68,9 @@
 #include "chrome/browser/ui/views/toolbar/reload_control.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/toolbar/webui_and_views_toolbar_interactive_uitest_base.h"
+#include "chrome/browser/ui/views/toolbar/webui_back_forward_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_battery_saver_control.h"
+#include "chrome/browser/ui/views/toolbar/webui_home_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_overflow_button.h"
 #include "chrome/browser/ui/views/toolbar/webui_reload_control.h"
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
@@ -120,12 +123,15 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/screen.h"
+#include "ui/events/event_constants.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -3042,6 +3048,154 @@ INSTANTIATE_TEST_SUITE_P(
                                        .button_pref = prefs::kPinSplitTabButton,
                                        .button_selector = "split-tabs-button"}),
     [](const testing::TestParamInfo<RightClickContextMenuTestParam>& info) {
+      return info.param.test_name;
+    });
+
+// Parameters for `WebUIToolbarButtonPressAndDragTest`.
+struct DragTestParam {
+  const char* test_name;
+  const char* selector;
+  const char* pref_name = nullptr;
+};
+
+// Tests that pressing and dragging downward on toolbar buttons opens their
+// native context menu. Runs in `interactive_ui_tests` because native context
+// menus opened via `views::MenuRunner` require window focus and mouse capture
+// isolation.
+class WebUIToolbarButtonPressAndDragTest
+    : public WebUIToolbarWebViewTestBase,
+      public testing::WithParamInterface<DragTestParam> {
+ public:
+  WebUIToolbarButtonPressAndDragTest()
+      : WebUIToolbarWebViewTestBase(
+            /*enabled=*/{features::kInitialWebUI, features::kWebUIReloadButton,
+                         features::kWebUISplitTabsButton,
+                         features::kWebUIHomeButton,
+                         features::kWebUIBackForwardButton,
+                         features::kSkipIPCChannelPausingForNonGuests,
+                         features::kWebUIInProcessResourceLoadingV2},
+            /*disabled=*/{}) {}
+};
+
+IN_PROC_BROWSER_TEST_P(WebUIToolbarButtonPressAndDragTest, PressAndDragDown) {
+  const auto& param = GetParam();
+  WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
+  content::WaitForCopyableViewInWebContents(web_contents);
+
+  if (param.pref_name) {
+    PinButton(browser(), web_view, param.pref_name);
+  }
+
+  if (std::string_view(param.test_name) == "Reload") {
+    webui_toolbar_view->reload_control_.SetDevToolsStatus(
+        /*is_dev_tools_connected=*/true);
+  }
+
+  if (std::string_view(param.test_name) == "Back" ||
+      std::string_view(param.test_name) == "Forward") {
+    // Navigate twice to ensure we have back/forward history.
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GURL("chrome://newtab")));
+    if (std::string_view(param.test_name) == "Forward") {
+      chrome::GoBack(browser(), ui::mojom::WindowOpenDisposition::kCurrentTab);
+    }
+  }
+
+  ASSERT_TRUE(WaitForButtonVisible(web_contents, param.selector));
+
+  // Wait for the inner icon button to be rendered and enabled (and for the
+  // reload button to reflect that its context menu is enabled).
+  const std::string ready_condition =
+      std::string_view(param.test_name) == "Reload"
+          ? base::StrCat({GetButtonIconJS(param.selector),
+                          "?.disabled === false && ",
+                          GetButtonIconJS(param.selector),
+                          "?.getAttribute('aria-haspopup') === 'true'"})
+          : base::StrCat(
+                {GetButtonIconJS(param.selector), "?.disabled === false"});
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(web_contents, ready_condition).ExtractBool();
+  }));
+
+  // Identify the control to check for menu_runner.
+  auto get_menu_runner = [&]() -> views::MenuRunner* {
+    if (std::string_view(param.selector) == kReloadButtonSelector) {
+      return webui_toolbar_view->reload_control_.menu_runner_.get();
+    } else if (std::string_view(param.selector) == kHomeSelector) {
+      return webui_toolbar_view->home_control_.menu_runner_.get();
+    } else if (std::string_view(param.selector) == kBackSelector) {
+      return webui_toolbar_view->back_control_.menu_runner_.get();
+    } else if (std::string_view(param.selector) == kForwardSelector) {
+      return webui_toolbar_view->forward_control_.menu_runner_.get();
+    }
+    return nullptr;
+  };
+
+  views::MenuRunner* initial_runner = get_menu_runner();
+  EXPECT_TRUE(!initial_runner || !initial_runner->IsRunning());
+
+  // Dispatch pointerdown followed by a downward pointermove by 10px on the
+  // button with mock pointer capture functions installed on the target.
+  // `base::StringPrintf` is used instead of `content::JsReplace` because
+  // `GetButtonIconJS`, `kGetCoordinatesJS`, and
+  // `AddMockPointerCaptureFunctions` return raw JavaScript code snippets rather
+  // than string values to be quoted as JavaScript string literals.
+  EXPECT_TRUE(content::ExecJs(
+      web_contents,
+      base::StringPrintf(
+          "(() => { "
+          "  const target = %s; "
+          "  %s"
+          "  %s"
+          "  target.dispatchEvent(new PointerEvent('pointerdown', "
+          "      {bubbles: true, cancelable: true, view: window, "
+          "       pointerType: 'mouse', clientX: x, clientY: y, "
+          "       detail: 1, button: 0})); "
+          "  target.dispatchEvent(new PointerEvent('pointermove', "
+          "      {bubbles: true, cancelable: true, view: window, "
+          "       pointerType: 'mouse', clientX: x, clientY: y + 10})); "
+          "})();",
+          GetButtonIconJS(param.selector).c_str(), kGetCoordinatesJS,
+          AddMockPointerCaptureFunctions("target").c_str())));
+
+  // The menu should open immediately.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    views::MenuRunner* runner = get_menu_runner();
+    return runner && runner->IsRunning();
+  }));
+
+  if (std::string_view(param.selector) == kBackSelector) {
+    EXPECT_TRUE(webui_toolbar_view->back_control_.menu_model_adapter_
+                    ->triggerable_event_flags() &
+                ui::EF_MIDDLE_MOUSE_BUTTON);
+  } else if (std::string_view(param.selector) == kForwardSelector) {
+    EXPECT_TRUE(webui_toolbar_view->forward_control_.menu_model_adapter_
+                    ->triggerable_event_flags() &
+                ui::EF_MIDDLE_MOUSE_BUTTON);
+  }
+
+  // Clean up.
+  get_menu_runner()->Cancel();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebUIToolbarButtonPressAndDragTest,
+    testing::Values(
+        DragTestParam{.test_name = "Reload", .selector = kReloadButtonSelector},
+        DragTestParam{.test_name = "Home",
+                      .selector = kHomeSelector,
+                      .pref_name = prefs::kShowHomeButton},
+        DragTestParam{.test_name = "Back", .selector = kBackSelector},
+        DragTestParam{.test_name = "Forward",
+                      .selector = kForwardSelector,
+                      .pref_name = prefs::kShowForwardButton}),
+    [](const testing::TestParamInfo<DragTestParam>& info) {
       return info.param.test_name;
     });
 

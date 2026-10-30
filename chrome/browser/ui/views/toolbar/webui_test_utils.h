@@ -100,8 +100,16 @@ void PinButton(BrowserWindowInterface* browser,
                views::WebView* web_view,
                const char* pref);
 
-// CSS selector for the WebUI toolbar home button.
+// CSS selectors for WebUI toolbar buttons.
 inline constexpr char kHomeSelector[] = "#home";
+inline constexpr char kReloadButtonSelector[] = "reload-button";
+inline constexpr char kBackSelector[] = "#back";
+inline constexpr char kForwardSelector[] = "#forward";
+inline constexpr char kAvatarSelector[] = "#avatar";
+inline constexpr char kSplitTabsSelector[] = "split-tabs-button";
+inline constexpr char kAppMenuButtonSelector[] = "#app-menu";
+inline constexpr char kBatterySaverSelector[] = "#battery-saver";
+inline constexpr char kMediaSelector[] = "#media";
 
 // Pins Home button and waits for it to become visible in WebUI toolbar.
 WebUIToolbarWebView* SetUpAndPinHomeButton(BrowserWindowInterface* browser);
