@@ -183,6 +183,105 @@ public class TabStateStoreUnitTest {
     }
 
     @Test
+    public void testRestoreTabsWithoutLoadState_Authoritative() {
+        // Mirrors startup with --no-restore-state, where loadState() is skipped.
+        mTabStateStore.onNativeLibraryReady();
+        mTabStateStore.clearState();
+        verify(mObserver).onStateLoaded();
+        clearInvocations(mObserver, mMigrationManager);
+
+        when(mModelTrackingOrchestrator.isSynchronizerPresent(false)).thenReturn(true);
+        when(mModelTrackingOrchestrator.isSynchronizerPresent(true)).thenReturn(true);
+        when(mRegularTabModel.getCount()).thenReturn(1);
+        when(mIncognitoTabModel.getCount()).thenReturn(0);
+
+        mTabStateStore.restoreTabs(/* setActiveTab= */ true);
+
+        verify(mTabStateStorageService, never()).loadAllData(any(), anyBoolean(), any());
+        verify(mTabCountTracker).updateTabCount(false, 1);
+        verify(mTabCountTracker).updateTabCount(true, 0);
+        verify(mObserver).onStateLoaded();
+
+        // clearState() already cleared the persisted state; nothing is razed again.
+        verify(mTabStateStorageService, never()).clearWindow(any());
+        verify(mMigrationManager, never()).onWindowCleared();
+        verify(mMigrationManager, never()).onShadowStoreRazed();
+        verify(mModelTrackingOrchestrator).setLoadIncognitoTabsOnStart(false);
+        verify(mMigrationManager).onAuthoritativeStoreInitialized(StoreType.TAB_STATE_STORE);
+        verify(mModelTrackingOrchestrator, never()).onRestoreCancelled();
+        verify(mModelTrackingOrchestrator, never()).destroy();
+        verify(mModelTrackingOrchestrator).onRestoreFinished();
+
+        // A second call is a no-op.
+        clearInvocations(
+                mObserver, mModelTrackingOrchestrator, mMigrationManager, mTabCountTracker);
+        mTabStateStore.restoreTabs(/* setActiveTab= */ true);
+        verify(mObserver, never()).onStateLoaded();
+        verify(mModelTrackingOrchestrator, never()).setLoadIncognitoTabsOnStart(anyBoolean());
+        verify(mMigrationManager, never()).onAuthoritativeStoreInitialized(anyInt());
+        verify(mModelTrackingOrchestrator, never()).onRestoreFinished();
+        verify(mTabCountTracker, never()).updateTabCount(anyBoolean(), anyInt());
+    }
+
+    @Test
+    public void testClearStateThenRestoreTabs_WithoutLoadState_NonAuthoritative() {
+        // Mirrors startup with --no-restore-state for the shadow store, where the authoritative
+        // store finishes loading after the shadow store's restoreTabs().
+        createNonAuthoritativeStore();
+        mTabStateStore.onNativeLibraryReady();
+        mTabStateStore.clearState();
+        verify(mObserver).onStateLoaded();
+        clearInvocations(mObserver);
+
+        mTabStateStore.restoreTabs(/* setActiveTab= */ true);
+
+        verify(mTabStateStorageService, never()).loadAllData(any(), anyBoolean(), any());
+        verify(mObserver).onStateLoaded();
+        verify(mModelTrackingOrchestrator).setLoadIncognitoTabsOnStart(false);
+        // Not razed or caught up until the authoritative store has loaded.
+        verify(mTabStateStorageService, never()).clearWindow(any());
+        verify(mMigrationManager, never()).onShadowStoreRazed();
+        verify(mModelTrackingOrchestrator, never()).onRestoreFinished();
+
+        mTabStateStore.onAuthoritativeStateLoaded();
+
+        verify(mModelTrackingOrchestrator).onAuthoritativeStateLoaded();
+        verify(mModelTrackingOrchestrator).onRestoreFinished();
+        verify(mTabStateStorageService).clearWindow(WINDOW_TAG);
+        verify(mMigrationManager).onShadowStoreRazed();
+    }
+
+    @Test
+    public void testClearStateThenRestoreTabs_WithoutLoadState_NonAuthoritative_AuthLoadedFirst() {
+        // In production the authoritative store's clearState() notifies the shadow store before
+        // the shadow store's restoreTabs() is called.
+        createNonAuthoritativeStore();
+        mTabStateStore.onNativeLibraryReady();
+        mTabStateStore.clearState();
+        verify(mObserver).onStateLoaded();
+        clearInvocations(mObserver);
+        mTabStateStore.onAuthoritativeStateLoaded();
+        verify(mModelTrackingOrchestrator, never()).onRestoreFinished();
+
+        mTabStateStore.restoreTabs(/* setActiveTab= */ true);
+
+        verify(mObserver).onStateLoaded();
+        verify(mModelTrackingOrchestrator).setLoadIncognitoTabsOnStart(false);
+        verify(mModelTrackingOrchestrator).onRestoreFinished();
+        verify(mTabStateStorageService).clearWindow(WINDOW_TAG);
+        verify(mMigrationManager).onShadowStoreRazed();
+
+        // A second call is a no-op.
+        clearInvocations(
+                mObserver, mTabStateStorageService, mModelTrackingOrchestrator, mMigrationManager);
+        mTabStateStore.restoreTabs(/* setActiveTab= */ true);
+        verify(mObserver, never()).onStateLoaded();
+        verify(mTabStateStorageService, never()).clearWindow(any());
+        verify(mModelTrackingOrchestrator, never()).onRestoreFinished();
+        verify(mMigrationManager, never()).onShadowStoreRazed();
+    }
+
+    @Test
     public void testLoadStateAndRestoreTabs_AuthoritativeDoesNotDuplicateRegistrationOrFullSave() {
         mTabStateStore.onNativeLibraryReady();
 
@@ -1056,6 +1155,12 @@ public class TabStateStoreUnitTest {
         verify(mTabCountTracker).clearCurrentWindow();
         verify(mActiveTabCache).clearCurrentWindow();
         verify(mMigrationManager).onShadowStoreRazed();
+
+        // restoreTabs() after the cancelled restore must not raze the caught up shadow store.
+        clearInvocations(mMigrationManager, mModelTrackingOrchestrator);
+        mTabStateStore.restoreTabs(/* setActiveTab= */ true);
+        verify(mMigrationManager, never()).onShadowStoreRazed();
+        verify(mModelTrackingOrchestrator, never()).onRestoreFinished();
     }
 
     @Test
