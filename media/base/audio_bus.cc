@@ -174,14 +174,7 @@ std::unique_ptr<AudioBus> AudioBus::WrapMemory(int channels,
 std::unique_ptr<AudioBus> AudioBus::WrapMemory(const AudioParameters& params,
                                                base::span<uint8_t> data) {
   CHECK(IsAligned(data.data()));
-  CHECK_EQ(data.size() % sizeof(float), 0u);
-
-  // SAFETY: This reinterpret cast is unfortunately unavoidable, since we want
-  // to expose channels as float spans. Making sure `data` is aligned and its
-  // size a multiple of `sizeof(float)` is the best we can do for safety here.
-  auto float_span = UNSAFE_BUFFERS(base::span<float>(
-      reinterpret_cast<float*>(data.data()), data.size() / sizeof(float)));
-  return WrapMemory(params, float_span);
+  return WrapMemory(params, base::subtle::reinterpret_span<float>(data));
 }
 
 std::unique_ptr<AudioBus> AudioBus::WrapMemory(const AudioParameters& params,
