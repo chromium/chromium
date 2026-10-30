@@ -132,14 +132,14 @@ public class TabStateStore implements TabPersistentStore {
                     mCombinedTabRestorer = null;
                     mIsRestoreFinished = true;
 
-                    for (TabPersistentStoreObserver observer : mObservers) {
-                        observer.onStateLoaded();
-                    }
-
                     if (mIsAuthoritative) {
                         assumeNonNull(mModelTrackingManager).onRestoreCancelled();
                     } else {
                         maybeCompleteShadowRestoreAndCatchUp();
+                    }
+
+                    for (TabPersistentStoreObserver observer : mObservers) {
+                        observer.onStateLoaded();
                     }
                 }
 
@@ -457,10 +457,6 @@ public class TabStateStore implements TabPersistentStore {
                     new InnerRegistrationObserver());
         }
         onFinishedCreatingAllTabs();
-        if (mIsAuthoritative) {
-            updateTabCountForModel(/* incognito= */ false);
-            updateTabCountForModel(/* incognito= */ true);
-        }
     }
 
     @Override
@@ -746,14 +742,16 @@ public class TabStateStore implements TabPersistentStore {
         mCombinedTabRestorer = null;
         mIsRestoreFinished = true;
 
-        for (TabPersistentStoreObserver observer : mObservers) {
-            observer.onStateLoaded();
-        }
-
         if (mIsAuthoritative) {
             assumeNonNull(mModelTrackingManager).onRestoreFinished();
+            updateTabCountForModel(/* incognito= */ false);
+            updateTabCountForModel(/* incognito= */ true);
         } else {
             maybeCompleteShadowRestoreAndCatchUp();
+        }
+
+        for (TabPersistentStoreObserver observer : mObservers) {
+            observer.onStateLoaded();
         }
     }
 
