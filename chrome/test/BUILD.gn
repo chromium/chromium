@@ -2100,12 +2100,6 @@ group("telemetry_perf_unittests_base") {
 
     # For smoke testing run_performance_tests.py
     "//testing/scripts/run_performance_tests.py",
-
-    # For tests in tools/perf/process_perf_results_unittest.py
-    "//build/android/pylib/",
-    "//build/util/",
-    "//build/android/java_home.py",
-    "//third_party/logdog/logdog",
   ]
 
   data_deps = [

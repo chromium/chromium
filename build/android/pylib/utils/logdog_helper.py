@@ -8,16 +8,26 @@ import logging
 import os
 import sys
 
-from pylib import constants
 from lib.common import decorators
+
+_DIR_SOURCE_ROOT = os.environ.get(
+    'CHECKOUT_SOURCE_ROOT',
+    os.path.abspath(
+        os.path.join(
+            os.path.dirname(__file__),
+            os.pardir,
+            os.pardir,
+            os.pardir,
+            os.pardir,
+        )
+    ),
+)
 
 sys.path.insert(
     0,
-    os.path.abspath(
-        os.path.join(constants.DIR_SOURCE_ROOT, 'third_party', 'logdog')
-    ),
+    os.path.abspath(os.path.join(_DIR_SOURCE_ROOT, 'third_party', 'logdog')),
 )
-from logdog import bootstrap
+from logdog import bootstrap  # noqa: E402
 
 
 @decorators.NoRaiseException(

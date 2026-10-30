@@ -1501,11 +1501,6 @@ if (use_blink && !is_cronet_build) {
     ]
 
     data = [
-      # These tests use //build/android/devil_chromium.py even when !is_android,
-      # so cannot use the helpers in //build/android (they assert(is_android)).
-      "//build/android/",
-      "//build/gn_helpers.py",
-      "//build/config/gclient_args.gni",
       "//components/crash/content/tools/generate_breakpad_symbols.py",
       "//testing/unexpected_passes_common/",
       "//testing/flake_suppressor_common/",
@@ -1524,9 +1519,6 @@ if (use_blink && !is_cronet_build) {
       "//third_party/blink/web_tests/VirtualTestSuites",
       "//third_party/blink/web_tests/W3CImportExpectations",
       "//third_party/blink/web_tests/paint/invalidation/repaint-overlay/",
-      "//third_party/catapult/common/py_utils/",
-      "//third_party/catapult/devil/",
-      "//third_party/catapult/dependency_manager/",
       "//third_party/catapult/third_party/typ/",
       "//third_party/depot_tools/pylint-2.7",
       "//third_party/depot_tools/pylint_main.py",

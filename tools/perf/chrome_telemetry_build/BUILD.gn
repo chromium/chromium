@@ -178,9 +178,9 @@ group("telemetry_chrome_test_without_chrome") {
   testonly = true
 
   data = [
-    "//build/android/pylib/",  # chromium_config.py uses pylib to look for Java
+    # chromium_config.py imports java_home.py to locate Java.
+    "//build/android/java_home.py",
     "//components/crash/content/tools/generate_breakpad_symbols.py",
-    "//build/android/java_home.py",  # Imported by pylib/constants.
     "//third_party/webpagereplay/",
     "//tools/perf/chrome_telemetry_build/",
     "//tools/perf/core/",  # chrome_telemetry_build/ depends on core/
@@ -223,6 +223,8 @@ group("telemetry_chrome_test_without_chrome") {
 
   if (is_android) {
     data += [
+      "//build/android/pylib/",
+
       # TODO(httpss://crbug.com/833808): Remove this once bots always set
       # CHROMIUM_OUTPUT_DIR correctly. Currently, this is necessary in order
       # for //build/android/pylib/constants/__init__.py to detect the output

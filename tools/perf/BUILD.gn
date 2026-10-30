@@ -2,7 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
 import("//build/config/vpython.gni")
+
+python_library("process_perf_results_py") {
+  pydeps_file = "process_perf_results.pydeps"
+}
 
 COMMON_PERF_DATA = [
   "//third_party/crossbench/vpython.toml",
@@ -74,6 +79,7 @@ if (is_android) {
 group("perf_without_chrome") {
   testonly = true
   data_deps = [
+    ":process_perf_results_py",
     "//tools/perf/chrome_telemetry_build:telemetry_chrome_test_without_chrome",
   ]
 
@@ -103,16 +109,14 @@ group("perf_without_chrome") {
            # For image_decoding.measurement
            "//chrome/test/data/image_decoding/",
 
-           # For Pylib used by VR tests
-           "//build/android/pylib/",
-           "//build/android/java_home.py",
-
-           # For process perf results
-           "//build/util/lib/",
-
            # For Crossbench WPR network
            "//third_party/webpagereplay/",
          ] + vpython_spec_files
+
+  if (is_android) {
+    # For Pylib used by VR and Android tests
+    data += [ "//build/android/pylib/" ]
+  }
 
   # Runs a script which generates the ad tagging ruleset.
   if (!is_ios) {
