@@ -14,6 +14,8 @@
 
 namespace tabs {
 
+class NodeHashCache;
+
 // Observes changes to the structure of a TabStripCollection.
 // This class does not manage observer registration and
 // unregistration.
@@ -42,7 +44,8 @@ class CollectionStorageObserver
 
   // Removes `collection` and all its descendants from storage.
   static void ClearSubTree(const TabCollection* collection,
-                           TabStateStorageService* service);
+                           TabStateStorageService* service,
+                           NodeHashCache* hash_cache);
 
  private:
   raw_ptr<TabStripCollection> collection_;

@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/tab/collection_storage_observer.h"
+#include "chrome/browser/tab/node_hash_cache.h"
 #include "chrome/browser/tab/restore_entity_tracker.h"
 #include "chrome/browser/tab/storage_collection_synchronizer.h"
 #include "chrome/browser/tab/storage_id.h"
@@ -203,12 +204,14 @@ void StorageRestoreOrchestrator::OnChildrenRemoved(
     const TabCollectionNodes& handles) {
   auto batch = service_->CreateScopedBatch();
   RestoreEntityTracker* tracker = loaded_data_->GetTracker();
+  NodeHashCache* hash_cache =
+      synchronizer_ ? &synchronizer_->hash_cache() : nullptr;
   for (const auto& handle : handles) {
     if (std::holds_alternative<TabCollection::Handle>(handle)) {
       const TabCollection* collection =
           std::get<TabCollection::Handle>(handle).Get();
       tracker->AssociateCollection(collection);
-      CollectionStorageObserver::ClearSubTree(collection, service_);
+      CollectionStorageObserver::ClearSubTree(collection, service_, hash_cache);
     } else if (std::holds_alternative<TabHandle>(handle)) {
       const TabInterface* tab = std::get<TabHandle>(handle).Get();
       tracker->AssociateTab(tab);
