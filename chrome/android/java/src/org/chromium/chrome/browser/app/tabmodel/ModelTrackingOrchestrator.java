@@ -487,27 +487,15 @@ public class ModelTrackingOrchestrator {
             mRegularModelCaughtUp = false;
         }
 
-        try (ScopedStorageBatch ignored = createBatch(profile)) {
-            var profileAndCollection = getProfileAndCollection(mTabModelSelector, incognito);
-            getSynchronizer(profileAndCollection, incognito)
-                    .fullSave(
-                            () ->
-                                    PostTask.postTask(
-                                            TaskTraits.UI_DEFAULT,
-                                            () -> markModelCaughtUp(incognito)));
-        }
-
         for (Tab tab : tabModel) {
-            TabStateAttributes attributes =
-                    TabStateAttributesRegistry.getAttributesFor(tab, TabStateStore.class);
-            if (attributes != null) {
-                attributes.clearTabStateDirtiness();
-            }
+            getDirtyTabs(incognito).add(tab);
         }
-        // fullSave() saves both the collection hierarchy and all tab payloads.
-        getDirtyTabs(incognito).clear();
 
         initializeTrackingSuite(incognito);
+        saveStructureSnapshot(
+                incognito,
+                /* clearUnusedNodes= */ true,
+                () -> PostTask.postTask(TaskTraits.UI_DEFAULT, () -> markModelCaughtUp(incognito)));
         return true;
     }
 
@@ -544,10 +532,7 @@ public class ModelTrackingOrchestrator {
 
         Callback<@Nullable Tab> obs =
                 incognito ? mIncognitoActiveTabObserver : mRegularActiveTabObserver;
-        mTabModelSelector
-                .getModel(incognito)
-                .getCurrentTabSupplier()
-                .addSyncObserverAndCallIfNonNull(obs);
+        mTabModelSelector.getModel(incognito).getCurrentTabSupplier().addSyncObserver(obs);
     }
 
     private void initVisualDataTracking(boolean incognito) {
@@ -596,9 +581,9 @@ public class ModelTrackingOrchestrator {
     }
 
     private void initializeTrackingSuite(boolean incognito) {
+        initCollectionTracking(incognito);
         initVisualDataTracking(incognito);
         initActiveTabTracking(incognito);
-        initCollectionTracking(incognito);
     }
 
     private void onActiveTabChange(boolean incognito) {

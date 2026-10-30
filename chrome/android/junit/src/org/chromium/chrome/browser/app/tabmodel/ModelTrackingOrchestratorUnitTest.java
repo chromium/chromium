@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -186,26 +187,17 @@ public class ModelTrackingOrchestratorUnitTest {
         mOrchestrator.onDataLoaded(mRegularData, /* incognito= */ false);
         mOrchestrator.onRestoredForModel(/* incognito= */ false);
 
-        // When data is loaded, synchronizer is in RESTORING or TRACKING and does not do fullSave.
-        verify(mRegularSynchronizer, never()).fullSave(any());
         verify(mRegularSynchronizer).saveStructureSnapshot(eq(true), any());
         verify(mRegularSynchronizer).consumeCollectionObserverFactory(any());
     }
 
     @Test
-    public void testNonAuthoritativeOnRestoreFinished_FullSaves() {
+    public void testNonAuthoritativeOnRestoreFinished_SavesStructureSnapshot() {
         createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ false);
-
-        MockTab tab = new MockTab(1, mProfile);
-        TabStateAttributesRegistry.createAttributesForTab(
-                tab, TabStateStore.class, TabCreationState.FROZEN_FOR_LAZY_LOAD);
-
-        when(mRegularTabModel.iterator())
-                .thenAnswer(inv -> Collections.singletonList((Tab) tab).iterator());
 
         mOrchestrator.onRestoredForModel(/* incognito= */ false);
 
-        verify(mRegularSynchronizer).fullSave(any());
+        verify(mRegularSynchronizer).saveStructureSnapshot(eq(true), any());
         assertTrue(mOrchestrator.isSynchronizerPresent(false));
     }
 
@@ -219,17 +211,17 @@ public class ModelTrackingOrchestratorUnitTest {
         mOrchestrator.setLoadIncognitoTabsOnStart(true);
 
         mOrchestrator.onRestoredForModel(/* incognito= */ false);
-        verify(mRegularSynchronizer).fullSave(any());
+        verify(mRegularSynchronizer).saveStructureSnapshot(eq(true), any());
 
         mOrchestrator.onRestoredForModel(/* incognito= */ true);
-        verify(mIncognitoSynchronizer, never()).fullSave(any());
+        verify(mIncognitoSynchronizer, never()).saveStructureSnapshot(anyBoolean(), any());
 
-        // With cipher factory, incognito synchronizer is created and full-saved.
+        // With cipher factory, incognito synchronizer is created and snapshot saved.
         createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ false);
         mOrchestrator.onAuthoritativeStateLoaded();
         mOrchestrator.setLoadIncognitoTabsOnStart(true);
         mOrchestrator.onRestoredForModel(/* incognito= */ true);
-        verify(mIncognitoSynchronizer).fullSave(any());
+        verify(mIncognitoSynchronizer).saveStructureSnapshot(eq(true), any());
     }
 
     @Test
@@ -241,7 +233,7 @@ public class ModelTrackingOrchestratorUnitTest {
         mOrchestrator.onRestoreFinished();
 
         assertTrue(mOrchestrator.isSynchronizerPresent(/* incognito= */ false));
-        verify(mRegularSynchronizer).fullSave(any());
+        verify(mRegularSynchronizer).saveStructureSnapshot(eq(true), any());
         verify(mRegularSynchronizer).consumeCollectionObserverFactory(any());
     }
 
@@ -258,7 +250,7 @@ public class ModelTrackingOrchestratorUnitTest {
         mOrchestrator.onRestoredForModel(/* incognito= */ false);
 
         ArgumentCaptor<Runnable> callbackCaptor = ArgumentCaptor.forClass(Runnable.class);
-        verify(mRegularSynchronizer).fullSave(callbackCaptor.capture());
+        verify(mRegularSynchronizer).saveStructureSnapshot(eq(true), callbackCaptor.capture());
         callbackCaptor.getValue().run();
 
         ShadowLooper.runUiThreadTasks();
@@ -281,7 +273,8 @@ public class ModelTrackingOrchestratorUnitTest {
         // Caught up Regular.
         mOrchestrator.onRestoredForModel(/* incognito= */ false);
         ArgumentCaptor<Runnable> regularCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
-        verify(mRegularSynchronizer).fullSave(regularCallbackCaptor.capture());
+        verify(mRegularSynchronizer)
+                .saveStructureSnapshot(eq(true), regularCallbackCaptor.capture());
         regularCallbackCaptor.getValue().run();
         ShadowLooper.runUiThreadTasks();
 
@@ -290,7 +283,8 @@ public class ModelTrackingOrchestratorUnitTest {
         // Caught up Incognito.
         mOrchestrator.onRestoredForModel(/* incognito= */ true);
         ArgumentCaptor<Runnable> incognitoCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
-        verify(mIncognitoSynchronizer).fullSave(incognitoCallbackCaptor.capture());
+        verify(mIncognitoSynchronizer)
+                .saveStructureSnapshot(eq(true), incognitoCallbackCaptor.capture());
         incognitoCallbackCaptor.getValue().run();
         ShadowLooper.runUiThreadTasks();
 
@@ -308,7 +302,8 @@ public class ModelTrackingOrchestratorUnitTest {
         // Caught up Regular.
         mOrchestrator.onRestoredForModel(/* incognito= */ false);
         ArgumentCaptor<Runnable> regularCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
-        verify(mRegularSynchronizer).fullSave(regularCallbackCaptor.capture());
+        verify(mRegularSynchronizer)
+                .saveStructureSnapshot(eq(true), regularCallbackCaptor.capture());
         regularCallbackCaptor.getValue().run();
         ShadowLooper.runUiThreadTasks();
 
@@ -319,8 +314,8 @@ public class ModelTrackingOrchestratorUnitTest {
 
         mOrchestrator.onRestoredForModel(/* incognito= */ true);
 
-        // Should mark incognito caught up immediately without calling fullSave.
-        verify(mIncognitoSynchronizer, never()).fullSave(any());
+        // Should mark incognito caught up immediately without calling saveStructureSnapshot.
+        verify(mIncognitoSynchronizer, never()).saveStructureSnapshot(anyBoolean(), any());
         verify(mMigrationManager).onShadowStoreCaughtUp();
     }
 
@@ -336,12 +331,13 @@ public class ModelTrackingOrchestratorUnitTest {
         verify(mMigrationManager, never()).onShadowStoreCaughtUp();
 
         mOrchestrator.onRestoredForModel(/* incognito= */ false);
-        verify(mRegularSynchronizer, never()).fullSave(any());
+        verify(mRegularSynchronizer, never()).saveStructureSnapshot(anyBoolean(), any());
         verify(mMigrationManager, never()).onShadowStoreCaughtUp();
 
         mOrchestrator.onRestoredForModel(/* incognito= */ true);
         ArgumentCaptor<Runnable> incognitoCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
-        verify(mIncognitoSynchronizer).fullSave(incognitoCallbackCaptor.capture());
+        verify(mIncognitoSynchronizer)
+                .saveStructureSnapshot(eq(true), incognitoCallbackCaptor.capture());
         incognitoCallbackCaptor.getValue().run();
         ShadowLooper.runUiThreadTasks();
 
@@ -664,14 +660,15 @@ public class ModelTrackingOrchestratorUnitTest {
         // Standard restore completed.
         mOrchestrator.onRestoredForModel(/* incognito= */ true);
 
-        verify(mIncognitoSynchronizer).fullSave(any());
+        verify(mIncognitoSynchronizer).saveStructureSnapshot(eq(true), any());
         assertTrue(mOrchestrator.isSynchronizerPresent(/* incognito= */ true));
         verify(mIncognitoSynchronizer).consumeCollectionObserverFactory(any());
         verify(mIncognitoSynchronizer, never()).consumeRestoreOrchestratorFactory(any());
     }
 
     @Test
-    public void testIncognitoModelCreatedBeforeRestoreFinished_NonAuthoritative_DefersFullSave() {
+    public void
+            testIncognitoModelCreatedBeforeRestoreFinished_NonAuthoritative_DefersSaveStructureSnapshot() {
         createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ false);
         mOrchestrator.setLoadIncognitoTabsOnStart(false);
 
@@ -681,18 +678,20 @@ public class ModelTrackingOrchestratorUnitTest {
         when(mIncognitoTabModel.getTabModelType()).thenReturn(TabModelType.STANDARD);
         observer.onIncognitoModelCreated();
 
-        // Should not start tracking or fullSave before onRestoreFinished (before shadow DB raze).
+        // Should not start tracking or save snapshot before onRestoreFinished (before shadow DB
+        // raze).
         assertFalse(mOrchestrator.isSynchronizerPresent(/* incognito= */ true));
-        verify(mIncognitoSynchronizer, never()).fullSave(any());
+        verify(mIncognitoSynchronizer, never()).saveStructureSnapshot(anyBoolean(), any());
 
-        // Once onRestoreFinished runs after DB raze, fullSave and tracking are initialized.
+        // Once onRestoreFinished runs after DB raze, snapshot and tracking are initialized.
         mOrchestrator.onRestoreFinished();
         assertTrue(mOrchestrator.isSynchronizerPresent(/* incognito= */ true));
-        verify(mIncognitoSynchronizer).fullSave(any());
+        verify(mIncognitoSynchronizer).saveStructureSnapshot(eq(true), any());
     }
 
     @Test
-    public void testIncognitoModelCreatedAfterRestoreFinished_NonAuthoritative_TriggersFullSave() {
+    public void
+            testIncognitoModelCreatedAfterRestoreFinished_NonAuthoritative_TriggersSaveStructureSnapshot() {
         createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ false);
         mOrchestrator.onAuthoritativeStateLoaded();
         mOrchestrator.setLoadIncognitoTabsOnStart(true);
@@ -705,13 +704,14 @@ public class ModelTrackingOrchestratorUnitTest {
         mOrchestrator.onRestoreFinished();
 
         ArgumentCaptor<Runnable> regularCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
-        verify(mRegularSynchronizer).fullSave(regularCallbackCaptor.capture());
+        verify(mRegularSynchronizer)
+                .saveStructureSnapshot(eq(true), regularCallbackCaptor.capture());
         regularCallbackCaptor.getValue().run();
         ShadowLooper.runUiThreadTasks();
 
         verify(mMigrationManager, times(1)).onShadowStoreCaughtUp();
         assertFalse(mOrchestrator.isSynchronizerPresent(/* incognito= */ true));
-        verify(mIncognitoSynchronizer, never()).fullSave(any());
+        verify(mIncognitoSynchronizer, never()).saveStructureSnapshot(anyBoolean(), any());
 
         // Later in the session, user opens an incognito tab and model is created.
         when(mIncognitoTabModel.getTabModelType()).thenReturn(TabModelType.STANDARD);
@@ -719,7 +719,8 @@ public class ModelTrackingOrchestratorUnitTest {
 
         assertTrue(mOrchestrator.isSynchronizerPresent(/* incognito= */ true));
         ArgumentCaptor<Runnable> incognitoCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
-        verify(mIncognitoSynchronizer).fullSave(incognitoCallbackCaptor.capture());
+        verify(mIncognitoSynchronizer)
+                .saveStructureSnapshot(eq(true), incognitoCallbackCaptor.capture());
         incognitoCallbackCaptor.getValue().run();
         ShadowLooper.runUiThreadTasks();
 
@@ -729,7 +730,7 @@ public class ModelTrackingOrchestratorUnitTest {
 
     @Test
     public void
-            testIncognitoModelCreatedBeforeRegularFullSaveFinishes_NonAuthoritative_DefersCaughtUpUntilBothFinish() {
+            testIncognitoModelCreatedBeforeRegularSaveStructureSnapshotFinishes_NonAuthoritative_DefersCaughtUpUntilBothFinish() {
         createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ false);
         mOrchestrator.onAuthoritativeStateLoaded();
         mOrchestrator.setLoadIncognitoTabsOnStart(false);
@@ -741,31 +742,33 @@ public class ModelTrackingOrchestratorUnitTest {
         mOrchestrator.onRestoreFinished();
 
         ArgumentCaptor<Runnable> regularCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
-        verify(mRegularSynchronizer).fullSave(regularCallbackCaptor.capture());
+        verify(mRegularSynchronizer)
+                .saveStructureSnapshot(eq(true), regularCallbackCaptor.capture());
 
-        // Incognito model is created while regular fullSave is still in flight.
+        // Incognito model is created while regular snapshot is still in flight.
         when(mIncognitoTabModel.getTabModelType()).thenReturn(TabModelType.STANDARD);
         observer.onIncognitoModelCreated();
 
         ArgumentCaptor<Runnable> incognitoCallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
-        verify(mIncognitoSynchronizer).fullSave(incognitoCallbackCaptor.capture());
+        verify(mIncognitoSynchronizer)
+                .saveStructureSnapshot(eq(true), incognitoCallbackCaptor.capture());
 
-        // Completing regular fullSave alone must not fire onShadowStoreCaughtUp.
+        // Completing regular snapshot alone must not fire onShadowStoreCaughtUp.
         regularCallbackCaptor.getValue().run();
         ShadowLooper.runUiThreadTasks();
         verify(mMigrationManager, never()).onShadowStoreCaughtUp();
 
-        // Completing incognito fullSave now fires onShadowStoreCaughtUp once.
+        // Completing incognito snapshot now fires onShadowStoreCaughtUp once.
         incognitoCallbackCaptor.getValue().run();
         ShadowLooper.runUiThreadTasks();
         verify(mMigrationManager, times(1)).onShadowStoreCaughtUp();
     }
 
     @Test
-    public void testFullSaveAndInitTracking_ClearsTabStateDirtiness() {
+    public void testClearTabStateDirtinessOnStartup() {
         createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ false);
 
-        MockTab tab = new MockTab(1, mProfile);
+        MockTab tab = createTab(1, mProfile, /* hasParentCollection= */ true);
         TabStateAttributesRegistry.createAttributesForTab(
                 tab, TabStateStore.class, TabCreationState.FROZEN_FOR_LAZY_LOAD);
         TabStateAttributes attributes =
@@ -777,7 +780,8 @@ public class ModelTrackingOrchestratorUnitTest {
 
         mOrchestrator.onRestoredForModel(/* incognito= */ false);
 
-        verify(mRegularSynchronizer).fullSave(any());
+        verify(mRegularSynchronizer).saveStructureSnapshot(eq(true), any());
+        verify(mTabStateStorageService).saveTabData(eq(tab));
         assertEquals(DirtinessState.CLEAN, attributes.getDirtinessState());
     }
 
@@ -873,10 +877,10 @@ public class ModelTrackingOrchestratorUnitTest {
         assertTrue(mOrchestrator.isSynchronizerPresent(/* incognito= */ false));
         assertTrue(mOrchestrator.isSynchronizerPresent(/* incognito= */ true));
         verify(mRegularSynchronizer, never()).consumeRestoreOrchestratorFactory(any());
-        verify(mRegularSynchronizer).fullSave(any());
+        verify(mRegularSynchronizer).saveStructureSnapshot(eq(true), any());
         verify(mRegularSynchronizer).consumeCollectionObserverFactory(any());
         verify(mIncognitoSynchronizer, never()).consumeRestoreOrchestratorFactory(any());
-        verify(mIncognitoSynchronizer).fullSave(any());
+        verify(mIncognitoSynchronizer).saveStructureSnapshot(eq(true), any());
         verify(mIncognitoSynchronizer).consumeCollectionObserverFactory(any());
     }
 
@@ -892,10 +896,10 @@ public class ModelTrackingOrchestratorUnitTest {
         assertTrue(mOrchestrator.isSynchronizerPresent(/* incognito= */ false));
         assertTrue(mOrchestrator.isSynchronizerPresent(/* incognito= */ true));
         verify(mRegularSynchronizer, never()).consumeRestoreOrchestratorFactory(any());
-        verify(mRegularSynchronizer).fullSave(any());
+        verify(mRegularSynchronizer).saveStructureSnapshot(eq(true), any());
         verify(mRegularSynchronizer).consumeCollectionObserverFactory(any());
         verify(mIncognitoSynchronizer, never()).consumeRestoreOrchestratorFactory(any());
-        verify(mIncognitoSynchronizer).fullSave(any());
+        verify(mIncognitoSynchronizer).saveStructureSnapshot(eq(true), any());
         verify(mIncognitoSynchronizer).consumeCollectionObserverFactory(any());
     }
 
@@ -909,7 +913,7 @@ public class ModelTrackingOrchestratorUnitTest {
         mOrchestrator.onRestoredForModel(/* incognito= */ false);
 
         assertTrue(mOrchestrator.isSynchronizerPresent(/* incognito= */ false));
-        verify(mRegularSynchronizer).fullSave(any());
+        verify(mRegularSynchronizer).saveStructureSnapshot(eq(true), any());
         verify(mRegularSynchronizer).consumeCollectionObserverFactory(any());
     }
 
