@@ -50,6 +50,7 @@ class DeferredClientWrapper : public Client {
                                       bool force_delete) override;
   void GetUploadData(const std::string& guid,
                      GetUploadDataCallback callback) override;
+  bool RequiresCustomRequestParameters() const override;
 
  private:
   // Forwarding functions

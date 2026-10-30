@@ -12,8 +12,10 @@
 #include <string>
 
 #include "components/download/internal/background_service/driver_entry.h"
+#include "net/base/isolation_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "url/origin.h"
 
 namespace base {
 class FilePath;
@@ -108,14 +110,18 @@ class DownloadDriver {
   virtual void Pause(const std::string& guid) = 0;
 
   // Resumes the download
-  void Resume(const std::string& guid) { ResumeWithFactory(guid, nullptr); }
+  void Resume(const std::string& guid) {
+    ResumeWithFactory(guid, nullptr, std::nullopt, std::nullopt);
+  }
 
   // Resumes a paused/interrupted download while providing a brand new
-  // URLLoaderFactory. Used by clients that need to repopulate the factory
-  // during repreparation.
+  // URLLoaderFactory, request initiator, and isolation info. Used by clients
+  // that need to repopulate these parameters during repreparation.
   virtual void ResumeWithFactory(
       const std::string& guid,
-      scoped_refptr<network::SharedURLLoaderFactory> factory) = 0;
+      scoped_refptr<network::SharedURLLoaderFactory> factory,
+      const std::optional<url::Origin>& request_initiator,
+      const std::optional<net::IsolationInfo>& isolation_info) = 0;
 
   // Finds a download record from low level download library.
   virtual std::optional<DriverEntry> Find(const std::string& guid) = 0;

@@ -2,16 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <atomic>
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "chrome/browser/background_fetch/background_fetch_delegate_impl.h"
 #include "chrome/browser/browser_process.h"
@@ -31,11 +37,13 @@
 #include "components/download/public/background_service/background_download_service.h"
 #include "components/download/public/background_service/features.h"
 #include "components/download/public/background_service/logger.h"
+#include "components/download/public/common/download_item.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
 #include "components/offline_items_collection/core/offline_content_provider.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/download_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -262,14 +270,16 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
   ~BackgroundFetchBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
+    Profile* profile = browser()->GetProfile();
+
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->RegisterRequestHandler(base::BindRepeating(
         &BackgroundFetchBrowserTest::HandleRequest, base::Unretained(this)));
     https_server_->AddDefaultHandlers(GetChromeTestDataDir());
-    ASSERT_TRUE(https_server_->Start());
-
-    Profile* profile = browser()->GetProfile();
+    ASSERT_TRUE(StartServerWithPersistedPort(
+        https_server_.get(),
+        profile->GetPath().AppendASCII("https_server_port.txt")));
 
     download_observer_ = std::make_unique<WaitableDownloadLoggerObserver>();
 
@@ -471,6 +481,28 @@ class BackgroundFetchBrowserTest : public InProcessBrowserTest {
   }
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
+
+  bool StartServerWithPersistedPort(net::EmbeddedTestServer* server,
+                                    const base::FilePath& port_file) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    uint16_t port = 0;
+    std::string port_str;
+    if (base::ReadFileToString(port_file, &port_str)) {
+      unsigned int parsed_port = 0;
+      if (base::StringToUint(
+              base::TrimWhitespaceASCII(port_str, base::TRIM_ALL),
+              &parsed_port)) {
+        port = static_cast<uint16_t>(parsed_port);
+      }
+    }
+    if (!server->Start(port)) {
+      return false;
+    }
+    if (port == 0) {
+      base::WriteFile(port_file, base::NumberToString(server->port()));
+    }
+    return true;
+  }
 
  protected:
   raw_ptr<BackgroundFetchDelegateImpl> delegate_ =
@@ -1077,25 +1109,55 @@ class BackgroundFetchCorsBrowserTest : public BackgroundFetchBrowserTest {
  public:
   BackgroundFetchCorsBrowserTest() {
     base::FieldTrialParams download_params;
-    // Set the DownloadService retry delay to 0 to prevent a 20-second timeout
+    // Set a minimal DownloadService retry delay to prevent a 20-second timeout
     // delay when a background fetch correctly fails due to CORS
     // restrictions.
-    download_params["retry_delay_ms"] = "0";
+    download_params["retry_delay_ms"] = "20";
 
     feature_list_.InitWithFeaturesAndParameters(
         {{download::kDownloadServiceFeature, download_params}}, {});
   }
 
   void SetUpOnMainThread() override {
-    BackgroundFetchBrowserTest::SetUpOnMainThread();
-
     cross_origin_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::EmbeddedTestServer::TYPE_HTTPS);
+    cross_origin_server_->RegisterRequestHandler(base::BindRepeating(
+        &BackgroundFetchCorsBrowserTest::HandleCrossOriginRequest,
+        base::Unretained(this)));
     cross_origin_server_->AddDefaultHandlers(GetChromeTestDataDir());
-    ASSERT_TRUE(cross_origin_server_->Start());
+    ASSERT_TRUE(StartServerWithPersistedPort(
+        cross_origin_server_.get(),
+        browser()->GetProfile()->GetPath().AppendASCII(
+            "cross_origin_server_port.txt")));
+
+    BackgroundFetchBrowserTest::SetUpOnMainThread();
   }
 
  protected:
+  std::unique_ptr<net::test_server::HttpResponse> HandleCrossOriginRequest(
+      const net::test_server::HttpRequest& request) {
+    if (request.relative_url != "/resumable_cors") {
+      return nullptr;
+    }
+    if (interrupt_resumable_cors_request_.load()) {
+      std::string headers =
+          "HTTP/1.1 200 OK\r\n"
+          "Access-Control-Allow-Origin: *\r\n"
+          "ETag: \"12345\"\r\n"
+          "Accept-Ranges: bytes\r\n"
+          "Content-Length: 82\r\n\r\n";
+      return std::make_unique<net::test_server::RawHttpResponse>(headers,
+                                                                 "0123456789");
+    }
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_code(net::HTTP_OK);
+    response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+    response->AddCustomHeader("ETag", "\"12345\"");
+    response->set_content(std::string(82, 'a'));
+    return response;
+  }
+
+  std::atomic<bool> interrupt_resumable_cors_request_{false};
   std::unique_ptr<net::EmbeddedTestServer> cross_origin_server_;
   base::test::ScopedFeatureList feature_list_;
 };
@@ -1248,4 +1310,210 @@ IN_PROC_BROWSER_TEST_F(BackgroundFetchCorsBrowserTest,
   // Access-Control-Expose-Headers, is filtered out and inaccessible in JS.
   offline_content_provider_observer_->ResumeOnNextUpdate();
   ASSERT_NO_FATAL_FAILURE(RunScriptAndCheckResultingMessage(script, "null"));
+}
+
+// Regression test for crbug.com/574059465: Ensure that when a cross-origin
+// Background Fetch with a small downloadTotal fails CORS on the initial
+// attempt, subsequent retries preserve the CORS request mode and do not
+// download the response body or crash when cancelling the job.
+IN_PROC_BROWSER_TEST_F(BackgroundFetchCorsBrowserTest,
+                       FailsWithoutCorsHeadersAndSmallDownloadTotal) {
+  SetPermission(ContentSettingsType::AUTOMATIC_DOWNLOADS,
+                CONTENT_SETTING_ALLOW);
+
+  GURL cross_origin_url =
+      cross_origin_server_->GetURL("/background_fetch/types_of_cheese.txt");
+  std::string script = "StartFetchFromWindowWithFetchOptions('" +
+                       cross_origin_url.spec() + "', {downloadTotal: 4})";
+
+  offline_content_provider_observer_->ResumeOnNextUpdate();
+  ASSERT_NO_FATAL_FAILURE(
+      RunScriptAndCheckResultingMessage(script, "backgroundfetchfail"));
+}
+
+// Regression test for crbug.com/574059465: Ensure that if an initial download
+// attempt fails before receiving response headers and a subsequent retry
+// exceeds downloadTotal, cancelling the job with a null response does not
+// crash in BackgroundFetchRequestInfo::SetResult.
+IN_PROC_BROWSER_TEST_F(
+    BackgroundFetchCorsBrowserTest,
+    FailsWhenRetryExceedsDownloadTotalAfterInitialFailureWithoutHeaders) {
+  SetPermission(ContentSettingsType::AUTOMATIC_DOWNLOADS,
+                CONTENT_SETTING_ALLOW);
+
+  std::atomic<int> request_count{0};
+  net::EmbeddedTestServer retry_server(net::EmbeddedTestServer::TYPE_HTTPS);
+  retry_server.RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url != "/retry_exceeds_total") {
+          return nullptr;
+        }
+        if (request_count.fetch_add(1) == 0) {
+          // Close the socket without sending headers on the first attempt so
+          // the download is interrupted with empty response_headers_.
+          return std::make_unique<net::test_server::RawHttpResponse>("", "");
+        }
+        auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+        response->set_code(net::HTTP_OK);
+        response->AddCustomHeader("Access-Control-Allow-Origin", "*");
+        response->set_content("Response body larger than downloadTotal");
+        return response;
+      }));
+  ASSERT_TRUE(retry_server.Start());
+
+  GURL url = retry_server.GetURL("/retry_exceeds_total");
+  std::string script = "StartFetchFromWindowWithFetchOptions('" + url.spec() +
+                       "', {downloadTotal: 4})";
+
+  offline_content_provider_observer_->ResumeOnNextUpdate();
+  ASSERT_NO_FATAL_FAILURE(
+      RunScriptAndCheckResultingMessage(script, "backgroundfetchfail"));
+  EXPECT_GE(request_count.load(), 2);
+}
+
+namespace {
+
+class InterruptAndPauseDownloadObserver
+    : public content::DownloadManager::Observer,
+      public download::DownloadItem::Observer {
+ public:
+  InterruptAndPauseDownloadObserver(content::DownloadManager* manager,
+                                    BackgroundFetchDelegateImpl* delegate)
+      : manager_(manager), delegate_(delegate) {
+    manager_->AddObserver(this);
+  }
+
+  ~InterruptAndPauseDownloadObserver() override {
+    if (download_item_) {
+      download_item_->RemoveObserver(this);
+    }
+    if (manager_) {
+      manager_->RemoveObserver(this);
+    }
+  }
+
+  void set_offline_item_id(const ContentId& id) {
+    offline_item_id_ = id;
+    MaybePauseAndQuit();
+  }
+
+  void Wait() { run_loop_.Run(); }
+
+  // content::DownloadManager::Observer:
+  void OnDownloadCreated(content::DownloadManager* manager,
+                         download::DownloadItem* item) override {
+    if (!download_item_) {
+      download_item_ = item;
+      download_item_->AddObserver(this);
+      MaybePauseAndQuit();
+    }
+  }
+
+  void ManagerGoingDown(content::DownloadManager* manager) override {
+    manager_->RemoveObserver(this);
+    manager_ = nullptr;
+  }
+
+  // download::DownloadItem::Observer:
+  void OnDownloadUpdated(download::DownloadItem* item) override {
+    MaybePauseAndQuit();
+  }
+
+  void OnDownloadDestroyed(download::DownloadItem* item) override {
+    download_item_->RemoveObserver(this);
+    download_item_ = nullptr;
+  }
+
+ private:
+  void MaybePauseAndQuit() {
+    if (!download_item_ || offline_item_id_.id.empty()) {
+      return;
+    }
+    if (download_item_->GetState() == download::DownloadItem::INTERRUPTED) {
+      if (!paused_called_) {
+        paused_called_ = true;
+        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(&BackgroundFetchDelegateImpl::PauseDownload,
+                           base::Unretained(delegate_), offline_item_id_));
+      }
+      if (download_item_->IsPaused()) {
+        run_loop_.Quit();
+      }
+    }
+  }
+
+  raw_ptr<content::DownloadManager> manager_ = nullptr;
+  raw_ptr<BackgroundFetchDelegateImpl> delegate_ = nullptr;
+  raw_ptr<download::DownloadItem> download_item_ = nullptr;
+  ContentId offline_item_id_;
+  bool paused_called_ = false;
+  base::RunLoop run_loop_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(BackgroundFetchCorsBrowserTest,
+                       PRE_ResumesAfterRestartWithCorsHeaders) {
+  interrupt_resumable_cors_request_.store(true);
+  SetPermission(ContentSettingsType::AUTOMATIC_DOWNLOADS,
+                CONTENT_SETTING_ALLOW);
+
+  InterruptAndPauseDownloadObserver observer(
+      browser()->GetProfile()->GetDownloadManager(), delegate_);
+
+  GURL cross_origin_url = cross_origin_server_->GetURL("/resumable_cors");
+  std::vector<OfflineItem> items;
+  std::string script =
+      "navigator.serviceWorker.ready.then(reg => "
+      "reg.backgroundFetch.fetch('bg-fetch-id', '" +
+      cross_origin_url.spec() + "')).then(() => 'ok')";
+  ASSERT_NO_FATAL_FAILURE(RunScriptAndWaitForOfflineItems(script, &items));
+  ASSERT_EQ(items.size(), 1u);
+
+  observer.set_offline_item_id(items[0].id);
+  observer.Wait();
+
+  content::RunAllTasksUntilIdle();
+}
+
+IN_PROC_BROWSER_TEST_F(BackgroundFetchCorsBrowserTest,
+                       ResumesAfterRestartWithCorsHeaders) {
+  SetPermission(ContentSettingsType::AUTOMATIC_DOWNLOADS,
+                CONTENT_SETTING_ALLOW);
+
+  offline_items_collection::OfflineContentAggregator* aggregator =
+      OfflineContentAggregatorFactory::GetInstance()->GetForKey(
+          browser()->GetProfile()->GetProfileKey());
+
+  ContentId bg_fetch_id;
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    std::vector<OfflineItem> items;
+    base::RunLoop run_loop;
+    aggregator->GetAllItems(base::BindLambdaForTesting(
+        [&](const std::vector<OfflineItem>& all_items) {
+          items = all_items;
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    for (const auto& item : items) {
+      if (item.id.name_space == "background_fetch" &&
+          item.state == offline_items_collection::OfflineItemState::PAUSED) {
+        bg_fetch_id = item.id;
+        return true;
+      }
+    }
+    return false;
+  }));
+
+  ASSERT_EQ("ok",
+            RunScript("window.resumeResultPromise = new Promise(resolve => {"
+                      "  navigator.serviceWorker.addEventListener('message', "
+                      "    e => resolve(e.data), {once: true});"
+                      "}); 'ok'"));
+
+  delegate_->ResumeDownload(bg_fetch_id);
+
+  EXPECT_EQ("backgroundfetchsuccess", RunScript("window.resumeResultPromise"));
 }

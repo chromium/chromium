@@ -674,6 +674,8 @@ std::unique_ptr<DownloadEntry> CreateDownloadEntryFromDownloadDBEntry(
       ukm_info->ukm_download_id);
   download_entry->fetched_via_service_worker =
       in_progress_info->fetched_via_service_worker;
+  download_entry->credentials_mode = in_progress_info->credentials_mode;
+  download_entry->fetch_request_mode = in_progress_info->fetch_request_mode;
   return download_entry;
 }
 

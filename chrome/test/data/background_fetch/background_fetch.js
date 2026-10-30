@@ -264,6 +264,21 @@ function StartFetchFromWindowWithOptions(url, options) {
       .catch(formatError);
 }
 
+function StartFetchFromWindowWithFetchOptions(url, fetchOptions) {
+  return navigator.serviceWorker.ready
+      .then(swRegistration => {
+        const onMessagePromise = new Promise(resolve => {
+          navigator.serviceWorker.addEventListener(
+              'message', resolve, {once: true});
+        });
+        return swRegistration.backgroundFetch
+            .fetch(kBackgroundFetchId, url, fetchOptions)
+            .then(() => onMessagePromise)
+            .then(filterMessage);
+      })
+      .catch(formatError);
+}
+
 function StartFetchFromWindowWithCustomHeader(url, headerName, headerValue) {
   const headers = {};
   headers[headerName] = headerValue;

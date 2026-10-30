@@ -123,6 +123,10 @@ void DeferredClientWrapper::GetUploadData(
   RunDeferredClosures(true /*force_inflate*/);
 }
 
+bool DeferredClientWrapper::RequiresCustomRequestParameters() const {
+  return wrapped_client_ && wrapped_client_->RequiresCustomRequestParameters();
+}
+
 void DeferredClientWrapper::ForwardOnServiceInitialized(
     bool state_lost,
     const std::vector<DownloadMetaData>& downloads) {
