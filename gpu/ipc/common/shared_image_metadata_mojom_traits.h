@@ -61,6 +61,10 @@ struct GPU_IPC_COMMON_EXPORT StructTraits<
         !data.ReadAlphaType(&out->alpha_type)) {
       return false;
     }
+    if (out->format.is_multi_plane() && !out->format.PrefersExternalSampler() &&
+        out->alpha_type == kPremul_SkAlphaType) {
+      return false;
+    }
     out->usage = gpu::SharedImageUsageSet(data.usage());
     out->array_layers = data.array_layers();
     return true;

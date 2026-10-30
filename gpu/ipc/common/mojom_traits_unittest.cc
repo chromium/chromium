@@ -10,9 +10,12 @@
 #include "gpu/config/gpu_feature_type.h"
 #include "gpu/ipc/common/gpu_feature_info.mojom.h"
 #include "gpu/ipc/common/gpu_feature_info_mojom_traits.h"
+#include "gpu/ipc/common/shared_image_metadata.mojom.h"
+#include "gpu/ipc/common/shared_image_metadata_mojom_traits.h"
 #include "gpu/ipc/common/traits_test_service.test-mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gpu {
@@ -405,6 +408,29 @@ TEST_F(StructTraitsTest, GpuFeatureInfo) {
   ASSERT_TRUE(mojom::GpuFeatureInfo::Deserialize(
       mojom::GpuFeatureInfo::Serialize(&input), &output));
   EXPECT_EQ(input.status_values, output.status_values);
+}
+
+TEST_F(StructTraitsTest, ValidateSIMetadataMultiplaneFormatWithPremulAlpha) {
+  auto valid_input = mojom::SharedImageMetadata::New(
+      viz::MultiPlaneFormat::kNV12, gfx::Size(100, 100), gfx::ColorSpace(),
+      kTopLeft_GrSurfaceOrigin, kUnpremul_SkAlphaType,
+      static_cast<uint32_t>(SHARED_IMAGE_USAGE_DISPLAY_READ),
+      /*array_layers=*/1);
+  SharedImageMetadata output;
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SharedImageMetadata>(
+      valid_input, output));
+  EXPECT_EQ(output.format, viz::MultiPlaneFormat::kNV12);
+  EXPECT_EQ(output.alpha_type, kUnpremul_SkAlphaType);
+
+  // Premultiplied alpha with a multiplanar format without external sampler
+  // should fail deserialization.
+  auto invalid_premul_input = mojom::SharedImageMetadata::New(
+      viz::MultiPlaneFormat::kNV12, gfx::Size(100, 100), gfx::ColorSpace(),
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+      static_cast<uint32_t>(SHARED_IMAGE_USAGE_DISPLAY_READ),
+      /*array_layers=*/1);
+  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<mojom::SharedImageMetadata>(
+      invalid_premul_input, output));
 }
 
 }  // namespace gpu

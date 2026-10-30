@@ -647,7 +647,7 @@ TEST_F(CompositingStructTraitsTest, CompositorFrame) {
       gpu::ClientSharedImage::CreateForTesting(
           gpu::SharedImageMetadata{.format = multi_plane_format,
                                    .size = tr_size,
-                                   .alpha_type = kPremul_SkAlphaType}),
+                                   .alpha_type = kUnpremul_SkAlphaType}),
       TransferableResource::ResourceSource::kTest, gpu::SyncToken());
   multi_plane_resource.id = multi_plane_id;
 
