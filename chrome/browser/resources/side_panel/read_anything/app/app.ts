@@ -381,7 +381,9 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.$.containerScroller.scrollTop > fontSize ?
         this.$.containerScroller.classList.add('fade') :
         this.$.containerScroller.classList.remove('fade');
-    this.onTextLocationsChange_();
+    if (this.visualBrowserProxy_.isLineFocusEnabled()) {
+      this.lineFocusController_.onScroll();
+    }
   }
 
   protected onContainerScrollend_() {

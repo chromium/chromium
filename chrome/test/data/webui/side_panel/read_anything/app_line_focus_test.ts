@@ -7,7 +7,7 @@ import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js'
 import type {AppElement, ContentController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {calculateTextBounds, ContentType, LineFocusController, LineFocusMovement, LineFocusStyle, ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertLT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {microtasksFinished, whenCheck} from 'chrome-untrusted://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished, whenCheck} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {emitEvent, setupAppTestEnvironment} from './common.js';
 import type {TestVisualBrowserProxy} from './test_visual_browser_proxy.js';
@@ -220,6 +220,22 @@ suite('AppLineFocus', () => {
     assertFalse(app.$.toolbar.isLineFocusShowing);
   });
 
+  test('container scroll notifies line focus of scroll', () => {
+    let scrolled = false;
+    let textLocationsChanged = false;
+    LineFocusController.getInstance().onScroll = () => {
+      scrolled = true;
+    };
+    LineFocusController.getInstance().onTextLocationsChange = () => {
+      textLocationsChanged = true;
+    };
+
+    app.$.containerScroller.dispatchEvent(new Event('scroll'));
+
+    assertTrue(scrolled);
+    assertFalse(textLocationsChanged);
+  });
+
   test('onNeedScrollForLineFocus scrolls', () => {
     const startingScrollTop = app.$.containerScroller.scrollTop;
     let scrollTo = 0;
@@ -257,15 +273,26 @@ suite('AppLineFocus', () => {
             {detail: {data: LineFocusMovement.STATIC}});
         emitEvent(app, ToolbarEvent.LINE_FOCUS_TOGGLE, {detail: {data: true}});
         await microtasksFinished();
-        app.$.containerScroller.scrollTop = 0;
+        if (app.$.containerScroller.scrollTop !== 20) {
+          const setupScrollEnd =
+              eventToPromise('scrollend', app.$.containerScroller);
+          app.$.containerScroller.scrollTop = 20;
+          await setupScrollEnd;
+        }
 
         assertLT(0, getLineFocusPadding());
         const staticY =
             Number.parseFloat(app.style.getPropertyValue('--line-focus-y'));
 
+        const cursorScrollEnd =
+            eventToPromise('scrollend', app.$.containerScroller);
         emitEvent(
             app, ToolbarEvent.LINE_FOCUS_MOVEMENT,
             {detail: {data: LineFocusMovement.CURSOR}});
+        // The mouse is over the toolbar when switching modes from the menu.
+        app.$.toolbar.dispatchEvent(
+            new MouseEvent('mousemove', {clientY: 250}));
+        await cursorScrollEnd;
         await microtasksFinished();
 
         assertEquals(0, getLineFocusPadding());

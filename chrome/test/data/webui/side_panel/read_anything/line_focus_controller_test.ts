@@ -378,6 +378,20 @@ suite('LineFocusController', () => {
     assertLT(startingTop, model.getTop());
   });
 
+  test('onScroll delegates only when flag enabled', () => {
+    let scrollCount = 0;
+    model.getCurrentMoveMode().onScroll = () => {
+      scrollCount++;
+    };
+
+    lineFocusController.onScroll();
+    assertEquals(1, scrollCount);
+
+    visualBrowserProxy.lineFocusEnabled = false;
+    lineFocusController.onScroll();
+    assertEquals(1, scrollCount);
+  });
+
   test('keyboard toggle is logged', async () => {
     const container = createShortContainer();
     lineFocusController.toggle(false, container, defaultHeight);

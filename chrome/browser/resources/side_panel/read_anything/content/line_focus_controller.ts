@@ -91,6 +91,12 @@ export class LineFocusController implements MoveModeDelegate {
     return false;
   }
 
+  onScroll() {
+    if (this.visualBrowserProxy_.isLineFocusEnabled()) {
+      this.model_.getCurrentMoveMode().onScroll();
+    }
+  }
+
   onScrollEnd(newScrollTop: number) {
     if (this.visualBrowserProxy_.isLineFocusEnabled()) {
       this.model_.getCurrentMoveMode().onScrollEnd(newScrollTop);
