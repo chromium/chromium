@@ -11,24 +11,8 @@ body {
 <script src="/resources/testharnessreport.js"></script>
 <script src="/container-timing/resources/container-timing-helpers.js"></script>
 <script>
-  let beforeRender;
-  async_test(function (t) {
+  promise_test(async t => {
     assert_implements(window.PerformanceContainerTiming, "PerformanceContainerTiming is not implemented");
-    const observer = new PerformanceObserver(
-      t.step_func_done(function(entryList) {
-        assert_equals(entryList.getEntries().length, 1);
-        const entry = entryList.getEntries()[0];
-        // lastPaintedElement is not asserted: both images are the same size, so
-        // which one wins the tie is not defined. See
-        // containertiming-largest-painted-element.html.
-        checkContainerEntry(entry, 'div_ct', null, beforeRender)
-        checkContainerIntersectionRect(entry, [0, 150, 0, 150])
-        // size is the total area that has been painted, so the more intersection, the less area painted.
-        checkContainerSize(entry, 17500);
-      })
-    );
-    observer.observe({entryTypes: ['container']});
-
     // Add a div that is the container timing root
     const div = document.createElement('div');
     div.setAttribute('containertiming', 'div_ct');
@@ -49,7 +33,18 @@ body {
     img2.style.position = 'absolute';
     div.appendChild(img2);
 
-    beforeRender = performance.now();
+    const beforeRender = performance.now();
+
+    const entries = await getContainerEntries(t);
+    assert_equals(entries.length, 1);
+    const entry = entries[0];
+    // lastPaintedElement is not asserted: both images are the same size, so
+    // which one wins the tie is not defined. See
+    // containertiming-largest-painted-element.html.
+    checkContainerEntry(entry, 'div_ct', null, beforeRender)
+    checkContainerIntersectionRect(entry, [0, 150, 0, 150])
+    // size is the total area that has been painted, so the more intersection, the less area painted.
+    checkContainerSize(entry, 17500);
   }, 'Overlapping images report to containertiming.');
 </script>
 
