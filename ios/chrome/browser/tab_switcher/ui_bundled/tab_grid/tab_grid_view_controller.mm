@@ -296,7 +296,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
         constraintEqualToAnchor:self.topToolbar.bottomAnchor],
     self.swipeToIncognitoIPHBottomConstraint
   ]];
-  if (IsPageActionMenuEnabled()) {
+  if (IsPageActionMenuEnabled() && !IsIOSGeminiBottomSheetMigrationEnabled()) {
     [self.geminiHandler
         hideFloatyIfInvokedAnimated:NO
                          fromSource:gemini::FloatyUpdateSource::GestureIph];
@@ -1351,7 +1351,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
           UISceneActivationStateForegroundActive) {
     return;
   }
-  if (IsPageActionMenuEnabled()) {
+  if (IsPageActionMenuEnabled() && !IsIOSGeminiBottomSheetMigrationEnabled()) {
     [self.geminiHandler
         updateFloatyVisibilityIfEligibleAnimated:NO
                                       fromSource:gemini::FloatyUpdateSource::
@@ -2122,7 +2122,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)gestureInProductHelpView:(GestureInProductHelpView*)view
             didDismissWithReason:(IPHDismissalReasonType)reason {
   [self.delegate tabGridDidDismissSwipeToIncognitoIPHWithReason:reason];
-  if (IsPageActionMenuEnabled()) {
+  if (IsPageActionMenuEnabled() && !IsIOSGeminiBottomSheetMigrationEnabled()) {
     [self.geminiHandler
         updateFloatyVisibilityIfEligibleAnimated:NO
                                       fromSource:gemini::FloatyUpdateSource::
