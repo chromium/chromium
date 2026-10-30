@@ -691,6 +691,26 @@ void ContextualTasksSidePanelCoordinator::Show(
 
   contextual_tasks_panel_host_->Show(animation_style);
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Feature engagement session notice and IPH trigger checks.
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserContext(
+          browser_window_->GetProfile());
+  if (tracker) {
+    tracker->NotifyEvent("contextual_tasks_session_started");
+
+    // Increment post-onboarding session count if it has been explicitly
+    // initialized (>= 0).
+    int post_onboarding_sessions =
+        pref_service_->GetInteger(kContextualTasksSessionCountPostOnboarding);
+    if (post_onboarding_sessions >= 0) {
+      post_onboarding_sessions++;
+      pref_service_->SetInteger(kContextualTasksSessionCountPostOnboarding,
+                                post_onboarding_sessions);
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   UpdateOpenState(/*is_open=*/true);
   UpdateContextualTaskUI();
   if (content::WebContents* active_web_contents = GetActiveWebContents()) {
@@ -709,24 +729,6 @@ void ContextualTasksSidePanelCoordinator::Show(
         active_tab_interface->GetContents(), "", std::nullopt,
         glic::GlicNudgeActivity::kNudgeIgnoredOpenedContextualTasksSidePanel,
         base::DoNothing());
-  }
-
-  // Feature engagement session notice and IPH trigger checks.
-  feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserContext(
-          browser_window_->GetProfile());
-  if (tracker) {
-    tracker->NotifyEvent("contextual_tasks_session_started");
-
-    // Increment post-onboarding session count if it has been explicitly
-    // initialized (>= 0).
-    int post_onboarding_sessions =
-        pref_service_->GetInteger(kContextualTasksSessionCountPostOnboarding);
-    if (post_onboarding_sessions >= 0) {
-      post_onboarding_sessions++;
-      pref_service_->SetInteger(kContextualTasksSessionCountPostOnboarding,
-                                post_onboarding_sessions);
-    }
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }

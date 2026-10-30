@@ -876,27 +876,21 @@ bool ContextualTasksUIBase::CanTriggerPinningPromoForAiPage(
   }
 
   // 1b. Query has tab or PDF context.
-  const bool is_lens_overlay_entry =
-      panel_controller->GetActiveEntrySource() ==
-      ContextualTasksPanelController::EntrySource::kLensOverlay;
-  // Server-committed resources on the task (skipped for Lens Overlay, which
-  // includes the implicit initial Lens upload).
-  if (!is_lens_overlay_entry) {
-    std::optional<ContextualTask> current_task =
-        panel_controller->GetCurrentTask();
-    if (current_task &&
-        std::ranges::any_of(
-            current_task->GetUrlResources(), [](const UrlResource& r) {
-              return r.resource_type == ResourceType::kPdf ||
-                     r.resource_type == ResourceType::kWebpage ||
-                     r.tab_id.has_value() || r.has_chrome_tab_data;
-            })) {
-      return true;
-    }
+  // Server-committed resources on the task.
+  std::optional<ContextualTask> current_task =
+      panel_controller->GetCurrentTask();
+  if (current_task &&
+      std::ranges::any_of(
+          current_task->GetUrlResources(), [](const UrlResource& r) {
+            return r.resource_type == ResourceType::kPdf ||
+                   r.resource_type == ResourceType::kWebpage ||
+                   r.tab_id.has_value() || r.has_chrome_tab_data;
+          })) {
+    return true;
   }
 
   // Fallback: client-side composebox tab/PDF context (before `ContextualTask`
-  // updates, or when manually added in a Lens Overlay session).
+  // updates, or when manually added in a session).
   contextual_search::ContextualSearchSessionHandle* session_handle =
       panel_controller->GetContextualSearchSessionHandleForPanel();
   if (!session_handle) {
@@ -905,12 +899,11 @@ bool ContextualTasksUIBase::CanTriggerPinningPromoForAiPage(
 
   const contextual_search::TabContextState& tab_context =
       session_handle->GetTabContextState();
-  if ((!is_lens_overlay_entry && !tab_context.restored.empty()) ||
+  if (!tab_context.restored.empty() ||
       std::ranges::any_of(
           tab_context.attached,
-          [is_lens_overlay_entry](const contextual_search::TabInfo& tab) {
-            return !is_lens_overlay_entry || tab.uploaded ||
-                   tab.pending_delayed_upload;
+          [](const contextual_search::TabInfo& tab) {
+            return tab.uploaded || tab.pending_delayed_upload;
           })) {
     return true;
   }
