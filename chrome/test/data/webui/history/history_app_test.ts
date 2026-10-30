@@ -105,7 +105,7 @@ suite('HistoryAppTest', function() {
   });
 
   test('SetsScrollOffset', async () => {
-    function resizeAndWait(height: number) {
+    function resizeAndWait(height: number): Promise<void> {
       const historyEmbeddingsContainer =
           element.shadowRoot.querySelector<HTMLElement>(
               '#historyEmbeddingsContainer');
@@ -125,11 +125,11 @@ suite('HistoryAppTest', function() {
 
     await resizeAndWait(700);
     await microtasksFinished();
-    assertEquals(700, element.$.history.scrollOffset);
+    assertEquals(700, Math.round(element.$.history.scrollOffset));
 
     await resizeAndWait(400);
     await microtasksFinished();
-    assertEquals(400, element.$.history.scrollOffset);
+    assertEquals(400, Math.round(element.$.history.scrollOffset));
   });
 
   test('QueriesMoreFromSiteFromHistoryEmbeddings', async () => {

@@ -50,7 +50,6 @@
 -CrComponentsComposeboxTest.ComposeboxFaviconGroup
 -ExtensionApiTabTest.Query
 -ExtensionCspApiTest.ServiceWorkerIsConstrainedByMV3CSPEvenIfSandboxed
--HistoryWithHistoryEmbeddingsTest.HistoryAppTest
 -PasswordGenerationAgentTest.*
 
 # https://crbug.com/544822220
