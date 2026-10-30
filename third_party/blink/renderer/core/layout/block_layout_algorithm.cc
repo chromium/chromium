@@ -1294,9 +1294,9 @@ const LayoutResult* BlockLayoutAlgorithm::FinishLayout(
     // Additionally this fragment produces no end margin strut.
 
     // If the current layout is a new formatting context, we need to encapsulate
-    // all of our floats. We only do this if we haven't line-clamped, though.
+    // all of our floats. We don't do this in line-clamp containers though.
     if (constraint_space.IsNewFormattingContext() &&
-        !line_clamp_data_.previous_inflow_position_when_clamped) {
+        !line_clamp_data_.data.IsLineClampContext()) {
       intrinsic_block_size_ =
           std::max(intrinsic_block_size_,
                    GetExclusionSpace().ClearanceOffsetIncludingInitialLetter(
