@@ -480,14 +480,10 @@ bool WebUiPageHandlerFactoryStubDispatch::Accept(
       ::mojo::PendingReceiver<PageHandler> p_handler{};
       WebUiPageHandlerFactory_CreatePageHandler_ParamsDataView input_data_view(params, message);
       
-      if (success) {
-        p_page =
-            input_data_view.TakePage<decltype(p_page)>();
-      }
-      if (success) {
-        p_handler =
-            input_data_view.TakeHandler<decltype(p_handler)>();
-      }
+      if (success)
+        input_data_view.TakePage(&p_page);
+      if (success)
+        input_data_view.TakeHandler(&p_handler);
       if (!success) {
         mojo::internal::ReportDeserializationErrorForMessage(
             message, WebUiPageHandlerFactory::Name_, 0, false);

@@ -212,14 +212,9 @@
 {%-       if kind|is_object_kind or kind|is_enum_kind %}
   if ({{success}} && !{{input}}.Read{{name|under_to_camel}}(&{{output_field}}))
     {{success}} = false;
-{%-       elif kind|is_any_handle_kind %}
+{%-       elif kind|is_any_handle_kind or kind|is_any_interface_kind %}
   if ({{success}})
-    {{output_field}} = {{input}}.Take{{name|under_to_camel}}();
-{%-       elif kind|is_any_interface_kind %}
-  if ({{success}}) {
-    {{output_field}} =
-        {{input}}.Take{{name|under_to_camel}}<decltype({{output_field}})>();
-  }
+    {{input}}.Take{{name|under_to_camel}}(&{{output_field}});
 {%-       else %}
   if ({{success}})
     {{output_field}} = {{input}}.{{name}}();

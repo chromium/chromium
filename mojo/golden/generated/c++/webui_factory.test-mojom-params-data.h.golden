@@ -117,20 +117,32 @@ class WebUiPageHandlerFactory_CreatePageHandler_ParamsDataView {
   template <typename UserType>
   UserType TakePage() {
     UserType result;
+    TakePage(&result);
+    return result;
+  }
+
+  // Same as above, but takes into `output`, which avoids a temporary.
+  template <typename UserType>
+  void TakePage(UserType* output) {
     bool ret =
         mojo::internal::Deserialize<mojo::InterfacePtrDataView<::golden::PageInterfaceBase>>(
-            &data_->page, &result, message_);
+            &data_->page, output, message_);
     DCHECK(ret);
-    return result;
   }
   template <typename UserType>
   UserType TakeHandler() {
     UserType result;
+    TakeHandler(&result);
+    return result;
+  }
+
+  // Same as above, but takes into `output`, which avoids a temporary.
+  template <typename UserType>
+  void TakeHandler(UserType* output) {
     bool ret =
         mojo::internal::Deserialize<mojo::InterfaceRequestDataView<::golden::PageHandlerInterfaceBase>>(
-            &data_->handler, &result, message_);
+            &data_->handler, output, message_);
     DCHECK(ret);
-    return result;
   }
  private:
   internal::WebUiPageHandlerFactory_CreatePageHandler_Params_Data* data_ = nullptr;

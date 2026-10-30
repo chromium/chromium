@@ -137,30 +137,41 @@ class {{struct.name}}DataView {
 {%-     elif kind|is_any_handle_kind %}
   {{kind|cpp_data_view_type}} Take{{name|under_to_camel}}() {
     {{kind|cpp_data_view_type}} result;
+    Take{{name|under_to_camel}}(&result);
+    return result;
+  }
+
+  // Same as above, but takes into `output`, which avoids a temporary.
+  void Take{{name|under_to_camel}}({{kind|cpp_data_view_type}}* output) {
 {%-       if pf.min_version != 0 %}
     if (data_->header_.version < {{pf.min_version}})
-      return result;
+      return;
 {%-       endif %}
     bool ret =
         mojo::internal::Deserialize<{{kind|unmapped_type_for_serializer}}>(
-            &data_->{{name}}, &result, message_);
+            &data_->{{name}}, output, message_);
     DCHECK(ret);
-    return result;
   }
 
 {%-     elif kind|is_any_interface_kind %}
   template <typename UserType>
   UserType Take{{name|under_to_camel}}() {
     UserType result;
+    Take{{name|under_to_camel}}(&result);
+    return result;
+  }
+
+  // Same as above, but takes into `output`, which avoids a temporary.
+  template <typename UserType>
+  void Take{{name|under_to_camel}}(UserType* output) {
 {%-       if pf.min_version != 0 %}
     if (data_->header_.version < {{pf.min_version}})
-      return result;
+      return;
 {%-       endif %}
     bool ret =
         mojo::internal::Deserialize<{{kind|unmapped_type_for_serializer}}>(
-            &data_->{{name}}, &result, message_);
+            &data_->{{name}}, output, message_);
     DCHECK(ret);
-    return result;
   }
 
 {%-     else %}
