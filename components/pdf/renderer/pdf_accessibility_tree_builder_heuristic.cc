@@ -208,6 +208,15 @@ constexpr size_t kMaxOrderedListLookaheadLines = 15;
 // not mistaken for markers.
 constexpr size_t kMaxOrderedMarkerDigits = 3;
 
+// Maximum first-line indent, in multiples of the item font size, for ordered
+// list items whose wrapped lines return to the margin. A line that wraps
+// further left of the marker ends the item.
+constexpr float kMaxFirstLineIndentEm = 3.0f;
+
+// Tolerance in multiples of the item font size for determining whether a line
+// reached close to the column's right edge before wrapping.
+constexpr float kWrapRightEdgeToleranceEm = 2.0f;
+
 // Delimiters that may follow the number in a decimal ordered list marker.
 // TODO(crbug.com/525509231): Support delimiters used in other languages, such
 // as ordinal indicators (e.g. "2º").
@@ -846,6 +855,22 @@ bool AreRunsOnSameLine(const chrome_pdf::AccessibilityTextRunInfo& run1,
                        const chrome_pdf::AccessibilityTextRunInfo& run2) {
   return DoBoundsOverlapOnLine(run1.bounds.y(), run1.bounds.height(),
                                run2.bounds.y(), run2.bounds.height());
+}
+
+// Returns the right edge of the visual line that starts with the text run at
+// `run_index`.
+float GetLineRightEdge(
+    base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs,
+    size_t run_index) {
+  const chrome_pdf::AccessibilityTextRunInfo& first = text_runs[run_index];
+  float right = first.bounds.right();
+  for (const auto& run : text_runs.subspan(run_index + 1)) {
+    if (!AreRunsOnSameLine(first, run)) {
+      break;
+    }
+    right = std::max(right, run.bounds.right());
+  }
+  return right;
 }
 
 const chrome_pdf::AccessibilityTextRunInfo* GetRunBeforeIndex(
@@ -1880,8 +1905,8 @@ void TrimTextRunPrefix(size_t prefix_char_count,
 
 // Returns whether to break before the run at `next_run_index` due to a list
 // boundary, such as a new standalone or combined marker run, an
-// out-of-sequence ordered marker, or an outdent past the innermost list
-// level's indent.
+// out-of-sequence ordered marker, an outdent past the innermost list level's
+// indent, or a first-line-indented paragraph after the last item.
 //
 // Known limitation: a non-marker block inside a list (e.g. a paragraph under a
 // nested item, or text continuing the parent item after a nested list) either
@@ -1909,14 +1934,35 @@ bool BreakAtListBoundary(const PageLayoutData& layout,
   if (ClassifyOrderedMarker(next_run_context).form != ListMarkerForm::kNone) {
     return true;
   }
+  const ListLevel& level = list_levels.back();
   // A heading-styled line ends an ordered list.
-  if (list_levels.back().last_ordered_value.has_value() &&
+  if (level.last_ordered_value.has_value() &&
       ClassifyHeading(next_run_context, page_properties) !=
           HeadingClassifier::kNone) {
     return true;
   }
-  return next_run_context.run->bounds.x() <
-         list_levels.back().marker_x - kListIndentThreshold;
+  const float next_x = next_run_context.run->bounds.x();
+  const float font_size = next_run_context.run->style.font_size;
+  const bool prev_line_ends_short =
+      layout.text_runs[next_run_index - 1].bounds.right() <
+      GetLineRightEdge(layout.text_runs, next_run_index) -
+          kWrapRightEdgeToleranceEm * font_size;
+  if (next_x >= level.marker_x - kListIndentThreshold) {
+    // A line indented past both wrap columns (the marker and the item text)
+    // after a short line starts a first-line-indented paragraph.
+    return prev_line_ends_short &&
+           next_x > std::max(level.marker_x, level.item_text_x) +
+                        kListIndentThreshold;
+  }
+  if (!level.last_ordered_value.has_value()) {
+    return true;
+  }
+  // Ordered items may wrap back left of an indented number, up to a limit, but
+  // only after a line that reached the column's right edge.
+  if (next_x < level.marker_x - kMaxFirstLineIndentEm * font_size) {
+    return true;
+  }
+  return prev_line_ends_short;
 }
 
 bool BreakParagraph(uint32_t text_run_index,
