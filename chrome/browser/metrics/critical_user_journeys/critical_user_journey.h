@@ -14,6 +14,8 @@
 #include <variant>
 #include <vector>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -64,15 +66,23 @@ struct Branch {
   //
   // If `min_dwell` is non-zero and the branch is reached sooner than
   // that after the previous step, the journey ends with
-  // JourneyResult::kAbandonedBelowDwell and no survey is launched.
+  // JourneyResult::kAbandonedBelowDwell and no survey is launched. If
+  // `max_dwell` is non-zero and the branch is reached later than that, the
+  // journey ends with JourneyResult::kAbandonedAboveDwell and no survey is
+  // launched.
   //
   // Exit branches are only valid in the final step of a journey (enforced by
   // CriticalUserJourney::Builder::Build()). The underlying InteractionSequence
   // cannot be reset from within a step callback, so an exit branch in an
   // earlier step could not stop the remaining steps from running.
-  Branch& SetExitBranch(base::TimeDelta min_dwell = base::TimeDelta()) {
+  Branch& SetExitBranch(base::TimeDelta min_dwell = base::TimeDelta(),
+                        base::TimeDelta max_dwell = base::TimeDelta()) {
+    CHECK_GE(min_dwell, base::TimeDelta());
+    CHECK_GE(max_dwell, base::TimeDelta());
+    CHECK(max_dwell.is_zero() || max_dwell > min_dwell);
     is_exit_branch = true;
     min_dwell_duration = min_dwell;
+    max_dwell_duration = max_dwell;
     return *this;
   }
 
@@ -102,6 +112,7 @@ struct Branch {
   int metric_id;
   bool is_exit_branch = false;
   base::TimeDelta min_dwell_duration = base::TimeDelta();
+  base::TimeDelta max_dwell_duration = base::TimeDelta();
   // Plain-English UI entry-point label sent as `kCujEntryStepKey` in HaTS
   // product-specific data (PSD) when this branch starts the journey.
   std::string hats_entry_point = kCujDefaultEntryStep;

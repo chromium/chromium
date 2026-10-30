@@ -104,6 +104,7 @@ CriticalUserJourney::Builder& CriticalUserJourney::Builder::AddAnyOf(
     CHECK(!built_branch->steps().empty());
     built_branch->steps()[0]->is_exit_branch = branch.is_exit_branch;
     built_branch->steps()[0]->min_dwell_duration = branch.min_dwell_duration;
+    built_branch->steps()[0]->max_dwell_duration = branch.max_dwell_duration;
     built_branch->steps()[0]->in_exit_branch_group = has_exit_branch;
     built_branch->steps()[0]->hats_entry_point = branch.hats_entry_point;
     step->branches.push_back(std::move(built_branch));

@@ -34,6 +34,7 @@ class CriticalUserJourneyStep : public ui::InteractionSequence::Step {
   std::vector<std::unique_ptr<CriticalUserJourney>> branches;
   base::TimeDelta time_out_duration = base::TimeDelta();
   base::TimeDelta min_dwell_duration = base::TimeDelta();
+  base::TimeDelta max_dwell_duration = base::TimeDelta();
   bool is_exit_branch = false;
   // Plain-English label for the UI entry point that started the journey,
   // reported as the "Entry step" HaTS product-specific data (PSD) value.

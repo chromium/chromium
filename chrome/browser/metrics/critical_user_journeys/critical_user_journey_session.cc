@@ -107,16 +107,18 @@ ui::InteractionSequence::Builder CriticalUserJourneySession::BuildSequence(
             base::BindOnce(
                 [](base::WeakPtr<CriticalUserJourneySession> self,
                    int metric_id, base::TimeDelta timeout, bool is_exit_branch,
-                   base::TimeDelta min_dwell_duration, ui::InteractionSequence*,
+                   base::TimeDelta min_dwell_duration,
+                   base::TimeDelta max_dwell_duration, ui::InteractionSequence*,
                    ui::TrackedElement*) {
                   if (self) {
                     self->OnStepStarted(metric_id, timeout, is_exit_branch,
-                                        min_dwell_duration);
+                                        min_dwell_duration, max_dwell_duration);
                   }
                 },
                 weak_factory_.GetWeakPtr(), metric_id,
                 trigger_step->time_out_duration, trigger_step->is_exit_branch,
-                trigger_step->min_dwell_duration)));
+                trigger_step->min_dwell_duration,
+                trigger_step->max_dwell_duration)));
       } else {
         // `CriticalUserJourneyService::RegisterJourneyTrigger()` subscribes to
         // Step 0's trigger event (`kActivated` or `kCustomEvent`) via
@@ -127,7 +129,8 @@ ui::InteractionSequence::Builder CriticalUserJourneySession::BuildSequence(
         // directly and build the `InteractionSequence` from Step 1 onward.
         OnStepStarted(metric_id, trigger_step->time_out_duration,
                       trigger_step->is_exit_branch,
-                      trigger_step->min_dwell_duration);
+                      trigger_step->min_dwell_duration,
+                      trigger_step->max_dwell_duration);
       }
       continue;
     }
@@ -145,11 +148,11 @@ ui::InteractionSequence::Builder CriticalUserJourneySession::BuildSequence(
       }
       step_builder.SetContext(step->context)
           .SetDescription(base::NumberToString(step->metric_id))
-          .SetStartCallback(
-              base::BindOnce(&CriticalUserJourneySession::OnStepStarted,
-                             weak_factory_.GetWeakPtr(), step->metric_id,
-                             step->time_out_duration, step->is_exit_branch,
-                             step->min_dwell_duration));
+          .SetStartCallback(base::BindOnce(
+              &CriticalUserJourneySession::OnStepStarted,
+              weak_factory_.GetWeakPtr(), step->metric_id,
+              step->time_out_duration, step->is_exit_branch,
+              step->min_dwell_duration, step->max_dwell_duration));
       if (step->in_exit_branch_group) {
         // All branches of an AnyOf start at the same time. When one of them
         // is an exit branch, the completion branch's element (e.g. a button
@@ -188,7 +191,12 @@ void CriticalUserJourneySession::OnStepStarted(
     int metric_id,
     base::TimeDelta timeout,
     bool is_exit_branch,
-    base::TimeDelta min_dwell_duration) {
+    base::TimeDelta min_dwell_duration,
+    base::TimeDelta max_dwell_duration) {
+  // In an `AddAnyOf()` group (`SubsequenceMode::kAtLeastOne`), the first
+  // branch subsequence to complete synchronously clears sibling subsequences
+  // in `InteractionSequence::StartStepTransition()`, cancelling any pending
+  // transition tasks on sibling branches.
   base::TimeTicks now = base::TimeTicks::Now();
 
   if (last_reached_metric_id_ == kNoMetricId) {
@@ -198,7 +206,14 @@ void CriticalUserJourneySession::OnStepStarted(
     base::TimeDelta step_duration = now - last_step_time_;
     if (is_exit_branch && !min_dwell_duration.is_zero() &&
         step_duration < min_dwell_duration) {
-      aborted_by_dwell_guardrail_ = true;
+      last_reached_metric_id_ = metric_id;
+      aborted_dwell_result_ = JourneyResult::kAbandonedBelowDwell;
+      return;
+    }
+    if (is_exit_branch && !max_dwell_duration.is_zero() &&
+        step_duration > max_dwell_duration) {
+      last_reached_metric_id_ = metric_id;
+      aborted_dwell_result_ = JourneyResult::kAbandonedAboveDwell;
       return;
     }
     std::string histogram_name =
@@ -260,17 +275,16 @@ void CriticalUserJourneySession::OnCompleted() {
   const std::string result_histogram =
       base::StrCat({"CriticalUserJourney.", journey_->name(), ".Result"});
 
-  if (aborted_by_dwell_guardrail_) {
-    // The exit branch was reached too quickly to count as a deliberate
-    // abandonment. The InteractionSequence still completes because the exit
-    // subsequence finished, so the result is reported here.
+  if (aborted_dwell_result_.has_value()) {
+    // The exit branch was reached outside its [min_dwell, max_dwell] window.
+    // The InteractionSequence still completes because the exit subsequence
+    // finished, so the result is reported here.
     base::UmaHistogramSparse(base::StrCat({"CriticalUserJourney.",
                                            journey_->name(), ".StepAborted"}),
                              last_reached_metric_id_);
-    base::UmaHistogramEnumeration(result_histogram,
-                                  JourneyResult::kAbandonedBelowDwell);
+    base::UmaHistogramEnumeration(result_histogram, *aborted_dwell_result_);
     if (on_done_callback_) {
-      std::move(on_done_callback_).Run(JourneyResult::kAbandonedBelowDwell);
+      std::move(on_done_callback_).Run(*aborted_dwell_result_);
     }
     return;
   }
