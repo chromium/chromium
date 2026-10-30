@@ -25,10 +25,7 @@ suite('NewTabPageLeftHandSideTest', () => {
   let windowProxy: TestMock<WindowProxy>;
 
   function getExpandedIframeWindow(): Window {
-    const expanded =
-        leftHandSide.shadowRoot.querySelector<IframeElement>('#expanded');
-    assertTrue(!!expanded);
-    const iframe = expanded.shadowRoot.querySelector('iframe');
+    const iframe = leftHandSide.$.expanded.shadowRoot.querySelector('iframe');
     assertTrue(!!iframe);
     assertTrue(!!iframe.contentWindow);
     return iframe.contentWindow;
@@ -62,14 +59,14 @@ suite('NewTabPageLeftHandSideTest', () => {
     await microtasksFinished();
   }
 
-  function getExpandedIframe(): IframeElement|null {
-    return leftHandSide.shadowRoot.querySelector<IframeElement>('#expanded');
+  function getExpandedIframe(): IframeElement {
+    return leftHandSide.$.expanded;
   }
 
   test('updates color-scheme on isDark changes', async () => {
     await createLeftHandSide();
 
-    const iframe = getExpandedIframe()!;
+    const iframe = getExpandedIframe();
     assertEquals('light', getComputedStyle(iframe).colorScheme);
 
     leftHandSide.isDark = true;
@@ -113,6 +110,17 @@ suite('NewTabPageLeftHandSideTest', () => {
       assertEquals(EXPANDED_LHS_URL, iframe.src);
       assertEquals('unbounded-element', iframe.allow);
       assertEquals(enableThreadsRailHybrid ? '261px' : '', iframe.style.width);
+      // In hybrid mode the host starts at the folded rail's width. In
+      // full-iframe mode no width is known until the iframe reports one.
+      const folded =
+          leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded');
+      if (enableThreadsRailHybrid) {
+        assertTrue(!!folded);
+        assertTrue(folded.offsetWidth > 0 && folded.offsetWidth < 261);
+      }
+      assertEquals(
+          enableThreadsRailHybrid ? `${folded!.offsetWidth}px` : '',
+          getHostWidthProperty());
       assertEquals(enableThreadsRailHybrid, iframe.hidden);
       assertTrue(iframe.inert);
       assertFalse(iframe.classList.contains('ready'));
@@ -153,6 +161,7 @@ suite('NewTabPageLeftHandSideTest', () => {
         const iframe = getExpandedIframe();
         assertTrue(!!iframe);
         assertEquals('320px', iframe.style.width);
+        assertEquals(`${folded.offsetWidth}px`, getHostWidthProperty());
         assertFalse(folded.hidden);
         assertTrue(iframe.hidden);
         assertFalse(iframe.inert);
@@ -166,7 +175,7 @@ suite('NewTabPageLeftHandSideTest', () => {
 
         const folded =
             leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
-        const iframe = getExpandedIframe()!;
+        const iframe = getExpandedIframe();
 
         folded.click();
         await microtasksFinished();
@@ -184,6 +193,10 @@ suite('NewTabPageLeftHandSideTest', () => {
 
   test('falls back to default width on invalid or missing width', async () => {
     await createLeftHandSide();
+    const folded =
+        leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+    folded.click();
+    await microtasksFinished();
 
     for (const invalidWidth of [undefined, 0, -100, '320']) {
       postLhsMessage({
@@ -194,6 +207,7 @@ suite('NewTabPageLeftHandSideTest', () => {
       const iframe = getExpandedIframe();
       assertTrue(!!iframe);
       assertEquals('320px', iframe.style.width);
+      assertEquals('320px', getHostWidthProperty());
 
       postLhsMessage({
         type: NtpLhsMessageType.NTP_LHS_READY,
@@ -202,7 +216,8 @@ suite('NewTabPageLeftHandSideTest', () => {
       await microtasksFinished();
 
       assertEquals('261px', iframe.style.width);
-      assertTrue(iframe.hidden);
+      assertEquals('261px', getHostWidthProperty());
+      assertFalse(iframe.hidden);
     }
   });
 
@@ -254,36 +269,40 @@ suite('NewTabPageLeftHandSideTest', () => {
     loadTimeData.overrideValues({enableThreadsRailHybrid: true});
     await createLeftHandSide();
 
-    const expanded =
-        leftHandSide.shadowRoot.querySelector<HTMLElement>('#expanded')!;
+    const expanded = leftHandSide.$.expanded;
     const folded =
         leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+    assertTrue(folded.offsetWidth > 0 && folded.offsetWidth < 261);
+    const collapsedWidth = `${folded.offsetWidth}px`;
+    assertEquals(collapsedWidth, getHostWidthProperty());
 
-    postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY});
+    postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY, width: 320});
     folded.click();
     await microtasksFinished();
     assertFalse(expanded.hidden);
     assertTrue(folded.hidden);
+    assertEquals('320px', getHostWidthProperty());
 
     postLhsMessage({type: NtpLhsMessageType.NTP_LHS_CLOSE});
     await microtasksFinished();
     assertTrue(expanded.hidden);
     assertFalse(folded.hidden);
+    assertEquals(collapsedWidth, getHostWidthProperty());
   });
 
   test('expands LHS when folded rail is clicked in hybrid mode', async () => {
     loadTimeData.overrideValues({enableThreadsRailHybrid: true});
     await createLeftHandSide();
 
-    const expanded =
-        leftHandSide.shadowRoot.querySelector<HTMLElement>('#expanded')!;
+    const expanded = leftHandSide.$.expanded;
     const folded =
         leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
 
-    postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY});
+    postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY, width: 320});
     await microtasksFinished();
     assertTrue(expanded.hidden);
     assertFalse(folded.hidden);
+    assertEquals(`${folded.offsetWidth}px`, getHostWidthProperty());
 
     folded.click();
     await microtasksFinished();
@@ -295,8 +314,7 @@ suite('NewTabPageLeftHandSideTest', () => {
     loadTimeData.overrideValues({enableThreadsRailHybrid: true});
     await createLeftHandSide();
 
-    const expanded =
-        leftHandSide.shadowRoot.querySelector<HTMLElement>('#expanded')!;
+    const expanded = leftHandSide.$.expanded;
     const folded =
         leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
 
@@ -334,13 +352,12 @@ suite('NewTabPageLeftHandSideTest', () => {
         });
         await createLeftHandSide();
 
-        const expanded =
-            leftHandSide.shadowRoot.querySelector<HTMLElement>('#expanded')!;
+        const expanded = leftHandSide.$.expanded;
         const folded =
             leftHandSide.shadowRoot.querySelector<ThreadsRailElement>(
                 '#folded')!;
 
-        postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY});
+        postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY, width: 320});
         await microtasksFinished();
         assertTrue(expanded.hidden);
         assertFalse(folded.hidden);
@@ -363,7 +380,117 @@ suite('NewTabPageLeftHandSideTest', () => {
         await microtasksFinished();
         assertFalse(expanded.hidden);
         assertTrue(folded.hidden);
+        assertEquals('320px', getHostWidthProperty());
       });
+
+  test(
+      'keeps folded width until expanded iframe is ready in hybrid mode',
+      async () => {
+        loadTimeData.overrideValues({enableThreadsRailHybrid: true});
+        await createLeftHandSide();
+
+        const expanded = leftHandSide.$.expanded;
+        const folded =
+            leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+        assertTrue(folded.offsetWidth > 0 && folded.offsetWidth < 261);
+        const collapsedWidth = `${folded.offsetWidth}px`;
+
+        // Clicking the folded rail before the embedded page is ready keeps
+        // showing the folded rail, so the host must keep its width too.
+        folded.click();
+        await microtasksFinished();
+        assertTrue(expanded.hidden);
+        assertFalse(folded.hidden);
+        assertEquals(collapsedWidth, getHostWidthProperty());
+
+        postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY, width: 320});
+        await microtasksFinished();
+        assertFalse(expanded.hidden);
+        assertTrue(folded.hidden);
+        assertEquals('320px', getHostWidthProperty());
+      });
+
+  // Resizes the inner <iframe> to simulate the embedded page reporting a new
+  // width through frame-sizing, then waits for the ResizeObserver to report
+  // and for the resulting re-render.
+  async function setIframeWidth(width: number) {
+    await setIframeSize({width});
+  }
+
+  async function setIframeSize(
+      {width, height}: {width?: number, height?: number}) {
+    const expanded = getExpandedIframe();
+    assertTrue(!!expanded);
+    const iframe = expanded.shadowRoot.querySelector('iframe');
+    assertTrue(!!iframe);
+    if (width !== undefined) {
+      iframe.style.width = `${width}px`;
+    }
+    if (height !== undefined) {
+      iframe.style.height = `${height}px`;
+    }
+    for (let i = 0; i < 2; i++) {
+      await new Promise(resolve => requestAnimationFrame(resolve));
+    }
+    await microtasksFinished();
+  }
+
+  function getHostWidthProperty(): string {
+    return leftHandSide.style.getPropertyValue('--cr-left-hand-side-width');
+  }
+
+  test('mirrors iframe width onto host in non-hybrid mode', async () => {
+    loadTimeData.overrideValues({enableThreadsRailHybrid: false});
+    await createLeftHandSide();
+
+    // The iframe is 0px wide until ready; the host width is left alone.
+    await setIframeWidth(0);
+    assertEquals('', getHostWidthProperty());
+
+    // NTP_LHS_READY does not infer an expanded state in non-hybrid mode: the
+    // embedded page may be ready in its folded state.
+    postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY});
+    await microtasksFinished();
+    assertFalse(leftHandSide.hasAttribute('is-expanded_'));
+
+    // The first reported width is mirrored without changing the expanded
+    // state.
+    await setIframeWidth(320);
+    assertEquals('320px', getHostWidthProperty());
+    assertFalse(leftHandSide.hasAttribute('is-expanded_'));
+
+    // Growing is treated as expanding, shrinking as collapsing.
+    await setIframeWidth(400);
+    assertEquals('400px', getHostWidthProperty());
+    assertTrue(leftHandSide.hasAttribute('is-expanded_'));
+
+    // A height-only resize (e.g. the browser window changing size) does not
+    // change the width and must not flip the expanded state.
+    await setIframeSize({height: 500});
+    assertEquals('400px', getHostWidthProperty());
+    assertTrue(leftHandSide.hasAttribute('is-expanded_'));
+
+    await setIframeWidth(64);
+    assertEquals('64px', getHostWidthProperty());
+    assertFalse(leftHandSide.hasAttribute('is-expanded_'));
+  });
+
+  test('does not mirror iframe width onto host in hybrid mode', async () => {
+    loadTimeData.overrideValues({enableThreadsRailHybrid: true});
+    await createLeftHandSide();
+
+    postLhsMessage({type: NtpLhsMessageType.NTP_LHS_READY});
+    const folded =
+        leftHandSide.shadowRoot.querySelector<HTMLElement>('#folded')!;
+    folded.click();
+    await microtasksFinished();
+    assertEquals('261px', getHostWidthProperty());
+
+    // The host keeps the reported expanded width; the iframe's own size is
+    // not observed in hybrid mode.
+    await setIframeWidth(320);
+    assertEquals('261px', getHostWidthProperty());
+  });
 
   test('handles NTP_LHS_NEW_THREAD message', async () => {
     await createLeftHandSide();
@@ -418,7 +545,7 @@ suite('NewTabPageLeftHandSideTest', () => {
     const [iframe, message, targetOrigin] =
         windowProxy.getArgs('postMessage')[0];
     assertEquals(
-        getExpandedIframe()!.shadowRoot.querySelector('#iframe'), iframe);
+        getExpandedIframe().shadowRoot.querySelector('#iframe'), iframe);
     assertDeepEquals(
         {
           type: NtpLhsMessageType.NTP_LHS_SET_THEME,
@@ -452,7 +579,7 @@ suite('NewTabPageLeftHandSideTest', () => {
     const [iframe, message, targetOrigin] =
         windowProxy.getArgs('postMessage')[0];
     assertEquals(
-        getExpandedIframe()!.shadowRoot.querySelector('#iframe'), iframe);
+        getExpandedIframe().shadowRoot.querySelector('#iframe'), iframe);
     assertDeepEquals(
         {
           type: NtpLhsMessageType.NTP_LHS_SET_THEME,
