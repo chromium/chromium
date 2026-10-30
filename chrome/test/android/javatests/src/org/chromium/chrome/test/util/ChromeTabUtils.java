@@ -14,7 +14,6 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.hamcrest.Matchers;
 import org.junit.Assert;
 
 import org.chromium.base.ThreadUtils;
@@ -26,8 +25,6 @@ import org.chromium.base.test.transit.SimpleConditions;
 import org.chromium.base.test.transit.Triggers;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.Criteria;
-import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
@@ -43,6 +40,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.url_constants.UrlOverrideUtils;
+import org.chromium.chrome.test.transit.page.NativePageCondition;
 import org.chromium.chrome.test.transit.page.PageHitTestDataCondition;
 import org.chromium.chrome.test.transit.page.PageInteractableOrHiddenCondition;
 import org.chromium.chrome.test.transit.page.PageLoadedCondition;
@@ -565,29 +563,32 @@ public class ChromeTabUtils {
     // the *FromMenu() helpers use a Public Transit entry point or hop on.
     @Deprecated
     public static void waitForNtpLoaded(final Tab tab) {
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    if (!tab.isIncognito()) {
-                        // If the WebUI NTP override is enabled, check that the renderer is ready.
-                        // Otherwise, check that the NTP is loaded in the native page.
-                        if (UrlOverrideUtils.isWebUiNtpOverrideEnabled()) {
-                            Criteria.checkThat(
-                                    ChromeTabUtils.isRendererReady(tab), Matchers.is(true));
-                        } else {
-                            Criteria.checkThat(
-                                    tab.getNativePage(), Matchers.instanceOf(NewTabPage.class));
-                            Criteria.checkThat(
-                                    ((NewTabPage) tab.getNativePage()).isLoadedForTests(),
-                                    Matchers.is(true));
-                        }
-                    } else {
-                        Criteria.checkThat(
-                                tab.getNativePage(),
-                                Matchers.instanceOf(IncognitoNewTabPage.class));
-                        Criteria.checkThat(
-                                ((IncognitoNewTabPage) tab.getNativePage()).isLoadedForTests(),
-                                Matchers.is(true));
-                    }
-                });
+        if (tab.isIncognito()) {
+            NativePageCondition<IncognitoNewTabPage> nativePage =
+                    new NativePageCondition<>(IncognitoNewTabPage.class, () -> tab);
+            Triggers.noopTo()
+                    .waitFor(
+                            nativePage,
+                            SimpleConditions.uiThreadCondition(
+                                    "Incognito NTP is loaded",
+                                    nativePage,
+                                    ntp -> whether(ntp.isLoadedForTests())));
+        } else if (UrlOverrideUtils.isWebUiNtpOverrideEnabled()) {
+            Triggers.noopTo()
+                    .waitFor(
+                            SimpleConditions.uiThreadCondition(
+                                    "WebUI NTP renderer is ready",
+                                    () -> whether(isRendererReady(tab), "isRendererReady")));
+        } else {
+            NativePageCondition<NewTabPage> nativePage =
+                    new NativePageCondition<>(NewTabPage.class, () -> tab);
+            Triggers.noopTo()
+                    .waitFor(
+                            nativePage,
+                            SimpleConditions.uiThreadCondition(
+                                    "Regular NTP is loaded",
+                                    nativePage,
+                                    ntp -> whether(ntp.isLoadedForTests())));
+        }
     }
 }
