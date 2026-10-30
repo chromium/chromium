@@ -10,7 +10,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Objects;
@@ -31,7 +30,6 @@ class FlatLayoutDelegate extends TabListLayoutDelegate {
 
     @Override
     int getInsertionIndexOfTab(Tab tab) {
-        if (tab == null) return TabList.INVALID_TAB_INDEX;
         // Compute the index of the tab within the tab's group.
         @Nullable PropertyModel model = mModelList.getFirstTabPropertyModel();
         if (model == null) return TabList.INVALID_TAB_INDEX;
@@ -59,11 +57,6 @@ class FlatLayoutDelegate extends TabListLayoutDelegate {
 
     @Override
     public void didChangeTabGroupTitle(Token tabGroupId, String newTitle) {
-        // No update needed. Flat layout does not display tab group headers.
-    }
-
-    @Override
-    public void didChangeTabGroupColor(Token tabGroupId, @TabGroupColorId int newColor) {
         // No update needed. Flat layout does not display tab group headers.
     }
 

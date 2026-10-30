@@ -134,12 +134,6 @@ public class FlatLayoutDelegateUnitTest {
     }
 
     @Test
-    public void testGetInsertionIndexOfTab_NullTab() {
-        int insertionIndex = mDelegate.getInsertionIndexOfTab(null);
-        assertEquals(TabModel.INVALID_TAB_INDEX, insertionIndex);
-    }
-
-    @Test
     public void testGetInsertionIndexOfTab_EmptyModelList() {
         int insertionIndex = mDelegate.getInsertionIndexOfTab(mTab2);
         assertEquals(TabModel.INVALID_TAB_INDEX, insertionIndex);

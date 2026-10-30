@@ -221,12 +221,6 @@ public class GroupedLayoutDelegateUnitTest {
     }
 
     @Test
-    public void testGetInsertionIndexOfTab_NullTab() {
-        int insertionIndex = mDelegate.getInsertionIndexOfTab(null);
-        assertEquals(TabModel.INVALID_TAB_INDEX, insertionIndex);
-    }
-
-    @Test
     public void testOnTabAdded_NewTab_Standalone() {
         setupTabsInModel(mTab1);
 

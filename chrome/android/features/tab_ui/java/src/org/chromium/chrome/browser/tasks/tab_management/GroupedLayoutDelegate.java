@@ -76,7 +76,6 @@ class GroupedLayoutDelegate extends TabListLayoutDelegate {
 
     @Override
     int getInsertionIndexOfTab(Tab tab) {
-        if (tab == null) return TabList.INVALID_TAB_INDEX;
         int tabIndex = TabList.INVALID_TAB_INDEX;
         TabModel tabModel = mMediator.getCurrentTabModelChecked();
 

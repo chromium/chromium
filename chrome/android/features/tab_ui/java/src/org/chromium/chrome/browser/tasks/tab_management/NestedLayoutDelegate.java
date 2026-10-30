@@ -61,8 +61,6 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
      */
     @Override
     int getInsertionIndexOfTab(Tab tab) {
-        if (tab == null) return TabList.INVALID_TAB_INDEX;
-
         TabModel tabModel = mMediator.getCurrentTabModelChecked();
         Token targetTabGroupId = tab.getTabGroupId();
 
@@ -135,7 +133,7 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
         if (newIndex == 0 && isOnlyArchivedMsg(mModelList)) newIndex++;
 
         Token groupId = tab.getTabGroupId();
-        if (groupId != null && mMediator.isTabInTabGroup(tab)) {
+        if (groupId != null) {
             if (ensureGroupHeaderExists(tab, groupId, newIndex)) {
                 newIndex++;
             }
@@ -298,9 +296,7 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
      * @return {@code true} if a header was created and inserted, {@code false} otherwise.
      */
     boolean ensureGroupHeaderExists(Tab tab, Token tabGroupId, int targetUiIndex) {
-        if (tabGroupId == null || targetUiIndex == TabModel.INVALID_TAB_INDEX) {
-            return false;
-        }
+        if (targetUiIndex == TabModel.INVALID_TAB_INDEX) return false;
 
         if (mModelList.indexFromTabGroupId(tabGroupId) == TabModel.INVALID_TAB_INDEX) {
             mMediator.addTabInfoToModelForGroup(tab, tabGroupId, targetUiIndex);
@@ -444,9 +440,7 @@ class NestedLayoutDelegate extends TabListLayoutDelegate {
         }
 
         int position = mModelList.indexFromModel(model);
-        if (position == TabModel.INVALID_TAB_INDEX || !mModelList.isValidIndex(position)) {
-            return;
-        }
+        if (!mModelList.isValidIndex(position)) return;
 
         boolean canMoveUp = canReorderToPosition(position, position - 1);
         boolean canMoveDown = canReorderToPosition(position, position + 1);

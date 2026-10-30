@@ -159,7 +159,6 @@ public class NestedLayoutDelegateUnitTest {
     public void testOnTabAdded_TabInExpandedGroup() {
         setupTabsInModel(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
         when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(false);
 
         int index = mDelegate.onTabAdded(mTab1);
@@ -174,7 +173,6 @@ public class NestedLayoutDelegateUnitTest {
     public void testOnTabAdded_TabInCollapsedGroup_NewHeader() {
         setupTabsInModel(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(true);
         when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(true);
 
         int index = mDelegate.onTabAdded(mTab1);
@@ -190,7 +188,6 @@ public class NestedLayoutDelegateUnitTest {
         addGroupHeaderToModelList(TAB1_ID);
         setupTabsInModel(mTab1, mTab2);
         when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
-        when(mMediator.isTabInTabGroup(mTab2)).thenReturn(true);
         when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(true);
 
         int index = mDelegate.onTabAdded(mTab2);
@@ -797,7 +794,6 @@ public class NestedLayoutDelegateUnitTest {
 
     @Test
     public void testEnsureGroupHeaderExists_InvalidInputs() {
-        assertFalse(mDelegate.ensureGroupHeaderExists(mTab1, null, 0));
         assertFalse(
                 mDelegate.ensureGroupHeaderExists(mTab1, TAB_GROUP_ID, TabModel.INVALID_TAB_INDEX));
         verify(mMediator, never()).addTabInfoToModelForGroup(any(), any(), anyInt());
