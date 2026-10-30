@@ -19,6 +19,7 @@ import androidx.annotation.Px;
 import androidx.annotation.StringRes;
 import androidx.core.view.WindowInsetsCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.Log;
 import org.chromium.base.MathUtils;
@@ -91,6 +92,9 @@ class BottomSheetMediator implements TouchHandler {
     private boolean mIsTouchEnabled = true;
     private @Nullable Supplier<Boolean> mIsHidingSupplier;
     private boolean mIsLargeFormFactor;
+    private @Px int mRequestedBottomMargin;
+    private @Px int mBottomMargin;
+    private @Nullable Callback<Integer> mContainerBottomMarginApplier;
 
     /**
      * Creates a new BottomSheetMediator.
@@ -144,6 +148,7 @@ class BottomSheetMediator implements TouchHandler {
 
     /** Clears all registered observers when destroying the mediator. */
     void destroy() {
+        mContainerBottomMarginApplier = null;
         mObservers.clear();
         mIsTouchEnabled = false;
     }
@@ -475,6 +480,57 @@ class BottomSheetMediator implements TouchHandler {
         for (BottomSheetObserver obs : mObservers) {
             obs.onContainerSizeChanged(mContainerWidth, mContainerHeight);
         }
+    }
+
+    /**
+     * Sets the requested bottom margin of the sheet container in pixels and updates the effective
+     * bottom margin.
+     *
+     * @param bottomMargin The requested bottom margin in pixels.
+     */
+    void setBottomMargin(@Px int bottomMargin) {
+        mRequestedBottomMargin = bottomMargin;
+        updateContainerBottomMargin();
+    }
+
+    /**
+     * Sets the callback invoked synchronously to apply the effective container bottom margin to the
+     * view hierarchy before observers are notified.
+     */
+    void setContainerBottomMarginApplier(Callback<Integer> containerBottomMarginApplier) {
+        mContainerBottomMarginApplier = containerBottomMarginApplier;
+    }
+
+    /**
+     * Recomputes the effective bottom margin of the sheet container, applies it via the registered
+     * container margin applier, and notifies observers if the effective margin changed.
+     *
+     * <p>Callers must invoke this after the requested margin, large-form-factor flag, or sheet
+     * content changes (e.g. via {@link #setBottomMargin} or layout mode updates).
+     */
+    void updateContainerBottomMargin() {
+        // Enforce the baseline visual requirements for large form factor devices: ensure the sheet
+        // physically floats above the logical bottom by attaching a rigid bottom margin offset.
+        @Px
+        int effectiveBottomMargin =
+                mRequestedBottomMargin + (isLargeFormFactorUiEnabled() ? mDesktopBottomMargin : 0);
+
+        // TODO(crbug.com/521433079): Should early return if this doesn't change. Leaving for now to
+        // ensure we don't introduce subtle client regressions.
+        boolean bottomMarginChanged = mBottomMargin != effectiveBottomMargin;
+        mBottomMargin = effectiveBottomMargin;
+        if (mContainerBottomMarginApplier != null) {
+            mContainerBottomMarginApplier.onResult(mBottomMargin);
+        }
+
+        if (!bottomMarginChanged) return;
+        notifyContainerBottomMarginChanged(mBottomMargin);
+    }
+
+    /** Returns the effective bottom margin of the sheet container in pixels. */
+    @Px
+    int getContainerBottomMargin() {
+        return mBottomMargin;
     }
 
     /**

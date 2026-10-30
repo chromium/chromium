@@ -80,6 +80,7 @@ import org.chromium.ui.util.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Unit tests for {@link BottomSheetCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -2125,7 +2126,26 @@ public class BottomSheetCoordinatorUnitTest {
         BottomSheetContent nonDesktopUiContent =
                 buildContent(/* supportsLargeFormFactor= */ false, 0.5f, 1.0f);
 
+        AtomicInteger observedMargin = new AtomicInteger(-1);
+        AtomicInteger containerMarginWhenObserved = new AtomicInteger(-1);
+        AtomicInteger observerCallCount = new AtomicInteger(0);
+        sheet.addObserver(
+                new BottomSheetObserver() {
+                    @Override
+                    public void onContainerBottomMarginChanged(int newMargin) {
+                        observerCallCount.incrementAndGet();
+                        observedMargin.set(newMargin);
+                        containerMarginWhenObserved.set(
+                                ((MarginLayoutParams) mSheetContainer.getLayoutParams())
+                                        .bottomMargin);
+                    }
+                });
+
         sheet.setBottomMargin(40);
+        assertEquals(1, observerCallCount.get());
+        assertEquals(40, observedMargin.get());
+        assertEquals(40, containerMarginWhenObserved.get());
+        assertEquals(40, ((MarginLayoutParams) mSheetContainer.getLayoutParams()).bottomMargin);
 
         // 1. Show a sheet with desktop UI enabled (DESKTOP_POPUP).
         sheet.showContent(desktopUiContent);
@@ -2135,6 +2155,12 @@ public class BottomSheetCoordinatorUnitTest {
                         + " caller margin.",
                 40 + desktopMargin,
                 sheet.getContainerBottomMargin());
+        assertEquals(
+                40 + desktopMargin,
+                ((MarginLayoutParams) mSheetContainer.getLayoutParams()).bottomMargin);
+        assertEquals(2, observerCallCount.get());
+        assertEquals(40 + desktopMargin, observedMargin.get());
+        assertEquals(40 + desktopMargin, containerMarginWhenObserved.get());
 
         // 2. Switch on the same BottomSheet instance to a sheet without desktop UI
         // (DESKTOP_FALLBACK).
@@ -2145,6 +2171,10 @@ public class BottomSheetCoordinatorUnitTest {
                         + " the desktop bottom margin offset.",
                 40,
                 sheet.getContainerBottomMargin());
+        assertEquals(40, ((MarginLayoutParams) mSheetContainer.getLayoutParams()).bottomMargin);
+        assertEquals(3, observerCallCount.get());
+        assertEquals(40, observedMargin.get());
+        assertEquals(40, containerMarginWhenObserved.get());
     }
 
     @Test

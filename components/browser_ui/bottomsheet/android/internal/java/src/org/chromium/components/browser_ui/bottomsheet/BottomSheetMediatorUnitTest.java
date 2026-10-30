@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -29,6 +30,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -38,6 +40,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Unit tests for {@link BottomSheetMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -1288,5 +1293,92 @@ public class BottomSheetMediatorUnitTest {
         assertEquals(
                 BottomSheetView.SheetLayoutMode.DESKTOP_FALLBACK,
                 mMediator.resolveSheetLayoutMode());
+    }
+
+    @Test
+    public void testSetBottomMargin() {
+        AtomicInteger applierCallCount = new AtomicInteger(0);
+        AtomicInteger applierMargin = new AtomicInteger(-1);
+        AtomicBoolean applierCalledBeforeObserver = new AtomicBoolean(false);
+        Callback<Integer> applier =
+                margin -> {
+                    applierCallCount.incrementAndGet();
+                    applierMargin.set(margin);
+                    try {
+                        verify(mObserver, never()).onContainerBottomMarginChanged(anyInt());
+                        applierCalledBeforeObserver.set(true);
+                    } catch (AssertionError e) {
+                        applierCalledBeforeObserver.set(false);
+                    }
+                };
+        mMediator.setContainerBottomMarginApplier(applier);
+
+        mMediator.setBottomMargin(24);
+        assertEquals(24, mMediator.getContainerBottomMargin());
+        assertEquals(24, applierMargin.get());
+        assertEquals(1, applierCallCount.get());
+        assertTrue(applierCalledBeforeObserver.get());
+        verify(mObserver, times(1)).onContainerBottomMarginChanged(24);
+
+        // Setting same margin unconditionally invokes applier (so view params are kept in sync),
+        // but does not trigger redundant observer notification.
+        mMediator.setBottomMargin(24);
+        assertEquals(24, applierMargin.get());
+        assertEquals(2, applierCallCount.get());
+        verify(mObserver, times(1)).onContainerBottomMarginChanged(24);
+    }
+
+    @Test
+    public void testUpdateContainerBottomMargin_LargeFormFactor() {
+        int desktopBottomMargin =
+                ContextUtils.getApplicationContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.bottom_sheet_desktop_bottom_margin);
+
+        // 1. Initial setBottomMargin(10) -> 10, notifies 10.
+        mMediator.setBottomMargin(10);
+        assertEquals(10, mMediator.getContainerBottomMargin());
+        verify(mObserver, times(1)).onContainerBottomMarginChanged(10);
+
+        // 2. Enable large form factor, but content does not support large form factor -> stays 10,
+        // no new notification.
+        mMediator.setIsLargeFormFactor(true);
+        when(mContent.supportsLargeFormFactor()).thenReturn(false);
+        mMediator.setSheetContent(mContent);
+        mMediator.updateContainerBottomMargin();
+        assertEquals(10, mMediator.getContainerBottomMargin());
+        verify(mObserver, times(1)).onContainerBottomMarginChanged(10);
+
+        // 3. Switch to content with supportsLargeFormFactor() == true -> 10 + desktopBottomMargin,
+        // notifies.
+        when(mContent.supportsLargeFormFactor()).thenReturn(true);
+        mMediator.updateContainerBottomMargin();
+        assertEquals(10 + desktopBottomMargin, mMediator.getContainerBottomMargin());
+        verify(mObserver, times(1)).onContainerBottomMarginChanged(10 + desktopBottomMargin);
+
+        // 4. setBottomMargin(20) while LFF is active -> 20 + desktopBottomMargin, notifies.
+        mMediator.setBottomMargin(20);
+        assertEquals(20 + desktopBottomMargin, mMediator.getContainerBottomMargin());
+        verify(mObserver, times(1)).onContainerBottomMarginChanged(20 + desktopBottomMargin);
+
+        // 5. Switch to content with supportsLargeFormFactor() == false -> drops back to 20,
+        // notifies 20.
+        when(mContent.supportsLargeFormFactor()).thenReturn(false);
+        mMediator.updateContainerBottomMargin();
+        assertEquals(20, mMediator.getContainerBottomMargin());
+        verify(mObserver, times(1)).onContainerBottomMarginChanged(20);
+
+        // 6. Switch back to supportsLargeFormFactor() == true -> 20 + desktopBottomMargin.
+        when(mContent.supportsLargeFormFactor()).thenReturn(true);
+        mMediator.updateContainerBottomMargin();
+        assertEquals(20 + desktopBottomMargin, mMediator.getContainerBottomMargin());
+        verify(mObserver, times(2)).onContainerBottomMarginChanged(20 + desktopBottomMargin);
+
+        // 7. Clear sheet content (null) + updateContainerBottomMargin() -> drops back to 20,
+        // notifies 20.
+        mMediator.setSheetContent(null);
+        mMediator.updateContainerBottomMargin();
+        assertEquals(20, mMediator.getContainerBottomMargin());
+        verify(mObserver, times(2)).onContainerBottomMarginChanged(20);
     }
 }

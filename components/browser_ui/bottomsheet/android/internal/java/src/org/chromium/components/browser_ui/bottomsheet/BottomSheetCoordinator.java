@@ -89,9 +89,6 @@ class BottomSheetCoordinator
     /** The visible rect for the screen taking the keyboard into account. */
     private final Rect mVisibleViewportRect = new Rect();
 
-    /** The bottom margin for desktop windowing mode. */
-    private final @Px int mDesktopBottomMargin;
-
     /** The default peek height of the sheet. */
     private final @Px int mDefaultPeekHeight;
 
@@ -150,8 +147,6 @@ class BottomSheetCoordinator
     /** The last recorded app header height, in px. */
     private int mAppHeaderHeight;
 
-    private @Px int mRequestedBottomMargin;
-    private @Px int mBottomMargin;
     private @ColorInt int mSheetBgColor;
     private boolean mIsRelayingOutContainer;
 
@@ -173,8 +168,6 @@ class BottomSheetCoordinator
         mView = view;
         Context context = mView.getContext();
         Resources res = mView.getResources();
-        mDesktopBottomMargin =
-                res.getDimensionPixelSize(R.dimen.bottom_sheet_desktop_bottom_margin);
         mDefaultPeekHeight = res.getDimensionPixelSize(R.dimen.bottom_sheet_peek_height);
         mSheetBgColor = getNonModalBottomSheetBgColor(context);
 
@@ -263,6 +256,7 @@ class BottomSheetCoordinator
         mEdgeToEdgeBottomInsetSupplier = edgeToEdgeBottomInsetSupplier;
         mInsetObserver = insetObserver;
         mSheetContainer = (ViewGroup) mView.getParent();
+        mMediator.setContainerBottomMarginApplier(this::applyContainerBottomMargin);
         onAppHeaderHeightChanged(appHeaderHeight);
         setBottomMargin(bottomMargin);
 
@@ -333,7 +327,7 @@ class BottomSheetCoordinator
 
     @Px
     int getEdgeToEdgeBottomInset() {
-        if (mBottomMargin != 0) return 0;
+        if (getContainerBottomMargin() != 0) return 0;
         assert mEdgeToEdgeBottomInsetSupplier.get() != null;
         @Px
         int bottomInset =
@@ -1044,7 +1038,7 @@ class BottomSheetCoordinator
     private void updateSheetLayoutMode(@SheetLayoutMode int mode) {
         mMediator.setSheetLayoutMode(mode);
         boolean isPopup = mode == SheetLayoutMode.DESKTOP_POPUP;
-        updateContainerBottomMargin();
+        mMediator.updateContainerBottomMargin();
         mMediator.updateCloseButton(isPopup, getCurrentSheetContent());
         updateContainerClipping(isPopup);
     }
@@ -1466,32 +1460,11 @@ class BottomSheetCoordinator
 
     @Px
     int getContainerBottomMargin() {
-        return mBottomMargin;
+        return mMediator.getContainerBottomMargin();
     }
 
     void setBottomMargin(@Px int bottomMargin) {
-        mRequestedBottomMargin = bottomMargin;
-        updateContainerBottomMargin();
-    }
-
-    private void updateContainerBottomMargin() {
-        // Enforce the baseline visual requirements for large form factor devices: ensure the sheet
-        // physically floats above the logical bottom by attaching a rigid bottom margin offset.
-        @Px
-        int effectiveBottomMargin =
-                mRequestedBottomMargin + (isLargeFormFactorUiEnabled() ? mDesktopBottomMargin : 0);
-
-        // TODO(crbug.com/521433079): Should early return if this doesn't change. Leaving for now to
-        // ensure we don't introduce subtle client regressions.
-        boolean bottomMarginChanged = mBottomMargin != effectiveBottomMargin;
-
-        mBottomMargin = effectiveBottomMargin;
-        MarginLayoutParams layoutParams = (MarginLayoutParams) mSheetContainer.getLayoutParams();
-        layoutParams.bottomMargin = mBottomMargin;
-        mSheetContainer.setLayoutParams(layoutParams);
-
-        if (!bottomMarginChanged) return;
-        mMediator.notifyContainerBottomMarginChanged(effectiveBottomMargin);
+        mMediator.setBottomMargin(bottomMargin);
     }
 
     void onSheetBackgroundColorOverrideChanged() {
@@ -1614,5 +1587,11 @@ class BottomSheetCoordinator
     @SheetState
     int getStateBeforeKeyboardShownForTesting() {
         return mMediator.getStateBeforeKeyboardShownForTesting();
+    }
+
+    private void applyContainerBottomMargin(@Px int bottomMargin) {
+        MarginLayoutParams layoutParams = (MarginLayoutParams) mSheetContainer.getLayoutParams();
+        layoutParams.bottomMargin = bottomMargin;
+        mSheetContainer.setLayoutParams(layoutParams);
     }
 }
