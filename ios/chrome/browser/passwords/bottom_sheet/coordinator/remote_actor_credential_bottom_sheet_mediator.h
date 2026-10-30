@@ -7,7 +7,21 @@
 
 #import <Foundation/Foundation.h>
 
+class FaviconLoader;
 @class RemoteActorCredentialBottomSheetMediator;
+
+namespace password_manager {
+class PasswordManagerClient;
+class PasswordStoreInterface;
+}  // namespace password_manager
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
 
 // Delegate protocol for `RemoteActorCredentialBottomSheetMediator` to
 // communicate the progress of the sharing flow back to the coordinator.
@@ -22,7 +36,9 @@
 
 // Mediator for the remote actor credential bottom sheet. Drives the
 // `RemoteActorCredentialSharingController` flow which retrieves the
-// credentials, lets the user pick one and shares the chosen credential.
+// credentials, lets the user pick one and shares the chosen credential. Device
+// reauthentication is handled by the controller through
+// `passwordManagerClient`.
 @interface RemoteActorCredentialBottomSheetMediator : NSObject
 
 // Delegate handling the flow progress.
@@ -30,10 +46,26 @@
     delegate;
 
 // Initializes the mediator for the remote actor request identified by
-// `domain`, `gaiaID` and `taskID`.
-- (instancetype)initWithDomain:(NSString*)domain
-                        gaiaID:(NSString*)gaiaID
-                        taskID:(NSString*)taskID NS_DESIGNATED_INITIALIZER;
+// `domain`, `gaiaID` and `taskID`. `identityManager`, `syncService`,
+// `profilePasswordStore`, `accountPasswordStore` and `passwordManagerClient`
+// are passed to `RemoteActorCredentialSharingController` to retrieve the
+// credentials and reauthenticate the user; `identityManager`, `syncService` and
+// `passwordManagerClient` may be null when unavailable, and the store matching
+// the user's sync state must be non-null. `faviconLoader` is used to load the
+// favicon of `domain`.
+- (instancetype)
+    initWithIdentityManager:(signin::IdentityManager*)identityManager
+                syncService:(syncer::SyncService*)syncService
+       profilePasswordStore:
+           (password_manager::PasswordStoreInterface*)profilePasswordStore
+       accountPasswordStore:
+           (password_manager::PasswordStoreInterface*)accountPasswordStore
+      passwordManagerClient:
+          (password_manager::PasswordManagerClient*)passwordManagerClient
+              faviconLoader:(FaviconLoader*)faviconLoader
+                     domain:(NSString*)domain
+                     gaiaID:(NSString*)gaiaID
+                     taskID:(NSString*)taskID NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -42,7 +74,8 @@
 // credentials to suggest.
 - (void)start;
 
-// Disconnects the mediator. Must be called before deallocation.
+// Disconnects the mediator and cleans up dependencies. Must be called before
+// deallocation.
 - (void)disconnect;
 
 @end

@@ -5,7 +5,19 @@
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/remote_actor_credential_bottom_sheet_coordinator.h"
 
 #import "base/check.h"
+#import "base/memory/scoped_refptr.h"
+#import "components/password_manager/core/browser/password_store/password_store_interface.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/passwords/bottom_sheet/coordinator/remote_actor_credential_bottom_sheet_mediator.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
+#import "ios/chrome/browser/passwords/model/password_tab_helper.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/web/public/web_state.h"
 
 @interface RemoteActorCredentialBottomSheetCoordinator () <
     RemoteActorCredentialBottomSheetMediatorDelegate>
@@ -50,10 +62,45 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  _mediator =
-      [[RemoteActorCredentialBottomSheetMediator alloc] initWithDomain:_domain
-                                                                gaiaID:_gaiaID
-                                                                taskID:_taskID];
+  ProfileIOS* profile = self.profile;
+  CHECK(profile);
+
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
+  PasswordTabHelper* passwordTabHelper =
+      activeWebState ? PasswordTabHelper::FromWebState(activeWebState)
+                     : nullptr;
+  password_manager::PasswordManagerClient* passwordManagerClient =
+      passwordTabHelper ? passwordTabHelper->GetPasswordManagerClient()
+                        : nullptr;
+
+  // Unlike the other dependencies, the favicon loader isn't null-checked by
+  // `RemoteActorCredentialSharingController`, and is always created for a
+  // profile.
+  FaviconLoader* faviconLoader =
+      IOSChromeFaviconLoaderFactory::GetForProfile(profile);
+  CHECK(faviconLoader);
+
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(profile);
+  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
+  scoped_refptr<password_manager::PasswordStoreInterface> profilePasswordStore =
+      IOSChromeProfilePasswordStoreFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS);
+  scoped_refptr<password_manager::PasswordStoreInterface> accountPasswordStore =
+      IOSChromeAccountPasswordStoreFactory::GetForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS);
+
+  _mediator = [[RemoteActorCredentialBottomSheetMediator alloc]
+      initWithIdentityManager:identityManager
+                  syncService:syncService
+         profilePasswordStore:profilePasswordStore.get()
+         accountPasswordStore:accountPasswordStore.get()
+        passwordManagerClient:passwordManagerClient
+                faviconLoader:faviconLoader
+                       domain:_domain
+                       gaiaID:_gaiaID
+                       taskID:_taskID];
   _mediator.delegate = self;
   [_mediator start];
 }
