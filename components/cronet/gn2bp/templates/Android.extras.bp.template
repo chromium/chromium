@@ -265,6 +265,7 @@ cc_genrule {
     out: ["intersection.ld"],
     tools: ["llvm-objdump"],
     tool_files: [
+        "build/android/java_home.py",
         "components/cronet/tools/symbols_map_generator/generate_version_script_from_symbols_intersection.py",
         "components/cronet/tools/utils.py",
     ],
