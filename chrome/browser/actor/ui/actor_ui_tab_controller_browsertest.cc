@@ -951,10 +951,8 @@ class ActorUiTabControllerNavigationConfirmLegacyContextualTasksTest
     : public ActorUiTabControllerNavigationConfirmTest {
  public:
   ActorUiTabControllerNavigationConfirmLegacyContextualTasksTest() {
-    contextual_tasks_feature_list_.InitWithFeatures(
-        {contextual_tasks::kContextualTasks},
-        {contextual_tasks::kContextualTasksRearchitecture,
-         contextual_tasks::kContextualTasksSidePanelRearchitecture});
+    contextual_tasks_feature_list_.InitAndEnableFeature(
+        contextual_tasks::kContextualTasks);
   }
 
   void SetUpInProcessBrowserTestFixture() override {

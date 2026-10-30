@@ -98,12 +98,8 @@ std::unique_ptr<KeyedService> BuildMockUiServiceForAuth(
 class LensSearchControllerUnificationBrowserTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{
-            contextual_tasks::kContextualTasksClobberActiveTab,
-            contextual_tasks::kContextualTasksRearchitecture,
-            contextual_tasks::kContextualTasksSidePanelRearchitecture});
+    feature_list_.InitAndDisableFeature(
+        contextual_tasks::kContextualTasksClobberActiveTab);
     InProcessBrowserTest::SetUp();
   }
 
@@ -384,12 +380,8 @@ class LensSearchControllerUnificationClobberActiveTabBrowserTest
     : public LensSearchControllerUnificationBrowserTest {
  public:
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{contextual_tasks::
-                                  kContextualTasksClobberActiveTab},
-        /*disabled_features=*/{
-            contextual_tasks::kContextualTasksRearchitecture,
-            contextual_tasks::kContextualTasksSidePanelRearchitecture});
+    feature_list_.InitAndEnableFeature(
+        contextual_tasks::kContextualTasksClobberActiveTab);
     InProcessBrowserTest::SetUp();
   }
 };

@@ -80,8 +80,7 @@ class ContextualTasksUrlLoaderFactoryInterceptorBrowserTest
     feature_list_.InitWithFeatures(
         {contextual_tasks::kContextualTasks,
          contextual_tasks::kContextualTasksForceEntryPointEligibility},
-        {contextual_tasks::kContextualTasksRearchitecture,
-         contextual_tasks::kContextualTasksSidePanelRearchitecture});
+        {});
   }
   ~ContextualTasksUrlLoaderFactoryInterceptorBrowserTest() override = default;
 
@@ -421,9 +420,7 @@ class
     feature_list_.InitWithFeatures(
         {contextual_tasks::kContextualTasks,
          contextual_tasks::kContextualTasksForceEntryPointEligibility},
-        {contextual_tasks::kContextualTasksRearchitecture,
-         contextual_tasks::kContextualTasksSidePanelRearchitecture,
-         kContextualTasksSendFullVersionListEnabled});
+        {kContextualTasksSendFullVersionListEnabled});
   }
 };
 
@@ -436,8 +433,7 @@ class ContextualTasksUrlLoaderFactoryInterceptorFullVersionListBrowserTest
         {contextual_tasks::kContextualTasks,
          contextual_tasks::kContextualTasksForceEntryPointEligibility,
          kContextualTasksSendFullVersionListEnabled},
-        {contextual_tasks::kContextualTasksRearchitecture,
-         contextual_tasks::kContextualTasksSidePanelRearchitecture});
+        {});
   }
 };
 

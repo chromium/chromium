@@ -62,8 +62,7 @@ class ContextualTasksBrowserTest : public WebUIMochaBrowserTest {
     scoped_feature_list_.InitWithFeatures(
         {contextual_tasks::kContextualTasks,
          contextual_tasks::kContextualTasksForceEntryPointEligibility},
-        {contextual_tasks::kContextualTasksRearchitecture,
-         contextual_tasks::kContextualTasksSidePanelRearchitecture});
+        {});
     set_test_loader_host(chrome::kChromeUIContextualTasksHost);
   }
 

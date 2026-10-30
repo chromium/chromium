@@ -5239,28 +5239,6 @@
             ]
         }
     ],
-    "ContextualTasksRearchitecture": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Prestable",
-                    "enable_features": [
-                        "ApiContextualTasksPrivate",
-                        "BackForwardCacheForComponentExtensionFrames",
-                        "ContextualTasksRearchitecture",
-                        "ContextualTasksSidePanelRearchitecture",
-                        "LensComposeboxIdentityDelegation"
-                    ]
-                }
-            ]
-        }
-    ],
     "ContextualTasksTabAndClickBehavior": [
         {
             "platforms": [
@@ -5352,6 +5330,25 @@
                     "disable_features": [
                         "ContextualTasksHideMenuOnAiPage",
                         "EphemeralPinningVisibleWhenPermanentlyPinned"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ContextualTasks_Srp2Aim": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ApiContextualTasksPrivate",
+                        "ContextualTasksPrivateApiNoAnimation"
                     ]
                 }
             ]
@@ -11306,7 +11303,11 @@
         {
             "platforms": [
                 "android",
-                "ios"
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
             ],
             "experiments": [
                 {

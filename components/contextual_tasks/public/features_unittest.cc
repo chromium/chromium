@@ -102,11 +102,6 @@ TEST(FeaturesTest, ForcedEmbeddedPageHost_SetOverrideRuntime) {
 }
 
 TEST(FeaturesTest, IsContextualTasksUnboundedMenuEnabled_DefaultDisabled) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{kContextualTasksUnboundedMenu,
-                             kContextualTasksSidePanelRearchitecture});
   EXPECT_FALSE(IsContextualTasksUnboundedMenuEnabled());
 }
 

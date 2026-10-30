@@ -352,8 +352,7 @@ class ContextualTasksUiServiceZeroStateEnabledTest
         {{contextual_tasks::kContextualTasks, {}},
          {omnibox::kWebUIOmniboxAskGAboutThisPage,
           {{"Omnibox_AskGCoBrowse", "true"}}}},
-        {contextual_tasks::kContextualTasksRearchitecture,
-         contextual_tasks::kContextualTasksSidePanelRearchitecture});
+        {});
   }
 
  private:
@@ -395,11 +394,8 @@ class ContextualTasksUiServiceZeroStateDisabledTest
     : public ContextualTasksUiServiceZeroStateTestBase {
  public:
   ContextualTasksUiServiceZeroStateDisabledTest() {
-    feature_list_.InitWithFeatures(
-        {contextual_tasks::kContextualTasks},
-        {contextual_tasks::kContextualTasksRearchitecture,
-         contextual_tasks::kContextualTasksSidePanelRearchitecture,
-         omnibox::kWebUIOmniboxAskGAboutThisPage});
+    feature_list_.InitWithFeatures({contextual_tasks::kContextualTasks},
+                                   {omnibox::kWebUIOmniboxAskGAboutThisPage});
   }
 
  private:
@@ -444,10 +440,7 @@ class ContextualTasksUiServiceTaskReuseTest
     : public ContextualTasksUiServiceZeroStateTestBase {
  public:
   ContextualTasksUiServiceTaskReuseTest() {
-    feature_list_.InitWithFeatures(
-        {contextual_tasks::kContextualTasks},
-        {contextual_tasks::kContextualTasksRearchitecture,
-         contextual_tasks::kContextualTasksSidePanelRearchitecture});
+    feature_list_.InitWithFeatures({contextual_tasks::kContextualTasks}, {});
   }
 
  private:

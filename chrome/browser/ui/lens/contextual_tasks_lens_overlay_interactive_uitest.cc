@@ -126,9 +126,7 @@ class ContextualTasksLensOverlayControllerInteractiveUiTest
         {{lens::features::kLensOverlayTextSelectionContextMenuEntrypoint,
           {{"contextualize", "true"}}}},
         /*disabled_features=*/
-        {contextual_tasks::kContextualTasksRearchitecture,
-         contextual_tasks::kContextualTasksSidePanelRearchitecture,
-         features::kNonBlockingOsClipboardReads,
+        {features::kNonBlockingOsClipboardReads,
          // These tests expect closing the side panel to close Lens sessions in
          // all tabs that share its task.
          contextual_tasks::kContextualTasksSidePanelTabState});
@@ -919,10 +917,7 @@ class ContextualTasksLensOverlayEphemeralButtonInteractiveUiTest
         /*enabled_features=*/
         {{contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint,
           {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}}},
-        /*disabled_features=*/
-        {contextual_tasks::kContextualTasksRearchitecture,
-         contextual_tasks::kContextualTasksSidePanelRearchitecture,
-         features::kNonBlockingOsClipboardReads});
+        /*disabled_features=*/{features::kNonBlockingOsClipboardReads});
   }
 };
 
@@ -988,12 +983,7 @@ class ContextualTasksLensOverlayControllerEligibilityInteractiveUiTest
   }
 
   void SetUpFeatureList() override {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/
-        {contextual_tasks::kContextualTasksRearchitecture,
-         contextual_tasks::kContextualTasksSidePanelRearchitecture,
-         features::kNonBlockingOsClipboardReads});
+    feature_list_.InitAndDisableFeature(features::kNonBlockingOsClipboardReads);
   }
 
   std::unique_ptr<KeyedService> BuildMockAimServiceInstance(
@@ -1107,10 +1097,7 @@ class OmniboxContextualSuggestionInteractiveUiTest
                                {}},
                               {omnibox::kWebUIOmniboxAskGAboutThisPage,
                                {{"Omnibox_AskGBypassPrivacyNotice", "true"}}}},
-        /*disabled_features=*/
-        {contextual_tasks::kContextualTasksRearchitecture,
-         contextual_tasks::kContextualTasksSidePanelRearchitecture,
-         features::kNonBlockingOsClipboardReads});
+        /*disabled_features=*/{features::kNonBlockingOsClipboardReads});
   }
 };
 
@@ -1187,10 +1174,7 @@ class ContextualTasksContextMenuAskGoogleInteractiveUiTest
           {{"ContextualTasksContextMenuShowAskGoogle", "true"},
            {"ContextualTasksContextMenuSubmenu", "false"},
            {"ContextualTasksContextMenuRouteAskGoogleToOmnibox", "false"}}}},
-        /*disabled_features=*/
-        {contextual_tasks::kContextualTasksRearchitecture,
-         contextual_tasks::kContextualTasksSidePanelRearchitecture,
-         features::kNonBlockingOsClipboardReads});
+        /*disabled_features=*/{features::kNonBlockingOsClipboardReads});
   }
 
   void SetupOptimizationFilter() {
@@ -1480,10 +1464,7 @@ class ContextualTasksContextMenuSubmenuInteractiveUiTest
           {{"ContextualTasksContextMenuShowAskGoogle", "true"},
            {"ContextualTasksContextMenuSubmenu", "true"},
            {"ContextualTasksContextMenuRouteAskGoogleToOmnibox", "false"}}}},
-        /*disabled_features=*/
-        {contextual_tasks::kContextualTasksRearchitecture,
-         contextual_tasks::kContextualTasksSidePanelRearchitecture,
-         features::kNonBlockingOsClipboardReads});
+        /*disabled_features=*/{features::kNonBlockingOsClipboardReads});
   }
 };
 
@@ -1690,10 +1671,7 @@ class ContextualTasksContextMenuRouteOmniboxInteractiveUiTest
            {"ContextualTasksContextMenuSubmenu", "false"},
            {"ContextualTasksContextMenuRouteAskGoogleToOmnibox", "true"}}},
          {omnibox::internal::kWebUIOmniboxAimPopup, {}}},
-        /*disabled_features=*/
-        {contextual_tasks::kContextualTasksRearchitecture,
-         contextual_tasks::kContextualTasksSidePanelRearchitecture,
-         features::kNonBlockingOsClipboardReads});
+        /*disabled_features=*/{features::kNonBlockingOsClipboardReads});
   }
 
   void SetupOptimizationFilter() {

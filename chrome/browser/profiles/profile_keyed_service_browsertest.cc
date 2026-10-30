@@ -647,14 +647,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     guest_otr_active_services.insert("AimEligibilityExtensionBridge");
     guest_otr_active_services.insert("ExtensionMojoBinderRegistry");
   }
-#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  if (base::FeatureList::IsEnabled(
-          contextual_tasks::kContextualTasksRearchitecture)) {
-    guest_otr_active_services.insert("ContextualTasksExtensionBridge");
-    guest_otr_active_services.insert("ExtensionConfigMap");
-    guest_otr_active_services.insert("ExtensionMojoBinderRegistry");
-  }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   // On ChromeOS, Guest session startup navigates to chrome://newtab (a WebUI)
   // by default, whereas Desktop CreateGuestBrowser() navigates to about:blank.
@@ -1110,12 +1102,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     guest_active_services.insert("ExtensionMojoBinderRegistry");
   }
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  if (base::FeatureList::IsEnabled(
-          contextual_tasks::kContextualTasksRearchitecture)) {
-    guest_active_services.insert("ContextualTasksExtensionBridge");
-    guest_active_services.insert("ExtensionConfigMap");
-    guest_active_services.insert("ExtensionMojoBinderRegistry");
-  }
   if (base::FeatureList::IsEnabled(
           policy::features::kEnableExtensionInstallPolicyFetching)) {
     guest_active_services.insert("ExtensionInstallPolicyService");

@@ -162,9 +162,7 @@ class ContextualTasksSidePanelCoordinatorInteractiveUiTest
           {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}}},
         // These tests expect the side panel state to be shared by the tabs in a
         // task.
-        {kContextualTasksRearchitecture,
-         kContextualTasksSidePanelRearchitecture,
-         kContextualTasksSidePanelTabState});
+        {kContextualTasksSidePanelTabState});
   }
   ~ContextualTasksSidePanelCoordinatorInteractiveUiTest() override = default;
 
@@ -342,8 +340,7 @@ class ContextualTasksSidePanelPermissionDashboardInteractiveUiTest
                               kContextualTasksForceEntryPointEligibility,
                               kContextualTasksEphemeralBrandedEntryPoint,
                               kContextualTasksSidePanelRearchitecture},
-        /*disabled_features=*/{kContextualTasksRearchitecture,
-                               kContextualTasksSidePanelTabState});
+        /*disabled_features=*/{kContextualTasksSidePanelTabState});
   }
 };
 
@@ -1342,8 +1339,7 @@ class ContextualTasksSidePanelCoordinatorFeatureDisabledInteractiveUiTest
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
-        /*disabled_features=*/{kContextualTasks, kContextualTasksRearchitecture,
-                               kContextualTasksSidePanelRearchitecture,
+        /*disabled_features=*/{kContextualTasks,
                                kContextualTasksClobberActiveTab});
   }
 };
@@ -1355,8 +1351,7 @@ class ContextualTasksSidePanelCoordinatorFeatureDisabledClobberInteractiveUiTest
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{kContextualTasksClobberActiveTab},
-        /*disabled_features=*/{kContextualTasks, kContextualTasksRearchitecture,
-                               kContextualTasksSidePanelRearchitecture});
+        /*disabled_features=*/{kContextualTasks});
   }
 };
 
@@ -2114,10 +2109,8 @@ class ContextualTasksExtensionsInteractiveUiTest
     enabled.push_back({kContextualTasksRearchitecture, {}});
     enabled.push_back({kContextualTasksSidePanelRearchitecture, {}});
     enabled.push_back({extensions_features::kExtensionsMenuAccessControl, {}});
-    std::vector<base::test::FeatureRef> disabled = GetDefaultDisabledFeatures();
-    std::erase(disabled, kContextualTasksRearchitecture);
-    std::erase(disabled, kContextualTasksSidePanelRearchitecture);
-    feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
+    feature_list_.InitWithFeaturesAndParameters(enabled,
+                                                GetDefaultDisabledFeatures());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

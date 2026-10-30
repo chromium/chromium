@@ -94,9 +94,7 @@ class ContextualTasksPixelTestBase : public WebUIComposeBoxPixelTest {
          {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
          {contextual_tasks::kContextualTasksContextMenu, {}}},
         /*disabled_features=*/
-        {contextual_tasks::kContextualTasksRearchitecture,
-         contextual_tasks::kContextualTasksSidePanelRearchitecture,
-         contextual_tasks::kContextualTasksAnimatedCaret,
+        {contextual_tasks::kContextualTasksAnimatedCaret,
          // TODO(crbug.com/452061489): Fix tests that fail when the WebUI
          // Omnibox is enabled and then remove these two Features.
          omnibox::internal::kWebUIOmniboxPopup,
@@ -703,22 +701,18 @@ class ContextualTasksToolbarPixelTest
          {{"ContextualTasksExpandButtonOptions", "toolbar-close-button"}}},
         {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}},
         {contextual_tasks::kContextualTasksContextMenu, {}}};
-    std::vector<base::test::FeatureRef> disabled_features = {
-        contextual_tasks::kContextualTasksRearchitecture,
-        contextual_tasks::kContextualTasksAnimatedCaret,
-        // TODO(crbug.com/452061489): Fix tests that fail when the WebUI
-        // Omnibox is enabled and then remove these two Features.
-        omnibox::internal::kWebUIOmniboxPopup,
-        omnibox::internal::kWebUIOmniboxAimPopup};
     if (GetParam().is_post_rearchitecture) {
       enabled_features.push_back(
           {contextual_tasks::kContextualTasksSidePanelRearchitecture, {}});
-    } else {
-      disabled_features.push_back(
-          contextual_tasks::kContextualTasksSidePanelRearchitecture);
     }
-    feature_list_.InitWithFeaturesAndParameters(enabled_features,
-                                                disabled_features);
+    feature_list_.InitWithFeaturesAndParameters(
+        enabled_features,
+        /*disabled_features=*/
+        {contextual_tasks::kContextualTasksAnimatedCaret,
+         // TODO(crbug.com/452061489): Fix tests that fail when the WebUI
+         // Omnibox is enabled and then remove these two Features.
+         omnibox::internal::kWebUIOmniboxPopup,
+         omnibox::internal::kWebUIOmniboxAimPopup});
     WebUIComposeBoxPixelTest::SetUp();
   }
 

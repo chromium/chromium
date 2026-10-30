@@ -183,8 +183,6 @@ ContextualTasksInteractiveTestBase::GetDefaultEnabledFeatures() {
 std::vector<base::test::FeatureRef>
 ContextualTasksInteractiveTestBase::GetDefaultDisabledFeatures() {
   return {
-      kContextualTasksRearchitecture,
-      kContextualTasksSidePanelRearchitecture,
       lens::features::kLensSendRawFileMediaTypes,
       omnibox::internal::kWebUIOmniboxPopup,
       omnibox::internal::kWebUIOmniboxAimPopup,

@@ -165,12 +165,9 @@ void LensOverlayInteractiveTestBase::SetUpFeatureList() {
                             {lens::features::kLensOverlayContextualSearchbox,
                              {{"use-pdfs-as-context", "true"},
                               {"auto-focus-searchbox", "false"}}}},
-      /*disabled_features=*/{
-          contextual_tasks::kContextualTasks,
-          contextual_tasks::kContextualTasksSidePanel,
-          contextual_tasks::kContextualTasksRearchitecture,
-          contextual_tasks::kContextualTasksSidePanelRearchitecture,
-          features::kNonBlockingOsClipboardReads});
+      /*disabled_features=*/{contextual_tasks::kContextualTasks,
+                             contextual_tasks::kContextualTasksSidePanel,
+                             features::kNonBlockingOsClipboardReads});
 }
 
 void LensOverlayInteractiveTestBase::WaitForTemplateURLServiceToLoad() {
