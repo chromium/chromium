@@ -54,10 +54,13 @@ from media_metrics import (
     parse_glances_csv_and_record,
 )
 from remote_transport import (
+    ReceiverAdbError,
+    ReceiverUnreachableError,
     RemoteDeviceError,
     SenderNotFoundError,
     SenderSshError,
     SenderUnreachableError,
+    verify_receiver_connectivity,
 )
 from senders import WIN_REMOTE_TMP_DIR, make_sender
 
@@ -74,6 +77,8 @@ __all__ = [
     'SERVER_PORT',
     'TEST_SCRIPTS_ROOT',
     'TRACES_DIR',
+    'ReceiverAdbError',
+    'ReceiverUnreachableError',
     'RemoteDeviceError',
     'RepeatingLog',
     'SenderNotFoundError',
@@ -88,6 +93,7 @@ __all__ = [
     'parse_glances_csv_and_record',
     'server',
     'setup_cros_environment',
+    'verify_receiver_connectivity',
     'video_analyzer',
     # Defined here.
     'FAIL_CODE',

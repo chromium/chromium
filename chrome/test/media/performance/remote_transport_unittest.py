@@ -15,11 +15,16 @@ from perf_test_fakes import IP, MAC_HOST, NO_ROUTE, USER, WIN_HOST, completed
 import remote_transport
 from remote_transport import (
     INFRA_FAILURE_NOTE,
+    ReceiverAdbError,
+    ReceiverUnreachableError,
     RemoteDeviceError,
     SenderNotFoundError,
     SenderSshError,
     SenderUnreachableError,
+    verify_receiver_connectivity,
 )
+
+RECEIVER = '172.16.0.3:5555'
 
 
 def _ssh(host=MAC_HOST, username=USER):
@@ -186,6 +191,8 @@ class VerifyConnectivityTest(fakes.SenderTestCase):
             SenderNotFoundError,
             SenderUnreachableError,
             SenderSshError,
+            ReceiverUnreachableError,
+            ReceiverAdbError,
         ):
             self.assertTrue(issubclass(cls, RemoteDeviceError))
             self.assertIn('infra failure, not a test failure', cls.__doc__)
@@ -299,6 +306,160 @@ class LocalTransportTest(fakes.SenderTestCase):
         with self.assertLogs(level='INFO'):
             self.assertIsNone(transport.open_tunnel(1, 2))
         self.popen.assert_not_called()
+
+
+class VerifyReceiverConnectivityTest(fakes.SenderTestCase):
+    def setUp(self):
+        super().setUp()
+        self.run.side_effect = None
+        self.run.return_value = completed(stdout='ok\n')
+
+    def test_healthy_receiver_passes_and_is_cached(self):
+        with self.assertLogs(level='INFO') as logs:
+            verify_receiver_connectivity(RECEIVER, '/bin/adb')
+        verify_receiver_connectivity(RECEIVER, '/bin/adb')
+
+        self.assertEqual(
+            logs.output,
+            [f'INFO:root:Receiver {RECEIVER} reachable over ADB.'],
+        )
+        self.create_connection.assert_called_once_with(
+            ('172.16.0.3', 5555), timeout=5
+        )
+        self.conn.close.assert_called_once()
+        self.assertEqual(
+            [c.args[0] for c in self.run.call_args_list],
+            [
+                ['/bin/adb', 'connect', RECEIVER],
+                ['/bin/adb', '-s', RECEIVER, 'shell', 'echo ok'],
+            ],
+        )
+        self.sleep.assert_not_called()
+
+    def test_defaults_port_when_omitted(self):
+        with self.assertLogs(level='INFO'):
+            verify_receiver_connectivity('172.16.0.3')
+        self.create_connection.assert_called_once_with(
+            ('172.16.0.3', 5555), timeout=5
+        )
+
+    def test_parses_ipv6_addresses(self):
+        cases = (
+            ('2001:db8::1', ('2001:db8::1', 5555)),
+            ('[2001:db8::1]', ('2001:db8::1', 5555)),
+            ('[2001:db8::1]:5556', ('2001:db8::1', 5556)),
+        )
+        for addr, expected in cases:
+            with self.subTest(addr=addr):
+                self.create_connection.reset_mock()
+                with self.assertLogs(level='INFO'):
+                    verify_receiver_connectivity(addr)
+                self.create_connection.assert_called_once_with(
+                    expected, timeout=5
+                )
+
+    def test_no_route_raises_receiver_unreachable_after_three_attempts(self):
+        self.make_unreachable()
+        with self.assertLogs(level='WARNING') as logs:
+            with self.assertRaises(ReceiverUnreachableError) as ctx:
+                verify_receiver_connectivity(RECEIVER)
+
+        self.assertEqual(self.create_connection.call_count, 3)
+        self.assertEqual(self.sleep.call_args_list, [mock.call(5)] * 2)
+        self.run.assert_not_called()
+        self.assertEqual(len(logs.output), 3)
+        msg = str(ctx.exception)
+        self.assertIn(
+            f"Receiver '{RECEIVER}' is not reachable on port 5555", msg
+        )
+        self.assertIn(NO_ROUTE, msg)
+        self.assertIn(INFRA_FAILURE_NOTE, msg)
+
+        # Cached failure reraises without reprobing.
+        self.create_connection.reset_mock()
+        with self.assertRaises(ReceiverUnreachableError):
+            verify_receiver_connectivity(RECEIVER)
+        self.create_connection.assert_not_called()
+
+    def test_adb_connect_rc_0_with_failed_shell_disconnects_and_raises(self):
+        # `adb connect` exits 0 even when connection fails; `adb shell` catches
+        # the offline/missing device and triggers `adb disconnect` before retry.
+        self.run.side_effect = [
+            completed(0, stdout=f'failed to connect to {RECEIVER}\n'),
+            completed(1, stderr=f"error: device '{RECEIVER}' not found\n"),
+            completed(0),
+        ] * 3
+
+        with self.assertLogs(level='WARNING'):
+            with self.assertRaises(ReceiverAdbError) as ctx:
+                verify_receiver_connectivity(RECEIVER, 'adb')
+
+        msg = str(ctx.exception)
+        self.assertIn('failed to connect to', msg)
+        self.assertIn('not found', msg)
+        self.assertIn(INFRA_FAILURE_NOTE, msg)
+        self.assertIn(
+            mock.call(
+                ['adb', 'disconnect', RECEIVER],
+                capture_output=True,
+                text=True,
+                timeout=10,
+                check=False,
+            ),
+            self.run.call_args_list,
+        )
+
+    def test_recovers_after_stale_offline_transport(self):
+        self.run.side_effect = [
+            completed(0, stdout=f'already connected to {RECEIVER}\n'),
+            completed(1, stderr='error: device offline\n'),
+            completed(0, stdout=f'disconnected {RECEIVER}\n'),
+            completed(0, stdout=f'connected to {RECEIVER}\n'),
+            completed(0, stdout='ok\n'),
+        ]
+        with self.assertLogs(level='INFO') as logs:
+            verify_receiver_connectivity(RECEIVER)
+        self.sleep.assert_called_once_with(5)
+        self.assertTrue(logs.output[0].startswith('WARNING'))
+        self.assertTrue(logs.output[-1].startswith('INFO'))
+
+    def test_adb_connect_timeout_raises_adb_error(self):
+        self.run.side_effect = subprocess.TimeoutExpired('adb', 15)
+        with self.assertLogs(level='WARNING'):
+            with self.assertRaises(ReceiverAdbError) as ctx:
+                verify_receiver_connectivity(RECEIVER)
+        self.assertIn('adb connect timed out after 15s', str(ctx.exception))
+
+    def test_adb_shell_timeout_raises_adb_error(self):
+        self.run.side_effect = [
+            completed(0, stdout=f'connected to {RECEIVER}\n'),
+            subprocess.TimeoutExpired('adb', 10),
+        ] * 3
+        with self.assertLogs(level='WARNING'):
+            with self.assertRaises(ReceiverAdbError) as ctx:
+                verify_receiver_connectivity(RECEIVER)
+        self.assertIn(
+            "adb timed out after 10s running 'echo ok'", str(ctx.exception)
+        )
+
+    def test_missing_adb_binary_raises_adb_error(self):
+        self.run.side_effect = FileNotFoundError(2, 'No such file', '/no/adb')
+        with self.assertLogs(level='WARNING'):
+            with self.assertRaises(ReceiverAdbError) as ctx:
+                verify_receiver_connectivity(RECEIVER, '/no/adb')
+        self.assertIn("could not execute '/no/adb'", str(ctx.exception))
+
+    def test_adb_disconnect_timeout_does_not_mask_adb_error(self):
+        self.run.side_effect = [
+            completed(0, stdout=f'already connected to {RECEIVER}\n'),
+            completed(1, stderr='error: device offline\n'),
+            subprocess.TimeoutExpired('adb', 10),
+        ] * 3
+        with self.assertLogs(level='WARNING'):
+            with self.assertRaises(ReceiverAdbError) as ctx:
+                verify_receiver_connectivity(RECEIVER)
+        self.assertIn('device offline', str(ctx.exception))
+        self.assertEqual(self.sleep.call_count, 2)
 
 
 if __name__ == '__main__':

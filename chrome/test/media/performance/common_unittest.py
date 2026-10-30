@@ -40,7 +40,10 @@ class ReexportTest(unittest.TestCase):
             'calculate_psnr_ssim',
             'finalize_results',
             'parse_glances_csv_and_record',
+            'ReceiverAdbError',
+            'ReceiverUnreachableError',
             'RemoteDeviceError',
+            'verify_receiver_connectivity',
         ):
             with self.subTest(name=name):
                 self.assertTrue(hasattr(common, name))

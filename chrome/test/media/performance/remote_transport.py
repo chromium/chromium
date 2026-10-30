@@ -42,13 +42,18 @@ PREFLIGHT_MAX_ATTEMPTS = 3
 PREFLIGHT_RETRY_DELAY_SECS = 5
 INFRA_FAILURE_NOTE = 'This is an infra failure, not a test failure.'
 
-# Maps (host, username) -> None on success, or the RemoteDeviceError that
-# made the connectivity check fail. Keeps the check to once per process.
+ADB_DEFAULT_PORT = 5555
+ADB_CONNECT_TIMEOUT_SECS = 15
+ADB_COMMAND_TIMEOUT_SECS = 10
+
+# Maps (host, username) or ('adb', receiver_addr) -> None on success, or the
+# RemoteDeviceError that made the connectivity check fail. Keeps the check to
+# once per process.
 _preflight_results = {}
 
 
 class RemoteDeviceError(RuntimeError):
-    """The remote sender DUT is unusable.
+    """A remote lab DUT (sender or receiver) is unusable.
 
     This is an infra failure, not a test failure.
     """
@@ -75,6 +80,20 @@ class SenderUnreachableError(RemoteDeviceError):
 
 class SenderSshError(RemoteDeviceError):
     """The SSH port is reachable, but running a command over SSH fails.
+
+    This is an infra failure, not a test failure.
+    """
+
+
+class ReceiverUnreachableError(RemoteDeviceError):
+    """The receiver cannot be reached over the network on the ADB port.
+
+    This is an infra failure, not a test failure.
+    """
+
+
+class ReceiverAdbError(RemoteDeviceError):
+    """The ADB port is reachable, but running a command over ADB fails.
 
     This is an infra failure, not a test failure.
     """
@@ -374,11 +393,7 @@ class SshTransport(Transport):
                 (self.host, SSH_PORT), timeout=PREFLIGHT_TCP_TIMEOUT_SECS
             )
         except OSError as e:
-            # socket.timeout has no errno/strerror, so fall back to str(e).
-            if e.errno is not None:
-                reason = f'[Errno {e.errno}] {e.strerror or e}'
-            else:
-                reason = str(e) or type(e).__name__
+            reason = _format_os_error(e)
             raise SenderUnreachableError(
                 f"Sender '{self.host}' ({ip}) is not reachable on port "
                 f"{SSH_PORT}: {reason}. Likely causes: device powered "
@@ -412,6 +427,169 @@ class SshTransport(Transport):
                 f"ssh stderr:\n{stderr}",
                 reason,
             )
+
+
+def _format_os_error(error):
+    """Formats an OSError with its errno when present."""
+    # socket.timeout has no errno/strerror, so fall back to str(error).
+    if error.errno is not None:
+        return f'[Errno {error.errno}] {error.strerror or error}'
+    return str(error) or type(error).__name__
+
+
+def _parse_host_port(address, default_port):
+    """Splits 'host:port', '[ipv6]:port', or bare host/IP into (host, port)."""
+    if address.startswith('['):
+        host, sep, port_str = address[1:].partition(']')
+        if sep and port_str.startswith(':') and port_str[1:].isdigit():
+            return host, int(port_str[1:])
+        if sep and not port_str:
+            return host, default_port
+    if address.count(':') == 1:
+        host, _, port_str = address.partition(':')
+        if host and port_str.isdigit():
+            return host, int(port_str)
+    return address, default_port
+
+
+def _check_receiver_tcp(receiver_addr, host, port):
+    """Opens and immediately closes a TCP connection to the ADB port."""
+    try:
+        conn = socket.create_connection(
+            (host, port), timeout=PREFLIGHT_TCP_TIMEOUT_SECS
+        )
+    except OSError as e:
+        reason = _format_os_error(e)
+        raise ReceiverUnreachableError(
+            f"Receiver '{receiver_addr}' is not reachable on port {port}: "
+            f"{reason}. Likely causes: Chromecast powered "
+            "off/asleep/rebooting, network link lost, or ADB debugging "
+            f"disabled. {INFRA_FAILURE_NOTE}",
+            reason,
+        ) from e
+    conn.close()
+
+
+def _check_receiver_adb(receiver_addr, adb_path):
+    """Connects over ADB and verifies a trivial shell command succeeds."""
+    try:
+        connect_res = subprocess.run(
+            [adb_path, 'connect', receiver_addr],
+            capture_output=True,
+            text=True,
+            timeout=ADB_CONNECT_TIMEOUT_SECS,
+            check=False,
+        )
+    except subprocess.TimeoutExpired as e:
+        reason = f'adb connect timed out after {e.timeout}s'
+        raise ReceiverAdbError(
+            f"ADB to receiver '{receiver_addr}' failed: {reason}. "
+            f"{INFRA_FAILURE_NOTE}",
+            reason,
+        ) from e
+    except OSError as e:
+        reason = f'could not execute {adb_path!r}: {e}'
+        raise ReceiverAdbError(
+            f"ADB to receiver '{receiver_addr}' failed ({reason}). "
+            f"{INFRA_FAILURE_NOTE}",
+            reason,
+        ) from e
+
+    try:
+        shell_res = subprocess.run(
+            [adb_path, '-s', receiver_addr, 'shell', 'echo ok'],
+            capture_output=True,
+            text=True,
+            timeout=ADB_COMMAND_TIMEOUT_SECS,
+            check=False,
+        )
+    except subprocess.TimeoutExpired as e:
+        reason = f"adb timed out after {e.timeout}s running 'echo ok'"
+        raise ReceiverAdbError(
+            f"ADB to receiver '{receiver_addr}' failed: {reason}. "
+            f"{INFRA_FAILURE_NOTE}",
+            reason,
+        ) from e
+
+    stdout = (shell_res.stdout or '').strip()
+    if shell_res.returncode == 0 and stdout == 'ok':
+        return
+
+    # Drop any stale/offline transport so the next attempt reconnects cleanly.
+    try:
+        subprocess.run(
+            [adb_path, 'disconnect', receiver_addr],
+            capture_output=True,
+            text=True,
+            timeout=ADB_COMMAND_TIMEOUT_SECS,
+            check=False,
+        )
+    except (subprocess.SubprocessError, OSError) as e:
+        logging.debug('adb disconnect %s failed: %s', receiver_addr, e)
+    connect_out = (
+        (connect_res.stdout or '') + '\n' + (connect_res.stderr or '')
+    ).strip() or '<empty>'
+    shell_err = (shell_res.stderr or '').strip() or '<empty>'
+    reason = (
+        f'rc={shell_res.returncode}, stdout={stdout!r}, '
+        f'stderr={shell_err}, connect={connect_out!r}'
+    )
+    raise ReceiverAdbError(
+        f"ADB to receiver '{receiver_addr}' failed "
+        f"(rc={shell_res.returncode}, stdout={stdout!r}). Check that the "
+        f"Chromecast has ADB debugging enabled and authorized for this host. "
+        f"{INFRA_FAILURE_NOTE}\n"
+        f"adb connect output: {connect_out}\n"
+        f"adb shell stderr: {shell_err}",
+        reason,
+    )
+
+
+def verify_receiver_connectivity(receiver_addr, adb_path='adb'):
+    """Fails fast if the ADB receiver (Chromecast) is unreachable.
+
+    Checks, in order, that the receiver accepts TCP connections on its ADB
+    port, that `adb connect` runs, and that `adb -s <addr> shell echo ok`
+    succeeds. Retries up to PREFLIGHT_MAX_ATTEMPTS times so a briefly
+    rebooting receiver does not fail the run. The outcome is cached per
+    receiver_addr for the process.
+
+    Raises:
+        ReceiverUnreachableError: The receiver ADB port cannot be reached.
+        ReceiverAdbError: TCP connects, but ADB connect or shell fails.
+    """
+    cache_key = ('adb', receiver_addr)
+    if cache_key in _preflight_results:
+        cached_error = _preflight_results[cache_key]
+        if cached_error is not None:
+            raise cached_error
+        return
+
+    host, port = _parse_host_port(receiver_addr, ADB_DEFAULT_PORT)
+    last_error = None
+    for attempt in range(1, PREFLIGHT_MAX_ATTEMPTS + 1):
+        try:
+            _check_receiver_tcp(receiver_addr, host, port)
+            _check_receiver_adb(receiver_addr, adb_path)
+        except RemoteDeviceError as e:
+            last_error = e
+            logging.warning(
+                'Receiver check attempt %d/%d failed for %s: %s',
+                attempt,
+                PREFLIGHT_MAX_ATTEMPTS,
+                receiver_addr,
+                e.reason,
+            )
+            if attempt < PREFLIGHT_MAX_ATTEMPTS:
+                time.sleep(PREFLIGHT_RETRY_DELAY_SECS)
+            continue
+
+        logging.info('Receiver %s reachable over ADB.', receiver_addr)
+        _preflight_results[cache_key] = None
+        return
+
+    _preflight_results[cache_key] = last_error
+    raise last_error
 
 
 def make_transport(host, username):

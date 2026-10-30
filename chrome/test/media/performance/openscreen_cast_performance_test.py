@@ -97,6 +97,7 @@ def should_run_vp9_tests(args) -> bool:
         if sender.transport.is_local:
             cpu_name = platform.processor().upper()
         else:
+            sender.verify_connectivity()
             cpu_cmd = (
                 'powershell -Command "(Get-CimInstance Win32_Processor).Name"'
             )
@@ -664,11 +665,11 @@ def main():
         shutil.rmtree(common.TRACES_DIR)
     os.makedirs(common.TRACES_DIR)
 
-    # Connect to the ADB receiver.
+    # Fail fast if the Chromecast receiver cannot be reached over ADB.
+    common.verify_receiver_connectivity(RECEIVER_IP, ADB_PATH)
+
+    # Configure Perfetto tracing on the ADB receiver.
     try:
-        subprocess.run(
-            [ADB_PATH, 'connect', RECEIVER_IP], check=False, timeout=15
-        )
         # Attempt to get ADB root.
         logging.info("Attempting to get ADB root...")
         res_root = subprocess.run(
