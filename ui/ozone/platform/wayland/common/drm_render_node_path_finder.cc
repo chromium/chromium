@@ -22,6 +22,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/linux/scoped_gbm_device.h"  // nogncheck
@@ -49,12 +50,12 @@ class ScopedDrmDeviceList {
       return;
     }
 
-    count_ = static_cast<size_t>(ret);
+    devices_.resize(static_cast<size_t>(ret));
   }
 
   ~ScopedDrmDeviceList() {
-    if (count_ > 0) {
-      drmFreeDevices(devices_.data(), static_cast<int>(count_));
+    if (!devices_.empty()) {
+      drmFreeDevices(devices_.data(), static_cast<int>(devices_.size()));
     }
   }
 
@@ -62,13 +63,13 @@ class ScopedDrmDeviceList {
   ScopedDrmDeviceList& operator=(const ScopedDrmDeviceList&) = delete;
 
   // Returns a span containing only the populated devices.
-  base::span<const drmDevice* const> devices() const {
-    return base::span(devices_).first(count_);
-  }
+  base::span<const drmDevice* const> devices() const { return devices_; }
 
  private:
-  std::vector<drmDevicePtr> devices_;
-  size_t count_ = 0;
+  // Owned.
+  // RAW_PTR_EXCLUSION: A contiguous drmDevicePtr buffer must be passed to
+  // drmFreeDevices external API.
+  RAW_PTR_EXCLUSION std::vector<drmDevicePtr> devices_;
 };
 
 // In libdrm xf86drm.h, DRM_NODE_MAX and DRM_NODE_RENDER are legacy macro
