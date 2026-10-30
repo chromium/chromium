@@ -4,7 +4,9 @@
 
 #include "chrome/browser/webauthn/passkey_unlock_manager.h"
 
+#include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -16,9 +18,11 @@
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/passkey_unlock_manager_factory.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/sync/service/sync_service.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "device/fido/public/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -178,6 +182,38 @@ IN_PROC_BROWSER_TEST_F(PasskeyUnlockManagerBrowserTest,
   ASSERT_FALSE(passkey_unlock_manager()->ShouldDisplayErrorUi());
 
   passkey_unlock_manager()->RemoveObserver(&observer);
+}
+
+class PasskeyUnlockManagerIdentityErrorUiBrowserTest
+    : public PasskeyUnlockManagerBrowserTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kPasskeyUnlockIdentityErrorUi};
+};
+
+IN_PROC_BROWSER_TEST_F(PasskeyUnlockManagerIdentityErrorUiBrowserTest,
+                       ReportsPasskeysLockedToSyncServiceUntilUnlocked) {
+  ASSERT_EQ(sync_harness()->service()->GetUserActionableError(),
+            syncer::SyncService::UserActionableError::kNone);
+
+  AddTestPasskeyToModel();
+  testing::NiceMock<MockPasskeyUnlockManagerObserver> observer;
+  base::ScopedObservation<PasskeyUnlockManager, PasskeyUnlockManager::Observer>
+      observation(&observer);
+  observation.Observe(passkey_unlock_manager());
+
+  EXPECT_EQ(sync_harness()->service()->GetUserActionableError(),
+            syncer::SyncService::UserActionableError::kPasskeysLocked);
+
+  base::test::TestFuture<void> event_future;
+  EXPECT_CALL(observer, OnPasskeyErrorUiStateChanged())
+      .WillOnce([&event_future]() { event_future.SetValue(); });
+
+  SimulateSuccessfulGpmPinCreation("123456");
+
+  EXPECT_TRUE(event_future.Wait());
+  EXPECT_EQ(sync_harness()->service()->GetUserActionableError(),
+            syncer::SyncService::UserActionableError::kNone);
 }
 
 }  // namespace

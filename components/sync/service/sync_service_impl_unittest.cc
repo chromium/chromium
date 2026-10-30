@@ -3220,9 +3220,11 @@ TEST_F(SyncServiceImplTest, ShouldReturnPasskeysLockedErrorAndRecordHistogram) {
   testing::NiceMock<MockSyncServiceObserver> mock_sync_service_observer;
   service()->AddObserver(&mock_sync_service_observer);
 
-  ON_CALL(*sync_client(), ArePasskeysLocked).WillByDefault(Return(true));
+  EXPECT_CALL(mock_sync_service_observer, OnStateChanged(service())).Times(0);
+  service()->SetPasskeysLocked(false);
+
   EXPECT_CALL(mock_sync_service_observer, OnStateChanged(service()));
-  service()->PasskeysLockedChanged();
+  service()->SetPasskeysLocked(true);
 
   EXPECT_EQ(SyncService::UserActionableError::kPasskeysLocked,
             service()->GetUserActionableError());
@@ -3230,9 +3232,11 @@ TEST_F(SyncServiceImplTest, ShouldReturnPasskeysLockedErrorAndRecordHistogram) {
       "Sync.UserActionableError",
       SyncService::UserActionableError::kPasskeysLocked, 1);
 
-  ON_CALL(*sync_client(), ArePasskeysLocked).WillByDefault(Return(false));
+  EXPECT_CALL(mock_sync_service_observer, OnStateChanged(service())).Times(0);
+  service()->SetPasskeysLocked(true);
+
   EXPECT_CALL(mock_sync_service_observer, OnStateChanged(service()));
-  service()->PasskeysLockedChanged();
+  service()->SetPasskeysLocked(false);
 
   EXPECT_EQ(SyncService::UserActionableError::kNone,
             service()->GetUserActionableError());
@@ -3247,7 +3251,7 @@ TEST_F(SyncServiceImplTest,
   RunUntilSyncTransportState(SyncService::TransportState::ACTIVE);
   ASSERT_FALSE(service()->GetActiveDataTypes().Has(WEBAUTHN_CREDENTIAL));
 
-  ON_CALL(*sync_client(), ArePasskeysLocked).WillByDefault(Return(true));
+  service()->SetPasskeysLocked(true);
   EXPECT_EQ(SyncService::UserActionableError::kNone,
             service()->GetUserActionableError());
 }
@@ -3273,7 +3277,7 @@ TEST_F(SyncServiceImplTest, PasskeysLockedErrorPriority) {
             service()->GetUserActionableError());
 
   // `kPasskeysLocked` takes priority over degraded recoverability.
-  ON_CALL(*sync_client(), ArePasskeysLocked).WillByDefault(Return(true));
+  service()->SetPasskeysLocked(true);
   EXPECT_EQ(SyncService::UserActionableError::kPasskeysLocked,
             service()->GetUserActionableError());
 

@@ -83,11 +83,6 @@ bool WebViewSyncClient::IsCustomPassphraseAllowed() {
   return true;
 }
 
-bool WebViewSyncClient::ArePasskeysLocked() {
-  // Locked passkeys aren't reported on iOS WebView.
-  return false;
-}
-
 void WebViewSyncClient::RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
     const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group) {
   // This code might be reached but synthetic field trials are not supported on

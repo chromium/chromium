@@ -51,6 +51,9 @@ constexpr base::FeatureParam<PasskeyUnlockErrorUiExperimentArm>
         &kPasskeyUnlockErrorUi, "passkey_unlock_ui_experiment_arm",
         PasskeyUnlockErrorUiExperimentArm::kVerify,
         &kPasskeyUnlockErrorUiExperimentArms};
+
+// Not yet enabled by default.
+BASE_FEATURE(kPasskeyUnlockIdentityErrorUi, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_MAC)

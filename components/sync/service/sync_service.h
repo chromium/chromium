@@ -585,9 +585,14 @@ class SyncService : public KeyedService {
   virtual void SetInvalidationsForSessionsEnabled(bool enabled) = 0;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  // Called when the value of `SyncClient::ArePasskeysLocked()` changes, so that
-  // `SyncService` can notify its observers.
-  virtual void PasskeysLockedChanged() = 0;
+  // Called by the passkey unlock logic when whether Google Password Manager
+  // passkeys are locked changes. When `passkeys_locked` is true and
+  // `WEBAUTHN_CREDENTIAL` is active, `GetUserActionableError()` reports
+  // `UserActionableError::kPasskeysLocked` (ranked with other errors).
+  // TODO(crbug.com/470338958): Reconsider this design, e.g. move
+  // `UserActionableError` out of `SyncService` into a dedicated service, so
+  // `SyncService` doesn't need passkey-specific state.
+  virtual void SetPasskeysLocked(bool passkeys_locked) = 0;
 
   // Shares the explicit passphrase content with layers outside of the browser
   // which have an independent sync client, and thus separate encryption

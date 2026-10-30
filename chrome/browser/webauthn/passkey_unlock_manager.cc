@@ -88,7 +88,7 @@ void PasskeyUnlockManager::OnPasskeyUnlockStateChanged() {
 }
 
 void PasskeyUnlockManager::ComputeShouldDisplayErrorUiAndNotifyObservers() {
-  bool previous_value = should_display_error_ui_;
+  bool previous_should_display_error_ui = should_display_error_ui_;
   // Compute the new value of `should_display_error_ui_`.
   std::optional<bool> passkeys_are_locked = ArePasskeysLocked();
   std::optional<bool> passkeys_are_unlockable = ArePasskeysUnlockable();
@@ -103,8 +103,20 @@ void PasskeyUnlockManager::ComputeShouldDisplayErrorUiAndNotifyObservers() {
     should_display_error_ui_ =
         passkeys_are_locked.value() && passkeys_are_unlockable.value();
   }
+
+  bool previous_passkeys_locked_for_sync = passkeys_locked_for_sync_;
+  passkeys_locked_for_sync_ =
+      base::FeatureList::IsEnabled(device::kPasskeyUnlockIdentityErrorUi) &&
+      has_passkeys_ == true && enclave_ready_ == false &&
+      passkeys_are_unlockable == true &&
+      !IsOpportunisticRecoveryOnStartupUnfinished();
+  if (passkeys_locked_for_sync_ != previous_passkeys_locked_for_sync &&
+      sync_service()) {
+    sync_service()->SetPasskeysLocked(passkeys_locked_for_sync_);
+  }
+
   // If `should_display_error_ui_` changed - notify observers.
-  if (should_display_error_ui_ != previous_value) {
+  if (should_display_error_ui_ != previous_should_display_error_ui) {
     NotifyObservers();
   }
 }
@@ -223,11 +235,15 @@ void PasskeyUnlockManager::UpdateHasPasskeys() {
 }
 
 void PasskeyUnlockManager::UpdateSyncState() {
-  sync_active_ =
+  syncing_webauthn_enabled_ =
       sync_service() &&
-      sync_service()->GetActiveDataTypes().Has(syncer::WEBAUTHN_CREDENTIAL) &&
-      sync_service()->GetUserActionableError() ==
-          syncer::SyncService::UserActionableError::kNone;
+      sync_service()->GetActiveDataTypes().Has(syncer::WEBAUTHN_CREDENTIAL);
+  // Reading `GetUserActionableError()` is safe: the
+  // `passkeys_locked_for_sync_` state pushed via
+  // `SyncService::SetPasskeysLocked()` does not depend on Sync state.
+  no_sync_errors_ =
+      sync_service() && sync_service()->GetUserActionableError() ==
+                            syncer::SyncService::UserActionableError::kNone;
 }
 
 void PasskeyUnlockManager::AsynchronouslyCheckGpmPinAvailability() {
@@ -265,6 +281,15 @@ bool PasskeyUnlockManager::IsOpportunisticRecoveryOnStartupUnfinished() const {
 
 #if BUILDFLAG(IS_MAC)
 void PasskeyUnlockManager::MaybeStartICloudRecovery() {
+  // When `kPasskeyUnlockIdentityErrorUi` is enabled, `ArePasskeysLocked()`
+  // ignores `no_sync_errors_`. This is safe because `WEBAUTHN_CREDENTIAL` is
+  // only active when `TransportState` is `ACTIVE` and the data type has no
+  // crypto or precondition error, so Sync errors that stop Sync or block
+  // `WEBAUTHN_CREDENTIAL` (auth/paused, unrecoverable, client upgrade, custom
+  // passphrase, or trusted vault key required with encrypt everything) already
+  // make `syncing_webauthn_enabled_` false. Remaining actionable errors either
+  // affect other data types/security domains or are `kPasskeysLocked` itself,
+  // and should not block background passkey recovery.
   if (icloud_recovery_state_ != ICloudRecoveryState::kNotStarted ||
       !base::FeatureList::IsEnabled(device::kPasskeyUnlockICloudRecovery) ||
       !ArePasskeysLocked().value_or(false)) {
@@ -286,13 +311,20 @@ void PasskeyUnlockManager::OnICloudRecoveryComplete() {
 #endif  // BUILDFLAG(IS_MAC)
 
 std::optional<bool> PasskeyUnlockManager::ArePasskeysLocked() const {
-  if (!has_passkeys_.has_value()) {
+  if (!has_passkeys_.has_value() || !enclave_ready_.has_value()) {
     return std::nullopt;
   }
-  if (!enclave_ready_.has_value()) {
-    return std::nullopt;
+  const bool passkeys_locked = has_passkeys_.value() &&
+                               syncing_webauthn_enabled_ &&
+                               !enclave_ready_.value();
+  // With `kPasskeyUnlockIdentityErrorUi` disabled, require `no_sync_errors_` so
+  // the standalone passkey pill does not compete with other Sync errors. With
+  // it enabled, Sync ranks errors itself via `GetUserActionableError()`, so
+  // lower-ranked Sync errors must not block iCloud Keychain recovery.
+  if (!base::FeatureList::IsEnabled(device::kPasskeyUnlockIdentityErrorUi)) {
+    return passkeys_locked && no_sync_errors_;
   }
-  return has_passkeys_.value() && sync_active_ && !enclave_ready_.value();
+  return passkeys_locked;
 }
 
 std::optional<bool> PasskeyUnlockManager::ArePasskeysUnlockable() const {

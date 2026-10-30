@@ -112,8 +112,8 @@ class PasskeyUnlockManager : public KeyedService,
   // Updates the cached value of `has_passkeys_`.
   void UpdateHasPasskeys();
 
-  // Updates the cached value of `sync_active_`. Checks the sync state and
-  // user actionable errors.
+  // Updates the cached values of `syncing_webauthn_enabled_` and
+  // `no_sync_errors_`.
   void UpdateSyncState();
 
   // Called whenever an input to the passkey unlock state changes. On macOS,
@@ -121,8 +121,8 @@ class PasskeyUnlockManager : public KeyedService,
   // to display the error UI.
   void OnPasskeyUnlockStateChanged();
 
-  // Recomputes `should_display_error_ui_` and notifies observers if its value
-  // changed.
+  // Recomputes `should_display_error_ui_` and `passkeys_locked_for_sync_`, and
+  // notifies observers / Sync if their values changed.
   void ComputeShouldDisplayErrorUiAndNotifyObservers();
 
   // Used for notifying observers.
@@ -147,9 +147,11 @@ class PasskeyUnlockManager : public KeyedService,
   void OnICloudRecoveryComplete();
 #endif  // BUILDFLAG(IS_MAC)
 
-  // A helper for `ComputeShouldDisplayErrorUi()`. Checks whether passkeys are
-  // in the locked state. If this information can't be computed returns
-  // `std::nullopt`.
+  // A helper for `ComputeShouldDisplayErrorUiAndNotifyObservers()` and
+  // `MaybeStartICloudRecovery()`. Checks whether passkeys are in the locked
+  // state; when `kPasskeyUnlockIdentityErrorUi` is disabled, also requires Sync
+  // to have no actionable error (`no_sync_errors_`). Returns `std::nullopt` if
+  // this information can't be computed yet.
   std::optional<bool> ArePasskeysLocked() const;
   // A helper for `ComputeShouldDisplayErrorUi()`. Checks whether passkeys could
   // be unlocked. If this information can't be computed returns `std::nullopt`.
@@ -202,8 +204,10 @@ class PasskeyUnlockManager : public KeyedService,
   std::optional<bool> enclave_ready_;
   std::optional<bool> has_gpm_pin_;
   std::optional<bool> has_system_uv_;
-  bool sync_active_ = false;
+  bool syncing_webauthn_enabled_ = false;
+  bool no_sync_errors_ = false;
   bool should_display_error_ui_ = false;
+  bool passkeys_locked_for_sync_ = false;
 
   base::ObserverList<Observer> observer_list_;
 

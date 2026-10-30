@@ -147,7 +147,7 @@ class SyncServiceImpl : public SyncService,
 #if BUILDFLAG(IS_ANDROID)
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
 #endif  // BUILDFLAG(IS_ANDROID)
-  void PasskeysLockedChanged() override;
+  void SetPasskeysLocked(bool passkeys_locked) override;
   void SendExplicitPassphraseToPlatformClient() override;
   void AddObserver(SyncServiceObserver* observer) override;
   void RemoveObserver(SyncServiceObserver* observer) override;
@@ -556,6 +556,8 @@ class SyncServiceImpl : public SyncService,
   // kAlwaysRegisterSessionsInvalidationsAndroid is disabled.
   bool sessions_invalidations_enabled_ = false;
 #endif  // BUILDFLAG(IS_ANDROID)
+
+  bool passkeys_locked_ = false;
 
   // Set if/when Initialize() schedules a deferred task to start the engine.
   // Cleared on the first start attempt, regardless of success and who triggered

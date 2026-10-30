@@ -99,11 +99,6 @@ bool IOSChromeSyncClient::IsCustomPassphraseAllowed() {
   return true;
 }
 
-bool IOSChromeSyncClient::ArePasskeysLocked() {
-  // Locked passkeys aren't reported on iOS.
-  return false;
-}
-
 void IOSChromeSyncClient::RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
     const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group) {
   CHECK(group.is_valid());

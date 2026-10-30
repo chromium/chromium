@@ -27,6 +27,10 @@ enum class PasskeyUnlockErrorUiExperimentArm {
 COMPONENT_EXPORT(FIDO_PUBLIC)
 extern const base::FeatureParam<PasskeyUnlockErrorUiExperimentArm>
     kPasskeyUnlockErrorUiExperimentArm;
+
+// Enables reporting locked passkeys as a Sync user actionable error.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_DECLARE_FEATURE(kPasskeyUnlockIdentityErrorUi);
 #endif
 
 #if BUILDFLAG(IS_MAC)

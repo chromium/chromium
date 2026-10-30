@@ -158,10 +158,6 @@ bool ChromeSyncClient::IsCustomPassphraseAllowed() {
   return true;
 }
 
-bool ChromeSyncClient::ArePasskeysLocked() {
-  return false;
-}
-
 void ChromeSyncClient::RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
     const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group) {
   CHECK(group.is_valid());
