@@ -25,6 +25,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_path_override.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/shell_integration_linux.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
@@ -293,6 +294,40 @@ TEST_F(WebAppShortcutLinuxTest, ShortcutIdentityDoesNotChangeWhenTitleChanges) {
                                           renamed_shortcut_info->app_id));
 }
 
+namespace {
+
+bool CreateDesktopShortcutForTest(const ShortcutInfo& shortcut_info,
+                                  const ShortcutLocations& creation_locations) {
+  base::test::TestFuture<bool> future;
+  CreateDesktopShortcut(shortcut_info, creation_locations,
+                        future.GetCallback());
+  return future.Get();
+}
+
+bool DeleteDesktopShortcutsForTest(const base::FilePath& profile_path,
+                                   const std::string& extension_id) {
+  base::test::TestFuture<bool> future;
+  DeleteDesktopShortcuts(profile_path, extension_id, future.GetCallback());
+  return future.Get();
+}
+
+bool DeleteAllDesktopShortcutsForTest(const base::FilePath& profile_path) {
+  base::test::TestFuture<bool> future;
+  DeleteAllDesktopShortcuts(profile_path, future.GetCallback());
+  return future.Get();
+}
+
+bool UpdateDesktopShortcutsForTest(
+    const ShortcutInfo& shortcut_info,
+    std::optional<ShortcutLocations> user_specified_locations) {
+  base::test::TestFuture<bool> future;
+  UpdateDesktopShortcuts(shortcut_info, user_specified_locations,
+                         future.GetCallback());
+  return future.Get();
+}
+
+}  // namespace
+
 TEST_F(WebAppShortcutLinuxTest, DeleteDesktopShortcuts) {
   base::FilePath autostart_shortcut_path =
       CreateShortcutInPath(GetAutostartPath());
@@ -310,8 +345,7 @@ TEST_F(WebAppShortcutLinuxTest, DeleteDesktopShortcuts) {
 
   EXPECT_TRUE(base::PathExists(desktop_shortcut_path));
   EXPECT_TRUE(base::PathExists(autostart_shortcut_path));
-  EXPECT_TRUE(
-      DeleteDesktopShortcuts(/*env=*/nullptr, GetProfilePath(), GetAppId()));
+  EXPECT_TRUE(DeleteDesktopShortcutsForTest(GetProfilePath(), GetAppId()));
   EXPECT_EQ(invoke_count, 1);
   EXPECT_FALSE(base::PathExists(desktop_shortcut_path));
   EXPECT_FALSE(base::PathExists(autostart_shortcut_path));
@@ -340,10 +374,42 @@ TEST_F(WebAppShortcutLinuxTest, DeleteAllDesktopShortcuts) {
 
   EXPECT_TRUE(base::PathExists(desktop_shortcut_path));
   EXPECT_TRUE(base::PathExists(autostart_shortcut_path));
-  EXPECT_TRUE(DeleteAllDesktopShortcuts(/*env=*/nullptr, GetProfilePath()));
+  EXPECT_TRUE(DeleteAllDesktopShortcutsForTest(GetProfilePath()));
   EXPECT_EQ(invoke_count, 1);
   EXPECT_FALSE(base::PathExists(desktop_shortcut_path));
   EXPECT_FALSE(base::PathExists(autostart_shortcut_path));
+}
+
+// A failure to delete one applications menu shortcut must not prevent the
+// remaining shortcuts from being deleted.
+TEST_F(WebAppShortcutLinuxTest,
+       DeleteAllDesktopShortcutsContinuesAfterFailure) {
+  ASSERT_TRUE(base::CreateDirectory(GetApplicationsPath()));
+  const std::string kOtherFilename = "chrome-other_extension-Profile_1.desktop";
+  ASSERT_TRUE(
+      base::WriteFile(GetApplicationsPath().Append(GetTemplateFilename()), ""));
+  ASSERT_TRUE(
+      base::WriteFile(GetApplicationsPath().Append(kOtherFilename), ""));
+
+  std::vector<std::string> uninstalled;
+  LaunchXdgUtilityForTesting launch_xdg_utility = base::BindLambdaForTesting(
+      [&](const std::vector<std::string>& argv, int* exit_code) -> bool {
+        EXPECT_EQ(argv[0], "xdg-desktop-menu");
+        EXPECT_EQ(argv[1], "uninstall");
+        uninstalled.push_back(argv.back());
+        *exit_code = 0;
+        // Fail the first deletion.
+        bool success = uninstalled.size() > 1;
+        if (uninstalled.size() < 2) {
+          SetLaunchXdgUtilityForTesting(launch_xdg_utility);
+        }
+        return success;
+      });
+  SetLaunchXdgUtilityForTesting(launch_xdg_utility);
+
+  EXPECT_FALSE(DeleteAllDesktopShortcutsForTest(GetProfilePath()));
+  EXPECT_THAT(uninstalled, testing::UnorderedElementsAre(GetTemplateFilename(),
+                                                         kOtherFilename));
 }
 
 TEST_F(WebAppShortcutLinuxTest, CreateDesktopShortcutUsesAbsoluteIconPath) {
@@ -366,8 +432,7 @@ TEST_F(WebAppShortcutLinuxTest, CreateDesktopShortcutUsesAbsoluteIconPath) {
   ShortcutLocations locations;
   locations.on_desktop = true;
 
-  ASSERT_TRUE(
-      CreateDesktopShortcut(/*env=*/nullptr, *shortcut_info, locations));
+  ASSERT_TRUE(CreateDesktopShortcutForTest(*shortcut_info, locations));
   EXPECT_EQ(invoke_count, 2);
 
   std::string shortcut_contents;
@@ -400,8 +465,7 @@ TEST_F(WebAppShortcutLinuxTest, CreateDesktopShortcut) {
   locations.in_startup = true;
   locations.applications_menu_location = APP_MENU_LOCATION_SUBDIR_CHROMEAPPS;
 
-  EXPECT_TRUE(
-      CreateDesktopShortcut(/*env=*/nullptr, *shortcut_info, locations));
+  EXPECT_TRUE(CreateDesktopShortcutForTest(*shortcut_info, locations));
   EXPECT_EQ(invoke_count, 4);
 
   // At this point, we've already validated creation in the Application menu
@@ -497,8 +561,7 @@ TEST_F(WebAppShortcutLinuxTest, CreateDesktopShortcutWithProtocols) {
 
   SetLaunchXdgUtilityForTesting(CreateDesktopShortcutLaunchXdgUtility);
 
-  EXPECT_TRUE(
-      CreateDesktopShortcut(/*env=*/nullptr, *shortcut_info, locations));
+  EXPECT_TRUE(CreateDesktopShortcutForTest(*shortcut_info, locations));
   EXPECT_EQ(invoke_count, 4);
 
   // At this point, we've already validated creation in the Application menu
@@ -620,8 +683,7 @@ TEST_F(WebAppShortcutLinuxTest,
 
   SetLaunchXdgUtilityForTesting(CreateDesktopShortcutLaunchXdgUtility);
 
-  EXPECT_TRUE(
-      CreateDesktopShortcut(/*env=*/nullptr, *shortcut_info, locations));
+  EXPECT_TRUE(CreateDesktopShortcutForTest(*shortcut_info, locations));
   EXPECT_EQ(invoke_count, 4);
 }
 
@@ -645,8 +707,7 @@ TEST_F(WebAppShortcutLinuxTest,
   // Force a failure by deleting the |scoped_desktop_path| location.
   base::FilePath desktop_path = GetDesktopPath();
   EXPECT_TRUE(DeletePathRecursively(desktop_path));
-  EXPECT_FALSE(
-      CreateDesktopShortcut(/*env=*/nullptr, *shortcut_info, locations));
+  EXPECT_FALSE(CreateDesktopShortcutForTest(*shortcut_info, locations));
 
   // At this point, we've already validated creation in the Application menu
   // because of the hook into XdgUtilityForTesting.
@@ -753,8 +814,7 @@ TEST_F(WebAppShortcutLinuxTest, CreateDesktopShortcutEmptyExtension) {
   locations.in_startup = true;
   locations.applications_menu_location = APP_MENU_LOCATION_SUBDIR_CHROMEAPPS;
 
-  EXPECT_TRUE(
-      CreateDesktopShortcut(/*env=*/nullptr, *shortcut_info, locations));
+  EXPECT_TRUE(CreateDesktopShortcutForTest(*shortcut_info, locations));
   EXPECT_EQ(invoke_count, 3);
 
   // At this point, we've already validated creation in the Application menu
@@ -825,8 +885,8 @@ TEST_F(WebAppShortcutLinuxTest, UpdateDesktopShortcuts) {
 
   std::unique_ptr<ShortcutInfo> shortcut_info = GetShortcutInfo();
 
-  UpdateDesktopShortcuts(/*env=*/nullptr, *shortcut_info,
-                         /*user_specified_locations=*/std::nullopt);
+  UpdateDesktopShortcutsForTest(*shortcut_info,
+                                /*user_specified_locations=*/std::nullopt);
   EXPECT_EQ(invoke_count, 4);
 
   // At this point, we've already validated creation in the Application menu
@@ -964,8 +1024,7 @@ TEST_F(WebAppShortcutLinuxTest, CreateDesktopShortcutWithShortcutMenuActions) {
 
   SetLaunchXdgUtilityForTesting(CreateDesktopShortcutLaunchXdgUtility);
 
-  EXPECT_TRUE(
-      CreateDesktopShortcut(/*env=*/nullptr, *shortcut_info, locations));
+  EXPECT_TRUE(CreateDesktopShortcutForTest(*shortcut_info, locations));
   EXPECT_EQ(invoke_count, 4);
 
   // At this point, we've already validated creation in the Application menu

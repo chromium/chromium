@@ -19,6 +19,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -480,11 +481,13 @@ bool DeleteShortcutIcons(const base::FilePath& shortcut_icon_filename) {
   return result;
 }
 
-bool CreateDesktopShortcut(base::Environment* env,
-                           const ShortcutInfo& shortcut_info,
-                           const ShortcutLocations& creation_locations) {
+void CreateDesktopShortcut(const ShortcutInfo& shortcut_info,
+                           const ShortcutLocations& creation_locations,
+                           base::OnceCallback<void(bool)> callback) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
+  std::unique_ptr<base::Environment> owned_env = base::Environment::Create();
+  base::Environment* env = owned_env.get();
   // If this is set, then keeping this as a local variable ensures it is not
   // destroyed while we use it.
   scoped_refptr<OsIntegrationTestOverride> test_override =
@@ -537,7 +540,8 @@ bool CreateDesktopShortcut(base::Environment* env,
   }
   if (shortcut_filename.empty()) {
     RecordCreateShortcut(CreateShortcutResult::kFailToGetShortcutFilename);
-    return false;
+    std::move(callback).Run(false);
+    return;
   }
 
   std::string icon_name =
@@ -582,7 +586,8 @@ bool CreateDesktopShortcut(base::Environment* env,
   }
 
   if (applications_menu_location == APP_MENU_LOCATION_NONE) {
-    return success;
+    std::move(callback).Run(success);
+    return;
   }
 
   base::FilePath directory_filename;
@@ -634,7 +639,7 @@ bool CreateDesktopShortcut(base::Environment* env,
   if (success) {
     RecordCreateShortcut(CreateShortcutResult::kSuccess);
   }
-  return success;
+  std::move(callback).Run(success);
 }
 
 ShortcutLocations GetExistingShortcutLocations(
@@ -687,11 +692,13 @@ ShortcutLocations GetExistingShortcutLocations(
   return locations;
 }
 
-bool DeleteDesktopShortcuts(base::Environment* env,
-                            const base::FilePath& profile_path,
-                            const std::string& extension_id) {
+void DeleteDesktopShortcuts(const base::FilePath& profile_path,
+                            const std::string& extension_id,
+                            base::OnceCallback<void(bool)> callback) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
+  std::unique_ptr<base::Environment> owned_env = base::Environment::Create();
+  base::Environment* env = owned_env.get();
   // If this is set, then keeping this as a local variable ensures it is not
   // destroyed while we use it.
   scoped_refptr<OsIntegrationTestOverride> test_override =
@@ -741,14 +748,17 @@ bool DeleteDesktopShortcuts(base::Environment* env,
     deleted_from_icon_storage = DeleteShortcutIcons(icon_filename);
   }
 
-  return (deleted_from_desktop && deleted_from_autostart &&
-          deleted_from_application_menu && deleted_from_icon_storage);
+  std::move(callback).Run(deleted_from_desktop && deleted_from_autostart &&
+                          deleted_from_application_menu &&
+                          deleted_from_icon_storage);
 }
 
-bool DeleteAllDesktopShortcuts(base::Environment* env,
-                               const base::FilePath& profile_path) {
+void DeleteAllDesktopShortcuts(const base::FilePath& profile_path,
+                               base::OnceCallback<void(bool)> callback) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
+  std::unique_ptr<base::Environment> owned_env = base::Environment::Create();
+  base::Environment* env = owned_env.get();
   // If this is set, then keeping this as a local variable ensures it is not
   // destroyed while we use it.
   scoped_refptr<OsIntegrationTestOverride> test_override =
@@ -785,7 +795,7 @@ bool DeleteAllDesktopShortcuts(base::Environment* env,
     // if it's populated.
     // TODO(https://crbug.com/332935566): Support this by saving the xdg calls.
     if (!test_override || GetInstalledLaunchXdgUtilityForTesting()) {
-      result = result && DeleteShortcutInAutoStart(env, shortcut);
+      result = DeleteShortcutInAutoStart(env, shortcut) && result;
     }
   }
 
@@ -800,25 +810,28 @@ bool DeleteAllDesktopShortcuts(base::Environment* env,
     // if it's populated.
     // TODO(https://crbug.com/332935566): Support this by saving the xdg calls.
     if (!test_override || GetInstalledLaunchXdgUtilityForTesting()) {
-      result = result && DeleteShortcutInApplicationsMenu(
-                             menu, base::FilePath(kDirectoryFilename));
+      result = DeleteShortcutInApplicationsMenu(
+                   menu, base::FilePath(kDirectoryFilename)) &&
+               result;
     }
   }
   // Delete the shortcut icons from the staging area.
   for (const auto& icon_files : icon_files_to_be_deleted) {
-    result = result && DeleteShortcutIcons(icon_files);
+    result = DeleteShortcutIcons(icon_files) && result;
   }
 
-  return result;
+  std::move(callback).Run(result);
 }
 
-bool UpdateDesktopShortcuts(
-    base::Environment* env,
+void UpdateDesktopShortcuts(
     const ShortcutInfo& shortcut_info,
-    std::optional<ShortcutLocations> user_specified_locations) {
+    std::optional<ShortcutLocations> user_specified_locations,
+    base::OnceCallback<void(bool)> callback) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
+  std::unique_ptr<base::Environment> owned_env = base::Environment::Create();
+  base::Environment* env = owned_env.get();
   scoped_refptr<OsIntegrationTestOverride> test_override =
       OsIntegrationTestOverride::Get();
   if (test_override) {
@@ -846,7 +859,7 @@ bool UpdateDesktopShortcuts(
     creation_locations.applications_menu_location = APP_MENU_LOCATION_HIDDEN;
   }
 
-  return CreateDesktopShortcut(env, shortcut_info, creation_locations);
+  CreateDesktopShortcut(shortcut_info, creation_locations, std::move(callback));
 }
 
 std::vector<base::FilePath> GetShortcutLocations(
@@ -904,11 +917,7 @@ void CreatePlatformShortcuts(const base::FilePath& /*web_app_path*/,
                              ShortcutCreationReason /*creation_reason*/,
                              const ShortcutInfo& shortcut_info,
                              CreateShortcutsCallback callback) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-  std::unique_ptr<base::Environment> env(base::Environment::Create());
-  std::move(callback).Run(
-      CreateDesktopShortcut(env.get(), shortcut_info, creation_locations));
+  CreateDesktopShortcut(shortcut_info, creation_locations, std::move(callback));
 }
 
 ShortcutLocations GetAppExistingShortCutLocationImpl(
@@ -922,12 +931,15 @@ void DeletePlatformShortcuts(const base::FilePath& web_app_path,
                              const ShortcutInfo& shortcut_info,
                              scoped_refptr<base::TaskRunner> result_runner,
                              DeleteShortcutsCallback callback) {
-  std::unique_ptr<base::Environment> env(base::Environment::Create());
-  result_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback),
-                                DeleteDesktopShortcuts(
-                                    env.get(), shortcut_info.profile_path,
-                                    shortcut_info.app_id)));
+  DeleteDesktopShortcuts(
+      shortcut_info.profile_path, shortcut_info.app_id,
+      base::BindOnce(
+          [](scoped_refptr<base::TaskRunner> result_runner,
+             DeleteShortcutsCallback callback, bool success) {
+            result_runner->PostTask(
+                FROM_HERE, base::BindOnce(std::move(callback), success));
+          },
+          result_runner, std::move(callback)));
 }
 
 void UpdatePlatformShortcuts(
@@ -936,17 +948,17 @@ void UpdatePlatformShortcuts(
     std::optional<ShortcutLocations> user_specified_locations,
     ResultCallback callback,
     const ShortcutInfo& shortcut_info) {
-  std::unique_ptr<base::Environment> env(base::Environment::Create());
-  Result result = (UpdateDesktopShortcuts(env.get(), shortcut_info,
-                                          user_specified_locations)
-                       ? Result::kOk
-                       : Result::kError);
-  std::move(callback).Run(result);
+  UpdateDesktopShortcuts(
+      shortcut_info, user_specified_locations,
+      base::BindOnce(
+          [](ResultCallback callback, bool success) {
+            std::move(callback).Run(success ? Result::kOk : Result::kError);
+          },
+          std::move(callback)));
 }
 
 void DeleteAllShortcutsForProfile(const base::FilePath& profile_path) {
-  std::unique_ptr<base::Environment> env(base::Environment::Create());
-  DeleteAllDesktopShortcuts(env.get(), profile_path);
+  DeleteAllDesktopShortcuts(profile_path, base::DoNothing());
 }
 
 std::vector<base::FilePath> GetShortcutLocations(

@@ -55,10 +55,10 @@ void SetLaunchXdgUtilityForTesting(
 // Create shortcuts on the desktop or in the application menu (as specified by
 // |shortcut_info|), for the web page or extension in |shortcut_info|.
 // For extensions, duplicate shortcuts are avoided, so if a requested shortcut
-// already exists it is deleted first.
-bool CreateDesktopShortcut(base::Environment* env,
-                           const ShortcutInfo& shortcut_info,
-                           const ShortcutLocations& creation_locations);
+// already exists it is deleted first. |callback| is run with true on success.
+void CreateDesktopShortcut(const ShortcutInfo& shortcut_info,
+                           const ShortcutLocations& creation_locations,
+                           base::OnceCallback<void(bool)> callback);
 
 // Returns filename for .desktop file based on |profile_path| and
 // |app_id|, sanitized for security.
@@ -75,22 +75,23 @@ ShortcutLocations GetExistingShortcutLocations(
     const base::FilePath& profile_path,
     const std::string& extension_id);
 
-bool UpdateDesktopShortcuts(
-    base::Environment* env,
+void UpdateDesktopShortcuts(
     const ShortcutInfo& shortcut_info,
-    std::optional<ShortcutLocations> user_specified_locations);
+    std::optional<ShortcutLocations> user_specified_locations,
+    base::OnceCallback<void(bool)> callback);
 
 // Delete any desktop shortcuts on desktop or in the application menu that have
-// been added for the extension with |extension_id| in |profile_path|. Returns
-// true on successful deletion.
-bool DeleteDesktopShortcuts(base::Environment* env,
-                            const base::FilePath& profile_path,
-                            const std::string& extension_id);
+// been added for the extension with |extension_id| in |profile_path|.
+// |callback| is run with true on successful deletion.
+void DeleteDesktopShortcuts(const base::FilePath& profile_path,
+                            const std::string& extension_id,
+                            base::OnceCallback<void(bool)> callback);
 
 // Delete any desktop shortcuts on desktop or in the application menu that have
-// for the profile in |profile_path|. Returns true on successful deletion.
-bool DeleteAllDesktopShortcuts(base::Environment* env,
-                               const base::FilePath& profile_path);
+// for the profile in |profile_path|. |callback| is run with true on successful
+// deletion.
+void DeleteAllDesktopShortcuts(const base::FilePath& profile_path,
+                               base::OnceCallback<void(bool)> callback);
 
 // Returns the shortcuts that match profile for |profile_path| and
 // web app with id |appid|.
