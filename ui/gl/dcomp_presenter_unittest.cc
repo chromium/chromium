@@ -2300,6 +2300,44 @@ TEST_P(DCompPresenterPixelTest, ContentRectClipsAndScalesBuffer) {
                                std::move(overlay));
 }
 
+TEST_P(DCompPresenterPixelTest,
+       BackgroundColorSurfaceAppearsWithoutQuadRectChange) {
+  const gfx::Size window_size(100, 100);
+  EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
+
+  const gfx::Rect quad_rects[] = {
+      gfx::Rect(5, 10, 50, 60),
+      gfx::Rect(20, 15, 30, 40),
+      gfx::Rect(30, 40, 1, 1),
+      gfx::Rect(50, 60, 1, 1),
+  };
+  for (const gfx::Rect& quad_rect : quad_rects) {
+    SCOPED_TRACE(quad_rect.ToString());
+    // Present two frames to ensure that each new quad rect has a frame where we
+    // set the quad rect with no solid color, then display a solid color without
+    // updating the quad rect.
+    for (bool has_background : {false, true}) {
+      auto overlay = CreateParamsFromImage(
+          CreateDCompSurface(quad_rect.size(), SkColors::kTransparent));
+      overlay.quad_rect = quad_rect;
+      overlay.background_color =
+          has_background ? kOverlayExpectedColor : SkColors::kTransparent;
+      overlay.z_order = 1;
+      overlay.layer_id = gfx::OverlayLayerId::MakeForTesting(0);
+
+      if (has_background) {
+        CheckOverlayExactlyFillsHole(window_size, quad_rect,
+                                     std::move(overlay));
+      } else {
+        InitializeRootAndScheduleRootSurface(window_size,
+                                             kRootSurfaceInitialColor);
+        ScheduleOverlay(std::move(overlay));
+        ASSERT_EQ(PresentAndGetSwapResult(), gfx::SwapResult::SWAP_ACK);
+      }
+    }
+  }
+}
+
 // Check that the surface backing solid color overlays is reused across frames.
 // This can happen e.g. with a solid color draw quad animating its color.
 TEST_P(DCompPresenterPixelTest, BackgroundColorSurfaceReuse) {
