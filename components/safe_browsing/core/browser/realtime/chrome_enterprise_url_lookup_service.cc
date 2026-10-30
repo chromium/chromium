@@ -228,6 +228,7 @@ ChromeEnterpriseRealTimeUrlLookupService::GetTrafficAnnotationTag() const {
             "The main frame URL that did not match the local safelist and "
             "the DM token of the device."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "safebrowsingrealtime.googleapis.com"
         }
         policy {
           cookies_allowed: NO

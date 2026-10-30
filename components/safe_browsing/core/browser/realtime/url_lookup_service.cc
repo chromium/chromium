@@ -184,6 +184,7 @@ RealTimeUrlLookupService::GetTrafficAnnotationTag() const {
             "lookup is not already cached, this will be sent."
           data: "The main frame URL that did not match the local safelist."
           destination: GOOGLE_OWNED_SERVICE
+          api_service_name: "safebrowsingrealtime.googleapis.com"
         }
         policy {
           cookies_allowed: YES
