@@ -27,6 +27,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
@@ -63,6 +64,8 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.PersonalizeGoogleServicesSettings;
 import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment;
+import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
+import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment.HighlightedOption;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.tracing.settings.TracingCategoriesSettings;
 import org.chromium.chrome.browser.tracing.settings.TracingSettings;
@@ -991,6 +994,64 @@ public class SettingsFragmentRegistryTest {
         SettingsFragmentRegistry.Resolution resolution = resolve("chrome://settings/tabPosition");
         assertNull(resolution.redirectUrl);
         assertEquals(TabPositionSettingsFragment.class, resolution.fragmentClass);
+    }
+
+    @Test
+    public void testResolveShowsAddressBarOnFoldable() {
+        DeviceInfo.setIsFoldableForTesting(true);
+
+        SettingsFragmentRegistry.Resolution resolution = resolve("chrome://settings/addressBar");
+        assertNull(resolution.redirectUrl);
+        assertEquals(AddressBarSettingsFragment.class, resolution.fragmentClass);
+        assertEquals(
+                "chrome://settings/addressBar",
+                SettingsFragmentRegistry.createUrlForFragment(
+                        AddressBarSettingsFragment.class, null));
+    }
+
+    @Test
+    public void testResolveRedirectsAddressBarWhenNotFoldable() {
+        // Only a foldable can be folded into a phone form factor while settings is open in a tab,
+        // so the page must not be built for a URL typed or replayed from history elsewhere.
+        DeviceInfo.setIsFoldableForTesting(false);
+
+        assertRedirects("chrome://settings/addressBar", "chrome://settings");
+    }
+
+    @Test
+    public void testAddressBarHighlightedOptionRoundTrips() {
+        // The bottom omnibox tip opens the page with an option highlighted. The argument must
+        // survive the URL with its int type, or the page would silently read NONE from it.
+        DeviceInfo.setIsFoldableForTesting(true);
+        Bundle args = AddressBarSettingsFragment.createArguments(HighlightedOption.BOTTOM_TOOLBAR);
+
+        String url =
+                SettingsFragmentRegistry.createUrlForFragment(
+                        AddressBarSettingsFragment.class, args);
+        assertEquals(
+                "chrome://settings/addressBar?highlightedOption="
+                        + HighlightedOption.BOTTOM_TOOLBAR,
+                url);
+        assertTrue(SettingsFragmentRegistry.urlPreservesArgs(url, args));
+
+        SettingsFragmentRegistry.Resolution resolution = resolve(url);
+        assertNull(resolution.redirectUrl);
+        assertEquals(AddressBarSettingsFragment.class, resolution.fragmentClass);
+        assertEquals(
+                HighlightedOption.BOTTOM_TOOLBAR,
+                resolution.args.getInt(AddressBarSettingsFragment.HIGHLIGHTED_OPTION));
+    }
+
+    @Test
+    public void testAddressBarMalformedHighlightedOptionFallsBackToNone() {
+        Bundle bundle =
+                SettingsFragmentRegistry.parseUrlArguments(
+                        "chrome://settings/addressBar?highlightedOption=abc");
+        // NONE is also Bundle#getInt's default, so check that the parser put it there.
+        assertTrue(bundle.containsKey(AddressBarSettingsFragment.HIGHLIGHTED_OPTION));
+        assertEquals(
+                HighlightedOption.NONE,
+                bundle.getInt(AddressBarSettingsFragment.HIGHLIGHTED_OPTION));
     }
 
     /** Resolves a URL for the cases that do not depend on browser state. */

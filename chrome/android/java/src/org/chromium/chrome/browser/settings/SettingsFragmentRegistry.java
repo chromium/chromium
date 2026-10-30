@@ -16,6 +16,7 @@ import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
@@ -79,6 +80,8 @@ import org.chromium.chrome.browser.sync.settings.PersonalizeGoogleServicesSettin
 import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
 import org.chromium.chrome.browser.tasks.tab_management.archived_tabs.TabArchiveSettingsFragment;
 import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment;
+import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
+import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment.HighlightedOption;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.tracing.settings.TracingCategoriesSettings;
 import org.chromium.chrome.browser.tracing.settings.TracingSettings;
@@ -368,6 +371,11 @@ public class SettingsFragmentRegistry {
                 .availableWhen(SettingsFragmentRegistry::isVerticalTabsEligible)
                 .fallback("/appearance");
 
+        // Address bar. Only foldables can move the address bar while settings is in a tab, since
+        // folding switches them to a phone form factor.
+        registerMapping("/addressBar", AddressBarSettingsFragment.class)
+                .availableWhen(profile -> DeviceInfo.isFoldable());
+
         // Accessibility
         registerMapping("/accessibility", AccessibilitySettings.class);
         registerMapping("/savedZoomForSites", ImageDescriptionsSettings.class);
@@ -504,6 +512,10 @@ public class SettingsFragmentRegistry {
                 "mode",
                 CookieSettings.EXTRA_COOKIE_PAGE_STATE,
                 /* defaultValue= */ CookieControlsMode.OFF);
+        registerIntParameterMapping(
+                "highlightedOption",
+                AddressBarSettingsFragment.HIGHLIGHTED_OPTION,
+                /* defaultValue= */ HighlightedOption.NONE);
     }
 
     /**
