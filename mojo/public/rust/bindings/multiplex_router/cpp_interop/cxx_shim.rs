@@ -95,6 +95,10 @@ pub fn create_incoming_message_rust(
         header,
         payload: remaining_bytes.to_vec(),
         handles,
+        // Any associated endpoints are owned by the C++ `MojoResponderWrapper`
+        // (passed as part of the `ResponseSender`), which closes unregistered
+        // ones on drop.
+        associated_ids: Default::default(),
         raw_message_handle: Some(message_handle),
     })
 }

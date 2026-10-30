@@ -164,16 +164,20 @@ where
         let parsing_registrar = DummyRegistrarForTesting::new(true);
         let deparsing_registrar = DummyRegistrarForTesting::new(false);
 
-        let (deparsed_bytes, _deparsed_handles, interface_ids_ptr) =
+        let SerializedData { bytes: deparsed_bytes, interface_ids_offset, .. } =
             deparse_top_level_value(value.into_mojom_value(&deparsing_registrar), T::wire_type())?;
 
         // Make sure deparsing output the right bytes.
-        // This also checks that out `interface_ids_ptr` is correct before we
+        // This also checks that out `interface_ids_offset` is correct before we
         // hand it to the parsing function.
         expect_eq!(wire_data.as_ref(), deparsed_bytes.as_slice());
 
-        let (_remaining_bytes, parsed_mojom_value) =
-            parse_top_level_value(wire_data.as_ref(), &mut [], interface_ids_ptr, T::wire_type())?;
+        let (_remaining_bytes, parsed_mojom_value) = parse_top_level_value(
+            wire_data.as_ref(),
+            &mut [],
+            interface_ids_offset,
+            T::wire_type(),
+        )?;
         let parsed_rust_value = T::try_from_mojom_value(parsed_mojom_value, &parsing_registrar)?;
 
         // Make sure parsing gave us the right Rust value.

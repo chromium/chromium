@@ -930,7 +930,13 @@ fn test_bad_control_message() {
     );
     // An empty mojom struct: 8 bytes of struct header, no fields.
     let payload = vec![8, 0, 0, 0, 0, 0, 0, 0];
-    let msg = MojomMessage { header, payload, handles: vec![], raw_message_handle: None };
+    let msg = MojomMessage {
+        header,
+        payload,
+        handles: vec![],
+        associated_ids: Default::default(),
+        raw_message_handle: None,
+    };
     let (serialized, handles) = msg.into_data();
     let raw_msg =
         system::message::WritableMessage::new_with_data(&serialized, handles).unwrap().into();
@@ -1039,6 +1045,7 @@ fn test_bad_message_to_cpp_associated_receiver() {
             header,
             payload: vec![0u8; 8],
             handles: vec![],
+            associated_ids: Default::default(),
             raw_message_handle: None,
         };
         // Don't call this yourself! We're being bad here!
@@ -1086,11 +1093,19 @@ fn send_request_with_flags<T: mojom_value_parser::MojomParse>(
     flags: MessageHeaderFlags,
     params: T,
 ) {
-    let (payload, handles, interface_ids_offset) = mojom_value_parser::serialize(params, &());
+    let mojom_value_parser::SerializedData {
+        bytes: payload, handles, interface_ids_offset, ..
+    } = mojom_value_parser::serialize(params, &());
     let header = MessageHeader::new(0, ordinal, flags, 0, interface_ids_offset);
     // Don't call this yourself! We're being bad here!
     remote.send_message_internal(
-        MojomMessage { header, payload, handles, raw_message_handle: None },
+        MojomMessage {
+            header,
+            payload,
+            handles,
+            associated_ids: Default::default(),
+            raw_message_handle: None,
+        },
         None,
     );
 }
@@ -1173,7 +1188,13 @@ fn test_malformed_interface_id_array_rejected() {
 
     // The ID array starts 8 bytes into the payload, just after the struct.
     let header = MessageHeader::new(0, 0, MessageHeaderFlags::default(), 0, 8);
-    let msg = MojomMessage { header, payload, handles: vec![], raw_message_handle: None };
+    let msg = MojomMessage {
+        header,
+        payload,
+        handles: vec![],
+        associated_ids: Default::default(),
+        raw_message_handle: None,
+    };
     let (serialized, handles) = msg.into_data();
     let raw_msg =
         system::message::WritableMessage::new_with_data(&serialized, handles).unwrap().into();
@@ -1882,12 +1903,14 @@ fn test_duplicate_interface_id_reports_bad_message() {
             header,
             payload: payload_slice.to_vec(),
             handles: vec![],
+            associated_ids: Default::default(),
             raw_message_handle: None,
         };
         let msg2 = MojomMessage {
             header,
             payload: payload_slice.to_vec(),
             handles: vec![],
+            associated_ids: Default::default(),
             raw_message_handle: None,
         };
         sender_rem.send_message_internal(msg1, None);
@@ -2362,4 +2385,100 @@ fn test_send_endpoint_with_closed_peer() {
     let pending_rec = PendingAssociatedReceiver::<dyn MathService>::from_cpp(pending_rec_cpp);
     nested_sender_rem.SendReceiver(pending_rec);
     verify_received_disconnects();
+}
+
+/// Verifies that when an incoming message is dropped without being
+/// deserialized (e.g. because its target endpoint was already closed), the
+/// associated endpoints it carries are closed, and their peers notified.
+#[gtest(RustBindingsAPI, TestDroppedIncomingMessageClosesAssociatedEndpoints)]
+fn test_dropped_incoming_message_closes_associated_endpoints() {
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
+    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+
+    let (pending_primary_remote, pending_primary_receiver) =
+        PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
+    let mut primary_remote = pending_primary_remote.bind();
+    let sender_impl = AssociatedSenderImpl::new();
+    let _primary_receiver = pending_primary_receiver.bind(sender_impl.clone());
+
+    // Establish a nested `AssociatedSender` pair, but drop the receiver
+    // rather than initializing it.
+    let (nested_sender_rem, nested_sender_rec) =
+        PendingAssociatedRemote::<dyn AssociatedSender>::new_pair();
+    let mut nested_sender_rem = nested_sender_rem.bind();
+    primary_remote.SendAssociatedSender(nested_sender_rec);
+    RunLoop::new().run_until_idle();
+    let received_nested_sender = sender_impl.send_associated_sender.lock().unwrap().take().unwrap();
+    drop(received_nested_sender);
+
+    // We haven't run a loop, so `nested_sender_rem` still thinks its receiver
+    // is alive. Therefore, when we call `SendReceiver` later, the message will
+    // be sent, but it will be dropped before deserialization on the other side.
+    let (pending_rem, pending_rec) = PendingAssociatedRemote::<dyn MathService>::new_pair();
+    let dc_loop = RunLoop::new();
+    let _bound_rem =
+        pending_rem.bind_with_options(None, Some(Box::new(dc_loop.get_quit_closure())));
+    nested_sender_rem.SendReceiver(pending_rec);
+    dc_loop.run();
+    // The test will only terminate if the dc handler runs, which means that
+    // `pending_rem` was notified of the disconnect.
+}
+
+/// Verifies that messages for an associated endpoint aren't dropped if they
+/// arrive before the message carrying that endpoint has been deserialized.
+#[gtest(RustBindingsAPI, TestMessageForUndeserializedEndpointIsDelivered)]
+fn test_message_for_undeserialized_endpoint_is_delivered() {
+    let _task_env = task_environment::ffi::CreateTaskEnvironment();
+    test_util::set_default_process_error_handler(|msg: &str| panic!("Got a bad message: {}", msg));
+
+    let (pending_primary_remote, pending_primary_receiver) =
+        PendingRemote::<dyn AssociatedSender>::new_pipe().unwrap();
+    let mut primary_remote = pending_primary_remote.bind();
+    let sender_impl = AssociatedSenderImpl::new();
+    let _primary_receiver = pending_primary_receiver.bind(sender_impl.clone());
+
+    // Establish an associated AssociatedSender channel, but don't bind the
+    // receiving end yet, so that messages sent over it block the queue.
+    let (nested_sender_rem, nested_sender_rec) =
+        PendingAssociatedRemote::<dyn AssociatedSender>::new_pair();
+    primary_remote.SendAssociatedSender(nested_sender_rec);
+    RunLoop::new().run_until_idle();
+    let nested_sender_rec = sender_impl.send_associated_sender.lock().unwrap().take().unwrap();
+
+    // Send a receiver over the blocked channel, then immediately use its
+    // remote. The second message is queued behind the first.
+    let mut nested_sender_rem = nested_sender_rem.bind();
+    let (math_rem, math_rec) = PendingAssociatedRemote::<dyn MathService>::new_pair();
+    let mut math_rem = math_rem.bind();
+    // This message is first in the queue, but can't be processed because
+    // `nested_sender_rec` is still unbound.
+    nested_sender_rem.SendReceiver(math_rec);
+    let got_response = Arc::new(Mutex::new(false));
+    let got_response_clone = got_response.clone();
+    // This message is second in the queue.
+    math_rem.Add(1, 2, move |res| {
+        expect_eq!(res, 3);
+        *got_response_clone.lock().unwrap() = true;
+    });
+    RunLoop::new().run_until_idle();
+
+    // Binding the receiver unblocks the queue. The `SendReceiver` message is
+    // _posted_ immediately, but won't be processed until later. When we get
+    // to the `Add` message, it sees that `math_rec` is registered but unbound,
+    // so the queue continues to block until the first message is fully
+    // processed.
+    let nested_sender_impl = AssociatedSenderImpl::new();
+    let _nested_sender_receiver = nested_sender_rec.bind(nested_sender_impl.clone());
+    RunLoop::new().run_until_idle();
+
+    let _math_receiver = nested_sender_impl
+        .send_receiver
+        .lock()
+        .unwrap()
+        .take()
+        .expect("Nested sender should have received the receiver")
+        .bind(SaturatingMathService {});
+    RunLoop::new().run_until_idle();
+
+    expect_true!(*got_response.lock().unwrap());
 }

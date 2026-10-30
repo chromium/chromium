@@ -18,7 +18,7 @@ chromium::import! {
   "//mojo/public/rust/mojom_value_parser";
 }
 
-use mojom_value_parser::MojomParse;
+use mojom_value_parser::{MojomParse, SerializedData};
 
 use crate::message::{MojomMessage, ReadableBytesOnlyMessage};
 use crate::message_header::{MessageHeader, MessageHeaderFlags};
@@ -84,7 +84,8 @@ pub fn construct_peer_endpoint_closed_message(id: InterfaceId) -> system::messag
     let input = RunOrClosePipeInput::PeerAssociatedEndpointClosedEvent(event);
     let params = RunOrClosePipeMessageParams { input };
 
-    let (payload, handles, interface_ids_offset) = mojom_value_parser::serialize(params, &());
+    let SerializedData { bytes: payload, handles, interface_ids_offset, .. } =
+        mojom_value_parser::serialize(params, &());
 
     let header = MessageHeader::new(
         CONTROL_INTERFACE_ID,
@@ -94,7 +95,14 @@ pub fn construct_peer_endpoint_closed_message(id: InterfaceId) -> system::messag
         interface_ids_offset,
     );
 
-    MojomMessage { header, payload, handles, raw_message_handle: None }.into()
+    MojomMessage {
+        header,
+        payload,
+        handles,
+        associated_ids: Default::default(),
+        raw_message_handle: None,
+    }
+    .into()
 }
 
 /// Parse a control message from its wire representation.

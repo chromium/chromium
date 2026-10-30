@@ -34,7 +34,7 @@ impl {{args_struct(method)}} {
   fn serialize_from_parts(registrar: &impl Registrar, {{typed_fields(method.param_struct.fields)}})
     -> bindings::message::MojomMessage
   {
-    let (payload, handles, interface_ids_offset) =
+    let serialized_data =
        mojom_value_parser::serialize(Self { {{field_names(method.param_struct.fields)}} }, registrar);
     {%- if method.response_parameters is not none %}
     let flags = bindings::message_header::MessageHeaderFlags::EXPECTS_RESPONSE;
@@ -43,9 +43,10 @@ impl {{args_struct(method)}} {
     {%- endif %}
     bindings::message::MojomMessage {
       header: bindings::message_header::MessageHeader::new(
-        0, {{ method.ordinal }}, flags, 0, interface_ids_offset),
-      payload,
-      handles,
+        0, {{ method.ordinal }}, flags, 0, serialized_data.interface_ids_offset),
+      payload: serialized_data.bytes,
+      handles: serialized_data.handles,
+      associated_ids: serialized_data.interface_ids,
       raw_message_handle: None,
     }
   }
@@ -58,15 +59,16 @@ impl {{response_struct(method)}} {
   fn serialize_from_parts(registrar: &impl Registrar, {{typed_fields(method.response_param_struct.fields)}})
     -> bindings::message::MojomMessage
   {
-    let (payload, handles, interface_ids_offset) =
+    let serialized_data =
       mojom_value_parser::serialize(Self { {{field_names(method.response_param_struct.fields)}} }, registrar);
     let flags = bindings::message_header::MessageHeaderFlags::IS_RESPONSE;
     bindings::message::MojomMessage {
       header: bindings::message_header::MessageHeader::new(
-        0, {{ method.ordinal }}, flags, 0, interface_ids_offset
+        0, {{ method.ordinal }}, flags, 0, serialized_data.interface_ids_offset
       ),
-      payload,
-      handles,
+      payload: serialized_data.bytes,
+      handles: serialized_data.handles,
+      associated_ids: serialized_data.interface_ids,
       raw_message_handle: None,
     }
   }

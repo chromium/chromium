@@ -25,6 +25,7 @@ chromium::import! {
 
 pub use mojom_value_parser_core::{
     deserialize, deserialize_exact, extract_interface_ids, serialize, InterfaceId, ParsingResult,
+    SerializedData,
 };
 pub use mojom_value_parser_core::{
     MessageHeader, MessageHeaderV1, MessageHeaderV2, MessageHeaderV3,

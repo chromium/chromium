@@ -7,6 +7,7 @@
 //! binary representation of that type.
 
 use crate::ast::{MojomValue, UntypedHandle};
+use crate::deparse_values::SerializedData;
 use crate::errors::ParsingResult;
 use crate::parsing_trait::MojomParse;
 
@@ -63,16 +64,12 @@ pub fn deserialize_exact<Context, T: MojomParse<T, Context>>(
 
 /// Serialize a Rust struct into a Mojom message.
 ///
-/// Returns the serialized bytes, any handles that were contained within
-/// `value`, and the offset from the beginning of the serialized value to the
-/// embedded array of interface IDs. If that array is absent, the offset is 0.
-///
 /// Panics if called on a non-struct (structs are the only valid top-level
 /// type).
 pub fn serialize<Context, T: MojomParse<T, Context>>(
     value: T,
     context: &Context,
-) -> (Vec<u8>, Vec<UntypedHandle>, u64) {
+) -> SerializedData {
     let mojom_value: MojomValue = value.into_mojom_value(context);
     crate::deparse_values::deparse_top_level_value(mojom_value, T::wire_type())
         // The Err return value is mostly useful for internal debugging

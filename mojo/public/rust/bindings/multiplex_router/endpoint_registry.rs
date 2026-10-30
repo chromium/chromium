@@ -98,8 +98,8 @@ impl EndpointInfo {
 /// by this router. Once an entry is inserted, it is never removed from the map.
 pub(super) enum EndpointState {
     /// We received a disconnect notification for this ID before we'd even heard
-    /// about it. This can happen if we send an associated endpoint whose peer
-    /// was already closed.
+    /// about it. This can happen if the other side sends an associated endpoint
+    /// whose peer was already closed.
     UnregisteredPeerClosed,
     /// The endpoint has been registered with the router, but is not currently
     /// bound to a sequence. Incoming messages for this ID will block the

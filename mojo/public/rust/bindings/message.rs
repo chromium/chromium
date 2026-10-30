@@ -21,6 +21,8 @@ pub use system::message::{
 };
 use system::mojo_types::UntypedHandle;
 
+use mojom_value_parser::InterfaceId;
+
 /// Represents a Mojom message with a structured header and unstructured
 /// payload.
 ///
@@ -34,6 +36,7 @@ pub struct MojomMessage {
     pub header: MessageHeader,
     pub payload: Vec<u8>,
     pub handles: Vec<UntypedHandle>,
+    pub associated_ids: Vec<InterfaceId>,
     // We keep the original message handle around so we can
     // report a bad message later if necessary.
     pub raw_message_handle: Option<ReadableBytesOnlyMessage>,
@@ -65,10 +68,30 @@ impl MojomMessage {
             }
         };
 
+        // We need to extract these immediately, because the message might
+        // never get deserialized (e.g. if its destination got shut down),
+        // in which case we need to close the associated interfaces.
+        let (_, associated_ids) = match mojom_value_parser::extract_interface_ids(
+            remaining_bytes,
+            header.interface_ids_offset(),
+        ) {
+            Ok(data) => data,
+            Err(err) => {
+                let _ = msg_bytes_only.report_bad_message(&err.to_string());
+                return None;
+            }
+        };
+
         // We might be able to avoid allocating here if we had a better
         // MojomMessage type.
         let payload = remaining_bytes.to_vec();
-        Some(MojomMessage { header, payload, handles, raw_message_handle: Some(msg_bytes_only) })
+        Some(MojomMessage {
+            header,
+            payload,
+            handles,
+            associated_ids,
+            raw_message_handle: Some(msg_bytes_only),
+        })
     }
 
     /// Report this (incoming) message as malformed.
@@ -79,26 +102,6 @@ impl MojomMessage {
             // they didn't receive, which means they created it themselves.
             None => panic!("Cannot report a bad message that doesn't have an underlying handle"),
         }
-    }
-
-    /// Extract any associated interface IDs serialized into this message's
-    /// payload.
-    ///
-    /// This function is meant to be called for outgoing messages only, in
-    /// order to close any contained associated interfaces if the message
-    /// fails to send. The associated interface IDs for incoming messages
-    /// will be handled by the normal deserialization process.
-    /// TODO(crbug.com/540355135): We should handle associated interfaces
-    /// better, maybe track them in the type instead of re-reading them each
-    /// time.
-    pub fn associated_interface_ids(&self) -> Vec<u32> {
-        let Ok((_, ids)) = mojom_value_parser::extract_interface_ids(
-            &self.payload,
-            self.header.interface_ids_offset(),
-        ) else {
-            unreachable!("Outgoing messages should always be well-formed.")
-        };
-        ids.into_iter().map(|id| id.get()).collect()
     }
 
     /// Serialize this message into its binary equivalent, and return the

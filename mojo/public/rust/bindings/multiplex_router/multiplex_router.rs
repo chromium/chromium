@@ -309,13 +309,14 @@ impl MultiplexRouter {
     pub(super) fn send_message(&self, mut msg: MojomMessage, interface_id: InterfaceId) {
         msg.header.interface_id = interface_id;
         // If the message fails to send, then Mojo will close any attached
-        // handles for us. But we have to close any attach associated
-        // interfaces ourselves, so get the list of interface IDs (if
-        // any) before we give away the message.
-        let ids = msg.associated_interface_ids();
+        // handles for us. But we have to close any attached associated
+        // interfaces ourselves, so grab their IDs before we give away the
+        // message.
+        let associated_ids = std::mem::take(&mut msg.associated_ids);
         let sent = self.send_raw_message(interface_id, msg.into());
         if !sent {
-            for id in ids {
+            for id in associated_ids {
+                let id = id.get();
                 // We should never have invalid IDs in this array
                 debug_assert!(id != PRIMARY_INTERFACE_ID && id != INVALID_INTERFACE_ID);
                 // The IDs were registered with this router prior to the sending
@@ -400,6 +401,19 @@ impl MultiplexRouter {
         self.schedule_all_possible_tasks();
     }
 
+    /// Close an associated interface ID from an incoming message, if it
+    /// wasn't already deserialized.
+    ///
+    /// If it was already deserizalized, then it's now part of a
+    /// `PendingAssociatedEndpoint` object, which will handle the closure.
+    fn close_if_unregistered(&self, interface_id: InterfaceId) {
+        // Add an entry to the map for this endpoint, so we know that we've
+        // seen it before and it's now closed.
+        if self.add_associated_interface(Some(interface_id), None).is_some() {
+            self.notify_dropped(interface_id);
+        }
+    }
+
     /// Sends a raw message through the underlying pipe if the interface is
     /// connected.
     pub(super) fn send_raw_message(
@@ -431,8 +445,9 @@ impl MultiplexRouter {
         _sender: ResponseSender,
     ) {
         let Some(message) = MojomMessage::parse_raw_or_report_bad_message(raw_message) else {
-            // If conversion failed then the header must have been malformed.
-            // The bad message has already been reported, so nothing else to do.
+            // If conversion failed then the header or interface ID array must
+            // have been malformed. The bad message has already been reported,
+            // so nothing else to do.
             return;
         };
 
@@ -473,9 +488,18 @@ impl MultiplexRouter {
         // Invalid notifications from the peer. Reporting them runs arbitrary
         // embedder code, so we wait until we've released the lock.
         let mut bad_messages = Vec::new();
-        // We pop unconditionally because we need to transfer ownership into
-        // `try_schedule_message_task`. It's inconvenient but much nicer code.
-        while let Some(task) = shared_state.unscheduled_tasks.pop_front() {
+        // Associated interface IDs from messages that were dropped without
+        // being dispatched. We close them after releasing the lock.
+        let mut dropped_ids = Vec::new();
+        while let Some(task) = shared_state.unscheduled_tasks.front() {
+            if let Task::Message(message) = task
+                && !Self::can_schedule_message(&shared_state.registry, message.header.interface_id)
+            {
+                // To preserve FIFO ordering, if the front message can't be
+                // handled yet, we can't process any later tasks either.
+                break;
+            }
+            let task = shared_state.unscheduled_tasks.pop_front().unwrap();
             match task {
                 Task::Disconnect(interface_id, message) => {
                     if let Err(error) =
@@ -487,19 +511,15 @@ impl MultiplexRouter {
                     }
                 }
                 Task::Message(message) => {
-                    // `try_schedule_message_task` returns `message` unchanged
-                    // on failure
-                    if let Err(message) =
-                        self.try_schedule_message_task(&shared_state.registry, message)
-                    {
-                        shared_state.unscheduled_tasks.push_front(Task::Message(message));
-                        break;
-                    }
+                    self.schedule_message_task(&shared_state.registry, message, &mut dropped_ids);
                 }
             }
         }
         drop(shared_state);
 
+        for id in dropped_ids {
+            self.close_if_unregistered(id);
+        }
         for (mut message, error) in bad_messages {
             let _ = message.report_bad_message(&error);
         }
@@ -558,30 +578,61 @@ impl MultiplexRouter {
         result
     }
 
-    /// Schedule an incoming message on its endpoint's runner, or return
-    /// `Err(message)` if the target endpoint is currently unbound.
-    fn try_schedule_message_task(
-        &self,
-        registry: &EndpointRegistry,
-        message: MojomMessage,
-    ) -> Result<(), MojomMessage> {
-        let interface_id = message.header.interface_id;
+    /// Returns whether a message for `interface_id` can be processed now
+    /// (either dispatched or dropped), or if it must wait in the queue because
+    /// the target endpoint is not yet bound.
+    fn can_schedule_message(registry: &EndpointRegistry, interface_id: InterfaceId) -> bool {
         match registry.endpoint_map.get(&interface_id) {
+            None if registry.is_peer_allocated_id(interface_id) => {
+                // This ID was allocated by the peer, and we haven't
+                // deserialized the earlier message that introduces it yet. Wait
+                // until that happens (as with `Unbound` below).
+                false
+            }
             Some(EndpointState::Unbound) => {
                 // This ID has been registered, but hasn't been bound to a
                 // sequence yet. We can't handle this message until that
-                // happens. To preserve FIFO ordering, we can't
-                // process any later tasks either, so return the
-                // message to be put back at the front of
-                // the queue.
-                Err(message)
+                // happens.
+                false
+            }
+            _ => true,
+        }
+    }
+
+    /// Schedule an incoming message on its endpoint's runner, or drop it if
+    /// the target endpoint is closed.
+    ///
+    /// Panics if the message cannot be scheduled, so make sure to call
+    /// `can_schedule_message` first.
+    fn schedule_message_task(
+        &self,
+        registry: &EndpointRegistry,
+        mut message: MojomMessage,
+        dropped_ids: &mut Vec<InterfaceId>,
+    ) {
+        let interface_id = message.header.interface_id;
+        match registry.endpoint_map.get(&interface_id) {
+            None if registry.is_peer_allocated_id(interface_id) => {
+                unreachable!("Should have called `can_schedule_message`")
+            }
+            Some(EndpointState::Unbound) => {
+                unreachable!("Should have called `can_schedule_message`")
             }
             Some(EndpointState::Bound(endpoint_info)) => {
                 let handler_clone = endpoint_info.incoming_message_handler.clone();
                 let router_clone = self.clone();
+                let router_for_cleanup = self.clone_and_downgrade();
+                let associated_ids = std::mem::take(&mut message.associated_ids);
                 let response_sender = super::ResponseSender::rust(router_clone, interface_id);
-                endpoint_info.runner.post_task(move || (*handler_clone)(message, response_sender));
-                Ok(())
+                endpoint_info.runner.post_task(move || {
+                    (*handler_clone)(message, response_sender);
+                    // We may need to clean up any extra IDs, e.g. if the
+                    // endpoint closes before this task is
+                    // run.
+                    for id in associated_ids {
+                        router_for_cleanup.close_if_unregistered(id.get());
+                    }
+                });
             }
             None
             | Some(
@@ -592,9 +643,9 @@ impl MultiplexRouter {
             ) => {
                 // All of these can validly occur through various race
                 // conditions. Regardless of how, we can't ever
-                // process these messages, so do nothing and let
-                // the message drop.
-                Ok(())
+                // process these messages, so let the message drop and close
+                // any associated interfaces it was carrying.
+                dropped_ids.extend(message.associated_ids.into_iter().map(|id| id.get()));
             }
         }
     }
