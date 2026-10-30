@@ -30,12 +30,17 @@ import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
 import org.chromium.mojo.bindings.InterfaceRequest;
+import org.chromium.mojo.bindings.Router;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Implements the Android WebView Media Integrity API.
@@ -73,6 +78,8 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
     private static int sProviderCreatedCounter;
     private final RenderFrameHost mRenderFrameHost;
     private final @Nullable WebContents mWebContents;
+    private final Set<WebViewMediaIntegrityProviderImpl> mProviders = new HashSet<>();
+    private boolean mIsClosed;
 
     public AwMediaIntegrityServiceImpl(RenderFrameHost renderFrameHost) {
         mRenderFrameHost = renderFrameHost;
@@ -80,11 +87,25 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
     }
 
     @Override
-    public void close() {}
+    public void close() {
+        if (mIsClosed) {
+            return;
+        }
+        mIsClosed = true;
+        List<WebViewMediaIntegrityProviderImpl> providers = new ArrayList<>(mProviders);
+        mProviders.clear();
+        for (WebViewMediaIntegrityProviderImpl provider : providers) {
+            provider.close();
+        }
+    }
 
     @Override
     public void onConnectionError(MojoException e) {
-        // Close will also be called in case of connection errors.
+        close();
+    }
+
+    private void onProviderClosed(WebViewMediaIntegrityProviderImpl provider) {
+        mProviders.remove(provider);
     }
 
     @Override
@@ -93,6 +114,9 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
             long cloudProjectNumber,
             GetIntegrityProvider_Response callback) {
         ThreadUtils.assertOnUiThread();
+        if (mIsClosed) {
+            throw new IllegalStateException("Provider is closed");
+        }
         // In practice, < 0 means cloudProjectNumber (which is unsigned in the IPC) was >= 2 ** 63.
         // In theory, we should never be called with a number greater than 2 ** 53 - 1 (JavaScript's
         // Number.MAX_SAFE_INTEGER), which the renderer SHOULD reject before passing along the IPC.
@@ -177,9 +201,10 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
             RecordHistogram.recordCount100Histogram(
                     "Android.WebView.MediaIntegrity.TokenProviderCacheHitsCumulativeV2",
                     ++sCacheHitCounter);
-            WebViewMediaIntegrityProvider integrityProvider =
-                    new WebViewMediaIntegrityProviderImpl(cachedProvider, key, awBrowserContext);
-            WebViewMediaIntegrityProvider.MANAGER.bind(integrityProvider, providerRequest);
+            final WebViewMediaIntegrityProviderImpl integrityProvider =
+                    new WebViewMediaIntegrityProviderImpl(
+                            cachedProvider, key, awBrowserContext, this, providerRequest);
+            mProviders.add(integrityProvider);
             callback.call(/* error= */ null);
             return;
         }
@@ -195,15 +220,21 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
                             public void onResult(MediaIntegrityProvider provider) {
                                 ThreadUtils.assertOnUiThread();
                                 Objects.requireNonNull(provider);
+                                if (mIsClosed) {
+                                    return;
+                                }
                                 RecordHistogram.recordCount100Histogram(
                                         "Android.WebView.MediaIntegrity"
                                                 + ".TokenProviderCreatedCumulativeV2",
                                         ++sProviderCreatedCounter);
-                                WebViewMediaIntegrityProvider integrityProvider =
+                                WebViewMediaIntegrityProviderImpl integrityProvider =
                                         new WebViewMediaIntegrityProviderImpl(
-                                                provider, key, awBrowserContext);
-                                WebViewMediaIntegrityProvider.MANAGER.bind(
-                                        integrityProvider, providerRequest);
+                                                provider,
+                                                key,
+                                                awBrowserContext,
+                                                AwMediaIntegrityServiceImpl.this,
+                                                providerRequest);
+                                mProviders.add(integrityProvider);
                                 callback.call(/* error= */ null);
                                 awBrowserContext.putMediaIntegrityProviderInCache(key, provider);
                             }
@@ -212,6 +243,9 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
                             public void onError(MediaIntegrityErrorWrapper error) {
                                 ThreadUtils.assertOnUiThread();
                                 Objects.requireNonNull(error);
+                                if (mIsClosed) {
+                                    return;
+                                }
                                 callback.call(errorCodeToMojomErrorCode(error.value));
                             }
                         });
@@ -239,28 +273,46 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
         private final MediaIntegrityProvider mProvider;
         private final MediaIntegrityProviderKey mCacheKey;
         private final WeakReference<AwBrowserContext> mAwBrowserContext;
+        private final AwMediaIntegrityServiceImpl mService;
+        private final Router mRouter;
+        private boolean mIsClosed;
         private int mRequestCounter;
 
+        /** Bind the {@code provider} to the {@code providerRequest}. */
         public WebViewMediaIntegrityProviderImpl(
                 MediaIntegrityProvider provider,
                 MediaIntegrityProviderKey cacheKey,
-                AwBrowserContext awBrowserContext) {
+                AwBrowserContext awBrowserContext,
+                AwMediaIntegrityServiceImpl service,
+                InterfaceRequest<WebViewMediaIntegrityProvider> providerRequest) {
             mProvider = provider;
             mCacheKey = cacheKey;
             mAwBrowserContext = new WeakReference<>(awBrowserContext);
+            mService = service;
+            mRouter = WebViewMediaIntegrityProvider.MANAGER.bind(this, providerRequest);
         }
 
         @Override
-        public void close() {}
+        public void close() {
+            if (mIsClosed) {
+                return;
+            }
+            mIsClosed = true;
+            mRouter.close();
+            mService.onProviderClosed(this);
+        }
 
         @Override
         public void onConnectionError(MojoException e) {
-            // Close will also be called in case of connection errors.
+            close();
         }
 
         @Override
         public void requestToken(@Nullable String contentBinding, RequestToken_Response callback) {
             ThreadUtils.assertOnUiThread();
+            if (mIsClosed) {
+                throw new IllegalStateException("Provider is closed.");
+            }
             RecordHistogram.recordCount1000Histogram(
                     "Android.WebView.MediaIntegrity.GetTokenCumulativeV2", ++mRequestCounter);
             // The provider is responsible for any contentBinding validation.
@@ -270,6 +322,9 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
                         @Override
                         public void onResult(String token) {
                             ThreadUtils.assertOnUiThread();
+                            if (mIsClosed) {
+                                return;
+                            }
                             WebViewMediaIntegrityTokenResponse response =
                                     new WebViewMediaIntegrityTokenResponse();
                             response.setToken(token);
@@ -279,6 +334,9 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
                         @Override
                         public void onError(MediaIntegrityErrorWrapper error) {
                             ThreadUtils.assertOnUiThread();
+                            if (mIsClosed) {
+                                return;
+                            }
                             if (error.value == MediaIntegrityErrorCode.TOKEN_PROVIDER_INVALID) {
                                 // This callback could take an arbitrary amount of time. We use a
                                 // weak reference to avoid making assumptions about AwBrowserContext
