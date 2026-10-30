@@ -7,6 +7,7 @@
 #include <array>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -15,6 +16,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace bookmarks_api {
 
@@ -102,8 +104,8 @@ void BookmarkUuidMapper::SetUuidOverride(const BookmarkIdTuple& tuple,
   CHECK(api_uuid.is_valid());
   CHECK(!tuple_to_uuid_.contains(tuple));
   CHECK(!uuid_to_tuple_.contains(api_uuid));
-  tuple_to_uuid_[tuple] = api_uuid;
-  uuid_to_tuple_[api_uuid] = tuple;
+  tuple_to_uuid_.emplace(tuple, api_uuid);
+  uuid_to_tuple_.emplace(api_uuid, tuple);
 }
 
 bool BookmarkUuidMapper::HasOverrideFor(
@@ -119,20 +121,20 @@ base::Uuid BookmarkUuidMapper::GetUuidFor(const bookmarks::BookmarkNode* node,
                                           BookmarkStorage storage) {
   const BookmarkIdTuple tuple(node);
   CHECK(tuple.uuid().is_valid());
-  auto it = tuple_to_uuid_.find(tuple);
-  if (it != tuple_to_uuid_.end()) {
-    return it->second;
+  auto [tuple_to_uuid_it, tuple_to_uuid_inserted] =
+      tuple_to_uuid_.try_emplace(tuple);
+  if (!tuple_to_uuid_inserted) {
+    return tuple_to_uuid_it->second;
   }
 
   base::Uuid api_uuid = DeriveApiUuid(node, storage);
   // Only possible if the model violates UUID uniqueness within a storage, or a
   // node that was moved across storages is still cached. Stay unique at the
   // cost of stability for this node.
-  if (uuid_to_tuple_.contains(api_uuid)) {
+  while (!uuid_to_tuple_.try_emplace(api_uuid, tuple).second) {
     api_uuid = base::Uuid::GenerateRandomV4();
   }
-  tuple_to_uuid_[tuple] = api_uuid;
-  uuid_to_tuple_[api_uuid] = tuple;
+  tuple_to_uuid_it->second = api_uuid;
   return api_uuid;
 }
 
@@ -174,10 +176,12 @@ void BookmarkUuidMapper::RemoveNode(const bookmarks::BookmarkNode* node) {
 
 void BookmarkUuidMapper::ClearAllExcept(
     const std::vector<const bookmarks::BookmarkNode*>& nodes_to_retain) {
-  std::unordered_map<BookmarkIdTuple, base::Uuid, BookmarkIdTupleHash>
+  absl::flat_hash_map<BookmarkIdTuple, base::Uuid, BookmarkIdTupleHash>
       new_tuple_to_uuid;
-  std::unordered_map<base::Uuid, BookmarkIdTuple, base::UuidHash>
+  new_tuple_to_uuid.reserve(nodes_to_retain.size());
+  absl::flat_hash_map<base::Uuid, BookmarkIdTuple, base::UuidHash>
       new_uuid_to_tuple;
+  new_uuid_to_tuple.reserve(nodes_to_retain.size());
   for (const auto* node : nodes_to_retain) {
     if (!node) {
       continue;
@@ -185,8 +189,9 @@ void BookmarkUuidMapper::ClearAllExcept(
     BookmarkIdTuple tuple(node);
     auto it = tuple_to_uuid_.find(tuple);
     if (it != tuple_to_uuid_.end()) {
-      new_tuple_to_uuid[tuple] = it->second;
-      new_uuid_to_tuple[it->second] = tuple;
+      auto& uuid =
+          new_tuple_to_uuid.emplace(tuple, std::move(it->second)).first->second;
+      new_uuid_to_tuple.emplace(uuid, std::move(tuple));
     }
   }
   tuple_to_uuid_ = std::move(new_tuple_to_uuid);

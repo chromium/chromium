@@ -6,11 +6,12 @@
 #define COMPONENTS_BROWSER_APIS_BOOKMARKS_BOOKMARK_UUID_MAPPER_H_
 
 #include <cstdint>
+#include <functional>
 #include <optional>
-#include <unordered_map>
 #include <vector>
 
 #include "base/uuid.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace bookmarks {
 class BookmarkNode;
@@ -128,9 +129,9 @@ class BookmarkUuidMapper {
   bool HasOverrideFor(const BookmarkIdTuple& tuple) const;
   void RemoveNode(const BookmarkIdTuple& tuple);
 
-  std::unordered_map<BookmarkIdTuple, base::Uuid, BookmarkIdTupleHash>
+  absl::flat_hash_map<BookmarkIdTuple, base::Uuid, BookmarkIdTupleHash>
       tuple_to_uuid_;
-  std::unordered_map<base::Uuid, BookmarkIdTuple, base::UuidHash>
+  absl::flat_hash_map<base::Uuid, BookmarkIdTuple, base::UuidHash>
       uuid_to_tuple_;
 };
 
