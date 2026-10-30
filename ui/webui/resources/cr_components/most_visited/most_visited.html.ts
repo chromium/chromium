@@ -31,7 +31,7 @@ export function getHtml(this: MostVisitedElement) {
           ?hidden="${this.nonEditable ||
               (!this.customLinksEnabled_ &&
                !this.isFromEnterpriseShortcut_(item.source))}"
-          data-index="${index}">
+          ?disabled="${this.inReorderMode_}" data-index="${index}">
       </cr-icon-button>
       <cr-icon-button id="removeButton" class="icon-clear"
           title="${this.getRemoveButtonText_(item.title)}"
@@ -39,7 +39,7 @@ export function getHtml(this: MostVisitedElement) {
           ?hidden="${this.nonEditable ||
               (this.customLinksEnabled_ ||
                this.isFromEnterpriseShortcut_(item.source))}"
-          data-index="${index}">
+          ?disabled="${this.inReorderMode_}" data-index="${index}">
       </cr-icon-button>
       <div class="tile-icon">
         <img src="${this.getFaviconUrl_(item.url)}" draggable="false"
@@ -60,7 +60,8 @@ export function getHtml(this: MostVisitedElement) {
     </div>
   `)}
   <cr-button id="addShortcut" tabindex="0" @click="${this.onAddClick_}"
-      ?hidden="${!this.showAdd_}" @keydown="${this.onAddShortcutKeydown_}"
+      ?hidden="${!this.showAdd_}" ?disabled="${this.inReorderMode_}"
+      @keydown="${this.onAddShortcutKeydown_}"
       aria-label="${this.i18n('addLinkTitle')}"
       title="${this.i18n('addLinkTitle')}" noink>
     <div class="tile-icon tile-icon-container">
@@ -72,7 +73,8 @@ export function getHtml(this: MostVisitedElement) {
   </cr-button>
   <div>
     <cr-button id="showMore" tabindex="0" @click="${this.onShowMoreClick_}"
-        ?hidden="${!this.showShowMore_}" @keydown="${this.onShowMoreKeydown_}"
+        ?hidden="${!this.showShowMore_}" ?disabled="${this.inReorderMode_}"
+        @keydown="${this.onShowMoreKeydown_}"
         aria-label="${this.i18n('showMore')}" title="${this.i18n('showMore')}"
         noink>
       <div class="tile-icon tile-icon-container">
@@ -83,7 +85,8 @@ export function getHtml(this: MostVisitedElement) {
       </div>
     </cr-button>
     <cr-button id="showLess" tabindex="0" @click="${this.onShowLessClick_}"
-        ?hidden="${!this.showShowLess_}" @keydown="${this.onShowLessKeydown_}"
+        ?hidden="${!this.showShowLess_}" ?disabled="${this.inReorderMode_}"
+        @keydown="${this.onShowLessKeydown_}"
         aria-label="${this.i18n('showLess')}" title="${this.i18n('showLess')}"
         noink>
       <div class="tile-icon tile-icon-container">
