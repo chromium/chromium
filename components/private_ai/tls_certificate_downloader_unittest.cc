@@ -45,6 +45,11 @@ class FakeNetworkContext : public network::TestNetworkContext {
   void CreateURLLoaderFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver,
       network::mojom::URLLoaderFactoryParamsPtr params) override {
+    ASSERT_TRUE(params);
+    EXPECT_TRUE(params->process_id.is_browser());
+    EXPECT_FALSE(params->is_trusted);
+    EXPECT_TRUE(params->automatically_assign_isolation_info);
+    EXPECT_FALSE(params->is_orb_enabled);
     ++create_factory_count_;
     factory_->Clone(std::move(receiver));
   }
