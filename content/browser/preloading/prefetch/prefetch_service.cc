@@ -1624,7 +1624,8 @@ void PrefetchService::SendPrefetchRequest(
   auto streaming_loader = PrefetchStreamingURLLoader::CreateAndStart(
       GetURLLoaderFactoryForCurrentPrefetch(prefetch_container),
       *prefetch_container.GetResourceRequest(),
-      kNavigationalPrefetchTrafficAnnotation, PrefetchTimeoutDuration(),
+      kNavigationalPrefetchTrafficAnnotation,
+      PrefetchTimeoutDuration(prefetch_container.request()),
       base::BindOnce(&PrefetchContainer::OnPrefetchResponseStarted,
                      weak_prefetch_container),
       base::BindRepeating(&PrefetchService::OnPrefetchRedirect,

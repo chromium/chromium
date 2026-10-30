@@ -270,6 +270,8 @@ CONTENT_EXPORT extern const base::FeatureParam<
     kPrefetchAheadOfImminentNavigationForceWaitNVSHeaderPolicy;
 CONTENT_EXPORT extern const base::FeatureParam<bool>
     kPrefetchAheadOfImminentNavigationUseBlockUntilHeadTimeout;
+CONTENT_EXPORT extern const base::FeatureParam<bool>
+    kPrefetchAheadOfImminentNavigationUsePrefetchLoaderTimeout;
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchOffTheMainThread);
 CONTENT_EXPORT extern const base::FeatureParam<bool>

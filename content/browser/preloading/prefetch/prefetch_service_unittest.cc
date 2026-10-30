@@ -4881,6 +4881,7 @@ class PrefetchServiceAheadOfImminentNavigationTest
       : WithPrefetchRearchParam(GetParam()) {}
 
   static constexpr int kBlockUntilHeadTimeout = 1000;
+  static constexpr int kPrefetchTimeout = 10000;
 
   void InitScopedFeatureList() override {
     InitBaseParams();
@@ -4891,7 +4892,7 @@ class PrefetchServiceAheadOfImminentNavigationTest
           {
               {"ineligible_decoy_request_probability", "0"},
               {"prefetch_container_lifetime_s", "-1"},
-              {"prefetch_timeout_ms", "10000"},
+              {"prefetch_timeout_ms", base::NumberToString(kPrefetchTimeout)},
               // Initialize > 0ms timeouts for testing purposes.
               {"block_until_head_timeout_embedder_prefetch",
                base::NumberToString(kBlockUntilHeadTimeout)},
@@ -5161,6 +5162,102 @@ TEST_P(PrefetchServiceAheadOfImminentNavigationTest,
   ASSERT_FALSE(navigation_result->serving_handle_future.IsReady());
 
   task_environment()->FastForwardBy(base::Milliseconds(kBlockUntilHeadTimeout));
+  ASSERT_TRUE(navigation_result->serving_handle_future.IsReady());
+  EXPECT_FALSE(navigation_result->serving_handle_future.Take());
+}
+
+// Tests that the prefetch loader timeout is disabled for a prefetch ahead of an
+// imminent navigation.
+//
+// Scenario: An embedder starts a prefetch of "?a=1" with
+// `is_ahead_of_imminent_navigation` true. A navigation to the URL without the
+// query starts and is blocked. It keeps blocked beyond the prefetch loader
+// timeout, and is eventually served once the head arrives.
+TEST_P(PrefetchServiceAheadOfImminentNavigationTest,
+       PrefetchLoaderTimeoutIsDisabled) {
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  std::unique_ptr<PrefetchHandle> handle = MakePrefetchFromEmbedder(
+      GURL("https://example.com/?a=1"),
+      PrefetchType(PreloadingTriggerType::kEmbedder,
+                   /*use_prefetch_proxy=*/false),
+      /*referrer=*/{}, /*referring_origin=*/std::nullopt,
+      /*is_ahead_of_imminent_navigation=*/true);
+  task_environment()->RunUntilIdle();
+
+  VerifyCommonRequestStateForWebContentsPrefetch(
+      GURL("https://example.com/?a=1"), {.use_prefetch_proxy = false});
+
+  std::unique_ptr<NavigationResult> navigation_result =
+      SimulatePartOfNavigation(GURL("https://example.com/"),
+                               /*is_renderer_initiated=*/false,
+                               /*is_nav_prerender=*/false);
+  task_environment()->RunUntilIdle();
+  ASSERT_FALSE(navigation_result->serving_handle_future.IsReady());
+
+  task_environment()->FastForwardBy(base::Milliseconds(kPrefetchTimeout));
+  ASSERT_FALSE(navigation_result->serving_handle_future.IsReady());
+
+  MakeResponseAndWait(
+      net::HTTP_OK, net::OK, kHTMLMimeType,
+      /*use_prefetch_proxy=*/false,
+      {{"X-Testing", "Hello World"}, {"No-Vary-Search", R"(params=("a"))"}},
+      kHTMLBody);
+
+  ASSERT_TRUE(navigation_result->serving_handle_future.IsReady());
+  PrefetchServingHandle serving_handle =
+      navigation_result->serving_handle_future.Take();
+  ExpectServingReaderSuccess(serving_handle);
+  EXPECT_EQ(serving_handle.GetPrefetchContainer()->GetURL(),
+            GURL("https://example.com/?a=1"));
+}
+
+// Tests that setting `use_prefetch_loader_timeout` to true re-enables the
+// prefetch loader timeout for a prefetch ahead of an imminent navigation.
+//
+// Scenario: With `use_prefetch_loader_timeout` set to true, an embedder starts
+// a prefetch of "?a=1" with `is_ahead_of_imminent_navigation` true. A
+// navigation to the URL without the query starts and is blocked beyond the
+// block-until-head timeout (disabled). The prefetch fails with
+// `ERR_TIMED_OUT` after `kPrefetchTimeout`, and the navigation falls back to
+// network.
+TEST_P(PrefetchServiceAheadOfImminentNavigationTest,
+       UsePrefetchLoaderTimeout_TimesOut) {
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      features::kPrefetchAheadOfImminentNavigation,
+      {
+          {"force_wait_no_vary_search_header_policy", "UseIfNoHint"},
+          {"use_prefetch_loader_timeout", "true"},
+      });
+
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>());
+
+  std::unique_ptr<PrefetchHandle> handle = MakePrefetchFromEmbedder(
+      GURL("https://example.com/?a=1"),
+      PrefetchType(PreloadingTriggerType::kEmbedder,
+                   /*use_prefetch_proxy=*/false),
+      /*referrer=*/{}, /*referring_origin=*/std::nullopt,
+      /*is_ahead_of_imminent_navigation=*/true);
+  task_environment()->RunUntilIdle();
+
+  VerifyCommonRequestStateForWebContentsPrefetch(
+      GURL("https://example.com/?a=1"), {.use_prefetch_proxy = false});
+
+  std::unique_ptr<NavigationResult> navigation_result =
+      SimulatePartOfNavigation(GURL("https://example.com/"),
+                               /*is_renderer_initiated=*/false,
+                               /*is_nav_prerender=*/false);
+  task_environment()->RunUntilIdle();
+  ASSERT_FALSE(navigation_result->serving_handle_future.IsReady());
+
+  task_environment()->FastForwardBy(base::Milliseconds(kBlockUntilHeadTimeout));
+  ASSERT_FALSE(navigation_result->serving_handle_future.IsReady());
+
+  task_environment()->FastForwardBy(
+      base::Milliseconds(kPrefetchTimeout - kBlockUntilHeadTimeout));
   ASSERT_TRUE(navigation_result->serving_handle_future.IsReady());
   EXPECT_FALSE(navigation_result->serving_handle_future.Take());
 }

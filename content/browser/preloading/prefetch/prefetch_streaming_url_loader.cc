@@ -71,7 +71,7 @@ void PrefetchStreamingURLLoader::Start(
       &PrefetchStreamingURLLoader::OnComplete, weak_ptr_factory_.GetWeakPtr(),
       network::URLLoaderCompletionStatus(net::ERR_ABORTED)));
 
-  if (!timeout_duration.is_zero()) {
+  if (timeout_duration.is_positive()) {
     timeout_timer_.Start(
         FROM_HERE, timeout_duration,
         base::BindOnce(&PrefetchStreamingURLLoader::OnComplete,

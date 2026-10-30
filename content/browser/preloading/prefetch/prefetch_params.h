@@ -41,8 +41,9 @@ CONTENT_EXPORT bool PrefetchServiceSendDecoyRequestForIneligblePrefetch(
     bool disabled_based_on_user_settings);
 
 // The amount of time to allow a prefetch to take before considering it a
-// timeout error.
-base::TimeDelta PrefetchTimeoutDuration();
+// timeout error. Non-positive value means no timeout.
+base::TimeDelta PrefetchTimeoutDuration(
+    const PrefetchRequest& prefetch_request);
 
 // The maximum body length allowed to be prefetched for mainframe responses in
 // bytes.

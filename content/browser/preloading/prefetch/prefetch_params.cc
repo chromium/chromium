@@ -88,7 +88,20 @@ bool PrefetchServiceSendDecoyRequestForIneligblePrefetch(
   return base::RandDouble() < probability;
 }
 
-base::TimeDelta PrefetchTimeoutDuration() {
+base::TimeDelta PrefetchTimeoutDuration(
+    const PrefetchRequest& prefetch_request) {
+  // Don't set a timeout for a prefetch ahead of an imminent navigation, for the
+  // same reason as `PrefetchBlockUntilHeadTimeout()`. Note that this timeout
+  // keeps running while a navigation is blocked until the head is received, so
+  // disabling only the block-until-head timeout is not enough.
+  if (base::FeatureList::IsEnabled(
+          features::kPrefetchAheadOfImminentNavigation) &&
+      prefetch_request.is_ahead_of_imminent_navigation() &&
+      !features::kPrefetchAheadOfImminentNavigationUsePrefetchLoaderTimeout
+           .Get()) {
+    return base::Seconds(0);
+  }
+
   return base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
       features::kPrefetchUseContentRefactor, "prefetch_timeout_ms",
       10 * 1000 /* 10 seconds */));

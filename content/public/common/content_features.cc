@@ -853,6 +853,14 @@ const base::FeatureParam<bool>
         &kPrefetchAheadOfImminentNavigation, "use_block_until_head_timeout",
         false};
 
+// If true, `PrefetchStreamingURLLoader` uses the prefetch timeout (see
+// `PrefetchTimeoutDuration()`) also for a prefetch ahead of an imminent
+// navigation.
+const base::FeatureParam<bool>
+    kPrefetchAheadOfImminentNavigationUsePrefetchLoaderTimeout{
+        &kPrefetchAheadOfImminentNavigation, "use_prefetch_loader_timeout",
+        false};
+
 // Allow starting prefetch request from off the main thread. Please see
 // crbug.com/452389538 for more details.
 BASE_FEATURE(kPrefetchOffTheMainThread, base::FEATURE_DISABLED_BY_DEFAULT);
