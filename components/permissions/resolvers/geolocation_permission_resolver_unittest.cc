@@ -11,7 +11,7 @@
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/permission_prompt_decision.h"
-#include "components/permissions/permission_request_data.h"
+#include "components/permissions/permission_uma_constants.h"
 #include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/permissions/resolvers/permission_resolver.h"
 #include "testing/gmock/include/gmock/gmock.h"

@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_id.h"
+#include "components/permissions/permission_uma_constants.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/resolvers/permission_prompt_options.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
@@ -23,18 +24,6 @@ struct PermissionRequestDescription;
 }
 
 namespace permissions {
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(GeolocationPromptType)
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.permissions
-enum class GeolocationPromptType {
-  kApproximateOrPrecise = 0,
-  kApproximateOnly = 1,
-  kUpgradeToPrecise = 2,
-  kMaxValue = kUpgradeToPrecise,
-};
-// LINT.ThenChange(//tools/metrics/histograms/enums.xml:GeolocationPromptType)
 
 // Holds information about `permissions::PermissionRequest`
 struct PermissionRequestData {

@@ -14,7 +14,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_prompt_decision.h"
-#include "components/permissions/permission_request_data.h"
+#include "components/permissions/permission_uma_constants.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/resolvers/permission_prompt_options.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"

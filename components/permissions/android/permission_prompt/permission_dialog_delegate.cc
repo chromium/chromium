@@ -11,7 +11,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/android/permission_prompt/permission_prompt_android.h"
 #include "components/permissions/features.h"
-#include "components/permissions/permission_request_data.h"
+#include "components/permissions/permission_uma_constants.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"

@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
-#include "components/permissions/permission_request_data.h"
+#include "components/permissions/permission_uma_constants.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"

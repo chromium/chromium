@@ -31,7 +31,6 @@
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_request.h"
-#include "components/permissions/permission_request_data.h"
 #include "components/permissions/permission_uma_constants.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"

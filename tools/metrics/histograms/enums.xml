@@ -4664,7 +4664,7 @@ shown properly on the user-facing crash UI.
   <int value="2" label="Upgrade to precise"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/permissions/permission_request_data.h:GeolocationPromptType) -->
+<!-- LINT.ThenChange(//components/permissions/permission_uma_constants.h:GeolocationPromptType) -->
 
 <enum name="GestureNavigationDirection">
   <int value="0" label="Gesture navigation back"/>

@@ -615,6 +615,18 @@ enum class UkmPermissionPromptOptions {
 };
 // LINT.ThenChange(//tools/metrics/ukm/ukm.xml:UkmPermissionPromptOptions)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(GeolocationPromptType)
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.permissions
+enum class GeolocationPromptType {
+  kApproximateOrPrecise = 0,
+  kApproximateOnly = 1,
+  kUpgradeToPrecise = 2,
+  kMaxValue = kUpgradeToPrecise,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:GeolocationPromptType)
+
 // LINT.IfChange(PromptDispositionSets)
 inline constexpr auto kQuietPromptDispositions =
     base::MakeFixedFlatSet<PermissionPromptDisposition>({
