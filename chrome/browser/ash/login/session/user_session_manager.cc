@@ -162,6 +162,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

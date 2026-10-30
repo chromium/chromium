@@ -129,6 +129,7 @@ static_library("session") {
     "//components/password_manager/core/browser:metrics_util",
     "//components/password_manager/core/browser/password_store:password_store_interface",
     "//components/policy/core/common:common_constants",
+    "//components/policy/proto",
     "//components/prefs",
     "//components/quirks",
     "//components/server_certificate_database",

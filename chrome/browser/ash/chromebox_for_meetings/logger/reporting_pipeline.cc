@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/reporting/client/report_queue.h"
 #include "components/reporting/client/report_queue_provider.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"

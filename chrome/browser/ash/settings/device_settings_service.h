@@ -17,11 +17,13 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/ownership/owner_settings_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
-#include "components/policy/core/common/cloud/cloud_policy_validator.h"
-#include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 class PrefService;
+
+namespace enterprise_management {
+class ChromeDeviceSettingsProto;
+}  // namespace enterprise_management
 
 namespace ownership {
 class OwnerKeyUtil;

@@ -18,6 +18,7 @@
 #include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/version_info/version_info.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
