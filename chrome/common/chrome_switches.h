@@ -1075,7 +1075,8 @@ inline constexpr char kGeicGuestURL[] = "geic-guest-url";
 // counterpart of `--glic-always-skip-fre`.
 inline constexpr char kGeicAlwaysSkipFre[] = "geic-always-skip-fre";
 
-// Clears all GEiC FRE status at startup. `--geic-always-skip-fre` wins over it.
+// Resets the GEiC FRE for the current GE instance at startup.
+// `--geic-always-skip-fre` wins over it.
 inline constexpr char kGeicResetFre[] = "geic-reset-fre";
 
 inline constexpr char kSkillsV2Origin[] = "skills-v2-origin";

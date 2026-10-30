@@ -5,10 +5,19 @@
 #include <utility>
 
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_pref_names.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic_internals_ui.h"
 #include "chrome/browser/glic/host/glic_ui.h"
+#include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_fre_store.h"
+#include "chrome/browser/glic/public/glic_provider.h"
+#include "chrome/browser/glic/public/glic_provider_latch.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
@@ -27,6 +36,37 @@ constexpr char kWaitForInternalsLoaded[] = R"js(
   customElements.whenDefined('glic-internals-app').then(() => true)
 )js";
 
+constexpr char kGeicGuestUrl[] =
+    "https://business.gemini.google/side-panel?configId=abc";
+
+// Loads chrome://glic/internals in `contents`, revokes Glic consent through the
+// page handler, and waits until `pref_name` in `prefs` changes.
+void RevokeGlicConsentFromInternals(content::WebContents* contents,
+                                    PrefService* prefs,
+                                    const char* pref_name) {
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(
+      contents, GURL("chrome://glic/internals")));
+  ASSERT_EQ(true, content::EvalJs(contents, kWaitForInternalsLoaded));
+
+  base::RunLoop run_loop;
+  PrefChangeRegistrar pref_registrar;
+  pref_registrar.Init(prefs);
+  pref_registrar.Add(pref_name, run_loop.QuitClosure());
+
+  constexpr char kRevokeGlicConsent[] = R"js(
+    (() => {
+      const app = document.querySelector('glic-internals-app');
+      if (!app) {
+        return 'app-missing';
+      }
+      app.browserProxy_.handler.revokeGlicConsent();
+      return 'ok';
+    })()
+  )js";
+  ASSERT_EQ("ok", content::EvalJs(contents, kRevokeGlicConsent));
+  run_loop.Run();
+}
+
 }  // namespace
 
 class GlicInternalsBrowserTest : public PlatformBrowserTest {
@@ -38,6 +78,76 @@ class GlicInternalsBrowserTest : public PlatformBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+// Enables GEiC and the GEiC FRE before the profile is created, so that the
+// profile is latched to Gemini Enterprise.
+// TODO(b/576661278): Use a shared helper for GEiC browser test setup.
+class GlicInternalsGeicBrowserTest : public PlatformBrowserTest {
+ public:
+  GlicInternalsGeicBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlic, {}},
+         {features::kGeic,
+          {{"enabled", "true"}, {"geic-guest-url", kGeicGuestUrl}}},
+         {features::kGeicFre, {}}},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest,
+                       RevokeGlicConsentResetsConsumerFreAndLocalState) {
+  Profile* profile = chrome_test_utils::GetProfile(this);
+  ASSERT_EQ(GlicProviderLatch::GetProvider(*profile), GlicProvider::kGemini);
+  profile->GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre,
+      std::to_underlying(prefs::FreStatus::kCompleted));
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetInteger(
+      prefs::kGlicDefaultHotkeyScope,
+      std::to_underlying(prefs::DefaultHotkeyScope::kGlobal));
+
+  RevokeGlicConsentFromInternals(chrome_test_utils::GetActiveWebContents(this),
+                                 local_state, prefs::kGlicDefaultHotkeyScope);
+
+  EXPECT_EQ(profile->GetPrefs()->GetInteger(prefs::kGlicCompletedFre),
+            std::to_underlying(prefs::FreStatus::kNotStarted));
+  EXPECT_EQ(local_state->GetInteger(prefs::kGlicDefaultHotkeyScope),
+            std::to_underlying(prefs::DefaultHotkeyScope::kNotMigrated));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInternalsGeicBrowserTest,
+                       RevokeGlicConsentResetsGeicFre) {
+  Profile* profile = chrome_test_utils::GetProfile(this);
+  ASSERT_EQ(GlicProviderLatch::GetProvider(*profile),
+            GlicProvider::kGeminiEnterprise);
+  GetGlicProviderSpec(profile).GetFreStore().SetStatus(
+      profile, prefs::FreStatus::kCompleted);
+  ASSERT_TRUE(GlicEnabling::HasConsentedForProfile(profile));
+  // Neither the consumer FRE nor the browser-wide launcher and hotkey prefs
+  // should be touched.
+  profile->GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre,
+      std::to_underlying(prefs::FreStatus::kCompleted));
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetInteger(
+      prefs::kGlicDefaultHotkeyScope,
+      std::to_underlying(prefs::DefaultHotkeyScope::kGlobal));
+
+  RevokeGlicConsentFromInternals(chrome_test_utils::GetActiveWebContents(this),
+                                 profile->GetPrefs(),
+                                 geic::prefs::kGeicCompletedFre);
+
+  EXPECT_FALSE(GlicEnabling::HasConsentedForProfile(profile));
+  EXPECT_EQ(GlicEnabling::GetCompletedFre(profile),
+            prefs::FreStatus::kNotStarted);
+  EXPECT_EQ(profile->GetPrefs()->GetInteger(prefs::kGlicCompletedFre),
+            std::to_underlying(prefs::FreStatus::kCompleted));
+  EXPECT_EQ(local_state->GetInteger(prefs::kGlicDefaultHotkeyScope),
+            std::to_underlying(prefs::DefaultHotkeyScope::kGlobal));
+}
 
 IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest,
                        InternalsSubpathInstantiatesGlicInternalsUI) {

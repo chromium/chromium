@@ -206,6 +206,54 @@ TEST_F(GeicFreTest, OtherInstanceStatusDoesNotApply) {
   EXPECT_TRUE(dict.FindDict(kOtherUrl));
 }
 
+TEST_F(GeicFreTest, ResetFreClearsOnlyCurrentInstance) {
+  constexpr char kOtherUrl[] =
+      "https://business.gemini.google/side-panel?configId=other";
+  SetRawEntry(kOtherUrl,
+              base::Value(base::DictValue().Set(
+                  kStatusKey, std::to_underlying(GeicFreStatus::kCompleted))));
+  CompleteFre(profile_.get());
+  ASSERT_EQ(GetFreStatus(profile_.get()), GeicFreStatus::kCompleted);
+
+  ResetFre(profile_.get());
+  EXPECT_EQ(GetFreStatus(profile_.get()), GeicFreStatus::kNotStarted);
+  const base::DictValue& dict = prefs()->GetDict(prefs::kGeicCompletedFre);
+  EXPECT_EQ(dict.size(), 1u);
+  EXPECT_FALSE(dict.FindDict(kFreKey));
+  EXPECT_TRUE(dict.FindDict(kOtherUrl));
+
+  // The FRE can be completed again.
+  CompleteFre(profile_.get());
+  EXPECT_EQ(GetFreStatus(profile_.get()), GeicFreStatus::kCompleted);
+}
+
+TEST_F(GeicFreTest, ResetFreIsNoOpWithoutEntry) {
+  int pref_changes = 0;
+  PrefChangeRegistrar registrar;
+  registrar.Init(prefs());
+  registrar.Add(prefs::kGeicCompletedFre,
+                base::BindLambdaForTesting([&] { ++pref_changes; }));
+
+  ResetFre(profile_.get());
+  EXPECT_EQ(pref_changes, 0);
+  EXPECT_EQ(GetFreStatus(profile_.get()), GeicFreStatus::kNotStarted);
+}
+
+TEST_F(GeicFreTest, ResetFreIsNoOpWhenGeicFreDoesNotApply) {
+  base::test::ScopedFeatureList disabled;
+  disabled.InitAndDisableFeature(features::kGeicFre);
+  TestingProfile profile;
+  ASSERT_EQ(GetFreStatus(&profile), std::nullopt);
+  ScopedDictPrefUpdate(profile.GetPrefs(), prefs::kGeicCompletedFre)
+      ->Set(kFreKey,
+            base::DictValue().Set(
+                kStatusKey, std::to_underlying(GeicFreStatus::kCompleted)));
+
+  ResetFre(&profile);
+  EXPECT_EQ(profile.GetPrefs()->GetDict(prefs::kGeicCompletedFre).size(), 1u);
+  ResetFre(nullptr);
+}
+
 TEST_F(GeicFreTest, LatchesGuestUrl) {
   // The guest URL is latched with the profile's Glic provider when the profile
   // is created, so a later policy URL doesn't change which GE instance the FRE

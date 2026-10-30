@@ -1854,13 +1854,15 @@ TEST_F(GlicEnablingGeicWithoutGeicFreTest, FreStoreIsGeminiEnterprise) {
             geic::prefs::kGeicCompletedFre);
 }
 
-TEST_F(GlicEnablingGeicFreTest, ResetSwitchClearsGeicFre) {
+TEST_F(GlicEnablingGeicFreTest, ResetSwitchResetsCurrentGeicFre) {
   base::test::ScopedCommandLine scoped_command_line;
   const GlicFreStore& store = GetGlicProviderSpec(profile()).GetFreStore();
   geic::CompleteFre(profile());
   // An entry for another GE instance.
+  constexpr char kOtherInstanceKey[] =
+      "https://business.gemini.google/side-panel?configId=other";
   ScopedDictPrefUpdate(profile()->GetPrefs(), geic::prefs::kGeicCompletedFre)
-      ->Set("https://business.gemini.google/side-panel?configId=other",
+      ->Set(kOtherInstanceKey,
             base::DictValue().Set(
                 "status",
                 std::to_underlying(geic::prefs::GeicFreStatus::kCompleted)));
@@ -1870,12 +1872,15 @@ TEST_F(GlicEnablingGeicFreTest, ResetSwitchClearsGeicFre) {
   store.ApplyDevSwitches(profile());
   EXPECT_TRUE(GlicEnabling::HasConsentedForProfile(profile()));
 
+  // Like `ResetForDebugging()`, only the current GE instance is reset.
   scoped_command_line.GetProcessCommandLine()->AppendSwitch(
       switches::kGeicResetFre);
   store.ApplyDevSwitches(profile());
   EXPECT_FALSE(GlicEnabling::HasConsentedForProfile(profile()));
-  EXPECT_TRUE(
-      profile()->GetPrefs()->GetDict(geic::prefs::kGeicCompletedFre).empty());
+  const base::DictValue& completed_fre =
+      profile()->GetPrefs()->GetDict(geic::prefs::kGeicCompletedFre);
+  EXPECT_EQ(completed_fre.size(), 1u);
+  EXPECT_TRUE(completed_fre.contains(kOtherInstanceKey));
 }
 
 TEST_F(GlicEnablingGeicFreTest, ResetAndSkipSwitchesLeaveGeicFreCompleted) {
@@ -1956,6 +1961,59 @@ TEST_F(GlicEnablingGeicFreTest, SetCompletedFreIgnoresOtherGeicStatuses) {
   // The consumer FRE is untouched.
   EXPECT_EQ(profile()->GetPrefs()->GetInteger(prefs::kGlicCompletedFre),
             std::to_underlying(prefs::FreStatus::kNotStarted));
+}
+
+TEST_F(GlicEnablingGeicFreTest, ResetForDebuggingResetsGeicFre) {
+  bool consent_changed = false;
+  auto subscription =
+      GlicKeyedService::Get(profile())->enabling().RegisterOnConsentChanged(
+          base::BindLambdaForTesting([&]() { consent_changed = true; }));
+  const GlicFreStore& store = GetGlicProviderSpec(profile()).GetFreStore();
+  store.SetStatus(profile(), prefs::FreStatus::kCompleted);
+  profile()->GetPrefs()->SetInteger(
+      prefs::kGlicCompletedFre,
+      std::to_underlying(prefs::FreStatus::kCompleted));
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  local_state->SetBoolean(prefs::kGlicLauncherEnabled, true);
+  local_state->SetInteger(
+      prefs::kGlicDefaultHotkeyScope,
+      std::to_underlying(prefs::DefaultHotkeyScope::kGlobal));
+  ASSERT_TRUE(GlicEnabling::HasConsentedForProfile(profile()));
+  consent_changed = false;
+
+  store.ResetForDebugging(profile());
+
+  EXPECT_EQ(GlicEnabling::GetCompletedFre(profile()),
+            prefs::FreStatus::kNotStarted);
+  EXPECT_FALSE(GlicEnabling::HasConsentedForProfile(profile()));
+  EXPECT_TRUE(consent_changed);
+  // Only the GEiC FRE is reset.
+  EXPECT_EQ(profile()->GetPrefs()->GetInteger(prefs::kGlicCompletedFre),
+            std::to_underlying(prefs::FreStatus::kCompleted));
+  EXPECT_TRUE(local_state->GetBoolean(prefs::kGlicLauncherEnabled));
+  EXPECT_EQ(local_state->GetInteger(prefs::kGlicDefaultHotkeyScope),
+            std::to_underlying(prefs::DefaultHotkeyScope::kGlobal));
+}
+
+TEST_F(GlicEnablingProfileEligibilityTest,
+       ResetForDebuggingResetsConsumerFreAndLocalState) {
+  const GlicFreStore& store = GetGlicProviderSpec(profile()).GetFreStore();
+  store.SetStatus(profile(), prefs::FreStatus::kCompleted);
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+  local_state->SetBoolean(prefs::kGlicLauncherEnabled, true);
+  local_state->SetBoolean(prefs::kGlicHotkeyGlobalScopeEnabled, true);
+  local_state->SetInteger(
+      prefs::kGlicDefaultHotkeyScope,
+      std::to_underlying(prefs::DefaultHotkeyScope::kGlobal));
+
+  store.ResetForDebugging(profile());
+
+  EXPECT_EQ(profile()->GetPrefs()->GetInteger(prefs::kGlicCompletedFre),
+            std::to_underlying(prefs::FreStatus::kNotStarted));
+  EXPECT_FALSE(local_state->HasPrefPath(prefs::kGlicLauncherEnabled));
+  EXPECT_FALSE(local_state->HasPrefPath(prefs::kGlicHotkeyGlobalScopeEnabled));
+  EXPECT_EQ(local_state->GetInteger(prefs::kGlicDefaultHotkeyScope),
+            std::to_underlying(prefs::DefaultHotkeyScope::kNotMigrated));
 }
 
 TEST_F(GlicEnablingProfileEligibilityTest,

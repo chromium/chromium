@@ -116,4 +116,14 @@ void CompleteFre(Profile* profile) {
                   kStatusKey, std::to_underlying(GeicFreStatus::kCompleted)));
 }
 
+void ResetFre(Profile* profile) {
+  const std::optional<std::string> key = GetFrePrefKey(profile);
+  if (!key ||
+      !profile->GetPrefs()->GetDict(prefs::kGeicCompletedFre).contains(*key)) {
+    return;
+  }
+  ScopedDictPrefUpdate update(profile->GetPrefs(), prefs::kGeicCompletedFre);
+  update->Remove(*key);
+}
+
 }  // namespace geic

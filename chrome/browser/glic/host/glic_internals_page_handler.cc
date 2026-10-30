@@ -35,11 +35,13 @@
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_fre_store.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_passkeys.h"
+#include "chrome/browser/glic/public/glic_provider_spec.h"
 #include "chrome/browser/glic/service/glic_instance_coordinator_impl.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
@@ -1007,17 +1009,10 @@ void GlicInternalsPageHandler::RevokeExperimentalTriggeringConsent() {
 }
 
 void GlicInternalsPageHandler::RevokeGlicConsent() {
-  if (auto* service = GetGlicService()) {
-    service->enabling().SetCompletedFre(glic::prefs::FreStatus::kNotStarted);
-    if (PrefService* local_state = g_browser_process->local_state()) {
-      local_state->ClearPref(prefs::kGlicLauncherEnabled);
-      local_state->ClearPref(prefs::kGlicLauncherHotkey);
-      local_state->ClearPref(prefs::kGlicHotkeyGlobalScopeEnabled);
-      local_state->SetInteger(
-          prefs::kGlicDefaultHotkeyScope,
-          std::to_underlying(prefs::DefaultHotkeyScope::kNotMigrated));
-    }
-  }
+  // Resets the FRE of the provider the profile is latched to (e.g. the GEiC FRE
+  // for the current GE instance), including that FRE's side effects.
+  Profile* profile = Profile::FromBrowserContext(browser_context_);
+  GetGlicProviderSpec(profile).GetFreStore().ResetForDebugging(profile);
 }
 
 void GlicInternalsPageHandler::RevokeActuationConsent() {

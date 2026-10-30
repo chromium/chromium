@@ -37,6 +37,11 @@ class GlicFreStore {
   // IPH). Other callers that only need to record consent use `SetStatus()`.
   virtual void CompleteOnboarding(Profile* profile) const = 0;
 
+  // Resets this FRE for `profile` so that it is shown again, including undoing
+  // this FRE's onboarding side effects where needed. Only resets this
+  // provider's FRE. For debugging only (chrome://glic/internals).
+  virtual void ResetForDebugging(Profile* profile) const = 0;
+
   // Applies this FRE's developer switches. Called once per profile at startup,
   // before the status is read.
   virtual void ApplyDevSwitches(Profile* profile) const = 0;
