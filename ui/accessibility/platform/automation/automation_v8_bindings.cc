@@ -66,7 +66,7 @@ class GenericHandlerFunctionWrapper : public V8HandlerFunctionWrapper {
     // TODO: Convert callback to use gin::Arguments.
     const v8::FunctionCallbackInfo<v8::Value>* args =
         arguments->GetFunctionCallbackInfo();
-    DCHECK(args);
+    CHECK(args, base::NotFatalUntil::M163);
     handler_function_.Run(*args);
   }
 
@@ -98,7 +98,7 @@ class TreeIDWrapper : public V8HandlerFunctionWrapper {
 
   void Run(gin::Arguments* arguments) override {
     // TODO: Convert to use gin::Arguments.
-    DCHECK(arguments->GetFunctionCallbackInfo());
+    CHECK(arguments->GetFunctionCallbackInfo(), base::NotFatalUntil::M163);
     const v8::FunctionCallbackInfo<v8::Value>& args =
         *arguments->GetFunctionCallbackInfo();
     v8::Isolate* isolate = automation_router_->GetIsolate();
@@ -154,7 +154,7 @@ class NodeIDWrapper : public V8HandlerFunctionWrapper {
 
   void Run(gin::Arguments* arguments) override {
     // TODO: Convert to use gin::Arguments.
-    DCHECK(arguments->GetFunctionCallbackInfo());
+    CHECK(arguments->GetFunctionCallbackInfo(), base::NotFatalUntil::M163);
     const v8::FunctionCallbackInfo<v8::Value>& args =
         *arguments->GetFunctionCallbackInfo();
     v8::Isolate* isolate = automation_router_->GetIsolate();
@@ -217,7 +217,7 @@ class NodeIDPlusAttributeWrapper : public V8HandlerFunctionWrapper {
 
   void Run(gin::Arguments* arguments) override {
     // TODO: Convert to use gin::Arguments.
-    DCHECK(arguments->GetFunctionCallbackInfo());
+    CHECK(arguments->GetFunctionCallbackInfo(), base::NotFatalUntil::M163);
     const v8::FunctionCallbackInfo<v8::Value>& args =
         *arguments->GetFunctionCallbackInfo();
     v8::Isolate* isolate = automation_router_->GetIsolate();
@@ -284,7 +284,7 @@ class NodeIDPlusRangeWrapper : public V8HandlerFunctionWrapper {
 
   void Run(gin::Arguments* arguments) override {
     // TODO: Convert to use gin::Arguments.
-    DCHECK(arguments->GetFunctionCallbackInfo());
+    CHECK(arguments->GetFunctionCallbackInfo(), base::NotFatalUntil::M163);
     const v8::FunctionCallbackInfo<v8::Value>& args =
         *arguments->GetFunctionCallbackInfo();
     v8::Isolate* isolate = automation_router_->GetIsolate();
@@ -345,7 +345,7 @@ class NodeIDPlusStringBoolWrapper : public V8HandlerFunctionWrapper {
 
   void Run(gin::Arguments* arguments) override {
     // TODO: Convert to use gin::Arguments.
-    DCHECK(arguments->GetFunctionCallbackInfo());
+    CHECK(arguments->GetFunctionCallbackInfo(), base::NotFatalUntil::M163);
     const v8::FunctionCallbackInfo<v8::Value>& args =
         *arguments->GetFunctionCallbackInfo();
     v8::Isolate* isolate = automation_router_->GetIsolate();
@@ -407,7 +407,7 @@ class NodeIDPlusDimensionsWrapper : public V8HandlerFunctionWrapper {
 
   void Run(gin::Arguments* arguments) override {
     // TODO: Convert to use gin::Arguments.
-    DCHECK(arguments->GetFunctionCallbackInfo());
+    CHECK(arguments->GetFunctionCallbackInfo(), base::NotFatalUntil::M163);
     const v8::FunctionCallbackInfo<v8::Value>& args =
         *arguments->GetFunctionCallbackInfo();
     v8::Isolate* isolate = automation_router_->GetIsolate();
@@ -470,7 +470,7 @@ class NodeIDPlusEventWrapper : public V8HandlerFunctionWrapper {
 
   void Run(gin::Arguments* arguments) override {
     // TODO: Convert to use gin::Arguments.
-    DCHECK(arguments->GetFunctionCallbackInfo());
+    CHECK(arguments->GetFunctionCallbackInfo(), base::NotFatalUntil::M163);
     const v8::FunctionCallbackInfo<v8::Value>& args =
         *arguments->GetFunctionCallbackInfo();
     v8::Isolate* isolate = automation_router_->GetIsolate();

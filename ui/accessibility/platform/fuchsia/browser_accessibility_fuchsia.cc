@@ -26,7 +26,7 @@ AccessibilityBridgeFuchsia*
 BrowserAccessibilityFuchsia::GetAccessibilityBridge() const {
   BrowserAccessibilityManagerFuchsia* manager_fuchsia =
       static_cast<BrowserAccessibilityManagerFuchsia*>(manager());
-  DCHECK(manager_fuchsia);
+  CHECK(manager_fuchsia, base::NotFatalUntil::M163);
 
   return manager_fuchsia->GetAccessibilityBridge();
 }
@@ -100,7 +100,7 @@ std::vector<uint32_t> BrowserAccessibilityFuchsia::GetFuchsiaChildIDs() const {
   for (const auto* child : AllChildren()) {
     const BrowserAccessibilityFuchsia* fuchsia_child =
         static_cast<const BrowserAccessibilityFuchsia*>(child);
-    DCHECK(fuchsia_child);
+    CHECK(fuchsia_child, base::NotFatalUntil::M163);
 
     child_ids.push_back(fuchsia_child->GetFuchsiaNodeID());
   }
@@ -441,7 +441,7 @@ bool BrowserAccessibilityFuchsia::AccessibilityPerformAction(
   if (action_data.action == ax::mojom::Action::kHitTest) {
     BrowserAccessibilityManager* root_manager =
         manager()->GetManagerForRootFrame();
-    DCHECK(root_manager);
+    CHECK(root_manager, base::NotFatalUntil::M163);
 
     AccessibilityBridgeFuchsia* accessibility_bridge = GetAccessibilityBridge();
     if (!accessibility_bridge)

@@ -74,7 +74,7 @@ OneShotAccessibilityTreeSearch::~OneShotAccessibilityTreeSearch() = default;
 
 void OneShotAccessibilityTreeSearch::SetStartNode(
     BrowserAccessibility* start_node) {
-  DCHECK(!did_search_);
+  CHECK(!did_search_, base::NotFatalUntil::M163);
   CHECK(start_node);
 
   if (!scope_node_->PlatformGetParent() ||
@@ -84,45 +84,45 @@ void OneShotAccessibilityTreeSearch::SetStartNode(
 }
 
 void OneShotAccessibilityTreeSearch::SetDirection(Direction direction) {
-  DCHECK(!did_search_);
+  CHECK(!did_search_, base::NotFatalUntil::M163);
   direction_ = direction;
 }
 
 void OneShotAccessibilityTreeSearch::SetResultLimit(size_t result_limit) {
-  DCHECK(!did_search_);
+  CHECK(!did_search_, base::NotFatalUntil::M163);
   result_limit_ = result_limit;
 }
 
 void OneShotAccessibilityTreeSearch::SetSearchLimit(size_t search_limit) {
-  DCHECK(!did_search_);
+  CHECK(!did_search_, base::NotFatalUntil::M163);
   search_limit_ = search_limit;
 }
 
 void OneShotAccessibilityTreeSearch::SetImmediateDescendantsOnly(
     bool immediate_descendants_only) {
-  DCHECK(!did_search_);
+  CHECK(!did_search_, base::NotFatalUntil::M163);
   immediate_descendants_only_ = immediate_descendants_only;
 }
 
 void OneShotAccessibilityTreeSearch::SetCanWrapToLastElement(
     bool can_wrap_to_last_element) {
-  DCHECK(!did_search_);
+  CHECK(!did_search_, base::NotFatalUntil::M163);
   can_wrap_to_last_element_ = can_wrap_to_last_element;
 }
 
 void OneShotAccessibilityTreeSearch::SetOnscreenOnly(bool onscreen_only) {
-  DCHECK(!did_search_);
+  CHECK(!did_search_, base::NotFatalUntil::M163);
   onscreen_only_ = onscreen_only;
 }
 
 void OneShotAccessibilityTreeSearch::SetSearchText(const std::string& text) {
-  DCHECK(!did_search_);
+  CHECK(!did_search_, base::NotFatalUntil::M163);
   search_text_ = text;
 }
 
 void OneShotAccessibilityTreeSearch::AddPredicate(
     AccessibilityMatchPredicate predicate) {
-  DCHECK(!did_search_);
+  CHECK(!did_search_, base::NotFatalUntil::M163);
   predicates_.push_back(predicate);
 }
 

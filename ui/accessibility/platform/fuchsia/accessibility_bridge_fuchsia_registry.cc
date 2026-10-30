@@ -33,8 +33,8 @@ AccessibilityBridgeFuchsiaRegistry::GetAccessibilityBridge(
 void AccessibilityBridgeFuchsiaRegistry::RegisterAccessibilityBridge(
     aura::Window* window,
     AccessibilityBridgeFuchsia* accessibility_bridge) {
-  DCHECK(window);
-  DCHECK(!window_to_bridge_map_.count(window));
+  CHECK(window, base::NotFatalUntil::M163);
+  CHECK(!window_to_bridge_map_.count(window), base::NotFatalUntil::M163);
 
   window_to_bridge_map_.emplace(window, accessibility_bridge);
 }

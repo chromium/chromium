@@ -57,8 +57,9 @@ void BrowserAccessibilityWin::UpdatePlatformAttributes() {
 }
 
 std::wstring BrowserAccessibilityWin::ComputeListItemNameFromContent() const {
-  DCHECK_EQ(GetRole(), ax::mojom::Role::kListItem);
-  DCHECK(!HasStringAttribute(ax::mojom::StringAttribute::kName));
+  CHECK_EQ(GetRole(), ax::mojom::Role::kListItem, base::NotFatalUntil::M163);
+  CHECK(!HasStringAttribute(ax::mojom::StringAttribute::kName),
+        base::NotFatalUntil::M163);
 
   std::wstring str;
   int offset = 0;
@@ -137,9 +138,9 @@ BrowserAccessibilityWin::GetUIADirectChildrenInRange(
 
   if (!IsIgnored() && !ShouldHideChildrenForUIA() && PlatformChildCount() > 0) {
     BrowserAccessibility* start_wrapper = FromAXPlatformNodeDelegate(start);
-    DCHECK(start_wrapper);
+    CHECK(start_wrapper, base::NotFatalUntil::M163);
     BrowserAccessibility* end_wrapper = FromAXPlatformNodeDelegate(end);
-    DCHECK(end_wrapper);
+    CHECK(end_wrapper, base::NotFatalUntil::M163);
 
     // When either (or both) of the start/end node is the same as the common
     // anchor, make them null. A null start node means that all UIA embedded
@@ -158,7 +159,7 @@ BrowserAccessibilityWin::GetUIADirectChildrenInRange(
 
     for (auto it = PlatformChildrenBegin(); it != PlatformChildrenEnd(); ++it) {
       BrowserAccessibility* child = it.get();
-      DCHECK(child);
+      CHECK(child, base::NotFatalUntil::M163);
 
       if (!in_range &&
           (start_wrapper &&
@@ -190,7 +191,8 @@ gfx::NativeViewAccessible BrowserAccessibilityWin::GetNativeViewAccessible() {
 BrowserAccessibilityComWin* BrowserAccessibilityWin::GetCOM() const {
   // It's OK to not have a browser_accessibility_com_ if this shouldn't
   // expose a platform node.
-  DCHECK(!ShouldHavePlatformNode() || browser_accessibility_com_);
+  CHECK(!ShouldHavePlatformNode() || browser_accessibility_com_,
+        base::NotFatalUntil::M163);
   return static_cast<BrowserAccessibilityComWin*>(
       browser_accessibility_com_.get());
 }

@@ -294,7 +294,7 @@ std::optional<size_t> AXPlatformNodeBase::GetIndexInParent() {
   size_t child_count = parent->GetChildCount();
   if (child_count == 0) {
     // |child_count| could be 0 if the parent is IsLeaf.
-    DCHECK(parent->IsLeaf());
+    CHECK(parent->IsLeaf(), base::NotFatalUntil::M163);
     return std::nullopt;
   }
 
@@ -996,7 +996,7 @@ bool AXPlatformNodeBase::HasSelectionFocusInSubtree() {
 
 bool AXPlatformNodeBase::HasSelectionFocusInSubtree(
     const AXSelection* selection) {
-  DCHECK(selection);
+  CHECK(selection, base::NotFatalUntil::M163);
   auto* focus_object = static_cast<AXPlatformNodeBase*>(
       GetDelegate()->GetFromNodeID(selection->focus_object_id));
   return focus_object && focus_object->IsDescendantOf(this);
@@ -1196,44 +1196,44 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
   switch (static_cast<ax::mojom::NameFrom>(name_from)) {
     case ax::mojom::NameFrom::kAttribute:
       from = "attribute";
-      DCHECK(!GetName().empty());
+      CHECK(!GetName().empty(), base::NotFatalUntil::M163);
       break;
     case ax::mojom::NameFrom::kCaption:
       from = "caption";
-      DCHECK(!GetName().empty());
+      CHECK(!GetName().empty(), base::NotFatalUntil::M163);
       break;
     case ax::mojom::NameFrom::kContents:
       is_explicit_name = false;
       from = "contents";
-      DCHECK(!GetName().empty());
+      CHECK(!GetName().empty(), base::NotFatalUntil::M163);
       break;
     case ax::mojom::NameFrom::kCssAltText:
       from = "CSS alt text";
-      DCHECK(!GetName().empty());
+      CHECK(!GetName().empty(), base::NotFatalUntil::M163);
       break;
     case ax::mojom::NameFrom::kPlaceholder:
       from = "placeholder";
-      DCHECK(!GetName().empty());
+      CHECK(!GetName().empty(), base::NotFatalUntil::M163);
       break;
     case ax::mojom::NameFrom::kProhibited:
     case ax::mojom::NameFrom::kProhibitedAndRedundant:
       is_explicit_name = false;
       from = "prohibited";
-      DCHECK(GetName().empty());
+      CHECK(GetName().empty(), base::NotFatalUntil::M163);
       break;
     case ax::mojom::NameFrom::kRelatedElement:
       from = "related-element";
-      DCHECK(!GetName().empty());
+      CHECK(!GetName().empty(), base::NotFatalUntil::M163);
       break;
     case ax::mojom::NameFrom::kPopoverTarget:
     case ax::mojom::NameFrom::kInterestFor:
     case ax::mojom::NameFrom::kTitle:
       from = "tooltip";
-      DCHECK(!GetName().empty());
+      CHECK(!GetName().empty(), base::NotFatalUntil::M163);
       break;
     case ax::mojom::NameFrom::kValue:
       from = "value";
-      DCHECK(!GetName().empty());
+      CHECK(!GetName().empty(), base::NotFatalUntil::M163);
       break;
     case ax::mojom::NameFrom::kAttributeExplicitlyEmpty:
       break;
@@ -1558,7 +1558,7 @@ void AXPlatformNodeBase::AddAttributeToList(
     const ax::mojom::StringAttribute attribute,
     const char* name,
     PlatformAttributeList* attributes) {
-  DCHECK(attributes);
+  CHECK(attributes, base::NotFatalUntil::M163);
   std::string value;
   if (GetStringAttribute(attribute, &value)) {
     AddAttributeToList(name, value, attributes);
@@ -1569,7 +1569,7 @@ void AXPlatformNodeBase::AddAttributeToList(
     const ax::mojom::BoolAttribute attribute,
     const char* name,
     PlatformAttributeList* attributes) {
-  DCHECK(attributes);
+  CHECK(attributes, base::NotFatalUntil::M163);
   bool value;
   if (GetBoolAttribute(attribute, &value)) {
     AddAttributeToList(name, base::ToString(value), attributes);
@@ -1580,7 +1580,7 @@ void AXPlatformNodeBase::AddAttributeToList(
     const ax::mojom::IntAttribute attribute,
     const char* name,
     PlatformAttributeList* attributes) {
-  DCHECK(attributes);
+  CHECK(attributes, base::NotFatalUntil::M163);
 
   auto maybe_value = ComputeAttribute(GetDelegate(), attribute);
   if (maybe_value.has_value()) {
@@ -1717,7 +1717,7 @@ bool AXPlatformNodeBase::ScrollToNode(ScrollType scroll_type) {
 // static
 void AXPlatformNodeBase::SanitizeStringAttribute(const std::string& input,
                                                  std::string* output) {
-  DCHECK(output);
+  CHECK(output, base::NotFatalUntil::M163);
   // According to the IA2 spec and AT-SPI2, these characters need to be escaped
   // with a backslash: backslash, colon, comma, equals and semicolon.  Note
   // that backslash must be replaced first.
@@ -1785,8 +1785,9 @@ int32_t AXPlatformNodeBase::GetHypertextOffsetFromChild(
 }
 
 int AXPlatformNodeBase::HypertextOffsetFromChildIndex(int child_index) const {
-  DCHECK_GE(child_index, 0);
-  DCHECK_LE(child_index, static_cast<int>(GetChildCount()));
+  CHECK_GE(child_index, 0, base::NotFatalUntil::M163);
+  CHECK_LE(child_index, static_cast<int>(GetChildCount()),
+           base::NotFatalUntil::M163);
 
   // Use both a child index and an iterator to avoid an O(n^2) complexity which
   // would be the case if we were to call GetChildAtIndex on each child.
@@ -1828,7 +1829,7 @@ int32_t AXPlatformNodeBase::GetHypertextOffsetFromDescendant(
 int AXPlatformNodeBase::GetHypertextOffsetFromEndpoint(
     AXPlatformNodeBase* endpoint_object,
     int endpoint_offset) {
-  DCHECK_GE(endpoint_offset, 0);
+  CHECK_GE(endpoint_offset, 0, base::NotFatalUntil::M163);
 
   // There are three cases:
   // 1. The selection endpoint is this object itself: endpoint_offset should be
@@ -1854,8 +1855,9 @@ int AXPlatformNodeBase::GetHypertextOffsetFromEndpoint(
 
   // Case 2. Is the endpoint an ancestor of this object.
   if (IsDescendantOf(endpoint_object)) {
-    DCHECK_LE(endpoint_offset,
-              static_cast<int>(endpoint_object->GetChildCount()));
+    CHECK_LE(endpoint_offset,
+             static_cast<int>(endpoint_object->GetChildCount()),
+             base::NotFatalUntil::M163);
 
     AXPlatformNodeBase* closest_ancestor = this;
     while (closest_ancestor) {
@@ -1889,7 +1891,7 @@ int AXPlatformNodeBase::GetHypertextOffsetFromEndpoint(
   if (!common_parent)
     return -1;
 
-  DCHECK(!(common_parent->IsText()));
+  CHECK(!(common_parent->IsText()), base::NotFatalUntil::M163);
 
   // Case 2. Is the selection endpoint inside a descendant of this object?
   //
@@ -1952,9 +1954,10 @@ int AXPlatformNodeBase::GetHypertextOffsetFromEndpoint(
 
 AXPlatformNodeBase::AXPosition AXPlatformNodeBase::HypertextOffsetToEndpoint(
     int hypertext_offset) const {
-  DCHECK_GE(hypertext_offset, 0);
+  CHECK_GE(hypertext_offset, 0, base::NotFatalUntil::M163);
   // The offset can be equal to the length when it is past the end.
-  DCHECK_LE(hypertext_offset, static_cast<int>(GetHypertext().size()));
+  CHECK_LE(hypertext_offset, static_cast<int>(GetHypertext().size()),
+           base::NotFatalUntil::M163);
 
   if (IsLeaf()) {
     if (IsText()) {
@@ -1985,7 +1988,7 @@ AXPlatformNodeBase::AXPosition AXPlatformNodeBase::HypertextOffsetToEndpoint(
 
 AXPlatformNodeBase::TextSelectionResult AXPlatformNodeBase::GetTextSelection(
     TextSelection* selection) {
-  DCHECK(selection);
+  CHECK(selection, base::NotFatalUntil::M163);
 
   AXSelection unignored_selection = GetDelegate()->GetUnignoredSelection();
 
@@ -2090,8 +2093,8 @@ AXPlatformNodeBase::TextSelectionResult AXPlatformNodeBase::SetTextSelection(
 AXActionData AXPlatformNodeBase::CreateTextSelectionAction(
     const AXPosition& anchor,
     const AXPosition& focus) {
-  DCHECK(!anchor->IsNullPosition());
-  DCHECK(!focus->IsNullPosition());
+  CHECK(!anchor->IsNullPosition(), base::NotFatalUntil::M163);
+  CHECK(!focus->IsNullPosition(), base::NotFatalUntil::M163);
   AXActionData action_data;
   action_data.action = ax::mojom::Action::kSetSelection;
   action_data.target_tree_id = anchor->tree_id();
@@ -2130,7 +2133,7 @@ AXPlatformNodeBase::ClearTextSelection() {
 }
 
 int AXPlatformNodeBase::GetSelectionAnchor(const AXSelection* selection) {
-  DCHECK(selection);
+  CHECK(selection, base::NotFatalUntil::M163);
   AXNodeID anchor_id = selection->anchor_object_id;
   AXPlatformNodeBase* anchor_object =
       static_cast<AXPlatformNodeBase*>(GetDelegate()->GetFromNodeID(anchor_id));
@@ -2142,7 +2145,7 @@ int AXPlatformNodeBase::GetSelectionAnchor(const AXSelection* selection) {
 }
 
 int AXPlatformNodeBase::GetSelectionFocus(const AXSelection* selection) {
-  DCHECK(selection);
+  CHECK(selection, base::NotFatalUntil::M163);
   AXNodeID focus_id = selection->focus_object_id;
   AXPlatformNodeBase* focus_object =
       static_cast<AXPlatformNodeBase*>(GetDelegate()->GetFromNodeID(focus_id));
@@ -2160,7 +2163,7 @@ void AXPlatformNodeBase::GetSelectionOffsets(int* selection_start,
 void AXPlatformNodeBase::GetSelectionOffsets(const AXSelection* selection,
                                              int* selection_start,
                                              int* selection_end) {
-  DCHECK(selection_start && selection_end);
+  CHECK(selection_start && selection_end, base::NotFatalUntil::M163);
 
   if (IsAtomicTextField() &&
       GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart,
@@ -2175,7 +2178,7 @@ void AXPlatformNodeBase::GetSelectionOffsets(const AXSelection* selection,
     unignored_selection = GetDelegate()->GetUnignoredSelection();
     selection = &unignored_selection;
   }
-  DCHECK(selection);
+  CHECK(selection, base::NotFatalUntil::M163);
   GetSelectionOffsetsFromTree(selection, selection_start, selection_end);
 }
 
@@ -2203,7 +2206,7 @@ void AXPlatformNodeBase::GetSelectionOffsetsFromTree(
     int* selection_start,
     int* selection_end,
     bool caret_only) {
-  DCHECK(selection_start && selection_end);
+  CHECK(selection_start && selection_end, base::NotFatalUntil::M163);
 
   *selection_start = GetSelectionAnchor(selection);
   *selection_end = GetSelectionFocus(selection);
@@ -2253,8 +2256,9 @@ void AXPlatformNodeBase::GetSelectionOffsetsFromTree(
     return;
 
   int child_index = index_iter->second;
-  DCHECK_GE(child_index, 0);
-  DCHECK_LT(static_cast<size_t>(child_index), GetChildCount());
+  CHECK_GE(child_index, 0, base::NotFatalUntil::M163);
+  CHECK_LT(static_cast<size_t>(child_index), GetChildCount(),
+           base::NotFatalUntil::M163);
   AXPlatformNodeBase* hyperlink = static_cast<AXPlatformNodeBase*>(
       AXPlatformNode::FromNativeViewAccessible(ChildAtIndex(child_index)));
   if (!hyperlink)
@@ -2393,7 +2397,7 @@ int AXPlatformNodeBase::FindTextBoundary(
     int offset,
     ax::mojom::MoveDirection direction,
     ax::mojom::TextAffinity affinity) const {
-  DCHECK_NE(boundary, ax::mojom::TextBoundary::kNone);
+  CHECK_NE(boundary, ax::mojom::TextBoundary::kNone, base::NotFatalUntil::M163);
 
   // TODO(crbug.com/40887363): AXPosition support for sentences is broken. Rely
   // upon known working utility method below.
@@ -2429,7 +2433,7 @@ int AXPlatformNodeBase::FindTextBoundary(
       << "\n  start anchor:      " << position->GetAnchor()
       << "\n  boundary position: " << *boundary_position
       << "\n  boundary anchor:   " << boundary_position->GetAnchor();
-  DCHECK_GE(boundary_position->text_offset(), 0);
+  CHECK_GE(boundary_position->text_offset(), 0, base::NotFatalUntil::M163);
   return boundary_position->text_offset();
 }
 
@@ -2648,7 +2652,7 @@ int AXPlatformNodeBase::GetSelectionCount() const {
 
 AXPlatformNodeBase* AXPlatformNodeBase::GetSelectedItem(
     int selected_index) const {
-  DCHECK_GE(selected_index, 0);
+  CHECK_GE(selected_index, 0, base::NotFatalUntil::M163);
   int max_items = GetMaxSelectableItems();
   if (max_items == 0)
     return nullptr;
@@ -2662,8 +2666,9 @@ AXPlatformNodeBase* AXPlatformNodeBase::GetSelectedItem(
   if (returned_count <= selected_index)
     return nullptr;
 
-  DCHECK(!selected_children.empty());
-  DCHECK_LT(selected_index, static_cast<int>(selected_children.size()));
+  CHECK(!selected_children.empty(), base::NotFatalUntil::M163);
+  CHECK_LT(selected_index, static_cast<int>(selected_children.size()),
+           base::NotFatalUntil::M163);
   return selected_children[selected_index];
 }
 
@@ -2689,7 +2694,7 @@ int AXPlatformNodeBase::GetSelectedItems(
 
 void AXPlatformNodeBase::SanitizeTextAttributeValue(const std::string& input,
                                                     std::string* output) const {
-  DCHECK(output);
+  CHECK(output, base::NotFatalUntil::M163);
 }
 
 bool AXPlatformNodeBase::IsDescribedByTooltip() const {

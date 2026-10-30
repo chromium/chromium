@@ -69,7 +69,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) ScopedCoMemArray {
   const T& operator[](std::size_t pos) const { return as_span()[pos]; }
 
   T** Receive() {
-    DCHECK_EQ(mem_ptr_, nullptr);  // To catch memory leaks.
+    CHECK_EQ(mem_ptr_, nullptr,
+             base::NotFatalUntil::M163);  // To catch memory leaks.
     return &mem_ptr_;
   }
   LONG* ReceiveSize() { return &size_; }

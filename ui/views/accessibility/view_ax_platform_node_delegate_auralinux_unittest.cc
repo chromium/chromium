@@ -112,8 +112,9 @@ TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest,
   widget->Init(std::move(init_params));
 
   View* content = widget->SetContentsView(std::make_unique<View>());
-  EXPECT_DCHECK_DEATH(content->NotifyAccessibilityEventDeprecated(
-      ax::mojom::Event::kExpandedChanged, true));
+  EXPECT_CHECK_DEATH(content->NotifyAccessibilityEventDeprecated(
+                         ax::mojom::Event::kExpandedChanged, true),
+                     base::NotFatalUntil::M163);
 }
 
 TEST_F(ViewAXPlatformNodeDelegateAuraLinuxTest, AuraChildWidgets) {

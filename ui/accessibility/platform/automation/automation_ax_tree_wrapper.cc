@@ -117,7 +117,8 @@ bool AutomationAXTreeWrapper::OnAccessibilityEvents(
 
   // Refresh child tree id  mappings.
   for (const AXTreeID& child_tree_id : ax_tree_->GetAllChildTreeIds()) {
-    DCHECK(!child_tree_id_reverse_map.contains(child_tree_id));
+    CHECK(!child_tree_id_reverse_map.contains(child_tree_id),
+          base::NotFatalUntil::M163);
     child_tree_id_reverse_map.insert(std::make_pair(child_tree_id, this));
   }
 
@@ -375,10 +376,11 @@ std::vector<AXNode*> AutomationAXTreeWrapper::GetChildTreeNodesForAppID(
       continue;
 
     AXNode* node = wrapper->ax_tree()->GetFromId(app_node_info.node_id);
-    // We don't expect this to ever be null, however in crbug.com/269669313 we
-    // see that it is occasionally null. This DCHECK might help sus out what's
-    // going on, meanwhile don't add the node to the result if it is null to
-    // avoid crashes in non-debug builds.
+    // TODO(crbug.com/269669313): CHECK-exclusion: We don't expect this to ever
+    // be null, however in crbug.com/269669313 we see that it is occasionally
+    // null. This DCHECK might help sus out what's going on, meanwhile don't add
+    // the node to the result if it is null to avoid crashes in non-debug
+    // builds.
     DCHECK(node);
     if (node != nullptr) {
       nodes.push_back(node);
@@ -482,7 +484,7 @@ void AutomationAXTreeWrapper::OnAtomicUpdateFinished(
     AXTree* tree,
     bool root_changed,
     const std::vector<AXTreeObserver::Change>& changes) {
-  DCHECK_EQ(ax_tree(), tree);
+  CHECK_EQ(ax_tree(), tree, base::NotFatalUntil::M163);
   for (const auto& change : changes) {
     AXNode* node = change.node;
     switch (change.type) {

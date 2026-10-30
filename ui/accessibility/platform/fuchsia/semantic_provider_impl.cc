@@ -45,15 +45,15 @@ bool AXFuchsiaSemanticProviderImpl::Batch::IsFull() const {
 
 void AXFuchsiaSemanticProviderImpl::Batch::Append(
     fuchsia_accessibility_semantics::Node node) {
-  DCHECK_EQ(type_, Type::kUpdate);
-  DCHECK(!IsFull());
+  CHECK_EQ(type_, Type::kUpdate, base::NotFatalUntil::M163);
+  CHECK(!IsFull(), base::NotFatalUntil::M163);
   updates_.push_back(std::move(node));
 }
 
 void AXFuchsiaSemanticProviderImpl::Batch::AppendDeletion(
     uint32_t delete_node_id) {
-  DCHECK_EQ(type_, Type::kDelete);
-  DCHECK(!IsFull());
+  CHECK_EQ(type_, Type::kDelete, base::NotFatalUntil::M163);
+  CHECK(!IsFull(), base::NotFatalUntil::M163);
   delete_node_ids_.push_back(delete_node_id);
 }
 
@@ -82,7 +82,7 @@ AXFuchsiaSemanticProviderImpl::AXFuchsiaSemanticProviderImpl(
     fuchsia_ui_views::ViewRef view_ref,
     Delegate* delegate)
     : delegate_(delegate) {
-  DCHECK(delegate_);
+  CHECK(delegate_, base::NotFatalUntil::M163);
 
   auto semantics_manager_client_end = base::fuchsia_component::Connect<
       fuchsia_accessibility_semantics::SemanticsManager>();
@@ -140,7 +140,7 @@ bool AXFuchsiaSemanticProviderImpl::Update(
   if (!semantic_updates_enabled())
     return false;
 
-  DCHECK(node.node_id().has_value());
+  CHECK(node.node_id().has_value(), base::NotFatalUntil::M163);
 
   // If the updated node is the root, we need to account for the pixel scale in
   // its transform.

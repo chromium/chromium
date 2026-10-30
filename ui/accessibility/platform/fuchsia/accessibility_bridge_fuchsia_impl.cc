@@ -60,7 +60,7 @@ AccessibilityBridgeFuchsiaImpl::AccessibilityBridgeFuchsiaImpl(
 
   AccessibilityBridgeFuchsiaRegistry* registry =
       AccessibilityBridgeFuchsiaRegistry::GetInstance();
-  DCHECK(registry);
+  CHECK(registry, base::NotFatalUntil::M163);
   if (root_window_)
     registry->RegisterAccessibilityBridge(root_window_, this);
 }
@@ -68,7 +68,7 @@ AccessibilityBridgeFuchsiaImpl::AccessibilityBridgeFuchsiaImpl(
 AccessibilityBridgeFuchsiaImpl::~AccessibilityBridgeFuchsiaImpl() {
   AccessibilityBridgeFuchsiaRegistry* registry =
       AccessibilityBridgeFuchsiaRegistry::GetInstance();
-  DCHECK(registry);
+  CHECK(registry, base::NotFatalUntil::M163);
   if (root_window_)
     registry->UnregisterAccessibilityBridge(root_window_);
 }
@@ -85,7 +85,7 @@ uint32_t AccessibilityBridgeFuchsiaImpl::MaybeToFuchsiaRootID(
 
 void AccessibilityBridgeFuchsiaImpl::UpdateNode(
     fuchsia_accessibility_semantics::Node node) {
-  DCHECK(node.node_id().has_value());
+  CHECK(node.node_id().has_value(), base::NotFatalUntil::M163);
 
   node.node_id(MaybeToFuchsiaRootID(node.node_id().value()));
 

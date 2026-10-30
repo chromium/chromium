@@ -265,7 +265,7 @@ const char* GetUniqueAccessibilityGTypeName(
 }
 
 void SetWeakGPtrToAtkObject(AtkObject** weak_pointer, AtkObject* new_value) {
-  DCHECK(weak_pointer);
+  CHECK(weak_pointer, base::NotFatalUntil::M163);
   if (*weak_pointer == new_value)
     return;
 
@@ -342,7 +342,7 @@ AtkAttributeSet* PrependAtkAttributeToAtkAttributeSet(
 void PrependTextAttributeToSet(const std::string& attribute,
                                const std::string& value,
                                AtkAttributeSet** attributes) {
-  DCHECK(attributes);
+  CHECK(attributes, base::NotFatalUntil::M163);
 
   AtkAttribute* new_attribute =
       static_cast<AtkAttribute*>(g_malloc(sizeof(AtkAttribute)));
@@ -362,8 +362,10 @@ std::string ToAtkTextAttributeColor(const std::string& color) {
   // The platform-independent color string is in the form "rgb(r, g, b)",
   // but ATK expects a string like "r, g, b". We convert the string here
   // by stripping away the unnecessary characters.
-  DCHECK(base::StartsWith(color, "rgb(", base::CompareCase::INSENSITIVE_ASCII));
-  DCHECK(base::EndsWith(color, ")", base::CompareCase::INSENSITIVE_ASCII));
+  CHECK(base::StartsWith(color, "rgb(", base::CompareCase::INSENSITIVE_ASCII),
+        base::NotFatalUntil::M163);
+  CHECK(base::EndsWith(color, ")", base::CompareCase::INSENSITIVE_ASCII),
+        base::NotFatalUntil::M163);
   return color.substr(4, color.length() - 5);
 }
 
@@ -1050,8 +1052,8 @@ gchar* GetText(AtkText* atk_text, gint start_offset, gint end_offset) {
         std::clamp(static_cast<int>(text.size()), start_offset, end_offset);
   }
 
-  DCHECK_GE(start_offset, 0);
-  DCHECK_GE(end_offset, start_offset);
+  CHECK_GE(start_offset, 0, base::NotFatalUntil::M163);
+  CHECK_GE(end_offset, start_offset, base::NotFatalUntil::M163);
 
   return g_strdup(
       base::UTF16ToUTF8(text.substr(start_offset, end_offset - start_offset))
@@ -1179,7 +1181,8 @@ char* GetTextWithBoundaryType(AtkText* atk_text,
   *end_offset_ptr = obj->UTF16ToUnicodeOffsetInText(end_offset);
 
   std::u16string text = obj->GetHypertext();
-  DCHECK_LE(end_offset, static_cast<int>(text.size()));
+  CHECK_LE(end_offset, static_cast<int>(text.size()),
+           base::NotFatalUntil::M163);
 
   std::u16string substr = text.substr(start_offset, end_offset - start_offset);
   return g_strdup(base::UTF16ToUTF8(substr).c_str());
@@ -1774,7 +1777,7 @@ gint GetIndexAt(AtkTable* table, gint row, gint column) {
 
   if (auto* obj = AXPlatformNodeAuraLinux::FromAtkObject(ATK_OBJECT(table))) {
     if (const AXPlatformNodeBase* cell = obj->GetTableCell(row, column)) {
-      DCHECK(cell->GetTableCellIndex().has_value());
+      CHECK(cell->GetTableCellIndex().has_value(), base::NotFatalUntil::M163);
       return cell->GetTableCellIndex().value();
     }
   }
@@ -1787,7 +1790,7 @@ gint GetColumnAtIndex(AtkTable* table, gint index) {
 
   if (auto* obj = AXPlatformNodeAuraLinux::FromAtkObject(ATK_OBJECT(table))) {
     if (const AXPlatformNodeBase* cell = obj->GetTableCell(index)) {
-      DCHECK(cell->GetTableColumn().has_value());
+      CHECK(cell->GetTableColumn().has_value(), base::NotFatalUntil::M163);
       return cell->GetTableColumn().value();
     }
   }
@@ -1800,7 +1803,7 @@ gint GetRowAtIndex(AtkTable* table, gint index) {
 
   if (auto* obj = AXPlatformNodeAuraLinux::FromAtkObject(ATK_OBJECT(table))) {
     if (const AXPlatformNodeBase* cell = obj->GetTableCell(index)) {
-      DCHECK(cell->GetTableRow().has_value());
+      CHECK(cell->GetTableRow().has_value(), base::NotFatalUntil::M163);
       return cell->GetTableRow().value();
     }
   }
@@ -1835,7 +1838,7 @@ gint GetColumnExtentAt(AtkTable* table, gint row, gint column) {
 
   if (auto* obj = AXPlatformNodeAuraLinux::FromAtkObject(ATK_OBJECT(table))) {
     if (const AXPlatformNodeBase* cell = obj->GetTableCell(row, column)) {
-      DCHECK(cell->GetTableColumnSpan().has_value());
+      CHECK(cell->GetTableColumnSpan().has_value(), base::NotFatalUntil::M163);
       return cell->GetTableColumnSpan().value();
     }
   }
@@ -1848,7 +1851,7 @@ gint GetRowExtentAt(AtkTable* table, gint row, gint column) {
 
   if (auto* obj = AXPlatformNodeAuraLinux::FromAtkObject(ATK_OBJECT(table))) {
     if (const AXPlatformNodeBase* cell = obj->GetTableCell(row, column)) {
-      DCHECK(cell->GetTableRowSpan().has_value());
+      CHECK(cell->GetTableRowSpan().has_value(), base::NotFatalUntil::M163);
       return cell->GetTableRowSpan().value();
     }
   }
@@ -3264,8 +3267,9 @@ static AtkIntListRelation kIntListRelations[] = {
 void AXPlatformNodeAuraLinux::AddRelationToSet(AtkRelationSet* relation_set,
                                                AtkRelationType relation,
                                                AXPlatformNode* target) {
-  DCHECK(target);
-  DCHECK(GetDelegate()->IsValidRelationTarget(target));
+  CHECK(target, base::NotFatalUntil::M163);
+  CHECK(GetDelegate()->IsValidRelationTarget(target),
+        base::NotFatalUntil::M163);
 
   // If we were compiled with a newer version of ATK than the runtime version,
   // it's possible that we might try to add a relation that doesn't exist in
@@ -3472,8 +3476,9 @@ void AXPlatformNodeAuraLinux::OnExpandedStateChanged(bool is_expanded) {
   // might imply a change in ATK interfaces implemented.
   EnsureAtkObjectIsValid();
 
-  DCHECK(HasState(ax::mojom::State::kCollapsed) ||
-         HasState(ax::mojom::State::kExpanded));
+  CHECK(HasState(ax::mojom::State::kCollapsed) ||
+            HasState(ax::mojom::State::kExpanded),
+        base::NotFatalUntil::M163);
 
   AtkObject* obj = GetOrCreateAtkObject();
   if (!obj)
@@ -3777,10 +3782,10 @@ void AXPlatformNodeAuraLinux::GetFullSelection(int32_t* anchor_node_id,
                                                int* anchor_offset,
                                                int32_t* focus_node_id,
                                                int* focus_offset) {
-  DCHECK(anchor_node_id);
-  DCHECK(anchor_offset);
-  DCHECK(focus_node_id);
-  DCHECK(focus_offset);
+  CHECK(anchor_node_id, base::NotFatalUntil::M163);
+  CHECK(anchor_offset, base::NotFatalUntil::M163);
+  CHECK(focus_node_id, base::NotFatalUntil::M163);
+  CHECK(focus_offset, base::NotFatalUntil::M163);
 
   if (IsAtomicTextField() &&
       GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart, anchor_offset) &&
@@ -3836,7 +3841,7 @@ void AXPlatformNodeAuraLinux::EmitSelectionChangedSignal(bool had_selection) {
   AtkObject* atk_object = GetOrCreateAtkObject();
   if (!atk_object)
     return;
-  DCHECK(ATK_IS_TEXT(atk_object));
+  CHECK(ATK_IS_TEXT(atk_object), base::NotFatalUntil::M163);
 
   // ATK does not consider a collapsed selection a selection, so
   // when the collapsed selection changes (caret movement), we should
@@ -3857,7 +3862,7 @@ void AXPlatformNodeAuraLinux::EmitCaretChangedSignal() {
   if (!atk_object)
     return;
 
-  DCHECK(ATK_IS_TEXT(atk_object));
+  CHECK(ATK_IS_TEXT(atk_object), base::NotFatalUntil::M163);
   g_signal_emit_by_name(atk_object, "text-caret-moved",
                         UTF16ToUnicodeOffsetInText(selection.second));
 }
@@ -3873,7 +3878,7 @@ void AXPlatformNodeAuraLinux::OnTextAttributesChanged() {
   if (!atk_object)
     return;
 
-  DCHECK(ATK_IS_TEXT(atk_object));
+  CHECK(ATK_IS_TEXT(atk_object), base::NotFatalUntil::M163);
   g_signal_emit_by_name(atk_object, "text-attributes-changed");
 }
 
@@ -3941,7 +3946,7 @@ void AXPlatformNodeAuraLinux::OnSortDirectionChanged() {
     return;
 
   AtkObject* atk_table = table->GetNativeViewAccessible();
-  DCHECK(ATK_IS_TABLE(atk_table));
+  CHECK(ATK_IS_TABLE(atk_table), base::NotFatalUntil::M163);
 
   if (GetRole() == ax::mojom::Role::kColumnHeader)
     g_signal_emit_by_name(atk_table, "row-reordered");
@@ -4893,7 +4898,7 @@ void AXPlatformNodeAuraLinux::AddAttributeToList(const char* name,
 
 void AXPlatformNodeAuraLinux::SetDocumentParent(
     AtkObject* new_document_parent) {
-  DCHECK(GetAtkRole() == ATK_ROLE_FRAME);
+  CHECK(GetAtkRole() == ATK_ROLE_FRAME, base::NotFatalUntil::M163);
   SetWeakGPtrToAtkObject(&document_parent_, new_document_parent);
 }
 
@@ -5204,8 +5209,8 @@ int AXPlatformNodeAuraLinux::FindStartOfStyle(
     int start_offset,
     ax::mojom::MoveDirection direction) {
   int text_length = GetHypertext().length();
-  DCHECK_GE(start_offset, 0);
-  DCHECK_LE(start_offset, text_length);
+  CHECK_GE(start_offset, 0, base::NotFatalUntil::M163);
+  CHECK_LE(start_offset, text_length, base::NotFatalUntil::M163);
 
   switch (direction) {
     case ax::mojom::MoveDirection::kNone:
@@ -5278,7 +5283,7 @@ void AXPlatformNodeAuraLinux::ActivateFindInPageResult(int start_offset,
   if (!atk_object)
     return;
 
-  DCHECK(ATK_IS_TEXT(atk_object));
+  CHECK(ATK_IS_TEXT(atk_object), base::NotFatalUntil::M163);
 
   if (!EmitsAtkTextEvents()) {
     ActivateFindInPageInParent(start_offset, end_offset);
@@ -5336,7 +5341,7 @@ void AXPlatformNodeAuraLinux::ActivateFindInPageInParent(int start_offset,
   if (!extents_in_parent.has_value())
     return;
 
-  DCHECK(IsText());
+  CHECK(IsText(), base::NotFatalUntil::M163);
   parent->ActivateFindInPageResult(extents_in_parent->first + start_offset,
                                    extents_in_parent->first + end_offset);
 }

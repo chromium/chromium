@@ -210,8 +210,9 @@ MakeTupleForAutomationFromEventTypes(
   }
 
   // At most one of the AXEvent / generated event should be populated.
-  DCHECK(std::get<0>(result) == ax::mojom::Event::kNone ||
-         std::get<1>(result) == AXEventGenerator::Event::NONE);
+  CHECK(std::get<0>(result) == ax::mojom::Event::kNone ||
+            std::get<1>(result) == AXEventGenerator::Event::NONE,
+        base::NotFatalUntil::M163);
 
   return result;
 }

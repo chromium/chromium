@@ -153,7 +153,7 @@ BrowserAccessibilityManager* BrowserAccessibilityManager::Create(
 // static
 BrowserAccessibilityManager* BrowserAccessibilityManager::FromID(
     AXTreeID ax_tree_id) {
-  DCHECK(ax_tree_id != AXTreeIDUnknown());
+  CHECK(ax_tree_id != AXTreeIDUnknown(), base::NotFatalUntil::M163);
   auto* manager = AXTreeManager::FromID(ax_tree_id);
   // If `manager` does not maintain a list of platform objects (such as
   // `BrowserAccessibility`) corresponding to each `AXNode` in its managed tree,
@@ -306,7 +306,7 @@ void BrowserAccessibilityManager::FireGeneratedEvent(
   // Mitigation for b/498205735. Using raw_ptr on the stack as defense-in-depth
   // to ensure memory is quarantined if freed during the loop below.
   raw_ptr<BrowserAccessibility> wrapper = GetFromAXNode(node);
-  DCHECK(wrapper);
+  CHECK(wrapper, base::NotFatalUntil::M163);
 
   const auto& node_data = wrapper->GetData();
 
@@ -322,9 +322,11 @@ void BrowserAccessibilityManager::FireGeneratedEvent(
   base::span<const std::string> types = node_data.GetStringListAttribute(
       ax::mojom::StringListAttribute::kAriaNotificationTypes);
 
-  DCHECK_EQ(announcements.size(), priority_properties.size());
-  DCHECK_EQ(announcements.size(), interrupt_properties.size());
-  DCHECK_EQ(announcements.size(), types.size());
+  CHECK_EQ(announcements.size(), priority_properties.size(),
+           base::NotFatalUntil::M163);
+  CHECK_EQ(announcements.size(), interrupt_properties.size(),
+           base::NotFatalUntil::M163);
+  CHECK_EQ(announcements.size(), types.size(), base::NotFatalUntil::M163);
 
   for (std::size_t i = 0; i < announcements.size(); ++i) {
     FireAriaNotificationEvent(wrapper, announcements[i],
@@ -371,7 +373,7 @@ BrowserAccessibility* BrowserAccessibilityManager::GetFromID(int32_t id) const {
   }
   const auto iter = id_wrapper_map_.find(id);
   if (iter != id_wrapper_map_.end()) {
-    DCHECK(iter->second);
+    CHECK(iter->second, base::NotFatalUntil::M163);
     return iter->second.get();
   }
 
@@ -411,8 +413,9 @@ BrowserAccessibilityManager::GetParentNodeFromParentTreeAsBrowserAccessibility()
       static_cast<BrowserAccessibilityManager*>(parent_manager);
   BrowserAccessibility* parent_node =
       parent_manager_wrapper->GetFromAXNode(parent);
-  DCHECK_EQ(parent_node->manager(), parent_manager_wrapper);
-  DCHECK_NE(parent_node->manager(), this);
+  CHECK_EQ(parent_node->manager(), parent_manager_wrapper,
+           base::NotFatalUntil::M163);
+  CHECK_NE(parent_node->manager(), this, base::NotFatalUntil::M163);
   return parent_node;
 }
 
@@ -425,11 +428,12 @@ void BrowserAccessibilityManager::UpdateAttributesOnParent(AXNode* parent) {
 }
 
 BrowserAccessibility* BrowserAccessibilityManager::GetPopupRoot() const {
-  DCHECK_LE(popup_root_ids_.size(), 1u);
+  CHECK_LE(popup_root_ids_.size(), 1u, base::NotFatalUntil::M163);
   if (popup_root_ids_.size() == 1) {
     BrowserAccessibility* node = GetFromID(*popup_root_ids_.begin());
     if (node) {
-      DCHECK(node->GetRole() == ax::mojom::Role::kGroup);
+      CHECK(node->GetRole() == ax::mojom::Role::kGroup,
+            base::NotFatalUntil::M163);
       return node;
     }
   }
@@ -556,13 +560,15 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     // means a node just got repeated or something harmless like that,
     // but it should still be investigated and could be the sign of a
     // performance issue.
-    DCHECK_LE(static_cast<int>(tree_update.nodes.size()), ax_tree()->size());
+    CHECK_LE(static_cast<int>(tree_update.nodes.size()), ax_tree()->size(),
+             base::NotFatalUntil::M163);
     // Every node in the AXTree must also be in BAM's map. However, the BAM map
     // can have extra nodes, specifically extra mac nodes from AXTableInfo.
-    DCHECK_GE(static_cast<int>(id_wrapper_map_.size()), ax_tree()->size());
+    CHECK_GE(static_cast<int>(id_wrapper_map_.size()), ax_tree()->size(),
+             base::NotFatalUntil::M163);
   }
 
-  DCHECK(ax_tree()->root());
+  CHECK(ax_tree()->root(), base::NotFatalUntil::M163);
 
   EnsureParentConnectionIfNotRootManager();
   if (!alive) {
@@ -738,8 +744,9 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     }
 
     if (event.event_type == ax::mojom::Event::kLoadComplete) {
-      DCHECK_EQ(event_target, GetBrowserAccessibilityRoot());
-      DCHECK(event_target->IsPlatformDocument());
+      CHECK_EQ(event_target, GetBrowserAccessibilityRoot(),
+               base::NotFatalUntil::M163);
+      CHECK(event_target->IsPlatformDocument(), base::NotFatalUntil::M163);
 
       // Don't fire multiple load-complete events. One may have been added by
       // RenderAccessibilityImpl::SendPendingAccessibilityEvents, and firing
@@ -752,8 +759,9 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     }
 
     if (event.event_type == ax::mojom::Event::kLoadStart) {
-      DCHECK_EQ(event_target, GetBrowserAccessibilityRoot());
-      DCHECK(event_target->IsPlatformDocument());
+      CHECK_EQ(event_target, GetBrowserAccessibilityRoot(),
+               base::NotFatalUntil::M163);
+      CHECK(event_target->IsPlatformDocument(), base::NotFatalUntil::M163);
       // If we already have a load-complete event, the load-start event is no
       // longer relevant. In addition, some code checks for the presence of
       // the "busy" state when firing a platform load-start event. If the page
@@ -917,7 +925,7 @@ void BrowserAccessibilityManager::ActivateFindInPageResult(int request_id) {
   // If an ancestor of this node is a leaf node, or if this node is ignored,
   // fire the notification on that.
   node = node->PlatformGetLowestPlatformAncestor();
-  DCHECK(node);
+  CHECK(node, base::NotFatalUntil::M163);
 
   // The "scrolled to anchor" notification is a great way to get a
   // screen reader to jump directly to a specific location in a document.
@@ -1618,7 +1626,8 @@ bool BrowserAccessibilityManager::FindIndicesInCommonParent(
     BrowserAccessibility** common_parent,
     size_t* child_index1,
     size_t* child_index2) {
-  DCHECK(common_parent && child_index1 && child_index2);
+  CHECK(common_parent && child_index1 && child_index2,
+        base::NotFatalUntil::M163);
   auto* ancestor1 = const_cast<BrowserAccessibility*>(&object1);
   auto* ancestor2 = const_cast<BrowserAccessibility*>(&object2);
   do {
@@ -1681,11 +1690,12 @@ BrowserAccessibilityManager::FindTextOnlyObjectsInRange(
       return text_only_objects;
     }
 
-    DCHECK(common_parent);
+    CHECK(common_parent, base::NotFatalUntil::M163);
     // If the child indices are equal, one object is a descendant of the other.
-    DCHECK(child_index1 != child_index2 ||
-           start_object.IsDescendantOf(&end_object) ||
-           end_object.IsDescendantOf(&start_object));
+    CHECK(child_index1 != child_index2 ||
+              start_object.IsDescendantOf(&end_object) ||
+              end_object.IsDescendantOf(&start_object),
+          base::NotFatalUntil::M163);
   }
 
   const BrowserAccessibility* start_text_object = nullptr;
@@ -1743,8 +1753,8 @@ std::u16string BrowserAccessibilityManager::GetTextForRange(
     int start_offset,
     const BrowserAccessibility& end_object,
     int end_offset) {
-  DCHECK_GE(start_offset, 0);
-  DCHECK_GE(end_offset, 0);
+  CHECK_GE(start_offset, 0, base::NotFatalUntil::M163);
+  CHECK_GE(end_offset, 0, base::NotFatalUntil::M163);
 
   if (&start_object == &end_object && start_object.IsAtomicTextField()) {
     if (start_offset > end_offset)
@@ -1815,8 +1825,8 @@ gfx::Rect BrowserAccessibilityManager::GetRootFrameInnerTextRangeBoundsRect(
     int start_offset,
     const BrowserAccessibility& end_object,
     int end_offset) {
-  DCHECK_GE(start_offset, 0);
-  DCHECK_GE(end_offset, 0);
+  CHECK_GE(start_offset, 0, base::NotFatalUntil::M163);
+  CHECK_GE(end_offset, 0, base::NotFatalUntil::M163);
 
   if (&start_object == &end_object && start_object.IsAtomicTextField()) {
     if (start_offset > end_offset)
@@ -1873,8 +1883,8 @@ gfx::Rect BrowserAccessibilityManager::GetRootFrameInnerTextRangeBoundsRect(
 }
 
 void BrowserAccessibilityManager::OnNodeCreated(AXTree* tree, AXNode* node) {
-  DCHECK(node);
-  DCHECK(node->IsDataValid());
+  CHECK(node, base::NotFatalUntil::M163);
+  CHECK(node->IsDataValid(), base::NotFatalUntil::M163);
   DCHECK(tree->GetFromId(node->id()) || node->IsGenerated())
       << "Node must be in AXTree's map, unless it's an ExtraMacNode.";
 
@@ -1994,7 +2004,7 @@ AXTreeManager* BrowserAccessibilityManager::GetParentManager() const {
   if (delegate_ && delegate_->AccessibilityIsWebContentSource() &&
       parent_platform_manager &&
       parent_platform_manager->IsWebContentSource()) {
-    DCHECK(!IsRootFrameManager());
+    CHECK(!IsRootFrameManager(), base::NotFatalUntil::M163);
   }
 
   // TODO(crbug.com/40672441): Investigate whether a child WidgetAXManager can
@@ -2033,8 +2043,8 @@ bool BrowserAccessibilityManager::IsRootFrameManager() const {
   if (is_root_tree && GetParentTreeID() != AXTreeIDUnknown()) {
     BrowserAccessibilityManager* parent_manager =
         BrowserAccessibilityManager::FromID(GetParentTreeID());
-    DCHECK(parent_manager);
-    DCHECK(!parent_manager->IsWebContentSource());
+    CHECK(parent_manager, base::NotFatalUntil::M163);
+    CHECK(!parent_manager->IsWebContentSource(), base::NotFatalUntil::M163);
   }
   return is_root_tree;
 }
@@ -2174,7 +2184,7 @@ BrowserAccessibility* BrowserAccessibilityManager::AXTreeHitTest(
     const gfx::Point& blink_screen_point) const {
   // TODO(crbug.com/40211255): assert that this gets called on a valid node.
   // This should usually be the root node except for Paint Preview.
-  DCHECK(cached_node_rtree_);
+  CHECK(cached_node_rtree_, base::NotFatalUntil::M163);
 
   std::vector<AXNodeID> results;
   std::vector<gfx::Rect> rects;
@@ -2222,7 +2232,7 @@ void BrowserAccessibilityManager::CollectChangedNodesAndParentsForAtomicUpdate(
   // plus some parents.
   for (const auto& change : changes) {
     const AXNode* changed_node = change.node;
-    DCHECK(changed_node);
+    CHECK(changed_node, base::NotFatalUntil::M163);
 
     if (!changed_node->IsIgnored()) {
       BrowserAccessibility* obj = GetFromAXNode(changed_node);

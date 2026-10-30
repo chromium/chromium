@@ -97,7 +97,7 @@ BrowserAccessibilityManagerFuchsia::GetAccessibilityBridge() const {
 
   AccessibilityBridgeFuchsiaRegistry* accessibility_bridge_registry =
       AccessibilityBridgeFuchsiaRegistry::GetInstance();
-  DCHECK(accessibility_bridge_registry);
+  CHECK(accessibility_bridge_registry, base::NotFatalUntil::M163);
 
   return accessibility_bridge_registry->GetAccessibilityBridge(
       accessibility_bridge_key);
@@ -182,7 +182,7 @@ void BrowserAccessibilityManagerFuchsia::OnHitTestResult(
   if (node) {
     BrowserAccessibilityFuchsia* hit_result =
         ToBrowserAccessibilityFuchsia(node);
-    DCHECK(hit_result);
+    CHECK(hit_result, base::NotFatalUntil::M163);
     hit_result_id = hit_result->GetFuchsiaNodeID();
   }
 

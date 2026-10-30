@@ -73,9 +73,9 @@ BrowserAccessibility* BrowserAccessibility::FromAXPlatformNodeDelegate(
 BrowserAccessibility::BrowserAccessibility(BrowserAccessibilityManager* manager,
                                            AXNode* node)
     : AXPlatformNodeDelegate(node), manager_(manager) {
-  DCHECK(manager);
-  DCHECK(node);
-  DCHECK(node->IsDataValid());
+  CHECK(manager, base::NotFatalUntil::M163);
+  CHECK(node, base::NotFatalUntil::M163);
+  CHECK(node->IsDataValid(), base::NotFatalUntil::M163);
 #if DCHECK_IS_ON()
   if (++browser_accessibility_count > kDumpBrowserAccessibilityLeakNumObjects) {
     // Possible leak.
@@ -277,7 +277,7 @@ bool BrowserAccessibility::IsDescendantOf(
     const BrowserAccessibility* ancestor) const {
   if (!ancestor)
     return false;
-  DCHECK(ancestor->node());
+  CHECK(ancestor->node(), base::NotFatalUntil::M163);
   return node()->IsDescendantOfCrossingTreeBoundary(ancestor->node());
 }
 
@@ -529,8 +529,8 @@ gfx::Rect BrowserAccessibility::GetRootFrameHypertextRangeBoundsRect(
     AXOffscreenResult* offscreen_result) const {
   // TODO(nektar): Move to `AXNode` as soon as hypertext computation is fully
   // migrated to that class.
-  DCHECK_GE(start, 0);
-  DCHECK_GE(len, 0);
+  CHECK_GE(start, 0, base::NotFatalUntil::M163);
+  CHECK_GE(len, 0, base::NotFatalUntil::M163);
 
   // Atomic text fields such as textarea have a text container node inside them
   // that holds all the text and do not expose any IA2 hypertext. We need to get
@@ -606,10 +606,10 @@ gfx::Rect BrowserAccessibility::GetRootFrameHypertextRangeBoundsRect(
     int local_end = overlap_end - child_start;
     // |local_end| and |local_start| may equal |child_length| when the caret is
     // at the end of a text field.
-    DCHECK_GE(local_start, 0);
-    DCHECK_LE(local_start, child_length);
-    DCHECK_GE(local_end, 0);
-    DCHECK_LE(local_end, child_length);
+    CHECK_GE(local_start, 0, base::NotFatalUntil::M163);
+    CHECK_LE(local_start, child_length, base::NotFatalUntil::M163);
+    CHECK_GE(local_end, 0, base::NotFatalUntil::M163);
+    CHECK_LE(local_end, child_length, base::NotFatalUntil::M163);
 
     // Don't clip bounds. Some screen magnifiers (e.g. ZoomText) prefer to
     // get unclipped bounds so that they can make smooth scrolling calculations.
@@ -968,8 +968,8 @@ bool BrowserAccessibility::HasVisibleCaretOrSelection() const {
 std::vector<AXPlatformNode*>
 BrowserAccessibility::GetSourceNodesForReverseRelations(
     ax::mojom::IntAttribute attr) {
-  DCHECK(manager_);
-  DCHECK(IsNodeIdIntAttribute(attr));
+  CHECK(manager_, base::NotFatalUntil::M163);
+  CHECK(IsNodeIdIntAttribute(attr), base::NotFatalUntil::M163);
   return GetNodesFromRelationIdSet(
       manager_->ax_tree()->GetReverseRelations(attr, GetData().id));
 }
@@ -977,8 +977,8 @@ BrowserAccessibility::GetSourceNodesForReverseRelations(
 std::vector<AXPlatformNode*>
 BrowserAccessibility::GetSourceNodesForReverseRelations(
     ax::mojom::IntListAttribute attr) {
-  DCHECK(manager_);
-  DCHECK(IsNodeIdIntListAttribute(attr));
+  CHECK(manager_, base::NotFatalUntil::M163);
+  CHECK(IsNodeIdIntListAttribute(attr), base::NotFatalUntil::M163);
   return GetNodesFromRelationIdSet(
       manager_->ax_tree()->GetReverseRelations(attr, GetData().id));
 }
@@ -1013,7 +1013,7 @@ std::string BrowserAccessibility::SubtreeToStringHelper(size_t level,
   for (InternalChildIterator it = InternalChildrenBegin();
        it != InternalChildrenEnd(); ++it) {
     BrowserAccessibility* child = it.get();
-    DCHECK(child);
+    CHECK(child, base::NotFatalUntil::M163);
     result += child->SubtreeToStringHelper(level + 1, stop_at_document);
   }
 
@@ -1194,7 +1194,7 @@ BrowserAccessibility::PlatformChildIterator::PlatformChildIterator(
     const BrowserAccessibility* parent,
     BrowserAccessibility* child)
     : parent_(parent), platform_iterator(parent, child) {
-  DCHECK(parent);
+  CHECK(parent, base::NotFatalUntil::M163);
 }
 
 BrowserAccessibility::PlatformChildIterator::~PlatformChildIterator() = default;
@@ -1388,7 +1388,7 @@ bool BrowserAccessibility::AccessibilityPerformAction(
       } else {
         selection_manager = manager_;
       }
-      DCHECK(selection_manager);
+      CHECK(selection_manager, base::NotFatalUntil::M163);
 
       if (selection.anchor_offset == ax::mojom::kNoSelectionOffset) {
         selection_manager->SetSelection(selection);
@@ -1399,9 +1399,9 @@ bool BrowserAccessibility::AccessibilityPerformAction(
       // if the anchor or the focus nodes include ignored children.
       const BrowserAccessibility* anchor_object =
           selection_manager->GetFromID(selection.anchor_node_id);
-      DCHECK(anchor_object);
+      CHECK(anchor_object, base::NotFatalUntil::M163);
       if (!anchor_object->IsLeaf()) {
-        DCHECK_GE(selection.anchor_offset, 0);
+        CHECK_GE(selection.anchor_offset, 0, base::NotFatalUntil::M163);
         const BrowserAccessibility* anchor_child =
             anchor_object->InternalGetChild(
                 static_cast<uint32_t>(selection.anchor_offset));
@@ -1419,13 +1419,13 @@ bool BrowserAccessibility::AccessibilityPerformAction(
 
       const BrowserAccessibility* focus_object =
           selection_manager->GetFromID(selection.focus_node_id);
-      DCHECK(focus_object);
+      CHECK(focus_object, base::NotFatalUntil::M163);
 
       // Blink only supports selections between two nodes in the same tree.
-      DCHECK_EQ(anchor_object->GetTreeData().tree_id,
-                focus_object->GetTreeData().tree_id);
+      CHECK_EQ(anchor_object->GetTreeData().tree_id,
+               focus_object->GetTreeData().tree_id, base::NotFatalUntil::M163);
       if (!focus_object->IsLeaf()) {
-        DCHECK_GE(selection.focus_offset, 0);
+        CHECK_GE(selection.focus_offset, 0, base::NotFatalUntil::M163);
         const BrowserAccessibility* focus_child =
             focus_object->InternalGetChild(
                 static_cast<uint32_t>(selection.focus_offset));
@@ -1527,7 +1527,7 @@ std::u16string BrowserAccessibility::GetLocalizedStringForImageAnnotationStatus(
       return std::u16string();
   }
 
-  DCHECK(message_id);
+  CHECK(message_id, base::NotFatalUntil::M163);
 
   return GetLocalizedString(message_id);
 }
@@ -2130,7 +2130,7 @@ TextAttributeMap BrowserAccessibility::GetSpellingAndGrammarAttributes() const {
              BrowserAccessibilityManager::NextTextOnlyObject(
                  InternalGetFirstChild());
          static_text; static_text = static_text->InternalGetNextSibling()) {
-      DCHECK(static_text->IsDescendantOf(this));
+      CHECK(static_text->IsDescendantOf(this), base::NotFatalUntil::M163);
       TextAttributeMap text_spelling_attributes =
           static_text->GetSpellingAndGrammarAttributes();
       for (auto& attribute : text_spelling_attributes) {
