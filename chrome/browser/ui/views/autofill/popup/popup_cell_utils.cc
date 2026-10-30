@@ -698,6 +698,12 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
 #endif
     case Suggestion::Icon::kGoogleWallet:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillEnableGradientGoogleLogos)) {
+        return ImageModelFromImageSkia(
+            *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+                IDR_AUTOFILL_GOOGLE_WALLET_ICON_WITH_GRADIENT));
+      }
       return ImageModelFromVectorIcon(vector_icons::kGoogleWalletIcon,
                                       kGoogleWalletIconSize);
 #else
