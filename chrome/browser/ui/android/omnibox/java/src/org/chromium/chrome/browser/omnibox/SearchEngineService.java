@@ -9,6 +9,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 
+import androidx.annotation.ColorRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
@@ -359,15 +360,17 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
 
     private void retrieveFaviconForStarterPack(
             TemplateUrl templateUrl, Callback<@Nullable StatusIconResource> callback) {
+        @ColorRes int tint = R.color.default_icon_color_accent1_tint_list;
         @Nullable StatusIconResource icon =
                 switch (templateUrl.getStarterPackId()) {
                     case StarterPackId.BOOKMARKS ->
-                            new StatusIconResource(R.drawable.ic_star_24dp, 0);
+                            new StatusIconResource(R.drawable.ic_star_24dp, tint);
                     case StarterPackId.HISTORY ->
-                            new StatusIconResource(R.drawable.ic_history_24dp, 0);
-                    case StarterPackId.TABS -> new StatusIconResource(R.drawable.switch_to_tab, 0);
+                            new StatusIconResource(R.drawable.ic_history_24dp, tint);
+                    case StarterPackId.TABS ->
+                            new StatusIconResource(R.drawable.switch_to_tab, tint);
                     case StarterPackId.GEMINI ->
-                            new StatusIconResource(R.drawable.ic_spark_4c_16dp, 0);
+                            new StatusIconResource(R.drawable.ic_spark_24dp, tint);
                     default -> null;
                 };
         if (icon != null) {

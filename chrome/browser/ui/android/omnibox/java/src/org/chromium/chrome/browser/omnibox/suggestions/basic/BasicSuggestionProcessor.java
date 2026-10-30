@@ -181,7 +181,7 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
             } else if (starterPackId == StarterPackId.TABS) {
                 icon = R.drawable.switch_to_tab;
             } else if (starterPackId == StarterPackId.GEMINI) {
-                icon = R.drawable.ic_spark_4c_16dp;
+                icon = R.drawable.ic_spark_24dp;
             }
         } else if (suggestion.getTakeoverAction() != null) {
             var action = suggestion.getTakeoverAction();

@@ -491,7 +491,7 @@ public class SearchEngineServiceUnitTest {
 
     @Test
     public void testRetrieveFavicon_Gemini() {
-        checkStarterPackFavicon(StarterPackId.GEMINI, R.drawable.ic_spark_4c_16dp);
+        checkStarterPackFavicon(StarterPackId.GEMINI, R.drawable.ic_spark_24dp);
     }
 
     @Test
@@ -517,7 +517,10 @@ public class SearchEngineServiceUnitTest {
         searchEngineService.retrieveFavicon(mTemplateUrl, mStarterPackCallback);
 
         verify(mStarterPackCallback).onResult(mStatusIconCaptor.capture());
-        assertEquals(expectedDrawableRes, mStatusIconCaptor.getValue().getIconRes());
+        assertEquals(
+                new StatusIconResource(
+                        expectedDrawableRes, R.color.default_icon_color_accent1_tint_list),
+                mStatusIconCaptor.getValue());
     }
 
     @Test

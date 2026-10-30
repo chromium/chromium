@@ -655,7 +655,7 @@ public class BasicSuggestionProcessorUnitTest {
         mModel = mProcessor.createModel();
         mProcessor.populateModel(mInput, mSuggestion, mModel, 0);
         OmniboxDrawableState icon4 = mModel.get(BaseSuggestionViewProperties.ICON);
-        assertEquals(R.drawable.ic_spark_4c_16dp, shadowOf(icon4.drawable).getCreatedFromResId());
+        assertEquals(R.drawable.ic_spark_24dp, shadowOf(icon4.drawable).getCreatedFromResId());
     }
 
     @Test
