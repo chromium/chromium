@@ -23,7 +23,6 @@
 #include "ui/linux/linux_ui.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/wm/wm_move_resize_handler.h"
-#include "ui/views/widget/desktop_aura/desktop_drag_drop_client_ozone.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 #include "ui/views/widget/native_widget_aura.h"
 #include "ui/views/widget/widget.h"
@@ -59,19 +58,9 @@ void WindowEventFilterLinux::HandleLocatedEventWithHitTest(
 
   begin_drag_location_.reset();
 
-  if (event->IsTouchEvent()) {
-    HandleTouchEventWithHitTest(hit_test, event->AsTouchEvent());
-  }
-
   if (event->type() != ui::EventType::kMousePressed) {
     return;
   }
-
-  // A mouse press starts a new implicit grab, so a caption or resize border
-  // touch that never received its release (e.g. because the compositor took
-  // over the touch for an interactive move or resize) can no longer be latched
-  // onto.
-  ResetMoveResizeTouch();
 
   if (event->IsMouseEvent() &&
       HandleMouseEventWithHitTest(hit_test, event->AsMouseEvent())) {
@@ -200,41 +189,6 @@ void WindowEventFilterLinux::OnClickedCaption(ui::MouseEvent* event,
       break;
     }
   }
-}
-
-void WindowEventFilterLinux::HandleTouchEventWithHitTest(
-    int hit_test,
-    ui::TouchEvent* event) {
-  const ui::PointerId id = event->pointer_details().id;
-  switch (event->type()) {
-    case ui::EventType::kTouchPressed:
-      ResetMoveResizeTouch();
-      if (ui::CanPerformDragOrResize(hit_test)) {
-        // A touch resting on the caption or a resize border may become an
-        // interactive window move or resize once it crosses the touch slop.
-        // Until the touch ends, prevent a renderer-initiated data drag from
-        // latching onto it. The suppression deliberately outlives the hand-off
-        // to the compositor, since the browser keeps tracking the touch (and
-        // its serial) as active until the compositor releases or cancels it.
-        move_resize_touch_id_ = id;
-        move_resize_touch_drag_suppression_ =
-            DesktopDragDropClientOzone::ScopedSuppressForWindowMove();
-      }
-      break;
-    case ui::EventType::kTouchReleased:
-    case ui::EventType::kTouchCancelled:
-      if (move_resize_touch_id_ == id) {
-        ResetMoveResizeTouch();
-      }
-      break;
-    default:
-      break;
-  }
-}
-
-void WindowEventFilterLinux::ResetMoveResizeTouch() {
-  move_resize_touch_id_.reset();
-  move_resize_touch_drag_suppression_.RunAndReset();
 }
 
 void WindowEventFilterLinux::MaybeToggleMaximizedState(aura::Window* window) {

@@ -7,12 +7,10 @@
 
 #include <optional>
 
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/hit_test.h"
 #include "ui/events/event_handler.h"
-#include "ui/events/pointer_details.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/views_export.h"
 
@@ -24,7 +22,6 @@ namespace ui {
 class EventTarget;
 class LocatedEvent;
 class MouseEvent;
-class TouchEvent;
 class WmMoveResizeHandler;
 }  // namespace ui
 
@@ -52,14 +49,6 @@ class VIEWS_EXPORT WindowEventFilterLinux : public ui::EventHandler {
 
   // Called when the user clicked the caption area.
   void OnClickedCaption(ui::MouseEvent* event, int previous_click_component);
-
-  // Tracks touches pressed on the caption or a resize border and suppresses
-  // data drags while they are held.
-  void HandleTouchEventWithHitTest(int hit_test, ui::TouchEvent* event);
-
-  // Clears `move_resize_touch_id_` and releases the associated data drag
-  // suppression.
-  void ResetMoveResizeTouch();
 
   void MaybeToggleMaximizedState(aura::Window* window);
 
@@ -94,17 +83,6 @@ class VIEWS_EXPORT WindowEventFilterLinux : public ui::EventHandler {
   // The drag will only happen if the system-provided mouse move threshold is
   // met.
   std::optional<gfx::Point> begin_drag_location_;
-
-  // The pointer ID of a touch that was pressed on the caption or a resize
-  // border and has not yet been released or cancelled.
-  std::optional<ui::PointerId> move_resize_touch_id_;
-
-  // Suppresses renderer-initiated data drags while `move_resize_touch_id_` is
-  // set, so that a data drag cannot latch onto the user's caption or resize
-  // border touch, either before the touch slop is crossed or after the move or
-  // resize has been handed off to the compositor. Must be reset whenever
-  // `move_resize_touch_id_` is reset.
-  base::ScopedClosureRunner move_resize_touch_drag_suppression_;
 
   base::ScopedObservation<ui::EventTarget, ui::EventHandler>
       window_observation_{this};

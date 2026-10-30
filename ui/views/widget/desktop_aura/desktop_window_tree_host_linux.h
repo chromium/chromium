@@ -106,10 +106,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostLinux
                            HitTest);
   FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformImplTest,
                            CaptionHoldHandsOffMoveAfterThreshold);
-  FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformImplTest,
-                           CaptionTouchHoldSuppressesDataDrag);
-  FRIEND_TEST_ALL_PREFIXES(DesktopWindowTreeHostPlatformImplTest,
-                           CaptionTouchEndsDragSuppression);
 
   // DesktopWindowTreeHostPlatform:
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap() override;
