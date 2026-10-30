@@ -413,8 +413,16 @@ void RenderWidgetHostViewAura::InitAsChild(gfx::NativeView parent_view) {
   CHECK_EQ(widget_type_, WidgetType::kFrame);
   CreateAuraWindow(aura::client::WINDOW_TYPE_CONTROL);
 
+  // Adding the window to a root window can run a nested message loop
+  // (UpdateLegacyWin() on Windows) in which this view is destroyed, and so can
+  // SetInputScope() below. Don't delete it until this returns, but stop using
+  // it once it is destroyed.
+  ScopedInputDispatchPin pin(this);
   if (parent_view)
     parent_view->AddChild(GetNativeView());
+  if (destroy_pending()) {
+    return;
+  }
 
   aura::Window* root = window_->GetRootWindow();
   if (!root && base::FeatureList::IsEnabled(
@@ -514,12 +522,26 @@ void RenderWidgetHostViewAura::InitAsPopup(
       ui::OwnedWindowConstraintAdjustment::kAdjustmentFlipY};
   window_->SetProperty(aura::client::kOwnedWindowAnchor, owned_window_anchor);
 
+  // ParentWindowWithContext(), SetBounds() and ShowWithVisibility() can run a
+  // nested message loop (UpdateLegacyWin() on Windows) in which this popup is
+  // closed, e.g. because its parent loses focus or is destroyed. Don't delete
+  // it until this returns, but stop using it once it is closed.
+  ScopedInputDispatchPin pin(this);
   aura::Window* root = popup_parent_host_view_->window_->GetRootWindow();
   aura::client::ParentWindowWithContext(window_, root, bounds_in_screen,
                                         display::kInvalidDisplayId);
+  if (destroy_pending()) {
+    return;
+  }
 
   SetBounds(bounds_in_screen);
+  if (destroy_pending()) {
+    return;
+  }
   ShowWithVisibility(PageVisibilityState::kVisible);
+  if (destroy_pending()) {
+    return;
+  }
   if (NeedsMouseCapture())
     window_->SetCapture();
 

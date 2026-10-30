@@ -5915,7 +5915,7 @@ FrameTree* WebContentsImpl::CreateNewWindow(
       // newly created object and give it one of its own member variables.
       RenderWidgetHostViewBase* widget_view = new_view->CreateViewForWidget(
           new_contents_impl->GetRenderViewHost()->GetWidget());
-      if (!weak_this || !weak_opener) {
+      if (!weak_this || !weak_opener || !widget_view) {
         return nullptr;
       }
       view_->SetOverscrollControllerEnabled(CanOverscrollContent());
@@ -6320,8 +6320,16 @@ void WebContentsImpl::ShowCreatedWidget(ChildProcessId process_id,
     }
   }
 
+  // InitAsPopup() can run a nested message loop (UpdateLegacyWin() on Windows)
+  // in which the popup is closed, e.g. because its parent loses focus, which
+  // deletes `render_widget_host_impl`.
+  base::WeakPtr<RenderWidgetHostImpl> weak_widget =
+      render_widget_host_impl->GetWeakPtr();
   widget_host_view->InitAsPopup(view, transformed_rect,
                                 transformed_anchor_rect);
+  if (!weak_widget) {
+    return;
+  }
 
   // Renderer-owned popup widgets wait for the renderer to request for them
   // to be shown. We signal that this condition is satisfied by calling Init().
@@ -11663,7 +11671,10 @@ void WebContentsImpl::CreateRenderWidgetHostViewForRenderManager(
     RenderWidgetHostViewBase* rwh_view =
         view_->CreateViewForWidget(render_view_host->GetWidget());
     view_->SetOverscrollControllerEnabled(CanOverscrollContent());
-    rwh_view->SetSize(GetSizeForMainFrame());
+    // The view is destroyed if the renderer goes away while it is created.
+    if (rwh_view) {
+      rwh_view->SetSize(GetSizeForMainFrame());
+    }
   }
 
   if (opt_out_frame_eviction_) {

@@ -347,7 +347,17 @@ class FakeRenderWidgetHostViewAura : public RenderWidgetHostViewAura {
     return RenderWidgetHostViewAura::CanSynchronizeVisualProperties();
   }
 
+  void SetBounds(const gfx::Rect& rect) override {
+    RenderWidgetHostViewAura::SetBounds(rect);
+    if (set_bounds_callback_) {
+      std::move(set_bounds_callback_).Run();
+    }
+  }
+
   size_t can_synchronize_visual_properties_count_ = 0;
+  // If set, this runs at the end of the next SetBounds(), which is where
+  // UpdateLegacyWin() can run a nested message loop on Windows.
+  base::OnceClosure set_bounds_callback_;
   gfx::Size last_frame_size_;
   raw_ptr<FakeWindowEventDispatcher> dispatcher_;
 };
@@ -1398,6 +1408,31 @@ TEST_F(RenderWidgetHostViewAuraTest, PopupClosesWhenParentMoves) {
   EXPECT_TRUE(observer.destroyed());
 }
 #endif
+
+// A popup can be closed in a nested message loop while InitAsPopup() sets its
+// bounds, e.g. because its parent loses focus. It must not be deleted until
+// InitAsPopup() returns, or be initialized any further, e.g. shown.
+TEST_F(RenderWidgetHostViewAuraTest, PopupClosedWhileSettingBounds) {
+  parent_view_->SetBounds(gfx::Rect(10, 10, 400, 400));
+  parent_view_->Focus();
+  EXPECT_TRUE(parent_view_->HasFocus());
+
+  FakeRenderWidgetHostViewAura* popup = view_;
+  widget_host_ = nullptr;  // Deleted when the popup is closed.
+  view_ = nullptr;         // Deleted when InitAsPopup() returns.
+  std::optional<TestWindowObserver> observer;
+  popup->set_bounds_callback_ = base::BindLambdaForTesting([&]() {
+    observer.emplace(popup->GetNativeView());
+    parent_view_->OnWindowFocused(/*gained_focus=*/nullptr,
+                                  parent_view_->GetNativeView());
+    EXPECT_TRUE(popup->destroy_pending());
+  });
+
+  popup->SetWidgetType(WidgetType::kPopup);
+  popup->InitAsPopup(parent_view_, gfx::Rect(10, 10, 100, 100),
+                     gfx::Rect(10, 10, 1, 1));
+  EXPECT_TRUE(observer->destroyed());
+}
 
 // Checks that IME-composition-event state is maintained correctly.
 TEST_F(RenderWidgetHostViewAuraTest, SetCompositionText) {

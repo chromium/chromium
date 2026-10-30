@@ -17,8 +17,10 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -55,7 +57,11 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
+#include "ui/aura/client/window_types.h"
+#include "ui/aura/env.h"
+#include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
@@ -125,7 +131,13 @@ class TestWebContentsViewDelegate : public WebContentsViewDelegate {
 // Where SelfDestructingRenderWidgetHostViewAura runs the pending nested loop
 // task: from InitAsChild(), or while the view is being shown (from
 // EnsurePlatformVisibility(), since ShowWithVisibility() is final).
-enum class NestedLoopPoint { kInitAsChild, kShow };
+enum class NestedLoopPoint {
+  kInitAsChild,
+  kShow,
+  // While InitAsChild() adds the view's window to its parent, which is where
+  // UpdateLegacyWin() runs.
+  kAddChild,
+};
 NestedLoopPoint g_nested_loop_point = NestedLoopPoint::kInitAsChild;
 
 // Work to do in a nested message loop. It runs `done` when finished, which ends
@@ -147,6 +159,40 @@ NestedLoopTask CloseShellTask(Shell* shell) {
       shell);
 }
 
+// The view that is running the pending nested loop task.
+RenderWidgetHostViewAura* g_view_running_nested_loop = nullptr;
+
+// Destroys the view running the nested loop, the way it is destroyed when its
+// renderer goes away.
+NestedLoopTask DestroyViewTask() {
+  return base::BindOnce([](base::OnceClosure done) {
+    g_view_running_nested_loop->RenderProcessGone();
+    std::move(done).Run();
+  });
+}
+
+// Runs a closure once a window has been added to the observed window, at the
+// end of aura::Window::AddChild().
+class WindowAddedCallback : public aura::WindowObserver {
+ public:
+  WindowAddedCallback(aura::Window* window, base::OnceClosure callback)
+      : callback_(std::move(callback)) {
+    observation_.Observe(window);
+  }
+
+  // aura::WindowObserver:
+  void OnWindowHierarchyChanged(const HierarchyChangeParams& params) override {
+    if (params.new_parent == observation_.GetSource() && callback_) {
+      std::move(callback_).Run();
+    }
+  }
+
+ private:
+  base::OnceClosure callback_;
+  base::ScopedObservation<aura::Window, aura::WindowObserver> observation_{
+      this};
+};
+
 // A view that simulates a nested message loop running while it is initialized
 // or shown (as can happen on Windows, e.g. in UpdateLegacyWin() or when a
 // synchronous TSF lock session is started), in which it runs the pending nested
@@ -162,7 +208,22 @@ class SelfDestructingRenderWidgetHostViewAura
   ~SelfDestructingRenderWidgetHostViewAura() override = default;
 
   void InitAsChild(gfx::NativeView parent_view) override {
+    std::optional<WindowAddedCallback> window_added;
+    if (parent_view) {
+      window_added.emplace(
+          parent_view,
+          base::BindOnce(
+              &SelfDestructingRenderWidgetHostViewAura::MaybeRunNestedLoop,
+              base::Unretained(this), NestedLoopPoint::kAddChild));
+    }
+    base::WeakPtr<RenderWidgetHostViewBase> weak_this = GetWeakPtr();
     RenderWidgetHostViewAura::InitAsChild(parent_view);
+    window_added.reset();
+    // InitAsChild() deletes this view if it was destroyed while its window was
+    // added.
+    if (!weak_this) {
+      return;
+    }
     MaybeRunNestedLoop(NestedLoopPoint::kInitAsChild);
   }
 
@@ -182,7 +243,9 @@ class SelfDestructingRenderWidgetHostViewAura
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(PendingNestedLoopTask()),
                                   run_loop.QuitClosure()));
+    g_view_running_nested_loop = this;
     run_loop.Run();
+    g_view_running_nested_loop = nullptr;
   }
 
   const bool armed_;
@@ -214,6 +277,55 @@ class FrameDeletedCallback : public WebContentsObserver {
  private:
   const GlobalRenderFrameHostId frame_id_;
   base::OnceClosure callback_;
+};
+
+// Closes the next popup that is created, the way `parent_view` closes its popup
+// when it loses focus, from a nested message loop run once the popup's window
+// is added to a root window (which is where UpdateLegacyWin() runs on Windows)
+// while RenderWidgetHostViewAura::InitAsPopup() initializes it.
+class PopupClosingObserver : public aura::EnvObserver,
+                             public aura::WindowObserver {
+ public:
+  explicit PopupClosingObserver(RenderWidgetHostViewAura* parent_view)
+      : parent_view_(parent_view) {
+    env_observation_.Observe(aura::Env::GetInstance());
+  }
+
+  bool closed_popup() const { return closed_popup_; }
+
+  // aura::EnvObserver:
+  void OnWindowInitialized(aura::Window* window) override {
+    // The popup's window is the first menu window created. On desktop Aura, the
+    // window it is added to is created later, in a root window of its own.
+    if (window->GetType() == aura::client::WINDOW_TYPE_MENU) {
+      env_observation_.Reset();
+      popup_window_observation_.Observe(window);
+    }
+  }
+
+  // aura::WindowObserver:
+  void OnWindowAddedToRootWindow(aura::Window* window) override {
+    popup_window_observation_.Reset();
+    closed_popup_ = true;
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          parent_view_->OnWindowFocused(/*gained_focus=*/nullptr,
+                                        parent_view_->GetNativeView());
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+  }
+  void OnWindowDestroying(aura::Window* window) override {
+    popup_window_observation_.Reset();
+  }
+
+ private:
+  const raw_ptr<RenderWidgetHostViewAura> parent_view_;
+  bool closed_popup_ = false;
+  base::ScopedObservation<aura::Env, aura::EnvObserver> env_observation_{this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      popup_window_observation_{this};
 };
 
 }  // namespace
@@ -345,6 +457,47 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraReentrantDestructionTest,
   // The new window's WebContents was destroyed before it was opened.
   EXPECT_EQ(web_contents_count, GetAllWebContents().size());
   EXPECT_TRUE(main_frame->IsRenderFrameLive());
+}
+
+// The new window's view itself can also be destroyed while CreateNewWindow()
+// creates it, e.g. because its renderer goes away while InitAsChild() adds its
+// window to its parent, which is where UpdateLegacyWin() runs.
+IN_PROC_BROWSER_TEST_F(WebContentsViewAuraReentrantDestructionTest,
+                       NewWindowViewDestroyedWhileAddedToParent) {
+  Shell* opener = CreateBrowser();
+  ASSERT_TRUE(NavigateToURL(
+      opener, embedded_test_server()->GetURL("a.com", "/title1.html")));
+  const size_t web_contents_count = GetAllWebContents().size();
+
+  g_nested_loop_point = NestedLoopPoint::kAddChild;
+  PendingNestedLoopTask() = DestroyViewTask();
+  // window.open() returns null when the window isn't created.
+  EXPECT_EQ(true, EvalJs(opener, "window.open('about:blank') === null"));
+  // The new window's WebContents was destroyed before it was opened.
+  EXPECT_EQ(web_contents_count, GetAllWebContents().size());
+}
+
+// A popup can be closed while WebContentsImpl::ShowCreatedWidget() initializes
+// it, e.g. because its parent loses focus in a nested message loop, which
+// deletes its RenderWidgetHost. Neither may be used after that.
+IN_PROC_BROWSER_TEST_F(WebContentsViewAuraReentrantDestructionTest,
+                       PopupClosedWhileParented) {
+  ASSERT_TRUE(NavigateToURL(
+      shell(), GURL("data:text/html,<select id='s'><option>a</option>"
+                    "<option>b</option></select>")));
+  WebContents* web_contents = shell()->web_contents();
+  RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+  PopupClosingObserver popup_closer(static_cast<RenderWidgetHostViewAura*>(
+      web_contents->GetRenderWidgetHostView()));
+
+  ShowPopupWidgetWaiter popup_waiter(web_contents, main_frame);
+  ASSERT_TRUE(ExecJs(main_frame, "document.getElementById('s').showPicker();"));
+  popup_waiter.Wait();
+
+  EXPECT_TRUE(popup_closer.closed_popup());
+  EXPECT_FALSE(
+      RenderWidgetHost::FromID(main_frame->GetProcess()->GetDeprecatedID(),
+                               popup_waiter.last_routing_id()));
 }
 
 class WebContentsViewAuraTest : public ContentBrowserTest {
