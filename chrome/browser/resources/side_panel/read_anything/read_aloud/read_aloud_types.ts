@@ -229,6 +229,10 @@ export interface Sentence {
 export interface SegmentedSentence {
   sentenceInfo: Sentence;
   segments: Segment[];
+  // The start offsets of each phrase within sentenceInfo.text. Undefined if
+  // the phrase boundaries haven't been requested yet, and empty if they've
+  // been requested but aren't available.
+  phraseBoundaries?: number[];
 }
 
 // A representation of a node linked with its starting offset within a broader

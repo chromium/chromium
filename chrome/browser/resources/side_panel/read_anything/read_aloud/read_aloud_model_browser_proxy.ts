@@ -41,6 +41,11 @@ export interface ReadAloudModelBrowserProxy {
   // Deletes a node from the model. Optional because the V8 model handles this
   // in C++.
   onNodeWillBeDeleted?(node: Node): void;
+
+  // Requests phrase boundaries for the current sentence and the next few
+  // sentences, so they're ready by the time they're highlighted. Optional
+  // because the V8 model handles this in C++.
+  prefetchPhraseBoundaries?(): void;
 }
 
 export function getReadAloudModel(): ReadAloudModelBrowserProxy {

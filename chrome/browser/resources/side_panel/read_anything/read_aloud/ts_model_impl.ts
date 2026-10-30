@@ -6,20 +6,43 @@ import {assert} from '//resources/js/assert.js';
 
 import {getReadingModeTextNodes} from '../shared/tree_traversal.js';
 
+import type {AudioBrowserProxy} from './audio_browser_proxy.js';
+import {AudioBrowserProxyImpl} from './audio_browser_proxy.js';
 import type {ReadAloudModelBrowserProxy} from './read_aloud_model_browser_proxy.js';
 import type {OffsetByNode, Segment, SegmentedSentence, Sentence} from './read_aloud_types.js';
 import {DomReadAloudNode, ReadAloudNode} from './read_aloud_types.js';
 import {TextSegmenter} from './text_segmenter.js';
 
+// The number of sentences, starting with the current sentence, that phrase
+// boundaries are requested for at once. Prefetching is meant to be repeated as
+// playback moves to each new sentence, so this only needs to stay far enough
+// ahead of playback that boundaries are usually ready before a sentence is
+// spoken. Larger values do more parsing up front that may be discarded if the
+// content changes. This value may be adjusted in the future based on
+// realistic phrase highlighting usage.
+const PHRASE_PREFETCH_WINDOW_SIZE = 5;
 
 // Read aloud model implementation based in TS to be used when the
 // ReadAnythingReadAloudTSTextSegmentation flag is enabled.
 export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
   private textSegmenter_: TextSegmenter = TextSegmenter.getInstance();
+  private audioBrowserProxy_: AudioBrowserProxy =
+      AudioBrowserProxyImpl.getInstance();
   // The list of sentences on the current page.
   private sentences_: SegmentedSentence[] = [];
   private currentIndex_: number = -1;
   private initialized_: boolean = false;
+  // Sentences that phrase boundaries have been requested for but not received
+  // yet, keyed by request ID.
+  private pendingPhraseRequests_: Map<number, SegmentedSentence[]> = new Map();
+  private nextPhraseRequestId_: number = 0;
+
+  constructor() {
+    if (this.audioBrowserProxy_.isPhraseHighlightingEnabled()) {
+      this.audioBrowserProxy_.onPhraseBoundariesReady.addListener(
+          this.onPhraseBoundariesReady_.bind(this));
+    }
+  }
 
   getHighlightForCurrentSegmentIndex(index: number, phrases: boolean):
       Segment[] {
@@ -28,10 +51,8 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
     }
     const currentSentence = this.sentences_[this.currentIndex_]!;
 
-    // TODO: crbug.com/440400392 - Implement phrase highlighting.
     if (phrases) {
-      // For now, just return the current sentence.
-      return this.getCurrentTextSegments();
+      return this.getPhraseHighlightSegments_(currentSentence, index);
     }
 
     // Word highlighting.
@@ -165,10 +186,53 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
     }
   }
 
+  prefetchPhraseBoundaries(): void {
+    if (!this.audioBrowserProxy_.isPhraseHighlightingEnabled() ||
+        !this.initialized_ || this.currentIndex_ < 0) {
+      return;
+    }
+
+    const sentencesToRequest: SegmentedSentence[] = [];
+    const end = Math.min(
+        this.currentIndex_ + PHRASE_PREFETCH_WINDOW_SIZE,
+        this.sentences_.length);
+    for (let i = this.currentIndex_; i < end; i++) {
+      const sentence = this.sentences_[i]!;
+      if (sentence.phraseBoundaries === undefined) {
+        // Mark the sentence as requested so it isn't requested again while the
+        // request is in flight.
+        sentence.phraseBoundaries = [];
+        sentencesToRequest.push(sentence);
+      }
+    }
+
+    if (sentencesToRequest.length === 0) {
+      return;
+    }
+    const requestId = this.nextPhraseRequestId_++;
+    this.pendingPhraseRequests_.set(requestId, sentencesToRequest);
+    this.audioBrowserProxy_.requestPhraseBoundaries(
+        requestId,
+        sentencesToRequest.map(sentence => sentence.sentenceInfo.text));
+  }
+
+  private onPhraseBoundariesReady_(requestId: number, boundaries: number[][]) {
+    const sentences = this.pendingPhraseRequests_.get(requestId);
+    // The request may have been cleared by a reset since it was made.
+    if (!sentences) {
+      return;
+    }
+    this.pendingPhraseRequests_.delete(requestId);
+    sentences.forEach((sentence, i) => {
+      sentence.phraseBoundaries = boundaries[i] ?? [];
+    });
+  }
+
   private resetState_() {
     this.sentences_ = [];
     this.currentIndex_ = -1;
     this.initialized_ = false;
+    this.pendingPhraseRequests_.clear();
   }
 
   // Takes a list of nodes to process and returns an object containing the
@@ -491,6 +555,28 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
         this.textSegmenter_.getNextWordEnd(remainingText);
     return this.getHighlightSegmentsForRange_(
         currentSentence, index, index + wordEndInRemaining);
+  }
+
+  // Returns the segments for the phrase containing `index`. Falls back to word
+  // highlighting if the phrase boundaries for the sentence aren't available.
+  private getPhraseHighlightSegments_(
+      currentSentence: SegmentedSentence, index: number): Segment[] {
+    const boundaries = currentSentence.phraseBoundaries;
+    if (!boundaries || boundaries.length === 0) {
+      return this.getWordHighlightSegment(currentSentence, index);
+    }
+
+    // Find the last phrase that starts at or before `index`.
+    let phraseIndex = 0;
+    while (phraseIndex + 1 < boundaries.length &&
+           boundaries[phraseIndex + 1]! <= index) {
+      phraseIndex++;
+    }
+    const phraseStart = boundaries[phraseIndex]!;
+    const phraseEnd =
+        boundaries[phraseIndex + 1] ?? currentSentence.sentenceInfo.text.length;
+    return this.getHighlightSegmentsForRange_(
+        currentSentence, phraseStart, phraseEnd);
   }
 
   // Returns the segments covering the text from `highlightStart` to

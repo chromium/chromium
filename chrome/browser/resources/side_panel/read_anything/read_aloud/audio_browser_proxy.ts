@@ -18,6 +18,8 @@ export interface AudioBrowserProxy {
 
   languageChanged: ChromeEvent<() => void>;
   onLockScreen: ChromeEvent<() => void>;
+  onPhraseBoundariesReady:
+      ChromeEvent<(requestId: number, boundaries: number[][]) => void>;
   onTabMuteStateChange: ChromeEvent<(muted: boolean) => void>;
   onTtsEngineInstalled: ChromeEvent<() => void>;
   readingModeWillClose: ChromeEvent<() => void>;
@@ -35,6 +37,7 @@ export interface AudioBrowserProxy {
   getSentenceHighlighting(): number;
   getNoHighlighting(): number;
   isPhraseHighlightingEnabled(): boolean;
+  requestPhraseBoundaries(requestId: number, sentences: string[]): void;
   getDisplayNameForLocale(locale: string, displayLocale: string): string;
   getDefaultLanguageForSpeech(): string;
   getBaseLanguageForSpeech(): string;
@@ -64,6 +67,8 @@ export interface AudioBrowserProxy {
 export class AudioBrowserProxyImpl implements AudioBrowserProxy {
   languageChanged = new EventForwarder<() => void>();
   onLockScreen = new EventForwarder<() => void>();
+  onPhraseBoundariesReady =
+      new EventForwarder<(requestId: number, boundaries: number[][]) => void>();
   onTabMuteStateChange = new EventForwarder<(muted: boolean) => void>();
   onTtsEngineInstalled = new EventForwarder<() => void>();
   readingModeWillClose = new EventForwarder<() => void>();
@@ -80,9 +85,10 @@ export class AudioBrowserProxyImpl implements AudioBrowserProxy {
       this.onLockScreen.forward();
     };
 
-    // TODO: crbug.com/440400392 - Forward phrase boundaries to the read aloud
-    // model once it requests them.
-    chrome.readingMode.onPhraseBoundariesReady = () => {};
+    chrome.readingMode.onPhraseBoundariesReady =
+        (requestId: number, boundaries: number[][]) => {
+          this.onPhraseBoundariesReady.forward(requestId, boundaries);
+        };
 
     chrome.readingMode.onTabMuteStateChange = (muted: boolean) => {
       this.onTabMuteStateChange.forward(muted);
@@ -136,6 +142,10 @@ export class AudioBrowserProxyImpl implements AudioBrowserProxy {
 
   isPhraseHighlightingEnabled(): boolean {
     return chrome.readingMode.isPhraseHighlightingEnabled;
+  }
+
+  requestPhraseBoundaries(requestId: number, sentences: string[]): void {
+    chrome.readingMode.requestPhraseBoundaries(requestId, sentences);
   }
 
   getDisplayNameForLocale(locale: string, displayLocale: string): string {

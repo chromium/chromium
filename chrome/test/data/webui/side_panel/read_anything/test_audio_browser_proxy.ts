@@ -10,6 +10,7 @@ export class TestAudioBrowserProxy extends TestBrowserProxy implements
     AudioBrowserProxy {
   languageChanged = new FakeChromeEvent();
   onLockScreen = new FakeChromeEvent();
+  onPhraseBoundariesReady = new FakeChromeEvent();
   onTabMuteStateChange = new FakeChromeEvent();
   onTtsEngineInstalled = new FakeChromeEvent();
   readingModeWillClose = new FakeChromeEvent();
@@ -49,6 +50,7 @@ export class TestAudioBrowserProxy extends TestBrowserProxy implements
       'getSentenceHighlighting',
       'getNoHighlighting',
       'isPhraseHighlightingEnabled',
+      'requestPhraseBoundaries',
       'getDisplayNameForLocale',
       'getDefaultLanguageForSpeech',
       'getBaseLanguageForSpeech',
@@ -114,6 +116,10 @@ export class TestAudioBrowserProxy extends TestBrowserProxy implements
   isPhraseHighlightingEnabled(): boolean {
     this.methodCalled('isPhraseHighlightingEnabled');
     return this.isPhraseHighlightingEnabledFlag;
+  }
+
+  requestPhraseBoundaries(requestId: number, sentences: string[]): void {
+    this.methodCalled('requestPhraseBoundaries', requestId, sentences);
   }
 
   getDisplayNameForLocale(locale: string, displayLocale: string): string {
