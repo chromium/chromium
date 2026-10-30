@@ -25,8 +25,6 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSource
     : public VideoFrameQueueUnderlyingSource,
       public MediaStreamVideoSink {
  public:
-  using CrossThreadFrameQueueSource =
-      CrossThreadPersistent<TransferredVideoFrameQueueUnderlyingSource>;
   static const int kMaxMonitoredFrameCount;
   static const int kMinMonitoredFrameCount;
 
@@ -62,7 +60,7 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSource
 
   void OnSourceTransferStarted(
       scoped_refptr<base::SequencedTaskRunner>,
-      CrossThreadPersistent<TransferredVideoFrameQueueUnderlyingSource>,
+      CrossThreadHandle<VideoFrameQueueUnderlyingSource>,
       base::TimeTicks time_origin,
       bool is_cross_origin_isolated);
 

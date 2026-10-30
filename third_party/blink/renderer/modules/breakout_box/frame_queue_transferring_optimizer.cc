@@ -20,14 +20,14 @@ namespace blink {
 template <typename NativeFrameType>
 FrameQueueTransferringOptimizer<NativeFrameType>::
     FrameQueueTransferringOptimizer(
-        FrameQueueHost* host,
+        CrossThreadWeakHandle<FrameQueueHost> host_handle,
         scoped_refptr<base::SequencedTaskRunner> host_runner,
         scoped_refptr<FrameQueue<NativeFrameType>> frame_queue,
         std::string device_id,
         wtf_size_t frame_pool_size,
         std::optional<base::ThreadType> thread_type,
         ConnectHostCallback connect_host_callback)
-    : host_(host),
+    : host_handle_(std::move(host_handle)),
       host_runner_(std::move(host_runner)),
       frame_queue_(std::move(frame_queue)),
       device_id_(std::move(device_id)),
@@ -40,17 +40,14 @@ UnderlyingSourceBase*
 FrameQueueTransferringOptimizer<NativeFrameType>::PerformInProcessOptimization(
     ScriptState* script_state) {
   ExecutionContext* context = ExecutionContext::From(script_state);
-  auto host = host_.Lock();
-  if (!host)
-    return nullptr;
-
   // A source created on a destroyed context would never get
   // `ContextDestroyed()`, so the host would keep forwarding frames to a dead
   // heap. Treat this like a transferred source whose context was destroyed.
   if (!context || context->IsContextDestroyed()) {
     PostCrossThreadTask(
         *host_runner_, FROM_HERE,
-        CrossThreadBindOnce(&FrameQueueHost::Close, std::move(host)));
+        CrossThreadBindOnce(&FrameQueueHost::Close,
+                            MakeUnwrappingCrossThreadWeakHandle(host_handle_)));
     return nullptr;
   }
   scoped_refptr<base::SingleThreadTaskRunner> current_runner =
@@ -66,14 +63,14 @@ FrameQueueTransferringOptimizer<NativeFrameType>::PerformInProcessOptimization(
 
   auto* source = MakeGarbageCollected<
       TransferredFrameQueueUnderlyingSource<NativeFrameType>>(
-      script_state, frame_queue_, host_runner_, host, device_id_,
+      script_state, frame_queue_, host_runner_, host_handle_, device_id_,
       frame_pool_size_, thread_type_);
 
   PostCrossThreadTask(
       *host_runner_, FROM_HERE,
       CrossThreadBindOnce(std::move(connect_host_callback_), current_runner,
-                          WrapCrossThreadPersistent(source), time_origin,
-                          is_cross_origin_isolated));
+                          MakeCrossThreadHandle<FrameQueueHost>(source),
+                          time_origin, is_cross_origin_isolated));
   return source;
 }
 

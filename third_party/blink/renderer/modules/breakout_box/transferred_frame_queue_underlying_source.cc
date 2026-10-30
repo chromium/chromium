@@ -18,7 +18,7 @@ TransferredFrameQueueUnderlyingSource<NativeFrameType>::
         ScriptState* script_state,
         scoped_refptr<FrameQueue<NativeFrameType>> queue,
         scoped_refptr<base::SequencedTaskRunner> host_runner,
-        CrossThreadPersistent<FrameQueueHost> host,
+        CrossThreadWeakHandle<FrameQueueHost> host_handle,
         std::string device_id,
         wtf_size_t frame_pool_size,
         std::optional<base::ThreadType> thread_type)
@@ -28,21 +28,35 @@ TransferredFrameQueueUnderlyingSource<NativeFrameType>::
                                                   frame_pool_size,
                                                   thread_type),
       host_runner_(std::move(host_runner)),
-      host_(std::move(host)) {}
+      host_handle_(std::move(host_handle)) {}
 
 template <typename NativeFrameType>
 bool TransferredFrameQueueUnderlyingSource<
     NativeFrameType>::StartFrameDelivery() {
   // PostCrossThreadTask needs a closure, so we have to ignore
   // StartFrameDelivery()'s return type.
-  auto start_frame_delivery_cb = [](FrameQueueHost* host) {
-    if (host) {
-      host->StartFrameDelivery();
-    }
-  };
-
-  PostCrossThreadTask(*host_runner_.get(), FROM_HERE,
-                      CrossThreadBindOnce(start_frame_delivery_cb, host_));
+  auto start_frame_delivery_cb =
+      [](FrameQueueHost* host,
+         scoped_refptr<base::SequencedTaskRunner> transferred_runner,
+         CrossThreadWeakHandle<FrameQueueHost> transferred_source) {
+        if (host) {
+          host->StartFrameDelivery();
+          return;
+        }
+        // The host is gone, so it won't deliver frames, and it may never close
+        // this source. Close it so that the transferred stream doesn't hang.
+        PostCrossThreadTask(
+            *transferred_runner, FROM_HERE,
+            CrossThreadBindOnce(&FrameQueueHost::Close,
+                                MakeUnwrappingCrossThreadWeakHandle(
+                                    std::move(transferred_source))));
+      };
+  PostCrossThreadTask(
+      *host_runner_.get(), FROM_HERE,
+      CrossThreadBindOnce(start_frame_delivery_cb,
+                          MakeUnwrappingCrossThreadWeakHandle(host_handle_),
+                          this->GetRealmRunner(),
+                          MakeCrossThreadWeakHandle<FrameQueueHost>(this)));
 
   // This could fail on the host side, but for now we don't do an async check.
   return true;
@@ -51,8 +65,10 @@ bool TransferredFrameQueueUnderlyingSource<
 template <typename NativeFrameType>
 void TransferredFrameQueueUnderlyingSource<
     NativeFrameType>::StopFrameDelivery() {
-  PostCrossThreadTask(*host_runner_.get(), FROM_HERE,
-                      CrossThreadBindOnce(&FrameQueueHost::Close, host_));
+  PostCrossThreadTask(
+      *host_runner_.get(), FROM_HERE,
+      CrossThreadBindOnce(&FrameQueueHost::Close,
+                          MakeUnwrappingCrossThreadWeakHandle(host_handle_)));
 }
 
 template <typename NativeFrameType>
@@ -64,7 +80,8 @@ void TransferredFrameQueueUnderlyingSource<NativeFrameType>::Close() {
   if (host_runner_) {
     PostCrossThreadTask(
         *host_runner_.get(), FROM_HERE,
-        CrossThreadBindOnce(&FrameQueueHost::ClearTransferredSource, host_));
+        CrossThreadBindOnce(&FrameQueueHost::ClearTransferredSource,
+                            MakeUnwrappingCrossThreadWeakHandle(host_handle_)));
   }
 }
 

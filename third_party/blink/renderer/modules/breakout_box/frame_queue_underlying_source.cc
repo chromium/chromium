@@ -85,8 +85,9 @@ FrameQueueUnderlyingSource<NativeFrameType>::FrameQueueUnderlyingSource(
       device_id_(std::move(device_id)),
       frame_pool_size_(frame_pool_size),
       thread_type_(thread_type),
-      realm_is_boostable_context_(ExecutionContext::From(script_state)
-                                      ->IsDedicatedWorkerGlobalScope()) {
+      realm_is_boostable_context_(
+          ExecutionContext::From(script_state)->IsDedicatedWorkerGlobalScope()),
+      self_handle_(MakeCrossThreadWeakHandle(this)) {
   DCHECK(device_id_.empty() || frame_pool_size_ > 0);
   auto q = Queue();
   if (q) {
@@ -188,18 +189,22 @@ void FrameQueueUnderlyingSource<NativeFrameType>::Close() {
     CloseController();
   }
   scoped_refptr<base::SequencedTaskRunner> transferred_runner;
-  CrossThreadPersistent<FrameQueueUnderlyingSource<NativeFrameType>>
-      transferred_source;
+  std::optional<CrossThreadHandle<FrameQueueUnderlyingSource<NativeFrameType>>>
+      transferred_source_handle;
   {
     base::AutoLock locker(lock_);
     transferred_runner = std::move(transferred_runner_);
-    transferred_source = std::move(transferred_source_);
+    if (transferred_source_handle_) {
+      transferred_source_handle.emplace(std::move(*transferred_source_handle_));
+      transferred_source_handle_.reset();
+    }
   }
-  if (transferred_source && transferred_runner) {
+  if (transferred_source_handle && transferred_runner) {
     PostCrossThreadTask(
         *transferred_runner, FROM_HERE,
         CrossThreadBindOnce(&FrameQueueUnderlyingSource<NativeFrameType>::Close,
-                            transferred_source));
+                            MakeUnwrappingCrossThreadHandle(
+                                std::move(*transferred_source_handle))));
   }
   scoped_refptr<FrameQueue<NativeFrameType>> frame_queue;
   Deque<NativeFrameType> frames_to_destroy;
@@ -212,7 +217,7 @@ void FrameQueueUnderlyingSource<NativeFrameType>::Close() {
     frame_queue = std::move(frame_queue_);
     if (frame_queue) {
       base::AutoLock queue_locker(frame_queue->GetLock());
-      if (!transferred_source) {
+      if (!transferred_source_handle) {
         // This source is the active consumer of the queue, so its pending
         // pulls are no longer relevant. If the source was transferred, the
         // pending pulls belong to the transferred source, which will reset
@@ -239,7 +244,7 @@ void FrameQueueUnderlyingSource<NativeFrameType>::Close() {
           frame_queue->TotalFramesLocked() - initial_total_frames_;
       closed_discarded_frames_ =
           frame_queue->DiscardedFramesLocked() - initial_discarded_frames_;
-      if (transferred_source) {
+      if (transferred_source_handle) {
         // These frames will be discarded by the transferred source when it
         // processes the Close() task, so we must account for them now before
         // we release our reference to the shared queue.
@@ -259,8 +264,8 @@ void FrameQueueUnderlyingSource<NativeFrameType>::QueueFrame(
     NativeFrameType media_frame) {
   scoped_refptr<FrameQueue<NativeFrameType>> frame_queue;
   scoped_refptr<base::SequencedTaskRunner> transferred_runner;
-  CrossThreadPersistent<FrameQueueUnderlyingSource<NativeFrameType>>
-      transferred_source;
+  std::optional<CrossThreadHandle<FrameQueueUnderlyingSource<NativeFrameType>>>
+      transferred_source_handle;
   {
     base::AutoLock locker(lock_);
     frame_queue = frame_queue_;
@@ -314,9 +319,9 @@ void FrameQueueUnderlyingSource<NativeFrameType>::QueueFrame(
       frame_queue->Push(std::move(media_frame));
     }
 
-    if (transferred_source_ && transferred_runner_) {
+    if (transferred_source_handle_ && transferred_runner_) {
       transferred_runner = transferred_runner_;
-      transferred_source = transferred_source_;
+      transferred_source_handle.emplace(*transferred_source_handle_);
     }
   }
 
@@ -332,20 +337,24 @@ void FrameQueueUnderlyingSource<NativeFrameType>::QueueFrame(
   }
 
   // Wake up whichever source is currently consuming the queue.
-  if (transferred_source) {
+  if (transferred_source_handle) {
     PostCrossThreadTask(
         *transferred_runner, FROM_HERE,
         CrossThreadBindOnce(
             &FrameQueueUnderlyingSource<
                 NativeFrameType>::MaybeSendFrameFromQueueToStream,
-            std::move(transferred_source)));
+            MakeUnwrappingCrossThreadHandle(
+                std::move(*transferred_source_handle))));
   } else {
+    // Use the pre-initialized weak |self_handle_| because CrossThreadHandle
+    // cannot be constructed off the creation thread and a strong member handle
+    // would prevent |this| from being garbage-collected.
     PostCrossThreadTask(
         *realm_task_runner_, FROM_HERE,
         CrossThreadBindOnce(
             &FrameQueueUnderlyingSource<
                 NativeFrameType>::MaybeSendFrameFromQueueToStream,
-            WrapCrossThreadPersistent(this)));
+            MakeUnwrappingCrossThreadWeakHandle(self_handle_)));
   }
 }
 
@@ -372,7 +381,7 @@ double FrameQueueUnderlyingSource<NativeFrameType>::DesiredSizeForTesting()
 template <typename NativeFrameType>
 void FrameQueueUnderlyingSource<NativeFrameType>::TransferSource(
     scoped_refptr<base::SequencedTaskRunner> transferred_runner,
-    CrossThreadPersistent<FrameQueueUnderlyingSource<NativeFrameType>>
+    CrossThreadHandle<FrameQueueUnderlyingSource<NativeFrameType>>
         transferred_source,
     base::TimeTicks time_origin,
     bool is_cross_origin_isolated) {
@@ -380,19 +389,19 @@ void FrameQueueUnderlyingSource<NativeFrameType>::TransferSource(
   UpdateRealmInfo(time_origin, is_cross_origin_isolated);
   base::AutoLock locker(lock_);
   if (!transferred_source_cleared_) {
-    DCHECK(!transferred_source_);
+    DCHECK(!transferred_source_handle_);
     transferred_runner_ = std::move(transferred_runner);
-    transferred_source_ = std::move(transferred_source);
-    // |frame_queue_|, including its pending-pull count, is shared with
-    // |transferred_source_|. Any pulls pending at this point were issued by
-    // this source's stream, which CloseController() closes below, so they
-    // will never be fulfilled. Reset the count so they are not attributed to
-    // |transferred_source_|; otherwise it would be sent frames for reads it
+    transferred_source_handle_.emplace(std::move(transferred_source));
+    // |frame_queue_|, including its pending-pull count, is shared with the
+    // transferred source. Any pulls pending at this point were issued by this
+    // source's stream, which CloseController() closes below, so they will
+    // never be fulfilled. Reset the count so they are not attributed to the
+    // transferred source; otherwise it would be sent frames for reads it
     // never issued, possibly before its stream has started.
     //
-    // This cannot discard a pull issued by |transferred_source_|: the
+    // This cannot discard a pull issued by the transferred source: the
     // destination stream first reads the cross-realm stream piped from this
-    // source's stream, and only starts pulling |transferred_source_| after
+    // source's stream, and only starts pulling the transferred source after
     // that stream closes, which requires the CloseController() call below.
     if (frame_queue_) {
       frame_queue_->ResetPendingPulls();
@@ -406,7 +415,7 @@ void FrameQueueUnderlyingSource<NativeFrameType>::ClearTransferredSource() {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
   base::AutoLock locker(lock_);
   transferred_source_cleared_ = true;
-  transferred_source_.Clear();
+  transferred_source_handle_.reset();
   transferred_runner_ = nullptr;
   auto frame_queue = std::move(frame_queue_);
   if (frame_queue) {
@@ -439,7 +448,7 @@ void FrameQueueUnderlyingSource<
     // queue belong to the transferred source. A wake-up task posted before the
     // transfer must not consume them, nor pop frames into our closed
     // controller.
-    if (transferred_source_ || transferred_source_cleared_) {
+    if (transferred_source_handle_ || transferred_source_cleared_) {
       return;
     }
     frame_queue = frame_queue_;

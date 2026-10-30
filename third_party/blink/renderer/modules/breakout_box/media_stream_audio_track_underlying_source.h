@@ -86,7 +86,7 @@ class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSource
   void DisconnectFromTrack();
   void OnSourceTransferStarted(
       scoped_refptr<base::SequencedTaskRunner> transferred_runner,
-      CrossThreadPersistent<TransferredAudioDataQueueUnderlyingSource> source,
+      CrossThreadHandle<AudioDataQueueUnderlyingSource> source,
       base::TimeTicks time_origin,
       bool is_cross_origin_isolated);
 

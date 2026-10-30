@@ -258,11 +258,11 @@ std::unique_ptr<ReadableStreamTransferringOptimizer>
 MediaStreamAudioTrackUnderlyingSource::GetTransferringOptimizer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<AudioDataQueueTransferOptimizer>(
-      this, GetRealmRunner(), Queue(), DeviceId(), FramePoolSize(),
-      ThreadType(),
+      MakeCrossThreadWeakHandle<AudioDataQueueUnderlyingSource>(this),
+      GetRealmRunner(), Queue(), DeviceId(), FramePoolSize(), ThreadType(),
       CrossThreadBindOnce(
           &MediaStreamAudioTrackUnderlyingSource::OnSourceTransferStarted,
-          WrapCrossThreadWeakPersistent(this)));
+          MakeUnwrappingCrossThreadWeakHandle(this)));
 }
 
 void MediaStreamAudioTrackUnderlyingSource::UpdateRealmInfo(
@@ -276,7 +276,7 @@ void MediaStreamAudioTrackUnderlyingSource::UpdateRealmInfo(
 
 void MediaStreamAudioTrackUnderlyingSource::OnSourceTransferStarted(
     scoped_refptr<base::SequencedTaskRunner> transferred_runner,
-    CrossThreadPersistent<TransferredAudioDataQueueUnderlyingSource> source,
+    CrossThreadHandle<AudioDataQueueUnderlyingSource> source,
     base::TimeTicks time_origin,
     bool is_cross_origin_isolated) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

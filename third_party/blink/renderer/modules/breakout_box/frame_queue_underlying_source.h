@@ -8,15 +8,17 @@
 #include <optional>
 
 #include "base/feature_list.h"
+#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/platform_thread.h"
+#include "base/time/time.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/video_frame.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/core/timing/time_clamper.h"
 #include "third_party/blink/renderer/modules/breakout_box/frame_queue.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -95,12 +97,12 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
 
   bool HasTransferredSourceForTesting() const {
     base::AutoLock locker(lock_);
-    return !!transferred_source_;
+    return transferred_source_handle_.has_value();
   }
 
-  // Due to a potential race condition between |transferred_source_|'s heap
+  // Due to a potential race condition between the transferred source's heap
   // being destroyed and the Close() method being called, we need to explicitly
-  // clear |transferred_source_| when its context is being destroyed.
+  // clear |transferred_source_handle_| when its context is being destroyed.
   void ClearTransferredSource();
 
  protected:
@@ -137,7 +139,7 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
   // queue. Must be called on |realm_task_runner_|.
   void TransferSource(
       scoped_refptr<base::SequencedTaskRunner> transferred_runner,
-      CrossThreadPersistent<FrameQueueUnderlyingSource<NativeFrameType>>
+      CrossThreadHandle<FrameQueueUnderlyingSource<NativeFrameType>>
           transferred_source,
       base::TimeTicks time_origin = base::TimeTicks(),
       bool is_cross_origin_isolated = false);
@@ -187,10 +189,11 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
   // `QueueFrame()`) and resets (in `Close()` and `ClearTransferredSource()`).
   scoped_refptr<FrameQueue<NativeFrameType>> frame_queue_ GUARDED_BY(lock_);
   // If the stream backed by this source is transferred to another in-process
-  // realm (e.g., a Worker), |transferred_source_| is the source of the
-  // transferred stream.
-  CrossThreadPersistent<FrameQueueUnderlyingSource<NativeFrameType>>
-      transferred_source_ GUARDED_BY(lock_);
+  // realm (e.g., a Worker), |transferred_source_handle_| is the handle to the
+  // source of the transferred stream. Wrapped in std::optional because
+  // CrossThreadHandle is neither default-constructible nor assignable.
+  std::optional<CrossThreadHandle<FrameQueueUnderlyingSource<NativeFrameType>>>
+      transferred_source_handle_ GUARDED_BY(lock_);
   scoped_refptr<base::SequencedTaskRunner> transferred_runner_
       GUARDED_BY(lock_);
   bool transferred_source_cleared_ GUARDED_BY(lock_) = false;
@@ -212,6 +215,12 @@ class FrameQueueUnderlyingSource : public UnderlyingSourceBase {
   std::optional<base::PlatformThread::RaiseThreadTypeLease>
       realm_thread_type_lease_;
   bool realm_is_boostable_context_;
+  // Initialized on the creation thread because CrossThreadWeakHandle must be
+  // constructed on the thread that owns |this|, whereas the functions calling
+  // it may run on a different thread. Held weakly to avoid a self-referencing
+  // strong root that would prevent |this| from being garbage-collected.
+  CrossThreadWeakHandle<FrameQueueUnderlyingSource<NativeFrameType>>
+      self_handle_;
 
   std::optional<base::TimeTicks> first_frame_ticks_;
   TimeClamper time_clamper_;

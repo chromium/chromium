@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/modules/breakout_box/frame_queue_underlying_source.h"
 #include "third_party/blink/renderer/modules/breakout_box/transferred_frame_queue_underlying_source.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/heap/cross_thread_persistent.h"
+#include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -27,15 +27,14 @@ class FrameQueueTransferringOptimizer final
  public:
   using FrameQueueHost = FrameQueueUnderlyingSource<NativeFrameType>;
 
-  using ConnectHostCallback = CrossThreadOnceFunction<void(
-      scoped_refptr<base::SequencedTaskRunner>,
-      CrossThreadPersistent<
-          TransferredFrameQueueUnderlyingSource<NativeFrameType>>,
-      base::TimeTicks time_origin,
-      bool is_cross_origin_isolated)>;
+  using ConnectHostCallback =
+      CrossThreadOnceFunction<void(scoped_refptr<base::SequencedTaskRunner>,
+                                   CrossThreadHandle<FrameQueueHost>,
+                                   base::TimeTicks time_origin,
+                                   bool is_cross_origin_isolated)>;
 
   FrameQueueTransferringOptimizer(
-      FrameQueueHost*,
+      CrossThreadWeakHandle<FrameQueueHost> host_handle,
       scoped_refptr<base::SequencedTaskRunner> host_runner,
       scoped_refptr<FrameQueue<NativeFrameType>> frame_queue,
       std::string device_id,
@@ -48,7 +47,10 @@ class FrameQueueTransferringOptimizer final
       ScriptState* script_state) override;
 
  private:
-  CrossThreadWeakPersistent<FrameQueueHost> host_;
+  // Weak handle to avoid having a GC root of the host when the stream is not
+  // transferred: the un-transferred `ReadableStream` owns this optimizer, so a
+  // strong handle would leak the host.
+  CrossThreadWeakHandle<FrameQueueHost> host_handle_;
   scoped_refptr<base::SequencedTaskRunner> host_runner_;
   scoped_refptr<FrameQueue<NativeFrameType>> frame_queue_;
   const std::string device_id_;

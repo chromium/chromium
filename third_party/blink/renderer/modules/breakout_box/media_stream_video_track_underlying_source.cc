@@ -72,16 +72,16 @@ std::unique_ptr<ReadableStreamTransferringOptimizer>
 MediaStreamVideoTrackUnderlyingSource::GetStreamTransferOptimizer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::make_unique<VideoFrameQueueTransferOptimizer>(
-      this, GetRealmRunner(), Queue(), DeviceId(), FramePoolSize(),
-      ThreadType(),
+      MakeCrossThreadWeakHandle<VideoFrameQueueUnderlyingSource>(this),
+      GetRealmRunner(), Queue(), DeviceId(), FramePoolSize(), ThreadType(),
       CrossThreadBindOnce(
           &MediaStreamVideoTrackUnderlyingSource::OnSourceTransferStarted,
-          WrapCrossThreadWeakPersistent(this)));
+          MakeUnwrappingCrossThreadWeakHandle(this)));
 }
 
 void MediaStreamVideoTrackUnderlyingSource::OnSourceTransferStarted(
     scoped_refptr<base::SequencedTaskRunner> transferred_runner,
-    CrossThreadPersistent<TransferredVideoFrameQueueUnderlyingSource> source,
+    CrossThreadHandle<VideoFrameQueueUnderlyingSource> source,
     base::TimeTicks time_origin,
     bool is_cross_origin_isolated) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
