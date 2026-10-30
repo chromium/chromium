@@ -36,11 +36,15 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.ImportantFormFactors;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.bookmarks.BookmarkActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -298,6 +302,41 @@ public class BookmarkOpenerTest {
         CriteriaHelper.pollUiThread(() -> cta.getActivityTab().getUrl().equals(url));
         assertEquals(
                 4,
+                ChromeTabUtils.getTabCountOnUiThread(
+                        cta.getTabModelSelector().getModel(/* incognito= */ true)));
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.PHONE)
+    public void testOpenBookmarksInNewTabs_AfterIncognitoProfileDestroyed() {
+        GURL url = new GURL(UrlConstants.ABOUT_URL);
+        List<BookmarkId> ids = List.of(addMobileBookmark("test", url));
+
+        IncognitoNewTabPageStation incognitoPageStation = mPage.openNewIncognitoTabOrWindowFast();
+        ChromeTabbedActivity cta = incognitoPageStation.getActivity();
+        Tab incognitoTab = incognitoPageStation.getTab();
+        Profile otrProfile = ThreadUtils.runOnUiThreadBlocking(incognitoTab::getProfile);
+        openBookmarkManager(incognitoPageStation);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        cta.getTabModelSelector()
+                                .getModel(/* incognito= */ true)
+                                .getTabRemover()
+                                .closeTabs(
+                                        TabClosureParams.closeTab(incognitoTab)
+                                                .allowUndo(/* allowUndo= */ false)
+                                                .build(),
+                                        /* allowDialog= */ false));
+        CriteriaHelper.pollUiThread(() -> !otrProfile.isNativeInitialized());
+
+        openMobileBookmarks();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mBookmarkOpener.openBookmarksInNewTabs(ids, /* incognito= */ true));
+        CriteriaHelper.pollUiThread(() -> cta.getActivityTab().getUrl().equals(url));
+        assertEquals(
+                1,
                 ChromeTabUtils.getTabCountOnUiThread(
                         cta.getTabModelSelector().getModel(/* incognito= */ true)));
     }

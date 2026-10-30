@@ -141,7 +141,6 @@ public class BookmarkManagerCoordinator
     private final SnackbarManager mSnackbarManager;
     private final SigninPromoCoordinator mSigninPromoCoordinator;
     private final BookmarkModel mBookmarkModel;
-    private final Profile mProfile;
     private final BookmarkUiPrefs mBookmarkUiPrefs;
     private final ModalDialogManager mModalDialogManager;
     private final ModelList mModelList;
@@ -188,11 +187,13 @@ public class BookmarkManagerCoordinator
             SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
             DeviceLockActivityLauncher deviceLockActivityLauncher) {
         mContext = activity;
-        mProfile = profile;
+        // Resolve the original profile eagerly for regular-profile-backed services; an OTR
+        // `profile` may be destroyed while the bookmark manager is still open.
+        Profile originalProfile = profile.getOriginalProfile();
         mImageFetcher =
                 ImageFetcherFactory.createImageFetcher(
                         ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
-                        profile.getProfileKey(),
+                        originalProfile.getProfileKey(),
                         GlobalDiscardableReferencePool.getReferencePool());
         mSnackbarManager = snackbarManager;
 
@@ -200,9 +201,9 @@ public class BookmarkManagerCoordinator
         int layoutId =
                 isDesktopLayoutEnabled ? R.layout.bookmark_main_desktop : R.layout.bookmark_main;
         mMainView = (ViewGroup) LayoutInflater.from(activity).inflate(layoutId, null);
-        mBookmarkModel = BookmarkModel.getForProfile(profile);
+        mBookmarkModel = BookmarkModel.getForProfile(originalProfile);
         mBookmarkOpener = bookmarkOpener;
-        ShoppingService service = ShoppingServiceFactory.getForProfile(profile);
+        ShoppingService service = ShoppingServiceFactory.getForProfile(originalProfile);
         if (CommerceFeatureUtils.isShoppingListEligible(service)) {
             service.scheduleSavedProductUpdate();
         }
@@ -273,7 +274,7 @@ public class BookmarkManagerCoordinator
         mBookmarkToolbarCoordinator =
                 new BookmarkToolbarCoordinator(
                         activity,
-                        mProfile,
+                        originalProfile,
                         mSelectableListLayout,
                         mSelectionDelegate,
                         /* searchDelegate= */ this,
@@ -285,7 +286,7 @@ public class BookmarkManagerCoordinator
                         mBookmarkUiPrefs,
                         mModalDialogManager,
                         this::onEndSearch,
-                        () -> IncognitoUtils.isIncognitoModeEnabled(profile),
+                        () -> IncognitoUtils.isIncognitoModeEnabled(originalProfile),
                         bookmarkManagerOpener,
                         mSnackbarManager,
                         /* nextFocusableView= */ mMainView.findViewById(R.id.list_content),
@@ -298,7 +299,7 @@ public class BookmarkManagerCoordinator
                 mBookmarkUiPrefs.getBookmarkRowDisplayPref();
         BookmarkImageFetcher bookmarkImageFetcher =
                 new BookmarkImageFetcher(
-                        profile,
+                        originalProfile,
                         activity,
                         mBookmarkModel,
                         mImageFetcher,
@@ -319,13 +320,13 @@ public class BookmarkManagerCoordinator
                         dragTouchHandler,
                         isDialogUi,
                         mBackPressStateSupplier,
-                        mProfile,
+                        profile,
                         bookmarkUndoController,
                         mModelList,
                         mBookmarkUiPrefs,
                         this::hideKeyboard,
                         bookmarkImageFetcher,
-                        ShoppingServiceFactory.getForProfile(mProfile),
+                        service,
                         mSnackbarManager,
                         this::canShowSigninPromo,
                         onScrollListenerConsumer,
@@ -346,7 +347,7 @@ public class BookmarkManagerCoordinator
                 new SigninPromoCoordinator(
                         windowAndroid,
                         activity,
-                        mProfile.getOriginalProfile(),
+                        originalProfile,
                         activityResultTracker,
                         signinAndHistorySyncActivityLauncher,
                         bottomSheetControllerSupplier,
@@ -355,7 +356,7 @@ public class BookmarkManagerCoordinator
                         deviceLockActivityLauncher,
                         new BookmarkSigninPromoDelegate(
                                 activity,
-                                mProfile.getOriginalProfile(),
+                                originalProfile,
                                 signinAndHistorySyncActivityLauncher,
                                 mMediator::onPromoVisibilityChange,
                                 this::openSettings));

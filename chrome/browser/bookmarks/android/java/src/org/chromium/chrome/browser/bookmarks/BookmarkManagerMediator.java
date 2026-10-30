@@ -381,6 +381,7 @@ class BookmarkManagerMediator
     private final boolean mIsDialogUi;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier;
     private final Profile mProfile;
+    private final Profile mOriginalProfile;
     private final BookmarkUndoController mBookmarkUndoController;
     private final BookmarkQueryHandler mBookmarkQueryHandler;
     private final ModelList mModelList;
@@ -463,6 +464,8 @@ class BookmarkManagerMediator
         mIsDialogUi = isDialogUi;
         mBackPressStateSupplier = backPressStateSupplier;
         mProfile = profile;
+        // Expected to already be the original profile, but calling this getter to be safe.
+        mOriginalProfile = profile.getOriginalProfile();
         mModelList = modelList;
         mBookmarkUiPrefs = bookmarkUiPrefs;
         mBookmarkUiPrefs.addObserver(mBookmarkUiPrefsObserver);
@@ -480,7 +483,7 @@ class BookmarkManagerMediator
                         activity,
                         lifecycleOwner,
                         modalDialogManager,
-                        mProfile.getOriginalProfile(),
+                        mOriginalProfile,
                         snackbarManagerSupplierImpl,
                         this::updateBatchUploadCard,
                         BatchUploadCardCoordinator.EntryPoint.BOOKMARK_MANAGER);
@@ -1681,7 +1684,8 @@ class BookmarkManagerMediator
 
         if (!bookmarkItem.isFolder()) {
             listItems.add(buildSimpleMenuItem(R.string.contextmenu_open_in_new_tab));
-            if (!mProfile.isOffTheRecord() && IncognitoUtils.isIncognitoModeEnabled(mProfile)) {
+            if (!mProfile.isOffTheRecord()
+                    && IncognitoUtils.isIncognitoModeEnabled(mOriginalProfile)) {
                 listItems.add(buildSimpleMenuItem(R.string.contextmenu_open_in_incognito_tab));
             }
             if (mBookmarkOpener.isOpenInNewWindowSupported()) {
@@ -1732,7 +1736,7 @@ class BookmarkManagerMediator
                         BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
                         assumeNonNull(bookmarkItem);
                         mBookmarkManagerOpener.startEditActivity(
-                                mContext, mProfile, bookmarkItem.getId());
+                                mContext, mOriginalProfile, bookmarkItem.getId());
                     } else if (textId == R.string.bookmark_item_copy_link) {
                         BookmarkItem bookmarkItem = mBookmarkModel.getBookmarkById(bookmarkId);
                         assumeNonNull(bookmarkItem);
@@ -1761,7 +1765,7 @@ class BookmarkManagerMediator
                         RecordUserAction.record("Android.BookmarkPage.ReadingList.MarkAsUnread");
                     } else if (textId == R.string.bookmark_item_move) {
                         mBookmarkManagerOpener.startFolderPickerActivity(
-                                mContext, mProfile, bookmarkId);
+                                mContext, mOriginalProfile, bookmarkId);
                         RecordUserAction.record("MobileBookmarkManagerMoveToFolder");
                     } else if (textId == R.string.bookmark_item_delete) {
                         if (mBookmarkModel != null) {
@@ -1810,7 +1814,7 @@ class BookmarkManagerMediator
                 enabled,
                 mSnackbarManager,
                 mContext.getResources(),
-                mProfile,
+                mOriginalProfile,
                 callback,
                 mPriceDropNotificationManager);
     }

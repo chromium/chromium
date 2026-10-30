@@ -12,7 +12,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.view.FocusFinder;
@@ -47,6 +50,8 @@ import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.incognito.IncognitoUtilsJni;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridge;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridgeJni;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
@@ -60,6 +65,8 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoor
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
@@ -115,6 +122,9 @@ public class BookmarkManagerCoordinatorTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private ActivityResultTracker mActivityResultTracker;
     @Mock private Profile mProfile;
+    @Mock private Profile mOtrProfile;
+    @Mock private BookmarkBridge.Natives mBookmarkBridgeJni;
+    @Mock private IncognitoUtils.Natives mIncognitoUtilsJni;
     @Mock private FaviconHelperJni mFaviconHelperJni;
     @Mock private ImageServiceBridge.Natives mImageServiceBridgeJni;
     @Mock private SyncService mSyncService;
@@ -159,7 +169,9 @@ public class BookmarkManagerCoordinatorTest {
         doReturn(mSigninManager).when(mIdentityServicesProvider).getSigninManager(mProfile);
         doReturn(mIdentityManager).when(mSigninManager).getIdentityManager();
         doReturn(mIdentityManager).when(mIdentityServicesProvider).getIdentityManager(any());
-        BookmarkModel.setInstanceForTesting(mBookmarkModel);
+        BookmarkBridgeJni.setInstanceForTesting(mBookmarkBridgeJni);
+        doReturn(mBookmarkModel).when(mBookmarkBridgeJni).nativeGetForProfile(mProfile);
+        IncognitoUtilsJni.setInstanceForTesting(mIncognitoUtilsJni);
         ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
         ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
 
@@ -686,5 +698,54 @@ public class BookmarkManagerCoordinatorTest {
             assertNotEquals(mainView.findViewById(R.id.selectable_list), nextFocus);
             assertNotEquals(mCoordinator.getToolbarForTesting(), nextFocus);
         }
+    }
+
+    @Test
+    public void testOffTheRecordProfileUsesOriginalProfile() {
+        mCoordinator.onDestroyed();
+        clearInvocations(mBookmarkBridgeJni, mImageServiceBridgeJni, mIncognitoUtilsJni, mProfile);
+
+        doReturn(true).when(mOtrProfile).isOffTheRecord();
+        doReturn(mProfile).when(mOtrProfile).getOriginalProfile();
+
+        BookmarkManagerCoordinator otrCoordinator =
+                new BookmarkManagerCoordinator(
+                        mWindowAndroid,
+                        mActivity,
+                        /* isDialogUi= */ true,
+                        mSnackbarManager,
+                        () -> mBottomSheetController,
+                        mActivityResultTracker,
+                        mOtrProfile,
+                        mBookmarkUiPrefs,
+                        mBookmarkOpener,
+                        mBookmarkManagerOpener,
+                        mPriceDropNotificationManager,
+                        /* edgeToEdgePadAdjusterGenerator= */ null,
+                        /* backPressManager= */ null,
+                        mSigninAndHistorySyncActivityLauncher,
+                        mDeviceLockActivityLauncher);
+
+        verify(mBookmarkBridgeJni).nativeGetForProfile(mProfile);
+        verify(mBookmarkBridgeJni, never()).nativeGetForProfile(mOtrProfile);
+        verify(mProfile).getProfileKey();
+        verify(mOtrProfile, never()).getProfileKey();
+        verify(mImageServiceBridgeJni).init(mProfile);
+        verify(mImageServiceBridgeJni, never()).init(mOtrProfile);
+
+        // Simulate OTR profile native destruction while the coordinator remains open.
+        doReturn(null).when(mOtrProfile).getOriginalProfile();
+        BookmarkId bookmarkId = new BookmarkId(/* id= */ 1, BookmarkType.NORMAL);
+        otrCoordinator
+                .getBookmarkDelegateForTesting()
+                .getSelectionDelegate()
+                .toggleSelectionForItem(bookmarkId);
+        verify(mIncognitoUtilsJni).getIncognitoModeEnabled(mProfile);
+        verify(mIncognitoUtilsJni, never()).getIncognitoModeEnabled(mOtrProfile);
+
+        otrCoordinator.openBookmark(bookmarkId);
+        verify(mBookmarkOpener).openBookmarkInCurrentTab(bookmarkId, /* incognito= */ true);
+
+        otrCoordinator.onDestroyed();
     }
 }
