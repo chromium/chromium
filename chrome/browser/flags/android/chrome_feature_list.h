@@ -320,6 +320,7 @@ BASE_DECLARE_FEATURE(kTabBottomSheetEdgeToEdge);
 BASE_DECLARE_FEATURE(kTabBottomSheetFullHeight);
 BASE_DECLARE_FEATURE(kTabBottomSheetHalfHeight);
 BASE_DECLARE_FEATURE(kTabBottomSheetResizeWebview);
+BASE_DECLARE_FEATURE(kTabBottomSheetSmoothKeyboardResize);
 BASE_DECLARE_FEATURE(kTabClosureCommittedMethodRefactor);
 BASE_DECLARE_FEATURE(kTabClosureMethodRefactor);
 BASE_DECLARE_FEATURE(kTabGroupActionsSubmenus);

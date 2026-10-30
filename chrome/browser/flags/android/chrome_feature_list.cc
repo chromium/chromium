@@ -528,6 +528,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabBottomSheetFullHeight,
     &kTabBottomSheetHalfHeight,
     &kTabBottomSheetResizeWebview,
+    &kTabBottomSheetSmoothKeyboardResize,
     &kTabClosureCommittedMethodRefactor,
     &kTabClosureMethodRefactor,
     &kTabGroupActionsSubmenus,
@@ -995,6 +996,7 @@ BASE_FEATURE(kTabBottomSheetEdgeToEdge, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTabBottomSheetFullHeight, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTabBottomSheetHalfHeight, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTabBottomSheetResizeWebview, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kTabBottomSheetSmoothKeyboardResize, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTabClosureCommittedMethodRefactor, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kTabClosureMethodRefactor, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTabGroupActionsSubmenus, base::FEATURE_DISABLED_BY_DEFAULT);

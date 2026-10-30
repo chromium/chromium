@@ -886,6 +886,8 @@ public abstract class ChromeFeatureList {
     public static final String TAB_BOTTOM_SHEET_FULL_HEIGHT = "TabBottomSheetFullHeight";
     public static final String TAB_BOTTOM_SHEET_HALF_HEIGHT = "TabBottomSheetHalfHeight";
     public static final String TAB_BOTTOM_SHEET_RESIZE_WEBVIEW = "TabBottomSheetResizeWebview";
+    public static final String TAB_BOTTOM_SHEET_SMOOTH_KEYBOARD_RESIZE =
+            "TabBottomSheetSmoothKeyboardResize";
     public static final String TAB_CLOSURE_COMMITTED_METHOD_REFACTOR =
             "TabClosureCommittedMethodRefactor";
     public static final String TAB_CLOSURE_METHOD_REFACTOR = "TabClosureMethodRefactor";
@@ -1902,6 +1904,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(TAB_BOTTOM_SHEET_HALF_HEIGHT, false);
     public static final MutableFlagWithSafeDefault sTabBottomSheetResizeWebview =
             newMutableFlagWithSafeDefault(TAB_BOTTOM_SHEET_RESIZE_WEBVIEW, false);
+    public static final MutableFlagWithSafeDefault sTabBottomSheetSmoothKeyboardResize =
+            newMutableFlagWithSafeDefault(TAB_BOTTOM_SHEET_SMOOTH_KEYBOARD_RESIZE, true);
     public static final MutableFlagWithSafeDefault sTabOpenerTracking =
             newMutableFlagWithSafeDefault(TAB_OPENER_TRACKING, true);
     public static final MutableFlagWithSafeDefault sTabSearchForDesktop =
