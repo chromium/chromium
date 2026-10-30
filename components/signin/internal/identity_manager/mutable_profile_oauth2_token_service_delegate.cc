@@ -596,11 +596,9 @@ MutableProfileOAuth2TokenServiceDelegate::GetURLLoaderFactory() const {
 }
 
 void MutableProfileOAuth2TokenServiceDelegate::InvalidateTokenForMultilogin(
-    const CoreAccountId& failed_account) {
-  UpdateAuthError(failed_account,
-                  GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-                      GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                          CREDENTIALS_REJECTED_BY_SERVER));
+    const CoreAccountId& failed_account,
+    const GoogleServiceAuthError& error) {
+  UpdateAuthError(failed_account, error);
 }
 
 void MutableProfileOAuth2TokenServiceDelegate::LoadCredentialsInternal(

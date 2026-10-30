@@ -324,15 +324,19 @@ class MockTokenService : public FakeProfileOAuth2TokenService {
                    std::unique_ptr<ProfileOAuth2TokenServiceDelegate> delegate)
       : FakeProfileOAuth2TokenService(prefs, std::move(delegate)) {}
 
-  MOCK_METHOD2(MockInvalidateTokenForMultilogin,
-               void(const CoreAccountId& account_id, const std::string& token));
+  MOCK_METHOD3(MockInvalidateTokenForMultilogin,
+               void(const CoreAccountId& account_id,
+                    const std::string& token,
+                    const GoogleServiceAuthError& error));
 
   // Notifies the mock and then calls the base class method.
-  void InvalidateTokenForMultilogin(const CoreAccountId& account_id,
-                                    const std::string& token) override {
-    MockInvalidateTokenForMultilogin(account_id, token);
+  void InvalidateTokenForMultilogin(
+      const CoreAccountId& account_id,
+      const std::string& token,
+      const GoogleServiceAuthError& error) override {
+    MockInvalidateTokenForMultilogin(account_id, token, error);
     FakeProfileOAuth2TokenService::InvalidateTokenForMultilogin(account_id,
-                                                                token);
+                                                                token, error);
   }
 };
 
@@ -340,6 +344,12 @@ class MockTokenService : public FakeProfileOAuth2TokenService {
 // default behaviour on Desktop platforms.
 class FakeProfileOAuth2TokenServiceDelegateDesktop
     : public FakeProfileOAuth2TokenServiceDelegate {
+ public:
+  explicit FakeProfileOAuth2TokenServiceDelegateDesktop(
+      bool fail_binding_key_assertion = false)
+      : fail_binding_key_assertion_(fail_binding_key_assertion) {}
+
+ private:
   std::string GetTokenForMultilogin(
       const CoreAccountId& account_id) const override {
     if (GetAuthError(account_id) == GoogleServiceAuthError::AuthErrorNone()) {
@@ -348,12 +358,27 @@ class FakeProfileOAuth2TokenServiceDelegateDesktop
     return std::string();
   }
   void InvalidateTokenForMultilogin(
-      const CoreAccountId& failed_account) override {
-    UpdateAuthError(failed_account,
-                    GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-                        GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                            CREDENTIALS_REJECTED_BY_SERVER));
+      const CoreAccountId& failed_account,
+      const GoogleServiceAuthError& error) override {
+    UpdateAuthError(failed_account, error);
   }
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  void GenerateRefreshTokenBindingKeyAssertionForMultilogin(
+      const CoreAccountId& account_id,
+      std::string_view challenge,
+      std::string_view ephemeral_public_key,
+      TokenBindingHelper::GenerateAssertionCallback callback) override {
+    if (fail_binding_key_assertion_) {
+      std::move(callback).Run(std::string());
+      return;
+    }
+    FakeProfileOAuth2TokenServiceDelegate::
+        GenerateRefreshTokenBindingKeyAssertionForMultilogin(
+            account_id, challenge, ephemeral_public_key, std::move(callback));
+  }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+  [[maybe_unused]] const bool fail_binding_key_assertion_;
 };
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -463,11 +488,13 @@ class OAuthMultiloginHelperTest
   MockCookieManager* cookie_manager() { return &mock_cookie_manager_; }
   MockTokenService* token_service() { return mock_token_service_.get(); }
 
-  void ReplaceTokenService(bool use_refresh_tokens_for_multilogin) {
+  void ReplaceTokenService(bool use_refresh_tokens_for_multilogin,
+                           bool fail_binding_key_assertion = false) {
     if (use_refresh_tokens_for_multilogin) {
       mock_token_service_ = std::make_unique<MockTokenService>(
           &pref_service_,
-          std::make_unique<FakeProfileOAuth2TokenServiceDelegateDesktop>());
+          std::make_unique<FakeProfileOAuth2TokenServiceDelegateDesktop>(
+              fail_binding_key_assertion));
     } else {
       mock_token_service_ = std::make_unique<MockTokenService>(&pref_service_);
     }
@@ -858,7 +885,11 @@ TEST_F(OAuthMultiloginHelperTest, InvalidTokenError) {
 
   // The failed access token should be invalidated.
   EXPECT_CALL(*token_service(),
-              MockInvalidateTokenForMultilogin(kAccountId, kAccessToken));
+              MockInvalidateTokenForMultilogin(
+                  kAccountId, kAccessToken,
+                  GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                      GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                          CREDENTIALS_REJECTED_BY_SERVER)));
 
   // Issue access tokens.
   OAuth2AccessTokenConsumer::TokenResponse success_response;
@@ -902,7 +933,11 @@ TEST_F(OAuthMultiloginHelperTest, InvalidTokenErrorWithRefreshTokens) {
 
   // The failed refresh token should be invalidated.
   EXPECT_CALL(*token_service(),
-              MockInvalidateTokenForMultilogin(kAccountId, "refresh_token"));
+              MockInvalidateTokenForMultilogin(
+                  kAccountId, "refresh_token",
+                  GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                      GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                          CREDENTIALS_REJECTED_BY_SERVER)));
 
   // Multilogin call fails with invalid token for kAccountId.
   EXPECT_TRUE(url_loader()->IsPending(multilogin_url()));
@@ -929,7 +964,11 @@ TEST_F(OAuthMultiloginHelperTest, InvalidTokenErrorMaxRetries) {
 
   // The failed access token should be invalidated.
   EXPECT_CALL(*token_service(),
-              MockInvalidateTokenForMultilogin(kAccountId, kAccessToken))
+              MockInvalidateTokenForMultilogin(
+                  kAccountId, kAccessToken,
+                  GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                      GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                          CREDENTIALS_REJECTED_BY_SERVER)))
       .Times(kMaxFetcherRetries);
 
   // Issue access tokens.
@@ -1254,7 +1293,7 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenFailureChallengedTwice) {
                                                        "test_challenge.signed"),
             }));
   EXPECT_CALL(*token_service(),
-              MockInvalidateTokenForMultilogin(kAccountId, "refresh_token"));
+              MockInvalidateTokenForMultilogin(kAccountId, "refresh_token", _));
   url_loader()->SimulateResponseForPendingRequest(
       multilogin_url(),
       base::StringPrintf(
@@ -1272,6 +1311,63 @@ TEST_F(OAuthMultiloginHelperTest, BoundTokenFailureChallengedTwice) {
   EXPECT_NE(token_service()->GetAuthError(kAccountId),
             GoogleServiceAuthError::AuthErrorNone());
   EXPECT_EQ(result_, SetAccountsInCookieResult::kPersistentError);
+}
+
+TEST_F(OAuthMultiloginHelperTest, BoundTokenFailureAssertionRejectedByServer) {
+  ReplaceTokenService(/*use_refresh_tokens_for_multilogin=*/true);
+  token_service()->UpdateCredentials(
+      kAccountId, "refresh_token",
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown,
+      signin::TokenBindingInfo(std::vector<uint8_t>{1, 2, 3},
+                               /*mtls_token_binding=*/false));
+  CreateHelper({{kAccountId, kGaiaId}});
+
+  url_loader()->SimulateResponseForPendingRequest(
+      multilogin_url(),
+      base::StringPrintf(
+          kMultiloginRetryWithTokenBindingAssertionResponseFormat,
+          kGaiaId.ToString(), "test_challenge"),
+      net::HTTP_BAD_REQUEST);
+
+  const GoogleServiceAuthError expected_error =
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              TOKEN_BINDING_ASSERTION_REJECTED_BY_SERVER);
+  EXPECT_CALL(*token_service(),
+              MockInvalidateTokenForMultilogin(kAccountId, "refresh_token",
+                                               expected_error));
+  url_loader()->SimulateResponseForPendingRequest(
+      multilogin_url(), kMultiloginInvalidTokenResponse);
+  EXPECT_EQ(token_service()->GetAuthError(kAccountId), expected_error);
+}
+
+TEST_F(OAuthMultiloginHelperTest, BoundTokenFailureAssertionGenerationFailed) {
+  ReplaceTokenService(/*use_refresh_tokens_for_multilogin=*/true,
+                      /*fail_binding_key_assertion=*/true);
+  token_service()->UpdateCredentials(
+      kAccountId, "refresh_token",
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown,
+      signin::TokenBindingInfo(std::vector<uint8_t>{1, 2, 3},
+                               /*mtls_token_binding=*/false));
+  CreateHelper({{kAccountId, kGaiaId}});
+
+  url_loader()->SimulateResponseForPendingRequest(
+      multilogin_url(),
+      base::StringPrintf(
+          kMultiloginRetryWithTokenBindingAssertionResponseFormat,
+          kGaiaId.ToString(), "test_challenge"),
+      net::HTTP_BAD_REQUEST);
+
+  const GoogleServiceAuthError expected_error =
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              TOKEN_BINDING_ASSERTION_GENERATION_FAILED);
+  EXPECT_CALL(*token_service(),
+              MockInvalidateTokenForMultilogin(kAccountId, "refresh_token",
+                                               expected_error));
+  url_loader()->SimulateResponseForPendingRequest(
+      multilogin_url(), kMultiloginInvalidTokenResponse);
+  EXPECT_EQ(token_service()->GetAuthError(kAccountId), expected_error);
 }
 
 class OAuthMultiloginHelperPrototypeBoundSessionsEnabledTest

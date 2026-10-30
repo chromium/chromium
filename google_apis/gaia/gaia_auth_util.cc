@@ -19,6 +19,7 @@
 #include "base/supports_user_data.h"
 #include "base/values.h"
 #include "google_apis/gaia/bound_oauth_token.pb.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/list_accounts_response.pb.h"
@@ -250,6 +251,34 @@ std::string CreateMultiOAuthHeader(
                         base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &base64_encoded_header);
   return base64_encoded_header;
+}
+
+GoogleServiceAuthError::InvalidGaiaCredentialsReason
+ClassifyTokenBindingAssertionFailure(std::string_view token_binding_assertion) {
+  // Gaia only issues a token binding challenge in response to
+  // `kTokenBindingAssertionSentinel` if the refresh token is still valid.
+  // Therefore, if a request carrying a real assertion (or the signature
+  // failure placeholder) is rejected, the rejection is attributed to token
+  // binding rather than to an invalid refresh token. This may misclassify the
+  // rare case where the refresh token gets revoked between the challenge and
+  // the assertion requests.
+  //
+  // Requests without a binding assertion or carrying the sentinel itself are
+  // not reclassified, because the server rejects them before any binding check
+  // takes place.
+  if (token_binding_assertion.empty() ||
+      token_binding_assertion ==
+          GaiaConstants::kTokenBindingAssertionSentinel) {
+    return GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+        CREDENTIALS_REJECTED_BY_SERVER;
+  }
+  if (token_binding_assertion ==
+      GaiaConstants::kTokenBindingAssertionFailedPlaceholder) {
+    return GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+        TOKEN_BINDING_ASSERTION_GENERATION_FAILED;
+  }
+  return GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+      TOKEN_BINDING_ASSERTION_REJECTED_BY_SERVER;
 }
 
 }  // namespace gaia

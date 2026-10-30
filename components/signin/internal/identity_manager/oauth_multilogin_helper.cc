@@ -5,6 +5,7 @@
 #include "components/signin/internal/identity_manager/oauth_multilogin_helper.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/barrier_callback.h"
@@ -25,6 +26,8 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
+#include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth_multilogin_result.h"
@@ -54,13 +57,6 @@ CoreAccountId FindAccountIdForGaiaId(
   auto it = std::ranges::find(
       accounts, gaia_id, &OAuthMultiloginHelper::AccountIdGaiaIdPair::second);
   return it != accounts.end() ? it->first : CoreAccountId();
-}
-
-std::string FindTokenForAccountId(
-    const base::flat_map<CoreAccountId, OAuthMultiloginTokenResponse>& tokens,
-    const CoreAccountId& account_id) {
-  auto it = tokens.find(account_id);
-  return it != tokens.end() ? it->second.oauth_token() : std::string();
 }
 
 net::CookieOptions GetCookieOptions() {
@@ -435,11 +431,13 @@ void OAuthMultiloginHelper::OnOAuthMultiloginFinished(
         }
       }
 
-      std::string failed_token =
-          FindTokenForAccountId(tokens_, failed_account_id);
-      CHECK(!failed_token.empty());
-      token_service_->InvalidateTokenForMultilogin(failed_account_id,
-                                                   failed_token);
+      auto token_it = tokens_.find(failed_account_id);
+      CHECK(token_it != tokens_.end());
+      token_service_->InvalidateTokenForMultilogin(
+          failed_account_id, token_it->second.oauth_token(),
+          GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+              gaia::ClassifyTokenBindingAssertionFailure(
+                  token_it->second.token_binding_assertion())));
       token_binding_challenges_.erase(failed_account_id);
     }
   }

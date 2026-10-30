@@ -182,11 +182,13 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
                              const std::string& access_token);
 
   // Removes token from cache (if it is cached) and calls
-  // InvalidateTokenForMultilogin method of the delegate. This should be done if
-  // the token was received from this class, but was not accepted by the server
-  // (e.g., the server returned 401 Unauthorized).
-  virtual void InvalidateTokenForMultilogin(const CoreAccountId& failed_account,
-                                            const std::string& token);
+  // `InvalidateTokenForMultilogin()` method of the delegate with `error`. This
+  // should be done if the token was received from this class, but was not
+  // accepted by the server (e.g., the server returned 401 Unauthorized).
+  virtual void InvalidateTokenForMultilogin(
+      const CoreAccountId& failed_account,
+      const std::string& token,
+      const GoogleServiceAuthError& error);
 
   // If set, this callback will be invoked when a new refresh token is
   // available. Contains diagnostic information about the source of the update

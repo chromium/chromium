@@ -194,10 +194,10 @@ class ProfileOAuth2TokenServiceDelegate {
       const std::string& access_token) {}
 
   // If refresh token is accessible (on Desktop) sets error for it to
-  // INVALID_GAIA_CREDENTIALS and notifies the observers. Otherwise
-  // does nothing.
+  // `error` and notifies the observers. Otherwise does nothing.
   virtual void InvalidateTokenForMultilogin(
-      const CoreAccountId& failed_account) {}
+      const CoreAccountId& failed_account,
+      const GoogleServiceAuthError& error) {}
 
   virtual void Shutdown() {}
 

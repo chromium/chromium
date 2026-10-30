@@ -950,19 +950,19 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   testing::Mock::VerifyAndClearExpectations(&observer);
 
   // This should be fired after error is set.
+  const GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              TOKEN_BINDING_ASSERTION_REJECTED_BY_SERVER);
   EXPECT_CALL(observer,
               OnAuthErrorChanged(
-                  account_id1,
-                  GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-                      GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                          CREDENTIALS_REJECTED_BY_SERVER),
+                  account_id1, error,
                   signin_metrics::SourceForRefreshTokenOperation::kUnknown));
 
-  oauth2_service_delegate_->InvalidateTokenForMultilogin(account_id1);
-  EXPECT_EQ(oauth2_service_delegate_->GetAuthError(account_id1).state(),
-            GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
-  EXPECT_EQ(oauth2_service_delegate_->GetAuthError(account_id2).state(),
-            GoogleServiceAuthError::NONE);
+  oauth2_service_delegate_->InvalidateTokenForMultilogin(account_id1, error);
+  EXPECT_EQ(oauth2_service_delegate_->GetAuthError(account_id1), error);
+  EXPECT_EQ(oauth2_service_delegate_->GetAuthError(account_id2),
+            GoogleServiceAuthError::AuthErrorNone());
 
   oauth2_service_delegate_->RemoveObserver(&observer);
 }

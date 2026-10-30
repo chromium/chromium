@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/base64url.h"
 #include "google_apis/gaia/gaia_auth_test_util.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_id_literal.h"
 #include "google_apis/gaia/list_accounts_response.pb.h"
@@ -550,6 +551,23 @@ TEST(GaiaAuthUtilTest, CreateMultiOAuthHeaderEmpty) {
   std::string actual = CreateMultiOAuthHeader(
       {MultiloginAccountAuthCredentials(GaiaId(), "", "")});
   EXPECT_EQ(actual, kExpected);
+}
+
+TEST(GaiaAuthUtilTest, ClassifyTokenBindingAssertionFailure) {
+  EXPECT_EQ(ClassifyTokenBindingAssertionFailure(""),
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                CREDENTIALS_REJECTED_BY_SERVER);
+  EXPECT_EQ(ClassifyTokenBindingAssertionFailure(
+                GaiaConstants::kTokenBindingAssertionSentinel),
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                CREDENTIALS_REJECTED_BY_SERVER);
+  EXPECT_EQ(ClassifyTokenBindingAssertionFailure(
+                GaiaConstants::kTokenBindingAssertionFailedPlaceholder),
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                TOKEN_BINDING_ASSERTION_GENERATION_FAILED);
+  EXPECT_EQ(ClassifyTokenBindingAssertionFailure("signed_assertion"),
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                TOKEN_BINDING_ASSERTION_REJECTED_BY_SERVER);
 }
 
 }  // namespace gaia

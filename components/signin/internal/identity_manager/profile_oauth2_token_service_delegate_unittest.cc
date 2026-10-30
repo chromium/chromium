@@ -63,16 +63,15 @@ TEST_F(ProfileOAuth2TokenServiceDelegateTest, InvalidateTokensForMultilogin) {
 
   // Check that OnAuthErrorChanged is not fired from
   // InvalidateTokensForMultilogin and refresh tokens are not set in error.
+  const GoogleServiceAuthError error =
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER);
   EXPECT_CALL(mock_observer,
-              OnAuthErrorChanged(
-                  ::testing::_,
-                  GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
-                      GoogleServiceAuthError::InvalidGaiaCredentialsReason::
-                          CREDENTIALS_REJECTED_BY_SERVER),
-                  testing::_))
+              OnAuthErrorChanged(::testing::_, error, testing::_))
       .Times(0);
 
-  delegate.InvalidateTokenForMultilogin(account_id1);
+  delegate.InvalidateTokenForMultilogin(account_id1, error);
 
   EXPECT_EQ(delegate.GetAuthError(account_id1).state(),
             GoogleServiceAuthError::NONE);
