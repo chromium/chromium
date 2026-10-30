@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/css/cssom/css_keyword_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_style_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unit_value.h"
+#include "third_party/blink/renderer/core/css/cssom/css_unparsed_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unsupported_color.h"
 #include "third_party/blink/renderer/platform/scheduler/public/non_main_thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -66,6 +67,31 @@ class CrossThreadStyleValueTest : public testing::Test {
     DCHECK(!IsMainThread());
 
     EXPECT_EQ(value->value_, "Unparsed");
+    waitable_event->Signal();
+  }
+
+  void CheckUnparsedValueToString(base::WaitableEvent* waitable_event) {
+    DCHECK(!IsMainThread());
+
+    EXPECT_EQ(CrossThreadUnparsedValue("").ToCSSStyleValue()->toString(), "");
+    EXPECT_EQ(
+        CrossThreadUnparsedValue("Unparsed").ToCSSStyleValue()->toString(),
+        "Unparsed");
+    EXPECT_EQ(CrossThreadUnparsedValue("if(supports(selector(div)): 10px)")
+                  .ToCSSStyleValue()
+                  ->toString(),
+              "if(supports(selector(div)): 10px)");
+    EXPECT_EQ(CrossThreadUnparsedValue("if(supports(selector(x >)): 1px)")
+                  .ToCSSStyleValue()
+                  ->toString(),
+              "if(supports(selector(x >)): 1px)");
+    EXPECT_EQ(
+        CrossThreadUnparsedValue("if(supports(list-style-type: disc): 10px)")
+            .ToCSSStyleValue()
+            ->toString(),
+        "if(supports(list-style-type: disc): 10px)");
+    EXPECT_EQ(CrossThreadUnparsedValue("var()").ToCSSStyleValue()->toString(),
+              "var()");
     waitable_event->Signal();
   }
 
@@ -143,6 +169,20 @@ TEST_F(CrossThreadStyleValueTest, PassUnparsedValueCrossThread) {
   ShutDownThread();
 }
 
+TEST_F(CrossThreadStyleValueTest, UnparsedValueToStringCrossThread) {
+  thread_ = blink::NonMainThread::CreateThread(
+      ThreadCreationParams(ThreadType::kTestThread).SetSupportsGC(true));
+  base::WaitableEvent waitable_event;
+  PostCrossThreadTask(
+      *thread_->GetTaskRunner(), FROM_HERE,
+      CrossThreadBindOnce(
+          &CrossThreadStyleValueTest::CheckUnparsedValueToString,
+          CrossThreadUnretained(this), CrossThreadUnretained(&waitable_event)));
+  waitable_event.Wait();
+
+  ShutDownThread();
+}
+
 TEST_F(CrossThreadStyleValueTest, CrossThreadUnparsedValueToCSSStyleValue) {
   std::unique_ptr<CrossThreadUnparsedValue> value =
       std::make_unique<CrossThreadUnparsedValue>("Unparsed");
@@ -152,6 +192,17 @@ TEST_F(CrossThreadStyleValueTest, CrossThreadUnparsedValueToCSSStyleValue) {
   EXPECT_EQ(style_value->GetType(),
             CSSStyleValue::StyleValueType::kUnparsedType);
   EXPECT_EQ(style_value->toString(), "Unparsed");
+  EXPECT_TRUE(To<CSSUnparsedValue>(style_value)->IsValidDeclarationValue());
+  EXPECT_EQ(style_value->ToCSSValue()->CssText(), "Unparsed");
+
+  CSSUnparsedValue* empty_value = CSSUnparsedValue::FromString("");
+  EXPECT_EQ(empty_value->toString(), "");
+  EXPECT_TRUE(empty_value->IsValidDeclarationValue());
+  EXPECT_EQ(empty_value->ToCSSValue()->CssText(), "");
+
+  CSSUnparsedValue* invalid_value = CSSUnparsedValue::FromString("var()");
+  EXPECT_EQ(invalid_value->toString(), "var()");
+  EXPECT_FALSE(invalid_value->IsValidDeclarationValue());
 }
 
 TEST_F(CrossThreadStyleValueTest, PassKeywordValueCrossThread) {

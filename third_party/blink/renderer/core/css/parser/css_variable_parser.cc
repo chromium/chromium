@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -721,6 +722,10 @@ CSSVariableData* CSSVariableParser::ConsumeUnparsedDeclaration(
     bool comma_ends_declaration,
     bool& important,
     const CSSParserContext& context) {
+  // ConsumeUnparsedValue() may parse arbitrary CSS properties or selectors via
+  // if(supports(...)), which relies on main-thread-only state.
+  CHECK(IsMainThread());
+
   // Consume leading whitespace and comments, as required by the spec.
   stream.ConsumeWhitespace();
   stream.EnsureLookAhead();

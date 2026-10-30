@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
@@ -140,13 +141,14 @@ IndexedPropertySetterResult CSSUnparsedValue::AnonymousIndexedSetter(
 }
 
 bool CSSUnparsedValue::IsValidDeclarationValue() const {
-  return IsValidDeclarationValue(ToStringInternal());
+  return IsValidDeclarationValue(toString());
 }
 
 const CSSValue* CSSUnparsedValue::ToCSSValue() const {
-  String unparsed_string = ToStringInternal();
+  CHECK(IsMainThread());
+  String unparsed_string = toString();
 
-  if (unparsed_string.IsNull()) {
+  if (unparsed_string.empty()) {
     return MakeGarbageCollected<CSSUnparsedDeclarationValue>(
         MakeGarbageCollected<CSSVariableData>());
   }
@@ -186,7 +188,7 @@ bool CSSUnparsedValue::IsValidDeclarationValue(const String& string) {
       *StrictCSSParserContext(SecureContextMode::kInsecureContext));
 }
 
-String CSSUnparsedValue::ToStringInternal() const {
+String CSSUnparsedValue::toString() const {
   String serialized = SerializeSegments();
 
   // The serialization above defensively inserted /**/ between segments
@@ -206,7 +208,7 @@ String CSSUnparsedValue::ToStringInternal() const {
   StringBuilder builder;
   CSSParserTokenStream stream(serialized);
   if (stream.AtEnd()) {
-    return g_null_atom;
+    return g_empty_atom;
   }
   CSSParserToken token = stream.ConsumeRaw();
   token.Serialize(builder);
