@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/process/process.h"
 #include "build/build_config.h"
@@ -122,8 +124,12 @@ void ProducerHost::Flush(
     size_t num_data_sources,
     perfetto::FlushFlags /*ignored*/) {
   DCHECK(producer_client_);
-  std::vector<uint64_t> data_source_ids(
-      raw_data_source_ids, UNSAFE_TODO(raw_data_source_ids + num_data_sources));
+  // SAFETY: `perfetto::Producer::Flush()` is a C-style interface that passes
+  // the data source IDs as a pointer + size pair. The tracing service
+  // guarantees `raw_data_source_ids` points to `num_data_sources` elements
+  // (it passes `std::vector::data()` and `std::vector::size()`).
+  std::vector<uint64_t> data_source_ids = base::ToVector(
+      UNSAFE_BUFFERS(base::span(raw_data_source_ids, num_data_sources)));
   DCHECK_EQ(data_source_ids.size(), num_data_sources);
   producer_client_->Flush(id, data_source_ids);
 }
