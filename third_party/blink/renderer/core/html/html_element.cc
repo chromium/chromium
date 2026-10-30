@@ -4368,6 +4368,13 @@ void HTMLElement::DefaultEventHandler(Event& event) {
 }
 
 bool HTMLElement::HandleKeyboardActivation(Event& event) {
+  // If the focus is on a descendant (such as a text field),
+  // skip handling keyboard activation.
+  if (RuntimeEnabledFeatures::KeyboardActivationFocusCheckEnabled()) {
+    if (GetDocument().FocusedElement() != this) {
+      return false;
+    }
+  }
   auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
   if (keyboard_event) {
     if (event.type() == event_type_names::kKeydown &&

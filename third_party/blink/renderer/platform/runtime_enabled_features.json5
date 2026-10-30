@@ -4046,6 +4046,11 @@
       base_feature: "none",
     },
     {
+      // Skips keyboard activation when focus is on a descendant. Shipped in M158.
+      name: "KeyboardActivationFocusCheck",
+      status: "stable",
+    },
+    {
       // Checks interactive content using EventPath captured at
       // dispatch start instead of current DOM state. This was
       // added in M145 and can be removed after M147.
