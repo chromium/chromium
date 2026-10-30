@@ -38,8 +38,6 @@ PaymentResponseHelper::PaymentResponseHelper(
     base::WeakPtr<JourneyLogger> journey_logger,
     base::WeakPtr<Delegate> delegate)
     : app_locale_(std::move(app_locale)),
-      is_waiting_for_shipping_address_normalization_(false),
-      is_waiting_for_instrument_details_(false),
       spec_(spec),
       delegate_(delegate),
       journey_logger_(journey_logger),
@@ -86,6 +84,7 @@ void PaymentResponseHelper::OnInstrumentDetailsReady(
   if (!is_waiting_for_instrument_details_)
     return;
 
+  is_waiting_for_instrument_details_ = false;
   method_name_ = method_name;
   stringified_details_ = stringified_details;
   payer_data_from_app_.payer_name = payer_data.payer_name;
@@ -94,7 +93,6 @@ void PaymentResponseHelper::OnInstrumentDetailsReady(
   payer_data_from_app_.shipping_address = payer_data.shipping_address.Clone();
   payer_data_from_app_.selected_shipping_option_id =
       payer_data.selected_shipping_option_id;
-  is_waiting_for_instrument_details_ = false;
   if (selected_app_->type() == PaymentApp::Type::SERVICE_WORKER_APP) {
     if (journey_logger_) {
       journey_logger_->RecordRespondWithResolvedStatus();
@@ -103,13 +101,10 @@ void PaymentResponseHelper::OnInstrumentDetailsReady(
             features::kPaymentRequestMandatoryPaymentAppUi) &&
         !WasPaymentHandlerWindowInteractedWith()) {
       is_waiting_for_user_gesture_ = true;
-      return;
     }
   }
 
-  if (!is_waiting_for_shipping_address_normalization_) {
-    GeneratePaymentResponse();
-  }
+  GeneratePaymentResponseIfNeeded();
 }
 
 void PaymentResponseHelper::OnUserInteractionCaptured() {
@@ -124,9 +119,7 @@ void PaymentResponseHelper::OnUserInteractionCaptured() {
         PaymentHandlerPausedResolutionOutcome::kUserInteracted);
   }
 
-  if (!is_waiting_for_shipping_address_normalization_) {
-    GeneratePaymentResponse();
-  }
+  GeneratePaymentResponseIfNeeded();
 }
 
 void PaymentResponseHelper::OnInstrumentDetailsError(
@@ -153,12 +146,10 @@ void PaymentResponseHelper::OnAddressNormalized(
   if (!is_waiting_for_shipping_address_normalization_)
     return;
 
-  shipping_address_ = normalized_profile;
   is_waiting_for_shipping_address_normalization_ = false;
+  shipping_address_ = normalized_profile;
 
-  if (!is_waiting_for_instrument_details_ && !is_waiting_for_user_gesture_) {
-    GeneratePaymentResponse();
-  }
+  GeneratePaymentResponseIfNeeded();
 }
 
 mojom::PayerDetailPtr PaymentResponseHelper::GeneratePayerDetail(
@@ -210,11 +201,12 @@ mojom::PayerDetailPtr PaymentResponseHelper::GeneratePayerDetail(
   return payer;
 }
 
-// TODO(b/525086085): Consolidate address normailization and user gesture check
-// at the begin of GeneratePaymentResponse().
-void PaymentResponseHelper::GeneratePaymentResponse() {
-  DCHECK(!is_waiting_for_instrument_details_);
-  DCHECK(!is_waiting_for_shipping_address_normalization_);
+void PaymentResponseHelper::GeneratePaymentResponseIfNeeded() {
+  if (is_waiting_for_instrument_details_ ||
+      is_waiting_for_shipping_address_normalization_ ||
+      is_waiting_for_user_gesture_) {
+    return;
+  }
 
   if (!spec_ || !selected_app_)
     return;

@@ -5,6 +5,7 @@
 #include "components/payments/content/payment_response_helper.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -18,6 +19,7 @@
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_quality/addresses/test_address_normalizer.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/payments/content/payment_request_spec.h"
@@ -101,6 +103,9 @@ class PaymentResponseHelperTest : public testing::Test,
   base::WeakPtr<PaymentApp> test_app() { return test_app_->AsWeakPtr(); }
   base::WeakPtr<PaymentRequestDelegate> test_payment_request_delegate() {
     return test_payment_request_delegate_.GetWeakPtr();
+  }
+  autofill::TestAddressNormalizer* test_address_normalizer() {
+    return test_payment_request_delegate_.test_address_normalizer();
   }
   base::WeakPtr<JourneyLogger> journey_logger() {
     return journey_logger_.GetWeakPtr();
@@ -261,6 +266,29 @@ class PaymentResponseHelperMandatoryUiTest : public PaymentResponseHelperTest {
         features::kPaymentRequestMandatoryPaymentAppUi);
   }
 
+  // PaymentResponseHelper::Delegate:
+  void OnPaymentResponseError(mojom::PaymentEventResponseType error,
+                              const std::string& error_message) override {
+    response_error_ = error;
+  }
+
+  void RecreateSpecWithShipping() {
+    std::vector<mojom::PaymentShippingOptionPtr> shipping_options;
+    mojom::PaymentShippingOptionPtr option =
+        mojom::PaymentShippingOption::New();
+    option->id = "option:1";
+    option->selected = true;
+    shipping_options.push_back(std::move(option));
+    mojom::PaymentDetailsPtr details = mojom::PaymentDetails::New();
+    details->shipping_options = std::move(shipping_options);
+    mojom::PaymentOptionsPtr options = mojom::PaymentOptions::New();
+    options->request_shipping = true;
+    RecreateSpecWithOptionsAndDetails(std::move(options), std::move(details),
+                                      GetMethodDataForVisa());
+  }
+
+  std::optional<mojom::PaymentEventResponseType> response_error_;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -396,6 +424,56 @@ TEST_F(PaymentResponseHelperMandatoryUiTest,
       "PaymentRequest.MandatoryPaymentAppUi."
       "PaymentHandlerPausedResolutionOutcome",
       0);
+}
+
+TEST_F(PaymentResponseHelperMandatoryUiTest,
+       GeneratePaymentResponseIfNeeded_MissingAddressNormalization) {
+  was_payment_handler_window_interacted_with_ = true;
+  RecreateSpecWithShipping();
+  test_address_normalizer()->DelayNormalization();
+  PaymentResponseHelper helper("en-US", spec(), test_app(),
+                               test_payment_request_delegate(), test_address(),
+                               test_address(), journey_logger(), GetWeakPtr());
+  EXPECT_TRUE(response().is_null());
+}
+
+TEST_F(PaymentResponseHelperMandatoryUiTest,
+       GeneratePaymentResponseIfNeeded_MissingInstrumentDetails) {
+  was_payment_handler_window_interacted_with_ = true;
+  ResetTestApp(std::make_unique<TestPaymentApp>(
+      "method-name", mojom::PaymentEventResponseType::PAYMENT_EVENT_REJECT));
+  RecreateSpecWithShipping();
+  // Address normalization finishes synchronously before `InvokePaymentApp()`
+  // rejects, calling `GeneratePaymentResponseIfNeeded()` while instrument
+  // details are still pending.
+  PaymentResponseHelper helper("en-US", spec(), test_app(),
+                               test_payment_request_delegate(), test_address(),
+                               test_address(), journey_logger(), GetWeakPtr());
+  EXPECT_EQ(mojom::PaymentEventResponseType::PAYMENT_EVENT_REJECT,
+            response_error_);
+  EXPECT_TRUE(response().is_null());
+}
+
+TEST_F(PaymentResponseHelperMandatoryUiTest,
+       GeneratePaymentResponseIfNeeded_MissingUserInteraction) {
+  was_payment_handler_window_interacted_with_ = false;
+  RecreateSpecWithShipping();
+  PaymentResponseHelper helper("en-US", spec(), test_app(),
+                               test_payment_request_delegate(), test_address(),
+                               test_address(), journey_logger(), GetWeakPtr());
+  EXPECT_TRUE(response().is_null());
+}
+
+TEST_F(PaymentResponseHelperMandatoryUiTest,
+       GeneratePaymentResponseIfNeeded_AllSignalsPresent) {
+  was_payment_handler_window_interacted_with_ = true;
+  RecreateSpecWithShipping();
+  PaymentResponseHelper helper("en-US", spec(), test_app(),
+                               test_payment_request_delegate(), test_address(),
+                               test_address(), journey_logger(), GetWeakPtr());
+  ASSERT_FALSE(response().is_null());
+  EXPECT_EQ("method-name", response()->method_name);
+  EXPECT_EQ("US", response()->shipping_address->country);
 }
 
 TEST_F(PaymentResponseHelperTest, RespondWithResolvedMetrics_ServiceWorkerApp) {

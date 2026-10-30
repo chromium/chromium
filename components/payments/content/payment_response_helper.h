@@ -72,8 +72,10 @@ class PaymentResponseHelper final : public PaymentApp::Delegate {
   }
 
  private:
-  // Generates the Payment Response and sends it to the delegate.
-  void GeneratePaymentResponse();
+  // Generates the payment response and sends it to the delegate. Does nothing
+  // until the payment details, shipping address normalization and any
+  // required user interaction have all completed.
+  void GeneratePaymentResponseIfNeeded();
 
   // To be used as AddressNormalizer::NormalizationCallback.
   void OnAddressNormalized(bool success,
@@ -84,8 +86,8 @@ class PaymentResponseHelper final : public PaymentApp::Delegate {
   bool WasPaymentHandlerWindowInteractedWith();
 
   const std::string app_locale_;
-  bool is_waiting_for_shipping_address_normalization_;
-  bool is_waiting_for_instrument_details_;
+  bool is_waiting_for_shipping_address_normalization_ = false;
+  bool is_waiting_for_instrument_details_ = false;
   bool is_waiting_for_user_gesture_ = false;
 
   base::WeakPtr<PaymentRequestSpec> spec_;
