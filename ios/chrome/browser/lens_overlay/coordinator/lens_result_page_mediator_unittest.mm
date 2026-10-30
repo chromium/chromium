@@ -112,6 +112,7 @@ class LensResultPageMediatorTest : public PlatformTest {
 
   ~LensResultPageMediatorTest() override {
     browser_web_state_delegate_.ClearLastProxyAuthenticationRequest();
+    fake_web_state_ = nullptr;
     [mediator_ disconnect];
     PlatformTest::TearDown();
   }
@@ -187,7 +188,7 @@ class LensResultPageMediatorTest : public PlatformTest {
   FakeLensResultPageMediatorDelegate* fake_delegate_;
 
   // Call `AttachFakeWebState()` to use `fake_web_state_`.
-  raw_ptr<web::FakeWebState, DanglingUntriaged> fake_web_state_;
+  raw_ptr<web::FakeWebState> fake_web_state_ = nullptr;
 };
 
 // Tests that the mediator starts a navigation when loadResultsURL is called.
