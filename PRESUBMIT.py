@@ -2000,6 +2000,19 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
         False,
         [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
     ),
+    BanRule(
+        r'/#include\s+["<](?:third_party/icu/source/i18n/)?'
+        r'unicode/(?:smpdtfmt|dtptngen)\.h[">]',
+        ('Do not use icu::SimpleDateFormat or icu::DateTimePatternGenerator '
+         'directly. Use base::i18n::IcuBridge::date_time_formatter() (see '
+         'base/i18n/icubridge/date_time_formatter.h) or the helpers in '
+         'base/i18n/time_formatting.h instead.', ),
+        True,
+        [
+            r'^base/i18n/',
+            _THIRD_PARTY_EXCEPT_BLINK,
+        ],
+    ),
     BanRule(r'CrossThreadPersistent<', (
         'Do not use blink::CrossThreadPersistent, but '
         'blink::CrossThreadHandle. It is harder to mis-use.', 'More info: '

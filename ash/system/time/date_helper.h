@@ -15,16 +15,15 @@
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "third_party/icu/source/i18n/unicode/dtitvfmt.h"
 #include "third_party/icu/source/i18n/unicode/gregocal.h"
-#include "third_party/icu/source/i18n/unicode/smpdtfmt.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 
 namespace ash {
 
-// A singleton class used to create and cache `GregorianCalendar`,
-// `icu::SimpleDateFormat` and `icu::DateIntervalFormat` objects, so that they
-// don't have to be recreated each time when querying the time difference or
-// formatting a time. This improves performance since creating
-// `icu::SimpleDateFormat` and `icu::DateIntervalFormat` objects is expensive.
+// A singleton class used to create and cache `GregorianCalendar` and
+// `icu::DateIntervalFormat` objects, so that they don't have to be recreated
+// each time when querying the time difference or formatting a time interval.
+// This improves performance since creating `icu::DateIntervalFormat` objects
+// is expensive.
 class DateHelper : public LocaleChangeObserver,
                    public system::TimezoneSettings::Observer {
  public:
@@ -81,7 +80,7 @@ class DateHelper : public LocaleChangeObserver,
 
   ~DateHelper() override;
 
-  // Resets the icu::SimpleDateFormat objects after a time zone change.
+  // Resets the icu::DateIntervalFormat objects after a time zone change.
   ASH_EXPORT void ResetFormatters();
 
   // Calculates the week titles based on the language setting.
