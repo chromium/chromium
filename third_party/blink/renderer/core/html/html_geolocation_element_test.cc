@@ -316,8 +316,12 @@ TEST_F(HTMLGeolocationElementTest, GeolocationDisplayModeIconOnlyDisabled) {
 
   geolocation_element->setAttribute(html_names::kDisplaymodeAttr,
                                     AtomicString("icon-only"));
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(geolocation_element->IsIconOnly());
   CheckInnerText(geolocation_element, kGeolocationString);
+  EXPECT_NE(nullptr, geolocation_element->permission_text_span_for_testing()
+                         ->GetComputedStyle());
+  EXPECT_EQ(kGeolocationString, geolocation_element->computedName());
 }
 
 TEST_F(HTMLGeolocationElementTest, GeolocationStatusChange) {

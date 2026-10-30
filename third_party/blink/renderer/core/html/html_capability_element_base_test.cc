@@ -511,10 +511,12 @@ TEST_F(HTMLCapabilityElementBaseTest, DisplayModeIconOnlyDisabled) {
 
   permission_element->setAttribute(html_names::kDisplaymodeAttr,
                                    AtomicString("icon-only"));
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(permission_element->IsIconOnly());
-  EXPECT_FALSE(permission_element->permission_text_span_for_testing()
-                   ->innerText()
-                   .empty());
+  CheckInnerText(permission_element, kCameraString);
+  EXPECT_NE(nullptr, permission_element->permission_text_span_for_testing()
+                         ->GetComputedStyle());
+  EXPECT_EQ(kCameraString, permission_element->computedName());
 }
 
 TEST_F(HTMLCapabilityElementBaseTest,
