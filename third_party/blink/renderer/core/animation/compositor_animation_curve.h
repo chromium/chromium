@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_COMPOSITOR_ANIMATION_CURVE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_COMPOSITOR_ANIMATION_CURVE_H_
 
+#include <atomic>
+
 #include "base/memory/ref_counted.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
@@ -35,8 +37,9 @@ class CORE_EXPORT CompositorAnimationCurve
     std::unique_ptr<gfx::TimingFunction> timing_function;
   };
 
-  wtf_size_t ComputeKeyframeIndex(double progress);
-  double ComputeKeyframeIntervalProgress(wtf_size_t index, double progress);
+  wtf_size_t ComputeKeyframeIndex(double progress) const;
+  double ComputeKeyframeIntervalProgress(wtf_size_t index,
+                                         double progress) const;
 
   const CSSPropertyName& PropertyName() const { return property_name_; }
 
@@ -93,8 +96,20 @@ class CORE_EXPORT CompositorAnimationCurve
   virtual scoped_refptr<CompositorAnimationCurve> Clone() = 0;
 
  private:
+  template <typename T>
+  class RelaxedAtomic {
+   public:
+    T load() const { return value_.load(std::memory_order_relaxed); }
+    void store(T value) { value_.store(value, std::memory_order_relaxed); }
+
+   private:
+    std::atomic<T> value_{};
+  };
+
   CSSPropertyName property_name_;
-  wtf_size_t last_index_ = 0;
+  // Hint for the next interval search. Any valid index works, so concurrent
+  // samples only need relaxed atomics.
+  mutable RelaxedAtomic<wtf_size_t> last_index_;
 
   // Holds the indices of any keyframes that contain a style dependent values.
   // The corresponding values require updating when the keyframe snapshot is
@@ -107,7 +122,7 @@ template <typename T>
 class TypedCompositorAnimationCurve : public CompositorAnimationCurve {
  public:
   // Returns the interpolated value from the animation progress.
-  T Interpolate(double progress) {
+  T Interpolate(double progress) const {
     wtf_size_t result_index = ComputeKeyframeIndex(progress);
     double transformed_progress =
         ComputeKeyframeIntervalProgress(result_index, progress);
@@ -197,7 +212,7 @@ class TypedCompositorAnimationCurve : public CompositorAnimationCurve {
   virtual T ConvertCssValue(const CSSValue* value) = 0;
   virtual T ConvertTypedInterpolationValue(
       const TypedInterpolationValue* interpolation_value) = 0;
-  virtual T InterpolateKeyframes(wtf_size_t index, double proress) = 0;
+  virtual T InterpolateKeyframes(wtf_size_t index, double progress) const = 0;
 
  private:
   Vector<TypedKeyframe> keyframes_;

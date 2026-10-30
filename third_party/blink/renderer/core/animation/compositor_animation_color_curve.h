@@ -5,13 +5,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_COMPOSITOR_ANIMATION_COLOR_CURVE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_COMPOSITOR_ANIMATION_COLOR_CURVE_H_
 
+#include "cc/paint/animation_curve_proxy.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-shared.h"
 #include "third_party/blink/renderer/core/animation/compositor_animation_curve.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace blink {
 
 class CORE_EXPORT CompositorAnimationColorCurve
-    : public TypedCompositorAnimationCurve<Color> {
+    : public TypedCompositorAnimationCurve<Color>,
+      public cc::AnimationCurveProxy<SkColor4f> {
  public:
   // Returns if the color value is supported for interpolation via a paint
   // worklet.
@@ -33,7 +36,14 @@ class CORE_EXPORT CompositorAnimationColorCurve
 
   ~CompositorAnimationColorCurve() override = default;
 
-  bool IsOpaque() { return is_opaque_; }
+  bool IsOpaque() const { return is_opaque_; }
+
+  // cc::AnimationCurveProxy<SkColor4f>:
+  void Sample(float progress, SkColor4f* value) const override {
+    *value = Interpolate(progress).toSkColor4f();
+  }
+  void AddRef() const override { CompositorAnimationCurve::AddRef(); }
+  void Release() const override { CompositorAnimationCurve::Release(); }
 
   bool NeedsKeyframeSnapshotUpdate(const Document& document,
                                    const ComputedStyle& style) const override;
@@ -46,7 +56,7 @@ class CORE_EXPORT CompositorAnimationColorCurve
   Color ConvertCssValue(const CSSValue* value) override;
   Color ConvertTypedInterpolationValue(
       const TypedInterpolationValue* value) override;
-  Color InterpolateKeyframes(wtf_size_t index, double progress) override;
+  Color InterpolateKeyframes(wtf_size_t index, double progress) const override;
 
   void UpdateIsOpaque();
 

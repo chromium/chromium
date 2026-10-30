@@ -5,13 +5,17 @@
 #ifndef CC_TEST_ANIMATION_TEST_COMMON_H_
 #define CC_TEST_ANIMATION_TEST_COMMON_H_
 
+#include <atomic>
 #include <memory>
 
+#include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "cc/animation/animation_timeline.h"
 #include "cc/animation/keyframe_model.h"
+#include "cc/paint/animation_curve_proxy.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/filter_operations.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 #include "ui/gfx/geometry/transform_operations.h"
 
@@ -80,6 +84,35 @@ class FakeFloatTransition : public gfx::FloatAnimationCurve {
   base::TimeDelta duration_;
   float from_;
   float to_;
+};
+
+// Thread-safe test curve that interpolates between `from` and `to` and counts
+// `Sample()` calls.
+class TestColorCurve : public AnimationCurveProxy<SkColor4f>,
+                       public base::RefCountedThreadSafe<TestColorCurve> {
+ public:
+  explicit TestColorCurve(SkColor4f from = SkColors::kBlack,
+                          SkColor4f to = SkColors::kWhite);
+
+  // The color at `progress` for the default curve.
+  static SkColor4f Gray(float progress) {
+    return {progress, progress, progress, 1.f};
+  }
+
+  // AnimationCurveProxy<SkColor4f>:
+  void Sample(float progress, SkColor4f* value) const override;
+  void AddRef() const override;
+  void Release() const override;
+
+  int samples() const { return samples_.load(std::memory_order_relaxed); }
+
+ private:
+  friend class base::RefCountedThreadSafe<TestColorCurve>;
+  ~TestColorCurve() override;
+
+  SkColor4f from_;
+  SkColor4f to_;
+  mutable std::atomic<int> samples_{0};
 };
 
 int AddScrollOffsetAnimationToAnimation(Animation* animation,

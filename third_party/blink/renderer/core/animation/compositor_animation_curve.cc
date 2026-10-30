@@ -138,7 +138,8 @@ CompositorAnimationCurve::UpdateKeyframeSnapshot(Animation* animation) {
   return scoped_ref;
 }
 
-wtf_size_t CompositorAnimationCurve::ComputeKeyframeIndex(double progress) {
+wtf_size_t CompositorAnimationCurve::ComputeKeyframeIndex(
+    double progress) const {
   double result = 0;
   wtf_size_t limit = Size() - 2;
   double min_progress = GetBaseKeyframe(0).offset;
@@ -148,7 +149,7 @@ wtf_size_t CompositorAnimationCurve::ComputeKeyframeIndex(double progress) {
   } else if (progress > min_progress && limit > 0) {
     // Most common case is that we are in the same keyframe interval as our
     // last call.
-    result = last_index_;
+    result = last_index_.load();
     double offset = GetBaseKeyframe(result).offset;
     if (offset <= progress) {
       // Current keyframe interval or animating in the forwards direction.
@@ -166,13 +167,13 @@ wtf_size_t CompositorAnimationCurve::ComputeKeyframeIndex(double progress) {
       }
     }
   }
-  last_index_ = result;
+  last_index_.store(result);
   return result;
 }
 
 double CompositorAnimationCurve::ComputeKeyframeIntervalProgress(
     wtf_size_t index,
-    double progress) {
+    double progress) const {
   double start = GetBaseKeyframe(index).offset;
   double end = GetBaseKeyframe(index + 1).offset;
   double local_progress = (progress - start) / (end - start);

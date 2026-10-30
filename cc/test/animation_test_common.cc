@@ -5,6 +5,7 @@
 #include "cc/test/animation_test_common.h"
 
 #include <algorithm>
+#include <limits>
 #include <memory>
 #include <utility>
 
@@ -19,6 +20,7 @@
 #include "cc/layers/layer_impl.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
+#include "ui/gfx/animation/tween.h"
 
 using gfx::KeyframeModel;
 
@@ -268,6 +270,24 @@ float FakeFloatTransition::GetTransformedValue(
 
 std::unique_ptr<gfx::AnimationCurve> FakeFloatTransition::Clone() const {
   return std::make_unique<FakeFloatTransition>(*this);
+}
+
+TestColorCurve::TestColorCurve(SkColor4f from, SkColor4f to)
+    : from_(from), to_(to) {}
+
+TestColorCurve::~TestColorCurve() = default;
+
+void TestColorCurve::Sample(float progress, SkColor4f* value) const {
+  samples_.fetch_add(1, std::memory_order_relaxed);
+  *value = gfx::Tween::ColorValueBetween(progress, from_, to_);
+}
+
+void TestColorCurve::AddRef() const {
+  base::RefCountedThreadSafe<TestColorCurve>::AddRef();
+}
+
+void TestColorCurve::Release() const {
+  base::RefCountedThreadSafe<TestColorCurve>::Release();
 }
 
 int AddScrollOffsetAnimationToAnimation(Animation* animation,

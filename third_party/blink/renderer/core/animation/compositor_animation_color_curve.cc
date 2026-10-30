@@ -86,8 +86,9 @@ Color CompositorAnimationColorCurve::ConvertTypedInterpolationValue(
   return CSSColorInterpolationType::GetColor(*(list.Get(0)));
 }
 
-Color CompositorAnimationColorCurve::InterpolateKeyframes(wtf_size_t index,
-                                                          double progress) {
+Color CompositorAnimationColorCurve::InterpolateKeyframes(
+    wtf_size_t index,
+    double progress) const {
   auto& keyframes = GetKeyframes();
   Color first = keyframes[index].value;
   Color second = keyframes[index + 1].value;

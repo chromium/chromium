@@ -868,6 +868,7 @@ cc_test("cc_unittests") {
     "metrics/video_playback_roughness_reporter_unittest.cc",
     "mojo_embedder/async_layer_tree_frame_sink_unittest.cc",
     "paint/clear_for_opaque_raster_unittest.cc",
+    "paint/deferred_values_unittest.cc",
     "paint/discardable_image_map_unittest.cc",
     "paint/display_item_list_unittest.cc",
     "paint/filter_operations_unittest.cc",

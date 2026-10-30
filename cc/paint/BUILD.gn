@@ -9,6 +9,7 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 cc_component("paint") {
   output_name = "cc_paint"
   sources = [
+    "animation_curve_proxy.h",
     "clear_for_opaque_raster.cc",
     "clear_for_opaque_raster.h",
     "color_filter.cc",
@@ -19,6 +20,11 @@ cc_component("paint") {
     "decoded_draw_image.h",
     "deferred_paint_record.cc",
     "deferred_paint_record.h",
+    "deferred_property_key.h",
+    "deferred_value_map.cc",
+    "deferred_value_map.h",
+    "deferred_values.cc",
+    "deferred_values.h",
     "directly_composited_image_info.h",
     "discardable_image_map.cc",
     "discardable_image_map.h",
