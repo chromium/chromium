@@ -68,7 +68,8 @@ enum class NearbySharePairedKeyVerificationError {
   kUnableToVerifyRemotePublicCertificateWhileRestrictedToContacts,
   kMissingOptionalSignature,
   kUnableToVerifyOptionalSignature,
-  kMaxValue = kUnableToVerifyOptionalSignature,
+  kInvalidOrReplayedAuthenticationToken,
+  kMaxValue = kInvalidOrReplayedAuthenticationToken,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/nearby/enums.xml:NearbySharePairedKeyVerificationError)
 

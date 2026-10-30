@@ -13,11 +13,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/certificates/fake_nearby_share_certificate_manager.h"
 #include "chrome/browser/nearby_sharing/certificates/nearby_share_decrypted_public_certificate.h"
 #include "chrome/browser/nearby_sharing/certificates/test_util.h"
 #include "chrome/browser/nearby_sharing/incoming_frames_reader.h"
+#include "chrome/browser/nearby_sharing/nearby_share_metrics.h"
 #include "chrome/browser/nearby_sharing/share_target.h"
 #include "chrome/services/sharing/public/proto/wire_format.pb.h"
 #include "chromeos/ash/components/nearby/common/connections_manager/fake_nearby_connection.h"
@@ -283,6 +285,127 @@ TEST_F(PairedKeyVerificationRunnerTest,
 
   ExpectPairedKeyEncryptionFrameSent();
   ExpectPairedKeyResultFrameSent(sharing::nearby::PairedKeyResultFrame::UNABLE);
+}
+
+TEST_F(PairedKeyVerificationRunnerTest, ReplayedIncomingAuthTokenRejected) {
+  share_target_.is_known = true;
+  SetUpPairedKeyEncryptionFrame(ReturnFrameType::kValid);
+  SetUpPairedKeyResultFrame(
+      ReturnFrameType::kValid,
+      sharing::mojom::PairedKeyResultFrame_Status::kSuccess);
+
+  RunVerification(
+      /*use_valid_public_certificate=*/true,
+      /*restricted_to_contacts=*/false,
+      PairedKeyVerificationRunner::PairedKeyVerificationResult::kSuccess);
+  ExpectPairedKeyEncryptionFrameSent();
+  ExpectPairedKeyResultFrameSent(
+      sharing::nearby::PairedKeyResultFrame::SUCCESS);
+
+  // A second incoming connection reusing the same authentication token must
+  // be rejected immediately before sending or reading any frames.
+  base::HistogramTester histogram_tester;
+  FakeNearbyConnection replay_connection;
+  testing::NiceMock<MockIncomingFramesReader> replay_frames_reader(
+      &process_manager_, &replay_connection);
+  EXPECT_CALL(replay_frames_reader,
+              ReadFrame(testing::_, testing::_, testing::_))
+      .Times(0);
+
+  PairedKeyVerificationRunner replay_runner(
+      share_target_, kEndpointId, AuthToken(), &replay_connection,
+      GetNearbyShareTestDecryptedPublicCertificate(), &certificate_manager_,
+      nearby_share::mojom::Visibility::kAllContacts,
+      /*restrict_to_contacts=*/false, &replay_frames_reader, kTimeout);
+
+  base::RunLoop run_loop;
+  replay_runner.Run(base::BindLambdaForTesting(
+      [&](PairedKeyVerificationRunner::PairedKeyVerificationResult result) {
+        EXPECT_EQ(
+            PairedKeyVerificationRunner::PairedKeyVerificationResult::kFail,
+            result);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  EXPECT_TRUE(replay_connection.GetWrittenData().empty());
+  histogram_tester.ExpectUniqueSample("Nearby.Share.PairedKeyVerificationError",
+                                      NearbySharePairedKeyVerificationError::
+                                          kInvalidOrReplayedAuthenticationToken,
+                                      1);
+}
+
+TEST_F(PairedKeyVerificationRunnerTest, EmptyIncomingAuthTokenRejected) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(frames_reader_, ReadFrame(testing::_, testing::_, testing::_))
+      .Times(0);
+
+  PairedKeyVerificationRunner runner(
+      share_target_, kEndpointId, /*token=*/{}, &connection_,
+      GetNearbyShareTestDecryptedPublicCertificate(), &certificate_manager_,
+      nearby_share::mojom::Visibility::kAllContacts,
+      /*restrict_to_contacts=*/false, &frames_reader_, kTimeout);
+
+  base::RunLoop run_loop;
+  runner.Run(base::BindLambdaForTesting(
+      [&](PairedKeyVerificationRunner::PairedKeyVerificationResult result) {
+        EXPECT_EQ(
+            PairedKeyVerificationRunner::PairedKeyVerificationResult::kFail,
+            result);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  EXPECT_TRUE(connection_.GetWrittenData().empty());
+  histogram_tester.ExpectUniqueSample("Nearby.Share.PairedKeyVerificationError",
+                                      NearbySharePairedKeyVerificationError::
+                                          kInvalidOrReplayedAuthenticationToken,
+                                      1);
+}
+
+TEST_F(PairedKeyVerificationRunnerTest, ReflectedOutgoingAuthTokenRejected) {
+  share_target_.is_incoming = false;
+  SetUpPairedKeyEncryptionFrame(ReturnFrameType::kEmpty);
+  SetUpPairedKeyResultFrame(
+      ReturnFrameType::kValid,
+      sharing::mojom::PairedKeyResultFrame_Status::kUnable);
+
+  RunVerification(
+      /*use_valid_public_certificate=*/false,
+      /*restricted_to_contacts=*/false,
+      PairedKeyVerificationRunner::PairedKeyVerificationResult::kUnable);
+  ExpectPairedKeyEncryptionFrameSent();
+  ExpectPairedKeyResultFrameSent(sharing::nearby::PairedKeyResultFrame::UNABLE);
+
+  // An incoming connection attempting to reflect the authentication token that
+  // was just signed on an outgoing connection must be rejected immediately.
+  share_target_.is_incoming = true;
+  base::HistogramTester histogram_tester;
+  FakeNearbyConnection reflected_connection;
+  testing::NiceMock<MockIncomingFramesReader> reflected_frames_reader(
+      &process_manager_, &reflected_connection);
+  EXPECT_CALL(reflected_frames_reader,
+              ReadFrame(testing::_, testing::_, testing::_))
+      .Times(0);
+
+  PairedKeyVerificationRunner reflected_runner(
+      share_target_, kEndpointId, AuthToken(), &reflected_connection,
+      GetNearbyShareTestDecryptedPublicCertificate(), &certificate_manager_,
+      nearby_share::mojom::Visibility::kAllContacts,
+      /*restrict_to_contacts=*/false, &reflected_frames_reader, kTimeout);
+
+  base::RunLoop run_loop;
+  reflected_runner.Run(base::BindLambdaForTesting(
+      [&](PairedKeyVerificationRunner::PairedKeyVerificationResult result) {
+        EXPECT_EQ(
+            PairedKeyVerificationRunner::PairedKeyVerificationResult::kFail,
+            result);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  EXPECT_TRUE(reflected_connection.GetWrittenData().empty());
+  histogram_tester.ExpectUniqueSample("Nearby.Share.PairedKeyVerificationError",
+                                      NearbySharePairedKeyVerificationError::
+                                          kInvalidOrReplayedAuthenticationToken,
+                                      1);
 }
 
 struct TestParameters {

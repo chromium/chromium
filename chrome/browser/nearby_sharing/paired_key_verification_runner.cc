@@ -4,18 +4,78 @@
 
 #include "chrome/browser/nearby_sharing/paired_key_verification_runner.h"
 
+#include <array>
+#include <cstddef>
 #include <iomanip>
 #include <iostream>
+#include <utility>
 
+#include "base/containers/lru_cache.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_local_storage_slot.h"
 #include "chrome/browser/nearby_sharing/certificates/common.h"
 #include "chrome/browser/nearby_sharing/certificates/constants.h"
 #include "chrome/browser/nearby_sharing/nearby_share_metrics.h"
 #include "components/cross_device/logging/logging.h"
+#include "crypto/hash.h"
 #include "third_party/nearby/sharing/proto/rpc_resources.pb.h"
 #include "third_party/nearby/sharing/proto/wire_format.pb.h"
 
 namespace {
+
+constexpr size_t kMaxConsumedAuthTokens = 4096;
+
+// Tracks authentication tokens on the current UI sequence so a compromised
+// kNearby utility process cannot replay or reflect a previously observed
+// (raw_authentication_token, PairedKeyEncryptionFrame) tuple onto a fabricated
+// incoming connection.
+//
+// Storing the guard in SequenceLocalStorageSlot keeps it alive across kNearby
+// utility process restarts for the lifetime of the browser UI sequence while
+// automatically resetting state when each unit test's TaskEnvironment tears
+// down.
+class IncomingTokenReplayGuard {
+ public:
+  using AuthTokenHash = std::array<uint8_t, crypto::hash::kSha256Size>;
+
+  static IncomingTokenReplayGuard& Get() {
+    static base::SequenceLocalStorageSlot<IncomingTokenReplayGuard> slot;
+    return slot.GetOrCreateValue();
+  }
+
+  bool IsConsumed(base::span<const uint8_t> raw_token) {
+    if (raw_token.empty()) {
+      return false;
+    }
+    AuthTokenHash token_hash = crypto::hash::Sha256(raw_token);
+    return consumed_tokens_.Get(token_hash) != consumed_tokens_.end();
+  }
+
+  bool TryConsume(base::span<const uint8_t> raw_token) {
+    if (raw_token.empty()) {
+      return false;
+    }
+    AuthTokenHash token_hash = crypto::hash::Sha256(raw_token);
+    if (consumed_tokens_.Get(token_hash) != consumed_tokens_.end()) {
+      return false;
+    }
+    consumed_tokens_.Put(std::move(token_hash));
+    return true;
+  }
+
+  void RecordConsumed(base::span<const uint8_t> raw_token) {
+    if (raw_token.empty()) {
+      return;
+    }
+    consumed_tokens_.Put(crypto::hash::Sha256(raw_token));
+  }
+
+ private:
+  base::LRUCacheSet<AuthTokenHash> consumed_tokens_{kMaxConsumedAuthTokens};
+};
 
 std::ostream& operator<<(
     std::ostream& out,
@@ -90,6 +150,27 @@ void PairedKeyVerificationRunner::Run(
   CHECK(!callback_, base::NotFatalUntil::M160);
   callback_ = std::move(callback);
 
+  // A genuine UKEY2 handshake derives a fresh authentication token per
+  // connection. Because UKEY2 terminates in the untrusted Nearby utility
+  // process, reject empty or previously consumed tokens before running
+  // paired-key verification.
+  if (share_target_.is_incoming) {
+    if (raw_token_.empty() ||
+        IncomingTokenReplayGuard::Get().IsConsumed(raw_token_)) {
+      CD_LOG(WARNING, Feature::NS)
+          << __func__
+          << ": Rejecting incoming paired-key verification due to empty or "
+             "replayed authentication token.";
+      RecordNearbySharePairedKeyVerificationError(
+          NearbySharePairedKeyVerificationError::
+              kInvalidOrReplayedAuthenticationToken);
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback_),
+                                    PairedKeyVerificationResult::kFail));
+      return;
+    }
+  }
+
   SendPairedKeyEncryptionFrame();
   frames_reader_->ReadFrame(
       sharing::mojom::V1Frame::Tag::kPairedKeyEncryption,
@@ -122,6 +203,10 @@ void PairedKeyVerificationRunner::OnReadPairedKeyEncryptionFrame(
   if (remote_public_certificate_result ==
       PairedKeyVerificationResult::kSuccess) {
     SendCertificateInfo();
+  } else if (remote_public_certificate_result ==
+             PairedKeyVerificationResult::kFail) {
+    std::move(callback_).Run(PairedKeyVerificationResult::kFail);
+    return;
   } else if (restrict_to_contacts_) {
     CD_LOG(VERBOSE, Feature::NS)
         << __func__
@@ -261,6 +346,11 @@ void PairedKeyVerificationRunner::SendPairedKeyEncryptionFrame() {
           certificate_manager_->SignWithPrivateCertificate(
               visibility_, PadPrefix(local_prefix_, raw_token_));
       signature && !signature->empty()) {
+    if (!share_target_.is_incoming) {
+      // Record outgoing sender-signed tokens so they cannot be reflected
+      // onto an incoming connection.
+      IncomingTokenReplayGuard::Get().RecordConsumed(raw_token_);
+    }
     encryption_frame->set_signed_data(signature->data(), signature->size());
   } else {
     auto random_bytes =
@@ -291,6 +381,9 @@ PairedKeyVerificationRunner::VerifyRemotePublicCertificate(
               visibility_, raw_token_);
       hash && std::ranges::equal(
                   *hash, frame->get_paired_key_encryption()->secret_id_hash)) {
+    if (!ConsumeIncomingTokenIfNeeded()) {
+      return PairedKeyVerificationResult::kFail;
+    }
     CD_LOG(VERBOSE, Feature::NS)
         << __func__ << ": Successfully verified remote public certificate.";
     return PairedKeyVerificationResult::kSuccess;
@@ -345,6 +438,10 @@ PairedKeyVerificationRunner::VerifyPairedKeyEncryptionFrame(
     }
   }
 
+  if (!ConsumeIncomingTokenIfNeeded()) {
+    return PairedKeyVerificationResult::kFail;
+  }
+
   if (!share_target_.is_known) {
     CD_LOG(VERBOSE, Feature::NS)
         << __func__
@@ -357,6 +454,24 @@ PairedKeyVerificationRunner::VerifyPairedKeyEncryptionFrame(
       << __func__
       << ": Successfully verified remote paired key encryption frame.";
   return PairedKeyVerificationResult::kSuccess;
+}
+
+bool PairedKeyVerificationRunner::ConsumeIncomingTokenIfNeeded() {
+  if (!share_target_.is_incoming || incoming_token_consumed_) {
+    return true;
+  }
+  if (!IncomingTokenReplayGuard::Get().TryConsume(raw_token_)) {
+    CD_LOG(WARNING, Feature::NS)
+        << __func__
+        << ": Rejecting incoming paired-key verification due to replayed "
+           "authentication token.";
+    RecordNearbySharePairedKeyVerificationError(
+        NearbySharePairedKeyVerificationError::
+            kInvalidOrReplayedAuthenticationToken);
+    return false;
+  }
+  incoming_token_consumed_ = true;
+  return true;
 }
 
 PairedKeyVerificationRunner::PairedKeyVerificationResult

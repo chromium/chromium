@@ -65,6 +65,7 @@ class PairedKeyVerificationRunner {
   PairedKeyVerificationResult MergeResults(
       const std::vector<PairedKeyVerificationResult>& results);
   void SendCertificateInfo();
+  bool ConsumeIncomingTokenIfNeeded();
 
   ShareTarget share_target_;
   std::string endpoint_id_;
@@ -80,6 +81,7 @@ class PairedKeyVerificationRunner {
 
   char local_prefix_;
   char remote_prefix_;
+  bool incoming_token_consumed_ = false;
 
   base::WeakPtrFactory<PairedKeyVerificationRunner> weak_ptr_factory_{this};
 };

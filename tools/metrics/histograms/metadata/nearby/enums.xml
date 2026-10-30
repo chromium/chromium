@@ -542,6 +542,7 @@ chromium-metrics-reviews@google.com.
   <int value="3"
       label="Unable to verify main signature and optional signature missing"/>
   <int value="4" label="Unable to verify both main and optional signatures"/>
+  <int value="5" label="Empty or replayed incoming authentication token"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/nearby_sharing/nearby_share_metrics.h:NearbySharePairedKeyVerificationError) -->
