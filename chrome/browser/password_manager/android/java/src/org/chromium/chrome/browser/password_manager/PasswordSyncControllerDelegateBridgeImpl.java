@@ -75,13 +75,13 @@ class PasswordSyncControllerDelegateBridgeImpl {
         @AndroidBackendErrorType int error = AndroidBackendErrorType.UNCATEGORIZED;
         int apiErrorCode = 0; // '0' means SUCCESS.
 
-        if (exception instanceof PasswordStoreAndroidBackend.BackendException) {
-            error = ((PasswordStoreAndroidBackend.BackendException) exception).errorCode;
+        if (exception instanceof PasswordStoreAndroidBackend.BackendException backendException) {
+            error = backendException.errorCode;
         }
 
-        if (exception instanceof ApiException) {
+        if (exception instanceof ApiException apiException) {
             error = AndroidBackendErrorType.EXTERNAL_ERROR;
-            apiErrorCode = ((ApiException) exception).getStatusCode();
+            apiErrorCode = apiException.getStatusCode();
         }
 
         PasswordSyncControllerDelegateBridgeImplJni.get()

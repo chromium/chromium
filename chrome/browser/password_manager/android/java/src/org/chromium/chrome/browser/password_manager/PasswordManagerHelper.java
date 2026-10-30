@@ -481,8 +481,8 @@ public class PasswordManagerHelper {
                         ? PasswordMetricsUtil.ACCOUNT_GET_INTENT_ERROR_HISTOGRAM
                         : PasswordMetricsUtil.LOCAL_GET_INTENT_ERROR_HISTOGRAM;
         RecordHistogram.recordBooleanHistogram(kGetIntentSuccessHistogram, false);
-        if (exception instanceof CredentialManagerBackendException) {
-            int errorCode = ((CredentialManagerBackendException) exception).errorCode;
+        if (exception instanceof CredentialManagerBackendException backendException) {
+            int errorCode = backendException.errorCode;
             RecordHistogram.recordEnumeratedHistogram(
                     kGetIntentErrorHistogram, errorCode, CredentialManagerError.COUNT);
             return;

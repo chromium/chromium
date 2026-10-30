@@ -25,8 +25,8 @@ class PasswordManagerAndroidBackendUtil {
     private PasswordManagerAndroidBackendUtil() {}
 
     static @AndroidBackendErrorType int getBackendError(Exception exception) {
-        if (exception instanceof PasswordStoreAndroidBackend.BackendException) {
-            return ((PasswordStoreAndroidBackend.BackendException) exception).errorCode;
+        if (exception instanceof PasswordStoreAndroidBackend.BackendException backendException) {
+            return backendException.errorCode;
         }
         if (exception instanceof ApiException) {
             return AndroidBackendErrorType.EXTERNAL_ERROR;
@@ -45,17 +45,16 @@ class PasswordManagerAndroidBackendUtil {
     }
 
     static int getApiErrorCode(Exception exception) {
-        if (exception instanceof ApiException) {
-            return ((ApiException) exception).getStatusCode();
+        if (exception instanceof ApiException apiException) {
+            return apiException.getStatusCode();
         }
         return 0; // '0' means SUCCESS.
     }
 
     static @Nullable Integer getConnectionResultCode(Exception exception) {
-        if (!(exception instanceof ApiException)) return null;
+        if (!(exception instanceof ApiException apiException)) return null;
 
-        ConnectionResult connectionResult =
-                ((ApiException) exception).getStatus().getConnectionResult();
+        ConnectionResult connectionResult = apiException.getStatus().getConnectionResult();
         if (connectionResult == null) return null;
 
         return connectionResult.getErrorCode();
