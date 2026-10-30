@@ -195,6 +195,73 @@ TEST_F(CriticalUserJourneyServiceTest, HaTSSurveyAbandonedExitBranchPSD) {
 }
 
 TEST_F(CriticalUserJourneyServiceTest,
+       SplitRateProbabilityGateFiltersAbandonedSurveys) {
+  base::test::ScopedFeatureList scoped_params;
+  scoped_params.InitAndEnableFeatureWithParameters(
+      kTestJourney, {{"survey_probability_on_exit", "0.25"}});
+
+  auto* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetForProfile(&profile_, true));
+
+  // Case A: Random roll 0.50 is above the 0.25 probability on exit.
+  // The survey must NOT be launched.
+  service_->SetRandDoubleCallbackForTesting(
+      base::BindRepeating([]() { return 0.50; }));
+  EXPECT_CALL(*mock_hats_service, LaunchSurvey(testing::_, testing::_, testing::_,
+                                               testing::_, testing::_,
+                                               testing::_, testing::_))
+      .Times(0);
+
+  ui::test::TestElement el1(kTestElementId1, kTestContext);
+  el1.Show();
+  base::RunLoop().RunUntilIdle();
+
+  ui::test::TestElement el3(kTestElementId3, kTestContext);
+  el3.Show();
+  el3.Hide();
+  base::RunLoop().RunUntilIdle();
+
+  testing::Mock::VerifyAndClearExpectations(mock_hats_service);
+
+  // Case B: Random roll 0.10 is below the 0.25 probability on exit.
+  // The survey MUST be launched.
+  base::RunLoop run_loop;
+  SurveyStringData captured_psd;
+  service_->SetRandDoubleCallbackForTesting(
+      base::BindRepeating([]() { return 0.10; }));
+  EXPECT_CALL(*mock_hats_service,
+              LaunchSurvey("TestHatsTrigger", testing::_, testing::_,
+                           testing::_, testing::_, testing::_, testing::_))
+      .WillOnce([&run_loop, &captured_psd](
+                    const std::string& trigger,
+                    base::OnceClosure success_callback,
+                    base::OnceClosure failure_callback,
+                    const SurveyBitsData& product_specific_bits_data,
+                    const SurveyStringData& product_specific_string_data,
+                    const std::optional<std::string>& supplied_trigger_id,
+                    const HatsService::SurveyOptions& survey_options) {
+        captured_psd = product_specific_string_data;
+        std::move(success_callback).Run();
+        run_loop.Quit();
+        return HatsService::LaunchError::kNone;
+      });
+
+  // Re-trigger the journey via exit branch.
+  ui::test::TestElement el1_b(kTestElementId1, kTestContext);
+  el1_b.Show();
+  base::RunLoop().RunUntilIdle();
+
+  ui::test::TestElement el3_b(kTestElementId3, kTestContext);
+  el3_b.Show();
+  el3_b.Hide();
+
+  run_loop.Run();
+
+  EXPECT_EQ(captured_psd[kCujJourneyOutcomeKey], kCujJourneyOutcomeAbandoned);
+  EXPECT_EQ(captured_psd[kCujJourneyNameKey], "TestJourney");
+}
+
+TEST_F(CriticalUserJourneyServiceTest,
        ActivatedTriggerHidingBeforeNextStepCompletesJourney) {
   class ActivatedTriggerService : public CriticalUserJourneyService {
    public:

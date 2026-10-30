@@ -188,6 +188,8 @@ class CriticalUserJourney {
   // Returns whether this specific journey's feature flag is enabled.
   bool IsEnabled() const { return base::FeatureList::IsEnabled(*feature_); }
 
+  const base::Feature* feature() const { return feature_; }
+
   const std::vector<std::unique_ptr<CriticalUserJourneyStep>>& steps() const {
     return steps_;
   }

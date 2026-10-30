@@ -7,8 +7,10 @@
 #include <algorithm>
 
 #include "base/functional/bind.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_registry.h"
@@ -128,12 +130,34 @@ void CriticalUserJourneyService::OnJourneyStarted(
 void CriticalUserJourneyService::OnJourneyEnded(
     CriticalUserJourneySession* session,
     CriticalUserJourneySession::JourneyResult result) {
+  // Every terminal `JourneyResult` reaches `OnJourneyEnded()` so `session` is
+  // removed from `active_sessions_` below. Exit-branch journeys outside
+  // `[min_dwell, max_dwell]` arrive as `kAbandonedBelowDwell` or
+  // `kAbandonedAboveDwell`, so they skip the HaTS survey and still clean up.
   const bool is_completed =
       result == CriticalUserJourneySession::JourneyResult::kCompleted;
   const bool is_abandoned =
       result == CriticalUserJourneySession::JourneyResult::kAbandoned;
-  if ((is_completed || is_abandoned) &&
-      session->journey()->hats_params().has_value()) {
+
+  bool should_launch_survey = (is_completed || is_abandoned) &&
+                              session->journey()->hats_params().has_value();
+
+  // Apply split-rate probability gate for exit branches (F3 / Q1).
+  if (is_abandoned && session->journey()->feature()) {
+    const double exit_probability = base::GetFieldTrialParamByFeatureAsDouble(
+        *session->journey()->feature(), "survey_probability_on_exit", 1.0);
+    if (exit_probability <= 0.0) {
+      should_launch_survey = false;
+    } else if (exit_probability < 1.0) {
+      const double roll = rand_double_callback_ ? rand_double_callback_.Run()
+                                                : base::RandDouble();
+      if (roll >= exit_probability) {
+        should_launch_survey = false;
+      }
+    }
+  }
+
+  if (should_launch_survey) {
     const auto& params = *session->journey()->hats_params();
     if (auto* hats_service = HatsServiceFactory::GetForProfile(
             profile_, /*create_if_necessary=*/true)) {

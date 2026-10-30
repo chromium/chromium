@@ -56,6 +56,13 @@ class CriticalUserJourneyService : public KeyedService {
   // Initializes the service, registers journeys and sets up triggers.
   void Initialize();
 
+  // Callback returning a random double in [0.0, 1.0) to override
+  // `base::RandDouble()` when testing exit-branch survey sampling.
+  using RandDoubleCallback = base::RepeatingCallback<double()>;
+  void SetRandDoubleCallbackForTesting(RandDoubleCallback callback) {
+    rand_double_callback_ = std::move(callback);
+  }
+
  protected:
   // Registers journeys with the registry. Overridden by platform-specific
   // implementations.
@@ -71,6 +78,11 @@ class CriticalUserJourneyService : public KeyedService {
   void OnJourneyStarted(const CriticalUserJourney* journey,
                         std::optional<int> metric_id,
                         ui::TrackedElement* element);
+  // Invoked for every terminal `JourneyResult` (`kCompleted`, `kAbandoned`,
+  // `kAbandonedBelowDwell`, `kAbandonedAboveDwell`, `kAborted`, and `kTimeout`)
+  // so `session` is always removed from `active_sessions_`. Only `kCompleted`
+  // and `kAbandoned` (an exit branch reached within `[min_dwell, max_dwell]`)
+  // are eligible to launch a HaTS survey.
   void OnJourneyEnded(CriticalUserJourneySession* session,
                       CriticalUserJourneySession::JourneyResult result);
 
@@ -82,6 +94,7 @@ class CriticalUserJourneyService : public KeyedService {
   CriticalUserJourneyRegistry registry_;
   std::vector<std::unique_ptr<CriticalUserJourneySession>> active_sessions_;
   std::vector<base::CallbackListSubscription> subscriptions_;
+  RandDoubleCallback rand_double_callback_;
 };
 
 }  // namespace metrics
