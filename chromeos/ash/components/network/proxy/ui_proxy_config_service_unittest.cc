@@ -8,16 +8,18 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/strings/string_util.h"
 #include "base/test/gtest_tags.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/network_state.h"
+#include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/components/onc/onc_utils.h"
 #include "components/onc/onc_pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -25,6 +27,7 @@
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
+#include "dbus/object_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -128,10 +131,18 @@ class UIProxyConfigServiceTest : public testing::Test {
     std::optional<base::DictValue> shill_json_dict =
         chromeos::onc::ReadDictionaryFromJson(shill_json_string);
     CHECK(shill_json_dict.has_value());
+    base::test::TestFuture<dbus::ObjectPath> configured;
     ShillManagerClient::Get()->ConfigureService(
-        *shill_json_dict, base::DoNothing(),
+        *shill_json_dict, configured.GetCallback<const dbus::ObjectPath&>(),
         base::BindOnce([](const std::string& name, const std::string& msg) {}));
-    base::RunLoop().RunUntilIdle();
+    ASSERT_TRUE(configured.Wait());
+
+    // The Shill reply can arrive before NetworkStateHandler has loaded the
+    // service properties used by proxy configuration lookup.
+    ASSERT_TRUE(base::test::RunUntil([&] {
+      return NetworkHandler::Get()->network_state_handler()->GetNetworkState(
+                 configured.Get().value()) != nullptr;
+    }));
   }
 
   std::unique_ptr<UIProxyConfigService> CreateServiceOffLocalState() {
