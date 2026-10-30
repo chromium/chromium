@@ -90,7 +90,9 @@ class GeminiActuationHandlerTest : public PlatformTest {
     };
   }
 
-  void TestInterruptReason(GeminiYieldReason reason) {
+  // Dispatches a yield with `reason` and expects it to be rejected, leaving the
+  // task untouched.
+  void TestInterruptReasonRejected(GeminiYieldReason reason) {
     GeminiActuationHandler* handler = CreateHandler();
     actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
 
@@ -109,7 +111,10 @@ class GeminiActuationHandlerTest : public PlatformTest {
 
     GeminiActuationResponse* response = future.Get();
     ASSERT_NE(nil, response);
-    EXPECT_EQ(actor::mojom::ActionResultCode::kOk, response.resultCode);
+    EXPECT_EQ(actor::mojom::ActionResultCode::kInvalidTaskStateForAct,
+              response.resultCode);
+    EXPECT_EQ(actor::ActorTaskState::kInit,
+              actor_service_->GetActiveTaskState());
   }
 
   // Returns a `kConfirmation` yield request carrying `message`.
@@ -840,18 +845,18 @@ TEST_F(
   ExpectConfirmedResponse(future1.Get());
 }
 
-// Tests that `dispatchActuationRequest` routes `kClarification`
-// and responds with `kOk`.
+// Tests that `dispatchActuationRequest` responds with `kInvalidTaskStateForAct`
+// to the unsupported `kClarification` reason.
 TEST_F(GeminiActuationHandlerTest,
        DispatchGeminiActuationRequest_Yield_Clarification) {
-  TestInterruptReason(GeminiYieldReason::kClarification);
+  TestInterruptReasonRejected(GeminiYieldReason::kClarification);
 }
 
-// Tests that `dispatchActuationRequest` routes `kUserTakeover`
-// and responds with `kOk`.
+// Tests that `dispatchActuationRequest` responds with `kInvalidTaskStateForAct`
+// to the unsupported `kUserTakeover` reason.
 TEST_F(GeminiActuationHandlerTest,
        DispatchGeminiActuationRequest_Yield_UserTakeover) {
-  TestInterruptReason(GeminiYieldReason::kUserTakeover);
+  TestInterruptReasonRejected(GeminiYieldReason::kUserTakeover);
 }
 
 // Tests that `dispatchActuationRequest` with `kTaskComplete` stops the
@@ -922,28 +927,11 @@ TEST_F(GeminiActuationHandlerTest,
             subsequent_response.resultCode);
 }
 
-// Tests that `dispatchActuationRequest` with `kUnknownReason` pauses the
-// task.
+// Tests that `dispatchActuationRequest` responds with `kInvalidTaskStateForAct`
+// to the unsupported `kUnknownReason` (pause) reason.
 TEST_F(GeminiActuationHandlerTest,
-       DispatchGeminiActuationRequest_Pause_UnknownReason) {
-  GeminiActuationHandler* handler = CreateHandler();
-  actor::ActorTaskId task_id = [handler createTaskWithTitle:@"Test Task"];
-
-  GeminiYieldAction* yield_action = [[GeminiYieldAction alloc]
-      initWithReason:GeminiYieldReason::kUnknownReason];
-  GeminiActuationRequest* request =
-      [[GeminiActuationRequest alloc] initWithActionProtos:nil
-                                                taskUpdate:nil
-                                               yieldAction:yield_action];
-
-  base::test::TestFuture<GeminiActuationResponse*> future;
-  [handler dispatchActuationRequest:request
-                          forTaskID:task_id
-                    completionBlock:GetCompletionBlock(future)];
-
-  GeminiActuationResponse* response = future.Get();
-  ASSERT_NE(nil, response);
-  EXPECT_EQ(actor::mojom::ActionResultCode::kOk, response.resultCode);
+       DispatchGeminiActuationRequest_Yield_UnknownReason) {
+  TestInterruptReasonRejected(GeminiYieldReason::kUnknownReason);
 }
 
 // Tests that `disconnect` cancels in-flight requests with `kExecutorDestroyed`.

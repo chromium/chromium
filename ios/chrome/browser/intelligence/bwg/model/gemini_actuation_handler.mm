@@ -96,6 +96,15 @@ GeminiActuationResponse* MakeRequestInProgressResponse() {
                          "this task."];
 }
 
+// Returned when the task rejects a request.
+// TODO(crbug.com/578539528): Map rejection causes to dedicated result codes
+// and error messages.
+GeminiActuationResponse* MakeTaskRejectedResponse() {
+  return [[GeminiActuationResponse alloc]
+      initWithResultCode:actor::mojom::ActionResultCode::kInvalidTaskStateForAct
+            errorMessage:"Task rejected the request."];
+}
+
 // Maps PageContextWrapperError enums to the corresponding TabObservationResult
 // proto enums.
 optimization_guide::proto::TabObservation::TabObservationResult
@@ -418,18 +427,15 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
                                 completionBlock:completionBlock];
         break;
       case GeminiYieldReason::kClarification:
-        [self handleInterruptTaskWithID:taskID
-                                 reason:actor::ActorTaskInterruptReason::
-                                            kWaitingUserClarification
-                            yieldAction:yieldAction
-                        completionBlock:completionBlock];
-        break;
       case GeminiYieldReason::kUserTakeover:
-        [self handleInterruptTaskWithID:taskID
-                                 reason:actor::ActorTaskInterruptReason::
-                                            kWaitingUserTakeover
-                            yieldAction:yieldAction
-                        completionBlock:completionBlock];
+      case GeminiYieldReason::kUnknownReason:
+        // TODO(crbug.com/567097523): Interrupt and prompt the user for
+        // clarification once `ActorTask` supports it.
+        // TODO(crbug.com/567096140): Interrupt and hand control to the user
+        // once `ActorTask` supports takeover.
+        // TODO(crbug.com/496163986): Pause the task until the user resumes it
+        // once `ActorTask` supports pausing.
+        completionBlock(MakeTaskRejectedResponse());
         break;
       case GeminiYieldReason::kTaskComplete:
         [self handleStopTaskWithID:taskID
@@ -442,9 +448,6 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
         [self handleStopTaskWithID:taskID
                             reason:actor::ActorTaskStoppedReason::kModelError
                    completionBlock:completionBlock];
-        break;
-      case GeminiYieldReason::kUnknownReason:
-        [self handlePauseTaskWithID:taskID completionBlock:completionBlock];
         break;
     }
     return;
@@ -651,25 +654,6 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
   std::move(callback).Run(response);
 }
 
-// Interrupts the task with `reason` for user intervention and unblocks the
-// caller.
-- (void)handleInterruptTaskWithID:(actor::ActorTaskId)taskID
-                           reason:(actor::ActorTaskInterruptReason)reason
-                      yieldAction:(GeminiYieldAction*)yieldAction
-                  completionBlock:
-                      (void (^)(GeminiActuationResponse*))completionBlock {
-  CHECK(yieldAction);
-  // TODO(crbug.com/556739755): Wire up `yieldAction.messageToUser` to the user
-  // intervention prompt / UI flow when intervention UI is integrated.
-  _actorService->InterruptTask(taskID, reason);
-  if (completionBlock) {
-    completionBlock([[GeminiActuationResponse alloc]
-             initWithResultCode:actor::mojom::ActionResultCode::kOk
-                   userResponse:nil
-        serializedActionsResult:nil]);
-  }
-}
-
 // Stops the task and invokes `completionBlock`.
 // `actorTaskDidStopWithID:` is posted, so the task is forgotten here directly
 // to reject follow-up requests with `kTaskWentAway`. Any in-flight request is
@@ -680,19 +664,6 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
                  (void (^)(GeminiActuationResponse*))completionBlock {
   _actorService->StopTask(taskID, reason);
   _taskToWebStateIDMap.erase(taskID);
-  if (completionBlock) {
-    completionBlock([[GeminiActuationResponse alloc]
-             initWithResultCode:actor::mojom::ActionResultCode::kOk
-                   userResponse:nil
-        serializedActionsResult:nil]);
-  }
-}
-
-// Pauses the task and immediately invokes `completionBlock` with `kOk`.
-- (void)handlePauseTaskWithID:(actor::ActorTaskId)taskID
-              completionBlock:
-                  (void (^)(GeminiActuationResponse*))completionBlock {
-  _actorService->PauseTask(taskID, /*from_actor=*/true);
   if (completionBlock) {
     completionBlock([[GeminiActuationResponse alloc]
              initWithResultCode:actor::mojom::ActionResultCode::kOk
