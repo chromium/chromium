@@ -21,6 +21,7 @@ extension ILType {
         withMethods: [
             "useStruct",
             "getStruct",
+            "getBrowserMadeStruct",
             "syncGetStruct",
         ])
     fileprivate static let jsGoldenPrimaryRemoteWrapper: ILType = .object(
@@ -45,6 +46,8 @@ extension ObjectGroup {
             "getStruct": [
                 .plain(.string),
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetStruct_ResponseParams),
+            "getBrowserMadeStruct": [
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetBrowserMadeStruct_ResponseParams),
             "syncGetStruct": [
                 .plain(.string),
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_SyncGetStruct_ResponseParams),
@@ -91,8 +94,18 @@ extension ILType {
     fileprivate static let jsGoldenSimpleStructConstructor: ILType = .constructor([
         .plain(.string),
     ] => .jsGoldenSimpleStruct)
+    fileprivate static let jsGoldenBrowserMadeStruct: ILType = .object(
+        ofGroup: "golden.BrowserMadeStruct",
+        withProperties: [
+            "data",
+        ])
     fileprivate static let jsGoldenPrimary_GetStruct_ResponseParams: ILType = .object(
         ofGroup: "golden.Primary_GetStruct_ResponseParams",
+        withProperties: [
+            "result",
+        ])
+    fileprivate static let jsGoldenPrimary_GetBrowserMadeStruct_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_GetBrowserMadeStruct_ResponseParams",
         withProperties: [
             "result",
         ])
@@ -125,11 +138,27 @@ extension ObjectGroup {
         ],
         methods: [:]
     )
+    fileprivate static let goldenBrowserMadeStruct = ObjectGroup(
+        name: "golden.BrowserMadeStruct",
+        instanceType: .jsGoldenBrowserMadeStruct,
+        properties: [
+            "data": .jsFloatMojoArray,
+        ],
+        methods: [:]
+    )
     fileprivate static let goldenPrimaryGetStructResponseParams = ObjectGroup(
         name: "golden.Primary_GetStruct_ResponseParams",
         instanceType: .jsGoldenPrimary_GetStruct_ResponseParams,
         properties: [
             "result": .jsGoldenSimpleStruct,
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenPrimaryGetBrowserMadeStructResponseParams = ObjectGroup(
+        name: "golden.Primary_GetBrowserMadeStruct_ResponseParams",
+        instanceType: .jsGoldenPrimary_GetBrowserMadeStruct_ResponseParams,
+        properties: [
+            "result": .jsGoldenBrowserMadeStruct,
         ],
         methods: [:]
     )
@@ -149,6 +178,8 @@ extension ObjectGroup {
 extension ILType {
     fileprivate static let jsInt64MojoArray: ILType =
         .createJsArrayType(ofElementType: .bigint)
+    fileprivate static let jsFloatMojoArray: ILType =
+        .createJsArrayType(ofElementType: .float)
 }
 
 /// As Fuzzilli runs, the OperationMutator and VariadicInputReducer will modify
@@ -168,6 +199,15 @@ private let MojoInt64MojoArrayGenerator = CodeGenerator(
     produces: [.jsInt64MojoArray]
 ) { b, _ in
     let elem = b.findOrGenerateType(.bigint)
+    var elements: [Variable] = [elem]
+    b.createArray(with: elements)
+}
+private let MojoFloatMojoArrayGenerator = CodeGenerator(
+    "MojoFloatMojoArrayGenerator",
+    inputs: .one,
+    produces: [.jsFloatMojoArray]
+) { b, _ in
+    let elem = b.findOrGenerateType(.float)
     var elements: [Variable] = [elem]
     b.createArray(with: elements)
 }
@@ -263,7 +303,9 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .goldenPrimaryRemoteWrapper,
     .goldenLargeStruct,
     .goldenSimpleStruct,
+    .goldenBrowserMadeStruct,
     .goldenPrimaryGetStructResponseParams,
+    .goldenPrimaryGetBrowserMadeStructResponseParams,
     .goldenPrimarySyncGetStructResponseParams,
     .goldenSimpleUnionUnion,
 ] + commonMojoObjectGroups
@@ -346,6 +388,7 @@ let mojoPrimaryProfile = Profile(
         (MojoMethodCallGenerator, 10000),
         (MojoPropertyRetrievalGenerator, 10000),
         (MojoInt64MojoArrayGenerator, 1),
+        (MojoFloatMojoArrayGenerator, 1),
     ] + commonMojoCodeGenerators,
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,

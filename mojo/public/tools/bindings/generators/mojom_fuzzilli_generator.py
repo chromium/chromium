@@ -100,7 +100,8 @@ class Generator(generator.Generator):
     self.maps = {}
     self.enums = {}
     self.unions = {}
-    self.structs = {}
+    self.js_structs = {}
+    self.browser_structs = {}
     # Methods with a response return a Promise that resolves to a JavaScript
     # object holding the response parameters. Represent these objects as
     # `mojom.Struct` objects, since we can then handle them the same way we
@@ -147,7 +148,9 @@ class Generator(generator.Generator):
       "maps": list(self.maps.values()),
       "enums": list(self.enums.values()),
       "unions": list(self.unions.values()),
-      "structs": list(self.structs.values()),
+      "js_structs": list(self.js_structs.values()),
+      # Union of `js_structs` and `browser_structs`
+      "structs": list((self.js_structs | self.browser_structs).values()),
       "response_structs": list(self.response_structs.values()),
     }
 
@@ -174,10 +177,11 @@ class Generator(generator.Generator):
       self._CollectUnion(kind, is_in_js)
 
   def _CollectStruct(self, struct, is_in_js):
+    structs = self.js_structs if is_in_js else self.browser_structs
     name = self._FormatUniqueName(struct)
-    if name in self.structs:
+    if name in structs:
       return
-    self.structs[name] = struct
+    structs[name] = struct
     for field in struct.fields:
       self._CollectInterfaceAndTypes(field.kind, is_in_js)
 

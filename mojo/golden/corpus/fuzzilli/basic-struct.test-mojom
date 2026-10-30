@@ -6,6 +6,7 @@ module golden;
 interface Primary {
   UseStruct(LargeStruct struct_param, uint64 id);
   GetStruct(string value) => (SimpleStruct result);
+  GetBrowserMadeStruct() => (BrowserMadeStruct result);
 
   [Sync]
   SyncGetStruct(string value) => (SimpleStruct result);
@@ -22,6 +23,10 @@ struct LargeStruct {
 
 struct SimpleStruct {
   string field;
+};
+
+struct BrowserMadeStruct {
+  array<float> data;
 };
 
 union SimpleUnion {
