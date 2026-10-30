@@ -12,15 +12,19 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/utility/safe_browsing/mac/read_stream.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
-DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
+namespace {
+
+void FuzzHfs(base::span<const uint8_t> data) {
   safe_browsing::dmg::MemoryReadStream input(data);
   safe_browsing::dmg::HFSIterator hfs_iterator(&input);
 
   if (!hfs_iterator.Open()) {
-    return 0;
+    return;
   }
 
   std::vector<uint8_t> buffer(getpagesize(), 0);
@@ -45,6 +49,16 @@ DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
       }
     } while (read_this_pass != 0);
   }
+}
 
+}  // namespace
+
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
+  FuzzHfs(data);
+  {
+    base::test::ScopedFeatureList enable_rust(
+        safe_browsing::kSafeBrowsingRustDmgParser);
+    FuzzHfs(data);
+  }
   return 0;
 }

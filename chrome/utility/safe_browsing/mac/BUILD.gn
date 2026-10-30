@@ -148,6 +148,8 @@ fuzzer_test("safe_browsing_dmg_fuzzer") {
   deps = [
     ":dmg_common",
     "//base",
+    "//base/test:test_support",
+    "//components/safe_browsing/core/common:features",
     "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
 }
@@ -158,6 +160,8 @@ fuzzer_test("safe_browsing_hfs_fuzzer") {
   deps = [
     ":dmg_common",
     "//base",
+    "//base/test:test_support",
+    "//components/safe_browsing/core/common:features",
     "//testing/libfuzzer:libfuzzer_base_wrappers",
   ]
 

@@ -12,26 +12,22 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/logging/logging_settings.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/utility/safe_browsing/mac/hfs.h"
 #include "chrome/utility/safe_browsing/mac/read_stream.h"
 #include "chrome/utility/safe_browsing/mac/udif.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 #include "testing/libfuzzer/libfuzzer_exports.h"
 
-extern "C" int LLVMFuzzerInitialize(int* argc, char*** argv) {
-  base::CommandLine::Init(*argc, *argv);
-  logging::LoggingSettings settings;
-  settings.logging_dest = logging::LOG_NONE;
-  logging::SetMinLogLevel(logging::LOGGING_FATAL);
-  return InitLogging(settings);
-}
+namespace {
 
-DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
+void FuzzDmg(base::span<const uint8_t> data) {
   safe_browsing::dmg::MemoryReadStream input(data);
   safe_browsing::dmg::UDIFParser udif_parser(&input);
 
   if (!udif_parser.Parse()) {
-    return 0;
+    return;
   }
 
   std::vector<uint8_t> buffer(getpagesize(), 0);
@@ -61,6 +57,24 @@ DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
       } while (read_this_pass != 0);
     }
   }
+}
 
+}  // namespace
+
+extern "C" int LLVMFuzzerInitialize(int* argc, char*** argv) {
+  base::CommandLine::Init(*argc, *argv);
+  logging::LoggingSettings settings;
+  settings.logging_dest = logging::LOG_NONE;
+  logging::SetMinLogLevel(logging::LOGGING_FATAL);
+  return InitLogging(settings);
+}
+
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(const base::span<const uint8_t> data) {
+  FuzzDmg(data);
+  {
+    base::test::ScopedFeatureList enable_rust(
+        safe_browsing::kSafeBrowsingRustDmgParser);
+    FuzzDmg(data);
+  }
   return 0;
 }
