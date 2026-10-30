@@ -218,7 +218,8 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
       base::OnceClosure context_lost_callback = {},
       bool register_flush_for_image_observer = true,
       bool register_destruction_observer = true,
-      bool register_context_lost_observer = true);
+      bool register_context_lost_observer = true,
+      bool register_memory_dump_client = true);
   CanvasNon2DResourceProvider(gfx::Size,
                               viz::SharedImageFormat,
                               SkAlphaType,
@@ -289,6 +290,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   const bool register_flush_for_image_observer_ = true;
   const bool register_destruction_observer_ = true;
   const bool register_context_lost_observer_ = true;
+  const bool register_memory_dump_client_ = true;
 
   mutable sk_sp<SkSurface> surface_;
   uint32_t snapshot_sk_image_id_ = 0u;

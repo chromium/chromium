@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/graphics/flush_for_image_listener.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
+#include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "ui/gfx/color_space.h"
@@ -46,7 +47,8 @@ class StaticBitmapImage;
 // Pool of accelerated SharedImages used to produce AcceleratedStaticBitmapImage
 // snapshots from media::VideoFrames.
 class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool
-    : public FlushForImageObserver,
+    : public CanvasMemoryDumpClient,
+      public FlushForImageObserver,
       public WebGraphicsContext3DProviderWrapper::DestructionObserver,
       public viz::ContextLostObserver {
  public:
@@ -72,6 +74,10 @@ class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper,
       std::unique_ptr<CanvasNon2DResourceProvider> provider);
+
+  // CanvasMemoryDumpClient:
+  void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
+  size_t GetSize() const override { return 0; }
 
   // FlushForImageObserver:
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override;

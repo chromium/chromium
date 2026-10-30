@@ -4,8 +4,12 @@
 
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 
+#include <inttypes.h>
+
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "build/build_config.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "cc/raster/playback_image_provider.h"
@@ -26,6 +30,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_non_2d_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/flush_for_image_listener.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
@@ -212,7 +217,8 @@ VideoFrameAcceleratedSnapshotPool::Create(const CanvasSnapshotInfo& info) {
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, /*context_lost_callback=*/{},
       /*register_flush_for_image_observer=*/false,
       /*register_destruction_observer=*/false,
-      /*register_context_lost_observer=*/false));
+      /*register_context_lost_observer=*/false,
+      /*register_memory_dump_client=*/false));
   auto pool = base::WrapUnique(new VideoFrameAcceleratedSnapshotPool(
       pool_info, std::move(context_provider_wrapper), std::move(provider)));
   return pool->IsValid() ? std::move(pool) : nullptr;
@@ -226,6 +232,7 @@ VideoFrameAcceleratedSnapshotPool::VideoFrameAcceleratedSnapshotPool(
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       provider_(std::move(provider)) {
   CHECK(provider_);
+  CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
   if (context_provider_wrapper_) {
     context_provider_wrapper_->AddObserver(this);
     raster_context_provider_ = base::WrapRefCounted(
@@ -240,6 +247,7 @@ VideoFrameAcceleratedSnapshotPool::VideoFrameAcceleratedSnapshotPool(
 }
 
 VideoFrameAcceleratedSnapshotPool::~VideoFrameAcceleratedSnapshotPool() {
+  CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
   if (context_provider_wrapper_) {
     context_provider_wrapper_->RemoveObserver(this);
   }
@@ -266,6 +274,17 @@ void VideoFrameAcceleratedSnapshotPool::ClearUnusedResources() {
   if (provider_->image_pool_) {
     provider_->image_pool_->Clear();
   }
+}
+
+void VideoFrameAcceleratedSnapshotPool::OnMemoryDump(
+    base::trace_event::ProcessMemoryDump* pmd) {
+  std::string path = base::StringPrintf("canvas/ResourceProvider_0x%" PRIXPTR,
+                                        reinterpret_cast<uintptr_t>(this));
+
+  provider_->resource_->OnMemoryDump(pmd, path);
+
+  std::string cached_path = path + "/cached";
+  provider_->image_pool_->OnMemoryDump(pmd, cached_path);
 }
 
 gpu::raster::RasterInterface*

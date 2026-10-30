@@ -235,7 +235,8 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
     base::OnceClosure context_lost_callback,
     bool register_flush_for_image_observer,
     bool register_destruction_observer,
-    bool register_context_lost_observer)
+    bool register_context_lost_observer,
+    bool register_memory_dump_client)
     : size_(size),
       format_(format),
       alpha_type_(alpha_type),
@@ -246,12 +247,15 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
       register_flush_for_image_observer_(register_flush_for_image_observer),
       register_destruction_observer_(register_destruction_observer),
       register_context_lost_observer_(register_context_lost_observer),
+      register_memory_dump_client_(register_memory_dump_client),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()),
       recorder_for_external_draws_(
           std::make_unique<MemoryManagedPaintRecorder>(Size(),
                                                        /*client=*/nullptr)),
       context_provider_wrapper_(std::move(context_provider_wrapper)) {
-  CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
+  if (register_memory_dump_client_) {
+    CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
+  }
   if (context_provider_wrapper_) {
     if (register_destruction_observer_) {
       context_provider_wrapper_->AddObserver(this);
@@ -363,7 +367,9 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
 }
 
 CanvasNon2DResourceProvider::~CanvasNon2DResourceProvider() {
-  CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
+  if (register_memory_dump_client_) {
+    CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
+  }
   if (context_provider_wrapper_ && register_destruction_observer_) {
     context_provider_wrapper_->RemoveObserver(this);
   }
