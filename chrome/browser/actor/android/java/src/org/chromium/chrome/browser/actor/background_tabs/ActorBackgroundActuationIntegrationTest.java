@@ -152,6 +152,14 @@ public class ActorBackgroundActuationIntegrationTest {
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    // Tests that finish the Activity hand mTab to background actuation or to a
+                    // mock TabModel, so no TabModel destroys it. Destroy it before the pools,
+                    // which its LiveBackgroundTab observer still references.
+                    if (mTab != null
+                            && !mTab.isDestroyed()
+                            && mActivityTestRule.getActivity().isFinishing()) {
+                        mTab.destroy();
+                    }
                     BackgroundTabPoolManager.resetForTesting();
                     if (mBackgroundManager != null) {
                         mBackgroundManager.destroy();
