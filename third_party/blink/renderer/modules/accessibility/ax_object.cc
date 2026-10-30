@@ -1041,7 +1041,8 @@ const AtomicString& AXObject::AriaAttribute(const Element& element,
 
 const AtomicString& AXObject::AriaAttribute(
     const QualifiedName& attribute) const {
-  return GetElement() ? AriaAttribute(*GetElement(), attribute) : g_null_atom;
+  Element* element = GetElement();
+  return element ? AriaAttribute(*element, attribute) : g_null_atom;
 }
 
 // static
@@ -1054,7 +1055,8 @@ bool AXObject::IsAriaAttributeTrue(const Element& element,
 
 // ARIA attributes are true if they are not empty, "false" or "undefined".
 bool AXObject::IsAriaAttributeTrue(const QualifiedName& attribute) const {
-  return GetElement() ? IsAriaAttributeTrue(*GetElement(), attribute) : false;
+  Element* element = GetElement();
+  return element ? IsAriaAttributeTrue(*element, attribute) : false;
 }
 
 bool AXObject::AriaBooleanAttribute(const Element& element,
@@ -1776,14 +1778,14 @@ void AXObject::SerializeLineAttributes(ui::AXNodeData* node_data) const {
 }
 
 void AXObject::SerializeListAttributes(ui::AXNodeData* node_data) const {
-  if (SetSize()) {
+  if (int set_size = SetSize()) {
     node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kSetSize,
-                               SetSize());
+                               set_size);
   }
 
-  if (PosInSet()) {
+  if (int pos_in_set = PosInSet()) {
     node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kPosInSet,
-                               PosInSet());
+                               pos_in_set);
   }
 }
 
@@ -2216,32 +2218,38 @@ void AXObject::SerializeStyleAttributes(ui::AXNodeData* node_data) const {
                                  FontSize());
   }
 
-  if (FontWeight()) {
+  if (float font_weight = FontWeight()) {
     node_data->AddFloatAttribute(ax::mojom::blink::FloatAttribute::kFontWeight,
-                                 FontWeight());
+                                 font_weight);
   }
 
-  if (RoleValue() == ax::mojom::blink::Role::kListItem &&
-      GetListStyle() != ax::mojom::blink::ListStyle::kNone) {
-    node_data->SetListStyle(GetListStyle());
+  if (RoleValue() == ax::mojom::blink::Role::kListItem) {
+    ax::mojom::blink::ListStyle list_style = GetListStyle();
+    if (list_style != ax::mojom::blink::ListStyle::kNone) {
+      node_data->SetListStyle(list_style);
+    }
   }
 
-  if (GetTextAlign() != ax::mojom::blink::TextAlign::kNone) {
-    node_data->SetTextAlign(GetTextAlign());
+  ax::mojom::blink::TextAlign text_align = GetTextAlign();
+  if (text_align != ax::mojom::blink::TextAlign::kNone) {
+    node_data->SetTextAlign(text_align);
   }
 
-  if (GetTextIndent() != 0.0f) {
+  float text_indent = GetTextIndent();
+  if (text_indent != 0.0f) {
     node_data->AddFloatAttribute(ax::mojom::blink::FloatAttribute::kTextIndent,
-                                 GetTextIndent());
+                                 text_indent);
   }
 
-  if (GetTextDirection() != ax::mojom::blink::WritingDirection::kNone) {
-    node_data->SetTextDirection(GetTextDirection());
+  ax::mojom::blink::WritingDirection text_direction = GetTextDirection();
+  if (text_direction != ax::mojom::blink::WritingDirection::kNone) {
+    node_data->SetTextDirection(text_direction);
   }
 
-  if (GetTextPosition() != ax::mojom::blink::TextPosition::kNone) {
+  ax::mojom::blink::TextPosition text_position = GetTextPosition();
+  if (text_position != ax::mojom::blink::TextPosition::kNone) {
     node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kTextPosition,
-                               static_cast<int32_t>(GetTextPosition()));
+                               static_cast<int32_t>(text_position));
   }
 
   int32_t text_style = 0;
@@ -2277,7 +2285,8 @@ void AXObject::SerializeStyleAttributes(ui::AXNodeData* node_data) const {
 }
 
 void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) const {
-  if (ui::IsTableLike(RoleValue())) {
+  ax::mojom::blink::Role role = RoleValue();
+  if (ui::IsTableLike(role)) {
     AddIntAttribute(this, ax::mojom::blink::IntAttribute::kAriaColumnCount,
                     html_names::kAriaColcountAttr, node_data,
                     ColumnCount() + 1);
@@ -2285,7 +2294,7 @@ void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) const {
                     html_names::kAriaRowcountAttr, node_data, RowCount() + 1);
   }
 
-  if (ui::IsTableRow(RoleValue())) {
+  if (ui::IsTableRow(role)) {
     AXObject* header = HeaderObject();
     if (header && !header->IsDetached()) {
       // TODO(crbug.com/380211806): these should be computed by ui::AXTableInfo
@@ -2296,7 +2305,7 @@ void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) const {
     }
   }
 
-  if (ui::IsCellOrTableHeader(RoleValue())) {
+  if (ui::IsCellOrTableHeader(role)) {
     // Both HTML rowspan/colspan and ARIA rowspan/colspan are serialized.
     AddIntAttribute(this, ax::mojom::blink::IntAttribute::kAriaCellColumnSpan,
                     html_names::kAriaColspanAttr, node_data, 1);
@@ -2308,7 +2317,7 @@ void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) const {
         ax::mojom::blink::IntAttribute::kTableCellRowSpan, RowSpan());
   }
 
-  if (ui::IsCellOrTableHeader(RoleValue()) || ui::IsTableRow(RoleValue())) {
+  if (ui::IsCellOrTableHeader(role) || ui::IsTableRow(role)) {
     // aria-rowindex and aria-colindex are supported on cells, headers and
     // rows.
     AddIntAttribute(this, ax::mojom::blink::IntAttribute::kAriaCellRowIndex,
@@ -2341,10 +2350,12 @@ void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) const {
     }
   }
 
-  if (ui::IsTableHeader(RoleValue()) &&
-      GetSortDirection() != ax::mojom::blink::SortDirection::kNone) {
-    node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kSortDirection,
-                               static_cast<int32_t>(GetSortDirection()));
+  if (ui::IsTableHeader(role)) {
+    ax::mojom::blink::SortDirection sort_direction = GetSortDirection();
+    if (sort_direction != ax::mojom::blink::SortDirection::kNone) {
+      node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kSortDirection,
+                                 static_cast<int32_t>(sort_direction));
+    }
   }
 }
 
@@ -2353,6 +2364,8 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
                                             ui::AXMode accessibility_mode,
                                             bool is_snapshot) const {
   SerializeNameAndDescriptionAttributes(accessibility_mode, node_data);
+
+  ax::mojom::blink::Role role = RoleValue();
 
   if (accessibility_mode.has_mode(ui::AXMode::kExtendedProperties)) {
     SerializeMarkerAttributes(node_data);
@@ -2368,9 +2381,11 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
   } else if (accessibility_mode.has_mode(ui::AXMode::kPDFPrinting)) {
     // For PDF printing, we need to serialize the list style to distinguish
     // ordered vs unordered lists in the PDF structure tree.
-    if (RoleValue() == ax::mojom::blink::Role::kListItem &&
-        GetListStyle() != ax::mojom::blink::ListStyle::kNone) {
-      node_data->SetListStyle(GetListStyle());
+    if (role == ax::mojom::blink::Role::kListItem) {
+      ax::mojom::blink::ListStyle list_style = GetListStyle();
+      if (list_style != ax::mojom::blink::ListStyle::kNone) {
+        node_data->SetListStyle(list_style);
+      }
     }
   }
 
@@ -2388,7 +2403,7 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
 
   // If text, return early as a performance tweak, as the rest of the properties
   // in this method do not apply to text.
-  if (RoleValue() == ax::mojom::blink::Role::kStaticText) {
+  if (role == ax::mojom::blink::Role::kStaticText) {
     return;
   }
 
@@ -2400,9 +2415,9 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
       node_data->AddState(ax::mojom::blink::State::kExpanded);
   }
 
-  ax::mojom::blink::Role role = RoleValue();
-  if (HasPopup() != ax::mojom::blink::HasPopup::kFalse) {
-    node_data->SetHasPopup(HasPopup());
+  ax::mojom::blink::HasPopup has_popup = HasPopup();
+  if (has_popup != ax::mojom::blink::HasPopup::kFalse) {
+    node_data->SetHasPopup(has_popup);
   } else if (role == ax::mojom::blink::Role::kPopUpButton ||
              role == ax::mojom::blink::Role::kComboBoxSelect) {
     node_data->SetHasPopup(ax::mojom::blink::HasPopup::kMenu);
@@ -2410,8 +2425,9 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
     node_data->SetHasPopup(ax::mojom::blink::HasPopup::kListbox);
   }
 
-  if (IsPopup() != ax::mojom::blink::IsPopup::kNone) {
-    node_data->SetIsPopup(IsPopup());
+  ax::mojom::blink::IsPopup is_popup = IsPopup();
+  if (is_popup != ax::mojom::blink::IsPopup::kNone) {
+    node_data->SetIsPopup(is_popup);
   }
 
   if (IsAutofillAvailable())
@@ -2435,25 +2451,30 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
   if (IsRequired())
     node_data->AddState(ax::mojom::blink::State::kRequired);
 
-  if (IsSelected() != blink::kSelectedStateUndefined) {
+  AccessibilitySelectedState selected = IsSelected();
+  if (selected != blink::kSelectedStateUndefined) {
     node_data->AddBoolAttribute(ax::mojom::blink::BoolAttribute::kSelected,
-                                IsSelected() == blink::kSelectedStateTrue);
+                                selected == blink::kSelectedStateTrue);
     node_data->AddBoolAttribute(
         ax::mojom::blink::BoolAttribute::kSelectedFromFocus,
         IsSelectedFromFocus());
   }
 
-  if (Orientation() == kAccessibilityOrientationVertical)
+  AccessibilityOrientation orientation = Orientation();
+  if (orientation == kAccessibilityOrientationVertical) {
     node_data->AddState(ax::mojom::blink::State::kVertical);
-  else if (Orientation() == blink::kAccessibilityOrientationHorizontal)
+  } else if (orientation == blink::kAccessibilityOrientationHorizontal) {
     node_data->AddState(ax::mojom::blink::State::kHorizontal);
+  }
 
   if (accessibility_mode.has_mode(ui::AXMode::kExtendedProperties) ||
       accessibility_mode.has_mode(ui::AXMode::kPDFPrinting)) {
     // Heading level.
-    if (ui::IsHeading(role) && HeadingLevel()) {
-      node_data->AddIntAttribute(
-          ax::mojom::blink::IntAttribute::kHierarchicalLevel, HeadingLevel());
+    if (ui::IsHeading(role)) {
+      if (int heading_level = HeadingLevel()) {
+        node_data->AddIntAttribute(
+            ax::mojom::blink::IntAttribute::kHierarchicalLevel, heading_level);
+      }
     }
 
     SerializeListAttributes(node_data);
@@ -2480,27 +2501,28 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
   TruncateAndAddStringAttribute(
       node_data, ax::mojom::blink::StringAttribute::kUrl, Url().GetString());
 
-  if (Element* element = GetElement()) {
+  Element* element = GetElement();
+  if (element) {
     SerializeRelationAttributes(node_data);
 
     TruncateAndAddStringAttribute(
         node_data, ax::mojom::blink::StringAttribute::kAriaBrailleLabel,
-        AriaAttribute(html_names::kAriaBraillelabelAttr));
-    if (RoleValue() != ax::mojom::blink::Role::kGenericContainer) {
+        AriaAttribute(*element, html_names::kAriaBraillelabelAttr));
+    if (role != ax::mojom::blink::Role::kGenericContainer) {
       // ARIA 1.2 prohibits aria-roledescription on the "generic" role.
       TruncateAndAddStringAttribute(
           node_data,
           ax::mojom::blink::StringAttribute::kAriaBrailleRoleDescription,
-          AriaAttribute(html_names::kAriaBrailleroledescriptionAttr));
+          AriaAttribute(*element, html_names::kAriaBrailleroledescriptionAttr));
       TruncateAndAddStringAttribute(
           node_data, ax::mojom::blink::StringAttribute::kRoleDescription,
-          AriaAttribute(html_names::kAriaRoledescriptionAttr));
+          AriaAttribute(*element, html_names::kAriaRoledescriptionAttr));
     }
     TruncateAndAddStringAttribute(
         node_data, ax::mojom::blink::StringAttribute::kKeyShortcuts,
-        AriaAttribute(html_names::kAriaKeyshortcutsAttr));
+        AriaAttribute(*element, html_names::kAriaKeyshortcutsAttr));
 
-    if (IsAriaAttributeTrue(html_names::kAriaBusyAttr)) {
+    if (IsAriaAttributeTrue(*element, html_names::kAriaBusyAttr)) {
       node_data->AddBoolAttribute(ax::mojom::blink::BoolAttribute::kBusy, true);
     }
 
@@ -2512,8 +2534,9 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
                                   GetValueForControl());
     TruncateAndAddStringAttribute(
         node_data, ax::mojom::blink::StringAttribute::kAriaValueText,
-        AriaAttribute(html_names::kAriaValuetextAttr));
+        AriaAttribute(*element, html_names::kAriaValuetextAttr));
 
+    int max_length = 0;
     if (auto* input = DynamicTo<HTMLInputElement>(element)) {
       String type = element->getAttribute(html_names::kTypeAttr);
       if (type.empty()) {
@@ -2527,6 +2550,9 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
             node_data, ax::mojom::blink::StringAttribute::kHtmlInputName,
             input_name);
       }
+      max_length = input->maxLength();
+    } else if (auto* textarea = DynamicTo<HTMLTextAreaElement>(element)) {
+      max_length = textarea->maxLength();
     }
 
     if (IsAtomicTextField()) {
@@ -2551,12 +2577,6 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
 
     // Serialize maxlength property.
     // TODO(https://github.com/w3c/aria/issues/1119): consider aria-maxlength.
-    int max_length = 0;
-    if (auto* input = DynamicTo<HTMLInputElement>(GetElement())) {
-      max_length = input->maxLength();
-    } else if (auto* textarea = DynamicTo<HTMLTextAreaElement>(GetElement())) {
-      max_length = textarea->maxLength();
-    }
     if (max_length > 0) {
       node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kMaxLength,
                                  max_length);
@@ -2585,7 +2605,7 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
 
   // Author-defined actions should take precedence over implicit ones.
   if (RuntimeEnabledFeatures::AccessibilityImplicitActionsEnabled() &&
-      !HasAriaAttribute(html_names::kAriaActionsAttr)) {
+      (!element || !HasAriaAttribute(*element, html_names::kAriaActionsAttr))) {
     SerializeImplicitActions(node_data);
   }
 
@@ -2603,8 +2623,8 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
   //      so kActionsIds can be non-empty even when AriaActionsEnabled()
   //      is off.
   if ((RuntimeEnabledFeatures::AriaActionsEnabled() &&
-       RoleSupportsAriaAttribute(RoleValue(), html_names::kAriaActionsAttr) &&
-       HasAriaAttribute(html_names::kAriaActionsAttr)) ||
+       RoleSupportsAriaAttribute(role, html_names::kAriaActionsAttr) &&
+       element && HasAriaAttribute(*element, html_names::kAriaActionsAttr)) ||
       node_data->HasIntListAttribute(
           ax::mojom::blink::IntListAttribute::kActionsIds)) {
     node_data->AddState(ax::mojom::blink::State::kHasActions);
@@ -2615,7 +2635,7 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
 
   SerializeChooserPopupAttributes(node_data);
 
-  if (GetElement()) {
+  if (element) {
     SerializeElementAttributes(node_data);
   }
 
@@ -2623,13 +2643,17 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
   SerializeTextInsertionDeletionOffsetAttributes(node_data);
 
   // Serialize datetime attribute on <time>, <ins> and <del>.
-  if (NativeRoleIgnoringAria() == ax::mojom::blink::Role::kTime ||
-      NativeRoleIgnoringAria() == ax::mojom::blink::Role::kContentInsertion ||
-      NativeRoleIgnoringAria() == ax::mojom::blink::Role::kContentDeletion) {
-    if (const AtomicString& datetime =
-            GetElement()->FastGetAttribute(html_names::kDatetimeAttr)) {
-      TruncateAndAddStringAttribute(
-          node_data, ax::mojom::blink::StringAttribute::kDateTime, datetime);
+  if (const auto* node_object = DynamicTo<AXNodeObject>(this)) {
+    if (node_object->native_role_ == ax::mojom::blink::Role::kTime ||
+        node_object->native_role_ ==
+            ax::mojom::blink::Role::kContentInsertion ||
+        node_object->native_role_ == ax::mojom::blink::Role::kContentDeletion) {
+      DCHECK_EQ(node_object->native_role_, NativeRoleIgnoringAria());
+      if (const AtomicString& datetime =
+              element->FastGetAttribute(html_names::kDatetimeAttr)) {
+        TruncateAndAddStringAttribute(
+            node_data, ax::mojom::blink::StringAttribute::kDateTime, datetime);
+      }
     }
   }
 }
@@ -3340,9 +3364,7 @@ ax::mojom::blink::Role AXObject::RoleValue() const {
 bool AXObject::IsARIATextField() const {
   if (IsAtomicTextField())
     return false;  // Native role supercedes the ARIA one.
-  return RawAriaRole() == ax::mojom::blink::Role::kTextField ||
-         RawAriaRole() == ax::mojom::blink::Role::kSearchBox ||
-         RawAriaRole() == ax::mojom::blink::Role::kTextFieldWithComboBox;
+  return ui::IsTextField(RawAriaRole());
 }
 
 bool AXObject::IsButton() const {
@@ -3613,7 +3635,8 @@ bool AXObject::IsTabItem() const {
 bool AXObject::IsTextField() const {
   if (IsDetached())
     return false;
-  return IsAtomicTextField() || IsNonAtomicTextField();
+  return IsAtomicTextField() || HasContentEditableAttributeSet() ||
+         ui::IsTextField(RawAriaRole());
 }
 
 bool AXObject::IsAutofillAvailable() const {
@@ -5355,8 +5378,7 @@ String AXObject::AriaTextAlternative(
     bool* found_text_alternative) const {
   String text_alternative;
 
-  bool already_visited = visited.Contains(this);
-  visited.insert(this);
+  bool already_visited = !visited.insert(this).is_new_entry;
 
   // Slots are elements that cannot be named.
   if (IsA<HTMLSlotElement>(GetNode())) {
@@ -5370,39 +5392,42 @@ String AXObject::AriaTextAlternative(
     return String();
   }
 
+  Element* element = GetElement();
+
   // Step 2B from: http://www.w3.org/TR/accname-aam-1.1
   // If you change this logic, update AXObject::IsNameFromAriaAttribute, too.
   if (!aria_label_or_description_root && !already_visited) {
     name_from = ax::mojom::blink::NameFrom::kRelatedElement;
-    String text_from_aria_labelledby;
 
-    // Check ARIA attributes.
-    const QualifiedName& attr =
-        HasAriaAttribute(html_names::kAriaLabeledbyAttr) &&
-                !HasAriaAttribute(html_names::kAriaLabelledbyAttr)
-            ? html_names::kAriaLabeledbyAttr
-            : html_names::kAriaLabelledbyAttr;
+    if (element || name_sources) {
+      // Check ARIA attributes.
+      const QualifiedName* attr = &html_names::kAriaLabelledbyAttr;
+      AtomicString aria_labelledby =
+          element ? AriaAttribute(*element, html_names::kAriaLabelledbyAttr)
+                  : g_null_atom;
+      if (aria_labelledby.IsNull() && element) {
+        aria_labelledby =
+            AriaAttribute(*element, html_names::kAriaLabeledbyAttr);
+        if (!aria_labelledby.IsNull()) {
+          attr = &html_names::kAriaLabeledbyAttr;
+        }
+      }
 
-    if (name_sources) {
-      name_sources->push_back(NameSource(*found_text_alternative, attr));
-      name_sources->back().type = name_from;
-    }
-
-    Element* element = GetElement();
-    if (element) {
-      const GCedHeapVector<Member<Element>>* elements_from_attribute =
-          ElementsFromAttributeOrInternals(element, attr);
-
-      const AtomicString& aria_labelledby = AriaAttribute(attr);
+      if (name_sources) {
+        name_sources->push_back(NameSource(*found_text_alternative, *attr));
+        name_sources->back().type = name_from;
+      }
 
       if (!aria_labelledby.IsNull()) {
         if (name_sources) {
           name_sources->back().attribute_value = aria_labelledby;
         }
 
-        // TODO(crbug/41469336): Show ElementInternals name sources in
+        String text_from_aria_labelledby;
+        // TODO(crbug.com/41469336): Show ElementInternals name sources in
         // DevTools
-        if (elements_from_attribute) {
+        if (const GCedHeapVector<Member<Element>>* elements_from_attribute =
+                ElementsFromAttributeOrInternals(element, *attr)) {
           text_from_aria_labelledby = TextFromElements(
               true, visited, *elements_from_attribute, related_objects);
         }
@@ -5432,18 +5457,21 @@ String AXObject::AriaTextAlternative(
         NameSource(*found_text_alternative, html_names::kAriaLabelAttr));
     name_sources->back().type = name_from;
   }
-  const AtomicString& aria_label = AriaAttribute(html_names::kAriaLabelAttr);
-  if (!aria_label.GetString().ContainsOnlyWhitespaceOrEmpty()) {
-    String text_from_aria_label = aria_label;
+  if (element) {
+    const AtomicString& aria_label =
+        AriaAttribute(*element, html_names::kAriaLabelAttr);
+    if (!aria_label.GetString().ContainsOnlyWhitespaceOrEmpty()) {
+      String text_from_aria_label = aria_label;
 
-    if (name_sources) {
-      NameSource& source = name_sources->back();
-      source.text = text_alternative = text_from_aria_label;
-      source.attribute_value = aria_label;
-      *found_text_alternative = true;
-    } else {
-      *found_text_alternative = true;
-      return text_from_aria_label;
+      if (name_sources) {
+        NameSource& source = name_sources->back();
+        source.text = text_alternative = text_from_aria_label;
+        source.attribute_value = aria_label;
+        *found_text_alternative = true;
+      } else {
+        *found_text_alternative = true;
+        return text_from_aria_label;
+      }
     }
   }
 

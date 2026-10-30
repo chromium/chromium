@@ -4215,10 +4215,12 @@ AXNodeObject::FindAllRadioButtonsWithSameName(HTMLInputElement* radio_button) {
 }
 
 ax::mojom::blink::WritingDirection AXNodeObject::GetTextDirection() const {
-  if (!GetLayoutObject())
+  LayoutObject* layout_object = GetLayoutObject();
+  if (!layout_object) {
     return AXObject::GetTextDirection();
+  }
 
-  const ComputedStyle& style = GetLayoutObject()->Style();
+  const ComputedStyle& style = layout_object->Style();
   switch (style.GetWritingDirection().InlineEnd()) {
     case PhysicalDirection::kRight:
       return ax::mojom::blink::WritingDirection::kLtr;
@@ -4247,8 +4249,10 @@ ax::mojom::blink::TextPosition AXNodeObject::GetTextPositionFromRole() const {
   if (obj->RoleValue() == ax::mojom::blink::Role::kSuperscript)
     return ax::mojom::blink::TextPosition::kSuperscript;
 
-  if (!GetLayoutObject() || !GetLayoutObject()->IsInline())
+  LayoutObject* layout_object = GetLayoutObject();
+  if (!layout_object || !layout_object->IsInline()) {
     return ax::mojom::blink::TextPosition::kNone;
+  }
 
   // We could have an inline element which descends from a subscript or
   // superscript.
@@ -4265,10 +4269,12 @@ ax::mojom::blink::TextPosition AXNodeObject::GetTextPosition() const {
       return text_position;
   }
 
-  if (!GetLayoutObject())
+  LayoutObject* layout_object = GetLayoutObject();
+  if (!layout_object) {
     return AXObject::GetTextPosition();
+  }
 
-  const ComputedStyle& style = GetLayoutObject()->Style();
+  const ComputedStyle& style = layout_object->Style();
   switch (style.VerticalAlign()) {
     case EVerticalAlign::kBaseline:
     case EVerticalAlign::kMiddle:
@@ -4291,13 +4297,14 @@ void AXNodeObject::GetTextStyleAndTextDecorationStyle(
     ax::mojom::blink::TextDecorationStyle* text_overline_style,
     ax::mojom::blink::TextDecorationStyle* text_strikethrough_style,
     ax::mojom::blink::TextDecorationStyle* text_underline_style) const {
-  if (!GetLayoutObject()) {
+  LayoutObject* layout_object = GetLayoutObject();
+  if (!layout_object) {
     AXObject::GetTextStyleAndTextDecorationStyle(
         text_style, text_overline_style, text_strikethrough_style,
         text_underline_style);
     return;
   }
-  const ComputedStyle& style = GetLayoutObject()->Style();
+  const ComputedStyle& style = layout_object->Style();
   *text_style = 0;
   *text_overline_style = ax::mojom::blink::TextDecorationStyle::kNone;
   *text_strikethrough_style = ax::mojom::blink::TextDecorationStyle::kNone;
@@ -4331,10 +4338,15 @@ void AXNodeObject::GetTextStyleAndTextDecorationStyle(
 
 ax::mojom::blink::TextAlign AXNodeObject::GetTextAlign() const {
   // Object attributes are not applied to text objects.
-  if (IsTextObject() || !GetLayoutObject())
+  if (IsTextObject()) {
     return ax::mojom::blink::TextAlign::kNone;
+  }
+  LayoutObject* layout_object = GetLayoutObject();
+  if (!layout_object) {
+    return ax::mojom::blink::TextAlign::kNone;
+  }
 
-  const ComputedStyle& style = GetLayoutObject()->Style();
+  const ComputedStyle& style = layout_object->Style();
   switch (style.GetTextAlign()) {
     case ETextAlign::kLeft:
     case ETextAlign::kWebkitLeft:
@@ -4358,11 +4370,16 @@ ax::mojom::blink::TextAlign AXNodeObject::GetTextAlign() const {
 
 float AXNodeObject::GetTextIndent() const {
   // Text-indent applies to lines or blocks, but not text.
-  if (IsTextObject() || !GetLayoutObject())
+  if (IsTextObject()) {
     return 0.0f;
+  }
+  LayoutObject* layout_object = GetLayoutObject();
+  if (!layout_object) {
+    return 0.0f;
+  }
 
   const auto* layout_block =
-      DynamicTo<LayoutBlock>(GetLayoutObject()->InclusiveContainingBox());
+      DynamicTo<LayoutBlock>(layout_object->InclusiveContainingBox());
   if (!layout_block)
     return 0.0f;
   float text_indent = layout_block->TextIndentOffset().ToFloat();
@@ -4516,28 +4533,34 @@ RGBA32 AXNodeObject::BackgroundColor() const {
 }
 
 RGBA32 AXNodeObject::GetColor() const {
-  if (!GetLayoutObject() || IsColorWell())
+  LayoutObject* layout_object = GetLayoutObject();
+  if (!layout_object || IsColorWell()) {
     return AXObject::GetColor();
+  }
 
-  const ComputedStyle& style = GetLayoutObject()->Style();
+  const ComputedStyle& style = layout_object->Style();
   Color color = style.VisitedDependentColor(GetCSSPropertyColor());
   return color.Rgb();
 }
 
 const AtomicString& AXNodeObject::ComputedFontFamily() const {
-  if (!GetLayoutObject())
+  LayoutObject* layout_object = GetLayoutObject();
+  if (!layout_object) {
     return AXObject::ComputedFontFamily();
+  }
 
-  const ComputedStyle& style = GetLayoutObject()->Style();
+  const ComputedStyle& style = layout_object->Style();
   const FontDescription& font_description = style.GetFontDescription();
   return font_description.Family().FamilyName();
 }
 
 String AXNodeObject::FontFamilyForSerialization() const {
-  if (!GetLayoutObject())
+  LayoutObject* layout_object = GetLayoutObject();
+  if (!layout_object) {
     return AXObject::FontFamilyForSerialization();
+  }
 
-  const ComputedStyle& style = GetLayoutObject()->Style();
+  const ComputedStyle& style = layout_object->Style();
   const SimpleFontData* primary_font = style.GetFont()->PrimaryFont();
   if (!primary_font)
     return AXObject::FontFamilyForSerialization();
@@ -4550,10 +4573,12 @@ String AXNodeObject::FontFamilyForSerialization() const {
 // Blink font size is provided in pixels.
 // Platform APIs may convert to another unit (IA2 converts to points).
 float AXNodeObject::FontSize() const {
-  if (!GetLayoutObject())
+  LayoutObject* layout_object = GetLayoutObject();
+  if (!layout_object) {
     return AXObject::FontSize();
+  }
 
-  const ComputedStyle& style = GetLayoutObject()->Style();
+  const ComputedStyle& style = layout_object->Style();
 
   // Font size should not be affected by scale transform or page zoom, because
   // users of authoring tools may want to check that their text is formatted
@@ -4564,10 +4589,12 @@ float AXNodeObject::FontSize() const {
 }
 
 float AXNodeObject::FontWeight() const {
-  if (!GetLayoutObject())
+  LayoutObject* layout_object = GetLayoutObject();
+  if (!layout_object) {
     return AXObject::FontWeight();
+  }
 
-  const ComputedStyle& style = GetLayoutObject()->Style();
+  const ComputedStyle& style = layout_object->Style();
   return style.GetFontWeight();
 }
 
@@ -7156,7 +7183,8 @@ String AXNodeObject::TextAlternativeFromTooltip(
     bool* found_text_alternative,
     String* text_alternative,
     AXRelatedObjectVector* related_objects) const {
-  if (!GetElement()) {
+  Element* element = GetElement();
+  if (!element) {
     return String();
   }
   name_from = ax::mojom::blink::NameFrom::kTitle;
@@ -7170,13 +7198,15 @@ String AXNodeObject::TextAlternativeFromTooltip(
 
   // First try for {explicit} interestfor relationships, then for hint popover.
   // TODO(accessibility) Consider only using interest for.
-  AXObject* popover_ax_object =
-      AXObjectCache().Get(GetElement()->InterestForElement(
-          Element::InterestForType::kExplicitOnly));
+  Element* interest_for_element =
+      element->InterestForElement(Element::InterestForType::kExplicitOnly);
+  AXObject* popover_ax_object = interest_for_element
+                                    ? AXObjectCache().Get(interest_for_element)
+                                    : nullptr;
   if (popover_ax_object) {
     name_from = ax::mojom::blink::NameFrom::kInterestFor;
   } else {
-    auto* form_control = DynamicTo<HTMLFormControlElement>(GetElement());
+    auto* form_control = DynamicTo<HTMLFormControlElement>(element);
     if (!form_control) {
       return String();
     }
@@ -7216,7 +7246,7 @@ String AXNodeObject::TextAlternativeFromTooltip(
       RecursiveTextAlternative(*popover_ax_object, popover_ax_object, visited);
   // Do not use if redundant with inner text.
   if (popover_text.StripWhiteSpace() ==
-      GetElement()->GetInnerTextWithoutUpdate().StripWhiteSpace()) {
+      element->GetInnerTextWithoutUpdate().StripWhiteSpace()) {
     return String();
   }
   *text_alternative = popover_text;
@@ -7270,8 +7300,10 @@ String AXNodeObject::NativeTextAlternative(
     AXRelatedObjectVector* related_objects,
     NameSources* name_sources,
     bool* found_text_alternative) const {
-  if (!GetNode())
+  Node* node = GetNode();
+  if (!node) {
     return String();
+  }
 
   // If nameSources is non-null, relatedObjects is used in filling it in, so it
   // must be non-null as well.
@@ -7281,7 +7313,7 @@ String AXNodeObject::NativeTextAlternative(
   String text_alternative;
   AXRelatedObjectVector local_related_objects;
 
-  if (auto* menulist = DynamicTo<HTMLMenuListElement>(GetNode())) {
+  if (auto* menulist = DynamicTo<HTMLMenuListElement>(node)) {
     Element* invoker = nullptr;
     if (menulist->GetPopoverData()) {
       invoker = menulist->GetPopoverData()->invoker();
@@ -7317,7 +7349,7 @@ String AXNodeObject::NativeTextAlternative(
     }
   }
 
-  if (auto* option_element = DynamicTo<HTMLOptionElement>(GetNode())) {
+  if (auto* option_element = DynamicTo<HTMLOptionElement>(node)) {
     if (option_element->HasOneTextChild()) {
       // Use the DisplayLabel() method if there are no interesting children.
       // If there are interesting children, fall through and compute the name
@@ -7336,7 +7368,7 @@ String AXNodeObject::NativeTextAlternative(
     }
   }
 
-  if (auto* opt_group_element = DynamicTo<HTMLOptGroupElement>(GetNode())) {
+  if (auto* opt_group_element = DynamicTo<HTMLOptGroupElement>(node)) {
     name_from = ax::mojom::blink::NameFrom::kAttribute;
     text_alternative = opt_group_element->GroupLabelText();
     if (!text_alternative.empty()) {
@@ -7350,8 +7382,7 @@ String AXNodeObject::NativeTextAlternative(
     }
   }
 
-  if (auto* capability_element =
-          DynamicTo<HTMLCapabilityElementBase>(GetNode())) {
+  if (auto* capability_element = DynamicTo<HTMLCapabilityElementBase>(node)) {
     if (capability_element->IsIconOnly()) {
       name_from = ax::mojom::blink::NameFrom::kContents;
       text_alternative = capability_element->AccessibleLabel();
@@ -7369,7 +7400,7 @@ String AXNodeObject::NativeTextAlternative(
 
   // 5.1/5.5 Text inputs, Other labelable Elements
   // If you change this logic, update AXNodeObject::IsNameFromLabelElement, too.
-  auto* html_element = DynamicTo<HTMLElement>(GetNode());
+  auto* html_element = DynamicTo<HTMLElement>(node);
   if (html_element && html_element->IsLabelable()) {
     name_from = ax::mojom::blink::NameFrom::kRelatedElement;
     if (name_sources) {
@@ -7418,7 +7449,7 @@ String AXNodeObject::NativeTextAlternative(
   }
 
   // 5.2 input type="button", input type="submit" and input type="reset"
-  const auto* input_element = DynamicTo<HTMLInputElement>(GetNode());
+  const auto* input_element = DynamicTo<HTMLInputElement>(node);
   if (input_element && input_element->IsTextButton()) {
     // value attribute.
     name_from = ax::mojom::blink::NameFrom::kValue;
@@ -7618,9 +7649,9 @@ String AXNodeObject::NativeTextAlternative(
   }
 
   // 5.8 img or area Element
-  if (IsA<HTMLImageElement>(GetNode()) || IsA<HTMLAreaElement>(GetNode())) {
+  if (IsA<HTMLImageElement>(node) || IsA<HTMLAreaElement>(node)) {
     // alt
-    const AtomicString& alt = GetElement()->FastGetAttribute(kAltAttr);
+    const AtomicString& alt = To<Element>(node)->FastGetAttribute(kAltAttr);
     const bool is_empty = alt.empty() && !alt.IsNull();
     name_from = is_empty ? ax::mojom::blink::NameFrom::kAttributeExplicitlyEmpty
                          : ax::mojom::blink::NameFrom::kAttribute;
@@ -7643,7 +7674,7 @@ String AXNodeObject::NativeTextAlternative(
   }
 
   // 5.9 table Element
-  if (auto* table_element = DynamicTo<HTMLTableElement>(GetNode())) {
+  if (auto* table_element = DynamicTo<HTMLTableElement>(node)) {
     // caption
     name_from = ax::mojom::blink::NameFrom::kCaption;
     if (name_sources) {
@@ -7682,7 +7713,7 @@ String AXNodeObject::NativeTextAlternative(
       name_sources->back().type = name_from;
     }
     const AtomicString& summary =
-        GetElement()->FastGetAttribute(html_names::kSummaryAttr);
+        table_element->FastGetAttribute(html_names::kSummaryAttr);
     if (!summary.IsNull()) {
       text_alternative = summary;
       if (name_sources) {
@@ -7699,7 +7730,7 @@ String AXNodeObject::NativeTextAlternative(
   }
 
   // Per SVG AAM 1.0's modifications to 2D of this algorithm.
-  if (auto* svg_element = DynamicTo<SVGElement>(*GetNode())) {
+  if (auto* svg_element = DynamicTo<SVGElement>(*node)) {
     name_from = ax::mojom::blink::NameFrom::kRelatedElement;
     if (name_sources) {
       name_sources->push_back(NameSource(*found_text_alternative));
@@ -7760,8 +7791,7 @@ String AXNodeObject::NativeTextAlternative(
   }
 
   // Fieldset / legend.
-  if (auto* html_field_set_element =
-          DynamicTo<HTMLFieldSetElement>(GetNode())) {
+  if (auto* html_field_set_element = DynamicTo<HTMLFieldSetElement>(node)) {
     name_from = ax::mojom::blink::NameFrom::kRelatedElement;
     if (name_sources) {
       name_sources->push_back(NameSource(*found_text_alternative));
@@ -7797,7 +7827,7 @@ String AXNodeObject::NativeTextAlternative(
   }
 
   // Document.
-  if (Document* document = DynamicTo<Document>(GetNode())) {
+  if (Document* document = DynamicTo<Document>(node)) {
     if (document) {
       name_from = ax::mojom::blink::NameFrom::kAttribute;
       if (name_sources) {

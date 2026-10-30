@@ -3816,5 +3816,102 @@ TEST_F(AccessibilityTest, FilterableSelectControlsAndRole) {
   }
 }
 
+TEST_F(AccessibilityTest, SerializeCachedNativeRoleAndAttributes) {
+  SetBodyInnerHTML(R"HTML(
+      <time id="time" datetime="2026-10-10">Oct 10</time>
+      <ins id="ins" datetime="2026-10-11">Inserted</ins>
+      <del id="del" datetime="2026-10-12">Deleted</del>
+      <time id="time_aria" role="note" datetime="2026-10-13">Note time</time>
+      <span id="lbl1">First label</span>
+      <span id="lbl2">Second label</span>
+      <button id="btn_labelledby" aria-labelledby="lbl1" aria-label="Fallback">
+        Button
+      </button>
+      <button id="btn_labeledby" aria-labeledby="lbl2">Button</button>
+      <ul style="list-style-type: disc;">
+        <li id="li" dir="rtl"
+            style="font-size: 20px; font-weight: 700; text-align: center; text-indent: 10mm;">
+          Item
+        </li>
+      </ul>
+      )HTML");
+
+  auto serialize = [&](const char* id) {
+    ui::AXNodeData node_data;
+    AXObject* ax_object = GetAXObjectByElementId(id);
+    if (!ax_object) {
+      ADD_FAILURE() << "No AXObject for " << id;
+      return node_data;
+    }
+    ScopedFreezeAXCache freeze(GetAXObjectCache());
+    ax_object->Serialize(&node_data, ui::kAXModeComplete);
+    return node_data;
+  };
+
+  ui::AXNodeData time_data = serialize("time");
+  EXPECT_EQ(ax::mojom::blink::Role::kTime, time_data.role);
+  EXPECT_EQ("2026-10-10", time_data.GetStringAttribute(
+                              ax::mojom::blink::StringAttribute::kDateTime));
+
+  ui::AXNodeData ins_data = serialize("ins");
+  EXPECT_EQ(ax::mojom::blink::Role::kContentInsertion, ins_data.role);
+  EXPECT_EQ("2026-10-11", ins_data.GetStringAttribute(
+                              ax::mojom::blink::StringAttribute::kDateTime));
+
+  ui::AXNodeData del_data = serialize("del");
+  EXPECT_EQ(ax::mojom::blink::Role::kContentDeletion, del_data.role);
+  EXPECT_EQ("2026-10-12", del_data.GetStringAttribute(
+                              ax::mojom::blink::StringAttribute::kDateTime));
+
+  // Even when `RoleValue()` is overridden by an explicit ARIA `role`, cached
+  // `native_role_` remains `kTime` and serializes `kDateTime`.
+  ui::AXNodeData time_aria_data = serialize("time_aria");
+  EXPECT_EQ(ax::mojom::blink::Role::kNote, time_aria_data.role);
+  EXPECT_EQ("2026-10-13", time_aria_data.GetStringAttribute(
+                              ax::mojom::blink::StringAttribute::kDateTime));
+
+  // Verify `NameSources` population for `aria-labelledby` and `aria-labeledby`.
+  const AXObject* btn_labelledby = GetAXObjectByElementId("btn_labelledby");
+  ASSERT_NE(nullptr, btn_labelledby);
+  ax::mojom::blink::NameFrom name_from;
+  AXObject::NameSources name_sources;
+  EXPECT_EQ("First label",
+            btn_labelledby->GetName(name_from, nullptr, &name_sources));
+  EXPECT_EQ(ax::mojom::blink::NameFrom::kRelatedElement, name_from);
+  ASSERT_GE(name_sources.size(), 2u);
+  EXPECT_EQ(html_names::kAriaLabelledbyAttr, name_sources[0].attribute);
+  EXPECT_EQ("First label", name_sources[0].text);
+  EXPECT_FALSE(name_sources[0].superseded);
+  EXPECT_EQ(html_names::kAriaLabelAttr, name_sources[1].attribute);
+  EXPECT_EQ("Fallback", name_sources[1].text);
+  EXPECT_TRUE(name_sources[1].superseded);
+
+  const AXObject* btn_labeledby = GetAXObjectByElementId("btn_labeledby");
+  ASSERT_NE(nullptr, btn_labeledby);
+  name_sources.clear();
+  EXPECT_EQ("Second label",
+            btn_labeledby->GetName(name_from, nullptr, &name_sources));
+  EXPECT_EQ(ax::mojom::blink::NameFrom::kRelatedElement, name_from);
+  ASSERT_GE(name_sources.size(), 1u);
+  EXPECT_EQ(html_names::kAriaLabeledbyAttr, name_sources[0].attribute);
+  EXPECT_EQ("Second label", name_sources[0].text);
+
+  // Verify style attribute serialization on `<li>`.
+  ui::AXNodeData li_data = serialize("li");
+  EXPECT_EQ(ax::mojom::blink::Role::kListItem, li_data.role);
+  EXPECT_FLOAT_EQ(20.0f, li_data.GetFloatAttribute(
+                             ax::mojom::blink::FloatAttribute::kFontSize));
+  EXPECT_FLOAT_EQ(700.0f, li_data.GetFloatAttribute(
+                              ax::mojom::blink::FloatAttribute::kFontWeight));
+  EXPECT_NEAR(
+      10.0f,
+      li_data.GetFloatAttribute(ax::mojom::blink::FloatAttribute::kTextIndent),
+      0.01f);
+  EXPECT_EQ(ax::mojom::blink::TextAlign::kCenter, li_data.GetTextAlign());
+  EXPECT_EQ(ax::mojom::blink::ListStyle::kDisc, li_data.GetListStyle());
+  EXPECT_EQ(ax::mojom::blink::WritingDirection::kRtl,
+            li_data.GetTextDirection());
+}
+
 }  // namespace test
 }  // namespace blink
