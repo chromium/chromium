@@ -506,7 +506,7 @@ BASE_FEATURE(kContextMenuSaveVideoFrameAs, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kContextMenuSearchForVideoFrame, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kD3D11VideoDecoderUseSharedHandle,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Runs the media service in the GPU process on a dedicated thread.
 BASE_FEATURE(kDedicatedMediaServiceThread,

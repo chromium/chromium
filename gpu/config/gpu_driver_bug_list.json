@@ -3735,6 +3735,18 @@
       "features": [
         "disable_graphite_d3d11_delay_flush"
       ]
+    },
+    {
+      "id": 507,
+      "cr_bugs": [402171652, 577963606],
+      "description": "Shared-handle D3D11 video decoder output textures cause visual corruption on top rows on AMD GPUs.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x1002",
+      "features": [
+        "disable_d3d11_video_decoder_shared_handle"
+      ]
     }
   ]
 }

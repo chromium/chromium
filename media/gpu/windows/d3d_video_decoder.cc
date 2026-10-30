@@ -142,7 +142,8 @@ D3DVideoDecoder::D3DVideoDecoder(
       supported_configs_(std::move(supported_configs)),
       use_shared_handle_(
           base::FeatureList::IsEnabled(kD3D12VideoDecoder) ||
-          base::FeatureList::IsEnabled(kD3D11VideoDecoderUseSharedHandle)) {
+          (base::FeatureList::IsEnabled(kD3D11VideoDecoderUseSharedHandle) &&
+           !gpu_workarounds_.disable_d3d11_video_decoder_shared_handle)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(media_log_);
   CHECK(backend_);
@@ -260,7 +261,8 @@ bool D3DVideoDecoder::RecreateDecoderWrapper() {
   use_shared_handle_ =
       base::FeatureList::IsEnabled(kD3D12VideoDecoder) ||
       (base::FeatureList::IsEnabled(kD3D11VideoDecoderUseSharedHandle) &&
-       use_single_texture.value());
+       use_single_texture.value() &&
+       !gpu_workarounds_.disable_d3d11_video_decoder_shared_handle);
 
   use_single_video_decoder_texture_ =
       use_single_texture.value() || use_shared_handle_ ||
