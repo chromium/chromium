@@ -520,6 +520,7 @@ source_set("browser_tests") {
     "//chromeos/dbus/power",
     "//chromeos/dbus/tpm_manager",
     "//chromeos/strings",
+    "//components/account_id",
     "//components/guest_view/browser",
     "//components/language/core/browser",
     "//components/metrics/structured:structured_events",

@@ -745,7 +745,9 @@ bool LoginDisplayHostMojo::GetKeyboardRemappedPrefValue(
 }
 
 bool LoginDisplayHostMojo::IsWebUIStarted() const {
-  return dialog_;
+  // Eagerly preloading a hidden dialog (e.g. under --enable-oobe-test-api) does
+  // not mean WebUI is active on the sign-in screen.
+  return IsOobeUIDialogVisible() || added_as_oobe_observer_;
 }
 
 bool LoginDisplayHostMojo::HandleAccelerator(LoginAcceleratorAction action) {
