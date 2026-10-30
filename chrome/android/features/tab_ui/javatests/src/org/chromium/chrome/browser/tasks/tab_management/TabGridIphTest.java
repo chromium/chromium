@@ -78,7 +78,11 @@ import java.io.IOException;
 
 /** End-to-end tests for TabGridIph component. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+@CommandLineFlags.Add({
+    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    // IPH is re-enabled, so restarting Chrome would otherwise show the bottom bar education.
+    ChromeSwitches.DISABLE_STARTUP_PROMOS
+})
 @Restriction(DeviceFormFactor.PHONE)
 @EnableFeatures(
         "IPH_TabGroupsDragAndDrop:availability/any"

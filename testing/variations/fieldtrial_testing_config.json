@@ -8375,28 +8375,47 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Arm2_BottomBar_1A_with_GLIC_filled",
+                    "name": "Enabled_BottomBar_LaunchCandidate",
                     "params": {
                         "adaptive-toolbar-auto-pin": "false",
                         "always_use_filled_glic_icon": "true",
+                        "bottom_bar_height_dp": "56",
+                        "default_user_enabled": "true",
                         "dont_show_fusebox": "true",
+                        "education_address_bar_iph_enabled": "false",
+                        "education_enabled": "true",
+                        "education_gemini_focused": "false",
                         "fullscreen_load_delay_ms": "1500",
                         "glic-min-required-ram-mb": "3600",
+                        "keep_app_menu_in_toolbar": "false",
                         "minimum_show_duration_ms": "1500",
-                        "show_glic_setting_toggle": "true"
+                        "move_toolbar_settings_to_appearance": "true",
+                        "ntp_scroll_off_enabled": "true",
+                        "remove_top_padding_for_bottom_omnibox": "true",
+                        "show_bottom_bar_on_gts": "false",
+                        "show_domain_only": "false",
+                        "show_glic_setting_toggle": "true",
+                        "show_settings_toggle": "true",
+                        "show_update_badge": "true"
                     },
                     "enable_features": [
                         "AndroidBottomBar",
                         "AndroidPageInfoAsAppMenuItem",
                         "BottomControlsJankImprovement",
+                        "BrowserControlsExtraHideGestures",
                         "BrowserControlsLockoutDuration",
                         "CompositorViewShrinkWhenKeyboardHidden",
                         "ContextualCueing",
                         "Glic",
                         "GlicActor",
                         "GlicRollout",
+                        "IPH_AndroidBottomBarEducation",
+                        "IPH_AndroidBottomBarEducationTooltips",
                         "IPH_SiteControls",
                         "TabBottomSheet"
+                    ],
+                    "disable_features": [
+                        "IPH_AndroidBottomBarAddressBar"
                     ]
                 }
             ]
