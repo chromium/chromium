@@ -5354,28 +5354,6 @@
             ]
         }
     ],
-    "CookieMonsterPerKeyDelete": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CookieMonsterPerKeyDelete"
-                    ]
-                }
-            ]
-        }
-    ],
     "CpssUseTfliteSignatureRunnerKillSwitch": [
         {
             "platforms": [
@@ -11755,6 +11733,30 @@
             ]
         }
     ],
+    "NavigationResponseHeaderOptimization": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20261030",
+                    "enable_features": [
+                        "CookieMonsterPerKeyDelete",
+                        "OptimizeLookalikeUrlNavigationThrottle",
+                        "PrioritizeSafeBrowsingNavigationCallbacks",
+                        "WebRequestProxyMoveResponse",
+                        "WebRequestProxyNavigationResponseTaskRunner"
+                    ]
+                }
+            ]
+        }
+    ],
     "NdkVideoEncodeAcceleratorBitrateLayering": [
         {
             "platforms": [
@@ -13149,26 +13151,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "OptimizeAssociateWindowsAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
-    "OptimizeLookalikeUrlNavigationThrottle": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OptimizeLookalikeUrlNavigationThrottle"
                     ]
                 }
             ]
@@ -14886,26 +14868,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "PrioritizeMainFrameNavigationNetworkResponse"
-                    ]
-                }
-            ]
-        }
-    ],
-    "PrioritizeSafeBrowsingNavigationCallbacks": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrioritizeSafeBrowsingNavigationCallbacks"
                     ]
                 }
             ]
@@ -19697,44 +19659,6 @@
                         "max_post_decode_queue_size": "10",
                         "reduce_steady_state_queue_size_threshold": "20"
                     }
-                }
-            ]
-        }
-    ],
-    "WebRequestProxyMoveResponse": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebRequestProxyMoveResponse"
-                    ]
-                }
-            ]
-        }
-    ],
-    "WebRequestProxyNavigationResponseTaskRunner": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebRequestProxyNavigationResponseTaskRunner"
-                    ]
                 }
             ]
         }
