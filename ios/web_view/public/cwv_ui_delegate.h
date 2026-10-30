@@ -60,24 +60,30 @@ CWV_EXPORT
 
 // Instructs the delegate to show UI in response to window.alert JavaScript
 // call.
+// `URL` is nil if the dialog originates from a frame with an opaque origin
+// (e.g. a sandboxed iframe or a data: URL).
 - (void)webView:(CWVWebView*)webView
     runJavaScriptAlertPanelWithMessage:(NSString*)message
-                               pageURL:(NSURL*)URL
+                               pageURL:(nullable NSURL*)URL
                      completionHandler:(void (^)(void))completionHandler;
 
 // Instructs the delegate to show UI in response to window.confirm JavaScript
 // call.
+// `URL` is nil if the dialog originates from a frame with an opaque origin
+// (e.g. a sandboxed iframe or a data: URL).
 - (void)webView:(CWVWebView*)webView
     runJavaScriptConfirmPanelWithMessage:(NSString*)message
-                                 pageURL:(NSURL*)URL
+                                 pageURL:(nullable NSURL*)URL
                        completionHandler:(void (^)(BOOL))completionHandler;
 
 // Instructs the delegate to show UI in response to window.prompt JavaScript
 // call.
+// `URL` is nil if the dialog originates from a frame with an opaque origin
+// (e.g. a sandboxed iframe or a data: URL).
 - (void)webView:(CWVWebView*)webView
     runJavaScriptTextInputPanelWithPrompt:(NSString*)prompt
                               defaultText:(NSString*)defaultText
-                                  pageURL:(NSURL*)URL
+                                  pageURL:(nullable NSURL*)URL
                         completionHandler:
                             (void (^)(NSString* _Nullable))completionHandler;
 
