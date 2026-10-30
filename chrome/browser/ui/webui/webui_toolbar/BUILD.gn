@@ -147,6 +147,7 @@ source_set("unit_tests") {
     "testing",
     "//base",
     "//base/test:test_support",
+    "//chrome/app/theme:theme_resources",
     "//chrome/browser/ui/views:layout_provider",
     "//chrome/browser/ui/waap",
     "//chrome/browser/ui/webui:webui_util",

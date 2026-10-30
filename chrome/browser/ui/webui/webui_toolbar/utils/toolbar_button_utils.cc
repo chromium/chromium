@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/page_action/action_ids.h"
 #include "chrome/browser/ui/page_info/about_this_site_icon.h"
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_ids.h"
+#include "chrome/browser/ui/webui/webui_toolbar/utils/known_resource_images.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
@@ -321,7 +322,7 @@ ActionItemToPinnedToolbarAction(actions::ActionItem* item) {
                           : omnibox::kSearchSparkOldIcon) ||
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
             icon == &vector_icons::kGoogleGLogoMonochromeIcon ||
-            item->GetImage().IsImage()
+            GetKnownResourceImageUrl(item->GetImage()).has_value()
 #else
             icon == &vector_icons::kGoogleColorIcon
 #endif

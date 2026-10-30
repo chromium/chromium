@@ -9,6 +9,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/webui/webui_toolbar/webui_toolbar_test_utils.h"
+#include "chrome/grit/theme_resources.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/omnibox/browser/location_bar_model_util.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -19,6 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -213,6 +215,33 @@ TEST_F(IconTableTest, RegisterColorUrl) {
       icon_table_.GetFullState(),
       testing::UnorderedElementsAre(MatchesIconUpdate(std::ref(expected_i1))));
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+TEST_F(IconTableTest, KnownResourceImagesMapToUrls) {
+  toolbar_ui_api::IconHandle i1 =
+      icon_table_.RegisterImageModel(ui::ImageModel::FromImageSkia(
+          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+              IDR_GOOGLE_G_GRADIENT_16_ALT)));
+  ASSERT_FALSE(i1.is_null());
+
+  auto expected_i1 = toolbar_ui_api::mojom::IconUpdate::New(
+      1u, "chrome://theme/IDR_GOOGLE_G_GRADIENT_16_ALT",
+      IconType::kFullColorUrl, /*color=*/std::nullopt);
+
+  EXPECT_THAT(
+      icon_table_.GetFullState(),
+      testing::UnorderedElementsAre(MatchesIconUpdate(std::ref(expected_i1))));
+
+  // Re-registering a fresh ImageModel for the same resource should reuse the
+  // existing handle.
+  toolbar_ui_api::IconHandle i2 = icon_table_.RegisterImageModelTryReuse(
+      ui::ImageModel::FromImageSkia(
+          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+              IDR_GOOGLE_G_GRADIENT_16_ALT)),
+      i1);
+  EXPECT_EQ(i1.HandleId(), i2.HandleId());
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 TEST_F(IconTableTest, RegisterImageModelTryReuse) {
   std::optional<toolbar_ui_api::IconHandle> maybe_i0 =

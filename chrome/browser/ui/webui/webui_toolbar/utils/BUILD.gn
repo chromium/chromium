@@ -4,12 +4,15 @@
 
 source_set("utils") {
   sources = [
+    "known_resource_images.cc",
+    "known_resource_images.h",
     "split_tabs_utils.cc",
     "split_tabs_utils.h",
     "toolbar_button_utils.cc",
     "toolbar_button_utils.h",
   ]
   deps = [
+    "//chrome/app/theme:theme_resources",
     "//chrome/browser/ui:browser_element_identifiers",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/actions:actions_headers",

@@ -22,6 +22,7 @@
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/browser/ui/webui/webui_toolbar/adapters/icon_table_fetcher.h"
+#include "chrome/browser/ui/webui/webui_toolbar/utils/known_resource_images.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -582,6 +583,12 @@ toolbar_ui_api::IconHandle IconTable::RegisterImageModel(ui::ImageModel icon) {
                                  : std::string_view("(null name)"));
       }
     }
+  }
+
+  if (std::optional<std::string_view> url = GetKnownResourceImageUrl(icon)) {
+    // Keep the image model around for reuse checks.
+    return AddRegistration(/*need_rasterize=*/false, std::string(*url),
+                           IconType::kFullColorUrl, std::move(icon));
   }
 
   return AddRegistration(/*need_rasterize=*/true,
