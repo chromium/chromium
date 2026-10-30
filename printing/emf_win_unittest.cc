@@ -94,6 +94,37 @@ bool IsRecordTypeOfInterest(DWORD type) {
          type == EMR_STRETCHDIBITS || type == EMR_EOF;
 }
 
+std::vector<DWORD> SafePlaybackAndGetRecordTypes(
+    base::span<const uint8_t> data) {
+  Emf src_emf;
+  if (!src_emf.InitFromData(data)) {
+    ADD_FAILURE();
+    return {};
+  }
+
+  Emf dest_emf;
+  if (!dest_emf.Init() || !dest_emf.context()) {
+    ADD_FAILURE();
+    return {};
+  }
+  EXPECT_TRUE(::SetGraphicsMode(dest_emf.context(), GM_ADVANCED));
+  EXPECT_TRUE(src_emf.SafePlayback(dest_emf.context()));
+  if (!dest_emf.FinishDocument()) {
+    ADD_FAILURE();
+    return {};
+  }
+
+  Emf::Enumerator emf_enum(dest_emf, nullptr, nullptr);
+  std::vector<DWORD> record_types;
+  for (const auto& record : emf_enum) {
+    DWORD type = record.record()->iType;
+    if (IsRecordTypeOfInterest(type)) {
+      record_types.push_back(type);
+    }
+  }
+  return record_types;
+}
+
 }  // namespace
 
 TEST(EmfTest, DC) {
@@ -247,24 +278,6 @@ TEST(EmfTest, SafePlayback) {
   std::vector<char> data = CreateTestEmfData();
   ASSERT_FALSE(HasFailure());
 
-  Emf src_emf;
-  ASSERT_TRUE(src_emf.InitFromData(base::as_byte_span(data)));
-
-  Emf dest_emf;
-  ASSERT_TRUE(dest_emf.Init());
-  ASSERT_TRUE(dest_emf.context());
-  EXPECT_TRUE(::SetGraphicsMode(dest_emf.context(), GM_ADVANCED));
-  EXPECT_TRUE(src_emf.SafePlayback(dest_emf.context()));
-  ASSERT_TRUE(dest_emf.FinishDocument());
-
-  Emf::Enumerator emf_enum(dest_emf, nullptr, nullptr);
-  std::vector<DWORD> record_types;
-  for (const auto& record : emf_enum) {
-    DWORD type = record.record()->iType;
-    if (IsRecordTypeOfInterest(type)) {
-      record_types.push_back(type);
-    }
-  }
   // On an EMF DC, `::SetWorldTransform()` records an `EMR_SETWORLDTRANSFORM`
   // and an `EMR_MODIFYWORLDTRANSFORM` (`MWT_SET`) pair:
   // - Playing `EMR_HEADER` calls `::SetWorldTransform()`, emitting `{35, 36}`.
@@ -274,7 +287,7 @@ TEST(EmfTest, SafePlayback) {
   // - Playing the source EMF's `MWT_LEFTMULTIPLY` record calls
   //   `::ModifyWorldTransform()`, emitting `{36}`.
   EXPECT_THAT(
-      record_types,
+      SafePlaybackAndGetRecordTypes(base::as_byte_span(data)),
       ElementsAre(EMR_HEADER, EMR_SETWORLDTRANSFORM, EMR_MODIFYWORLDTRANSFORM,
                   EMR_RECTANGLE, EMR_STRETCHDIBITS, EMR_SETWORLDTRANSFORM,
                   EMR_MODIFYWORLDTRANSFORM, EMR_MODIFYWORLDTRANSFORM,
@@ -289,10 +302,10 @@ TEST(EmfTest, SafePlaybackSkipsInvalidRecords) {
 
   // Corrupt records so `Emf::Record::SafePlayback()` rejects them while
   // `record->nSize` remains valid for enumeration:
-  // - Set `cbBmiSrc` to 0 in `EMR_STRETCHDIBITS`.
+  // - Corrupt `EMR_STRETCHDIBITS` fields (`cbBmiSrc` and `offBmiSrc`).
   // - Swap `iType` between `EMR_SETWORLDTRANSFORM` and
   //   `EMR_MODIFYWORLDTRANSFORM` so their sizes no longer match their types.
-  bool found_stretch_dibits = false;
+  EMRSTRETCHDIBITS* stretch_dibits_record = nullptr;
   bool found_set_world_transform = false;
   bool found_modify_world_transform = false;
   base::span<uint8_t> span = base::as_writable_byte_span(data);
@@ -300,9 +313,7 @@ TEST(EmfTest, SafePlaybackSkipsInvalidRecords) {
     auto* record = reinterpret_cast<ENHMETARECORD*>(span.data());
     if (record->iType == EMR_STRETCHDIBITS) {
       ASSERT_GE(span.size(), sizeof(EMRSTRETCHDIBITS));
-      auto* sdib_record = reinterpret_cast<EMRSTRETCHDIBITS*>(span.data());
-      sdib_record->cbBmiSrc = 0;
-      found_stretch_dibits = true;
+      stretch_dibits_record = reinterpret_cast<EMRSTRETCHDIBITS*>(span.data());
     } else if (record->iType == EMR_SETWORLDTRANSFORM) {
       ASSERT_EQ(record->nSize, sizeof(EMRSETWORLDTRANSFORM));
       record->iType = EMR_MODIFYWORLDTRANSFORM;
@@ -315,31 +326,25 @@ TEST(EmfTest, SafePlaybackSkipsInvalidRecords) {
     ASSERT_LE(record->nSize, span.size());
     span = span.subspan(record->nSize);
   }
-  ASSERT_TRUE(found_stretch_dibits);
+  ASSERT_TRUE(stretch_dibits_record);
   ASSERT_TRUE(found_set_world_transform);
   ASSERT_TRUE(found_modify_world_transform);
 
-  Emf src_emf;
-  ASSERT_TRUE(src_emf.InitFromData(base::as_byte_span(data)));
+  // Set `cbBmiSrc` to 0 in `EMR_STRETCHDIBITS`.
+  const DWORD original_cb_bmi_src = stretch_dibits_record->cbBmiSrc;
+  stretch_dibits_record->cbBmiSrc = 0;
+  EXPECT_THAT(
+      SafePlaybackAndGetRecordTypes(base::as_byte_span(data)),
+      ElementsAre(EMR_HEADER, EMR_SETWORLDTRANSFORM, EMR_MODIFYWORLDTRANSFORM,
+                  EMR_RECTANGLE, EMR_RECTANGLE, EMR_EOF));
 
-  Emf dest_emf;
-  ASSERT_TRUE(dest_emf.Init());
-  ASSERT_TRUE(dest_emf.context());
-  EXPECT_TRUE(::SetGraphicsMode(dest_emf.context(), GM_ADVANCED));
-  EXPECT_TRUE(src_emf.SafePlayback(dest_emf.context()));
-  ASSERT_TRUE(dest_emf.FinishDocument());
-
-  Emf::Enumerator emf_enum(dest_emf, nullptr, nullptr);
-  std::vector<DWORD> record_types;
-  for (const auto& record : emf_enum) {
-    DWORD type = record.record()->iType;
-    if (IsRecordTypeOfInterest(type)) {
-      record_types.push_back(type);
-    }
-  }
-  EXPECT_THAT(record_types, ElementsAre(EMR_HEADER, EMR_SETWORLDTRANSFORM,
-                                        EMR_MODIFYWORLDTRANSFORM, EMR_RECTANGLE,
-                                        EMR_RECTANGLE, EMR_EOF));
+  // Restore `cbBmiSrc` and make `offBmiSrc` unaligned in `EMR_STRETCHDIBITS`.
+  stretch_dibits_record->cbBmiSrc = original_cb_bmi_src;
+  ++stretch_dibits_record->offBmiSrc;
+  EXPECT_THAT(
+      SafePlaybackAndGetRecordTypes(base::as_byte_span(data)),
+      ElementsAre(EMR_HEADER, EMR_SETWORLDTRANSFORM, EMR_MODIFYWORLDTRANSFORM,
+                  EMR_RECTANGLE, EMR_RECTANGLE, EMR_EOF));
 }
 
 TEST(PostScriptMetaFileTest, SafePlaybackUndersizedComment) {

@@ -36,6 +36,7 @@ const BITMAPINFOHEADER* GetBitmapInfoHeader(
   const auto* sdib_record =
       reinterpret_cast<const EMRSTRETCHDIBITS*>(record_span.data());
   if (sdib_record->offBmiSrc < sizeof(EMRSTRETCHDIBITS) ||
+      sdib_record->offBmiSrc % alignof(BITMAPINFOHEADER) != 0 ||
       sdib_record->cbBmiSrc < sizeof(BITMAPINFOHEADER)) {
     return nullptr;
   }
