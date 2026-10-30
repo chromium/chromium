@@ -113,5 +113,5 @@ This will preserve the temporary directories containing the raw GN description J
 
 ### Modifying GN2BP behavior
 1. **Adding a new GN Action**: If Chromium introduces a new `action` script, you must add a corresponding `ActionSanitizer` in `gen_android_bp.py` to translate its arguments to a Soong `genrule`.
-2. **Adding Dependencies**: If Cronet adds a new third-party dependency, you may need to add it to the `origin_files` in `copy.bara.sky` or map it to an existing Android library in `builtin_deps` in `gen_android_bp.py`.
+2. **Adding Dependencies**: If Cronet adds a new non-Rust third-party dependency, you may need to add it to the `origin_files` in `copy.bara.sky` or map it to an existing Android library in `builtin_deps` in `gen_android_bp.py` (`third_party/rust` crate paths are extracted automatically into `out/gn2bp/copybara_rust_crates.bara.sky` by `gen_android_bp.py`).
 3. **Rust Build Scripts**: If a Rust crate heavily relies on `OUT_DIR` and `build.rs`, ensure `generate_build_scripts_output.py` successfully captures the generated code and that the output paths are correctly referenced.
