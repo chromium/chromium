@@ -652,6 +652,7 @@ ci.thin_tester(
                         ),
                     ),
                     "mac_26_arm64",
+                    "ci_only",
                 ],
                 remove_mixins = "mac_26_vm_optional",
             ),
