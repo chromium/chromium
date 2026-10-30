@@ -165,7 +165,8 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
 
   void NotifySlottedNodesOfFlatTreeChange(
       const HeapVector<Member<Node>>& old_slotted,
-      const HeapVector<Member<Node>>& new_slotted);
+      const HeapVector<Member<Node>>& new_slotted,
+      bool switched_between_assignment_and_fallback);
   static void NotifySlottedNodesOfFlatTreeChangeNaive(
       const HeapVector<Member<Node>>& old_assigned_nodes,
       const HeapVector<Member<Node>>& new_assigned_nodes);
@@ -185,6 +186,9 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
 
   HeapVector<Member<Node>> assigned_nodes_;
   HeapVector<Member<Node>> flat_tree_children_;
+  // Tracks whether the most recent slot assignment was empty, hence the
+  // light-DOM children of the slot element (if any) were active fallback.
+  bool flat_tree_children_are_fallback_ = true;
 
   bool slotchange_event_enqueued_ = false;
 

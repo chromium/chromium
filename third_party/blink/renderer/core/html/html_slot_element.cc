@@ -317,23 +317,18 @@ void HTMLSlotElement::UpdateFlatTreeNodeDataForAssignedNodes() {
   const HeapVector<Member<Node>> assigned_nodes = assigned_nodes_;
   for (auto& current : assigned_nodes) {
     bool mark_parent_slot_changed = false;
-    if (!current->NeedsStyleRecalc() && !current->GetLayoutObject()) {
-      if (current->IsTextNode() ||
-          !To<Element>(current.Get())->GetComputedStyle()) {
-        if (FlatTreeNodeData* node_data = current->GetFlatTreeNodeData()) {
-          // This invalidation is covering the case where the node did not
-          // change assignment, but between the assignment recalcs:
-          //
-          // 1. The node was removed from the host.
-          // 2. The node was inserted into a different parent.
-          // 3. The node was then re-inserted into the original host.
-          //
-          // In this case the AssignedSlot() and ComputedStyle and were cleared,
-          // which means the node still needs to be marked for style recalc, but
-          // the diffing in RecalcFlatTreeChildren() can not detect this.
-          mark_parent_slot_changed = !node_data->AssignedSlot();
-        }
-      }
+    if (FlatTreeNodeData* node_data = current->GetFlatTreeNodeData()) {
+      // This invalidation is covering the case where the node did not
+      // change assignment, but between the assignment recalcs:
+      //
+      // 1. The node was removed from the host.
+      // 2. The node was inserted into a different parent.
+      // 3. The node was then re-inserted into the original host.
+      //
+      // In this case the AssignedSlot() and ComputedStyle and were cleared,
+      // which means the node still needs to be marked for style recalc, but
+      // the diffing in RecalcFlatTreeChildren() can not detect this.
+      mark_parent_slot_changed = !node_data->AssignedSlot();
     }
     FlatTreeNodeData& flat_tree_node_data = current->EnsureFlatTreeNodeData();
     flat_tree_node_data.SetAssignedSlot(this);
@@ -401,8 +396,12 @@ void HTMLSlotElement::RecalcFlatTreeChildren() {
     }
   }
 
+  bool switched_between_assignment_and_fallback =
+      flat_tree_children_are_fallback_ != assigned_nodes_.empty();
   NotifySlottedNodesOfFlatTreeChange(old_flat_tree_children,
-                                     flat_tree_children_);
+                                     flat_tree_children_,
+                                     switched_between_assignment_and_fallback);
+  flat_tree_children_are_fallback_ = assigned_nodes_.empty();
 }
 
 void HTMLSlotElement::DispatchSlotChangeEvent() {
@@ -613,7 +612,18 @@ void HTMLSlotElement::NotifySlottedNodesOfFlatTreeChangeByDynamicProgramming(
 
 void HTMLSlotElement::NotifySlottedNodesOfFlatTreeChange(
     const HeapVector<Member<Node>>& old_slotted,
-    const HeapVector<Member<Node>>& new_slotted) {
+    const HeapVector<Member<Node>>& new_slotted,
+    bool switched_between_assignment_and_fallback) {
+  // If we previously used fallback content but now use assigned nodes, or
+  // vice versa, then all nodes need to be notified.
+  if (switched_between_assignment_and_fallback) {
+    probe::DidPerformSlotDistribution(this);
+    for (const auto& node : new_slotted) {
+      node->ParentSlotChanged();
+    }
+    return;
+  }
+
   if (old_slotted == new_slotted)
     return;
   probe::DidPerformSlotDistribution(this);

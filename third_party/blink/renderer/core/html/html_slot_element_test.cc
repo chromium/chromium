@@ -5,10 +5,14 @@
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
@@ -192,6 +196,166 @@ TEST_F(HTMLSlotElementInDocumentTest, SlotableFallback) {
 
   EXPECT_TRUE(slot->AssignedNodes().empty());
   EXPECT_EQ(2u, GetFlatTreeChildren(*slot).size());
+}
+
+TEST_F(HTMLSlotElementInDocumentTest,
+       MoveElementBetweenShadowHostAndSlotInvalidatesStyle) {
+  // Avoid whitespace as direct children of the shadow hosts, since whitespace
+  // text nodes would be assigned to the unnamed <slot> and prevent fallback.
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <div id="host1"><template shadowrootmode="open">
+      <style>
+        ::slotted(div) { color: rgb(0, 128, 0); }
+        slot > div { color: rgb(0, 0, 255); }
+      </style>
+      <slot id="slot1"></slot>
+    </template><div id="slotted1"></div></div>
+    <div id="host2"><template shadowrootmode="open">
+      <style>
+        ::slotted(div) { color: rgb(0, 128, 0); }
+        slot > div { color: rgb(0, 0, 255); }
+      </style>
+      <slot id="slot2"></slot>
+    </template><div id="slotted2"></div></div>
+    <div id="host3"><template shadowrootmode="open">
+      <style>
+        ::slotted(div) { color: rgb(0, 128, 0); }
+        slot > div { color: rgb(0, 0, 255); }
+      </style>
+      <slot id="slot3">
+        <div id="fallback1"></div>
+      </slot>
+    </template></div>
+    <div id="host4"><template shadowrootmode="open">
+      <style>
+        ::slotted(div) { color: rgb(0, 128, 0); }
+        slot > div { color: rgb(0, 0, 255); }
+      </style>
+      <slot id="slot4">
+        <div id="fallback2"></div>
+      </slot>
+    </template></div>
+    <div id="other"></div>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  constexpr Color kAssignedColor = Color::FromRGB(0, 128, 0);
+  constexpr Color kFallbackColor = Color::FromRGB(0, 0, 255);
+
+  auto* other = GetDocument().getElementById(AtomicString("other"));
+  auto* host1 = GetDocument().getElementById(AtomicString("host1"));
+  auto* slotted1 = GetDocument().getElementById(AtomicString("slotted1"));
+  auto* slot1 = host1->GetShadowRoot()->getElementById(AtomicString("slot1"));
+
+  auto* host2 = GetDocument().getElementById(AtomicString("host2"));
+  auto* slotted2 = GetDocument().getElementById(AtomicString("slotted2"));
+  auto* slot2 = host2->GetShadowRoot()->getElementById(AtomicString("slot2"));
+
+  auto* host3 = GetDocument().getElementById(AtomicString("host3"));
+  auto* slot3 = host3->GetShadowRoot()->getElementById(AtomicString("slot3"));
+  auto* fallback1 =
+      host3->GetShadowRoot()->getElementById(AtomicString("fallback1"));
+
+  auto* host4 = GetDocument().getElementById(AtomicString("host4"));
+  auto* slot4 = host4->GetShadowRoot()->getElementById(AtomicString("slot4"));
+  auto* fallback2 =
+      host4->GetShadowRoot()->getElementById(AtomicString("fallback2"));
+
+  auto color_of = [](const Element* element) {
+    return element->GetComputedStyle()->VisitedDependentColor(
+        GetCSSPropertyColor());
+  };
+
+  ASSERT_EQ(FlatTreeTraversal::Parent(*slotted1), slot1);
+  ASSERT_EQ(FlatTreeTraversal::Parent(*slotted2), slot2);
+  ASSERT_EQ(FlatTreeTraversal::Parent(*fallback1), slot3);
+  ASSERT_EQ(FlatTreeTraversal::Parent(*fallback2), slot4);
+  ASSERT_TRUE(slotted1->GetComputedStyle());
+  ASSERT_TRUE(slotted2->GetComputedStyle());
+  ASSERT_TRUE(fallback1->GetComputedStyle());
+  ASSERT_TRUE(fallback2->GetComputedStyle());
+  EXPECT_EQ(color_of(slotted1), kAssignedColor);
+  EXPECT_EQ(color_of(slotted2), kAssignedColor);
+  EXPECT_EQ(color_of(fallback1), kFallbackColor);
+  EXPECT_EQ(color_of(fallback2), kFallbackColor);
+
+  // 1. Assigned node -> slot fallback content (via appendChild and moveBefore),
+  //    and slot fallback content -> assigned node (via appendChild and
+  //    moveBefore).
+  slot1->appendChild(slotted1);
+  slot2->moveBefore(slotted2, nullptr, ASSERT_NO_EXCEPTION);
+  host3->appendChild(fallback1);
+  host4->moveBefore(fallback2, nullptr, ASSERT_NO_EXCEPTION);
+
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(FlatTreeTraversal::Parent(*slotted1), slot1);
+  ASSERT_TRUE(slotted1->GetComputedStyle());
+  EXPECT_TRUE(slotted1->GetLayoutObject());
+  EXPECT_EQ(color_of(slotted1), kFallbackColor);
+
+  EXPECT_EQ(FlatTreeTraversal::Parent(*slotted2), slot2);
+  ASSERT_TRUE(slotted2->GetComputedStyle());
+  EXPECT_TRUE(slotted2->GetLayoutObject());
+  EXPECT_EQ(color_of(slotted2), kFallbackColor);
+
+  EXPECT_EQ(FlatTreeTraversal::Parent(*fallback1), slot3);
+  ASSERT_TRUE(fallback1->GetComputedStyle());
+  EXPECT_TRUE(fallback1->GetLayoutObject());
+  EXPECT_EQ(color_of(fallback1), kAssignedColor);
+
+  EXPECT_EQ(FlatTreeTraversal::Parent(*fallback2), slot4);
+  ASSERT_TRUE(fallback2->GetComputedStyle());
+  EXPECT_TRUE(fallback2->GetLayoutObject());
+  EXPECT_EQ(color_of(fallback2), kAssignedColor);
+
+  // 2. Move each element back in the opposite direction.
+  host1->appendChild(slotted1);
+  host2->moveBefore(slotted2, nullptr, ASSERT_NO_EXCEPTION);
+  slot3->appendChild(fallback1);
+  slot4->moveBefore(fallback2, nullptr, ASSERT_NO_EXCEPTION);
+
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(FlatTreeTraversal::Parent(*slotted1), slot1);
+  ASSERT_TRUE(slotted1->GetComputedStyle());
+  EXPECT_TRUE(slotted1->GetLayoutObject());
+  EXPECT_EQ(color_of(slotted1), kAssignedColor);
+
+  EXPECT_EQ(FlatTreeTraversal::Parent(*slotted2), slot2);
+  ASSERT_TRUE(slotted2->GetComputedStyle());
+  EXPECT_TRUE(slotted2->GetLayoutObject());
+  EXPECT_EQ(color_of(slotted2), kAssignedColor);
+
+  EXPECT_EQ(FlatTreeTraversal::Parent(*fallback1), slot3);
+  ASSERT_TRUE(fallback1->GetComputedStyle());
+  EXPECT_TRUE(fallback1->GetLayoutObject());
+  EXPECT_EQ(color_of(fallback1), kFallbackColor);
+
+  EXPECT_EQ(FlatTreeTraversal::Parent(*fallback2), slot4);
+  ASSERT_TRUE(fallback2->GetComputedStyle());
+  EXPECT_TRUE(fallback2->GetLayoutObject());
+  EXPECT_EQ(color_of(fallback2), kFallbackColor);
+
+  // 3. Detour an assigned node through an unrelated parent and back into the
+  //    same shadow host in a single task (via appendChild and moveBefore).
+  other->appendChild(slotted1);
+  host1->appendChild(slotted1);
+
+  other->moveBefore(slotted2, nullptr, ASSERT_NO_EXCEPTION);
+  host2->moveBefore(slotted2, nullptr, ASSERT_NO_EXCEPTION);
+
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(FlatTreeTraversal::Parent(*slotted1), slot1);
+  ASSERT_TRUE(slotted1->GetComputedStyle());
+  EXPECT_TRUE(slotted1->GetLayoutObject());
+  EXPECT_EQ(color_of(slotted1), kAssignedColor);
+
+  EXPECT_EQ(FlatTreeTraversal::Parent(*slotted2), slot2);
+  ASSERT_TRUE(slotted2->GetComputedStyle());
+  EXPECT_TRUE(slotted2->GetLayoutObject());
+  EXPECT_EQ(color_of(slotted2), kAssignedColor);
 }
 
 }  // namespace blink

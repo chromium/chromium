@@ -1126,6 +1126,140 @@ TEST_P(HTMLCanvasElementTest, RemoveAndReinsertSlottedElementToSameHost) {
   EXPECT_TRUE(child2->IsInCanvasSubtree());
 }
 
+// Moving an element between a shadow host and its <slot> in either direction
+// when it is the slot's only flat-tree child switches the slot between
+// assigned-nodes mode and fallback mode without changing the element's
+// flat-tree parent or the slot's flat-tree child list ([target] -> [target]).
+// Both directions must still notify the moved node so its kIsInCanvasSubtree
+// flag is updated.
+TEST_P(HTMLCanvasElementTest, MoveElementBetweenShadowHostAndSlotKeepsFlag) {
+  // Avoid whitespace as direct children of the shadow hosts, since whitespace
+  // text nodes would be assigned to the unnamed <slot> and prevent fallback.
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(R"HTML(
+    <canvas content="drawable">
+      <div drawable id="drawable">
+        <div id="host1"><template shadowrootmode="open">
+          <slot id="slot1"></slot>
+        </template><div id="slotted1">
+          <div id="slotted_child1"></div>
+        </div></div>
+        <div id="host2"><template shadowrootmode="open">
+          <slot id="slot2"></slot>
+        </template><div id="slotted2">
+          <div id="slotted_child2"></div>
+        </div></div>
+        <div id="host3"><template shadowrootmode="open">
+          <slot id="slot3">
+            <div id="fallback1">
+              <div id="fallback_child1"></div>
+            </div>
+          </slot>
+        </template></div>
+        <div id="host4"><template shadowrootmode="open">
+          <slot id="slot4">
+            <div id="fallback2">
+              <div id="fallback_child2"></div>
+            </div>
+          </slot>
+        </template></div>
+      </div>
+    </canvas>
+    <div id="other"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* other = GetDocument().getElementById(AtomicString("other"));
+  auto* host1 = GetDocument().getElementById(AtomicString("host1"));
+  auto* slotted1 = GetDocument().getElementById(AtomicString("slotted1"));
+  auto* slotted_child1 =
+      GetDocument().getElementById(AtomicString("slotted_child1"));
+  auto* slot1 = host1->GetShadowRoot()->getElementById(AtomicString("slot1"));
+
+  auto* host2 = GetDocument().getElementById(AtomicString("host2"));
+  auto* slotted2 = GetDocument().getElementById(AtomicString("slotted2"));
+  auto* slotted_child2 =
+      GetDocument().getElementById(AtomicString("slotted_child2"));
+  auto* slot2 = host2->GetShadowRoot()->getElementById(AtomicString("slot2"));
+
+  auto* host3 = GetDocument().getElementById(AtomicString("host3"));
+  auto* slot3 = host3->GetShadowRoot()->getElementById(AtomicString("slot3"));
+  auto* fallback1 =
+      host3->GetShadowRoot()->getElementById(AtomicString("fallback1"));
+  auto* fallback_child1 =
+      host3->GetShadowRoot()->getElementById(AtomicString("fallback_child1"));
+
+  auto* host4 = GetDocument().getElementById(AtomicString("host4"));
+  auto* slot4 = host4->GetShadowRoot()->getElementById(AtomicString("slot4"));
+  auto* fallback2 =
+      host4->GetShadowRoot()->getElementById(AtomicString("fallback2"));
+  auto* fallback_child2 =
+      host4->GetShadowRoot()->getElementById(AtomicString("fallback_child2"));
+
+  ASSERT_TRUE(slotted1->IsInCanvasSubtree());
+  ASSERT_TRUE(slotted_child1->IsInCanvasSubtree());
+  ASSERT_TRUE(slotted2->IsInCanvasSubtree());
+  ASSERT_TRUE(slotted_child2->IsInCanvasSubtree());
+  ASSERT_TRUE(fallback1->IsInCanvasSubtree());
+  ASSERT_TRUE(fallback_child1->IsInCanvasSubtree());
+  ASSERT_TRUE(fallback2->IsInCanvasSubtree());
+  ASSERT_TRUE(fallback_child2->IsInCanvasSubtree());
+
+  // 1. Assigned node -> slot fallback content (via appendChild and moveBefore),
+  //    and slot fallback content -> assigned node (via appendChild and
+  //    moveBefore).
+  slot1->appendChild(slotted1);
+  slot2->moveBefore(slotted2, nullptr, ASSERT_NO_EXCEPTION);
+  host3->appendChild(fallback1);
+  host4->moveBefore(fallback2, nullptr, ASSERT_NO_EXCEPTION);
+
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(slotted1->IsInCanvasSubtree());
+  EXPECT_TRUE(slotted_child1->IsInCanvasSubtree());
+  EXPECT_TRUE(slotted2->IsInCanvasSubtree());
+  EXPECT_TRUE(slotted_child2->IsInCanvasSubtree());
+  EXPECT_TRUE(fallback1->IsInCanvasSubtree());
+  EXPECT_TRUE(fallback_child1->IsInCanvasSubtree());
+  EXPECT_TRUE(fallback2->IsInCanvasSubtree());
+  EXPECT_TRUE(fallback_child2->IsInCanvasSubtree());
+
+  // 2. Move each element back in the opposite direction.
+  host1->appendChild(slotted1);
+  host2->moveBefore(slotted2, nullptr, ASSERT_NO_EXCEPTION);
+  slot3->appendChild(fallback1);
+  slot4->moveBefore(fallback2, nullptr, ASSERT_NO_EXCEPTION);
+
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(slotted1->IsInCanvasSubtree());
+  EXPECT_TRUE(slotted_child1->IsInCanvasSubtree());
+  EXPECT_TRUE(slotted2->IsInCanvasSubtree());
+  EXPECT_TRUE(slotted_child2->IsInCanvasSubtree());
+  EXPECT_TRUE(fallback1->IsInCanvasSubtree());
+  EXPECT_TRUE(fallback_child1->IsInCanvasSubtree());
+  EXPECT_TRUE(fallback2->IsInCanvasSubtree());
+  EXPECT_TRUE(fallback_child2->IsInCanvasSubtree());
+
+  // 3. Detour an assigned node through an unrelated parent and back into the
+  //    same shadow host in a single task (via appendChild and moveBefore).
+  other->appendChild(slotted1);
+  EXPECT_FALSE(slotted1->IsInCanvasSubtree());
+  EXPECT_FALSE(slotted_child1->IsInCanvasSubtree());
+  host1->appendChild(slotted1);
+
+  other->moveBefore(slotted2, nullptr, ASSERT_NO_EXCEPTION);
+  EXPECT_FALSE(slotted2->IsInCanvasSubtree());
+  EXPECT_FALSE(slotted_child2->IsInCanvasSubtree());
+  host2->moveBefore(slotted2, nullptr, ASSERT_NO_EXCEPTION);
+
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(slotted1->IsInCanvasSubtree());
+  EXPECT_TRUE(slotted_child1->IsInCanvasSubtree());
+  EXPECT_TRUE(slotted2->IsInCanvasSubtree());
+  EXPECT_TRUE(slotted_child2->IsInCanvasSubtree());
+}
+
 // Moving a focused <input type=date> with no suggested value into a canvas
 // subtree must not rebuild its fields, so slot assignment recalc does not move
 // focus or run script.
