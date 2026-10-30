@@ -57,6 +57,28 @@ let passwordTypeObserver: MutationObserver|null = null;
 let mutationProcessTimeout: ReturnType<typeof setTimeout>|null = null;
 
 /**
+ * Strong references to tracked elements, held temporarily while mutation
+ * processing is debounced.
+ *
+ * Because `__gCrElementMap` only stores `WeakRef`s, an element removed from the
+ * DOM could be garbage-collected before the debounce timer fires, which would
+ * cause its removal to be missed. Holding strong references here keeps detached
+ * elements alive until `processFormMutationsOptimized()` runs.
+ */
+let pendingBatchElements: Element[] = [];
+
+/**
+ * Number of `__gCrElementMap` entries already scanned during the current
+ * debounce window.
+ *
+ * `__gCrElementMap` preserves insertion order and new entries are appended,
+ * so subsequent callbacks only need to scan entries after this count.
+ * Dead `WeakRef` entries are skipped rather than added, so this count can
+ * exceed `pendingBatchElements.length`.
+ */
+let scannedEntryCount = 0;
+
+/**
  * Snapshot of the total number of form controls in the document.
  */
 let formControlCount: number = -1;
@@ -654,11 +676,9 @@ function processFormMutationsOptimized(): void {
   elementMap.forEach((ref, id) => {
     const element = ref.deref() as Element | null;
     if (!element) {
-      // Element was garbage-collected, which implies it was already
-      // disconnected from the DOM and is not part of the current mutation
-      // records (which hold strong references to removed nodes). We simply
-      // clean up our map without reporting it as a new removal. This
-      // ensures that future mutation processing iterations are faster.
+      // Element was garbage-collected before this mutation batch started
+      // (tracked elements are held strongly while a batch is pending). Clean
+      // up the map entry without reporting removal.
       elementMap.delete(id);
       return;
     }
@@ -711,9 +731,9 @@ function processFormMutationsOptimized(): void {
   const addedFormControlCount =
       (newFormControlCount - formControlCount) + removedFormControlCount;
 
-   // Handle the removed form control element case as a form changed
-   // mutation. Removed form control are elements that are not form nor
-   // unowned autofillable fields.
+  // Handle the removed form control element case as a form changed
+  // mutation. Removed form control are elements that are not form nor
+  // unowned autofillable fields.
   if (addedFormControlCount > 0 ||
       removedFormControlCount >
           (removedFormIDs.length + removedFieldIDs.length)) {
@@ -747,6 +767,37 @@ function processFormMutationsOptimized(): void {
       !sendFormMutationMessagesAfterDelay(messagesToSend, 0, true)) {
     formMsgBatchMetadata.dropCount += messagesToSend.length;
   }
+}
+
+/**
+ * Retains the elements registered since the last call, so that they can't be
+ * garbage-collected before the pending batch is processed.
+ */
+function retainNewTrackedElements(): void {
+  const elementMap = getElementMap();
+  if (!elementMap) {
+    return;
+  }
+  if (elementMap.size < scannedEntryCount) {
+    // Entries were deleted outside of the batch processing, so the scanned
+    // entries can't be told apart anymore. Rescans them all; retaining an
+    // element twice is harmless.
+    scannedEntryCount = 0;
+  }
+  if (elementMap.size === scannedEntryCount) {
+    return;
+  }
+  let index = 0;
+  elementMap.forEach(ref => {
+    if (index++ < scannedEntryCount) {
+      return;
+    }
+    const element = ref.deref() as Element | undefined;
+    if (element) {
+      pendingBatchElements.push(element);
+    }
+  });
+  scannedEntryCount = elementMap.size;
 }
 
 /**
@@ -786,6 +837,8 @@ function cleanUpFormMutationTracking(): void {
     clearTimeout(mutationProcessTimeout);
     mutationProcessTimeout = null;
   }
+  pendingBatchElements = [];
+  scannedEntryCount = 0;
   formControlCollections = [];
   lastFocusedElement = null;
 }
@@ -827,17 +880,23 @@ function trackFormMutations(delay: number): void {
     formControlCount = getFormControlCount();
 
     formMutationObserver = new MutationObserver(function() {
-      // Disconnect the observer to reduce the number of microtasks
-      // during the delay period.
-      if (formMutationObserver) {
-        formMutationObserver.disconnect();
+      // Keep observing during the delay so that elements registered meanwhile
+      // are also retained until the batch is processed.
+      retainNewTrackedElements();
+      if (mutationProcessTimeout) {
+        return;
       }
-
       mutationProcessTimeout = setTimeout(function() {
         mutationProcessTimeout = null;
-        processFormMutationsOptimized();
-        // Reconnect the observer to start listening for new mutations again.
-        observeFormMutations(formMutationObserver);
+        try {
+          processFormMutationsOptimized();
+        } finally {
+          // Released only after processing, so that the removed elements can't
+          // be garbage-collected (e.g. by an allocation in the processing)
+          // before their removal is detected.
+          pendingBatchElements = [];
+          scannedEntryCount = 0;
+        }
       }, delay);
     });
     observeFormMutations(formMutationObserver);
