@@ -9,7 +9,7 @@
 
 #include "base/android/device_info.h"
 #include "base/functional/callback.h"
-#include "chrome/browser/ui/android/safe_browsing/password_reuse_dialog_view_android.h"
+#include "chrome/browser/ui/android/safe_browsing/password_protection/password_reuse_dialog_view_android.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"

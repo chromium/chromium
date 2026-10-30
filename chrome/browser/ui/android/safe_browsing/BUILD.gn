@@ -11,8 +11,8 @@ generate_jni("jni_headers") {
 
 source_set("safe_browsing") {
   sources = [
-    "password_reuse_dialog_view_android.cc",
-    "password_reuse_dialog_view_android.h",
+    "password_protection/password_reuse_dialog_view_android.cc",
+    "password_protection/password_reuse_dialog_view_android.h",
     "suspicious_site_dialog_view_android.cc",
     "suspicious_site_dialog_view_android.h",
   ]

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/android/safe_browsing/password_reuse_dialog_view_android.h"
+#include "chrome/browser/ui/android/safe_browsing/password_protection/password_reuse_dialog_view_android.h"
 
 #include <string>
 
