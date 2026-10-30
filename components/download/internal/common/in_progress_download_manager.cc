@@ -590,6 +590,11 @@ void InProgressDownloadManager::StartDownloadWithItem(
   std::unique_ptr<DownloadFile> download_file;
   if (info->result == DOWNLOAD_INTERRUPT_REASON_NONE) {
     DCHECK(stream);
+    if (info->save_info && info->save_info->last_modified.empty()) {
+      info->save_info->last_modified = !info->last_modified.empty()
+                                           ? info->last_modified
+                                           : download->GetLastModifiedTime();
+    }
     download_file.reset(file_factory_->CreateFile(
         std::move(info->save_info), default_download_directory,
         std::move(stream), download->GetId(), duplicate_download_file_path,

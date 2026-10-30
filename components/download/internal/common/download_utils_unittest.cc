@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/test/scoped_feature_list.h"
+#include "components/download/public/common/download_create_info.h"
 #include "components/download/public/common/download_features.h"
 #include "crypto/hash.h"
 #include "net/base/net_errors.h"
@@ -195,6 +196,43 @@ TEST(DownloadUtilsTest, AbortedServiceWorkerWithCertErrorIsCertProblem) {
                 net::CERT_STATUS_DATE_INVALID, /*is_partial_request=*/false,
                 DOWNLOAD_INTERRUPT_REASON_NONE,
                 /*is_served_from_service_worker=*/true));
+}
+
+TEST(DownloadUtilsTest, HandleResponseHeadersPopulatesSaveInfoLastModified) {
+  // Case 1: Headers have Last-Modified but no strong validators.
+  // create_info.last_modified remains empty, but save_info->last_modified is populated.
+  {
+    net::HttpResponseHeaders::Builder builder(net::HttpVersion(1, 1), "200 OK");
+    builder.AddHeader("Last-Modified", "Wed, 21 Oct 2015 07:28:00 GMT");
+    scoped_refptr<net::HttpResponseHeaders> headers = builder.Build();
+    ASSERT_FALSE(headers->HasStrongValidators());
+
+    DownloadCreateInfo create_info;
+    create_info.save_info = std::make_unique<DownloadSaveInfo>();
+
+    HandleResponseHeaders(headers.get(), &create_info);
+    EXPECT_TRUE(create_info.last_modified.empty());
+    EXPECT_EQ("Wed, 21 Oct 2015 07:28:00 GMT",
+              create_info.save_info->last_modified);
+  }
+
+  // Case 2: Headers have strong validator (ETag).
+  // Both create_info.last_modified and save_info->last_modified are populated.
+  {
+    net::HttpResponseHeaders::Builder builder(net::HttpVersion(1, 1), "200 OK");
+    builder.AddHeader("ETag", "\"xyz\"");
+    builder.AddHeader("Last-Modified", "Wed, 21 Oct 2015 07:28:00 GMT");
+    scoped_refptr<net::HttpResponseHeaders> headers = builder.Build();
+    ASSERT_TRUE(headers->HasStrongValidators());
+
+    DownloadCreateInfo create_info;
+    create_info.save_info = std::make_unique<DownloadSaveInfo>();
+
+    HandleResponseHeaders(headers.get(), &create_info);
+    EXPECT_EQ("Wed, 21 Oct 2015 07:28:00 GMT", create_info.last_modified);
+    EXPECT_EQ("Wed, 21 Oct 2015 07:28:00 GMT",
+              create_info.save_info->last_modified);
+  }
 }
 
 }  // namespace

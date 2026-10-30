@@ -99,6 +99,9 @@ struct COMPONENTS_DOWNLOAD_EXPORT DownloadSaveInfo {
   // The size of the response body. If content-length response header is not
   // presented or can't be parse, set to 0.
   int64_t total_bytes = 0;
+
+  // The HTTP Last-Modified header value of the downloaded file, if present.
+  std::string last_modified;
 };
 
 }  // namespace download

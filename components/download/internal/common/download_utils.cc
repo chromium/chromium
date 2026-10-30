@@ -406,11 +406,15 @@ void HandleResponseHeaders(const net::HttpResponseHeaders* headers,
   if (!headers)
     return;
 
+  std::optional<std::string_view> last_modified =
+      headers->EnumerateHeader(nullptr, "Last-Modified");
+  if (create_info->save_info && last_modified.has_value()) {
+    create_info->save_info->last_modified = *last_modified;
+  }
+
   if (headers->HasStrongValidators()) {
     // If we don't have strong validators as per RFC 7232 section 2, then
     // we neither store nor use them for range requests.
-    std::optional<std::string_view> last_modified =
-        headers->EnumerateHeader(nullptr, "Last-Modified");
     create_info->last_modified = last_modified.value_or(std::string_view());
 
     std::optional<std::string_view> etag =

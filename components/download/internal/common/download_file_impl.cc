@@ -785,11 +785,12 @@ void DownloadFileImpl::OnDownloadCompleted() {
   }
 
   std::optional<crypto::hash::Hasher> hash_state =
-      obfuscator_ ? obfuscator_->GetUnobfuscatedHash()
-                  : file_.Finish(potential_file_length_);
+      obfuscator_
+          ? obfuscator_->GetUnobfuscatedHash()
+          : file_.Finish(potential_file_length_, save_info_->last_modified);
 #else
   std::optional<crypto::hash::Hasher> hash_state =
-      file_.Finish(potential_file_length_);
+      file_.Finish(potential_file_length_, save_info_->last_modified);
 #endif
 
   update_timer_.reset();

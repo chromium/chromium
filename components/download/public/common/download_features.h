@@ -121,6 +121,9 @@ COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
     kEnableDownloadOpenWithContextMenu);
 #endif  // BUILDFLAG(IS_WIN)
+
+// Whether to preserve the HTTP Last-Modified timestamp on downloaded files.
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kPreserveDownloadLastModified);
 }  // namespace features
 
 }  // namespace download

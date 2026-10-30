@@ -113,6 +113,9 @@ BASE_FEATURE(kDeferredDownloadHistoryLoading,
 BASE_FEATURE(kEnableDownloadOpenWithContextMenu,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
+
+BASE_FEATURE(kPreserveDownloadLastModified,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
 
 }  // namespace download

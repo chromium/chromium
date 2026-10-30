@@ -4357,6 +4357,12 @@ inline constexpr char kPrerender2EarlyDocumentLifecycleUpdateDescription[] =
     "Allows prerendering pages to execute more lifecycle updates, such as "
     "prepaint, before activation";
 
+inline constexpr char kPreserveDownloadLastModifiedName[] =
+    "Preserve Last-Modified timestamp on downloaded files";
+inline constexpr char kPreserveDownloadLastModifiedDescription[] =
+    "When enabled, sets the modification timestamp of downloaded files to "
+    "match the HTTP Last-Modified response header provided by the server.";
+
 inline constexpr char kTreesInVizName[] = "Trees in viz";
 inline constexpr char kTreesInVizDescription[] =
     "Enables the renderer to send a CC LayerTree to the viz/gpu process "

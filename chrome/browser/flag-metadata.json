@@ -8462,6 +8462,11 @@
     "expiry_milestone": 143
   },
   {
+    "name": "preserve-download-last-modified",
+    "owners": [ "//components/download/OWNERS" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "price-insights",
     "owners": [ "qib@google.com", "chrome-shopping-eng@google.com", "chrommerce-eng@google.com" ],
     "expiry_milestone": 135

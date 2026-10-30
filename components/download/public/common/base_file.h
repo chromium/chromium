@@ -161,7 +161,12 @@ class COMPONENTS_DOWNLOAD_EXPORT BaseFile {
   //
   // |expected_size|: The expected final size of the file in bytes. If non-zero,
   //     BaseFile will verify that the file size matches this value.
-  std::optional<crypto::hash::Hasher> Finish(int64_t expected_size = 0);
+  // |last_modified|: The HTTP Last-Modified header value, used to set the
+  //     file's last modified timestamp when kPreserveDownloadLastModified is
+  //     enabled.
+  std::optional<crypto::hash::Hasher> Finish(
+      int64_t expected_size = 0,
+      const std::string& last_modified = std::string());
 
   // Callback used with AnnotateWithSourceInformation.
   // Created by DownloadFileImpl::RenameWithRetryInternal

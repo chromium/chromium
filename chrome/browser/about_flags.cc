@@ -14409,6 +14409,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableOffersAndLoyaltyCardsSettings)},
 
+    {"preserve-download-last-modified",
+     flag_descriptions::kPreserveDownloadLastModifiedName,
+     flag_descriptions::kPreserveDownloadLastModifiedDescription, kOsAll,
+     FEATURE_VALUE_TYPE(download::features::kPreserveDownloadLastModified)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -23,6 +24,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_interrupt_reasons_utils.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_stats.h"
@@ -347,7 +349,9 @@ void BaseFile::Cancel() {
   Detach();
 }
 
-std::optional<crypto::hash::Hasher> BaseFile::Finish(int64_t expected_size) {
+std::optional<crypto::hash::Hasher> BaseFile::Finish(
+    int64_t expected_size,
+    const std::string& last_modified) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(qinmin): verify that all the holes have been filled.
@@ -365,6 +369,16 @@ std::optional<crypto::hash::Hasher> BaseFile::Finish(int64_t expected_size) {
       file_.SetLength(target_size);
     }
   }
+
+  if (file_.IsValid() && !last_modified.empty() &&
+      base::FeatureList::IsEnabled(features::kPreserveDownloadLastModified)) {
+    base::Time mtime;
+    if (base::Time::FromString(last_modified.c_str(), &mtime)) {
+      file_.Flush();
+      file_.SetTimes(base::Time::Now(), mtime);
+    }
+  }
+
   Close();
   return std::exchange(secure_hash_, std::nullopt);
 }

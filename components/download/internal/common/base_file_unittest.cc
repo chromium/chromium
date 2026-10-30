@@ -17,8 +17,10 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
 #include "build/build_config.h"
+#include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/download/public/common/download_item.h"
 #include "crypto/hash.h"
@@ -974,6 +976,57 @@ TEST_F(BaseFileTest, GetEffectiveAuthorityURL) {
   // Nothing usable.
   EXPECT_EQ(GURL(),
             BaseFile::GetEffectiveAuthorityURL(GURL(), GURL(), std::nullopt));
+}
+
+TEST_F(BaseFileTest, PreserveLastModifiedEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPreserveDownloadLastModified);
+
+  ASSERT_TRUE(InitializeFile());
+  ASSERT_TRUE(AppendDataToFile(kTestData1));
+
+  const std::string kLastModified = "Wed, 21 Oct 2015 07:28:00 GMT";
+  base::Time expected_mtime;
+  ASSERT_TRUE(base::Time::FromString(kLastModified.c_str(), &expected_mtime));
+
+  base_file_->Finish(0, kLastModified);
+
+  base::File::Info file_info;
+  ASSERT_TRUE(base::GetFileInfo(base_file_->full_path(), &file_info));
+  EXPECT_NEAR(expected_mtime.InSecondsFSinceUnixEpoch(),
+              file_info.last_modified.InSecondsFSinceUnixEpoch(), 1.0);
+}
+
+TEST_F(BaseFileTest, PreserveLastModifiedDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kPreserveDownloadLastModified);
+
+  ASSERT_TRUE(InitializeFile());
+  ASSERT_TRUE(AppendDataToFile(kTestData1));
+
+  const std::string kLastModified = "Wed, 21 Oct 2015 07:28:00 GMT";
+  base::Time expected_mtime;
+  ASSERT_TRUE(base::Time::FromString(kLastModified.c_str(), &expected_mtime));
+
+  base_file_->Finish(0, kLastModified);
+
+  base::File::Info file_info;
+  ASSERT_TRUE(base::GetFileInfo(base_file_->full_path(), &file_info));
+  EXPECT_NE(expected_mtime, file_info.last_modified);
+}
+
+TEST_F(BaseFileTest, PreserveLastModifiedInvalidString) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPreserveDownloadLastModified);
+
+  ASSERT_TRUE(InitializeFile());
+  ASSERT_TRUE(AppendDataToFile(kTestData1));
+
+  base_file_->Finish(0, "not-a-valid-timestamp");
+
+  base::File::Info file_info;
+  ASSERT_TRUE(base::GetFileInfo(base_file_->full_path(), &file_info));
+  EXPECT_FALSE(file_info.last_modified.is_null());
 }
 
 }  // namespace download

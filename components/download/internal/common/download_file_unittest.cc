@@ -263,7 +263,8 @@ class DownloadFileTest : public testing::Test {
                           bool calculate_hash,
                           const DownloadItem::ReceivedSlices& received_slices,
                           int file_offset,
-                          bool needs_obfuscation = false) {
+                          bool needs_obfuscation = false,
+                          const std::string& last_modified = std::string()) {
     // There can be only one.
     DCHECK(!download_file_);
 
@@ -293,6 +294,7 @@ class DownloadFileTest : public testing::Test {
 
     save_info->offset = 0;
     save_info->file_offset = file_offset;
+    save_info->last_modified = last_modified;
     if (needs_obfuscation) {
       save_info->needs_obfuscation = needs_obfuscation;
       save_info->total_bytes = length;
@@ -1417,6 +1419,61 @@ TEST_F(DownloadFileTest, DownloadFileWithCopyMissingSourceDoesNotCreateFile) {
 
   EXPECT_EQ(DOWNLOAD_INTERRUPT_REASON_NONE, result_reason);
   EXPECT_FALSE(base::PathExists(missing_source));
+}
+
+TEST_F(DownloadFileTest, PreserveLastModifiedAcrossRename) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kPreserveDownloadLastModified);
+
+  const std::string kLastModified = "Wed, 21 Oct 2015 07:28:00 GMT";
+  base::Time expected_mtime;
+  ASSERT_TRUE(base::Time::FromString(kLastModified.c_str(), &expected_mtime));
+
+  ASSERT_TRUE(CreateDownloadFile(
+      0, true, DownloadItem::ReceivedSlices(), -1, false, kLastModified));
+  base::FilePath initial_path(download_file_->FullPath());
+  base::FilePath target_path(
+      initial_path.InsertBeforeExtensionASCII("_renamed"));
+
+  const url::Origin initiator =
+      url::Origin::Create(GURL("https://initiator.example.com/"));
+
+  EXPECT_CALL(quarantine_,
+              QuarantineFile(_, GURL("https://initiator.example.com/"),
+                             GURL("https://referrer.example.com/"),
+                             Eq(initiator), _, _))
+      .WillOnce(WithArg<5>(
+          [](quarantine::mojom::Quarantine::QuarantineFileCallback callback) {
+            std::move(callback).Run(
+                quarantine::mojom::QuarantineFileResult::OK);
+          }));
+
+  mojo::Receiver<quarantine::mojom::Quarantine> receiver(&quarantine_);
+  base::RunLoop loop_runner;
+  DownloadInterruptReason result_reason = DOWNLOAD_INTERRUPT_REASON_NONE;
+  download_file_->RenameAndAnnotate(
+      target_path, "12345678-ABCD-1234-DCBA-123456789ABC",
+      GURL("https://initiator.example.com/"),
+      GURL("https://referrer.example.com/"), initiator,
+      receiver.BindNewPipeAndPassRemote(),
+      base::BindOnce(
+          [](base::OnceClosure quit, DownloadInterruptReason* out,
+             DownloadInterruptReason reason, const base::FilePath&) {
+            *out = reason;
+            std::move(quit).Run();
+          },
+          loop_runner.QuitClosure(), &result_reason));
+  loop_runner.Run();
+  EXPECT_EQ(DOWNLOAD_INTERRUPT_REASON_NONE, result_reason);
+
+  FinishStream(DOWNLOAD_INTERRUPT_REASON_NONE, true, kEmptyHash);
+
+  base::File::Info file_info;
+  ASSERT_TRUE(base::GetFileInfo(target_path, &file_info));
+  EXPECT_NEAR(expected_mtime.InSecondsFSinceUnixEpoch(),
+              file_info.last_modified.InSecondsFSinceUnixEpoch(), 1.0);
+
+  DestroyDownloadFile(0);
 }
 
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)

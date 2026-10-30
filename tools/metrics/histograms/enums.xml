@@ -11046,6 +11046,7 @@ from previous Chrome versions.
   <int value="-1191392087" label="AmbientSubpageUIChange:disabled"/>
   <int value="-1191258368" label="PageInfoPerformanceHints:disabled"/>
   <int value="-1191035428" label="LensOnQuickActionSearchWidget:enabled"/>
+  <int value="-1190714538" label="PreserveDownloadLastModified:disabled"/>
   <int value="-1190174011" label="enable-hdr"/>
   <int value="-1190171773" label="NtpHistoryClustersModuleTextOnly:enabled"/>
   <int value="-1189429241" label="AndroidBottomBar:disabled"/>
@@ -21092,6 +21093,7 @@ from previous Chrome versions.
   <int value="1810157428" label="SimplifiedBookmarkSaveFlow:enabled"/>
   <int value="1810258949" label="DisplayLocking:enabled"/>
   <int value="1810311887" label="WebAssemblyThreads:enabled"/>
+  <int value="1810532435" label="PreserveDownloadLastModified:enabled"/>
   <int value="1810693550" label="OnlyShowNewShortcutsApp:enabled"/>
   <int value="1811266774" label="WebUITabStripNewTabButtonInTabStrip:disabled"/>
   <int value="1811661413" label="LauncherImageSearchOcr:enabled"/>
