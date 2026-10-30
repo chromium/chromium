@@ -7,8 +7,6 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 
 import type {VisualBrowserProxy} from '../app/visual_browser_proxy.js';
 import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
-import type {AudioBrowserProxy} from '../read_aloud/audio_browser_proxy.js';
-import {AudioBrowserProxyImpl} from '../read_aloud/audio_browser_proxy.js';
 import {previousReadHighlightClass} from '../read_aloud/movement.js';
 import {getReadAloudModel} from '../read_aloud/read_aloud_model_browser_proxy.js';
 import {ReadAloudNode} from '../read_aloud/read_aloud_types.js';
@@ -198,8 +196,6 @@ export class ContentController {
       VisualBrowserProxyImpl.getInstance();
   private contentBrowserProxy_: ContentBrowserProxy =
       ContentBrowserProxyImpl.getInstance();
-  private audioBrowserProxy_: AudioBrowserProxy =
-      AudioBrowserProxyImpl.getInstance();
 
   private readonly listeners_: ContentListener[] = [];
   private currentState_: ContentState = CONTENT_STATES[ContentType.NO_CONTENT];
@@ -323,7 +319,7 @@ export class ContentController {
 
     // When a node is deleted, the read aloud model can get out of sync with the
     // DOM. To be safe, delete the node from the model.
-    if (deletedNode && !this.audioBrowserProxy_.isPhraseHighlightingEnabled()) {
+    if (deletedNode) {
       getReadAloudModel().onNodeWillBeDeleted?.(deletedNode);
     }
 
@@ -589,15 +585,13 @@ export class ContentController {
       }
       this.nodeStore_.estimateWordsSeenWithDelay();
       // Initialize the speech tree with the new content.
-      if (!this.audioBrowserProxy_.isPhraseHighlightingEnabled()) {
-        const contextNode = ReadAloudNode.create(rootNode);
-        if (contextNode) {
-          // Don't initialize until after drawing otherwise, the DOM nodes might
-          // not yet exist in the tree.
-          // TODO(crbug.com/575459750): Don't let Read Aloud setup block
-          // distillation or other Reading mode work.
-          getReadAloudModel().init(contextNode);
-        }
+      const contextNode = ReadAloudNode.create(rootNode);
+      if (contextNode) {
+        // Don't initialize until after drawing otherwise, the DOM nodes might
+        // not yet exist in the tree.
+        // TODO(crbug.com/575459750): Don't let Read Aloud setup block
+        // distillation or other Reading mode work.
+        getReadAloudModel().init(contextNode);
       }
     });
   }
@@ -813,16 +807,6 @@ export class ContentController {
         isPdf && this.contentBrowserProxy_.isSuperscript(nodeId);
     const isSubscript = isPdf && !isSuperscript &&
         this.contentBrowserProxy_.isSubscript(nodeId);
-
-    // When creating text nodes, save the first text node id. We need this
-    // node id to call InitAXPosition in playSpeech. If it's not saved here,
-    // we have to retrieve it through a DOM search such as createTreeWalker,
-    // which can be computationally expensive.
-    // This needs to be done after the text node is created and added to the
-    // node store.
-    if (this.audioBrowserProxy_.isPhraseHighlightingEnabled()) {
-      this.speechController_.initializeSpeechTree(textNode);
-    }
 
     if (!shouldBold && !isOverline && !isSuperscript && !isSubscript) {
       return textNode;
@@ -1078,7 +1062,7 @@ export class ContentController {
       this.speechController_.resetForNewContent();
       const container = shadowRoot.getElementById('container') || shadowRoot;
       this.updateReadAloudState(container as Node);
-    } else if (!this.audioBrowserProxy_.isPhraseHighlightingEnabled()) {
+    } else {
       getReadAloudModel().resetModel?.();
     }
   }

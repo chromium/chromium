@@ -142,23 +142,20 @@ suite('SpeechController', () => {
           initialResetCallCount + 2, readAloudModel.getCallCount('resetModel'));
     });
 
-    test(
-        'updateContent does not reset the model with phrase highlighting flag',
-        () => {
-          audioBrowserProxy.isPhraseHighlightingEnabledFlag = true;
-          const initialResetCallCount =
-              readAloudModel.getCallCount('resetModel');
+    test('updateContent resets the model with phrase highlighting flag', () => {
+      audioBrowserProxy.isPhraseHighlightingEnabledFlag = true;
+      const initialResetCallCount = readAloudModel.getCallCount('resetModel');
 
-          setContent('hello', readAloudModel);
-          app.updateContent();
-          assertEquals(
-              initialResetCallCount, readAloudModel.getCallCount('resetModel'));
+      setContent('hello', readAloudModel);
+      app.updateContent();
+      assertEquals(
+          initialResetCallCount + 1, readAloudModel.getCallCount('resetModel'));
 
-          setContent('hello, it\'s me', readAloudModel);
-          app.updateContent();
-          assertEquals(
-              initialResetCallCount, readAloudModel.getCallCount('resetModel'));
-        });
+      setContent('hello, it\'s me', readAloudModel);
+      app.updateContent();
+      assertEquals(
+          initialResetCallCount + 2, readAloudModel.getCallCount('resetModel'));
+    });
 
     test('showLoading resets the read aloud model', () => {
       const initialResetCallCount = readAloudModel.getCallCount('resetModel');
@@ -167,16 +164,13 @@ suite('SpeechController', () => {
           initialResetCallCount + 1, readAloudModel.getCallCount('resetModel'));
     });
 
-    test(
-        'showLoading does not reset the model with phrase highlighting flag',
-        () => {
-          audioBrowserProxy.isPhraseHighlightingEnabledFlag = true;
-          const initialResetCallCount =
-              readAloudModel.getCallCount('resetModel');
-          app.showLoading();
-          assertEquals(
-              initialResetCallCount, readAloudModel.getCallCount('resetModel'));
-        });
+    test('showLoading resets the model with phrase highlighting flag', () => {
+      audioBrowserProxy.isPhraseHighlightingEnabledFlag = true;
+      const initialResetCallCount = readAloudModel.getCallCount('resetModel');
+      app.showLoading();
+      assertEquals(
+          initialResetCallCount + 1, readAloudModel.getCallCount('resetModel'));
+    });
   });
 
   test('clearReadAloudState', () => {

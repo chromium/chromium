@@ -92,10 +92,8 @@ export class SpeechController {
       this.logSpeechPlaybackSessionPerPage_();
     }
 
-    if (!this.audioBrowserProxy_.isPhraseHighlightingEnabled()) {
-      // Reset the read aloud model because there's new content.
-      this.readAloudModel_.resetModel?.();
-    }
+    // Reset the read aloud model because there's new content.
+    this.readAloudModel_.resetModel?.();
 
     this.clearReadAloudState();
   }
@@ -406,29 +404,12 @@ export class SpeechController {
     this.setHasSpeechBeenTriggered(true);
     this.model_.setIsSpeechBeingRepositioned(false);
 
-    // When the TS segmentation flag is enabled, playFromContentPosition_ needs
-    // to be called after initializeSpeechTree. While this change is probably
-    // okay to introduce for the non-TS segmentation flag case, the original
-    // order is maintained when the flag is disabled to reduce the risk of
-    // introducing unexpected bugs to the V8 segmentation method.
-    if (this.audioBrowserProxy_.isPhraseHighlightingEnabled()) {
-      if (this.playFromContentPosition_()) {
-        return;
-      }
-    }
+    // TODO: crbug.com/440400392- The speech tree should also be initialized
+    // before the play button is pressed.
+    this.initializeSpeechTree(context);
 
-    if (!this.audioBrowserProxy_.isPhraseHighlightingEnabled()) {
-      // TODO: crbug.com/440400392- The speech tree should also be initialized
-      // before the play button is pressed.
-      this.initializeSpeechTree(context);
-    } else {
-      this.initializeSpeechTree();
-    }
-
-    if (!this.audioBrowserProxy_.isPhraseHighlightingEnabled()) {
-      if (this.playFromContentPosition_()) {
-        return;
-      }
+    if (this.playFromContentPosition_()) {
+      return;
     }
     if (this.isSpeechTreeInitialized() && !this.highlightAndPlayMessage_()) {
       // Ensure we're updating Read Aloud state if there's no text to speak.
@@ -1073,16 +1054,10 @@ export class SpeechController {
   private findSegment_(
       segments: Segment[], node: ReadAloudNode, offset: number): Segment
       |undefined {
-    // When the PhraseHighlighting flag is disabled, findSegment_ should count a
-    // match if the selection node contains the read aloud node (i.e. the read
-    // aloud node is a child of the selection node) - otherwise there
-    // won't be a match on the first run of playFromSelection()
-    if (this.audioBrowserProxy_.isPhraseHighlightingEnabled()) {
-      return segments.find(
-          segment => segment.node.equals(node) &&
-              (segment.start + segment.length > offset));
-    }
-
+    // findSegment_ should count a match if the selection node contains the
+    // read aloud node (i.e. the read aloud node is a child of the selection
+    // node) - otherwise there won't be a match on the first run of
+    // playFromSelection()
     const selectedDomNode = node.domNode();
     if (!selectedDomNode) {
       return undefined;

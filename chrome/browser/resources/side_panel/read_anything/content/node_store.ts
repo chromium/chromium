@@ -2,12 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from '//resources/js/assert.js';
-
 import type {VisualBrowserProxy} from '../app/visual_browser_proxy.js';
 import {VisualBrowserProxyImpl} from '../app/visual_browser_proxy.js';
-import type {AudioBrowserProxy} from '../read_aloud/audio_browser_proxy.js';
-import {AudioBrowserProxyImpl} from '../read_aloud/audio_browser_proxy.js';
 import type {AncestorNode, ReadAloudNode} from '../read_aloud/read_aloud_types.js';
 import {getWordCount, isDistilledByReadability, isTranslatePdfEnabled} from '../shared/common.js';
 import type {MetricsBrowserProxy} from '../shared/metrics_browser_proxy.js';
@@ -140,8 +136,6 @@ export class NodeStore {
   // getComputedStyle() lookups when finding block ancestors for read aloud.
   private blockAncestors_: WeakMap<Element, Node> = new WeakMap();
 
-  private audioBrowserProxy_: AudioBrowserProxy =
-      AudioBrowserProxyImpl.getInstance();
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
   private visualBrowserProxy_: VisualBrowserProxy =
@@ -282,25 +276,9 @@ export class NodeStore {
 
   replaceDomNode(current: ChildNode, replacer: Node) {
     const nodeId = this.getAxId(current);
-    // When Screen2x is used with the V8 segmentation model, a node id should
-    // never be undefined. However, when Readability.js is used, nodes will not
-    // be added to the node_store in updateContent, as there aren't any
-    // associated AxNodeIds.
-    // With the TS text segmentation implementation without Readability, the
-    // majority of nodes will have associated AXNodeIDs, but it's possible for
-    // some nodes (such as ordered lists) to not have an associated AXNodeId.
-    // Longer term, this should be consolidated, but in the short term,
-    // continue asserting when these flags are disabled avoid introducing new
-    // bugs, while ignoring the requirement for Readability.js in order for
-    // highlighting to work with Readability and with the TS text segmentation
-    // model.
-    if (!isDistilledByReadability() &&
-        this.audioBrowserProxy_.isPhraseHighlightingEnabled()) {
-      assert(
-          nodeId !== undefined,
-          'trying to replace an element that doesn\'t exist');
-    }
-
+    // The node id can be undefined because some nodes (such as ordered lists,
+    // or any node when Readability.js is used) don't have an associated
+    // AXNodeID. Such nodes are still replaced in the DOM.
     if (nodeId !== undefined) {
       const offset = this.getAxNodeOffset(current);
 

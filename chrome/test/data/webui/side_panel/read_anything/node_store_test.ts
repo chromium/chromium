@@ -39,7 +39,7 @@ suite('NodeStore', () => {
     if (!domNode) {
       return undefined as unknown as ReadAloudNode;
     }
-    return ReadAloudNode.create(domNode, nodeStore)!;
+    return ReadAloudNode.create(domNode)!;
   }
 
   function setDomNodes(axNodeIds: number[]) {
@@ -197,7 +197,7 @@ suite('NodeStore', () => {
     const element = document.createElement('p');
     element.innerText = 'Some text';
     document.body.appendChild(element);
-    const readAloudNode = ReadAloudNode.create(element, nodeStore)!;
+    const readAloudNode = ReadAloudNode.create(element)!;
 
     // Initially not hidden.
     assertFalse(nodeStore.areNodesAllHidden([readAloudNode]));

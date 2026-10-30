@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AudioBrowserProxyImpl} from './audio_browser_proxy.js';
 import type {ReadAloudNode, Segment} from './read_aloud_types.js';
 import {TsReadModelImpl} from './ts_model_impl.js';
-import {V8ModelImpl} from './v8_model_impl.js';
 
 // Proxy class used to wrap text segmentation calls. This can be used to use
 // different text segmentation approaches via feature flag, such as an
@@ -49,10 +47,8 @@ export interface ReadAloudModelBrowserProxy {
 }
 
 export function getReadAloudModel(): ReadAloudModelBrowserProxy {
-  return instance ||
-      (!AudioBrowserProxyImpl.getInstance().isPhraseHighlightingEnabled() ?
-           instance = new TsReadModelImpl() :
-           instance = new V8ModelImpl());
+  // TODO(crbug.com/440400392): Delete V8ModelImpl now that it's unused.
+  return instance || (instance = new TsReadModelImpl());
 }
 
 export function setInstance(obj: ReadAloudModelBrowserProxy|null) {

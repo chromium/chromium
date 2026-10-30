@@ -1,10 +1,12 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {getReadAloudModel, ReadAloudNode, setInstance} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {AudioBrowserProxyImpl, getReadAloudModel, ReadAloudNode, setInstance} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {DomReadAloudNode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
+
+import {TestAudioBrowserProxy} from './test_audio_browser_proxy.js';
 
 
 suite('ReadAloudModel', () => {
@@ -2324,5 +2326,119 @@ suite('ReadAloudModel', () => {
     const div = document.createElement('div');
     getReadAloudModel().init(ReadAloudNode.create(div)!);
     assertTrue(getReadAloudModel().isInitialized());
+  });
+
+  suite('PhraseHighlighting', () => {
+    let audioBrowserProxy: TestAudioBrowserProxy;
+
+    // Creates a single sentence split across three nodes:
+    // "After the rain " <b>"stopped, "</b> "the children played."
+    function createPhraseSentence(): {node1: Text, node2: Text, node3: Text} {
+      const paragraph = document.createElement('p');
+      const node1 = document.createTextNode('After the rain ');
+      const bold = document.createElement('b');
+      const node2 = document.createTextNode('stopped, ');
+      bold.appendChild(node2);
+      const node3 = document.createTextNode('the children played.');
+      paragraph.appendChild(node1);
+      paragraph.appendChild(bold);
+      paragraph.appendChild(node3);
+      document.body.appendChild(paragraph);
+      return {node1, node2, node3};
+    }
+
+    // Returns the request ID of the most recent phrase boundaries request.
+    function lastPhraseRequestId(): number {
+      const args = audioBrowserProxy.getArgs('requestPhraseBoundaries');
+      return args[args.length - 1][0];
+    }
+
+    setup(() => {
+      // The model listens for phrase boundaries on the audio browser proxy
+      // when it's created, so install the test proxy and enable phrase
+      // highlighting before getReadAloudModel() creates the model.
+      audioBrowserProxy = new TestAudioBrowserProxy();
+      audioBrowserProxy.isPhraseHighlightingEnabledFlag = true;
+      AudioBrowserProxyImpl.setInstance(audioBrowserProxy);
+    });
+
+    test('falls back to word highlighting without boundaries', async () => {
+      const paragraph = document.createElement('p');
+      const text = document.createTextNode('Never feel heavy or earthbound.');
+      paragraph.appendChild(text);
+      document.body.appendChild(paragraph);
+      await microtasksFinished();
+
+      getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+
+      expectHighlightAtIndexMatches(
+          0, [{node: text, start: 0, length: 5}], /*phrases=*/ true);
+    });
+
+    test('prefetched boundaries are used for phrases', async () => {
+      const {node1, node2, node3} = createPhraseSentence();
+      await microtasksFinished();
+      getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+
+      getReadAloudModel().prefetchPhraseBoundaries?.();
+      assertEquals(
+          1, audioBrowserProxy.getCallCount('requestPhraseBoundaries'));
+      assertDeepEquals(
+          ['After the rain stopped, the children played.'],
+          audioBrowserProxy.getArgs('requestPhraseBoundaries')[0][1]);
+
+      // Sentences with a pending request aren't requested again.
+      getReadAloudModel().prefetchPhraseBoundaries?.();
+      assertEquals(
+          1, audioBrowserProxy.getCallCount('requestPhraseBoundaries'));
+
+      audioBrowserProxy.onPhraseBoundariesReady.callListeners(
+          lastPhraseRequestId(), [[0, 24]]);
+
+      const firstPhrase = [
+        {node: node1, start: 0, length: 15},
+        {node: node2, start: 0, length: 9},
+      ];
+      expectHighlightAtIndexMatches(0, firstPhrase, /*phrases=*/ true);
+      expectHighlightAtIndexMatches(15, firstPhrase, /*phrases=*/ true);
+      expectHighlightAtIndexMatches(
+          24, [{node: node3, start: 0, length: 20}], /*phrases=*/ true);
+    });
+
+    test('responses to requests made before a reset are ignored', async () => {
+      const paragraph = document.createElement('p');
+      paragraph.textContent = 'Hello world.';
+      document.body.appendChild(paragraph);
+      await microtasksFinished();
+      getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+      getReadAloudModel().prefetchPhraseBoundaries?.();
+      const oldRequestId = lastPhraseRequestId();
+
+      // Switch to new content before the first response arrives.
+      getReadAloudModel().resetModel?.();
+      document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      const {node1, node2} = createPhraseSentence();
+      await microtasksFinished();
+      getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+      getReadAloudModel().prefetchPhraseBoundaries?.();
+      assertEquals(
+          2, audioBrowserProxy.getCallCount('requestPhraseBoundaries'));
+      const newRequestId = lastPhraseRequestId();
+
+      // The response for the old content arrives after the response for the
+      // new content, and shouldn't overwrite it.
+      audioBrowserProxy.onPhraseBoundariesReady.callListeners(
+          newRequestId, [[0, 24]]);
+      audioBrowserProxy.onPhraseBoundariesReady.callListeners(
+          oldRequestId, [[0, 6]]);
+
+      expectHighlightAtIndexMatches(
+          0,
+          [
+            {node: node1, start: 0, length: 15},
+            {node: node2, start: 0, length: 9},
+          ],
+          /*phrases=*/ true);
+    });
   });
 });

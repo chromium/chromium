@@ -4,7 +4,6 @@
 
 import {NodeStore} from '../content/node_store.js';
 
-import {AudioBrowserProxyImpl} from './audio_browser_proxy.js';
 import {ReadAloudNodeStore} from './read_aloud_node_store.js';
 
 // This file contains type definitions for the data structures
@@ -43,36 +42,18 @@ export abstract class ReadAloudNode {
       axNodeId: number, nodeStore = NodeStore.getInstance()): ReadAloudNode
       |undefined {
     const domNode: Node|undefined = nodeStore.getDomNode(axNodeId);
-    if (!domNode &&
-        AudioBrowserProxyImpl.getInstance().isPhraseHighlightingEnabled()) {
-      // If there's no DOM node yet, it might not have gotten added to the
-      // node store yet, so create an AxReadAloudNode instead.
-      // TODO: crbug.com/440400392- This shouldn't be necessary but is a
-      // fallback to help ensure that the text segmentation refactor does not
-      // impact the V8 segmentation implementation.
-      return new AxReadAloudNodeImpl(axNodeId, nodeStore);
-    }
     if (!domNode) {
       return undefined;
     }
-    return this.create(domNode, nodeStore);
+    return this.create(domNode);
   }
 
-  static create(node: Node, nodeStore = NodeStore.getInstance()): ReadAloudNode
-      |undefined {
-    if (!AudioBrowserProxyImpl.getInstance().isPhraseHighlightingEnabled()) {
-      return new DomReadAloudNodeImpl(node);
-    }
-
-    const axNodeId = nodeStore.getAxId(node);
-    if (axNodeId) {
-      return new AxReadAloudNodeImpl(axNodeId, nodeStore);
-    }
-
-    return undefined;
+  static create(node: Node): ReadAloudNode|undefined {
+    return new DomReadAloudNodeImpl(node);
   }
 }
 
+// TODO: crbug.com/440400392- Delete AxReadAloudNode now that it's unused.
 export class AxReadAloudNode extends ReadAloudNode {
   protected constructor(
       public readonly axNodeId: number,
@@ -93,19 +74,10 @@ export class AxReadAloudNode extends ReadAloudNode {
   }
 }
 
-// TODO: crbug.com/440400392: The Impl classes are a tool for working
+// TODO: crbug.com/440400392: The Impl class is a tool for working
 // with ReadAloudNodes during the refactor in order to enforce more strict
-// ReadAloudNode creation. These classes should be deleted once
+// ReadAloudNode creation. This class should be deleted once
 // the Phrase Highlighting flag is fully enabled and sooner, if possible.
-
-// Impl class to help enforce that AxReadAloudNode should only be constructed
-// by one of the #create methods in ReadAloudNode.
-// This class should not be exported.
-class AxReadAloudNodeImpl extends AxReadAloudNode {
-  constructor(axNodeId: number, nodeStore = NodeStore.getInstance()) {
-    super(axNodeId, nodeStore);
-  }
-}
 
 // Represents a node used by read aloud that's based entirely on the DOM.
 export class DomReadAloudNode extends ReadAloudNode {
