@@ -72,7 +72,8 @@ class GpuHostImplPersistentCacheTest : public ContentBrowserTest {
       : gpu_service_thread_("Gpu Service"),
         cache_factory_thread_("Cache Factory") {
     feature_list_.InitWithFeatures(
-        {features::kSkiaGraphite, features::kSkiaGraphiteUsePersistentCache},
+        {features::kGpuPersistentCache, features::kSkiaGraphite,
+         features::kSkiaGraphiteUsePersistentCache},
         {});
 
     CHECK(temp_dir_.CreateUniqueTempDir());
