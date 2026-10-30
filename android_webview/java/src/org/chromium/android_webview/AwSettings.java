@@ -643,8 +643,12 @@ public class AwSettings {
         if (TRACE) Log.i(TAG, "setAllowFileAccess=" + allow);
         RecordHistogram.recordBooleanHistogram("Android.WebView.SetAllowFileAccess", allow);
         synchronized (mAwSettingsLock) {
+            boolean changed = mAllowFileUrlAccess != allow;
             mAllowFileUrlAccess = allow;
             mEventHandler.updateAllowFileAccessLocked();
+            if (changed) {
+                mEventHandler.updateWebkitPreferencesLocked();
+            }
         }
     }
 

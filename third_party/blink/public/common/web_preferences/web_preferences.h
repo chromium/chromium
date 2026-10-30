@@ -88,6 +88,9 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   bool tabs_to_links = true;
   bool disable_ipc_flooding_protection = false;
   bool hyperlink_auditing_enabled = true;
+  // If false then the values of allow_universal_access_from_file_urls and
+  // allow_file_access_from_file_urls are disregarded.
+  bool allow_file_access_from_workers = true;
   bool allow_universal_access_from_file_urls = false;
   bool allow_file_access_from_file_urls = false;
   bool webgl1_enabled = true;

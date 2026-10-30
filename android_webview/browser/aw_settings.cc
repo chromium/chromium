@@ -655,6 +655,9 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
   web_prefs->javascript_enabled =
       Java_AwSettings_getJavaScriptEnabledLocked(env, obj);
 
+  web_prefs->allow_file_access_from_workers =
+      Java_AwSettings_getAllowFileAccess(env, obj);
+
   web_prefs->allow_universal_access_from_file_urls =
       Java_AwSettings_getAllowUniversalAccessFromFileUrlsLocked(env, obj);
 

@@ -57,8 +57,9 @@ bool DoesCreatorAllowFileUrlSupport(
     return true;
   }
   if (web_preferences) {
-    return web_preferences->allow_file_access_from_file_urls ||
-           web_preferences->allow_universal_access_from_file_urls;
+    return web_preferences->allow_file_access_from_workers &&
+           (web_preferences->allow_file_access_from_file_urls ||
+            web_preferences->allow_universal_access_from_file_urls);
   }
   return creator_worker_has_file_url_support;
 }

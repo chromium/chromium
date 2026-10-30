@@ -460,6 +460,38 @@ TEST_F(DedicatedWorkerServiceImplTest, FileUrlSupportInheritance) {
     observer.RunUntilWorkerEvent();
     EXPECT_TRUE(observer.dedicated_worker_infos().empty());
   }
+
+  // 5. With WebPreferences::allow_file_access disabled, file_url_support should
+  // be false even if file access or universal access from file URLs is allowed.
+  {
+    blink::web_pref::WebPreferences prefs =
+        web_contents->GetOrCreateWebPreferences();
+    prefs.allow_file_access_from_workers = false;
+    prefs.allow_file_access_from_file_urls = true;
+    prefs.allow_universal_access_from_file_urls = true;
+    web_contents->SetWebPreferences(prefs);
+
+    auto mock_worker = std::make_unique<MockDedicatedWorker>(
+        rfh->GetProcess()->GetID(), rfh->GetGlobalId(), origin);
+    observer.RunUntilWorkerEvent();
+
+    ASSERT_EQ(observer.dedicated_worker_infos().size(), 1u);
+    blink::DedicatedWorkerToken token =
+        observer.dedicated_worker_infos().begin()->first;
+    DedicatedWorkerHost* host =
+        GetDedicatedWorkerServiceImpl()->GetDedicatedWorkerHostFromToken(token);
+    ASSERT_TRUE(host);
+    EXPECT_FALSE(host->file_url_support());
+
+    mock_worker = nullptr;
+    observer.RunUntilWorkerEvent();
+    EXPECT_TRUE(observer.dedicated_worker_infos().empty());
+
+    prefs.allow_file_access_from_workers = true;
+    prefs.allow_file_access_from_file_urls = false;
+    prefs.allow_universal_access_from_file_urls = false;
+    web_contents->SetWebPreferences(prefs);
+  }
 }
 
 class DedicatedWorkerHostNavigationTest
