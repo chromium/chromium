@@ -125,6 +125,9 @@ public class SettingsPageTest {
     private static Integer sInitialOrientation;
     private boolean mFinishActivity;
 
+    /** The activity the test started with, to detect tests that recreate it. */
+    private ChromeTabbedActivity mInitialActivity;
+
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
@@ -137,6 +140,7 @@ public class SettingsPageTest {
     @Before
     public void setUp() {
         var activity = mActivityTestRule.getActivity();
+        mInitialActivity = activity;
         if (sInitialOrientation == null) {
             sInitialOrientation = activity.getResources().getConfiguration().orientation;
         }
@@ -154,7 +158,13 @@ public class SettingsPageTest {
         LocalizationUtils.setRtlForTesting(false);
         var activity = mActivityTestRule.getActivity();
         ActivityTestUtils.clearActivityOrientation(activity);
-        if (mFinishActivity) {
+        // Do not carry an activity that was recreated during the test (theme change, tab
+        // reparenting, etc.) over to the next test. The recreated activity may still be starting
+        // up on the UI thread when the next test begins, and resetters it registers between
+        // tests can deadlock against ResettersForTesting.beforeHooksWillExecute(), which runs
+        // resetters under its lock while they block on the UI thread. That hangs the next test
+        // before its body runs and times out the whole batch. See crbug.com/578114288.
+        if (mFinishActivity || activity != mInitialActivity) {
             mActivityTestRule.finishActivity();
             return;
         }
