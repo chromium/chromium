@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.bookmarks;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -48,7 +50,9 @@ import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRow.Location;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
@@ -624,5 +628,49 @@ public class ImprovedBookmarkRowTest {
                         .getDimensionPixelSize(R.dimen.improved_bookmark_start_image_size_compact);
         assertEquals(compactSize, compactStartImage.getLayoutParams().width);
         assertEquals(compactSize, compactStartImage.getLayoutParams().height);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
+    public void testBuildView_desktopPadding() {
+        ImprovedBookmarkRow row = ImprovedBookmarkRow.buildView(mActivity, /* isVisual= */ false);
+        View container = row.findViewById(R.id.container);
+        int expectedPadding =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.improved_bookmark_row_padding_desktop);
+        assertEquals(expectedPadding, container.getPaddingStart());
+        assertEquals(expectedPadding, container.getPaddingTop());
+        assertEquals(expectedPadding, container.getPaddingBottom());
+        assertEquals(0, container.getPaddingEnd());
+    }
+
+    @Test
+    public void testSetVisualLocation() {
+        View container = mImprovedBookmarkRow.findViewById(R.id.container);
+        Drawable defaultBackground = container.getBackground();
+
+        mModel.set(ImprovedBookmarkRowProperties.VISUAL_LOCATION, Location.TOP);
+        Drawable topBackground = container.getBackground();
+        assertNotNull(topBackground);
+        assertNotSame(defaultBackground, topBackground);
+
+        mModel.set(ImprovedBookmarkRowProperties.VISUAL_LOCATION, Location.MIDDLE);
+        Drawable middleBackground = container.getBackground();
+        assertNotNull(middleBackground);
+        assertNotSame(topBackground, middleBackground);
+
+        // Switching back to TOP should reuse the cached drawable instance.
+        mModel.set(ImprovedBookmarkRowProperties.VISUAL_LOCATION, Location.TOP);
+        assertSame(topBackground, container.getBackground());
+
+        // Selection state should switch to the location's selected background and back.
+        mModel.set(ImprovedBookmarkRowProperties.SELECTED, /* value= */ true);
+        Drawable selectedTopBackground = container.getBackground();
+        assertNotNull(selectedTopBackground);
+        assertNotSame(topBackground, selectedTopBackground);
+
+        mModel.set(ImprovedBookmarkRowProperties.SELECTED, /* value= */ false);
+        assertSame(topBackground, container.getBackground());
     }
 }

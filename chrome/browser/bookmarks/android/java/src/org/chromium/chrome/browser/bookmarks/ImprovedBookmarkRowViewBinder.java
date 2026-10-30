@@ -115,6 +115,8 @@ public class ImprovedBookmarkRowViewBinder {
         } else if (key == ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT_TEXT_STYLE) {
             folderView.setChildCountStyle(
                     model.get(ImprovedBookmarkRowProperties.FOLDER_CHILD_COUNT_TEXT_STYLE));
+        } else if (key == ImprovedBookmarkRowProperties.VISUAL_LOCATION) {
+            row.setVisualLocation(model.get(ImprovedBookmarkRowProperties.VISUAL_LOCATION));
         } else if (key == BookmarkManagerProperties.IS_HIGHLIGHTED) {
             View highlightedView = view.findViewById(R.id.container);
             if (model.get(BookmarkManagerProperties.IS_HIGHLIGHTED)) {

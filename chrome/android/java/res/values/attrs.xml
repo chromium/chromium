@@ -29,4 +29,9 @@ found in the LICENSE file.
 
     <!-- Custom states for TintedCompositorButton -->
     <attr name="state_peripheral_pressed" format="boolean" />
+
+    <!-- Corner radii of the improved_bookmark_row_position_* backgrounds,
+         set by the ThemeOverlay.BookmarkRow.ListPosition.* overlays. -->
+    <attr name="bookmarkRowTopRadius" format="dimension" />
+    <attr name="bookmarkRowBottomRadius" format="dimension" />
 </resources>

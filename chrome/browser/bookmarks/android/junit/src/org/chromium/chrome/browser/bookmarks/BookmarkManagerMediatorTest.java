@@ -1153,7 +1153,8 @@ public class BookmarkManagerMediatorTest {
         mMediator.openFolder(mFolderId1);
         assertEquals(4, mModelList.size());
         assertEquals(
-                Location.MIDDLE, mModelList.get(2).model.get(BookmarkManagerProperties.LOCATION));
+                Location.MIDDLE,
+                mModelList.get(2).model.get(BookmarkManagerProperties.REORDER_LOCATION));
 
         verify(mBookmarkModel).addObserver(mBookmarkModelObserverArgumentCaptor.capture());
         mBookmarkModelObserverArgumentCaptor
@@ -1161,7 +1162,9 @@ public class BookmarkManagerMediatorTest {
                 .bookmarkNodeRemoved(
                         mFolderItem1, 0, mFolderItem2, /* isDoingExtensiveChanges= */ false);
         assertEquals(3, mModelList.size());
-        assertEquals(Location.TOP, mModelList.get(1).model.get(BookmarkManagerProperties.LOCATION));
+        assertEquals(
+                Location.TOP,
+                mModelList.get(1).model.get(BookmarkManagerProperties.REORDER_LOCATION));
     }
 
     @Test
@@ -1677,7 +1680,7 @@ public class BookmarkManagerMediatorTest {
         ModelList menuModelList =
                 mMediator.createListMenuModelList(
                         model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY),
-                        model.get(BookmarkManagerProperties.LOCATION));
+                        model.get(BookmarkManagerProperties.REORDER_LOCATION));
         // Open in incognito tab should not be shown if we're already incognito.
         verifyMenuListItemTitles(
                 menuModelList,
@@ -1733,7 +1736,7 @@ public class BookmarkManagerMediatorTest {
         ModelList menuModelList =
                 mMediator.createListMenuModelList(
                         model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY),
-                        model.get(BookmarkManagerProperties.LOCATION));
+                        model.get(BookmarkManagerProperties.REORDER_LOCATION));
         verifyMenuListItemTitles(
                 menuModelList,
                 R.string.bookmark_item_select,
@@ -3409,5 +3412,44 @@ public class BookmarkManagerMediatorTest {
                 "abc",
                 mMediator.getOrCreateSearchBoxPropertyModel().get(SearchBoxProperties.SEARCH_TEXT));
         verifyCurrentBookmarkIds(null, mFolderId3);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT)
+    public void testVisualLocation_desktopLayout() {
+        finishLoading();
+
+        doReturn(Arrays.asList(mPriceTrackedBookmarkId, mFolderId1, mPartnerBookmarkFolderId))
+                .when(mBookmarkModel)
+                .getChildIds(mMobileFolderId);
+        mMediator.openFolder(mMobileFolderId);
+
+        assertEquals(3, mModelList.size());
+        assertEquals(
+                Location.TOP,
+                mModelList.get(0).model.get(ImprovedBookmarkRowProperties.VISUAL_LOCATION));
+        assertEquals(
+                Location.TOP,
+                mModelList.get(0).model.get(BookmarkManagerProperties.REORDER_LOCATION));
+
+        // mFolderId1 is visually in the middle of the 3 rows, but is the last movable row above the
+        // non-movable partner folder.
+        assertEquals(
+                Location.MIDDLE,
+                mModelList.get(1).model.get(ImprovedBookmarkRowProperties.VISUAL_LOCATION));
+        assertEquals(
+                Location.BOTTOM,
+                mModelList.get(1).model.get(BookmarkManagerProperties.REORDER_LOCATION));
+
+        assertEquals(
+                Location.BOTTOM,
+                mModelList.get(2).model.get(ImprovedBookmarkRowProperties.VISUAL_LOCATION));
+
+        // Single-item folder should set VISUAL_LOCATION to SOLO.
+        mMediator.openFolder(mFolderId2);
+        assertEquals(1, mModelList.size());
+        assertEquals(
+                Location.SOLO,
+                mModelList.get(0).model.get(ImprovedBookmarkRowProperties.VISUAL_LOCATION));
     }
 }

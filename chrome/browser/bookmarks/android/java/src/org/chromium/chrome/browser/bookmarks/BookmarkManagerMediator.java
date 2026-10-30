@@ -1214,6 +1214,9 @@ class BookmarkManagerMediator
     }
 
     private void updateAllLocations() {
+        // Visual locations change whenever the reorder locations do, so update both here.
+        updateAllVisualLocations();
+
         Predicate<ListItem> locationPredicate =
                 (ListItem listItem) ->
                         isBookmarkRowType(listItem.type)
@@ -1225,17 +1228,55 @@ class BookmarkManagerMediator
         }
 
         if (startIndex == lastIndex) {
-            mModelList.get(startIndex).model.set(BookmarkManagerProperties.LOCATION, Location.SOLO);
+            mModelList
+                    .get(startIndex)
+                    .model
+                    .set(BookmarkManagerProperties.REORDER_LOCATION, Location.SOLO);
         } else {
-            mModelList.get(startIndex).model.set(BookmarkManagerProperties.LOCATION, Location.TOP);
+            mModelList
+                    .get(startIndex)
+                    .model
+                    .set(BookmarkManagerProperties.REORDER_LOCATION, Location.TOP);
             mModelList
                     .get(lastIndex)
                     .model
-                    .set(BookmarkManagerProperties.LOCATION, Location.BOTTOM);
+                    .set(BookmarkManagerProperties.REORDER_LOCATION, Location.BOTTOM);
         }
 
         for (int i = startIndex + 1; i < lastIndex; i++) {
-            mModelList.get(i).model.set(BookmarkManagerProperties.LOCATION, Location.MIDDLE);
+            mModelList
+                    .get(i)
+                    .model
+                    .set(BookmarkManagerProperties.REORDER_LOCATION, Location.MIDDLE);
+        }
+    }
+
+    /**
+     * Updates the visual location of every bookmark row within its contiguous run of bookmark rows.
+     * Unlike {@link BookmarkManagerProperties#REORDER_LOCATION}, which only considers movable rows
+     * for reordering, this considers all rows and is used to style the desktop layout.
+     */
+    private void updateAllVisualLocations() {
+        if (!BookmarkUtils.isDesktopBookmarksLayoutEnabled()) return;
+
+        int size = mModelList.size();
+        for (int i = 0; i < size; i++) {
+            ListItem listItem = mModelList.get(i);
+            if (!isBookmarkRowType(listItem.type)) continue;
+
+            boolean hasRowAbove = i > 0 && isBookmarkRowType(mModelList.get(i - 1).type);
+            boolean hasRowBelow = i < size - 1 && isBookmarkRowType(mModelList.get(i + 1).type);
+            final @Location int visualLocation;
+            if (hasRowAbove && hasRowBelow) {
+                visualLocation = Location.MIDDLE;
+            } else if (hasRowAbove) {
+                visualLocation = Location.BOTTOM;
+            } else if (hasRowBelow) {
+                visualLocation = Location.TOP;
+            } else {
+                visualLocation = Location.SOLO;
+            }
+            listItem.model.set(ImprovedBookmarkRowProperties.VISUAL_LOCATION, visualLocation);
         }
     }
 
@@ -1701,7 +1742,8 @@ class BookmarkManagerMediator
         BookmarkListEntry entry = model.get(BookmarkManagerProperties.BOOKMARK_LIST_ENTRY);
         BookmarkId bookmarkId = assumeNonNull(entry.getBookmarkItem()).getId();
         ModelList listItems =
-                createListMenuModelList(entry, model.get(BookmarkManagerProperties.LOCATION));
+                createListMenuModelList(
+                        entry, model.get(BookmarkManagerProperties.REORDER_LOCATION));
         ListMenu.Delegate delegate =
                 (item, view) -> {
                     int textId = item.get(ListMenuItemProperties.TITLE_ID);

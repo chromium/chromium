@@ -589,6 +589,42 @@ found in the LICENSE file.
         <item name="android:textSize">16dp</item>
     </style>
 
+    <!-- Corner radii of a bookmark row based on its position within a run of
+         consecutive rows. Applied when loading the
+         improved_bookmark_row_position_* backgrounds. -->
+    <style name="ThemeOverlay.BookmarkRow.ListPosition.Solo" parent="">
+        <item name="bookmarkRowTopRadius">
+            @dimen/improved_bookmark_row_outer_corner_radius
+        </item>
+        <item name="bookmarkRowBottomRadius">
+            @dimen/improved_bookmark_row_outer_corner_radius
+        </item>
+    </style>
+    <style name="ThemeOverlay.BookmarkRow.ListPosition.Top" parent="">
+        <item name="bookmarkRowTopRadius">
+            @dimen/improved_bookmark_row_outer_corner_radius
+        </item>
+        <item name="bookmarkRowBottomRadius">
+            @dimen/improved_bookmark_row_inner_corner_radius
+        </item>
+    </style>
+    <style name="ThemeOverlay.BookmarkRow.ListPosition.Middle" parent="">
+        <item name="bookmarkRowTopRadius">
+            @dimen/improved_bookmark_row_inner_corner_radius
+        </item>
+        <item name="bookmarkRowBottomRadius">
+            @dimen/improved_bookmark_row_inner_corner_radius
+        </item>
+    </style>
+    <style name="ThemeOverlay.BookmarkRow.ListPosition.Bottom" parent="">
+        <item name="bookmarkRowTopRadius">
+            @dimen/improved_bookmark_row_inner_corner_radius
+        </item>
+        <item name="bookmarkRowBottomRadius">
+            @dimen/improved_bookmark_row_outer_corner_radius
+        </item>
+    </style>
+
      <!-- Magic Stack styles -->
     <style name="TextAppearance.ShoppingPriceDropSmallText" parent="TextAppearance.TextSmall.Secondary">
         <item name="android:textColor">@color/price_indicator_text_color</item>

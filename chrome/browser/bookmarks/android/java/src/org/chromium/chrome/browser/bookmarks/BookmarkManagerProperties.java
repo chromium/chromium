@@ -24,7 +24,11 @@ public class BookmarkManagerProperties {
             new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<BookmarkId> BOOKMARK_ID =
             new WritableObjectPropertyKey<>();
-    public static final WritableIntDefPropertyKey<Location> LOCATION =
+    // The position of a movable row relative to other movable rows, used to enable/disable the
+    // Move Up and Move Down menu items. Distinct from
+    // ImprovedBookmarkRowProperties.VISUAL_LOCATION, which includes non-movable rows for visual
+    // styling.
+    public static final WritableIntDefPropertyKey<Location> REORDER_LOCATION =
             new WritableIntDefPropertyKey<>(Location.TOP);
     public static final WritableBooleanPropertyKey IS_FROM_FILTER_VIEW =
             new WritableBooleanPropertyKey();
@@ -38,7 +42,7 @@ public class BookmarkManagerProperties {
         BATCH_UPLOAD_CARD_COORDINATOR,
         BOOKMARK_LIST_ENTRY,
         BOOKMARK_ID,
-        LOCATION,
+        REORDER_LOCATION,
         IS_FROM_FILTER_VIEW,
         IS_HIGHLIGHTED,
         OPEN_FOLDER
