@@ -51,6 +51,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -67,6 +68,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -82,10 +84,14 @@
 #include "net/test/scoped_mutually_exclusive_feature_list.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/display/screen_base.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
@@ -2672,6 +2678,110 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, Disposition_NewSplitView) {
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
+                       Disposition_NewSplitView_CtrlAltClick) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url1(embedded_test_server()->GetURL("/title1.html"));
+  const GURL url2(embedded_test_server()->GetURL("/title2.html"));
+  ASSERT_TRUE(content::NavigateToURL(
+      browser()->GetTabStripModel()->GetActiveWebContents(), url1));
+
+  WebContents* old_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  ASSERT_TRUE(content::ExecJs(
+      old_contents, content::JsReplace("const a = document.createElement('a');"
+                                       "a.id = 'split_link';"
+                                       "a.href = $1;"
+                                       "a.textContent = 'Split Link';"
+                                       "document.body.appendChild(a);",
+                                       url2)));
+
+  gfx::Point center = gfx::ToFlooredPoint(
+      content::GetCenterCoordinatesOfElementWithId(old_contents, "split_link"));
+
+#if BUILDFLAG(IS_MAC)
+  int modifiers = blink::WebInputEvent::Modifiers::kMetaKey |
+                  blink::WebInputEvent::Modifiers::kAltKey;
+#else
+  int modifiers = blink::WebInputEvent::Modifiers::kControlKey |
+                  blink::WebInputEvent::Modifiers::kAltKey;
+#endif
+
+  content::WebContentsAddedObserver new_contents_observer;
+  content::SimulateMouseClickAt(old_contents, modifiers,
+                                blink::WebMouseEvent::Button::kLeft, center);
+
+  content::WebContents* new_contents = new_contents_observer.GetWebContents();
+  ASSERT_TRUE(new_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(new_contents));
+
+  EXPECT_TRUE(old_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
+  EXPECT_EQ(2, browser()->GetTabStripModel()->count());
+  EXPECT_NE(old_contents, new_contents);
+
+  tabs::TabInterface* old_tab =
+      tabs::TabInterface::MaybeGetFromContents(old_contents);
+  tabs::TabInterface* new_tab =
+      tabs::TabInterface::MaybeGetFromContents(new_contents);
+  ASSERT_TRUE(old_tab);
+  ASSERT_TRUE(new_tab);
+  EXPECT_TRUE(old_tab->IsSplit());
+  EXPECT_TRUE(new_tab->IsSplit());
+  EXPECT_EQ(old_tab->GetSplit().value(), new_tab->GetSplit().value());
+  EXPECT_EQ(url2, new_contents->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
+                       Disposition_NewSplitView_NoUserGesture) {
+  WebContents* old_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  NavigateParams params(MakeNavigateParams());
+  params.disposition = WindowOpenDisposition::kNewSplitView;
+  params.user_gesture = false;
+  Navigate(&params);
+
+  EXPECT_EQ(2, browser()->GetTabStripModel()->count());
+  EXPECT_NE(old_contents, params.navigated_or_inserted_contents);
+
+  tabs::TabInterface* old_tab =
+      tabs::TabInterface::MaybeGetFromContents(old_contents);
+  tabs::TabInterface* new_tab = tabs::TabInterface::MaybeGetFromContents(
+      params.navigated_or_inserted_contents);
+  ASSERT_TRUE(old_tab);
+  ASSERT_TRUE(new_tab);
+  EXPECT_FALSE(old_tab->IsSplit());
+  EXPECT_FALSE(new_tab->IsSplit());
+  EXPECT_EQ(WindowOpenDisposition::kNewForegroundTab, params.disposition);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
+                       Disposition_NewSplitView_AddNewContents_NoUserGesture) {
+  WebContents* old_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  std::unique_ptr<WebContents> new_contents =
+      WebContents::Create(WebContents::CreateParams(browser()->GetProfile()));
+  WebContents* raw_new_contents = new_contents.get();
+
+  WebContents* returned_contents = old_contents->GetDelegate()->AddNewContents(
+      old_contents, std::move(new_contents), GetGoogleURL(),
+      WindowOpenDisposition::kNewSplitView, blink::mojom::WindowFeatures(),
+      /*user_gesture=*/false,
+      /*was_blocked=*/nullptr);
+
+  EXPECT_EQ(raw_new_contents, returned_contents);
+  EXPECT_EQ(2, browser()->GetTabStripModel()->count());
+
+  tabs::TabInterface* old_tab =
+      tabs::TabInterface::MaybeGetFromContents(old_contents);
+  tabs::TabInterface* new_tab =
+      tabs::TabInterface::MaybeGetFromContents(returned_contents);
+  ASSERT_TRUE(old_tab);
+  ASSERT_TRUE(new_tab);
+  EXPECT_FALSE(old_tab->IsSplit());
+  EXPECT_FALSE(new_tab->IsSplit());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
                        Disposition_NewSplitView_AlreadySplit) {
   chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1, true);
   ASSERT_EQ(2, browser()->GetTabStripModel()->count());
@@ -2694,6 +2804,121 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   EXPECT_EQ(source_contents, returned_contents);
   // No new tab should have been created; the other pane was navigated.
   EXPECT_EQ(2, browser()->GetTabStripModel()->count());
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
+                       Disposition_NewSplitView_AlreadySplit_PopupBlocked) {
+  chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1, true);
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+
+  browser()->GetTabStripModel()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  WebContents* source_contents =
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
+  WebContents* other_contents =
+      browser()->GetTabStripModel()->GetWebContentsAt(1);
+
+  content::OpenURLParams open_params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          GetGoogleURL(), WindowOpenDisposition::kNewSplitView,
+          ui::PAGE_TRANSITION_LINK);
+  open_params.user_gesture = false;
+  WebContents* returned_contents = source_contents->OpenURL(open_params, {});
+
+  EXPECT_EQ(nullptr, returned_contents);
+  // No new tab should have been created; the other pane was not navigated.
+  EXPECT_EQ(2, browser()->GetTabStripModel()->count());
+  EXPECT_EQ(GURL(url::kAboutBlankURL), other_contents->GetVisibleURL());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BrowserNavigatorTest,
+    Disposition_NewSplitView_AlreadySplit_PopupBlocked_ThenUnblocked) {
+  chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1, true);
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+
+  browser()->GetTabStripModel()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  WebContents* source_contents =
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
+  WebContents* other_contents =
+      browser()->GetTabStripModel()->GetWebContentsAt(1);
+
+  content::OpenURLParams open_params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          GetGoogleURL(), WindowOpenDisposition::kNewSplitView,
+          ui::PAGE_TRANSITION_LINK);
+  open_params.user_gesture = false;
+  WebContents* returned_contents = source_contents->OpenURL(open_params, {});
+
+  EXPECT_EQ(nullptr, returned_contents);
+  EXPECT_EQ(2, browser()->GetTabStripModel()->count());
+  EXPECT_EQ(GURL(url::kAboutBlankURL), other_contents->GetVisibleURL());
+
+  auto* popup_blocker =
+      blocked_content::PopupBlockerTabHelper::FromWebContents(source_contents);
+  ASSERT_TRUE(popup_blocker);
+  EXPECT_EQ(1u, popup_blocker->GetBlockedPopupsCount());
+  auto blocked_requests = popup_blocker->GetBlockedPopupRequests();
+  ASSERT_EQ(1u, blocked_requests.size());
+
+  // Simulate user unblocking the popup.
+  popup_blocker->ShowBlockedPopup(blocked_requests.begin()->first,
+                                  WindowOpenDisposition::kCurrentTab);
+
+  // Since there was no user gesture, the disposition was normalized to
+  // NEW_FOREGROUND_TAB before being blocked. Unblocking the popup opens a third
+  // tab rather than navigating the partner pane.
+  EXPECT_EQ(3, browser()->GetTabStripModel()->count());
+  EXPECT_EQ(GURL(url::kAboutBlankURL), other_contents->GetVisibleURL());
+  EXPECT_EQ(
+      GetGoogleURL(),
+      browser()->GetTabStripModel()->GetWebContentsAt(2)->GetVisibleURL());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BrowserNavigatorTest,
+    Disposition_NewSplitView_AlreadySplit_PopupAllowed_NoUserGesture) {
+  chrome::AddTabAt(browser(), GURL(url::kAboutBlankURL), -1, true);
+  ASSERT_EQ(2, browser()->GetTabStripModel()->count());
+  browser()->GetTabStripModel()->ActivateTabAt(0);
+
+  browser()->GetTabStripModel()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  WebContents* source_contents =
+      browser()->GetTabStripModel()->GetWebContentsAt(0);
+  WebContents* other_contents =
+      browser()->GetTabStripModel()->GetWebContentsAt(1);
+
+  // Allow popups.
+  HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile())
+      ->SetDefaultContentSetting(ContentSettingsType::POPUPS,
+                                 CONTENT_SETTING_ALLOW);
+
+  content::OpenURLParams open_params =
+      content::OpenURLParams::CreateBrowserInitiated(
+          GetGoogleURL(), WindowOpenDisposition::kNewSplitView,
+          ui::PAGE_TRANSITION_LINK);
+  open_params.user_gesture = false;
+  WebContents* returned_contents = source_contents->OpenURL(open_params, {});
+
+  // Since there is no user gesture, the disposition is normalized to
+  // NEW_FOREGROUND_TAB. The partner pane in the split tab should not be
+  // navigated; instead, a new foreground tab should be opened.
+  EXPECT_NE(nullptr, returned_contents);
+  EXPECT_NE(source_contents, returned_contents);
+  EXPECT_NE(other_contents, returned_contents);
+  EXPECT_EQ(3, browser()->GetTabStripModel()->count());
+  EXPECT_EQ(GURL(url::kAboutBlankURL), other_contents->GetVisibleURL());
+  EXPECT_EQ(GetGoogleURL(), returned_contents->GetVisibleURL());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,

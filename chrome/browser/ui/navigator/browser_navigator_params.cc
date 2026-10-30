@@ -78,6 +78,7 @@ void NavigateParams::FillNavigateParamsFromOpenURLParams(
   this->started_from_context_menu = params.started_from_context_menu;
   this->is_service_worker_open_window = params.is_service_worker_open_window;
   this->user_gesture = params.user_gesture;
+  this->original_user_gesture = params.user_gesture;
   this->blob_url_loader_factory = params.blob_url_loader_factory;
   this->href_translate = params.href_translate;
   this->internal_scroll_to_text_fragment =

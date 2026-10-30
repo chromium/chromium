@@ -4627,6 +4627,10 @@ bool ChromeContentBrowserClient::CanCreateWindow(
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  if (disposition == WindowOpenDisposition::kNewSplitView && !user_gesture) {
+    disposition = WindowOpenDisposition::kNewForegroundTab;
+  }
+
   const BlockedWindowParams blocked_params(
       target_url, opener->GetGlobalFrameToken(), source_origin,
       opener->GetSiteInstance(), referrer, frame_name, disposition, features,

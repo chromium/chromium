@@ -303,6 +303,39 @@ BackgroundContents* CreateBackgroundContents(
   return contents;
 }
 
+std::unique_ptr<ChromePopupNavigationDelegate> MaybeBlockPopupOrGetDelegate(
+    BrowserWindowInterface* browser,
+    content::WebContents* source,
+    const content::OpenURLParams& params) {
+  NavigateParams nav_params(browser, params.url, params.transition);
+  nav_params.FillNavigateParamsFromOpenURLParams(params);
+  nav_params.source_contents = source;
+  nav_params.tabstrip_add_types = AddTabTypes::ADD_NONE;
+  if (params.user_gesture) {
+    nav_params.window_action = NavigateParams::WindowAction::kShowWindow;
+  }
+  if (nav_params.disposition == WindowOpenDisposition::kNewSplitView &&
+      !params.user_gesture) {
+    nav_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  }
+
+  auto popup_delegate =
+      std::make_unique<ChromePopupNavigationDelegate>(std::move(nav_params));
+
+  if (source && blocked_content::ConsiderForPopupBlocking(
+                    popup_delegate->nav_params()->disposition)) {
+    popup_delegate.reset(static_cast<ChromePopupNavigationDelegate*>(
+        blocked_content::MaybeBlockPopup(
+            source, nullptr, std::move(popup_delegate), &params,
+            blink::mojom::WindowFeatures(),
+            HostContentSettingsMapFactory::GetForProfile(
+                source->GetBrowserContext()))
+            .release()));
+  }
+
+  return popup_delegate;
+}
+
 }  // namespace
 
 BrowserWebContentsDelegate::BrowserWebContentsDelegate(
@@ -581,49 +614,21 @@ content::WebContents* BrowserWebContentsDelegate::OpenURLFromTab(
                                   std::move(navigation_handle_callback));
   }
 
-  // If the source is already split, navigate the other pane instead of
-  // creating a new tab. Return |source| so that WebContentsImpl::OpenURL()
-  // sees new_contents == this and skips the DidOpenRequestedURL notification,
-  // which is only meant for newly created WebContents.
-  if (params.disposition == WindowOpenDisposition::kNewSplitView && source) {
-    tabs::TabInterface* const source_tab =
-        tabs::TabInterface::MaybeGetFromContents(source);
-    if (source_tab && source_tab->IsSplit()) {
-      const split_tabs::SplitTabId split_id = source_tab->GetSplit().value();
-      for (tabs::TabInterface* tab :
-           browser_->GetTabStripModel()->GetSplitData(split_id)->ListTabs()) {
-        if (tab != source_tab) {
-          content::NavigationController::LoadURLParams load_params(params);
-          tab->GetContents()->GetController().LoadURLWithParams(load_params);
-          return source;
-        }
-      }
-    }
+  tabs::TabInterface* const source_tab =
+      source ? tabs::TabInterface::MaybeGetFromContents(source) : nullptr;
+  const bool is_already_split =
+      params.disposition == WindowOpenDisposition::kNewSplitView &&
+      source_tab && source_tab->IsSplit();
+
+  auto popup_delegate =
+      MaybeBlockPopupOrGetDelegate(&browser_.get(), source, params);
+  if (!popup_delegate) {
+    return nullptr;
   }
 
-  NavigateParams nav_params(&*browser_, params.url, params.transition);
-  nav_params.FillNavigateParamsFromOpenURLParams(params);
-  nav_params.source_contents = source;
-  nav_params.tabstrip_add_types = AddTabTypes::ADD_NONE;
-  if (params.user_gesture) {
-    nav_params.window_action = NavigateParams::WindowAction::kShowWindow;
-  }
-  bool is_popup =
-      source && blocked_content::ConsiderForPopupBlocking(params.disposition);
-  auto popup_delegate =
-      std::make_unique<ChromePopupNavigationDelegate>(std::move(nav_params));
-  if (is_popup) {
-    popup_delegate.reset(static_cast<ChromePopupNavigationDelegate*>(
-        blocked_content::MaybeBlockPopup(
-            source, nullptr, std::move(popup_delegate), &params,
-            blink::mojom::WindowFeatures(),
-            HostContentSettingsMapFactory::GetForProfile(
-                source->GetBrowserContext()))
-            .release()));
-    if (!popup_delegate) {
-      return nullptr;
-    }
-  }
+  const bool is_popup =
+      source && blocked_content::ConsiderForPopupBlocking(
+                    popup_delegate->nav_params()->disposition);
 
   chrome::ConfigureTabGroupForNavigation(popup_delegate->nav_params());
 
@@ -636,17 +641,29 @@ content::WebContents* BrowserWebContentsDelegate::OpenURLFromTab(
 
   content::WebContents* navigated_or_inserted_contents =
       popup_delegate->nav_params()->navigated_or_inserted_contents;
-  if (is_popup && navigated_or_inserted_contents) {
-    auto* tracker = blocked_content::PopupTracker::CreateForWebContents(
-        navigated_or_inserted_contents, source, params.disposition);
-    tracker->set_is_trusted(
-        params.triggering_event_info !=
-        blink::mojom::TriggeringEventInfo::kFromUntrustedEvent);
-  }
 
   TRACE_EVENT_INSTANT(
       "navigation", "BrowserWebContentsDelegate::OpenURLFromTab_Result",
       "navigated_or_inserted_contents", navigated_or_inserted_contents);
+
+  if (is_already_split && popup_delegate->nav_params()->disposition ==
+                              WindowOpenDisposition::kNewSplitView) {
+    // If the source was already split and the disposition was not normalized,
+    // the partner pane was navigated instead of creating a new tab. Return
+    // |source| so that WebContentsImpl::OpenURL() sees new_contents == this and
+    // skips the DidOpenRequestedURL notification, which is only meant for newly
+    // created WebContents.
+    return source;
+  }
+
+  if (is_popup && navigated_or_inserted_contents) {
+    auto* tracker = blocked_content::PopupTracker::CreateForWebContents(
+        navigated_or_inserted_contents, source,
+        popup_delegate->nav_params()->disposition);
+    tracker->set_is_trusted(
+        params.triggering_event_info !=
+        blink::mojom::TriggeringEventInfo::kFromUntrustedEvent);
+  }
 
   return navigated_or_inserted_contents;
 }
@@ -742,6 +759,10 @@ content::WebContents* BrowserWebContentsDelegate::AddNewContents(
     disposition = WindowOpenDisposition::kNewForegroundTab;
   }
 #endif
+
+  if (disposition == WindowOpenDisposition::kNewSplitView && !user_gesture) {
+    disposition = WindowOpenDisposition::kNewForegroundTab;
+  }
 
   // At this point the |new_contents| is beyond the popup blocker, but we use
   // the same logic for determining if the popup tracker needs to be attached.
