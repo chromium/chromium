@@ -33,8 +33,12 @@
    * pick up the page's font itself. */
   --tab-picker-font-family: var(--cr-composebox-context-menu-font-family,
       Arial, sans-serif);
+  /* Matches the hover state layer of the Search page's other (+) menu rows:
+   * on-surface-default (#0a0a0a light, #e6e8f0 dark) at the SDS med-emphasis
+   * hover opacity (0.08). Like the font above, this can't be inherited across
+   * the cross-origin iframe boundary, so the value is duplicated here. */
   --tab-picker-hover-background-color:
-      var(--color-context-menu-hover-background, rgba(0, 0, 0, 0.04));
+      var(--color-context-menu-hover-background, rgba(10, 10, 10, 0.08));
   --tab-picker-menu-background-color: var(--color-composebox-background,
       var(--search-background-color,
           var(--color-menu-background, #fff)));
@@ -52,7 +56,7 @@
   --tab-picker-favicon-skeleton-color: rgb(68, 71, 70);
   --tab-picker-focus-outline-color: #a8c7fa;
   --tab-picker-hover-background-color:
-      var(--color-context-menu-hover-background, rgba(53, 53, 53, 1));
+      var(--color-context-menu-hover-background, rgba(230, 232, 240, 0.08));
   --tab-picker-menu-background-color: var(--color-composebox-background,
       var(--search-background-color,
           var(--color-menu-background, rgba(44, 46, 54, 1))));
