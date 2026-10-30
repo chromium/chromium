@@ -1392,6 +1392,10 @@ testing::AssertionResult ShowsAllHostsWarning(const std::string& pattern) {
 
 TEST(PermissionsTest, GetWarningMessages_TLDWildcardTreatedAsAllHosts) {
   EXPECT_TRUE(ShowsAllHostsWarning("http://*.com/*"));    // most popular.
+  EXPECT_TRUE(ShowsAllHostsWarning("http://*.com./*"));   // trailing dot.
+  EXPECT_TRUE(ShowsAllHostsWarning("http://*.com../*"));  // multiple dots.
+  // trailing unicode (。) which maps to standard ASCII dot (.).
+  EXPECT_TRUE(ShowsAllHostsWarning("http://*.com\xe3\x80\x82/*"));
   EXPECT_TRUE(ShowsAllHostsWarning("http://*.org/*"));    // sanity check.
   EXPECT_TRUE(ShowsAllHostsWarning("http://*.co.uk/*"));  // eTLD.
   EXPECT_TRUE(ShowsAllHostsWarning("http://*.de/*"));  // foreign country tld.

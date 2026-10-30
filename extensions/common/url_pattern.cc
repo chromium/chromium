@@ -331,9 +331,18 @@ URLPattern::ParseResult URLPattern::Parse(std::string_view pattern) {
 
   if (!host_.empty()) {
     // If |host_| is present (i.e., isn't a wildcard), we need to canonicalize
-    // it.
+    // it and strip any trailing dots.
     url::CanonHostInfo host_info;
     host_ = net::CanonicalizeHost(host_, &host_info);
+    if (host_.ends_with('.')) {
+      host_ = std::string(CanonicalizeHostForMatching(host_));
+      if (host_.empty()) {
+        return ParseResult::kEmptyHost;
+      }
+      // Stripping multiple trailing dots can expose an invalid host so we
+      // re-canonicalize to catch the failure.
+      host_ = net::CanonicalizeHost(host_, &host_info);
+    }
     // net::CanonicalizeHost() returns an empty string on failure.
     if (host_.empty()) {
       return ParseResult::kInvalidHost;
@@ -508,18 +517,26 @@ bool URLPattern::MatchesHost(std::string_view host) const {
 }
 
 bool URLPattern::MatchesHost(const GURL& test) const {
-  std::string_view test_host(CanonicalizeHostForMatching(test.host()));
-  const std::string_view pattern_host(CanonicalizeHostForMatching(host_));
-
-  // If the hosts are exactly equal, we have a match.
-  if (test_host == pattern_host) {
-    return true;
-  }
-
   // If we're matching subdomains, and we have no host in the match pattern,
   // that means that we're matching all hosts, which means we have a match no
   // matter what the test host is.
-  if (match_subdomains_ && pattern_host.empty()) {
+  if (match_subdomains_ && host_.empty()) {
+    return true;
+  }
+
+  // Strip trailing dots from both the test_host and host_.
+  std::string_view test_host(CanonicalizeHostForMatching(test.host()));
+  const std::string_view pattern_host(CanonicalizeHostForMatching(host_));
+
+  // If either host was non-empty before canonicalization but is now empty
+  // (e.g., if a host consisted solely of dots), it cannot match.
+  if ((!host_.empty() && pattern_host.empty()) ||
+      (!test.host().empty() && test_host.empty())) {
+    return false;
+  }
+
+  // If the hosts are exactly equal, we have a match.
+  if (test_host == pattern_host) {
     return true;
   }
 
@@ -560,10 +577,15 @@ bool URLPattern::MatchesEffectiveTld(
     return false;
   }
 
+  const std::string_view canonical_host(CanonicalizeHostForMatching(host_));
+  if (canonical_host.empty()) {
+    return false;
+  }
+
   // If there was more than just a TLD in the host (e.g., *.foobar.com), it
   // doesn't match all hosts in an effective TLD.
   if (net::registry_controlled_domains::HostHasRegistryControlledDomain(
-          host_, unknown_filter, private_filter)) {
+          canonical_host, unknown_filter, private_filter)) {
     return false;
   }
 
@@ -574,7 +596,8 @@ bool URLPattern::MatchesEffectiveTld(
   // If we recognized this TLD, then this is a pattern like *.com, and it
   // matches an effective TLD.
   return net::registry_controlled_domains::HostHasRegistryControlledDomain(
-      "notatld." + host_, unknown_filter, private_filter);
+      base::StrCat({"notatld.", canonical_host}), unknown_filter,
+      private_filter);
 }
 
 bool URLPattern::MatchesSingleOrigin() const {

@@ -40,7 +40,26 @@ TEST(ExtensionURLPatternTest, ParseInvalid) {
       {"http://", URLPattern::ParseResult::kEmptyHost},
       {"http:///", URLPattern::ParseResult::kEmptyHost},
       {"http://:1234/", URLPattern::ParseResult::kEmptyHost},
+      {"http://./", URLPattern::ParseResult::kEmptyHost},
+      {"http://../", URLPattern::ParseResult::kEmptyHost},
       {"http://*./", URLPattern::ParseResult::kEmptyHost},
+      {"http://*../", URLPattern::ParseResult::kEmptyHost},
+      // Stripping multiple trailing dots exposes the numeric final label
+      // ("example.2"), which is rejected as an invalid IPv4 host.
+      {"http://example.2../", URLPattern::ParseResult::kInvalidHost},
+      // %2e is URL-encoded '.'.
+      {"http://%2e/", URLPattern::ParseResult::kEmptyHost},
+      {"http://*.%2e/", URLPattern::ParseResult::kEmptyHost},
+      // \xe3\x80\x82 is U+3002 IDEOGRAPHIC FULL STOP (。), mapped to '.'.
+      {"http://\xe3\x80\x82/", URLPattern::ParseResult::kEmptyHost},
+      {"http://*.\xe3\x80\x82/", URLPattern::ParseResult::kEmptyHost},
+      // \xef\xbc\x8e is U+FF0E FULLWIDTH FULL STOP (．), mapped to '.'.
+      {"http://*.\xef\xbc\x8e/", URLPattern::ParseResult::kEmptyHost},
+      // \xef\xbd\xa1 is U+FF61 HALFWIDTH IDEOGRAPHIC FULL STOP (｡), mapped to
+      // '.'.
+      {"http://*.\xef\xbd\xa1/", URLPattern::ParseResult::kEmptyHost},
+      // \xc2\xad is U+00AD SOFT HYPHEN, stripped during host canonicalization.
+      {"http://.\xc2\xad/", URLPattern::ParseResult::kEmptyHost},
       {"http://*foo/bar", URLPattern::ParseResult::kInvalidHostWildcard},
       {"http://foo.*.bar/baz", URLPattern::ParseResult::kInvalidHostWildcard},
       {"http://fo.*.ba:123/baz", URLPattern::ParseResult::kInvalidHostWildcard},
@@ -991,16 +1010,29 @@ TEST(ExtensionURLPatternTest, TrailingDotDomain) {
 
   const URLPattern trailing_pattern(URLPattern::SCHEME_HTTP,
                                     "*://example.com./*");
+  EXPECT_EQ("example.com", trailing_pattern.host());
+  EXPECT_EQ("*://example.com/*", trailing_pattern.GetAsString());
   EXPECT_TRUE(trailing_pattern.MatchesURL(normal_domain));
   EXPECT_TRUE(trailing_pattern.MatchesURL(trailing_dot_domain));
   EXPECT_TRUE(trailing_pattern.MatchesURL(multiple_trailing_dots_domain));
 
   const URLPattern multiple_trailing_pattern(URLPattern::SCHEME_HTTP,
                                              "*://example.com../*");
+  EXPECT_EQ("example.com", multiple_trailing_pattern.host());
+  EXPECT_EQ("*://example.com/*", multiple_trailing_pattern.GetAsString());
   EXPECT_TRUE(multiple_trailing_pattern.MatchesURL(normal_domain));
   EXPECT_TRUE(multiple_trailing_pattern.MatchesURL(trailing_dot_domain));
   EXPECT_TRUE(
       multiple_trailing_pattern.MatchesURL(multiple_trailing_dots_domain));
+
+  URLPattern set_host_dot_pattern(URLPattern::SCHEME_HTTP);
+  ASSERT_TRUE(set_host_dot_pattern.SetScheme("http"));
+  set_host_dot_pattern.SetHost(".");
+  set_host_dot_pattern.SetMatchSubdomains(true);
+  set_host_dot_pattern.SetPath("/*");
+  // "." host is rejected as an EmptyHost instead of matching all domains.
+  EXPECT_FALSE(set_host_dot_pattern.MatchesURL(normal_domain));
+  EXPECT_FALSE(set_host_dot_pattern.MatchesEffectiveTld());
 }
 
 TEST(ExtensionURLPatternTest, MatchesEffectiveTLD) {
@@ -1026,6 +1058,10 @@ TEST(ExtensionURLPatternTest, MatchesEffectiveTLD) {
 
       // Matching a given (e)TLD is effectively all hosts.
       {"https://*.com/*", true, true, true},
+      {"https://*.com./*", true, true, true},
+      {"https://*.com../*", true, true, true},
+      // \xe3\x80\x82 is U+3002 IDEOGRAPHIC FULL STOP (。), mapped to '.'.
+      {"*://*.com\xe3\x80\x82/*", true, true, true},
       {"*://*.co.uk/*", true, true, true},
 
       // Matching an arbitrary domain with a given path or port is effectively
@@ -1305,8 +1341,9 @@ TEST(ExtensionURLPatternTest, ContainsSchemes) {
 
 // Tests the handling of whitespace, along with various "."s.
 TEST(ExtensionURLPatternTest, WhitespaceHostParsing) {
+  // Note: A host consisting solely of "." is rejected as kEmptyHost.
   constexpr char const* kHosts[] = {
-      ".", " ", " .", ". ", ". .", ". . .", " . ",
+      " ", " .", ". ", ". .", ". . .", " . ",
   };
 
   for (const char* host : kHosts) {

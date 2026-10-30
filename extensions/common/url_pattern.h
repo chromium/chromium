@@ -128,8 +128,9 @@ class URLPattern {
   int valid_schemes() const { return valid_schemes_; }
   void SetValidSchemes(int valid_schemes);
 
-  // Gets the host the pattern matches. This can be an empty string if the
-  // pattern matches all hosts (the input was <scheme>://*/<whatever>).
+  // Gets the host the pattern matches. This can be an empty string if
+  // the pattern matches all hosts (the input was <scheme>://*/<whatever>).
+  // Note: Parse() will strip any trailing dots from host_.
   const std::string& host() const { return host_; }
   void SetHost(std::string_view host);
 
