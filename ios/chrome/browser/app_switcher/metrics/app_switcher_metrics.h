@@ -12,6 +12,10 @@ class TimeDelta;
 // Records that the user entered the AI Summarization flow via App Switcher.
 void RecordAppSwitcherAISummarizationEntrypoint();
 
+// Records the outcome of fetching App Switcher params specifically for AI
+// Summarization allowlisted caller apps.
+void RecordAppSwitcherAISummarizationFetchOutcome(bool success);
+
 // Records the outcome of fetching App Switcher params.
 void RecordAppSwitcherFetchOutcome(bool success);
 

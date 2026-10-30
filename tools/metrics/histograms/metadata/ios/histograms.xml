@@ -576,6 +576,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.AppSwitcher.AISummarization.FetchOutcome"
+    enum="BooleanSuccess" expires_after="2027-04-01">
+  <owner>joemerramos@google.com</owner>
+  <owner>bling-mony-pod@google.com</owner>
+  <summary>
+    The success or failure outcome of fetching parameters from the App Switcher
+    provider API specifically for AI Summarization allowlisted caller apps.
+    Recorded when receiving an intent from an allowlisted AI Summarization
+    source app. True represents a successful parameters fetch (no error), while
+    False represents a failed or timed out fetch request.
+  </summary>
+</histogram>
+
 <histogram name="IOS.AppSwitcher.FetchDuration" units="ms"
     expires_after="2027-04-01">
   <owner>joemerramos@google.com</owner>

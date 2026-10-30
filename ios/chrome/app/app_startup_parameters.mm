@@ -324,6 +324,7 @@ AppSwitcherParamsRequestStatus AppSwitcherParamsAvailability(
 
   if (IsAppSwitcherAISummarizationEnabled()) {
     if (IsCallerAppAllowListedForAISummarization(_sourceAppID)) {
+      RecordAppSwitcherAISummarizationFetchOutcome(success);
       if (success && result.is_ai_summarization) {
         self.postOpeningAction = START_GEMINI_AI_SUMMARIZATION;
         self.appSwitcherHashedUserID =

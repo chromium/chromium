@@ -13,6 +13,11 @@ void RecordAppSwitcherAISummarizationEntrypoint() {
       base::UserMetricsAction("IOS.AISummarization.AppSwitcherEntrypoint"));
 }
 
+void RecordAppSwitcherAISummarizationFetchOutcome(bool success) {
+  base::UmaHistogramBoolean("IOS.AppSwitcher.AISummarization.FetchOutcome",
+                            success);
+}
+
 void RecordAppSwitcherFetchOutcome(bool success) {
   base::UmaHistogramBoolean("IOS.AppSwitcher.FetchOutcome", success);
 }
