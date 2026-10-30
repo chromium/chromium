@@ -1765,9 +1765,6 @@ BASE_FEATURE(kFwupdDeveloperMode, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kCrostiniAdvancedAccessControls,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables support for sideloading android apps into Arc via crostini.
-BASE_FEATURE(kCrostiniArcSideload, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables distributed model for TPM1.2, i.e., using tpm_managerd and
 // attestationd.
 BASE_FEATURE(kCryptohomeDistributedModel, base::FEATURE_DISABLED_BY_DEFAULT);

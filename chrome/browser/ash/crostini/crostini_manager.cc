@@ -1214,8 +1214,7 @@ void CrostiniManager::AddStoppingVmForTesting(std::string vm_name) {
 void CrostiniManager::ConfigureForArcSideload() {
   ash::SessionManagerClient* session_manager_client =
       ash::SessionManagerClient::Get();
-  if (!base::FeatureList::IsEnabled(ash::features::kCrostiniArcSideload) ||
-      !session_manager_client) {
+  if (!session_manager_client) {
     return;
   }
   session_manager_client->QueryAdbSideload(base::BindOnce(
