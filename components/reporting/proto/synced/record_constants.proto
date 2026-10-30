@@ -156,6 +156,18 @@ enum Destination {
   // Metrics.
   CHROME_BROWSER_ENTERPRISE_METRIC = 41;
 
+  // |MOBILE_STATUS_REPORT| is for collecting status report from the Android
+  // mobile devices.
+  MOBILE_STATUS_REPORT = 42;
+
+  // |MOBILE_USAGE_LOGS| is for usage logs events from the Android mobile
+  // devices.
+  MOBILE_USAGE_LOGS = 43;
+
+  // |MOBILE_INTERMEDIATE_STATUS_REPORT| is for holding a intermediate state of
+  // the mobile status report.
+  MOBILE_INTERMEDIATE_STATUS_REPORT = 44;
+
   reserved 8;
 }
 
