@@ -4119,6 +4119,81 @@ TEST_F(ContextualTasksUiTest, MaybeTriggerPinningPromo_Success) {
   actions::ActionIdMap::ResetMapsForTesting();
 }
 
+TEST_F(ContextualTasksUiTest,
+       MaybeTriggerPinningPromo_SuppressedWhenOnboardingTooltipVisible) {
+  InitializeActionIdStringMapping();
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {contextual_tasks::kContextualTasksPinningV2,
+       contextual_tasks::kEnableContextualTasksPinButtonInToolbar,
+       feature_engagement::kIPHSidePanelContextualTasksPinnableFeature},
+      /*disabled_features=*/{
+          contextual_tasks::kContextualTasksHideMenuOnAiPage});
+
+  FakeContextualTasksEligibilityManager eligibility_manager;
+  ON_CALL(*service_for_nav_, GetEligibilityManager())
+      .WillByDefault(Return(&eligibility_manager));
+  profile_->GetPrefs()->SetInteger(
+      contextual_tasks::kContextualTasksSessionCountPostOnboarding, 2);
+
+  testing::NiceMock<MockBrowserWindowInterface> mock_browser_window;
+  ui::UnownedUserDataHost window_user_data_host;
+  ON_CALL(mock_browser_window, GetUnownedUserDataHost())
+      .WillByDefault(ReturnRef(window_user_data_host));
+  ON_CALL(mock_browser_window, GetProfile()).WillByDefault(Return(profile_));
+  MockBrowserUserEducationInterface mock_user_education(&mock_browser_window);
+
+  testing::NiceMock<MockContextualTasksPanelController> mock_panel_controller;
+  ContextualTask task_with_tab(base::Uuid::GenerateRandomV4());
+  task_with_tab.AddUrlResource(
+      UrlResource(GURL("https://example.com"), ResourceType::kWebpage));
+  ON_CALL(mock_panel_controller, GetCurrentTask())
+      .WillByDefault(Return(task_with_tab));
+  ON_CALL(mock_panel_controller, GetActiveWebContents())
+      .WillByDefault(Return(embedded_web_contents_.get()));
+  const GURL kAiUrlWithMstk(
+      "https://www.google.com/search?udm=50&q=test&mstk=123");
+  content::WebContentsTester::For(embedded_web_contents_.get())
+      ->NavigateAndCommit(kAiUrlWithMstk);
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  TestContextualTasksUI controller(&web_ui);
+  controller.set_panel_controller(&mock_panel_controller);
+  controller.set_browser_window(&mock_browser_window);
+  controller.set_inner_frame_url(kAiUrlWithMstk);
+  controller.ContextualTasksUIBase::SetIsAiPage(true);
+
+  EXPECT_CALL(mock_panel_controller, IsPanelOpenForContextualTask())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*service_for_nav_, IsAiUrl(_)).WillRepeatedly(Return(true));
+  EXPECT_CALL(mock_panel_controller, IsOnboardingTooltipVisible())
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(
+      mock_user_education,
+      MaybeShowFeaturePromo(
+          testing::Matcher<user_education::FeaturePromoParams>(testing::_)))
+      .Times(0);
+
+  controller.MaybeTriggerPinningPromo();
+  controller.ContextualTasksUIBase::MaybeTriggerPinningPromo();
+  testing::Mock::VerifyAndClearExpectations(&mock_user_education);
+
+  EXPECT_CALL(mock_panel_controller, IsOnboardingTooltipVisible())
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(
+      mock_user_education,
+      MaybeShowFeaturePromo(
+          testing::Matcher<user_education::FeaturePromoParams>(testing::_)))
+      .Times(2)
+      .WillRepeatedly(Return(true));
+
+  controller.MaybeTriggerPinningPromo();
+  controller.ContextualTasksUIBase::MaybeTriggerPinningPromo();
+
+  actions::ActionIdMap::ResetMapsForTesting();
+}
+
 TEST_F(ContextualTasksUiTest, MaybeTriggerPinningPromo_ZeroState) {
   InitializeActionIdStringMapping();
   base::test::ScopedFeatureList scoped_feature_list;

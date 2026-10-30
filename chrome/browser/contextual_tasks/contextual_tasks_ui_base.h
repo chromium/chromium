@@ -82,7 +82,7 @@ class ContextualTasksUIBase
 
   Profile* GetProfile();
   content::WebContents* GetWebUIWebContents();
-  BrowserWindowInterface* GetBrowser();
+  virtual BrowserWindowInterface* GetBrowser();
   virtual contextual_tasks::ContextualTasksPanelController*
   GetPanelController();
   contextual_tasks::ContextualTasksUiService* GetUiService();

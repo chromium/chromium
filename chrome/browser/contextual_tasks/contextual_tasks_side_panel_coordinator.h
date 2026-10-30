@@ -194,6 +194,7 @@ class ContextualTasksSidePanelCoordinator
   bool HasResults() const override;
   ContextualTasksPanelController::EntrySource GetActiveEntrySource()
       const override;
+  bool IsOnboardingTooltipVisible() const override;
   std::optional<tabs::TabHandle> GetAutoSuggestedTabHandle() override;
   void OnTaskChanged(content::WebContents* web_contents,
                      base::Uuid task_id) override;
