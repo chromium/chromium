@@ -233,6 +233,7 @@ source_set("tab") {
     "collection_storage_observer.h",
     "collection_storage_package.h",
     "media_state.h",
+    "node_hash_cache.h",
     "payload.h",
     "payload_util.h",
     "restore_entity_tracker.h",
@@ -276,6 +277,7 @@ source_set("impl") {
   sources = [
     "collection_storage_observer.cc",
     "collection_storage_package.cc",
+    "node_hash_cache.cc",
     "payload_util.cc",
     "storage_collection_synchronizer.cc",
     "storage_id.cc",
@@ -312,6 +314,7 @@ source_set("impl") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "node_hash_cache_unittest.cc",
     "payload_util_unittest.cc",
     "storage_loaded_data_unittest.cc",
     "tab_state_storage_service_unittest.cc",
