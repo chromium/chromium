@@ -7,15 +7,21 @@ package org.chromium.chrome.browser.suggestions.tile;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 
-import androidx.annotation.DrawableRes;
+import androidx.core.content.res.ResourcesCompat;
 
+import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
+import org.chromium.chrome.browser.omnibox.SearchEngineService;
+import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.preloading.AndroidPrerenderManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -29,6 +35,8 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.Snackbar
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.components.omnibox.OmniboxFeatures;
+import org.chromium.components.search_engines.AiModeButtonUiConfig;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -57,12 +65,17 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
     private final SnackbarManager mSnackbarManager;
     private final SuggestionsNavigationDelegate mNavigationDelegate;
     private final MostVisitedSites mMostVisitedSites;
+    private final boolean mIsAim3pEntrypointEnabled;
 
     private @Nullable ModalDialogManager mModalDialogManager;
-
     private boolean mIsDestroyed;
     private @Nullable SnackbarController mTileRemovedSnackbarController;
     private @Nullable SnackbarController mTileUnpinnedSnackbarController;
+    private @Nullable NullableObservableSupplier<AiModeButtonUiConfig>
+            mAiModeButtonUiConfigSupplier;
+    private @Nullable NonNullObservableSupplier<StatusIconResource> mAiModeButtonIconSupplier;
+    private @Nullable Callback<@Nullable AiModeButtonUiConfig> mAiModeButtonConfigObserver;
+    private @Nullable Callback<StatusIconResource> mAiModeButtonIconObserver;
 
     public TileGroupDelegateImpl(
             Context context,
@@ -75,6 +88,12 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
         mSnackbarManager = snackbarManager;
         mMostVisitedSites =
                 SuggestionsDependencyFactory.getInstance().createMostVisitedSites(profile);
+        mIsAim3pEntrypointEnabled = OmniboxFeatures.isAim3pEntrypointEnabled();
+        if (mIsAim3pEntrypointEnabled) {
+            SearchEngineService searchEngineService = SearchEngineService.getForProfile(profile);
+            mAiModeButtonUiConfigSupplier = searchEngineService.getAiModeButtonUiConfigSupplier();
+            mAiModeButtonIconSupplier = searchEngineService.getAiModeButtonIconSupplier();
+        }
     }
 
     // CustomLinkOperations -> TileGroup.Delegate implementation.
@@ -160,6 +179,32 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
     public void setMostVisitedSitesObserver(MostVisitedSites.Observer observer, int maxResults) {
         assert !mIsDestroyed;
 
+        if (mIsAim3pEntrypointEnabled && mAiModeButtonConfigObserver == null) {
+            // Native MostVisitedSites does not observe TemplateURLService, so TileGroup is told
+            // directly whenever the AI Mode config changes (e.g. on a DSE switch) and re-evaluates
+            // whether to show, update, or hide the AI Mode tile from its cached suggestions.
+            mAiModeButtonConfigObserver =
+                    unused -> {
+                        if (mIsDestroyed) return;
+
+                        observer.onAiModeTileConfigChanged();
+                    };
+            // Notifies TileGroup to refresh the AI Mode tile's icon in-place once the 3P favicon
+            // bitmap finishes downloading.
+            mAiModeButtonIconObserver =
+                    unused -> {
+                        if (mIsDestroyed) return;
+
+                        GURL aiModeTileUrl = getAiModeTileUrl();
+                        if (!GURL.isEmptyOrInvalid(aiModeTileUrl)) {
+                            observer.onIconMadeAvailable(aiModeTileUrl);
+                        }
+                    };
+            assumeNonNull(mAiModeButtonUiConfigSupplier)
+                    .addSyncObserver(mAiModeButtonConfigObserver);
+            assumeNonNull(mAiModeButtonIconSupplier).addSyncObserver(mAiModeButtonIconObserver);
+        }
+
         mMostVisitedSites.setObserver(observer, maxResults);
     }
 
@@ -232,6 +277,16 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
         assert !mIsDestroyed;
         mIsDestroyed = true;
 
+        if (mAiModeButtonConfigObserver != null) {
+            assumeNonNull(mAiModeButtonUiConfigSupplier)
+                    .removeObserver(mAiModeButtonConfigObserver);
+            mAiModeButtonConfigObserver = null;
+        }
+        if (mAiModeButtonIconObserver != null) {
+            assumeNonNull(mAiModeButtonIconSupplier).removeObserver(mAiModeButtonIconObserver);
+            mAiModeButtonIconObserver = null;
+        }
+
         dismissAllSnackbars();
         mMostVisitedSites.destroy();
     }
@@ -299,24 +354,78 @@ public class TileGroupDelegateImpl implements TileGroup.Delegate {
         return !TileUtils.isSearchTile(mProfile, tile);
     }
 
+    /**
+     * Returns the AI Mode tile title from the DSE config when Aim3pEntrypoint is enabled (or null
+     * if unavailable, hiding the tile), or the default 1P label when the feature is disabled.
+     */
     @Override
     public @Nullable String getAiModeTileTitle() {
+        if (mIsAim3pEntrypointEnabled) {
+            AiModeButtonUiConfig config = assumeNonNull(mAiModeButtonUiConfigSupplier).get();
+            return config != null ? config.text : null;
+        }
+
         return mContext.getString(R.string.ai_mode_entrypoint_label);
     }
 
+    /**
+     * Returns the AI Mode navigation URL from the DSE config (falling back to the 1P composeplate
+     * URL when empty, or null if no config is available) when Aim3pEntrypoint is enabled, or the 1P
+     * composeplate URL when the feature is disabled.
+     */
     @Override
     public @Nullable GURL getAiModeTileUrl() {
+        // TODO(crbug.com/549681251): Refactors this URL resolution logic to share the
+        // implementation with SearchProviderInfoDelegate#getComposeplateUrl() if the MVT AI Mode
+        // tile arm launches.
+        if (mIsAim3pEntrypointEnabled) {
+            AiModeButtonUiConfig config = assumeNonNull(mAiModeButtonUiConfigSupplier).get();
+            if (config == null) return null;
+
+            // 3P DSEs provide navigationUrlEmpty in the config; 1P Google leaves it empty and
+            // uses getComposeplateUrl().
+            return !config.navigationUrlEmpty.isEmpty()
+                    ? config.navigationUrlEmpty
+                    : getComposeplateUrl();
+        }
+
+        return getComposeplateUrl();
+    }
+
+    private @Nullable GURL getComposeplateUrl() {
         TemplateUrlService templateUrlService = TemplateUrlServiceFactory.getForProfile(mProfile);
         return templateUrlService != null ? templateUrlService.getComposeplateUrl() : null;
     }
 
+    /**
+     * Returns the AI Mode tile accessibility description from the DSE config when Aim3pEntrypoint
+     * is enabled (or null if unavailable), or the default 1P shortcut description when the feature
+     * is disabled.
+     */
     @Override
     public @Nullable String getAiModeTileContentDescription() {
+        if (mIsAim3pEntrypointEnabled) {
+            AiModeButtonUiConfig config = assumeNonNull(mAiModeButtonUiConfigSupplier).get();
+            return config != null ? config.a11yLabel : null;
+        }
+
         return mContext.getString(R.string.accessibility_ai_mode_mvt_tile);
     }
 
+    /**
+     * Returns the AI Mode tile icon from the DSE icon supplier when Aim3pEntrypoint is enabled (or
+     * null if unavailable), or the default 1P spark icon when the feature is disabled.
+     */
     @Override
-    public @DrawableRes int getAiModeTileIconDrawableId() {
-        return R.drawable.search_spark_white_24dp;
+    public @Nullable Drawable getAiModeTileIconDrawable() {
+        if (mIsAim3pEntrypointEnabled) {
+            AiModeButtonUiConfig config = assumeNonNull(mAiModeButtonUiConfigSupplier).get();
+            if (config == null) return null;
+
+            return assumeNonNull(mAiModeButtonIconSupplier).get().getDrawable(mContext);
+        }
+
+        return ResourcesCompat.getDrawable(
+                mContext.getResources(), R.drawable.search_spark_white_24dp, /* theme= */ null);
     }
 }

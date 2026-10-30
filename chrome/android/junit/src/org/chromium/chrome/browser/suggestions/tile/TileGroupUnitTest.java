@@ -11,6 +11,9 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -22,6 +25,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import static org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites.createCustomLinkSiteSuggestion;
 import static org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites.createSiteSuggestion;
@@ -30,6 +34,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.widget.TextView;
@@ -47,6 +53,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -57,6 +64,9 @@ import org.chromium.chrome.browser.ntp.NewTabPageUtils.LayoutType;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.preloading.AndroidPrerenderManager;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.ImageFetcher;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
@@ -66,6 +76,7 @@ import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -107,6 +118,11 @@ public class TileGroupUnitTest {
     private static final int TILE_TITLE_LINES = 1;
     private static final String[] URLS = {"https://www.google.com/", "https://tellmedadjokes.com/"};
     private static final GURL AI_MODE_TEST_URL = JUnitTestGURLs.URL_1;
+    private static final GURL THIRD_PARTY_AI_URL = JUnitTestGURLs.BLUE_1;
+    private static final String GOOGLE_AI_MODE_TITLE = "AI Mode";
+    private static final String GOOGLE_AI_MODE_CONTENT_DESCRIPTION = "Ask AI Mode in Google Search";
+    private static final String THIRD_PARTY_AI_MODE_TITLE = "Red AI";
+    private static final String THIRD_PARTY_AI_MODE_CONTENT_DESCRIPTION = "Ask Red AI";
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TileGroup.Observer mTileGroupObserver;
@@ -116,6 +132,9 @@ public class TileGroupUnitTest {
     @Mock private ContextMenuManager mContextMenuManager;
     @Mock private OfflinePageBridge mOfflinePageBridge;
     @Mock private ImageFetcher mMockImageFetcher;
+    @Mock private Profile mProfile;
+    @Mock private TemplateUrlService mTemplateUrlService;
+    @Mock private AndroidPrerenderManager mAndroidPrerenderManager;
 
     private Context mContext;
     private FakeMostVisitedSites mMostVisitedSites;
@@ -145,6 +164,8 @@ public class TileGroupUnitTest {
 
     @After
     public void tearDown() {
+        AndroidPrerenderManager.clearAndroidPrerenderManagerForTesting();
+        TemplateUrlServiceFactory.setInstanceForTesting(null);
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX);
     }
@@ -692,7 +713,7 @@ public class TileGroupUnitTest {
         // Capacity scales to 9 when injected.
         assertEquals(9, tiles.size());
         assertEquals(TileSource.AI_MODE, tiles.get(0).getSource());
-        assertEquals("AI Mode", tiles.get(0).getTitle());
+        assertEquals(GOOGLE_AI_MODE_TITLE, tiles.get(0).getTitle());
         assertEquals(AI_MODE_TEST_URL, tiles.get(0).getUrl());
         assertEquals(0, tiles.get(0).getIndex());
 
@@ -771,7 +792,7 @@ public class TileGroupUnitTest {
         // Organic top site replaced; AI Mode tile injected at slot 0.
         assertEquals(3, tiles.size());
         assertEquals(TileSource.AI_MODE, tiles.get(0).getSource());
-        assertEquals("AI Mode", tiles.get(0).getTitle());
+        assertEquals(GOOGLE_AI_MODE_TITLE, tiles.get(0).getTitle());
         assertEquals("Site 0", tiles.get(1).getTitle());
         assertEquals("Site 2", tiles.get(2).getTitle());
     }
@@ -890,6 +911,35 @@ public class TileGroupUnitTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/" + LayoutType.INSIDE_MVT})
+    public void testAiModeTile_injectedWithTextContentDescriptionAndIcon() {
+        // Verifies that the AI Mode tile is injected and rendered with the title, URL, content
+        // description, and icon provided by TileGroup.Delegate.
+        enableNativeTileRenderingForAiMode();
+        Drawable loupeIcon = mContext.getDrawable(R.drawable.ic_search_24dp);
+        configureAiModeBranding(
+                THIRD_PARTY_AI_MODE_TITLE,
+                THIRD_PARTY_AI_URL,
+                THIRD_PARTY_AI_MODE_CONTENT_DESCRIPTION,
+                loupeIcon);
+
+        SiteSuggestion[] sites = createSiteSuggestions(2);
+        TileGroup tileGroup = initializeTileGroup(SuggestionsConfig.MAX_TILE_COUNT + 1, sites);
+        MostVisitedTilesLayout layout = renderTileGroupAndRunTasks(tileGroup);
+
+        Tile aiTile = getPersonalizedTiles(tileGroup).get(0);
+        assertEquals(TileSource.AI_MODE, aiTile.getSource());
+        assertEquals(THIRD_PARTY_AI_MODE_TITLE, aiTile.getTitle());
+        assertEquals(THIRD_PARTY_AI_URL, aiTile.getUrl());
+        assertEquals(TileVisualType.ICON_DEFAULT, aiTile.getType());
+        assertNotNull(aiTile.getIconTint());
+        assertEquals(R.drawable.ic_search_24dp, shadowOf(aiTile.getIcon()).getCreatedFromResId());
+
+        SuggestionsTileView aiTileView = (SuggestionsTileView) layout.getChildAt(0);
+        assertEquals(THIRD_PARTY_AI_MODE_CONTENT_DESCRIPTION, aiTileView.getContentDescription());
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/" + LayoutType.INSIDE_MVT})
     public void testDeleteCustomLink_beforeAiModeTile_shiftsAndRestoresAiModeIndex() {
         enableAiModeTileInsideMvt();
         ChromeSharedPreferences.getInstance()
@@ -934,6 +984,60 @@ public class TileGroupUnitTest {
                 ChromeSharedPreferences.getInstance()
                         .readInt(ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, -1));
         verify(mTileGroupDelegate).addCustomLink(eq("Custom 0"), eq(custom0Url), eq(0));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/" + LayoutType.INSIDE_MVT})
+    public void testAiModeTile_onAiModeTileConfigChangedSwitchesAcrossDseTypes() {
+        // Verifies that onAiModeTileConfigChanged() rebuilds the AI Mode tile from the cached
+        // suggestions immediately even while the UI is visible, without a new native delivery:
+        // 1P Google -> 3P with a downloaded bitmap -> DSE without AI Mode (tile removed).
+        enableNativeTileRenderingForAiMode();
+        Drawable sparkIcon = mContext.getDrawable(R.drawable.ic_search_spark_24dp);
+        configureAiModeBranding(
+                GOOGLE_AI_MODE_TITLE,
+                AI_MODE_TEST_URL,
+                GOOGLE_AI_MODE_CONTENT_DESCRIPTION,
+                sparkIcon);
+        SiteSuggestion[] sites = createSiteSuggestions(2);
+        TileGroup tileGroup = initializeTileGroup(SuggestionsConfig.MAX_TILE_COUNT + 1, sites);
+        when(mSuggestionsUiDelegate.isVisible()).thenReturn(true);
+        renderTileGroupAndRunTasks(tileGroup);
+        assertAiModeTile(tileGroup, GOOGLE_AI_MODE_TITLE, AI_MODE_TEST_URL, sparkIcon);
+
+        // 1. Switches to a 3P DSE with a downloaded bitmap icon: the tile is replaced in place.
+        BitmapDrawable bitmapDrawable =
+                new BitmapDrawable(
+                        mContext.getResources(), Bitmap.createBitmap(1, 1, Config.ARGB_8888));
+        configureAiModeBranding(
+                THIRD_PARTY_AI_MODE_TITLE,
+                THIRD_PARTY_AI_URL,
+                THIRD_PARTY_AI_MODE_CONTENT_DESCRIPTION,
+                bitmapDrawable);
+        reset(mTileGroupObserver);
+        tileGroup.onAiModeTileConfigChanged();
+        renderTileGroupAndRunTasks(tileGroup);
+
+        assertAiModeTile(tileGroup, THIRD_PARTY_AI_MODE_TITLE, THIRD_PARTY_AI_URL, bitmapDrawable);
+        verify(mTileGroupObserver).onTileDataChanged();
+        verify(mTileGroupObserver, never()).onTileCountChanged();
+
+        // 2. Switches to a DSE that does not support AI Mode: the tile is removed.
+        configureAiModeBranding(
+                /* title= */ null,
+                /* url= */ null,
+                /* contentDescription= */ null,
+                /* icon= */ null);
+        reset(mTileGroupObserver);
+        tileGroup.onAiModeTileConfigChanged();
+
+        List<Tile> remainingTiles = getPersonalizedTiles(tileGroup);
+        assertEquals(sites.length, remainingTiles.size());
+        for (Tile tile : remainingTiles) {
+            assertTrue(tile.getSource() != TileSource.AI_MODE);
+        }
+        verify(mTileGroupObserver).onTileCountChanged();
+        verify(mTileGroupObserver).onTileDataChanged();
     }
 
     @Test
@@ -984,6 +1088,43 @@ public class TileGroupUnitTest {
         verify(mTileGroupDelegate).addCustomLink(eq("Custom 0"), eq(custom0Url), eq(0));
     }
 
+    @Test
+    @EnableFeatures({ChromeFeatureList.NTP_AURORA_V2 + ":layout_type/" + LayoutType.INSIDE_MVT})
+    public void testAiModeTile_onIconMadeAvailableUpdatesIconInPlace() {
+        // Verifies that onIconMadeAvailable refreshes the AI Mode tile's icon in-place from the
+        // placeholder search loupe to the downloaded 3P bitmap and notifies onTileIconChanged
+        // without rebuilding the tile list.
+        enableNativeTileRenderingForAiMode();
+        configureAiModeBranding(
+                THIRD_PARTY_AI_MODE_TITLE,
+                THIRD_PARTY_AI_URL,
+                THIRD_PARTY_AI_MODE_CONTENT_DESCRIPTION,
+                mContext.getDrawable(R.drawable.ic_search_24dp));
+
+        SiteSuggestion[] sites = createSiteSuggestions(2);
+        TileGroup tileGroup = initializeTileGroup(SuggestionsConfig.MAX_TILE_COUNT + 1, sites);
+        renderTileGroupAndRunTasks(tileGroup);
+
+        Tile aiTile = getPersonalizedTiles(tileGroup).get(0);
+        assertEquals(TileVisualType.ICON_DEFAULT, aiTile.getType());
+        assertNotNull(aiTile.getIconTint());
+        assertEquals(R.drawable.ic_search_24dp, shadowOf(aiTile.getIcon()).getCreatedFromResId());
+        reset(mTileGroupObserver);
+
+        // 3P favicon bitmap finishes downloading and triggers onIconMadeAvailable.
+        Bitmap bitmap = Bitmap.createBitmap(1, 1, Config.ARGB_8888);
+        when(mTileGroupDelegate.getAiModeTileIconDrawable())
+                .thenReturn(new BitmapDrawable(mContext.getResources(), bitmap));
+        tileGroup.onIconMadeAvailable(THIRD_PARTY_AI_URL);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertEquals(TileVisualType.ICON_REAL, aiTile.getType());
+        assertNull(aiTile.getIconTint());
+        assertEquals(bitmap, ((BitmapDrawable) aiTile.getIcon()).getBitmap());
+        verify(mTileGroupObserver).onTileIconChanged(aiTile);
+        verify(mTileGroupObserver, never()).onTileDataChanged();
+    }
+
     private boolean isAddNewButton(View view) {
         View tileView = view.findViewById(R.id.tile_view_title);
         return tileView != null
@@ -1000,8 +1141,48 @@ public class TileGroupUnitTest {
     }
 
     private void enableAiModeTileInsideMvt() {
-        when(mTileGroupDelegate.getAiModeTileTitle()).thenReturn("AI Mode");
+        when(mTileGroupDelegate.getAiModeTileTitle()).thenReturn(GOOGLE_AI_MODE_TITLE);
         when(mTileGroupDelegate.getAiModeTileUrl()).thenReturn(AI_MODE_TEST_URL);
+    }
+
+    private void enableNativeTileRenderingForAiMode() {
+        AndroidPrerenderManager.setAndroidPrerenderManagerForTesting(mAndroidPrerenderManager);
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+        mTileRenderer.onNativeInitializationReady(mProfile);
+    }
+
+    private void configureAiModeBranding(
+            String title, GURL url, String contentDescription, Drawable icon) {
+        when(mTileGroupDelegate.getAiModeTileTitle()).thenReturn(title);
+        when(mTileGroupDelegate.getAiModeTileUrl()).thenReturn(url);
+        when(mTileGroupDelegate.getAiModeTileContentDescription()).thenReturn(contentDescription);
+        when(mTileGroupDelegate.getAiModeTileIconDrawable()).thenReturn(icon);
+    }
+
+    private MostVisitedTilesLayout renderTileGroupAndRunTasks(TileGroup tileGroup) {
+        MostVisitedTilesLayout layout = setupView();
+        refreshData(tileGroup, layout);
+        RobolectricUtil.runAllBackgroundAndUi();
+        return layout;
+    }
+
+    private List<Tile> getPersonalizedTiles(TileGroup tileGroup) {
+        List<Tile> tiles = tileGroup.getTileSections().get(TileSectionType.PERSONALIZED);
+        assertThat(tiles).isNotNull();
+        return tiles;
+    }
+
+    /**
+     * Asserts that the first personalized tile is the AI Mode tile carrying {@code expectedTitle},
+     * {@code expectedUrl}, and exactly the {@code expectedIcon} instance returned by the delegate.
+     */
+    private void assertAiModeTile(
+            TileGroup tileGroup, String expectedTitle, GURL expectedUrl, Drawable expectedIcon) {
+        Tile aiTile = getPersonalizedTiles(tileGroup).get(0);
+        assertEquals(TileSource.AI_MODE, aiTile.getSource());
+        assertEquals(expectedTitle, aiTile.getTitle());
+        assertEquals(expectedUrl, aiTile.getUrl());
+        assertSame(expectedIcon, aiTile.getIcon());
     }
 
     private TileGroup initializeTileGroup(int maxResults, SiteSuggestion... suggestions) {

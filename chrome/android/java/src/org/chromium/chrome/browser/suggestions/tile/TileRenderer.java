@@ -14,7 +14,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import androidx.annotation.DimenRes;
-import androidx.annotation.DrawableRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.res.ResourcesCompat;
@@ -438,10 +437,15 @@ public class TileRenderer {
      */
     public void updateIcon(final Tile tile, TileGroup.TileSetupDelegate setupDelegate) {
         if (isSearchTile(tile)) {
-            setTileIconFromResAsync(tile, setupDelegate, R.drawable.ic_suggestion_magnifier);
+            Drawable drawable =
+                    ResourcesCompat.getDrawable(
+                            mContext.getResources(),
+                            R.drawable.ic_suggestion_magnifier,
+                            /* theme= */ null);
+            setTileIconFromDrawableAsync(tile, setupDelegate, drawable);
         } else if (tile.isAiMode()) {
-            setTileIconFromResAsync(
-                    tile, setupDelegate, setupDelegate.getAiModeTileIconDrawableId());
+            setTileIconFromDrawableAsync(
+                    tile, setupDelegate, setupDelegate.getAiModeTileIconDrawable());
         } else if (mImageFetcher != null) {
             mImageFetcher.makeLargeIconRequest(
                     tile.getUrl(),
@@ -462,8 +466,12 @@ public class TileRenderer {
         tile.setType(TileVisualType.ICON_REAL);
     }
 
-    public void setTileIconFromResAsync(
-            Tile tile, TileGroup.TileSetupDelegate setupDelegate, @DrawableRes int res) {
+    /**
+     * Asynchronously sets the tile icon from {@code drawable}, rendering bitmaps untinted as {@link
+     * TileVisualType#ICON_REAL} and other drawables tinted as {@link TileVisualType#ICON_DEFAULT}.
+     */
+    public void setTileIconFromDrawableAsync(
+            Tile tile, TileGroup.TileSetupDelegate setupDelegate, @Nullable Drawable drawable) {
         // We already have an icon, and could trigger the update instantly.
         // Problem is, the TileView is likely not attached yet and the update would not be
         // properly reflected. Yield.
@@ -471,11 +479,16 @@ public class TileRenderer {
         PostTask.postTask(
                 TaskTraits.UI_DEFAULT,
                 () -> {
-                    tile.setIcon(ResourcesCompat.getDrawable(mContext.getResources(), res, null));
+                    tile.setIcon(drawable);
+                    boolean isBitmap = drawable instanceof BitmapDrawable;
                     tile.setIconTint(
-                            ChromeColors.getSecondaryIconTint(
-                                    mContext, /* forceLightIconTint= */ false));
-                    tile.setType(TileVisualType.ICON_DEFAULT);
+                            isBitmap
+                                    ? null
+                                    : ChromeColors.getSecondaryIconTint(
+                                            mContext, /* forceLightIconTint= */ false));
+                    // Uses ICON_REAL for 3P favicon bitmaps so SuggestionsTileView renders them at
+                    // the 24dp favicon size instead of stretching them to the 26dp monogram size.
+                    tile.setType(isBitmap ? TileVisualType.ICON_REAL : TileVisualType.ICON_DEFAULT);
                     if (iconCallback != null) iconCallback.run();
                 });
     }

@@ -6,11 +6,11 @@ package org.chromium.chrome.browser.suggestions.tile;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.View;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
@@ -106,10 +106,9 @@ public class TileGroup implements MostVisitedSites.Observer {
         @Nullable String getAiModeTileContentDescription();
 
         /**
-         * @return Icon drawable resource ID for the AI Mode tile.
+         * @return Icon drawable for the AI Mode tile, or null if unavailable.
          */
-        @DrawableRes
-        int getAiModeTileIconDrawableId();
+        @Nullable Drawable getAiModeTileIconDrawable();
 
         /**
          * @param originalTile The tile to edit, or null to add a new tile.
@@ -207,10 +206,9 @@ public class TileGroup implements MostVisitedSites.Observer {
         @Nullable String getAiModeTileContentDescription();
 
         /**
-         * @return Icon drawable resource ID for the AI Mode tile.
+         * @return Icon drawable for the AI Mode tile, or null if unavailable.
          */
-        @DrawableRes
-        int getAiModeTileIconDrawableId();
+        @Nullable Drawable getAiModeTileIconDrawable();
     }
 
     /** Delegate for handling interactions with tiles. */
@@ -385,8 +383,8 @@ public class TileGroup implements MostVisitedSites.Observer {
                 }
 
                 @Override
-                public @DrawableRes int getAiModeTileIconDrawableId() {
-                    return mTileGroupDelegate.getAiModeTileIconDrawableId();
+                public @Nullable Drawable getAiModeTileIconDrawable() {
+                    return mTileGroupDelegate.getAiModeTileIconDrawable();
                 }
             };
 
@@ -432,6 +430,25 @@ public class TileGroup implements MostVisitedSites.Observer {
         for (Tile tile : findTilesForUrl(siteUrl)) {
             mTileRenderer.updateIcon(tile, mTileSetupDelegate);
         }
+    }
+
+    @Override
+    public void onAiModeTileConfigChanged() {
+        reloadTilesFromCurrentSuggestions();
+    }
+
+    /**
+     * Re-runs {@link #loadTiles()} on the most recently loaded suggestions so the AI Mode tile is
+     * re-evaluated (shown, updated, or hidden) without a new native suggestion delivery. Any
+     * suggestions deferred to {@link #onSwitchToForeground(boolean)} are preserved.
+     */
+    private void reloadTilesFromCurrentSuggestions() {
+        if (mCurrentSiteSuggestions == null) return;
+
+        @Nullable List<SiteSuggestion> deferredSuggestions = mPendingChanges.siteSuggestions;
+        mPendingChanges.siteSuggestions = new ArrayList<>(mCurrentSiteSuggestions);
+        loadTiles();
+        mPendingChanges.siteSuggestions = deferredSuggestions;
     }
 
     /**
@@ -1084,15 +1101,6 @@ public class TileGroup implements MostVisitedSites.Observer {
                                 ChromePreferenceKeys.NTP_MVT_AI_MODE_TILE_INDEX, savedAiIndex);
                         reloadTilesFromCurrentSuggestions();
                     });
-        }
-
-        private void reloadTilesFromCurrentSuggestions() {
-            if (mCurrentSiteSuggestions == null) return;
-
-            @Nullable List<SiteSuggestion> deferredSuggestions = mPendingChanges.siteSuggestions;
-            mPendingChanges.siteSuggestions = new ArrayList<>(mCurrentSiteSuggestions);
-            loadTiles();
-            mPendingChanges.siteSuggestions = deferredSuggestions;
         }
 
         /**

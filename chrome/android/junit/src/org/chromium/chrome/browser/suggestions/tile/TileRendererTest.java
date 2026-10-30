@@ -16,6 +16,7 @@ import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import org.junit.After;
@@ -228,19 +229,41 @@ public class TileRendererTest {
 
     @Test
     public void testBuildTileView_AiMode_Icon() {
+        // Verifies that a resource drawable AI Mode icon (1P spark or 3P fallback loupe) is
+        // rendered tinted as ICON_DEFAULT.
         mTileSource = TileSource.AI_MODE;
-        doReturn(R.drawable.search_spark_white_24dp)
-                .when(mTileSetupDelegate)
-                .getAiModeTileIconDrawableId();
+        Drawable sparkDrawable = mActivity.getDrawable(R.drawable.search_spark_white_24dp);
+        doReturn(sparkDrawable).when(mTileSetupDelegate).getAiModeTileIconDrawable();
         buildTileView(TileStyle.MODERN, TITLE_LINES);
 
         verify(mTileSetupCallback, never()).run();
         RobolectricUtil.runAllBackgroundAndUi();
         verify(mTileSetupCallback).run();
 
+        Assert.assertEquals(TileVisualType.ICON_DEFAULT, mTile.getType());
+        Assert.assertNotNull(mTile.getIconTint());
+        Assert.assertNotEquals(mFakeColorStateList, mTile.getIconTint());
         ShadowDrawable shadowDrawable = shadowOf(mTile.getIcon());
         Assert.assertEquals(
                 R.drawable.search_spark_white_24dp, shadowDrawable.getCreatedFromResId());
+    }
+
+    @Test
+    public void testBuildTileView_AiMode_BitmapIcon() {
+        // Verifies that a 3P bitmap AI Mode icon is rendered untinted as ICON_REAL so it uses the
+        // 24dp favicon size rather than stretching to the 26dp monogram size.
+        mTileSource = TileSource.AI_MODE;
+        BitmapDrawable bitmapDrawable = new BitmapDrawable(mActivity.getResources(), mBitmap);
+        doReturn(bitmapDrawable).when(mTileSetupDelegate).getAiModeTileIconDrawable();
+        buildTileView(TileStyle.MODERN, TITLE_LINES);
+
+        verify(mTileSetupCallback, never()).run();
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(mTileSetupCallback).run();
+
+        Assert.assertEquals(TileVisualType.ICON_REAL, mTile.getType());
+        Assert.assertNull(mTile.getIconTint());
+        Assert.assertEquals(mBitmap, ((BitmapDrawable) mTile.getIcon()).getBitmap());
     }
 
     @Test

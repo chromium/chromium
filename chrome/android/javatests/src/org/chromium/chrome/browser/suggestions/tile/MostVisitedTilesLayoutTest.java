@@ -122,6 +122,7 @@ public class MostVisitedTilesLayoutTest {
 
     private final CallbackHelper mLoadCompleteHelper = new CallbackHelper();
     private MostVisitedTilesCoordinator mCoordinator;
+    private TileGroup.Delegate mTileGroupDelegate;
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
@@ -144,6 +145,12 @@ public class MostVisitedTilesLayoutTest {
         if (mCoordinator != null) {
             ThreadUtils.runOnUiThreadBlocking(() -> mCoordinator.destroy());
             mCoordinator = null;
+        }
+        // Mirrors NewTabPage#destroy(): the delegate outlives the coordinator and must be destroyed
+        // so it unregisters its SearchEngineService observers instead of retaining the Activity.
+        if (mTileGroupDelegate != null) {
+            ThreadUtils.runOnUiThreadBlocking(() -> mTileGroupDelegate.destroy());
+            mTileGroupDelegate = null;
         }
         // Since renderTiles() calls setContentView() on the Activity, the clean up causes an
         // exception.
@@ -336,7 +343,7 @@ public class MostVisitedTilesLayoutTest {
         SuggestionsUiDelegate uiDelegate =
                 new SuggestionsUiDelegateImpl(null, profile, null, activity.getSnackbarManager());
 
-        TileGroup.Delegate delegate =
+        mTileGroupDelegate =
                 new TileGroupDelegateImpl(activity, profile, null, null) {
                     @Override
                     public void onLoadingComplete(List<Tile> tiles) {
@@ -353,6 +360,6 @@ public class MostVisitedTilesLayoutTest {
                         new UiConfig(containerLayout),
                         null,
                         null);
-        mCoordinator.initWithNative(profile, uiDelegate, delegate, mTouchEnabledDelegate);
+        mCoordinator.initWithNative(profile, uiDelegate, mTileGroupDelegate, mTouchEnabledDelegate);
     }
 }
