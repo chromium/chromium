@@ -6,6 +6,15 @@
 
 #include <inttypes.h>
 
+#include <algorithm>
+#include <iterator>
+#include <memory>
+#include <optional>
+#include <set>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/uuid.h"
@@ -235,6 +244,13 @@ void CombinedBookmarksView::BookmarkNodeAdded(
     const bookmarks::BookmarkNode* parent,
     size_t index,
     bool added_by_user) {
+  if (parent == model_->root_node()) {
+    const bookmarks::BookmarkNode* node = parent->children()[index].get();
+    if (node->IsVisible()) {
+      NotifyPermanentNodeAdded(node);
+    }
+    return;
+  }
   std::vector<bookmarks_api::mojom::BookmarksEventPtr> events;
   events.push_back(translator_.CreateAddedEvent(parent, index));
   Notify(std::move(events));
@@ -247,7 +263,12 @@ void CombinedBookmarksView::BookmarkNodeRemoved(
     const std::set<GURL>& removed_urls,
     const base::Location& location) {
   std::vector<bookmarks_api::mojom::BookmarksEventPtr> events;
-  events.push_back(translator_.OnNodeRemoved(node));
+  if (node->IsVisible()) {
+    // Must precede `uuid_mapper_.RemoveNode(node)`: `BookmarkModel` has already
+    // erased `node` from `uuid_index_`, so `GetUuid(node)` for account nodes
+    // relies on the cached mapping in `uuid_mapper_`.
+    events.push_back(translator_.OnNodeRemoved(node));
+  }
   uuid_mapper_.RemoveNode(node);
   Notify(std::move(events));
 }
@@ -265,6 +286,9 @@ void CombinedBookmarksView::BookmarkNodeMoved(
 
 void CombinedBookmarksView::BookmarkNodeChanged(
     const bookmarks::BookmarkNode* node) {
+  if (!node->IsVisible()) {
+    return;
+  }
   std::vector<bookmarks_api::mojom::BookmarksEventPtr> events;
   events.push_back(translator_.CreateChangedEvent(node));
   Notify(std::move(events));
@@ -293,16 +317,7 @@ void CombinedBookmarksView::BookmarkNodeChildrenReordered(
 void CombinedBookmarksView::BookmarkPermanentNodeVisibilityChanged(
     const bookmarks::BookmarkPermanentNode* node) {
   if (node->IsVisible()) {
-    std::vector<const bookmarks::BookmarkNode*> visible_children =
-        GetChildren(synthetic_root_node_.get());
-    auto it = std::find(visible_children.begin(), visible_children.end(), node);
-    if (it != visible_children.end()) {
-      size_t index = std::distance(visible_children.begin(), it);
-      std::vector<bookmarks_api::mojom::BookmarksEventPtr> events;
-      events.push_back(
-          translator_.CreateAddedEvent(synthetic_root_node_.get(), index));
-      Notify(std::move(events));
-    }
+    NotifyPermanentNodeAdded(node);
   } else {
     std::vector<bookmarks_api::mojom::BookmarksEventPtr> events;
     events.push_back(translator_.OnNodeRemoved(node));
@@ -328,6 +343,20 @@ void CombinedBookmarksView::ExtensiveBookmarkChangesEnded() {
     }
     queued_events_.clear();
   }
+}
+
+void CombinedBookmarksView::NotifyPermanentNodeAdded(
+    const bookmarks::BookmarkNode* node) {
+  CHECK(node->IsVisible());
+  std::vector<const bookmarks::BookmarkNode*> visible_children =
+      GetChildren(synthetic_root_node_.get());
+  auto it = std::ranges::find(visible_children, node);
+  CHECK(it != visible_children.end());
+  size_t visible_index = std::distance(visible_children.begin(), it);
+  std::vector<bookmarks_api::mojom::BookmarksEventPtr> events;
+  events.push_back(
+      translator_.CreateAddedEvent(synthetic_root_node_.get(), visible_index));
+  Notify(std::move(events));
 }
 
 void CombinedBookmarksView::Notify(
