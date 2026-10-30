@@ -14,7 +14,6 @@ import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.TextUtils;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.DeviceInfo;
@@ -73,8 +72,6 @@ import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.util.TokenHolder;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -87,27 +84,6 @@ public class FullscreenSigninMediator
 
     private static final int SIGNIN_ANIMATION_DELAY_MS = 600;
     private static boolean sAnimationsEnabled = true;
-
-    // LINT.IfChange(LoadPoint)
-    /** Used for MobileFre.SlowestLoadPoint histogram. Should be treated as append-only. */
-    @VisibleForTesting
-    @IntDef({
-        LoadPoint.NATIVE_INITIALIZATION,
-        LoadPoint.POLICY_LOAD,
-        LoadPoint.CHILD_STATUS_LOAD,
-        LoadPoint.ACCOUNT_FETCHING,
-        LoadPoint.MAX
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface LoadPoint {
-        int NATIVE_INITIALIZATION = 0;
-        int POLICY_LOAD = 1;
-        int CHILD_STATUS_LOAD = 2;
-        int ACCOUNT_FETCHING = 3;
-        int MAX = 4;
-    }
-
-    // LINT.ThenChange(//tools/metrics/histograms/metadata/mobile/enums.xml:LoadPoint)
 
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
@@ -270,19 +246,19 @@ public class FullscreenSigninMediator
         if (mContinueButtonProfileDataCache == null) {
             initializeProfileDataCache();
         }
-        checkWhetherInitialLoadCompleted(LoadPoint.NATIVE_INITIALIZATION);
+        checkWhetherInitialLoadCompleted(FullscreenSigninLoadPoint.NATIVE_INITIALIZATION);
     }
 
     private void onChildAccountStatusAvailable() {
-        checkWhetherInitialLoadCompleted(LoadPoint.CHILD_STATUS_LOAD);
+        checkWhetherInitialLoadCompleted(FullscreenSigninLoadPoint.CHILD_STATUS_LOAD);
     }
 
     private void onPolicyLoad() {
-        checkWhetherInitialLoadCompleted(LoadPoint.POLICY_LOAD);
+        checkWhetherInitialLoadCompleted(FullscreenSigninLoadPoint.POLICY_LOAD);
     }
 
     /** Checks the initial load status. See {@link #onInitialLoadCompleted} for details. */
-    private void checkWhetherInitialLoadCompleted(@LoadPoint int slowestLoadPoint) {
+    private void checkWhetherInitialLoadCompleted(@FullscreenSigninLoadPoint int slowestLoadPoint) {
         // This happens asynchronously, so this check is necessary to ensure we don't interact with
         // the delegate after the mediator is destroyed. See https://crbug.com/40214143.
         if (mDestroyed) return;
@@ -582,7 +558,7 @@ public class FullscreenSigninMediator
 
     private void updateAccountsAndCheck(List<AccountInfo> accounts) {
         updateAccounts(accounts);
-        checkWhetherInitialLoadCompleted(LoadPoint.ACCOUNT_FETCHING);
+        checkWhetherInitialLoadCompleted(FullscreenSigninLoadPoint.ACCOUNT_FETCHING);
     }
 
     @Override

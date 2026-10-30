@@ -56,7 +56,7 @@ import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninConfig;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninCoordinator;
-import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninMediator;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninLoadPoint;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninView;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.policy.EnterpriseInfo;
@@ -273,8 +273,7 @@ public class SigninFirstRunFragment extends Fragment
 
     /** Implements {@link FullscreenSigninCoordinator.Delegate}. */
     @Override
-    public void recordLoadCompletedHistograms(
-            @FullscreenSigninMediator.LoadPoint int slowestLoadPoint) {
+    public void recordLoadCompletedHistograms(@FullscreenSigninLoadPoint int slowestLoadPoint) {
         assumeNonNull(getPageDelegate()).recordLoadCompletedHistograms(slowestLoadPoint);
     }
 

@@ -345,7 +345,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Load accounts from the device"/>
 </enum>
 
-<!-- LINT.ThenChange(/chrome/browser/ui/android/signin/java/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FullscreenSigninMediator.java:LoadPoint) -->
+<!-- LINT.ThenChange(/chrome/browser/ui/android/signin/java/src/org/chromium/chrome/browser/ui/signin/fullscreen_signin/FullscreenSigninLoadPoint.java:LoadPoint) -->
 
 <!-- LINT.IfChange(MobileDefaultBrowserState) -->
 

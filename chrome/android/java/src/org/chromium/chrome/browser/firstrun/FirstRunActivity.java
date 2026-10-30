@@ -59,7 +59,7 @@ import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoU
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderCoordinator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.signin.DialogWhenLargeContentLayout;
-import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninMediator;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninLoadPoint;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -1047,8 +1047,7 @@ public class FirstRunActivity extends FirstRunActivityBase
     }
 
     @Override
-    public void recordLoadCompletedHistograms(
-            @FullscreenSigninMediator.LoadPoint int slowestLoadPoint) {
+    public void recordLoadCompletedHistograms(@FullscreenSigninLoadPoint int slowestLoadPoint) {
         // TODO: crbug.com/462005651 - Remove obsolete
         // "MobileFre.FromLaunch.NativePolicyAndChildStatusLoaded" histogram.
         RecordHistogram.recordTimesHistogram(
@@ -1058,9 +1057,7 @@ public class FirstRunActivity extends FirstRunActivityBase
                 "MobileFre.FromLaunch.InitialLoadCompleted",
                 SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
         RecordHistogram.recordEnumeratedHistogram(
-                "MobileFre.SlowestLoadPoint",
-                slowestLoadPoint,
-                FullscreenSigninMediator.LoadPoint.MAX);
+                "MobileFre.SlowestLoadPoint", slowestLoadPoint, FullscreenSigninLoadPoint.MAX);
     }
 
     @Override

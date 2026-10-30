@@ -74,8 +74,7 @@ public class FullscreenSigninCoordinator implements IdentityManager.Observer {
          *
          * @param slowestLoadPoint The slowest load point to be recorded.
          */
-        void recordLoadCompletedHistograms(
-                @FullscreenSigninMediator.LoadPoint int slowestLoadPoint);
+        void recordLoadCompletedHistograms(@FullscreenSigninLoadPoint int slowestLoadPoint);
 
         /** Records *.FromLaunch.NativeInitialized histogram. */
         void recordNativeInitializedHistogram();

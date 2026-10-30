@@ -11,7 +11,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
-import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninMediator;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninLoadPoint;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -84,7 +84,7 @@ public interface FirstRunPageDelegate {
     void recordFreProgressHistogram(@MobileFreProgress int state);
 
     /** Records MobileFre.FromLaunch.NativeAndPoliciesLoaded histogram. */
-    void recordLoadCompletedHistograms(@FullscreenSigninMediator.LoadPoint int slowestLoadPoint);
+    void recordLoadCompletedHistograms(@FullscreenSigninLoadPoint int slowestLoadPoint);
 
     /** Records MobileFre.FromLaunch.NativeInitialized histogram. */
     void recordNativeInitializedHistogram();

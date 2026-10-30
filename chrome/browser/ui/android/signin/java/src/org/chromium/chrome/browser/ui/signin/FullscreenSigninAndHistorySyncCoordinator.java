@@ -30,7 +30,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninCoordinator;
-import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninMediator;
+import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninLoadPoint;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninView;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator;
@@ -301,8 +301,7 @@ public final class FullscreenSigninAndHistorySyncCoordinator extends SigninAndHi
     }
 
     @Override
-    public void recordLoadCompletedHistograms(
-            @FullscreenSigninMediator.LoadPoint int slowestLoadPoint) {
+    public void recordLoadCompletedHistograms(@FullscreenSigninLoadPoint int slowestLoadPoint) {
         RecordHistogram.recordTimesHistogram(
                 "Signin.Timestamps.Android.Fullscreen.LoadCompleted",
                 SystemClock.elapsedRealtime() - mActivityStartTime);

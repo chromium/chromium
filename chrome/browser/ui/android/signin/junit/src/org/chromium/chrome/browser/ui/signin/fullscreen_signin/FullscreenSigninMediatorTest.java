@@ -59,7 +59,6 @@ import org.chromium.chrome.browser.ui.signin.ForcedSigninStatusProvider;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator.SigninFlow;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninCoordinator.Delegate;
-import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninMediator.LoadPoint;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.prefs.PrefService;
@@ -174,7 +173,8 @@ public class FullscreenSigninMediatorTest {
         initializeNative();
         assertLoadingSpinnerVisibility(false);
         assertSelectedAccountIsDisplayed(TestAccounts.ACCOUNT1);
-        verify(mDelegateMock).recordLoadCompletedHistograms(LoadPoint.NATIVE_INITIALIZATION);
+        verify(mDelegateMock)
+                .recordLoadCompletedHistograms(FullscreenSigninLoadPoint.NATIVE_INITIALIZATION);
     }
 
     @Test
@@ -206,7 +206,8 @@ public class FullscreenSigninMediatorTest {
 
         assertLoadingSpinnerVisibility(false);
         assertSelectedAccountIsDisplayed(TestAccounts.ACCOUNT1);
-        verify(mDelegateMock).recordLoadCompletedHistograms(LoadPoint.ACCOUNT_FETCHING);
+        verify(mDelegateMock)
+                .recordLoadCompletedHistograms(FullscreenSigninLoadPoint.ACCOUNT_FETCHING);
     }
 
     @Test
@@ -225,7 +226,7 @@ public class FullscreenSigninMediatorTest {
 
         assertLoadingSpinnerVisibility(false);
         assertSelectedAccountIsDisplayed(TestAccounts.ACCOUNT1);
-        verify(mDelegateMock).recordLoadCompletedHistograms(LoadPoint.POLICY_LOAD);
+        verify(mDelegateMock).recordLoadCompletedHistograms(FullscreenSigninLoadPoint.POLICY_LOAD);
     }
 
     @Test
@@ -244,7 +245,8 @@ public class FullscreenSigninMediatorTest {
 
         assertLoadingSpinnerVisibility(false);
         assertSelectedAccountIsDisplayed(TestAccounts.ACCOUNT1);
-        verify(mDelegateMock).recordLoadCompletedHistograms(LoadPoint.CHILD_STATUS_LOAD);
+        verify(mDelegateMock)
+                .recordLoadCompletedHistograms(FullscreenSigninLoadPoint.CHILD_STATUS_LOAD);
     }
 
     @Test
