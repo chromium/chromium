@@ -117,8 +117,11 @@ void GLSurfaceEGLSurfaceControl::PreserveChildSurfaceControls() {
 
 void GLSurfaceEGLSurfaceControl::Destroy() {
   TRACE_EVENT0("gpu", "GLSurfaceEGLSurfaceControl::Destroy");
-  // Detach all child layers to prevent leaking unless browser asked us not too.
-  if (!preserve_children_) {
+  // Detach all child layers to prevent leaking unless browser asked us not to.
+  // Always detach |root_surface_| when there are no child surfaces to preserve,
+  // so destroying |root_surface_| before any frame is presented does not leave
+  // an unpromoted layer with a parent in SurfaceFlinger.
+  if (!preserve_children_ || surface_list_.empty()) {
     gfx::SurfaceControl::Transaction transaction;
     for (auto& surface : surface_list_) {
       transaction.SetParent(*surface.surface, nullptr);
