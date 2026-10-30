@@ -41,58 +41,32 @@ import org.mockito.Mockito;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ObserverList;
-import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TriState;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
-import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
-import org.chromium.base.test.params.ParameterSet;
-import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
-import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.components.signin.SigninFeatures;
-import org.chromium.components.sync.SyncService;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-/**
- * TODO(crbug.com/493130564): Revert to regular runner after
- * MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS launch.
- */
+/** Tests for {@link MultiColumnSettings}. */
 @Batch(Batch.PER_CLASS)
-@RunWith(ParameterizedRunner.class)
-@UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
+@RunWith(ChromeJUnit4ClassRunner.class)
 public class MultiColumnSettingsTest {
-
-    @ClassParameter
-    private static final List<ParameterSet> sClassParams =
-            Arrays.asList(
-                    new ParameterSet().value(false).name("AccountManagerFacadeSource"),
-                    new ParameterSet().value(true).name("IdentityManagerSource"));
 
     @Rule
     public SettingsTestRule<MainSettings> mSettingsTestRule =
@@ -105,10 +79,10 @@ public class MultiColumnSettingsTest {
     @After
     public void tearDown() {
         if (mSettingsTestRule.getActivity() != null) {
-            mSettingsTestRule.getActivity().finish();
+            mSettingsTestRule.finishActivity();
         }
         if (mBlankUiActivityTestRule.getActivity() != null) {
-            mBlankUiActivityTestRule.getActivity().finish();
+            mBlankUiActivityTestRule.finishActivity();
         }
     }
 
@@ -157,28 +131,9 @@ public class MultiColumnSettingsTest {
         }
     }
 
-    private final boolean mIsIdentityManagerSourceOfAccounts;
-
-    public MultiColumnSettingsTest(boolean isIdentityManagerSourceOfAccounts) {
-        mIsIdentityManagerSourceOfAccounts = isIdentityManagerSourceOfAccounts;
-    }
-
     @Before
     public void setUp() {
-        FeatureOverrides.overrideFlag(
-                SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
-                mIsIdentityManagerSourceOfAccounts);
-
-        SigninManager mockSigninManager = Mockito.mock(SigninManager.class);
-        TemplateUrlService mockTemplateUrlService = Mockito.mock(TemplateUrlService.class);
-        SyncService mockSyncService = Mockito.mock(SyncService.class);
-
-        IdentityServicesProvider.setSigninManagerForTesting(mockSigninManager);
-        TemplateUrlServiceFactory.setInstanceForTesting(mockTemplateUrlService);
-        SyncServiceFactory.setInstanceForTesting(mockSyncService);
-
-        ResettersForTesting.register(
-                () -> Mockito.reset(mockSigninManager, mockTemplateUrlService, mockSyncService));
+        MainSettings.setSkipPreferencesForTesting(true);
     }
 
     // Creation of fragments (specifically, ObservableSupplierImpl) requires
@@ -360,12 +315,6 @@ public class MultiColumnSettingsTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE)
-    @EnableFeatures({
-        SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT,
-    })
-    @DisableFeatures({
-        ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2,
-    })
     public void testSinglePane() {
         SettingsActivityInterface activity = startSettings();
         MultiColumnSettings settings = (MultiColumnSettings) activity.getMultiColumnSettings();
@@ -381,9 +330,6 @@ public class MultiColumnSettingsTest {
     @Test
     @SmallTest
     @Restriction(DeviceFormFactor.ONLY_TABLET)
-    @DisableFeatures({
-        ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2,
-    })
     public void testTwoPane() {
         SettingsActivityInterface activity = startSettings();
 
@@ -549,8 +495,8 @@ public class MultiColumnSettingsTest {
     @Test
     @SmallTest
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
-    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     public void testProcessPendingFragmentIntent_MainSettings_ReturnsNull() {
+        FeatureOverrides.enable(ChromeFeatureList.SETTINGS_IN_TAB);
         Intent intent = new Intent();
         intent.putExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT, MainSettings.class.getName());
 
@@ -628,8 +574,8 @@ public class MultiColumnSettingsTest {
     @Test
     @SmallTest
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
-    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     public void testProcessPendingFragmentIntent_SubpageFragment_InstantiatesWithThemedContext() {
+        FeatureOverrides.enable(ChromeFeatureList.SETTINGS_IN_TAB);
         Intent intent = new Intent();
         intent.putExtra(SettingsIntentUtil.EXTRA_SHOW_FRAGMENT, TestFragment.class.getName());
 
@@ -664,8 +610,8 @@ public class MultiColumnSettingsTest {
     @Test
     @SmallTest
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
-    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     public void testOnCreateInitialDetailFragment_SettingsInTab_TwoColumnMode() {
+        FeatureOverrides.enable(ChromeFeatureList.SETTINGS_IN_TAB);
         mBlankUiActivityTestRule.launchActivity(null);
         BlankUiTestActivity activity = mBlankUiActivityTestRule.getActivity();
 
@@ -686,8 +632,8 @@ public class MultiColumnSettingsTest {
     @Test
     @SmallTest
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
-    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     public void testOnCreateInitialDetailFragment_SettingsInTab_SingleColumnMode() {
+        FeatureOverrides.enable(ChromeFeatureList.SETTINGS_IN_TAB);
         mBlankUiActivityTestRule.launchActivity(null);
         BlankUiTestActivity activity = mBlankUiActivityTestRule.getActivity();
 
@@ -708,8 +654,8 @@ public class MultiColumnSettingsTest {
     @Test
     @SmallTest
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
-    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     public void testUpdateHeaderPaneFocusability() {
+        FeatureOverrides.enable(ChromeFeatureList.SETTINGS_IN_TAB);
         mBlankUiActivityTestRule.launchActivity(null);
         BlankUiTestActivity activity = mBlankUiActivityTestRule.getActivity();
 
@@ -748,8 +694,8 @@ public class MultiColumnSettingsTest {
     @Test
     @SmallTest
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
-    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     public void testEmptyBackStack_InTwoColumnMode_EnsuresInitialDetailFragment() {
+        FeatureOverrides.enable(ChromeFeatureList.SETTINGS_IN_TAB);
         mBlankUiActivityTestRule.launchActivity(null);
         BlankUiTestActivity activity = mBlankUiActivityTestRule.getActivity();
 
@@ -781,8 +727,8 @@ public class MultiColumnSettingsTest {
     @Test
     @SmallTest
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
-    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
     public void testEmptyBackStack_InSingleColumnMode_ClosesSlidingPaneAndClearsTitles() {
+        FeatureOverrides.enable(ChromeFeatureList.SETTINGS_IN_TAB);
         mBlankUiActivityTestRule.launchActivity(null);
         BlankUiTestActivity activity = mBlankUiActivityTestRule.getActivity();
 
@@ -859,8 +805,11 @@ public class MultiColumnSettingsTest {
     @Test
     @SmallTest
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
-    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV})
     public void testOnCreateInitialDetailFragment_withInitialUrl() {
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.SETTINGS_IN_TAB)
+                .enable(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+                .apply();
         mBlankUiActivityTestRule.launchActivity(null);
         BlankUiTestActivity activity = mBlankUiActivityTestRule.getActivity();
 
@@ -896,8 +845,11 @@ public class MultiColumnSettingsTest {
     @Test
     @SmallTest
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
-    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV})
     public void testOnPreferenceStartFragment_delegatesToSettingsNavigation() {
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.SETTINGS_IN_TAB)
+                .enable(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+                .apply();
         mBlankUiActivityTestRule.launchActivity(null);
         BlankUiTestActivity activity = mBlankUiActivityTestRule.getActivity();
 
@@ -926,9 +878,11 @@ public class MultiColumnSettingsTest {
     @Test
     @SmallTest
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
-    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
-    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV})
     public void testOnPreferenceStartFragment_urlNavDisabled_fallsBackToParent() {
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.SETTINGS_IN_TAB)
+                .disable(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+                .apply();
         mBlankUiActivityTestRule.launchActivity(null);
         BlankUiTestActivity activity = mBlankUiActivityTestRule.getActivity();
 
@@ -953,8 +907,11 @@ public class MultiColumnSettingsTest {
     @Test
     @SmallTest
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
-    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV})
     public void testOnPreferenceStartFragment_nullFragment_fallsBackToParent() {
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.SETTINGS_IN_TAB)
+                .enable(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+                .apply();
         mBlankUiActivityTestRule.launchActivity(null);
         BlankUiTestActivity activity = mBlankUiActivityTestRule.getActivity();
 
@@ -980,8 +937,11 @@ public class MultiColumnSettingsTest {
     @Test
     @SmallTest
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP})
-    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV})
     public void testOnPreferenceStartFragment_invalidFragmentClass_fallsBackToParent() {
+        FeatureOverrides.newBuilder()
+                .enable(ChromeFeatureList.SETTINGS_IN_TAB)
+                .enable(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+                .apply();
         mBlankUiActivityTestRule.launchActivity(null);
         BlankUiTestActivity activity = mBlankUiActivityTestRule.getActivity();
 
