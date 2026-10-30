@@ -16,7 +16,6 @@
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
@@ -61,13 +60,7 @@ class SingleClientSavedTabGroupsSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientSavedTabGroupsSyncTest() : SyncTest(SINGLE_CLIENT) {
-    std::vector<base::test::FeatureRef> enabled_features;
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, {});
-  }
+  SingleClientSavedTabGroupsSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientSavedTabGroupsSyncTest() override = default;
   SingleClientSavedTabGroupsSyncTest(
       const SingleClientSavedTabGroupsSyncTest&) = delete;
@@ -143,13 +136,6 @@ class SingleClientSavedTabGroupsSyncTest
   TabGroupSyncService* GetService() {
     return tab_groups::TabGroupSyncServiceFactory::GetForProfile(GetProfile(0));
   }
-
-  base::test::ScopedFeatureList& scoped_feature_list() {
-    return scoped_feature_list_;
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,

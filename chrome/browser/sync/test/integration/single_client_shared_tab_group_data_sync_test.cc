@@ -172,14 +172,7 @@ class SingleClientSharedTabGroupDataSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientSharedTabGroupDataSyncTest() : SyncTest(SINGLE_CLIENT) {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        data_sharing::features::kDataSharingFeature};
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-    feature_overrides_.InitWithFeatures(enabled_features, {});
-  }
+  SingleClientSharedTabGroupDataSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientSharedTabGroupDataSyncTest() override = default;
 
   void SetUp() override {
@@ -307,7 +300,8 @@ class SingleClientSharedTabGroupDataSyncTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_overrides_;
+  base::test::ScopedFeatureList feature_overrides_{
+      data_sharing::features::kDataSharingFeature};
 };
 
 INSTANTIATE_TEST_SUITE_P(,

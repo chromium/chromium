@@ -26,7 +26,6 @@
 #include "components/skills/public/skills_prefs.h"
 #include "components/skills/public/skills_service.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/engine/loopback_server/persistent_tombstone_entity.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/model/data_type_store.h"
@@ -205,14 +204,7 @@ class SingleClientSkillsSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientSkillsSyncTest() : SyncTest(SINGLE_CLIENT) {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kSkillsEnabled};
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-    feature_overrides_.InitWithFeatures(enabled_features, {});
-  }
+  SingleClientSkillsSyncTest() : SyncTest(SINGLE_CLIENT) {}
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
     return GetParam();
@@ -293,7 +285,7 @@ class SingleClientSkillsSyncTest
   }
 
  private:
-  base::test::ScopedFeatureList feature_overrides_;
+  base::test::ScopedFeatureList feature_overrides_{features::kSkillsEnabled};
 };
 
 INSTANTIATE_TEST_SUITE_P(,

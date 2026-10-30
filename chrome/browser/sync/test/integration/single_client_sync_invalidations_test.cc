@@ -19,7 +19,6 @@
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
@@ -268,10 +267,8 @@ class SingleClientSyncInvalidationsTest
  public:
   SingleClientSyncInvalidationsTest() : SyncTest(SINGLE_CLIENT) {
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitWithFeatures(
-          {syncer::kReplaceSyncPromosWithSignInPromos,
-           switches::kSyncEnableBookmarksInTransportMode},
-          {});
+      scoped_feature_list_.InitAndEnableFeature(
+          switches::kSyncEnableBookmarksInTransportMode);
     } else {
       // Skip sync-to-signin migration for sync-the-feature tests. This is to
       // avoid the sync state changing between the PRE_ tests.

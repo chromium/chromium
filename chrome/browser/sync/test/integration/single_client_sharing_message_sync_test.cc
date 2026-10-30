@@ -7,7 +7,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/sharing/sharing_message_bridge_factory.h"
@@ -19,7 +18,6 @@
 #include "components/sharing_message/features.h"
 #include "components/sharing_message/sharing_message_bridge.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/sync_token_status.h"
 #include "content/public/test/browser_test.h"
 #include "google_apis/gaia/fake_oauth2_token_response.h"
@@ -163,12 +161,7 @@ class SingleClientSharingMessageSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientSharingMessageSyncTest() : SyncTest(SINGLE_CLIENT) {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-  }
+  SingleClientSharingMessageSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientSharingMessageSyncTest() override = default;
 
   [[nodiscard]] bool SetupSync() {
@@ -191,9 +184,6 @@ class SingleClientSharingMessageSyncTest
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
     return GetParam();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

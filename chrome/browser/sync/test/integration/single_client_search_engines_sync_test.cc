@@ -93,7 +93,6 @@ class SingleClientSearchEnginesSyncTest
     enabled_features.push_back(syncer::kSyncSearchEnginesAndroidLFF);
 #endif
     if (GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTransportOnly) {
-      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
       enabled_features.push_back(syncer::kSeparateLocalAndAccountSearchEngines);
       enabled_features.push_back(switches::kEnablePreferencesAccountStorage);
     }
@@ -324,7 +323,6 @@ class
         syncer::kSeparateLocalAndAccountSearchEngines,
         // This is needed to enable search engines in transport mode.
         switches::kEnablePreferencesAccountStorage,
-        syncer::kReplaceSyncPromosWithSignInPromos,
     };
 #if BUILDFLAG(IS_ANDROID)
     enabled_features.push_back(syncer::kSyncSearchEnginesAndroidLFF);

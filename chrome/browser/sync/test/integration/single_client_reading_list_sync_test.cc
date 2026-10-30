@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/location.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
@@ -14,7 +13,6 @@
 #include "components/reading_list/core/reading_list_entry.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -45,14 +43,7 @@ class SingleClientReadingListSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientReadingListSyncTest() : SyncTest(SINGLE_CLIENT) {
-    std::vector<base::test::FeatureRef> enabled_features;
-    if (GetParam() == SyncTest::SetupSyncMode::kSyncTransportOnly) {
-      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features,
-                                          /*disabled_features=*/{});
-  }
+  SingleClientReadingListSyncTest() : SyncTest(SINGLE_CLIENT) {}
 
   SingleClientReadingListSyncTest(const SingleClientReadingListSyncTest&) =
       delete;
@@ -77,9 +68,6 @@ class SingleClientReadingListSyncTest
   raw_ptr<ReadingListModel> model() {
     return ReadingListModelFactory::GetForBrowserContext(GetProfile(0));
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,

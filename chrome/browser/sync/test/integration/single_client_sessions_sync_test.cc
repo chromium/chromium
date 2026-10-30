@@ -35,7 +35,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -216,12 +215,7 @@ class SingleClientSessionsSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientSessionsSyncTest() : SyncTest(SINGLE_CLIENT) {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-  }
+  SingleClientSessionsSyncTest() : SyncTest(SINGLE_CLIENT) {}
 
   SingleClientSessionsSyncTest(const SingleClientSessionsSyncTest&) = delete;
   SingleClientSessionsSyncTest& operator=(const SingleClientSessionsSyncTest&) =
@@ -301,9 +295,6 @@ class SingleClientSessionsSyncTest
     host_resolver()->AddRule("*", "127.0.0.1");
     SyncTest::SetUpOnMainThread();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,

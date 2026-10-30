@@ -9,7 +9,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -35,7 +34,6 @@
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/test_send_tab_to_self_entity_builder.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
@@ -84,12 +82,7 @@ class SingleClientSendTabToSelfSyncTest
     : public SyncTest,
       public WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  SingleClientSendTabToSelfSyncTest() : SyncTest(SINGLE_CLIENT) {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kReplaceSyncPromosWithSignInPromos);
-    }
-  }
+  SingleClientSendTabToSelfSyncTest() : SyncTest(SINGLE_CLIENT) {}
 
   SingleClientSendTabToSelfSyncTest(const SingleClientSendTabToSelfSyncTest&) =
       delete;
@@ -101,9 +94,6 @@ class SingleClientSendTabToSelfSyncTest
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
     return GetParam();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,
