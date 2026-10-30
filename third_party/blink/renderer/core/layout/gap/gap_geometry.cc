@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/css_gap_decoration_property_utils.h"
 #include "third_party/blink/renderer/core/layout/gap/flex_gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/gap/gap_utils.h"
+#include "third_party/blink/renderer/core/layout/gap/multicol_gap_geometry.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
@@ -782,8 +783,8 @@ void GapGeometry::GenerateCrossIntersectionList(
       break;
     }
     case ContainerType::kMultiColumn:
-      GenerateCrossIntersectionListForMulticol(direction, gap_index,
-                                               intersections, cursor);
+      To<MulticolGapGeometry>(*this).GenerateCrossIntersectionListForMulticol(
+          direction, gap_index, intersections, cursor);
       break;
   }
 }
@@ -813,36 +814,6 @@ void GapGeometry::GenerateCrossIntersectionListForGrid(
       direction == kForColumns ? content_block_end_ : content_inline_end_;
 
   intersections.emplace_back(content_end, cursor.GetNextGapSegmentState());
-}
-
-void GapGeometry::GenerateCrossIntersectionListForMulticol(
-    GridTrackSizingDirection direction,
-    wtf_size_t gap_index,
-    Vector<GapIntersection>& intersections,
-    GapSegmentStateCursor& cursor) const {
-  // For multicol containers, the block offset of the intersections for a
-  // `CrossGap` are the following:
-  // - The start block offset of the cross gap.
-  // - The offset of any main gaps that intersect this cross gap.
-  CHECK_EQ(direction, kForColumns);
-
-  // At most, any cross gap can intersect with all main gaps, plus the start and
-  // end of the container.
-  intersections.reserve(main_gaps_.size() + 2);
-
-  CHECK_LT(gap_index, GetCrossGaps().size());
-  const CrossGap& cross_gap = GetCrossGaps()[gap_index];
-
-  intersections.emplace_back(cross_gap.GetGapOffset().block_offset,
-                             cursor.GetNextGapSegmentState());
-
-  for (const auto& main_gap : GetMainGaps()) {
-    intersections.emplace_back(main_gap.GetGapOffset(),
-                               cursor.GetNextGapSegmentState());
-  }
-
-  intersections.emplace_back(content_block_end_,
-                             cursor.GetNextGapSegmentState());
 }
 
 LayoutUnit GapGeometry::GridAxisOffsetForLaneBoundary(

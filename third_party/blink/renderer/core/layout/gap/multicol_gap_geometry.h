@@ -14,6 +14,21 @@ namespace blink {
 class CORE_EXPORT MulticolGapGeometry final : public GapGeometry {
  public:
   MulticolGapGeometry() : GapGeometry(ContainerType::kMultiColumn) {}
+
+ private:
+  // TODO(javiercon): Remove this friend declaration when the methods that
+  // `GapGeometry` calls can be made virtual.
+  friend class GapGeometry;
+
+  // Fills `intersections` for a multicol cross gap at `gap_index`, which
+  // includes:
+  // 1. The start block offset of the cross gap.
+  // 2. The offset of any main gaps that intersect this cross gap.
+  void GenerateCrossIntersectionListForMulticol(
+      GridTrackSizingDirection direction,
+      wtf_size_t gap_index,
+      Vector<GapIntersection>& intersections,
+      GapSegmentStateCursor& cursor) const;
 };
 
 template <>

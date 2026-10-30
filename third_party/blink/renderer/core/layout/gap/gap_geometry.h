@@ -703,16 +703,6 @@ class CORE_EXPORT GapGeometry : public GarbageCollected<GapGeometry> {
       wtf_size_t lane,
       Vector<GapIntersection>& intersections) const;
 
-  // Fills `intersections` for a multicol cross gap at `gap_index`, which
-  // includes:
-  // 1. The start block offset of the cross gap.
-  // 2. The offset of any main gaps that intersect this cross gap.
-  void GenerateCrossIntersectionListForMulticol(
-      GridTrackSizingDirection direction,
-      wtf_size_t gap_index,
-      Vector<GapIntersection>& intersections,
-      GapSegmentStateCursor& cursor) const;
-
   // For `overlap-join`, computes the inset so the main-direction decoration
   // extends to meet the far edge of the cross-direction decoration at each
   // junction intersection. When `has_joining_decoration` is false (e.g. at cap
