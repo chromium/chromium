@@ -1145,7 +1145,10 @@ class _CheckoutPaths:
     chain_directory: str
 
 
-def _ResolveCheckoutPaths(protobuf_directory: str) -> _CheckoutPaths:
+def _ResolveCheckoutPaths(
+        protobuf_directory: str | _CheckoutPaths) -> _CheckoutPaths:
+    if isinstance(protobuf_directory, _CheckoutPaths):
+        return protobuf_directory
     protobuf_directory = os.path.abspath(protobuf_directory)
     process = _RunGit([
         'git', '-C', protobuf_directory, 'rev-parse', '--show-toplevel',
@@ -1228,7 +1231,8 @@ def _SaveRollState(checkout: _CheckoutPaths, state: RollState) -> None:
 
 
 def LoadRollState(
-        protobuf_directory: str = _PROTOBUF_DIRECTORY) -> RollState | None:
+    protobuf_directory: str | _CheckoutPaths = _PROTOBUF_DIRECTORY,
+) -> RollState | None:
     """Loads GITDIR/protobuf-roll/state.json and chain/*.patch, or None."""
     checkout = _ResolveCheckoutPaths(protobuf_directory)
     if not os.path.isfile(checkout.state_file_path):
@@ -1281,7 +1285,7 @@ def PrepareRoll(to_revision: str,
     chain/*.patch and state.json under GITDIR/protobuf-roll/.
     """
     checkout = _ResolveCheckoutPaths(protobuf_directory)
-    existing_state = LoadRollState(checkout.protobuf_directory)
+    existing_state = LoadRollState(checkout)
     if existing_state is not None and (
         (existing_state.phase == 'conflict'
          and _FindLocalRollBranch(checkout, existing_state) is not None) or
@@ -1505,7 +1509,7 @@ def _ReplayRemainingPatches(checkout: _CheckoutPaths,
 
 def _RequireActiveConflictState(checkout: _CheckoutPaths,
                                 subcommand: str) -> RollState:
-    state = LoadRollState(checkout.protobuf_directory)
+    state = LoadRollState(checkout)
     roll_branch = (_FindLocalRollBranch(checkout, state) if state is not None
                    and state.phase == 'conflict' else None)
     if (state is None or roll_branch is None
@@ -1570,7 +1574,7 @@ def _RejectStagedChangesOutsideProtobuf(checkout: _CheckoutPaths) -> None:
     prefix_with_slash = f'{checkout.protobuf_prefix}/'
     outside_staged = sorted(path for path in _SplitNulSeparatedPaths(
         _RunScratchGit(checkout.repository_root, 'diff', '--cached',
-                       '--name-only', '-z').stdout)
+                       '--no-renames', '--name-only', '-z').stdout)
                             if not path.startswith(prefix_with_slash))
     if outside_staged:
         raise RollProtobufError(
@@ -1722,7 +1726,7 @@ def DropCurrentPatch(
 def ResumeRoll(protobuf_directory: str = _PROTOBUF_DIRECTORY) -> RollState:
     """Reconciles state.json with manual Apply/Drop commits and continues."""
     checkout = _ResolveCheckoutPaths(protobuf_directory)
-    state = LoadRollState(checkout.protobuf_directory)
+    state = LoadRollState(checkout)
     roll_branch = (_FindLocalRollBranch(checkout, state) if state is not None
                    and state.phase != 'prepared' else None)
     if state is None or roll_branch is None:
@@ -1961,7 +1965,7 @@ def GenerateBootstrapFiles(
             'Provide -C <out_dir> so gen_extra_chromium_files.py can build '
             'protoc.')
     checkout = _ResolveCheckoutPaths(protobuf_directory)
-    state = LoadRollState(checkout.protobuf_directory)
+    state = LoadRollState(checkout)
     current_head = _ResolveCommitHash(checkout.repository_root, 'HEAD')
     if (state is not None and state.phase in ('prepared', 'conflict')
             and (current_head == state.expected_head
@@ -2127,7 +2131,7 @@ def _ResolveRollBaseCommit(checkout: _CheckoutPaths) -> str | None:
     root = checkout.repository_root
     if _ResolveCommitHash(root, 'HEAD') is None:
         return None
-    state = LoadRollState(checkout.protobuf_directory)
+    state = LoadRollState(checkout)
     if (state is not None and state.phase in ('conflict', 'replayed')
             and _IsRollBranchHead(checkout, state)):
         return state.start_commit
@@ -2519,7 +2523,7 @@ class RollStatus:
 
 def GetRollStatus(protobuf_directory: str = _PROTOBUF_DIRECTORY) -> RollStatus:
     checkout = _ResolveCheckoutPaths(protobuf_directory)
-    roll_state = LoadRollState(checkout.protobuf_directory)
+    roll_state = LoadRollState(checkout)
     roll_branch = (_FindLocalRollBranch(checkout, roll_state)
                    if roll_state is not None and roll_state.phase == 'conflict'
                    else None)
@@ -2566,7 +2570,7 @@ def GetRollStatus(protobuf_directory: str = _PROTOBUF_DIRECTORY) -> RollStatus:
 def AbortRoll(protobuf_directory: str = _PROTOBUF_DIRECTORY) -> RollState:
     """Resets an active roll to start_commit or clears stale roll state."""
     checkout = _ResolveCheckoutPaths(protobuf_directory)
-    roll_state = LoadRollState(checkout.protobuf_directory)
+    roll_state = LoadRollState(checkout)
     if roll_state is None:
         raise RollProtobufError('No protobuf roll is in progress (missing '
                                 f'{checkout.state_file_path}).')
@@ -2788,7 +2792,7 @@ def main(command_line_arguments: Sequence[str] | None = None) -> int:
             exit_code = EXIT_CODE_SUCCESS
         elif arguments.subcommand == 'abort':
             checkout = _ResolveCheckoutPaths(arguments.protobuf_directory)
-            prior_state = LoadRollState(checkout.protobuf_directory)
+            prior_state = LoadRollState(checkout)
             did_reset = (prior_state is not None
                          and _CanResetRollHead(checkout, prior_state))
             result = AbortRoll(arguments.protobuf_directory)

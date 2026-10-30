@@ -1805,6 +1805,20 @@ def _CreatePlanFixture(temporary_directory: str) -> _PlanFixture:
 class RollProtobufPlanTest(unittest.TestCase):
     """Proves `plan` classifies patches like a real roll would, read-only."""
 
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.enterClassContext(
+            mock.patch.dict(
+                os.environ,
+                {
+                    'GIT_CONFIG_GLOBAL': os.devnull,
+                    'GIT_CONFIG_NOSYSTEM': '1',
+                },
+            ))
+        template_dir = cls.enterClassContext(tempfile.TemporaryDirectory())
+        cls._template_fixture = _CreatePlanFixture(template_dir)
+
     def setUp(self):
         super().setUp()
         self.enterContext(
@@ -1817,7 +1831,17 @@ class RollProtobufPlanTest(unittest.TestCase):
             ))
         self.temporary_directory = self.enterContext(
             tempfile.TemporaryDirectory())
-        self.fixture = _CreatePlanFixture(self.temporary_directory)
+        upstream_dir = os.path.join(self.temporary_directory, 'upstream')
+        protobuf_dir = os.path.join(self.temporary_directory, 'chromium')
+        shutil.copytree(self._template_fixture.upstream_directory,
+                        upstream_dir)
+        shutil.copytree(self._template_fixture.protobuf_directory,
+                        protobuf_dir)
+        self.fixture = dataclasses.replace(
+            self._template_fixture,
+            upstream_directory=upstream_dir,
+            protobuf_directory=protobuf_dir,
+        )
 
     def _BuildPatchChain(self) -> roll_protobuf.PatchChain:
         return roll_protobuf.BuildPatchChain(
@@ -2337,9 +2361,10 @@ def _WriteFakeCompileSizeProbeScript(protobuf_directory: str,
 class RollProtobufStartTest(unittest.TestCase):
     """Proves checkout-modifying roll commands (prepare, start, status, abort)."""
 
-    def setUp(self):
-        super().setUp()
-        self.enterContext(
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.enterClassContext(
             mock.patch.dict(
                 os.environ,
                 {
@@ -2347,9 +2372,9 @@ class RollProtobufStartTest(unittest.TestCase):
                     'GIT_CONFIG_NOSYSTEM': '1',
                 },
             ))
-        self.temporary_directory = self.enterContext(
+        cls._template_dir = cls.enterClassContext(
             tempfile.TemporaryDirectory())
-        seed = _CreatePlanFixture(os.path.join(self.temporary_directory, 's'))
+        seed = _CreatePlanFixture(os.path.join(cls._template_dir, 's'))
         _WriteFilesToDirectory(
             seed.upstream_directory,
             {
@@ -2363,15 +2388,15 @@ class RollProtobufStartTest(unittest.TestCase):
         new_commit = _RunGitCommand(seed.upstream_directory,
                                     ['rev-parse', 'HEAD'])
         _RunGitCommand(seed.upstream_directory, ['tag', 'v37.0', new_commit])
-        self.repository_root = os.path.join(self.temporary_directory, 'repo')
-        protobuf_directory = os.path.join(self.repository_root, 'third_party',
-                                          'protobuf')
+        cls._template_repo = os.path.join(cls._template_dir, 'repo')
+        protobuf_dir = os.path.join(cls._template_repo, 'third_party',
+                                    'protobuf')
         shutil.copytree(seed.protobuf_directory,
-                        protobuf_directory,
+                        protobuf_dir,
                         ignore=shutil.ignore_patterns('.git'))
-        _RunGitCommand(self.repository_root, ['init', '--quiet'])
+        _RunGitCommand(cls._template_repo, ['init', '--quiet'])
         _WriteFilesToDirectory(
-            self.repository_root,
+            cls._template_repo,
             {
                 '.gitignore':
                 '*.targets\n*.orig\n*.rej\n',
@@ -2386,14 +2411,94 @@ class RollProtobufStartTest(unittest.TestCase):
                  f'Revision: {seed.old_commit}\n'),
             },
         )
-        _RunGitCommand(self.repository_root, ['add', '-f', '.'])
-        _RunGitCommand(self.repository_root,
+        _RunGitCommand(cls._template_repo, ['add', '-f', '.'])
+        _RunGitCommand(cls._template_repo,
                        ['commit', '--quiet', '-m', 'Initial checkout'])
-        self.fixture = dataclasses.replace(
-            seed,
-            protobuf_directory=protobuf_directory,
-            new_commit=new_commit,
+        cls._template_upstream = seed.upstream_directory
+        cls._old_commit = seed.old_commit
+        cls._new_commit = new_commit
+        cls._conflict_roll_repo: str | None = None
+        cls._clean_roll_repos: dict[tuple[bool, bool], str] = {}
+
+    def setUp(self):
+        super().setUp()
+        self.enterContext(
+            mock.patch.dict(
+                os.environ,
+                {
+                    'GIT_CONFIG_GLOBAL': os.devnull,
+                    'GIT_CONFIG_NOSYSTEM': '1',
+                },
+            ))
+        self.temporary_directory = self.enterContext(
+            tempfile.TemporaryDirectory())
+        self._repo_swap_index = 0
+        upstream_dir = os.path.join(self.temporary_directory, 'upstream')
+        self.repository_root = os.path.join(self.temporary_directory, 'repo')
+        shutil.copytree(self._template_upstream, upstream_dir)
+        shutil.copytree(self._template_repo, self.repository_root)
+        self.fixture = _PlanFixture(
+            upstream_directory=upstream_dir,
+            protobuf_directory=os.path.join(self.repository_root,
+                                            'third_party', 'protobuf'),
+            old_commit=self._old_commit,
+            new_commit=self._new_commit,
         )
+
+    def _SwapRepositoryFromTemplate(self, template_repo: str) -> None:
+        self._repo_swap_index += 1
+        os.rename(
+            self.repository_root,
+            os.path.join(self.temporary_directory,
+                         f'discarded_repo_{self._repo_swap_index}'))
+        shutil.copytree(template_repo, self.repository_root)
+
+    def _StartDefaultConflictRoll(self) -> roll_protobuf.RollState:
+        cls = type(self)
+        if cls._conflict_roll_repo is None:
+            repo = os.path.join(cls._template_dir, 'conflict_roll_repo')
+            shutil.copytree(cls._template_repo, repo)
+            roll_protobuf.StartRoll(
+                to_revision='v37.0',
+                protobuf_directory=os.path.join(repo, 'third_party',
+                                                'protobuf'),
+                upstream_repository_path=cls._template_upstream,
+            )
+            cls._conflict_roll_repo = repo
+        self._SwapRepositoryFromTemplate(cls._conflict_roll_repo)
+        return roll_protobuf.LoadRollState(self.fixture.protobuf_directory)
+
+    def _StartCleanRoll(
+            self,
+            *,
+            with_fake_generator: bool = False,
+            with_fake_probe: bool = False) -> roll_protobuf.RollState:
+        cls = type(self)
+        key = (with_fake_generator, with_fake_probe)
+        if key not in cls._clean_roll_repos:
+            suffix = f'{int(with_fake_generator)}_{int(with_fake_probe)}'
+            repo = os.path.join(cls._template_dir, f'clean_roll_{suffix}')
+            shutil.copytree(cls._template_repo, repo)
+            proto_dir = os.path.join(repo, 'third_party', 'protobuf')
+            for patch_name in (_PLAN_CONFLICT_PATCH, _PLAN_MISSING_FILE_PATCH):
+                os.remove(os.path.join(proto_dir, 'patches', patch_name))
+            if with_fake_generator:
+                _WriteFakeBootstrapGeneratorScript(proto_dir)
+            if with_fake_probe:
+                _WriteFakeCompileSizeProbeScript(proto_dir)
+            _RunGitCommand(repo, ['add', '-A', '--', 'third_party/protobuf'])
+            _RunGitCommand(repo,
+                           ['commit', '--quiet', '-m', 'Prepare clean roll'])
+            _RunGitCommand(repo,
+                           ['update-ref', 'refs/remotes/origin/main', 'HEAD'])
+            roll_protobuf.StartRoll(
+                to_revision='v37.0',
+                protobuf_directory=proto_dir,
+                upstream_repository_path=cls._template_upstream,
+            )
+            cls._clean_roll_repos[key] = repo
+        self._SwapRepositoryFromTemplate(cls._clean_roll_repos[key])
+        return roll_protobuf.LoadRollState(self.fixture.protobuf_directory)
 
     def testPrepareRollWritesChainPatchesPreimageBlobsAndStateJson(self):
         start_head = _RunGitCommand(self.repository_root,
@@ -2659,11 +2764,7 @@ class RollProtobufStartTest(unittest.TestCase):
         )
         prepared_status = roll_protobuf.GetRollStatus(
             self.fixture.protobuf_directory)
-        conflict_state = roll_protobuf.StartRoll(
-            to_revision='v37.0',
-            protobuf_directory=self.fixture.protobuf_directory,
-            upstream_repository_path=self.fixture.upstream_directory,
-        )
+        conflict_state = self._StartDefaultConflictRoll()
         conflict_status = roll_protobuf.GetRollStatus(
             self.fixture.protobuf_directory)
         roll_protobuf._SaveRollState(
@@ -2830,11 +2931,7 @@ class RollProtobufStartTest(unittest.TestCase):
         self.assertIn('State: replayed (3/3 patch(es)).', status_stdout)
 
     def testContinueRollCommitsResolvedConflictRefreshesPatchAndAdvances(self):
-        roll_protobuf.StartRoll(
-            to_revision='v37.0',
-            protobuf_directory=self.fixture.protobuf_directory,
-            upstream_repository_path=self.fixture.upstream_directory,
-        )
+        self._StartDefaultConflictRoll()
         _WriteFilesToDirectory(
             self.fixture.protobuf_directory,
             {
@@ -2991,11 +3088,7 @@ class RollProtobufStartTest(unittest.TestCase):
                 roll_protobuf.ContinueRoll(self.fixture.protobuf_directory)
 
         AssertContinueRaises(r'No conflicting protobuf patch is waiting')
-        roll_protobuf.StartRoll(
-            to_revision='v37.0',
-            protobuf_directory=self.fixture.protobuf_directory,
-            upstream_repository_path=self.fixture.upstream_directory,
-        )
+        self._StartDefaultConflictRoll()
         AssertContinueRaises(r'Unresolved conflict markers remain')
         _WriteFilesToDirectory(
             self.fixture.protobuf_directory,
@@ -3020,12 +3113,41 @@ class RollProtobufStartTest(unittest.TestCase):
             os.path.join(self.fixture.protobuf_directory, 'src',
                          'leftover.rej'))
 
-        _WriteFilesToDirectory(self.repository_root,
-                               {'OTHER_CHROMIUM_FILE': 'staged outside\n'})
-        _RunGitCommand(self.repository_root, ['add', 'OTHER_CHROMIUM_FILE'])
+        _WriteFilesToDirectory(
+            self.repository_root,
+            {
+                'third_party/protobuf/src/moved.cc':
+                'outside third_party/protobuf\n',
+            },
+        )
+        _RunGitCommand(
+            self.repository_root,
+            [
+                'add',
+                '-A',
+                '--',
+                'OTHER_CHROMIUM_FILE',
+                'third_party/protobuf/src/moved.cc',
+            ],
+        )
+        _RunGitCommand(self.repository_root,
+                       ['rm', '-f', '--', 'OTHER_CHROMIUM_FILE'])
         AssertContinueRaises(r'Staged changes outside //third_party/protobuf')
+        _RunGitCommand(
+            self.repository_root,
+            [
+                'reset',
+                '-q',
+                'HEAD',
+                '--',
+                'OTHER_CHROMIUM_FILE',
+                'third_party/protobuf/src/moved.cc',
+            ],
+        )
         _RunGitCommand(self.repository_root,
                        ['checkout', 'HEAD', '--', 'OTHER_CHROMIUM_FILE'])
+        os.remove(
+            os.path.join(self.fixture.protobuf_directory, 'src', 'moved.cc'))
 
         _WriteFilesToDirectory(self.fixture.protobuf_directory,
                                {'BUILD.gn': '# accidental edit\n'})
@@ -3138,11 +3260,7 @@ class RollProtobufStartTest(unittest.TestCase):
                       roll_protobuf.FormatRollStateReport(final_state))
 
     def testResumeRollReconcilesManualApplyAndDropCommitsAndFinishesRoll(self):
-        roll_protobuf.StartRoll(
-            to_revision='v37.0',
-            protobuf_directory=self.fixture.protobuf_directory,
-            upstream_repository_path=self.fixture.upstream_directory,
-        )
+        self._StartDefaultConflictRoll()
         _WriteFilesToDirectory(
             self.fixture.protobuf_directory,
             {
@@ -3204,11 +3322,7 @@ class RollProtobufStartTest(unittest.TestCase):
         )
 
     def testResumeRollRejectsDirtyWorkingTreeAndUnexpectedCommitSubjects(self):
-        roll_protobuf.StartRoll(
-            to_revision='v37.0',
-            protobuf_directory=self.fixture.protobuf_directory,
-            upstream_repository_path=self.fixture.upstream_directory,
-        )
+        self._StartDefaultConflictRoll()
         with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
                                     r'Working tree has uncommitted changes'):
             roll_protobuf.ResumeRoll(self.fixture.protobuf_directory)
@@ -3257,9 +3371,7 @@ class RollProtobufStartTest(unittest.TestCase):
             (drop_payload['phase'], drop_payload['patch_results'][3]['error']))
 
     def testMainResumeFinishesRollAfterManualCommit(self):
-        _RunMain('start', '--to', 'v37.0', '--protobuf-dir',
-                 self.fixture.protobuf_directory, '--upstream-repo',
-                 self.fixture.upstream_directory)
+        self._StartDefaultConflictRoll()
         _RunGitCommand(self.repository_root,
                        ['reset', '--quiet', '--hard', 'HEAD'])
         resume_outcomes = []
@@ -3439,11 +3551,7 @@ class RollProtobufStartTest(unittest.TestCase):
                                     r"while roll phase is 'prepared'"):
             roll_protobuf.GenerateBootstrapFiles(
                 out_directory, self.fixture.protobuf_directory)
-        roll_protobuf.StartRoll(
-            to_revision='v37.0',
-            protobuf_directory=self.fixture.protobuf_directory,
-            upstream_repository_path=self.fixture.upstream_directory,
-        )
+        self._StartDefaultConflictRoll()
         with self.assertRaisesRegex(roll_protobuf.RollProtobufError,
                                     r"while roll phase is 'conflict'"):
             roll_protobuf.GenerateBootstrapFiles(
@@ -4012,22 +4120,7 @@ class RollProtobufStartTest(unittest.TestCase):
             dataclasses.replace(base_check,
                                 stale_bootstrap_triggers=('err', )).IsClean())
 
-        for patch_name in (_PLAN_CONFLICT_PATCH, _PLAN_MISSING_FILE_PATCH):
-            os.remove(
-                os.path.join(self.fixture.protobuf_directory, 'patches',
-                             patch_name))
-        _WriteFakeBootstrapGeneratorScript(self.fixture.protobuf_directory)
-        _RunGitCommand(self.repository_root,
-                       ['add', '-A', '--', 'third_party/protobuf'])
-        _RunGitCommand(self.repository_root,
-                       ['commit', '--quiet', '-m', 'Add fake generator'])
-        _RunGitCommand(self.repository_root,
-                       ['update-ref', 'refs/remotes/origin/main', 'HEAD'])
-        roll_protobuf.StartRoll(
-            to_revision='v37.0',
-            protobuf_directory=self.fixture.protobuf_directory,
-            upstream_repository_path=self.fixture.upstream_directory,
-        )
+        self._StartCleanRoll(with_fake_generator=True)
         _WriteFilesToDirectory(self.fixture.protobuf_directory,
                                {'src/leftover.orig': 'backup\n'})
 
@@ -4079,23 +4172,7 @@ class RollProtobufStartTest(unittest.TestCase):
             ).IsClean())
 
     def testCheckRollReportsFileListsAndCompileSizeProbeWithoutFailing(self):
-        for patch_name in (_PLAN_CONFLICT_PATCH, _PLAN_MISSING_FILE_PATCH):
-            os.remove(
-                os.path.join(self.fixture.protobuf_directory, 'patches',
-                             patch_name))
-        _WriteFakeBootstrapGeneratorScript(self.fixture.protobuf_directory)
-        _WriteFakeCompileSizeProbeScript(self.fixture.protobuf_directory)
-        _RunGitCommand(self.repository_root,
-                       ['add', '-A', '--', 'third_party/protobuf'])
-        _RunGitCommand(self.repository_root,
-                       ['commit', '--quiet', '-m', 'Add fake scripts'])
-        _RunGitCommand(self.repository_root,
-                       ['update-ref', 'refs/remotes/origin/main', 'HEAD'])
-        roll_protobuf.StartRoll(
-            to_revision='v37.0',
-            protobuf_directory=self.fixture.protobuf_directory,
-            upstream_repository_path=self.fixture.upstream_directory,
-        )
+        self._StartCleanRoll(with_fake_generator=True, with_fake_probe=True)
         out_dir = os.path.join(self.temporary_directory, 'out_release')
         _WriteFilesToDirectory(out_dir,
                                {'.compile_size_probe/before.json': '{}'})
@@ -4152,21 +4229,7 @@ class RollProtobufStartTest(unittest.TestCase):
                       roll_protobuf.FormatRollCheckReport(err_result))
 
     def testMainGenerateAndCheckCompletePostRollVerification(self):
-        for patch_name in (_PLAN_CONFLICT_PATCH, _PLAN_MISSING_FILE_PATCH):
-            os.remove(
-                os.path.join(self.fixture.protobuf_directory, 'patches',
-                             patch_name))
-        _WriteFakeBootstrapGeneratorScript(self.fixture.protobuf_directory)
-        _WriteFakeCompileSizeProbeScript(self.fixture.protobuf_directory)
-        _RunGitCommand(self.repository_root,
-                       ['add', '-A', '--', 'third_party/protobuf'])
-        _RunGitCommand(self.repository_root,
-                       ['commit', '--quiet', '-m', 'Add fake scripts'])
-        _RunGitCommand(self.repository_root,
-                       ['update-ref', 'refs/remotes/origin/main', 'HEAD'])
-        _RunMain('start', '--to', 'v37.0', '--protobuf-dir',
-                 self.fixture.protobuf_directory, '--upstream-repo',
-                 self.fixture.upstream_directory)
+        self._StartCleanRoll(with_fake_generator=True, with_fake_probe=True)
 
         _, status_before, _ = _RunMain('status', '--protobuf-dir',
                                        self.fixture.protobuf_directory,
