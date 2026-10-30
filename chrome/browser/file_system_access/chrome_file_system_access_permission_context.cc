@@ -463,6 +463,10 @@ GenerateBlockPaths(bool should_normalize_file_path) {
       // it on all platforms, see crbug.com/569012015.
       BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL(".config"),
                                 BlockType::kBlockAllChildren),
+      // ~/.cache holds caches and virtual environments for cross-platform
+      // tools, so block it on all platforms, see crbug.com/577400245.
+      BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL(".cache"),
+                                BlockType::kBlockAllChildren),
       // Shell startup files in the home directory, including the ones read by
       // Git Bash on Windows, see crbug.com/558362029.
       BlockPath::CreateRelative(base::DIR_HOME,
@@ -602,8 +606,8 @@ GenerateBlockPaths(bool should_normalize_file_path) {
       // Block the per-user NSS database, see crbug.com/557367241.
       BlockPath::CreateRelative(base::DIR_HOME, FILE_PATH_LITERAL(".pki"),
                                 BlockType::kBlockAllChildren),
-      // And block all of ~/.cache, matching the similar restrictions on mac
-      // and windows.
+      // Also block base::DIR_CACHE to cover $XDG_CACHE_HOME overrides on Linux
+      // and ChromeOS, and the app cache directory on Android.
       BlockPath::CreateRelative(base::DIR_CACHE, BlockType::kBlockAllChildren),
 #endif
 #if BUILDFLAG(IS_ANDROID)
