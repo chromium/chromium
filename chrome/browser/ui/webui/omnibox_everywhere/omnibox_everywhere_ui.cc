@@ -105,25 +105,6 @@ bool IsScreenshotCommand(int command_id) {
 // and the previous dropdown implementation (320px).
 constexpr int kScreenshotMenuWidth = 320;
 
-bool IsFuseboxEligible(Profile* profile) {
-  if (!profile) {
-    return false;
-  }
-  auto* aim_eligibility_service =
-      AimEligibilityServiceFactory::GetForProfile(profile);
-  return aim_eligibility_service &&
-         aim_eligibility_service->IsFuseboxEligible();
-}
-
-bool IsFuseboxEnabled(Profile* profile) {
-  if (!IsFuseboxEligible(profile)) {
-    return false;
-  }
-  return !profile || !profile->GetPrefs() ||
-         profile->GetPrefs()->GetBoolean(
-             omnibox_everywhere::prefs::kOmniboxEverywhereShowAiMode);
-}
-
 class OmniboxEverywhereMostVisitedPrefObserver
     : public MostVisitedPrefObserver {
  public:
@@ -484,6 +465,24 @@ OmniboxEverywhereUI::OmniboxEverywhereUI(content::WebUI* web_ui)
 }
 
 OmniboxEverywhereUI::~OmniboxEverywhereUI() = default;
+
+// static
+bool OmniboxEverywhereUI::IsFuseboxEligible(Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+  auto* aim_eligibility_service =
+      AimEligibilityServiceFactory::GetForProfile(profile);
+  return aim_eligibility_service &&
+         aim_eligibility_service->IsFuseboxEligible();
+}
+
+// static
+bool OmniboxEverywhereUI::IsFuseboxEnabled(Profile* profile) {
+  return IsFuseboxEligible(profile) && profile->GetPrefs() &&
+         profile->GetPrefs()->GetBoolean(
+             omnibox_everywhere::prefs::kOmniboxEverywhereShowAiMode);
+}
 
 void OmniboxEverywhereUI::BindInterface(
     mojo::PendingReceiver<plural_string::mojom::PluralStringProvider>
@@ -949,6 +948,14 @@ void OmniboxEverywhereUI::ExecuteScreenshotCommand(
     return;
   }
 
+  // Re-check AI Mode availability: this may run after the asynchronous
+  // screenshot disclosure dialog, during which eligibility can change. Reset
+  // the page as for a cancelled capture.
+  if (!IsFuseboxEnabled(profile_)) {
+    OnScreenshotCaptureDone(std::nullopt);
+    return;
+  }
+
   screenshot_origin_was_searchbox_ = !is_composebox_mode_;
 
   // Open Composebox immediately from the Lens entry point with a pending
@@ -1039,7 +1046,11 @@ bool OmniboxEverywhereUI::IsCommandIdEnabled(int command_id) const {
     case kScreenshotEntireScreen:
     case kScreenshotWindow:
     case kScreenshotRegion:
-      return IsScreenshotCommandEnabled(GetContextualSearchboxHandler());
+      // Screenshots are shared with AI Mode, so refuse them when AI Mode is
+      // unavailable. `ExecuteCommand()` checks this before showing the
+      // screenshot disclosure dialog.
+      return IsFuseboxEnabled(profile_) &&
+             IsScreenshotCommandEnabled(GetContextualSearchboxHandler());
   }
   return true;
 }
@@ -1050,6 +1061,10 @@ bool OmniboxEverywhereUI::IsCommandIdVisible(int command_id) const {
 
 void OmniboxEverywhereUI::OpenComposebox(
     omnibox_everywhere::mojom::ComposeboxInitialStatePtr initial_state) {
+  // AI Mode eligibility can change while a native menu or file chooser is open.
+  if (!IsFuseboxEnabled(profile_)) {
+    return;
+  }
   // Clear any active autocomplete suggestions on the omnibox searchbox before
   // transitioning into Composebox mode so that stale searchbox results do not
   // linger or flash during the mode switch.
@@ -1126,6 +1141,12 @@ void OmniboxEverywhereUI::OnFileChooserClosed() {
 }
 
 void OmniboxEverywhereUI::ShowContextActionMenu(const gfx::Rect& anchor_rect) {
+  // The "+" menu's actions all open the AI Mode composebox, so don't show the
+  // menu when AI Mode is unavailable.
+  if (!IsFuseboxEnabled(profile_)) {
+    OnContextMenuClosed();
+    return;
+  }
   if (context_menu_) {
     context_menu_->Cancel();
   }

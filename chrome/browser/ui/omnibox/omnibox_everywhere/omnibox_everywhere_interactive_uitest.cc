@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/check_deref.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
+#include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
 #include "chrome/browser/background/omnibox_everywhere/omnibox_everywhere_background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
@@ -15,6 +18,7 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -45,12 +49,14 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/buildflags/buildflags.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/mojom/window_open_disposition.mojom-shared.h"
@@ -395,6 +401,45 @@ class OmniboxEverywhereEphemeralBrowserTest
     OmniboxEverywhereBrowserTest::SetUpOnMainThread();
     g_browser_process->local_state()->SetBoolean(
         prefs::kOmniboxEverywhereEphemeralModel, true);
+  }
+};
+
+namespace {
+
+class EligibleAimEligibilityService : public ChromeAimEligibilityService {
+ public:
+  explicit EligibleAimEligibilityService(PrefService& pref_service)
+      : ChromeAimEligibilityService(pref_service,
+                                    /*template_url_service=*/nullptr,
+                                    /*url_loader_factory=*/nullptr,
+                                    /*identity_manager=*/nullptr,
+                                    /*configuration=*/{}) {}
+
+  variations::VariationsService* GetVariationsService() const override {
+    return nullptr;
+  }
+  bool IsAimEligible() const override { return true; }
+  bool IsFuseboxEligible() const override { return true; }
+  bool IsAimAllowedByDse() const override { return true; }
+};
+
+}  // namespace
+
+// Runs Omnibox Everywhere in ephemeral mode with AI Mode eligible (bots are
+// ineligible by default).
+class OmniboxEverywhereAimEligibleBrowserTest
+    : public OmniboxEverywhereEphemeralBrowserTest {
+ public:
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    OmniboxEverywhereEphemeralBrowserTest::SetUpBrowserContextKeyedServices(
+        context);
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindOnce([](content::BrowserContext* context)
+                                    -> std::unique_ptr<KeyedService> {
+          return std::make_unique<EligibleAimEligibilityService>(
+              CHECK_DEREF(Profile::FromBrowserContext(context)->GetPrefs()));
+        }));
   }
 };
 
@@ -1268,7 +1313,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereBrowserTest,
       WaitForStateChange(kOmniboxWebContentsId, avatar_updated_to_gaia));
 }
 
-IN_PROC_BROWSER_TEST_F(OmniboxEverywhereEphemeralBrowserTest,
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereAimEligibleBrowserTest,
                        ScreenshotSharingDisclosureFlow) {
   GlobalFeatures* features = g_browser_process->GetFeatures();
   ASSERT_TRUE(features);
@@ -1362,6 +1407,39 @@ IN_PROC_BROWSER_TEST_F(OmniboxEverywhereEphemeralBrowserTest,
       WaitForWidgetActiveState(true),
       // Dismiss the widget to cleanly release keep-alives.
       InvokeViaHotkey(), CheckWidgetVisible(false));
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxEverywhereEphemeralBrowserTest,
+                       AiModeActionsRefusedWhenAiModeUnavailable) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOmniboxWebContentsId);
+
+  RunTestSequence(InvokeViaHotkey(), CheckWidgetVisible(true),
+                  WaitForOmniboxWebUIReady(kOmniboxWebContentsId), Check([&]() {
+                    content::WebContents* web_contents =
+                        g_browser_process->GetFeatures()
+                            ->omnibox_everywhere_controller()
+                            ->ui_manager()
+                            ->web_contents();
+                    if (!web_contents || !web_contents->GetWebUI()) {
+                      return false;
+                    }
+                    auto* omnibox_ui = web_contents->GetWebUI()
+                                           ->GetController()
+                                           ->GetAs<OmniboxEverywhereUI>();
+                    if (!omnibox_ui) {
+                      return false;
+                    }
+                    omnibox_ui->OpenComposebox(/*initial_state=*/nullptr);
+                    return !omnibox_ui->is_composebox_mode() &&
+                           !omnibox_ui->IsCommandIdEnabled(
+                               OmniboxEverywhereUI::kScreenshotEntireScreen) &&
+                           !omnibox_ui->IsCommandIdEnabled(
+                               OmniboxEverywhereUI::kScreenshotWindow) &&
+                           !omnibox_ui->IsCommandIdEnabled(
+                               OmniboxEverywhereUI::kScreenshotRegion);
+                  }),
+                  // Dismiss the widget to cleanly release keep-alives.
+                  InvokeViaHotkey(), CheckWidgetVisible(false));
 }
 
 }  // namespace omnibox_everywhere
