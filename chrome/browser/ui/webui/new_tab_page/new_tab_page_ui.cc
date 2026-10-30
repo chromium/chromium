@@ -251,6 +251,18 @@ bool UseGoogleLogo26() {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
+// Returns whether the left-hand side (LHS) threads rail is shown on the NTP.
+// The rail embeds Google Search AI Mode content, so it is only available on
+// Google Chrome branded builds.
+bool IsThreadsRailEnabled(bool aim_eligible) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return aim_eligible &&
+         base::FeatureList::IsEnabled(ntp_features::kNtpThreadsRail);
+#else
+  return false;
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
 }  // namespace
 
 // static
@@ -808,9 +820,7 @@ base::DictValue NewTabPageUI::GetLoadTimeData(
 
   // The left-hand side (LHS) threads rail embeds AI Mode content, so it is only
   // shown to AIM eligible users.
-  dict.Set("enableThreadsRail",
-           aim_eligible &&
-               base::FeatureList::IsEnabled(ntp_features::kNtpThreadsRail));
+  dict.Set("enableThreadsRail", IsThreadsRailEnabled(aim_eligible));
   dict.Set("enableThreadsRailHybrid",
            ntp_features::kNtpThreadsRailHybridParam.Get());
 
