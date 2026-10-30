@@ -4471,7 +4471,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.JavaScript.Permissions.Geolocation.Authorized"
-    enum="GeolocationAPI" expires_after="2027-02-07">
+    enum="GeolocationAPI" expires_after="2027-10-01">
   <owner>michaeldo@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -4484,7 +4484,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.JavaScript.Permissions.Geolocation.Denied"
-    enum="GeolocationAPI" expires_after="2027-02-07">
+    enum="GeolocationAPI" expires_after="2027-10-01">
   <owner>michaeldo@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -4497,7 +4497,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.JavaScript.Permissions.Geolocation.NotDetermined"
-    enum="GeolocationAPI" expires_after="2027-02-07">
+    enum="GeolocationAPI" expires_after="2027-10-01">
   <owner>michaeldo@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -4510,7 +4510,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.JavaScript.Permissions.Geolocation.Restricted"
-    enum="GeolocationAPI" expires_after="2026-12-01">
+    enum="GeolocationAPI" expires_after="2027-10-01">
   <owner>michaeldo@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -4523,7 +4523,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.JavaScript.Permissions.Media.Denied" enum="MediaAPIParams"
-    expires_after="2026-12-01">
+    expires_after="2027-10-01">
   <owner>michaeldo@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -4536,7 +4536,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.JavaScript.Permissions.Media.Granted"
-    enum="MediaAPIParams" expires_after="2027-03-14">
+    enum="MediaAPIParams" expires_after="2027-10-01">
   <owner>michaeldo@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -4549,7 +4549,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.JavaScript.Permissions.Media.Undetermined"
-    enum="MediaAPIParams" expires_after="2027-03-14">
+    enum="MediaAPIParams" expires_after="2027-10-01">
   <owner>michaeldo@google.com</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
