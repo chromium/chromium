@@ -240,6 +240,39 @@ TEST_F(ContextualTasksUtilsTest, IsTabSharingEligible_NullProfile) {
 TEST_F(ContextualTasksUtilsTest, IsTabSharingEligible_OffTheRecord) {
   Profile* otr_profile = profile_->GetPrimaryOTRProfile(true);
   EXPECT_FALSE(IsTabSharingEligible(otr_profile));
+
+  testing::NiceMock<MockAimEligibilityService>* mock_aim_service = nullptr;
+  AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+      otr_profile,
+      base::BindRepeating(
+          [](testing::NiceMock<MockAimEligibilityService>** mock_out,
+             content::BrowserContext* context)
+              -> std::unique_ptr<KeyedService> {
+            auto mock =
+                std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
+                    *Profile::FromBrowserContext(context)->GetPrefs(), nullptr,
+                    nullptr, nullptr);
+            *mock_out = mock.get();
+            return mock;
+          },
+          &mock_aim_service));
+  AimEligibilityServiceFactory::GetForProfile(otr_profile);
+  ASSERT_TRUE(mock_aim_service);
+  ON_CALL(*mock_aim_service, IsAimEligible())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*mock_aim_service, IsFuseboxEligible())
+      .WillByDefault(testing::Return(true));
+
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(kContextualTasksRearchitecture);
+    EXPECT_FALSE(IsTabSharingEligible(otr_profile));
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(kContextualTasksRearchitecture);
+    EXPECT_TRUE(IsTabSharingEligible(otr_profile));
+  }
 }
 
 TEST_F(ContextualTasksUtilsTest, IsTabSharingEligible_NoAimService) {
@@ -348,9 +381,17 @@ TEST_F(ContextualTasksUtilsTest, CanShareTabContext_NullProfile) {
 TEST_F(ContextualTasksUtilsTest,
        CanShareTabContext_ForceEntryPointEligibility) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kContextualTasksForceEntryPointEligibility);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{kContextualTasksForceEntryPointEligibility},
+      /*disabled_features=*/{kContextualTasksRearchitecture});
   EXPECT_TRUE(CanShareTabContext(profile_.get()));
   EXPECT_FALSE(CanShareTabContext(profile_->GetPrimaryOTRProfile(true)));
+
+  {
+    base::test::ScopedFeatureList rearch_feature_list;
+    rearch_feature_list.InitAndEnableFeature(kContextualTasksRearchitecture);
+    EXPECT_TRUE(CanShareTabContext(profile_->GetPrimaryOTRProfile(true)));
+  }
 
   profile_->GetPrefs()->SetInteger(
       contextual_search::kSearchContentSharingSettings,
@@ -361,7 +402,9 @@ TEST_F(ContextualTasksUtilsTest,
 
 TEST_F(ContextualTasksUtilsTest, GetSearchHandshakeMessageProto_Capabilities) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kContextualTasksForceEntryPointEligibility);
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{kContextualTasksForceEntryPointEligibility},
+      /*disabled_features=*/{kContextualTasksRearchitecture});
 
   // Regular profile with tab sharing enabled includes both `TABS` and `LENS`.
   lens::ClientToSearchMessage regular_msg =
@@ -372,7 +415,7 @@ TEST_F(ContextualTasksUtilsTest, GetSearchHandshakeMessageProto_Capabilities) {
       testing::ElementsAre(lens::ClientToSearchMessage::HandshakePing::TABS,
                            lens::ClientToSearchMessage::HandshakePing::LENS));
 
-  // Incognito (OTR) profile omits `TABS` and includes only `LENS`.
+  // Incognito (OTR) profile omits `TABS` when rearchitecture is disabled.
   Profile* otr_profile = profile_->GetPrimaryOTRProfile(true);
   lens::ClientToSearchMessage otr_msg =
       GetSearchHandshakeMessageProto(otr_profile);
@@ -380,6 +423,20 @@ TEST_F(ContextualTasksUtilsTest, GetSearchHandshakeMessageProto_Capabilities) {
   EXPECT_THAT(
       otr_msg.handshake_ping().capabilities(),
       testing::ElementsAre(lens::ClientToSearchMessage::HandshakePing::LENS));
+
+  // Incognito (OTR) profile includes `TABS` and `LENS` when rearchitecture is
+  // enabled.
+  {
+    base::test::ScopedFeatureList rearch_feature_list;
+    rearch_feature_list.InitAndEnableFeature(kContextualTasksRearchitecture);
+    lens::ClientToSearchMessage otr_rearch_msg =
+        GetSearchHandshakeMessageProto(otr_profile);
+    ASSERT_TRUE(otr_rearch_msg.has_handshake_ping());
+    EXPECT_THAT(
+        otr_rearch_msg.handshake_ping().capabilities(),
+        testing::ElementsAre(lens::ClientToSearchMessage::HandshakePing::TABS,
+                             lens::ClientToSearchMessage::HandshakePing::LENS));
+  }
 
   // Null profile omits `TABS` and includes only `LENS`.
   lens::ClientToSearchMessage null_msg =

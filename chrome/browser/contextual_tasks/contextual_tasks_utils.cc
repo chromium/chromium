@@ -256,7 +256,8 @@ bool IsTabSharingEligible(Profile* profile) {
           kContextualTasksForceEntryPointEligibility)) {
     return true;
   }
-  if (!profile || profile->IsOffTheRecord()) {
+  if (!profile || (profile->IsOffTheRecord() &&
+                   !IsContextualTasksRearchitectureEnabled())) {
     return false;
   }
   auto* aim_service = AimEligibilityServiceFactory::GetForProfile(profile);
@@ -296,7 +297,10 @@ bool ShouldUseContextualTasksContextMenuSubmenu(Profile* profile) {
 }
 
 bool CanShareTabContext(Profile* profile) {
-  if (!profile || profile->IsOffTheRecord() || !IsTabSharingEligible(profile)) {
+  if (!profile ||
+      (profile->IsOffTheRecord() &&
+       !IsContextualTasksRearchitectureEnabled()) ||
+      !IsTabSharingEligible(profile)) {
     return false;
   }
   return contextual_search::ContextualSearchService::IsContextSharingEnabled(

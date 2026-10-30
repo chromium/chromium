@@ -21,6 +21,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
+#include "components/contextual_search/pref_names.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/contextual_tasks/public/prefs.h"
@@ -95,6 +96,8 @@ class ContextualTasksWebContentsUserDataTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  base::test::ScopedFeatureList default_feature_list_{
+      kContextualTasksForceEntryPointEligibility};
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor> identity_test_env_adaptor_;
   std::unique_ptr<content::TestWebContentsFactory> web_contents_factory_;
@@ -1254,6 +1257,68 @@ TEST_F(ContextualTasksWebContentsUserDataTest,
       "ContextualTasks.ThreadContextLibrary.RestoredTabCount", 0);
   histogram_tester.ExpectTotalCount(
       "ContextualTasks.ThreadContextLibrary.TimeFromHandshakeToFirstUpdate", 0);
+}
+
+TEST_F(ContextualTasksWebContentsUserDataTest,
+       ContextLibraryAndThreadUpdate_BlockedWhenCanShareTabContextFalse) {
+  base::test::ScopedFeatureList feature_list{kContextualTasksContextLibrary};
+  base::HistogramTester histogram_tester;
+
+  // Disable tab context sharing via pref so `CanShareTabContext(profile_)` is
+  // false.
+  profile_->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kDisabled));
+
+  auto session_handle = std::make_unique<testing::NiceMock<
+      contextual_search::MockContextualSearchSessionHandle>>();
+  auto* mock_handle = session_handle.get();
+  ContextualSearchWebContentsHelper::GetOrCreateForWebContents(web_contents_)
+      ->SetTaskSession(std::nullopt, std::move(session_handle),
+                       /*input_state_model=*/nullptr);
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::GetOrCreateForWebContents(
+          web_contents_);
+  ASSERT_NE(user_data, nullptr);
+
+  std::vector<lens::ClientToSearchMessage> dispatched_messages;
+  user_data->SetSearchMessageDispatcherForTesting(base::BindRepeating(
+      [](std::vector<lens::ClientToSearchMessage>* messages,
+         const lens::ClientToSearchMessage& msg) { messages->push_back(msg); },
+      &dispatched_messages));
+  user_data->OnHandshakeComplete();
+  dispatched_messages.clear();
+
+  // Attaching a tab to the session handle should not mount `CONTEXT_LIBRARY`
+  // when `CanShareTabContext()` is false.
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  mock_handle->GetUploadedContextTokensForTesting().push_back(token);
+  mock_handle->AttachTabPendingUpload(token, /*tab_id=*/1,
+                                      GURL("https://example.com"), "Example");
+  EXPECT_FALSE(dispatched_messages.empty());
+  for (const auto& msg : dispatched_messages) {
+    EXPECT_FALSE(msg.has_inject_chrome_input());
+  }
+
+  // `HandleThreadContextLibraryUpdateFromAim()` should return early and record
+  // `kFeatureDisabled` without populating restored tabs.
+  lens::SearchToClientMessage::UpdateThreadContextLibrary update;
+  auto* ctx = update.add_contexts();
+  ctx->set_context_id(1);
+  ctx->set_has_chrome_tab_data(true);
+  ctx->mutable_webpage()->set_url("https://example.com");
+  ctx->mutable_webpage()->set_title("Example");
+
+  user_data->HandleThreadContextLibraryUpdateFromAim(update);
+
+  histogram_tester.ExpectUniqueSample(
+      "ContextualTasks.ThreadContextLibrary.UpdateOutcome",
+      ContextualTasksWebContentsUserData::ThreadContextLibraryUpdateOutcome::
+          kFeatureDisabled,
+      1);
+  EXPECT_TRUE(mock_handle->GetTabContextState().restored.empty());
 }
 
 TEST_F(ContextualTasksWebContentsUserDataTest,
