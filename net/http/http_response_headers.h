@@ -454,14 +454,6 @@ class NET_EXPORT HttpResponseHeaders
   struct ParsedHeader;
   typedef std::vector<ParsedHeader> HeaderList;
 
-  // Whether or not a header value passed to the private AddHeader() method
-  // contains commas.
-  enum class ContainsCommas {
-    kNo,     // Definitely no commas. No need to parse it.
-    kYes,    // Contains commas. Needs to be parsed.
-    kMaybe,  // Unknown whether commas are present. Needs to be parsed.
-  };
-
   struct CacheControlFreshnessDirectives {
     // Whether the 'immutable' directive is present.
     bool immutable = false;
@@ -505,21 +497,21 @@ class NET_EXPORT HttpResponseHeaders
       const std::string_view directive) const;
 
   // Add header->value pair(s) to our list. The value will be split into
-  // multiple values if it contains unquoted commas. If `contains_commas` is
-  // ContainsCommas::kNo then the value will not be parsed as a performance
-  // optimization. Values are all offsets within `raw_headers_`.
-  void AddHeader(size_t name_begin,
-                 size_t name_end,
-                 size_t value_begin,
-                 size_t value_end,
-                 ContainsCommas contains_commas);
+  // multiple values if it contains unquoted commas. Values are all offsets
+  // within `raw_headers`, which is passed explicitly so this can be called from
+  // inside `raw_headers_.resize_and_overwrite()`.
+  void AddHeaderContainingCommas(size_t name_begin,
+                                 size_t name_end,
+                                 size_t value_begin,
+                                 size_t value_end,
+                                 std::string_view raw_headers);
 
-  // Add to parsed_ given the fields of a ParsedHeader object. Values are all
-  // offsets within `raw_headers_`.
-  void AddToParsed(size_t name_begin,
-                   size_t name_end,
-                   size_t value_begin,
-                   size_t value_end);
+  // Add to `parsed_` given the fields of a ParsedHeader object when the header
+  // value is not split on commas. Values are all offsets within `raw_headers_`.
+  void AddHeaderNotContainingCommas(size_t name_begin,
+                                    size_t name_end,
+                                    size_t value_begin,
+                                    size_t value_end);
 
   // Replaces the current headers with the merged version of `raw_headers` and
   // the current headers without the headers in `headers_to_remove`. Note that

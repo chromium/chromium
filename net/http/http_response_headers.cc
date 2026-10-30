@@ -13,10 +13,13 @@
 #include <limits>
 #include <memory>
 #include <optional>
+#include <ranges>
 #include <string_view>
 #include <utility>
 
 #include "base/byte_size.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -130,11 +133,26 @@ bool ShouldUpdateHeader(std::string_view name) {
   return true;
 }
 
-bool HasEmbeddedNulls(std::string_view str) {
-  return str.find('\0') != std::string::npos;
+// Annotates a lambda indicating it should always be inlined.
+// TODO(ricea): Move to base/compiler_specific.h.
+#if !defined(ALWAYS_INLINE_LAMBDA)
+#if defined(NDEBUG)
+#if __has_cpp_attribute(clang::always_inline)
+#define ALWAYS_INLINE_LAMBDA [[clang::always_inline]]
+#endif
+#endif
+#if !defined(ALWAYS_INLINE_LAMBDA)
+#define ALWAYS_INLINE_LAMBDA
+#endif
+#endif
+
+ALWAYS_INLINE bool HasEmbeddedNulls(std::string_view str) {
+  // `str.contains()` fails to be inlined on Android 32-bit builds, making this
+  // check expensive.
+  return std::char_traits<char>::find(str.data(), str.size(), '\0') != nullptr;
 }
 
-void CheckDoesNotHaveEmbeddedNulls(std::string_view str) {
+ALWAYS_INLINE void CheckDoesNotHaveEmbeddedNulls(std::string_view str) {
   // Care needs to be taken when adding values to the raw headers string to
   // make sure it does not contain embeded NULLs. Any embeded '\0' may be
   // understood as line terminators and change how header lines get tokenized.
@@ -274,14 +292,18 @@ HttpResponseHeaders::HttpResponseHeaders(
   // right amount of memory.
   size_t expected_size = 8;  // "HTTP/x.x"
   expected_size += formatted_status.size();
-  expected_size += 1;  // "\0"
+  expected_size += 2;  // "\0\0" (status line terminator + trailing terminator)
   size_t expected_parsed_size = 0;
 
   // Track which headers (by index) have a comma in the value. Since bools are
   // only 1 byte, we can afford to put 100 of them on the stack and avoid
   // allocating more memory 99.9% of the time.
-  absl::InlinedVector<bool, 100> header_contains_comma;
-  for (const auto& [key, value] : headers) {
+  absl::InlinedVector<bool, 100> header_contains_comma(headers.size());
+  // Index rather than using a range-based for loop because
+  // `base::CheckedContiguousIterator` `operator==` fails to inline on 32-bit
+  // Android builds (`-Os`).
+  for (size_t i = 0; i < headers.size(); ++i) {
+    const auto& [key, value] = headers[i];
     expected_size += key.size();
     expected_size += 1;  // ":"
     expected_size += value.size();
@@ -289,12 +311,10 @@ HttpResponseHeaders::HttpResponseHeaders(
     // It's okay if we over-estimate the size of `parsed_`, so treat all ','
     // characters as if they might split the value to avoid parsing the value
     // carefully here.
-    const size_t comma_count = std::ranges::count(value, ',') + 1;
-    expected_parsed_size += comma_count;
-    header_contains_comma.push_back(comma_count);
+    const size_t comma_count = std::ranges::count(value, ',');
+    expected_parsed_size += comma_count + 1;
+    header_contains_comma[i] = comma_count > 0;
   }
-  expected_size += 1;  // "\0"
-  raw_headers_.reserve(expected_size);
   parsed_.reserve(expected_parsed_size);
 
   // Now fill in the output.
@@ -302,42 +322,85 @@ HttpResponseHeaders::HttpResponseHeaders(
   const uint16_t minor = version.minor_value();
   CHECK_LE(major, 9);
   CHECK_LE(minor, 9);
-  raw_headers_.append("HTTP/");
-  raw_headers_.push_back('0' + major);
-  raw_headers_.push_back('.');
-  raw_headers_.push_back('0' + minor);
-  raw_headers_.append(formatted_status);
-  raw_headers_.push_back('\0');
-  // It is vital that `raw_headers_` iterators are not invalidated after this
-  // point.
-  const char* const data_at_start = raw_headers_.data();
-  size_t index = 0;
-  for (const auto& [key, value] : headers) {
-    CheckDoesNotHaveEmbeddedNulls(key);
-    CheckDoesNotHaveEmbeddedNulls(value);
-    // Because std::string iterators are random-access, end() has to point to
-    // the position where the next character will be appended.
-    const auto name_begin = raw_headers_.size();
-    raw_headers_.append(key);
-    const auto name_end = raw_headers_.size();
-    raw_headers_.push_back(':');
-    auto values_begin = raw_headers_.size();
-    raw_headers_.append(value);
-    auto values_end = raw_headers_.size();
-    raw_headers_.push_back('\0');
-    // The HTTP/2 standard disallows header values starting or ending with
-    // whitespace (RFC 9113 8.2.1). Hopefully the same is also true of HTTP/3.
-    // TODO(crbug.com/40282642): Validate that our implementations
-    // actually enforce this constraint and change this TrimLWS() to a DCHECK.
-    HttpUtil::TrimLWS(raw_headers_, values_begin, values_end);
-    AddHeader(name_begin, name_end, values_begin, values_end,
-              header_contains_comma[index] ? ContainsCommas::kYes
-                                           : ContainsCommas::kNo);
-    ++index;
-  }
-  raw_headers_.push_back('\0');
-  CHECK_EQ(expected_size, raw_headers_.size());
-  CHECK_EQ(data_at_start, raw_headers_.data());
+  raw_headers_.resize_and_overwrite(expected_size, [&](char* p, size_t n) {
+    // SAFETY: `std::string::resize_and_overwrite` guarantees `[p, p + n)` is
+    // valid. Several utility functions require a view of the string, and do
+    // not access into the uninitialized portion. Accessing `raw_headers_`
+    // inside a call to `resize_and_overwrite()` is undefined behavior.
+    const std::string_view raw_headers_view =
+        UNSAFE_BUFFERS(std::string_view(p, n));
+    size_t pos = 0;
+
+    // Write directly via `char*` rather than `base::span` iterators because
+    // `base::CheckedContiguousIterator<char>` fails to inline on 32-bit Android
+    // builds (`-Os`), hurting performance. This code is on the hot path for
+    // HTTP responses over HTTP/2 and HTTP/3.
+    auto write_str = [&] ALWAYS_INLINE_LAMBDA(std::string_view s) {
+      CHECK_LE(s.size(), n - pos);
+      // SAFETY: `pos + s.size() <= n` is verified by the `CHECK_LE` above.
+      UNSAFE_BUFFERS(std::ranges::copy(s, p + pos));
+      pos += s.size();
+    };
+    auto write_char = [&] ALWAYS_INLINE_LAMBDA(char c) {
+      CHECK_LT(pos, n);
+      // SAFETY: `pos < n` is verified by the `CHECK_LT` above.
+      UNSAFE_BUFFERS(p[pos]) = c;
+      ++pos;
+    };
+
+    // Cache `formatted_status` in a `string_view` so the compiler knows writes
+    // through `char* p` cannot alias its size, and prove upfront that all 6
+    // status-line writes fit so the compiler eliminates their individual
+    // `CHECK`s.
+    const std::string_view formatted_status_view = formatted_status;
+    CHECK_LE(9u, n);
+    CHECK_LE(formatted_status_view.size(), n - 9);
+    write_str("HTTP/");
+    write_char('0' + major);
+    write_char('.');
+    write_char('0' + minor);
+    write_str(formatted_status_view);
+    write_char('\0');
+
+    for (size_t index = 0; index < headers.size(); ++index) {
+      // Copy `headers[index]` by value so writes through `char* p` cannot alias
+      // `key` or `value`, and use `CHECK_LT` to prove room for `key:` and
+      // `value\0` without unsigned overflow so the compiler can fold the
+      // per-write and `substr()` bounds checks.
+      const auto [key, value] = headers[index];
+      CHECK_LE(pos, n);
+      CHECK_LT(key.size(), n - pos);
+      const size_t name_begin = pos;
+      write_str(key);
+      const size_t name_end = pos;
+      write_char(':');
+      CHECK_LT(value.size(), n - pos);
+      size_t values_begin = pos;
+      write_str(value);
+      size_t values_end = pos;
+      // Check `key:value` together to halve the number of `memchr()` calls.
+      ALWAYS_INLINE_CALL CheckDoesNotHaveEmbeddedNulls(
+          raw_headers_view.substr(name_begin, values_end - name_begin));
+      write_char('\0');
+      // The HTTP/2 standard disallows header values starting or ending with
+      // whitespace (RFC 9113 8.2.1). Hopefully the same is also true of
+      // HTTP/3.
+      // TODO(crbug.com/40282642): Validate that our implementations
+      // actually enforce this constraint and change this TrimLWS() to a
+      // DCHECK.
+      HttpUtil::TrimLWS(raw_headers_view, values_begin, values_end);
+      if (header_contains_comma[index]) {
+        AddHeaderContainingCommas(name_begin, name_end, values_begin,
+                                  values_end, raw_headers_view);
+      } else {
+        AddHeaderNotContainingCommas(name_begin, name_end, values_begin,
+                                     values_end);
+      }
+    }
+    write_char('\0');
+    CHECK_EQ(pos, n);
+    return n;
+  });
   DCHECK_LE(parsed_.size(), expected_parsed_size);
 
   DCHECK_EQ('\0', raw_headers_[raw_headers_.size() - 2]);
@@ -618,10 +681,11 @@ void HttpResponseHeaders::Parse(std::string_view raw_input) {
       std::string_view(raw_headers_).substr(status_line_len),
       std::string(1, '\0'));
   while (headers.GetNext()) {
-    AddHeader(status_line_len + headers.name_begin(),
-              status_line_len + headers.name_end(),
-              status_line_len + headers.values_begin(),
-              status_line_len + headers.values_end(), ContainsCommas::kMaybe);
+    AddHeaderContainingCommas(status_line_len + headers.name_begin(),
+                              status_line_len + headers.name_end(),
+                              status_line_len + headers.values_begin(),
+                              status_line_len + headers.values_end(),
+                              raw_headers_);
   }
 
   DCHECK_EQ('\0', raw_headers_[raw_headers_.size() - 2]);
@@ -966,18 +1030,21 @@ HttpResponseHeaders::GetCacheControlHeaderValueForTesting(
   return std::nullopt;
 }
 
-void HttpResponseHeaders::AddHeader(size_t name_begin,
-                                    size_t name_end,
-                                    size_t values_begin,
-                                    size_t values_end,
-                                    ContainsCommas contains_commas) {
+void HttpResponseHeaders::AddHeaderContainingCommas(
+    size_t name_begin,
+    size_t name_end,
+    size_t values_begin,
+    size_t values_end,
+    std::string_view raw_headers) {
   // If the header can be coalesced, then we should split it up.
   if (values_begin == values_end ||
-      HttpUtil::IsNonCoalescingHeader(subrange(name_begin, name_end)) ||
-      contains_commas == ContainsCommas::kNo) {
-    AddToParsed(name_begin, name_end, values_begin, values_end);
+      HttpUtil::IsNonCoalescingHeader(
+          raw_headers.substr(name_begin, name_end - name_begin))) {
+    AddHeaderNotContainingCommas(name_begin, name_end, values_begin,
+                                 values_end);
   } else {
-    std::string_view values = subrange(values_begin, values_end);
+    std::string_view values =
+        raw_headers.substr(values_begin, values_end - values_begin);
     HttpUtil::ValuesIterator it(values, ',', /*ignore_empty_values=*/false);
     while (it.GetNext()) {
       // Calculate offsets of each value in [values_begin, values_end], relative
@@ -985,18 +1052,19 @@ void HttpResponseHeaders::AddHeader(size_t name_begin,
       size_t value_begin = values_begin + it.value_begin();
       size_t value_end = values_begin + it.value_end();
 
-      AddToParsed(name_begin, name_end, value_begin, value_end);
+      AddHeaderNotContainingCommas(name_begin, name_end, value_begin,
+                                   value_end);
       // clobber these so that subsequent values are treated as continuations
       name_begin = name_end = values_end;
     }
   }
 }
 
-void HttpResponseHeaders::AddToParsed(size_t name_begin,
-                                      size_t name_end,
-                                      size_t value_begin,
-                                      size_t value_end) {
-  parsed_.emplace_back(name_begin, name_end, value_begin, value_end);
+void HttpResponseHeaders::AddHeaderNotContainingCommas(size_t name_begin,
+                                                       size_t name_end,
+                                                       size_t value_begin,
+                                                       size_t value_end) {
+  parsed_.push_back({name_begin, name_end, value_begin, value_end});
 }
 
 void HttpResponseHeaders::AddNonCacheableHeaders(HeaderSet* result) const {
