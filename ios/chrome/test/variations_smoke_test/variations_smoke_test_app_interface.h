@@ -10,7 +10,8 @@
 // The app interface for variations smoke test.
 @interface VariationsSmokeTestAppInterface : NSObject
 
-// Non-empty variations seed signature & compressed seed are stored.
+// Checks asynchronously via `completion` whether non-empty variations seed
+// signature & compressed seed are stored.
 + (void)isVariationsSeedStored:(void (^)(BOOL hasSeed))completion;
 
 // Returns true when variations seed last fetch time appears in Local State
@@ -20,7 +21,7 @@
 // Lands pending writes of Local State Prefs to disk.
 + (void)localStatePrefsCommitPendingWrite;
 
-// Stores the seed and signature using the SeedReaderWriter.
+// Stores `seed_data` and `signature` using the SeedReaderWriter.
 + (void)storeSeed:(NSString*)seed_data
      andSignature:(NSString*)signature;
 

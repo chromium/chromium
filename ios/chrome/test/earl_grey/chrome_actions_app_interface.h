@@ -16,10 +16,10 @@ typedef NS_ENUM(NSInteger, GREYDirection);
 // into the app binary and can be called from either app or test code.
 @interface ChromeActionsAppInterface : NSObject
 
-// Action to longpress on the element selected by `selector` in the Chrome's
-// webview. If `triggers_context_menu` is true, this gesture is expected to
-// cause the context menu to appear, and is not expected to trigger events
-// in the webview. If `triggers_context_menu` is false, the converse is true.
+// Returns an action to longpress on the element selected by `selector` in the
+// Chrome's webview. If `triggerContextMenu` is true, this gesture is expected
+// to cause the context menu to appear, and is not expected to trigger events
+// in the webview. If `triggerContextMenu` is false, the converse is true.
 // This action doesn't fail if the context menu isn't displayed; calling code
 // should check for that separately with a matcher.
 + (id<GREYAction>)longPressElementOnWebView:(ElementSelector*)selector
@@ -54,9 +54,10 @@ typedef NS_ENUM(NSInteger, GREYDirection);
 // avoid dismissing the VC.
 + (id<GREYAction>)scrollToTop;
 
-// Action to tap an element at the given xOriginStartPercentage as a percentage
-// of the total width and yOriginStartPercentage as a percentage of the total
-// height. Percentages are between 0 and 1, where 1 is 100%.
+// Returns an action to tap an element at the given `x` origin start percentage
+// as a percentage of the total width and `y` origin start percentage as a
+// percentage of the total height. Percentages are between 0 and 1, where 1 is
+// 100%.
 + (id<GREYAction>)tapAtPointAtxOriginStartPercentage:(CGFloat)x
                               yOriginStartPercentage:(CGFloat)y;
 
@@ -70,12 +71,13 @@ typedef NS_ENUM(NSInteger, GREYDirection);
 // trigger the gesture.
 + (id<GREYAction>)accessibilitySwipeRight;
 
-// Swipes down and to the left or right depending on the given `direction`.
-// Use `kGREYDirectionDown` to indicate that the swipe should only be down and
-// not have a horizontal component.
+// Returns an action that swipes down and to the left or right depending on the
+// given `direction`. Use `kGREYDirectionDown` to indicate that the swipe
+// should only be down and not have a horizontal component.
 + (id<GREYAction>)overscrollSwipe:(GREYDirection)direction;
 
-// An action that notifies a `UITextView` that its content is about to change.
+// Returns an action that notifies a `UITextView` that its content is about to
+// change to `text`.
 //
 // The purpose of this custom action is to mitigate a shortcoming
 // of EarlGrey's `grey_replaceText`, that does not correctly invoke

@@ -17,6 +17,8 @@
 // from the rest of the app UI.
 @interface ChromeCoordinatorAppInterface : NSObject
 
+#pragma mark - Dispatcher, State, and Lifecycle
+
 // The isolated dispatcher used when starting coordinators from this app
 // interface.
 @property(class, readonly) CommandDispatcher* dispatcher;
@@ -31,41 +33,65 @@
 // YES if the last URL loaded was in incognito.
 @property(class, readonly) BOOL lastURLLoadedInIncognito;
 
-// Returns YES if the selector was previously dispatched and recorded.
+// Returns YES if `selectorString` was previously dispatched and recorded.
 + (BOOL)selectorWasDispatched:(NSString*)selectorString;
 
-// Dispatches a selector. Must be a method that does not require params.
+// Dispatches `selectorString`. Must be a method that does not require params.
 + (void)dispatchSelector:(NSString*)selectorString;
 
-// Calls the block if the given selector is dispatched.
+// Calls `block` if the given `selectorString` is dispatched.
 + (void)setAction:(ProceduralBlock)block forSelector:(NSString*)selectorString;
 
 // Ensures the browser is created. Used to initialize browser dependencies before
 // starting the tested coordinator.
 + (void)startBrowser;
 
-// Methods to start coordinators.
-// keep-sorted start
-+ (void)startBookmarksCoordinator;
-+ (void)startComposeboxCoordinator;
-+ (void)startEnhancedSafeBrowsingPromoCoordinator;
-+ (void)startHistoryCoordinator;
-+ (void)startLensPromoCoordinator;
-+ (void)startNewTabPageCoordinator;
-+ (void)startOmniboxCoordinator;
-+ (void)startPasswordSuggestionCoordinator;
-+ (void)startPrivacySafeBrowsingCoordinator;
-+ (void)startQRScannerLegacyCoordinator;
-+ (void)startReadingListCoordinator;
-+ (void)startSearchWhatYouSeePromoCoordinator;
-+ (void)startSnackbarCoordinator;
-// keep-sorted end
-
 // Stops the currently started coordinator.
 + (void)stopCoordinator;
 
 // Resets the isolated dispatcher and dismisses the blank rootViewController.
 + (void)reset;
+
+#pragma mark - Feature Coordinators
+
+// Starts the Bookmarks coordinator in isolation.
++ (void)startBookmarksCoordinator;
+
+// Starts the Composebox coordinator in isolation.
++ (void)startComposeboxCoordinator;
+
+// Starts the Enhanced Safe Browsing promo coordinator in isolation.
++ (void)startEnhancedSafeBrowsingPromoCoordinator;
+
+// Starts the History coordinator in isolation.
++ (void)startHistoryCoordinator;
+
+// Starts the Lens promo coordinator in isolation.
++ (void)startLensPromoCoordinator;
+
+// Starts the New Tab Page coordinator in isolation.
++ (void)startNewTabPageCoordinator;
+
+// Starts the Omnibox coordinator in isolation.
++ (void)startOmniboxCoordinator;
+
+// Starts the Password Suggestion coordinator in isolation.
++ (void)startPasswordSuggestionCoordinator;
+
+// Starts the Privacy Safe Browsing coordinator in isolation.
++ (void)startPrivacySafeBrowsingCoordinator;
+
+// Starts the legacy QR Scanner coordinator in isolation.
++ (void)startQRScannerLegacyCoordinator;
+
+// Starts the Reading List coordinator in isolation.
++ (void)startReadingListCoordinator;
+
+// Starts the Search What You See promo coordinator in isolation.
++ (void)startSearchWhatYouSeePromoCoordinator;
+
+// Starts the Snackbar coordinator in isolation.
++ (void)startSnackbarCoordinator;
 
 @end
 
