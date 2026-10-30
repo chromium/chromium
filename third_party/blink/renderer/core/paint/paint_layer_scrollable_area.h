@@ -448,8 +448,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
   // Test if a pointer/touch position is in the resize control area.
   bool IsAbsolutePointInResizeControl(const gfx::Point& absolute_point,
                                       ResizerHitTestType) const;
-  bool IsLocalPointInResizeControl(const gfx::Point& local_point,
-                                   ResizerHitTestType) const;
 
   bool HitTestOverflowControls(HitTestResult&, const gfx::Point& local_point);
 

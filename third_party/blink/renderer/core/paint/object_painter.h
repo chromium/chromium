@@ -28,7 +28,6 @@ class ObjectPainter {
       : layout_object_(layout_object) {}
 
   void PaintOutline(const PaintInfo&, const PhysicalOffset& paint_offset);
-  void PaintInlineChildrenOutlines(const PaintInfo&);
   void AddURLRectIfNeeded(const PaintInfo&, const PhysicalOffset& paint_offset);
 
   // Paints the object atomically as if it created a new stacking context, for:

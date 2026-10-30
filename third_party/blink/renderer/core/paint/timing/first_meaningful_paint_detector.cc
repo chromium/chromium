@@ -161,10 +161,6 @@ void FirstMeaningfulPaintDetector::OnNetwork2Quiet() {
   }
 }
 
-bool FirstMeaningfulPaintDetector::SeenFirstMeaningfulPaint() const {
-  return !first_meaningful_paint_.is_null();
-}
-
 void FirstMeaningfulPaintDetector::RegisterNotifyPresentationTime(
     PaintEvent event) {
   ++outstanding_presentation_promise_count_;

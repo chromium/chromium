@@ -44,16 +44,11 @@ class CORE_EXPORT FirstMeaningfulPaintDetector
                                          double contents_height_before_layout,
                                          double contents_height_after_layout,
                                          int visible_height);
-  void MarkNextPaintAsMeaningfulForTesting() {
-    next_paint_is_meaningful_ = true;
-  }
-
   void NotifyInputEvent();
   void NotifyPaint();
   void ReportPresentationTime(PaintEvent, const viz::FrameTimingDetails&);
   void NotifyFirstContentfulPaint(base::TimeTicks presentation_time);
   void OnNetwork2Quiet();
-  bool SeenFirstMeaningfulPaint() const;
 
   // The caller owns the |clock| which must outlive the paint detector.
   static void SetTickClockForTesting(const base::TickClock* clock);

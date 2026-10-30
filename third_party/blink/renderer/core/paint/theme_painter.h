@@ -69,11 +69,6 @@ class ThemePainter {
                         const PaintInfo&,
                         const gfx::Rect&);
 
-  virtual bool PaintCapsLockIndicator(const LayoutObject&,
-                                      const PaintInfo&,
-                                      const gfx::Rect&) {
-    return false;
-  }
   void PaintSliderTicks(const LayoutObject&,
                         const PaintInfo&,
                         const gfx::Rect&);

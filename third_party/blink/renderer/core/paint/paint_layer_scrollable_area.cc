@@ -2326,17 +2326,6 @@ bool PaintLayerScrollableArea::IsAbsolutePointInResizeControl(
   return ResizerCornerRect(resizer_hit_test_type).Contains(local_point);
 }
 
-bool PaintLayerScrollableArea::IsLocalPointInResizeControl(
-    const gfx::Point& local_point,
-    ResizerHitTestType resizer_hit_test_type) const {
-  if (GetLayoutBox()->Style().Visibility() != EVisibility::kVisible ||
-      !GetLayoutBox()->CanResize()) {
-    return false;
-  }
-
-  return ResizerCornerRect(resizer_hit_test_type).Contains(local_point);
-}
-
 void PaintLayerScrollableArea::UpdateResizerStyle(
     const ComputedStyle* old_style) {
   // Change of resizer status affects HasOverlayOverflowControls(). Invalid

@@ -123,8 +123,6 @@ class CORE_EXPORT PaintLayerStackingNode
                : it->value.Get();
   }
 
-  void ClearNeedsReorderOverlayOverflowControls();
-
   void Trace(Visitor* visitor) const;
 
  private:

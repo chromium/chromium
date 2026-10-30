@@ -52,7 +52,6 @@ class ReplacedPainter {
 
  private:
   bool ShouldPaintBoxDecorationBackground(const PaintInfo&);
-  void MeasureOverflowMetrics() const;
 
   void PaintBoxDecorationBackground(const PaintInfo&,
                                     const PhysicalOffset& paint_offset);

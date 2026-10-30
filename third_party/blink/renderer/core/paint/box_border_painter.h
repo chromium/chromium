@@ -144,8 +144,6 @@ class BoxBorderPainter {
   void ClipBorderSidePolygonCloseToEdges(BoxSide,
                                          MiterType miter1,
                                          MiterType miter2) const;
-  gfx::Rect CalculateSideRectIncludingInner(BoxSide) const;
-
   void ClipContouredRect(const ContouredRect&) const;
   void ClipOutContouredRect(const ContouredRect&) const;
   MiterType ComputeMiter(BoxSide, BoxSide adjacent_side, BorderEdgeFlags) const;

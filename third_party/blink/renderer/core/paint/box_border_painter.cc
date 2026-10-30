@@ -1898,33 +1898,6 @@ void BoxBorderPainter::DrawCurvedRidgeGrooveBoxSide(
   context_.FillRect(rect, auto_dark_mode);
 }
 
-gfx::Rect BoxBorderPainter::CalculateSideRectIncludingInner(
-    BoxSide side) const {
-  gfx::Rect side_rect = gfx::ToRoundedRect(outer_.Rect());
-  int width;
-
-  switch (side) {
-    case BoxSide::kTop:
-      width = side_rect.height() - Edge(BoxSide::kBottom).Width();
-      side_rect.set_height(width);
-      break;
-    case BoxSide::kBottom:
-      width = side_rect.height() - Edge(BoxSide::kTop).Width();
-      SetToBottomSideRect(side_rect, width);
-      break;
-    case BoxSide::kLeft:
-      width = side_rect.width() - Edge(BoxSide::kRight).Width();
-      side_rect.set_width(width);
-      break;
-    case BoxSide::kRight:
-      width = side_rect.width() - Edge(BoxSide::kLeft).Width();
-      SetToRightSideRect(side_rect, width);
-      break;
-  }
-
-  return side_rect;
-}
-
 // This algorithm clips as follows:
 // The path of the side, including the full two corners, is clipped first, to
 // avoid including overlapping opposite corners. Then, each of the half corners

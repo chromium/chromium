@@ -48,18 +48,6 @@ void ObjectPainter::PaintOutline(const PaintInfo& paint_info,
                                     info, style_to_use, &layout_object_);
 }
 
-void ObjectPainter::PaintInlineChildrenOutlines(const PaintInfo& paint_info) {
-  DCHECK(ShouldPaintDescendantOutlines(paint_info.phase));
-
-  PaintInfo paint_info_for_descendants = paint_info.ForDescendants();
-  for (LayoutObject* child = layout_object_.SlowFirstChild(); child;
-       child = child->NextSibling()) {
-    if (child->IsLayoutInline() &&
-        !To<LayoutInline>(child)->HasSelfPaintingLayer())
-      child->Paint(paint_info_for_descendants);
-  }
-}
-
 void ObjectPainter::AddURLRectIfNeeded(const PaintInfo& paint_info,
                                        const PhysicalOffset& paint_offset) {
   DCHECK(paint_info.ShouldAddUrlMetadata());

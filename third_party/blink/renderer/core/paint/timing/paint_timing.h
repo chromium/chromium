@@ -413,8 +413,6 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
 
   PaintDetails& GetRelevantPaintDetails() { return paint_details_; }
 
-  DOMPaintTimingInfo ToDOMPaintTimingInfo(const PaintTimingInfo&) const;
-
   PaintDetails paint_details_;
   // Timestamps used for UKM reporting.
   base::TimeTicks first_paint_presentation_for_ukm_;

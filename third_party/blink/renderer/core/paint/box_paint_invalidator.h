@@ -23,8 +23,6 @@ class CORE_EXPORT BoxPaintInvalidator {
                       const PaintInvalidatorContext& context)
       : box_(box), context_(context) {}
 
-  static void BoxWillBeDestroyed(const LayoutBox&);
-
   void InvalidatePaint();
 
  private:
