@@ -306,6 +306,9 @@ enum class PermissionPromptDispositionReason {
 
   // Disposition was chosen because the request lacked a user gesture.
   LACK_OF_GESTURE = 5,
+
+  // Always keep this at the end.
+  kMaxValue = LACK_OF_GESTURE,
 };
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PermissionPromptDispositionReason)
 
@@ -606,6 +609,9 @@ enum class DismissalType {
 enum class UkmPermissionPromptOptions {
   APPROXIMATE_LOCATION = 1,
   PRECISE_LOCATION = 2,
+
+  // Always keep this at the end.
+  kMaxValue = PRECISE_LOCATION,
 };
 // LINT.ThenChange(//tools/metrics/ukm/ukm.xml:UkmPermissionPromptOptions)
 
