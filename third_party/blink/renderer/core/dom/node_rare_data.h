@@ -271,7 +271,8 @@ class CORE_EXPORT NodeRareData final : public GarbageCollected<NodeRareData> {
   const ElementInternals* GetElementInternals() const;
   RareDataUpdate<ElementInternals> EnsureElementInternals(HTMLElement& target);
 
-  RareDataUpdate<DisplayLockContext> EnsureDisplayLockContext(Element* element);
+  RareDataUpdate<DisplayLockContext> SetDisplayLockContext(
+      DisplayLockContext& context);
   DisplayLockContext* GetDisplayLockContext() const;
 
   RareDataUpdate<ContainerQueryData> EnsureContainerQueryData();

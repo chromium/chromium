@@ -5,10 +5,15 @@
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_node_data.h"
 #include "third_party/blink/renderer/core/dom/node-inl.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
+#include "third_party/blink/renderer/core/html/html_slot_element.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
@@ -224,6 +229,60 @@ TEST_F(NodeRareDataTest, PseudoElementReallocation) {
   // `DCHECK(!GetField(FieldId::kPseudoElementData))` in its destructor.
   ThreadState::Current()->CollectAllGarbageForTesting(
       ThreadState::StackState::kNoHeapPointers);
+}
+
+TEST_F(NodeRareDataTest, ReentrantEnsureDisplayLockContextPreservesFields) {
+  GetPage().GetFocusController().SetActive(true);
+  GetPage().GetFocusController().SetFocused(true);
+
+  GetDocument().body()->SetHTMLUnsafeWithoutTrustedTypes(
+      "<div id=\"host\">"
+      "<template shadowrootmode=\"open\">"
+      "<slot id=\"slot\"></slot>"
+      "</template>"
+      "<input id=\"input\">"
+      "</div>");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* host = GetDocument().getElementById(AtomicString("host"));
+  Element* input = GetDocument().getElementById(AtomicString("input"));
+  HTMLSlotElement* slot = To<HTMLSlotElement>(
+      host->GetShadowRoot()->getElementById(AtomicString("slot")));
+  input->Focus();
+  ASSERT_EQ(input, GetDocument().FocusedElement());
+
+  // Populate kMinimumVectorSize fields so that adding another field during
+  // slot assignment recalc will reallocate NodeRareData.
+  TestElement* node = MakeGarbageCollected<TestElement>(GetDocument());
+  NodeRareData* rare_data = &node->EnsureRareData();
+  rare_data->SetNonce(AtomicString("test-nonce")).RefreshNode(*node);
+  rare_data = node->RareData();
+  rare_data->SetIsValue(AtomicString("test-is-value")).RefreshNode(*node);
+  rare_data = node->RareData();
+  ASSERT_EQ(kMinimumVectorSize, GetSize(rare_data));
+
+  // Appending `node` to `host` marks `host`'s shadow root as needing slot
+  // assignment recalc without creating `node`'s FlatTreeNodeData yet.
+  host->AppendChild(node);
+  ASSERT_TRUE(host->GetShadowRoot()->NeedsSlotAssignmentRecalc());
+  ASSERT_FALSE(HasField(node->RareData(), FieldId::kFlatTreeNodeData));
+
+  // Constructing DisplayLockContext walks the flat tree from the focused
+  // element (`input`), triggering slot assignment recalc on `host`'s shadow
+  // root, which re-enters `node`'s NodeRareData via EnsureFlatTreeNodeData()
+  // and reallocates it.
+  DisplayLockContext& context = node->EnsureDisplayLockContext();
+  EXPECT_FALSE(host->GetShadowRoot()->NeedsSlotAssignmentRecalc());
+
+  rare_data = node->RareData();
+  EXPECT_EQ(4u, GetSize(rare_data));
+  EXPECT_TRUE(HasField(rare_data, FieldId::kFlatTreeNodeData));
+  EXPECT_NE(nullptr, rare_data->GetFlatTreeNodeData());
+  EXPECT_EQ(slot, node->AssignedSlot());
+  EXPECT_TRUE(HasField(rare_data, FieldId::kDisplayLockContext));
+  EXPECT_EQ(&context, rare_data->GetDisplayLockContext());
+  EXPECT_EQ(AtomicString("test-nonce"), rare_data->GetNonce());
+  EXPECT_EQ(AtomicString("test-is-value"), rare_data->IsValue());
 }
 
 }  // namespace blink

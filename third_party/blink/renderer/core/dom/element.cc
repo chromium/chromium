@@ -10238,8 +10238,12 @@ DisplayLockContext* Element::GetDisplayLockContextFromRareData() const {
 }
 
 DisplayLockContext& Element::EnsureDisplayLockContext() {
+  if (DisplayLockContext* context = GetDisplayLockContext()) {
+    return *context;
+  }
+  auto* context = MakeGarbageCollected<DisplayLockContext>(this);
   SetHasDisplayLockContext();
-  return EnsureRareData().EnsureDisplayLockContext(this).RefreshNodeAndUnwrap(
+  return EnsureRareData().SetDisplayLockContext(*context).RefreshNodeAndUnwrap(
       *this);
 }
 

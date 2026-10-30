@@ -424,9 +424,11 @@ RareDataUpdate<ElementInternals> NodeRareData::EnsureElementInternals(
   return EnsureField<ElementInternals>(FieldId::kElementInternals, target);
 }
 
-RareDataUpdate<DisplayLockContext> NodeRareData::EnsureDisplayLockContext(
-    Element* element) {
-  return EnsureField<DisplayLockContext>(FieldId::kDisplayLockContext, element);
+RareDataUpdate<DisplayLockContext> NodeRareData::SetDisplayLockContext(
+    DisplayLockContext& context) {
+  CHECK(!GetDisplayLockContext());
+  return {base::PassKey<NodeRareData>(), context,
+          SetField(FieldId::kDisplayLockContext, &context)};
 }
 DisplayLockContext* NodeRareData::GetDisplayLockContext() const {
   return static_cast<DisplayLockContext*>(
