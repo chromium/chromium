@@ -1563,8 +1563,12 @@ void SearchboxHandler::QueryAutocomplete(
                   : metrics::OmniboxFocusType::INTERACTION_DEFAULT);
   autocomplete_input.set_prevent_inline_autocomplete(
       prevent_inline_autocomplete);
-  // TODO(b/504669216): `set_allow_exact_keyword_match()` should be true even
-  //   when not in keyword mode.
+  // Outside keyword mode this must stay false, so that e.g. pasted
+  // "<keyword> <query>" text doesn't produce a default keyword match. Views
+  // also sets it for one autocomplete pass after a space is typed in the middle
+  // of "<keyword><query>", to enter keyword mode via the result. The WebUI
+  // detects that case in `keyword_mode_manager.ts` and queries with the keyword
+  // instead, so `is_keyword_selected` is already true here.
   autocomplete_input.set_allow_exact_keyword_match(is_keyword_selected);
   autocomplete_input.set_in_keyword_mode(is_keyword_selected);
   // Set the lens overlay suggest inputs, if available.
