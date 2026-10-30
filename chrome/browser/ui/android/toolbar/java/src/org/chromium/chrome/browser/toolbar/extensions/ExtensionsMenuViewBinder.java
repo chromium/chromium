@@ -174,12 +174,7 @@ public class ExtensionsMenuViewBinder {
         } else if (key == ExtensionsMenuProperties.MENU_BUTTON_PINNING_CLICK_LISTENER) {
             View.OnClickListener listener =
                     model.get(ExtensionsMenuProperties.MENU_BUTTON_PINNING_CLICK_LISTENER);
-            // We can set the same click listener because the toggle consumes the event.
-            // TODO(crbug.com/481457578): Explore the best way to have a toggle inside a clickable
-            // row.
             view.findViewById(R.id.extensions_menu_pin_menu_icon_button)
-                    .setOnClickListener(listener);
-            view.findViewById(R.id.extensions_menu_button_pinning_toggle)
                     .setOnClickListener(listener);
         } else if (key == ExtensionsMenuProperties.MENU_BUTTON_PINNED) {
             MaterialSwitch toggle = view.findViewById(R.id.extensions_menu_button_pinning_toggle);
