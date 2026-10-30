@@ -152,8 +152,6 @@ if (is_android) {
 # (lld-link /lib) rejects with "lib failed".
 source_set("test_support") {
   testonly = true
-  deps = []
-
   public_deps = [
     "//chrome/browser/notifications:test_support",
     "//chrome/browser/origin_trials",
@@ -172,10 +170,6 @@ source_set("test_support") {
     public_deps += [ "//chrome/renderer:process_state" ]
   }
 
-  if (enable_dice_support || is_chromeos) {
-    deps += [ "//chrome/browser/profiles/batch_upload:test_support" ]
-  }
-
   if (enable_extensions_core) {
     public_deps += [
       "//chrome/browser/extensions:test_support",
@@ -186,8 +180,6 @@ source_set("test_support") {
   }
 
   if (enable_extensions) {
-    deps += [ "//chrome/browser/ui/web_applications/test:test_support" ]
-
     public_deps += [
       "//apps:test_support",
       "//chrome/browser/extensions:test_support",
@@ -394,12 +386,6 @@ source_set("test_support") {
       "//ui/compositor:test_support",
       "//ui/snapshot",
     ]
-
-    # Non-android deps for "test_support" target.
-    deps += [
-      "//chrome/browser/badging:test_support",
-      "//chrome/browser/lookalikes:test_support",
-    ]
   }
 
   if (use_nss_certs) {
@@ -417,19 +403,10 @@ source_set("test_support") {
       "//components/crash/core/app",
       "//third_party/wtl",
     ]
-    deps += [ "//chrome/browser/webshare:test_support" ]
     libs = [ "runtimeobject.lib" ]
   }
 
   if (is_chromeos) {
-    deps += [
-      "//ash/constants",
-      "//chrome/browser/ash/printing:test_support",
-      "//components/component_updater/ash:test_support",
-      "//google_apis:test_support",
-      "//net:test_support",
-    ]
-
     public_deps += [
       "//ash",
       "//ash:test_support",
@@ -503,7 +480,6 @@ source_set("test_support") {
       "//chrome/browser/ui/views/autofill/popup:popup_search_bar_view",
       "//chrome/browser/ui/views/autofill/popup:popup_view_views",
     ]
-    deps += [ "//components/omnibox/browser:test_support" ]
   }
 
   if (enable_message_center) {
@@ -512,10 +488,6 @@ source_set("test_support") {
 
   if (enable_offline_pages) {
     public_deps += [ "//components/offline_pages/core:test_support" ]
-  }
-
-  if (enable_compose) {
-    deps += [ "//chrome/browser/compose:test_support" ]
   }
 
   # All test_support sources have been migrated into per-feature
