@@ -12,7 +12,7 @@
 // The app interface for supervised user settings tests.
 @interface FamilyLinkSettingsAppInterface : NSObject
 
-// Sets the supervised user's web filter type.
+// Sets the supervised user's web filter type to `filterType`.
 + (void)setWebFilterType:(supervised_user::WebFilterType)filterType;
 
 // Resets to default parental control settings for website filtering.
@@ -25,17 +25,17 @@
 // for a supervised user.
 + (void)setFakePermissionCreator;
 
-// Approves a requested website for a supervised user.
+// Approves a requested website `url` for a supervised user.
 + (void)approveWebsiteDomain:(NSURL*)url;
 
-// Adds the `url` to a supervised user's allow-list.
+// Adds `url` to a supervised user's allow-list.
 + (void)addWebsiteToAllowList:(NSURL*)url;
 
-// Adds the `url` to a supervised user's block-list.
+// Adds `url` to a supervised user's block-list.
 + (void)addWebsiteToBlockList:(NSURL*)url;
 
-// Sets the behaviour of Safe Search filtering: it sets the default
-// response of the ClassifyUrl endpoint to allow or restrict all requests.
+// Sets the behaviour of Safe Search filtering: sets the default response of
+// the ClassifyUrl endpoint to `is_allowed`.
 + (void)setDefaultClassifyURLNavigationIsAllowed:(BOOL)is_allowed;
 
 // Returns the number of Supervised User interstitials attached to the existing

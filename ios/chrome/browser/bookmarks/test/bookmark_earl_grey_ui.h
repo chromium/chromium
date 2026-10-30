@@ -83,6 +83,8 @@ id<GREYMatcher> SearchIconButton();
 // Test Process for EG2 and EG1.
 @interface BookmarkEarlGreyUIImpl : BaseEGTestHelperImpl
 
+#pragma mark - Navigation and Bookmarking Actions
+
 // Navigates to the bookmark manager UI.
 - (void)openBookmarks;
 
@@ -90,86 +92,71 @@ id<GREYMatcher> SearchIconButton();
 // Sets and Leaves the root matcher to the given window.
 - (void)openBookmarksInWindowWithNumber:(int)windowNumber;
 
-// Selects MobileBookmarks to open. The second method is used in case of
-// ambiguity.
+// Selects MobileBookmarks to open.
 - (void)openMobileBookmarks;
+
+// Selects MobileBookmarks to open for `kindOfTest` in case of ambiguity.
 - (void)openMobileBookmarks:(chrome_test_util::KindOfTest)kindOfTest;
 
 // Adds a bookmark for the current tab. Must be called when on a tab.
 - (void)starCurrentTab;
 
-// Adds a bookmark, then tap on the edit button in the snack bar. Checks the
+// Adds a bookmark, then taps on the edit button in the snack bar. Checks the
 // editor is displayed. Must be called when on a tab that is not in the
-// bookmarks. If title is nil, title is not checked.
+// bookmarks. If `title` is nil, title is not checked.
 - (void)starAndEditCurrentTabWithSnackbarTitle:(NSString*)title;
+
+// Bookmarks the current tab using `title` as Bookmark title. Make sure the
+// Bookmark model is loaded before by calling `[BookmarkEarlGrey
+// waitForBookmarkModelLoaded]`.
+- (void)bookmarkCurrentTabWithTitle:(NSString*)title;
 
 // Creates a new folder in `storageType` starting from the folder picker.
 // Passing a `name` of 0 length will use the default value.
 - (void)addFolderWithName:(NSString*)name
                 inStorage:(BookmarkStorageType)storageType;
 
-// Waits for the disparition of the given `title` in the UI.
-- (void)waitForDeletionOfBookmarkWithTitle:(NSString*)title;
-
-// Tap on the snackbar to make it go away.
-- (void)closeUndoSnackbarAndWait;
+// Creates a new bookmark folder with `folderTitle` and optionally presses
+// return according to `pressReturn`.
+- (void)createNewBookmarkFolderWithFolderTitle:(NSString*)folderTitle
+                                   pressReturn:(BOOL)pressReturn;
 
 // Rename folder title to `folderTitle`. Must be in edit folder UI.
 - (void)renameBookmarkFolderWithFolderTitle:(NSString*)folderTitle;
-
-// Close edit mode.
-- (void)closeContextBarEditMode;
-
-// Select urls from Mobile Bookmarks and tap on a specified context bar button.
-// Must be called after previously calling [BookmarkEarlGreyUI openBookmarks].
-- (void)selectUrlsAndTapOnContextBarButtonWithLabelId:(int)buttonLabelId;
-
-- (void)verifyContextMenuForSingleURLWithEditEnabled:(BOOL)editEnabled;
-
-- (void)verifyContextMenuForSingleFolderWithEditEnabled:(BOOL)editEnabled;
-
-- (void)dismissContextMenu;
-
-- (void)verifyActionSheetsForSingleURLWithEditEnabled:(BOOL)editEnabled;
-
-- (void)verifyContextBarInDefaultStateWithSelectEnabled:(BOOL)selectEnabled
-                                       newFolderEnabled:(BOOL)newFolderEnabled;
-
-- (void)verifyContextBarInEditMode;
-
-- (void)verifyFolderFlowIsClosed;
-
-- (void)verifyEmptyBackgroundAppears;
-
-- (void)verifyEmptyBackgroundIsAbsent;
-
-- (void)verifyEmptyState;
-
-- (void)verifyBookmarkFolderIsSeen:(NSString*)bookmarkFolder;
-
-// Scroll the bookmarks to bottom.
-- (void)scrollToBottom;
-
-// Verify a folder with given name is created and it is not being edited.
-- (void)verifyFolderCreatedWithTitle:(NSString*)folderTitle;
 
 // Opens the folder picker. This method should be called from the bookmark or
 // the folder editor.
 - (void)openFolderPicker;
 
-// Checks that, in the bookmark or folder editor, the currently edited object is
-// in the correct folder. The name of the folder owning the edited node is
-// `parentName`. The expected label of the folder depends on `kindOfTest`.
-- (void)assertChangeFolderIsCorrectlySet:(NSString*)parentName
-                              kindOfTest:
-                                  (chrome_test_util::KindOfTest)kindOfTest;
+// Tap on the snackbar to make it go away.
+- (void)closeUndoSnackbarAndWait;
 
+// Scroll the bookmarks to bottom.
+- (void)scrollToBottom;
+
+#pragma mark - Context Bar and Context Menu Actions
+
+// Close edit mode.
+- (void)closeContextBarEditMode;
+
+// Selects URLs from Mobile Bookmarks and taps on the context bar button with
+// `buttonLabelId`. Must be called after previously calling
+// `[BookmarkEarlGreyUI openBookmarks]`.
+- (void)selectUrlsAndTapOnContextBarButtonWithLabelId:(int)buttonLabelId;
+
+// Dismisses the bookmark context menu.
+- (void)dismissContextMenu;
+
+// Taps the context menu button with `menuButtonId`, opens `editorId`, moves the
+// bookmark from `sourceFolder` to `destinationFolder` for `kindOfTest`.
 - (void)tapOnContextMenuButton:(int)menuButtonId
                     openEditor:(NSString*)editorId
              setParentFolderTo:(NSString*)destinationFolder
                           from:(NSString*)sourceFolder
                     kindOfTest:(chrome_test_util::KindOfTest)kindOfTest;
 
+// Long-presses `item` and taps `actionMatcher`, opens `editorId`, modifies
+// `textFieldId` to `newName`, and dismisses with `dismissButtonId`.
 - (void)tapOnLongPressContextMenuButton:(id<GREYMatcher>)actionMatcher
                                  onItem:(id<GREYMatcher>)item
                              openEditor:(NSString*)editorId
@@ -177,31 +164,75 @@ id<GREYMatcher> SearchIconButton();
                                      to:(NSString*)newName
                             dismissWith:(NSString*)dismissButtonId;
 
+// Taps the context menu button with `menuButtonId`, opens `editorId`, modifies
+// `textFieldId` to `newName`, and dismisses with `dismissButtonId`.
 - (void)tapOnContextMenuButton:(int)menuButtonId
                     openEditor:(NSString*)editorId
                modifyTextField:(NSString*)textFieldId
                             to:(NSString*)newName
                    dismissWith:(NSString*)dismissButtonId;
 
-// Context bar strings.
+// Returns the localized string for the context bar New Folder button.
 - (NSString*)contextBarNewFolderString;
 
+// Returns the localized string for the context bar Delete button.
 - (NSString*)contextBarDeleteString;
 
+// Returns the localized string for the context bar Cancel button.
 - (NSString*)contextBarCancelString;
 
+// Returns the localized string for the context bar Select button.
 - (NSString*)contextBarSelectString;
 
+// Returns the localized string for the context bar More button.
 - (NSString*)contextBarMoreString;
 
-// Create a new folder with given title.
-- (void)createNewBookmarkFolderWithFolderTitle:(NSString*)folderTitle
-                                   pressReturn:(BOOL)pressReturn;
+// Waits for the disparition of the given `title` in the UI.
+- (void)waitForDeletionOfBookmarkWithTitle:(NSString*)title;
 
-// Bookmarks the current tab using `title` as Bookmark title. Make sure the
-// Bookmark loaded is loaded before by calling [BookmarkEarlGrey
-// waitForBookmarkModelLoaded];
-- (void)bookmarkCurrentTabWithTitle:(NSString*)title;
+#pragma mark - UI State Verifications
+
+// Verifies the context menu for a single URL with `editEnabled`.
+- (void)verifyContextMenuForSingleURLWithEditEnabled:(BOOL)editEnabled;
+
+// Verifies the context menu for a single folder with `editEnabled`.
+- (void)verifyContextMenuForSingleFolderWithEditEnabled:(BOOL)editEnabled;
+
+// Verifies the action sheets for a single URL with `editEnabled`.
+- (void)verifyActionSheetsForSingleURLWithEditEnabled:(BOOL)editEnabled;
+
+// Verifies the context bar in default state with `selectEnabled` and
+// `newFolderEnabled`.
+- (void)verifyContextBarInDefaultStateWithSelectEnabled:(BOOL)selectEnabled
+                                       newFolderEnabled:(BOOL)newFolderEnabled;
+
+// Verifies the context bar is in edit mode.
+- (void)verifyContextBarInEditMode;
+
+// Verifies the folder flow is closed.
+- (void)verifyFolderFlowIsClosed;
+
+// Verifies the empty background view appears.
+- (void)verifyEmptyBackgroundAppears;
+
+// Verifies the empty background view is absent.
+- (void)verifyEmptyBackgroundIsAbsent;
+
+// Verifies the bookmark list is in its empty state.
+- (void)verifyEmptyState;
+
+// Verifies that `bookmarkFolder` is visible in the bookmark list.
+- (void)verifyBookmarkFolderIsSeen:(NSString*)bookmarkFolder;
+
+// Verifies a folder with `folderTitle` is created and is not being edited.
+- (void)verifyFolderCreatedWithTitle:(NSString*)folderTitle;
+
+// Checks that, in the bookmark or folder editor, the currently edited object is
+// in the correct folder. The name of the folder owning the edited node is
+// `parentName`. The expected label of the folder depends on `kindOfTest`.
+- (void)assertChangeFolderIsCorrectlySet:(NSString*)parentName
+                              kindOfTest:
+                                  (chrome_test_util::KindOfTest)kindOfTest;
 
 @end
 

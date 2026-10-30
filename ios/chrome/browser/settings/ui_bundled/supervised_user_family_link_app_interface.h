@@ -16,14 +16,20 @@
 // TestFamilyLinkSettingsStateHelper singleton is successfully seeded.
 + (BOOL)isFamilyLinkSettingsStateSeeded;
 
-// Manages Family Link settings.
+// Seeds default Family Link settings.
 // For subsequent calls to any of these methods, callers must wait for
 // the BrowserState singleton to be seeded
 // (i.e., [SupervisedUserFamilyLinkAppInterface isBrowserStateSeeded]
 // returns YES).
 + (void)seedDefaultFamilyLinkSettings;
+
+// Seeds SafeSites filtering in Family Link settings.
 + (void)seedSafeSitesFiltering;
+
+// Seeds `url` as an allowed site in Family Link settings.
 + (void)seedAllowSite:(NSString*)url;
+
+// Seeds `url` as a blocked site in Family Link settings.
 + (void)seedBlockSite:(NSString*)url;
 
 // Manually triggers sync service refresh as a fallback to ensure that

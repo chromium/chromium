@@ -17,12 +17,13 @@
 // `defaultSearchEngine` should be its short name.
 + (void)setSearchEngineTo:(NSString*)defaultSearchEngine;
 
-// Adds a new Search engine an optionally sets it as default.
+// Adds a new search engine with `name` and `URL`, and optionally sets it as
+// default according to `setDefault`.
 + (void)addSearchEngineWithName:(NSString*)name
                             URL:(NSString*)URL
                      setDefault:(BOOL)setDefault;
 
-// Removes the search engine.
+// Removes the search engine with `name`.
 + (void)removeSearchEngineWithName:(NSString*)name;
 
 @end

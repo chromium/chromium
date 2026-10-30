@@ -14,6 +14,8 @@
 // Test methods that perform sign in actions on Chrome UI.
 @interface SigninEarlGreyUI : NSObject
 
+#pragma mark - Sign-In, Sign-Out, and Account Management UI
+
 // Calls
 // +[SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableHistorySync:NO].
 // `fakeIdentity` is added if it was not added yet.
@@ -35,23 +37,44 @@
 // screen. Taps the "Sign Out" button, dismisses the confirmation snackbar and
 // close the settings. Verifies the user is signed-out.
 + (void)signOut;
+
 // Opens the settings > sync > signout. If `expectSnackbar`, dismisses it,
 // otherwise check it does not appear. If `closeSettings`, tap on "Done".
 // Verifies the user is signed-out.
 + (void)signOutWithExpectSnackbar:(BOOL)expectSnackbar
                     closeSettings:(BOOL)closeSettings;
 
-// dismisses the confirmation snackbar on sign-out.
-+ (void)dismissSignoutSnackbar;
-
 // Opens the recent tabs and tap in the primary sign-in button.
 + (void)tapPrimarySignInButtonInRecentTabs;
 
+// Submits encryption `passphrase`, if the user is on the Encryption page.
++ (void)submitSyncPassphrase:(NSString*)passphrase;
+
+// Enters `fakeIdentity` in the fake add-account menu and validates it. The menu
+// should be opened.
++ (void)addFakeAccountInFakeAddAccountMenu:(FakeSystemIdentity*)fakeIdentity;
+
+// Enters `fakeIdentity` in the fake add-account menu with `unknownCapabilities`
+// and validates it. The menu should be opened.
++ (void)addFakeAccountInFakeAddAccountMenu:(FakeSystemIdentity*)fakeIdentity
+                   withUnknownCapabilities:(BOOL)unknownCapabilities;
+
+// Opens settings > identity.
++ (void)openSyncSettings;
+
+// Opens settings > identity > Manage accounts on this device.
++ (void)openManageAccountsFromSettings;
+
+// Opens settings > identity > account menu.
++ (void)openAccountMenuFromSettings;
+
+#pragma mark - Promo, Dialog, and Snackbar Verification
+
 // Checks that the sign-in promo view (with a close button) is visible using the
-// right mode.
+// right `mode`.
 + (void)verifySigninPromoVisibleWithMode:(SigninPromoViewMode)mode;
 
-// Checks that the sign-in promo view is visible using the right mode. If
+// Checks that the sign-in promo view is visible using the right `mode`. If
 // `closeButton` is set to YES, the close button in the sign-in promo has to be
 // visible.
 + (void)verifySigninPromoVisibleWithMode:(SigninPromoViewMode)mode
@@ -63,42 +86,24 @@
 // Checks that the web sign-in consistency sheet visibility matches `isVisible`.
 + (void)verifyWebSigninIsVisible:(BOOL)isVisible;
 
-// Submits encryption passphrase, if the user is on the Encryption page.
-+ (void)submitSyncPassphrase:(NSString*)passphrase;
-
 // Ensure the fake add-account menu is displayed.
 + (void)assertFakeAddAccountMenuDisplayed;
 
-// Enters [fakeIdentity] in the fake add-account menu and validates it. The menu
-// should be opened
-+ (void)addFakeAccountInFakeAddAccountMenu:(FakeSystemIdentity*)fakeIdentity;
+// dismisses the confirmation snackbar on sign-out.
++ (void)dismissSignoutSnackbar;
 
-// Enters [fakeIdentity] in the fake add-account menu and validates it. The menu
-// should be opened
-+ (void)addFakeAccountInFakeAddAccountMenu:(FakeSystemIdentity*)fakeIdentity
-                   withUnknownCapabilities:(BOOL)unknownCapabilities;
-
-// Handles the identity confirmation snackbar. If `assertVisible` is YES,
-// the test will fail if the snackbar is not visible. Otherwise, if the snackbar
-// is visible, it is dismissed.
+// Handles the identity confirmation snackbar for `identity`. If `assertVisible`
+// is YES, the test will fail if the snackbar is not visible. Otherwise, if the
+// snackbar is visible, it is dismissed.
 + (void)dismissSigninConfirmationSnackbarForIdentity:
             (FakeSystemIdentity*)identity
                                        assertVisible:(BOOL)assertVisible;
 
-// Handles the identity confirmation snackbar with a title. If `assertVisible`
+// Handles the identity confirmation snackbar with `title`. If `assertVisible`
 // is YES, the test will fail if the snackbar is not visible. Otherwise, if the
 // snackbar is visible, it is dismissed.
 + (void)dismissSigninConfirmationSnackbarWithTitle:(NSString*)title
                                      assertVisible:(BOOL)assertVisible;
-
-// Opens settings > identity.
-+ (void)openSyncSettings;
-
-// Opens settings > identity > Manage accounts on this device.
-+ (void)openManageAccountsFromSettings;
-
-// Opens settings > identity > account menu.
-+ (void)openAccountMenuFromSettings;
 
 @end
 

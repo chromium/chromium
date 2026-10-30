@@ -16,7 +16,7 @@
 // Returns comma separated "accept lang" list (f.e. @"en,fr").
 + (NSString*)languages;
 
-// Adds language to "accept lang" list.
+// Adds `language` to "accept lang" list.
 + (void)addLanguage:(NSString*)language;
 
 // Returns YES if "offer translate" setting is enabled.
@@ -26,7 +26,7 @@
 // ("Never Translate This Language" option).
 + (BOOL)isBlockedLanguage:(NSString*)language;
 
-// Simulates the last-observed translate target language. Used to determine
+// Simulates the last-observed translate target `language`. Used to determine
 // which target language to offer in future.
 + (void)setRecentTargetLanguage:(NSString*)language;
 

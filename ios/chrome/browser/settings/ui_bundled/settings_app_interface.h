@@ -21,7 +21,7 @@
 // upload what has been stored locally.
 + (BOOL)isMetricsReportingEnabled [[nodiscard]];
 
-// Allows turning on and off metrics reporting.
+// Sets whether metrics reporting is `reportingEnabled`.
 + (void)setMetricsReportingEnabled:(BOOL)reportingEnabled;
 
 // YES if crashpad crash collection is enabled.
@@ -33,7 +33,7 @@
 // Returns YES if keyboard commands were seen.
 + (BOOL)settingsRegisteredKeyboardCommands;
 
-// Override the default search engine with the given search engine URL.
+// Overrides the default search engine with the given `searchEngineURL`.
 + (void)overrideSearchEngineWithURL:(NSString*)searchEngineURL;
 
 // Restores the default search engine to Google, and wipes search engine choice
@@ -41,8 +41,8 @@
 + (void)resetSearchEngine;
 
 // Adds a URL rewriter to replace all requests having their host containing a
-// string `host` from `hosts`. Those URL are rewritten to
-// 127.0.0.1:<port>/<host>.
+// string `host` from `hosts`. Those URLs are rewritten to
+// 127.0.0.1:`port`/<host>.
 + (void)addURLRewriterForHosts:(NSArray<NSString*>*)hosts
                         onPort:(NSString*)port;
 

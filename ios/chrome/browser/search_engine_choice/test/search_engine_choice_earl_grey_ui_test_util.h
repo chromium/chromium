@@ -26,7 +26,8 @@ typedef NS_ENUM(NSUInteger, FakeOmniboxState) {
 // Test methods that perform actions on the search engine choice UI
 @interface SearchEngineChoiceEarlGreyUI : NSObject
 
-// Selects search engine cell with `search_engine_name`.
+// Selects the search engine cell with `searchEngineName` by scrolling in
+// `scrollDirection` by `scrollAmount`.
 + (void)selectSearchEngineCellWithName:(NSString*)searchEngineName
                        scrollDirection:(GREYDirection)scrollDirection
                                 amount:(CGFloat)scrollAmount;
@@ -41,10 +42,12 @@ typedef NS_ENUM(NSUInteger, FakeOmniboxState) {
 // Opens the search engine settings.
 + (void)openSearchEngineSettings;
 
-// Checks that the default search engine was correctly set.
+// Checks that the default search engine was correctly set to
+// `searchEngineName`.
 + (void)verifyDefaultSearchEngineSetting:(NSString*)searchEngineName;
 
-// Returns GreyMatcher for the search engine for the settings table view.
+// Returns GreyMatcher for the search engine with `name` for the settings table
+// view.
 + (id<GREYMatcher>)settingsSearchEngineMatcherWithName:(NSString*)name;
 
 // Returns the GREYElementInteraction for the item in the search engine list

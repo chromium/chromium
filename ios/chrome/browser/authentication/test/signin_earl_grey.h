@@ -27,16 +27,20 @@ class GURL;
 // TODO(crbug.com/41465348): Consider moving these into ChromeEarlGrey.
 @interface SigninEarlGreyImpl : BaseEGTestHelperImpl
 
-// Calls -[SigninEarlGreyImpl addFakeIdentity:withUnknownCapabilities:NO].
+#pragma mark - Fake Identities and Capabilities
+
+// Adds `fakeIdentity` via `-[SigninEarlGreyImpl addFakeIdentity:fakeIdentity
+// withUnknownCapabilities:NO]`.
 - (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity;
 
 // Adds `fakeIdentity` to the fake identity service with capabilities set or
-// unset. Does nothing if the identity is already added.
+// unset according to `usingUnknownCapabilities`. Does nothing if the identity
+// is already added.
 - (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity
     withUnknownCapabilities:(BOOL)usingUnknownCapabilities;
 
-// Adds `fakeIdentity` and set the capabilities before firing the list changed
-// notification.
+// Adds `fakeIdentity` and sets the `capabilities` before firing the list
+// changed notification.
 - (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity
        withCapabilities:(NSDictionary<NSString*, NSNumber*>*)capabilities;
 
@@ -45,17 +49,18 @@ class GURL;
 - (void)setCapabilities:(NSDictionary<NSString*, NSNumber*>*)capabilities
             forIdentity:(FakeSystemIdentity*)fakeIdentity;
 
-// Calls -[SigninEarlGreyImpl
-// addFakeIdentityForSSOAuthAddAccountFlow:withUnknownCapabilities:NO].
+// Adds `fakeIdentity` via `-[SigninEarlGreyImpl
+// addFakeIdentityForSSOAuthAddAccountFlow:fakeIdentity
+// withUnknownCapabilities:NO]`.
 - (void)addFakeIdentityForSSOAuthAddAccountFlow:
     (FakeSystemIdentity*)fakeIdentity;
 
 // Adds `fakeIdentity` to the fake system identity interaction manager with
-// capabilities set or unset. This is used to simulate adding the `fakeIdentity`
-// through the fake SSO Auth flow done by
-// `FakeSystemIdentityInteractionManager`. Use
-// `[SigninEarlGreyUI addFakeAccountInFakeAddAccountMenu:fakeIdentity];` to
-// trigger the add account flow.
+// capabilities set or unset according to `usingUnknownCapabilities`. This is
+// used to simulate adding the `fakeIdentity` through the fake SSO Auth flow
+// done by `FakeSystemIdentityInteractionManager`. Use `[SigninEarlGreyUI
+// addFakeAccountInFakeAddAccountMenu:fakeIdentity];` to trigger the add account
+// flow.
 - (void)addFakeIdentityForSSOAuthAddAccountFlow:
             (FakeSystemIdentity*)fakeIdentity
                         withUnknownCapabilities:(BOOL)usingUnknownCapabilities;
@@ -64,42 +69,23 @@ class GURL;
 // simulate identity removal from the device.
 - (void)forgetFakeIdentity:(FakeSystemIdentity*)fakeIdentity;
 
-// Returns YES if the identity was added to the fake identity service.
+// Returns YES if `fakeIdentity` was added to the fake identity service.
 - (BOOL)isIdentityAdded:(FakeSystemIdentity*)fakeIdentity;
 
-// Simulates a persistent authentication error for an account.
-- (void)setPersistentAuthErrorForAccount:(const CoreAccountId&)accountId;
-
-// Triggers a persistent MDM error for the provided identity.
-- (void)setMDMErrorForIdentity:(FakeSystemIdentity*)fakeIdentity
-                userActionable:(BOOL)userActionable;
-
-// Clears the persistent MDM error for the provided identity.
-- (void)clearMDMErrorForIdentity:(FakeSystemIdentity*)fakeIdentity;
-
-// Resets the recorded MDM notification display status in
-// `FakeSystemIdentityManager`.
-- (void)resetMDMNotificationDisplayed;
-
-// Returns YES if `DisplayMDMNotification()` was called on
-// `FakeSystemIdentityManager`.
-- (BOOL)wasMDMNotificationDisplayed;
-
-// Waits for the MDM notification to be displayed.
-- (void)waitForMDMNotificationDisplayed;
+#pragma mark - Sign-In, Sign-Out, and Account Verification
 
 // Returns the gaia ID of the signed-in account.
 // If there is no signed-in account returns an empty string.
 - (GaiaId)primaryAccountGaiaID;
 
-// Checks that no identity is signed in.
+// Returns YES if no identity is signed in.
 - (BOOL)isSignedOut;
 
 // Signs the user out of the primary account. Induces a GREYAssert if the
 // app fails to sign out.
 - (void)signOut;
 
-// Signs in with the fake identity and, if `waitForSync` is true, waits for the
+// Signs in with `identity` and, if `waitForSync` is true, waits for the
 // Sync machinery to become active.
 // Adds the fake-identity to the identity manager if necessary.
 // Only intended for tests requiring sign-in but not covering the sign-in UI
@@ -110,10 +96,10 @@ class GURL;
 - (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity
     waitForSyncTransportActive:(BOOL)waitForSync;
 
-// Same as `signinWithFakeIdentity:identity waitForSyncTransportActive:YES`.
+// Signs in with `identity` with `waitForSyncTransportActive:YES`.
 - (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity;
 
-// Signs in with the fake identity and, if `waitForSync` is true, waits for the
+// Signs in with `identity` and, if `waitForSync` is true, waits for the
 // Sync machinery to become active.
 // Adds the fake-identity to the identity manager if necessary.
 // If separate profiles for managed accounts are enabled, converts the personal
@@ -127,8 +113,7 @@ class GURL;
             (FakeSystemIdentity*)identity
                             waitForSyncTransportActive:(BOOL)waitForSync;
 
-// Same as `signinWithFakeManagedIdentityInPersonalProfile:identity
-// waitForSyncTransportActive:YES`.
+// Signs in with managed `identity` with `waitForSyncTransportActive:YES`.
 - (void)signinWithFakeManagedIdentityInPersonalProfile:
     (FakeSystemIdentity*)identity;
 
@@ -137,8 +122,9 @@ class GURL;
 // `url` that triggered the web sign-in/consistency dialog.
 - (void)triggerConsistencyPromoSigninDialogWithURL:(GURL)url;
 
-// Triggers the reauth dialog. This is done by sending ShowSigninCommand to
-// SceneController, without any UI interaction to open the dialog.
+// Triggers the reauth dialog for `identity`. This is done by sending
+// ShowSigninCommand to SceneController, without any UI interaction to open the
+// dialog.
 // TODO(crbug.com/40916763): To be consistent, this method should be renamed to
 // `triggerSigninAndSyncReauthWithFakeIdentity:`.
 - (void)triggerReauthDialogWithFakeIdentity:(FakeSystemIdentity*)identity;
@@ -153,29 +139,6 @@ class GURL;
 // Induces a GREYAssert if an identity is signed in.
 - (void)verifySignedOut;
 
-- (void)setSelectedType:(syncer::UserSelectableType)type enabled:(BOOL)enabled;
-
-// Returns if the data type is enabled for the sync service.
-- (BOOL)isSelectedTypeEnabled:(syncer::UserSelectableType)type;
-
-// Checks that fore each histogram listed above as properties, it’s emitted the
-// number of time indicated in the property for `accessPoint`.
-- (void)assertExpectedSigninHistograms:(ExpectedSigninHistograms*)expecteds;
-
-// Set/clear a global flag to return fake default responses for all profile
-// separation policy fetch requests (unless a specific response is set for the
-// next request, see `setPolicyResponseForNextProfileSeparationPolicyRequest:`).
-// If a test sets this (typically in `setUpForTestCase`), it must also unset it
-// again (in `tearDown`).
-- (void)setUseFakeResponsesForProfileSeparationPolicyRequests;
-- (void)clearUseFakeResponsesForProfileSeparationPolicyRequests;
-
-// Stores a policy that will be returned for the next fetch profile separation
-// policy request.
-- (void)setPolicyResponseForNextProfileSeparationPolicyRequest:
-    (policy::ProfileSeparationDataMigrationSettings)
-        profileSeparationDataMigrationSettings;
-
 // Closes the managed account sign-in confirmation dialog when necessary, if
 // `fakeIdentity` is a managed account. That dialog may be shown on signing in
 // if User Policy is enabled.
@@ -185,6 +148,56 @@ class GURL;
 // signed-out users to sign in. If `fakeIdentity` is nil, clears the preferred
 // account.
 - (void)setPreferredAccountForSignin:(FakeSystemIdentity*)fakeIdentity;
+
+#pragma mark - Auth Errors, Sync Types, and Policies
+
+// Simulates a persistent authentication error for `accountId`.
+- (void)setPersistentAuthErrorForAccount:(const CoreAccountId&)accountId;
+
+// Triggers a persistent MDM error for `fakeIdentity` with `userActionable`.
+- (void)setMDMErrorForIdentity:(FakeSystemIdentity*)fakeIdentity
+                userActionable:(BOOL)userActionable;
+
+// Clears the persistent MDM error for `fakeIdentity`.
+- (void)clearMDMErrorForIdentity:(FakeSystemIdentity*)fakeIdentity;
+
+// Resets the recorded MDM notification display status in
+// `FakeSystemIdentityManager`.
+- (void)resetMDMNotificationDisplayed;
+
+// Returns YES if `DisplayMDMNotification()` was called on
+// `FakeSystemIdentityManager`.
+- (BOOL)wasMDMNotificationDisplayed;
+
+// Waits for the MDM notification to be displayed.
+- (void)waitForMDMNotificationDisplayed;
+
+// Sets the sync selected `type` to `enabled`.
+- (void)setSelectedType:(syncer::UserSelectableType)type enabled:(BOOL)enabled;
+
+// Returns YES if the data `type` is enabled for the sync service.
+- (BOOL)isSelectedTypeEnabled:(syncer::UserSelectableType)type;
+
+// Checks that for each histogram listed in `expecteds`, it is emitted the
+// expected number of times for `accessPoint`.
+- (void)assertExpectedSigninHistograms:(ExpectedSigninHistograms*)expecteds;
+
+// Sets a global flag to return fake default responses for all profile
+// separation policy fetch requests (unless a specific response is set for the
+// next request, see `setPolicyResponseForNextProfileSeparationPolicyRequest:`).
+// If a test sets this (typically in `setUpForTestCase`), it must also unset it
+// again (in `tearDown`).
+- (void)setUseFakeResponsesForProfileSeparationPolicyRequests;
+
+// Clears the global flag returning fake default responses for profile
+// separation policy fetch requests.
+- (void)clearUseFakeResponsesForProfileSeparationPolicyRequests;
+
+// Stores `profileSeparationDataMigrationSettings` as the policy that will be
+// returned for the next fetch profile separation policy request.
+- (void)setPolicyResponseForNextProfileSeparationPolicyRequest:
+    (policy::ProfileSeparationDataMigrationSettings)
+        profileSeparationDataMigrationSettings;
 
 @end
 

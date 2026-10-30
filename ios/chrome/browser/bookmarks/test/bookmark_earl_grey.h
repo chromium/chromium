@@ -42,12 +42,13 @@ const GURL GetFrenchUrl();
 // Clear Bookmarks top most row position cache.
 - (void)clearBookmarksPositionCache;
 
-// Loads a set of default bookmarks in the model for the tests to use.
-// GREYAssert is induced if test bookmarks can not be loaded.
+// Loads a set of default bookmarks in `storageType` in the model for the tests
+// to use. GREYAssert is induced if test bookmarks can not be loaded.
 - (void)setupStandardBookmarksInStorage:(BookmarkStorageType)storageType;
 
-// Loads a large set of bookmarks in the model which is longer than the screen
-// height. GREYAssert is induced if test bookmarks can not be loaded.
+// Loads a large set of bookmarks in `storageType` in the model which is longer
+// than the screen height. GREYAssert is induced if test bookmarks can not be
+// loaded.
 - (void)setupBookmarksWhichExceedsScreenHeightInStorage:
     (BookmarkStorageType)storageType;
 
@@ -58,69 +59,72 @@ const GURL GetFrenchUrl();
 // terminating and restarting the app.
 - (void)commitPendingWrite;
 
-// Set the last used bookmark folder to Mobile bookmarks in storage type.
+// Sets the last used bookmark folder to Mobile bookmarks in `storageType`.
 - (void)setLastUsedBookmarkFolderToMobileBookmarksInStorageType:
     (BookmarkStorageType)storageType;
 
 #pragma mark - Common Helpers
 
 // Verifies that `expectedCount` bookmarks exist with the corresponding `title`
-// using the BookmarkModel. GREYAssert is induced if the count doesn't match.
+// in `storageType` using the BookmarkModel. GREYAssert is induced if the count
+// doesn't match.
 - (void)verifyBookmarksWithTitle:(NSString*)title
                    expectedCount:(NSUInteger)expectedCount
                        inStorage:(BookmarkStorageType)storageType;
 
-// Verifies that there is `count` children on the bookmark folder with `name`.
-// GREYAssert is induced if the folder doesn't exist or the count doesn't match.
+// Verifies that there are `count` children in the bookmark folder with `name`
+// in `storageType`. GREYAssert is induced if the folder doesn't exist or the
+// count doesn't match.
 - (void)verifyChildCount:(int)count
         inFolderWithName:(NSString*)name
                inStorage:(BookmarkStorageType)storageType;
 
-// Programmatically adds a bookmark with the given title and URL. GREYAssert is
-// induced if the bookmark cannot be added.
+// Programmatically adds a bookmark with the given `title` and `url` in
+// `storageType`. GREYAssert is induced if the bookmark cannot be added.
 - (void)addBookmarkWithTitle:(NSString*)title
                          URL:(NSString*)url
                    inStorage:(BookmarkStorageType)storageType;
 
-// Removes programmatically the first bookmark with the given title. GREYAssert
-// is induced if the bookmark can't be removed.
+// Removes programmatically the first bookmark with the given `title` in
+// `storageType`. GREYAssert is induced if the bookmark can't be removed.
 - (void)removeBookmarkWithTitle:(NSString*)title
                       inStorage:(BookmarkStorageType)storageType;
 
 // Moves bookmark with title `bookmarkTitle` into a folder with title
-// `newFolder`. GREYAssert is induced if the bookmark can't be moved.
+// `newFolder` in `storageType`. GREYAssert is induced if the bookmark can't be
+// moved.
 - (void)moveBookmarkWithTitle:(NSString*)bookmarkTitle
             toFolderWithTitle:(NSString*)newFolder
                     inStorage:(BookmarkStorageType)storageType;
 
-// Verifies the existence of a Bookmark with `URL` and `name`. GREYAssert is
-// induced if the bookmarks doesn't exist.
+// Verifies the existence of a Bookmark with `URL` and `name` in `storageType`.
+// GREYAssert is induced if the bookmark doesn't exist.
 - (void)verifyExistenceOfBookmarkWithURL:(NSString*)URL
                                     name:(NSString*)name
                                inStorage:(BookmarkStorageType)storageType;
 
-// Verifies the absence of a Bookmark with `URL`. GREYAssert is induced if the
-// bookmarks does exist.
+// Verifies the absence of a Bookmark with `URL` in `storageType`. GREYAssert is
+// induced if the bookmark does exist.
 - (void)verifyAbsenceOfBookmarkWithURL:(NSString*)URL
                              inStorage:(BookmarkStorageType)storageType;
 
-// Verifies that a folder called `title` exists. GREYAssert is induced if the
-// folder doesn't exist.
+// Verifies that a folder called `title` exists in `storageType`. GREYAssert is
+// induced if the folder doesn't exist.
 - (void)verifyExistenceOfFolderWithTitle:(NSString*)title
                                inStorage:(BookmarkStorageType)storageType;
 
-// Verifies the absence of a folder with `title`. GREYAssert is induced if the
-// folder does exist.
+// Verifies the absence of a folder with `title` in `storageType`. GREYAssert is
+// induced if the folder does exist.
 - (void)verifyAbsenceOfFolderWithTitle:(NSString*)title
                              inStorage:(BookmarkStorageType)storageType;
 
 #pragma mark - Promo
 
-// Checks that the promo has already been seen or not. GREYAssert is induced if
+// Checks that the promo seen state matches `seen`. GREYAssert is induced if
 // the opposite is true.
 - (void)verifyPromoAlreadySeen:(BOOL)seen;
 
-// Checks that the promo has already been seen or not.
+// Sets whether the promo has already been `seen`.
 - (void)setPromoAlreadySeen:(BOOL)seen;
 
 // Sets that the promo has already been seen `times` number of times.

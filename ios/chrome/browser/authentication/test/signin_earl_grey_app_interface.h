@@ -22,12 +22,13 @@ enum class UserSelectableType;
 @interface SigninEarlGreyAppInterface : NSObject
 
 // Adds `fakeIdentity` to the fake identity service with capabilities set or
-// unset. Does nothing if the fake identity is already added.
+// unset according to `usingUnknownCapabilities`. Does nothing if the fake
+// identity is already added.
 + (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity
     withUnknownCapabilities:(BOOL)usingUnknownCapabilities;
 
-// Adds `fakeIdentity` and set the capabilities before firing the list changed
-// notification.
+// Adds `fakeIdentity` and sets the `capabilities` before firing the list
+// changed notification.
 + (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity
        withCapabilities:(NSDictionary<NSString*, NSNumber*>*)capabilities;
 
@@ -37,9 +38,9 @@ enum class UserSelectableType;
             forIdentity:(FakeSystemIdentity*)fakeIdentity;
 
 // Adds `fakeIdentity` to the fake system identity interaction manager, with
-// capabilities set or unset. This is used to simulate adding the `fakeIdentity`
-// through the fake SSO Auth flow done by
-// `FakeSystemIdentityInteractionManager`. See
+// capabilities set or unset according to `usingUnknownCapabilities`. This is
+// used to simulate adding the `fakeIdentity` through the fake SSO Auth flow
+// done by `FakeSystemIdentityInteractionManager`. See
 // `kFakeAuthAddAccountButtonIdentifier` to trigger the add account flow.
 + (void)addFakeIdentityForSSOAuthAddAccountFlow:
             (FakeSystemIdentity*)fakeIdentity
@@ -49,10 +50,11 @@ enum class UserSelectableType;
 // to simulate identity removal from the device.
 + (void)forgetFakeIdentity:(FakeSystemIdentity*)fakeIdentity;
 
-// Returns YES if the identity was added to the fake identity service.
+// Returns YES if `fakeIdentity` was added to the fake identity service.
 + (BOOL)isIdentityAdded:(FakeSystemIdentity*)fakeIdentity;
 
-// Simulates a persistent authentication error for an account.
+// Simulates a persistent authentication error for an account with
+// `accountGaiaId`.
 + (void)setPersistentAuthErrorForAccount:(NSString*)accountGaiaId;
 
 // Returns the gaia ID of the primary account.
@@ -69,57 +71,62 @@ enum class UserSelectableType;
 // Signs out the current user.
 + (void)signOut;
 
-// Signs in with the fake identity.
+// Signs in with the fake `identity`.
 // Adds the fake-identity to the identity manager if necessary.
 // Call `[SigninEarlGrey signinWithFakeIdentity:identity]` instead.
-// `fakeIdentity` is added if it was not added yet.
+// `identity` is added if it was not added yet.
 + (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity;
 
-// Signs in with the fake managed identity.
+// Signs in with the fake managed `identity`.
 // Adds the fake-identity to the identity manager if necessary.
 // If separate profiles for managed accounts are enabled, converts the personal
 // profile into a managed one.
 // Call `[SigninEarlGrey
 // signinWithFakeManagedIdentityInPersonalProfile:identity]` instead.
-// `fakeIdentity` is added if it was not added yet.
+// `identity` is added if it was not added yet.
 + (void)signinWithFakeManagedIdentityInPersonalProfile:
     (FakeSystemIdentity*)identity;
 
-// Triggers the reauth dialog. This is done by sending ShowSigninCommand to
-// SceneController, without any UI interaction to open the dialog.
+// Triggers the reauth dialog with `identity`. This is done by sending
+// ShowSigninCommand to SceneController, without any UI interaction to open the
+// dialog.
 // TODO(crbug.com/40916763): To be consistent, this method should be renamed to
 // `triggerSigninAndSyncReauthWithFakeIdentity:`.
 + (void)triggerReauthDialogWithFakeIdentity:(FakeSystemIdentity*)identity;
 
 // Triggers the web sign-in consistency dialog. This is done by calling
-// directly the current SceneController.
-// `url` that triggered the web sign-in/consistency dialog.
+// directly the current SceneController with `url` that triggered the dialog.
 + (void)triggerConsistencyPromoSigninDialogWithURL:(NSURL*)url;
 
+// Sets whether the sync data `type` is `enabled`.
 + (void)setSelectedType:(syncer::UserSelectableType)type enabled:(BOOL)enabled;
 
-// Returns if the data type is enabled for the sync service.
+// Returns if the data `type` is enabled for the sync service.
 + (BOOL)isSelectedTypeEnabled:(syncer::UserSelectableType)type;
 
-// Set/clear a global flag to return fake default responses for all profile
+// Sets a global flag to return fake default responses for all profile
 // separation policy fetch requests (unless a specific response is set for the
 // next request, see `setPolicyResponseForNextProfileSeparationPolicyRequest:`).
 // If a test sets this (typically in `setUpForTestCase`), it must also unset it
 // again (in `tearDown`).
 + (void)setUseFakeResponsesForProfileSeparationPolicyRequests;
+
+// Clears the global flag to return fake default responses for profile
+// separation policy fetch requests.
 + (void)clearUseFakeResponsesForProfileSeparationPolicyRequests;
 
 // Stores a policy that will be returned for the next fetch profile separation
-// policy request.
+// policy request using `profileSeparationDataMigrationSettings`.
 + (void)setPolicyResponseForNextProfileSeparationPolicyRequest:
     (policy::ProfileSeparationDataMigrationSettings)
         profileSeparationDataMigrationSettings;
 
-// Triggers a persistent MDM error for the provided identity.
+// Triggers a persistent MDM error for `fakeIdentity`, setting actionable status
+// to `userActionable`.
 + (void)setMDMErrorForIdentity:(FakeSystemIdentity*)fakeIdentity
                 userActionable:(BOOL)userActionable;
 
-// Clears the persistent MDM error for the provided identity.
+// Clears the persistent MDM error for `fakeIdentity`.
 + (void)clearMDMErrorForIdentity:(FakeSystemIdentity*)fakeIdentity;
 
 // Resets the recorded MDM notification display status in
