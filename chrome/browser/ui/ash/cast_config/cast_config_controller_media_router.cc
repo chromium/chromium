@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/icu4c_tag_converter.h"
 #include "base/memory/raw_ref.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -157,9 +158,10 @@ void CastDeviceCache::SortSinks() {
   }
   if (!collator_) {
     UErrorCode error = U_ZERO_ERROR;
-    const std::string& locale = application_locale_storage_->Get();
-    collator_.reset(
-        icu::Collator::createInstance(icu::Locale(locale.c_str()), error));
+    collator_.reset(icu::Collator::createInstance(
+        base::i18n::IcuLocaleConverter::GetInstance().FromLanguageTag(
+            application_locale_storage_->GetTag()),
+        error));
     if (U_FAILURE(error)) {
       collator_.reset();
       return;

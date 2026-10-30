@@ -170,18 +170,16 @@ void SetResultTo(ResultView* result_view, DefinitionResult* definition_result) {
 
 void SetResultTo(ResultView* result_view,
                  TranslationResult* translation_result,
-                 const std::string& application_locale) {
+                 const base::i18n::LanguageTag& application_locale) {
   result_view->SetFirstLineText(
       base::UTF8ToUTF16(translation_result->text_to_translate));
 
   std::u16string display_name_locale;
   std::optional<base::i18n::LanguageTag> locale_tag =
       base::i18n::GetLanguageTagFromString(translation_result->source_locale);
-  std::optional<base::i18n::LanguageTag> display_locale_tag =
-      base::i18n::GetLanguageTagFromString(application_locale);
-  if (locale_tag && display_locale_tag) {
+  if (locale_tag) {
     display_name_locale = l10n_util::GetDisplayNameForLocale(
-        locale_tag->WithLanguageSubtagOnly(), *display_locale_tag,
+        locale_tag->WithLanguageSubtagOnly(), application_locale,
         /*is_for_ui=*/true);
   }
   if (!display_name_locale.empty()) {
@@ -594,8 +592,9 @@ std::optional<Intent> QuickAnswersView::GetIntent() const {
   return intent_;
 }
 
-void QuickAnswersView::SetResult(const StructuredResult& structured_result,
-                                 const std::string& application_locale) {
+void QuickAnswersView::SetResult(
+    const StructuredResult& structured_result,
+    const base::i18n::LanguageTag& application_locale) {
   // Check if the view (or any of its children) had focus before resetting the
   // view, so it can be restored for the updated view.
   bool pane_already_had_focus = HasFocusInside();

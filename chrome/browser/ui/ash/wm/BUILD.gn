@@ -18,6 +18,7 @@ static_library("wm") {
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
+    "//base/i18n:language_tag",
     "//chrome/browser/ash/app_restore",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/desks",

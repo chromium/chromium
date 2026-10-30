@@ -5,6 +5,7 @@
 #include "components/google/core/common/google_util.h"
 
 #include "base/command_line.h"
+#include "base/i18n/language_tag.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/google/core/common/google_switches.h"
@@ -662,4 +663,19 @@ TEST(GoogleUtilTest, IsGoogleSearchPrewarmUrl) {
       GURL("https://www.example.com/search/warmup.html")));
   EXPECT_FALSE(google_util::IsGoogleSearchPrewarmUrl(
       GURL("https://subdomain.google.com/search/warmup.html")));
+}
+
+TEST(GoogleUtilTest, GetGoogleLocaleFromLanguageTag) {
+  // Google uses "no" instead of "nb" for Norwegian Bokmal.
+  EXPECT_EQ(
+      base::i18n::GetKnownLanguageTag("no"),
+      google_util::GetGoogleLocale(base::i18n::GetKnownLanguageTag("nb")));
+
+  // Other language tags are returned unchanged.
+  EXPECT_EQ(
+      base::i18n::GetKnownLanguageTag("no"),
+      google_util::GetGoogleLocale(base::i18n::GetKnownLanguageTag("no")));
+  EXPECT_EQ(
+      base::i18n::GetKnownLanguageTag("en-US"),
+      google_util::GetGoogleLocale(base::i18n::GetKnownLanguageTag("en-US")));
 }

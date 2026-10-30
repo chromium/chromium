@@ -30,6 +30,10 @@
 #include "ui/views/view_tracker.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace views {
 class ImageButton;
 class ImageView;
@@ -94,7 +98,7 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
   std::optional<Intent> GetIntent() const;
 
   void SetResult(const StructuredResult& structured_result,
-                 const std::string& application_locale);
+                 const base::i18n::LanguageTag& application_locale);
 
   void ShowRetryView();
 

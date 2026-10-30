@@ -22,6 +22,8 @@
 #include "ash/webui/grit/ash_graduation_resources_map.h"
 #include "base/check_deref.h"
 #include "base/containers/span.h"
+#include "base/i18n/language_tag.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/version_info/version_info.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -45,7 +47,8 @@ namespace {
 constexpr char kUserAgentStringPrefix[] = "ChromeWebView/%s";
 
 const std::string GetTransferUrl() {
-  const std::string language_code = GraduationManager::Get()->GetLanguageCode();
+  const base::i18n::LanguageTag language_tag =
+      GraduationManager::Get()->GetLanguageCode();
 
   std::string url_base;
   // TODO(crbug.com/376690096): Clean up feature flag when the new
@@ -59,7 +62,7 @@ const std::string GetTransferUrl() {
 
   GURL::Replacements replacements;
   const std::string query_string =
-      base::StringPrintf("hl=%s", language_code.c_str());
+      base::StrCat({"hl=", language_tag.tag_string()});
   replacements.SetQueryStr(query_string);
   const GURL transfer_url = transfer_url_base.ReplaceComponents(replacements);
 

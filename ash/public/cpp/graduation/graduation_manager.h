@@ -5,9 +5,8 @@
 #ifndef ASH_PUBLIC_CPP_GRADUATION_GRADUATION_MANAGER_H_
 #define ASH_PUBLIC_CPP_GRADUATION_GRADUATION_MANAGER_H_
 
-#include <string>
-
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/i18n/language_tag.h"
 #include "base/observer_list_types.h"
 
 namespace base {
@@ -43,8 +42,9 @@ class ASH_PUBLIC_EXPORT GraduationManager {
   GraduationManager& operator=(const GraduationManager&) = delete;
   virtual ~GraduationManager();
 
-  // Returns the language code of the device's current locale.
-  virtual std::string GetLanguageCode() const = 0;
+  // Returns the language tag of the device's current locale, adjusted to the
+  // form expected by Google web properties.
+  virtual base::i18n::LanguageTag GetLanguageCode() const = 0;
 
   //  Returns storage partition for a given `context` and
   //  `storage_partition_config`.

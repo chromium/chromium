@@ -185,7 +185,7 @@ void QuickAnswersUiController::RenderQuickAnswersViewWithResult(
   // QuickAnswersView was initiated with a loading page and will be updated
   // when quick answers result from server side is ready.
   quick_answers_view()->SetResult(structured_result,
-                                  application_locale_storage_->Get());
+                                  application_locale_storage_->GetTag());
 }
 
 void QuickAnswersUiController::SetActiveQuery(Profile* profile,

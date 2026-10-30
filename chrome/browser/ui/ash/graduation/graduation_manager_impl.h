@@ -27,6 +27,10 @@ class TickClock;
 class WallClockTimer;
 }  // namespace base
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 namespace ash::graduation {
 
 // Manages the state of the Transfer app depending on the status of the
@@ -43,7 +47,7 @@ class GraduationManagerImpl : public ash::graduation::GraduationManager,
   ~GraduationManagerImpl() override;
 
   // ash::graduation::GraduationManager:
-  std::string GetLanguageCode() const override;
+  base::i18n::LanguageTag GetLanguageCode() const override;
 
   content::StoragePartition* GetStoragePartition(
       content::BrowserContext* context,

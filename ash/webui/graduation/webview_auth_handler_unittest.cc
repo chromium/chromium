@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ash/public/cpp/graduation/graduation_manager.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -101,7 +102,9 @@ class TestGraduationManager : public GraduationManager {
     return &test_storage_partition_;
   }
 
-  std::string GetLanguageCode() const override { return "en"; }
+  base::i18n::LanguageTag GetLanguageCode() const override {
+    return base::i18n::GetKnownLanguageTag("en");
+  }
   void AddObserver(GraduationManagerObserver* observer) override {}
   void RemoveObserver(GraduationManagerObserver* observer) override {}
   void SetClocksForTesting(const base::Clock* clock,

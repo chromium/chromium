@@ -12,6 +12,7 @@
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_model_observer.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/icu_test_util.h"
@@ -171,7 +172,7 @@ class GraduationManagerTest : public SystemWebAppBrowserTestBase,
         prefs::kGraduationEnablementStatus, status.Clone());
   }
 
-  std::string GetLanguageCode() {
+  base::i18n::LanguageTag GetLanguageCode() {
     return ash::graduation::GraduationManagerImpl::Get()->GetLanguageCode();
   }
 
@@ -363,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppUnpinnedWhenEndDateHasPassed) {
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest, GetLanguageCode) {
   // Browser tests should default to English.
-  EXPECT_EQ("en-US", GetLanguageCode());
+  EXPECT_EQ(base::i18n::GetKnownLanguageTag("en-US"), GetLanguageCode());
 
   // Switch the application locale to Spanish.
   base::RunLoop run_loop;
@@ -373,7 +374,7 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest, GetLanguageCode) {
       ProfileManager::GetActiveUserProfile());
   run_loop.Run();
 
-  EXPECT_EQ("es", GetLanguageCode());
+  EXPECT_EQ(base::i18n::GetKnownLanguageTag("es"), GetLanguageCode());
 }
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest, DoesNotLoopOnDstFallBackDay) {

@@ -15,6 +15,10 @@
 
 class GURL;
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
+
 // This namespace provides various helpers around handling Google-related URLs.
 namespace google_util {
 
@@ -57,6 +61,10 @@ bool HasGoogleSearchQueryParam(std::string_view str);
 // the same string as AppendGoogleLocaleParam adds to the URL, only without the
 // leading "hl".
 std::string GetGoogleLocale(const std::string& application_locale);
+
+// Same as above, but takes and returns a `base::i18n::LanguageTag`.
+base::i18n::LanguageTag GetGoogleLocale(
+    const base::i18n::LanguageTag& application_locale);
 
 // Adds the Google locale string to the URL (e.g., hl=en-US).  This does not
 // check to see if the param already exists.

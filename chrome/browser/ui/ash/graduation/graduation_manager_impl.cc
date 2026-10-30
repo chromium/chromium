@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "base/i18n/language_tag.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
@@ -55,8 +56,8 @@ GraduationManagerImpl::~GraduationManagerImpl() {
   midnight_timer_.reset();
 }
 
-std::string GraduationManagerImpl::GetLanguageCode() const {
-  return google_util::GetGoogleLocale(application_locale_storage_->Get());
+base::i18n::LanguageTag GraduationManagerImpl::GetLanguageCode() const {
+  return google_util::GetGoogleLocale(application_locale_storage_->GetTag());
 }
 
 content::StoragePartition* GraduationManagerImpl::GetStoragePartition(

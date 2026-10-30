@@ -16,6 +16,7 @@
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "base/no_destructor.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
@@ -208,6 +209,15 @@ bool HasGoogleSearchQueryParam(std::string_view str) {
 std::string GetGoogleLocale(const std::string& application_locale) {
   // Google does not recognize "nb" for Norwegian Bokmal; it uses "no".
   return (application_locale == "nb") ? "no" : application_locale;
+}
+
+base::i18n::LanguageTag GetGoogleLocale(
+    const base::i18n::LanguageTag& application_locale) {
+  // Google does not recognize "nb" for Norwegian Bokmal; it uses "no".
+  if (application_locale == base::i18n::GetKnownLanguageTag("nb")) {
+    return base::i18n::GetKnownLanguageTag("no");
+  }
+  return application_locale;
 }
 
 GURL AppendGoogleLocaleParam(const GURL& url,
