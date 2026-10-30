@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/startup/features.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_webui_profile.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
@@ -50,6 +51,7 @@
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
@@ -66,6 +68,21 @@
 #endif
 
 namespace {
+
+constexpr char kClearDiskStateHistogram[] =
+    "Storage.SessionStorage.ClearDiskStateAtStoragePartitionInit";
+
+// Returns the number of samples of `kClearDiskStateHistogram` recorded for
+// TopChromeWebUIProfile. With kTopChromeWebUISharedRenderer, it hosts the WebUI
+// toolbar, and its in-memory storage partition records false.
+int GetTopChromeWebUIProfileSampleCount() {
+  Profile* profile = webui::GetTopChromeWebUIProfile();
+  return profile && profile->GetStoragePartition(
+                        content::StoragePartitionConfig::CreateDefault(profile),
+                        /*can_create=*/false)
+             ? 1
+             : 0;
+}
 
 const char kTestHeaders[] = "HTTP/1.1 200 OK\nContent-type: text/html\n\n";
 
@@ -430,23 +447,21 @@ IN_PROC_BROWSER_TEST_P(ContinueWhereILeftOffSessionStorageTest,
   // regardless of feature state.
   CheckReloadedPageRestored();
 
+  const int top_chrome_webui_samples = GetTopChromeWebUIProfileSampleCount();
 #if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS also loads a signin OTR Profile (always false) and its parent
   // non-OTR Profile (true when the feature is enabled. False otherwise).
   if (IsClearDiskStateEnabled()) {
-    histogram_tester_.ExpectBucketCount(
-        "Storage.SessionStorage.ClearDiskStateAtStoragePartitionInit", false,
-        2);
-    histogram_tester_.ExpectBucketCount(
-        "Storage.SessionStorage.ClearDiskStateAtStoragePartitionInit", true, 1);
+    histogram_tester_.ExpectBucketCount(kClearDiskStateHistogram, false,
+                                        2 + top_chrome_webui_samples);
+    histogram_tester_.ExpectBucketCount(kClearDiskStateHistogram, true, 1);
   } else {
-    histogram_tester_.ExpectUniqueSample(
-        "Storage.SessionStorage.ClearDiskStateAtStoragePartitionInit", false,
-        3);
+    histogram_tester_.ExpectUniqueSample(kClearDiskStateHistogram, false,
+                                         3 + top_chrome_webui_samples);
   }
 #else
-  histogram_tester_.ExpectUniqueSample(
-      "Storage.SessionStorage.ClearDiskStateAtStoragePartitionInit", false, 1);
+  histogram_tester_.ExpectUniqueSample(kClearDiskStateHistogram, false,
+                                       1 + top_chrome_webui_samples);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
@@ -779,7 +794,8 @@ IN_PROC_BROWSER_TEST_P(RestartSessionStorageTest, SessionStorage) {
   CheckReloadedPageRestored();
 
   histogram_tester_.ExpectUniqueSample(
-      "Storage.SessionStorage.ClearDiskStateAtStoragePartitionInit", false, 1);
+      kClearDiskStateHistogram, false,
+      1 + GetTopChromeWebUIProfileSampleCount());
 }
 
 IN_PROC_BROWSER_TEST_F(RestartTest, PRE_LocalStorageClearedOnExit) {
@@ -905,24 +921,27 @@ IN_PROC_BROWSER_TEST_P(NoSessionRestoreSessionStorageTest, SessionStorage) {
   EXPECT_EQ(std::string(url::kAboutBlankURL), web_contents->GetURL().spec());
   StoreDataWithPage("session_storage.html");
 
+  const int top_chrome_webui_samples = GetTopChromeWebUIProfileSampleCount();
 #if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS also loads a signin OTR Profile (always false) and its parent
   // non-OTR Profile (true when the feature is enabled. False otherwise).
   if (IsClearDiskStateEnabled()) {
-    histogram_tester_.ExpectBucketCount(
-        "Storage.SessionStorage.ClearDiskStateAtStoragePartitionInit", true, 2);
-    histogram_tester_.ExpectBucketCount(
-        "Storage.SessionStorage.ClearDiskStateAtStoragePartitionInit", false,
-        1);
+    histogram_tester_.ExpectBucketCount(kClearDiskStateHistogram, true, 2);
+    histogram_tester_.ExpectBucketCount(kClearDiskStateHistogram, false,
+                                        1 + top_chrome_webui_samples);
   } else {
-    histogram_tester_.ExpectUniqueSample(
-        "Storage.SessionStorage.ClearDiskStateAtStoragePartitionInit", false,
-        3);
+    histogram_tester_.ExpectUniqueSample(kClearDiskStateHistogram, false,
+                                         3 + top_chrome_webui_samples);
   }
 #else
-  histogram_tester_.ExpectUniqueSample(
-      "Storage.SessionStorage.ClearDiskStateAtStoragePartitionInit",
-      IsClearDiskStateEnabled(), 1);
+  if (IsClearDiskStateEnabled()) {
+    histogram_tester_.ExpectBucketCount(kClearDiskStateHistogram, true, 1);
+    histogram_tester_.ExpectBucketCount(kClearDiskStateHistogram, false,
+                                        top_chrome_webui_samples);
+  } else {
+    histogram_tester_.ExpectUniqueSample(kClearDiskStateHistogram, false,
+                                         1 + top_chrome_webui_samples);
+  }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
