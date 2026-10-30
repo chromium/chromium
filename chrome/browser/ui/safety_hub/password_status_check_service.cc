@@ -69,8 +69,7 @@ std::map<std::string, int> GetDayPrefWeightMap() {
 // randomly while respecting the weights.
 base::TimeDelta FindNewCheckTime() {
   // The password check will be scheculed starting from tomorrow.
-  base::Time tomorrow_midnight =
-      base::Time::Now().LocalMidnight() + base::Days(1);
+  base::Time tomorrow_midnight = base::Time::Now().NextLocalMidnight();
   base::Time::Exploded tomorrow_midnight_exploded;
   tomorrow_midnight.LocalExplode(&tomorrow_midnight_exploded);
   int tomorrow_day_of_week = tomorrow_midnight_exploded.day_of_week;
@@ -103,8 +102,8 @@ base::TimeDelta FindNewCheckTime() {
 
   // Find a random time in the selected day.
   base::Time beg_of_selected_day =
-      tomorrow_midnight + base::Days(selected_day_offset);
-  base::Time end_of_selected_day = beg_of_selected_day + base::Days(1);
+      tomorrow_midnight.LocalMidnightWithOffset(selected_day_offset);
+  base::Time end_of_selected_day = beg_of_selected_day.NextLocalMidnight();
 
   // Pick a random time in the selected day.
   return base::RandTimeDelta(beg_of_selected_day.ToDeltaSinceWindowsEpoch(),
