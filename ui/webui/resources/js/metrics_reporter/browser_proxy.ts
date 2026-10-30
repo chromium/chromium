@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {TimeDelta} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+import type {TimeDelta, TimeTicks} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
 import type {PageMetricsHostRemote} from '../metrics_reporter.mojom-webui.js';
 import {PageMetricsCallbackRouter, PageMetricsHost} from '../metrics_reporter.mojom-webui.js';
@@ -11,6 +11,7 @@ export interface BrowserProxy {
   getMark(name: string): Promise<{markedTime: TimeDelta | null}>;
   clearMark(name: string): void;
   umaReportTime(name: string, time: TimeDelta): void;
+  umaReportLongTimeSpan(name: string, start: TimeTicks, end: TimeTicks): void;
   getCallbackRouter(): PageMetricsCallbackRouter;
   now(): bigint;
 }
@@ -36,6 +37,10 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   umaReportTime(name: string, time: TimeDelta) {
     this.host.onUmaReportTime(name, time);
+  }
+
+  umaReportLongTimeSpan(name: string, start: TimeTicks, end: TimeTicks) {
+    this.host.onUmaReportLongTimeSpan(name, start, end);
   }
 
   now(): bigint {

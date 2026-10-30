@@ -6,6 +6,10 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
+#include "third_party/perfetto/include/perfetto/tracing/string_helpers.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 MetricsReporter::MetricsReporter() {
   page_receiver_ = page_.BindNewPipeAndPassReceiver();
@@ -128,4 +132,27 @@ void MetricsReporter::OnClearMark(const std::string& name) {
 void MetricsReporter::OnUmaReportTime(const std::string& name,
                                       base::TimeDelta time) {
   base::UmaHistogramTimes(name, time);
+}
+
+void MetricsReporter::OnUmaReportLongTimeSpan(const std::string& name,
+                                              base::TimeTicks start,
+                                              base::TimeTicks end) {
+  // The page reports both times, so drop spans that can't be real. `end` can
+  // be up to a frame in the future, since some platforms report the next vsync
+  // as a frame's presentation time (see `SanitizePresentationFeedback()` in
+  // components/viz/service/display/display.cc).
+  if (start.is_null() || end < start) {
+    return;
+  }
+  const base::TimeDelta time = end - start;
+  // Uses 100 buckets like `Startup.FirstWebContents.NonEmptyPaint3`.
+  base::UmaHistogramLongTimes100(name, time);
+
+  // Each span gets its own track, named after the histogram, so that
+  // overlapping spans can't mis-nest. Perfetto merges same-named tracks.
+  const perfetto::NamedTrack track(perfetto::DynamicString(name),
+                                   base::trace_event::GetNextGlobalTraceId());
+  TRACE_EVENT_BEGIN("ui", perfetto::DynamicString(name), track, start,
+                    "latency_ms", time.InMillisecondsF());
+  TRACE_EVENT_END("ui", track, end);
 }

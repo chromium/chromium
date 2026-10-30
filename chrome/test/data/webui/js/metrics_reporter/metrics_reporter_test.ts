@@ -99,4 +99,13 @@ suite('MetricsReporterTest', function() {
     assertEquals(1, apiProxy.getCallCount('clearMark'));
     assertEquals(1, apiProxy.getCallCount('getMark'));
   });
+
+  test('umaReportLongTimeSpan', function() {
+    metricsReporter.umaReportLongTimeSpan('histogram', 1000n, 25001000n);
+    assertEquals(1, apiProxy.getCallCount('umaReportLongTimeSpan'));
+    const [name, start, end] = apiProxy.getArgs('umaReportLongTimeSpan')[0];
+    assertEquals('histogram', name);
+    assertEquals(1000n, start.internalValue);
+    assertEquals(25001000n, end.internalValue);
+  });
 });

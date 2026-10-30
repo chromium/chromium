@@ -28,6 +28,10 @@ function timeToMojo(mark: bigint): TimeDelta {
  *     Use measure(startMark[, endMark]) to measure the duration between two
  * marks. If `endMark` is not given, current time will be used.
  *   - Use umaReportTime(metricsName, duration) to record UMA histogram.
+ *     Use umaReportLongTimeSpan(metricsName, start, end) instead to record the
+ *     time between two TimeTicks values in microseconds, of up to an hour,
+ *     e.g. from a start time that the browser sent to a presentation time. The
+ *     browser also traces the span.
  *   - You can call these functions from the C++ side. The marks are accessible
  * from both C++ and WebUI Javascript.
  *
@@ -77,6 +81,7 @@ export interface MetricsReporter {
   hasLocalMark(name: string): boolean;
   clearMark(name: string): void;
   umaReportTime(histogram: string, time: bigint): void;
+  umaReportLongTimeSpan(histogram: string, start: bigint, end: bigint): void;
 }
 
 export class MetricsReporterImpl implements MetricsReporter {
@@ -149,6 +154,11 @@ export class MetricsReporterImpl implements MetricsReporter {
 
   umaReportTime(histogram: string, time: bigint) {
     this.browserProxy_.umaReportTime(histogram, timeToMojo(time));
+  }
+
+  umaReportLongTimeSpan(histogram: string, start: bigint, end: bigint) {
+    this.browserProxy_.umaReportLongTimeSpan(
+        histogram, {internalValue: start}, {internalValue: end});
   }
 }
 
