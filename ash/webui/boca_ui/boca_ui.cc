@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
+#include "ash/constants/chrome_pref_names.h"
 #include "ash/webui/boca_ui/boca_app_page_handler.h"
 #include "ash/webui/boca_ui/boca_util.h"
 #include "ash/webui/boca_ui/provider/tab_info_collector.h"
@@ -18,9 +20,16 @@
 #include "ash/webui/grit/ash_boca_ui_resources_map.h"
 #include "base/check_deref.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
+#include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/gemini/gemini_status_fetcher.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/grit/chromeos_boca_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_boca_app_bundle_resources_map.h"
+#include "components/application_locale_storage/application_locale_storage.h"
+#include "components/prefs/pref_service.h"
+#include "components/user_manager/user.h"
+#include "components/version_info/channel.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -44,11 +53,74 @@ content::WebUIDataSource* CreateAndAddHostDataSource(
   return source;
 }
 
+void PopulateLoadTimeData(
+    content::BrowserContext* browser_context,
+    const ApplicationLocaleStorage& application_locale_storage,
+    const PrefService& pref_service,
+    content::WebUIDataSource* source) {
+  const user_manager::User* const user =
+      BrowserContextHelper::Get()->GetUserByBrowserContext(browser_context);
+  const version_info::Channel channel = GetChannel();
+  source->AddBoolean("isDevChannel",
+                     channel == version_info::Channel::DEV ||
+                         channel == version_info::Channel::UNKNOWN);
+  source->AddBoolean("isProducer", boca_util::IsProducer(user));
+  source->AddBoolean("isConsumer", boca_util::IsConsumer(user));
+  // Do not honor sub-feature flag for student as there is no way to config
+  // it for consumer.
+  source->AddBoolean(
+      "spotlightEnabled",
+      boca_util::IsConsumer(user) ||
+          pref_service.GetBoolean(
+              prefs::kClassManagementToolsViewScreenEligibilitySetting));
+  source->AddString("appLocale", application_locale_storage.Get());
+  source->AddBoolean(
+      "classroomEnabled",
+      pref_service.GetBoolean(
+          prefs::kClassManagementToolsClassroomEligibilitySetting));
+  source->AddBoolean(
+      "captionEnabled",
+      boca_util::IsConsumer(user) ||
+          pref_service.GetBoolean(
+              prefs::kClassManagementToolsCaptionEligibilitySetting));
+  if (features::IsBocaSpotlightEnabled()) {
+    source->AddString("spotlightUrlTemplate",
+                      features::kBocaSpotlightUrlTemplate.Get());
+  }
+  source->AddBoolean("sessionControlsUpdate",
+                     features::IsBocaLockPauseUpdateEnabled());
+  source->AddBoolean("navSettingsDialog",
+                     features::IsBocaNavSettingsDialogEnabled());
+  source->AddBoolean("captionToggle", features::IsBocaCaptionToggleEnabled());
+  source->AddBoolean("materialTypeIndicator",
+                     features::IsBocaMaterialTypeUiIndicatorEnabled());
+
+  source->AddBoolean("spotlightNativeClientUpdate",
+                     features::IsBocaSpotlightRobotRequesterEnabled());
+  source->AddBoolean(
+      "userFeedbackAllowed",
+      pref_service.GetBoolean(chrome_prefs::kUserFeedbackAllowed));
+  if (features::IsBocaConfigureMaxStudentsEnabled()) {
+    source->AddInteger("maxNumStudentsAllowed",
+                       features::kBocaMaxNumStudentsAllowed.Get());
+  }
+  source->AddBoolean("screenSharingTeacher",
+                     features::IsBocaScreenSharingTeacherEnabled());
+  source->AddBoolean("screenSharingStudent",
+                     features::IsBocaScreenSharingStudentEnabled());
+
+  source->AddBoolean("geminiIntegration",
+                     features::IsBocaGeminiIntegrationEnabled());
+  source->AddString("geminiUrl", features::kBocaGeminiUrl.Get());
+  source->AddString("geminiGuidedLearningUrl",
+                    features::kBocaGeminiGuidedLearningUrl.Get());
+}
+
 }  // namespace
 
 BocaUI::BocaUI(
     content::WebUI* web_ui,
-    std::unique_ptr<BocaUIDelegate> delegate,
+    const ApplicationLocaleStorage& application_locale_storage,
     BocaSessionManager* boca_session_manager,
     bool is_producer,
     HostContentSettingsMap* host_content_settings_map,
@@ -110,7 +182,8 @@ BocaUI::BocaUI(
                             ContentSettingsType::JAVASCRIPT,
                             ContentSettingsType::SOUND,
                         });
-  delegate->PopulateLoadTimeData(host_source);
+  PopulateLoadTimeData(browser_context, application_locale_storage,
+                       pref_service_.get(), host_source);
   host_source->UseStringsJs();
 
 #if !DCHECK_IS_ON()

@@ -29,6 +29,7 @@ class WebUIDataSource;
 }  // namespace content
 
 class HostContentSettingsMap;
+class ApplicationLocaleStorage;
 class PrefService;
 
 namespace network {
@@ -45,29 +46,18 @@ class BocaAppHandler;
 class BocaSessionManager;
 class OnTaskSystemWebAppManager;
 
-// A delegate used during data source creation to expose some //chrome
-// functionality to the data source
-class BocaUIDelegate {
- public:
-  virtual ~BocaUIDelegate() = default;
-  // Takes a WebUIDataSource, and populates its load-time data.
-  virtual void PopulateLoadTimeData(content::WebUIDataSource* source) = 0;
-};
-
 // The WebUI for chrome-untrusted://boca-app/. Boca app is directly served in
 // main frame.
 class BocaUI : public ui::UntrustedWebUIController,
                public boca::mojom::BocaPageHandlerFactory {
  public:
-  // `delegate` is only used during construction, to populate the data
-  // source's load-time data; it is not retained.
   // `host_content_settings_map` is the one belonging to the user's profile,
   // resolved by the caller. It must be non-null and must outlive `this`.
   // `on_task_system_web_app_manager` is null when there is no on-task session.
   // The remaining four are what a GeminiStatusFetcher is built from; Create()
   // builds a fresh one per page handler.
   BocaUI(content::WebUI* web_ui,
-         std::unique_ptr<BocaUIDelegate> delegate,
+         const ApplicationLocaleStorage& application_locale_storage,
          BocaSessionManager* boca_session_manager,
          bool is_producer,
          HostContentSettingsMap* host_content_settings_map,
