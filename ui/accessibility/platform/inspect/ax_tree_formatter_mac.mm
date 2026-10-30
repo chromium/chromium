@@ -67,7 +67,7 @@ void AXTreeFormatterMac::AddDefaultFilters(
 
 base::DictValue AXTreeFormatterMac::BuildTree(
     AXPlatformNodeDelegate* root) const {
-  DCHECK(root);
+  CHECK(root, base::NotFatalUntil::M163);
   return BuildTree(root->GetNativeViewAccessible().Get());
 }
 
@@ -86,7 +86,7 @@ base::DictValue AXTreeFormatterMac::BuildTreeForAXUIElement(
 }
 
 base::DictValue AXTreeFormatterMac::BuildTree(id root) const {
-  DCHECK(root);
+  CHECK(root, base::NotFatalUntil::M163);
 
   AXTreeIndexerMac indexer((gfx::NativeViewAccessible(root)));
   base::DictValue dict;
@@ -140,7 +140,7 @@ std::string AXTreeFormatterMac::EvaluateScript(
       continue;
     }
 
-    DCHECK(instructions[index].IsScript());
+    CHECK(instructions[index].IsScript(), base::NotFatalUntil::M163);
     const AXPropertyNode& property_node = instructions[index].AsScript();
     AXOptionalNSObject value = invoker.Invoke(property_node);
     if (value.IsUnsupported()) {
@@ -172,7 +172,7 @@ std::string AXTreeFormatterMac::EvaluateScript(
 
 base::DictValue AXTreeFormatterMac::BuildNode(
     AXPlatformNodeDelegate* node) const {
-  DCHECK(node);
+  CHECK(node, base::NotFatalUntil::M163);
   return BuildNode(node->GetNativeViewAccessible());
 }
 
@@ -187,7 +187,7 @@ base::DictValue AXTreeFormatterMac::BuildNodeForSelector(
 
 base::DictValue AXTreeFormatterMac::BuildNode(
     gfx::NativeViewAccessible node) const {
-  DCHECK(node);
+  CHECK(node, base::NotFatalUntil::M163);
 
   AXTreeIndexerMac indexer(node);
   base::DictValue dict;

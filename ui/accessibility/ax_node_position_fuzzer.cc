@@ -95,7 +95,7 @@ TestPositionType AXNodePositionFuzzerGenerator::CreateNewPosition(
   // 1 to get [1, max_id)
   anchor_id = (anchor_id % (max_id_ - 1)) + 1;
   ui::AXNode* anchor = tree_->GetFromId(anchor_id);
-  DCHECK(anchor);
+  CHECK(anchor, base::NotFatalUntil::M163);
 
   switch (position_kind) {
     case ui::AXPositionKind::TREE_POSITION:

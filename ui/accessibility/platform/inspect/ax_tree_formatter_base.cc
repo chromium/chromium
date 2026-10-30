@@ -53,7 +53,7 @@ bool AXTreeFormatterBase::ShouldDumpChildren(
 }
 
 std::string AXTreeFormatterBase::Format(AXPlatformNodeDelegate* root) const {
-  DCHECK(root);
+  CHECK(root, base::NotFatalUntil::M163);
   return FormatTree(BuildTree(root));
 }
 
@@ -156,7 +156,7 @@ void AXTreeFormatterBase::RecursiveFormatTree(const base::DictValue& dict,
       const base::ListValue* children = dict.FindList(kChildrenDictAttr);
       if (children) {
         for (const auto& child : *children) {
-          DCHECK(child.is_dict());
+          CHECK(child.is_dict(), base::NotFatalUntil::M163);
           RecursiveFormatTree(child.GetDict(), contents, depth + 1,
                               found_subtree, subtree_depth);
         }
@@ -179,7 +179,7 @@ void AXTreeFormatterBase::RecursiveFormatTree(const base::DictValue& dict,
   const base::ListValue* children = dict.FindList(kChildrenDictAttr);
   if (children) {
     for (const auto& child : *children) {
-      DCHECK(child.is_dict());
+      CHECK(child.is_dict(), base::NotFatalUntil::M163);
       RecursiveFormatTree(child.GetDict(), contents, depth + 1, found_subtree,
                           subtree_depth);
     }

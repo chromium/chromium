@@ -62,7 +62,7 @@ constexpr char kUnsupportedObject[] =
 
 // static
 AXElementWrapper::AXType AXElementWrapper::TypeOf(id node) {
-  DCHECK(IsValidElement(node));
+  CHECK(IsValidElement(node), base::NotFatalUntil::M163);
   if (IsNSAccessibilityElement(node)) {
     return AXType::kNSAccessibilityElement;
   }

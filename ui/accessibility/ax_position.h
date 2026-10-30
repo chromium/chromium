@@ -6765,7 +6765,7 @@ class AXPosition {
         break;
     }
 
-    DCHECK(text_position->IsValid());
+    CHECK(text_position->IsValid(), base::NotFatalUntil::M163);
     return text_position;
   }
 

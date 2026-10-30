@@ -96,7 +96,7 @@ void BrowserAccessibilityManagerMac::FireSourceEvent(
     ax::mojom::Event event_type,
     BrowserAccessibility* node,
     int action_request_id) {
-  DCHECK(node);
+  CHECK(node, base::NotFatalUntil::M163);
   BrowserAccessibilityManager::FireSourceEvent(event_type, node,
                                                action_request_id);
   NSString* mac_notification = nullptr;
@@ -148,7 +148,7 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
     const AXNode* node) {
   BrowserAccessibilityManager::FireGeneratedEvent(event_type, node);
   BrowserAccessibility* wrapper = GetFromAXNode(node);
-  DCHECK(wrapper);
+  CHECK(wrapper, base::NotFatalUntil::M163);
   BrowserAccessibilityCocoa* native_node =
       ObjCCastStrict<BrowserAccessibilityCocoa>(
           wrapper->GetNativeViewAccessible().Get());
@@ -347,11 +347,11 @@ void BrowserAccessibilityManagerMac::FireGeneratedEvent(
       }
       break;
     case AXEventGenerator::Event::SELECTED_VALUE_CHANGED:
-      DCHECK(IsSelectElement(wrapper->GetRole()));
+      CHECK(IsSelectElement(wrapper->GetRole()), base::NotFatalUntil::M163);
       mac_notification = NSAccessibilityValueChangedNotification;
       break;
     case AXEventGenerator::Event::VALUE_IN_TEXT_FIELD_CHANGED:
-      DCHECK(wrapper->IsTextField());
+      CHECK(wrapper->IsTextField(), base::NotFatalUntil::M163);
       mac_notification = NSAccessibilityValueChangedNotification;
       if (!text_edits_.empty()) {
         std::u16string deleted_text;
@@ -498,7 +498,7 @@ void BrowserAccessibilityManagerMac::FireAriaNotificationEvent(
 void BrowserAccessibilityManagerMac::FireNativeMacNotification(
     NSString* mac_notification,
     BrowserAccessibility& node) {
-  DCHECK(mac_notification);
+  CHECK(mac_notification, base::NotFatalUntil::M163);
   if (!node.CanFireEvents()) {
     return;
   }
@@ -512,7 +512,7 @@ void BrowserAccessibilityManagerMac::FireNativeMacNotification(
   // initialization happens later via
   // BrowserAccessibilityManager::OnAtomicUpdateFinished. DCHECK to catch if
   // this occurs.
-  DCHECK(native_node);
+  CHECK(native_node, base::NotFatalUntil::M163);
   if (!native_node) {
     return;
   }
@@ -564,7 +564,7 @@ void BrowserAccessibilityManagerMac::OnAtomicUpdateFinished(
   }
 
   for (const BrowserAccessibilityCocoa* obj : changed_editable_roots) {
-    DCHECK(obj);
+    CHECK(obj, base::NotFatalUntil::M163);
     const AXTextEdit text_edit = [obj computeTextEdit];
     if (!text_edit.IsEmpty())
       text_edits_[[obj owner]->GetId()] = text_edit;
@@ -636,7 +636,7 @@ NSDictionary* BrowserAccessibilityManagerMac::
 
   // Try to detect when the text selection changes due to a focus change.
   BrowserAccessibility* focus_object = GetFocus();
-  DCHECK(focus_object);
+  CHECK(focus_object, base::NotFatalUntil::M163);
   bool focus_changed = focus_object != GetFromAXNode(GetLastFocusedNode());
 
   // Detect when the text selection changes due to character inputs or
@@ -681,7 +681,7 @@ BrowserAccessibilityManagerMac::GetUserInfoForValueChangedNotification(
     const std::u16string& deleted_text,
     const std::u16string& inserted_text,
     id edit_text_marker) const {
-  DCHECK(native_node);
+  CHECK(native_node, base::NotFatalUntil::M163);
   if (deleted_text.empty() && inserted_text.empty())
     return nil;
 

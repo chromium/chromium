@@ -32,12 +32,12 @@ AXPlatform& AXPlatform::GetInstance() {
 }
 
 AXPlatform::AXPlatform(Delegate& delegate) : delegate_(delegate) {
-  DCHECK_EQ(g_instance, nullptr);
+  CHECK_EQ(g_instance, nullptr, base::NotFatalUntil::M163);
   g_instance = this;
 }
 
 AXPlatform::~AXPlatform() {
-  DCHECK_EQ(g_instance, this);
+  CHECK_EQ(g_instance, this, base::NotFatalUntil::M163);
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   g_instance = nullptr;
 }
@@ -128,7 +128,7 @@ void AXPlatform::DisableActiveUiaProvider() {
   // https://learn.microsoft.com/en-us/windows/win32/api/uiautomationcoreapi/nf-uiautomationcoreapi-uiadisconnectallproviders
   // for more info.
   HRESULT hr = ::UiaDisconnectAllProviders();
-  DCHECK(SUCCEEDED(hr));
+  CHECK(SUCCEEDED(hr), base::NotFatalUntil::M163);
 }
 
 bool AXPlatform::IsUiaProviderEnabled() const {

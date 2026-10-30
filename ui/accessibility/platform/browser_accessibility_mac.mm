@@ -276,13 +276,13 @@ AXPlatformNode* BrowserAccessibilityMac::GetAXPlatformNode() const {
 }
 
 void BrowserAccessibilityMac::CreatePlatformNodes() {
-  DCHECK(!platform_node_);
+  CHECK(!platform_node_, base::NotFatalUntil::M163);
   platform_node_ = AXPlatformNode::Create(*this);
   CreateNativeWrapper();
 }
 
 BrowserAccessibilityCocoa* BrowserAccessibilityMac::CreateNativeWrapper() {
-  DCHECK(platform_node_);
+  CHECK(platform_node_, base::NotFatalUntil::M163);
 
   BrowserAccessibilityCocoa* node_cocoa =
       [[BrowserAccessibilityCocoa alloc] initWithObject:this

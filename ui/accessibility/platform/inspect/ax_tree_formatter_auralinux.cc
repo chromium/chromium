@@ -71,7 +71,7 @@ std::string AXTreeFormatterAuraLinux::EvaluateScript(
       continue;
     }
 
-    DCHECK(instructions[index].IsScript());
+    CHECK(instructions[index].IsScript(), base::NotFatalUntil::M163);
     const AXPropertyNode& property_node = instructions[index].AsScript();
 
     AXOptionalObject value = invoker.Invoke(property_node);
@@ -93,10 +93,10 @@ std::string AXTreeFormatterAuraLinux::EvaluateScript(
 }
 
 AtkObject* GetAtkObject(AXPlatformNodeDelegate* node) {
-  DCHECK(node);
+  CHECK(node, base::NotFatalUntil::M163);
 
   AtkObject* atk_node = node->GetNativeViewAccessible();
-  DCHECK(atk_node);
+  CHECK(atk_node, base::NotFatalUntil::M163);
 
   return atk_node;
 }
@@ -127,7 +127,7 @@ void AXTreeFormatterAuraLinux::RecursiveBuildTree(AtkObject* atk_node,
 
   AXPlatformNodeAuraLinux* platform_node =
       AXPlatformNodeAuraLinux::FromAtkObject(atk_node);
-  DCHECK(platform_node);
+  CHECK(platform_node, base::NotFatalUntil::M163);
 
   AXPlatformNodeDelegate* node = platform_node->GetDelegate();
 
@@ -235,9 +235,9 @@ void AXTreeFormatterAuraLinux::AddHypertextProperties(
 
 #if DCHECK_IS_ON()
       AtkObject* link_obj = atk_hyperlink_get_object(link, 0);
-      DCHECK(link_obj);
+      CHECK(link_obj, base::NotFatalUntil::M163);
       int index_in_parent = atk_object_get_index_in_parent(link_obj);
-      DCHECK_GE(index_in_parent, 0);
+      CHECK_GE(index_in_parent, 0, base::NotFatalUntil::M163);
 #endif
 
       int utf8_offset = atk_hyperlink_get_start_index(link);
@@ -338,7 +338,7 @@ void AXTreeFormatterAuraLinux::AddRelationProperties(
     if (atk_relation_set_contains(relation_set, relation_type)) {
       AtkRelation* relation =
           atk_relation_set_get_relation_by_type(relation_set, relation_type);
-      DCHECK(relation);
+      CHECK(relation, base::NotFatalUntil::M163);
 
       relations.Append(ToString(relation));
     }
@@ -352,13 +352,13 @@ std::string AXTreeFormatterAuraLinux::ToString(AtkRelation* relation) {
   std::string relation_name =
       atk_relation_type_get_name(relation->relationship);
   GPtrArray* relation_targets = atk_relation_get_target(relation);
-  DCHECK(relation_targets);
+  CHECK(relation_targets, base::NotFatalUntil::M163);
 
   std::vector<std::string> target_roles(relation_targets->len);
   for (guint i = 0; i < relation_targets->len; i++) {
     AtkObject* atk_target = static_cast<AtkObject*>(
         UNSAFE_TODO(g_ptr_array_index(relation_targets, i)));
-    DCHECK(atk_target);
+    CHECK(atk_target, base::NotFatalUntil::M163);
     // Use the same stable mapping as the per-node role output.
     target_roles[i] = AtkRoleToString(atk_object_get_role(atk_target));
   }
@@ -512,7 +512,7 @@ void AXTreeFormatterAuraLinux::AddProperties(AtkObject* atk_object,
                                              base::DictValue* dict) const {
   AXPlatformNodeAuraLinux* platform_node =
       AXPlatformNodeAuraLinux::FromAtkObject(atk_object);
-  DCHECK(platform_node);
+  CHECK(platform_node, base::NotFatalUntil::M163);
 
   AXPlatformNodeDelegate* node = platform_node->GetDelegate();
 

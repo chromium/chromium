@@ -148,7 +148,7 @@ void AXEventRecorderAuraLinux::ProcessATKEvent(const char* event,
   std::string event_name(event);
   std::string log;
   if (event_name.find("property-change") != std::string::npos) {
-    DCHECK_GE(n_params, 2u);
+    CHECK_GE(n_params, 2u, base::NotFatalUntil::M163);
     AtkPropertyValues* property_values = static_cast<AtkPropertyValues*>(
         g_value_get_pointer(&UNSAFE_TODO(params[1])));
 
@@ -205,7 +205,7 @@ void AXEventRecorderAuraLinux::ProcessATKEvent(const char* event,
 
     } else if (event_name.find("text-insert") != std::string::npos ||
                event_name.find("text-remove") != std::string::npos) {
-      DCHECK_GE(n_params, 4u);
+      CHECK_GE(n_params, 4u, base::NotFatalUntil::M163);
       log += base::StringPrintf(" (start=%i length=%i '%s')",
                                 g_value_get_int(&UNSAFE_TODO(params[1])),
                                 g_value_get_int(&UNSAFE_TODO(params[2])),

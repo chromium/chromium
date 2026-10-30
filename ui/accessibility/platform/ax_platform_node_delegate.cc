@@ -27,12 +27,12 @@ namespace ui {
 AXPlatformNodeDelegate::AXPlatformNodeDelegate() : node_(nullptr) {}
 
 AXPlatformNodeDelegate::AXPlatformNodeDelegate(AXNode* node) : node_(node) {
-  DCHECK(node);
-  DCHECK(node->IsDataValid());
+  CHECK(node, base::NotFatalUntil::M163);
+  CHECK(node->IsDataValid(), base::NotFatalUntil::M163);
 }
 
 void AXPlatformNodeDelegate::SetNode(AXNode& node) {
-  DCHECK(node.IsDataValid());
+  CHECK(node.IsDataValid(), base::NotFatalUntil::M163);
   node_ = &node;
 }
 
@@ -165,7 +165,7 @@ AXNodePosition::AXPositionInstance AXPlatformNodeDelegate::CreateTextPositionAt(
     DCHECK(node_->tree())
         << "All nodes should be owned by an accessibility tree.\n"
         << *node_;
-    DCHECK(node_->IsDataValid());
+    CHECK(node_->IsDataValid(), base::NotFatalUntil::M163);
     return AXNodePosition::CreateTextPosition(*node_, offset, affinity);
   }
   return AXNodePosition::CreateNullPosition();
@@ -545,7 +545,7 @@ AXPlatformNode* AXPlatformNodeDelegate::GetFromTreeIDAndNodeID(
 
 AXPlatformNode* AXPlatformNodeDelegate::GetTargetNodeForRelation(
     ax::mojom::IntAttribute attr) {
-  DCHECK(IsNodeIdIntAttribute(attr));
+  CHECK(IsNodeIdIntAttribute(attr), base::NotFatalUntil::M163);
 
   if (!HasIntAttribute(attr)) {
     return nullptr;
@@ -561,7 +561,7 @@ AXPlatformNode* AXPlatformNodeDelegate::GetTargetNodeForRelation(
 
 std::vector<AXPlatformNode*> AXPlatformNodeDelegate::GetTargetNodesForRelation(
     ax::mojom::IntListAttribute attr) {
-  DCHECK(IsNodeIdIntListAttribute(attr));
+  CHECK(IsNodeIdIntListAttribute(attr), base::NotFatalUntil::M163);
   if (!HasIntListAttribute(attr)) {
     return std::vector<AXPlatformNode*>();
   }
@@ -623,9 +623,10 @@ bool AXPlatformNodeDelegate::IsValidRelationTarget(
     // relations reported via platform APIs.
     return false;
   }
-  DCHECK_GT(GetUniqueId(), AXPlatformNodeId());
-  DCHECK(target);
-  DCHECK_GT(target->GetUniqueId(), AXPlatformNodeId());
+  CHECK_GT(GetUniqueId(), AXPlatformNodeId(), base::NotFatalUntil::M163);
+  CHECK(target, base::NotFatalUntil::M163);
+  CHECK_GT(target->GetUniqueId(), AXPlatformNodeId(),
+           base::NotFatalUntil::M163);
   // We should ignore reflexive relations.
   return GetUniqueId() != target->GetUniqueId();
 }

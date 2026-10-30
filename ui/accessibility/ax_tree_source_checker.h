@@ -79,7 +79,7 @@ std::string AXTreeSourceChecker<AXSourceNode>::NodeToString(AXSourceNode node) {
   } else {
     for (size_t i = 0; i < num_children; i++) {
       auto* child = tree_->ChildAt(node, i);
-      DCHECK(child);
+      CHECK(child, base::NotFatalUntil::M163);
       AXNodeID child_id = tree_->GetId(child);
       if (i == 0)
         children_str += "child_ids=" + base::NumberToString(child_id);

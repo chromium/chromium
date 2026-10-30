@@ -91,7 +91,7 @@ AXTreeFormatterWin::~AXTreeFormatterWin() = default;
 Microsoft::WRL::ComPtr<IAccessible> GetIAObject(AXPlatformNodeDelegate* node,
                                                 LONG& root_x,
                                                 LONG& root_y) {
-  DCHECK(node);
+  CHECK(node, base::NotFatalUntil::M163);
   // If dumping when the page or iframe is reloading, the
   // tree manager may have been removed.
   AXTreeManager* manager = node->GetTreeManager();
@@ -111,7 +111,7 @@ Microsoft::WRL::ComPtr<IAccessible> GetIAObject(AXPlatformNodeDelegate* node,
                    ->GetNativeViewAccessible()
                    ->accLocation(&root_x, &root_y, &root_width, &root_height,
                                  variant_self);
-  DCHECK(SUCCEEDED(hr));
+  CHECK(SUCCEEDED(hr), base::NotFatalUntil::M163);
 
   return node->GetNativeViewAccessible();
 }
@@ -188,7 +188,7 @@ std::string AXTreeFormatterWin::EvaluateScript(
     const std::vector<AXScriptInstruction>& instructions,
     size_t start_index,
     size_t end_index) const {
-  DCHECK(root);
+  CHECK(root, base::NotFatalUntil::M163);
   return EvaluateScript(root->GetNativeViewAccessible(), instructions,
                         start_index, end_index);
 }
@@ -211,7 +211,7 @@ std::string AXTreeFormatterWin::EvaluateScript(
       continue;
     }
 
-    DCHECK(instructions[index].IsScript());
+    CHECK(instructions[index].IsScript(), base::NotFatalUntil::M163);
     const AXPropertyNode& property_node = instructions[index].AsScript();
 
     AXOptionalObject value = invoker.Invoke(property_node);
@@ -620,15 +620,15 @@ void AXTreeFormatterWin::AddIA2HypertextProperties(
       // embedded character offset. Exclude child index from such cases.
       LONG child_index = -1;
       if (hr == S_OK) {
-        DCHECK_GE(index_of_embed, 0);
+        CHECK_GE(index_of_embed, 0, base::NotFatalUntil::M163);
         Microsoft::WRL::ComPtr<IAccessibleHyperlink> embedded_object;
         hr = ia2hyper->get_hyperlink(index_of_embed, &embedded_object);
-        DCHECK(SUCCEEDED(hr));
+        CHECK(SUCCEEDED(hr), base::NotFatalUntil::M163);
         Microsoft::WRL::ComPtr<IAccessible2> ax_embed;
         hr = embedded_object.As(&ax_embed);
-        DCHECK(SUCCEEDED(hr));
+        CHECK(SUCCEEDED(hr), base::NotFatalUntil::M163);
         hr = ax_embed->get_indexInParent(&child_index);
-        DCHECK(SUCCEEDED(hr));
+        CHECK(SUCCEEDED(hr), base::NotFatalUntil::M163);
       }
 
       std::wstring child_index_str =
@@ -643,7 +643,7 @@ void AXTreeFormatterWin::AddIA2HypertextProperties(
       --number_of_embeds;
     }
   }
-  DCHECK_EQ(number_of_embeds, 0);
+  CHECK_EQ(number_of_embeds, 0, base::NotFatalUntil::M163);
 
   dict->Set("ia2_hypertext", base::WideToUTF16(ia2_hypertext));
 }
@@ -683,17 +683,17 @@ void AXTreeFormatterWin::AddIA2RelationProperty(
   // non-hidden node, all of these checks should work.
   LONG n_targets;
   relation->get_nTargets(&n_targets);
-  DCHECK(n_targets != NULL);
-  DCHECK(n_targets > 0);
+  CHECK(n_targets != NULL, base::NotFatalUntil::M163);
+  CHECK(n_targets > 0, base::NotFatalUntil::M163);
 
   base::win::ScopedBstr name;
   relation->get_relationType(name.Receive());
-  DCHECK(name.Get() != NULL);
+  CHECK(name.Get() != NULL, base::NotFatalUntil::M163);
 
   LONG ignored;
   auto targets = base::HeapArray<IUnknown*>::Uninit(n_targets);
   HRESULT hr = relation->get_targets(n_targets, targets.data(), &ignored);
-  DCHECK(SUCCEEDED(hr));
+  CHECK(SUCCEEDED(hr), base::NotFatalUntil::M163);
   std::string targetsString;
   for (IUnknown* unknown_ptr : targets) {
     Microsoft::WRL::ComPtr<IUnknown> unknown;

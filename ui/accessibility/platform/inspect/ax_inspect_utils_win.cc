@@ -765,7 +765,8 @@ HWND GetHWNDBySelector(const AXTreeSelector& selector) {
   // and matches the search pattern when provided.
   // Note that both the search title and pattern are optional, but at
   // least one should be provided.
-  DCHECK(!info.title.empty() || !info.pattern.empty());
+  CHECK(!info.title.empty() || !info.pattern.empty(),
+        base::NotFatalUntil::M163);
 
   ::EnumWindows(MatchWindow, reinterpret_cast<LPARAM>(&info));
 

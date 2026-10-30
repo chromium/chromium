@@ -105,7 +105,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_appName(BSTR* app_name) {
     return E_INVALIDARG;
   *app_name = SysAllocString(
       base::UTF8ToWide(AXPlatform::GetInstance().GetProductName()).c_str());
-  DCHECK(*app_name);
+  CHECK(*app_name, base::NotFatalUntil::M163);
   return *app_name ? S_OK : E_FAIL;
 }
 
@@ -118,7 +118,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_appVersion(BSTR* app_version) {
 
   *app_version = SysAllocString(
       base::UTF8ToWide(AXPlatform::GetInstance().GetProductVersion()).c_str());
-  DCHECK(*app_version);
+  CHECK(*app_version, base::NotFatalUntil::M163);
   return *app_version ? S_OK : E_FAIL;
 }
 
@@ -129,7 +129,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_toolkitName(BSTR* toolkit_name) {
     return E_INVALIDARG;
 
   *toolkit_name = SysAllocString(FRAMEWORK_ID);
-  DCHECK(*toolkit_name);
+  CHECK(*toolkit_name, base::NotFatalUntil::M163);
   return *toolkit_name ? S_OK : E_FAIL;
 }
 
@@ -145,7 +145,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_toolkitVersion(
 
   *toolkit_version = SysAllocString(
       base::UTF8ToWide(AXPlatform::GetInstance().GetToolkitVersion()).c_str());
-  DCHECK(*toolkit_version);
+  CHECK(*toolkit_version, base::NotFatalUntil::M163);
   return *toolkit_version ? S_OK : E_FAIL;
 }
 
@@ -168,7 +168,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_description(BSTR* desc) {
 
   *desc = SysAllocString(description().c_str());
 
-  DCHECK(*desc);
+  CHECK(*desc, base::NotFatalUntil::M163);
   return S_OK;
 }
 
@@ -318,7 +318,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_text(LONG start_offset,
     return S_FALSE;
 
   *text = SysAllocString(base::as_wcstr(substr));
-  DCHECK(*text);
+  CHECK(*text, base::NotFatalUntil::M163);
   return S_OK;
 }
 
@@ -415,7 +415,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::scrollSubstringToPoint(
   if (start_index > end_index)
     std::swap(start_index, end_index);
   LONG length = end_index - start_index + 1;
-  DCHECK_GE(length, 0);
+  CHECK_GE(length, 0, base::NotFatalUntil::M163);
 
   BrowserAccessibilityWin* const owner = GetOwner();
   gfx::Rect string_bounds = owner->GetRootFrameHypertextRangeBoundsRect(
@@ -502,7 +502,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_attributes(
   // This is better than returning S_FALSE which the screen reader
   // may not recognize as valid attributes.
   *text_attributes = SysAllocString(attributes_str.c_str());
-  DCHECK(*text_attributes);
+  CHECK(*text_attributes, base::NotFatalUntil::M163);
   return S_OK;
 }
 
@@ -624,7 +624,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_anchor(LONG index,
   OnExtendedPropertiesUsed(WinApiType::kMsaa);
 
   BSTR ia2_hypertext = SysAllocString(base::as_wcstr(GetHypertext()));
-  DCHECK(ia2_hypertext);
+  CHECK(ia2_hypertext, base::NotFatalUntil::M163);
   anchor->vt = VT_BSTR;
   anchor->bstrVal = ia2_hypertext;
 
@@ -659,7 +659,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_anchorTarget(
                                       &target))) {
     target = SysAllocString(L"");
   }
-  DCHECK(target);
+  CHECK(target, base::NotFatalUntil::M163);
   anchor_target->vt = VT_BSTR;
   anchor_target->bstrVal = target;
 
@@ -912,7 +912,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_name(LONG action_index,
   }
 
   *name = SysAllocString(base::as_wcstr(base::UTF8ToUTF16(action_verb)));
-  DCHECK(name);
+  CHECK(name, base::NotFatalUntil::M163);
   return S_OK;
 }
 
@@ -978,7 +978,7 @@ BrowserAccessibilityComWin::get_localizedName(LONG action_index,
 
   *localized_name =
       SysAllocString(base::as_wcstr(base::UTF8ToUTF16(action_verb)));
-  DCHECK(localized_name);
+  CHECK(localized_name, base::NotFatalUntil::M163);
   return S_OK;
 }
 
@@ -1011,7 +1011,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_URL(BSTR* url) {
     return S_FALSE;
 
   *url = SysAllocString(base::UTF8ToWide(str).c_str());
-  DCHECK(*url);
+  CHECK(*url, base::NotFatalUntil::M163);
 
   return S_OK;
 }
@@ -1037,7 +1037,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_title(BSTR* title) {
     return S_FALSE;
 
   *title = SysAllocString(base::UTF8ToWide(str).c_str());
-  DCHECK(*title);
+  CHECK(*title, base::NotFatalUntil::M163);
 
   return S_OK;
 }
@@ -1063,7 +1063,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_mimeType(BSTR* mime_type) {
     return S_FALSE;
 
   *mime_type = SysAllocString(base::UTF8ToWide(str).c_str());
-  DCHECK(*mime_type);
+  CHECK(*mime_type, base::NotFatalUntil::M163);
 
   return S_OK;
 }
@@ -1089,7 +1089,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_docType(BSTR* doc_type) {
     return S_FALSE;
 
   *doc_type = SysAllocString(base::UTF8ToWide(str).c_str());
-  DCHECK(*doc_type);
+  CHECK(*doc_type, base::NotFatalUntil::M163);
 
   return S_OK;
 }
@@ -1449,7 +1449,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_innerHTML(BSTR* innerHTML) {
   std::u16string inner_html =
       owner->GetString16Attribute(ax::mojom::StringAttribute::kMathContent);
   *innerHTML = SysAllocString(base::as_wcstr(inner_html));
-  DCHECK(*innerHTML);
+  CHECK(*innerHTML, base::NotFatalUntil::M163);
   return S_OK;
 }
 
@@ -1478,7 +1478,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_language(BSTR* language) {
     lang = L"en-US";
 
   *language = SysAllocString(lang.c_str());
-  DCHECK(*language);
+  CHECK(*language, base::NotFatalUntil::M163);
   return S_OK;
 }
 
@@ -1600,7 +1600,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_fontFamily(BSTR* font_family) {
     return S_FALSE;
 
   *font_family = SysAllocString(base::as_wcstr(family));
-  DCHECK(*font_family);
+  CHECK(*font_family, base::NotFatalUntil::M163);
   return S_OK;
 }
 
@@ -1726,7 +1726,7 @@ void BrowserAccessibilityComWin::ComputeStylesIfNeeded() {
 
 void BrowserAccessibilityComWin::UpdateStep1ComputeWinAttributes(
     UpdateState* update_state) {
-  DCHECK(win_attributes_);
+  CHECK(win_attributes_, base::NotFatalUntil::M163);
 
   BrowserAccessibilityWin* const owner = GetOwner();
 
@@ -1769,7 +1769,7 @@ void BrowserAccessibilityComWin::UpdateStep1ComputeWinAttributes(
 }
 
 void BrowserAccessibilityComWin::UpdateStep2ComputeHypertext() {
-  DCHECK(update_state_);
+  CHECK(update_state_, base::NotFatalUntil::M163);
   UpdateComputedHypertext();
 }
 
@@ -1780,7 +1780,7 @@ void BrowserAccessibilityComWin::UpdateStep3FireEvents() {
   if (!update_state_) {
     return;
   }
-  DCHECK(update_state_->old_win_attributes);
+  CHECK(update_state_->old_win_attributes, base::NotFatalUntil::M163);
 
   // Hold a reference to `this` only when calling `FireNativeEvent`, as pumping
   // in-context WinEvent hooks can destroy `owner` and drop its reference to
@@ -1881,7 +1881,7 @@ BrowserAccessibilityWin* BrowserAccessibilityComWin::GetOwner() const {
 
 BrowserAccessibilityManager* BrowserAccessibilityComWin::Manager() const {
   auto* manager = GetOwner()->manager();
-  DCHECK(manager);
+  CHECK(manager, base::NotFatalUntil::M163);
   return manager;
 }
 
@@ -1936,7 +1936,7 @@ HRESULT BrowserAccessibilityComWin::GetStringAttributeAsBstr(
   }
 
   *value_bstr = SysAllocString(base::as_wcstr(str));
-  DCHECK(*value_bstr);
+  CHECK(*value_bstr, base::NotFatalUntil::M163);
 
   return S_OK;
 }
@@ -1949,7 +1949,7 @@ HRESULT BrowserAccessibilityComWin::GetNameAsBstr(BSTR* value_bstr) {
   std::u16string str;
   str = GetOwner()->GetNameAsString16();
   *value_bstr = SysAllocString(base::as_wcstr(str));
-  DCHECK(*value_bstr);
+  CHECK(*value_bstr, base::NotFatalUntil::M163);
 
   return S_OK;
 }
@@ -1965,8 +1965,8 @@ LONG BrowserAccessibilityComWin::FindStartOfStyle(
     LONG start_offset,
     ax::mojom::MoveDirection direction) {
   LONG text_length = static_cast<LONG>(GetHypertext().length());
-  DCHECK_GE(start_offset, 0);
-  DCHECK_LE(start_offset, text_length);
+  CHECK_GE(start_offset, 0, base::NotFatalUntil::M163);
+  CHECK_LE(start_offset, text_length, base::NotFatalUntil::M163);
 
   switch (direction) {
     case ax::mojom::MoveDirection::kNone:

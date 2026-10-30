@@ -20,7 +20,8 @@ namespace {
 AXPlatformNodeWin* GetParentAXPlatformNodeWin(AXPlatformNodeWin* node) {
   gfx::NativeViewAccessible native_parent = node->GetParent();
 
-  DCHECK(native_parent != node->GetNativeViewAccessible());
+  CHECK(native_parent != node->GetNativeViewAccessible(),
+        base::NotFatalUntil::M163);
 
   return static_cast<AXPlatformNodeWin*>(
       AXPlatformNode::FromNativeViewAccessible(native_parent));

@@ -231,7 +231,7 @@ IFACEMETHODIMP AXPlatformRelationWin::get_relationType(BSTR* relation_type) {
     return E_INVALIDARG;
 
   *relation_type = SysAllocString(type_.c_str());
-  DCHECK(*relation_type);
+  CHECK(*relation_type, base::NotFatalUntil::M163);
   return S_OK;
 }
 

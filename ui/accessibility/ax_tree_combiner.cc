@@ -22,7 +22,7 @@ void AXTreeCombiner::AddTree(AXTreeUpdate& tree, bool is_root) {
   }
 
   if (is_root) {
-    DCHECK_EQ(root_tree_id_, AXTreeIDUnknown());
+    CHECK_EQ(root_tree_id_, AXTreeIDUnknown(), base::NotFatalUntil::M163);
     root_tree_id_ = tree.tree_data.tree_id;
   }
 
@@ -35,7 +35,8 @@ bool AXTreeCombiner::Combine() {
 
   if (trees_.size() == 1) {
     // Nothing to combine -- only one tree.
-    DCHECK(root_tree_id_ == trees_[0].tree_data.tree_id);
+    CHECK(root_tree_id_ == trees_[0].tree_data.tree_id,
+          base::NotFatalUntil::M163);
     combined_ = std::move(trees_[0]);
     return true;
   }

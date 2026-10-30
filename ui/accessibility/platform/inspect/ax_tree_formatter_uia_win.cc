@@ -58,7 +58,8 @@ std::string UiaIdentifierToCondensedString(int32_t id) {
 void GetUIARuntimeId(IUIAutomationElement* first_child,
                      IRawElementProviderFragment* start_fragment,
                      SAFEARRAY** runtime_id_out) {
-  DCHECK(first_child && start_fragment && runtime_id_out);
+  CHECK(first_child && start_fragment && runtime_id_out,
+        base::NotFatalUntil::M163);
   std::array<int, 3> internal_id;
   {
     // Get the internal runtime id from the IRawElementProviderFragment based
@@ -482,7 +483,7 @@ base::DictValue AXTreeFormatterUia::BuildTree(
     root->FindFirst(TreeScope_Subtree, not_is_pane_condition.Get(),
                     &non_pane_descendant);
 
-    DCHECK(non_pane_descendant.Get());
+    CHECK(non_pane_descendant.Get(), base::NotFatalUntil::M163);
     RecursiveBuildTree(non_pane_descendant.Get(), root_bounds.left,
                        root_bounds.top, &tree);
   }

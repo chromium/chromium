@@ -942,7 +942,7 @@ NodeType* AXNode::ChildIteratorBase<NodeType,
                                     PreviousSibling,
                                     FirstChild,
                                     LastChild>::get() const {
-  DCHECK(child_);
+  CHECK(child_, base::NotFatalUntil::M163);
   return child_;
 }
 
@@ -956,7 +956,7 @@ NodeType& AXNode::ChildIteratorBase<NodeType,
                                     PreviousSibling,
                                     FirstChild,
                                     LastChild>::operator*() const {
-  DCHECK(child_);
+  CHECK(child_, base::NotFatalUntil::M163);
   return *child_;
 }
 
@@ -970,7 +970,7 @@ NodeType* AXNode::ChildIteratorBase<NodeType,
                                     PreviousSibling,
                                     FirstChild,
                                     LastChild>::operator->() const {
-  DCHECK(child_);
+  CHECK(child_, base::NotFatalUntil::M163);
   return child_;
 }
 

@@ -84,12 +84,12 @@ class AXRange final {
   ~AXRange() = default;
 
   AXPositionType* anchor() const {
-    DCHECK(anchor_);
+    CHECK(anchor_, base::NotFatalUntil::M163);
     return anchor_.get();
   }
 
   AXPositionType* focus() const {
-    DCHECK(focus_);
+    CHECK(focus_, base::NotFatalUntil::M163);
     return focus_.get();
   }
 
@@ -129,8 +129,8 @@ class AXRange final {
   //   nullopt - If positions are not comparable (see AXPosition::CompareTo).
   static std::optional<int> CompareEndpoints(const AXPositionType* first,
                                              const AXPositionType* second) {
-    DCHECK(first->IsValid());
-    DCHECK(second->IsValid());
+    CHECK(first->IsValid(), base::NotFatalUntil::M163);
+    CHECK(second->IsValid(), base::NotFatalUntil::M163);
     std::optional<int> tree_position_comparison =
         first->AsTreePosition()->CompareTo(*second->AsTreePosition());
 
@@ -163,7 +163,7 @@ class AXRange final {
   }
 
   bool IsNull() const {
-    DCHECK(anchor_ && focus_);
+    CHECK(anchor_ && focus_, base::NotFatalUntil::M163);
     return anchor_->IsNullPosition() || focus_->IsNullPosition();
   }
 
@@ -247,27 +247,28 @@ class AXRange final {
 
     // Only forward iteration is supported, so operator-- is not implemented.
     Iterator& operator++() {
-      DCHECK(!current_start_->IsNullPosition());
+      CHECK(!current_start_->IsNullPosition(), base::NotFatalUntil::M163);
       if (current_start_->GetAnchor() == iterator_end_->GetAnchor()) {
         current_start_ = AXPositionType::CreateNullPosition();
       } else {
         current_start_ = current_start_->CreateNextLeafTreePosition();
-        DCHECK_LE(*current_start_, *iterator_end_);
+        CHECK_LE(*current_start_, *iterator_end_, base::NotFatalUntil::M163);
       }
       return *this;
     }
 
     AXRange operator*() const {
-      DCHECK(!current_start_->IsNullPosition());
+      CHECK(!current_start_->IsNullPosition(), base::NotFatalUntil::M163);
       AXPositionInstance current_end =
           (current_start_->GetAnchor() != iterator_end_->GetAnchor())
               ? current_start_->CreatePositionAtEndOfAnchor()
               : iterator_end_->Clone();
-      DCHECK_LE(*current_end, *iterator_end_);
+      CHECK_LE(*current_end, *iterator_end_, base::NotFatalUntil::M163);
 
       AXRange current_leaf_text_range(current_start_->AsTextPosition(),
                                       current_end->AsTextPosition());
-      DCHECK(current_leaf_text_range.IsLeafTextRange());
+      CHECK(current_leaf_text_range.IsLeafTextRange(),
+            base::NotFatalUntil::M163);
       return std::move(current_leaf_text_range);
     }
 
@@ -333,28 +334,29 @@ class AXRange final {
     }
 
     ReverseIterator& operator--() {
-      DCHECK(!focus_->IsNullPosition());
+      CHECK(!focus_->IsNullPosition(), base::NotFatalUntil::M163);
       if (anchor_->GetAnchor() == focus_->GetAnchor()) {
         focus_ = AXPositionType::CreateNullPosition();
       } else {
         focus_ = focus_->CreatePreviousLeafTreePosition()
                      ->CreatePositionAtEndOfAnchor();
-        DCHECK_LE(*anchor_, *focus_);
+        CHECK_LE(*anchor_, *focus_, base::NotFatalUntil::M163);
       }
       return *this;
     }
 
     AXRange operator*() const {
-      DCHECK(!focus_->IsNullPosition());
+      CHECK(!focus_->IsNullPosition(), base::NotFatalUntil::M163);
       AXPositionInstance current_anchor =
           (anchor_->GetAnchor() != focus_->GetAnchor())
               ? focus_->CreatePositionAtStartOfAnchor()
               : anchor_->Clone();
-      DCHECK_LE(*anchor_, *current_anchor);
+      CHECK_LE(*anchor_, *current_anchor, base::NotFatalUntil::M163);
 
       AXRange current_leaf_text_range(current_anchor->AsTextPosition(),
                                       focus_->AsTextPosition());
-      DCHECK(current_leaf_text_range.IsLeafTextRange());
+      CHECK(current_leaf_text_range.IsLeafTextRange(),
+            base::NotFatalUntil::M163);
       return std::move(current_leaf_text_range);
     }
 
@@ -446,8 +448,8 @@ class AXRange final {
     const AXNode* prev_text_field_ancestor = nullptr;
 
     while (!start->IsNullPosition()) {
-      DCHECK(start->IsLeafTextPosition());
-      DCHECK_GE(start->text_offset(), 0);
+      CHECK(start->IsLeafTextPosition(), base::NotFatalUntil::M163);
+      CHECK_GE(start->text_offset(), 0, base::NotFatalUntil::M163);
       const bool start_is_unignored = !start->IsIgnored();
       const bool start_is_in_white_space = start->IsInWhiteSpace();
 
@@ -585,8 +587,9 @@ class AXRange final {
           }
         }
 
-        DCHECK(max_count < 0 ||
-               static_cast<int>(range_text.length()) <= max_count);
+        CHECK(
+            max_count < 0 || static_cast<int>(range_text.length()) <= max_count,
+            base::NotFatalUntil::M163);
         is_first_included_leaf = false;
 
         // Track the text field ancestor for every included leaf so that
@@ -670,7 +673,7 @@ class AXRange final {
           range_start->text_offset(), range_end->text_offset(),
           AXClippingBehavior::kUnclipped, &offscreen_result);
       if (offscreen_result == AXOffscreenResult::kOnscreen) {
-        DCHECK(degenerate_range_rect.width() == 0);
+        CHECK(degenerate_range_rect.width() == 0, base::NotFatalUntil::M163);
         degenerate_range_rect.set_width(1);
         rects.push_back(degenerate_range_rect);
       }
@@ -679,7 +682,7 @@ class AXRange final {
     }
 
     for (const AXRange& leaf_text_range : *this) {
-      DCHECK(leaf_text_range.IsLeafTextRange());
+      CHECK(leaf_text_range.IsLeafTextRange(), base::NotFatalUntil::M163);
       AXPositionType* current_line_start = leaf_text_range.anchor();
       AXPositionType* current_line_end = leaf_text_range.focus();
 

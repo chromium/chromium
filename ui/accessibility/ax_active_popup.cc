@@ -32,7 +32,7 @@ void SetActivePopupAxUniqueId(std::optional<AXNodeID> ax_unique_id) {
   // this would indicate two autofill popups are showing at the same time or
   // previous on popup hide call did not clear the variable, so we should fail
   // via DCHECK here.
-  DCHECK(!GetActivePopupAXUniqueIdInstance());
+  CHECK(!GetActivePopupAXUniqueIdInstance(), base::NotFatalUntil::M163);
 
   GetActivePopupAXUniqueIdInstance() = ax_unique_id;
 }

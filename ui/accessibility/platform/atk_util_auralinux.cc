@@ -202,7 +202,7 @@ void AtkUtilAuraLinux::InitializeForTesting() {
 __attribute__((no_sanitize("cfi-icall")))
 DiscardAtkKeyEvent AtkUtilAuraLinux::HandleAtkKeyEvent(
     AtkKeyEventStruct* key_event) {
-  DCHECK(key_event);
+  CHECK(key_event, base::NotFatalUntil::M163);
 
   if (!AXPlatform::GetInstance().GetMode().has_mode(AXMode::kNativeAPIs)) {
     return DiscardAtkKeyEvent::Retain;

@@ -39,22 +39,22 @@ bool AXScriptInstruction::IsPrintTree() const {
 }
 
 AXPropertyNode AXScriptInstruction::AsScript() const {
-  DCHECK(!IsEvent());
+  CHECK(!IsEvent(), base::NotFatalUntil::M163);
   return AXPropertyNode::From(instruction_);
 }
 
 std::string AXScriptInstruction::AsEvent() const {
-  DCHECK(IsEvent());
+  CHECK(IsEvent(), base::NotFatalUntil::M163);
   return instruction_.substr(kWaitForLength);
 }
 
 std::string AXScriptInstruction::AsDomKeyString() const {
-  DCHECK(IsKeyEvent());
+  CHECK(IsKeyEvent(), base::NotFatalUntil::M163);
   return instruction_.substr(kPressLength);
 }
 
 std::string AXScriptInstruction::AsComment() const {
-  DCHECK(IsComment());
+  CHECK(IsComment(), base::NotFatalUntil::M163);
   return instruction_;
 }
 

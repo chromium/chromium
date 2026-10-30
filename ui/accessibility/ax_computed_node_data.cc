@@ -102,7 +102,8 @@ bool AXComputedNodeData::GetOrComputeIsDescendantOfPlatformLeaf() const {
 
 const std::string& AXComputedNodeData::ComputeAttributeUTF8(
     const ax::mojom::StringAttribute attribute) const {
-  DCHECK(owner_->CanComputeStringAttribute(attribute));
+  CHECK(owner_->CanComputeStringAttribute(attribute),
+        base::NotFatalUntil::M163);
   switch (attribute) {
     case ax::mojom::StringAttribute::kValue:
       return GetOrComputeTextContentWithParagraphBreaksUTF8();
@@ -117,7 +118,8 @@ const std::string& AXComputedNodeData::ComputeAttributeUTF8(
 
 std::u16string AXComputedNodeData::ComputeAttributeUTF16(
     const ax::mojom::StringAttribute attribute) const {
-  DCHECK(owner_->CanComputeStringAttribute(attribute));
+  CHECK(owner_->CanComputeStringAttribute(attribute),
+        base::NotFatalUntil::M163);
   switch (attribute) {
     case ax::mojom::StringAttribute::kValue:
       return GetOrComputeTextContentWithParagraphBreaksUTF16();
@@ -132,7 +134,8 @@ std::u16string AXComputedNodeData::ComputeAttributeUTF16(
 
 const std::vector<int32_t>& AXComputedNodeData::ComputeAttribute(
     const ax::mojom::IntListAttribute attribute) const {
-  DCHECK(owner_->CanComputeIntListAttribute(attribute));
+  CHECK(owner_->CanComputeIntListAttribute(attribute),
+        base::NotFatalUntil::M163);
   switch (attribute) {
     case ax::mojom::IntListAttribute::kLineStarts:
       ComputeLineOffsetsIfNeeded();
@@ -243,7 +246,7 @@ bool AXComputedNodeData::CanInferNameAttribute() const {
 void AXComputedNodeData::ComputeUnignoredValues(
     AXNodeID unignored_parent_id,
     int starting_index_in_parent) const {
-  DCHECK_GE(starting_index_in_parent, 0);
+  CHECK_GE(starting_index_in_parent, 0, base::NotFatalUntil::M163);
   // Reset any previously computed values.
   unignored_index_in_parent_ = std::nullopt;
   unignored_parent_id_ = std::nullopt;
@@ -263,9 +266,9 @@ void AXComputedNodeData::ComputeUnignoredValues(
       // Skip the ignored node and recursively look at its children.
       computed_data.ComputeUnignoredValues(unignored_parent_id_for_child,
                                            new_index_in_parent);
-      DCHECK(computed_data.unignored_child_count_);
+      CHECK(computed_data.unignored_child_count_, base::NotFatalUntil::M163);
       unignored_child_count += *computed_data.unignored_child_count_;
-      DCHECK(computed_data.unignored_child_ids_);
+      CHECK(computed_data.unignored_child_ids_, base::NotFatalUntil::M163);
       unignored_child_ids.insert(unignored_child_ids.end(),
                                  computed_data.unignored_child_ids_->begin(),
                                  computed_data.unignored_child_ids_->end());
@@ -315,9 +318,11 @@ void AXComputedNodeData::ComputeIsDescendantOfPlatformLeaf() const {
 }
 
 void AXComputedNodeData::ComputeLineOffsetsIfNeeded() const {
-  DCHECK_EQ(line_starts_.has_value(), line_ends_.has_value());
+  CHECK_EQ(line_starts_.has_value(), line_ends_.has_value(),
+           base::NotFatalUntil::M163);
   if (line_starts_) {
-    DCHECK_EQ(line_starts_->size(), line_ends_->size());
+    CHECK_EQ(line_starts_->size(), line_ends_->size(),
+             base::NotFatalUntil::M163);
     return;  // Already cached.
   }
 
@@ -342,9 +347,11 @@ void AXComputedNodeData::ComputeLineOffsetsIfNeeded() const {
 }
 
 void AXComputedNodeData::ComputeSentenceOffsetsIfNeeded() const {
-  DCHECK_EQ(sentence_starts_.has_value(), sentence_ends_.has_value());
+  CHECK_EQ(sentence_starts_.has_value(), sentence_ends_.has_value(),
+           base::NotFatalUntil::M163);
   if (sentence_starts_) {
-    DCHECK_EQ(sentence_starts_->size(), sentence_ends_->size());
+    CHECK_EQ(sentence_starts_->size(), sentence_ends_->size(),
+             base::NotFatalUntil::M163);
     return;  // Already cached.
   }
 
@@ -379,9 +386,11 @@ void AXComputedNodeData::ComputeSentenceOffsetsIfNeeded() const {
 }
 
 void AXComputedNodeData::ComputeWordOffsetsIfNeeded() const {
-  DCHECK_EQ(word_starts_.has_value(), word_ends_.has_value());
+  CHECK_EQ(word_starts_.has_value(), word_ends_.has_value(),
+           base::NotFatalUntil::M163);
   if (word_starts_) {
-    DCHECK_EQ(word_starts_->size(), word_ends_->size());
+    CHECK_EQ(word_starts_->size(), word_ends_->size(),
+             base::NotFatalUntil::M163);
     return;  // Already cached.
   }
 

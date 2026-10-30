@@ -1148,7 +1148,7 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 
   [attributedString beginEditing];
   for (const AXRange& leafTextRange : *axRange) {
-    DCHECK(!leafTextRange.IsNull());
+    CHECK(!leafTextRange.IsNull(), base::NotFatalUntil::M163);
     DCHECK_EQ(leafTextRange.anchor()->GetAnchor(),
               leafTextRange.focus()->GetAnchor())
         << "An anchor range should only span a single object.";
@@ -1181,11 +1181,13 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
                                  leafTextRange.focus()->CreateParentPosition());
       markers_anchor = markersTextRange.anchor()->GetAnchor();
 
-      DCHECK(markersTextRange.anchor()->GetAnchor() ==
-             markersTextRange.focus()->GetAnchor());
+      CHECK(markersTextRange.anchor()->GetAnchor() ==
+                markersTextRange.focus()->GetAnchor(),
+            base::NotFatalUntil::M163);
       DCHECK(markers_anchor) << "Markers anchor should not be null.";
-      DCHECK(markers_anchor->GetRole() == ax::mojom::Role::kStaticText ||
-             markers_anchor->GetRole() == ax::mojom::Role::kLineBreak);
+      CHECK(markers_anchor->GetRole() == ax::mojom::Role::kStaticText ||
+                markers_anchor->GetRole() == ax::mojom::Role::kLineBreak,
+            base::NotFatalUntil::M163);
     }
 
     // Add misspelling information
@@ -1199,9 +1201,11 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
         markers_anchor->GetIntListAttribute(
             ax::mojom::IntListAttribute::kHighlightTypes);
 
-    DCHECK_EQ(markerTypes.size(), markerStarts.size());
-    DCHECK_EQ(markerTypes.size(), markerEnds.size());
-    DCHECK_EQ(markerTypes.size(), highlightTypes.size());
+    CHECK_EQ(markerTypes.size(), markerStarts.size(),
+             base::NotFatalUntil::M163);
+    CHECK_EQ(markerTypes.size(), markerEnds.size(), base::NotFatalUntil::M163);
+    CHECK_EQ(markerTypes.size(), highlightTypes.size(),
+             base::NotFatalUntil::M163);
 
     for (size_t i = 0; i < markerTypes.size(); ++i) {
       const bool is_spelling_marker =
@@ -1381,8 +1385,9 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 
 - (AXAnnouncementSpec*)announcementForEvent:(ax::mojom::Event)eventType {
   // Only alerts and live region changes should be announced.
-  DCHECK(eventType == ax::mojom::Event::kAlert ||
-         eventType == ax::mojom::Event::kLiveRegionChanged);
+  CHECK(eventType == ax::mojom::Event::kAlert ||
+            eventType == ax::mojom::Event::kLiveRegionChanged,
+        base::NotFatalUntil::M163);
   std::string liveStatus =
       _node->GetStringAttribute(ax::mojom::StringAttribute::kLiveStatus);
   // If live status is explicitly set to off, don't announce.
@@ -1501,7 +1506,8 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
 
   // VoiceOver expects the "press" action to be first. Note that some roles
   // should be given a press action implicitly.
-  DCHECK([action_list[0].second isEqualToString:NSAccessibilityPressAction]);
+  CHECK([action_list[0].second isEqualToString:NSAccessibilityPressAction],
+        base::NotFatalUntil::M163);
   for (const auto& item : action_list) {
     if ((_node->HasAction(item.first) ||
          HasImplicitAction(*_node, item.first))) {
@@ -2799,8 +2805,8 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   if (!_node) {
     return NO;
   }
-  DCHECK(_node->GetDelegate());
-  DCHECK([self instanceActive]);
+  CHECK(_node->GetDelegate(), base::NotFatalUntil::M163);
+  CHECK([self instanceActive], base::NotFatalUntil::M163);
 
   // After ViewsAX lands, we should be able to add this DCHECK.
   // DCHECK(!_node->GetDelegate()->IsIgnored())
@@ -3530,14 +3536,14 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   if ([self internalRole] == ax::mojom::Role::kTreeItem) {
     return [[self treeItemRowIndex] integerValue];
   } else if ([self internalRole] == ax::mojom::Role::kColumn) {
-    DCHECK(_node);
+    CHECK(_node, base::NotFatalUntil::M163);
     std::optional<int> col_index =
         _node->GetDelegate()->node()->GetTableColColIndex();
     if (col_index.has_value()) {
       return *col_index;
     }
   } else if ([self internalRole] == ax::mojom::Role::kRow) {
-    DCHECK(_node);
+    CHECK(_node, base::NotFatalUntil::M163);
     std::optional<int> row_index =
         _node->GetDelegate()->node()->GetTableRowRowIndex();
     if (row_index.has_value()) {

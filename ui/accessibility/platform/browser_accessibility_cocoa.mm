@@ -156,8 +156,8 @@ AXRange GetSelectedRange(BrowserAccessibility& owner) {
   // <input>, <textarea> and Views-based text fields.
   int anchor_offset = unignored_selection.anchor_offset;
   int focus_offset = unignored_selection.focus_offset;
-  DCHECK_GE(anchor_offset, 0);
-  DCHECK_GE(focus_offset, 0);
+  CHECK_GE(anchor_offset, 0, base::NotFatalUntil::M163);
+  CHECK_GE(focus_offset, 0, base::NotFatalUntil::M163);
 
   ax::mojom::TextAffinity anchor_affinity = unignored_selection.anchor_affinity;
   ax::mojom::TextAffinity focus_affinity = unignored_selection.focus_affinity;
@@ -1001,12 +1001,12 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
   if ([self internalRole] == ax::mojom::Role::kTreeItem) {
     return [self treeItemRowIndex];
   } else if ([self internalRole] == ax::mojom::Role::kColumn) {
-    DCHECK(_owner->node());
+    CHECK(_owner->node(), base::NotFatalUntil::M163);
     std::optional<int> col_index = *_owner->node()->GetTableColColIndex();
     if (col_index)
       return @(*col_index);
   } else if ([self internalRole] == ax::mojom::Role::kRow) {
-    DCHECK(_owner->node());
+    CHECK(_owner->node(), base::NotFatalUntil::M163);
     std::optional<int> row_index = _owner->node()->GetTableRowRowIndex();
     if (row_index)
       return @(*row_index);
@@ -1019,8 +1019,10 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
   if (![self instanceActive])
     return nil;
 
-  DCHECK([self internalRole] == ax::mojom::Role::kTreeItem);
-  DCHECK([[self role] isEqualToString:NSAccessibilityRowRole]);
+  CHECK([self internalRole] == ax::mojom::Role::kTreeItem,
+        base::NotFatalUntil::M163);
+  CHECK([[self role] isEqualToString:NSAccessibilityRowRole],
+        base::NotFatalUntil::M163);
 
   // First find an ancestor that establishes this tree or treegrid. We
   // will search in this ancestor to calculate our row index.
@@ -1048,7 +1050,8 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
   if (![self instanceActive])
     return false;
 
-  DCHECK([[toFind accessibilityRole] isEqualToString:NSAccessibilityRowRole]);
+  CHECK([[toFind accessibilityRole] isEqualToString:NSAccessibilityRowRole],
+        base::NotFatalUntil::M163);
   for (BrowserAccessibilityCocoa* childToCheck in
        [self accessibilityChildren]) {
     if ([toFind isEqual:childToCheck]) {
@@ -1091,7 +1094,7 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
   // replacement characters in the accessibility tree. Mac is not one of them.
   const AXPosition caretPosition = range.focus()->LowestCommonAncestorPosition(
       *_owner->CreateTextPositionAt(0), ax::mojom::MoveDirection::kForward);
-  DCHECK(!caretPosition->IsNullPosition())
+  CHECK(!caretPosition->IsNullPosition(), base::NotFatalUntil::M163)
       << "Calling HasVisibleCaretOrSelection() should have ensured that there "
          "is a valid selection focus inside the current object.";
   base::span<const int> lineStarts =
@@ -1134,7 +1137,7 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
   // replacement characters in the accessibility tree. Mac is not one of them.
   const AXPosition caretPosition = range.focus()->LowestCommonAncestorPosition(
       *_owner->CreateTextPositionAt(0), ax::mojom::MoveDirection::kForward);
-  DCHECK(!caretPosition->IsNullPosition())
+  CHECK(!caretPosition->IsNullPosition(), base::NotFatalUntil::M163)
       << "Calling HasVisibleCaretOrSelection() should have ensured that there "
          "is a valid selection focus inside the current object.";
   base::span<const int> lineStarts =
@@ -1160,7 +1163,7 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
   if (![self instanceActive])
     return nil;
   ui::AXNode* node = _owner->node();
-  DCHECK(node);
+  CHECK(node, base::NotFatalUntil::M163);
   return base::SysUTF8ToNSString(node->GetLanguage());
 }
 
@@ -1258,7 +1261,7 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
   if (_owner->PlatformGetParent()) {
     id unignored_parent = NSAccessibilityUnignoredAncestor(
         _owner->PlatformGetParent()->GetNativeViewAccessible().Get());
-    DCHECK(unignored_parent);
+    CHECK(unignored_parent, base::NotFatalUntil::M163);
     return unignored_parent;
   }
 
@@ -1280,7 +1283,7 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
           ->ToBrowserAccessibilityManagerMac();
   if (!manager) {
     // TODO(accessibility) Determine why this is happening.
-    DCHECK(false);
+    CHECK(false, base::NotFatalUntil::M163);
     return nil;
   }
   return manager->GetParentView();
@@ -1332,8 +1335,8 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
          base::IsUnicodeWhitespace(newValue[newValue.length() - j - 1])));
        ++j) {
   }
-  DCHECK_LE(i + j, oldValue.length());
-  DCHECK_LE(i + j, newValue.length());
+  CHECK_LE(i + j, oldValue.length(), base::NotFatalUntil::M163);
+  CHECK_LE(i + j, newValue.length(), base::NotFatalUntil::M163);
 
   std::u16string deletedText = oldValue.substr(i, oldValue.length() - i - j);
   std::u16string insertedText = newValue.substr(i, newValue.length() - i - j);
@@ -1416,7 +1419,7 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
 
   TRACE_EVENT1("accessibility", "BrowserAccessibilityCocoa::role",
                "role=", base::SysNSStringToUTF8(cocoa_role));
-  DCHECK(cocoa_role != NSAccessibilityUnknownRole);
+  CHECK(cocoa_role != NSAccessibilityUnknownRole, base::NotFatalUntil::M163);
   return cocoa_role;
 }
 
@@ -1632,11 +1635,11 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
   // replacement characters in the accessibility tree. Mac is not one of them.
   const AXPosition startPosition = range.anchor()->LowestCommonAncestorPosition(
       *_owner->CreateTextPositionAt(0), ax::mojom::MoveDirection::kForward);
-  DCHECK(!startPosition->IsNullPosition())
+  CHECK(!startPosition->IsNullPosition(), base::NotFatalUntil::M163)
       << "Calling HasVisibleCaretOrSelection() should have ensured that there "
          "is a valid selection anchor inside the current object.";
   int selectionStart = startPosition->AsTextPosition()->text_offset();
-  DCHECK_GE(selectionStart, 0);
+  CHECK_GE(selectionStart, 0, base::NotFatalUntil::M163);
   int selectionLength = range.GetText().length();
   return NSMakeRange(selectionStart, selectionLength);
 }
@@ -1661,11 +1664,11 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
   // replacement characters in the accessibility tree. Mac is not one of them.
   const AXPosition startPosition = range.anchor()->LowestCommonAncestorPosition(
       *_owner->CreateTextPositionAt(0), ax::mojom::MoveDirection::kForward);
-  DCHECK(!startPosition->IsNullPosition())
+  CHECK(!startPosition->IsNullPosition(), base::NotFatalUntil::M163)
       << "Calling HasVisibleCaretOrSelection() should have ensured that there "
          "is a valid selection anchor inside the current object.";
   int selStart = startPosition->AsTextPosition()->text_offset();
-  DCHECK_GE(selStart, 0);
+  CHECK_GE(selStart, 0, base::NotFatalUntil::M163);
   int selLength = range.GetText().length();
   return [NSValue valueWithRange:NSMakeRange(selStart, selLength)];
 }
@@ -1817,7 +1820,7 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
   if (![self instanceActive])
     return nil;
 
-  DCHECK(_owner->node()->IsDataValid());
+  CHECK(_owner->node()->IsDataValid(), base::NotFatalUntil::M163);
 
   if (ui::IsNameExposedInAXValueForRole([self internalRole])) {
     std::u16string name = _owner->GetNameAsString16();
@@ -2625,9 +2628,9 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
     endObject = _owner->manager()->GetFromAXNode(focus->GetAnchor());
     startOffset = anchor->text_offset();
     endOffset = focus->text_offset();
-    DCHECK(startObject && endObject);
-    DCHECK_GE(startOffset, 0);
-    DCHECK_GE(endOffset, 0);
+    CHECK(startObject && endObject, base::NotFatalUntil::M163);
+    CHECK_GE(startOffset, 0, base::NotFatalUntil::M163);
+    CHECK_GE(endOffset, 0, base::NotFatalUntil::M163);
     if (!startObject || !endObject || startOffset < 0 || endOffset < 0)
       return nil;
 
@@ -2684,7 +2687,7 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
     AXPosition position = AXTextMarkerToAXPosition(parameter);
     if (position->IsNullPosition())
       return @"nil";
-    DCHECK(position->GetAnchor());
+    CHECK(position->GetAnchor(), base::NotFatalUntil::M163);
     return base::SysUTF8ToNSString(position->GetAnchor()->data().ToString());
   }
 

@@ -11,13 +11,13 @@ namespace ui {
 ChildIteratorBase::ChildIteratorBase(const AXPlatformNodeDelegate* parent,
                                      size_t index)
     : parent_(parent), index_(index) {
-  DCHECK(parent);
-  DCHECK_LE(index, parent->GetChildCount());
+  CHECK(parent, base::NotFatalUntil::M163);
+  CHECK_LE(index, parent->GetChildCount(), base::NotFatalUntil::M163);
 }
 
 ChildIteratorBase::ChildIteratorBase(const ChildIteratorBase& it)
     : parent_(it.parent_), index_(it.index_) {
-  DCHECK(parent_);
+  CHECK(parent_, base::NotFatalUntil::M163);
 }
 
 ChildIteratorBase& ChildIteratorBase::operator++() {
@@ -32,13 +32,13 @@ ChildIteratorBase ChildIteratorBase::operator++(int) {
 }
 
 ChildIteratorBase& ChildIteratorBase::operator--() {
-  DCHECK_GT(index_, 0u);
+  CHECK_GT(index_, 0u, base::NotFatalUntil::M163);
   index_--;
   return *this;
 }
 
 ChildIteratorBase ChildIteratorBase::operator--(int) {
-  DCHECK_GT(index_, 0u);
+  CHECK_GT(index_, 0u, base::NotFatalUntil::M163);
   ChildIteratorBase previous_state = *this;
   index_--;
   return previous_state;
@@ -65,7 +65,7 @@ AXPlatformNodeDelegate* ChildIteratorBase::get() const {
 AXPlatformNodeDelegate& ChildIteratorBase::operator*() const {
   AXPlatformNode* platform_node =
       AXPlatformNode::FromNativeViewAccessible(GetNativeViewAccessible());
-  DCHECK(platform_node);
+  CHECK(platform_node, base::NotFatalUntil::M163);
   return *(platform_node->GetDelegate());
 }
 

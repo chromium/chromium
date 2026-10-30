@@ -71,7 +71,7 @@ BrowserAccessibilityManagerAuraLinux::~BrowserAccessibilityManagerAuraLinux() {
         << "We should never get here in non-web content sourced managers.";
   }
 
-  DCHECK(GetBrowserAccessibilityRoot());
+  CHECK(GetBrowserAccessibilityRoot(), base::NotFatalUntil::M163);
   gfx::NativeViewAccessible obj =
       GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
   // We don't fire state:changed:defunct on every object in order to reduce
@@ -94,10 +94,11 @@ AXTreeUpdate BrowserAccessibilityManagerAuraLinux::GetEmptyDocument() {
 
 void BrowserAccessibilityManagerAuraLinux::SetPrimaryWebContentsForWindow(
     AXNodeID node_id) {
-  DCHECK_NE(node_id, kInvalidAXNodeID);
-  DCHECK(GetFromID(node_id));
-  DCHECK(primary_web_contents_for_window_id_ == node_id ||
-         primary_web_contents_for_window_id_ == kInvalidAXNodeID);
+  CHECK_NE(node_id, kInvalidAXNodeID, base::NotFatalUntil::M163);
+  CHECK(GetFromID(node_id), base::NotFatalUntil::M163);
+  CHECK(primary_web_contents_for_window_id_ == node_id ||
+            primary_web_contents_for_window_id_ == kInvalidAXNodeID,
+        base::NotFatalUntil::M163);
   primary_web_contents_for_window_id_ = node_id;
 }
 
@@ -268,7 +269,7 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
   BrowserAccessibilityManager::FireGeneratedEvent(event_type, node);
 
   BrowserAccessibility* wrapper = GetFromAXNode(node);
-  DCHECK(wrapper);
+  CHECK(wrapper, base::NotFatalUntil::M163);
   if (!GetAtkNode(wrapper)) {
     return;
   }
@@ -370,7 +371,7 @@ void BrowserAccessibilityManagerAuraLinux::FireGeneratedEvent(
       FireSelectedEvent(wrapper);
       break;
     case AXEventGenerator::Event::SELECTED_VALUE_CHANGED:
-      DCHECK(IsSelectElement(wrapper->GetRole()));
+      CHECK(IsSelectElement(wrapper->GetRole()), base::NotFatalUntil::M163);
       FireEvent(wrapper, ax::mojom::Event::kValueChanged);
       break;
     case AXEventGenerator::Event::SORT_CHANGED:
@@ -456,7 +457,7 @@ void BrowserAccessibilityManagerAuraLinux::FireAriaNotificationEvent(
     ax::mojom::AriaNotificationPriority priority_property,
     ax::mojom::AriaNotificationInterrupt interrupt_property,
     const std::string& type) {
-  DCHECK(node);
+  CHECK(node, base::NotFatalUntil::M163);
 
   // Only newer Atk versions support the notification signal type.
   BrowserAccessibility* target =
@@ -516,7 +517,7 @@ void BrowserAccessibilityManagerAuraLinux::OnIgnoredWillChange(
     AXNode* node,
     bool is_ignored_new_value,
     bool is_changing_unignored_parents_children) {
-  DCHECK_EQ(ax_tree(), tree);
+  CHECK_EQ(ax_tree(), tree, base::NotFatalUntil::M163);
 
   // Since AuraLinux needs to send the children-changed::remove event with the
   // index in parent, the event must be fired before the node becomes ignored.
@@ -524,7 +525,7 @@ void BrowserAccessibilityManagerAuraLinux::OnIgnoredWillChange(
   if (is_ignored_new_value && is_changing_unignored_parents_children) {
     BrowserAccessibility* obj = GetFromID(node->id());
     if (obj && obj->GetParent()) {
-      DCHECK(!obj->IsIgnored());
+      CHECK(!obj->IsIgnored(), base::NotFatalUntil::M163);
       if (!CanEmitChildrenChanged(obj))
         return;
       g_signal_emit_by_name(obj->GetParent(), "children-changed::remove",

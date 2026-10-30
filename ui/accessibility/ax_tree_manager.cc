@@ -48,10 +48,11 @@ AXTreeManager* AXTreeManager::ForChildTree(const AXNode& parent_node) {
 
   // Some platforms do not use AXTreeManagers, so child trees don't exist in
   // the browser process.
-  DCHECK(!child_tree_manager ||
-         !child_tree_manager->GetParentNodeFromParentTree() ||
-         child_tree_manager->GetParentNodeFromParentTree()->id() ==
-             parent_node.id());
+  CHECK(!child_tree_manager ||
+            !child_tree_manager->GetParentNodeFromParentTree() ||
+            child_tree_manager->GetParentNodeFromParentTree()->id() ==
+                parent_node.id(),
+        base::NotFatalUntil::M163);
   return child_tree_manager;
 }
 
@@ -193,7 +194,7 @@ void AXTreeManager::SetLastFocusedNode(AXNode* node) {
 #endif
 
     // Only set frame url crash keys if the tree id has changed.
-    DCHECK(node->GetManager());
+    CHECK(node->GetManager(), base::NotFatalUntil::M163);
     if (node->GetManager()->GetTreeID() != last_focused_node_tree_id_) {
       if (node->GetManager() && node->GetManager()->GetRootManager()) {
         node_info_top_frame << node->GetManager()->GetRootManager()->GetRoot();
@@ -210,8 +211,9 @@ void AXTreeManager::SetLastFocusedNode(AXNode* node) {
 
     last_focused_node_id_ = node->id();
     last_focused_node_tree_id_ = node->GetManager()->GetTreeID();
-    DCHECK(last_focused_node_tree_id_);
-    DCHECK(last_focused_node_tree_id_ != AXTreeIDUnknown());
+    CHECK(last_focused_node_tree_id_, base::NotFatalUntil::M163);
+    CHECK(last_focused_node_tree_id_ != AXTreeIDUnknown(),
+          base::NotFatalUntil::M163);
   } else {
 #if AX_FAIL_FAST_BUILD()
     base::debug::ClearCrashKeyString(ax_crash_key_focus);
@@ -226,8 +228,9 @@ void AXTreeManager::SetLastFocusedNode(AXNode* node) {
 // static
 AXNode* AXTreeManager::GetLastFocusedNode() {
   if (last_focused_node_id_) {
-    DCHECK(last_focused_node_tree_id_);
-    DCHECK(last_focused_node_tree_id_ != AXTreeIDUnknown());
+    CHECK(last_focused_node_tree_id_, base::NotFatalUntil::M163);
+    CHECK(last_focused_node_tree_id_ != AXTreeIDUnknown(),
+          base::NotFatalUntil::M163);
     if (AXTreeManager* last_focused_manager =
             FromID(last_focused_node_tree_id_.value())) {
       return last_focused_manager->GetNode(last_focused_node_id_.value());
@@ -290,9 +293,9 @@ std::unique_ptr<AXTree> AXTreeManager::SetTree(
 void AXTreeManager::OnTreeDataChanged(AXTree* tree,
                                       const AXTreeData& old_data,
                                       const AXTreeData& new_data) {
-  DCHECK_NE(ax_tree(), nullptr);
-  DCHECK_EQ(ax_tree(), tree);
-  DCHECK_EQ(GetTreeID(), new_data.tree_id);
+  CHECK_NE(ax_tree(), nullptr, base::NotFatalUntil::M163);
+  CHECK_EQ(ax_tree(), tree, base::NotFatalUntil::M163);
+  CHECK_EQ(GetTreeID(), new_data.tree_id, base::NotFatalUntil::M163);
 
   // Tree ID hasn't changed.
   if (new_data.tree_id == old_data.tree_id) {
@@ -320,7 +323,7 @@ void AXTreeManager::OnTreeDataChanged(AXTree* tree,
 }
 
 void AXTreeManager::OnNodeWillBeDeleted(AXTree* tree, AXNode* node) {
-  DCHECK(node);
+  CHECK(node, base::NotFatalUntil::M163);
   if (node == GetLastFocusedNode())
     SetLastFocusedNode(nullptr);
 
@@ -335,7 +338,7 @@ void AXTreeManager::OnAtomicUpdateFinished(
     AXTree* tree,
     bool root_changed,
     const std::vector<AXTreeObserver::Change>& changes) {
-  DCHECK_EQ(ax_tree(), tree);
+  CHECK_EQ(ax_tree(), tree, base::NotFatalUntil::M163);
   if (root_changed)
     connected_to_parent_tree_node_ = false;
 }
@@ -376,7 +379,7 @@ AXNode* AXTreeManager::GetParentNodeFromParentTree() const {
   if (!parent_manager)
     return nullptr;
 
-  DCHECK(GetRoot());
+  CHECK(GetRoot(), base::NotFatalUntil::M163);
 
   std::set<int32_t> host_node_ids =
       parent_manager->ax_tree()->GetNodeIdsForChildTreeId(GetTreeID());
@@ -389,7 +392,7 @@ AXNode* AXTreeManager::GetParentNodeFromParentTree() const {
   << "Multiple nodes cannot claim the same child tree ID.";
 
   AXNode* parent_node = parent_manager->GetNode(*(host_node_ids.begin()));
-  DCHECK(parent_node);
+  CHECK(parent_node, base::NotFatalUntil::M163);
   DCHECK_EQ(GetTreeID(), AXTreeID::FromString(parent_node->GetStringAttribute(
                              ax::mojom::StringAttribute::kChildTreeId)))
       << "A node that hosts a child tree should expose its tree ID in its "
@@ -459,7 +462,7 @@ void AXTreeManager::EnsureParentConnectionIfNotRootManager() {
     // an existing UI element. Due to race conditions, in some cases, `this` is
     // destroyed first, and this condition is not reached; while in other cases
     // the parent node is destroyed first (this case).
-    DCHECK(IsRoot() || !CanFireEvents());
+    CHECK(IsRoot() || !CanFireEvents(), base::NotFatalUntil::M163);
   }
 }
 
