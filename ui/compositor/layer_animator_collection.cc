@@ -26,7 +26,7 @@ LayerAnimatorCollection::~LayerAnimatorCollection() {
 
 void LayerAnimatorCollection::StartAnimator(
     scoped_refptr<LayerAnimator> animator) {
-  DCHECK_EQ(0U, animators_.count(animator));
+  CHECK_EQ(0U, animators_.count(animator), base::NotFatalUntil::M163);
   if (animators_.empty())
     last_tick_time_ = base::TimeTicks::Now();
   animators_.insert(animator);
@@ -36,7 +36,7 @@ void LayerAnimatorCollection::StartAnimator(
 
 void LayerAnimatorCollection::StopAnimator(
     scoped_refptr<LayerAnimator> animator) {
-  DCHECK_GT(animators_.count(animator), 0U);
+  CHECK_GT(animators_.count(animator), 0U, base::NotFatalUntil::M163);
   animators_.erase(animator);
   if (animators_.empty() && compositor_)
     compositor_->RemoveAnimationObserver(this);
@@ -60,7 +60,7 @@ void LayerAnimatorCollection::OnAnimationStep(base::TimeTicks now) {
 
 void LayerAnimatorCollection::OnCompositingShuttingDown(
     Compositor* compositor) {
-  DCHECK_EQ(compositor_, compositor);
+  CHECK_EQ(compositor_, compositor, base::NotFatalUntil::M163);
   compositor_->RemoveAnimationObserver(this);
   compositor_ = nullptr;
 }

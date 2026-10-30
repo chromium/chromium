@@ -341,8 +341,8 @@ bool DisplayConfigurator::DisplayLayoutManagerImpl::GetDisplayLayout(
       break;
     }
   }
-  DCHECK(new_display_state == MULTIPLE_DISPLAY_STATE_HEADLESS ||
-         !size.IsEmpty());
+  CHECK(new_display_state == MULTIPLE_DISPLAY_STATE_HEADLESS || !size.IsEmpty(),
+        base::NotFatalUntil::M163);
 
   return true;
 }
@@ -408,7 +408,7 @@ bool DisplayConfigurator::DisplayLayoutManagerImpl::
 bool DisplayConfigurator::DisplayLayoutManagerImpl::FindExactMatchingMirrorMode(
     const std::vector<DisplayState*>& displays,
     bool preserve_native_aspect_ratio) const {
-  DCHECK(displays.size() > 0);
+  CHECK(displays.size() > 0, base::NotFatalUntil::M163);
 
   // Put each display's display modes in |mode_lists| and sort the display modes
   // for each display by size area and refresh rate.
@@ -549,7 +549,7 @@ DisplayConfigurator::~DisplayConfigurator() {
 
 void DisplayConfigurator::SetDelegateForTesting(
     std::unique_ptr<NativeDisplayDelegate> display_delegate) {
-  DCHECK(!native_display_delegate_);
+  CHECK(!native_display_delegate_, base::NotFatalUntil::M163);
 
   native_display_delegate_ = std::move(display_delegate);
   SetConfigureDisplays(true);
@@ -747,12 +747,12 @@ void DisplayConfigurator::ForceInitialConfigure() {
   if (configurator_disabled())
     return;
 
-  DCHECK(native_display_delegate_);
+  CHECK(native_display_delegate_, base::NotFatalUntil::M163);
   native_display_delegate_->Initialize();
 
   // ForceInitialConfigure should be the first configuration so there shouldn't
   // be anything scheduled.
-  DCHECK(!configuration_task_);
+  CHECK(!configuration_task_, base::NotFatalUntil::M163);
 
   configuration_task_ = std::make_unique<UpdateDisplayConfigurationTask>(
       native_display_delegate_.get(), layout_manager_.get(),
@@ -794,10 +794,12 @@ void DisplayConfigurator::SetPrivacyScreen(int64_t display_id,
       break;
     }
   }
-  DCHECK(internal_display);
-  DCHECK_EQ(internal_display->display_id(), display_id);
-  DCHECK_NE(internal_display->privacy_screen_state(), kNotSupported);
-  DCHECK(internal_display->current_mode());
+  CHECK(internal_display, base::NotFatalUntil::M163);
+  CHECK_EQ(internal_display->display_id(), display_id,
+           base::NotFatalUntil::M163);
+  CHECK_NE(internal_display->privacy_screen_state(), kNotSupported,
+           base::NotFatalUntil::M163);
+  CHECK(internal_display->current_mode(), base::NotFatalUntil::M163);
 #endif
 
   native_display_delegate_->SetPrivacyScreen(display_id, enabled,
@@ -990,7 +992,7 @@ void DisplayConfigurator::RunPendingConfiguration() {
   }
   ConfigurationType configuration_type = kConfigurationTypeFull;
   if (!HasPendingFullConfiguration()) {
-    DCHECK(HasPendingSeamlessConfiguration());
+    CHECK(HasPendingSeamlessConfiguration(), base::NotFatalUntil::M163);
     configuration_type = kConfigurationTypeSeamless;
   }
 
@@ -1011,7 +1013,8 @@ void DisplayConfigurator::RunPendingConfiguration() {
   pending_refresh_rate_overrides_ = std::nullopt;
   pending_vrr_state_ = std::nullopt;
 
-  DCHECK(in_progress_configuration_callbacks_.empty());
+  CHECK(in_progress_configuration_callbacks_.empty(),
+        base::NotFatalUntil::M163);
   in_progress_configuration_callbacks_.swap(queued_configuration_callbacks_);
 
   configuration_task_->Run();

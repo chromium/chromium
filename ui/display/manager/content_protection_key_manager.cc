@@ -46,7 +46,7 @@ void ContentProtectionKeyManager::SetKeyIfRequired(
         displays_states,
     int64_t display_id,
     KeySetCallback on_key_set) {
-  DCHECK(!on_key_set.is_null());
+  CHECK(!on_key_set.is_null(), base::NotFatalUntil::M163);
 
   // TODO(markyacoub): Remove this flag once the feature is fully launched.
   if (!features::IsHdcpKeyProvisioningRequired()) {
@@ -82,7 +82,7 @@ void ContentProtectionKeyManager::SetKeyIfRequired(
 }
 
 void ContentProtectionKeyManager::FetchKeyFromServer() {
-  DCHECK(!provisioned_key_request_.is_null());
+  CHECK(!provisioned_key_request_.is_null(), base::NotFatalUntil::M163);
   provisioned_key_request_.Run(
       base::BindOnce(&ContentProtectionKeyManager::OnKeyFetchedFromServer,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -92,7 +92,7 @@ void ContentProtectionKeyManager::OnKeyFetchedFromServer(
     const std::string& key) {
   if (key.size()) {
     // This is the size of the key that we expect from the server as of now.
-    DCHECK_EQ(key.size(), kHdcpKeySize);
+    CHECK_EQ(key.size(), kHdcpKeySize, base::NotFatalUntil::M163);
     cached_provisioned_key_ = key;
     for (int64_t display_id : displays_pending_set_key_) {
       InjectKeyToKernel(display_id);
@@ -107,7 +107,7 @@ void ContentProtectionKeyManager::OnKeyFetchedFromServer(
 }
 
 void ContentProtectionKeyManager::InjectKeyToKernel(int64_t display_id) {
-  DCHECK(native_display_delegate_);
+  CHECK(native_display_delegate_, base::NotFatalUntil::M163);
   native_display_delegate_->SetHdcpKeyProp(
       display_id, cached_provisioned_key_,
       base::BindOnce(&ContentProtectionKeyManager::OnKeyInjectedToKernel,
@@ -125,7 +125,7 @@ void ContentProtectionKeyManager::TriggerPendingCallbacks(int64_t display_id,
                                                           bool is_key_set) {
   CHECK(pending_display_callbacks_.contains(display_id));
   KeySetCallback callback = std::move(pending_display_callbacks_[display_id]);
-  DCHECK(!callback.is_null());
+  CHECK(!callback.is_null(), base::NotFatalUntil::M163);
   std::move(callback).Run(is_key_set);
 
   pending_display_callbacks_.erase(display_id);

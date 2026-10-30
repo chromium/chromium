@@ -71,7 +71,7 @@ std::optional<int> GetPerMonitorDPI(HMONITOR monitor) {
     return std::nullopt;
   }
 
-  DCHECK_EQ(dpi_x, dpi_y);
+  CHECK_EQ(dpi_x, dpi_y, base::NotFatalUntil::M163);
   return static_cast<int>(dpi_x);
 }
 
@@ -96,7 +96,7 @@ ScaleFactors GetScaleFactorsForDPI(int dpi, bool include_accessibility) {
 // scale factor if per-monitor DPI is not supported.
 ScaleFactors GetMonitorScaleFactors(HMONITOR monitor,
                                     bool include_accessibility = true) {
-  DCHECK(monitor);
+  CHECK(monitor, base::NotFatalUntil::M163);
   if (Display::HasForceDeviceScaleFactor()) {
     return {Display::GetForcedDeviceScaleFactor(), 1.0f};
   }

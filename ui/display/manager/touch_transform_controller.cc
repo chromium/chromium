@@ -273,7 +273,7 @@ gfx::Transform GetUncalibratedTransform(const gfx::Transform& tm,
 }
 
 DisplayIdList GetConnectedDisplayIdList(const DisplayManager* display_manager) {
-  DCHECK(display_manager->num_connected_displays());
+  CHECK(display_manager->num_connected_displays(), base::NotFatalUntil::M163);
   if (display_manager->num_connected_displays() == 1) {
     return DisplayIdList{display_manager->first_display_id()};
   }
@@ -397,7 +397,8 @@ void TouchTransformController::UpdateTouchRadius(
   for (const auto& device :
        display_manager_->touch_device_manager()
            ->GetAssociatedTouchDevicesForDisplay(display.id())) {
-    DCHECK_EQ(0u, update_data->device_to_scale.count(device.id));
+    CHECK_EQ(0u, update_data->device_to_scale.count(device.id),
+             base::NotFatalUntil::M163);
     update_data->device_to_scale.emplace(
         device.id, GetTouchResolutionScale(display, device));
   }
@@ -429,12 +430,12 @@ void TouchTransformController::UpdateTouchTransforms(
     return;
 
   DisplayIdList display_id_list = GetConnectedDisplayIdList(display_manager_);
-  DCHECK(display_id_list.size());
+  CHECK(display_id_list.size(), base::NotFatalUntil::M163);
 
   DisplayInfoList display_info_list;
 
   for (int64_t display_id : display_id_list) {
-    DCHECK(display_id != kInvalidDisplayId);
+    CHECK(display_id != kInvalidDisplayId, base::NotFatalUntil::M163);
     display_info_list.push_back(display_manager_->GetDisplayInfo(display_id));
     UpdateTouchRadius(display_info_list.back(), update_data);
   }

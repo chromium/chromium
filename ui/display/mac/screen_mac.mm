@@ -489,10 +489,12 @@ class ScreenMac : public Screen {
   void OnDelayedNotification() {
     // This can only be called `delayed_notification_new_displays_` is identical
     // to `displays_` except for HDR headroom.
-    DCHECK_EQ(delayed_notification_new_displays_.size(), displays_.size());
+    CHECK_EQ(delayed_notification_new_displays_.size(), displays_.size(),
+             base::NotFatalUntil::M163);
     for (size_t i = 0; i < displays_.size(); ++i) {
-      DCHECK(display::Display::EqualExceptForHdrHeadroom(
-          displays_[i], delayed_notification_new_displays_[i]));
+      CHECK(display::Display::EqualExceptForHdrHeadroom(
+                displays_[i], delayed_notification_new_displays_[i]),
+            base::NotFatalUntil::M163);
     }
 
     // Update `displays_` and send the notification.

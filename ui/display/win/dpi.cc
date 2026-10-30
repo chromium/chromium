@@ -22,7 +22,7 @@ float g_device_scale_factor = 0.f;
 }  // namespace
 
 void SetDefaultDeviceScaleFactor(float scale) {
-  DCHECK_NE(0.f, scale);
+  CHECK_NE(0.f, scale, base::NotFatalUntil::M163);
   g_device_scale_factor = scale;
 }
 
@@ -55,7 +55,7 @@ int GetDefaultSystemDPI() {
     // to all screens.
     dpi_x = ::GetDeviceCaps(screen_dc, LOGPIXELSX);
     dpi_y = ::GetDeviceCaps(screen_dc, LOGPIXELSY);
-    DCHECK_EQ(dpi_x, dpi_y);
+    CHECK_EQ(dpi_x, dpi_y, base::NotFatalUntil::M163);
   }
   return dpi_x;
 }

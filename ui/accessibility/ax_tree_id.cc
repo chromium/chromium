@@ -71,7 +71,8 @@ void swap(AXTreeID& first, AXTreeID& second) {
 }
 
 size_t AXTreeIDHash::operator()(const AXTreeID& tree_id) const {
-  DCHECK(tree_id.type() == ax::mojom::AXTreeIDType::kToken);
+  CHECK(tree_id.type() == ax::mojom::AXTreeIDType::kToken,
+        base::NotFatalUntil::M163);
   return base::UnguessableTokenHash()(tree_id.token().value());
 }
 

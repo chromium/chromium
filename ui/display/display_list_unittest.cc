@@ -129,15 +129,17 @@ TEST(DisplayListTest, EmptyIsValid) {
 
 TEST(DisplayListTest, FirstDisplayAddedMustBePrimary) {
   DisplayList display_list;
-  EXPECT_DCHECK_DEATH(
-      display_list.AddDisplay(Display(1), DisplayList::Type::NOT_PRIMARY));
+  EXPECT_CHECK_DEATH(
+      display_list.AddDisplay(Display(1), DisplayList::Type::NOT_PRIMARY),
+      base::NotFatalUntil::M163);
 }
 
 TEST(DisplayListTest, DisplaysIdsMustBeUnique) {
   DisplayList display_list;
   display_list.AddDisplay(Display(1), DisplayList::Type::PRIMARY);
-  EXPECT_DCHECK_DEATH(
-      display_list.AddDisplay(Display(1), DisplayList::Type::PRIMARY));
+  EXPECT_CHECK_DEATH(
+      display_list.AddDisplay(Display(1), DisplayList::Type::PRIMARY),
+      base::NotFatalUntil::M163);
 }
 
 TEST(DisplayListTest, GetPrimaryDisplayEmpty) {

@@ -92,7 +92,7 @@ ColorProfileReader::BuildDisplayIdToPathMapOnBackgroundThread() {
 
 void ColorProfileReader::BuildDisplayIdToPathMapCompleted(
     DisplayIdToPathMap new_display_id_to_path_map) {
-  DCHECK(update_in_flight_);
+  CHECK(update_in_flight_, base::NotFatalUntil::M163);
 
   // Are there any changes from previous results
   if (display_id_to_path_map_ == new_display_id_to_path_map) {
@@ -128,7 +128,7 @@ ColorProfileReader::ReadProfilesOnBackgroundThread(
 
 void ColorProfileReader::ReadProfilesCompleted(
     DisplayIdToProfileMap display_id_to_profile_map) {
-  DCHECK(update_in_flight_);
+  CHECK(update_in_flight_, base::NotFatalUntil::M163);
   update_in_flight_ = false;
   display_id_to_profile_map_ = std::move(display_id_to_profile_map);
   client_->OnColorProfilesChanged();

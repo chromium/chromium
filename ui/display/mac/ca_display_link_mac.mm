@@ -54,7 +54,7 @@ API_AVAILABLE(macos(14.0))
 
 @implementation CADisplayLinkTarget
 - (void)step:(CADisplayLink*)displayLink {
-  DCHECK(_callback);
+  CHECK(_callback, base::NotFatalUntil::M163);
   _callback.Run();
 }
 
@@ -526,7 +526,7 @@ void WindowServerEventPumpThread::DisableDisplayLink(Result failure) {
     return;
   }
 
-  DCHECK_NE(failure, Result::kSuccess);
+  CHECK_NE(failure, Result::kSuccess, base::NotFatalUntil::M163);
   RecordWindowServerEventPumpResult(failure);
 
   shutdown_ = true;

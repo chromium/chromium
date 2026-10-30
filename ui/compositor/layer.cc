@@ -74,7 +74,7 @@ void CheckSnapped(float snapped_position) {
   // uncommon device scale factor is applied.
   const float kEplison = 0.003f;
   float diff = std::abs(snapped_position - std::round(snapped_position));
-  DCHECK_LT(diff, kEplison);
+  CHECK_LT(diff, kEplison, base::NotFatalUntil::M163);
 }
 #endif
 
@@ -341,10 +341,10 @@ void Layer::SetCompositor(Compositor* compositor,
                           scoped_refptr<cc::Layer> root_layer) {
   // This function must only be called to set the compositor on the root ui
   // layer.
-  DCHECK(compositor);
-  DCHECK(!compositor_);
-  DCHECK(compositor->root_layer() == this);
-  DCHECK(!parent_);
+  CHECK(compositor, base::NotFatalUntil::M163);
+  CHECK(!compositor_, base::NotFatalUntil::M163);
+  CHECK(compositor->root_layer() == this, base::NotFatalUntil::M163);
+  CHECK(!parent_, base::NotFatalUntil::M163);
 
   compositor_ = compositor;
   OnDeviceScaleFactorChanged(compositor->device_scale_factor());
@@ -354,7 +354,7 @@ void Layer::SetCompositor(Compositor* compositor,
 }
 
 void Layer::ResetCompositor() {
-  DCHECK(!parent_);
+  CHECK(!parent_, base::NotFatalUntil::M163);
   if (compositor_) {
     ResetCompositorForAnimatorsInTree(compositor_);
     compositor_ = nullptr;
@@ -370,7 +370,7 @@ void Layer::RemoveObserver(LayerObserver* observer) {
 }
 
 void Layer::Add(Layer* child) {
-  DCHECK(!child->compositor_);
+  CHECK(!child->compositor_, base::NotFatalUntil::M163);
   if (child->parent_)
     child->parent_->Remove(child);
   child->parent_ = this;

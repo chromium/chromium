@@ -157,7 +157,7 @@ const ManagedDisplayMode* FindNextMode(
     const ManagedDisplayInfo::ManagedDisplayModeList& modes,
     size_t index,
     bool up) {
-  DCHECK_LT(index, modes.size());
+  CHECK_LT(index, modes.size(), base::NotFatalUntil::M163);
   size_t new_index = index;
   if (up && (index + 1 < modes.size())) {
     ++new_index;
@@ -172,7 +172,7 @@ const ManagedDisplayMode* FindNextMode(
 bool GetDisplayModeForNextResolution(const ManagedDisplayInfo& info,
                                      bool up,
                                      ManagedDisplayMode* mode) {
-  DCHECK(!IsInternalDisplayId(info.id()));
+  CHECK(!IsInternalDisplayId(info.id()), base::NotFatalUntil::M163);
 
   const ManagedDisplayInfo::ManagedDisplayModeList& modes =
       info.display_modes();
@@ -255,7 +255,7 @@ enum class DisplayCountRange {
 DisplayCountRange GetDisplayCountRange(int display_count) {
   // Note that Unified Mode and mirror mode cannot be enabled with a single
   // display.
-  DCHECK_GE(display_count, 2);
+  CHECK_GE(display_count, 2, base::NotFatalUntil::M163);
 
   if (display_count <= 2) {
     return DisplayCountRange::k2Displays;
@@ -338,8 +338,8 @@ std::string ToString(DisplayManager::MultiDisplayMode mode) {
 // value such that [0%, 80%] maps to [5 nits, 203 nits] and
 // [80%, 100%] maps to [203 nits, `hdr_max_lum`].
 float GetSdrLumForScreenBrightness(float percent, float hdr_max_lum) {
-  DCHECK_LE(percent, 100.f);
-  DCHECK_GE(percent, 0.f);
+  CHECK_LE(percent, 100.f, base::NotFatalUntil::M163);
+  CHECK_GE(percent, 0.f, base::NotFatalUntil::M163);
 
   float brightness_pivot = 80.f;
   float sdr_avg = gfx::ColorSpace::kDefaultSDRWhiteLevel;
@@ -354,8 +354,8 @@ float GetSdrLumForScreenBrightness(float percent, float hdr_max_lum) {
     sdr_lum += hdr_max_lum;
   }
 
-  DCHECK_LE(sdr_lum, hdr_max_lum);
-  DCHECK_GT(sdr_lum, sdr_min);
+  CHECK_LE(sdr_lum, hdr_max_lum, base::NotFatalUntil::M163);
+  CHECK_GT(sdr_lum, sdr_min, base::NotFatalUntil::M163);
   return sdr_lum;
 }
 
@@ -525,7 +525,7 @@ void DisplayManager::InitDefaultDisplay() {
 
 void DisplayManager::UpdateInternalDisplay(
     const ManagedDisplayInfo& display_info) {
-  DCHECK(HasInternalDisplay());
+  CHECK(HasInternalDisplay(), base::NotFatalUntil::M163);
   InsertAndUpdateDisplayInfo(display_info);
 }
 
@@ -568,7 +568,7 @@ void DisplayManager::RefreshFontParams() {
 }
 
 const DisplayLayout& DisplayManager::GetCurrentDisplayLayout() const {
-  DCHECK_LE(2U, num_connected_displays());
+  CHECK_LE(2U, num_connected_displays(), base::NotFatalUntil::M163);
   if (num_connected_displays() > 1) {
     DisplayIdList list = GetConnectedDisplayIdList();
     return layout_store_->GetRegisteredDisplayLayout(list);
@@ -595,8 +595,8 @@ bool DisplayManager::IsConnectedDisplayIdListInSyncWithCurrentState(
   DisplayIdList connected_display_id_list = display_id_list;
   if (IsInUnifiedMode()) {
     // A display for unified desktop is virtual.
-    DCHECK_EQ(1u, display_id_list.size());
-    DCHECK_EQ(display_id_list[0], kUnifiedDisplayId);
+    CHECK_EQ(1u, display_id_list.size(), base::NotFatalUntil::M163);
+    CHECK_EQ(display_id_list[0], kUnifiedDisplayId, base::NotFatalUntil::M163);
     connected_display_id_list.clear();
   }
 
@@ -623,7 +623,7 @@ void DisplayManager::SetLayoutForCurrentDisplays(
 
   const DisplayIdList list = GetConnectedDisplayIdList();
 
-  DCHECK(DisplayLayout::Validate(list, *layout));
+  CHECK(DisplayLayout::Validate(list, *layout), base::NotFatalUntil::M163);
 
   const DisplayLayout& current_layout =
       layout_store_->GetRegisteredDisplayLayout(list);
@@ -686,7 +686,7 @@ bool DisplayManager::UpdateWorkAreaOfDisplay(int64_t display_id,
                                              const gfx::Insets& insets) {
   BeginEndNotifier notifier(this);
   Display* display = FindDisplayForId(display_id);
-  DCHECK(display);
+  CHECK(display, base::NotFatalUntil::M163);
   gfx::Rect old_work_area = display->work_area();
   display->UpdateWorkAreaFromInsets(insets);
   bool workarea_changed = old_work_area != display->work_area();
@@ -891,7 +891,7 @@ void DisplayManager::RegisterDisplayProperty(
   info.set_vsync_rate_min(vsync_rate_min);
 
   if (!resolution_in_pixels.IsEmpty()) {
-    DCHECK(!IsInternalDisplayId(display_id));
+    CHECK(!IsInternalDisplayId(display_id), base::NotFatalUntil::M163);
     ManagedDisplayMode mode(resolution_in_pixels, refresh_rate, is_interlaced,
                             false, device_scale_factor);
     display_modes_[display_id] = mode;
@@ -1135,7 +1135,8 @@ bool DisplayManager::UpdateDisplaysWith(
 
   if (num_connected_displays() > 1) {
     DisplayIdList connected_display_id_list = GetConnectedDisplayIdList();
-    DCHECK(IsConnectedDisplayIdListInSyncWithCurrentState(new_display_id_list));
+    CHECK(IsConnectedDisplayIdListInSyncWithCurrentState(new_display_id_list),
+          base::NotFatalUntil::M163);
     const DisplayLayout& layout =
         layout_store_->GetOrCreateRegisteredDisplayLayout(
             connected_display_id_list);
@@ -1474,7 +1475,7 @@ bool DisplayManager::UpdateDisplaysWith(
 }
 
 const Display& DisplayManager::GetDisplayAt(size_t index) const {
-  DCHECK_LT(index, active_display_list_.size());
+  CHECK_LT(index, active_display_list_.size(), base::NotFatalUntil::M163);
   return active_display_list_[index];
 }
 
@@ -1591,7 +1592,7 @@ Display DisplayManager::GetMirroringDisplayForUnifiedDesktop(
     return Display();
   }
 
-  DCHECK(!current_unified_desktop_matrix_.empty());
+  CHECK(!current_unified_desktop_matrix_.empty(), base::NotFatalUntil::M163);
 
   const size_t rows = current_unified_desktop_matrix_.size();
   const size_t columns = current_unified_desktop_matrix_[0].size();
@@ -1611,7 +1612,7 @@ Display DisplayManager::GetMirroringDisplayForUnifiedDesktop(
       break;
   }
 
-  DCHECK_NE(display_id, kInvalidDisplayId);
+  CHECK_NE(display_id, kInvalidDisplayId, base::NotFatalUntil::M163);
 
   for (auto& display : software_mirroring_display_list_) {
     if (display.id() == display_id) {
@@ -1624,20 +1625,20 @@ Display DisplayManager::GetMirroringDisplayForUnifiedDesktop(
 
 int DisplayManager::GetMirroringDisplayRowIndexInUnifiedMatrix(
     int64_t display_id) const {
-  DCHECK(IsInUnifiedMode());
+  CHECK(IsInUnifiedMode(), base::NotFatalUntil::M163);
 
   return mirroring_display_id_to_unified_matrix_row_.at(display_id);
 }
 
 int DisplayManager::GetUnifiedDesktopRowMaxHeight(int row_index) const {
-  DCHECK(IsInUnifiedMode());
+  CHECK(IsInUnifiedMode(), base::NotFatalUntil::M163);
 
   return unified_display_rows_heights_.at(row_index);
 }
 
 const ManagedDisplayInfo& DisplayManager::GetDisplayInfo(
     int64_t display_id) const {
-  DCHECK_NE(kInvalidDisplayId, display_id);
+  CHECK_NE(kInvalidDisplayId, display_id, base::NotFatalUntil::M163);
 
   auto iter = display_info_.find(display_id);
   CHECK(iter != display_info_.end()) << display_id;
@@ -1666,7 +1667,7 @@ std::string DisplayManager::GetDisplayNameForId(int64_t id) const {
 }
 
 bool DisplayManager::ShouldSetMirrorModeOn(const DisplayIdList& new_id_list) {
-  DCHECK(new_id_list.size() > 1);
+  CHECK(new_id_list.size() > 1, base::NotFatalUntil::M163);
   if (layout_store_->forced_mirror_mode_for_tablet()) {
     return true;
   }
@@ -1721,7 +1722,7 @@ void DisplayManager::SetMirrorMode(
     // 2. Restore the mixed mirror mode when display configuration changes.
     mixed_mirror_mode_params_ = mixed_params;
   } else {
-    DCHECK(mixed_params == std::nullopt);
+    CHECK(mixed_params == std::nullopt, base::NotFatalUntil::M163);
     // Clear mixed mirror mode parameters here to avoid restoring the mode after
     // display configuration changes.
     mixed_mirror_mode_params_ = std::nullopt;
@@ -1742,7 +1743,7 @@ void DisplayManager::SetMirrorMode(
 
 void DisplayManager::AddRemoveDisplay() {
   ManagedDisplayInfo::ManagedDisplayModeList display_modes;
-  DCHECK(!active_display_list_.empty());
+  CHECK(!active_display_list_.empty(), base::NotFatalUntil::M163);
 
   DisplayInfoList new_display_info_list;
   const ManagedDisplayInfo& first_display =
@@ -1894,8 +1895,8 @@ void DisplayManager::ClearTouchCalibrationData(
 }
 
 void DisplayManager::UpdateZoomFactor(int64_t display_id, float zoom_factor) {
-  DCHECK(zoom_factor > 0);
-  DCHECK_NE(display_id, kInvalidDisplayId);
+  CHECK(zoom_factor > 0, base::NotFatalUntil::M163);
+  CHECK_NE(display_id, kInvalidDisplayId, base::NotFatalUntil::M163);
   auto iter = display_info_.find(display_id);
   if (iter == display_info_.end()) {
     return;
@@ -1930,7 +1931,7 @@ bool DisplayManager::HasUnassociatedDisplay() const {
 
 void DisplayManager::SetDefaultMultiDisplayModeForCurrentDisplays(
     MultiDisplayMode mode) {
-  DCHECK_NE(MIRRORING, mode);
+  CHECK_NE(MIRRORING, mode, base::NotFatalUntil::M163);
   DisplayIdList list = GetConnectedDisplayIdList();
   layout_store_->UpdateDefaultUnified(list, mode == UNIFIED);
   ReconfigureDisplays();
@@ -1973,13 +1974,13 @@ bool DisplayManager::UpdateDisplayBounds(int64_t display_id,
   // the displays so the unified display size is recomputed.
   if (IsInUnifiedMode() &&
       ContainsDisplayWithId(software_mirroring_display_list_, display_id)) {
-    DCHECK(!IsActiveDisplayId(display_id));
+    CHECK(!IsActiveDisplayId(display_id), base::NotFatalUntil::M163);
     ReconfigureDisplays();
     return true;
   }
 
   Display* display = FindDisplayForId(display_id);
-  DCHECK(display);
+  CHECK(display, base::NotFatalUntil::M163);
   display->SetSize(display_info_[display_id].size_in_pixel());
   BeginEndNotifier notifier(this);
   NotifyMetricsChanged(*display, DisplayObserver::DISPLAY_METRIC_BOUNDS);
@@ -2014,7 +2015,7 @@ void DisplayManager::UpdateInternalManagedDisplayModeListForTest() {
 
 bool DisplayManager::ZoomDisplay(int64_t display_id, bool up) {
   if (IsInUnifiedMode()) {
-    DCHECK_EQ(display_id, kUnifiedDisplayId);
+    CHECK_EQ(display_id, kUnifiedDisplayId, base::NotFatalUntil::M163);
     const ManagedDisplayInfo& display_info = GetDisplayInfo(display_id);
 
     ManagedDisplayMode mode;
@@ -2062,7 +2063,7 @@ bool DisplayManager::ZoomDisplay(int64_t display_id, bool up) {
 
 void DisplayManager::ResetDisplayZoom(int64_t display_id) {
   if (IsInUnifiedMode()) {
-    DCHECK_EQ(display_id, kUnifiedDisplayId);
+    CHECK_EQ(display_id, kUnifiedDisplayId, base::NotFatalUntil::M163);
     const ManagedDisplayInfo& display_info = GetDisplayInfo(kUnifiedDisplayId);
     const ManagedDisplayInfo::ManagedDisplayModeList& modes =
         display_info.display_modes();
@@ -2117,7 +2118,7 @@ void DisplayManager::CreateSoftwareMirroringDisplayInfo(
           source_id = first_display_id_;
         }
 
-        DCHECK(source_id != kInvalidDisplayId);
+        CHECK(source_id != kInvalidDisplayId, base::NotFatalUntil::M163);
 
         for (auto& info : *display_info_list) {
           if (source_id != info.id()) {
@@ -2156,7 +2157,7 @@ void DisplayManager::CreateSoftwareMirroringDisplayInfo(
 
 void DisplayManager::CreateUnifiedDesktopDisplayInfo(
     DisplayInfoList* display_info_list) {
-  DCHECK(!display_info_list->empty());
+  CHECK(!display_info_list->empty(), base::NotFatalUntil::M163);
   if (display_info_list->size() == 1) {
     return;
   }
@@ -2200,7 +2201,7 @@ void DisplayManager::CreateUnifiedDesktopDisplayInfo(
     int max_height = std::numeric_limits<int>::min();
     for (const auto& id : row) {
       const ManagedDisplayInfo* info = FindInfoById(*display_info_list, id);
-      DCHECK(info);
+      CHECK(info, base::NotFatalUntil::M163);
       max_height = std::max(max_height, info->size_in_pixel().height());
     }
     rows_max_heights.emplace_back(max_height);
@@ -2229,7 +2230,7 @@ void DisplayManager::CreateUnifiedDesktopDisplayInfo(
     for (size_t j = 0; j < num_columns; ++j) {
       const auto& id = row[j];
       const ManagedDisplayInfo* info = FindInfoById(*display_info_list, id);
-      DCHECK(info);
+      CHECK(info, base::NotFatalUntil::M163);
 
       InsertAndUpdateDisplayInfo(*info);
       const float scale =
@@ -2273,7 +2274,7 @@ void DisplayManager::CreateUnifiedDesktopDisplayInfo(
       }
 
       const ManagedDisplayInfo* info = FindInfoById(*display_info_list, id);
-      DCHECK(info);
+      CHECK(info, base::NotFatalUntil::M163);
 
       const float scale = scales[i][j];
       const gfx::Point origin(row_displays_bounds.right(),
@@ -2306,7 +2307,7 @@ void DisplayManager::CreateUnifiedDesktopDisplayInfo(
   // Find the default mode.
   auto default_mode_iter =
       std::ranges::find_if(modes, &ManagedDisplayMode::native);
-  DCHECK(default_mode_iter != modes.end());
+  CHECK(default_mode_iter != modes.end(), base::NotFatalUntil::M163);
 
   if (default_mode_iter != modes.end()) {
     const ManagedDisplayMode& default_mode = *default_mode_iter;
@@ -2344,7 +2345,8 @@ void DisplayManager::CreateUnifiedDesktopDisplayInfo(
   // 7 - Now that we know the final unified display bounds, update the displays
   //     in the |software_mirroring_display_list_| list so that they have the
   //     correct bounds.
-  DCHECK_EQ(num_rows * num_columns, software_mirroring_display_list_.size());
+  CHECK_EQ(num_rows * num_columns, software_mirroring_display_list_.size(),
+           base::NotFatalUntil::M163);
   int last_bottom = 0;
   for (size_t i = 0; i < num_rows; ++i) {
     int last_right = 0;
@@ -2368,7 +2370,8 @@ void DisplayManager::CreateUnifiedDesktopDisplayInfo(
     last_bottom += max_height;
   }
 
-  DCHECK_EQ(num_rows, unified_display_rows_heights_.size());
+  CHECK_EQ(num_rows, unified_display_rows_heights_.size(),
+           base::NotFatalUntil::M163);
 
   display_info_list->clear();
   display_info_list->emplace_back(unified_display_info);
@@ -2513,8 +2516,9 @@ void DisplayManager::UpdateNonPrimaryDisplayBoundsForLayout(
   const DisplayLayout& layout =
       layout_store_->GetRegisteredDisplayLayout(GetConnectedDisplayIdList());
 
-  DCHECK(IsConnectedDisplayIdListInSyncWithCurrentState(
-      CreateDisplayIdList(*display_list)));
+  CHECK(IsConnectedDisplayIdListInSyncWithCurrentState(
+            CreateDisplayIdList(*display_list)),
+        base::NotFatalUntil::M163);
 
   // Ignore if a user has a old format (should be extremely rare)
   // and this will be replaced with DCHECK.
@@ -2548,8 +2552,9 @@ void DisplayManager::CreateMirrorWindowIfAny() {
   if (created_mirror_window_) {
     std::move(created_mirror_window_).Run();
   }
-  DCHECK(IsConnectedDisplayIdListInSyncWithCurrentState(
-      CreateDisplayIdList(active_display_list())));
+  CHECK(IsConnectedDisplayIdListInSyncWithCurrentState(
+            CreateDisplayIdList(active_display_list())),
+        base::NotFatalUntil::M163);
 }
 
 void DisplayManager::ApplyDisplayLayout(DisplayLayout* layout,

@@ -204,14 +204,15 @@ ManagedDisplayInfo ManagedDisplayInfo::CreateFromSpecWithID(
     std::vector<std::string_view> radii_part = base::SplitStringPiece(
         parts[1], "|", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-    DCHECK(radii_part.size() == 1 || radii_part.size() == 4);
+    CHECK(radii_part.size() == 1 || radii_part.size() == 4,
+          base::NotFatalUntil::M163);
 
     std::array<float, 4> radii = {};
     int radius_in_int = 0;
     for (size_t idx = 0; idx < radii_part.size(); ++idx) {
       std::string_view radius = radii_part[idx];
       bool conversion_success = base::StringToInt(radius, &radius_in_int);
-      DCHECK(conversion_success);
+      CHECK(conversion_success, base::NotFatalUntil::M163);
       radii[idx] = static_cast<float>(radius_in_int);
     }
 
@@ -433,7 +434,7 @@ void ManagedDisplayInfo::AddZoomFactorForSize(const std::string& size,
 }
 
 void ManagedDisplayInfo::Copy(const ManagedDisplayInfo& native_info) {
-  DCHECK(id_ == native_info.id_);
+  CHECK(id_ == native_info.id_, base::NotFatalUntil::M163);
   port_display_id_ = native_info.port_display_id_;
   edid_display_id_ = native_info.edid_display_id_;
   connector_index_ = native_info.connector_index_;
@@ -448,7 +449,7 @@ void ManagedDisplayInfo::Copy(const ManagedDisplayInfo& native_info) {
   connection_type_ = native_info.connection_type_;
   physical_size_ = native_info.physical_size_;
   device_scale_factor_ = native_info.device_scale_factor_;
-  DCHECK(!native_info.bounds_in_native_.IsEmpty());
+  CHECK(!native_info.bounds_in_native_.IsEmpty(), base::NotFatalUntil::M163);
   bounds_in_native_ = native_info.bounds_in_native_;
   device_dpi_ = native_info.device_dpi_;
   panel_orientation_ = native_info.panel_orientation_,
@@ -490,7 +491,8 @@ void ManagedDisplayInfo::Copy(const ManagedDisplayInfo& native_info) {
 }
 
 void ManagedDisplayInfo::SetBounds(const gfx::Rect& new_bounds_in_native) {
-  DCHECK_NE(new_bounds_in_native.width(), new_bounds_in_native.height());
+  CHECK_NE(new_bounds_in_native.width(), new_bounds_in_native.height(),
+           base::NotFatalUntil::M163);
 
   bounds_in_native_ = new_bounds_in_native;
   size_in_pixel_ = new_bounds_in_native.size();
@@ -527,7 +529,7 @@ void ManagedDisplayInfo::UpdateZoomFactorToMatchTargetDPI() {
       std::max(bounds_in_native_.width(), bounds_in_native_.height());
   const std::vector<float> avaialble_zoom_factors =
       GetDisplayZoomFactorsByDisplayWidth(display_larger_side);
-  DCHECK_GE(avaialble_zoom_factors.size(), 1u);
+  CHECK_GE(avaialble_zoom_factors.size(), 1u, base::NotFatalUntil::M163);
 
   const float min_zoom_factor = avaialble_zoom_factors.front();
   const float max_zoom_factor = avaialble_zoom_factors.back();
@@ -539,8 +541,9 @@ void ManagedDisplayInfo::UpdateZoomFactorToMatchTargetDPI() {
     zoom_factor_ = max_zoom_factor;
   } else {
     // Round to the neareast available zoom factor.
-    DCHECK(std::is_sorted(avaialble_zoom_factors.begin(),
-                          avaialble_zoom_factors.end()));
+    CHECK(std::is_sorted(avaialble_zoom_factors.begin(),
+                         avaialble_zoom_factors.end()),
+          base::NotFatalUntil::M163);
     for (size_t i = 0; i < avaialble_zoom_factors.size() - 1; i++) {
       const float left_bound = avaialble_zoom_factors[i];
       const float right_bound = avaialble_zoom_factors[i + 1];

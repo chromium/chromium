@@ -48,7 +48,7 @@ bool g_default_instance_cleaned_up = false;
 // when creating the UWP UI Settings object, so we've moved the initialization
 // to a separate function.
 bool CreateUiSettingsComObject(ComPtr<IUISettings2>& ptr) {
-  DCHECK(!ptr);
+  CHECK(!ptr, base::NotFatalUntil::M163);
 
   // Create the COM object.
   auto hstring = base::win::ScopedHString::Create(
@@ -148,7 +148,7 @@ class UwpTextScaleFactorImpl : public UwpTextScaleFactor {
     // Windows documents this property to always have a value greater than or
     // equal to 1. Let's make sure that's the case - if we don't, we could get
     // bizarre behavior and divide-by-zeros later on.
-    DCHECK_GE(result, 1.0);
+    CHECK_GE(result, 1.0, base::NotFatalUntil::M163);
     return static_cast<float>(result);
   }
 

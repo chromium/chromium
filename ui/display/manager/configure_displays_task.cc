@@ -54,7 +54,7 @@ const std::string GetUmaNamePrefixForRequest(
 // mode is found by comparing resolutions, and if those are similar, comparing
 // refresh rates. If no mode is found, return nullptr.
 const DisplayMode* FindNextMode(const DisplayConfigureRequest& request) {
-  DCHECK(request.mode);
+  CHECK(request.mode, base::NotFatalUntil::M163);
 
   // Internal displays are restricted to their native mode. We do not
   // attempt to downgrade their modes upon failure.
@@ -306,7 +306,7 @@ ConfigureDisplaysTask::~ConfigureDisplaysTask() {
 }
 
 void ConfigureDisplaysTask::Run() {
-  DCHECK(!requests_.empty());
+  CHECK(!requests_.empty(), base::NotFatalUntil::M163);
 
   const bool is_first_attempt = pending_display_group_requests_.empty();
   std::vector<display::DisplayConfigurationParams> config_requests;
@@ -356,7 +356,7 @@ void ConfigureDisplaysTask::OnFirstAttemptConfigured(
     // the retry logic. The next time |delegate_|->Configure() terminates
     // OnRetryConfigured() will be executed instead.
     PartitionRequests();
-    DCHECK(!pending_display_group_requests_.empty());
+    CHECK(!pending_display_group_requests_.empty(), base::NotFatalUntil::M163);
     // Prep the first group
     for (const auto& pair : pending_display_group_requests_.front()) {
       pair.request->mode =

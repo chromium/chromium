@@ -379,7 +379,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   }
 
   void dec_screen_capture_active_counter() {
-    DCHECK_GT(screen_capture_active_counter_, 0);
+    CHECK_GT(screen_capture_active_counter_, 0, base::NotFatalUntil::M163);
     screen_capture_active_counter_--;
   }
 

@@ -42,7 +42,8 @@ void LayerAnimationObserver::StopObserving() {
 
 void LayerAnimationObserver::AttachedToSequence(
     LayerAnimationSequence* sequence) {
-  DCHECK(attached_sequences_.find(sequence) == attached_sequences_.end());
+  CHECK(attached_sequences_.find(sequence) == attached_sequences_.end(),
+        base::NotFatalUntil::M163);
   attached_sequences_.insert(sequence);
   OnAttachedToSequence(sequence);
 }
@@ -89,7 +90,8 @@ void ImplicitAnimationObserver::OnLayerAnimationEnded(
   sequence->RemoveObserver(this);
   if (!weak_this)
     return;
-  DCHECK(attached_sequences().find(sequence) == attached_sequences().end());
+  CHECK(attached_sequences().find(sequence) == attached_sequences().end(),
+        base::NotFatalUntil::M163);
   CheckCompleted();
 }
 
@@ -100,7 +102,8 @@ void ImplicitAnimationObserver::OnLayerAnimationAborted(
   sequence->RemoveObserver(this);
   if (!weak_this)
     return;
-  DCHECK(attached_sequences().find(sequence) == attached_sequences().end());
+  CHECK(attached_sequences().find(sequence) == attached_sequences().end(),
+        base::NotFatalUntil::M163);
   CheckCompleted();
 }
 
@@ -118,7 +121,8 @@ void ImplicitAnimationObserver::OnAttachedToSequence(
 
 void ImplicitAnimationObserver::OnDetachedFromSequence(
     LayerAnimationSequence* sequence) {
-  DCHECK(attached_sequences().find(sequence) == attached_sequences().end());
+  CHECK(attached_sequences().find(sequence) == attached_sequences().end(),
+        base::NotFatalUntil::M163);
   CheckCompleted();
 }
 

@@ -44,7 +44,7 @@ class AXTreeSource {
 
   AXNodeSource EnsureGetFromId(AXNodeID id) const {
     AXNodeSource node = GetFromId(id);
-    DCHECK(node);
+    CHECK(node, base::NotFatalUntil::M163);
     return node;
   }
 

@@ -8397,7 +8397,7 @@ BSTR AXPlatformNodeWin::GetValueAttributeAsBstr(AXPlatformNodeWin* target) {
     std::wstring url =
         base::UTF8ToWide(target->GetDelegate()->GetTreeData().url);
     BSTR value = SysAllocString(url.c_str());
-    DCHECK(value);
+    CHECK(value, base::NotFatalUntil::M163);
     return value;
   }
 
@@ -8405,12 +8405,12 @@ BSTR AXPlatformNodeWin::GetValueAttributeAsBstr(AXPlatformNodeWin* target) {
     std::wstring url = base::UTF8ToWide(
         target->GetStringAttribute(ax::mojom::StringAttribute::kUrl));
     BSTR value = SysAllocString(url.c_str());
-    DCHECK(value);
+    CHECK(value, base::NotFatalUntil::M163);
     return value;
   }
 
   BSTR value = SysAllocString(base::as_wcstr(target->GetValueForControl()));
-  DCHECK(value);
+  CHECK(value, base::NotFatalUntil::M163);
   return value;
 }
 
@@ -8423,7 +8423,7 @@ HRESULT AXPlatformNodeWin::GetStringAttributeAsBstr(
     return S_FALSE;
 
   *value_bstr = SysAllocString(base::as_wcstr(str));
-  DCHECK(*value_bstr);
+  CHECK(*value_bstr, base::NotFatalUntil::M163);
 
   return S_OK;
 }
@@ -8432,13 +8432,14 @@ HRESULT AXPlatformNodeWin::GetNameAsBstr(BSTR* value_bstr) const {
   std::wstring str = base::UTF8ToWide(GetName());
 
   *value_bstr = SysAllocString(str.c_str());
-  DCHECK(*value_bstr);
+  CHECK(*value_bstr, base::NotFatalUntil::M163);
   return S_OK;
 }
 
 HRESULT AXPlatformNodeWin::ComputeListItemNameAsBstr(BSTR* value_bstr) const {
-  DCHECK_EQ(GetRole(), ax::mojom::Role::kListItem);
-  DCHECK(!HasStringAttribute(ax::mojom::StringAttribute::kName));
+  CHECK_EQ(GetRole(), ax::mojom::Role::kListItem, base::NotFatalUntil::M163);
+  CHECK(!HasStringAttribute(ax::mojom::StringAttribute::kName),
+        base::NotFatalUntil::M163);
   std::wstring str;
   // If the name is specified by the author.
   if (GetNameFrom() == ax::mojom::NameFrom::kAttribute) {
@@ -8448,7 +8449,7 @@ HRESULT AXPlatformNodeWin::ComputeListItemNameAsBstr(BSTR* value_bstr) const {
   }
 
   *value_bstr = SysAllocString(str.c_str());
-  DCHECK(*value_bstr);
+  CHECK(*value_bstr, base::NotFatalUntil::M163);
   return S_OK;
 }
 
@@ -8585,9 +8586,9 @@ HRESULT AXPlatformNodeWin::AllocateComArrayFromVector(
     LONG max,
     LONG** selected,
     LONG* n_selected) {
-  DCHECK_GT(max, 0);
-  DCHECK(selected);
-  DCHECK(n_selected);
+  CHECK_GT(max, 0, base::NotFatalUntil::M163);
+  CHECK(selected, base::NotFatalUntil::M163);
+  CHECK(n_selected, base::NotFatalUntil::M163);
 
   auto count = std::min(static_cast<LONG>(results.size()), max);
   *n_selected = count;
@@ -9048,7 +9049,7 @@ AXPlatformNodeWin* AXPlatformNodeWin::GetUIATableAncestor() const {
 // static
 void AXPlatformNodeWin::SanitizeStringAttributeForIA2(const std::string& input,
                                                       std::string* output) {
-  DCHECK(output);
+  CHECK(output, base::NotFatalUntil::M163);
   // According to the IA2 Spec, these characters need to be escaped with a
   // backslash: backslash, colon, comma, equals and semicolon.
   // Note that backslash must be replaced first.

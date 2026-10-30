@@ -65,7 +65,7 @@ void VSyncProviderMac::AddSupportedDisplayLinkId(CGDirectDisplayID display_id) {
     auto result =
         display_states_.emplace(std::make_pair(display_id, DisplayState()));
     bool inserted = result.second;
-    DCHECK(inserted);
+    CHECK(inserted, base::NotFatalUntil::M163);
   }
 }
 

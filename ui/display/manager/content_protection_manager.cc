@@ -41,7 +41,7 @@ ContentProtectionManager::ClientId ContentProtectionManager::RegisterClient() {
 
   ClientId client_id = next_client_id_++;
   bool success = requests_.emplace(*client_id, ContentProtections()).second;
-  DCHECK(success);
+  CHECK(success, base::NotFatalUntil::M163);
 
   return client_id;
 }
@@ -50,7 +50,7 @@ void ContentProtectionManager::UnregisterClient(ClientId client_id) {
   if (disabled())
     return;
 
-  DCHECK(GetContentProtections(client_id));
+  CHECK(GetContentProtections(client_id), base::NotFatalUntil::M163);
   requests_.erase(*client_id);
 
   QueueTask(std::make_unique<ApplyContentProtectionTask>(
@@ -75,7 +75,8 @@ void ContentProtectionManager::QueryContentProtection(
     ClientId client_id,
     int64_t display_id,
     QueryContentProtectionCallback callback) {
-  DCHECK(disabled() || GetContentProtections(client_id));
+  CHECK(disabled() || GetContentProtections(client_id),
+        base::NotFatalUntil::M163);
 
   if (disabled() || !GetDisplay(display_id)) {
     std::move(callback).Run(/*success=*/false, DISPLAY_CONNECTION_TYPE_NONE,
@@ -96,7 +97,7 @@ void ContentProtectionManager::ApplyContentProtection(
     uint32_t protection_mask,
     ApplyContentProtectionCallback callback) {
   ContentProtections* protections = GetContentProtections(client_id);
-  DCHECK(disabled() || protections);
+  CHECK(disabled() || protections, base::NotFatalUntil::M163);
 
   if (disabled() || !GetDisplay(display_id)) {
     std::move(callback).Run(/*success=*/false);
@@ -167,7 +168,7 @@ void ContentProtectionManager::QueueTask(std::unique_ptr<Task> task) {
 }
 
 void ContentProtectionManager::DequeueTask() {
-  DCHECK(!tasks_.empty());
+  CHECK(!tasks_.empty(), base::NotFatalUntil::M163);
   tasks_.pop();
 
   if (!tasks_.empty())
@@ -186,7 +187,7 @@ void ContentProtectionManager::KillTasks() {
   // being killed.
   base::queue<std::unique_ptr<Task>> tasks;
   tasks.swap(tasks_);
-  DCHECK(tasks_.empty());
+  CHECK(tasks_.empty(), base::NotFatalUntil::M163);
   tasks = {};
 
   ToggleDisplaySecurityPolling();

@@ -154,8 +154,8 @@ void EdidParser::SplitProductCodeInManufacturerIdAndProductId(
     int64_t product_code,
     uint16_t* manufacturer_id,
     uint16_t* product_id) {
-  DCHECK(manufacturer_id);
-  DCHECK(product_id);
+  CHECK(manufacturer_id, base::NotFatalUntil::M163);
+  CHECK(product_id, base::NotFatalUntil::M163);
   // Undo GetProductCode() packing.
   *product_id = product_code & 0xFFFF;
   *manufacturer_id = (product_code >> 16) & 0xFFFF;

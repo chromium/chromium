@@ -263,7 +263,7 @@ void EnsureDisplayWithResolution(display::Screen* screen,
 
   base::apple::ScopedCFTypeRef<CFArrayRef> display_modes(
       CGDisplayCopyAllDisplayModes(display_id, nullptr));
-  DCHECK(display_modes);
+  CHECK(display_modes, base::NotFatalUntil::M163);
 
   CGDisplayModeRef preferred_display_mode = nullptr;
   for (CFIndex i = 0; i < CFArrayGetCount(display_modes.get()); ++i) {
@@ -275,7 +275,7 @@ void EnsureDisplayWithResolution(display::Screen* screen,
       break;
     }
   }
-  DCHECK(preferred_display_mode);
+  CHECK(preferred_display_mode, base::NotFatalUntil::M163);
 
   uint32_t expected_changed_metrics =
       display::DisplayObserver::DISPLAY_METRIC_BOUNDS |
@@ -288,7 +288,7 @@ void EnsureDisplayWithResolution(display::Screen* screen,
   // mode switch is complete.
   CGError result =
       CGDisplaySetDisplayMode(display_id, preferred_display_mode, nullptr);
-  DCHECK_EQ(result, kCGErrorSuccess);
+  CHECK_EQ(result, kCGErrorSuccess, base::NotFatalUntil::M163);
 
   // Wait for `display::Screen` and `display::Display` structures to be updated.
   display_metrics_change_observer.Wait();
@@ -323,7 +323,7 @@ int64_t VirtualDisplayUtilMac::AddDisplay(const DisplayParams& display_params) {
 
 void VirtualDisplayUtilMac::RemoveDisplay(int64_t display_id) {
   auto it = g_display_map.find(display_id);
-  DCHECK(it != g_display_map.end());
+  CHECK(it != g_display_map.end(), base::NotFatalUntil::M163);
 
   // The first display removal has known flaky timeouts if removed
   // individually. Remove another display simultaneously during the first
@@ -332,7 +332,7 @@ void VirtualDisplayUtilMac::RemoveDisplay(int64_t display_id) {
   if (g_need_display_removal_workaround) {
     const int64_t tmp_display_id = AddDisplay(0, k1920x1080);
     auto tmp_it = g_display_map.find(tmp_display_id);
-    DCHECK(tmp_it != g_display_map.end());
+    CHECK(tmp_it != g_display_map.end(), base::NotFatalUntil::M163);
 
     waiting_for_ids_.insert(display_id);
     waiting_for_ids_.insert(tmp_display_id);
@@ -400,7 +400,7 @@ int64_t VirtualDisplayUtilMac::AddDisplay(int64_t serial_number,
       display_params.resolution.width(), display_params.resolution.height(),
       display_params.dpi.x(), /*hiDPI=*/display_params.dpi.x() >= 200,
       display_name, serial_number);
-  DCHECK(display);
+  CHECK(display, base::NotFatalUntil::M163);
 
   // TODO(crbug.com/40148077): Please remove this log or replace it with
   // [D]CHECK() ASAP when the TEST is stable.
@@ -409,7 +409,7 @@ int64_t VirtualDisplayUtilMac::AddDisplay(int64_t serial_number,
             << ". CreateVirtualDisplay success.";
 
   int64_t id = display.displayID;
-  DCHECK_NE(id, 0u);
+  CHECK_NE(id, 0u, base::NotFatalUntil::M163);
 
   WaitForDisplay(id, /*added=*/true);
 
@@ -423,7 +423,7 @@ int64_t VirtualDisplayUtilMac::AddDisplay(int64_t serial_number,
             << " - serial number: " << serial_number << "(" << id
             << "). WaitForDisplay success.";
 
-  DCHECK(!g_display_map[id]);
+  CHECK(!g_display_map[id], base::NotFatalUntil::M163);
   g_display_map[id] = display;
 
   return id;
@@ -499,12 +499,12 @@ VirtualDisplayUtilMac::DisplaySleepBlocker::DisplaySleepBlocker() {
   IOReturn result = IOPMAssertionCreateWithName(
       kIOPMAssertionTypeNoDisplaySleep, kIOPMAssertionLevelOn,
       CFSTR("DisplaySleepBlocker"), &assertion_id_);
-  DCHECK_EQ(result, kIOReturnSuccess);
+  CHECK_EQ(result, kIOReturnSuccess, base::NotFatalUntil::M163);
 }
 
 VirtualDisplayUtilMac::DisplaySleepBlocker::~DisplaySleepBlocker() {
   IOReturn result = IOPMAssertionRelease(assertion_id_);
-  DCHECK_EQ(result, kIOReturnSuccess);
+  CHECK_EQ(result, kIOReturnSuccess, base::NotFatalUntil::M163);
 }
 
 void VirtualDisplayUtilMac::OnDisplayMetricsChanged(
@@ -571,14 +571,14 @@ void VirtualDisplayUtilMac::WaitForDisplay(int64_t id, bool added) {
 }
 
 void VirtualDisplayUtilMac::StartWaiting() {
-  DCHECK(!run_loop_);
+  CHECK(!run_loop_, base::NotFatalUntil::M163);
   run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();
   run_loop_.reset();
 }
 
 void VirtualDisplayUtilMac::StopWaiting() {
-  DCHECK(run_loop_);
+  CHECK(run_loop_, base::NotFatalUntil::M163);
   run_loop_->Quit();
 }
 

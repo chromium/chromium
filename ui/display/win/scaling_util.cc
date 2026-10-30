@@ -215,7 +215,8 @@ DisplayPlacement CalculateDisplayPlacement(
                                    parent.device_scale_factor(),
                                    parent_end - current_end);
   } else {
-    DCHECK(InRange(parent_begin, current_begin, current_end));
+    CHECK(InRange(parent_begin, current_begin, current_end),
+          base::NotFatalUntil::M163);
     placement.offset = ScaleOffset(current_end - current_begin,
                                    current.device_scale_factor(),
                                    current_begin);

@@ -63,7 +63,8 @@ bool ComputeVSyncParameters(const CVTimeStamp& cv_time,
                             base::TimeTicks* timebase,
                             base::TimeDelta* interval) {
   // Verify that videoRefreshPeriod fits in 32 bits.
-  DCHECK((cv_time.videoRefreshPeriod & ~0xFFFF'FFFFull) == 0ull);
+  CHECK((cv_time.videoRefreshPeriod & ~0xFFFF'FFFFull) == 0ull,
+        base::NotFatalUntil::M163);
 
   // Verify that the numerator and denominator make some sense.
   uint32_t numerator = static_cast<uint32_t>(cv_time.videoRefreshPeriod);
@@ -233,7 +234,8 @@ bool CVDisplayLinkMac::EnsureDisplayLinkRunning() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!display_link_is_running_) {
-    DCHECK(!CVDisplayLinkIsRunning(display_link_.get()));
+    CHECK(!CVDisplayLinkIsRunning(display_link_.get()),
+          base::NotFatalUntil::M163);
     CVReturn ret = CVDisplayLinkStart(display_link_.get());
     // https://developer.apple.com/documentation/corevideo/cvdisplaylinkstart(_:)
     // If the specified display link is already running, CVDisplayLinkStart
@@ -260,7 +262,8 @@ void CVDisplayLinkMac::StopDisplayLinkIfNeeded() {
 
   // Stop has already been requested; nothing to do.
   if (!display_link_is_running_) {
-    DCHECK(!CVDisplayLinkIsRunning(display_link_.get()));
+    CHECK(!CVDisplayLinkIsRunning(display_link_.get()),
+          base::NotFatalUntil::M163);
     return;
   }
 
@@ -347,7 +350,7 @@ CVDisplayLinkMac::CVDisplayLinkMac(
     base::AutoLock lock(globals.lock);
     auto result = globals.map.insert(std::make_pair(key, this));
     bool inserted = result.second;
-    DCHECK(inserted);
+    CHECK(inserted, base::NotFatalUntil::M163);
   }
 }
 
@@ -355,7 +358,7 @@ CVDisplayLinkMac::~CVDisplayLinkMac() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // All callbacks hold a reference to `this`, so there can be none.
-  DCHECK(callbacks_.empty());
+  CHECK(callbacks_.empty(), base::NotFatalUntil::M163);
 
   // Stop the display link (if needed). After this call, it is safe to assume
   // that CVDisplayLinkMac::CVDisplayLinkCallback will not be called with
@@ -374,8 +377,8 @@ CVDisplayLinkMac::~CVDisplayLinkMac() {
     auto& globals = DisplayLinkGlobals::Get();
     base::AutoLock lock(globals.lock);
     auto found = globals.map.find(key);
-    DCHECK(found != globals.map.end());
-    DCHECK(found->second == this);
+    CHECK(found != globals.map.end(), base::NotFatalUntil::M163);
+    CHECK(found->second == this, base::NotFatalUntil::M163);
     globals.map.erase(found);
   }
 }

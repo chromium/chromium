@@ -169,15 +169,16 @@ std::vector<float> GetDisplayZoomFactorsByDisplayWidth(
   while (index > 0 && display_width < kZoomListBuckets[index].first) {
     index--;
   }
-  DCHECK_GE(display_width, kZoomListBuckets[index].first);
+  CHECK_GE(display_width, kZoomListBuckets[index].first,
+           base::NotFatalUntil::M163);
 
   const auto& zoom_array = kZoomListBuckets[index].second;
   return std::vector<float>(zoom_array.begin(), zoom_array.end());
 }
 
 std::vector<float> GetDisplayZoomFactorForDsf(float dsf) {
-  DCHECK(!WithinEpsilon(dsf, 1.f));
-  DCHECK_GT(dsf, 1.f);
+  CHECK(!WithinEpsilon(dsf, 1.f), base::NotFatalUntil::M163);
+  CHECK_GT(dsf, 1.f, base::NotFatalUntil::M163);
 
   for (const auto& bucket : kZoomListBucketsForDsf) {
     if (WithinEpsilon(bucket.first, dsf)) {

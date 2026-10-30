@@ -104,7 +104,7 @@ void Display::SetForceDeviceScaleFactor(double dsf) {
 
 // static
 gfx::ColorSpace Display::GetForcedRasterColorProfile() {
-  DCHECK(HasForceRasterColorProfile());
+  CHECK(HasForceRasterColorProfile(), base::NotFatalUntil::M163);
   std::string value =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           switches::kForceRasterColorProfile);
@@ -306,7 +306,7 @@ bool Display::IsInternal() const {
 // static
 int64_t Display::InternalDisplayId() {
   auto& ids = GetInternalDisplayIds();
-  DCHECK_EQ(1u, ids.size());
+  CHECK_EQ(1u, ids.size(), base::NotFatalUntil::M163);
   return ids.size() ? *ids.begin() : kInvalidDisplayId;
 }
 

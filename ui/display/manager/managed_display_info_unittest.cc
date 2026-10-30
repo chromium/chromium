@@ -134,19 +134,22 @@ TEST_F(DisplayInfoTest, CreateFromSpec) {
 }
 
 TEST_F(DisplayInfoTest, ExpectDeathWhenInvalidNumberOfRadiiProvided) {
-  EXPECT_DCHECK_DEATH(
-      ManagedDisplayInfo::CreateFromSpecWithID("200x100~10|15", 10));
+  EXPECT_CHECK_DEATH(
+      ManagedDisplayInfo::CreateFromSpecWithID("200x100~10|15", 10),
+      base::NotFatalUntil::M163);
 
-  EXPECT_DCHECK_DEATH(
-      ManagedDisplayInfo::CreateFromSpecWithID("200x100~10|10|15", 10));
+  EXPECT_CHECK_DEATH(
+      ManagedDisplayInfo::CreateFromSpecWithID("200x100~10|10|15", 10),
+      base::NotFatalUntil::M163);
 }
 
 TEST_F(DisplayInfoTest, ExpectDeathWhenInvalidDisplayRadiusProvided) {
-  EXPECT_DCHECK_DEATH(
-      ManagedDisplayInfo::CreateFromSpecWithID("200x100~1f", 10));
+  EXPECT_CHECK_DEATH(ManagedDisplayInfo::CreateFromSpecWithID("200x100~1f", 10),
+                     base::NotFatalUntil::M163);
 
-  EXPECT_DCHECK_DEATH(
-      ManagedDisplayInfo::CreateFromSpecWithID("200x100~10.5", 10));
+  EXPECT_CHECK_DEATH(
+      ManagedDisplayInfo::CreateFromSpecWithID("200x100~10.5", 10),
+      base::NotFatalUntil::M163);
 }
 
 TEST_F(DisplayInfoTest, TestToStringFormat) {

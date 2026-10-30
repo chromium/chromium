@@ -49,7 +49,7 @@ FakeDisplayDelegate::FakeDisplayDelegate() = default;
 FakeDisplayDelegate::~FakeDisplayDelegate() = default;
 
 int64_t FakeDisplayDelegate::AddDisplay(const gfx::Size& display_size) {
-  DCHECK(!display_size.IsEmpty());
+  CHECK(!display_size.IsEmpty(), base::NotFatalUntil::M163);
 
   if (next_display_id_ == 0xFF) {
     LOG(ERROR) << "Exceeded display id limit";
@@ -66,7 +66,7 @@ int64_t FakeDisplayDelegate::AddDisplay(const gfx::Size& display_size) {
 }
 
 bool FakeDisplayDelegate::AddDisplay(std::unique_ptr<DisplaySnapshot> display) {
-  DCHECK(display);
+  CHECK(display, base::NotFatalUntil::M163);
 
   int64_t display_id = display->display_id();
   // Check there is no existing display with the same id.
@@ -99,7 +99,7 @@ bool FakeDisplayDelegate::RemoveDisplay(int64_t display_id) {
 }
 
 void FakeDisplayDelegate::Initialize() {
-  DCHECK(!initialized_);
+  CHECK(!initialized_, base::NotFatalUntil::M163);
 
   // The default display will be an internal display with a native resolution
   // of 1366x768 if --screen-config not specified on the command line.
@@ -256,7 +256,7 @@ void FakeDisplayDelegate::OnConfigurationChanged() {
 }
 
 void FakeDisplayDelegate::ConfigureDone() {
-  DCHECK(!configure_callbacks_.empty());
+  CHECK(!configure_callbacks_.empty(), base::NotFatalUntil::M163);
   std::move(configure_callbacks_.front()).Run();
   configure_callbacks_.pop();
 

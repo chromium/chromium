@@ -297,7 +297,7 @@ gfx::ColorSpace ForcedColorProfileStringToColorSpace(const std::string& value) {
 }
 
 gfx::ColorSpace GetForcedDisplayColorProfile() {
-  DCHECK(HasForceDisplayColorProfile());
+  CHECK(HasForceDisplayColorProfile(), base::NotFatalUntil::M163);
   std::string value =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           /*switches::kForceDisplayColorProfile=*/"force-color-profile");
@@ -378,8 +378,8 @@ gfx::DisplayColorSpaces CreateDisplayColorSpaces(
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 int ConnectorIndex8(int device_index, int display_index) {
-  DCHECK_LT(device_index, 16);
-  DCHECK_LT(display_index, 16);
+  CHECK_LT(device_index, 16, base::NotFatalUntil::M163);
+  CHECK_LT(display_index, 16, base::NotFatalUntil::M163);
   return ((device_index << 4) + display_index) & 0xFF;
 }
 

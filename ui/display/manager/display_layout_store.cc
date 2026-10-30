@@ -93,7 +93,7 @@ const DisplayLayout& DisplayLayoutStore::GetRegisteredDisplayLayout(
 
 void DisplayLayoutStore::UpdateDefaultUnified(const DisplayIdList& list,
                                               bool default_unified) {
-  DCHECK(layouts_.find(list) != layouts_.end());
+  CHECK(layouts_.find(list) != layouts_.end(), base::NotFatalUntil::M163);
   if (layouts_.find(list) == layouts_.end())
     GetOrCreateRegisteredDisplayLayoutInternal(list,
                                                /*create_if_not_exist=*/false);
@@ -126,18 +126,19 @@ const DisplayLayout&
 DisplayLayoutStore::GetOrCreateRegisteredDisplayLayoutInternal(
     const DisplayIdList& list,
     bool create_if_not_exist) {
-  DCHECK_GT(list.size(), 1u);
-  DCHECK(IsDisplayIdListSorted(list));
+  CHECK_GT(list.size(), 1u, base::NotFatalUntil::M163);
+  CHECK(IsDisplayIdListSorted(list), base::NotFatalUntil::M163);
 
   const auto iter = layouts_.find(list);
-  DCHECK(create_if_not_exist || iter != layouts_.end());
+  CHECK(create_if_not_exist || iter != layouts_.end(),
+        base::NotFatalUntil::M163);
 
   const DisplayLayout* layout = iter != layouts_.end()
                                     ? iter->second.get()
                                     : CreateDefaultDisplayLayout(list);
 
   DCHECK(DisplayLayout::Validate(list, *layout)) << layout->ToString();
-  DCHECK_NE(layout->primary_id, kInvalidDisplayId);
+  CHECK_NE(layout->primary_id, kInvalidDisplayId, base::NotFatalUntil::M163);
   return *layout;
 }
 

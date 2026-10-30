@@ -82,7 +82,8 @@ AXActionHandlerBase* AXActionHandlerRegistry::GetActionHandler(
 
 void AXActionHandlerRegistry::SetAXTreeID(const AXTreeID& id,
                                           AXActionHandlerBase* action_handler) {
-  DCHECK(id_to_action_handler_.find(id) == id_to_action_handler_.end());
+  CHECK(id_to_action_handler_.find(id) == id_to_action_handler_.end(),
+        base::NotFatalUntil::M163);
   id_to_action_handler_[id] = action_handler;
 }
 

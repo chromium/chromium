@@ -84,7 +84,7 @@ HostBeginFrameObserver::GetBoundRemote() {
 }
 
 void HostBeginFrameObserver::CoalescedBeginFrame() {
-  DCHECK(begin_frame_args_.IsValid());
+  CHECK(begin_frame_args_.IsValid(), base::NotFatalUntil::M163);
   TRACE_EVENT_INSTANT("ui", "HostBeginFrameObserver::finish coalescing",
                       perfetto::Flow::Global(coalesce_flow_id_),
                       [&](perfetto::EventContext ctx) {

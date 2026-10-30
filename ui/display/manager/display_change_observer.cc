@@ -409,7 +409,8 @@ void DisplayChangeObserver::UpdateInternalDisplay(
         (force_first_display_internal &&
          (!HasInternalDisplay() || IsInternalDisplayId(state->display_id())))) {
       if (HasInternalDisplay()) {
-        DCHECK_EQ(Display::InternalDisplayId(), state->display_id());
+        CHECK_EQ(Display::InternalDisplayId(), state->display_id(),
+                 base::NotFatalUntil::M163);
       }
       SetInternalDisplayIds({state->display_id()});
 

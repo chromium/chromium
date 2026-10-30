@@ -127,7 +127,7 @@ bool Screen::GetDisplayWithDisplayId(int64_t display_id,
 void Screen::SetPanelRotationForTesting(int64_t display_id,
                                         Display::Rotation rotation) {
   // Not implemented.
-  DCHECK(false);
+  CHECK(false, base::NotFatalUntil::M163);
 }
 
 std::string Screen::GetCurrentWorkspace() {
@@ -196,7 +196,7 @@ ScreenInfos Screen::GetScreenInfosNearestDisplay(int64_t nearest_id) const {
       // If we are in a situation where we have no displays and so the primary
       // display is invalid, then it's a logic error (elsewhere) to pass in a
       // valid id, because where would it come from?
-      DCHECK_EQ(nearest_id, kInvalidDisplayId);
+      CHECK_EQ(nearest_id, kInvalidDisplayId, base::NotFatalUntil::M163);
       primary.set_id(kDefaultDisplayId);
     }
     displays = {primary};
@@ -254,7 +254,7 @@ ScopedNativeScreen::ScopedNativeScreen(const base::Location& location) {
 
 ScopedNativeScreen::~ScopedNativeScreen() {
   if (screen_) {
-    DCHECK_EQ(screen_.get(), Screen::Get());
+    CHECK_EQ(screen_.get(), Screen::Get(), base::NotFatalUntil::M163);
     Screen::SetScreenInstance(nullptr);
     screen_.reset();
   }
