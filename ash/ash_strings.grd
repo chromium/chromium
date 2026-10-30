@@ -8729,15 +8729,6 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ARC_MIGRATE_ENCRYPTION_NOTIFICATION_LOW_BATTERY_MESSAGE" desc="Main message of the notification to navigate the user to first update the device encryption before running Android apps.">
         To use Android apps, charge &amp; update your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
       </message>
-      <message name="IDS_ARC_USB_PERMISSION_TITLE" desc="Titlebar of Android app USB permissions prompt window">
-        Confirm USB Permission
-      </message>
-      <message name="IDS_ARC_USB_SCAN_DEVICE_LIST_PERMISSION_HEADING" desc="Heading text in the content area of the Android app scan device list permission prompt. Tells the user the app will be able to scan attached USB device list if confirmed.">
-        Allow "<ph name="APP_NAME">$1<ex>Gmail Checker</ex></ph>" to get the list of your attached USB devices?
-      </message>
-      <message name="IDS_ARC_USB_ACCESS_PERMISSION_HEADING" desc="Heading text in the content area of the Android app USB device access permission prompt. Tells the user the app will be able to access the usb device if confirmed.">
-        Allow "<ph name="APP_NAME">$1<ex>Gmail Checker</ex></ph>" to access:
-      </message>
       <message name="IDS_ARC_ACCESSIBILITY_SELECTED_STATUS" desc="Text used by screen readers that represents that the element is selected.">
         Selected
       </message>

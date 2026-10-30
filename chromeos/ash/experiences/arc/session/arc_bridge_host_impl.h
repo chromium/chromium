@@ -175,8 +175,6 @@ class ArcBridgeHostImpl
       mojo::PendingRemote<mojom::TracingInstance> trace_remote) override;
   void OnTtsInstanceReady(
       mojo::PendingRemote<mojom::TtsInstance> tts_remote) override;
-  void OnUsbHostInstanceReady(
-      mojo::PendingRemote<mojom::UsbHostInstance> usb_host_remote) override;
   void OnVideoInstanceReady(
       mojo::PendingRemote<mojom::VideoInstance> video_remote) override;
   void OnVolumeMounterInstanceReady(

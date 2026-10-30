@@ -106,8 +106,6 @@ class SystemUiInstance;
 class TracingInstance;
 class TtsHost;
 class TtsInstance;
-class UsbHostHost;
-class UsbHostInstance;
 class VideoHost;
 class VideoInstance;
 class VolumeMounterHost;
@@ -322,9 +320,6 @@ class ArcBridgeService {
   ConnectionHolder<mojom::SystemUiInstance>* system_ui() { return &system_ui_; }
   ConnectionHolder<mojom::TracingInstance>* tracing() { return &tracing_; }
   ConnectionHolder<mojom::TtsInstance, mojom::TtsHost>* tts() { return &tts_; }
-  ConnectionHolder<mojom::UsbHostInstance, mojom::UsbHostHost>* usb_host() {
-    return &usb_host_;
-  }
   ConnectionHolder<mojom::VideoInstance, mojom::VideoHost>* video() {
     return &video_;
   }
@@ -417,7 +412,6 @@ class ArcBridgeService {
   ConnectionHolder<mojom::SystemUiInstance> system_ui_;
   ConnectionHolder<mojom::TracingInstance> tracing_;
   ConnectionHolder<mojom::TtsInstance, mojom::TtsHost> tts_;
-  ConnectionHolder<mojom::UsbHostInstance, mojom::UsbHostHost> usb_host_;
   ConnectionHolder<mojom::VideoInstance, mojom::VideoHost> video_;
   ConnectionHolder<mojom::VolumeMounterInstance, mojom::VolumeMounterHost>
       volume_mounter_;

@@ -19,8 +19,6 @@
 #include "chrome/browser/apps/app_service/publishers/arc_apps_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_package_syncable_service_factory.h"
-#include "chrome/browser/ash/app_list/arc/arc_usb_host_permission_manager.h"
-#include "chrome/browser/ash/app_list/arc/arc_usb_host_permission_manager_factory.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler_factory.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
@@ -110,7 +108,6 @@
 #include "chromeos/ash/experiences/arc/session/arc_session.h"
 #include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
 #include "chromeos/ash/experiences/arc/system_ui/arc_system_ui_bridge.h"
-#include "chromeos/ash/experiences/arc/usb/usb_host_bridge.h"
 #include "chromeos/ash/experiences/arc/user_session/arc_user_session_service.h"
 #include "chromeos/ash/experiences/arc/video/gpu_arc_video_service_host.h"
 #include "chromeos/ash/experiences/arc/volume_mounter/arc_volume_mounter_bridge.h"
@@ -379,8 +376,6 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(
     ArcTracingBridge::GetForBrowserContext(profile);
   }
   ArcTtsService::GetForBrowserContext(profile);
-  ArcUsbHostBridge::GetForBrowserContext(profile);
-  ArcUsbHostPermissionManager::GetForBrowserContext(profile);
   ArcUserSessionService::GetForBrowserContext(profile);
   ArcVolumeMounterBridge::GetForBrowserContext(profile);
   ArcWakeLockBridge::GetForBrowserContext(profile);
@@ -573,8 +568,6 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
   ArcSystemStateBridge::EnsureFactoryBuilt();
   ArcTracingBridge::EnsureFactoryBuilt();
   ArcTtsService::EnsureFactoryBuilt();
-  ArcUsbHostBridge::EnsureFactoryBuilt();
-  ArcUsbHostPermissionManagerFactory::GetInstance();
   ArcUserSessionService::EnsureFactoryBuilt();
   ArcVolumeMounterBridge::EnsureFactoryBuilt();
   ArcWakeLockBridge::EnsureFactoryBuilt();

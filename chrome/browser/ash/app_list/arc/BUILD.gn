@@ -6,7 +6,6 @@ assert(is_chromeos)
 
 static_library("arc") {
   sources = [
-    "arc_app_dialog.h",
     "arc_app_icon.cc",
     "arc_app_icon.h",
     "arc_app_icon_descriptor.cc",
@@ -42,10 +41,6 @@ static_library("arc") {
     "arc_package_syncable_service_factory.h",
     "arc_pai_starter.cc",
     "arc_pai_starter.h",
-    "arc_usb_host_permission_manager.cc",
-    "arc_usb_host_permission_manager.h",
-    "arc_usb_host_permission_manager_factory.cc",
-    "arc_usb_host_permission_manager_factory.h",
     "arc_vpn_provider_manager.cc",
     "arc_vpn_provider_manager.h",
     "arc_vpn_provider_manager_factory.cc",
@@ -186,31 +181,6 @@ source_set("unit_tests") {
     "//ui/gfx:test_support",
     "//ui/gfx/codec",
     "//ui/gfx/geometry:geometry_skia",
-  ]
-}
-
-source_set("browser_tests") {
-  testonly = true
-
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-  sources = [ "arc_usb_host_permission_browsertest.cc" ]
-
-  deps = [
-    ":arc",
-    "//base",
-    "//chrome/browser/ash/arc",
-    "//chrome/browser/ash/arc:arc_util",
-    "//chrome/browser/ash/arc/session",
-    "//chrome/browser/ash/login/users:test_support",
-    "//chrome/browser/profiles:profile",
-    "//chrome/test:test_support_ui",
-    "//chromeos/ash/experiences/arc",
-    "//chromeos/ash/experiences/arc:arc_test_support",
-    "//chromeos/ash/experiences/arc:notification_test_support",
-    "//chromeos/ash/experiences/arc/mojom",
-    "//components/user_manager",
-    "//content/test:test_support",
   ]
 }
 

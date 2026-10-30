@@ -183,7 +183,6 @@ TEST_F(ArcBridgeHostImplTest, TestOnInstanceReady) {
     MAKE_INSTANCE_READY(Sharesheet);
     MAKE_INSTANCE_READY(Tracing);
     MAKE_INSTANCE_READY(Tts);
-    MAKE_INSTANCE_READY(UsbHost);
     MAKE_INSTANCE_READY(Video);
     MAKE_INSTANCE_READY(VolumeMounter);
     MAKE_INSTANCE_READY(WakeLock);

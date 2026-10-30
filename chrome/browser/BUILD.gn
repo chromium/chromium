@@ -3631,7 +3631,6 @@ source_set("browser") {
       "//chrome/browser/ui:browser_commands_chromeos",
       "//chrome/browser/ui:settings_window_manager_chromeos",
       "//chrome/browser/ui:settings_window_manager_chromeos_impl",
-      "//chrome/browser/ui/ash/arc/arc_app_dialog_view",
       "//chrome/browser/ui/ash/arc/arc_data_removal_dialog_view",
       "//chrome/browser/ui/ash/assistant",
       "//chrome/browser/ui/ash/birch",

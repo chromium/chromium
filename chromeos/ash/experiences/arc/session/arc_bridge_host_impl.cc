@@ -61,7 +61,6 @@
 #include "chromeos/ash/experiences/arc/mojom/system_ui.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/tracing.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/tts.mojom.h"
-#include "chromeos/ash/experiences/arc/mojom/usb_host.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/video.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/volume_mounter.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/wake_lock.mojom.h"
@@ -406,11 +405,6 @@ void ArcBridgeHostImpl::OnTracingInstanceReady(
 void ArcBridgeHostImpl::OnTtsInstanceReady(
     mojo::PendingRemote<mojom::TtsInstance> tts_remote) {
   OnInstanceReady(arc_bridge_service_->tts(), std::move(tts_remote));
-}
-
-void ArcBridgeHostImpl::OnUsbHostInstanceReady(
-    mojo::PendingRemote<mojom::UsbHostInstance> usb_host_remote) {
-  OnInstanceReady(arc_bridge_service_->usb_host(), std::move(usb_host_remote));
 }
 
 void ArcBridgeHostImpl::OnVideoInstanceReady(

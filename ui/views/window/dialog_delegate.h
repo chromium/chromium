@@ -73,7 +73,6 @@ FORWARD_DECLARE_TEST(ExtensionPopupInteractiveUiTest,
                      ExtensionPopupClosesOnShowingWebDialog);
 
 namespace arc {
-class ArcAppDialogView;
 class DataRemovalConfirmationDialog;
 }  // namespace arc
 
@@ -752,7 +751,6 @@ class VIEWS_EXPORT DialogDelegateView : public DialogDelegate, public View {
   friend class ::WebAppUninstallDialogDelegateView;
   FRIEND_TEST_ALL_PREFIXES(::ExtensionPopupInteractiveUiTest,
                            ExtensionPopupClosesOnShowingWebDialog);
-  friend class ::arc::ArcAppDialogView;
   friend class ::arc::DataRemovalConfirmationDialog;
   friend class ::ash::AccessibilityConfirmationDialog;
   friend class ::ash::AccessibilityFeatureDisableDialog;

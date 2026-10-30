@@ -2016,7 +2016,6 @@ if (!is_android) {
         "//chrome/browser/resources/chromeos/accessibility:browser_tests",
         "//chrome/browser/support_tool/ash:browser_tests",
         "//chrome/browser/ui/ash:browser_tests",
-        "//chrome/browser/ui/ash/arc/arc_app_dialog_view:browser_tests",
         "//chrome/browser/ui/ash/editor_menu:browser_tests",
         "//chrome/browser/ui/ash/input_method:browser_tests",
         "//chrome/browser/ui/ash/quick_answers:browser_tests",

@@ -50,7 +50,6 @@
 #include "chromeos/ash/experiences/arc/mojom/system_ui.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/tracing.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/tts.mojom.h"
-#include "chromeos/ash/experiences/arc/mojom/usb_host.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/video.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/volume_mounter.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/wake_lock.mojom.h"
@@ -228,9 +227,6 @@ void FakeArcBridgeHost::OnTracingInstanceReady(
 
 void FakeArcBridgeHost::OnTtsInstanceReady(
     mojo::PendingRemote<mojom::TtsInstance> tts_remote) {}
-
-void FakeArcBridgeHost::OnUsbHostInstanceReady(
-    mojo::PendingRemote<mojom::UsbHostInstance> usb_remote) {}
 
 void FakeArcBridgeHost::OnVideoInstanceReady(
     mojo::PendingRemote<mojom::VideoInstance> video_remote) {}
