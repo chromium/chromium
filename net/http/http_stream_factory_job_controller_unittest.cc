@@ -4908,10 +4908,8 @@ TEST_F(HttpStreamFactoryJobControllerTest, DelayedTCPWithLargeSrtt) {
   EXPECT_FALSE(job_controller_->alternative_job());
 }
 
-// TODO(crbug.com/40649375): Disabled because the pending task count does
-//                                  not match expectations.
 TEST_F(HttpStreamFactoryJobControllerTest,
-       DISABLED_ResumeMainJobImmediatelyOnStreamFailed) {
+       ResumeMainJobImmediatelyOnStreamFailed) {
   HttpRequestInfo request_info;
   request_info.method = "GET";
   request_info.url = GURL("https://www.google.com");
@@ -4949,6 +4947,7 @@ TEST_F(HttpStreamFactoryJobControllerTest,
 
   EXPECT_TRUE(job_controller_->main_job());
   EXPECT_TRUE(job_controller_->alternative_job());
+  FastForwardBy(base::TimeDelta());
   // Main job is not blocked but hasn't resumed yet; it's scheduled to resume
   // in 15us.
   EXPECT_FALSE(JobControllerPeer::main_job_is_blocked(job_controller_));
@@ -4970,9 +4969,11 @@ TEST_F(HttpStreamFactoryJobControllerTest,
   EXPECT_FALSE(job_controller_->alternative_job());
   EXPECT_TRUE(JobControllerPeer::main_job_is_resumed(job_controller_));
 
-  // Verify there is another task to resume main job with delay but should
-  // not call Resume() on the main job as main job has been resumed.
-  EXPECT_NE(0u, GetPendingMainThreadTaskCount());
+  // The previously posted delayed task was canceled when ResumeMainJobLater()
+  // reset `resume_main_job_callback_` to post the immediate task, so no
+  // pending main thread tasks remain and advancing by 15us does not call
+  // Resume() again.
+  EXPECT_EQ(0u, GetPendingMainThreadTaskCount());
   EXPECT_CALL(*job_factory_.main_job(), Resume()).Times(0);
   FastForwardBy(base::Microseconds(15));
 
