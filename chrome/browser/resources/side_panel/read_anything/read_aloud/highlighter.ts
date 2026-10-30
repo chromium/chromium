@@ -121,6 +121,14 @@ export class ReadAloudHighlighter {
     this.previousGranularities_ = [];
   }
 
+  // Returns whether phrases will be highlighted, after accounting for the
+  // selected granularity, whether phrase highlighting is enabled, and the
+  // speech rate, voice, and language.
+  willHighlightPhrases(): boolean {
+    return this.getEffectiveHighlightingGranularity_() ===
+        this.audioBrowserProxy_.getPhraseHighlighting();
+  }
+
   private getEffectiveHighlightingGranularity_(): number {
     // Parse all of the conditions that control highlighting and return the
     // effective highlighting granularity.

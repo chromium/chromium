@@ -803,6 +803,55 @@ suite('SpeechController', () => {
         assertTrue(highlighter.hasCurrentGranularity());
       });
 
+  test('onHighlightGranularityChange prefetches phrases when used', () => {
+    audioBrowserProxy.isPhraseHighlightingEnabledFlag = true;
+    audioBrowserProxy.baseLanguageForSpeech = 'en';
+    audioBrowserProxy.highlightGranularity =
+        audioBrowserProxy.phraseHighlighting;
+    wordBoundaries.updateBoundary(0);
+
+    speechController.onHighlightGranularityChange(
+        audioBrowserProxy.phraseHighlighting);
+
+    assertEquals(1, readAloudModel.getCallCount('prefetchPhraseBoundaries'));
+  });
+
+  test('onHighlightGranularityChange does not prefetch for words', () => {
+    audioBrowserProxy.isPhraseHighlightingEnabledFlag = true;
+    audioBrowserProxy.baseLanguageForSpeech = 'en';
+    audioBrowserProxy.highlightGranularity = audioBrowserProxy.wordHighlighting;
+    wordBoundaries.updateBoundary(0);
+
+    speechController.onHighlightGranularityChange(
+        audioBrowserProxy.wordHighlighting);
+
+    assertEquals(0, readAloudModel.getCallCount('prefetchPhraseBoundaries'));
+  });
+
+  test('playing speech prefetches phrases when used', () => {
+    audioBrowserProxy.isPhraseHighlightingEnabledFlag = true;
+    audioBrowserProxy.baseLanguageForSpeech = 'en';
+    audioBrowserProxy.highlightGranularity =
+        audioBrowserProxy.phraseHighlighting;
+    wordBoundaries.updateBoundary(0);
+
+    onPlayPauseToggle('Prefetch the phrases');
+
+    assertEquals(1, readAloudModel.getCallCount('prefetchPhraseBoundaries'));
+  });
+
+  test('playing speech does not prefetch for non-English speech', () => {
+    audioBrowserProxy.isPhraseHighlightingEnabledFlag = true;
+    audioBrowserProxy.baseLanguageForSpeech = 'fr';
+    audioBrowserProxy.highlightGranularity =
+        audioBrowserProxy.phraseHighlighting;
+    wordBoundaries.updateBoundary(0);
+
+    onPlayPauseToggle('Bonjour tout le monde');
+
+    assertEquals(0, readAloudModel.getCallCount('prefetchPhraseBoundaries'));
+  });
+
   test('onLockScreen while paused does nothing', () => {
     speechController.onLockScreen();
 

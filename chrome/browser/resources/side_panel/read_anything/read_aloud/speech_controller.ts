@@ -281,6 +281,8 @@ export class SpeechController {
   }
 
   onHighlightGranularityChange(newGranularity: number) {
+    this.maybePrefetchPhraseBoundaries_();
+
     // Rehighlight the new granularity.
     if (this.hasSpeechBeenTriggered() &&
         newGranularity !== this.audioBrowserProxy_.getNoHighlighting()) {
@@ -522,6 +524,8 @@ export class SpeechController {
       return this.skipCurrentPosition_(isInterrupted, isMovingBackward);
     }
 
+    this.maybePrefetchPhraseBoundaries_();
+
     let textToPlay = utteranceText;
     let boundaryIndex = 0;
 
@@ -574,6 +578,14 @@ export class SpeechController {
       this.moveToNextGranularity_();
     }
     return this.highlightAndPlayMessage_(isInterrupted, isMovingBackward);
+  }
+
+  // Requests phrase boundaries for the upcoming sentences so they're ready by
+  // the time they're highlighted.
+  private maybePrefetchPhraseBoundaries_() {
+    if (this.highlighter_.willHighlightPhrases()) {
+      this.readAloudModel_.prefetchPhraseBoundaries?.();
+    }
   }
 
   private playText_(utteranceText: string) {
