@@ -649,7 +649,7 @@ const ShapeResultView* ShapingLineBreaker::ConcatShapeResults(
     segments[count++] = {line_end_result, last_safe, max_length};
   }
   auto* line_result =
-      ShapeResultView::Create(UNSAFE_TODO({&segments[0], count}));
+      ShapeResultView::Create(base::span(segments).first(count));
   DCHECK_EQ(end - start, line_result->NumCharacters());
   return line_result;
 }
