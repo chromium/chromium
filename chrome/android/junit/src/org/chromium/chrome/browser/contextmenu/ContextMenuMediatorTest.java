@@ -96,11 +96,7 @@ public class ContextMenuMediatorTest {
         mListView = new ListView(mActivity);
         mMediator =
                 new ContextMenuMediator(
-                        mActivity,
-                        mHeaderCoordinator,
-                        /* isIncognito= */ false,
-                        mClickCallback,
-                        mDismissDialog);
+                        mActivity, mHeaderCoordinator, mClickCallback, mDismissDialog);
 
         mListItemWithModelClickCallback =
                 new ListItem(

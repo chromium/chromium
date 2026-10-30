@@ -38,7 +38,6 @@ public class ContextMenuMediator {
     private final ContextMenuHeaderCoordinator mContextMenuHeaderCoordinator;
     private final Callback<Integer> mOnItemClicked;
     private final Runnable mDismissDialog;
-    private final boolean mIsIncognito;
 
     /**
      * Returns a mediator ({@link ContextMenuMediator}) to be used for a context menu. See {@link
@@ -46,19 +45,16 @@ public class ContextMenuMediator {
      *
      * @param activity The parent {@link Activity}.
      * @param headerCoordinator The {@link ContextMenuHeaderCoordinator} to use.
-     * @param isIncognito Whether the menu is shown in incognito mode.
      * @param onItemClicked A callback that takes the MENU_ITEM_ID of an item, to use on click.
      * @param dismissDialog The {@link Runnable} to use to dismiss the context menu.
      */
     /* package */ ContextMenuMediator(
             Activity activity,
             ContextMenuHeaderCoordinator headerCoordinator,
-            boolean isIncognito,
             Callback<Integer> onItemClicked,
             Runnable dismissDialog) {
         mActivity = activity;
         mContextMenuHeaderCoordinator = headerCoordinator;
-        mIsIncognito = isIncognito;
         mOnItemClicked = onItemClicked;
         mDismissDialog = dismissDialog;
     }
@@ -110,7 +106,8 @@ public class ContextMenuMediator {
             // Add a divider if there are already items in the list.
             // (The first group should not have a divider above it.)
             if (!mModelList.isEmpty()) {
-                mModelList.add(BasicListMenu.buildMenuDivider(mIsIncognito));
+                // TODO(crbug.com/416222384): Update context menus to use incognito theming.
+                mModelList.add(BasicListMenu.buildMenuDivider(/* isIncognito= */ false));
             }
 
             // Add the items in the group. We must check for emptiness first, because addAll asserts

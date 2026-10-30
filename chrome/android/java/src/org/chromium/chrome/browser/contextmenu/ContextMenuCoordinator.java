@@ -270,10 +270,9 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         mWebContents,
                         mNativeDelegate,
                         mIsCustomItemPresent);
-        boolean isIncognito = Profile.fromWebContents(mWebContents).isIncognitoBranded();
         ContextMenuMediator mediator =
                 new ContextMenuMediator(
-                        mActivity, mHeaderCoordinator, isIncognito, onItemClicked, this::dismiss);
+                        mActivity, mHeaderCoordinator, onItemClicked, this::dismiss);
 
         // The Integer here specifies the {@link ListItemType}.
         ModelList listItems =
