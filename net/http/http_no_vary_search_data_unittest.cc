@@ -8,7 +8,6 @@
 #include <array>
 #include <string>
 #include <string_view>
-#include <tuple>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -20,27 +19,22 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
-#include "net/base/features.h"
 #include "net/base/pickle.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/hash/hash_testing.h"
-#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 #include "url/gurl.h"
 
 namespace net {
 
 namespace {
 
-using ::testing::Combine;
 using ::testing::IsEmpty;
 using ::testing::Optional;
 using ::testing::UnorderedElementsAreArray;
-using ::testing::Values;
 using ::testing::ValuesIn;
 
 TEST(HttpNoVarySearchCreateTest, CreateFromNoVaryParamsNonEmptyVaryOnKeyOrder) {
@@ -897,52 +891,8 @@ constexpr std::pair<std::string_view, std::string_view>
         {"𐨀", R"(%F0%90%A8%80)"},
 };
 
-enum class AreEquivalentImplementation {
-  kOld,
-  kNew,
-};
-
-// Configures the ImplementationOverrideForTesting object to simulate
-// enabling/disabling feature "HttpNoVarySearchDataUseNewAreEquivalent".
-std::unique_ptr<
-    ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting>
-ConfigureAreEquivalentImplementation(
-    AreEquivalentImplementation implementation) {
-  switch (implementation) {
-    case AreEquivalentImplementation::kOld:
-      return std::make_unique<
-          ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting>(
-          false);
-
-    case AreEquivalentImplementation::kNew:
-      return std::make_unique<
-          ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting>(
-          true);
-  }
-}
-
-class HttpNoVarySearchAreEquivalentTest
-    : public ::testing::Test,
-      public ::testing::WithParamInterface<AreEquivalentImplementation> {
- public:
-  HttpNoVarySearchAreEquivalentTest() {
-    are_equivalent_implementation_override_ =
-        ConfigureAreEquivalentImplementation(GetParam());
-  }
-
- private:
-  std::unique_ptr<
-      ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting>
-      are_equivalent_implementation_override_;
-};
-
-INSTANTIATE_TEST_SUITE_P(HttpNoVarySearchAreEquivalentTest,
-                         HttpNoVarySearchAreEquivalentTest,
-                         Values(AreEquivalentImplementation::kOld,
-                                AreEquivalentImplementation::kNew));
-
-TEST_P(HttpNoVarySearchAreEquivalentTest,
-       CheckUrlEqualityWithPercentEncodedNonASCIICharactersExcept) {
+TEST(HttpNoVarySearchAreEquivalentTest,
+     CheckUrlEqualityWithPercentEncodedNonASCIICharactersExcept) {
   for (const auto& [key, value] : kPercentEncodedNonAsciiKeys) {
     std::string request_url =
         base::StringPrintf("https://a.test/index.html?%s=c", key);
@@ -962,8 +912,8 @@ TEST_P(HttpNoVarySearchAreEquivalentTest,
   }
 }
 
-TEST_P(HttpNoVarySearchAreEquivalentTest,
-       CheckUrlEqualityWithPercentEncodedNonASCIICharacters) {
+TEST(HttpNoVarySearchAreEquivalentTest,
+     CheckUrlEqualityWithPercentEncodedNonASCIICharacters) {
   for (const auto& [key, value] : kPercentEncodedNonAsciiKeys) {
     std::string request_url =
         base::StringPrintf("https://a.test/index.html?a=2&%s=c", key);
@@ -983,27 +933,11 @@ TEST_P(HttpNoVarySearchAreEquivalentTest,
 }
 
 class HttpNoVarySearchAreEquivalentParameterizedTest
-    : public ::testing::TestWithParam<std::tuple<NoVarySearchCompareTestData,
-                                                 AreEquivalentImplementation>> {
- protected:
-  HttpNoVarySearchAreEquivalentParameterizedTest() {
-    are_equivalent_implementation_override_ =
-        ConfigureAreEquivalentImplementation(std::get<1>(GetParam()));
-  }
-
-  const NoVarySearchCompareTestData& GetTestData() const {
-    return std::get<0>(GetParam());
-  }
-
- private:
-  std::unique_ptr<
-      ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting>
-      are_equivalent_implementation_override_;
-};
+    : public ::testing::TestWithParam<NoVarySearchCompareTestData> {};
 
 TEST_P(HttpNoVarySearchAreEquivalentParameterizedTest,
        CheckUrlEqualityByNoVarySearch) {
-  const auto& test_data = GetTestData();
+  const auto& test_data = GetParam();
 
   const auto no_vary_search_data = CreateFromRawHeaders(test_data.raw_headers);
 
@@ -1235,55 +1169,19 @@ const NoVarySearchCompareTestData no_vary_search_compare_tests[] = {
      R"(No-Vary-Search: params, except=("%C3%A9"))"
      "\r\n\r\n",
      false},
+    // URLs with different fragments (including a URL with a fragment and no
+    // query parameters) are equivalent when the query parameter is ignored.
+    {GURL("https://a.test/index.html#ref1"),
+     GURL("https://a.test/index.html?a=2#ref2"),
+     "HTTP/1.1 200 OK\r\n"
+     R"(No-Vary-Search: params=("a"))"
+     "\r\n\r\n",
+     true},
 };
 
 INSTANTIATE_TEST_SUITE_P(HttpNoVarySearchAreEquivalentParameterizedTest,
                          HttpNoVarySearchAreEquivalentParameterizedTest,
-                         Combine(ValuesIn(no_vary_search_compare_tests),
-                                 Values(AreEquivalentImplementation::kOld,
-                                        AreEquivalentImplementation::kNew)));
-
-// AreEquivalent() needs to operate on a URL that has a scheme that has a query
-// and fragment. Rather than forcing the fuzzer to work that it needs to start
-// the string with an http(s) scheme by itself, this function always creates an
-// https URL.
-GURL CreateUrlFromSuffix(const std::string& suffix) {
-  return GURL(base::StrCat({"https://", suffix}));
-}
-
-// Verifies that the old and new implementations of AreEquivalent() give the
-// same output for the same input. `url_suffix_a` and `url_suffix_b` are the
-// URLs to test without the initial "https://". `params`, `vary_on_params` and
-// `vary_on_key_order` are used to configure the HttpNoVarySearchData object.
-void AreEquivalentImplementationsMatch(const std::string& url_suffix_a,
-                                       const std::string& url_suffix_b,
-                                       const std::vector<std::string>& params,
-                                       bool vary_on_params,
-                                       bool vary_on_key_order) {
-  // Discard invalid configurations early so we don't waste time on them.
-  if (vary_on_params && params.empty() && vary_on_key_order) {
-    // This configuration is equivalent to the default configuration, so is
-    // invalid.
-    return;
-  }
-  const GURL url_a = CreateUrlFromSuffix(url_suffix_a);
-  if (!url_a.is_valid()) {
-    return;
-  }
-  const GURL url_b = CreateUrlFromSuffix(url_suffix_b);
-  if (!url_b.is_valid()) {
-    return;
-  }
-  const HttpNoVarySearchData data =
-      vary_on_params ? HttpNoVarySearchData::CreateFromNoVaryParams(
-                           params, vary_on_key_order)
-                     : HttpNoVarySearchData::CreateFromVaryParams(
-                           params, vary_on_key_order);
-  EXPECT_EQ(data.AreEquivalentOldImplForTesting(url_a, url_b),
-            data.AreEquivalentNewImplForTesting(url_a, url_b));
-}
-
-FUZZ_TEST(HttpNoVarySearchTest, AreEquivalentImplementationsMatch);
+                         ValuesIn(no_vary_search_compare_tests));
 
 TEST(HttpNoVarySearchTest, CanonicalizeQuery) {
   HttpNoVarySearchData data =

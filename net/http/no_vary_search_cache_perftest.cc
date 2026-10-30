@@ -19,7 +19,6 @@
 #include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
-#include "net/http/http_no_vary_search_data.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/no_vary_search_cache_test_utils.h"
@@ -127,23 +126,18 @@ std::optional<NoVarySearchCache>& Cache() {
 }
 
 // To avoid state from leaking out into other performance tests in the same
-// binary, this struct is constructed in SetFeatures() and destroyed again in
-// ClearFeatures().
-struct FeatureState {
-  base::test::ScopedFeatureList scoped_feature_list;
-  ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting
-      equivalent_override{true};
-};
-
-std::optional<FeatureState>& GetFeatureState() {
-  static base::NoDestructor<std::optional<FeatureState>> feature_state;
+// binary, `ScopedFeatureList` is constructed in SetFeatures() and destroyed
+// again in ClearFeatures().
+std::optional<base::test::ScopedFeatureList>& GetFeatureState() {
+  static base::NoDestructor<std::optional<base::test::ScopedFeatureList>>
+      feature_state;
   return *feature_state;
 }
 
 void SetFeatures() {
   auto& feature_state = GetFeatureState();
   feature_state.emplace();
-  feature_state->scoped_feature_list.InitWithFeatureState(
+  feature_state->InitWithFeatureState(
       features::kSplitCacheByNetworkIsolationKey, true);
 }
 

@@ -3402,7 +3402,6 @@ target(_test_target_type, "net_unittests") {
     "HpackHeaderTableFuzzTest.CanCallMethodSequence",
     "HttpAuthHandlerDigestTest.DigestAuthDoesNotCrash",
     "HttpChunkedDecoderParityTest.DecodeParity",
-    "HttpNoVarySearchTest.AreEquivalentImplementationsMatch",
     "HttpUtilTest.ParseFetchSingleRangeNeverCrashes",
     "PickleTest.FuzzRoundTrip",
     "ParseProxyListFuzzer.TestOneInput",

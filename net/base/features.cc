@@ -729,9 +729,6 @@ BASE_FEATURE_PARAM(bool,
                    "persistence_enabled",
                    true);
 
-BASE_FEATURE(kHttpNoVarySearchDataUseNewAreEquivalent,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kHttpCacheSkipUnusableEntry, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kReportingApiCorsOriginHeader, base::FEATURE_ENABLED_BY_DEFAULT);

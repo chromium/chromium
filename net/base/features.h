@@ -747,10 +747,6 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(size_t,
 NET_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
                                       kHttpCacheNoVarySearchPersistenceEnabled);
 
-// Whether to use the new implementation of
-// HttpNoVarySearchData::AreEquivalent().
-NET_EXPORT BASE_DECLARE_FEATURE(kHttpNoVarySearchDataUseNewAreEquivalent);
-
 // Whether to skip opening the http cache entry which was marked as "unusable"
 // from the "Cache-Control" header point of view.
 NET_EXPORT BASE_DECLARE_FEATURE(kHttpCacheSkipUnusableEntry);

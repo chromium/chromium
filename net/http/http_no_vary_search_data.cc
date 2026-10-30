@@ -21,7 +21,6 @@
 #include "base/types/expected_macros.h"
 #include "net/base/features.h"
 #include "net/base/pickle.h"
-#include "net/base/url_search_params.h"
 #include "net/base/url_search_params_view.h"
 #include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
@@ -67,34 +66,7 @@ std::string_view ExtractBaseUrl(const GURL& url) {
   return view.substr(0, end_of_base);
 }
 
-std::optional<bool>& GetHttpNoVarySearchDataUseNewAreEquivalentOverride() {
-  static constinit std::optional<bool> override_value;
-  return override_value;
-}
-
-bool IsHttpNoVarySearchDataUseNewAreEquivalentEnabled() {
-  if (GetHttpNoVarySearchDataUseNewAreEquivalentOverride().has_value()) {
-    return *GetHttpNoVarySearchDataUseNewAreEquivalentOverride();
-  }
-
-  static const bool kEnabled = base::FeatureList::IsEnabled(
-      features::kHttpNoVarySearchDataUseNewAreEquivalent);
-
-  return kEnabled;
-}
-
 }  // namespace
-
-ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting::
-    ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting(
-        bool use_new_implementation) {
-  GetHttpNoVarySearchDataUseNewAreEquivalentOverride() = use_new_implementation;
-}
-
-ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting::
-    ~ScopedHttpNoVarySearchDataEquivalentImplementationOverrideForTesting() {
-  GetHttpNoVarySearchDataUseNewAreEquivalentOverride() = std::nullopt;
-}
 
 HttpNoVarySearchData::HttpNoVarySearchData() = default;
 HttpNoVarySearchData::HttpNoVarySearchData(const HttpNoVarySearchData&) =
@@ -111,8 +83,8 @@ std::vector<std::string> HttpNoVarySearchData::GetAffectedParams() const {
                                   affected_params_.end());
 }
 
-template <typename ParamsType>
-void HttpNoVarySearchData::ApplyRulesToParams(ParamsType& params) const {
+void HttpNoVarySearchData::ApplyRulesToParams(
+    UrlSearchParamsView& params) const {
   if (vary_by_default_) {
     params.DeleteAllWithNames(affected_params_);
   } else {
@@ -126,11 +98,18 @@ void HttpNoVarySearchData::ApplyRulesToParams(ParamsType& params) const {
 bool HttpNoVarySearchData::AreEquivalent(const GURL& a, const GURL& b) const {
   CHECK(a.is_valid());
   CHECK(b.is_valid());
-  if (IsHttpNoVarySearchDataUseNewAreEquivalentEnabled()) {
-    return AreEquivalentNewImpl(a, b);
+  if (ExtractBaseUrl(a) != ExtractBaseUrl(b)) {
+    return false;
   }
 
-  return AreEquivalentOldImpl(a, b);
+  // If equal, look at how the rules stored in `this` affect search params
+  // variance.
+  UrlSearchParamsView a_search_params(a);
+  UrlSearchParamsView b_search_params(b);
+  ApplyRulesToParams(a_search_params);
+  ApplyRulesToParams(b_search_params);
+
+  return a_search_params == b_search_params;
 }
 
 std::string HttpNoVarySearchData::CanonicalizeQuery(const GURL& url) const {
@@ -216,16 +195,6 @@ bool HttpNoVarySearchData::operator==(const HttpNoVarySearchData& rhs) const =
     default;
 std::strong_ordering HttpNoVarySearchData::operator<=>(
     const HttpNoVarySearchData& rhs) const = default;
-
-bool HttpNoVarySearchData::AreEquivalentOldImplForTesting(const GURL& a,
-                                                          const GURL& b) const {
-  return AreEquivalentOldImpl(a, b);
-}
-
-bool HttpNoVarySearchData::AreEquivalentNewImplForTesting(const GURL& a,
-                                                          const GURL& b) const {
-  return AreEquivalentNewImpl(a, b);
-}
 
 // static
 base::expected<HttpNoVarySearchData, HttpNoVarySearchData::ParseErrorEnum>
@@ -317,45 +286,6 @@ HttpNoVarySearchData::ParseNoVarySearchDictionary(
   no_vary_search.vary_by_default_ = vary_by_default;
 
   return no_vary_search;
-}
-
-bool HttpNoVarySearchData::AreEquivalentOldImpl(const GURL& a,
-                                                const GURL& b) const {
-  // Check urls without query and reference (fragment) for equality first.
-  GURL::Replacements replacements;
-  replacements.ClearRef();
-  replacements.ClearQuery();
-  if (a.ReplaceComponents(replacements) != b.ReplaceComponents(replacements)) {
-    return false;
-  }
-
-  // If equal, look at how HttpNoVarySearchData argument affects
-  // search params variance.
-  UrlSearchParams a_search_params(a);
-  UrlSearchParams b_search_params(b);
-  ApplyRulesToParams(a_search_params);
-  ApplyRulesToParams(b_search_params);
-
-  // Check Search Params for equality
-  // All search params, in order, need to have the same keys and the same
-  // values.
-  return a_search_params.params() == b_search_params.params();
-}
-
-bool HttpNoVarySearchData::AreEquivalentNewImpl(const GURL& a,
-                                                const GURL& b) const {
-  if (ExtractBaseUrl(a) != ExtractBaseUrl(b)) {
-    return false;
-  }
-
-  // If equal, look at how HttpNoVarySearchData argument affects
-  // search params variance.
-  UrlSearchParamsView a_search_params(a);
-  UrlSearchParamsView b_search_params(b);
-  ApplyRulesToParams(a_search_params);
-  ApplyRulesToParams(b_search_params);
-
-  return a_search_params == b_search_params;
 }
 
 // LINT.IfChange(Serialization)
