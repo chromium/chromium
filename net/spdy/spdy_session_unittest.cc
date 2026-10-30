@@ -6589,6 +6589,81 @@ TEST_F(AltSvcFrameTest, DoNotProcessAltSvcFrameOnStreamWithInsecureOrigin) {
                   .empty());
 }
 
+// Check that an ALTSVC frame on stream 0 is ignored if the connection has a
+// certificate error, even if the error was bypassed.
+TEST_F(AltSvcFrameTest, DoNotProcessAltSvcFrameWithCertError) {
+  const char origin[] = "https://mail.example.org";
+  spdy::SpdyAltSvcIR altsvc_ir(/* stream_id = */ 0);
+  altsvc_ir.add_altsvc(alternative_service_);
+  altsvc_ir.set_origin(origin);
+  AddSocketData(altsvc_ir);
+  ssl_.ssl_info.cert_status = CERT_STATUS_AUTHORITY_INVALID;
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+  CreateSpdySession();
+
+  WaitForSessionClose(session_);
+  EXPECT_TRUE(AllSocketDataConsumed());
+
+  EXPECT_TRUE(
+      spdy_session_pool_->http_server_properties()
+          ->GetAlternativeServiceInfos(url::SchemeHostPort(GURL(origin)),
+                                       NetworkAnonymizationKey())
+          .empty());
+}
+
+// Check that an ALTSVC frame on an active stream is ignored if the connection
+// has a certificate error, even if the error was bypassed.
+TEST_F(AltSvcFrameTest, DoNotProcessAltSvcFrameOnActiveStreamWithCertError) {
+  spdy::SpdyAltSvcIR altsvc_ir(/* stream_id = */ 1);
+  altsvc_ir.add_altsvc(alternative_service_);
+
+  spdy::SpdySerializedFrame altsvc_frame(spdy_util_.SerializeFrame(altsvc_ir));
+  spdy::SpdySerializedFrame rst(
+      spdy_util_.ConstructSpdyRstStream(1, spdy::ERROR_CODE_REFUSED_STREAM));
+  MockRead reads[] = {
+      CreateMockRead(altsvc_frame, 1), CreateMockRead(rst, 2),
+      MockRead(SYNCHRONOUS, OK, 3)  // EOF
+  };
+
+  const char request_origin[] = "https://mail.example.org";
+  spdy::SpdySerializedFrame req(
+      spdy_util_.ConstructSpdyGet(request_origin, 1, MEDIUM));
+  MockWrite writes[] = {
+      CreateMockWrite(req, 0),
+  };
+  SequencedSocketData data(reads, writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  ssl_.ssl_info.cert_status = CERT_STATUS_AUTHORITY_INVALID;
+  AddSSLSocketData();
+
+  CreateNetworkSession();
+  CreateSpdySession();
+
+  base::WeakPtr<SpdyStream> spdy_stream1 = CreateStreamSynchronously(
+      SPDY_REQUEST_RESPONSE_STREAM, session_, GURL(request_origin), MEDIUM,
+      NetLogWithSource());
+  test::StreamDelegateDoNothing delegate1(spdy_stream1);
+  spdy_stream1->SetDelegate(&delegate1);
+
+  quiche::HttpHeaderBlock headers(
+      spdy_util_.ConstructGetHeaderBlock(request_origin));
+
+  spdy_stream1->SendRequestHeaders(std::move(headers), NO_MORE_DATA_TO_SEND);
+
+  WaitForSessionClose(session_);
+  EXPECT_TRUE(data.AllWriteDataConsumed());
+  EXPECT_TRUE(data.AllReadDataConsumed());
+
+  EXPECT_TRUE(spdy_session_pool_->http_server_properties()
+                  ->GetAlternativeServiceInfos(
+                      url::SchemeHostPort(GURL(request_origin)),
+                      NetworkAnonymizationKey())
+                  .empty());
+}
+
 // An ALTSVC frame received on a session used to carry tunnels to other
 // destinations must be ignored: the session host is not authoritative for the
 // origin associated with the tunnel stream.

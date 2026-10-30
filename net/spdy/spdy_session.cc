@@ -3219,6 +3219,13 @@ void SpdySession::OnAltSvc(
       stream_id != 0) {
     return;
   }
+  // Alternative services are persisted, so only accept them over connections
+  // with valid certificates, with no errors (even bypassed ones).
+  SSLInfo ssl_info;
+  if (!GetSSLInfo(&ssl_info) || !ssl_info.is_valid() ||
+      IsCertStatusError(ssl_info.cert_status)) {
+    return;
+  }
   url::SchemeHostPort scheme_host_port;
   if (stream_id == 0) {
     if (origin.empty())
@@ -3229,10 +3236,6 @@ void SpdySession::OnAltSvc(
     }
     if (!gurl.SchemeIs(url::kHttpsScheme))
       return;
-    SSLInfo ssl_info;
-    if (!GetSSLInfo(&ssl_info)) {
-      return;
-    }
     if (!CanPool(transport_security_state_, ssl_info, *ssl_config_service_,
                  host_port_pair().host(), gurl.host())) {
       return;
@@ -3247,6 +3250,8 @@ void SpdySession::OnAltSvc(
     const GURL& gurl(it->second->url());
     if (!gurl.SchemeIs(url::kHttpsScheme))
       return;
+    // No need for CanPool() here, since the stream's origin was already
+    // validated against this session when the stream was created.
     scheme_host_port = url::SchemeHostPort(gurl);
   }
 

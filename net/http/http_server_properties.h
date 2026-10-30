@@ -295,6 +295,12 @@ class NET_EXPORT HttpServerProperties
       const url::SchemeHostPort& origin,
       const NetworkAnonymizationKey& network_anonymization_key);
 
+  // The following methods set alternative services for `origin`. If the
+  // alternative services were received over the network (e.g., via an Alt-Svc
+  // header or ALTSVC frame), the caller must ensure that the connection they
+  // were received over has a valid certificate, with no errors, even bypassed
+  // ones, that covers `origin`.
+
   // Set a single HTTP/2 alternative service for |origin|.  Previous
   // alternative services for |origin| are discarded.
   // |alternative_service.host| may be empty.

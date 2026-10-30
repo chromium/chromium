@@ -129,6 +129,10 @@ class NET_EXPORT HttpStreamFactory {
 
   virtual ~HttpStreamFactory();
 
+  // Parses the Alt-Svc header in `headers`, if any, and stores the results in
+  // `session`'s HttpServerProperties. The caller must ensure that `headers`
+  // were received over a connection with a valid certificate (with no errors,
+  // even bypassed ones) that covers `http_server`.
   void ProcessAlternativeServices(
       HttpNetworkSession* session,
       const NetworkAnonymizationKey& network_anonymization_key,
