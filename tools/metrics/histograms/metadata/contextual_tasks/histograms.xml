@@ -1267,6 +1267,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.WebUI.AccountMenuButton.Shown" enum="Boolean"
+    expires_after="2027-06-18">
+  <owner>mercerd@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the account avatar button that opens the account menu becomes
+    visible in the contextual tasks top toolbar. Always recorded as true.
+  </summary>
+</histogram>
+
 <histogram name="ContextualTasks.WebUI.OAuthError"
     units="GoogleServiceAuthError" expires_after="2027-03-28">
   <owner>mercerd@chromium.org</owner>
@@ -1288,6 +1298,15 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="ActionType">
     <variant name=".CloseSidePanel" summary="The user closed the side panel."/>
+    <variant name=".HoverAccountMenuButton"
+        summary="The user hovered over the account avatar button that opens
+                 the account menu."/>
+    <variant name=".ManageAccountFromAccountMenu"
+        summary="The user clicked the manage account item in the account
+                 menu."/>
+    <variant name=".OpenAccountMenu"
+        summary="The user opened the account menu by clicking the account
+                 avatar button."/>
     <variant name=".OpenFeedback" summary="The user opened the feedback page."/>
     <variant name=".OpenHelp" summary="The user opened the help page."/>
     <variant name=".OpenInNewTab"
@@ -1302,6 +1321,8 @@ chromium-metrics-reviews@google.com.
     <variant name=".OpenThreadHistory"
         summary="The user opened the thread history."/>
     <variant name=".PinSidePanel" summary="The user pinned the side panel."/>
+    <variant name=".SignOutFromAccountMenu"
+        summary="The user clicked the sign out item in the account menu."/>
     <variant name=".TabFromSourcesMenuClicked"
         summary="The user clicked on a tab from the sources menu."/>
     <variant name=".UnpinSidePanel"

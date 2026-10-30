@@ -15,6 +15,7 @@ import type {CrIconElement} from 'chrome://resources/cr_elements/cr_icon/cr_icon
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -1555,6 +1556,71 @@ suite('TopToolbarTest', () => {
       profileIndicator.click();
       await microtasksFinished();
       assertFalse(tooltip.isOpen);
+    });
+
+    test('records account menu metrics', async () => {
+      const metrics = fakeMetricsPrivate();
+      assertEquals(
+          0,
+          metrics.count('ContextualTasks.WebUI.AccountMenuButton.Shown', true));
+
+      topToolbar.profileAvatarUrl = 'data:image/png;base64,fakeImageData';
+      await microtasksFinished();
+      assertEquals(
+          1,
+          metrics.count('ContextualTasks.WebUI.AccountMenuButton.Shown', true));
+      assertEquals(
+          0, metrics.count('ContextualTasks.WebUI.AccountMenuButton.Shown', 0));
+
+      // Updating the avatar URL while already visible should not re-record.
+      topToolbar.profileAvatarUrl = 'data:image/png;base64,updatedImageData';
+      await microtasksFinished();
+      assertEquals(
+          1,
+          metrics.count('ContextualTasks.WebUI.AccountMenuButton.Shown', true));
+
+      const profileIndicator =
+          topToolbar.shadowRoot.querySelector<HTMLElement>('#profileIndicator');
+      assertTrue(!!profileIndicator);
+      profileIndicator.dispatchEvent(new PointerEvent('pointerenter'));
+      assertEquals(
+          1,
+          metrics.count(
+              'ContextualTasks.WebUI.UserAction.HoverAccountMenuButton', true));
+
+      profileIndicator.click();
+      await microtasksFinished();
+      assertEquals(
+          1,
+          metrics.count(
+              'ContextualTasks.WebUI.UserAction.OpenAccountMenu', true));
+
+      const accountMenu = topToolbar.$.accountMenu.get();
+      accountMenu.shadowRoot.querySelector<HTMLElement>(
+                                '#manageAccountButton')!.click();
+      assertEquals(
+          1,
+          metrics.count(
+              'ContextualTasks.WebUI.UserAction.ManageAccountFromAccountMenu',
+              true));
+
+      profileIndicator.click();
+      await microtasksFinished();
+      accountMenu.shadowRoot.querySelector<HTMLElement>(
+                                '#signOutButton')!.click();
+      assertEquals(
+          1,
+          metrics.count(
+              'ContextualTasks.WebUI.UserAction.SignOutFromAccountMenu', true));
+
+      // Hiding and showing the button again records another impression.
+      topToolbar.profileAvatarUrl = '';
+      await microtasksFinished();
+      topToolbar.profileAvatarUrl = 'data:image/png;base64,fakeImageData';
+      await microtasksFinished();
+      assertEquals(
+          2,
+          metrics.count('ContextualTasks.WebUI.AccountMenuButton.Shown', true));
     });
   });
 });

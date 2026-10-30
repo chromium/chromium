@@ -4,6 +4,13 @@
 
 import type {BigBuffer} from 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 
+export function recordBoolean(metricName: string, value: boolean) {
+  const metricsService = chrome.histograms || chrome.metricsPrivate;
+  if (metricsService) {
+    metricsService.recordBoolean(metricName, value);
+  }
+}
+
 export function recordAction(actionName: string) {
   const metricsService = chrome.histograms || chrome.metricsPrivate;
   if (metricsService) {

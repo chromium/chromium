@@ -38,7 +38,7 @@ import type {ProfileTooltipElement} from './profile_tooltip.js';
 import type {SourcesMenuElement} from './sources_menu.js';
 import {getCss} from './top_toolbar.css.js';
 import {getHtml} from './top_toolbar.html.js';
-import {recordAction} from './utils.js';
+import {recordAction, recordBoolean} from './utils.js';
 // clang-format on
 
 export interface TopToolbarElement {
@@ -171,6 +171,7 @@ export class TopToolbarElement extends TopToolbarElementBase {
   protected accessor overflowMenuOpen_: boolean = false;
   protected accessor webuiRoundedIconsEnabled_: boolean =
       loadTimeData.getBoolean('webuiRoundedIconsEnabled');
+  private wasProfileIndicatorShown_: boolean = false;
   private boundOnWindowBlur_: () => void = this.onWindowBlur_.bind(this);
 
   override connectedCallback() {
@@ -255,6 +256,7 @@ export class TopToolbarElement extends TopToolbarElementBase {
     this.toolbarListenerIds_.forEach(
         id => this.toolbarBrowserProxy_.callbackRouter.removeListener(id));
     this.toolbarListenerIds_ = [];
+    this.wasProfileIndicatorShown_ = false;
     window.removeEventListener('blur', this.boundOnWindowBlur_);
 
     // <if expr="not is_android">
@@ -297,6 +299,13 @@ export class TopToolbarElement extends TopToolbarElementBase {
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
+
+    const isProfileIndicatorShown = this.isSidePanelRearchitectureEnabled_ &&
+        Boolean(this.profileAvatarUrl);
+    if (isProfileIndicatorShown && !this.wasProfileIndicatorShown_) {
+      recordBoolean('ContextualTasks.WebUI.AccountMenuButton.Shown', true);
+    }
+    this.wasProfileIndicatorShown_ = isProfileIndicatorShown;
 
     if (changedProperties.has('isAiPage') ||
         changedProperties.has('title') ||
@@ -364,6 +373,7 @@ export class TopToolbarElement extends TopToolbarElementBase {
   }
 
   protected onProfileIndicatorClick_(e: Event) {
+    recordAction('ContextualTasks.WebUI.UserAction.OpenAccountMenu');
     this.getProfileTooltip_()?.hide();
     this.$.accountMenu.get().showAt(e.currentTarget as HTMLElement);
   }
@@ -398,6 +408,7 @@ export class TopToolbarElement extends TopToolbarElementBase {
   }
 
   protected onProfileIndicatorPointerenter_(e: PointerEvent) {
+    recordAction('ContextualTasks.WebUI.UserAction.HoverAccountMenuButton');
     this.getProfileTooltip_()?.scheduleShow(e.currentTarget as HTMLElement);
   }
 
