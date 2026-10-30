@@ -724,6 +724,11 @@ class BBJSONGenerator(object):
       'can_use_on_swarming_builders', swarmable
     )
 
+    mixins_to_ignore = test.pop('remove_mixins', [])
+    self.ensure_valid_mixin_list(
+      mixins_to_ignore, f'test {test_name} remove_mixins'
+    )
+
     # Test common mixins are mixins specified in the test declaration itself. To
     # match the order of expansion in starlark, they take effect before anything
     # specified in the legacy_test_config.
@@ -734,14 +739,9 @@ class BBJSONGenerator(object):
         test_common_mixins, f'test {test_name} test_common mixins'
       )
       test_common = self.apply_mixins(
-        test_common, test_common_mixins, [], builder
+        test_common, test_common_mixins, mixins_to_ignore, builder
       )
       test = self.apply_mixin(test, test_common, builder)
-
-    mixins_to_ignore = test.pop('remove_mixins', [])
-    self.ensure_valid_mixin_list(
-      mixins_to_ignore, f'test {test_name} remove_mixins'
-    )
 
     # Expand any conditional values
     self.resolve_os_conditional_values(test, builder)
