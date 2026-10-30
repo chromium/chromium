@@ -13,7 +13,7 @@ android_library("public_java") {
     "//components/browser_ui/bottomsheet/android:java",
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/blink/public/mojom:mojom_platform_java",
+    "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
     "//url:gurl_java",

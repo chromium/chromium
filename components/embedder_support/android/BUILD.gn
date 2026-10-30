@@ -298,7 +298,7 @@ if (current_toolchain == default_toolchain) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/androidx:androidx_appcompat_appcompat_java",
       "//third_party/androidx:androidx_core_core_java",
-      "//third_party/blink/public/mojom:mojom_platform_java",
+      "//third_party/blink/public/mojom:android_mojo_bindings_java",
       "//third_party/jni_zero:jni_zero_java",
       "//ui/android:ui_no_recycler_view_java",
       "//url:gurl_java",
