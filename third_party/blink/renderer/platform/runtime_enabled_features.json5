@@ -6814,6 +6814,11 @@
       status: "experimental",
     },
     {
+      // https://crbug.com/578671521
+      name: "TextEncodingDetectorTldHint",
+      status: "stable",
+    },
+    {
       name: "TextFragmentAPI",
       status: "experimental",
     },
