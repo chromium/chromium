@@ -296,7 +296,8 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       WaitForShow(kToolbarPerformanceInterventionButtonElementId),
       WaitForShow(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
-      PressButton(kToolbarPerformanceInterventionButtonElementId),
+      PressButton(kToolbarPerformanceInterventionButtonElementId,
+                  InputType::kKeyboard),
       WaitForHide(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
       EnsurePresent(kToolbarPerformanceInterventionButtonElementId),
@@ -343,7 +344,8 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       WaitForShow(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
 
-      PressButton(kToolbarPerformanceInterventionButtonElementId),
+      PressButton(kToolbarPerformanceInterventionButtonElementId,
+                  InputType::kKeyboard),
       WaitForHide(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
 
@@ -366,7 +368,8 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       WaitForShow(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
 
-      PressButton(kToolbarPerformanceInterventionButtonElementId),
+      PressButton(kToolbarPerformanceInterventionButtonElementId,
+                  InputType::kKeyboard),
       WaitForHide(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
       EnsurePresent(kToolbarPerformanceInterventionButtonElementId),
@@ -423,11 +426,13 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       WaitForShow(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
 
-      PressButton(kToolbarPerformanceInterventionButtonElementId),
+      PressButton(kToolbarPerformanceInterventionButtonElementId,
+                  InputType::kKeyboard),
       WaitForHide(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
 
-      PressButton(kToolbarPerformanceInterventionButtonElementId),
+      PressButton(kToolbarPerformanceInterventionButtonElementId,
+                  InputType::kKeyboard),
       WaitForShow(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody));
 }
@@ -790,7 +795,8 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       WaitForShow(kToolbarPerformanceInterventionButtonElementId),
       WaitForShow(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
-      PressButton(kToolbarPerformanceInterventionButtonElementId),
+      PressButton(kToolbarPerformanceInterventionButtonElementId,
+                  InputType::kKeyboard),
       WaitForHide(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
       TriggerOnActionableTabListChange({}),
@@ -860,10 +866,12 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionNotificationImprovementTest,
                        kPerformanceInterventionNotificationLastShown) !=
                base::Time();
       }),
-      PressButton(kToolbarPerformanceInterventionButtonElementId),
+      PressButton(kToolbarPerformanceInterventionButtonElementId,
+                  InputType::kKeyboard),
       WaitForHide(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
-      PressButton(kToolbarPerformanceInterventionButtonElementId),
+      PressButton(kToolbarPerformanceInterventionButtonElementId,
+                  InputType::kKeyboard),
       WaitForShow(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
       Check([&]() {

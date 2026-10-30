@@ -16,7 +16,7 @@
       currentColor);
 }
 
-:host(.anchor-highlight) #button {
+:host([is-active]) #button {
   --cr-icon-button-fill-color: var(
       --color-performance-intervention-button-icon-active,
       currentColor);
