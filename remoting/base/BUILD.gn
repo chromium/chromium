@@ -98,7 +98,7 @@ static_library("os_utils") {
   }
 }
 
-source_set("base") {
+static_library("base") {
   sources = [
     "async_file_util.cc",
     "async_file_util.h",
@@ -306,7 +306,7 @@ source_set("session_policies") {
   deps = [ "//base" ]
 }
 
-source_set("authorization") {
+static_library("authorization") {
   sources = [
     "gaia_oauth_client.cc",
     "gaia_oauth_client.h",
@@ -364,7 +364,7 @@ source_set("logging") {
   deps = [ "//base" ]
 }
 
-source_set("settings") {
+static_library("settings") {
   sources = [
     "host_settings.cc",
     "host_settings.h",

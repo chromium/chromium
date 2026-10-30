@@ -4,7 +4,7 @@
 
 import("//remoting/remoting_options.gni")
 
-source_set("encoder") {
+static_library("encoder") {
   sources = [
     "encoder_bitrate_filter.cc",
     "encoder_bitrate_filter.h",
@@ -25,7 +25,6 @@ source_set("encoder") {
     ":vpx_codec",
     "//remoting/base",
     "//remoting/proto",
-    "//remoting/signaling",
     "//third_party/libvpx",
     "//third_party/libyuv",
     "//third_party/webrtc_overrides:webrtc_component",
@@ -48,7 +47,7 @@ source_set("encoder") {
   }
 }
 
-source_set("vpx_codec") {
+static_library("vpx_codec") {
   sources = [
     "scoped_vpx_codec.cc",
     "scoped_vpx_codec.h",

@@ -174,7 +174,7 @@ generate_library_loader("pipewire_loader") {
   ]
 }
 
-source_set("utils") {
+static_library("utils") {
   sources = [
     "gdbus_connection_ref.cc",
     "gdbus_connection_ref.h",
@@ -225,7 +225,7 @@ source_set("remote_session_info_main_headers") {
   deps = [ "//remoting/host:host_main_headers" ]
 }
 
-source_set("platform_impls") {
+static_library("platform_impls") {
   defines = [ "REMOTING_USE_X11" ]
   sources = [
     "active_display_monitor_linux.cc",
@@ -431,7 +431,7 @@ source_set("x11_display_utils") {
 }
 
 if (remoting_use_x11) {
-  source_set("x11") {
+  static_library("x11") {
     sources = [
       "thread_bound_x11_event_source.cc",
       "thread_bound_x11_event_source.h",
