@@ -150,6 +150,7 @@
 #import "ios/chrome/browser/passwords/model/ios_password_requirements_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ode/ios_chrome_on_device_encryption_metrics_reporter_factory.h"
 #import "ios/chrome/browser/passwords/model/password_manager_log_router_factory.h"
+#import "ios/chrome/browser/passwords/model/remote_actor/ios_chrome_remote_actor_credential_sharing_service_factory.h"
 #import "ios/chrome/browser/personal_context/model/ios_personal_context_eligibility_service_factory.h"
 #import "ios/chrome/browser/personal_context/model/ios_personal_context_first_run_service_factory.h"
 #import "ios/chrome/browser/personal_context/model/ios_personal_context_service_factory.h"
@@ -408,6 +409,7 @@ void EnsureProfileKeyedServiceFactoriesBuilt() {
   IOSChromePasswordSenderServiceFactory::GetInstance();
   IOSChromeProfileInvalidationProviderFactory::GetInstance();
   IOSChromeProfilePasswordStoreFactory::GetInstance();
+  IOSChromeRemoteActorCredentialSharingServiceFactory::GetInstance();
   IOSChromeSafetyCheckManagerFactory::GetInstance();
   IOSChromeTabRestoreServiceFactory::GetInstance();
   IOSContextualTasksServiceFactory::GetInstance();
