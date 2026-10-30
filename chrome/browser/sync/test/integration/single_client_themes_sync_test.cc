@@ -178,7 +178,6 @@ class SingleClientThemesSyncTest
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{syncer::kSeparateLocalAndAccountThemes,
-                                syncer::kSeparateLocalAndAccountSearchEngines,
                                 // `kEnablePreferencesAccountStorage` is used to
                                 // enable themes in transport
                                 // mode alongside some other data types.

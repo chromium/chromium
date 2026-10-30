@@ -720,9 +720,7 @@ bool SyncPrefs::IsTypeSupportedInTransportMode(UserSelectableType type) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
       return IsReplaceSyncPromosWithSignInPromosEnabled();
 #else
-      // Search engines are behind `UserSelectableType::kPreferences`.
-      return base::FeatureList::IsEnabled(
-          kSeparateLocalAndAccountSearchEngines);
+      return true;
 #endif
     case UserSelectableType::kPasswords:
       return true;

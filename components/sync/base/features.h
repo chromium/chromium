@@ -79,8 +79,6 @@ bool IsContactInfoDataTypeForCustomPassphraseUsersEnabled();
 
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForDasherUsers);
 
-// If enabled, keeps local and account search engines separate.
-BASE_DECLARE_FEATURE(kSeparateLocalAndAccountSearchEngines);
 
 // Feature flag to replace all sync-related UI with sign-in ones.
 // Do not use this flag directly in production code. Use

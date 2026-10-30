@@ -985,12 +985,8 @@ CommonControllerBuilder::CreateSearchEnginesDataTypeController(
       data_type_store_service_.value()->GetStoreFactory(),
       template_url_service_.value()->AsWeakPtr(),
       base::BindRepeating(&syncer::ReportUnrecoverableError, channel),
-      base::FeatureList::IsEnabled(
-          syncer::kSeparateLocalAndAccountSearchEngines)
-          ? syncer::SyncableServiceBasedDataTypeController::DelegateMode::
-                kTransportModeWithSingleModel
-          : syncer::SyncableServiceBasedDataTypeController::DelegateMode::
-                kLegacyFullSyncModeOnly);
+      syncer::SyncableServiceBasedDataTypeController::DelegateMode::
+          kTransportModeWithSingleModel);
 }
 
 std::unique_ptr<syncer::DataTypeController>

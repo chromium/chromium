@@ -167,7 +167,6 @@ class SingleClientDictionaryWithAccountStorageSyncTest
         syncer::kSpellcheckSeparateLocalAndAccountDictionaries};
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
       enabled.push_back(switches::kEnablePreferencesAccountStorage);
-      enabled.push_back(syncer::kSeparateLocalAndAccountSearchEngines);
     }
     feature_list_.InitWithFeatures(enabled, {});
   }

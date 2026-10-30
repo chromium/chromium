@@ -32,12 +32,7 @@ class TwoClientSearchEnginesSyncTest
     : public SyncTest,
       public testing::WithParamInterface<SyncTest::SetupSyncMode> {
  public:
-  TwoClientSearchEnginesSyncTest() : SyncTest(TWO_CLIENT) {
-    if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
-      scoped_feature_list_.InitAndEnableFeature(
-          syncer::kSeparateLocalAndAccountSearchEngines);
-    }
-  }
+  TwoClientSearchEnginesSyncTest() : SyncTest(TWO_CLIENT) {}
   ~TwoClientSearchEnginesSyncTest() override = default;
 
   SyncTest::SetupSyncMode GetSetupSyncMode() const override {
@@ -59,9 +54,6 @@ class TwoClientSearchEnginesSyncTest
 
     return true;
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(,

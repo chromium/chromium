@@ -43,7 +43,6 @@
 #include "components/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
 #include "components/sync/base/data_type.h"
-#include "components/sync/base/features.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
@@ -128,10 +127,7 @@ class SingleClientPreferencesSyncTest
   SingleClientPreferencesSyncTest() : SyncTest(SINGLE_CLIENT) {
     if (GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTransportOnly) {
       feature_list_.InitWithFeatures(
-          /*enabled_features=*/{switches::kEnablePreferencesAccountStorage,
-                                // This is needed to enable prefs in transport
-                                // mode.
-                                syncer::kSeparateLocalAndAccountSearchEngines},
+          /*enabled_features=*/{switches::kEnablePreferencesAccountStorage},
           /*disabled_features=*/{});
     }
   }
@@ -285,10 +281,7 @@ class SingleClientPreferencesWithAccountStorageSyncTest
  public:
   SingleClientPreferencesWithAccountStorageSyncTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{switches::kEnablePreferencesAccountStorage,
-                              // This is needed to enable prefs in transport
-                              // mode.
-                              syncer::kSeparateLocalAndAccountSearchEngines},
+        /*enabled_features=*/{switches::kEnablePreferencesAccountStorage},
         /*disabled_features=*/{});
   }
 
@@ -1341,9 +1334,8 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(SyncTest::SetupSyncMode::kSyncTransportOnly),
     testing::PrintToStringParamName());
 
-IN_PROC_BROWSER_TEST_P(
-    SingleClientPreferencesMigrateAccountPrefsSyncTest,
-    ShouldNotCreateAccountPrefsFile) {
+IN_PROC_BROWSER_TEST_P(SingleClientPreferencesMigrateAccountPrefsSyncTest,
+                       ShouldNotCreateAccountPrefsFile) {
   ASSERT_TRUE(SetupClients());
   // Register `sync_preferences::kSyncablePrefForTesting`.
   GetRegistry(GetProfile(0))
@@ -1368,9 +1360,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(base::PathExists(AccountPreferencesFilePath()));
 }
 
-IN_PROC_BROWSER_TEST_P(
-    SingleClientPreferencesMigrateAccountPrefsSyncTest,
-    ShouldDownloadAccountPrefsWithInitialSync) {
+IN_PROC_BROWSER_TEST_P(SingleClientPreferencesMigrateAccountPrefsSyncTest,
+                       ShouldDownloadAccountPrefsWithInitialSync) {
   ASSERT_TRUE(SetupClients());
   // Register `sync_preferences::kSyncablePrefForTesting`.
   GetRegistry(GetProfile(0))
@@ -1415,9 +1406,8 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(account_pref_values_on_disk->empty());
 }
 
-IN_PROC_BROWSER_TEST_P(
-    SingleClientPreferencesMigrateAccountPrefsSyncTest,
-    ShouldCleanupAccountPreferencesFileOnDisable) {
+IN_PROC_BROWSER_TEST_P(SingleClientPreferencesMigrateAccountPrefsSyncTest,
+                       ShouldCleanupAccountPreferencesFileOnDisable) {
   ASSERT_TRUE(SetupClients());
   // Register `sync_preferences::kSyncablePrefForTesting`.
   GetRegistry(GetProfile(0))
@@ -1474,9 +1464,8 @@ IN_PROC_BROWSER_TEST_P(
       file_content->FindString(sync_preferences::kSyncablePrefForTesting));
 }
 
-IN_PROC_BROWSER_TEST_P(
-    SingleClientPreferencesMigrateAccountPrefsSyncTest,
-    ShouldCleanupAccountPreferencesFileOnSignout) {
+IN_PROC_BROWSER_TEST_P(SingleClientPreferencesMigrateAccountPrefsSyncTest,
+                       ShouldCleanupAccountPreferencesFileOnSignout) {
   ASSERT_TRUE(SetupClients());
   // Register `sync_preferences::kSyncablePrefForTesting`.
   GetRegistry(GetProfile(0))

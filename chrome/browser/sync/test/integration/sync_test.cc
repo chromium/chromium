@@ -1346,16 +1346,7 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
   if (base::FeatureList::IsEnabled(
           switches::kEnablePreferencesAccountStorage)) {
     allowed_types.Put(syncer::PRIORITY_PREFERENCES);
-#if BUILDFLAG(IS_ANDROID)
     allowed_types.Put(syncer::PREFERENCES);
-#else
-    // On desktop, support for transport mode for preferences is implemented
-    // alongside that of search engines.
-    if (base::FeatureList::IsEnabled(
-            syncer::kSeparateLocalAndAccountSearchEngines)) {
-      allowed_types.Put(syncer::PREFERENCES);
-    }
-#endif  // BUILDFLAG(IS_ANDROID)
   }
   if (base::FeatureList::IsEnabled(
           switches::kSyncEnableBookmarksInTransportMode)) {
@@ -1451,8 +1442,7 @@ syncer::DataTypeSet AllowedTypesInStandaloneTransportMode() {
     allowed_types.Put(syncer::CONTEXTUAL_TASK);
   }
 
-  if (base::FeatureList::IsEnabled(
-          syncer::kSeparateLocalAndAccountSearchEngines) &&
+  if (
       // Support for transport mode for search engines is implemented alongside
       // that of preferences.
       base::FeatureList::IsEnabled(switches::kEnablePreferencesAccountStorage)

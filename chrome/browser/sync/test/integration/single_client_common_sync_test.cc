@@ -660,16 +660,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientFeatureToTransportSyncTest,
       "Sync.ClearMetadataWhileStopped",
       syncer::DataTypeHistogramValue(syncer::SECURITY_EVENTS), 0);
 
-  // With `kSeparateLocalAndAccountSearchEngines`, the same model is used for
-  // both transport mode and Sync-the-feature mode, so the metadata should *not*
-  // have been cleared.
+  // The same model is used for both transport mode and Sync-the-feature mode,
+  // so the metadata should *not* have been cleared.
   histograms_.ExpectBucketCount(
       "Sync.ClearMetadataWhileStopped",
-      syncer::DataTypeHistogramValue(syncer::SEARCH_ENGINES),
-      base::FeatureList::IsEnabled(
-          syncer::kSeparateLocalAndAccountSearchEngines)
-          ? 0
-          : 1);
+      syncer::DataTypeHistogramValue(syncer::SEARCH_ENGINES), 0);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

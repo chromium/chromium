@@ -49,7 +49,6 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync/base/features.h"
 #include "components/url_formatter/url_formatter.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/mime_util.h"
@@ -2546,10 +2545,7 @@ const TemplateURLData& TemplateURL::data() const {
 }
 
 TemplateURLData& TemplateURL::active_data() {
-  CHECK(local_data_ || base::FeatureList::IsEnabled(
-                           syncer::kSeparateLocalAndAccountSearchEngines));
-  CHECK(!account_data_ || base::FeatureList::IsEnabled(
-                              syncer::kSeparateLocalAndAccountSearchEngines));
+  CHECK(local_data_ || account_data_);
   // TODO(crbug.com/386916073): Improve the conflict resolution.
   if (local_data_ && account_data_) {
     TemplateURL local_turl(local_data_, std::nullopt);

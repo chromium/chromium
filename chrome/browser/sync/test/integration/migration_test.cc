@@ -178,7 +178,6 @@ class MigrationTest : public SyncTest,
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
       scoped_feature_list_.InitWithFeatures(
           {switches::kEnablePreferencesAccountStorage,
-           syncer::kSeparateLocalAndAccountSearchEngines,
            syncer::kSpellcheckSeparateLocalAndAccountDictionaries,
            syncer::kSeparateLocalAndAccountThemes,
            switches::kSyncEnableBookmarksInTransportMode},

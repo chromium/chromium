@@ -152,7 +152,6 @@ BrowserRootViewBrowserTest.*
 -SingleClientReadingListSyncTest.*
 -SingleClientSavedTabGroupsSyncTest.*
 -SingleClientSearchEnginesSyncTest.*
--SingleClientSearchEnginesSyncTestWithSeparateLocalAndAccountSearchEnginesEnabled.*
 -SingleClientSecondaryAccountSyncTest.*
 -SingleClientSendTabToSelfSyncTest.*
 -SingleClientSessionsSyncTest.*

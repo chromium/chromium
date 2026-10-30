@@ -128,7 +128,6 @@ class EnableDisableSingleClientTest
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/
           {switches::kEnablePreferencesAccountStorage,
-           syncer::kSeparateLocalAndAccountSearchEngines,
            syncer::kSpellcheckSeparateLocalAndAccountDictionaries,
            syncer::kSeparateLocalAndAccountThemes,
            switches::kSyncEnableBookmarksInTransportMode},
@@ -183,15 +182,14 @@ class EnableDisableSingleClientTest
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
     if (GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTheFeature) {
-      ASSERT_TRUE(GetClient(0)->SetupSyncWithCustomSettings(
-          base::BindLambdaForTesting([all_types_enabled](
-                                         syncer::SyncUserSettings*
-                                             user_settings) {
-            user_settings->SetSelectedTypes(all_types_enabled, {});
+      ASSERT_TRUE(
+          GetClient(0)->SetupSyncWithCustomSettings(base::BindLambdaForTesting(
+              [all_types_enabled](syncer::SyncUserSettings* user_settings) {
+                user_settings->SetSelectedTypes(all_types_enabled, {});
 #if !BUILDFLAG(IS_CHROMEOS)
-            user_settings->SetInitialSyncFeatureSetupComplete();
+                user_settings->SetInitialSyncFeatureSetupComplete();
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-          })));
+              })));
     } else {
       ASSERT_TRUE(GetClient(0)->SignInNoWaitForCompletion());
       GetSyncService(0)->GetUserSettings()->SetSelectedTypes(all_types_enabled,

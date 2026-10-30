@@ -16,7 +16,6 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "components/sync/base/features.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync_preferences/common_syncable_prefs_database.h"
 #include "content/public/test/browser_test.h"
@@ -41,9 +40,7 @@ class TwoClientPreferencesSyncTest
   TwoClientPreferencesSyncTest() : SyncTest(TWO_CLIENT) {
     if (GetSetupSyncMode() == SetupSyncMode::kSyncTransportOnly) {
       scoped_feature_list_.InitWithFeatures(
-          {switches::kEnablePreferencesAccountStorage,
-           syncer::kSeparateLocalAndAccountSearchEngines},
-          {});
+          {switches::kEnablePreferencesAccountStorage}, {});
     }
   }
 
