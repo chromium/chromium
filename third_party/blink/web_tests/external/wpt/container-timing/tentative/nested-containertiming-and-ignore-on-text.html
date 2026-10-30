@@ -13,21 +13,17 @@ body {
 <script>
   promise_test(async t => {
     assert_implements(window.PerformanceContainerTiming, "PerformanceContainerTiming is not implemented");
-    // Outer containertiming root.
-    const outer = document.createElement('div');
-    outer.setAttribute('containertiming', 'outer_ct');
-    document.body.appendChild(outer);
+    const outer = addContainerRoot(document.body, 'outer_ct');
 
     // Paragraph that is itself a container timing root and has
     // containertimingignore set. The ignore must prevent the text paint
     // from propagating to the outer containertiming root, but the paragraph
     // itself must still report its own text paint.
-    const p = document.createElement('p');
-    p.setAttribute('containertiming', 'p_ct');
-    p.setAttribute('containertimingignore', '');
-    p.id = 'my_id';
-    p.innerText = "This is a text";
-    outer.appendChild(p);
+    addText(outer, {
+      containertiming: 'p_ct',
+      containertimingignore: '',
+      id: 'my_id'
+    });
 
     const beforeRender = performance.now();
 

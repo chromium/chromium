@@ -69,17 +69,22 @@ function waitForPendingPaints() {
     });
     observer.observe({type: 'container'});
 
-    const img = document.createElement('img');
-    img.src = '/container-timing/resources/square100.png';
-    img.setAttribute('containertiming', identifier);
-    img.setAttribute('containertimingignore', '');
     // Pin inside the viewport and out of normal flow so tall/scrolled pages do
     // not clip it offscreen (suppressing its entry), adjacent whitespace inside
     // a <body> root still collapses without painting as text, and layout does
     // not shift.
-    img.style.cssText =
-        'position: fixed; right: 0; bottom: 0; width: 1px; height: 1px; pointer-events: none;';
-    document.body.appendChild(img);
+    const img = addSquare100Image(document.body, {
+      containertiming: identifier,
+      containertimingignore: '',
+      style: [
+        'position: fixed',
+        'right: 0',
+        'bottom: 0',
+        'width: 1px',
+        'height: 1px',
+        'pointer-events: none',
+      ].join('; '),
+    });
   });
 }
 
@@ -131,4 +136,31 @@ async function getContainerEntriesWithin(t, duration = 1000) {
 // observing container entries.
 function waitWithoutObserving(t, duration = 3000) {
   return new Promise(resolve => t.step_timeout(resolve, duration));
+}
+
+// Attributes are set before the element is inserted.
+function addElement(parent, tagName, attributes = {}) {
+  const element = document.createElement(tagName);
+  for (const [name, value] of Object.entries(attributes)) {
+    element.setAttribute(name, value);
+  }
+  parent.appendChild(element);
+  return element;
+}
+
+function addContainerRoot(parent, identifier, attributes = {}) {
+  return addElement(parent, 'div',
+                    {containertiming: identifier, ...attributes});
+}
+
+function addSquare100Image(parent, attributes = {}) {
+  return addElement(
+      parent, 'img',
+      {src: '/container-timing/resources/square100.png', ...attributes});
+}
+
+function addText(parent, attributes = {}) {
+  const p = addElement(parent, 'p', attributes);
+  p.innerText = 'This is a text';
+  return p;
 }

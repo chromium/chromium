@@ -13,23 +13,17 @@ body {
 <script>
   promise_test(async t => {
     assert_implements(window.PerformanceContainerTiming, "PerformanceContainerTiming is not implemented");
-    const div = document.createElement('div');
-    div.setAttribute('containertiming', 'div_ct');
-    document.body.appendChild(div);
+    const div = addContainerRoot(document.body, 'div_ct');
 
-    function addImage(id, left, top, width, height) {
-      const img = document.createElement('img');
-      img.src = '/container-timing/resources/square100.png';
-      img.setAttribute('id', id);
-      img.style.position = 'absolute';
-      img.style.left = left + 'px';
-      img.style.top = top + 'px';
-      img.style.width = width + 'px';
-      img.style.height = height + 'px';
-      div.appendChild(img);
+    function addPositionedImage(id, left, top, width, height) {
+      addSquare100Image(div, {
+        id,
+        style: `position: absolute; left: ${left}px; top: ${top}px; ` +
+               `width: ${width}px; height: ${height}px;`
+      });
     }
 
-    addImage('first_id', 0, 0, 100, 100);
+    addPositionedImage('first_id', 0, 0, 100, 100);
     const beforeRender = performance.now();
 
     const entries = await getContainerEntries(t);
@@ -44,8 +38,8 @@ body {
     //  - 60x60 of entirely new area: 3600 either way.
     // Selecting by the newly contributed area would report the smaller
     // one; selecting by the element's own area reports the larger one.
-    addImage('overlapping_id', 0, 0, 100, 120);
-    addImage('fresh_id', 200, 200, 60, 60);
+    addPositionedImage('overlapping_id', 0, 0, 100, 120);
+    addPositionedImage('fresh_id', 200, 200, 60, 60);
     const allEntries = await getContainerEntries(t, 2);
 
     assert_equals(allEntries.length, 2);

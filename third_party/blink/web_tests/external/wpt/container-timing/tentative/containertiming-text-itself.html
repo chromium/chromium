@@ -13,11 +13,7 @@ body {
 <script>
   promise_test(async t => {
     assert_implements(window.PerformanceContainerTiming, "PerformanceContainerTiming is not implemented");
-    const p = document.createElement('p');
-    p.setAttribute('containertiming', 'p_ct');
-    p.id = 'my_id';
-    p.innerText = "This is a text";
-    document.body.appendChild(p);
+    addText(document.body, {containertiming: 'p_ct', id: 'my_id'});
 
     const beforeRender = performance.now();
 

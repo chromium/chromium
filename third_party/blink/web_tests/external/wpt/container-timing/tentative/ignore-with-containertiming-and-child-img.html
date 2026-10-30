@@ -13,21 +13,9 @@ body {
 <script>
   promise_test(async t => {
     assert_implements(window.PerformanceContainerTiming, "PerformanceContainerTiming is not implemented");
-    // Add a div that is the container timing root
-    const div1 = document.createElement('div');
-    div1.setAttribute('containertimingignore', '');
-    document.body.appendChild(div1);
-
-    // Intermediate ignore should block paint events
-    const div2 = document.createElement('div');
-    div2.setAttribute('containertiming', 'div2_ct');
-    div1.appendChild(div2)
-
-    // Add image of width equal to 100 and height equal to 100.
-    const img = document.createElement('img');
-    img.src = '/container-timing/resources/square100.png';
-    img.setAttribute('id', 'img_id');
-    div2.appendChild(img);
+    const div1 = addElement(document.body, 'div', {containertimingignore: ''});
+    const div2 = addContainerRoot(div1, 'div2_ct');
+    addSquare100Image(div2, {id: 'img_id'});
 
     const beforeRender = performance.now();
 

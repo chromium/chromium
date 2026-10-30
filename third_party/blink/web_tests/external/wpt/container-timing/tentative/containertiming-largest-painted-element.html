@@ -13,31 +13,19 @@ body {
 <script>
   promise_test(async t => {
     assert_implements(window.PerformanceContainerTiming, "PerformanceContainerTiming is not implemented");
-    // Add a div that is the container timing root
-    const div = document.createElement('div');
-    div.setAttribute('containertiming', 'div_ct');
-    document.body.appendChild(div);
+    const div = addContainerRoot(document.body, 'div_ct');
 
     // 100x100 = 10000 for the big one, 40x40 = 1600 for the small one.
-    const big = document.createElement('img');
-    big.src = '/container-timing/resources/square100.png';
-    big.setAttribute('id', 'big_id');
-    big.style.position = 'absolute';
-    big.style.left = '0px';
-    big.style.top = '0px';
-    big.style.width = '100px';
-    big.style.height = '100px';
-    div.appendChild(big);
-
-    const small = document.createElement('img');
-    small.src = '/container-timing/resources/square100.png';
-    small.setAttribute('id', 'small_id');
-    small.style.position = 'absolute';
-    small.style.left = '200px';
-    small.style.top = '200px';
-    small.style.width = '40px';
-    small.style.height = '40px';
-    div.appendChild(small);
+    addSquare100Image(div, {
+      id: 'big_id',
+      style: 'position: absolute; left: 0px; top: 0px; ' +
+             'width: 100px; height: 100px;'
+    });
+    addSquare100Image(div, {
+      id: 'small_id',
+      style: 'position: absolute; left: 200px; top: 200px; ' +
+             'width: 40px; height: 40px;'
+    });
 
     const beforeRender = performance.now();
 

@@ -17,12 +17,11 @@ body {
     // containertimingignore set. containertimingignore only blocks upward
     // propagation to ancestor roots; the element's own paint still reports
     // under its own root.
-    const img = document.createElement('img');
-    img.src = '/container-timing/resources/square100.png';
-    img.setAttribute('containertiming', 'image_ct');
-    img.setAttribute('containertimingignore', '');
-    img.setAttribute('id', 'my_id');
-    document.body.appendChild(img);
+    addSquare100Image(document.body, {
+      containertiming: 'image_ct',
+      containertimingignore: '',
+      id: 'my_id'
+    });
 
     const beforeRender = performance.now();
 

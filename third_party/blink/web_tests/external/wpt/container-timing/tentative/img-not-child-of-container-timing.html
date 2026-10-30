@@ -13,16 +13,8 @@ body {
 <script>
   promise_test(async t => {
     assert_implements(window.PerformanceContainerTiming, "PerformanceContainerTiming is not implemented");
-    // Add a div that is the container timing root
-    const div = document.createElement('div');
-    div.setAttribute('containertiming', 'div_ct');
-    document.body.appendChild(div);
-
-    // Add image of width equal to 100 and height equal to 100.
-    const img = document.createElement('img');
-    img.src = '/container-timing/resources/square100.png';
-    img.setAttribute('id', 'img_id');
-    document.body.appendChild(img);
+    addContainerRoot(document.body, 'div_ct');
+    const img = addSquare100Image(document.body, {id: 'img_id'});
     await img.decode();
     const entries = await getContainerEntries(t, 0);
 

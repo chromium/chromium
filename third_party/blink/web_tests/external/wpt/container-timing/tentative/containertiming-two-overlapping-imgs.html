@@ -13,25 +13,12 @@ body {
 <script>
   promise_test(async t => {
     assert_implements(window.PerformanceContainerTiming, "PerformanceContainerTiming is not implemented");
-    // Add a div that is the container timing root
-    const div = document.createElement('div');
-    div.setAttribute('containertiming', 'div_ct');
-    document.body.appendChild(div);
-
-    // Add two overlapping images
-    const img1 = document.createElement('img');
-    img1.src = '/container-timing/resources/square100.png';
-    img1.setAttribute('id', 'img1_id');
-    img1.style.position = 'absolute';
-    div.appendChild(img1);
-
-    const img2 = document.createElement('img');
-    img2.src = '/container-timing/resources/square100.png';
-    img2.setAttribute('id', 'img2_id');
-    img2.style.marginLeft = '50px';
-    img2.style.marginTop = '50px';
-    img2.style.position = 'absolute';
-    div.appendChild(img2);
+    const div = addContainerRoot(document.body, 'div_ct');
+    addSquare100Image(div, {id: 'img1_id', style: 'position: absolute;'});
+    addSquare100Image(div, {
+      id: 'img2_id',
+      style: 'margin-left: 50px; margin-top: 50px; position: absolute;'
+    });
 
     const beforeRender = performance.now();
 

@@ -23,12 +23,8 @@ body {
       preload.onload = resolve;
       preload.src = IMAGE_URL;
     });
-
-    const img = document.createElement('img');
-    img.src = IMAGE_URL;
-    img.setAttribute('containertiming', 'image_ct');
-    img.setAttribute('id', 'my_id');
-    document.body.appendChild(img);
+    addElement(document.body, 'img',
+               {src: IMAGE_URL, containertiming: 'image_ct', id: 'my_id'});
     const beforeRender = performance.now();
 
     const entries = await getContainerEntries(t);

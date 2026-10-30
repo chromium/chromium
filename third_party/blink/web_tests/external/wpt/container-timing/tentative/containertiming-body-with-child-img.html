@@ -13,11 +13,7 @@ body {
 <script>
   promise_test(async t => {
     assert_implements(window.PerformanceContainerTiming, "PerformanceContainerTiming is not implemented");
-    // Add image of width equal to 100 and height equal to 100.
-    const img = document.createElement('img');
-    img.src = '/container-timing/resources/square100.png';
-    img.setAttribute('id', 'img_id');
-    document.body.appendChild(img);
+    addSquare100Image(document.body, {id: 'img_id'});
 
     const beforeRender = performance.now();
 

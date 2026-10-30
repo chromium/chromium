@@ -13,21 +13,17 @@ body {
 <script>
   promise_test(async t => {
     assert_implements(window.PerformanceContainerTiming, "PerformanceContainerTiming is not implemented");
-    // Outer containertiming root.
-    const outer = document.createElement('div');
-    outer.setAttribute('containertiming', 'outer_ct');
-    document.body.appendChild(outer);
+    const outer = addContainerRoot(document.body, 'outer_ct');
 
     // Image that is itself a container timing root and has
     // containertimingignore set. The ignore must prevent the image's paint
     // from propagating to the outer containertiming root, but the image
     // itself must still report under its own root.
-    const img = document.createElement('img');
-    img.src = '/container-timing/resources/square100.png';
-    img.setAttribute('containertiming', 'image_ct');
-    img.setAttribute('containertimingignore', '');
-    img.setAttribute('id', 'my_id');
-    outer.appendChild(img);
+    addSquare100Image(outer, {
+      containertiming: 'image_ct',
+      containertimingignore: '',
+      id: 'my_id'
+    });
 
     const beforeRender = performance.now();
 
