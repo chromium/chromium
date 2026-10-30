@@ -4,46 +4,45 @@
 
 #include "chrome/browser/ash/extensions/file_manager/search_by_pattern.h"
 
+#include <algorithm>
+#include <string>
+#include <string_view>
+#include <utility>
+#include <vector>
+
 #include "base/files/file_enumerator.h"
-#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/fileapi/recent_disk_source.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 namespace extensions {
 
-std::string CreateFnmatchQuery(const std::string& query) {
-  std::vector<std::string> query_pieces = {"*"};
-  size_t sequence_start = 0;
-  for (size_t i = 0; i < query.size(); ++i) {
-    if (absl::ascii_isalpha(static_cast<unsigned char>(query[i]))) {
-      if (sequence_start != i) {
-        query_pieces.push_back(
-            query.substr(sequence_start, i - sequence_start));
-      }
-      std::string piece("[");
-      piece.resize(4);
-      piece[1] = absl::ascii_tolower(static_cast<unsigned char>(query[i]));
-      piece[2] = absl::ascii_toupper(static_cast<unsigned char>(query[i]));
-      piece[3] = ']';
-      query_pieces.push_back(std::move(piece));
-      sequence_start = i + 1;
-    }
-  }
-  if (sequence_start != query.size()) {
-    query_pieces.push_back(query.substr(sequence_start));
-  }
-  if (query_pieces.size() > 1) {
-    query_pieces.push_back("*");
+std::string CreateFnmatchQuery(std::string_view query) {
+  if (query.empty()) {
+    return "*";
   }
 
-  return base::StrCat(query_pieces);
+  const size_t alpha_count = std::ranges::count_if(
+      query, [](unsigned char c) { return absl::ascii_isalpha(c); });
+  std::string fnmatch_query;
+  fnmatch_query.reserve(query.size() + 3 * alpha_count + 2);
+  fnmatch_query.push_back('*');
+  for (unsigned char c : query) {
+    if (absl::ascii_isalpha(c)) {
+      fnmatch_query.append(
+          {'[', absl::ascii_tolower(c), absl::ascii_toupper(c), ']'});
+    } else {
+      fnmatch_query.push_back(static_cast<char>(c));
+    }
+  }
+  fnmatch_query.push_back('*');
+  return fnmatch_query;
 }
 
 std::vector<std::pair<base::FilePath, bool>> SearchByPattern(
     const base::FilePath& root,
     const std::vector<base::FilePath>& excluded_paths,
-    const std::string& query,
+    std::string_view query,
     const base::Time& min_timestamp,
     ash::RecentSource::FileType file_type,
     size_t max_results) {

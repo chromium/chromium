@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/extensions/file_manager/search_by_pattern.h"
+
 #include <stddef.h>
 #include <stdint.h>
 
-#include <string>
+#include <array>
+#include <string_view>
 #include <vector>
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/extensions/file_manager/search_by_pattern.h"
 #include "chrome/browser/ash/fileapi/recent_source.h"
 
 /**
@@ -38,8 +40,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // Create files in the temp_dir, as otherwise SearchByPattern will never use
   // the query (it only uses it when matching against files it found).
   base::FilePath test_dir = temp_dir.GetPath();
-  std::vector<std::string> file_names = {"foo.txt", "bar.exe"};
-  for (const auto& name : file_names) {
+  static constexpr auto kFileNames =
+      std::to_array<std::string_view>({"foo.txt", "bar.exe"});
+  for (std::string_view name : kFileNames) {
     base::FilePath file_path = test_dir.Append(name);
     if (!CreateTestFile(file_path)) {
       LOG(ERROR) << "Failed to create file \"" << file_path.MaybeAsASCII()
@@ -50,13 +53,13 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   }
 
   base::Time min_modified_time = base::Time::UnixEpoch();
-  std::string query = std::string(reinterpret_cast<const char*>(data), size);
+  std::string_view query(reinterpret_cast<const char*>(data), size);
 
   // Searching by fuzzed query. Using most broad parameters, excluding no paths,
   // accepting files of any time with modified date after 1 Jan 1970.
   std::vector<base::FilePath> excluded_path;
   extensions::SearchByPattern(test_dir, excluded_path, query, min_modified_time,
                               ash::RecentSource::FileType::kAll,
-                              file_names.size());
+                              kFileNames.size());
   return 0;
 }

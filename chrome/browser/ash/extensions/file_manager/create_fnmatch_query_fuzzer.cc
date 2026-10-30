@@ -5,12 +5,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <string>
+#include <string_view>
 
 #include "chrome/browser/ash/extensions/file_manager/search_by_pattern.h"
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  std::string str = std::string(reinterpret_cast<const char*>(data), size);
-  extensions::CreateFnmatchQuery(str);
+  extensions::CreateFnmatchQuery({reinterpret_cast<const char*>(data), size});
   return 0;
 }

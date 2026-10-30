@@ -9,6 +9,8 @@
 // matching is applied to file names only.
 
 #include <string>
+#include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -19,7 +21,7 @@ namespace extensions {
 
 // Construct a case-insensitive fnmatch query from |query|. E.g.  for abc123,
 // the result would be *[aA][bB][cC]123*.
-std::string CreateFnmatchQuery(const std::string& query);
+std::string CreateFnmatchQuery(std::string_view query);
 
 // For the given root it attempts to find files that have name matching the
 // given pattern, are not in folders whose paths are anywhere on the
@@ -31,7 +33,7 @@ std::string CreateFnmatchQuery(const std::string& query);
 std::vector<std::pair<base::FilePath, bool>> SearchByPattern(
     const base::FilePath& root,
     const std::vector<base::FilePath>& excluded_paths,
-    const std::string& query,
+    std::string_view query,
     const base::Time& min_timestamp,
     ash::RecentSource::FileType file_type,
     size_t max_results);
