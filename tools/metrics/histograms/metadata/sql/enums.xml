@@ -44,7 +44,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="kPragmaJournalFailed"/>
 </enum>
 
-<!-- LINT.ThenChange(//sql/database.cc:OpenDatabaseFailedReason) -->
+<!-- LINT.ThenChange(//sql/database.h:OpenFailedReason) -->
 
 <!-- LINT.IfChange(RazeDatabaseFailedReason) -->
 
@@ -63,7 +63,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="kCheckpointFailed"/>
 </enum>
 
-<!-- LINT.ThenChange(//sql/database.cc:RazeDatabaseFailedReason) -->
+<!-- LINT.ThenChange(//sql/database.h:RazeFailedReason) -->
 
 <!-- LINT.IfChange(SqlMigrationBlockResult) -->
 

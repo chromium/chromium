@@ -1093,7 +1093,9 @@ TEST_P(SQLDatabaseTest, RazeFailedOnPoisoned) {
 
   base::HistogramTester tester;
   EXPECT_FALSE(db_->Raze());
-  tester.ExpectTotalCount("Sql.Database.Raze.FailureReason.Test", 1);
+  tester.ExpectUniqueSample("Sql.Database.Raze.FailureReason.Test",
+                            Database::RazeFailedReason::kPoisoned,
+                            /*expected_bucket_count=*/1);
 }
 
 TEST_P(SQLDatabaseTest, RazeDuringSelect) {
@@ -2719,7 +2721,9 @@ TEST_P(SQLDatabaseTest, OpenFails_WindowsExclusiveReadMode) {
   expecter.ExpectError(SQLITE_CANTOPEN);
   ASSERT_FALSE(db_->Open(db_path_));
   ASSERT_TRUE(expecter.SawExpectedErrors());
-  tester.ExpectTotalCount("Sql.Database.Open.FailureReason.Test", 1);
+  tester.ExpectUniqueSample("Sql.Database.Open.FailureReason.Test",
+                            Database::OpenFailedReason::kSqliteOpenFailed,
+                            /*expected_bucket_count=*/1);
   db_->Close();
 
   file.Close();
@@ -2740,7 +2744,9 @@ TEST_P(SQLDatabaseTest, OpenFails_WindowsExclusiveWriteMode) {
   expecter.ExpectError(SQLITE_READONLY);
   ASSERT_FALSE(db_->Open(db_path_));
   ASSERT_TRUE(expecter.SawExpectedErrors());
-  tester.ExpectTotalCount("Sql.Database.Open.FailureReason.Test", 1);
+  tester.ExpectUniqueSample("Sql.Database.Open.FailureReason.Test",
+                            Database::OpenFailedReason::kSqliteOpenFailed,
+                            /*expected_bucket_count=*/1);
   db_->Close();
 
   file.Close();
@@ -2761,7 +2767,9 @@ TEST_P(SQLDatabaseTest, OpenFails_ExclusiveLock) {
     expecter.ExpectError(SQLITE_IOERR_READ);
     ASSERT_FALSE(db_->Open(db_path_));
     ASSERT_TRUE(expecter.SawExpectedErrors());
-    tester.ExpectTotalCount("Sql.Database.Open.FailureReason.Test", 1);
+    tester.ExpectUniqueSample("Sql.Database.Open.FailureReason.Test",
+                              Database::OpenFailedReason::kSqliteOpenFailed,
+                              /*expected_bucket_count=*/1);
     db_->Close();
   }
 

@@ -207,52 +207,17 @@ std::string AsUTF8ForSQL(const base::FilePath& path) {
 #endif
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(OpenDatabaseFailedReason)
-enum class OpenDatabaseFailedReason {
-  kAlreadyOpened = 0,
-  kIncorrectPath = 1,
-  kSqliteOpenFailed = 2,
-  kLockingModeFailed = 3,
-  kMetadataLoadingFailed = 4,
-  kPageSizeFailed = 5,
-  kPragmaSynchronousFailed = 6,
-  kPragmaJournalFailed = 7,
-  kMaxValue = kPragmaJournalFailed
-};
-
-// LINT.ThenChange(//tools/metrics/histograms/metadata/sql/enums.xml:OpenDatabaseFailedReason)
 // Reports the reason for a failure in Database::Open(...).
 void RecordOpenDatabaseFailureReason(const std::string& histogram_tag,
-                                     OpenDatabaseFailedReason reason) {
+                                     Database::OpenFailedReason reason) {
   base::UmaHistogramEnumeration(
       base::StrCat({"Sql.Database.Open.FailureReason.", histogram_tag}),
       reason);
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(RazeDatabaseFailedReason)
-enum class RazeDatabaseFailedReason {
-  kPoisoned = 0,
-  kPendingTransaction = 1,
-  kCantOpenInMemory = 2,
-  kAutoVacuumFailed = 3,
-  kSchemaFailed = 4,
-  kLocked = 5,
-  kTruncateFailed = 6,
-  kBackupFailed = 7,
-  kPageSizeFailed = 8,
-  kUnknownError = 9,
-  kCheckpointFailed = 10,
-  kMaxValue = kCheckpointFailed
-};
-
-// LINT.ThenChange(//tools/metrics/histograms/metadata/sql/enums.xml:RazeDatabaseFailedReason)
 // Reports the reason for a failure in Database::Raze(...).
 void RecordRazeDatabaseFailureReason(const std::string& histogram_tag,
-                                     RazeDatabaseFailedReason reason) {
+                                     Database::RazeFailedReason reason) {
   base::UmaHistogramEnumeration(
       base::StrCat({"Sql.Database.Raze.FailureReason.", histogram_tag}),
       reason);
@@ -1100,14 +1065,14 @@ bool Database::RazeInternal() {
   if (!db_) {
     DCHECK(poisoned_) << "Cannot raze null db";
     RecordRazeDatabaseFailureReason(histogram_tag_,
-                                    RazeDatabaseFailedReason::kPoisoned);
+                                    RazeFailedReason::kPoisoned);
     return false;
   }
 
   DCHECK_GE(transaction_nesting_, 0);
   if (transaction_nesting_ > 0) {
-    RecordRazeDatabaseFailureReason(
-        histogram_tag_, RazeDatabaseFailedReason::kPendingTransaction);
+    RecordRazeDatabaseFailureReason(histogram_tag_,
+                                    RazeFailedReason::kPendingTransaction);
     return false;
   }
 
@@ -1118,8 +1083,8 @@ bool Database::RazeInternal() {
       "RazeNullDB");
   if (!null_db.OpenInMemory()) {
     DLOG(FATAL) << "Unable to open in-memory database.";
-    RecordRazeDatabaseFailureReason(
-        histogram_tag_, RazeDatabaseFailedReason::kCantOpenInMemory);
+    RecordRazeDatabaseFailureReason(histogram_tag_,
+                                    RazeFailedReason::kCantOpenInMemory);
     return false;
   }
 
@@ -1131,8 +1096,8 @@ bool Database::RazeInternal() {
   // would be to create an actual filesystem database, which is
   // unfortunate.
   if (!null_db.Execute("PRAGMA auto_vacuum = 1")) {
-    RecordRazeDatabaseFailureReason(
-        histogram_tag_, RazeDatabaseFailedReason::kAutoVacuumFailed);
+    RecordRazeDatabaseFailureReason(histogram_tag_,
+                                    RazeFailedReason::kAutoVacuumFailed);
     return false;
   }
 #endif
@@ -1146,7 +1111,7 @@ bool Database::RazeInternal() {
   // so that other readers see the schema change and act accordingly.
   if (!null_db.Execute("PRAGMA schema_version = 1")) {
     RecordRazeDatabaseFailureReason(histogram_tag_,
-                                    RazeDatabaseFailedReason::kSchemaFailed);
+                                    RazeFailedReason::kSchemaFailed);
     return false;
   }
 
@@ -1175,8 +1140,7 @@ bool Database::RazeInternal() {
 
   // The destination database was locked.
   if (sqlite_result_code == SqliteResultCode::kBusy) {
-    RecordRazeDatabaseFailureReason(histogram_tag_,
-                                    RazeDatabaseFailedReason::kLocked);
+    RecordRazeDatabaseFailureReason(histogram_tag_, RazeFailedReason::kLocked);
     return false;
   }
 
@@ -1191,8 +1155,8 @@ bool Database::RazeInternal() {
     sqlite3_file* file = GetSqliteVfsFile();
     if (!file || file->pMethods->xTruncate(file, 0) != SQLITE_OK) {
       DLOG(FATAL) << "Failed to truncate file.";
-      RecordRazeDatabaseFailureReason(
-          histogram_tag_, RazeDatabaseFailedReason::kTruncateFailed);
+      RecordRazeDatabaseFailureReason(histogram_tag_,
+                                      RazeFailedReason::kTruncateFailed);
       return false;
     }
 
@@ -1200,7 +1164,7 @@ bool Database::RazeInternal() {
         BackupDatabaseForRaze(null_db.db(InternalApiToken()), db_);
     if (sqlite_result_code != SqliteResultCode::kDone) {
       RecordRazeDatabaseFailureReason(histogram_tag_,
-                                      RazeDatabaseFailedReason::kBackupFailed);
+                                      RazeFailedReason::kBackupFailed);
       return false;
     }
   }
@@ -1214,8 +1178,8 @@ bool Database::RazeInternal() {
     const std::string page_size_sql = base::StrCat(
         {"PRAGMA page_size=", base::NumberToString(options_.page_size_)});
     if (!Execute(page_size_sql)) {
-      RecordRazeDatabaseFailureReason(
-          histogram_tag_, RazeDatabaseFailedReason::kPageSizeFailed);
+      RecordRazeDatabaseFailureReason(histogram_tag_,
+                                      RazeFailedReason::kPageSizeFailed);
       return false;
     }
     // Page size isn't changed until the database is vacuumed.
@@ -1229,7 +1193,7 @@ bool Database::RazeInternal() {
         BackupDatabaseForRaze(null_db.db(InternalApiToken()), db_);
     if (sqlite_result_code != SqliteResultCode::kDone) {
       RecordRazeDatabaseFailureReason(histogram_tag_,
-                                      RazeDatabaseFailedReason::kBackupFailed);
+                                      RazeFailedReason::kBackupFailed);
 
       return false;
     }
@@ -1239,7 +1203,7 @@ bool Database::RazeInternal() {
     NOTIMPLEMENTED() << "Unhandled sqlite3_backup_step() error: "
                      << sqlite_result_code;
     RecordRazeDatabaseFailureReason(histogram_tag_,
-                                    RazeDatabaseFailedReason::kUnknownError);
+                                    RazeFailedReason::kUnknownError);
     base::UmaHistogramSparse(
         base::StrCat(
             {"Sql.Database.Raze.UnhandledErrorCode.", histogram_tag()}),
@@ -1252,8 +1216,8 @@ bool Database::RazeInternal() {
   // The database can still contain old data if the Checkpoint fails so fail the
   // Raze.
   if (!CheckpointDatabase()) {
-    RecordRazeDatabaseFailureReason(
-        histogram_tag_, RazeDatabaseFailedReason::kCheckpointFailed);
+    RecordRazeDatabaseFailureReason(histogram_tag_,
+                                    RazeFailedReason::kCheckpointFailed);
     return false;
   }
 
@@ -2140,7 +2104,7 @@ bool Database::OpenInternal(const std::string& db_file_path) {
   if (is_open()) {
     DLOG(FATAL) << "sql::Database is already open.";
     RecordOpenDatabaseFailureReason(histogram_tag_,
-                                    OpenDatabaseFailedReason::kAlreadyOpened);
+                                    OpenFailedReason::kAlreadyOpened);
     return false;
   }
 
@@ -2180,8 +2144,8 @@ bool Database::OpenInternal(const std::string& db_file_path) {
     if (!in_memory) {
       // Do not allow query injection.
       if (db_file_path.contains('?')) {
-        RecordOpenDatabaseFailureReason(
-            histogram_tag_, OpenDatabaseFailedReason::kIncorrectPath);
+        RecordOpenDatabaseFailureReason(histogram_tag_,
+                                        OpenFailedReason::kIncorrectPath);
         return false;
       }
       open_flags |= SQLITE_OPEN_URI;
@@ -2238,8 +2202,8 @@ bool Database::OpenInternal(const std::string& db_file_path) {
       sqlite3_close(db);
     }
 
-    RecordOpenDatabaseFailureReason(
-        histogram_tag_, OpenDatabaseFailedReason::kSqliteOpenFailed);
+    RecordOpenDatabaseFailureReason(histogram_tag_,
+                                    OpenFailedReason::kSqliteOpenFailed);
     MaybeReportErrorDuringOpen(sqlite_result_code);
     OnSqliteError(ToSqliteErrorCode(sqlite_result_code), nullptr,
                   "-- sqlite3_open_v2()");
@@ -2258,8 +2222,8 @@ bool Database::OpenInternal(const std::string& db_file_path) {
       "Chrome assumes SQLite is configured to default to EXCLUSIVE locking");
   if (!options_.exclusive_locking_) {
     if (!Execute("PRAGMA locking_mode=NORMAL")) {
-      RecordOpenDatabaseFailureReason(
-          histogram_tag_, OpenDatabaseFailedReason::kLockingModeFailed);
+      RecordOpenDatabaseFailureReason(histogram_tag_,
+                                      OpenFailedReason::kLockingModeFailed);
       return false;
     }
   }
@@ -2293,8 +2257,8 @@ bool Database::OpenInternal(const std::string& db_file_path) {
       MaybeReportErrorDuringOpen(sqlite_result_code);
       OnSqliteError(ToSqliteErrorCode(sqlite_result_code), nullptr,
                     "-- sqlite3_table_column_metadata()");
-      RecordOpenDatabaseFailureReason(
-          histogram_tag_, OpenDatabaseFailedReason::kMetadataLoadingFailed);
+      RecordOpenDatabaseFailureReason(histogram_tag_,
+                                      OpenFailedReason::kMetadataLoadingFailed);
       return false;
     }
   }
@@ -2310,8 +2274,8 @@ bool Database::OpenInternal(const std::string& db_file_path) {
     const std::string page_size_sql =
         base::StringPrintf("PRAGMA page_size=%d", options_.page_size_);
     if (!ExecuteWithTimeout(page_size_sql, kBusyTimeout)) {
-      RecordOpenDatabaseFailureReason(
-          histogram_tag_, OpenDatabaseFailedReason::kPageSizeFailed);
+      RecordOpenDatabaseFailureReason(histogram_tag_,
+                                      OpenFailedReason::kPageSizeFailed);
       return false;
     }
 
@@ -2338,7 +2302,7 @@ bool Database::OpenInternal(const std::string& db_file_path) {
                        ? base::cstring_view("PRAGMA synchronous=OFF")
                        : base::cstring_view("PRAGMA synchronous=NORMAL"))) {
         RecordOpenDatabaseFailureReason(
-            histogram_tag_, OpenDatabaseFailedReason::kPragmaSynchronousFailed);
+            histogram_tag_, OpenFailedReason::kPragmaSynchronousFailed);
         return false;
       }
     }
@@ -2358,8 +2322,8 @@ bool Database::OpenInternal(const std::string& db_file_path) {
       // Opening the db in WAL mode can fail (eg if the underlying VFS doesn't
       // support shared memory and we are not in exclusive locking mode).
       if (!Execute("PRAGMA journal_mode=WAL")) {
-        RecordOpenDatabaseFailureReason(
-            histogram_tag_, OpenDatabaseFailedReason::kPragmaJournalFailed);
+        RecordOpenDatabaseFailureReason(histogram_tag_,
+                                        OpenFailedReason::kPragmaJournalFailed);
         return false;
       }
 
@@ -2386,8 +2350,8 @@ bool Database::OpenInternal(const std::string& db_file_path) {
       // [1]: https://crbug.com/493008
       // [2]: https://www.sqlite.org/pragma.html#pragma_journal_mode
       if (!Execute("PRAGMA journal_mode=TRUNCATE")) {
-        RecordOpenDatabaseFailureReason(
-            histogram_tag_, OpenDatabaseFailedReason::kPragmaJournalFailed);
+        RecordOpenDatabaseFailureReason(histogram_tag_,
+                                        OpenFailedReason::kPragmaJournalFailed);
         return false;
       }
     }

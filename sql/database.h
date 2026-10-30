@@ -422,6 +422,41 @@ class COMPONENT_EXPORT(SQL) Database {
   class StatementRef;  // Forward declaration, see real one below.
 
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(OpenFailedReason)
+  enum class OpenFailedReason {
+    kAlreadyOpened = 0,
+    kIncorrectPath = 1,
+    kSqliteOpenFailed = 2,
+    kLockingModeFailed = 3,
+    kMetadataLoadingFailed = 4,
+    kPageSizeFailed = 5,
+    kPragmaSynchronousFailed = 6,
+    kPragmaJournalFailed = 7,
+    kMaxValue = kPragmaJournalFailed
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/sql/enums.xml:OpenDatabaseFailedReason)
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(RazeFailedReason)
+  enum class RazeFailedReason {
+    kPoisoned = 0,
+    kPendingTransaction = 1,
+    kCantOpenInMemory = 2,
+    kAutoVacuumFailed = 3,
+    kSchemaFailed = 4,
+    kLocked = 5,
+    kTruncateFailed = 6,
+    kBackupFailed = 7,
+    kPageSizeFailed = 8,
+    kUnknownError = 9,
+    kCheckpointFailed = 10,
+    kMaxValue = kCheckpointFailed
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/sql/enums.xml:RazeDatabaseFailedReason)
+
   // A convenience struct to
   // 1. Convert (often implicitly) a static const char* string to a database tag
   // to pass to the Database constructors
