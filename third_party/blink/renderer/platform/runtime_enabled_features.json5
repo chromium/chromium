@@ -4392,7 +4392,7 @@
     {
       // Enables MathMLAnchorElement
       name: "MathMLAnchorElement",
-      status: "test",
+      status: "experimental",
     },
     {
       // Enables mirroring for stretchy and large MathML operators when
