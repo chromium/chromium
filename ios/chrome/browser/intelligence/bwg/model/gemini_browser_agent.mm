@@ -1631,16 +1631,19 @@ void GeminiBrowserAgent::ShowFloatyIfInvoked(
     return;
   }
 
-  // Web navigations should not be seen as a transition as an old WebState can
-  // be hidden quickly followed by a new WebState being shown where
-  // hiding/showing the floaty are valid invocations.
+  // Web navigations, context menu dismissals, and keyboard dismissals should
+  // not be treated as view transitions: these dismissals can occur quickly
+  // after presentation (e.g. rapid omnibox focus/defocus), and the floaty must
+  // be restored to avoid leaving it permanently hidden.
   bool is_web_navigation = source == gemini::FloatyUpdateSource::WebNavigation;
   bool is_context_menu = source == gemini::FloatyUpdateSource::ContextMenu;
+  bool is_keyboard = source == gemini::FloatyUpdateSource::Keyboard;
 
   GeminiTabHelper* gemini_tab_helper = GetActiveTabHelper();
   bool should_block =
       gemini_tab_helper && gemini_tab_helper->ShouldBlockFloatyFromShowing();
-  if ((!is_web_navigation && !is_context_menu && triggered_during_transition) ||
+  if ((!is_web_navigation && !is_context_menu && !is_keyboard &&
+       triggered_during_transition) ||
       should_block) {
     return;
   }

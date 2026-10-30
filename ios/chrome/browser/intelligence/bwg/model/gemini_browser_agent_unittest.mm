@@ -736,6 +736,22 @@ TEST_F(GeminiBrowserAgentTest, TestShowFloatyIfInvokedWithWebNavigation) {
   EXPECT_EQ(ios::provider::GeminiViewState::kExpanded, GetLastShownViewState());
 }
 
+// Tests that a floaty is shown regardless of transition time when the source is
+// from keyboard dismissal.
+TEST_F(GeminiBrowserAgentTest, TestShowFloatyIfInvokedWithKeyboard) {
+  SetIsFloatyInvoked(true);
+  gemini_browser_agent_->HideFloatyIfInvoked(
+      /*animated=*/false, /*source=*/gemini::FloatyUpdateSource::Keyboard);
+  gemini_browser_agent_->SetLastShownViewState(
+      ios::provider::GeminiViewState::kExpanded);
+
+  gemini_browser_agent_->ShowFloatyIfInvoked(
+      /*animated=*/false, /*source=*/gemini::FloatyUpdateSource::Keyboard);
+
+  EXPECT_FALSE(IsFloatyTemporarilyHidden());
+  EXPECT_EQ(ios::provider::GeminiViewState::kExpanded, GetLastShownViewState());
+}
+
 // Tests if a floaty is shown during a simulated view controller transition.
 TEST_F(GeminiBrowserAgentTest,
        TestShowFloatyIfInvokedDuringViewControllerTransition) {
