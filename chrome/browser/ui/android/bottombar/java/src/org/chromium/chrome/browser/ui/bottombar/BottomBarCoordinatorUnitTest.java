@@ -581,13 +581,20 @@ public class BottomBarCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_BOTTOM_BAR,
+        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":education_enabled/false"
+    })
     public void testMaybeClaimPromoSlotForEducation_EducationDisabled_ReturnsFalse() {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mTab.isOffTheRecord()).thenReturn(false);
         mTabSupplier.set(mTab);
 
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+
+        when(mTracker.isInitialized()).thenReturn(true);
+        when(mTracker.wouldTriggerHelpUi(FeatureConstants.ANDROID_BOTTOM_BAR_EDUCATION))
+                .thenReturn(true);
 
         assertFalse(mCoordinator.maybeClaimPromoSlotForEducation(mProfile));
     }

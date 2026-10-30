@@ -2084,7 +2084,7 @@ public abstract class ChromeFeatureList {
             newBooleanCachedFeatureParam(
                     ANDROID_BOTTOM_BAR, "education_address_bar_iph_enabled", false);
     public static final BooleanCachedFeatureParam sAndroidBottomBarEducationEnabled =
-            newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "education_enabled", false);
+            newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "education_enabled", true);
     public static final BooleanCachedFeatureParam sAndroidBottomBarEducationGeminiFocused =
             newBooleanCachedFeatureParam(ANDROID_BOTTOM_BAR, "education_gemini_focused", false);
     public static final BooleanCachedFeatureParam sAndroidBottomBarKeepAppMenuInToolbar =
