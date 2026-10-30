@@ -119,7 +119,7 @@ base::ListValue GetConfigurableSidePanelAlignments(Profile* profile) {
     switch (*id) {
       case SidePanelEntryId::kContextualTasks:
         label = l10n_util::GetStringUTF16(
-            IDS_SETTINGS_SIDE_PANEL_ALIGNMENT_CONTEXTUAL_TASKS);
+            IDS_SETTINGS_SIDE_PANEL_ALIGNMENT_CONTEXTUAL_TASKS_GOOGLE_SEARCH);
         break;
       default:
         label = std::u16string(action_item->GetText());
