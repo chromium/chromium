@@ -28,8 +28,10 @@ source_set("email_verifier") {
     "//components/vector_icons",
     "//content/public/browser",
     "//net",
+    "//skia",
     "//ui/base",
     "//ui/gfx",
+    "//ui/gfx/codec",
   ]
 }
 
@@ -45,5 +47,9 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//components/favicon/core",
     "//components/favicon/core/test:test_support",
+    "//components/favicon_base",
+    "//ui/base",
+    "//ui/display",
+    "//ui/gfx",
   ]
 }

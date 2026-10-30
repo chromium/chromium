@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/numerics/safe_conversions.h"
 #include "chrome/browser/favicon/large_icon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/email_verifier/email_verification_popup_controller.h"
@@ -21,15 +22,19 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/layout.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -104,11 +109,23 @@ EmailVerificationPopupViewImpl::EmailVerificationPopupViewImpl(
         controller->GetWebContents()->GetBrowserContext());
     if (auto* favicon_service =
             LargeIconServiceFactory::GetForBrowserContext(profile)) {
+      // Request the favicon at the physical pixel size needed to render
+      // `kDesiredIconSize` DIPs crisply on the current display (e.g. 40px on a
+      // 2x display). `GetIconRawBitmapOrFallbackStyleForPageUrl()` never
+      // upscales: it only returns a bitmap if the stored icon is at least
+      // `desired_size_in_pixel` (downscaling larger ones), and otherwise
+      // returns just a fallback style, in which case the static email-verified
+      // icon above is kept.
+      const float device_scale_factor =
+          parent_widget
+              ? ui::GetScaleFactorForNativeView(parent_widget->GetNativeView())
+              : 1.0f;
       favicon_service->GetIconRawBitmapOrFallbackStyleForPageUrl(
           issuer_origin.GetURL(),
-          /*desired_size_in_pixel=*/kDesiredIconSize,
+          /*desired_size_in_pixel=*/
+          base::ClampCeil(kDesiredIconSize * device_scale_factor),
           base::BindOnce(&EmailVerificationPopupViewImpl::OnFaviconLoaded,
-                         weak_ptr_factory_.GetWeakPtr()),
+                         weak_ptr_factory_.GetWeakPtr(), device_scale_factor),
           &favicon_task_tracker_);
     }
   }
@@ -255,12 +272,19 @@ void EmailVerificationPopupViewImpl::OnCancel(const ui::Event& event) {
 }
 
 void EmailVerificationPopupViewImpl::OnFaviconLoaded(
+    float device_scale_factor,
     favicon_base::LargeIconResult result) {
-  if (result.bitmap.is_valid() && icon_view_) {
-    gfx::Image image =
-        gfx::Image::CreateFrom1xPNGBytes(result.bitmap.bitmap_data);
-    icon_view_->SetImage(ui::ImageModel::FromImage(image));
+  if (!icon_view_ || !result.bitmap.is_valid()) {
+    return;
   }
+  SkBitmap bitmap = gfx::PNGCodec::Decode(*result.bitmap.bitmap_data);
+  if (bitmap.isNull()) {
+    return;
+  }
+  // Tag the bitmap with the device scale factor it was requested for so that it
+  // maps to `kDesiredIconSize` DIPs without being upscaled.
+  icon_view_->SetImage(ui::ImageModel::FromImageSkia(
+      gfx::ImageSkia::CreateFromBitmap(bitmap, device_scale_factor)));
 }
 
 BEGIN_METADATA(EmailVerificationPopupViewImpl)

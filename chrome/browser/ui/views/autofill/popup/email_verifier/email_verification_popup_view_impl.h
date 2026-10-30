@@ -84,7 +84,10 @@ class EmailVerificationPopupViewImpl : public EmailVerificationPopupView,
   void Show();
   void OnConfirm(const ui::Event& event);
   void OnCancel(const ui::Event& event);
-  void OnFaviconLoaded(favicon_base::LargeIconResult result);
+  // Called with the issuer favicon, which was requested at `kDesiredIconSize`
+  // DIPs times `device_scale_factor` of the display the popup is shown on.
+  void OnFaviconLoaded(float device_scale_factor,
+                       favicon_base::LargeIconResult result);
 
   base::OnceCallback<void(bool)> callback_;
   views::InputEventActivationProtector input_protector_;

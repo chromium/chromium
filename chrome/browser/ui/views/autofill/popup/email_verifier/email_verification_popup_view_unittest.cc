@@ -5,11 +5,13 @@
 #include "chrome/browser/ui/autofill/email_verifier/email_verification_popup_view.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/scoped_command_line.h"
 #include "chrome/browser/favicon/large_icon_service_factory.h"
 #include "chrome/browser/ui/autofill/email_verifier/email_verification_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/email_verifier/email_verification_popup_view_impl.h"
@@ -17,6 +19,7 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon/core/test/mock_large_icon_service.h"
+#include "components/favicon_base/fallback_icon_style.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -25,10 +28,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
+#include "ui/display/display.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -147,17 +154,37 @@ TEST_F(EmailVerificationPopupViewTest, ShowLoadingStateRealView) {
   view->GetWidget()->CloseNow();
 }
 
-// Tests that the popup requests the favicon using the full `issuer_origin` URL
-// (preserving subdomains) via `GetIconRawBitmapOrFallbackStyleForPageUrl` and
-// updates the headline icon when the bitmap loads.
-TEST_F(EmailVerificationPopupViewTest, LoadsFaviconUsingIssuerOrigin) {
-  auto* mock_large_icon_service = static_cast<MockLargeIconService*>(
+// Returns a `LargeIconResult` holding a square PNG favicon of `size` pixels.
+favicon_base::LargeIconResult CreateFaviconResult(int size) {
+  gfx::Image test_image = gfx::test::CreateImage(size, size);
+  std::optional<std::vector<uint8_t>> encoded =
+      gfx::PNGCodec::EncodeBGRASkBitmap(*test_image.ToSkBitmap(),
+                                        /*discard_transparency=*/false);
+  favicon_base::FaviconRawBitmapResult bitmap_result;
+  bitmap_result.bitmap_data =
+      base::MakeRefCounted<base::RefCountedBytes>(std::move(encoded.value()));
+  bitmap_result.pixel_size = gfx::Size(size, size);
+  bitmap_result.icon_url = GURL("https://accounts.issuer.com/favicon.ico");
+  return favicon_base::LargeIconResult(bitmap_result);
+}
+
+// Installs a `MockLargeIconService` for `profile` and returns it.
+MockLargeIconService* SetUpMockLargeIconService(TestingProfile* profile) {
+  return static_cast<MockLargeIconService*>(
       LargeIconServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          &profile_,
+          profile,
           base::BindRepeating(
               [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
                 return std::make_unique<MockLargeIconService>();
               })));
+}
+
+// Tests that the popup requests the favicon using the full `issuer_origin` URL
+// (preserving subdomains) via `GetIconRawBitmapOrFallbackStyleForPageUrl` and
+// updates the headline icon when the bitmap loads.
+TEST_F(EmailVerificationPopupViewTest, LoadsFaviconUsingIssuerOrigin) {
+  MockLargeIconService* mock_large_icon_service =
+      SetUpMockLargeIconService(&profile_);
 
   favicon_base::LargeIconCallback saved_callback;
   EXPECT_CALL(*mock_large_icon_service,
@@ -177,18 +204,96 @@ TEST_F(EmailVerificationPopupViewTest, LoadsFaviconUsingIssuerOrigin) {
   EXPECT_TRUE(view->icon_view_for_testing()->GetImageModel().IsVectorIcon());
   ASSERT_TRUE(saved_callback);
 
-  gfx::Image test_image = gfx::test::CreateImage(20, 20);
-  std::optional<std::vector<uint8_t>> encoded =
-      gfx::PNGCodec::EncodeBGRASkBitmap(*test_image.ToSkBitmap(),
-                                        /*discard_transparency=*/false);
-  favicon_base::FaviconRawBitmapResult bitmap_result;
-  bitmap_result.bitmap_data =
-      base::MakeRefCounted<base::RefCountedBytes>(std::move(encoded.value()));
-  bitmap_result.pixel_size = gfx::Size(20, 20);
-  bitmap_result.icon_url = GURL("https://accounts.issuer.com/favicon.ico");
+  std::move(saved_callback).Run(CreateFaviconResult(20));
+  const ui::ImageModel& image_model =
+      view->icon_view_for_testing()->GetImageModel();
+  ASSERT_TRUE(image_model.IsImage());
+  EXPECT_EQ(image_model.Size(), gfx::Size(20, 20));
+  const gfx::ImageSkia image = image_model.GetImage().AsImageSkia();
+  ASSERT_TRUE(image.HasRepresentation(1.0f));
+  EXPECT_EQ(image.GetRepresentation(1.0f).pixel_size(), gfx::Size(20, 20));
+}
 
-  std::move(saved_callback).Run(favicon_base::LargeIconResult(bitmap_result));
-  EXPECT_TRUE(view->icon_view_for_testing()->GetImageModel().IsImage());
+// Tests that the static email-verified icon is kept if no big enough favicon is
+// available and only a fallback style is returned.
+TEST_F(EmailVerificationPopupViewTest, KeepsStaticIconIfNoFavicon) {
+  MockLargeIconService* mock_large_icon_service =
+      SetUpMockLargeIconService(&profile_);
+
+  favicon_base::LargeIconCallback saved_callback;
+  EXPECT_CALL(*mock_large_icon_service,
+              GetIconRawBitmapOrFallbackStyleForPageUrl(_, 20, _, _))
+      .WillOnce(MoveArgAndReturn<2>(&saved_callback,
+                                    base::CancelableTaskTracker::kBadTaskId));
+
+  auto controller =
+      std::make_unique<EmailVerificationPopupController>(web_contents());
+  auto view = std::make_unique<EmailVerificationPopupViewImpl>(
+      controller->GetWeakPtr(), widget_.get(),
+      url::Origin::Create(GURL("https://accounts.issuer.com")),
+      u"user@example.com", base::DoNothing());
+  ASSERT_TRUE(saved_callback);
+
+  std::move(saved_callback)
+      .Run(favicon_base::LargeIconResult(
+          std::make_unique<favicon_base::FallbackIconStyle>()));
+  EXPECT_TRUE(view->icon_view_for_testing()->GetImageModel().IsVectorIcon());
+}
+
+// Runs the popup on a display with a device scale factor of 2.
+class EmailVerificationPopupViewHighDpiTest
+    : public EmailVerificationPopupViewTest {
+ public:
+  void SetUp() override {
+    // The device scale factor must be forced before the test screen is
+    // created. `SetForceDeviceScaleFactor()` appends a command line switch, so
+    // scope the command line to this test.
+    scoped_command_line_.emplace();
+    display::Display::SetForceDeviceScaleFactor(2.0);
+    EmailVerificationPopupViewTest::SetUp();
+  }
+
+  void TearDown() override {
+    EmailVerificationPopupViewTest::TearDown();
+    // Restore the command line before resetting the cached forced device scale
+    // factor so that it is not re-read from the switch by later tests.
+    scoped_command_line_.reset();
+    display::Display::ResetForceDeviceScaleFactorForTesting();
+  }
+
+ private:
+  std::optional<base::test::ScopedCommandLine> scoped_command_line_;
+};
+
+// Tests that on a 2x display the favicon is requested at 40px and shown as a
+// 2x 40px bitmap in the 20 DIP headline icon, so it is not upscaled.
+TEST_F(EmailVerificationPopupViewHighDpiTest, LoadsFaviconAtDeviceScaleFactor) {
+  MockLargeIconService* mock_large_icon_service =
+      SetUpMockLargeIconService(&profile_);
+
+  favicon_base::LargeIconCallback saved_callback;
+  EXPECT_CALL(*mock_large_icon_service,
+              GetIconRawBitmapOrFallbackStyleForPageUrl(
+                  GURL("https://accounts.issuer.com/"), 40, _, _))
+      .WillOnce(MoveArgAndReturn<2>(&saved_callback,
+                                    base::CancelableTaskTracker::kBadTaskId));
+
+  auto controller =
+      std::make_unique<EmailVerificationPopupController>(web_contents());
+  auto view = std::make_unique<EmailVerificationPopupViewImpl>(
+      controller->GetWeakPtr(), widget_.get(),
+      url::Origin::Create(GURL("https://accounts.issuer.com")),
+      u"user@example.com", base::DoNothing());
+  ASSERT_TRUE(saved_callback);
+
+  std::move(saved_callback).Run(CreateFaviconResult(40));
+  const ui::ImageModel& image_model =
+      view->icon_view_for_testing()->GetImageModel();
+  ASSERT_TRUE(image_model.IsImage());
+  EXPECT_EQ(image_model.Size(), gfx::Size(20, 20));
+  const gfx::ImageSkia image = image_model.GetImage().AsImageSkia();
+  ASSERT_TRUE(image.HasRepresentation(2.0f));
+  EXPECT_EQ(image.GetRepresentation(2.0f).pixel_size(), gfx::Size(40, 40));
 }
 
 }  // namespace
