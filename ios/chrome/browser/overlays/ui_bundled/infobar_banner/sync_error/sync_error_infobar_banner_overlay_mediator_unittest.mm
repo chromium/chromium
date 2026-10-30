@@ -6,7 +6,6 @@
 
 #import <string>
 
-#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/infobars/core/infobar.h"
@@ -58,8 +57,6 @@ class SyncErrorInfobarBannerOverlayMediatorTest : public PlatformTest {
             profile_.get(), presenter_, primary_account_reauth_handler_,
             kTitleText, kMessageText, kButtonLabelText,
             /*use_icon_background_tint=*/true);
-    // Create an InfoBarIOS with a MockSyncErrorInfoBarDelegate.
-    delegate_ = delegate.get();
     infobar_ = std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeSyncError,
                                             std::move(delegate));
     // Package the infobar into an OverlayRequest, then create a mediator that
@@ -83,10 +80,13 @@ class SyncErrorInfobarBannerOverlayMediatorTest : public PlatformTest {
     }
   }
 
+  MockSyncErrorInfoBarDelegate& delegate() {
+    return *static_cast<MockSyncErrorInfoBarDelegate*>(infobar_->delegate());
+  }
+
  protected:
   id<SyncPresenterCommands> presenter_;
   id<PrimaryAccountReauthCommands> primary_account_reauth_handler_;
-  raw_ptr<MockSyncErrorInfoBarDelegate, DanglingUntriaged> delegate_ = nil;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestProfileIOS> profile_;
@@ -126,7 +126,7 @@ TEST_F(SyncErrorInfobarBannerOverlayMediatorTest, MainAction) {
   mediator_.consumer = consumer_mock_;
 
   // Verify that the 'Accept()' method is called.
-  EXPECT_CALL(*delegate_, Accept());
+  EXPECT_CALL(delegate(), Accept());
   [mediator_ bannerInfobarButtonWasPressed:nil];
 }
 
