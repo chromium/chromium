@@ -1229,11 +1229,21 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPromoInteractiveTest,
 }
 
 class ContextualTasksEphemeralButtonPinningV2PromoInteractiveTest
-    : public ContextualTasksEphemeralButtonPromoInteractiveTest {
+    : public ContextualTasksEphemeralButtonPromoInteractiveTestBase {
  public:
+  ContextualTasksEphemeralButtonPinningV2PromoInteractiveTest()
+      : ContextualTasksEphemeralButtonPromoInteractiveTestBase(
+            UseDefaultTrackerAllowingPromos(
+                {feature_engagement::
+                     kIPHContextualTasksEphemeralToolbarButtonFeature,
+                 feature_engagement::
+                     kIPHSidePanelContextualTasksPinnableFeature})) {}
+  ~ContextualTasksEphemeralButtonPinningV2PromoInteractiveTest() override =
+      default;
+
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures() override {
     std::vector<base::test::FeatureRefAndParams> enabled_features =
-        ContextualTasksEphemeralButtonPromoInteractiveTest::
+        ContextualTasksEphemeralButtonPromoInteractiveTestBase::
             GetEnabledFeatures();
     enabled_features.push_back(
         {contextual_tasks::kContextualTasksPinningV2, {}});
@@ -1272,6 +1282,33 @@ IN_PROC_BROWSER_TEST_F(
       PressButton(kContextualTasksEphemeralToolbarButtonElementId),
       WaitForHide(
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksEphemeralButtonPinningV2PromoInteractiveTest,
+    AbortsPinningPromoWhenSidePanelCloses) {
+  RunTestSequence(
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
+      AddInstrumentedTab(kSecondTab, GetTestURL()),
+      SelectTab(kTabStripElementId, 0),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      SimulateOpeningContextualTaskSidePanel(),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      Do([this]() {
+        BrowserUserEducationInterface::From(browser())
+            ->MaybeShowFeaturePromo(
+                feature_engagement::
+                    kIPHSidePanelContextualTasksPinnableFeature);
+      }),
+      WaitForPromo(
+          feature_engagement::kIPHSidePanelContextualTasksPinnableFeature),
+      SimulateClosingContextualTaskSidePanel(),
+      WaitForHide(kContextualTasksEphemeralToolbarButtonElementId),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      CheckPromoActive(
+          feature_engagement::kIPHSidePanelContextualTasksPinnableFeature,
+          false));
 }
 
 class ContextualTasksEphemeralBrandedButtonInteractiveTest

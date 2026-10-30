@@ -253,10 +253,6 @@ void ContextualTasksEphemeralButtonController::OnWillBeDestroyed() {
 void ContextualTasksEphemeralButtonController::OnTaskAssociatedToTab(
     const base::Uuid& task_id,
     SessionID tab_id) {
-  if (contextual_tasks::IsContextualTasksPinningV2Enabled() && IsPanelOpen() &&
-      GetCurrentTabSessionId() == tab_id) {
-    MarkActiveTaskTabsEligible();
-  }
   MaybeNotifyVisibilityShouldChange();
 }
 
@@ -282,9 +278,6 @@ void ContextualTasksEphemeralButtonController::OnEntryShown(
   is_hiding_contextual_tasks_panel_ = false;
   if (IsEphemeralEntryPointEnabled() ||
       contextual_tasks::IsContextualTasksPinningV2Enabled()) {
-    if (contextual_tasks::IsContextualTasksPinningV2Enabled()) {
-      MarkActiveTaskTabsEligible();
-    }
     CancelAutoDismissTimersForActiveTask();
     MaybeNotifyVisibilityShouldChange();
   } else {
@@ -613,6 +606,10 @@ bool ContextualTasksEphemeralButtonController::IsTaskEligibleForEphemeralButton(
   if (!service) {
     return false;
   }
+  if (contextual_tasks::IsContextualTasksPinningV2Enabled() && IsPanelOpen() &&
+      GetActiveTaskId() == task_id) {
+    return true;
+  }
   return std::ranges::any_of(
       service->GetTabsAssociatedWithTask(task_id), [this](SessionID tab_id) {
         return std::ranges::contains(ephemeral_button_eligible_tabs_, tab_id);
@@ -691,26 +688,6 @@ void ContextualTasksEphemeralButtonController::
       for (SessionID tab_id : service->GetTabsAssociatedWithTask(*task_id)) {
         ephemeral_button_auto_dismiss_timers_.erase(tab_id);
       }
-    }
-  }
-}
-
-void ContextualTasksEphemeralButtonController::MarkActiveTaskTabsEligible() {
-  std::optional<base::Uuid> task_id = GetActiveTaskId();
-  if (!task_id.has_value()) {
-    return;
-  }
-
-  contextual_tasks::ContextualTasksService* service =
-      GetContextualTasksService();
-  if (!service) {
-    return;
-  }
-
-  for (SessionID tab_id :
-       service->GetTabsAssociatedWithTask(*task_id)) {
-    if (!std::ranges::contains(ephemeral_button_eligible_tabs_, tab_id)) {
-      ephemeral_button_eligible_tabs_.emplace_back(tab_id);
     }
   }
 }

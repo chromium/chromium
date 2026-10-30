@@ -172,7 +172,6 @@ class ContextualTasksEphemeralButtonController
   void DismissEphemeralButtonForTab(SessionID tab_id);
   void DisassociateNavigatedTab();
   void CancelAutoDismissTimersForActiveTask();
-  void MarkActiveTaskTabsEligible();
 
   bool is_contextual_tasks_panel_open_ = false;
   bool is_hiding_contextual_tasks_panel_ = false;
