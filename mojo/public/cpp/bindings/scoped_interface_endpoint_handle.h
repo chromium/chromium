@@ -58,7 +58,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ScopedInterfaceEndpointHandle {
 
   // Returns the disconnect reason if the peer handle is closed before
   // association and specifies a custom disconnect reason.
-  const std::optional<DisconnectReason>& disconnect_reason() const;
+  std::optional<DisconnectReason> disconnect_reason() const;
 
   enum AssociationEvent {
     // The interface has been associated with a message pipe.

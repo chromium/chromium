@@ -166,9 +166,12 @@ class ScopedInterfaceEndpointHandle::State
     return group_controller_.get();
   }
 
-  const std::optional<DisconnectReason>& disconnect_reason() const {
+  std::optional<DisconnectReason> disconnect_reason() const {
     internal::MayAutoLock locker(&lock_);
-    return disconnect_reason_;
+    if (!disconnect_reason_) {
+      return std::nullopt;
+    }
+    return *disconnect_reason_;
   }
 
  private:
@@ -233,7 +236,8 @@ class ScopedInterfaceEndpointHandle::State
         return;
       }
 
-      disconnect_reason_ = reason;
+      disconnect_reason_ =
+          reason ? std::make_unique<DisconnectReason>(*reason) : nullptr;
       // NOTE: This handle itself is still pending.
       peer_state_ = nullptr;
 
@@ -279,7 +283,9 @@ class ScopedInterfaceEndpointHandle::State
   mutable std::optional<base::Lock> lock_;
 
   bool pending_association_ = false;
-  std::optional<DisconnectReason> disconnect_reason_;
+
+  // Rarely set; out of line to keep InterfaceEndpoint small.
+  std::unique_ptr<DisconnectReason> disconnect_reason_;
 
   scoped_refptr<State> peer_state_;
 
@@ -342,7 +348,7 @@ AssociatedGroupController* ScopedInterfaceEndpointHandle::group_controller()
   return state_->group_controller();
 }
 
-const std::optional<DisconnectReason>&
+std::optional<DisconnectReason>
 ScopedInterfaceEndpointHandle::disconnect_reason() const {
   return state_->disconnect_reason();
 }

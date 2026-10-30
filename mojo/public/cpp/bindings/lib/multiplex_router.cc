@@ -76,13 +76,19 @@ class MultiplexRouter::InterfaceEndpoint
     handle_created_ = true;
   }
 
-  const std::optional<DisconnectReason>& disconnect_reason() const {
-    return disconnect_reason_;
+  std::optional<DisconnectReason> disconnect_reason() const {
+    if (!disconnect_reason_) {
+      return std::nullopt;
+    }
+    return *disconnect_reason_;
   }
   void set_disconnect_reason(
       const std::optional<DisconnectReason>& disconnect_reason) {
     router_->AssertLockAcquired();
-    disconnect_reason_ = disconnect_reason;
+    disconnect_reason_ =
+        disconnect_reason
+            ? std::make_unique<DisconnectReason>(*disconnect_reason)
+            : nullptr;
   }
 
   base::SequencedTaskRunner* task_runner() const { return task_runner_.get(); }
@@ -263,16 +269,17 @@ class MultiplexRouter::InterfaceEndpoint
   // endpoint.
   bool handle_created_;
 
-  std::optional<DisconnectReason> disconnect_reason_;
+  // Indicates whether the sync watcher should be signaled for this endpoint.
+  bool sync_message_event_signaled_ = false;
+
+  // Rarely set; out of line to keep InterfaceEndpoint small.
+  std::unique_ptr<DisconnectReason> disconnect_reason_;
 
   // The task runner on which |client_|'s methods can be called.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   // Not owned. It is null if no client is attached to this endpoint.
   // RAW_PTR_EXCLUSION: Performance reasons (based on analysis of speedometer3).
   RAW_PTR_EXCLUSION InterfaceEndpointClient* client_ = nullptr;
-
-  // Indicates whether the sync watcher should be signaled for this endpoint.
-  bool sync_message_event_signaled_ = false;
 
   // Guarded by the router's lock. Used to synchronously wait on replies.
   std::unique_ptr<SequenceLocalSyncEventWatcher> sync_watcher_;

@@ -584,13 +584,19 @@ class ChannelAssociatedGroupController
       handle_created_ = true;
     }
 
-    const std::optional<mojo::DisconnectReason>& disconnect_reason() const {
-      return disconnect_reason_;
+    std::optional<mojo::DisconnectReason> disconnect_reason() const {
+      if (!disconnect_reason_) {
+        return std::nullopt;
+      }
+      return *disconnect_reason_;
     }
 
     void set_disconnect_reason(
         const std::optional<mojo::DisconnectReason>& disconnect_reason) {
-      disconnect_reason_ = disconnect_reason;
+      disconnect_reason_ =
+          disconnect_reason
+              ? std::make_unique<mojo::DisconnectReason>(*disconnect_reason)
+              : nullptr;
     }
 
     base::SequencedTaskRunner* task_runner() const {
@@ -831,7 +837,8 @@ class ChannelAssociatedGroupController
     bool peer_closed_ = false;
     bool handle_created_ = false;
     bool was_bound_off_sequence_ = false;
-    std::optional<mojo::DisconnectReason> disconnect_reason_;
+    // Rarely set; out of line to keep Endpoint small.
+    std::unique_ptr<mojo::DisconnectReason> disconnect_reason_;
     raw_ptr<mojo::InterfaceEndpointClient> client_ = nullptr;
     scoped_refptr<base::SequencedTaskRunner> task_runner_;
     std::unique_ptr<mojo::SequenceLocalSyncEventWatcher> sync_watcher_;
