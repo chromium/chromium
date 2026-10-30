@@ -67,6 +67,26 @@ source_set("container_mediator") {
   ]
 }
 
+source_set("actor_task_store") {
+  sources = [
+    "gemini_actor_task_store.h",
+    "gemini_actor_task_store.mm",
+  ]
+  public_deps = [
+    "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
+    "//ios/chrome/browser/intelligence/actor/public:actor_types",
+    "//ios/chrome/browser/intelligence/actor/public:actuation_worklog_data_source",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/intelligence/actor/model",
+    "//ios/chrome/browser/intelligence/actor/ui",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ui/base",
+  ]
+}
+
 source_set("coordinator") {
   sources = [
     "gemini_container_coordinator.h",
@@ -141,6 +161,7 @@ source_set("coordinator") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "gemini_actor_task_store_unittest.mm",
     "gemini_container_coordinator_unittest.mm",
     "gemini_container_mediator_unittest.mm",
     "gemini_container_ui_state_manager_unittest.mm",
@@ -149,6 +170,7 @@ source_set("unit_tests") {
   ]
 
   deps = [
+    ":actor_task_store",
     ":container_mediator",
     ":coordinator",
     "//base",
@@ -174,9 +196,11 @@ source_set("unit_tests") {
     "//ios/chrome/browser/assistant/ui:detent",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/fullscreen/ui_bundled/test",
+    "//ios/chrome/browser/intelligence/actor/model",
     "//ios/chrome/browser/intelligence/actor/public:actor_task_ui_protocols",
     "//ios/chrome/browser/intelligence/actor/public:actor_types",
     "//ios/chrome/browser/intelligence/actor/ui",
+    "//ios/chrome/browser/intelligence/actor/util:test_support",
     "//ios/chrome/browser/intelligence/bwg/metrics",
     "//ios/chrome/browser/intelligence/bwg/model",
     "//ios/chrome/browser/intelligence/bwg/model:browser_agent",

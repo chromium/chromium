@@ -11,6 +11,7 @@
 #import "base/memory/scoped_refptr.h"
 #import "base/sequence_checker.h"
 #import "base/task/sequenced_task_runner.h"
+#import "ios/chrome/browser/intelligence/actor/model/crb_protocol_observers_util.h"
 
 namespace {
 
@@ -19,15 +20,6 @@ using RegisteredBlock = void (^)(id observer);
 
 // Sends a notification to the observers.
 using Notification = void (^)(id observers);
-
-// Returns whether `observer` is registered in `observers`.
-bool ContainsObserver(CRBProtocolObservers* observers, id observer) {
-  __block bool contains = false;
-  [observers executeOnObservers:^(id candidate) {
-    contains |= candidate == observer;
-  }];
-  return contains;
-}
 
 }  // namespace
 
@@ -84,7 +76,7 @@ bool ContainsObserver(CRBProtocolObservers* observers, id observer) {
   CHECK(observer);
   CHECK([observer conformsToProtocol:_observers.protocol]);
   // A duplicate registration would send `onRegistered` twice.
-  if (ContainsObserver(_observers, observer) ||
+  if (actor::ContainsObserver(_observers, observer) ||
       [_pendingObserverIDs objectForKey:observer]) {
     return;
   }

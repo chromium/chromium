@@ -22,6 +22,8 @@ source_set("model") {
     "actor_task_background_worker.mm",
     "actor_web_state_policy_decider.h",
     "actor_web_state_policy_decider.mm",
+    "crb_protocol_observers_util.h",
+    "crb_protocol_observers_util.mm",
     "posted_observer_list.h",
     "posted_observer_list.mm",
   ]
