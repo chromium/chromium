@@ -9,29 +9,32 @@
 
 @interface PasswordManagerAppInterface : NSObject
 
-// Stores a credential to the password store. Similar to the other functions in
-// this file, but also specifies a backup password for the credential.
+// Stores a credential with `username`, `password`, `URL`, `shared` status, and
+// `backupPassword` to the password store. Returns nil on success, or an
+// NSError on failure.
 + (NSError*)storeCredentialWithUsername:(NSString*)username
                                password:(NSString*)password
                                     URL:(NSURL*)URL
                                  shared:(BOOL)shared
                          backupPassword:(NSString*)backupPassword;
 
-// Stores a credential to the password store. Similar to the other functions in
-// this file, but also specifies whether the credential was `shared` (received
-// from some other user).
+// Stores a credential with `username`, `password`, and `URL` to the password
+// store, and specifies whether the credential was `shared` (received from some
+// other user). Returns nil on success, or an NSError on failure.
 + (NSError*)storeCredentialWithUsername:(NSString*)username
                                password:(NSString*)password
                                     URL:(NSURL*)URL
                                  shared:(BOOL)shared;
 
-// Stores a credential to the password store.
+// Stores a credential with `username`, `password`, and `URL` to the password
+// store. Returns nil on success, or an NSError on failure.
 + (NSError*)storeCredentialWithUsername:(NSString*)username
                                password:(NSString*)password
                                     URL:(NSURL*)URL;
 
-// Stores a credential to the password store. Associates the current WebState's
-// last committed URL with the credential.
+// Stores a credential with `username` and `password` to the password store.
+// Associates the current WebState's last committed URL with the credential.
+// Returns nil on success, or an NSError on failure.
 + (NSError*)storeCredentialWithUsername:(NSString*)username
                                password:(NSString*)password;
 
@@ -40,7 +43,8 @@
 + (bool)verifyCredentialStoredWithUsername:(NSString*)username
                                   password:(NSString*)password;
 
-// Clears any credentials that were stored during a test run.
+// Clears any credentials that were stored during a test run. Returns true if
+// credentials were successfully cleared.
 + (bool)clearCredentials;
 
 // Returns the number of stored credentials.

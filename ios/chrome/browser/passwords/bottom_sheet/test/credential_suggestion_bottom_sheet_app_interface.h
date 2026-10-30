@@ -12,8 +12,9 @@
 // the app binary and can be called from either app or test code.
 @interface CredentialSuggestionBottomSheetAppInterface : NSObject
 
-// Sets the pref recording the number of times the bottom sheet was dismissed.
-// Used to either suppress or force the bottom sheet to appear in tests.
+// Sets the pref recording the `dismissCount` of times the bottom sheet was
+// dismissed. Used to either suppress or force the bottom sheet to appear in
+// tests.
 + (void)setDismissCount:(int)dismissCount;
 
 // Sets the pref recording the number of times the bottom sheet was dismissed to

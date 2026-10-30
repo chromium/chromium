@@ -11,8 +11,9 @@
 // automation_egtest helpers which involve app-side classes.
 @interface AutomationAppInterface : NSObject
 
-// Sets autofill automation profile data in app side. Passes JSON format
-// NSString to app side, extracts and sets autofill profile in app side.
+// Sets autofill automation profile data from JSON string `profileJSON` in the
+// app side. Returns nil on success, or an NSError if parsing or setting the
+// profile fails.
 + (NSError*)setAutofillAutomationProfile:(NSString*)profileJSON;
 
 @end

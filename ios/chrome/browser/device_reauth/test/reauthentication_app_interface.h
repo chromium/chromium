@@ -12,16 +12,17 @@
 // App interface to interact with the reauthentication service.
 @interface ReauthenticationAppInterface : NSObject
 
-// Mocks the expected result of the device authentication.
+// Mocks the `expectedResult` of the device authentication.
 + (void)mockReauthenticationModuleExpectedResult:
     (ReauthenticationResult)expectedResult;
 
-// Mocks whether the reauth module can attempt reauth, i.e. whether any way of
+// Mocks whether the reauth module `canAttempt` reauth, i.e. whether any way of
 // authenticating is enabled on the device.
 + (void)mockReauthenticationModuleCanAttempt:(BOOL)canAttempt;
 
-// Whether the mock reauthentication module should return the result when the
-// reauthentication request is made or wait for explicitly invoking the
+// Sets `shouldSkip` to control whether the mock reauthentication module should
+// return the result immediately when the reauthentication request is made or
+// wait for explicitly invoking the
 // `mockReauthenticationModuleReturnMockedResult` method.
 //
 // Use it for testing state before the result is returned (e.g. View X
