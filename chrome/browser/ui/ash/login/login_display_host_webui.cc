@@ -58,7 +58,6 @@
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/login/input_events_blocker.h"
@@ -1369,7 +1368,12 @@ void ShowLoginWizard(
       /*login_input_methods_only=*/false);
 }
 
-void SwitchWebUItoMojo() {
+void SwitchWebUItoMojo(
+    PrefService* local_state,
+    ::metrics::MetricsService* metrics_service,
+    ApplicationLocaleStorage* application_locale_storage,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash) {
   auto* oobe_ui = LoginDisplayHost::default_host()->GetOobeUI();
   if (oobe_ui) {
     CHECK_EQ(oobe_ui->display_type(), OobeUI::kOobeDisplay,
@@ -1377,13 +1381,9 @@ void SwitchWebUItoMojo() {
   }
 
   // This replaces WebUI host with the Mojo (views) host.
-  // TODO(crbug.com/403154552): Avoid using g_browser_process.
-  ShowLoginWizard(
-      g_browser_process->local_state(), g_browser_process->metrics_service(),
-      g_browser_process->GetFeatures()->application_locale_storage(),
-      g_browser_process->shared_url_loader_factory(),
-      g_browser_process->platform_part()->browser_policy_connector_ash(),
-      OOBE_SCREEN_UNKNOWN);
+  ShowLoginWizard(local_state, metrics_service, application_locale_storage,
+                  std::move(shared_url_loader_factory),
+                  browser_policy_connector_ash, OOBE_SCREEN_UNKNOWN);
 }
 
 }  // namespace ash

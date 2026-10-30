@@ -39,9 +39,18 @@ void ShowLoginWizard(
     policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     OobeScreenId first_screen);
 
-// Shuts down LoginDisplayHostWebUI host and create LoginDisplayHostMojo
-// instead.
-void SwitchWebUItoMojo();
+// Shuts down LoginDisplayHostWebUI host and creates LoginDisplayHostMojo
+// instead. This may happen asynchronously, after a locale switch.
+// `local_state`, `metrics_service`, `application_locale_storage` and
+// `browser_policy_connector_ash` must be non-null and must outlive the
+// LoginDisplayHost that this function creates.
+// `shared_url_loader_factory` must be non-null.
+void SwitchWebUItoMojo(
+    PrefService* local_state,
+    ::metrics::MetricsService* metrics_service,
+    ApplicationLocaleStorage* application_locale_storage,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash);
 
 }  // namespace ash
 

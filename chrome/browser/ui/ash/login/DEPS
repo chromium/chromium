@@ -55,9 +55,6 @@ specific_include_rules = {
   "login_display_host_mojo\\.cc": [
     "+chrome/browser/global_features.h",
   ],
-  "login_display_host_webui\\.cc": [
-    "+chrome/browser/global_features.h",
-  ],
   "fake_login_display_host\\.cc": [
     "+chrome/browser/global_features.h",
   ],

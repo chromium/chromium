@@ -2488,7 +2488,11 @@ void WizardController::OnEnrollmentDone() {
     // Could be not managed in tests.
     CHECK_EQ(LoginDisplayHost::default_host()->GetOobeUI()->display_type(),
              OobeUI::kOobeDisplay, base::NotFatalUntil::M160);
-    SwitchWebUItoMojo();
+    CHECK(metrics_service_);
+    SwitchWebUItoMojo(&local_state_.get(), metrics_service_.get(),
+                      &application_locale_storage_.get(),
+                      shared_url_loader_factory_,
+                      &browser_policy_connector_ash_.get());
   } else {
     ShowLoginScreen();
   }
@@ -2538,7 +2542,11 @@ void WizardController::OnDemoSetupScreenExit(DemoSetupScreen::Result result) {
     case DemoSetupScreen::Result::kCompleted:
       PerformOOBECompletedActions(
           OobeMetricsHelper::CompletedPreLoginOobeFlowType::kDemo);
-      SwitchWebUItoMojo();
+      CHECK(metrics_service_);
+      SwitchWebUItoMojo(&local_state_.get(), metrics_service_.get(),
+                        &application_locale_storage_.get(),
+                        shared_url_loader_factory_,
+                        &browser_policy_connector_ash_.get());
       break;
     case DemoSetupScreen::Result::kCanceled:
       ShowWelcomeScreen();
