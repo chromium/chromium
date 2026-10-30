@@ -20,7 +20,6 @@
 #include "base/no_destructor.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/scoped_handle.h"
-#include "remoting/base/scoped_sc_handle_win.h"
 #include "remoting/host/installer/win/setup/installer_constants.h"
 #include "remoting/host/installer/win/setup/service_util.h"
 
@@ -28,43 +27,39 @@ namespace remoting::installer {
 
 namespace {
 
-ServiceControlCallback& GetStartServiceCallback() {
-  static base::NoDestructor<ServiceControlCallback> callback;
-  return *callback;
-}
+class DefaultServiceManager : public ServiceManager {
+ public:
+  ServiceStateQueryResult GetServiceState() override {
+    return GetHostServiceState();
+  }
 
-ServiceControlCallback& GetStopServiceCallback() {
-  static base::NoDestructor<ServiceControlCallback> callback;
-  return *callback;
-}
+  bool InstallOrUpdateService(const base::FilePath& host_binary_path,
+                              const base::FilePath& host_config_path) override {
+    return remoting::installer::InstallOrUpdateService(host_binary_path,
+                                                       host_config_path);
+  }
 
-ServiceControlCallback& GetInstallOrUpdateServiceCallback() {
-  static base::NoDestructor<ServiceControlCallback> callback;
-  return *callback;
-}
+  bool StartService() override { return StartHostService(); }
 
-ServiceControlCallback& GetUninstallServiceCallback() {
-  static base::NoDestructor<ServiceControlCallback> callback;
-  return *callback;
+  bool StopService() override { return StopHostService(); }
+
+  bool UninstallService() override { return UninstallHostService(); }
+};
+
+ServiceManager* g_service_manager_override = nullptr;
+
+ServiceManager* GetServiceManager() {
+  if (g_service_manager_override) {
+    return g_service_manager_override;
+  }
+  static base::NoDestructor<DefaultServiceManager> default_manager;
+  return default_manager.get();
 }
 
 }  // namespace
 
-void SetStartServiceCallbackForTesting(ServiceControlCallback callback) {
-  GetStartServiceCallback() = std::move(callback);
-}
-
-void SetStopServiceCallbackForTesting(ServiceControlCallback callback) {
-  GetStopServiceCallback() = std::move(callback);
-}
-
-void SetInstallOrUpdateServiceCallbackForTesting(
-    ServiceControlCallback callback) {
-  GetInstallOrUpdateServiceCallback() = std::move(callback);
-}
-
-void SetUninstallServiceCallbackForTesting(ServiceControlCallback callback) {
-  GetUninstallServiceCallback() = std::move(callback);
+void SetServiceManagerForTesting(ServiceManager* service_manager) {
+  g_service_manager_override = service_manager;
 }
 
 StopServiceWorkItem::StopServiceWorkItem() = default;
@@ -75,43 +70,15 @@ bool StopServiceWorkItem::DoImpl() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  // TODO(crbug.com/551615326): Introduce an SCM interface/fake so service
-  // state transitions (including rollback when the service was not previously
-  // running) can be tested without callback overrides.
-  if (GetStopServiceCallback()) {
+  ServiceStateQueryResult state = GetServiceManager()->GetServiceState();
+  if (state == ServiceStateQueryResult::kError) {
+    return false;
+  }
+  if (state != ServiceStateQueryResult::kNotInstalled &&
+      state != ServiceStateQueryResult::kStopped) {
     was_running_ = true;
-    return GetStopServiceCallback().Run();
+    return GetServiceManager()->StopService();
   }
-
-  ScopedScHandle scm(
-      ::OpenSCManagerW(nullptr, SERVICES_ACTIVE_DATABASE, SC_MANAGER_CONNECT));
-  if (!scm.is_valid()) {
-    PLOG(ERROR) << "Failed to open Service Control Manager.";
-    return false;
-  }
-
-  ScopedScHandle service(
-      ::OpenServiceW(scm.Get(), kWindowsServiceName, SERVICE_QUERY_STATUS));
-  if (!service.is_valid()) {
-    DWORD error = ::GetLastError();
-    if (error == ERROR_SERVICE_DOES_NOT_EXIST) {
-      return true;
-    }
-    PLOG(ERROR) << "Failed to open service " << kWindowsServiceName;
-    return false;
-  }
-
-  SERVICE_STATUS status = {};
-  if (!::QueryServiceStatus(service.Get(), &status)) {
-    PLOG(ERROR) << "Failed to query service status for " << kWindowsServiceName;
-    return false;
-  }
-
-  if (status.dwCurrentState != SERVICE_STOPPED) {
-    was_running_ = true;
-    return StopHostService();
-  }
-
   return true;
 }
 
@@ -120,21 +87,15 @@ void StopServiceWorkItem::RollbackImpl() {
                                                 base::BlockingType::MAY_BLOCK);
 
   if (was_running_) {
-    if (GetStartServiceCallback()) {
-      GetStartServiceCallback().Run();
-    } else {
-      StartHostService();
-    }
+    GetServiceManager()->StartService();
   }
 }
 
 InstallOrUpdateServiceWorkItem::InstallOrUpdateServiceWorkItem(
     const base::FilePath& host_binary_path,
-    const base::FilePath& host_config_path,
-    bool existed_previously_for_testing)
+    const base::FilePath& host_config_path)
     : host_binary_path_(host_binary_path),
-      host_config_path_(host_config_path),
-      existed_previously_(existed_previously_for_testing) {}
+      host_config_path_(host_config_path) {}
 
 InstallOrUpdateServiceWorkItem::~InstallOrUpdateServiceWorkItem() = default;
 
@@ -142,31 +103,18 @@ bool InstallOrUpdateServiceWorkItem::DoImpl() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  if (GetInstallOrUpdateServiceCallback()) {
-    return GetInstallOrUpdateServiceCallback().Run();
-  }
-
-  if (!existed_previously_) {
-    ScopedScHandle scm(::OpenSCManagerW(nullptr, SERVICES_ACTIVE_DATABASE,
-                                        SC_MANAGER_CONNECT));
+  ServiceStateQueryResult state = GetServiceManager()->GetServiceState();
+  if (state != ServiceStateQueryResult::kNotInstalled) {
     // If we cannot determine whether the service already exists (e.g., due to
-    // SCM or service open errors other than `ERROR_SERVICE_DOES_NOT_EXIST`),
-    // default `existed_previously_` to true. On a failed installation or
-    // update, it is much safer to leave a service registered than to risk
-    // deleting a working pre-existing host service during rollback.
-    if (scm.is_valid()) {
-      ScopedScHandle service(
-          ::OpenServiceW(scm.Get(), kWindowsServiceName, SERVICE_QUERY_CONFIG));
-      if (service.is_valid() ||
-          ::GetLastError() != ERROR_SERVICE_DOES_NOT_EXIST) {
-        existed_previously_ = true;
-      }
-    } else {
-      existed_previously_ = true;
-    }
+    // SCM or service open errors returning `kError`), default
+    // `existed_previously_` to true. On a failed installation or update, it is
+    // much safer to leave a service registered than to risk deleting a working
+    // pre-existing host service during rollback.
+    existed_previously_ = true;
   }
 
-  return InstallOrUpdateService(host_binary_path_, host_config_path_);
+  return GetServiceManager()->InstallOrUpdateService(host_binary_path_,
+                                                     host_config_path_);
 }
 
 void InstallOrUpdateServiceWorkItem::RollbackImpl() {
@@ -177,11 +125,7 @@ void InstallOrUpdateServiceWorkItem::RollbackImpl() {
   // restore the prior service configuration (`lpBinaryPathName`, etc.) on
   // rollback.
   if (!existed_previously_) {
-    if (GetUninstallServiceCallback()) {
-      GetUninstallServiceCallback().Run();
-    } else {
-      UninstallHostService();
-    }
+    GetServiceManager()->UninstallService();
   }
 }
 
@@ -193,42 +137,19 @@ bool StartServiceWorkItem::DoImpl() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  if (GetStartServiceCallback()) {
-    if (GetStartServiceCallback().Run()) {
-      started_by_us_ = true;
-      return true;
-    }
+  ServiceStateQueryResult state = GetServiceManager()->GetServiceState();
+  if (state == ServiceStateQueryResult::kError ||
+      state == ServiceStateQueryResult::kNotInstalled) {
     return false;
   }
-
-  ScopedScHandle scm(
-      ::OpenSCManagerW(nullptr, SERVICES_ACTIVE_DATABASE, SC_MANAGER_CONNECT));
-  if (!scm.is_valid()) {
-    PLOG(ERROR) << "Failed to open Service Control Manager.";
-    return false;
-  }
-
-  ScopedScHandle service(::OpenServiceW(scm.Get(), kWindowsServiceName,
-                                        SERVICE_START | SERVICE_QUERY_STATUS));
-  if (!service.is_valid()) {
-    PLOG(ERROR) << "Failed to open service " << kWindowsServiceName;
-    return false;
-  }
-
-  SERVICE_STATUS status = {};
-  if (::QueryServiceStatus(service.Get(), &status) &&
-      (status.dwCurrentState == SERVICE_RUNNING ||
-       status.dwCurrentState == SERVICE_START_PENDING)) {
-    // Service is already running; no need to start or record rollback.
+  if (state == ServiceStateQueryResult::kRunning ||
+      state == ServiceStateQueryResult::kStartPending) {
+    // Service is already running or starting; no need to start or record
+    // rollback.
     return true;
   }
 
-  if (!::StartServiceW(service.Get(), 0, nullptr)) {
-    DWORD error = ::GetLastError();
-    if (error == ERROR_SERVICE_ALREADY_RUNNING) {
-      return true;
-    }
-    PLOG(ERROR) << "Failed to start service " << kWindowsServiceName;
+  if (!GetServiceManager()->StartService()) {
     return false;
   }
 
@@ -241,11 +162,7 @@ void StartServiceWorkItem::RollbackImpl() {
                                                 base::BlockingType::MAY_BLOCK);
 
   if (started_by_us_) {
-    if (GetStopServiceCallback()) {
-      GetStopServiceCallback().Run();
-    } else {
-      StopHostService();
-    }
+    GetServiceManager()->StopService();
   }
 }
 
@@ -315,10 +232,7 @@ bool UninstallServiceWorkItem::DoImpl() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  if (GetUninstallServiceCallback()) {
-    return GetUninstallServiceCallback().Run();
-  }
-  return UninstallHostService();
+  return GetServiceManager()->UninstallService();
 }
 
 void UninstallServiceWorkItem::RollbackImpl() {

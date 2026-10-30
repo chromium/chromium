@@ -102,6 +102,50 @@ bool SignalHostUpdatePending(const wchar_t* event_name_for_testing) {
   return true;
 }
 
+ServiceStateQueryResult GetHostServiceState() {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  ScopedScHandle scm(
+      ::OpenSCManagerW(nullptr, SERVICES_ACTIVE_DATABASE, SC_MANAGER_CONNECT));
+  if (!scm.is_valid()) {
+    PLOG(ERROR) << "Failed to open Service Control Manager.";
+    return ServiceStateQueryResult::kError;
+  }
+
+  ScopedScHandle service(
+      ::OpenServiceW(scm.Get(), kWindowsServiceName, SERVICE_QUERY_STATUS));
+  if (!service.is_valid()) {
+    if (::GetLastError() == ERROR_SERVICE_DOES_NOT_EXIST) {
+      return ServiceStateQueryResult::kNotInstalled;
+    }
+    PLOG(ERROR) << "Failed to open service " << kWindowsServiceName;
+    return ServiceStateQueryResult::kError;
+  }
+
+  SERVICE_STATUS status = {};
+  if (!::QueryServiceStatus(service.Get(), &status)) {
+    PLOG(ERROR) << "Failed to query service status for " << kWindowsServiceName;
+    return ServiceStateQueryResult::kError;
+  }
+
+  switch (status.dwCurrentState) {
+    case SERVICE_STOPPED:
+      return ServiceStateQueryResult::kStopped;
+    case SERVICE_START_PENDING:
+      return ServiceStateQueryResult::kStartPending;
+    case SERVICE_STOP_PENDING:
+      return ServiceStateQueryResult::kStopPending;
+    case SERVICE_RUNNING:
+      return ServiceStateQueryResult::kRunning;
+    default:
+      // The CRD service does not support pause/continue controls; treat any
+      // other active state as stop-pending so StartServiceWorkItem attempts to
+      // start it and StopServiceWorkItem stops it.
+      return ServiceStateQueryResult::kStopPending;
+  }
+}
+
 bool InstallOrUpdateService(const base::FilePath& host_binary_path,
                             const base::FilePath& host_config_path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,

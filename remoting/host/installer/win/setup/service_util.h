@@ -22,6 +22,17 @@
 
 namespace remoting::installer {
 
+// Result of querying the current state of the Chrome Remote Desktop Windows
+// service.
+enum class ServiceStateQueryResult {
+  kNotInstalled,
+  kStopped,
+  kStartPending,
+  kStopPending,
+  kRunning,
+  kError,
+};
+
 // Returns true if the running host service currently has an active desktop
 // session (i.e. `event_name_for_testing` is openable and signaled).
 bool IsHostSessionActive(
@@ -32,6 +43,9 @@ bool IsHostSessionActive(
 // Returns true if the event was successfully opened and signaled.
 bool SignalHostUpdatePending(
     const wchar_t* event_name_for_testing = kHostUpdatePendingEventName);
+
+// Queries the current state of the Chrome Remote Desktop Windows service.
+ServiceStateQueryResult GetHostServiceState();
 
 // Installs or updates the Windows service configuration for Chrome Remote
 // Desktop, including 1-minute failure recovery actions.

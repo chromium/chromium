@@ -15,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/unguessable_token.h"
 #include "base/win/scoped_handle.h"
@@ -34,6 +33,57 @@ std::wstring CreateUniqueEventName(const wchar_t* prefix) {
       {prefix, L"_",
        base::UTF8ToWide(base::UnguessableToken::Create().ToString())});
 }
+
+class FakeServiceManager : public ServiceManager {
+ public:
+  ServiceStateQueryResult GetServiceState() override { return state_; }
+
+  bool InstallOrUpdateService(const base::FilePath& host_binary_path,
+                              const base::FilePath& host_config_path) override {
+    install_called_ = true;
+    if (state_ == ServiceStateQueryResult::kNotInstalled) {
+      state_ = ServiceStateQueryResult::kStopped;
+    }
+    return true;
+  }
+
+  bool StartService() override {
+    if (!start_succeeds_) {
+      return false;
+    }
+    start_called_ = true;
+    state_ = ServiceStateQueryResult::kRunning;
+    return true;
+  }
+
+  bool StopService() override {
+    stop_called_ = true;
+    state_ = ServiceStateQueryResult::kStopped;
+    return true;
+  }
+
+  bool UninstallService() override {
+    uninstall_called_ = true;
+    state_ = ServiceStateQueryResult::kNotInstalled;
+    return true;
+  }
+
+  void set_state(ServiceStateQueryResult state) { state_ = state; }
+  void set_start_succeeds(bool succeeds) { start_succeeds_ = succeeds; }
+
+  bool install_called() const { return install_called_; }
+  bool start_called() const { return start_called_; }
+  bool stop_called() const { return stop_called_; }
+  bool uninstall_called() const { return uninstall_called_; }
+
+ private:
+  ServiceStateQueryResult state_ = ServiceStateQueryResult::kNotInstalled;
+  bool start_succeeds_ = true;
+  bool install_called_ = false;
+  bool start_called_ = false;
+  bool stop_called_ = false;
+  bool uninstall_called_ = false;
+};
 
 }  // namespace
 
@@ -57,10 +107,7 @@ class SetupWorkItemsTest : public testing::Test {
       }
     }
 
-    SetStartServiceCallbackForTesting(ServiceControlCallback());
-    SetStopServiceCallbackForTesting(ServiceControlCallback());
-    SetInstallOrUpdateServiceCallbackForTesting(ServiceControlCallback());
-    SetUninstallServiceCallbackForTesting(ServiceControlCallback());
+    SetServiceManagerForTesting(&fake_service_manager_);
     SetMoveFileExCallbackForTesting(base::BindRepeating(
         [](const wchar_t* existing, const wchar_t* new_name, DWORD flags) {
           if (flags & MOVEFILE_DELAY_UNTIL_REBOOT) {
@@ -71,10 +118,7 @@ class SetupWorkItemsTest : public testing::Test {
   }
 
   void TearDown() override {
-    SetStartServiceCallbackForTesting(ServiceControlCallback());
-    SetStopServiceCallbackForTesting(ServiceControlCallback());
-    SetInstallOrUpdateServiceCallbackForTesting(ServiceControlCallback());
-    SetUninstallServiceCallbackForTesting(ServiceControlCallback());
+    SetServiceManagerForTesting(nullptr);
     SetMoveFileExCallbackForTesting(MoveFileExCallback());
   }
 
@@ -83,47 +127,25 @@ class SetupWorkItemsTest : public testing::Test {
   base::FilePath source_dir_;
   base::FilePath install_dir_;
   base::FilePath config_dir_;
+  FakeServiceManager fake_service_manager_;
 };
 
 TEST_F(SetupWorkItemsTest, CreateInstallWorkItemList_Success) {
-  bool service_stopped = false;
-  bool service_configured = false;
-  bool service_started = false;
-
-  SetStopServiceCallbackForTesting(base::BindLambdaForTesting([&]() {
-    service_stopped = true;
-    return true;
-  }));
-
-  SetInstallOrUpdateServiceCallbackForTesting(base::BindLambdaForTesting([&]() {
-    service_configured = true;
-    return true;
-  }));
-
-  SetStartServiceCallbackForTesting(base::BindLambdaForTesting([&]() {
-    service_started = true;
-    return true;
-  }));
+  fake_service_manager_.set_state(ServiceStateQueryResult::kRunning);
 
   std::unique_ptr<WorkItemList> list = CreateInstallWorkItemList(
       source_dir_, install_dir_, config_dir_.Append(L"host.json"));
   ASSERT_TRUE(list);
 
   EXPECT_TRUE(list->Do());
-  EXPECT_TRUE(service_stopped);
-  EXPECT_TRUE(service_configured);
-  EXPECT_TRUE(service_started);
+  EXPECT_TRUE(fake_service_manager_.stop_called());
+  EXPECT_TRUE(fake_service_manager_.install_called());
+  EXPECT_TRUE(fake_service_manager_.start_called());
   EXPECT_TRUE(base::PathExists(install_dir_.Append(kHostBinaryName)));
 }
 
 TEST_F(SetupWorkItemsTest, CreateInstallWorkItemList_FailureRollback) {
-  SetStopServiceCallbackForTesting(base::BindRepeating([]() { return true; }));
-  SetInstallOrUpdateServiceCallbackForTesting(
-      base::BindRepeating([]() { return true; }));
-  SetUninstallServiceCallbackForTesting(
-      base::BindRepeating([]() { return true; }));
-  SetStartServiceCallbackForTesting(
-      base::BindRepeating([]() { return false; }));
+  fake_service_manager_.set_start_succeeds(false);
 
   std::unique_ptr<WorkItemList> list = CreateInstallWorkItemList(
       source_dir_, install_dir_, config_dir_.Append(L"host.json"));
@@ -132,6 +154,7 @@ TEST_F(SetupWorkItemsTest, CreateInstallWorkItemList_FailureRollback) {
   EXPECT_FALSE(list->Do());
   list->Rollback();
 
+  EXPECT_TRUE(fake_service_manager_.uninstall_called());
   EXPECT_FALSE(base::PathExists(install_dir_.Append(kHostBinaryName)));
   EXPECT_FALSE(base::DirectoryExists(install_dir_));
 }
@@ -155,18 +178,7 @@ TEST_F(SetupWorkItemsTest, CreateUpdatePendingWorkItemList_Success) {
 }
 
 TEST_F(SetupWorkItemsTest, CreateUninstallWorkItemList_Success) {
-  bool service_stopped = false;
-  bool service_uninstalled = false;
-
-  SetStopServiceCallbackForTesting(base::BindLambdaForTesting([&]() {
-    service_stopped = true;
-    return true;
-  }));
-
-  SetUninstallServiceCallbackForTesting(base::BindLambdaForTesting([&]() {
-    service_uninstalled = true;
-    return true;
-  }));
+  fake_service_manager_.set_state(ServiceStateQueryResult::kRunning);
 
   ASSERT_TRUE(base::CreateDirectory(install_dir_));
   ASSERT_TRUE(
@@ -177,8 +189,8 @@ TEST_F(SetupWorkItemsTest, CreateUninstallWorkItemList_Success) {
   ASSERT_TRUE(list);
 
   EXPECT_TRUE(list->Do());
-  EXPECT_TRUE(service_stopped);
-  EXPECT_TRUE(service_uninstalled);
+  EXPECT_TRUE(fake_service_manager_.stop_called());
+  EXPECT_TRUE(fake_service_manager_.uninstall_called());
   EXPECT_FALSE(base::PathExists(install_dir_.Append(kHostBinaryName)));
 }
 

@@ -9,7 +9,7 @@
 // Windows host installer.
 //
 // What belongs here:
-// - `WorkItem` subclasses (`StopServiceWorkItem`,
+// - `ServiceManager` and `WorkItem` subclasses (`StopServiceWorkItem`,
 //   `InstallOrUpdateServiceWorkItem`, `StartServiceWorkItem`,
 //   `SignalUpdatePendingWorkItem`, `UninstallServiceWorkItem`) and their test
 //   injection seams.
@@ -21,20 +21,30 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/functional/callback.h"
 #include "chrome/installer/util/work_item.h"
+#include "remoting/host/installer/win/setup/service_util.h"
 
 namespace remoting::installer {
 
-// Callbacks for mocking service operations in tests without requiring SCM
+// Interface for interacting with the Windows Service Control Manager (SCM),
+// allowing service WorkItems and state transitions to be tested without SCM
 // elevation.
-using ServiceControlCallback = base::RepeatingCallback<bool()>;
+class ServiceManager {
+ public:
+  virtual ~ServiceManager() = default;
 
-void SetStartServiceCallbackForTesting(ServiceControlCallback callback);
-void SetStopServiceCallbackForTesting(ServiceControlCallback callback);
-void SetInstallOrUpdateServiceCallbackForTesting(
-    ServiceControlCallback callback);
-void SetUninstallServiceCallbackForTesting(ServiceControlCallback callback);
+  virtual ServiceStateQueryResult GetServiceState() = 0;
+  virtual bool InstallOrUpdateService(
+      const base::FilePath& host_binary_path,
+      const base::FilePath& host_config_path) = 0;
+  virtual bool StartService() = 0;
+  virtual bool StopService() = 0;
+  virtual bool UninstallService() = 0;
+};
+
+// Overrides the default SCM-backed `ServiceManager` for testing. Passing
+// `nullptr` restores the default implementation.
+void SetServiceManagerForTesting(ServiceManager* service_manager);
 
 // A WorkItem that stops the Chrome Remote Desktop service if it is running.
 // On rollback, restarts the service if it was running before this WorkItem
@@ -58,8 +68,7 @@ class StopServiceWorkItem : public WorkItem {
 class InstallOrUpdateServiceWorkItem : public WorkItem {
  public:
   InstallOrUpdateServiceWorkItem(const base::FilePath& host_binary_path,
-                                 const base::FilePath& host_config_path,
-                                 bool existed_previously_for_testing = false);
+                                 const base::FilePath& host_config_path);
   InstallOrUpdateServiceWorkItem(const InstallOrUpdateServiceWorkItem&) =
       delete;
   InstallOrUpdateServiceWorkItem& operator=(
