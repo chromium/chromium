@@ -202,15 +202,6 @@ private let MojoInt64MojoArrayGenerator = CodeGenerator(
     var elements: [Variable] = [elem]
     b.createArray(with: elements)
 }
-private let MojoFloatMojoArrayGenerator = CodeGenerator(
-    "MojoFloatMojoArrayGenerator",
-    inputs: .one,
-    produces: [.jsFloatMojoArray]
-) { b, _ in
-    let elem = b.findOrGenerateType(.float)
-    var elements: [Variable] = [elem]
-    b.createArray(with: elements)
-}
 
 ///
 /// Unions
@@ -388,7 +379,6 @@ let mojoPrimaryProfile = Profile(
         (MojoMethodCallGenerator, 10000),
         (MojoPropertyRetrievalGenerator, 10000),
         (MojoInt64MojoArrayGenerator, 1),
-        (MojoFloatMojoArrayGenerator, 1),
     ] + commonMojoCodeGenerators,
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,

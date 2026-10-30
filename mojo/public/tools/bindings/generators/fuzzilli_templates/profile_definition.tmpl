@@ -148,7 +148,7 @@ let mojo{{primary.name}}Profile = Profile(
         (Mojo{{receiver|format_unique_name}}RouterListenerGenerator, 5000),
     {%- endif %}
 {%- endfor %}
-{%- for array in arrays %}
+{%- for array in js_arrays %}
         (Mojo{{array|format_unique_name}}Generator, 1),
 {%- endfor %}
 {%- for m in maps %}

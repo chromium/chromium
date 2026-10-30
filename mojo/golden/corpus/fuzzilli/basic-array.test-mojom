@@ -19,6 +19,20 @@ interface Primary {
   PassFloats(array<float> floats);
   PassInts(array<int32> ints);
   PassUInts(array<uint32> ints);
+  GetBrowserMadeEntries() => (array<BrowserMadeEntry> entries);
+
+  // `array<OrderedEntry>` is first seen in a response, then in a parameter. Ensures
+  // that visit order doesn't affect the content of profiles.
+  GetOrderedEntries() => (array<OrderedEntry> entries);
+  PassOrderedEntries(array<OrderedEntry> entries);
 };
 
 struct Entry {};
+
+struct BrowserMadeEntry {
+  uint8 data;
+};
+
+struct OrderedEntry {
+  uint8 data;
+};

@@ -5,7 +5,7 @@ extension ILType {
 {%- endfor %}
 }
 
-{%- for array in arrays %}
+{%- for array in js_arrays %}
     {%- if loop.first %}
 
 /// As Fuzzilli runs, the OperationMutator and VariadicInputReducer will modify

@@ -96,7 +96,8 @@ class Generator(generator.Generator):
     self.interface_pending_receivers = set()
     self.interface_associated_pending_receivers = set()
 
-    self.arrays = {}
+    self.js_arrays = {}
+    self.browser_arrays = {}
     self.maps = {}
     self.enums = {}
     self.js_unions = {}
@@ -145,7 +146,9 @@ class Generator(generator.Generator):
       "interface_associated_pending_receivers": list(
         self.interface_associated_pending_receivers
       ),
-      "arrays": list(self.arrays.values()),
+      "js_arrays": list(self.js_arrays.values()),
+      # Union of `js_arrays` and `browser_arrays`
+      "arrays": list((self.js_arrays | self.browser_arrays).values()),
       "maps": list(self.maps.values()),
       "enums": list(self.enums.values()),
       "js_unions": list(self.js_unions.values()),
@@ -189,10 +192,11 @@ class Generator(generator.Generator):
       self._CollectInterfaceAndTypes(field.kind, is_in_js)
 
   def _CollectArray(self, array, is_in_js):
+    arrays = self.js_arrays if is_in_js else self.browser_arrays
     name = self._FormatUniqueName(array.kind)
-    if name in self.arrays:
+    if name in arrays:
       return
-    self.arrays[name] = array
+    arrays[name] = array
     self._CollectInterfaceAndTypes(array.kind, is_in_js)
 
   def _CollectMap(self, m, is_in_js):

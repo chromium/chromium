@@ -29,6 +29,9 @@ extension ILType {
             "passFloats",
             "passInts",
             "passUInts",
+            "getBrowserMadeEntries",
+            "getOrderedEntries",
+            "passOrderedEntries",
         ])
     fileprivate static let jsGoldenPrimaryRemoteWrapper: ILType = .object(
         ofGroup: "golden.PrimaryRemoteWrapper",
@@ -74,6 +77,13 @@ extension ObjectGroup {
             "passUInts": [
                 .plain(.jsUint32MojoArray),
             ] => .undefined,
+            "getBrowserMadeEntries": [
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetBrowserMadeEntries_ResponseParams),
+            "getOrderedEntries": [
+            ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetOrderedEntries_ResponseParams),
+            "passOrderedEntries": [
+                .plain(.jsGoldenOrderedEntryMojoArray),
+            ] => .undefined,
         ]
     )
 
@@ -97,6 +107,19 @@ extension ILType {
         ])
     fileprivate static let jsGoldenEntryConstructor: ILType = .constructor([
     ] => .jsGoldenEntry)
+    fileprivate static let jsGoldenOrderedEntry: ILType = .object(
+        ofGroup: "golden.OrderedEntry",
+        withProperties: [
+            "data",
+        ])
+    fileprivate static let jsGoldenOrderedEntryConstructor: ILType = .constructor([
+        .plain(.jsUint8),
+    ] => .jsGoldenOrderedEntry)
+    fileprivate static let jsGoldenBrowserMadeEntry: ILType = .object(
+        ofGroup: "golden.BrowserMadeEntry",
+        withProperties: [
+            "data",
+        ])
     fileprivate static let jsGoldenPrimary_Get_ResponseParams: ILType = .object(
         ofGroup: "golden.Primary_Get_ResponseParams",
         withProperties: [
@@ -132,6 +155,16 @@ extension ILType {
         withProperties: [
             "strings",
         ])
+    fileprivate static let jsGoldenPrimary_GetBrowserMadeEntries_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_GetBrowserMadeEntries_ResponseParams",
+        withProperties: [
+            "entries",
+        ])
+    fileprivate static let jsGoldenPrimary_GetOrderedEntries_ResponseParams: ILType = .object(
+        ofGroup: "golden.Primary_GetOrderedEntries_ResponseParams",
+        withProperties: [
+            "entries",
+        ])
 }
 
 extension ObjectGroup {
@@ -139,6 +172,22 @@ extension ObjectGroup {
         name: "golden.Entry",
         instanceType: .jsGoldenEntry,
         properties: [:],
+        methods: [:]
+    )
+    fileprivate static let goldenOrderedEntry = ObjectGroup(
+        name: "golden.OrderedEntry",
+        instanceType: .jsGoldenOrderedEntry,
+        properties: [
+            "data": .jsUint8,
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenBrowserMadeEntry = ObjectGroup(
+        name: "golden.BrowserMadeEntry",
+        instanceType: .jsGoldenBrowserMadeEntry,
+        properties: [
+            "data": .jsUint8,
+        ],
         methods: [:]
     )
     fileprivate static let goldenPrimaryGetResponseParams = ObjectGroup(
@@ -197,6 +246,22 @@ extension ObjectGroup {
         ],
         methods: [:]
     )
+    fileprivate static let goldenPrimaryGetBrowserMadeEntriesResponseParams = ObjectGroup(
+        name: "golden.Primary_GetBrowserMadeEntries_ResponseParams",
+        instanceType: .jsGoldenPrimary_GetBrowserMadeEntries_ResponseParams,
+        properties: [
+            "entries": .jsGoldenBrowserMadeEntryMojoArray,
+        ],
+        methods: [:]
+    )
+    fileprivate static let goldenPrimaryGetOrderedEntriesResponseParams = ObjectGroup(
+        name: "golden.Primary_GetOrderedEntries_ResponseParams",
+        instanceType: .jsGoldenPrimary_GetOrderedEntries_ResponseParams,
+        properties: [
+            "entries": .jsGoldenOrderedEntryMojoArray,
+        ],
+        methods: [:]
+    )
 }
 
 ///
@@ -207,16 +272,20 @@ extension ILType {
         .createJsArrayType(ofElementType: .jsGoldenEntry)
     fileprivate static let jsGoldenEntryMojoArrayMojoArray: ILType =
         .createJsArrayType(ofElementType: .jsGoldenEntryMojoArray)
-    fileprivate static let jsBoolMojoArray: ILType =
-        .createJsArrayType(ofElementType: .boolean)
-    fileprivate static let jsStringMojoArray: ILType =
-        .createJsArrayType(ofElementType: .string)
     fileprivate static let jsFloatMojoArray: ILType =
         .createJsArrayType(ofElementType: .float)
     fileprivate static let jsInt32MojoArray: ILType =
         .createJsArrayType(ofElementType: .jsInt32)
     fileprivate static let jsUint32MojoArray: ILType =
         .createJsArrayType(ofElementType: .jsUint32)
+    fileprivate static let jsGoldenOrderedEntryMojoArray: ILType =
+        .createJsArrayType(ofElementType: .jsGoldenOrderedEntry)
+    fileprivate static let jsBoolMojoArray: ILType =
+        .createJsArrayType(ofElementType: .boolean)
+    fileprivate static let jsStringMojoArray: ILType =
+        .createJsArrayType(ofElementType: .string)
+    fileprivate static let jsGoldenBrowserMadeEntryMojoArray: ILType =
+        .createJsArrayType(ofElementType: .jsGoldenBrowserMadeEntry)
 }
 
 /// As Fuzzilli runs, the OperationMutator and VariadicInputReducer will modify
@@ -248,24 +317,6 @@ private let MojoGoldenEntryMojoArrayMojoArrayGenerator = CodeGenerator(
     var elements: [Variable] = [elem]
     b.createArray(with: elements)
 }
-private let MojoBoolMojoArrayGenerator = CodeGenerator(
-    "MojoBoolMojoArrayGenerator",
-    inputs: .one,
-    produces: [.jsBoolMojoArray]
-) { b, _ in
-    let elem = b.findOrGenerateType(.boolean)
-    var elements: [Variable] = [elem]
-    b.createArray(with: elements)
-}
-private let MojoStringMojoArrayGenerator = CodeGenerator(
-    "MojoStringMojoArrayGenerator",
-    inputs: .one,
-    produces: [.jsStringMojoArray]
-) { b, _ in
-    let elem = b.findOrGenerateType(.string)
-    var elements: [Variable] = [elem]
-    b.createArray(with: elements)
-}
 private let MojoFloatMojoArrayGenerator = CodeGenerator(
     "MojoFloatMojoArrayGenerator",
     inputs: .one,
@@ -290,6 +341,15 @@ private let MojoUint32MojoArrayGenerator = CodeGenerator(
     produces: [.jsUint32MojoArray]
 ) { b, _ in
     let elem = b.findOrGenerateType(.jsUint32)
+    var elements: [Variable] = [elem]
+    b.createArray(with: elements)
+}
+private let MojoGoldenOrderedEntryMojoArrayGenerator = CodeGenerator(
+    "MojoGoldenOrderedEntryMojoArrayGenerator",
+    inputs: .one,
+    produces: [.jsGoldenOrderedEntryMojoArray]
+) { b, _ in
+    let elem = b.findOrGenerateType(.jsGoldenOrderedEntry)
     var elements: [Variable] = [elem]
     b.createArray(with: elements)
 }
@@ -352,6 +412,8 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .goldenPrimaryRemote,
     .goldenPrimaryRemoteWrapper,
     .goldenEntry,
+    .goldenOrderedEntry,
+    .goldenBrowserMadeEntry,
     .goldenPrimaryGetResponseParams,
     .goldenPrimaryGetNestedArrayResponseParams,
     .goldenPrimarySyncGetNestedArrayResponseParams,
@@ -359,6 +421,8 @@ private let mojoObjectGroups: [ObjectGroup] = [
     .goldenPrimarySyncGetStringsResponseParams,
     .goldenPrimaryGetBoolsResponseParams,
     .goldenPrimaryGetStringsResponseParams,
+    .goldenPrimaryGetBrowserMadeEntriesResponseParams,
+    .goldenPrimaryGetOrderedEntriesResponseParams,
 ] + commonMojoObjectGroups
 
 private let mojoBuiltins: [String: ILType] = [
@@ -372,6 +436,7 @@ private let mojoBuiltins: [String: ILType] = [
     /// as an opaque object Fuzzilli does not use it as a general-purpose array.
     "mojoAsyncFunctionPromises": .object(withMethods: ["push"]),
     "golden.Entry": .jsGoldenEntryConstructor,
+    "golden.OrderedEntry": .jsGoldenOrderedEntryConstructor,
 ]
 
 private let keepGenerators = [
@@ -436,11 +501,10 @@ let mojoPrimaryProfile = Profile(
         (MojoPropertyRetrievalGenerator, 10000),
         (MojoGoldenEntryMojoArrayGenerator, 1),
         (MojoGoldenEntryMojoArrayMojoArrayGenerator, 1),
-        (MojoBoolMojoArrayGenerator, 1),
-        (MojoStringMojoArrayGenerator, 1),
         (MojoFloatMojoArrayGenerator, 1),
         (MojoInt32MojoArrayGenerator, 1),
         (MojoUint32MojoArrayGenerator, 1),
+        (MojoGoldenOrderedEntryMojoArrayGenerator, 1),
     ] + commonMojoCodeGenerators,
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,
