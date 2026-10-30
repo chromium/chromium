@@ -3,15 +3,10 @@
 # found in the LICENSE file.
 
 import("//build/config/apple/swift_source_set.gni")
-import("//build/config/ios/ios_sdk.gni")
 import("//build/config/locales.gni")
 import("//ios/build/chrome_build.gni")
 import("//ios/chrome/extension_repack.gni")
 import("//ios/chrome/tools/strings/generate_localizable_strings.gni")
-
-config("ios_available_lockscreen_widget") {
-  swiftflags = [ "-DIOS_AVAILABLE_LOCKSCREEN_WIDGET" ]
-}
 
 config("ios_enable_lockscreen_widget") {
   swiftflags = [ "-DIOS_ENABLE_LOCKSCREEN_WIDGET" ]
@@ -53,12 +48,6 @@ swift_source_set("widget_kit_extension_swift") {
     "//ios/chrome/widget_kit_extension/resources",
     "//ui/base",
   ]
-
-  # Swift does not have the equivalent of __IPHONE_16_0, so use a
-  # custom define instead.
-  if (xcode_version_int >= 1400) {
-    configs += [ ":ios_available_lockscreen_widget" ]
-  }
 
   if (ios_enable_lockscreen_widget) {
     configs += [ ":ios_enable_lockscreen_widget" ]

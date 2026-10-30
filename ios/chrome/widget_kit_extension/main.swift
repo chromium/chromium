@@ -25,12 +25,10 @@ struct ChromeWidgetsForMIM: WidgetBundle {
     SearchPasswordsWidgetConfigurable()
     DinoGameWidgetConfigurable()
     #if IOS_ENABLE_LOCKSCREEN_WIDGET
-      #if IOS_AVAILABLE_LOCKSCREEN_WIDGET
-        LockscreenLauncherSearchWidget()
-        LockscreenLauncherIncognitoWidget()
-        LockscreenLauncherVoiceSearchWidget()
-        LockscreenLauncherGameWidget()
-      #endif
+      LockscreenLauncherSearchWidget()
+      LockscreenLauncherIncognitoWidget()
+      LockscreenLauncherVoiceSearchWidget()
+      LockscreenLauncherGameWidget()
     #endif
   }
 }

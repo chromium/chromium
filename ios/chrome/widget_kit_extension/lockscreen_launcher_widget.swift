@@ -7,9 +7,8 @@ import SwiftUI
 import WidgetKit
 
 #if IOS_ENABLE_LOCKSCREEN_WIDGET
-  #if IOS_AVAILABLE_LOCKSCREEN_WIDGET
 
-    enum LockscreenLauncherWidgetType {
+  enum LockscreenLauncherWidgetType {
       case search, incognito, voiceSearch, dinoGame
 
       struct Configuration {
@@ -142,5 +141,4 @@ import WidgetKit
       }
     }
 
-  #endif  // IOS_AVAILABLE_LOCKSCREEN_WIDGET
 #endif  // IOS_ENABLE_LOCKSCREEN_WIDGET
