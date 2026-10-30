@@ -8,6 +8,21 @@ found in the LICENSE file.
 
 <enums>
 
+<!-- LINT.IfChange(SmartSelectionDocumentMimeType) -->
+
+<enum name="SmartSelectionDocumentMimeType">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Pdf"/>
+  <int value="2" label="Html"/>
+  <int value="3" label="PlainText"/>
+  <int value="4" label="Image"/>
+  <int value="5" label="Video"/>
+  <int value="6" label="Audio"/>
+  <int value="7" label="Json"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/selection/metrics_logger.h:DocumentMimeType) -->
+
 <!-- LINT.IfChange(SmartSelectionEntryPoint) -->
 
 <enum name="SmartSelectionEntryPoint">

@@ -10,12 +10,15 @@
 namespace selection {
 namespace {
 
-TEST(MetricsLoggerTest, LogsInvocationEntryPoint) {
+TEST(MetricsLoggerTest, LogsInvocationEntryPointAndMimeType) {
   base::HistogramTester histogram_tester;
-  const MetricsLogger logger(EntryPoint::kContextMenuText);
+  const MetricsLogger logger(EntryPoint::kContextMenuText, "application/pdf");
 
   histogram_tester.ExpectUniqueSample("SmartSelection.Invocation.ByEntryPoint",
                                       EntryPoint::kContextMenuText, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SmartSelection.Invocation.ByDocumentMimeType", DocumentMimeType::kPdf,
+      1);
 }
 
 }  // namespace
