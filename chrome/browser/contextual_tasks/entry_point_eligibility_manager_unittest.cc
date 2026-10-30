@@ -276,39 +276,33 @@ TEST_F(EntryPointEligibilityManagerTest,
   EXPECT_FALSE(manager_->AreEntryPointsEligible());
 }
 
-// Disable test on ChromeOS since ChromeOS does not support switching the
-// primary account without a restart.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_NotifyEntryPointEligibilityChanged \
-  DISABLED_NotifyEntryPointEligibilityChanged
-#else
-#define MAYBE_NotifyEntryPointEligibilityChanged \
-  NotifyEntryPointEligibilityChanged
-#endif
-TEST_F(EntryPointEligibilityManagerTest,
-       MAYBE_NotifyEntryPointEligibilityChanged) {
-  // Start with eligible state.
+TEST_F(EntryPointEligibilityManagerTest, NotifyEntryPointEligibilityChanged) {
+  // Start with account and cookies available, but primary account not yet set.
   auto account_info =
       identity_test_env_adaptor_->identity_test_env()->MakeAccountAvailable(
           "test@example.com");
   identity_test_env_adaptor_->identity_test_env()->SetCookieAccounts(
       {{.email = std::string(account_info.GetEmail()),
         .gaia_id = account_info.GetGaiaId()}});
-  identity_test_env_adaptor_->identity_test_env()->SetPrimaryAccount(
-      account_info.GetEmail(), signin::ConsentLevel::kSignin);
 
   EXPECT_CALL(*mock_ui_service_, IsSignedInToBrowserWithValidCredentials())
       .WillRepeatedly(Return(true));
   profile_->GetPrefs()->SetInteger(omnibox::kAIModeSettings, 0);
 
   InitializeManager();
-  ASSERT_TRUE(manager_->AreEntryPointsEligible());
+  ASSERT_FALSE(manager_->AreEntryPointsEligible());
 
   // Register observer.
   std::optional<bool> notified_eligibility;
   auto subscription = manager_->RegisterOnEntryPointEligibilityChanged(
       base::BindLambdaForTesting(
           [&](bool eligible) { notified_eligibility = eligible; }));
+
+  // Test OnPrimaryAccountChanged (sign-in): Set primary account.
+  identity_test_env_adaptor_->identity_test_env()->SetPrimaryAccount(
+      account_info.GetEmail(), signin::ConsentLevel::kSignin);
+  EXPECT_EQ(notified_eligibility, true);
+  ASSERT_TRUE(manager_->AreEntryPointsEligible());
 
   // 1. Test OnAccountsInCookieUpdated: Set cookies to empty.
   notified_eligibility.reset();
@@ -322,7 +316,10 @@ TEST_F(EntryPointEligibilityManagerTest,
         .gaia_id = account_info.GetGaiaId()}});
   EXPECT_EQ(notified_eligibility, true);
 
+#if !BUILDFLAG(IS_CHROMEOS)
   // 2. Test OnPrimaryAccountChanged: Clear primary account.
+  // Skipped on ChromeOS since signin::ClearPrimaryAccount() is not supported
+  // without a restart.
   notified_eligibility.reset();
   identity_test_env_adaptor_->identity_test_env()->ClearPrimaryAccount();
   EXPECT_EQ(notified_eligibility, false);
@@ -336,6 +333,7 @@ TEST_F(EntryPointEligibilityManagerTest,
       {{.email = std::string(account_info.GetEmail()),
         .gaia_id = account_info.GetGaiaId()}});
   EXPECT_EQ(notified_eligibility, true);
+#endif
 
   // 3. Test OnRefreshTokenUpdatedForAccount:
   // Change IsSignedIn expectation to false to simulate invalid credentials.
