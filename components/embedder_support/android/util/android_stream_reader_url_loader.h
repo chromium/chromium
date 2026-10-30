@@ -172,7 +172,6 @@ class AndroidStreamReaderURLLoader : public network::mojom::URLLoader {
   mojo::ScopedDataPipeProducerHandle producer_handle_;
   scoped_refptr<network::NetToMojoPendingBuffer> pending_buffer_;
   mojo::SimpleWatcher writable_handle_watcher_;
-  base::Time start_time_;
   std::optional<SetCookieHeader> set_cookie_header_;
   base::ThreadChecker thread_checker_;
 

@@ -8254,19 +8254,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.InputStreamTime" units="ms"
-    expires_after="2025-06-01">
-  <owner>jam@chromium.org</owner>
-  <owner>cduvall@chromium.org</owner>
-  <owner>stefanoduo@google.com</owner>
-  <summary>
-    Measures how long InputStreams take from creation to completion. This is
-    emitted for all streams whether they succeed or fail. This metric was
-    expired between December 2023 and May 2024. Data from that period will be
-    incomplete.
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.isDebuggable" enum="DebuggingEnabled"
     expires_after="2026-07-25">
   <owner>ntfschr@chromium.org</owner>

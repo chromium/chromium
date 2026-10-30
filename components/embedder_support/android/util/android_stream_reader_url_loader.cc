@@ -14,7 +14,6 @@
 #include "base/android/jni_android.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -152,7 +151,6 @@ AndroidStreamReaderURLLoader::AndroidStreamReaderURLLoader(
       writable_handle_watcher_(FROM_HERE,
                                mojo::SimpleWatcher::ArmingPolicy::MANUAL,
                                base::SequencedTaskRunner::GetCurrentDefault()),
-      start_time_(base::Time::Now()),
       set_cookie_header_(set_cookie_header) {
   DCHECK(response_delegate_);
   // If there is a client error, clean up the request.
@@ -515,8 +513,6 @@ void AndroidStreamReaderURLLoader::RequestCompleteWithStatus(
   }
 
   client_->OnComplete(status);
-  UMA_HISTOGRAM_TIMES("Android.WebView.InputStreamTime",
-                      base::Time::Now() - start_time_);
   CleanUp();
 }
 
