@@ -1256,10 +1256,12 @@ TEST_F(VideoCaptureManagerTest, DeviceCaptureDeviceNotClosedOnScreenlock) {
 // ScreenLocked event on desktop platforms.
 TEST_F(VideoCaptureManagerTest, DesktopCaptureDeviceClosedOnScreenlock) {
   InSequence s;
-  // ScreenLocked event should stop desktop capture device.
+  // ScreenLocked event should abort and then close the desktop capture device.
   EXPECT_CALL(*listener_,
               Opened(blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE, _));
   EXPECT_CALL(*frame_observer_, OnStarted(_));
+  EXPECT_CALL(*listener_,
+              Aborted(blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE, _));
   EXPECT_CALL(*listener_,
               Closed(blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE, _));
 

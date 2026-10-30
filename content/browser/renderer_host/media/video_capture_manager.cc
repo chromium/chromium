@@ -1067,7 +1067,21 @@ void VideoCaptureManager::OnScreenLocked() {
                             &VideoCaptureManager::ReleaseDevices);
   }
 
-  for (auto session_id : desktopcapture_session_ids) {
+  for (const auto& session_id : desktopcapture_session_ids) {
+    auto session_it = sessions_.find(session_id);
+    if (session_it == sessions_.end()) {
+      continue;
+    }
+    // The session is being torn down from under its owner, so report it as
+    // aborted rather than closed. This lets listeners also stop any paired
+    // audio capture, the same way they do for a device error. Copy the type
+    // because a listener may close the session and invalidate `session_it`.
+    const blink::mojom::MediaStreamType type = session_it->second.type;
+    for (auto& listener : listeners_) {
+      listener.Aborted(type, session_id);
+    }
+    // Listeners usually close the session in response to Aborted(). Close()
+    // is a no-op if the session is already gone.
     Close(session_id);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
