@@ -3032,7 +3032,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/r8',
-              'version': 'Zto0xLX0LI8Qtvd22oJhVzhhpLNpCoH0Ge8sQ0XQaqIC',
+              'version': 'bWYJsIq9EF-telhXlh_WlyusblFC-qLt-vccSN5bQ1QC',
           },
       ],
       'condition': 'checkout_android and non_git_source',
