@@ -44,6 +44,7 @@
 
 #include "third_party/blink/renderer/core/paint/paint_layer_clipper.h"
 
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -173,8 +174,14 @@ void PaintLayerClipper::CalculateBackgroundClipRectInternal(
   // paint outside of those bounds.
   // The total painting bounds includes any visual overflow (such as shadow) and
   // filter bounds.
+  const auto* element = DynamicTo<Element>(layer_->GetLayoutObject().GetNode());
+  const bool has_scoped_transition_pseudo =
+      element && !element->IsDocumentElement() &&
+      element->PseudoElementLayoutObject(kPseudoIdViewTransition);
+  // A scoped transition pseudo can extend outside these bounds and escapes the
+  // scope's overflow clip. Do not reject its hit-test pass at the scope layer.
   if ((should_apply_self_overflow_clip == kRespectOverflowClip) &&
-      HasNonVisibleOverflow(*layer_)) {
+      HasNonVisibleOverflow(*layer_) && !has_scoped_transition_pseudo) {
     // Implement the following special case: if computing clip rects with
     // respect to the root, don't exclude overlay scrollbars for the background
     // rect if layer_ is the same as the root.
