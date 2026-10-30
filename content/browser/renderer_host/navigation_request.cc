@@ -6057,6 +6057,10 @@ void NavigationRequest::OnRequestFailedInternal(
   // requests.
   pending_entry_ref_.reset();
 
+  // An error page is never a secure-context root, even when the answer was
+  // already computed for the document that failed to commit.
+  commit_params_->is_secure_context_root = false;
+
   net_error_ = static_cast<net::Error>(status.error_code);
   extended_error_code_ = status.extended_error_code;
   resolve_error_info_ = status.resolve_error_info;

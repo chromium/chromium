@@ -29,6 +29,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/fake_local_frame.h"
+#include "content/public/test/test_navigation_throttle.h"
 #include "content/public/test/test_utils.h"
 #include "content/test/navigation_simulator_impl.h"
 #include "content/test/storage_partition_test_helpers.h"
@@ -2046,6 +2047,36 @@ TEST_F(RenderFrameHostImplMimeHandlerTest,
   EXPECT_TRUE(extension_frame->frame_tree_node()
                   ->current_replication_state()
                   .is_secure_context_root);
+}
+
+// A throttle can block the response after the commit-time policies were
+// computed, and the frame then commits an error page instead. The error page is
+// not the chrome-extension document the secure-context-root answer was
+// computed for, so it is expected not to become a secure-context root.
+TEST_F(RenderFrameHostImplMimeHandlerTest,
+       BlockedResponseErrorPageIsNotSecureContextRoot) {
+  TestRenderFrameHost* embedder = CommitEmbedder(GURL(kEmbedderUrl));
+  TestRenderFrameHost* child = AppendAndMaybeCommit(embedder, "child", GURL());
+
+  auto navigation =
+      NavigationSimulator::CreateRendererInitiated(GURL(kExtensionUrl), child);
+  navigation->Start();
+  auto& registry = navigation->GetNavigationThrottleRegistry();
+  auto throttle = std::make_unique<TestNavigationThrottle>(registry);
+  throttle->SetResponse(TestNavigationThrottle::WILL_PROCESS_RESPONSE,
+                        TestNavigationThrottle::SYNCHRONOUS,
+                        NavigationThrottle::BLOCK_RESPONSE);
+  registry.AddThrottle(std::move(throttle));
+  navigation->ReadyToCommit();
+  ASSERT_EQ(NavigationThrottle::BLOCK_RESPONSE,
+            navigation->GetLastThrottleCheckResult());
+  navigation->CommitErrorPage();
+
+  EXPECT_FALSE(
+      static_cast<RenderFrameHostImpl*>(navigation->GetFinalRenderFrameHost())
+          ->frame_tree_node()
+          ->current_replication_state()
+          .is_secure_context_root);
 }
 
 // Turns on the DBSC JS API, so that each commit computes
