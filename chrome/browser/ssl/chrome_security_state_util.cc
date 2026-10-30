@@ -27,7 +27,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
-#include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
+#include "chrome/browser/safe_browsing/password_protection/chrome_password_protection_service.h"
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)

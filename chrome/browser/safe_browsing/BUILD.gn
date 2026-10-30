@@ -202,9 +202,6 @@ static_library("safe_browsing") {
       "chrome_client_side_detection_host_delegate.h",
       "chrome_client_side_detection_service_delegate.h",
       "chrome_enterprise_url_lookup_service_factory.h",
-      "chrome_password_protection_service.h",
-      "chrome_password_protection_service_factory.h",
-      "chrome_password_reuse_detection_manager_client.h",
       "chrome_ping_manager_factory.h",
       "chrome_safe_browsing_blocking_page_factory.h",
       "chrome_safe_browsing_local_state_delegate.h",
@@ -239,6 +236,9 @@ static_library("safe_browsing") {
       "notification_content_detection/notification_content_detection_util.h",
       "notification_telemetry/notification_telemetry_service.h",
       "notification_telemetry/notification_telemetry_service_factory.h",
+      "password_protection/chrome_password_protection_service.h",
+      "password_protection/chrome_password_protection_service_factory.h",
+      "password_protection/chrome_password_reuse_detection_manager_client.h",
       "phishy_interaction_tracker.h",
       "safe_browsing_navigation_observer_manager_factory.h",
       "safe_browsing_service.h",
@@ -261,9 +261,6 @@ static_library("safe_browsing") {
       "chrome_client_side_detection_host_delegate.cc",
       "chrome_client_side_detection_service_delegate.cc",
       "chrome_enterprise_url_lookup_service_factory.cc",
-      "chrome_password_protection_service.cc",
-      "chrome_password_protection_service_factory.cc",
-      "chrome_password_reuse_detection_manager_client.cc",
       "chrome_ping_manager_factory.cc",
       "chrome_safe_browsing_blocking_page_factory.cc",
       "chrome_safe_browsing_local_state_delegate.cc",
@@ -298,6 +295,9 @@ static_library("safe_browsing") {
       "notification_content_detection/notification_content_detection_util.cc",
       "notification_telemetry/notification_telemetry_service.cc",
       "notification_telemetry/notification_telemetry_service_factory.cc",
+      "password_protection/chrome_password_protection_service.cc",
+      "password_protection/chrome_password_protection_service_factory.cc",
+      "password_protection/chrome_password_reuse_detection_manager_client.cc",
       "phishy_interaction_tracker.cc",
       "safe_browsing_navigation_observer_manager_factory.cc",
       "safe_browsing_service.cc",
@@ -800,7 +800,6 @@ source_set("unit_tests") {
 
   if (safe_browsing_mode != 0) {
     sources += [
-      "chrome_password_protection_service_unittest.cc",
       "chrome_ui_manager_delegate_unittest.cc",
       "chrome_user_population_helper_unittest.cc",
       "client_side_detection_host_unittest.cc",
@@ -814,6 +813,7 @@ source_set("unit_tests") {
       "download_protection/file_system_access_metadata_unittest.cc",
       "gemini_antiscam_protection/gemini_antiscam_protection_service_unittest.cc",
       "notification_content_detection/notification_content_detection_util_unittest.cc",
+      "password_protection/chrome_password_protection_service_unittest.cc",
       "threat_details_unittest.cc",
     ]
     deps += [
@@ -905,7 +905,6 @@ source_set("unit_tests") {
   if (safe_browsing_mode == 1) {
     sources += [
       "advanced_protection/advanced_protection_status_manager_desktop_unittest.cc",
-      "chrome_password_reuse_detection_manager_client_unittest.cc",
       "chrome_ping_manager_factory_unittest.cc",
       "chrome_safe_browsing_hats_delegate_desktop_unittest.cc",
       "client_side_detection_intelligent_scan_delegate_desktop_unittest.cc",
@@ -956,6 +955,7 @@ source_set("unit_tests") {
       "incident_reporting/state_store_unittest.cc",
       "incident_reporting/tracked_preference_incident_unittest.cc",
       "ohttp_key_service_factory_unittest.cc",
+      "password_protection/chrome_password_reuse_detection_manager_client_unittest.cc",
       "phishy_interaction_tracker_unittest.cc",
       "safe_browsing_service_unittest.cc",
       "suspicious_site_warnings/suspicious_site_controller_desktop_unittest.cc",
@@ -1385,11 +1385,11 @@ source_set("browser_tests") {
   if (safe_browsing_mode == 1) {
     sources += [
       "chrome_client_side_detection_host_delegate_browsertest.cc",
-      "chrome_password_protection_service_browsertest.cc",
-      "chrome_password_protection_service_sync_browsertest.cc",
       "client_side_detection_host_browsertest.cc",
       "notification_content_detection/notification_content_detection_service_browsertest.cc",
       "ohttp_key_service_browsertest.cc",
+      "password_protection/chrome_password_protection_service_browsertest.cc",
+      "password_protection/chrome_password_protection_service_sync_browsertest.cc",
       "safe_browsing_blocking_page_test.cc",
       "safe_browsing_navigation_observer_browsertest.cc",
       "safe_browsing_service_browsertest.cc",
