@@ -15,9 +15,9 @@ desc: |-
   This policy has no effect if <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_POLICY_NAME">ProvisionManagedClientCertificateForUser</ph> is disabled or unset.
 supported_on:
 - chrome.*:159-
+- android:159-
 future_on:
 - chrome_os
-- android
 - ios
 features:
   cloud_only: true
