@@ -224,7 +224,6 @@ VideoFrameAcceleratedSnapshotPool::VideoFrameAcceleratedSnapshotPool(
       context_provider_wrapper_(std::move(context_provider_wrapper)) {
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
   if (context_provider_wrapper_) {
-    context_provider_wrapper_->AddObserver(this);
     raster_context_provider_ = base::WrapRefCounted(
         context_provider_wrapper_->ContextProvider().RasterContextProvider());
   }
@@ -274,9 +273,6 @@ VideoFrameAcceleratedSnapshotPool::VideoFrameAcceleratedSnapshotPool(
 
 VideoFrameAcceleratedSnapshotPool::~VideoFrameAcceleratedSnapshotPool() {
   CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
-  if (context_provider_wrapper_) {
-    context_provider_wrapper_->RemoveObserver(this);
-  }
   if (raster_context_provider_) {
     raster_context_provider_->RemoveObserver(this);
   }
@@ -286,16 +282,6 @@ VideoFrameAcceleratedSnapshotPool::~VideoFrameAcceleratedSnapshotPool() {
 }
 
 void VideoFrameAcceleratedSnapshotPool::OnContextLost() {
-  ClearUnusedResources();
-}
-
-void VideoFrameAcceleratedSnapshotPool::OnContextDestroyed() {
-  if (image_pool_) {
-    image_pool_->Clear();
-  }
-}
-
-void VideoFrameAcceleratedSnapshotPool::ClearUnusedResources() {
   if (image_pool_) {
     image_pool_->Clear();
   }

@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_snapshot_info.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
-#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
@@ -42,13 +41,13 @@ class PaintFlags;
 
 namespace blink {
 class StaticBitmapImage;
+class WebGraphicsContext3DProviderWrapper;
 
 // Pool of accelerated SharedImages used to produce AcceleratedStaticBitmapImage
 // snapshots from media::VideoFrames.
 class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool
     : public CanvasMemoryDumpClient,
       public CanvasResourceSharedImage::Client,
-      public WebGraphicsContext3DProviderWrapper::DestructionObserver,
       public viz::ContextLostObserver {
  public:
   static std::unique_ptr<VideoFrameAcceleratedSnapshotPool> Create(
@@ -84,13 +83,9 @@ class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool
       scoped_refptr<CanvasResourceSharedImage>&& resource) override;
   void OnDestroyResource() override { --num_inflight_resources_; }
 
-  // WebGraphicsContext3DProviderWrapper::DestructionObserver:
-  void OnContextDestroyed() override;
-
   // viz::ContextLostObserver:
   void OnContextLost() override;
 
-  void ClearUnusedResources();
   void FlushRecording(cc::PaintRecord last_recording);
   void EnsureResourceReadyForDraw();
   bool ShouldReplaceTargetBuffer(cc::PaintImage::ContentId content_id);
