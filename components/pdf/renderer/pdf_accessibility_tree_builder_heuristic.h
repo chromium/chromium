@@ -200,6 +200,9 @@ class PdfAccessibilityTreeBuilderHeuristic {
   // Result of `CreateBlockLevelNode()`.
   struct BlockLevelNodeResult;
 
+  // Tracks which text runs are on the same line.
+  class LineHelper;
+
   BlockLevelNodeResult CreateBlockLevelNode(
       const PageLayoutData& layout,
       size_t text_run_index,
@@ -231,21 +234,27 @@ class PdfAccessibilityTreeBuilderHeuristic {
                                    StaticTextState* static_text_state,
                                    size_t marker_prefix_char_count = 0);
 
+  // Adds the text runs in [`start_text_run_index`, `end_text_run_index`] to
+  // `ax_node`. `line_helper` is shared with `BuildPageTree()` so lines that
+  // start or end inside an object are tracked like body text.
   void AddTextToAXNode(size_t start_text_run_index,
                        uint32_t end_text_run_index,
                        ui::AXNodeData* ax_node,
-                       ui::AXNodeData** previous_on_line_node);
+                       ui::AXNodeData** previous_on_line_node,
+                       LineHelper* line_helper);
 
   void AddTextToObjectNode(size_t object_text_run_index,
                            uint32_t object_text_run_count,
                            ui::AXNodeData* object_node,
                            ui::AXNodeData* para_node,
                            ui::AXNodeData** previous_on_line_node,
+                           LineHelper* line_helper,
                            size_t* text_run_index);
 
   void AddLinkToParaNode(const chrome_pdf::AccessibilityLinkInfo& link,
                          ui::AXNodeData* para_node,
                          ui::AXNodeData** previous_on_line_node,
+                         LineHelper* line_helper,
                          size_t* text_run_index);
 
   void AddImageToParaNode(const chrome_pdf::AccessibilityImageInfo& image,
@@ -256,6 +265,7 @@ class PdfAccessibilityTreeBuilderHeuristic {
       const chrome_pdf::AccessibilityHighlightInfo& highlight,
       ui::AXNodeData* para_node,
       ui::AXNodeData** previous_on_line_node,
+      LineHelper* line_helper,
       size_t* text_run_index);
 
   void AddRemainingAnnotations(

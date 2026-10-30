@@ -9349,6 +9349,45 @@ TEST_F(PdfAccessibilityTreeTest, TestPreviousNextOnLine) {
                 ax::mojom::IntAttribute::kPreviousOnLineId));
 }
 
+// A line that starts with a link keeps its runs after the link connected on the
+// line.
+TEST_F(PdfAccessibilityTreeTest, HeuristicPreviousNextOnLineAfterLeadingLink) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  chrome_pdf::AccessibilityLinkInfo link;
+  link.bounds = gfx::RectF(30.0f, 33.0f, 40.0f, 12.0f);
+  link.url = kChromiumTestUrl;
+  link.text_range.index = 1;
+  link.text_range.count = 1;
+  page_objects_.links.push_back(link);
+
+  const ui::AXNode* page =
+      SetUpUniformHeuristicPage({"Line one", "Link", ", ", "more text"},
+                                {
+                                    gfx::RectF(30.0f, 20.0f, 120.0f, 12.0f),
+                                    gfx::RectF(30.0f, 33.0f, 40.0f, 12.0f),
+                                    gfx::RectF(70.0f, 33.0f, 20.0f, 12.0f),
+                                    gfx::RectF(90.0f, 33.0f, 60.0f, 12.0f),
+                                });
+  ASSERT_NE(nullptr, page);
+  ASSERT_EQ(1u, page->GetChildCount());
+  const ui::AXNode* paragraph = page->GetChildAtIndex(0u);
+  ASSERT_EQ(3u, paragraph->GetChildCount());
+  EXPECT_EQ(ax::mojom::Role::kLink, paragraph->GetChildAtIndex(1u)->GetRole());
+
+  const ui::AXNode* static_text = paragraph->GetChildAtIndex(2u);
+  ASSERT_EQ(2u, static_text->GetChildCount());
+  const ui::AXNode* comma_box = static_text->GetChildAtIndex(0u);
+  const ui::AXNode* more_text_box = static_text->GetChildAtIndex(1u);
+  EXPECT_EQ(more_text_box->id(),
+            comma_box->GetIntAttribute(ax::mojom::IntAttribute::kNextOnLineId));
+  EXPECT_EQ(comma_box->id(), more_text_box->GetIntAttribute(
+                                 ax::mojom::IntAttribute::kPreviousOnLineId));
+}
+
 TEST_F(PdfAccessibilityTreeTest, TextRunsAndCharsMismatch) {
   // `chars_` and `text_runs_` span over the same page text. They should denote
   // the same page text size, but `text_runs_` is incorrect and only denotes 1
