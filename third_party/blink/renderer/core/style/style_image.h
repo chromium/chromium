@@ -178,8 +178,6 @@ class CORE_EXPORT StyleImage : public GarbageCollected<StyleImage> {
   ALWAYS_INLINE bool IsPaintImage() const { return is_paint_image_; }
   ALWAYS_INLINE bool IsCrossfadeImage() const { return is_crossfade_; }
 
-  virtual bool IsLoadedAfterMouseover() const { return false; }
-
   virtual void Trace(Visitor* visitor) const {}
 
  protected:

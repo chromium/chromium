@@ -52,25 +52,6 @@ bool FilterOperations::operator==(const FilterOperations& o) const {
   return true;
 }
 
-bool FilterOperations::CanInterpolateWith(const FilterOperations& other) const {
-  auto can_interpolate = [](FilterOperation* operation) {
-    return FilterOperation::CanInterpolate(operation->GetType());
-  };
-  if (!std::ranges::all_of(Operations(), can_interpolate) ||
-      !std::ranges::all_of(other.Operations(), can_interpolate)) {
-    return false;
-  }
-
-  wtf_size_t common_size =
-      std::min(Operations().size(), other.Operations().size());
-  for (wtf_size_t i = 0; i < common_size; ++i) {
-    if (!Operations()[i]->IsSameType(*other.Operations()[i])) {
-      return false;
-    }
-  }
-  return true;
-}
-
 gfx::RectF FilterOperations::MapRect(const gfx::RectF& rect) const {
   auto accumulate_mapped_rect = [](const gfx::RectF& rect,
                                    const Member<FilterOperation>& op) {
@@ -78,12 +59,6 @@ gfx::RectF FilterOperations::MapRect(const gfx::RectF& rect) const {
   };
   return std::accumulate(operations_.begin(), operations_.end(), rect,
                          accumulate_mapped_rect);
-}
-
-bool FilterOperations::HasFilterThatAffectsOpacity() const {
-  return std::ranges::any_of(operations_, [](const auto& operation) {
-    return operation->AffectsOpacity();
-  });
 }
 
 bool FilterOperations::HasFilterThatMovesPixels() const {

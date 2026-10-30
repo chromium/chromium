@@ -78,31 +78,6 @@ class CORE_EXPORT FilterOperation : public GarbageCollected<FilterOperation> {
     kTurbulence,
   };
 
-  static bool CanInterpolate(FilterOperation::OperationType type) {
-    switch (type) {
-      case OperationType::kGrayscale:
-      case OperationType::kSepia:
-      case OperationType::kSaturate:
-      case OperationType::kHueRotate:
-      case OperationType::kLuminanceToAlpha:
-      case OperationType::kInvert:
-      case OperationType::kOpacity:
-      case OperationType::kBrightness:
-      case OperationType::kContrast:
-      case OperationType::kBlur:
-      case OperationType::kDropShadow:
-      case OperationType::kColorMatrix:
-      case OperationType::kTurbulence:
-        return true;
-      case OperationType::kReference:
-      case OperationType::kComponentTransfer:
-      case OperationType::kConvolveMatrix:
-      case OperationType::kBoxReflect:
-        return false;
-    }
-    NOTREACHED();
-  }
-
   virtual ~FilterOperation() = default;
   virtual void Trace(Visitor* visitor) const {}
 
@@ -115,8 +90,6 @@ class CORE_EXPORT FilterOperation : public GarbageCollected<FilterOperation> {
     return o.GetType() == type_;
   }
 
-  // True if the alpha channel of any pixel can change under this operation.
-  virtual bool AffectsOpacity() const { return false; }
   // True if the the value of one pixel can affect the value of another pixel
   // under this operation, such as blur.
   virtual bool MovesPixels() const { return false; }
@@ -148,7 +121,6 @@ class CORE_EXPORT ReferenceFilterOperation : public FilterOperation {
  public:
   ReferenceFilterOperation(const AtomicString& url, SVGResource*);
 
-  bool AffectsOpacity() const override { return true; }
   bool MovesPixels() const override { return true; }
   bool UsesCurrentColor() const override {
     // This is pessimistic. A reference filter _may_ contain a primitive that
@@ -277,10 +249,6 @@ class CORE_EXPORT BasicComponentTransferFilterOperation
 
   double Amount() const { return amount_; }
 
-  bool AffectsOpacity() const override {
-    return type_ == OperationType::kOpacity;
-  }
-
  protected:
   bool IsEqualAssumingSameType(const FilterOperation& o) const override {
     const BasicComponentTransferFilterOperation* other =
@@ -332,7 +300,6 @@ class CORE_EXPORT BlurFilterOperation : public FilterOperation {
     return std_deviation_;
   }
 
-  bool AffectsOpacity() const override { return true; }
   bool MovesPixels() const override { return true; }
   gfx::RectF MapRect(const gfx::RectF&) const override;
 
@@ -368,7 +335,6 @@ class CORE_EXPORT DropShadowFilterOperation : public FilterOperation {
 
   const ShadowData& Shadow() const { return shadow_; }
 
-  bool AffectsOpacity() const override { return true; }
   bool MovesPixels() const override { return true; }
   bool UsesCurrentColor() const override {
     return shadow_.GetColor().DependsOnCurrentColor();
@@ -402,7 +368,6 @@ class CORE_EXPORT BoxReflectFilterOperation : public FilterOperation {
 
   const BoxReflection& Reflection() const { return reflection_; }
 
-  bool AffectsOpacity() const override { return true; }
   bool MovesPixels() const override { return true; }
   gfx::RectF MapRect(const gfx::RectF&) const override;
 

@@ -500,11 +500,6 @@ class ComputedStyle final : public ComputedStyleBase {
    * class, and be kept to a minimum.
    */
 
-  // anchor-name
-  bool AnchorNameDataEquivalent(const ComputedStyle& o) const {
-    return base::ValuesEquivalent(AnchorName(), o.AnchorName());
-  }
-
   // Regular (non-interleaved) style resolutions happen without an
   // AnchorEvaluator, which means any anchor*() function will use
   // the fallback. Since anchor*() functions resolve computed-value time,
@@ -783,9 +778,6 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // list-style-type
   const AtomicString& ListStyleStringValue() const;
-  bool ListStyleTypeDataEquivalent(const ComputedStyle& other) const {
-    return base::ValuesEquivalent(ListStyleType(), other.ListStyleType());
-  }
 
   // list-style-position
 
@@ -1493,7 +1485,6 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // Float utility functions.
   bool IsFloating() const { return Floating() != EFloat::kNone; }
-  EFloat UnresolvedFloating() const { return Floating(); }
 
   EFloat Floating(const ComputedStyle& cb_style) const {
     return Floating(cb_style.Direction());
@@ -1585,7 +1576,6 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // Clear utility functions.
   bool HasClear() const { return Clear() != EClear::kNone; }
-  EClear UnresolvedClear() const { return Clear(); }
 
   EClear Clear(const ComputedStyle& cb_style) const {
     return Clear(cb_style.Direction());
@@ -1854,7 +1844,6 @@ class ComputedStyle final : public ComputedStyleBase {
   bool HasResize() const {
     return StyleType() == kPseudoIdNone && Resize() != EResize::kNone;
   }
-  EResize UnresolvedResize() const { return Resize(); }
 
   EResize UsedResize() const {
     EResize value = Resize();
@@ -2360,12 +2349,6 @@ class ComputedStyle final : public ComputedStyleBase {
   }
   bool NeedsTrailingSpace() const {
     return ShouldBreakOnlyAfterWhiteSpace() && ShouldWrapLine();
-  }
-
-  bool ShouldBreakWords() const {
-    return (WordBreak() == EWordBreak::kBreakWord ||
-            OverflowWrap() != EOverflowWrap::kNormal) &&
-           ShouldWrapLine();
   }
 
   // Text direction utility functions.
@@ -2911,12 +2894,6 @@ class ComputedStyle final : public ComputedStyleBase {
     return PhysicalToLogical<int>(GetWritingDirection(), BorderTopWidth(),
                                   BorderRightWidth(), BorderBottomWidth(),
                                   BorderLeftWidth());
-  }
-
-  PhysicalToLogical<EBorderStyle> PhysicalBorderStyleToLogical() const {
-    return PhysicalToLogical<EBorderStyle>(
-        GetWritingDirection(), BorderTopStyle(), BorderRightStyle(),
-        BorderBottomStyle(), BorderLeftStyle());
   }
 
   static Difference ComputeDifferenceIgnoringInheritedFirstLineStyle(
@@ -3715,8 +3692,6 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
                                    bool is_inherited_property) const;
   CORE_EXPORT StyleInheritedVariables& MutableInheritedVariables();
   CORE_EXPORT StyleNonInheritedVariables& MutableNonInheritedVariables();
-  void SetInheritedVariablesFrom(const ComputedStyle*);
-  void SetNonInheritedVariablesFrom(const ComputedStyle*);
   CORE_EXPORT void SetVariableData(const AtomicString& name,
                                    CSSVariableData* value,
                                    bool is_inherited_property) {

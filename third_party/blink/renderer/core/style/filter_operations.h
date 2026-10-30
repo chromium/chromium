@@ -66,14 +66,11 @@ class CORE_EXPORT FilterOperations {
     return index < operations_.size() ? operations_.at(index).Get() : nullptr;
   }
 
-  bool CanInterpolateWith(const FilterOperations&) const;
-
   // Maps "forward" to determine which pixels in a destination rect are
   // affected by pixels in the source rect.
   // See also FilterEffect::MapRect.
   gfx::RectF MapRect(const gfx::RectF&) const;
 
-  bool HasFilterThatAffectsOpacity() const;
   bool HasFilterThatMovesPixels() const;
   bool HasReferenceFilter() const;
   bool UsesCurrentColor() const;

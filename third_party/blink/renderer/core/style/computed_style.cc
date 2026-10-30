@@ -3354,16 +3354,6 @@ CSSVariableData* ComputedStyleBuilder::GetVariableData(
   return blink::GetVariableDataInternal(*this, name, is_inherited_property);
 }
 
-void ComputedStyleBuilder::SetInheritedVariablesFrom(
-    const ComputedStyle* style) {
-  SetInheritedVariablesInternal(style->InheritedVariablesInternal());
-}
-
-void ComputedStyleBuilder::SetNonInheritedVariablesFrom(
-    const ComputedStyle* style) {
-  SetNonInheritedVariablesInternal(style->NonInheritedVariablesInternal());
-}
-
 STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kAuto,
                    EOverscrollBehavior::kAuto);
 STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kContain,

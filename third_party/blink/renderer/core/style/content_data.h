@@ -361,7 +361,6 @@ class QuoteContentData final : public ContentData {
   explicit QuoteContentData(QuoteType quote) : quote_(quote) {}
 
   QuoteType Quote() const { return quote_; }
-  void SetQuote(QuoteType quote) { quote_ = quote; }
 
   bool IsQuote() const override { return true; }
   LayoutObject* CreateLayoutObject(LayoutObject& owner) const override;
