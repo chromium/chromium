@@ -56,6 +56,16 @@ std::unique_ptr<DlpContentTabHelper> DlpContentTabHelper::MaybeCreate(
 }
 
 // static
+void DlpContentTabHelper::MaybeCreateForWebContents(
+    content::WebContents* web_contents) {
+  if (!ShouldCreateForWebContents(web_contents)) {
+    return;
+  }
+  content::WebContentsUserData<DlpContentTabHelper>::CreateForWebContents(
+      web_contents);
+}
+
+// static
 DlpContentTabHelper* DlpContentTabHelper::FromTab(tabs::TabInterface* tab) {
   return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
 }
@@ -66,7 +76,12 @@ DlpContentTabHelper* DlpContentTabHelper::FromWebContents(
   if (!web_contents) {
     return nullptr;
   }
-  return FromTab(tabs::TabInterface::MaybeGetFromContents(web_contents));
+  if (auto* helper =
+          FromTab(tabs::TabInterface::MaybeGetFromContents(web_contents))) {
+    return helper;
+  }
+  return content::WebContentsUserData<DlpContentTabHelper>::FromWebContents(
+      web_contents);
 }
 
 // static
@@ -146,15 +161,28 @@ void DlpContentTabHelper::OnVisibilityChanged(content::Visibility visibility) {
   DlpContentObserver::Get()->OnVisibilityChanged(web_contents());
 }
 
+void DlpContentTabHelper::InnerWebContentsAttached(
+    content::WebContents* inner_web_contents,
+    content::RenderFrameHost* render_frame_host) {
+  if (auto* inner_helper =
+          DlpContentTabHelper::FromWebContents(inner_web_contents)) {
+    inner_helper->MaybeNotifyConfidentialityOnAttachment();
+  }
+}
+
 std::vector<DlpContentTabHelper::RfhInfo> DlpContentTabHelper::GetFramesInfo()
     const {
   return std::vector<RfhInfo>{confidential_frames_.begin(),
                               confidential_frames_.end()};
 }
 
+DlpContentTabHelper::DlpContentTabHelper(content::WebContents* web_contents)
+    : DlpContentTabHelper(nullptr, web_contents) {}
+
 DlpContentTabHelper::DlpContentTabHelper(tabs::TabInterface* tab,
                                          content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
+    : content::WebContentsUserData<DlpContentTabHelper>(*web_contents),
+      content::WebContentsObserver(web_contents) {
   if (tab) {
     scoped_unowned_user_data_.emplace(tab->GetUnownedUserDataHost(), *this);
   }
@@ -189,5 +217,15 @@ void DlpContentTabHelper::RemoveFrame(
                                                         new_restriction_set);
   }
 }
+
+void DlpContentTabHelper::MaybeNotifyConfidentialityOnAttachment() {
+  const DlpContentRestrictionSet restriction_set = GetRestrictionSet();
+  if (!restriction_set.IsEmpty()) {
+    DlpContentObserver::Get()->OnConfidentialityChanged(web_contents(),
+                                                        restriction_set);
+  }
+}
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(DlpContentTabHelper);
 
 }  // namespace policy

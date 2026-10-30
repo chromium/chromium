@@ -8,6 +8,8 @@
 #include "base/path_service.h"
 #include "chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
+#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_observer.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_content_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -93,6 +95,159 @@ IN_PROC_BROWSER_TEST_F(DlpContentTabHelperBrowserTest, PlatformApp) {
               OnConfidentialityChanged(_, GetEmptyRestrictionSet()))
       .Times(1);
   EXPECT_CALL(mock_dlp_content_observer_, OnWebContentsDestroyed(_)).Times(2);
+}
+
+class DlpContentTabHelperWebViewBrowserTest
+    : public extensions::PlatformAppBrowserTest {
+ public:
+  DlpContentTabHelperWebViewBrowserTest() = default;
+
+  void SetUpOnMainThread() override {
+    extensions::PlatformAppBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ private:
+  DlpContentTabHelper::ScopedIgnoreDlpRulesManager ignore_dlp_rules_manager_{
+      DlpContentTabHelper::IgnoreDlpRulesManagerForTesting()};
+};
+
+IN_PROC_BROWSER_TEST_F(DlpContentTabHelperWebViewBrowserTest,
+                       WebViewCaptureVisibleRegionBlocked) {
+  const GURL confidential_url = embedded_test_server()->GetURL("/title1.html");
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      confidential_url, GetScreenshotRestrictionSet());
+
+  const extensions::Extension* extension =
+      LoadAndLaunchPlatformApp("dlp_test", "Launched");
+  ASSERT_TRUE(extension);
+
+  content::WebContents* app_web_contents = GetFirstAppWindowWebContents();
+  ASSERT_TRUE(app_web_contents);
+
+  const std::string script = content::JsReplace(
+      R"(
+        new Promise(resolve => {
+          const wv = document.createElement('webview');
+          wv.style.width = '200px';
+          wv.style.height = '200px';
+          wv.addEventListener('loadstop', () => {
+            wv.captureVisibleRegion({format: 'png'}, (dataUrl) => {
+              if (chrome.runtime.lastError) {
+                resolve('ERROR: ' + chrome.runtime.lastError.message);
+              } else if (dataUrl && dataUrl.startsWith('data:image/png')) {
+                resolve('SUCCESS');
+              } else {
+                resolve('ERROR: Unknown error');
+              }
+            });
+          });
+          wv.src = $1;
+          document.body.appendChild(wv);
+        });
+      )",
+      confidential_url);
+
+  EXPECT_EQ("ERROR: Failed to capture webview: screenshot has been disabled",
+            content::EvalJs(app_web_contents, script));
+}
+
+IN_PROC_BROWSER_TEST_F(DlpContentTabHelperWebViewBrowserTest,
+                       UnattachedWebViewNavigatesToConfidentialUrl) {
+  const GURL opener_url = embedded_test_server()->GetURL("/title2.html");
+  const GURL confidential_url = embedded_test_server()->GetURL("/title1.html");
+  DlpContentRestrictionSet::SetRestrictionsForURLForTesting(
+      confidential_url, GetScreenshotRestrictionSet());
+
+  const extensions::Extension* extension =
+      LoadAndLaunchPlatformApp("dlp_test", "Launched");
+  ASSERT_TRUE(extension);
+
+  content::WebContents* app_web_contents = GetFirstAppWindowWebContents();
+  ASSERT_TRUE(app_web_contents);
+
+  content::CreateAndLoadWebContentsObserver opener_loaded_observer;
+  EXPECT_EQ("LOADED", content::EvalJs(app_web_contents, content::JsReplace(
+                                                            R"(
+            new Promise(resolve => {
+              const openerWv = document.createElement('webview');
+              openerWv.style.width = '200px';
+              openerWv.style.height = '200px';
+              window.newWindowCreatedPromise = new Promise(resolveNewWindow => {
+                openerWv.addEventListener('newwindow', e => {
+                  e.preventDefault();
+                  const newWv = document.createElement('webview');
+                  newWv.style.width = '200px';
+                  newWv.style.height = '200px';
+                  e.window.attach(newWv);
+                  window.unattachedWebview = newWv;
+                  resolveNewWindow('NEWWINDOW_READY');
+                }, {once: true});
+              });
+              openerWv.addEventListener('loadstop', () => resolve('LOADED'),
+                                        {once: true});
+              openerWv.src = $1;
+              document.body.appendChild(openerWv);
+            })
+          )",
+                                                            opener_url)));
+  content::WebContents* opener_guest_web_contents =
+      opener_loaded_observer.Wait();
+  ASSERT_TRUE(opener_guest_web_contents);
+
+  // Open `confidential_url` in a new guest window with 'noopener'. In the
+  // embedder's `newwindow` handler, `e.window.attach(newWv)` is called on a
+  // detached <webview> element (`newWv` is not in the DOM yet), so the new
+  // guest WebContents loads `confidential_url` while remaining unattached
+  // (`GetNativeView() == nullptr`).
+  content::CreateAndLoadWebContentsObserver unattached_guest_loaded_observer;
+  content::ExecuteScriptAsync(
+      opener_guest_web_contents,
+      content::JsReplace("window.open($1, '_blank', 'noopener');",
+                         confidential_url));
+
+  content::WebContents* guest_web_contents =
+      unattached_guest_loaded_observer.Wait();
+  ASSERT_TRUE(guest_web_contents);
+  ASSERT_NE(opener_guest_web_contents, guest_web_contents);
+  EXPECT_EQ(
+      "NEWWINDOW_READY",
+      content::EvalJs(app_web_contents, "window.newWindowCreatedPromise"));
+
+  // While unattached, the guest WebContents has no native view, is tracked as
+  // confidential, and does not crash DlpContentManagerAsh or apply on-screen
+  // restrictions prematurely.
+  EXPECT_EQ(nullptr, guest_web_contents->GetNativeView());
+  EXPECT_EQ(GetScreenshotRestrictionSet(),
+            DlpContentManager::Get()->GetConfidentialRestrictions(
+                guest_web_contents));
+  EXPECT_TRUE(
+      DlpContentManager::Get()->IsScreenshotApiRestricted(guest_web_contents));
+  EXPECT_EQ(GetEmptyRestrictionSet(),
+            DlpContentManagerAsh::Get()->GetOnScreenPresentRestrictions());
+
+  // Append `window.unattachedWebview` to the DOM to complete attachment, wait
+  // for its queued `loadstop` event, and verify DLP blocks screenshots and
+  // applies on-screen restrictions once attached.
+  EXPECT_EQ("ERROR: Failed to capture webview: screenshot has been disabled",
+            content::EvalJs(app_web_contents, R"(
+              new Promise(resolve => {
+                const wv = window.unattachedWebview;
+                wv.addEventListener('loadstop', () => {
+                  wv.captureVisibleRegion({format: 'png'}, () => {
+                    if (chrome.runtime.lastError) {
+                      resolve('ERROR: ' + chrome.runtime.lastError.message);
+                    } else {
+                      resolve('SUCCESS');
+                    }
+                  });
+                }, {once: true});
+                document.body.appendChild(wv);
+              })
+            )"));
+  EXPECT_NE(nullptr, guest_web_contents->GetNativeView());
+  EXPECT_EQ(GetScreenshotRestrictionSet(),
+            DlpContentManagerAsh::Get()->GetOnScreenPresentRestrictions());
 }
 
 class DlpContentTabHelperBFCacheBrowserTest : public InProcessBrowserTest {

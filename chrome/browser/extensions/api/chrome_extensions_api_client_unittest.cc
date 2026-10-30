@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
 
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
@@ -12,6 +14,12 @@
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "content/public/browser/web_contents.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -98,5 +106,20 @@ TEST_F(ChromeExtensionsAPIClientTest, ShouldHideBrowserNetworkRequest) {
   EXPECT_FALSE(client.ShouldHideBrowserNetworkRequest(
       nullptr /* context */, WebRequestInfo(std::move(params))));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+using ChromeExtensionsAPIClientDlpTest = ChromeRenderViewHostTestHarness;
+
+TEST_F(ChromeExtensionsAPIClientDlpTest,
+       AttachWebContentsHelpersCreatesDlpTabHelper) {
+  auto ignore_dlp_rules_manager =
+      policy::DlpContentTabHelper::IgnoreDlpRulesManagerForTesting();
+
+  ChromeExtensionsAPIClient client;
+  client.AttachWebContentsHelpers(web_contents());
+  EXPECT_NE(nullptr,
+            policy::DlpContentTabHelper::FromWebContents(web_contents()));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

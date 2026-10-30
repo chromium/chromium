@@ -2250,6 +2250,7 @@ source_set("unit_tests") {
       "//chrome/browser/ash/printing",
       "//chrome/browser/ash/scanning",
       "//chrome/browser/ash/scanning:test_support",
+      "//chrome/browser/chromeos/policy/dlp",
       "//chrome/browser/extensions/api/braille_display_private",
       "//chrome/browser/extensions/api/terminal:startup_status",
       "//chrome/browser/prefs:util",

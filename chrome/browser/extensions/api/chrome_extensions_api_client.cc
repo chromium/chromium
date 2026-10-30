@@ -94,6 +94,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
 #include "chrome/browser/extensions/api/file_handlers/non_native_file_system_delegate_chromeos.h"
 #include "chrome/browser/extensions/api/file_system/chrome_file_system_delegate_ash.h"
 #include "chrome/browser/extensions/api/file_system/consent_provider_impl.h"
@@ -137,6 +138,9 @@ void ChromeExtensionsAPIClient::AttachWebContentsHelpers(
   favicon::CreateContentFaviconDriverForWebContents(web_contents);
 #if BUILDFLAG(ENABLE_PRINTING)
   printing::InitializePrintingForWebContents(web_contents);
+#endif
+#if BUILDFLAG(IS_CHROMEOS)
+  policy::DlpContentTabHelper::MaybeCreateForWebContents(web_contents);
 #endif
 }
 

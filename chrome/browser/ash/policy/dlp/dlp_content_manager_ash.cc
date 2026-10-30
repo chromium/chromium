@@ -371,12 +371,16 @@ void DlpContentManagerAsh::OnConfidentialityChanged(
     const DlpContentRestrictionSet& restriction_set) {
   DlpContentManager::OnConfidentialityChanged(web_contents, restriction_set);
   if (!restriction_set.IsEmpty()) {
-    web_contents_window_observers_[web_contents] =
-        std::make_unique<DlpWindowObserver>(web_contents->GetNativeView(),
-                                            this);
-    if (web_contents->GetVisibility() == content::Visibility::VISIBLE) {
-      MaybeChangeOnScreenRestrictions();
+    if (aura::Window* window = web_contents->GetNativeView()) {
+      web_contents_window_observers_[web_contents] =
+          std::make_unique<DlpWindowObserver>(window, this);
+      if (web_contents->GetVisibility() == content::Visibility::VISIBLE) {
+        MaybeChangeOnScreenRestrictions();
+      } else {
+        CheckRunningScreenShares();
+      }
     } else {
+      web_contents_window_observers_.erase(web_contents);
       CheckRunningScreenShares();
     }
   } else {
@@ -398,9 +402,12 @@ void DlpContentManagerAsh::RemoveFromConfidential(
 
 void DlpContentManagerAsh::MaybeChangeOnScreenRestrictions() {
   DlpContentRestrictionSet new_restriction_set;
-  // Check each visible WebContents.
+  // Check each visible WebContents that has a native window. Unattached guest
+  // WebContents have Visibility::VISIBLE by default, but no native view until
+  // attached to their embedder.
   for (const auto& entry : confidential_web_contents_) {
-    if (entry.first->GetVisibility() == content::Visibility::VISIBLE) {
+    if (entry.first->GetVisibility() == content::Visibility::VISIBLE &&
+        entry.first->GetNativeView()) {
       new_restriction_set.UnionWith(entry.second);
     }
   }
@@ -480,8 +487,10 @@ DlpContentManagerAsh::GetConfidentialContentsOnScreen(
   info.restriction_info =
       GetOnScreenPresentRestrictions().GetRestrictionLevelAndUrl(restriction);
   for (auto& entry : confidential_web_contents_) {
-    if (entry.first->GetVisibility() != content::Visibility::VISIBLE)
+    if (entry.first->GetVisibility() != content::Visibility::VISIBLE ||
+        !entry.first->GetNativeView()) {
       continue;
+    }
     if (entry.first->IsBeingDestroyed()) {
       // The contents can be in the process of being destroyed during this
       // check, although they have not yet been removed from
@@ -529,7 +538,7 @@ DlpContentManagerAsh::GetAreaConfidentialContentsInfo(
     // Check whether the captured window contains any confidential WebContents.
     for (auto& entry : confidential_web_contents_) {
       aura::Window* web_contents_window = entry.first->GetNativeView();
-      if (area.window->Contains(web_contents_window)) {
+      if (web_contents_window && area.window->Contains(web_contents_window)) {
         if (entry.second.GetRestrictionLevel(restriction) ==
             info.restriction_info.level) {
           info.confidential_contents.Add(entry.first);
@@ -576,8 +585,8 @@ DlpContentManagerAsh::GetAreaConfidentialContentsInfo(
       continue;
     }
     aura::Window* web_contents_window = entry.first->GetNativeView();
-    if (web_contents_window->GetOcclusionState() ==
-        aura::Window::OcclusionState::OCCLUDED) {
+    if (!web_contents_window || web_contents_window->GetOcclusionState() ==
+                                    aura::Window::OcclusionState::OCCLUDED) {
       continue;
     }
     aura::Window* root_window = web_contents_window->GetRootWindow();
@@ -664,8 +673,9 @@ DlpContentManagerAsh::GetScreenShareConfidentialContentsInfo(
     // Check whether the captured window contains any confidential WebContents.
     for (auto& entry : confidential_web_contents_) {
       aura::Window* web_contents_window = entry.first->GetNativeView();
-      if (!window->Contains(web_contents_window))
+      if (!web_contents_window || !window->Contains(web_contents_window)) {
         continue;
+      }
       if (entry.second.GetRestrictionLevel(
               DlpContentRestriction::kScreenShare) ==
           info.restriction_info.level) {
