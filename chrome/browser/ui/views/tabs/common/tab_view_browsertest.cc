@@ -1329,6 +1329,7 @@ class TabViewTabMutingEnabledTest : public TabViewTest {
       override {
     auto enabled = TabViewTest::GetEnabledFeatures();
     enabled.push_back({media::kEnableTabMuting, {}});
+    enabled.push_back({features::kTabStripDeclutter, {}});
     return enabled;
   }
 };
