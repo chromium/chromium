@@ -66,6 +66,9 @@ class ContextualTasksService;
 class ContextualTasksUiService;
 class ActiveTaskContextProvider;
 class EntryPointEligibilityManager;
+#if !BUILDFLAG(IS_ANDROID)
+class ContextualTasksOnboardingTooltipController;
+#endif
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -115,6 +118,10 @@ class ContextualTasksSidePanelCoordinator
     // The entry source that triggered this task's panel.
     ContextualTasksPanelController::EntrySource entry_source =
         ContextualTasksPanelController::EntrySource::kOther;
+
+    // The entry point that triggered this task's panel.
+    omnibox::ChromeAimEntryPoint entry_point =
+        omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT;
 
     // The time when this task's panel was opened.
     base::TimeTicks open_time_ticks;
@@ -216,6 +223,12 @@ class ContextualTasksSidePanelCoordinator
   ContextualTasksPermissionController* permission_controller() {
     return permission_controller_.get();
   }
+#if !BUILDFLAG(IS_ANDROID)
+  ContextualTasksOnboardingTooltipController*
+  onboarding_controller_for_testing() {
+    return onboarding_controller_.get();
+  }
+#endif
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
   ContextualTasksExtensionsContainer* GetExtensionsContainerForTesting() {
     return extensions_container_.get();
@@ -524,6 +537,8 @@ class ContextualTasksSidePanelCoordinator
       theme_service_observation_{this};
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       native_theme_observation_{this};
+  std::unique_ptr<ContextualTasksOnboardingTooltipController>
+      onboarding_controller_;
 #endif
 
   base::WeakPtrFactory<ContextualTasksSidePanelCoordinator> weak_ptr_factory_{

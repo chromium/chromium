@@ -13,6 +13,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_interactive_test_base.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_onboarding_tooltip_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
@@ -39,6 +40,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_onboarding_bubble_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
@@ -52,8 +54,10 @@
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/contextual_tasks/public/prefs.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
@@ -68,10 +72,13 @@
 #include "extensions/buildflags/buildflags.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/actions/actions.h"
+#include "ui/base/interaction/element_test_util.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/widget/widget_deletion_observer.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -219,7 +226,8 @@ class ContextualTasksSidePanelCoordinatorInteractiveUiTest
               const GURL& url = params->url_request.url;
               LOG(INFO) << "URLLoaderInterceptor intercepted URL: "
                         << url.spec();
-              if (url.host() == "www.google.com") {
+              if (url.host() == "www.google.com" ||
+                  url.host() == "support.google.com") {
                 content::URLLoaderInterceptor::WriteResponse(
                     "chrome/test/data/mock_aim_page.html",
                     params->client.get());
@@ -1955,5 +1963,219 @@ INSTANTIATE_TEST_SUITE_P(All,
                          UserVariationToString);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
-}  // namespace contextual_tasks
+class ContextualTasksOnboardingBubbleInteractiveUiTest
+    : public ContextualTasksSidePanelCoordinatorInteractiveUiTest {
+ public:
+  ContextualTasksOnboardingBubbleInteractiveUiTest() {
+    onboarding_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{kContextualTasks, kContextualTasksContext,
+                              kContextualTasksRearchitecture,
+                              kContextualTasksSidePanelRearchitecture,
+                              kContextualTasksShowOnboardingTooltip,
+                              omnibox::kWebUIOmniboxAskGAboutThisPage},
+        /*disabled_features=*/{});
+  }
 
+  ~ContextualTasksOnboardingBubbleInteractiveUiTest() override = default;
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    ContextualTasksSidePanelCoordinatorInteractiveUiTest::
+        SetUpBrowserContextKeyedServices(context);
+    AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          Profile* profile = Profile::FromBrowserContext(context);
+          return std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
+              CHECK_DEREF(profile->GetPrefs()),
+              /*template_url_service=*/nullptr,
+              /*url_loader_factory=*/nullptr,
+              IdentityManagerFactory::GetForProfile(profile));
+        }));
+  }
+
+  void ShowFaviconsElement() {
+    ui::ElementContext context = BrowserElements::From(browser())->GetContext();
+    views::Widget* browser_widget =
+        BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+    test_element_ = std::make_unique<ui::test::TestElement>(
+        kContextualTasksFaviconsElementId, context);
+    test_element_->SetNativeView(browser_widget->GetNativeView());
+    test_element_->SetScreenBounds(gfx::Rect(100, 100, 50, 50));
+    test_element_->Show();
+  }
+
+  void AddAutomaticActiveTabToPanelSession() {
+    auto* session_handle =
+        GetCoordinator()->GetContextualSearchSessionHandleForPanel();
+    ASSERT_NE(session_handle, nullptr);
+    session_handle->AddPendingDelayedTab(1, GURL("https://example.com"),
+                                         "Example");
+  }
+
+  void TearDownOnMainThread() override {
+    test_element_.reset();
+    ContextualTasksSidePanelCoordinatorInteractiveUiTest::
+        TearDownOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList onboarding_feature_list_;
+  std::unique_ptr<ui::test::TestElement> test_element_;
+};
+
+// This tests the following CUJ:
+//  (1) User opens the Contextual Tasks side panel from the toolbar button.
+//  (2) Tab favicons appear without an auto-suggested active tab, and the
+//      onboarding bubble remains hidden until an auto-suggested active tab is
+//      added.
+//  (3) User clicks Got it, dismissing the bubble and incrementing the pref.
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksOnboardingBubbleInteractiveUiTest,
+    ShowsOnboardingBubbleAnchoredToFaviconsAndDismissesOnGotIt) {
+  ContextualTasksSidePanelCoordinator* coordinator = GetCoordinator();
+
+  RunTestSequence(
+      Do([coordinator]() {
+        coordinator->Show(
+            /*transition_from_tab=*/false,
+            omnibox::ChromeAimEntryPoint::
+                DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      Do([this]() { ShowFaviconsElement(); }),
+      CheckResult(
+          [coordinator]() {
+            return coordinator->onboarding_controller_for_testing()
+                ->IsBubbleShowing();
+          },
+          false),
+      Do([this]() { AddAutomaticActiveTabToPanelSession(); }),
+      WaitForShow(ContextualTasksOnboardingBubbleView::kBubbleElementId),
+      CheckResult(
+          [coordinator]() {
+            return coordinator->onboarding_controller_for_testing()
+                ->IsBubbleShowing();
+          },
+          true),
+      CheckResult(
+          [coordinator]() {
+            return coordinator->onboarding_controller_for_testing()
+                ->active_variant_for_testing();
+          },
+          ContextualTasksOnboardingBubbleView::Variant::kOnboarding),
+      PressButton(ContextualTasksOnboardingBubbleView::kAcceptButtonElementId),
+      WaitForHide(ContextualTasksOnboardingBubbleView::kBubbleElementId),
+      CheckResult(
+          [this]() {
+            return browser()->GetProfile()->GetPrefs()->GetInteger(
+                kContextualTasksOnboardingTooltipDismissedCount);
+          },
+          1));
+}
+
+// This tests the following CUJ:
+//  (1) User opens the Contextual Tasks side panel via the omnibox Ask Google
+//      action and tab favicons appear, showing the Ask Google privacy notice.
+//  (2) User clicks the Learn more link in the bubble, opening the help tab
+//      without incrementing the dismissed count pref.
+//  (3) User clicks Got it, dismissing the bubble and incrementing the Ask
+//      Google pref.
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksOnboardingBubbleInteractiveUiTest,
+    ShowsAskGoogleBubbleForOmniboxActionAndLearnMoreOpensHelpTab) {
+  ContextualTasksSidePanelCoordinator* coordinator = GetCoordinator();
+
+  RunTestSequence(
+      Do([coordinator]() {
+        coordinator->Show(
+            /*transition_from_tab=*/false,
+            omnibox::ChromeAimEntryPoint::
+                DESKTOP_CHROME_COBROWSE_OMNIBOX_ACTION);
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      Do([this]() { ShowFaviconsElement(); }),
+      WaitForShow(ContextualTasksOnboardingBubbleView::kBubbleElementId),
+      CheckResult(
+          [coordinator]() {
+            return coordinator->onboarding_controller_for_testing()
+                ->IsBubbleShowing();
+          },
+          true),
+      CheckResult(
+          [coordinator]() {
+            return coordinator->onboarding_controller_for_testing()
+                ->active_variant_for_testing();
+          },
+          ContextualTasksOnboardingBubbleView::Variant::kAskGoogle),
+      WithElement(ContextualTasksOnboardingBubbleView::kBodyElementId,
+                  [](ui::TrackedElement* el) {
+                    auto* tracked_views = el->AsA<views::TrackedElementViews>();
+                    ASSERT_NE(tracked_views, nullptr);
+                    auto* label = views::AsViewClass<views::StyledLabel>(
+                        tracked_views->view());
+                    ASSERT_NE(label, nullptr);
+                    label->ClickFirstLinkForTesting();
+                  }),
+      CheckResult(
+          [this]() {
+            return browser()
+                ->tab_strip_model()
+                ->GetActiveWebContents()
+                ->GetVisibleURL();
+          },
+          GURL(GetContextualTasksTabHelpUrl())),
+      CheckResult(
+          [this]() {
+            return browser()->GetProfile()->GetPrefs()->GetInteger(
+                kContextualTasksAskGTooltipDismissedCount);
+          },
+          0),
+      PressButton(ContextualTasksOnboardingBubbleView::kAcceptButtonElementId),
+      WaitForHide(ContextualTasksOnboardingBubbleView::kBubbleElementId),
+      CheckResult(
+          [this]() {
+            return browser()->GetProfile()->GetPrefs()->GetInteger(
+                kContextualTasksAskGTooltipDismissedCount);
+          },
+          1));
+}
+
+// This tests the following CUJ:
+//  (1) User opens the Contextual Tasks side panel and the onboarding bubble
+//      appears anchored to the tab favicons element.
+//  (2) User closes the Contextual Tasks side panel, automatically closing the
+//      onboarding bubble.
+IN_PROC_BROWSER_TEST_F(ContextualTasksOnboardingBubbleInteractiveUiTest,
+                       ClosesOnboardingBubbleWhenSidePanelCloses) {
+  ContextualTasksSidePanelCoordinator* coordinator = GetCoordinator();
+
+  RunTestSequence(
+      Do([coordinator]() {
+        coordinator->Show(
+            /*transition_from_tab=*/false,
+            omnibox::ChromeAimEntryPoint::
+                DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([this]() {
+        AddAutomaticActiveTabToPanelSession();
+        ShowFaviconsElement();
+      }),
+      WaitForShow(ContextualTasksOnboardingBubbleView::kBubbleElementId),
+      CheckResult(
+          [coordinator]() {
+            return coordinator->onboarding_controller_for_testing()
+                ->IsBubbleShowing();
+          },
+          true),
+      Do([coordinator]() { coordinator->Close(); }),
+      WaitForHide(ContextualTasksOnboardingBubbleView::kBubbleElementId),
+      CheckResult(
+          [coordinator]() {
+            return coordinator->onboarding_controller_for_testing()
+                ->IsBubbleShowing();
+          },
+          false));
+}
+
+}  // namespace contextual_tasks
