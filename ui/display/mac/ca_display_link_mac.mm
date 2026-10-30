@@ -309,7 +309,7 @@ WindowServerEventPumpThread::WindowServerEventPumpThread(
 
   base::Thread::Options thread_options;
   thread_options.message_pump_type = base::MessagePumpType::NS_RUNLOOP;
-  thread_options.thread_type = base::ThreadType::kPresentation;
+  thread_options.thread_type = base::ThreadType::kBackground;
   StartWithOptions(std::move(thread_options));
 
   task_runner()->PostTask(
