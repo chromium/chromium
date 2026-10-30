@@ -146,10 +146,6 @@ bool HasEmptyOrValidManagementUrl(
 // AutofillAi import constraints and has an empty or valid management URL.
 bool AreAutofillAiSpecificsValid(
     const sync_pb::AutofillValuableSpecifics& specifics) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillAiImportConstraintsForSync)) {
-    return true;
-  }
   std::optional<EntityInstance> entity =
       CreateEntityInstanceFromSpecifics(specifics);
   if (!entity) {

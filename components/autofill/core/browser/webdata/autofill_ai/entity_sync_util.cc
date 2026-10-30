@@ -166,8 +166,7 @@ void AddAttribute(
     std::optional<AttributeInstance::MarkAsMaskedPasskey> passkey,
     base::flat_set<AttributeInstance, AttributeInstance::CompareByType>&
         attributes) {
-  if (value.empty() && base::FeatureList::IsEnabled(
-                           features::kAutofillAiImportConstraintsForSync)) {
+  if (value.empty()) {
     return;
   }
   AttributeInstance attribute{AttributeType(type)};
@@ -196,9 +195,7 @@ void AddDateAttribute(
     const sync_pb::NaiveDate& date,
     base::flat_set<AttributeInstance, AttributeInstance::CompareByType>&
         attributes) {
-  if ((!date.has_year() || !date.has_month() || !date.has_day()) &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillAiImportConstraintsForSync)) {
+  if (!date.has_year() || !date.has_month() || !date.has_day()) {
     return;
   }
   AddAttribute(type,

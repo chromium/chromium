@@ -808,8 +808,6 @@ TEST(EntitySyncUtilTest, EntityTypeToPassType) {
 
 // Tests that no attributes are created for fields with unset or empty values.
 TEST(EntitySyncUtilTest, CreateEntityInstanceFromSpecifics_EmptyFields) {
-  base::test::ScopedFeatureList feature{
-      features::kAutofillAiImportConstraintsForSync};
   // Passport is used as an example here. This is representative of the general
   // case because the implementation uses generic helpers across all entities.
   sync_pb::AutofillValuableSpecifics specifics;

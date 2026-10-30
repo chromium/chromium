@@ -273,8 +273,6 @@ TEST_F(ValuableSyncBridgeTest, InitializationFailure) {
 // Tests that for specifics that represent AutofillAi entities, import
 // constraints are enforced by the bridge's IsEntityDataValid().
 TEST_F(ValuableSyncBridgeTest, IsEntityDataValid_ImportConstraints) {
-  base::test::ScopedFeatureList feature{
-      features::kAutofillAiImportConstraintsForSync};
   sync_pb::AutofillValuableSpecifics specifics;
   specifics.set_id("client-tag");
   // One way for an order to meet its import constraints is by having (at least)
@@ -306,9 +304,8 @@ TEST_F(ValuableSyncBridgeTest, IsEntityDataValid_ImportConstraints) {
 
 // Tests that specifics w/o a management URL are counted but considered valid.
 TEST_F(ValuableSyncBridgeTest, IsEntityDataValid_MissingManagementUrl) {
-  base::test::ScopedFeatureList feature_list(
-      {features::kAutofillAiImportConstraintsForSync,
-       features::kAutofillAiWalletServerProvidedDeepLink});
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiWalletServerProvidedDeepLink};
   sync_pb::AutofillValuableSpecifics specifics =
       CreateSpecificsFromEntityInstance(GetServerVehicleEntityInstance(),
                                         /*base_specifics=*/{});
@@ -330,9 +327,8 @@ TEST_F(ValuableSyncBridgeTest, IsEntityDataValid_MissingManagementUrl) {
 
 // Tests a successful check of specifics with a management URL.
 TEST_F(ValuableSyncBridgeTest, IsEntityDataValid_ValidManagementUrl) {
-  base::test::ScopedFeatureList feature_list(
-      {features::kAutofillAiImportConstraintsForSync,
-       features::kAutofillAiWalletServerProvidedDeepLink});
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiWalletServerProvidedDeepLink};
   sync_pb::AutofillValuableSpecifics specifics =
       CreateSpecificsFromEntityInstance(GetServerVehicleEntityInstance(),
                                         /*base_specifics=*/{});
@@ -352,9 +348,8 @@ TEST_F(ValuableSyncBridgeTest, IsEntityDataValid_ValidManagementUrl) {
 // Tests that specifics with an invalid management URL are counted and flagged
 // as illegal.
 TEST_F(ValuableSyncBridgeTest, IsEntityDataValid_InvalidManagementUrl) {
-  base::test::ScopedFeatureList feature_list(
-      {features::kAutofillAiImportConstraintsForSync,
-       features::kAutofillAiWalletServerProvidedDeepLink});
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiWalletServerProvidedDeepLink};
   sync_pb::AutofillValuableSpecifics specifics =
       CreateSpecificsFromEntityInstance(GetServerVehicleEntityInstance(),
                                         /*base_specifics=*/{});
@@ -375,8 +370,6 @@ TEST_F(ValuableSyncBridgeTest, IsEntityDataValid_InvalidManagementUrl) {
 // flagged as illegal if the feature flag for Wallet deeplinks is not enabled.
 TEST_F(ValuableSyncBridgeTest,
        IsEntityDataValid_InvalidManagementUrl_FeatureDisabled) {
-  base::test::ScopedFeatureList feature_list(
-      {features::kAutofillAiImportConstraintsForSync});
   sync_pb::AutofillValuableSpecifics specifics =
       CreateSpecificsFromEntityInstance(GetServerVehicleEntityInstance(),
                                         /*base_specifics=*/{});
