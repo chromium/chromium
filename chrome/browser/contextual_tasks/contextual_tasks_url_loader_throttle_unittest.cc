@@ -166,15 +166,39 @@ TEST_F(ContextualTasksURLLoaderThrottleTest,
       testing::ElementsAre(kContextualTasksSearchCapabilitiesHeaderName));
 }
 
-// 5. Ineligible profile (incognito or feature flags disabled): Throttle
-// returns nullptr.
+// 5. Incognito profile: Header present, so Search serves the searchbox in
+// Incognito too.
 TEST_F(ContextualTasksURLLoaderThrottleTest,
-       IneligibleProfile_IncognitoReturnsNullptr) {
+       IncognitoProfile_GoogleUrl_AppendsHeader) {
   Profile* incognito_profile =
       TestingProfile::Builder().BuildIncognito(profile());
   ASSERT_NE(incognito_profile, nullptr);
 
-  EXPECT_EQ(ContextualTasksURLLoaderThrottle::MaybeCreate(incognito_profile),
+  auto throttle =
+      ContextualTasksURLLoaderThrottle::MaybeCreate(incognito_profile);
+  ASSERT_NE(throttle, nullptr);
+
+  network::ResourceRequest request;
+  request.url = GURL("https://www.google.com/search");
+  bool defer = false;
+
+  throttle->WillStartRequest(&request, &defer);
+  EXPECT_FALSE(defer);
+
+  EXPECT_EQ(request.cors_exempt_headers.GetHeader(
+                kContextualTasksSearchCapabilitiesHeaderName),
+            kContextualTasksSearchCapabilitiesDefaultVersion);
+}
+
+// 6. Ineligible profile (non-Incognito OTR, null profile, or feature flags
+// disabled): Throttle returns nullptr.
+TEST_F(ContextualTasksURLLoaderThrottleTest,
+       IneligibleProfile_NonIncognitoOtrReturnsNullptr) {
+  Profile* otr_profile = TestingProfile::Builder().BuildOffTheRecord(
+      profile(), Profile::OTRProfileID::CreateUniqueForTesting());
+  ASSERT_NE(otr_profile, nullptr);
+
+  EXPECT_EQ(ContextualTasksURLLoaderThrottle::MaybeCreate(otr_profile),
             nullptr);
 }
 
@@ -230,7 +254,7 @@ TEST_F(ContextualTasksURLLoaderThrottleTest,
             "2.0");
 }
 
-// 6. Subresource proxying URLLoaderFactory appends header on Google HTTPS
+// 7. Subresource proxying URLLoaderFactory appends header on Google HTTPS
 // subresource requests (e.g. /async/folif and /async/folwr) when the top-level
 // frame also has the header.
 TEST_F(ContextualTasksURLLoaderThrottleTest,
@@ -261,6 +285,19 @@ TEST_F(ContextualTasksURLLoaderThrottleTest,
       test_factory.GetPendingRequest(0)->request.cors_exempt_headers.GetHeader(
           kContextualTasksSearchCapabilitiesHeaderName),
       kContextualTasksSearchCapabilitiesDefaultVersion);
+}
+
+TEST_F(ContextualTasksURLLoaderThrottleTest,
+       SubresourceProxy_IncognitoProfile_Proxies) {
+  Profile* incognito_profile =
+      TestingProfile::Builder().BuildIncognito(profile());
+  ASSERT_NE(incognito_profile, nullptr);
+
+  network::URLLoaderFactoryBuilder builder;
+  ContextualTasksSubresourceProxyingURLLoaderFactory::MaybeProxyRequest(
+      incognito_profile, CreateIsolationInfo(GURL("https://www.google.com")),
+      builder);
+  EXPECT_EQ(builder.num_interceptors(), 1u);
 }
 
 TEST_F(ContextualTasksURLLoaderThrottleTest,
@@ -358,12 +395,12 @@ TEST_F(ContextualTasksURLLoaderThrottleTest,
   }
 
   {
-    Profile* incognito_profile =
-        TestingProfile::Builder().BuildIncognito(profile());
-    ASSERT_NE(incognito_profile, nullptr);
+    Profile* otr_profile = TestingProfile::Builder().BuildOffTheRecord(
+        profile(), Profile::OTRProfileID::CreateUniqueForTesting());
+    ASSERT_NE(otr_profile, nullptr);
     network::URLLoaderFactoryBuilder builder;
     ContextualTasksSubresourceProxyingURLLoaderFactory::MaybeProxyRequest(
-        incognito_profile, google_isolation_info, builder);
+        otr_profile, google_isolation_info, builder);
     EXPECT_EQ(builder.num_interceptors(), 0u);
   }
 

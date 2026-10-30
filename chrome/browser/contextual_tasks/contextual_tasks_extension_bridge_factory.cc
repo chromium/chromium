@@ -33,8 +33,11 @@ ContextualTasksExtensionBridgeFactory::ContextualTasksExtensionBridgeFactory()
     : ProfileKeyedServiceFactory(
           "ContextualTasksExtensionBridge",
           ProfileSelections::Builder()
-              .WithRegular(ProfileSelection::kOriginalOnly)
-              .WithGuest(ProfileSelection::kOriginalOnly)
+              // Off-the-record profiles get their own bridge, since the
+              // extension runs a separate instance in each of them (split
+              // incognito mode).
+              .WithRegular(ProfileSelection::kOwnInstance)
+              .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(extensions::ExtensionConfigMapFactory::GetInstance());
   DependsOn(extensions::ExtensionMojoBinderRegistryFactory::GetInstance());
