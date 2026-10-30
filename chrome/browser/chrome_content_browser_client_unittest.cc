@@ -127,6 +127,7 @@
 #include "crypto/crypto_buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 #include "net/base/url_util.h"
 #include "net/log/net_log.h"
@@ -2322,6 +2323,33 @@ TEST_F(ChromeContentBrowserClientTest,
   client.OverrideWebPreferences(web_contents, *web_contents->GetSiteInstance(),
                                 &web_prefs);
   EXPECT_EQ(22, web_prefs.default_font_size);
+}
+
+// Tests that the autoplay policy of a WebContents in the Top Chrome WebUI
+// profile is computed from the user profile set for it.
+TEST_F(ChromeContentBrowserClientTest,
+       TopChromeWebUIProfileAutoplayPolicyUsesUserProfile) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      media::kAutoplayDisableSettings);
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kAutoplayPolicy,
+      switches::autoplay::kDocumentUserActivationRequiredPolicy);
+  webui::ScopedTopChromeWebUIProfileForTesting scoped_profile;
+
+  content::TestWebContentsFactory web_contents_factory;
+  content::WebContents* web_contents =
+      web_contents_factory.CreateWebContents(webui::GetTopChromeWebUIProfile());
+  webui::SetUserProfile(web_contents, profile());
+  // The user profile allows autoplay without a user gesture.
+  profile()->GetPrefs()->SetBoolean(prefs::kBlockAutoplayEnabled, false);
+
+  ChromeContentBrowserClient client;
+  blink::web_pref::WebPreferences web_prefs;
+  client.OverrideWebPreferences(web_contents, *web_contents->GetSiteInstance(),
+                                &web_prefs);
+  EXPECT_EQ(blink::mojom::AutoplayPolicy::kNoUserGestureRequired,
+            web_prefs.autoplay_policy);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
