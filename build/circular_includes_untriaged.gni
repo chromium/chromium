@@ -33,7 +33,6 @@ allow_circular_includes_from_untriaged = [
   "//chrome/browser/ash/app_mode:app_mode",
   "//chrome/browser/ash/app_restore:app_restore",
   "//chrome/browser/ash/arc/fileapi:fileapi",
-  "//chrome/browser/ash/arc/idle_manager:idle_manager",
   "//chrome/browser/ash/arc/input_overlay/ui:ui",
   "//chrome/browser/ash/arc/input_overlay:input_overlay",
   "//chrome/browser/ash/arc/instance_throttle:instance_throttle",

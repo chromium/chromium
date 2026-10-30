@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_ARC_VMM_ARC_SYSTEM_STATE_BRIDGE_H_
-#define CHROME_BROWSER_ASH_ARC_VMM_ARC_SYSTEM_STATE_BRIDGE_H_
+#ifndef CHROME_BROWSER_ASH_ARC_IDLE_MANAGER_ARC_SYSTEM_STATE_BRIDGE_H_
+#define CHROME_BROWSER_ASH_ARC_IDLE_MANAGER_ARC_SYSTEM_STATE_BRIDGE_H_
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -73,4 +73,4 @@ class ArcSystemStateBridge : public KeyedService,
 
 }  // namespace arc
 
-#endif  // CHROME_BROWSER_ASH_ARC_VMM_ARC_SYSTEM_STATE_BRIDGE_H_
+#endif  // CHROME_BROWSER_ASH_ARC_IDLE_MANAGER_ARC_SYSTEM_STATE_BRIDGE_H_

@@ -6,8 +6,6 @@ assert(is_chromeos)
 
 static_library("vmm") {
   sources = [
-    "arc_system_state_bridge.cc",
-    "arc_system_state_bridge.h",
     "arcvm_working_set_trim_executor.cc",
     "arcvm_working_set_trim_executor.h",
   ]
@@ -17,7 +15,6 @@ static_library("vmm") {
     "//chrome/browser/ash/arc/session",
     "//chromeos/ash/experiences/arc",
     "//chromeos/ash/experiences/arc/mojom",
-    "//components/keyed_service/core",
     "//content/public/browser",
   ]
 }
@@ -25,10 +22,7 @@ static_library("vmm") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "arc_system_state_bridge_unittest.cc",
-    "arcvm_working_set_trim_executor_unittest.cc",
-  ]
+  sources = [ "arcvm_working_set_trim_executor_unittest.cc" ]
 
   deps = [
     ":vmm",

@@ -16,6 +16,8 @@ static_library("idle_manager") {
     "arc_idle_manager.h",
     "arc_on_battery_observer.cc",
     "arc_on_battery_observer.h",
+    "arc_system_state_bridge.cc",
+    "arc_system_state_bridge.h",
     "arc_window_observer.cc",
     "arc_window_observer.h",
   ]
@@ -23,16 +25,16 @@ static_library("idle_manager") {
   deps = [
     "//ash",
     "//base",
-    "//chrome/browser/ash/arc/vmm",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/patchpanel",
     "//chromeos/ash/components/throttle",
     "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/dbus/power",
+    "//components/keyed_service/core",
+    "//content/public/browser",
     "//ui/display/manager",
   ]
-
-  allow_circular_includes_from = [ "//chrome/browser/ash/arc/vmm" ]
 }
 
 static_library("test_support") {
@@ -54,6 +56,7 @@ source_set("unit_tests") {
     "arc_display_power_observer_unittest.cc",
     "arc_idle_manager_unittest.cc",
     "arc_on_battery_observer_unittest.cc",
+    "arc_system_state_bridge_unittest.cc",
     "arc_window_observer_unittest.cc",
   ]
 

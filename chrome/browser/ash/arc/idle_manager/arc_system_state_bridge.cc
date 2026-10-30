@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/arc/vmm/arc_system_state_bridge.h"
+#include "chrome/browser/ash/arc/idle_manager/arc_system_state_bridge.h"
 
 #include "base/no_destructor.h"
 #include "chromeos/ash/experiences/arc/arc_browser_context_keyed_service_factory_base.h"
