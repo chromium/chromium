@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf16.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 using std::numeric_limits;
 

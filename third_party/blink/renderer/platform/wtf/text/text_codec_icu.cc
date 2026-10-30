@@ -38,25 +38,29 @@
 #include "base/notreached.h"
 #include "base/types/to_address.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_cjk.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_utf16.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_utf8.h"
-#include "third_party/blink/renderer/platform/wtf/threading.h"
+#include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
 namespace blink {
 
 const size_t kConversionBufferSize = 16384;
 
 IcuConverterWrapper::~IcuConverterWrapper() {
-  if (converter)
+  if (converter) {
     ucnv_close(converter);
+  }
 }
 
 static UConverter*& CachedConverterIcu() {
-  return WtfThreading().CachedConverterIcu().converter;
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<IcuConverterWrapper>,
+                                  cached_converter_icu, ());
+  return cached_converter_icu->converter;
 }
 
 std::unique_ptr<TextCodec> TextCodecIcu::Create(const TextEncoding& encoding) {
@@ -343,8 +347,9 @@ TextCodecIcu::~TextCodecIcu() {
 void TextCodecIcu::ReleaseIcuConverter() const {
   if (converter_icu_) {
     UConverter*& cached_converter = CachedConverterIcu();
-    if (cached_converter)
+    if (cached_converter) {
       ucnv_close(cached_converter);
+    }
     cached_converter = converter_icu_;
     converter_icu_ = nullptr;
   }
@@ -376,8 +381,9 @@ void TextCodecIcu::CreateIcuConverter() const {
   converter_icu_ = ucnv_open(encoding_.GetName().Utf8().c_str(), &err);
   DLOG_IF(ERROR, err == U_AMBIGUOUS_ALIAS_WARNING)
       << "ICU ambiguous alias warning for encoding: " << encoding_.GetName();
-  if (converter_icu_)
+  if (converter_icu_) {
     ucnv_setFallback(converter_icu_, true);
+  }
 }
 
 size_t TextCodecIcu::DecodeToBuffer(base::span<UChar> target,
@@ -721,8 +727,9 @@ std::string TextCodecIcu::EncodeInternal(base::span<const UChar> input,
   }
 
   DCHECK(U_SUCCESS(err));
-  if (U_FAILURE(err))
+  if (U_FAILURE(err)) {
     return std::string();
+  }
 
   const UChar* source = input.data();
   const UChar* end = base::to_address(input.end());

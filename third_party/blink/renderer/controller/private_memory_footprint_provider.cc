@@ -7,6 +7,7 @@
 #include "base/task/task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 

@@ -7,8 +7,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include "base/compiler_specific.h"
-#include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
 namespace blink {
@@ -29,10 +29,6 @@ WTF_EXPORT extern uintptr_t g_main_thread_stack_start;
 WTF_EXPORT extern uintptr_t g_main_thread_underestimated_stack_size;
 
 WTF_EXPORT void InitializeMainThreadStackEstimate();
-
-#if BUILDFLAG(IS_WIN) && defined(COMPILER_MSVC)
-size_t ThreadStackSize();
-#endif
 
 }  // namespace internal
 

@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
+#include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
 // Legacy support for NT1(https://www.w3.org/TR/navigation-timing/).
 namespace blink {

@@ -30,20 +30,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREADING_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREADING_H_
 
-#include <stdint.h>
-#include <memory>
-
-#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/wtf/thread_specific.h"
-#include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
 namespace blink {
-
-struct IcuConverterWrapper;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)
 WTF_EXPORT base::PlatformThreadId CurrentThread();
@@ -60,40 +52,6 @@ WTF_EXPORT bool IsBeforeThreadCreated();
 WTF_EXPORT void WillCreateThread();
 WTF_EXPORT void SetIsBeforeThreadCreatedForTest();
 #endif
-
-class WTF_EXPORT Threading {
-  DISALLOW_NEW();
-
- public:
-  Threading();
-  Threading(const Threading&) = delete;
-  Threading& operator=(const Threading&) = delete;
-  ~Threading();
-
-  IcuConverterWrapper& CachedConverterIcu() { return *cached_converter_icu_; }
-
-  // Must be called on the main thread before any callers to wtfThreadData().
-  static void Initialize();
-
-#if BUILDFLAG(IS_WIN) && defined(COMPILER_MSVC)
-  static size_t ThreadStackSize();
-#endif
-
- private:
-  std::unique_ptr<IcuConverterWrapper> cached_converter_icu_;
-
-#if BUILDFLAG(IS_WIN) && defined(COMPILER_MSVC)
-  size_t thread_stack_size_ = 0u;
-#endif
-
-  static ThreadSpecific<Threading>* static_data_;
-  friend Threading& WtfThreading();
-};
-
-inline Threading& WtfThreading() {
-  DCHECK(Threading::static_data_);
-  return **Threading::static_data_;
-}
 
 }  // namespace blink
 

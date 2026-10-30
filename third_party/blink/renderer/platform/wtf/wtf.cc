@@ -78,8 +78,6 @@ void InitializeWtf() {
 #endif
   g_main_thread_identifier = CurrentThread();
 
-  Threading::Initialize();
-
   internal::InitializeDoubleConverter();
 
   internal::InitializeMainThreadStackEstimate();

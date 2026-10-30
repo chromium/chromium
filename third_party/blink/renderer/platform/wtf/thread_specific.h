@@ -82,9 +82,7 @@ class ThreadSpecific {
 template <typename T>
 inline void ThreadSpecific<T>::Destroy(void* ptr) {
   // Never call destructors on the main thread. This is fine because Blink no
-  // longer has a graceful shutdown sequence. Be careful to call this function
-  // (which can be re-entrant) while the pointer is still set, to avoid lazily
-  // allocating Threading after it is destroyed.
+  // longer has a graceful shutdown sequence.
   if (blink::IsMainThread()) {
     return;
   }

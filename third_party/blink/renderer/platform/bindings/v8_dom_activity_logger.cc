@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_dom_activity_logger.h"
 
 #include <memory>
+
 #include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -14,6 +15,7 @@
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
