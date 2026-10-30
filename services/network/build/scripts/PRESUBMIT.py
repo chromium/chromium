@@ -5,8 +5,10 @@
 
 def _GenerateTestCommand(input_api, output_api, file_name, affected_list):
     if not input_api.AffectedFiles(
-            file_filter=lambda x: input_api.FilterSourceFile(
-                x, files_to_check=affected_list)):
+        file_filter=lambda x: input_api.FilterSourceFile(
+            x, files_to_check=affected_list
+        )
+    ):
         return None
 
     if input_api.is_committing:
@@ -14,45 +16,53 @@ def _GenerateTestCommand(input_api, output_api, file_name, affected_list):
     else:
         message_type = output_api.PresubmitPromptWarning
 
-    test_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
-                                       file_name)
+    test_path = input_api.os_path.join(
+        input_api.PresubmitLocalPath(), file_name
+    )
     cmd = [input_api.python3_executable, test_path]
 
     # Adds paths for jinja2 and pyjson5
     env = input_api.environ.copy()
     import_path = [
-        input_api.os_path.join(input_api.change.RepositoryRoot(),
-                               'third_party'),
-        input_api.os_path.join(input_api.change.RepositoryRoot(),
-                               'third_party', 'pyjson5', 'src')
+        input_api.os_path.join(
+            input_api.change.RepositoryRoot(), 'third_party'
+        ),
+        input_api.os_path.join(
+            input_api.change.RepositoryRoot(), 'third_party', 'pyjson5', 'src'
+        ),
     ]
     if env.get('PYTHONPATH'):
         import_path.append(env.get('PYTHONPATH'))
     env['PYTHONPATH'] = input_api.os_path.pathsep.join(import_path)
 
     test_cmd = input_api.Command(
-        name=file_name, cmd=cmd, kwargs={'env': env}, message=message_type)
+        name=file_name, cmd=cmd, kwargs={'env': env}, message=message_type
+    )
     return test_cmd
 
 
 def _RunTests(input_api, output_api):
-    if not input_api.HasAffectedFiles(extensions=('.py', '.tmpl', '.json5', '.ref')):
+    if not input_api.HasAffectedFiles(
+        extensions=('.py', '.tmpl', '.json5', '.ref')
+    ):
         return []
-    tests = [{
-        'file_name':
-        'make_permissions_policy_features_tests.py',
-        'affected_list': [
-            r'.*make_permissions_policy_features.*',
-            '.*/templates/permissions_policy_features_generated.cc.tmpl',
-        ]
-    }]
+    tests = [
+        {
+            'file_name': 'make_permissions_policy_features_tests.py',
+            'affected_list': [
+                r'.*make_permissions_policy_features.*',
+                '.*/templates/permissions_policy_features_generated.cc.tmpl',
+            ],
+        }
+    ]
     test_commands = []
     for test in tests:
         test_commands.append(
-            _GenerateTestCommand(input_api, output_api, test['file_name'],
-                                 test['affected_list']))
-    return input_api.RunTests(
-        [command for command in test_commands if command])
+            _GenerateTestCommand(
+                input_api, output_api, test['file_name'], test['affected_list']
+            )
+        )
+    return input_api.RunTests([command for command in test_commands if command])
 
 
 def CheckChangeOnUpload(input_api, output_api):

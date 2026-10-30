@@ -13,8 +13,9 @@ from def_parser import parse_def_exports
 
 def parse_export_targets(def_path):
   return {
-      export.target for export in parse_def_exports(def_path)
-      if export.target and re.fullmatch(r'Apifw\w+', export.target)
+    export.target
+    for export in parse_def_exports(def_path)
+    if export.target and re.fullmatch(r'Apifw\w+', export.target)
   }
 
 
@@ -22,19 +23,26 @@ def parse_stub_exports(source_path):
   with open(source_path, 'r', encoding='utf-8') as f:
     text = f.read()
   exports = set(
-      re.findall(r'\bBASIC_STUB_EXPORT\b[\s\S]*?\b(Apifw\w+)\s*\(', text))
+    re.findall(r'\bBASIC_STUB_EXPORT\b[\s\S]*?\b(Apifw\w+)\s*\(', text)
+  )
   exports.update(
-      'Apifw' + match
-      for match in re.findall(r'\bAPIFW_FORWARD_\w+\s*\(\s*(\w+)', text))
+    'Apifw' + match
+    for match in re.findall(r'\bAPIFW_FORWARD_\w+\s*\(\s*(\w+)', text)
+  )
   return exports
 
 
 def main():
   parser = argparse.ArgumentParser(description=__doc__)
-  parser.add_argument('--logging-def', required=True,
-                      help='Path to shim/exports_logging.def')
-  parser.add_argument('--source', action='append', required=True,
-                      help='Thunk source file to check')
+  parser.add_argument(
+    '--logging-def', required=True, help='Path to shim/exports_logging.def'
+  )
+  parser.add_argument(
+    '--source',
+    action='append',
+    required=True,
+    help='Thunk source file to check',
+  )
   parser.add_argument('--stamp', help='Stamp file written on success')
   args = parser.parse_args()
 
@@ -44,8 +52,9 @@ def main():
     unused = sorted(parse_stub_exports(source) - targets)
     if unused:
       failed = True
-      sys.stderr.write(f'{source} defines thunks not exported by '
-                       f'{args.logging_def}:\n')
+      sys.stderr.write(
+        f'{source} defines thunks not exported by {args.logging_def}:\n'
+      )
       for name in unused:
         sys.stderr.write(f'  {name}\n')
 

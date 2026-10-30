@@ -23,17 +23,23 @@ import os
 import subprocess
 import sys
 
+
 def usage():
-  print('usage: %s {--api-version|--cflags|--ldflags|--libs|--libs-for-gn} '
-        '[sysroot]' % sys.argv[0])
+  print(
+    'usage: %s {--api-version|--cflags|--ldflags|--libs|--libs-for-gn} '
+    '[sysroot]' % sys.argv[0]
+  )
 
 
 def run_cups_config(cups_config, mode):
   """Run cups-config with all --cflags etc modes, parse out the mode we want,
   and return those flags as a list."""
 
-  cups = subprocess.Popen([cups_config, '--cflags', '--ldflags', '--libs'],
-                          stdout=subprocess.PIPE, universal_newlines=True)
+  cups = subprocess.Popen(
+    [cups_config, '--cflags', '--ldflags', '--libs'],
+    stdout=subprocess.PIPE,
+    universal_newlines=True,
+  )
   flags = cups.communicate()[0].strip()
 
   flags_subset = []
@@ -41,9 +47,9 @@ def run_cups_config(cups_config, mode):
     flag_mode = None
     if flag.startswith('-l'):
       flag_mode = '--libs'
-    elif (flag.startswith('-L') or flag.startswith('-Wl,')):
+    elif flag.startswith('-L') or flag.startswith('-Wl,'):
       flag_mode = '--ldflags'
-    elif (flag.startswith('-I') or flag.startswith('-D')):
+    elif flag.startswith('-I') or flag.startswith('-D'):
       flag_mode = '--cflags'
 
     # Be conservative: for flags where we don't know which mode they

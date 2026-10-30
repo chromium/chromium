@@ -361,8 +361,10 @@ class MockFile(object):
         self._local_path = local_path
         self._local_root = local_root or _REPO_ROOT
         self._new_contents = new_contents
-        self._changed_contents = [(i + 1, l)
-                                  for i, l in enumerate(new_contents)]
+        self._changed_contents = [
+            (i + 1, l)
+            for i, l in enumerate(new_contents)  # noqa: E741
+        ]
         self._action = action
         import difflib
         if scm_diff:
@@ -378,7 +380,7 @@ class MockFile(object):
         else:
             self._scm_diff = ("--- /dev/null\n+++ %s\n@@ -0,0 +1,%d @@\n" %
                               (local_path, len(new_contents)))
-            for l in new_contents:
+            for l in new_contents:  # noqa: E741
                 self._scm_diff += "+%s\n" % l
         self._old_contents = old_contents or []
 

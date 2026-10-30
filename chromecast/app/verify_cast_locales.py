@@ -11,11 +11,59 @@ import argparse
 import sys
 
 CAST_LOCALES = [
-    'am', 'ar', 'bg', 'bn', 'ca', 'cs', 'da', 'de', 'el', 'en-GB', 'en-US',
-    'es-419', 'es', 'et', 'fa', 'fi', 'fil', 'fr', 'gu', 'he', 'hi', 'hr', 'hu',
-    'id', 'it', 'ja', 'kn', 'ko', 'lt', 'lv', 'ml', 'mr', 'ms', 'nb', 'nl',
-    'pl', 'pt-BR', 'pt-PT', 'ro', 'ru', 'sk', 'sl', 'sr', 'sv', 'sw', 'ta',
-    'te', 'th', 'tr', 'uk', 'vi', 'zh-CN', 'zh-TW'
+  'am',
+  'ar',
+  'bg',
+  'bn',
+  'ca',
+  'cs',
+  'da',
+  'de',
+  'el',
+  'en-GB',
+  'en-US',
+  'es-419',
+  'es',
+  'et',
+  'fa',
+  'fi',
+  'fil',
+  'fr',
+  'gu',
+  'he',
+  'hi',
+  'hr',
+  'hu',
+  'id',
+  'it',
+  'ja',
+  'kn',
+  'ko',
+  'lt',
+  'lv',
+  'ml',
+  'mr',
+  'ms',
+  'nb',
+  'nl',
+  'pl',
+  'pt-BR',
+  'pt-PT',
+  'ro',
+  'ru',
+  'sk',
+  'sl',
+  'sr',
+  'sv',
+  'sw',
+  'ta',
+  'te',
+  'th',
+  'tr',
+  'uk',
+  'vi',
+  'zh-CN',
+  'zh-TW',
 ]
 
 SUCCESS_RETURN_CODE = 0
@@ -33,10 +81,16 @@ FAILURE_RETURN_CODE = 1
 # any locale changes.
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('locales', type=str, nargs='+',
-                      help='Locales from the GN locale list')
-  parser.add_argument('--stamp-file', '-s', type=str, required=True,
-                      help='The script will stamp this file if successful.')
+  parser.add_argument(
+    'locales', type=str, nargs='+', help='Locales from the GN locale list'
+  )
+  parser.add_argument(
+    '--stamp-file',
+    '-s',
+    type=str,
+    required=True,
+    help='The script will stamp this file if successful.',
+  )
   args = parser.parse_args()
 
   if set(CAST_LOCALES) == set(args.locales):
@@ -52,8 +106,12 @@ def main():
     print('These locales have been removed: {}'.format(list(removed_locales)))
   if added_locales:
     print('These locales have been added: {}'.format(list(added_locales)))
-  print(('Please update CAST_LOCALES in {file} and add a reviewer from '
-         '//chromecast/OWNERS to your CL. ').format(file=__file__))
+  print(
+    (
+      'Please update CAST_LOCALES in {file} and add a reviewer from '
+      '//chromecast/OWNERS to your CL. '
+    ).format(file=__file__)
+  )
   return FAILURE_RETURN_CODE
 
 

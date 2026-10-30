@@ -10,8 +10,10 @@ def CheckPythonTests(input_api, output_api):
     return []
   tools_dir = input_api.os_path.join(input_api.PresubmitLocalPath(), 'tools')
   return input_api.RunTests(
-      input_api.canned_checks.GetUnitTestsInDirectory(
-          input_api,
-          output_api,
-          tools_dir,
-          files_to_check=[r'.+_(?:unit)?test\.py$']))
+    input_api.canned_checks.GetUnitTestsInDirectory(
+      input_api,
+      output_api,
+      tools_dir,
+      files_to_check=[r'.+_(?:unit)?test\.py$'],
+    )
+  )

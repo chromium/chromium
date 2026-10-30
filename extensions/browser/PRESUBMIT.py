@@ -18,32 +18,32 @@ def _CreateHistogramValueChecker(input_api, output_api, path):
 
   try:
     sys.path.append(
-        input_api.os_path.join(
-            input_api.PresubmitLocalPath(),
-            '..',
-            '..',
-            'tools',
-            'strict_enum_value_checker',
-        )
+      input_api.os_path.join(
+        input_api.PresubmitLocalPath(),
+        '..',
+        '..',
+        'tools',
+        'strict_enum_value_checker',
+      )
     )
     from strict_enum_value_checker import StrictEnumValueChecker
   finally:
     sys.path = original_sys_path
 
   return StrictEnumValueChecker(
-      input_api,
-      output_api,
-      start_marker='enum HistogramValue {',
-      end_marker='  // Last entry:',
-      path=path,
+    input_api,
+    output_api,
+    start_marker='enum HistogramValue {',
+    end_marker='  // Last entry:',
+    path=path,
   )
 
 
 def CheckHistogramValuesUpload(input_api, output_api):
   results = []
   histogram_paths = (
-      'extensions/browser/extension_event_histogram_value.h',
-      'extensions/browser/extension_function_histogram_value.h',
+    'extensions/browser/extension_event_histogram_value.h',
+    'extensions/browser/extension_function_histogram_value.h',
   )
   for path in histogram_paths:
     results += _CreateHistogramValueChecker(input_api, output_api, path).Run()
@@ -57,17 +57,17 @@ def CheckHistogramsUpload(input_api, output_api):
 
     original_sys_path = sys.path
     sys.path = sys.path + [
-        input_api.os_path.join(
-            input_api.change.RepositoryRoot(), 'tools', 'metrics', 'histograms'
-        )
+      input_api.os_path.join(
+        input_api.change.RepositoryRoot(), 'tools', 'metrics', 'histograms'
+      )
     ]
 
     import presubmit_bad_message_reasons
 
     return presubmit_bad_message_reasons.PrecheckBadMessage(
-        input_api, output_api, 'BadMessageReasonExtensions'
+      input_api, output_api, 'BadMessageReasonExtensions'
     )
-  except:
+  except:  # noqa: E722
     return [output_api.PresubmitError('Could not verify histogram!')]
   finally:
     sys.path = original_sys_path

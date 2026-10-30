@@ -12,24 +12,24 @@ import re
 
 # Skip attributes that are already implemented in print preview plus job-priority (b/172208667).
 NOOP_ATTRS = [
-    'copies',
-    'job-hold-until',
-    'job-copies',
-    'job-password',
-    'job-password-encryption',
-    'job-priority',
-    'media',
-    'media-col',
-    'multiple-document-handling',
-    'number-up',
-    'orientation-requested',
-    'page-ranges',
-    'presentation-direction-number-up',
-    'print-color-mode',
-    'print-scaling',
-    'printer-resolution',
-    'sheet-collate',
-    'sides',
+  'copies',
+  'job-hold-until',
+  'job-copies',
+  'job-password',
+  'job-password-encryption',
+  'job-priority',
+  'media',
+  'media-col',
+  'multiple-document-handling',
+  'number-up',
+  'orientation-requested',
+  'page-ranges',
+  'presentation-direction-number-up',
+  'print-color-mode',
+  'print-scaling',
+  'printer-resolution',
+  'sheet-collate',
+  'sides',
 ]
 
 # RFC 8011 (5.1.4) requires keywords to start with a letter. There's however at
@@ -141,38 +141,43 @@ def add_l10n(l10n_map, ipp_id, grit_id=None):
 def main():
   parser = argparse.ArgumentParser(usage=__doc__)
   parser.add_argument(
-      '-a',
-      '--attributes-file',
-      dest='attributes_file',
-      help='path to ipp-registrations-2.csv input file',
-      metavar='FILE',
-      required=True)
+    '-a',
+    '--attributes-file',
+    dest='attributes_file',
+    help='path to ipp-registrations-2.csv input file',
+    metavar='FILE',
+    required=True,
+  )
   parser.add_argument(
-      '-k',
-      '--keyword-values-file',
-      dest='keyword_values_file',
-      help='path to ipp-registrations-4.csv input file',
-      metavar='FILE',
-      required=True)
+    '-k',
+    '--keyword-values-file',
+    dest='keyword_values_file',
+    help='path to ipp-registrations-4.csv input file',
+    metavar='FILE',
+    required=True,
+  )
   parser.add_argument(
-      '-e',
-      '--enum-values-file',
-      dest='enum_values_file',
-      help='path to ipp-registrations-6.csv input file',
-      metavar='FILE',
-      required=True)
+    '-e',
+    '--enum-values-file',
+    dest='enum_values_file',
+    help='path to ipp-registrations-6.csv input file',
+    metavar='FILE',
+    required=True,
+  )
   parser.add_argument(
-      '-i',
-      '--ipp-handler-map',
-      dest='ipp_handler_map',
-      help='path to ipp_handler_map.cc output file',
-      metavar='FILE')
+    '-i',
+    '--ipp-handler-map',
+    dest='ipp_handler_map',
+    help='path to ipp_handler_map.cc output file',
+    metavar='FILE',
+  )
   parser.add_argument(
-      '-l',
-      '--localization-map',
-      dest='localization_map',
-      help='path to ipp_l10n.h output file',
-      metavar='FILE')
+    '-l',
+    '--localization-map',
+    dest='localization_map',
+    help='path to ipp_l10n.h output file',
+    metavar='FILE',
+  )
   args = parser.parse_args()
 
   if not (args.ipp_handler_map or args.localization_map):
@@ -217,9 +222,11 @@ def main():
     handler_file = open(args.ipp_handler_map, 'w')
     handler_file.write(HANDLER_HEADER)
 
-    for (attr_name, handler) in handlers:
-      handler_file.write('  result.emplace("%s", base::BindRepeating(&%s));\n'
-                         % (attr_name, handler))
+    for attr_name, handler in handlers:
+      handler_file.write(
+        '  result.emplace("%s", base::BindRepeating(&%s));\n'
+        % (attr_name, handler)
+      )
 
     handler_file.write(HANDLER_FOOTER)
     handler_file.close()
@@ -227,7 +234,7 @@ def main():
   if args.localization_map:
     l10n_map = {}
 
-    for (attr_name, handler) in handlers:
+    for attr_name, handler in handlers:
       if handler != 'NoOpHandler':
         if not handler.startswith('Multivalue'):
           add_l10n(l10n_map, attr_name)
@@ -266,8 +273,11 @@ def main():
             # Skip duplicates and finishings 'none' value.
             if l10n_key not in supported_items and l10n_key != 'finishings/3':
               supported_items.add(l10n_key)
-              add_l10n(l10n_map, l10n_key,
-                       attr_name + '_' + remove_annotation(enum_item[2]))
+              add_l10n(
+                l10n_map,
+                l10n_key,
+                attr_name + '_' + remove_annotation(enum_item[2]),
+              )
           except ValueError:
             # TODO(crbug.com/964919): Handle some plain English cases.
             pass

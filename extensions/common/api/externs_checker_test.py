@@ -10,10 +10,15 @@ import unittest
 from externs_checker import ExternsChecker
 
 sys.path.append(
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..'))
+  os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..')
+)
 
-from PRESUBMIT_test_mocks import (MockInputApi, MockOutputApi, MockFile,
-                                  MockChange)
+from PRESUBMIT_test_mocks import (
+  MockInputApi,
+  MockOutputApi,
+  MockFile,
+  MockChange,
+)
 
 
 class ExternsCheckerTest(unittest.TestCase):
@@ -34,10 +39,11 @@ class ExternsCheckerTest(unittest.TestCase):
     self.assertEquals(1, len(results[0].items))
     self.assertEquals('b', results[0].items[0])
     self.assertEquals(
-        'To update the externs, run:\n'
-        ' src/ $ python3 tools/json_schema_compiler/compiler.py b --root=. '
-        '--generator=externs > 2',
-        results[0].long_text)
+      'To update the externs, run:\n'
+      ' src/ $ python3 tools/json_schema_compiler/compiler.py b --root=. '
+      '--generator=externs > 2',
+      results[0].long_text,
+    )
 
   def testModifiedSourceWithModifiedExtern(self):
     results = self._runChecks(['b', '2', 'test', 'random'])
@@ -50,10 +56,11 @@ class ExternsCheckerTest(unittest.TestCase):
     self.assertTrue('b' in results[0].items)
     self.assertTrue('c' in results[0].items)
     self.assertEquals(
-        'To update the externs, run:\n'
-        ' src/ $ python3 tools/json_schema_compiler/compiler.py <source_file> '
-        '--root=. --generator=externs > <output_file>',
-        results[0].long_text)
+      'To update the externs, run:\n'
+      ' src/ $ python3 tools/json_schema_compiler/compiler.py <source_file> '
+      '--root=. --generator=externs > <output_file>',
+      results[0].long_text,
+    )
 
   def testModifiedMultipleSourcesWithOneModifiedExtern(self):
     results = self._runChecks(['b', 'test', 'c', 'random', '2'])
@@ -62,7 +69,7 @@ class ExternsCheckerTest(unittest.TestCase):
     self.assertEquals('c', results[0].items[0])
 
   def testApiFileDoesNotExist(self):
-    exists = lambda f: f in ['a', 'b', 'c', '1', '2']
+    exists = lambda f: f in ['a', 'b', 'c', '1', '2']  # noqa: E731
     with self.assertRaises(OSError) as e:
       self._runChecks(['a'], exists)
     self.assertEqual('Path Not Found: 3', str(e.exception))

@@ -26,47 +26,53 @@ import sys
 
 
 def generate_sandbox_params(argv):
-    if len(argv) < 3:
-        print('Usage: {} output_file_prefix file1.sb...'.format(argv[0]),
-              file=sys.stderr)
-        return 1
+  if len(argv) < 3:
+    print(
+      'Usage: {} output_file_prefix file1.sb...'.format(argv[0]),
+      file=sys.stderr,
+    )
+    return 1
 
-    h_contents = ''
-    cc_contents = ''
-    for (name, value) in _process_policy_files(argv[2:]):
-        variable_name = 'kParam' + name.title().replace('-', '')
-        h_contents += 'SANDBOX_POLICY_EXPORT extern const char {}[];\n'.format(
-            variable_name)
-        cc_contents += 'const char {}[] = "{}";\n'.format(variable_name, value)
+  h_contents = ''
+  cc_contents = ''
+  for name, value in _process_policy_files(argv[2:]):
+    variable_name = 'kParam' + name.title().replace('-', '')
+    h_contents += 'SANDBOX_POLICY_EXPORT extern const char {}[];\n'.format(
+      variable_name
+    )
+    cc_contents += 'const char {}[] = "{}";\n'.format(variable_name, value)
 
-    with open(argv[1] + '.h', 'w') as f:
-        f.write(
-            FILE_TEMPLATE.format(includes='#include "sandbox/policy/export.h"',
-                                 contents=h_contents))
+  with open(argv[1] + '.h', 'w') as f:
+    f.write(
+      FILE_TEMPLATE.format(
+        includes='#include "sandbox/policy/export.h"', contents=h_contents
+      )
+    )
 
-    with open(argv[1] + '.cc', 'w') as f:
-        f.write(
-            FILE_TEMPLATE.format(
-                includes='#include "sandbox/policy/mac/params.h"',
-                contents=cc_contents))
+  with open(argv[1] + '.cc', 'w') as f:
+    f.write(
+      FILE_TEMPLATE.format(
+        includes='#include "sandbox/policy/mac/params.h"', contents=cc_contents
+      )
+    )
 
-    return 0
+  return 0
 
 
 def _process_policy_files(files):
-    """Iterates the files in |files|, parsing out parameter definitions, and
-    yields the name-value pair.
-    """
-    for sb_file in files:
-        with open(sb_file, 'r') as f:
-            for line in f:
-                comment_start = line.find(';')
-                if comment_start != -1:
-                    line = line[:comment_start]
-                match = DEFINE_RE.match(line)
-                if match:
-                    groups = match.groups()
-                    yield (groups[0], groups[1])
+  """Iterates the files in |files|, parsing out parameter definitions, and
+  yields the name-value pair.
+  """
+  for sb_file in files:
+    with open(sb_file, 'r') as f:
+      for line in f:
+        comment_start = line.find(';')
+        if comment_start != -1:
+          line = line[:comment_start]
+        match = DEFINE_RE.match(line)
+        if match:
+          groups = match.groups()
+          yield (groups[0], groups[1])
 
 
 DEFINE_RE = re.compile(r'^\(define\s+([a-zA-Z0-9\-]+).*"(\w+)"\)')
@@ -85,4 +91,4 @@ namespace policy {{
 """
 
 if __name__ == '__main__':
-    sys.exit(generate_sandbox_params(sys.argv))
+  sys.exit(generate_sandbox_params(sys.argv))

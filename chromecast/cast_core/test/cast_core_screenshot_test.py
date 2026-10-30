@@ -16,7 +16,8 @@ from telemetry.util import rgba_color
 
 
 class ScreenshotTest(
-    serially_executed_browser_test_case.SeriallyExecutedBrowserTestCase):
+  serially_executed_browser_test_case.SeriallyExecutedBrowserTestCase
+):
   @classmethod
   def Name(cls):
     return 'screenshot'
@@ -33,14 +34,15 @@ class ScreenshotTest(
 
   @classmethod
   def StartCastReceiver(cls):
-    """ Navigates sending tab to about:blank and cast to receiver."""
+    """Navigates sending tab to about:blank and cast to receiver."""
 
     try:
       # TODO(crbug.com/40558533): Note cls._browser_options actually is a
       # FinderOptions object, and we need to access the real browser_option's
       # contained inside.
       cls._cast_receiver_to_create.SetUpEnvironment(
-          cls._browser_options.browser_options)
+        cls._browser_options.browser_options
+      )
       cls.cast_receiver = cls._cast_receiver_to_create.Create()
     except Exception:
       cls._cast_receiver_to_create.CleanUpEnvironment()
@@ -61,31 +63,38 @@ class ScreenshotTest(
     cls._browser_to_create = browser_finder.FindBrowser(browser_options)
     if not cls._browser_to_create:
       raise browser_finder_exceptions.BrowserFinderException(
-          'Cannot find browser of type %s. \n\nAvailable browsers:\n%s\n' % (
-              browser_options.browser_options.browser_type,
-              '\n'.join(browser_finder.GetAllAvailableBrowserTypes(
-                  browser_options))))
+        'Cannot find browser of type %s. \n\nAvailable browsers:\n%s\n'
+        % (
+          browser_options.browser_options.browser_type,
+          '\n'.join(
+            browser_finder.GetAllAvailableBrowserTypes(browser_options)
+          ),
+        )
+      )
 
     cast_devices = cast_device.FindAllAvailableDevices(browser_options)
     cast_browsers = []
     for device in cast_devices:
       cast_browsers.extend(
-          cast_browser_finder.FindAllAvailableBrowsers(
-              browser_options, device))
-    cls._cast_receiver_to_create = \
-        cast_browser_finder.SelectDefaultBrowser(cast_browsers)
+        cast_browser_finder.FindAllAvailableBrowsers(browser_options, device)
+      )
+    cls._cast_receiver_to_create = cast_browser_finder.SelectDefaultBrowser(
+      cast_browsers
+    )
 
     if not cls.platform:
       cls.platform = cls._browser_to_create.platform
       cls.platform.network_controller.Open(
-          browser_options.browser_options.wpr_mode)
+        browser_options.browser_options.wpr_mode
+      )
     assert cls.platform == cls._browser_to_create.platform, (
-        'All browser launches within same test suite must use browsers on '
-        'the same platform')
+      'All browser launches within same test suite must use browsers on '
+      'the same platform'
+    )
 
   @classmethod
   def TearDownProcess(cls):
-    """ Tear down the testing logic after running the test cases.
+    """Tear down the testing logic after running the test cases.
     This is guaranteed to be called only once for all the tests after the test
     suite finishes running.
     """
@@ -109,10 +118,11 @@ class ScreenshotTest(
     """Fling a Youtube video to the Cast receiver and confirm that rendering
     is correctly performed via screenshot."""
     self.cast_receiver._browser_backend.FlingVideo(
-        'https://youtu.be/zBeWNaNWtIM')
+      'https://youtu.be/zBeWNaNWtIM'
+    )
     self.receiver_tab = self.cast_receiver.tabs[0]
     screenshot = self.receiver_tab.Screenshot(10)
-    logging.warning(screenshot)
+    logging.warning(screenshot)  # noqa: F821
     pixel_value = image_util.GetPixelColor(screenshot, 100, 100)
 
     if self._local_cast:
@@ -126,10 +136,16 @@ class ScreenshotTest(
     tolerance = 1
 
     if not videoRGB.IsEqual(pixel_value, tolerance):
-      error_message = ('Color mismatch : expected (%d, %d, %d), ' +
-                       'got (%d, %d, %d)') % (
-                           videoRGB.r, videoRGB.g, videoRGB.b,
-                           pixel_value.r, pixel_value.g, pixel_value.b)
+      error_message = (
+        'Color mismatch : expected (%d, %d, %d), ' + 'got (%d, %d, %d)'
+      ) % (
+        videoRGB.r,
+        videoRGB.g,
+        videoRGB.b,
+        pixel_value.r,
+        pixel_value.g,
+        pixel_value.b,
+      )
       self.fail(error_message)
 
   def TestMirroring(self):
@@ -137,14 +153,19 @@ class ScreenshotTest(
     the Cast receiver and confirm that the colors match."""
 
     canvasRGB = rgba_color.RgbaColor(
-        random.randint(0, 255), random.randint(0, 255), random.randint(0, 255),
-        255)
+      random.randint(0, 255),
+      random.randint(0, 255),
+      random.randint(0, 255),
+      255,
+    )
     tab = self.tab
     tab.action_runner.Navigate(self.UrlOfStaticFilePath('screenshot.html'))
-    tab.EvaluateJavaScript('window.draw({{ red }}, {{ green }}, {{ blue }});',
-                           red=canvasRGB.r,
-                           green=canvasRGB.g,
-                           blue=canvasRGB.b)
+    tab.EvaluateJavaScript(
+      'window.draw({{ red }}, {{ green }}, {{ blue }});',
+      red=canvasRGB.r,
+      green=canvasRGB.g,
+      blue=canvasRGB.b,
+    )
     self.cast_receiver._browser_backend.MirrorTab()
     self.receiver_tab = self.cast_receiver.tabs[0]
 
@@ -166,5 +187,6 @@ class ScreenshotTest(
 
 def load_tests(loader, tests, pattern):
   del loader, tests, pattern  # Unused.
-  return serially_executed_browser_test_case \
-            .LoadAllTestsInModule(sys.modules[__name__])
+  return serially_executed_browser_test_case.LoadAllTestsInModule(
+    sys.modules[__name__]
+  )

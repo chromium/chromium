@@ -18,23 +18,23 @@ def CheckAPIPermissionIDUpload(input_api, output_api):
 
   try:
     sys.path.append(
-        input_api.os_path.join(
-            input_api.PresubmitLocalPath(),
-            '..',
-            '..',
-            '..',
-            'tools',
-            'strict_enum_value_checker',
-        )
+      input_api.os_path.join(
+        input_api.PresubmitLocalPath(),
+        '..',
+        '..',
+        '..',
+        'tools',
+        'strict_enum_value_checker',
+      )
     )
     from strict_enum_value_checker import StrictEnumValueChecker
   finally:
     sys.path = original_sys_path
 
   return StrictEnumValueChecker(
-      input_api,
-      output_api,
-      start_marker='enum APIPermissionID {',
-      end_marker='};',
-      path='extensions/common/mojom/api_permission_id.mojom',
+    input_api,
+    output_api,
+    start_marker='enum APIPermissionID {',
+    end_marker='};',
+    path='extensions/common/mojom/api_permission_id.mojom',
   ).Run()

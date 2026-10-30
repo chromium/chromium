@@ -10,7 +10,7 @@ for more details on the presubmit API built into depot_tools.
 
 PRESUBMIT_VERSION = '2.0.0'
 
-import sys
+import sys  # noqa: E402
 
 
 def CheckExternsOnUpload(input_api, output_api):

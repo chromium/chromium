@@ -11,7 +11,6 @@ from def_parser import parse_def_exports
 
 
 class DefParserTest(unittest.TestCase):
-
   def setUp(self):
     self._temp_dir = tempfile.TemporaryDirectory()
     self.addCleanup(self._temp_dir.cleanup)
@@ -34,12 +33,14 @@ EXPORTS
     exports = parse_def_exports(self.path)
 
     self.assertEqual(
-        [
-            ('Plain', None, None),
-            ('Forwarded', 'kernel32.Forwarded', None),
-            ('Ordinal', 'ws2_32.Ordinal', 7),
-            ('DataSymbol', None, None),
-        ], list(exports))
+      [
+        ('Plain', None, None),
+        ('Forwarded', 'kernel32.Forwarded', None),
+        ('Ordinal', 'ws2_32.Ordinal', 7),
+        ('DataSymbol', None, None),
+      ],
+      list(exports),
+    )
 
   def test_requires_exports_section(self):
     self._write('LIBRARY sample.dll\n')

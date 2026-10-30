@@ -12,8 +12,9 @@ import re
 Export = collections.namedtuple('Export', ('name', 'target', 'ordinal'))
 
 _EXPORT_RE = re.compile(
-    r'^(\S+)(?:\s*=\s*(\S+))?(?:\s+@(\d+))?'
-    r'(?:\s+(?:DATA|NONAME|PRIVATE))*$')
+  r'^(\S+)(?:\s*=\s*(\S+))?(?:\s+@(\d+))?'
+  r'(?:\s+(?:DATA|NONAME|PRIVATE))*$'
+)
 
 
 def parse_def_exports(path):
@@ -32,8 +33,12 @@ def parse_def_exports(path):
       if not match:
         raise ValueError(f'{path}:{line_number}: invalid export: {stripped}')
       exports.append(
-          Export(match.group(1), match.group(2),
-                 int(match.group(3)) if match.group(3) else None))
+        Export(
+          match.group(1),
+          match.group(2),
+          int(match.group(3)) if match.group(3) else None,
+        )
+      )
   if not in_exports:
     raise ValueError(f'{path}: missing EXPORTS section')
   return exports

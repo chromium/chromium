@@ -8,6 +8,7 @@ import sys
 
 from telemetry.testing import browser_test_runner
 
+
 def main():
   retval = browser_test_runner.Run(cast_project_config.CONFIG, sys.argv)
   return retval

@@ -48,8 +48,11 @@ def parse_allowlist(path):
   with open(path, 'r', encoding='utf-8') as f:
     for line in f:
       stripped = line.strip()
-      if (not stripped or stripped.startswith(';') or
-          stripped.upper() == 'EXPORTS'):
+      if (
+        not stripped
+        or stripped.startswith(';')
+        or stripped.upper() == 'EXPORTS'
+      ):
         continue
       names.add(stripped.split()[0])
   return names
@@ -67,8 +70,11 @@ def parse_export_routing(path):
   for export in parse_def_exports(path):
     if export.target == 'ApifwNotReached':
       notreached.add(export.name)
-    elif (export.target and '.' in export.target and
-          not export.target.startswith('Apifw')):
+    elif (
+      export.target
+      and '.' in export.target
+      and not export.target.startswith('Apifw')
+    ):
       # "Name = module.Export" — a PE forward straight to the real API.
       direct_forwards.add(export.name)
   return direct_forwards, notreached
@@ -76,11 +82,14 @@ def parse_export_routing(path):
 
 def main():
   parser = argparse.ArgumentParser(
-      description='Audit allowlist coverage of the logging shim export table')
-  parser.add_argument('--allowlist', required=True,
-                      help='Path to basic_sandbox.def')
-  parser.add_argument('--logging-def', required=True,
-                      help='Path to shim/exports_logging.def')
+    description='Audit allowlist coverage of the logging shim export table'
+  )
+  parser.add_argument(
+    '--allowlist', required=True, help='Path to basic_sandbox.def'
+  )
+  parser.add_argument(
+    '--logging-def', required=True, help='Path to shim/exports_logging.def'
+  )
   parser.add_argument('--stamp', help='Stamp file written on success')
   args = parser.parse_args()
 
@@ -94,19 +103,22 @@ def main():
 
   if forwarded_not_allowlisted or allowlisted_notreached:
     sys.stderr.write(
-        'basic-process allowlist / logging shim drift '
-        '(basic_sandbox.def vs exports_logging.def):\n')
+      'basic-process allowlist / logging shim drift '
+      '(basic_sandbox.def vs exports_logging.def):\n'
+    )
     if forwarded_not_allowlisted:
       sys.stderr.write(
-          '  direct-forwarded (silently, unlogged) but NOT on the allowlist —\n'
-          '  add to basic_sandbox.def or route to a logging thunk:\n')
+        '  direct-forwarded (silently, unlogged) but NOT on the allowlist —\n'
+        '  add to basic_sandbox.def or route to a logging thunk:\n'
+      )
       for name in forwarded_not_allowlisted:
         sys.stderr.write(f'    {name}\n')
     if allowlisted_notreached:
       sys.stderr.write(
-          '  on the allowlist but routed to ApifwNotReached — an expected\n'
-          '  API must not crash-sink; route it to a forward or logging '
-          'thunk:\n')
+        '  on the allowlist but routed to ApifwNotReached — an expected\n'
+        '  API must not crash-sink; route it to a forward or logging '
+        'thunk:\n'
+      )
       for name in allowlisted_notreached:
         sys.stderr.write(f'    {name}\n')
     return 1

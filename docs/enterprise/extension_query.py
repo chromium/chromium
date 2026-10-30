@@ -48,11 +48,11 @@ def ComputeExtensionsList(extensions_list, data):
             key = key + ' @ ' + extension['version']
           if key not in extensions_list:
             current_extension = {
-                'name': extension.get('name', ''),
-                'permissions': extension.get('permissions', ''),
-                'installed': set(),
-                'disabled': set(),
-                'forced': set()
+              'name': extension.get('name', ''),
+              'permissions': extension.get('permissions', ''),
+              'installed': set(),
+              'disabled': set(),
+              'forced': set(),
             }
           else:
             current_extension = extensions_list[key]
@@ -132,11 +132,12 @@ def Flatten(data, all_columns):
 
         flat_list_len = len(flat_list)
         if flat_list_len > MAX_CELL_LENGTH:
-          last_separator = flat_list.rfind(SEPARATOR, 0,
-                                           MAX_CELL_LENGTH - flat_list_len)
+          last_separator = flat_list.rfind(
+            SEPARATOR, 0, MAX_CELL_LENGTH - flat_list_len
+          )
           if last_separator != -1:
             added_item[current_column] = flat_list[0:last_separator]
-            flat_list = flat_list[last_separator + 2:]
+            flat_list = flat_list[last_separator + 2 :]
             overflow_prop_index = overflow_prop_index + 1
             continue
 
@@ -145,9 +146,9 @@ def Flatten(data, all_columns):
         added_item[current_column] = flat_list
         break
 
-      assert isinstance(added_item[prop],
-                        (int, bool, str)), ('unexpected type for item: %s' %
-                                            type(added_item[prop]).__name__)
+      assert isinstance(added_item[prop], (int, bool, str)), (
+        'unexpected type for item: %s' % type(added_item[prop]).__name__
+      )
 
     all_columns.update(added_item.keys())
     yield added_item
@@ -165,8 +166,16 @@ def ExtensionListAsCsv(extensions_list, csv_filename, sort_column='name'):
   flattened_list = list(Flatten(DictToList(extensions_list), all_columns))
 
   desired_column_order = [
-      'id', 'name', 'num_permissions', 'num_installed', 'num_disabled',
-      'num_forced', 'permissions', 'installed', 'disabled', 'forced'
+    'id',
+    'name',
+    'num_permissions',
+    'num_installed',
+    'num_disabled',
+    'num_forced',
+    'permissions',
+    'installed',
+    'disabled',
+    'forced',
   ]
 
   # Order the columns as desired. Columns other than those in
@@ -180,7 +189,8 @@ def ExtensionListAsCsv(extensions_list, csv_filename, sort_column='name'):
     ordered_fieldnames.extend(sorted(matching_columns))
 
   ordered_fieldnames.extend(
-      [x for x in desired_column_order if x not in ordered_fieldnames])
+    [x for x in desired_column_order if x not in ordered_fieldnames]
+  )
   with open(csv_filename, mode='w', newline='', encoding='utf-8') as csv_file:
     writer = csv.DictWriter(csv_file, fieldnames=ordered_fieldnames)
     writer.writeheader()
@@ -202,11 +212,12 @@ def main(args):
   # from_p12_keyfile method of ServiceAccountCredentials and specify the
   # service account email address, p12 keyfile, and scopes.
   service_credentials = Credentials.from_service_account_file(
-      args.service_account_key_path,
-      scopes=[
-          'https://www.googleapis.com/auth/admin.directory.device.chromebrowsers.readonly'
-      ],
-      subject=args.admin_email)
+    args.service_account_key_path,
+    scopes=[
+      'https://www.googleapis.com/auth/admin.directory.device.chromebrowsers.readonly'
+    ],
+    subject=args.admin_email,
+  )
 
   try:
     http = google_auth_httplib2.AuthorizedHttp(service_credentials, http=Http())
@@ -219,8 +230,9 @@ def main(args):
 
       retrycount = 0
       while retrycount < 5:
-        response = http.request(base_request_url + '?' + request_parameters,
-                                'GET')[1]
+        response = http.request(
+          base_request_url + '?' + request_parameters, 'GET'
+        )[1]
 
         if isinstance(response, bytes):
           response = response.decode('utf-8')
@@ -242,8 +254,10 @@ def main(args):
 
       print('%s browsers processed.' % (browsers_processed))
 
-      if (args.max_browsers_to_process is not None and
-          args.max_browsers_to_process <= browsers_processed):
+      if (
+        args.max_browsers_to_process is not None
+        and args.max_browsers_to_process <= browsers_processed
+      ):
         print('Stopping at %s browsers processed.' % (browsers_processed))
         break
 
@@ -257,32 +271,37 @@ def main(args):
 if __name__ == '__main__':
   parser = argparse.ArgumentParser(description='CBCM Extension Analyzer')
   parser.add_argument(
-      '-k',
-      '--service_account_key_path',
-      metavar='FILENAME',
-      required=True,
-      help='The service account key file used to make API requests.')
+    '-k',
+    '--service_account_key_path',
+    metavar='FILENAME',
+    required=True,
+    help='The service account key file used to make API requests.',
+  )
   parser.add_argument(
-      '-a',
-      '--admin_email',
-      required=True,
-      help='The admin user used to make the API requests.')
+    '-a',
+    '--admin_email',
+    required=True,
+    help='The admin user used to make the API requests.',
+  )
   parser.add_argument(
-      '-x',
-      '--extension_list_csv',
-      metavar='FILENAME',
-      default='./extension_list.csv',
-      help='Generate an extension list to the specified CSV '
-      'file')
+    '-x',
+    '--extension_list_csv',
+    metavar='FILENAME',
+    default='./extension_list.csv',
+    help='Generate an extension list to the specified CSV file',
+  )
   parser.add_argument(
-      '-m',
-      '--max_browsers_to_process',
-      type=int,
-      help='Maximum number of browsers to process. (Must be > 0).')
+    '-m',
+    '--max_browsers_to_process',
+    type=int,
+    help='Maximum number of browsers to process. (Must be > 0).',
+  )
   args = parser.parse_args()
 
-  if (args.max_browsers_to_process is not None and
-      args.max_browsers_to_process <= 0):
+  if (
+    args.max_browsers_to_process is not None
+    and args.max_browsers_to_process <= 0
+  ):
     print('max_browsers_to_process must be > 0.')
     parser.print_help()
     sys.exit(1)

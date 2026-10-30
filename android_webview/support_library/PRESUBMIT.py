@@ -6,11 +6,13 @@
 Runs various style checks before upload.
 """
 
+
 def CheckChangeOnUpload(input_api, output_api):
   results = []
   results.extend(_CheckAnnotatedInvocationHandlers(input_api, output_api))
   results.extend(_CheckFeatureDevSuffix(input_api, output_api))
   return results
+
 
 def _CheckAnnotatedInvocationHandlers(input_api, output_api):
   """Checks that all references to InvocationHandlers are annotated with a
@@ -22,17 +24,22 @@ def _CheckAnnotatedInvocationHandlers(input_api, output_api):
   invocation_handler_str = r'\bInvocationHandler\b'
   annotation_str = r'/\* \w+ \*/\s+'
   invocation_handler_import_pattern = input_api.re.compile(
-      r'^import.*' + invocation_handler_str + ';$')
+    r'^import.*' + invocation_handler_str + ';$'
+  )
   possibly_annotated_handler_pattern = input_api.re.compile(
-      r'(' + annotation_str + r')?(' + invocation_handler_str + r')')
+    r'(' + annotation_str + r')?(' + invocation_handler_str + r')'
+  )
 
   errors = []
 
-  sources = lambda affected_file: input_api.FilterSourceFile(
-      affected_file,
-      files_to_skip=(input_api.DEFAULT_FILES_TO_SKIP +
-                  (r'.*support_lib_boundary[\\\/]util[\\\/].*',)),
-      files_to_check=(r'.*\.java$',))
+  sources = lambda affected_file: input_api.FilterSourceFile(  # noqa: E731
+    affected_file,
+    files_to_skip=(
+      input_api.DEFAULT_FILES_TO_SKIP
+      + (r'.*support_lib_boundary[\\\/]util[\\\/].*',)
+    ),
+    files_to_check=(r'.*\.java$',),
+  )
 
   for f in input_api.AffectedSourceFiles(sources):
     for line_num, line in f.ChangedContents():
@@ -48,15 +55,20 @@ def _CheckAnnotatedInvocationHandlers(input_api, output_api):
   results = []
 
   if errors:
-    results.append(output_api.PresubmitPromptWarning("""
+    results.append(
+      output_api.PresubmitPromptWarning(
+        """
 All references to InvocationHandlers should be annotated with the type they
 represent using a comment, e.g.:
 
 /* RetType */ InvocationHandler method(/* ParamType */ InvocationHandler param);
 """,
-        errors))
+        errors,
+      )
+    )
 
   return results
+
 
 def _CheckFeatureDevSuffix(input_api, output_api):
   """Checks that Features.DEV_SUFFIX is not used in boundary_interfaces. The
@@ -66,7 +78,7 @@ def _CheckFeatureDevSuffix(input_api, output_api):
   pattern = input_api.re.compile(r'\bDEV_SUFFIX\b')
 
   problems = []
-  filt = lambda f: 'boundary_interfaces' in f.LocalPath()
+  filt = lambda f: 'boundary_interfaces' in f.LocalPath()  # noqa: E731
   for f in input_api.AffectedFiles(file_filter=filt):
     for line_num, line in f.ChangedContents():
       m = pattern.search(line)
@@ -75,6 +87,9 @@ def _CheckFeatureDevSuffix(input_api, output_api):
 
   if not problems:
     return []
-  return [output_api.PresubmitPromptWarning(
-    'DEV_SUFFIX should not be used in boundary_interfaces.\n' + '\n'
-    .join(problems))]
+  return [
+    output_api.PresubmitPromptWarning(
+      'DEV_SUFFIX should not be used in boundary_interfaces.\n'
+      + '\n'.join(problems)
+    )
+  ]

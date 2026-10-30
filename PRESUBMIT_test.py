@@ -27,10 +27,10 @@ try:
 finally:
     sys.path.pop(0)
 
-import PRESUBMIT
+import PRESUBMIT  # noqa: E402
 
-from PRESUBMIT_test_mocks import MockFile, MockAffectedFile
-from PRESUBMIT_test_mocks import MockInputApi, MockOutputApi, MockChange
+from PRESUBMIT_test_mocks import MockFile, MockAffectedFile  # noqa: E402
+from PRESUBMIT_test_mocks import MockInputApi, MockOutputApi, MockChange  # noqa: E402, F401
 
 _TEST_DATA_DIR = 'base/test/data/presubmit'
 
@@ -4894,7 +4894,7 @@ class TranslationExpectationsTest(unittest.TestCase):
 
     # Tests that the list of files passed to the presubmit does not
     # contain duplicate basenames.
-    def testExpectationsSuccess(self):
+    def testExpectationsSuccess(self):  # noqa: F811
         # Mock input file list needs a grd or grdp file in order to run the
         # presubmit. The file itself doesn't matter.
         input_api = MockInputApi()
@@ -6209,8 +6209,7 @@ class CheckDanglingUntriagedTest(unittest.TestCase):
         )
 
 
-class CheckDanglingUntriagedTest(unittest.TestCase):
-
+class CheckDanglingUntriagedTest(unittest.TestCase):  # noqa: F811
     def testError(self):
         """Test patch adding dangling pointers are reported"""
         mock_input_api = MockInputApi()
@@ -6580,7 +6579,7 @@ class CheckDeprecatedSyncConsentFunctionsTest(unittest.TestCase):
     class TestCase:
         path: str
         content: str
-        expected_result: Result
+        expected_result: Result  # noqa: F821
 
     """Test the presubmit for deprecated ConsentLevel::kSync functions."""
 

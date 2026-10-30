@@ -25,10 +25,12 @@ RESPONSE_BODY = b""")]}'
 }
 """
 
+
 class Handler(http.server.BaseHTTPRequestHandler):
   def do_POST(self):
     self.send_response(200)
     self.end_headers()
     self.wfile.write(RESPONSE_BODY)
+
 
 http.server.HTTPServer(('', 8080), Handler).serve_forever()

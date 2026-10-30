@@ -14,7 +14,7 @@ from __future__ import print_function
 
 import os
 import re
-import sys
+import sys  # noqa: F401
 
 
 # The token returned when an API key is unset.
@@ -23,13 +23,15 @@ DUMMY_TOKEN = 'dummytoken'
 
 def _GetTokenFromOfficialFile(token_name):
   """Parses the token from the official file if it exists, else returns None."""
-  official_path = os.path.join(os.path.dirname(__file__),
-                               'internal/google_chrome_api_keys.h')
+  official_path = os.path.join(
+    os.path.dirname(__file__), 'internal/google_chrome_api_keys.h'
+  )
   if not os.path.isfile(official_path):
     return None
 
   line_regexp = r'^#define\s*%s\s*"([^"]+)"' % token_name
   line_pattern = re.compile(line_regexp)
+
   def ParseLine(current_line):
     result = line_pattern.match(current_line)
     if result:
@@ -50,7 +52,8 @@ def _GetTokenFromOfficialFile(token_name):
         if token:
           if current_line.count('"') != 2:
             raise Exception(
-              'Embedded quotes and multi-line strings are not supported.')
+              'Embedded quotes and multi-line strings are not supported.'
+            )
           return token
         current_line = ''
     return None
@@ -94,5 +97,6 @@ if __name__ == "__main__":
   print('GOOGLE_CLIENT_ID_REMOTING=%s' % GetClientID('REMOTING'))
   print('GOOGLE_CLIENT_SECRET_REMOTING=%s' % GetClientSecret('REMOTING'))
   print('GOOGLE_CLIENT_ID_REMOTING_HOST=%s' % GetClientID('REMOTING_HOST'))
-  print('GOOGLE_CLIENT_SECRET_REMOTING_HOST=%s' % GetClientSecret(
-      'REMOTING_HOST'))
+  print(
+    'GOOGLE_CLIENT_SECRET_REMOTING_HOST=%s' % GetClientSecret('REMOTING_HOST')
+  )

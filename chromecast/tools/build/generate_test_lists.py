@@ -2,8 +2,7 @@
 # Copyright 2014 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Helper script to generate unit test lists for the Chromecast build scripts.
-"""
+"""Helper script to generate unit test lists for the Chromecast build scripts."""
 
 import glob
 import json
@@ -48,8 +47,9 @@ def GetTestFilters(test_files_dir, test_names, include_filters):
   return test_filters
 
 
-def CombineList(test_files_dir, list_output_file, include_filters,
-                additional_runtime_options):
+def CombineList(
+  test_files_dir, list_output_file, include_filters, additional_runtime_options
+):
   """Writes a unit test file in a format compatible for Chromecast scripts.
 
   If include_filters is True, uses filters to create a test runner list
@@ -70,10 +70,12 @@ def CombineList(test_files_dir, list_output_file, include_filters,
   test_names = GetTestNames(test_files_dir)
   test_filters = GetTestFilters(test_files_dir, test_names, include_filters)
   test_commands = [
-      "{} {} {}".format(test_name,
-                        additional_runtime_options or "",
-                        test_filters.get(test_name, ""))
-      for test_name in test_names
+    "{} {} {}".format(
+      test_name,
+      additional_runtime_options or "",
+      test_filters.get(test_name, ""),
+    )
+    for test_name in test_names
   ]
 
   with open(list_output_file, "w") as f:
@@ -107,7 +109,8 @@ def CombineRuntimeDeps(test_files_dir, deps_output_file):
   runtime_deps_dir = os.path.join(test_files_dir, "runtime_deps")
   for runtime_deps_file in glob.glob(runtime_deps_dir + "/*_runtime_deps.txt"):
     test_name = os.path.basename(runtime_deps_file).replace(
-        "_runtime_deps.txt", "")
+      "_runtime_deps.txt", ""
+    )
     if test_name not in test_names:
       continue
 
@@ -116,7 +119,8 @@ def CombineRuntimeDeps(test_files_dir, deps_output_file):
 
   with open(deps_output_file, "w") as outfile:
     json.dump(
-        runtime_deps, outfile, sort_keys=True, indent=2, separators=(",", ": "))
+      runtime_deps, outfile, sort_keys=True, indent=2, separators=(",", ": ")
+    )
 
 
 def CreateList(inputs, list_output_file):
@@ -127,7 +131,7 @@ def CreateList(inputs, list_output_file):
 def DoMain(argv):
   """Main method. Runs helper commands for generating unit test lists."""
   parser = optparse.OptionParser(
-      """usage: %prog [<options>] <command> [<test names>]
+    """usage: %prog [<options>] <command> [<test names>]
 
       Valid commands:
           create_list       prints all given test names/args to a file, one line
@@ -136,27 +140,32 @@ def DoMain(argv):
                             into a single test list file
           pack_run          packs all test and filter files from the given
                             output directory into a single test list file
-      """)
+      """
+  )
   parser.add_option(
-      "-o",
-      action="store",
-      dest="list_output_file",
-      help="Output path in which to write the test list.")
+    "-o",
+    action="store",
+    dest="list_output_file",
+    help="Output path in which to write the test list.",
+  )
   parser.add_option(
-      "-d",
-      action="store",
-      dest="deps_output_file",
-      help="Output path in which to write the runtime deps.")
+    "-d",
+    action="store",
+    dest="deps_output_file",
+    help="Output path in which to write the runtime deps.",
+  )
   parser.add_option(
-      "-t",
-      action="store",
-      dest="test_files_dir",
-      help="Intermediate test list directory.")
+    "-t",
+    action="store",
+    dest="test_files_dir",
+    help="Intermediate test list directory.",
+  )
   parser.add_option(
-      "-a",
-      action="store",
-      dest="additional_runtime_options",
-      help="Additional options applied to all tests.")
+    "-a",
+    action="store",
+    dest="additional_runtime_options",
+    help="Additional options applied to all tests.",
+  )
   options, inputs = parser.parse_args(argv)
 
   list_output_file = options.list_output_file
@@ -185,8 +194,9 @@ def DoMain(argv):
       parser.error("pack_run require a test files directory (-t).\n")
     if deps_output_file:
       CombineRuntimeDeps(test_files_dir, deps_output_file)
-    return CombineList(test_files_dir, list_output_file, True,
-                       additional_runtime_options)
+    return CombineList(
+      test_files_dir, list_output_file, True, additional_runtime_options
+    )
 
   parser.error("Invalid command specified.")
 
