@@ -35,7 +35,7 @@ inline constexpr auto kContentSettingsTypeToHistogramValue =
         {ContentSettingsType::MEDIASTREAM_MIC, 12},
         {ContentSettingsType::MEDIASTREAM_CAMERA, 13},
         {ContentSettingsType::PROTOCOL_HANDLERS, 14},
-        // Removed DEPRECATED_PPAPI_BROKER in M156.
+        // Removed DEPRECATED_PPAPI_BROKER in M159.
         {ContentSettingsType::AUTOMATIC_DOWNLOADS, 16},
         {ContentSettingsType::MIDI_SYSEX, 17},
         {ContentSettingsType::SSL_CERT_DECISIONS, 19},
@@ -56,7 +56,7 @@ inline constexpr auto kContentSettingsTypeToHistogramValue =
         {ContentSettingsType::SOUND, 36},
         {ContentSettingsType::CLIENT_HINTS, 37},
         {ContentSettingsType::SENSORS, 38},
-        // Removed DEPRECATED_ACCESSIBILITY_EVENTS in M156.
+        // Removed DEPRECATED_ACCESSIBILITY_EVENTS in M159.
         {ContentSettingsType::PAYMENT_HANDLER, 43},
         {ContentSettingsType::USB_GUARD, 44},
         {ContentSettingsType::BACKGROUND_FETCH, 45},
@@ -96,7 +96,7 @@ inline constexpr auto kContentSettingsTypeToHistogramValue =
         {ContentSettingsType::JAVASCRIPT_JIT, 79},
         {ContentSettingsType::HTTP_ALLOWED, 80},
         {ContentSettingsType::FORMFILL_METADATA, 81},
-        // Removed DEPRECATED_FEDERATED_IDENTITY_ACTIVE_SESSION in M156.
+        // Removed DEPRECATED_FEDERATED_IDENTITY_ACTIVE_SESSION in M159.
         {ContentSettingsType::AUTO_DARK_WEB_CONTENT, 83},
         {ContentSettingsType::REQUEST_DESKTOP_SITE, 84},
         {ContentSettingsType::FEDERATED_IDENTITY_API, 85},
@@ -144,10 +144,10 @@ inline constexpr auto kContentSettingsTypeToHistogramValue =
         // Removed TOP_LEVEL_TPCD_ORIGIN_TRIAL in M143.
         {ContentSettingsType::DISPLAY_MEDIA_SYSTEM_AUDIO, 125},
         {ContentSettingsType::JAVASCRIPT_OPTIMIZER, 126},
-        // Removed STORAGE_ACCESS_HEADER_ORIGIN_TRIAL in M156.
+        // Removed STORAGE_ACCESS_HEADER_ORIGIN_TRIAL in M159.
         {ContentSettingsType::HAND_TRACKING, 128},
         {ContentSettingsType::WEB_APP_INSTALLATION, 129},
-        // Removed DEPRECATED_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS in M156.
+        // Removed DEPRECATED_DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS in M159.
         {ContentSettingsType::LEGACY_COOKIE_SCOPE, 131},
         {ContentSettingsType::ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
          132},
