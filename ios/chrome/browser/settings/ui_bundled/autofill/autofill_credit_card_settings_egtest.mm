@@ -27,6 +27,8 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using chrome_test_util::AutofillCreditCardEditTableView;
+using chrome_test_util::AutofillCreditCardTableView;
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::NavigationBarCancelButton;
@@ -120,8 +122,17 @@ id<GREYMatcher> BottomToolbar() {
   [ChromeEarlGreyUI
       tapSettingsMenuButton:grey_accessibilityID(
                                 kSettingsAutofillAndPasswordsCellId)];
+  // Wait for the push of the "Your saved info" page to complete.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:grey_accessibilityID(
+                                                 kSettingsTableViewId)];
   [[EarlGrey selectElementWithMatcher:PaymentMethodsButton()]
       performAction:grey_tap()];
+  // Wait for the push of the "Payments" page to complete.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:PaymentMethodsButton()];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      AutofillCreditCardTableView()];
 }
 
 // Helper to open the settings page for the Autofill credit card with `label`.
@@ -130,6 +141,22 @@ id<GREYMatcher> BottomToolbar() {
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(label)]
       performAction:grey_tap()];
+}
+
+// Waits for `AutofillCreditCardTableView()` to disappear from the view
+// hierarchy, for `AutofillCreditCardEditTableView()` to appear, and for the
+// first expected field cell (`kExpectedFields[0]`) to become visible.
+- (void)waitForCreditCardDetailsPageToAppear {
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:AutofillCreditCardTableView()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:AutofillCreditCardEditTableView()];
+  id<GREYMatcher> firstFieldMatcher = grey_accessibilityLabel(
+      [NSString stringWithFormat:@"%@, %@",
+                                 l10n_util::GetNSString(
+                                     kExpectedFields[0].display_string_id),
+                                 kExpectedFields[0].expected_result]);
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:firstFieldMatcher];
 }
 
 // Helper to open the settings page for the Autofill credit card list in edit
@@ -163,6 +190,10 @@ id<GREYMatcher> BottomToolbar() {
 - (void)exitSettingsMenu {
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
       performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:AutofillCreditCardTableView()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:SettingsDoneButton()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
   // Wait for UI components to finish loading.
@@ -218,11 +249,11 @@ id<GREYMatcher> BottomToolbar() {
 
 // Test that the page for viewing Autofill credit card details is as expected
 // when Mandatory Reauth is disabled.
-// TODO(crbug.com/395854842): Deflake test.
-- (void)FLAKY_testCreditCardViewPageMandatoryReauthDisabled {
+- (void)testCreditCardViewPageMandatoryReauthDisabled {
   [AutofillAppInterface setMandatoryReauthEnabled:FALSE];
   NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
   [self openEditCreditCard:[self creditCardLabel:lastDigits]];
+  [self waitForCreditCardDetailsPageToAppear];
 
   // Check that all fields and values match the expectations.
   for (const DisplayStringIDToExpectedResult& expectation : kExpectedFields) {
@@ -238,6 +269,8 @@ id<GREYMatcher> BottomToolbar() {
   // Go back to the list view page.
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
       performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:AutofillCreditCardTableView()];
 
   [self exitSettingsMenu];
 }
@@ -327,42 +360,50 @@ id<GREYMatcher> BottomToolbar() {
 }
 
 // Test that the page for viewing Autofill credit card details is accessible.
-// TODO(crbug.com/366085550): Re-enable the test.
-- (void)DISABLED_testAccessibilityOnCreditCardViewPage {
+- (void)testAccessibilityOnCreditCardViewPage {
   NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
   [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
   [self openEditCreditCard:[self creditCardLabel:lastDigits]];
+  [self waitForCreditCardDetailsPageToAppear];
 
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 
   // Go back to the list view page.
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
       performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:AutofillCreditCardTableView()];
 
   [self exitSettingsMenu];
 }
 
 // Test that the page for editing Autofill credit card details is accessible.
-// TODO(crbug.com/379736649): Re-enable this test.
-- (void)FLAKY_testAccessibilityOnCreditCardEditPage {
+- (void)testAccessibilityOnCreditCardEditPage {
   NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
   [ReauthenticationAppInterface mockReauthenticationModuleExpectedResult:
                                     ReauthenticationResult::kSuccess];
   [self openEditCreditCard:[self creditCardLabel:lastDigits]];
+  [self waitForCreditCardDetailsPageToAppear];
 
   // Switch on edit mode.
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
       performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:NavigationBarCancelButton()];
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 
   // Leave edit mode.
   [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
       performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:NavigationBarEditButton()];
 
   // Go back to the list view page.
   [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
       performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:AutofillCreditCardTableView()];
 
   [self exitSettingsMenu];
 }
