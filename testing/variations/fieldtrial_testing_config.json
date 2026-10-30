@@ -10075,6 +10075,21 @@
             ]
         }
     ],
+    "IOSChooseFromDriveSignedOut": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSChooseFromDriveSignedOut"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSComposeboxAimRichAPCExtraction": [
         {
             "platforms": [
