@@ -217,7 +217,7 @@ void RemoteFontFaceSource::NotifyFinished(Resource* resource) {
   if (resource->PassedIntegrityChecks() || !check_integrity) {
     custom_font_data_ = font->GetCustomFontData();
     if (RuntimeEnabledFeatures::IncrementalFontTransferEnabled()) {
-      ift_custom_font_data_ = IftCustomFontData::MaybeCreate(this, *font);
+      ift_font_ = IftFont::MaybeCreate(this, *font);
     }
   }
   url_ = resource->Url().GetString();
@@ -364,8 +364,8 @@ const SimpleFontData* RemoteFontFaceSource::CreateFontData(
   histograms_.RecordFallbackTime();
 
   CustomFontData* custom_font_data =
-      ift_custom_font_data_ ? ift_custom_font_data_.Get()
-                            : MakeGarbageCollected<CustomFontData>();
+      ift_font_ ? ift_font_->CreateCustomFontData()
+                : MakeGarbageCollected<CustomFontData>();
   return MakeGarbageCollected<SimpleFontData>(
       custom_font_data_->GetFontPlatformData(
           font_description.EffectiveFontSize(),
@@ -465,7 +465,7 @@ void RemoteFontFaceSource::Trace(Visitor* visitor) const {
   visitor->Trace(face_);
   visitor->Trace(font_selector_);
   visitor->Trace(custom_font_data_);
-  visitor->Trace(ift_custom_font_data_);
+  visitor->Trace(ift_font_);
   CSSFontFaceSource::Trace(visitor);
   FontResourceClient::Trace(visitor);
 }

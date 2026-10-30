@@ -40,11 +40,10 @@
 
 namespace blink {
 
-class IftCustomFontData::PatchLoader final
-    : public GarbageCollected<PatchLoader>,
-      public RawResourceClient {
+class IftFont::PatchLoader final : public GarbageCollected<PatchLoader>,
+                                   public RawResourceClient {
  public:
-  PatchLoader(const IftCustomFontData* owner, String patch_url)
+  PatchLoader(const IftFont* owner, String patch_url)
       : owner_(owner), patch_url_(std::move(patch_url)) {
     CHECK(owner_);
   }
@@ -64,16 +63,15 @@ class IftCustomFontData::PatchLoader final
     owner_->OnPatchLoaded(this, resource);
   }
 
-  String DebugName() const override { return "IftCustomFontData::PatchLoader"; }
+  String DebugName() const override { return "IftFont::PatchLoader"; }
 
  private:
-  Member<const IftCustomFontData> owner_;
+  Member<const IftFont> owner_;
   const String patch_url_;
 };
 
-IftCustomFontData* IftCustomFontData::MaybeCreate(
-    RemoteFontFaceSource* font_face_source,
-    FontResource& font_resource) {
+IftFont* IftFont::MaybeCreate(RemoteFontFaceSource* font_face_source,
+                              FontResource& font_resource) {
   std::unique_ptr<IftPatcher> patcher = font_resource.TakeIftPatcher();
   if (!patcher) {
     return nullptr;
@@ -84,16 +82,16 @@ IftCustomFontData* IftCustomFontData::MaybeCreate(
   // redirects, matching how Blink handles URLs within stylesheets, so that
   // patches are fetched relative to where the font bytes actually came from.
   const KURL initial_font_url = font_resource.GetResponse().ResponseUrl();
-  return MakeGarbageCollected<IftCustomFontData>(
-      base::PassKey<IftCustomFontData>(), font_face_source, initial_font_url,
+  return MakeGarbageCollected<IftFont>(
+      base::PassKey<IftFont>(), font_face_source, initial_font_url,
       font_resource.Options().WorldForCsp(), std::move(patcher));
 }
 
-IftCustomFontData::IftCustomFontData(base::PassKey<IftCustomFontData>,
-                                     RemoteFontFaceSource* font_face_source,
-                                     const KURL& font_url,
-                                     const DOMWrapperWorld* world_for_csp,
-                                     std::unique_ptr<IftPatcher> patcher)
+IftFont::IftFont(base::PassKey<IftFont>,
+                 RemoteFontFaceSource* font_face_source,
+                 const KURL& font_url,
+                 const DOMWrapperWorld* world_for_csp,
+                 std::unique_ptr<IftPatcher> patcher)
     : font_face_source_(font_face_source),
       font_url_(font_url),
       world_for_csp_(world_for_csp),
@@ -105,16 +103,19 @@ IftCustomFontData::IftCustomFontData(base::PassKey<IftCustomFontData>,
   CHECK(patcher_);
 }
 
-IftCustomFontData::~IftCustomFontData() = default;
+IftFont::~IftFont() = default;
 
-void IftCustomFontData::Trace(Visitor* visitor) const {
+void IftFont::Trace(Visitor* visitor) const {
   visitor->Trace(font_face_source_);
   visitor->Trace(world_for_csp_);
   visitor->Trace(patch_loaders_);
-  CustomFontData::Trace(visitor);
 }
 
-bool IftCustomFontData::IftRequireSubset(const StringView& text) const {
+IftCustomFontData* IftFont::CreateCustomFontData() const {
+  return MakeGarbageCollected<IftCustomFontData>(this);
+}
+
+bool IftFont::RequireSubset(const StringView& text) const {
   if (state_ == State::kFailed) {
     return false;
   }
@@ -133,11 +134,11 @@ bool IftCustomFontData::IftRequireSubset(const StringView& text) const {
   return false;
 }
 
-base::span<const uint8_t> IftCustomFontData::GetFontDataForTesting() const {
+base::span<const uint8_t> IftFont::GetFontDataForTesting() const {
   return patcher_->GetFontData();
 }
 
-void IftCustomFontData::BeginIdle() const {
+void IftFont::BeginIdle() const {
   if (state_ == State::kFailed) {
     return;
   }
@@ -160,7 +161,7 @@ void IftCustomFontData::BeginIdle() const {
   font_face_source_->UpdateCustomFontData(custom_font_data);
 }
 
-void IftCustomFontData::BeginCollecting() const {
+void IftFont::BeginCollecting() const {
   if (state_ != State::kIdle) {
     return;
   }
@@ -172,11 +173,11 @@ void IftCustomFontData::BeginCollecting() const {
     return;
   }
   execution_context->GetTaskRunner(TaskType::kFontLoading)
-      ->PostTask(FROM_HERE, BindOnce(&IftCustomFontData::BeginFetching,
-                                     WrapPersistent(this)));
+      ->PostTask(FROM_HERE,
+                 BindOnce(&IftFont::BeginFetching, WrapPersistent(this)));
 }
 
-void IftCustomFontData::BeginFetching() const {
+void IftFont::BeginFetching() const {
   if (state_ != State::kCollecting) {
     return;
   }
@@ -217,7 +218,7 @@ void IftCustomFontData::BeginFetching() const {
   }
 }
 
-void IftCustomFontData::ApplyPatches() const {
+void IftFont::ApplyPatches() const {
   if (state_ != State::kFetching) {
     return;
   }
@@ -240,15 +241,15 @@ void IftCustomFontData::ApplyPatches() const {
   }
 }
 
-void IftCustomFontData::BeginFailed() const {
+void IftFont::BeginFailed() const {
   if (state_ == State::kFailed) {
     return;
   }
   state_ = State::kFailed;
 }
 
-void IftCustomFontData::OnPatchLoaded(PatchLoader* loader,
-                                      const Resource* resource) const {
+void IftFont::OnPatchLoaded(PatchLoader* loader,
+                            const Resource* resource) const {
   patch_loaders_.erase(loader);
   loader->Detach();
   if (state_ != State::kFetching) {
@@ -268,6 +269,22 @@ void IftCustomFontData::OnPatchLoaded(PatchLoader* loader,
   if (patch_loaders_.empty()) {
     ApplyPatches();
   }
+}
+
+IftCustomFontData::IftCustomFontData(const IftFont* ift_font)
+    : ift_font_(ift_font) {
+  CHECK(ift_font_);
+}
+
+IftCustomFontData::~IftCustomFontData() = default;
+
+void IftCustomFontData::Trace(Visitor* visitor) const {
+  visitor->Trace(ift_font_);
+  CustomFontData::Trace(visitor);
+}
+
+bool IftCustomFontData::IftRequireSubset(const StringView& text) const {
+  return ift_font_->RequireSubset(text);
 }
 
 }  // namespace blink
