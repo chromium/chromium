@@ -50,7 +50,7 @@ LRESULT SplashWnd::OnCreate(UINT, WPARAM, LPARAM) {
   }
 
   // Center window based on the DPI.
-  const UINT dpi = ::GetDpiForWindow(hwnd());
+  const UINT dpi = GetWindowDpi(hwnd());
   const int width = GetScaledValue(logo_size_.cx, dpi);
   const int height = GetScaledValue(logo_size_.cy, dpi);
   ::SetWindowPos(hwnd(), HWND_TOPMOST,

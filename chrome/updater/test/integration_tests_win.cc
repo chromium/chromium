@@ -66,6 +66,7 @@
 #include "base/win/sid.h"
 #include "base/win/win_util.h"
 #include "base/win/window_enumerator.h"
+#include "base/win/windows_version.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/updater/activity.h"
@@ -1782,6 +1783,19 @@ void InvokeTestServiceFunction(const std::string& function_name,
 
 std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions(
     const std::string& arch_suffix) {
+  if (arch_suffix.empty() &&
+      base::win::GetVersion() < base::win::Version::WIN10_RS1) {
+    // TODO(crbug.com/579543435): Remove once `old_updater` is rolled to a
+    // version containing the fix for dynamic USER32 DPI imports on Windows 10
+    // 1507 (10.0.10240). `arch_suffix.empty()` selects the default
+    // `old_updater` CIPD packages (which currently statically import
+    // `USER32.dll!GetDpiForWindow` and fail to load on 10.0.10240), whereas the
+    // `arch_suffix == "_sans_iid"` CIPD packages are pinned in `DEPS` to older
+    // instances that predate the static `GetDpiForWindow` import and still load
+    // on 10.0.10240.
+    return {};
+  }
+
   std::vector<std::string> supported_archs;
 
 #if defined(ARCH_CPU_ARM64)
@@ -1956,13 +1970,17 @@ void SetupFakeLegacyUpdater(UpdaterScope scope) {
   key.Close();
 
   if (IsSystemInstall(scope)) {
-    // Install mock GoogleUpdate services "gupdate" and "gupdatem".
+    // Install mock GoogleUpdate services "gupdate" and "gupdatem". Distinct
+    // display names are required because `::CreateServiceW` on Windows 10
+    // 10.0.10240 fails with `ERROR_DUPLICATE_SERVICE_NAME` if two services
+    // share the same display name.
     EXPECT_TRUE(CreateService(kLegacyServiceNamePrefix,
                               kLegacyServiceDisplayNamePrefix,
                               L"C:\\temp\\temp.exe"));
-    EXPECT_TRUE(CreateService(base::StrCat({kLegacyServiceNamePrefix, L"m"}),
-                              kLegacyServiceDisplayNamePrefix,
-                              L"C:\\temp\\temp.exe"));
+    EXPECT_TRUE(
+        CreateService(base::StrCat({kLegacyServiceNamePrefix, L"m"}),
+                      base::StrCat({kLegacyServiceDisplayNamePrefix, L"m"}),
+                      L"C:\\temp\\temp.exe"));
   } else {
     // Install mock GoogleUpdate run value.
     base::win::RegKey run_key;

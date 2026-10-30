@@ -170,9 +170,9 @@ void OmahaWnd::UpdateWindowIcon(HBITMAP big_bitmap,
     return;
   }
   // Prefer the explicit DPI passed from ApplyDpiScaling during WM_DPICHANGED,
-  // as GetDpiForWindow() may not yet reflect the updated DPI before window
+  // as GetWindowDpi() may not yet reflect the updated DPI before window
   // bounds adjustment completes.
-  const UINT target_dpi = dpi ? dpi : ::GetDpiForWindow(hwnd());
+  const UINT target_dpi = dpi ? dpi : GetWindowDpi(hwnd());
   if (big_bitmap == current_logo_big_ && small_bitmap == current_logo_small_ &&
       target_dpi == current_dpi_ &&
       badge_resource_id == current_badge_resource_id_ &&
@@ -375,8 +375,7 @@ void OmahaWnd::Show() {
 
 void OmahaWnd::ApplyDpiScaling(UINT dpi) {
   const UINT effective_dpi =
-      dpi ? dpi
-          : (IsWindow() ? ::GetDpiForWindow(hwnd()) : USER_DEFAULT_SCREEN_DPI);
+      dpi ? dpi : (IsWindow() ? GetWindowDpi(hwnd()) : USER_DEFAULT_SCREEN_DPI);
   // Calculate new font height: (DesiredPointSize * dpi) / 72. Use a negative
   // number for height to request the character height in CreateFontW.
   const int dpi_val = static_cast<int>(effective_dpi);

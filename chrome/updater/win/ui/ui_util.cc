@@ -861,16 +861,78 @@ SIZE GetBaseLogoDimensions(int target_w, int target_h) {
   };
 }
 
+namespace {
+
+template <typename T>
+T GetUser32Proc(const char* proc_name) {
+  // Resolve from the already-loaded `user32.dll` via `GetModuleHandleW` rather
+  // than `base::win::GetUser32FunctionPointer()`, because `PinSystemLibrary()`
+  // asserts `ScopedBlockingCall(MAY_BLOCK)` and UI task runners (such as
+  // `CreateSplashScreen()`) disallow blocking.
+  return reinterpret_cast<T>(
+      ::GetProcAddress(::GetModuleHandleW(L"user32.dll"), proc_name));
+}
+
+UINT GetSystemDpi() {
+  // `LOGPIXELSX` depends on the process DPI awareness, so caching it in a
+  // function-local static assumes the first call happens after process DPI
+  // awareness has been initialized (e.g. `base::win::EnableHighDPISupport()`).
+  static const UINT system_dpi = [] {
+    if (const HDC screen_dc = ::GetDC(nullptr)) {
+      const int dpi_x = ::GetDeviceCaps(screen_dc, LOGPIXELSX);
+      ::ReleaseDC(nullptr, screen_dc);
+      if (dpi_x > 0) {
+        return static_cast<UINT>(dpi_x);
+      }
+    }
+    return static_cast<UINT>(USER_DEFAULT_SCREEN_DPI);
+  }();
+  return system_dpi;
+}
+
+}  // namespace
+
+UINT GetWindowDpi(HWND hwnd) {
+  static const auto get_dpi_for_window =
+      GetUser32Proc<decltype(&::GetDpiForWindow)>("GetDpiForWindow");
+  if (get_dpi_for_window && hwnd) {
+    if (const UINT dpi = get_dpi_for_window(hwnd)) {
+      return dpi;
+    }
+  }
+  // Prior to Windows 10 1607 (e.g. 10.0.10240, where `GetDpiForWindow` is
+  // unavailable) or when `hwnd` is invalid, fall back to the primary monitor's
+  // system DPI (`LOGPIXELSX`) rather than per-monitor DPI
+  // (`shcore.dll!GetDpiForMonitor`).
+  return GetSystemDpi();
+}
+
+int ScaleSystemMetricForDpi(int value, UINT dpi, UINT system_dpi) {
+  return ::MulDiv(
+      value, static_cast<int>(dpi),
+      system_dpi ? static_cast<int>(system_dpi) : USER_DEFAULT_SCREEN_DPI);
+}
+
+int GetSystemMetricsForDpiCompat(int index, UINT dpi) {
+  if (!dpi) {
+    return ::GetSystemMetrics(index);
+  }
+  static const auto get_system_metrics_for_dpi =
+      GetUser32Proc<decltype(&::GetSystemMetricsForDpi)>(
+          "GetSystemMetricsForDpi");
+  if (get_system_metrics_for_dpi) {
+    return get_system_metrics_for_dpi(index, dpi);
+  }
+  return ScaleSystemMetricForDpi(::GetSystemMetrics(index), dpi,
+                                 GetSystemDpi());
+}
+
 IconSizes GetIconSizesForDpi(UINT dpi) {
   return {
-      .cx_big = dpi ? ::GetSystemMetricsForDpi(SM_CXICON, dpi)
-                    : ::GetSystemMetrics(SM_CXICON),
-      .cy_big = dpi ? ::GetSystemMetricsForDpi(SM_CYICON, dpi)
-                    : ::GetSystemMetrics(SM_CYICON),
-      .cx_small = dpi ? ::GetSystemMetricsForDpi(SM_CXSMICON, dpi)
-                      : ::GetSystemMetrics(SM_CXSMICON),
-      .cy_small = dpi ? ::GetSystemMetricsForDpi(SM_CYSMICON, dpi)
-                      : ::GetSystemMetrics(SM_CYSMICON),
+      .cx_big = GetSystemMetricsForDpiCompat(SM_CXICON, dpi),
+      .cy_big = GetSystemMetricsForDpiCompat(SM_CYICON, dpi),
+      .cx_small = GetSystemMetricsForDpiCompat(SM_CXSMICON, dpi),
+      .cy_small = GetSystemMetricsForDpiCompat(SM_CYSMICON, dpi),
   };
 }
 

@@ -433,7 +433,7 @@ void CaptionButton::DrawFocusFrame(HDC dc,
   base::win::ScopedGDIObject<HPEN> pen(::CreatePen(
       PS_INSIDEFRAME,
       /*thickness=*/
-      std::max(1, ::MulDiv(1, /*dpi=*/::GetDpiForWindow(hwnd()),
+      std::max(1, ::MulDiv(1, /*dpi=*/GetWindowDpi(hwnd()),
                            USER_DEFAULT_SCREEN_DPI)),
       GetColor(paint_state.is_high_contrast, frame_color, COLOR_WINDOWFRAME)));
   if (!pen.is_valid()) {
@@ -480,8 +480,7 @@ base::win::ScopedGDIObject<HRGN> CloseButton::GetButtonRgn(int rgn_width,
   // Scale the thickness. For instance, 2px at 100% (96 DPI) becomes 4px at 200%
   // (192 DPI).
   const int thickness = std::max(
-      1,
-      ::MulDiv(2, /*dpi=*/::GetDpiForWindow(hwnd()), USER_DEFAULT_SCREEN_DPI));
+      1, ::MulDiv(2, /*dpi=*/GetWindowDpi(hwnd()), USER_DEFAULT_SCREEN_DPI));
   const int center_size = thickness * 2;
 
   const int square_side = std::min(rgn_width, rgn_height) / 2 * 2;
@@ -534,8 +533,7 @@ base::win::ScopedGDIObject<HRGN> MinimizeButton::GetButtonRgn(int rgn_width,
   }
 
   const int thickness = std::max(
-      1,
-      ::MulDiv(2, /*dpi=*/::GetDpiForWindow(hwnd()), USER_DEFAULT_SCREEN_DPI));
+      1, ::MulDiv(2, /*dpi=*/GetWindowDpi(hwnd()), USER_DEFAULT_SCREEN_DPI));
 
   // Prevent thickness from exceeding total height.
   const int safe_thickness = std::min(thickness, rgn_height);
@@ -683,11 +681,11 @@ void OwnerDrawTitleBarWindow::CreateCaptionButtons() {
   minimize_button_.set_bk_color(bk_color_);
 
   // Get the DPI for this specific window.
-  const int dpi = ::GetDpiForWindow(hwnd());
+  const UINT dpi = GetWindowDpi(hwnd());
 
   // Use the DPI-aware version of system metrics.
-  RECT button_rect = {0, 0, ::GetSystemMetricsForDpi(SM_CXSIZE, dpi),
-                      ::GetSystemMetricsForDpi(SM_CYSIZE, dpi)};
+  RECT button_rect = {0, 0, GetSystemMetricsForDpiCompat(SM_CXSIZE, dpi),
+                      GetSystemMetricsForDpiCompat(SM_CYSIZE, dpi)};
 
   minimize_button_.Create(hwnd(), button_rect, kButtonMinimize);
   close_button_.Create(hwnd(), button_rect, kButtonClose);
@@ -979,7 +977,7 @@ void CustomProgressBarCtrl::DrawBar(HDC dc, const RECT& rect, int scale) const {
 
   const int corner_size = std::min(
       Height(rect),
-      ::MulDiv(16 * scale, ::GetDpiForWindow(hwnd()), USER_DEFAULT_SCREEN_DPI));
+      ::MulDiv(16 * scale, GetWindowDpi(hwnd()), USER_DEFAULT_SCREEN_DPI));
 
   // Draw the Background Track.
   base::win::ScopedGDIObject<HBRUSH> bg_brush(::CreateSolidBrush(track_color));
@@ -1286,8 +1284,8 @@ LRESULT FlatButton::OnPaint(UINT, WPARAM, LPARAM) {
   // Render background and border at 4x scale for high-quality anti-aliasing.
   // If the offscreen allocation fails, draw directly at 1x instead.
   constexpr int kScale = 4;
-  const int border_thickness = std::max(
-      1, ::MulDiv(1, ::GetDpiForWindow(hwnd()), USER_DEFAULT_SCREEN_DPI));
+  const int border_thickness =
+      std::max(1, ::MulDiv(1, GetWindowDpi(hwnd()), USER_DEFAULT_SCREEN_DPI));
   if (!DrawScaled(dc, rect, kScale,
                   [&](HDC dc_hi_res, const RECT& high_res_rect) {
                     DrawPill(dc_hi_res, high_res_rect, bg, border,

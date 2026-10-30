@@ -1072,6 +1072,11 @@ class IntegrationLowerVersionTest
 INSTANTIATE_TEST_SUITE_P(IntegrationLowerVersionTestCases,
                          IntegrationLowerVersionTest,
                          ::testing::ValuesIn(GetRealUpdaterLowerVersions()));
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/579543435): Remove once `old_updater` is rolled; see
+// `GetRealUpdaterLowerVersions()`.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(IntegrationLowerVersionTest);
+#endif
 
 TEST_P(IntegrationLowerVersionTest, OverinstallWorking) {
   ASSERT_NO_FATAL_FAILURE(SetupRealUpdater(GetParam().updater_setup_path));
@@ -3271,6 +3276,13 @@ TEST_F(IntegrationTestDeviceManagement, ForceInstall) {
 }
 
 TEST_F(IntegrationTestDeviceManagement, QualifyUpdaterWhenUpdateDisabled) {
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/579543435): Remove once `old_updater` is rolled; see
+  // `GetRealUpdaterLowerVersions()`.
+  if (GetRealUpdaterLowerVersions().empty()) {
+    GTEST_SKIP();
+  }
+#endif
   // This test depends on the companion app to provide CBCM policies. On macOS
   // the companion app requires a valid ksadmin to install, which the fake
   // updater does not provide.
@@ -3323,6 +3335,13 @@ TEST_F(IntegrationTestDeviceManagement, QualifyUpdaterWhenUpdateDisabled) {
 
 TEST_F(IntegrationTestDeviceManagement,
        QualifyUpdaterWhenNextCheckDelayIsZero) {
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/579543435): Remove once `old_updater` is rolled; see
+  // `GetRealUpdaterLowerVersions()`.
+  if (GetRealUpdaterLowerVersions().empty()) {
+    GTEST_SKIP();
+  }
+#endif
   // This test depends on the companion app to provide CBCM policies. On macOS
   // the companion app requires a valid ksadmin to install, which the fake
   // updater does not provide.

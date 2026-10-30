@@ -1111,6 +1111,7 @@ if (is_win || is_mac || is_linux) {
         "//chrome/enterprise_companion:enterprise_companion_test",
         "//chrome/updater/win:updater",
         "//chrome/updater/win:updater_test",
+        "//chrome/updater/win/installer",
         "//chrome/updater/win/installer:installer_test",
         "//chrome/updater/win/test:updater_test_process",
       ]

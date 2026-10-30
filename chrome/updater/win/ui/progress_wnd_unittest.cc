@@ -442,12 +442,11 @@ TEST_F(ProgressWndTest, SetAppLogoDynamicSizing) {
 
   RECT ctl_rect = progress_wnd->GetControlClientRect(app_bitmap_ctl);
   const int initial_bottom = ctl_rect.bottom;
-  const int dpi = ::GetDpiForWindow(progress_wnd->hwnd());
-  const int effective_dpi = dpi ? dpi : USER_DEFAULT_SCREEN_DPI;
+  const UINT dpi = GetWindowDpi(progress_wnd->hwnd());
   EXPECT_EQ(ctl_rect.right - ctl_rect.left,
-            ::MulDiv(48, effective_dpi, USER_DEFAULT_SCREEN_DPI));
+            ::MulDiv(48, dpi, USER_DEFAULT_SCREEN_DPI));
   EXPECT_EQ(ctl_rect.bottom - ctl_rect.top,
-            ::MulDiv(48, effective_dpi, USER_DEFAULT_SCREEN_DPI));
+            ::MulDiv(48, dpi, USER_DEFAULT_SCREEN_DPI));
 
   // Test with a 92x24 rectangular logo.
   base::win::ScopedGDIObject<HBITMAP> rect_bitmap = CreateTestDIB24(dc, 92, 24);
@@ -460,9 +459,9 @@ TEST_F(ProgressWndTest, SetAppLogoDynamicSizing) {
   // the bottom coordinate remains locked to the original baseline.
   ctl_rect = progress_wnd->GetControlClientRect(app_bitmap_ctl);
   EXPECT_EQ(ctl_rect.right - ctl_rect.left,
-            ::MulDiv(92, effective_dpi, USER_DEFAULT_SCREEN_DPI));
+            ::MulDiv(92, dpi, USER_DEFAULT_SCREEN_DPI));
   EXPECT_EQ(ctl_rect.bottom - ctl_rect.top,
-            ::MulDiv(24, effective_dpi, USER_DEFAULT_SCREEN_DPI));
+            ::MulDiv(24, dpi, USER_DEFAULT_SCREEN_DPI));
   EXPECT_EQ(ctl_rect.bottom, initial_bottom);
 
   progress_wnd->DestroyWindow();
@@ -524,14 +523,13 @@ TEST_F(ProgressWndTest, SetAppLogoThemeSwitching) {
   EXPECT_EQ(progress_wnd->dark_app_logo_bmp_.get(), dark_hbitmap);
   EXPECT_EQ(progress_wnd->GetCurrentAppLogoBitmap(), light_hbitmap);
 
-  const int dpi = ::GetDpiForWindow(progress_wnd->hwnd());
-  const int effective_dpi = dpi ? dpi : USER_DEFAULT_SCREEN_DPI;
+  const UINT dpi = GetWindowDpi(progress_wnd->hwnd());
 
   RECT ctl_rect = progress_wnd->GetControlClientRect(app_bitmap_ctl);
   EXPECT_EQ(ctl_rect.right - ctl_rect.left,
-            ::MulDiv(32, effective_dpi, USER_DEFAULT_SCREEN_DPI));
+            ::MulDiv(32, dpi, USER_DEFAULT_SCREEN_DPI));
   EXPECT_EQ(ctl_rect.bottom - ctl_rect.top,
-            ::MulDiv(32, effective_dpi, USER_DEFAULT_SCREEN_DPI));
+            ::MulDiv(32, dpi, USER_DEFAULT_SCREEN_DPI));
 
   // Switch to dark mode and notify the window via WM_SETTINGCHANGE.
   SetDarkMode(true);
@@ -545,9 +543,9 @@ TEST_F(ProgressWndTest, SetAppLogoThemeSwitching) {
   EXPECT_NE(dark_big_icon, custom_big_icon);
   ctl_rect = progress_wnd->GetControlClientRect(app_bitmap_ctl);
   EXPECT_EQ(ctl_rect.right - ctl_rect.left,
-            ::MulDiv(48, effective_dpi, USER_DEFAULT_SCREEN_DPI));
+            ::MulDiv(48, dpi, USER_DEFAULT_SCREEN_DPI));
   EXPECT_EQ(ctl_rect.bottom - ctl_rect.top,
-            ::MulDiv(48, effective_dpi, USER_DEFAULT_SCREEN_DPI));
+            ::MulDiv(48, dpi, USER_DEFAULT_SCREEN_DPI));
 
   // Switch back to light mode and notify via WM_SYSCOLORCHANGE.
   SetDarkMode(false);
@@ -560,9 +558,9 @@ TEST_F(ProgressWndTest, SetAppLogoThemeSwitching) {
   EXPECT_NE(light_big_icon, dark_big_icon);
   ctl_rect = progress_wnd->GetControlClientRect(app_bitmap_ctl);
   EXPECT_EQ(ctl_rect.right - ctl_rect.left,
-            ::MulDiv(32, effective_dpi, USER_DEFAULT_SCREEN_DPI));
+            ::MulDiv(32, dpi, USER_DEFAULT_SCREEN_DPI));
   EXPECT_EQ(ctl_rect.bottom - ctl_rect.top,
-            ::MulDiv(32, effective_dpi, USER_DEFAULT_SCREEN_DPI));
+            ::MulDiv(32, dpi, USER_DEFAULT_SCREEN_DPI));
 
   // Test with only a single fallback logo (light provided, dark is null).
   base::win::ScopedGDIObject<HBITMAP> fallback_bitmap =
@@ -587,9 +585,9 @@ TEST_F(ProgressWndTest, SetAppLogoThemeSwitching) {
   EXPECT_EQ(progress_wnd->GetCurrentAppLogoBitmap(), fallback_hbitmap);
   ctl_rect = progress_wnd->GetControlClientRect(app_bitmap_ctl);
   EXPECT_EQ(ctl_rect.right - ctl_rect.left,
-            ::MulDiv(64, effective_dpi, USER_DEFAULT_SCREEN_DPI));
+            ::MulDiv(64, dpi, USER_DEFAULT_SCREEN_DPI));
   EXPECT_EQ(ctl_rect.bottom - ctl_rect.top,
-            ::MulDiv(64, effective_dpi, USER_DEFAULT_SCREEN_DPI));
+            ::MulDiv(64, dpi, USER_DEFAULT_SCREEN_DPI));
 
   // In dark mode with no dark logo provided, falls back to light logo.
   SetDarkMode(true);
@@ -598,9 +596,9 @@ TEST_F(ProgressWndTest, SetAppLogoThemeSwitching) {
   EXPECT_EQ(progress_wnd->GetCurrentAppLogoBitmap(), fallback_hbitmap);
   ctl_rect = progress_wnd->GetControlClientRect(app_bitmap_ctl);
   EXPECT_EQ(ctl_rect.right - ctl_rect.left,
-            ::MulDiv(64, effective_dpi, USER_DEFAULT_SCREEN_DPI));
+            ::MulDiv(64, dpi, USER_DEFAULT_SCREEN_DPI));
   EXPECT_EQ(ctl_rect.bottom - ctl_rect.top,
-            ::MulDiv(64, effective_dpi, USER_DEFAULT_SCREEN_DPI));
+            ::MulDiv(64, dpi, USER_DEFAULT_SCREEN_DPI));
 
   // Switch back to light mode and verify fallback logo persists.
   SetDarkMode(false);
@@ -608,9 +606,9 @@ TEST_F(ProgressWndTest, SetAppLogoThemeSwitching) {
   EXPECT_EQ(progress_wnd->GetCurrentAppLogoBitmap(), fallback_hbitmap);
   ctl_rect = progress_wnd->GetControlClientRect(app_bitmap_ctl);
   EXPECT_EQ(ctl_rect.right - ctl_rect.left,
-            ::MulDiv(64, effective_dpi, USER_DEFAULT_SCREEN_DPI));
+            ::MulDiv(64, dpi, USER_DEFAULT_SCREEN_DPI));
   EXPECT_EQ(ctl_rect.bottom - ctl_rect.top,
-            ::MulDiv(64, effective_dpi, USER_DEFAULT_SCREEN_DPI));
+            ::MulDiv(64, dpi, USER_DEFAULT_SCREEN_DPI));
 
   // Test window icon re-scaling across dynamic DPI changes (WM_DPICHANGED).
   RECT suggested_rect = {0, 0, 600, 400};
@@ -744,7 +742,7 @@ TEST_F(ProgressWndTest, DpiChangedWithoutSuggestedRect) {
   ::SendMessage(hwnd, WM_SET_APP_LOGO, reinterpret_cast<WPARAM>(logo.release()),
                 0);
 
-  const UINT window_dpi = ::GetDpiForWindow(hwnd);
+  const UINT window_dpi = GetWindowDpi(hwnd);
   const UINT target_dpi = (window_dpi == 192) ? 96 : 192;
   ASSERT_NE(target_dpi, window_dpi);
 
@@ -768,8 +766,10 @@ TEST_F(ProgressWndTest, DpiChangedWithoutSuggestedRect) {
   base::win::ScopedGDIObject<HBITMAP> big_mask(big_info.hbmMask);
   BITMAP bm_big = {};
   ASSERT_NE(::GetObject(big_color.get(), sizeof(bm_big), &bm_big), 0);
-  EXPECT_EQ(bm_big.bmWidth, ::GetSystemMetricsForDpi(SM_CXICON, target_dpi));
-  EXPECT_NE(bm_big.bmWidth, ::GetSystemMetricsForDpi(SM_CXICON, window_dpi));
+  EXPECT_EQ(bm_big.bmWidth,
+            GetSystemMetricsForDpiCompat(SM_CXICON, target_dpi));
+  EXPECT_NE(bm_big.bmWidth,
+            GetSystemMetricsForDpiCompat(SM_CXICON, window_dpi));
 
   progress_wnd->DestroyWindow();
 }
@@ -856,7 +856,7 @@ TEST_F(ProgressWndTest, ApplyDpiScalingIconMetrics) {
   // Choose a target DPI that strictly differs from the window's current DPI
   // (e.g. 192 vs 96) to simulate WM_DPICHANGED arriving before window rect
   // adjustment finishes.
-  const UINT window_dpi = ::GetDpiForWindow(progress_wnd->hwnd());
+  const UINT window_dpi = GetWindowDpi(progress_wnd->hwnd());
   const UINT target_dpi = (window_dpi == 192) ? 96 : 192;
   ASSERT_NE(target_dpi, window_dpi);
   progress_wnd->ApplyDpiScaling(target_dpi);
@@ -882,18 +882,21 @@ TEST_F(ProgressWndTest, ApplyDpiScalingIconMetrics) {
   BITMAP bm_small = {};
   ASSERT_NE(::GetObject(small_color.get(), sizeof(bm_small), &bm_small), 0);
 
-  const int expected_cx_big = ::GetSystemMetricsForDpi(SM_CXICON, target_dpi);
-  const int expected_cy_big = ::GetSystemMetricsForDpi(SM_CYICON, target_dpi);
+  const int expected_cx_big =
+      GetSystemMetricsForDpiCompat(SM_CXICON, target_dpi);
+  const int expected_cy_big =
+      GetSystemMetricsForDpiCompat(SM_CYICON, target_dpi);
   const int expected_cx_small =
-      ::GetSystemMetricsForDpi(SM_CXSMICON, target_dpi);
+      GetSystemMetricsForDpiCompat(SM_CXSMICON, target_dpi);
   const int expected_cy_small =
-      ::GetSystemMetricsForDpi(SM_CYSMICON, target_dpi);
+      GetSystemMetricsForDpiCompat(SM_CYSMICON, target_dpi);
 
-  const int stale_cx_big = ::GetSystemMetricsForDpi(SM_CXICON, window_dpi);
-  const int stale_cx_small = ::GetSystemMetricsForDpi(SM_CXSMICON, window_dpi);
+  const int stale_cx_big = GetSystemMetricsForDpiCompat(SM_CXICON, window_dpi);
+  const int stale_cx_small =
+      GetSystemMetricsForDpiCompat(SM_CXSMICON, window_dpi);
 
   // Assert icons match the target DPI, proving they were not overwritten by
-  // a stale GetDpiForWindow() call.
+  // a stale GetWindowDpi() call.
   EXPECT_EQ(bm_big.bmWidth, expected_cx_big);
   EXPECT_EQ(std::abs(bm_big.bmHeight), expected_cy_big);
   EXPECT_NE(bm_big.bmWidth, stale_cx_big);
@@ -1129,7 +1132,7 @@ TEST_F(ProgressWndTest, WindowIconOnLogoAndDpiChange) {
 
   // Trigger DPI change back to original: exercises updating icons for
   // previously visited DPI.
-  const UINT original_dpi = ::GetDpiForWindow(progress_wnd->hwnd());
+  const UINT original_dpi = GetWindowDpi(progress_wnd->hwnd());
   ::SendMessage(progress_wnd->hwnd(), WM_DPICHANGED,
                 MAKELONG(original_dpi, original_dpi),
                 reinterpret_cast<LPARAM>(&new_rect));

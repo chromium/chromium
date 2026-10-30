@@ -574,9 +574,10 @@ TEST(UiUtilTest, CreateIconFromBitmap) {
   base::win::ScopedGDIObject<HBITMAP> dpi_mask(dpi_info.hbmMask);
   BITMAP dpi_bm = {};
   EXPECT_NE(::GetObject(dpi_color.get(), sizeof(dpi_bm), &dpi_bm), 0);
-  EXPECT_EQ(dpi_bm.bmWidth, ::GetSystemMetricsForDpi(SM_CXICON, kCustomDpi));
+  EXPECT_EQ(dpi_bm.bmWidth,
+            GetSystemMetricsForDpiCompat(SM_CXICON, kCustomDpi));
   EXPECT_EQ(std::abs(dpi_bm.bmHeight),
-            ::GetSystemMetricsForDpi(SM_CYICON, kCustomDpi));
+            GetSystemMetricsForDpiCompat(SM_CYICON, kCustomDpi));
 
   // Verify that a rectangular (non-square) source bitmap is fitted and centered
   // while preserving its aspect ratio, with transparent letterbox margins.
@@ -1386,6 +1387,27 @@ TEST(UiUtilTest, CreateIconFromBitmap_ColorKeying) {
   }
 }
 
+TEST(UiUtilTest, GetWindowDpi) {
+  EXPECT_GT(GetWindowDpi(nullptr), 0u);
+  EXPECT_GT(GetWindowDpi(::GetDesktopWindow()), 0u);
+}
+
+TEST(UiUtilTest, GetSystemMetricsForDpiCompat) {
+  EXPECT_EQ(GetSystemMetricsForDpiCompat(SM_CXICON, 0),
+            ::GetSystemMetrics(SM_CXICON));
+  const int base_cx =
+      GetSystemMetricsForDpiCompat(SM_CXICON, USER_DEFAULT_SCREEN_DPI);
+  const int double_cx =
+      GetSystemMetricsForDpiCompat(SM_CXICON, USER_DEFAULT_SCREEN_DPI * 2);
+  EXPECT_GT(base_cx, 0);
+  EXPECT_EQ(double_cx, 2 * base_cx);
+
+  EXPECT_EQ(ScaleSystemMetricForDpi(32, 96, 96), 32);
+  EXPECT_EQ(ScaleSystemMetricForDpi(32, 144, 96), 48);
+  EXPECT_EQ(ScaleSystemMetricForDpi(32, 192, 96), 64);
+  EXPECT_EQ(ScaleSystemMetricForDpi(32, 192, 0), 64);
+}
+
 TEST(UiUtilTest, IconHelpers) {
   // Test GetIconSizesForDpi.
   const IconSizes sizes_default = GetIconSizesForDpi(0);
@@ -1394,12 +1416,17 @@ TEST(UiUtilTest, IconHelpers) {
   EXPECT_EQ(sizes_default.cx_small, ::GetSystemMetrics(SM_CXSMICON));
   EXPECT_EQ(sizes_default.cy_small, ::GetSystemMetrics(SM_CYSMICON));
 
+  const UINT system_dpi = GetWindowDpi(nullptr);
   constexpr UINT kDpi = 192;
   const IconSizes sizes_192 = GetIconSizesForDpi(kDpi);
-  EXPECT_EQ(sizes_192.cx_big, ::GetSystemMetricsForDpi(SM_CXICON, kDpi));
-  EXPECT_EQ(sizes_192.cy_big, ::GetSystemMetricsForDpi(SM_CYICON, kDpi));
-  EXPECT_EQ(sizes_192.cx_small, ::GetSystemMetricsForDpi(SM_CXSMICON, kDpi));
-  EXPECT_EQ(sizes_192.cy_small, ::GetSystemMetricsForDpi(SM_CYSMICON, kDpi));
+  EXPECT_EQ(sizes_192.cx_big,
+            ::MulDiv(::GetSystemMetrics(SM_CXICON), kDpi, system_dpi));
+  EXPECT_EQ(sizes_192.cy_big,
+            ::MulDiv(::GetSystemMetrics(SM_CYICON), kDpi, system_dpi));
+  EXPECT_EQ(sizes_192.cx_small,
+            ::MulDiv(::GetSystemMetrics(SM_CXSMICON), kDpi, system_dpi));
+  EXPECT_EQ(sizes_192.cy_small,
+            ::MulDiv(::GetSystemMetrics(SM_CYSMICON), kDpi, system_dpi));
 
   // Invalid resource ID returns empty handles.
   WindowIcons invalid_icons = LoadResourceIcons(-1);

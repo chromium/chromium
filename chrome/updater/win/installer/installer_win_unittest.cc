@@ -6,15 +6,22 @@
 
 #include <shlobj.h>
 
+#include <functional>
 #include <optional>
+#include <set>
 #include <string>
+#include <string_view>
 
+#include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/win/pe_image.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/util/util.h"
 #include "chrome/updater/win/installer/exit_code.h"
@@ -100,6 +107,75 @@ TEST(InstallerTest, FindOfflineDir) {
   EXPECT_TRUE(offline_dir.has_value());
   EXPECT_EQ(offline_dir->BaseName(),
             base::FilePath(L"{8D5D0563-F2A0-40E3-932D-AFEAE261A9D1}"));
+}
+
+// Verifies that updater and installer executables do not statically import
+// USER32.dll DPI functions introduced after Windows 10 10.0.10240 (RTM), which
+// would cause the Windows PE loader to fail at startup on 10.0.10240.
+TEST(InstallerTest, NoUnsupportedWin10RtmUser32Imports) {
+  base::FilePath out_dir;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &out_dir));
+
+  static constexpr const wchar_t* kExecutables[] = {
+      L"UpdaterSetup.exe",
+      L"UpdaterSetup_test.exe",
+      L"updater.exe",
+      L"updater_test.exe",
+  };
+  static constexpr std::string_view kUnsupportedUser32DpiImports[] = {
+      "AdjustWindowRectExForDpi",
+      "AreDpiAwarenessContextsEqual",
+      "EnableNonClientDpiScaling",
+      "GetAwarenessFromDpiAwarenessContext",
+      "GetDpiForSystem",
+      "GetDpiForWindow",
+      "GetDpiFromDpiAwarenessContext",
+      "GetSystemDpiForProcess",
+      "GetSystemMetricsForDpi",
+      "GetThreadDpiAwarenessContext",
+      "GetWindowDpiAwarenessContext",
+      "IsValidDpiAwarenessContext",
+      "SetDialogControlDpiChangeBehavior",
+      "SetDialogDpiChangeBehavior",
+      "SetProcessDpiAwarenessContext",
+      "SetThreadDpiAwarenessContext",
+      "SetThreadDpiHostingBehavior",
+      "SystemParametersInfoForDpi",
+  };
+
+  for (const wchar_t* executable : kExecutables) {
+    const base::FilePath exe_path = out_dir.Append(executable);
+    SCOPED_TRACE(exe_path.value());
+    ASSERT_TRUE(base::PathExists(exe_path));
+
+    base::MemoryMappedFile mapped_exe;
+    ASSERT_TRUE(mapped_exe.Initialize(exe_path));
+
+    // Only static imports from `user32.dll` are checked; delay-loaded imports
+    // are intentionally not checked because they are not resolved at process
+    // load time.
+    std::set<std::string, std::less<>> user32_imports;
+    base::win::PEImageAsData pe_image(
+        reinterpret_cast<HMODULE>(mapped_exe.mutable_bytes().data()));
+    ASSERT_TRUE(pe_image.VerifyMagic());
+    pe_image.EnumAllImports(
+        [](const base::win::PEImage&, LPCSTR, DWORD, LPCSTR import_name, DWORD,
+           PIMAGE_THUNK_DATA, PVOID cookie) -> bool {
+          if (import_name) {
+            static_cast<std::set<std::string, std::less<>>*>(cookie)->insert(
+                import_name);
+          }
+          return true;
+        },
+        &user32_imports, "user32.dll");
+    ASSERT_FALSE(user32_imports.empty());
+
+    for (std::string_view unsupported_import : kUnsupportedUser32DpiImports) {
+      EXPECT_FALSE(user32_imports.contains(unsupported_import))
+          << "Found static import of " << unsupported_import << " in "
+          << exe_path.BaseName().value();
+    }
+  }
 }
 
 TEST(BuildInstallerCommandLineArgumentsTest, EnableLoggingSwitch) {

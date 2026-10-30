@@ -54,6 +54,24 @@ bool IsMainWindow(HWND wnd);
 // Returns true if the window has a system menu.
 bool HasSystemMenu(HWND wnd);
 
+// Returns the DPI for `hwnd`, falling back to the primary monitor's system DPI
+// (`LOGPIXELSX`) or `USER_DEFAULT_SCREEN_DPI` when `GetDpiForWindow` is
+// unavailable (prior to Windows 10 1607, e.g. 10.0.10240) or `hwnd` is
+// invalid.
+UINT GetWindowDpi(HWND hwnd);
+
+// Linearly scales a system metric `value` from `system_dpi` to `dpi` (using
+// `USER_DEFAULT_SCREEN_DPI` if `system_dpi` is 0).
+int ScaleSystemMetricForDpi(int value, UINT dpi, UINT system_dpi);
+
+// Returns the system metric `index` scaled to `dpi`, falling back to linearly
+// scaling `::GetSystemMetrics(index)` by `dpi / system_dpi` when
+// `GetSystemMetricsForDpi` is unavailable (prior to Windows 10 1607, e.g.
+// 10.0.10240) or returning `::GetSystemMetrics(index)` when `dpi` is 0. Note
+// that the fallback only supports size/dimension metrics (not counts or
+// boolean flags).
+int GetSystemMetricsForDpiCompat(int index, UINT dpi);
+
 // System icon dimensions for big (ICON_BIG) and small (ICON_SMALL) icons.
 struct IconSizes {
   int cx_big = 0;

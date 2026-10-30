@@ -229,8 +229,7 @@ void ProgressWnd::UpdateAppLogo(UINT target_dpi) {
     return;
   }
 
-  const UINT effective_dpi =
-      target_dpi ? target_dpi : ::GetDpiForWindow(hwnd());
+  const UINT effective_dpi = target_dpi ? target_dpi : GetWindowDpi(hwnd());
 
   const HWND app_bitmap_ctl = ::GetDlgItem(hwnd(), IDC_APP_BITMAP);
   if (!app_bitmap_ctl) {
@@ -345,13 +344,12 @@ LRESULT ProgressWnd::OnInitDialog(UINT, WPARAM, LPARAM) {
   const HWND app_bitmap_ctl = ::GetDlgItem(hwnd(), IDC_APP_BITMAP);
   if (app_bitmap_ctl) {
     const RECT ctl_rect = GetControlClientRect(app_bitmap_ctl);
-    const int dpi = ::GetDpiForWindow(hwnd());
-    const int effective_dpi = dpi ? dpi : USER_DEFAULT_SCREEN_DPI;
+    const UINT dpi = GetWindowDpi(hwnd());
     // Record the design-time baseline bottom coordinate in 96-DPI space if not
     // already captured.
     if (initial_app_logo_base_bottom_y_ < 0) {
       initial_app_logo_base_bottom_y_ =
-          ::MulDiv(ctl_rect.bottom, USER_DEFAULT_SCREEN_DPI, effective_dpi);
+          ::MulDiv(ctl_rect.bottom, USER_DEFAULT_SCREEN_DPI, dpi);
     }
   }
 
@@ -443,7 +441,7 @@ void ProgressWnd::UpdateWindowRgn() {
 }
 
 int ProgressWnd::GetScaledCornerRadius() const {
-  return ::MulDiv(11, ::GetDpiForWindow(hwnd()), USER_DEFAULT_SCREEN_DPI);
+  return ::MulDiv(11, GetWindowDpi(hwnd()), USER_DEFAULT_SCREEN_DPI);
 }
 
 void ProgressWnd::ApplyDpiScaling(UINT dpi) {
@@ -516,8 +514,8 @@ LRESULT ProgressWnd::OnEraseBkgnd(UINT, WPARAM wparam, LPARAM) {
   // Draw a 1px border at 30% opacity (or 100% system theme color in High
   // Contrast Mode) using RAII objects.
   const int scaled_radius = GetScaledCornerRadius();
-  const int scaled_border = std::max(
-      1, ::MulDiv(1, ::GetDpiForWindow(hwnd()), USER_DEFAULT_SCREEN_DPI));
+  const int scaled_border =
+      std::max(1, ::MulDiv(1, GetWindowDpi(hwnd()), USER_DEFAULT_SCREEN_DPI));
   base::win::ScopedCreateDC hdc_blend(::CreateCompatibleDC(hdc));
   if (hdc_blend.is_valid()) {
     base::win::ScopedGDIObject<HBITMAP> hbmp_blend(
