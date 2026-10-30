@@ -72,8 +72,9 @@ public class SyncTest {
         // Sync should get re-initialized with the default passphrase type, KEYSTORE_PASSPHRASE.
         CriteriaHelper.pollUiThread(
                 () ->
-                        mSyncTestRule.getSyncService().getPassphraseType()
-                                == PassphraseType.KEYSTORE_PASSPHRASE,
+                        mSyncTestRule.getSyncService().isEngineInitialized()
+                                && mSyncTestRule.getSyncService().getPassphraseType()
+                                        == PassphraseType.KEYSTORE_PASSPHRASE,
                 "Timed out checking getPassphraseType() == PassphraseType.KEYSTORE_PASSPHRASE",
                 SyncTestUtil.TIMEOUT_MS,
                 SyncTestUtil.INTERVAL_MS);
