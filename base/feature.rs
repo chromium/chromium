@@ -7,7 +7,7 @@
 //! macro itself, which is defined at the bottom of this file.)
 
 use std::ffi::c_char;
-use std::sync::atomic::AtomicU32;
+use std::sync::atomic::{AtomicU32, Ordering};
 
 #[doc(hidden)]
 pub mod internal {
@@ -16,6 +16,11 @@ pub mod internal {
     pub enum FeatureMacroHandshake {
         Secret,
     }
+
+    // LINT.IfChange(FeatureDefaultState)
+    pub const FEATURE_DEFAULT_STATE_SHIFT: u32 = 19;
+    // LINT.ThenChange(feature_internal.h:FeatureDefaultState)
+    pub(super) const FEATURE_DEFAULT_STATE_MASK: u32 = 0b11 << FEATURE_DEFAULT_STATE_SHIFT;
 }
 
 /// Specifies whether a given feature is enabled or disabled by default.
@@ -40,24 +45,18 @@ pub struct Feature {
     /// The name of the feature. Private to enforce null-termination via the
     /// constructor.
     name: &'static c_char,
-    /// The default state of the feature.
-    default_state: FeatureState,
-    /// Cached override state, used by C++ FeatureList::IsEnabled.
-    /// Initialized to 0.
-    cached_value: AtomicU32,
+    /// The writable state of the feature, used by C++
+    /// FeatureList::IsEnabled. Also holds the default state.
+    state: &'static AtomicU32,
 }
 
 // LINT.IfChange(FeatureStruct)
 const _: () = {
-    assert!(
-        std::mem::size_of::<Feature>()
-            == if std::mem::size_of::<*const ()>() == 8 { 16 } else { 12 }
-    );
+    assert!(std::mem::size_of::<Feature>() == 2 * std::mem::size_of::<*const ()>());
     assert!(std::mem::align_of::<Feature>() == std::mem::size_of::<*const ()>());
 
     assert!(std::mem::offset_of!(Feature, name) == 0);
-    assert!(std::mem::offset_of!(Feature, default_state) == std::mem::size_of::<*const ()>());
-    assert!(std::mem::offset_of!(Feature, cached_value) == std::mem::size_of::<*const ()>() + 4);
+    assert!(std::mem::offset_of!(Feature, state) == std::mem::size_of::<*const ()>());
 };
 // LINT.ThenChange(feature_list_unittest.cc:FeatureStruct)
 
@@ -70,15 +69,14 @@ impl Feature {
     #[doc(hidden)]
     pub const unsafe fn from_id(
         name: &'static str,
-        default_state: FeatureState,
+        state: &'static AtomicU32,
         _handshake: internal::FeatureMacroHandshake,
     ) -> Self {
         Self {
             // Safety: name is guaranteed to be null-terminated.
             // We take a pointer here.
             name: unsafe { &*(name.as_ptr() as *const c_char) },
-            default_state,
-            cached_value: AtomicU32::new(0),
+            state,
         }
     }
 
@@ -89,7 +87,14 @@ impl Feature {
 
     /// Return the feature's default state.
     pub fn default_state(&self) -> FeatureState {
-        self.default_state
+        let value = self.state.load(Ordering::Relaxed);
+        match (value & internal::FEATURE_DEFAULT_STATE_MASK)
+            >> internal::FEATURE_DEFAULT_STATE_SHIFT
+        {
+            0 => FeatureState::Disabled,
+            1 => FeatureState::Enabled,
+            _ => unreachable!("Rust features do not support country-restricted defaults"),
+        }
     }
 }
 
@@ -102,7 +107,7 @@ impl<'a> From<&'a Feature> for &'a ffi::Feature {
 }
 
 // Safety: Feature is intended to be used as a global static and is thread-safe
-// thanks to the atomic cached_value.
+// thanks to the atomic state it points to.
 unsafe impl Sync for Feature {}
 
 /// A parameter for a `base::Feature`.
@@ -267,17 +272,28 @@ macro_rules! base_feature {
                 target_os = "chromeos",
                 target_os = "fuchsia"
             ),
-            unsafe(link_section = ".data..cr_features")
+            unsafe(link_section = ".data.rel.ro..cr_features")
         )]
-        #[cfg_attr(target_os = "windows", unsafe(link_section = ".data$cr_features"))]
         // LINT.ThenChange(feature_internal.h:FeatureSection)
-        pub static $id: $crate::Feature = unsafe {
-            // Safety: The string constructed here is explicitly null-terminated.
-            $crate::Feature::from_id(
-                concat!(stringify!($id), "\0"),
-                $default,
-                $crate::internal::FeatureMacroHandshake::Secret,
-            )
+        pub static $id: $crate::Feature = {
+            use ::std::sync::atomic::AtomicU32;
+
+            const DEFAULT_STATE: $crate::FeatureState = $default;
+            // LINT.IfChange(FeatureStateSection)
+            #[cfg_attr(target_os = "windows", unsafe(link_section = ".data$cr_feature_states"))]
+            // LINT.ThenChange(feature_internal.h:FeatureStateSection)
+            static STATE: AtomicU32 = AtomicU32::new(
+                (DEFAULT_STATE as u32) << $crate::internal::FEATURE_DEFAULT_STATE_SHIFT,
+            );
+            unsafe {
+                // Safety: The string constructed here is explicitly
+                // null-terminated.
+                $crate::Feature::from_id(
+                    concat!(stringify!($id), "\0"),
+                    &STATE,
+                    $crate::internal::FeatureMacroHandshake::Secret,
+                )
+            }
         };
     };
 }

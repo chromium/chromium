@@ -166,8 +166,8 @@ FLAG_COVERED = 256
 # Relevant for non-locale .pak symbols. Indicates a pak entry is stored
 # uncompressed.
 FLAG_UNCOMPRESSED = 512
-# Relevant for .data & .rodata symbols. Indicates the symbol is a Feature flag
-# placed in the .data..cr_features section.
+# Relevant for .data, .data.rel.ro & .rodata symbols. Indicates the symbol is a
+# Feature flag placed in a section with the .cr_features suffix.
 FLAG_FEATURE = 1024
 
 

@@ -867,8 +867,8 @@ class BASE_EXPORT FeatureList {
   bool initialized_from_command_line_ = false;
 
   // Used when querying `base::Feature` state to determine if the cached value
-  // in the `Feature` object is populated and valid. See the comment on
-  // `base::Feature::cached_value` for more details.
+  // in the feature's state storage is populated and valid. See the comment on
+  // `base::Feature::state` for more details.
   const uint16_t caching_context_;
 
   // If this instance was set with SetEarlyAccessInstance(), this set contains

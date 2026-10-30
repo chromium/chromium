@@ -27,7 +27,7 @@ inline uint16_t NextCachingContext(uint16_t& next_context) {
   return context;
 }
 
-// Masks for the fields in the 32-bit `cached_value`.
+// Masks for the fields in the 32-bit feature state.
 enum : Feature::FeatureStateCache {
   // The bottom 16 bits of the 32-bit cached value are used for the caching
   // context ID.
@@ -44,7 +44,15 @@ enum : Feature::FeatureStateCache {
 
   // The feature has been declared as runtime mutable. The feature's state may
   // be subject to change at runtime.
-  kRuntimeMutabilityMask = 1 << 18,
+  kRuntimeMutabilityMask = feature_state_masks::kRuntimeMutabilityMask,
+
+  // The feature's `FeatureState` default state.
+  kFeatureDefaultStateShift = feature_state_masks::kFeatureDefaultStateShift,
+  kFeatureDefaultStateMask = 0b11 << kFeatureDefaultStateShift,
+
+  // The bits that are fixed when the feature is defined.
+  kFeatureImmutableStateMask =
+      kRuntimeMutabilityMask | kFeatureDefaultStateMask,
 
   // The resolved enabled state and explicit override marker are cached
   // separately so the enabled state can be read without decoding an override.
