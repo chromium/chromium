@@ -89,7 +89,6 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/actor/android/background_tabs/offscreen_rendering_manager_android.h"
 #include "chrome/browser/glic/host/context/glic_empty_pinned_tab_manager.h"
 #include "chrome/browser/glic/widget/conversions.h"
 #include "chrome/browser/glic/widget/glic_floating_ui_android.h"
@@ -332,7 +331,7 @@ GlicInstanceImpl::~GlicInstanceImpl() {
   // the coordinator while this instance is being destroyed.
   coordinator_delegate_ = nullptr;
   tab_group_binding_.reset();
-  StopOffscreenRendering();
+  offscreen_rendering_controller_.Stop();
   // Destroying the web contents may result in calls back here, so do it first.
   host_.Hibernate();
 
@@ -502,7 +501,7 @@ void GlicInstanceImpl::Show(ShowOptions options) {
     DeactivateCurrentEmbedder();
     // Ensure that there is a WebContents for the embedder to use.
     EnsureHostAwake();
-    StopOffscreenRendering();
+    offscreen_rendering_controller_.Stop();
     GlicUiEmbedder* embedder = CreateActiveEmbedder(options);
     CHECK(embedder);
     host_.SetDelegate(embedder->GetHostEmbedderDelegate());
@@ -948,48 +947,13 @@ void GlicInstanceImpl::UpdateSkillPreviews(
   skills_manager().UpdateSkillPreviews(updated_tab);
 }
 
-// TODO(b/572001459): Extract Android offscreen rendering management out of
-// GlicInstanceImpl into a dedicated helper class owned by this instance.
 void GlicInstanceImpl::SetHiddenInitializing(bool initializing) {
-  if (is_hidden_initializing_ == initializing) {
-    return;
-  }
-  is_hidden_initializing_ = initializing;
-  UpdateOffscreenRenderingState();
+  offscreen_rendering_controller_.SetHiddenInitializing(initializing);
 }
 
 void GlicInstanceImpl::OnActuatingChanged(bool actuating) {
   host_.OnActuatingChanged(actuating);
-  UpdateOffscreenRenderingState();
-}
-
-void GlicInstanceImpl::UpdateOffscreenRenderingState() {
-#if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(features::kGlicAndroidOffscreenRendering)) {
-    return;
-  }
-
-  const bool should_render_offscreen =
-      !HasActiveEmbedder() &&
-      (is_hidden_initializing_ ||
-       (actor_task_manager_ && actor_task_manager_->IsActuating()));
-
-  if (should_render_offscreen == is_offscreen_rendering_active_) {
-    return;
-  }
-
-  if (should_render_offscreen) {
-    EnsureHostAwake();
-    // TODO(b/572001459): Re-attach offscreen rendering when the host contents
-    // are recreated (e.g. Host::Reload()) while offscreen rendering is active.
-    if (content::WebContents* contents = GetOffscreenRenderingContents()) {
-      actor::StartOffscreenRenderingForWebContents(contents);
-      is_offscreen_rendering_active_ = true;
-    }
-  } else {
-    StopOffscreenRendering();
-  }
-#endif
+  offscreen_rendering_controller_.UpdateState();
 }
 
 // Returns the WebContents to render offscreen: the WebUI contents in webview
@@ -999,17 +963,6 @@ void GlicInstanceImpl::UpdateOffscreenRenderingState() {
 content::WebContents* GlicInstanceImpl::GetOffscreenRenderingContents() const {
   return service_->IsNoWebviewEnabled() ? host_.web_client_contents()
                                         : host_.webui_contents();
-}
-
-void GlicInstanceImpl::StopOffscreenRendering() {
-#if BUILDFLAG(IS_ANDROID)
-  if (is_offscreen_rendering_active_) {
-    if (content::WebContents* contents = GetOffscreenRenderingContents()) {
-      actor::StopOffscreenRenderingForWebContents(contents);
-    }
-    is_offscreen_rendering_active_ = false;
-  }
-#endif
 }
 
 void GlicInstanceImpl::FetchZeroStateSuggestions(
@@ -1752,7 +1705,7 @@ void GlicInstanceImpl::OnAllEmbeddersInactive() {
 
   NotifyInstanceActivationChanged(false);
   host_.SetDebouncedVisibility(false);
-  UpdateOffscreenRenderingState();
+  offscreen_rendering_controller_.UpdateState();
   if (actor_task_manager_) {
     // Attempt to show toast on UI deactivated (and not replaced by anything
     // else).

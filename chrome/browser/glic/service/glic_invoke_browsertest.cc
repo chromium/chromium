@@ -41,6 +41,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/enterprise/data_controls/core/browser/prefs.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -585,6 +586,19 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeBrowserTest, InvokeWithAutoSubmitHidden) {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+namespace {
+
+// Returns the WebContents that offscreen rendering targets: the guest contents
+// in NoWebview mode, or the WebUI contents otherwise.
+content::WebContents* GetOffscreenRenderingContents(
+    GlicKeyedService& service,
+    GlicInstanceImpl& instance) {
+  return service.IsNoWebviewEnabled() ? instance.host().web_client_contents()
+                                      : instance.host().webui_contents();
+}
+
+}  // namespace
+
 class GlicInvokeOffscreenRenderingBrowserTest : public GlicInvokeBrowserTest {
  public:
   GlicInvokeOffscreenRenderingBrowserTest() {
@@ -618,13 +632,56 @@ IN_PROC_BROWSER_TEST_F(GlicInvokeOffscreenRenderingBrowserTest,
   ASSERT_TRUE(instance);
 
   // While hidden invocation is warming up, offscreen rendering should be
-  // active.
+  // active, with its target WebContents attached to the offscreen window.
   EXPECT_TRUE(instance->is_offscreen_rendering_active_for_testing());
+  content::WebContents* contents =
+      GetOffscreenRenderingContents(*service(), *instance);
+  ASSERT_TRUE(contents);
+  EXPECT_TRUE(contents->GetTopLevelNativeWindow());
 
   // Showing the instance onscreen must immediately stop offscreen rendering.
   instance->Show(ShowOptions::ForSidePanel(*tab));
   EXPECT_FALSE(instance->is_offscreen_rendering_active_for_testing());
   EXPECT_TRUE(instance->IsShowing());
+}
+
+class GlicInvokeOffscreenRenderingDisabledBrowserTest
+    : public GlicInvokeBrowserTest {
+ public:
+  GlicInvokeOffscreenRenderingDisabledBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kGlicAndroidOffscreenRendering);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicInvokeOffscreenRenderingDisabledBrowserTest,
+                       InvokeWithAutoSubmitHiddenDoesNotAttach) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  base::test::TestFuture<void> success_future;
+  base::test::TestFuture<std::string> conversation_id_future;
+
+  GlicInvokeOptions options(glic::Target(*tab),
+                            mojom::InvocationSource::kOsButton);
+  options.on_success = success_future.GetCallback();
+
+  GlicInvokeWithAutoSubmitOptions auto_submit_options;
+  auto_submit_options.on_conversation_id_ready =
+      conversation_id_future.GetCallback();
+  auto_submit_options.show_panel = false;
+
+  coordinator().InvokeWithAutoSubmit(GetPassKey(), std::move(options),
+                                     std::move(auto_submit_options));
+
+  GlicInstanceImpl* instance = coordinator().GetInstanceImplForTab(tab);
+  ASSERT_TRUE(instance);
+  EXPECT_FALSE(instance->is_offscreen_rendering_active_for_testing());
+  content::WebContents* contents =
+      GetOffscreenRenderingContents(*service(), *instance);
+  ASSERT_TRUE(contents);
+  EXPECT_FALSE(contents->GetTopLevelNativeWindow());
 }
 
 class GlicInvokeNoWebviewOffscreenRenderingBrowserTest

@@ -527,6 +527,8 @@ source_set("impl") {
     "service/glic_invoke_handler.h",
     "service/glic_invoke_task.cc",
     "service/glic_invoke_task.h",
+    "service/glic_offscreen_rendering_controller.cc",
+    "service/glic_offscreen_rendering_controller.h",
     "service/glic_onboarding_status.cc",
     "service/glic_onboarding_status.h",
     "service/glic_onboarding_tracker.cc",

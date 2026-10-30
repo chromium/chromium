@@ -33,6 +33,7 @@
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_window_invocation_tracker.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
+#include "chrome/browser/glic/service/glic_offscreen_rendering_controller.h"
 #include "chrome/browser/glic/service/glic_ui_embedder.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
@@ -83,7 +84,8 @@ class GlicInstanceImpl : public GlicInstance,
                          public Host::Observer,
                          public GlicSharingManagerProvider,
                          public GlicUiEmbedder::Delegate,
-                         public GlicActorTaskManager::Delegate {
+                         public GlicActorTaskManager::Delegate,
+                         public GlicOffscreenRenderingController::Delegate {
  public:
   class InstanceCoordinatorDelegate {
    public:
@@ -195,7 +197,7 @@ class GlicInstanceImpl : public GlicInstance,
   bool IsActive() override;
   bool IsHibernated() const override;
 
-  bool HasActiveEmbedder() const;
+  bool HasActiveEmbedder() const override;
   bool IsDetached();
   bool IsActuating() const override;
   bool IsInvoking() const override;
@@ -264,8 +266,6 @@ class GlicInstanceImpl : public GlicInstance,
 
   // Marks whether a hidden invoke is actively warming up / initializing the
   // client. When running hidden, drives offscreen rendering on Android.
-  // TODO(b/572001459): Extract Android offscreen rendering management out of
-  // GlicInstanceImpl into a dedicated helper class owned by this instance.
   void SetHiddenInitializing(bool initializing);
 
   // Called exactly once, right before the instance is destroyed.
@@ -338,11 +338,9 @@ class GlicInstanceImpl : public GlicInstance,
 #endif
   tabs::TabInterface* GetActiveEmbedderTabForTesting();
   std::string DescribeForTesting();
-#if BUILDFLAG(IS_ANDROID)
   bool is_offscreen_rendering_active_for_testing() const {
-    return is_offscreen_rendering_active_;
+    return offscreen_rendering_controller_.is_active();
   }
-#endif
 
   base::WeakPtr<GlicInstanceImpl> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -421,7 +419,7 @@ class GlicInstanceImpl : public GlicInstance,
   // (!host_.webui_contents()), notifies the coordinator via
   // OnInstanceWillAwaken() and creates the WebUI container. No-op if
   // contents already exist.
-  void EnsureHostAwake();
+  void EnsureHostAwake() override;
 
   void MaybeActivateForegroundEmbedder();
   void MaybeRemoveBlankInstanceOnClose();
@@ -456,13 +454,11 @@ class GlicInstanceImpl : public GlicInstance,
   mojom::PanelState ComputePanelState();
 
   void OnActuatingChanged(bool actuating);
-  void UpdateOffscreenRenderingState();
-  void StopOffscreenRendering();
   // Returns the WebContents to attach for offscreen rendering: the WebUI
   // contents in webview mode, or the guest contents in NoWebview mode.
   // TODO(b/534807813): Remove once webview is deleted; callers should use
   // host_.web_client_contents() directly.
-  content::WebContents* GetOffscreenRenderingContents() const;
+  content::WebContents* GetOffscreenRenderingContents() const override;
 
   using ConversationInfoChangedCallbackList =
       base::RepeatingCallbackList<void(const mojom::ConversationInfo&)>;
@@ -540,10 +536,7 @@ class GlicInstanceImpl : public GlicInstance,
 
   std::optional<TabGroupBinding> tab_group_binding_;
 
-  bool is_hidden_initializing_ = false;
-#if BUILDFLAG(IS_ANDROID)
-  bool is_offscreen_rendering_active_ = false;
-#endif
+  GlicOffscreenRenderingController offscreen_rendering_controller_{*this};
 
   base::WeakPtrFactory<GlicInstanceImpl> weak_ptr_factory_{this};
 };
