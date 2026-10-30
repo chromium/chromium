@@ -39,7 +39,6 @@ class SearchMetricsReporterTest : public testing::Test {
         index_id,
         base::BindOnce([](bool* callback_done) { *callback_done = true; },
                        &callback_done));
-    task_environment_.RunUntilIdle();
     ASSERT_TRUE(callback_done);
   }
 
