@@ -26,6 +26,9 @@
 #include "components/page_image_service/metrics_util.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/search_engines/search_engines_test_environment.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -322,6 +325,52 @@ TEST_F(ImageServiceImplTest, SuggestBackendEndToEnd) {
   EXPECT_EQ(histogram_tester_.GetBucketCount(
                 "PageImageService.Backend.Suggest.Result.Journeys",
                 PageImageServiceResult::kSuccess),
+            1);
+}
+
+// Regression test for crbug.com/577867847. If the TemplateURL matched for a
+// Google SRP has no suggestions URL (e.g. the AI Mode starter pack engine),
+// no Suggest request can be made, but the caller must still be notified.
+TEST_F(ImageServiceImplTest, SuggestBackendWithoutSuggestionsUrl) {
+  TemplateURLService* template_url_service =
+      search_engines_test_environment_.template_url_service();
+  template_url_service->Load();
+
+  // Use a Google host not owned by any other engine, so this engine is the one
+  // matched for the SRP regardless of conflict-resolution ordering. It has no
+  // suggestions URL.
+  TemplateURLData data;
+  data.SetShortName(u"Google without suggest");
+  data.SetKeyword(u"nosuggest");
+  data.SetURL("https://www.google.co.uk/search?q={searchTerms}");
+  ASSERT_TRUE(template_url_service->Add(std::make_unique<TemplateURL>(data)));
+
+  mojom::Options options;
+  options.suggest_images = true;
+  options.optimization_guide_images = true;
+
+  base::RunLoop loop;
+  GURL response("https://not-yet-responded.com");
+  image_service_->FetchImageFor(
+      mojom::ClientId::Journeys,
+      GURL("https://www.google.co.uk/search?q=santa+monica"), options,
+      base::BindOnce(&QuitLoopAndStoreImageUrlResponse, &loop, &response));
+
+  // The Suggest backend must have been selected for this to cover the bug.
+  EXPECT_EQ(
+      histogram_tester_.GetBucketCount("PageImageService.Backend.Journeys",
+                                       PageImageServiceBackend::kSuggest),
+      1);
+  // The callback must be invoked asynchronously.
+  EXPECT_EQ(response, GURL("https://not-yet-responded.com"));
+
+  // The callback must still be invoked, with an empty result.
+  loop.Run();
+  EXPECT_EQ(response, GURL());
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  EXPECT_EQ(histogram_tester_.GetBucketCount(
+                "PageImageService.Backend.Suggest.Result.Journeys",
+                PageImageServiceResult::kResponseMissing),
             1);
 }
 
