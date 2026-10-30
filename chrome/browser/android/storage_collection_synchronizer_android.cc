@@ -9,7 +9,6 @@
 #include "chrome/browser/android/collection_storage_observer_factory_android.h"
 #include "chrome/browser/android/storage_restore_orchestrator_factory_android.h"
 #include "chrome/browser/android/tab_state_storage_service_factory.h"
-#include "components/tabs/public/android/jni_conversion.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().

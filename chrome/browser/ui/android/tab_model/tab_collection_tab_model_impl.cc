@@ -21,7 +21,6 @@
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
-#include "components/tabs/public/android/jni_conversion.h"
 #include "components/tabs/public/pinned_tab_collection.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
@@ -426,9 +425,9 @@ int TabCollectionTabModelImpl::GetIndexOfFirstNonPinnedTab(JNIEnv* env) const {
   return tab_strip_collection_->IndexOfFirstNonPinnedTab();
 }
 
-TabStripCollection* TabCollectionTabModelImpl::GetTabStripCollection(
-    JNIEnv* env) {
-  return tab_strip_collection_.get();
+jni_zero::JniRawPtr<tabs::TabStripCollection>
+TabCollectionTabModelImpl::GetTabStripCollection(JNIEnv* env) {
+  return jni_zero::MakeRaw(tab_strip_collection_.get());
 }
 
 // Private methods:

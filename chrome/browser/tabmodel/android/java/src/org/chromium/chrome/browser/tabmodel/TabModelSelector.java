@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import org.jni_zero.JniPtr;
+
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -219,7 +221,8 @@ public interface TabModelSelector {
             IncognitoTabModelObserver.IncognitoReauthDialogDelegate incognitoReauthDialogDelegate);
 
     /** Returns the {@link TabModel} for the associated {@link TabStripCollection}. */
-    @Nullable TabModel getTabModelForTabStripCollection(TabStripCollection tabStripCollection);
+    @Nullable TabModel getTabModelForTabStripCollection(
+            JniPtr<TabStripCollection> tabStripCollection);
 
     /**
      * This method adds {@link TabModelObserver} to both {@link TabModel}s. Caches the observer

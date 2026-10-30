@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -144,7 +145,7 @@ public class TabStateStorageService {
     public void clearUnusedNodesForWindow(
             String windowTag,
             boolean isOffTheRecord,
-            @Nullable TabStripCollection tabStripCollection) {
+            @Nullable JniPtr<TabStripCollection> tabStripCollection) {
         if (tabStripCollection != null) {
             TabStateStorageServiceJni.get()
                     .clearUnusedNodesForWindow(
@@ -244,7 +245,8 @@ public class TabStateStorageService {
                 long nativeTabStateStorageServiceAndroid,
                 @JniType("std::string") String windowTag,
                 boolean isOffTheRecord,
-                @JniType("TabStripCollection*") TabStripCollection tabStripCollection);
+                @JniType("const tabs::TabStripCollection*")
+                        JniPtr<TabStripCollection> tabStripCollection);
 
         void printAll(long nativeTabStateStorageServiceAndroid);
 

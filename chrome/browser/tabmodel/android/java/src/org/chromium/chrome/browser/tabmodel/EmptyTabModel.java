@@ -9,6 +9,8 @@ import static org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils.UNSET_TAB_
 
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.JniPtr;
+
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -324,7 +326,7 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public @Nullable TabStripCollection getTabStripCollection() {
+    public @Nullable JniPtr<TabStripCollection> getTabStripCollection() {
         return null;
     }
 

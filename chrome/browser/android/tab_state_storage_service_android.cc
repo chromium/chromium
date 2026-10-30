@@ -28,7 +28,6 @@
 #include "chrome/browser/tab/tab_state_storage_backend.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
 #include "chrome/browser/tab/tab_storage_util.h"
-#include "components/tabs/public/android/jni_conversion.h"
 #include "components/tabs/public/direct_child_walker.h"
 #include "components/tabs/public/tab_strip_collection.h"
 

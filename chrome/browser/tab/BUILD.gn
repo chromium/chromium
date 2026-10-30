@@ -158,6 +158,7 @@ android_resources("java_resources") {
 }
 
 generate_jni("jni_headers") {
+  deps = [ "//components/tabs/public/android:jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/tab/CollectionStorageObserverFactory.java",
     "java/src/org/chromium/chrome/browser/tab/StorageCollectionSynchronizer.java",

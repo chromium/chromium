@@ -11,7 +11,7 @@
 #include "chrome/browser/android/tab_state_storage_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab/storage_loaded_data.h"
-#include "components/tabs/public/android/jni_conversion.h"
+#include "components/tabs/public/tab_strip_collection.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().

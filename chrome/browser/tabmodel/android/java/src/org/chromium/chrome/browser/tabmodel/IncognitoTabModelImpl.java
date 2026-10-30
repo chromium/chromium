@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
+import org.jni_zero.JniPtr;
+
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
@@ -499,7 +501,7 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public @Nullable TabStripCollection getTabStripCollection() {
+    public @Nullable JniPtr<TabStripCollection> getTabStripCollection() {
         return mDelegateModel.getTabStripCollection();
     }
 

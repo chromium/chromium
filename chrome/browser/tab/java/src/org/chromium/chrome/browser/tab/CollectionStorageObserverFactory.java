@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -21,7 +22,7 @@ import org.chromium.components.tabs.TabStripCollection;
 @JNINamespace("tabs")
 public class CollectionStorageObserverFactory {
     public final Profile profile;
-    public final TabStripCollection collection;
+    public final JniPtr<TabStripCollection> collection;
 
     /**
      * Constructs a factory for {@link CollectionStorageObserver}.
@@ -29,7 +30,8 @@ public class CollectionStorageObserverFactory {
      * @param profile The profile associated with the storage.
      * @param collection The tab strip collection being observed.
      */
-    public CollectionStorageObserverFactory(Profile profile, TabStripCollection collection) {
+    public CollectionStorageObserverFactory(
+            Profile profile, JniPtr<TabStripCollection> collection) {
         this.profile = profile;
         this.collection = collection;
     }
@@ -41,8 +43,6 @@ public class CollectionStorageObserverFactory {
 
     @NativeMethods
     interface Natives {
-        long build(
-                @JniType("Profile*") Profile profile,
-                @JniType("tabs::TabStripCollection*") TabStripCollection collection);
+        long build(@JniType("Profile*") Profile profile, JniPtr<TabStripCollection> collection);
     }
 }

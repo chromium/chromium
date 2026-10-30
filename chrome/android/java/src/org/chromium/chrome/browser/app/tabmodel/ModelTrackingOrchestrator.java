@@ -10,6 +10,8 @@ import static org.chromium.chrome.browser.tab.TabStateStorageServiceFactory.crea
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.jni_zero.JniPtr;
+
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.Token;
@@ -77,7 +79,7 @@ public class ModelTrackingOrchestrator {
          * @param profile The profile associated with the collection.
          * @param collection The {@link TabStripCollection} keyed under the profile.
          */
-        T build(Profile profile, TabStripCollection collection);
+        T build(Profile profile, JniPtr<TabStripCollection> collection);
     }
 
     /** The state of the synchronization lifecycle for a specific model. */
@@ -525,7 +527,7 @@ public class ModelTrackingOrchestrator {
         TabModel tabModel = selector.getModel(incognito);
         Profile profile = tabModel.getProfile();
         assert profile != null;
-        TabStripCollection tabStripCollection = tabModel.getTabStripCollection();
+        JniPtr<TabStripCollection> tabStripCollection = tabModel.getTabStripCollection();
         assert tabStripCollection != null;
         return new ProfileAndCollection(profile, tabStripCollection);
     }
@@ -557,9 +559,9 @@ public class ModelTrackingOrchestrator {
 
     private static class ProfileAndCollection {
         public final Profile profile;
-        public final TabStripCollection collection;
+        public final JniPtr<TabStripCollection> collection;
 
-        public ProfileAndCollection(Profile profile, TabStripCollection collection) {
+        public ProfileAndCollection(Profile profile, JniPtr<TabStripCollection> collection) {
             this.profile = profile;
             this.collection = collection;
         }

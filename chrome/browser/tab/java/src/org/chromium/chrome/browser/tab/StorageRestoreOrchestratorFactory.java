@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -21,11 +22,11 @@ import org.chromium.components.tabs.TabStripCollection;
 @JNINamespace("tabs")
 public class StorageRestoreOrchestratorFactory {
     public final Profile profile;
-    public final TabStripCollection collection;
+    public final JniPtr<TabStripCollection> collection;
     public final StorageLoadedData loadedData;
 
     public StorageRestoreOrchestratorFactory(
-            Profile profile, TabStripCollection collection, StorageLoadedData loadedData) {
+            Profile profile, JniPtr<TabStripCollection> collection, StorageLoadedData loadedData) {
         this.profile = profile;
         this.collection = collection;
         this.loadedData = loadedData;
@@ -41,7 +42,7 @@ public class StorageRestoreOrchestratorFactory {
     interface Natives {
         long build(
                 @JniType("Profile*") Profile profile,
-                @JniType("tabs::TabStripCollection*") TabStripCollection collection,
+                JniPtr<TabStripCollection> collection,
                 @JniType("StorageLoadedData*") StorageLoadedData loadedData);
     }
 }

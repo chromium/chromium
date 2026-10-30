@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 class Profile;
 class TabAndroid;
@@ -145,7 +146,8 @@ class TabCollectionTabModelImpl {
   int GetIndexOfFirstNonPinnedTab(JNIEnv* env) const;
 
   // Returns the TabStripCollection associated with this TabModel.
-  tabs::TabStripCollection* GetTabStripCollection(JNIEnv* env);
+  jni_zero::JniRawPtr<tabs::TabStripCollection> GetTabStripCollection(
+      JNIEnv* env);
 
  private:
   // Returns a safe index for adding or moving a tab or tab group.

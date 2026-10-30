@@ -31,7 +31,6 @@
 #include "chrome/browser/tab/tab_storage_package.h"
 #include "chrome/browser/tab/tab_storage_packager.h"
 #include "chrome/browser/tab/web_contents_state.h"
-#include "components/tabs/public/android/jni_conversion.h"
 #include "components/tabs/public/tab_strip_collection.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"

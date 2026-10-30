@@ -517,8 +517,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
 
     @CalledByNative
     @Override
-    public abstract @JniType("tabs::TabStripCollection*") @Nullable TabStripCollection
-            getTabStripCollection();
+    public abstract @Nullable JniPtr<TabStripCollection> getTabStripCollection();
 
     /** Returns whether or not a sync session is currently being restored. */
     @CalledByNative

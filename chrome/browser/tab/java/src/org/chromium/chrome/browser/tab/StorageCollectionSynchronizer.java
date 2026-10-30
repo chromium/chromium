@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
@@ -23,7 +24,7 @@ public class StorageCollectionSynchronizer implements Destroyable {
      * @param profile The profile associated with the collection.
      * @param collection The {@link TabStripCollection} to track.
      */
-    public StorageCollectionSynchronizer(Profile profile, TabStripCollection collection) {
+    public StorageCollectionSynchronizer(Profile profile, JniPtr<TabStripCollection> collection) {
         mNativePtr = StorageCollectionSynchronizerJni.get().init(this, profile, collection);
     }
 
@@ -81,7 +82,7 @@ public class StorageCollectionSynchronizer implements Destroyable {
         long init(
                 StorageCollectionSynchronizer self,
                 @JniType("Profile*") Profile profile,
-                @JniType("tabs::TabStripCollection*") TabStripCollection collection);
+                JniPtr<TabStripCollection> collection);
 
         void fullSave(
                 long nativeStorageCollectionSynchronizerAndroid,

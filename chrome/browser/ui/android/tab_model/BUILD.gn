@@ -30,7 +30,7 @@ source_set("tab_model") {
     "//components/sync_sessions",
     "//components/tab_groups",
     "//components/tabs:public",
-    "//components/tabs/public/android",
+    "//third_party/jni_zero",
     "//ui/base/unowned_user_data",
     "//url",
   ]

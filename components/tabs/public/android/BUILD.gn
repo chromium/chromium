@@ -25,13 +25,3 @@ android_library("java") {
     "//third_party/jni_zero:jni_zero_java",
   ]
 }
-
-source_set("android") {
-  sources = [ "jni_conversion.h" ]
-  deps = [
-    ":jni_headers",
-    "//base",
-    "//components/tabs:public",
-    "//third_party/jni_zero",
-  ]
-}

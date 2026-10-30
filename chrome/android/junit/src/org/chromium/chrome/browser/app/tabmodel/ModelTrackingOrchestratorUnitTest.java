@@ -15,6 +15,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.jni_zero.JniRawPtr;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -74,8 +76,6 @@ public class ModelTrackingOrchestratorUnitTest {
     @Mock private TabModel mRegularTabModel;
     @Mock private IncognitoTabModel mIncognitoTabModel;
     @Mock private Profile mProfile;
-    @Mock private TabStripCollection mRegularTabStripCollection;
-    @Mock private TabStripCollection mIncognitoTabStripCollection;
     @Mock private ActiveTabCache mActiveTabCache;
     @Mock private StorageLoadedData mRegularData;
     @Mock private StorageLoadedData mStorageLoadedData;
@@ -90,6 +90,8 @@ public class ModelTrackingOrchestratorUnitTest {
     private final SettableNullableObservableSupplier<Tab> mIncognitoTabSupplier =
             ObservableSuppliers.createNullable();
 
+    private JniRawPtr<TabStripCollection> mRegularTabStripCollection;
+    private JniRawPtr<TabStripCollection> mIncognitoTabStripCollection;
     private ModelTrackingOrchestrator mOrchestrator;
 
     @Before
@@ -101,6 +103,9 @@ public class ModelTrackingOrchestratorUnitTest {
 
         when(mRegularTabModel.getProfile()).thenReturn(mProfile);
         when(mIncognitoTabModel.getProfile()).thenReturn(mProfile);
+
+        mRegularTabStripCollection = JniRawPtr.createForTesting(1L);
+        mIncognitoTabStripCollection = JniRawPtr.createForTesting(2L);
 
         when(mRegularTabModel.getTabStripCollection()).thenReturn(mRegularTabStripCollection);
         when(mIncognitoTabModel.getTabStripCollection()).thenReturn(mIncognitoTabStripCollection);
@@ -127,6 +132,12 @@ public class ModelTrackingOrchestratorUnitTest {
         when(mStorageLoadedData.getLoadedTabStates())
                 .thenReturn(new StorageLoadedData.LoadedTabState[1]);
         when(mStorageLoadedData.getGroupsData()).thenReturn(new TabGroupCollectionData[0]);
+    }
+
+    @After
+    public void tearDown() {
+        mRegularTabStripCollection.release();
+        mIncognitoTabStripCollection.release();
     }
 
     private void createOrchestrator(boolean hasCipherFactory, boolean isAuthoritative) {
