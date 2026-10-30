@@ -1142,6 +1142,7 @@ public class KeyboardShortcuts {
                 semanticMeaning,
                 KeyboardShortcuts.KeyboardShortcutsSemanticMeaning.MAX_VALUE + 1);
 
+        // LINT.IfChange(KeyboardShortcutsOnKeyDown)
         switch (semanticMeaning) {
             case KeyboardShortcutsSemanticMeaning.OPEN_RECENTLY_CLOSED_TAB:
                 menuOrKeyboardActionController.onMenuOrKeyboardAction(
@@ -1359,6 +1360,7 @@ public class KeyboardShortcuts {
                             R.id.toggle_tab_strip_multiselect, /* fromMenu= */ false);
             }
         }
+        // LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/shortcuts/BrowserCommandDelegate.java:BrowserCommandDelegateCommands)
 
         return false;
     }

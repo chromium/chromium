@@ -14,6 +14,8 @@ if (is_android) {
       "android_profile_browser_collection_service.h",
       "android_profile_browser_collection_service_factory.cc",
       "android_profile_browser_collection_service_factory.h",
+      "browser_command_delegate_android.cc",
+      "browser_command_delegate_android.h",
       "browser_navigator_android.cc",
       "chrome_http_auth_handler.cc",
       "chrome_http_auth_handler.h",
