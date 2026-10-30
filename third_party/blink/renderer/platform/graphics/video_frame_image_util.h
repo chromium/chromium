@@ -15,7 +15,10 @@
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/shared_image_pool.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/video_transformation.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_snapshot_info.h"
 #include "third_party/blink/renderer/platform/graphics/flush_for_image_listener.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
@@ -40,14 +43,13 @@ class PaintFlags;
 }  // namespace cc
 
 namespace blink {
-class CanvasNon2DResourceProvider;
-class CanvasResourceSharedImage;
 class StaticBitmapImage;
 
 // Pool of accelerated SharedImages used to produce AcceleratedStaticBitmapImage
 // snapshots from media::VideoFrames.
 class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool
     : public CanvasMemoryDumpClient,
+      public CanvasResourceSharedImage::Client,
       public FlushForImageObserver,
       public WebGraphicsContext3DProviderWrapper::DestructionObserver,
       public viz::ContextLostObserver {
@@ -69,15 +71,22 @@ class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool
       base::FunctionRef<void(cc::PaintCanvas&)> draw_callback);
 
  private:
+  static constexpr int kMaxRecycledCanvasResources = 3;
+
   VideoFrameAcceleratedSnapshotPool(
       const CanvasSnapshotInfo& info,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper,
-      std::unique_ptr<CanvasNon2DResourceProvider> provider);
+      gpu::SharedImageUsageSet shared_image_usage_flags);
 
   // CanvasMemoryDumpClient:
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
   size_t GetSize() const override { return 0; }
+
+  // CanvasResourceSharedImage::Client:
+  void OnResourceRefReturned(
+      scoped_refptr<CanvasResourceSharedImage>&& resource) override;
+  void OnDestroyResource() override { --num_inflight_resources_; }
 
   // FlushForImageObserver:
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
@@ -96,9 +105,19 @@ class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool
   gpu::raster::RasterInterface* RasterInterface() const;
 
   const CanvasSnapshotInfo info_;
+  const bool is_software_ = false;
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
-  std::unique_ptr<CanvasNon2DResourceProvider> provider_;
+  std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>> image_pool_;
+  scoped_refptr<CanvasResourceSharedImage> resource_;
+  cc::PaintImage::ContentId cached_content_id_ =
+      cc::PaintImage::kInvalidContentId;
+  bool is_cleared_ = false;
+  int num_inflight_resources_ = 0;
+  int max_inflight_resources_ = 0;
+
+  base::WeakPtrFactory<VideoFrameAcceleratedSnapshotPool> weak_ptr_factory_{
+      this};
 };
 
 // Converts a media orientation into a blink one or vice versa.

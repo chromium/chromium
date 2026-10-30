@@ -232,11 +232,7 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
     const gfx::HDRMetadata& hdr_metadata,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     gpu::SharedImageUsageSet shared_image_usage_flags,
-    base::OnceClosure context_lost_callback,
-    bool register_flush_for_image_observer,
-    bool register_destruction_observer,
-    bool register_context_lost_observer,
-    bool register_memory_dump_client)
+    base::OnceClosure context_lost_callback)
     : size_(size),
       format_(format),
       alpha_type_(alpha_type),
@@ -244,27 +240,19 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
       hdr_metadata_(hdr_metadata),
       context_lost_callback_(std::move(context_lost_callback)),
       is_software_(false),
-      register_flush_for_image_observer_(register_flush_for_image_observer),
-      register_destruction_observer_(register_destruction_observer),
-      register_context_lost_observer_(register_context_lost_observer),
-      register_memory_dump_client_(register_memory_dump_client),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()),
       recorder_for_external_draws_(
           std::make_unique<MemoryManagedPaintRecorder>(Size(),
                                                        /*client=*/nullptr)),
       context_provider_wrapper_(std::move(context_provider_wrapper)) {
-  if (register_memory_dump_client_) {
-    CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
-  }
+  CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
   if (context_provider_wrapper_) {
-    if (register_destruction_observer_) {
-      context_provider_wrapper_->AddObserver(this);
-    }
+    context_provider_wrapper_->AddObserver(this);
     raster_context_provider_ = base::WrapRefCounted(
         context_provider_wrapper_->ContextProvider().RasterContextProvider());
   }
 
-  if (raster_context_provider_ && register_context_lost_observer_) {
+  if (raster_context_provider_) {
     raster_context_provider_->AddObserver(this);
   }
 
@@ -323,9 +311,7 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
   }
 
   resource_ = NewOrRecycledResource();
-  if (register_flush_for_image_observer_) {
-    FlushForImageListener::Get()->AddObserver(this);
-  }
+  FlushForImageListener::Get()->AddObserver(this);
 }
 
 CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
@@ -367,20 +353,18 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
 }
 
 CanvasNon2DResourceProvider::~CanvasNon2DResourceProvider() {
-  if (register_memory_dump_client_) {
-    CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
-  }
-  if (context_provider_wrapper_ && register_destruction_observer_) {
+  CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
+  if (context_provider_wrapper_) {
     context_provider_wrapper_->RemoveObserver(this);
   }
-  if (raster_context_provider_ && register_context_lost_observer_) {
+  if (raster_context_provider_) {
     raster_context_provider_->RemoveObserver(this);
   }
   if (shared_image_interface_provider_) {
     shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);
   }
 
-  if (!is_software_ && register_flush_for_image_observer_) {
+  if (!is_software_) {
     FlushForImageListener::Get()->RemoveObserver(this);
   }
 

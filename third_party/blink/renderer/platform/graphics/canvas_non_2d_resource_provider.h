@@ -205,8 +205,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   }
 
  private:
-  friend class VideoFrameAcceleratedSnapshotPool;
-
   CanvasNon2DResourceProvider(
       gfx::Size,
       viz::SharedImageFormat,
@@ -215,11 +213,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
       const gfx::HDRMetadata&,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       gpu::SharedImageUsageSet shared_image_usage_flags,
-      base::OnceClosure context_lost_callback = {},
-      bool register_flush_for_image_observer = true,
-      bool register_destruction_observer = true,
-      bool register_context_lost_observer = true,
-      bool register_memory_dump_client = true);
+      base::OnceClosure context_lost_callback = {});
   CanvasNon2DResourceProvider(gfx::Size,
                               viz::SharedImageFormat,
                               SkAlphaType,
@@ -287,10 +281,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   base::OnceClosure context_lost_callback_;
 
   const bool is_software_;
-  const bool register_flush_for_image_observer_ = true;
-  const bool register_destruction_observer_ = true;
-  const bool register_context_lost_observer_ = true;
-  const bool register_memory_dump_client_ = true;
 
   mutable sk_sp<SkSurface> surface_;
   uint32_t snapshot_sk_image_id_ = 0u;
