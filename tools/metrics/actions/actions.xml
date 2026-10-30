@@ -732,7 +732,6 @@ should be able to be added at any place in this file.
       summary="For iOSTabGridSwipeRightForIncognito feature"/>
   <variant name="_iOSTabGroupsDesktop"
       summary="For iOSTabGroupsDesktopFeature"/>
-  <variant name="_iOSWelcomeBack" summary="For iOSWelcomeBack feature"/>
   <variant name="_KeyboardAccessoryPaymentOffer"
       summary="For KeyboardAccessoryPaymentOffer feature."/>
   <variant name="_LensOverlay" summary="For Lens Overlay IPH feature."/>
@@ -16869,28 +16868,6 @@ should be able to be added at any place in this file.
     unit conversion view controller) the user changes the unit type (title
     button) of a unit conversion view controller. iOS only.
   </description>
-</action>
-
-<action name="IOS.WelcomeBack.Dismissed">
-  <owner>cheickcisse@google.com</owner>
-  <owner>bling-mony-pod@google.com</owner>
-  <description>
-    Recorded when the user dismisses the Welcome Back screen. iOS only.
-  </description>
-</action>
-
-<action name="IOS.WelcomeBack.Impression">
-  <owner>cheickcisse@google.com</owner>
-  <owner>bling-mony-pod@google.com</owner>
-  <description>
-    Recorded when the Welcome Back screen is presented to the user. iOS only.
-  </description>
-</action>
-
-<action name="IOS.WelcomeBack.Stopped">
-  <owner>cheickcisse@google.com</owner>
-  <owner>bling-mony-pod@google.com</owner>
-  <description>TODO(crbug.com/483957938): Write the description.</description>
 </action>
 
 <action name="IOSAccountsSettingsCloseWithSwipe">

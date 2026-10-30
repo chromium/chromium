@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
 #import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/welcome_back/model/features.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -20,9 +19,6 @@
 namespace {
 // Returns the secondary action string based on the current variation.
 NSString* ConfigureSecondaryActionString() {
-  if (IsWelcomeBackEnabled()) {
-    return l10n_util::GetNSString(IDS_IOS_WELCOME_BACK_KEEP_BROWSING_BUTTON);
-  }
 
   using enum first_run::BestFeaturesScreenVariationType;
   switch (first_run::GetBestFeaturesScreenVariationType()) {

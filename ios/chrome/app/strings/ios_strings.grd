@@ -9593,18 +9593,6 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_WEB_INSPECTOR_TITLE" desc="The title of the screen in which the user can enable Web Inspector support, to allow debugging web pages">
         Web Inspector
       </message>
-      <message name="IDS_IOS_WELCOME_BACK_KEEP_BROWSING_BUTTON" desc="The text of the Keep browsing button on the Welcome Back promo">
-        Keep browsing
-      </message>
-      <message name="IDS_IOS_WELCOME_BACK_SUBTITLE" desc="The subtitle of the Welcome Back promo">
-        Explore helpful features that you've missed
-      </message>
-      <message name="IDS_IOS_WELCOME_BACK_TITLE_DEFAULT" desc="The title of the Welcome Back promo for users who are not signed in">
-        Welcome back
-      </message>
-      <message name="IDS_IOS_WELCOME_BACK_TITLE_SIGNED_IN" desc="The title of the Welcome Back promo for users who are signed in">
-        Welcome back, <ph name="USER_NAME">$1<ex>John</ex></ph>
-      </message>
       <message name="IDS_IOS_WHATS_NEW_CALENDAR_SCREENSHOT_TEXT_ADD_TITLE" desc="Text in image displaying a placeholder for the title of the Google calendar event. [iOS only]">
         Add title
       </message>

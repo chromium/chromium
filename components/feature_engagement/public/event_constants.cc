@@ -180,8 +180,6 @@ const char kIOSDownloadAutoDeletionIPHCriterionMet[] =
     "ios_download_auto_deletion_iph_criterion_met";
 const char kIOSScrolledOnFeed[] = "ios_scrolled_on_feed";
 const char kIOSActionOnFeed[] = "ios_action_on_feed";
-const char kIOSWelcomeBackPromoTrigger[] = "welcome_back_promo_trigger";
-const char kIOSWelcomeBackPromoUsed[] = "welcome_back_promo_used";
 const char kIOSBWGPromoTrigger[] = "bwg_half_screen_promo_trigger";
 const char kIOSBWGPromoUsed[] = "bwg_half_screen_promo_used";
 const char kIOSSafariImportRemindMeLater[] =

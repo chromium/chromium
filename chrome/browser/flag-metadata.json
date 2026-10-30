@@ -6626,11 +6626,6 @@
     "expiry_milestone": 154
   },
   {
-    "name": "ios-welcome-back-screen",
-    "owners": ["cheickcisse@google.com", "bling-mony-pod@google.com"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "iph-autofill-credit-card-benefit-feature",
     "owners": [ "viplavkadam@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 145

@@ -1,5 +1,0 @@
-include_rules = [
-  # keep-sorted start
-  "+ios/chrome/browser/promos_manager/coordinator/standard_promo_display_handler.h",
-  # keep-sorted end
-]

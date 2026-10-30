@@ -9,7 +9,6 @@
 
 // An enum representing the different features promoted by Bling's Best
 // Features. These values should not be reordered or reused.
-// LINT.IfChange(BestFeaturesItemType)
 enum class BestFeaturesItemType {
   kLensSearch = 0,
   kEnhancedSafeBrowsing = 1,
@@ -22,9 +21,6 @@ enum class BestFeaturesItemType {
   kIncognitoBrowsing = 8,
   kMaxValue = kIncognitoBrowsing,
 };
-// LINT.ThenChange(
-// /ios/chrome/browser/welcome_back/model/welcome_back_prefs.mm:IntToBestFeaturesItemType,
-// /tools/metrics/histograms/metadata/ios/enums.xml:IOSBestFeaturesItemType)
 
 // Holds properties and values needed to configure the items in the Best
 // Features Screen.

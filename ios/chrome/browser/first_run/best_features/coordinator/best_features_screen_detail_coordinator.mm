@@ -127,7 +127,7 @@
 
 // Handles taps on the primary action of
 // the`FeatureHighlightScreenshotViewController` that is presented when the
-// DetailScreenPresentationSource is kBestFeaturesFRE or kWelcomeBack.
+// DetailScreenPresentationSource is kBestFeaturesFRE.
 - (void)confirmationAlertPrimaryAction {
   base::UmaHistogramEnumeration(
       BestFeaturesActionHistogramForItemType(_bestFeaturesItem.type),
@@ -142,7 +142,7 @@
 
 // Handles taps on the secondary action of
 // the`FeatureHighlightScreenshotViewController` that is presented when the
-// DetailScreenPresentationSource is kBestFeaturesFRE or kWelcomeBack.
+// DetailScreenPresentationSource is kBestFeaturesFRE.
 - (void)confirmationAlertSecondaryAction {
   [self continueFRESequence];
 }

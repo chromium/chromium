@@ -147,7 +147,6 @@
 #import "ios/chrome/browser/upgrade/model/upgrade_constants.h"
 #import "ios/chrome/browser/voice/model/voice_search_prefs_registration.h"
 #import "ios/chrome/browser/web/model/font_size/font_size_tab_helper.h"
-#import "ios/chrome/browser/welcome_back/model/welcome_back_prefs.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/components/cookie_util/cookie_constants.h"
 #import "ios/web/common/features.h"
@@ -247,6 +246,9 @@ inline constexpr char kTailoredSecuritySyncFlowLastUserInteractionState[] =
 inline constexpr char kTailoredSecuritySyncFlowObservedOutcomeUnsetTimestamp[] =
     "safebrowsing.aesb_sync_flow_observed_outcome_unset_timestamp";
 
+// Deprecated 10/2026.
+inline constexpr char kWelcomeBackEligibleItems[] =
+    "ios.welcomeback.eligible_items";
 }  // namespace
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
@@ -286,7 +288,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   TipsNotificationClient::RegisterLocalStatePrefs(registry);
   auto_deletion::AutoDeletionService::RegisterLocalStatePrefs(registry);
   push_notification_prefs::RegisterLocalStatePrefs(registry);
-  RegisterWelcomeBackLocalStatePrefs(registry);
   feature_engagement::RegisterLocalStatePrefs(registry);
 
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
@@ -489,6 +490,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Deprecated 08/2026.
   registry->RegisterTimePref(kWaitingForMultiProfileForcedMigrationTimestamp,
                              base::Time());
+
+  // Deprecated 10/2026.
+  registry->RegisterListPref(kWelcomeBackEligibleItems);
 }
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -955,6 +959,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
 
   // Added 08/2026.
   prefs->ClearPref(kWaitingForMultiProfileForcedMigrationTimestamp);
+
+  // Added 10/2026.
+  prefs->ClearPref(kWelcomeBackEligibleItems);
 }
 
 // This method should be periodically pruned of year+ old migrations.

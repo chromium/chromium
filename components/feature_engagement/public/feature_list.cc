@@ -243,7 +243,6 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSSwipeToolbarToChangeTabFeature,
     &kIPHiOSSwitchAccountsWithNTPAccountParticleDiscFeature,
     &kIPHiOSTabGridSwipeRightForIncognito,
-    &kIPHiOSWelcomeBackFeature,
     &kIPHLongPressToolbarTipFeature,
     &kIPHPriceNotificationsWhileBrowsingFeature,
     &kIPHReadingListMessagesFeature,

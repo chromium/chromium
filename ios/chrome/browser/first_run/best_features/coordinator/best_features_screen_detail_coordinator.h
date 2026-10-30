@@ -17,7 +17,6 @@
 enum class DetailScreenPresentationSource {
   kBestOfAppFRE,
   kBestFeaturesFRE,
-  kWelcomeBack,
 };
 
 // Coordinator to present the feature specific Best Features Detail Screen.

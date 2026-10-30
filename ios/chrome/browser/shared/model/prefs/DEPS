@@ -37,7 +37,6 @@ include_rules = [
   "+ios/chrome/browser/tips_notifications/model/tips_notification_client.h",
   "+ios/chrome/browser/voice/model/voice_search_prefs_registration.h",
   "+ios/chrome/browser/web/model/font_size/font_size_tab_helper.h",
-  "+ios/chrome/browser/welcome_back/model/welcome_back_prefs.h",
   # keep-sorted end
 ]
 

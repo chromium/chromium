@@ -1,6 +1,0 @@
-include_rules = [
-  # keep-sorted start
-  "+ios/chrome/browser/first_run/public",
-  "+ios/chrome/browser/first_run/public/features.h",
-  # keep-sorted end
-]

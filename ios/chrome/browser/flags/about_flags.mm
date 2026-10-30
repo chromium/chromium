@@ -130,7 +130,6 @@
 #import "ios/chrome/browser/text_selection/model/text_selection_util.h"
 #import "ios/chrome/browser/variations/model/ios_chrome_variations_seed_fetcher.h"
 #import "ios/chrome/browser/web/model/features.h"
-#import "ios/chrome/browser/welcome_back/model/features.h"
 #import "ios/chrome/browser/whats_new/coordinator/whats_new_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/components/enterprise/analysis/features.h"
@@ -774,23 +773,6 @@ constexpr FeatureEntry::FeatureVariation kFeedSwipeInProductHelpVariations[] = {
     {"- Static IPH after the second run",
      kFeedSwipeInProductHelpStaticInSecondRun, nullptr},
     {"- Animated IPH", kFeedSwipeInProductHelpAnimated, nullptr}};
-
-constexpr FeatureEntry::FeatureParam kWelcomeBackArm1[] = {
-    {kWelcomeBackParam, "1"}};
-constexpr FeatureEntry::FeatureParam kWelcomeBackArm2[] = {
-    {kWelcomeBackParam, "2"}};
-constexpr FeatureEntry::FeatureParam kWelcomeBackArm3[] = {
-    {kWelcomeBackParam, "3"}};
-constexpr FeatureEntry::FeatureParam kWelcomeBackArm4[] = {
-    {kWelcomeBackParam, "4"}};
-
-constexpr FeatureEntry::FeatureVariation kWelcomeBackVariations[] = {
-    {" - Variant A: Basics with Locked Incognito", kWelcomeBackArm1, nullptr},
-    {" - Variant B: Basics with Save & Autofill Passwords", kWelcomeBackArm2,
-     nullptr},
-    {" - Variant C: Productivity & Shopping", kWelcomeBackArm3, nullptr},
-    {" - Variant D: Sign-in Benefits", kWelcomeBackArm4, nullptr},
-};
 
 constexpr FeatureEntry::FeatureParam kBackgroundRefreshRegressionTestControl[] =
     {{"regression_test_arm", "control"}};
@@ -2131,11 +2113,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kSafeBrowsingTrustedURLName,
      flag_descriptions::kSafeBrowsingTrustedURLDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kSafeBrowsingTrustedURL)},
-    {"ios-welcome-back-screen", flag_descriptions::kWelcomeBackName,
-     flag_descriptions::kWelcomeBackDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kWelcomeBack,
-                                    kWelcomeBackVariations,
-                                    "WelcomeBack")},
     {"best-of-app-fre", flag_descriptions::kBestOfAppFREName,
      flag_descriptions::kBestOfAppFREDescription, flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kBestOfAppFRE,

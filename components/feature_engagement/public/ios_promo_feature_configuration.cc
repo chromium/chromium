@@ -56,12 +56,6 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
         EventConfig(events::kChromeOpened, Comparator(GREATER_THAN_OR_EQUAL, 7),
                     /*window=*/365, /*storage=*/365));
 
-    // Only show the promo if the Welcome Back Screen hasn't been displayed
-    // in the past 3 days.
-    config.event_configs.insert(EventConfig(events::kIOSWelcomeBackPromoTrigger,
-                                            Comparator(EQUAL, 0), /*window=*/3,
-                                            /*storage=*/365));
-
     return config;
   } else if (kIPHiOSPromoEphemeralThemeFeature.name == feature->name) {
     FeatureConfig config;
@@ -301,20 +295,6 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     config.trigger =
         EventConfig(events::kIOSReaderModeChipExpanded,
                     Comparator(LESS_THAN, 3), /*window=*/1, /*storage=*/360);
-    return config;
-  } else if (kIPHiOSWelcomeBackFeature.name == feature->name) {
-    // Show the promo any time the conditions are met.
-    FeatureConfig config;
-    config.valid = true;
-    config.availability = kAlwaysAvailable;
-    config.session_rate = kNoRestrictions;
-    config.used =
-        EventConfig(events::kIOSWelcomeBackPromoUsed, Comparator(EQUAL, 0),
-                    /*window=*/kMaxWindowPeriod, /*storage=*/kMaxStoragePeriod);
-    config.trigger =
-        EventConfig(events::kIOSWelcomeBackPromoTrigger, Comparator(EQUAL, 0),
-                    /*window=*/kMaxWindowPeriod, /*storage=*/kMaxStoragePeriod);
-    config.storage_type = StorageType::DEVICE;
     return config;
   } else {
     return std::nullopt;

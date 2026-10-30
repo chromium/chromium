@@ -20448,28 +20448,6 @@
             ]
         }
     ],
-    "WelcomeBack": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "UseActiveDays": "true",
-                        "WelcomeBackParam": "1"
-                    },
-                    "enable_features": [
-                        "WelcomeBack"
-                    ],
-                    "disable_features": [
-                        "BestFeaturesScreenInFirstRunExperience"
-                    ]
-                }
-            ]
-        }
-    ],
     "WhatsNewHats": [
         {
             "platforms": [
