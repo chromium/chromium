@@ -13303,7 +13303,6 @@
                     "enable_features": [
                         "InlinePdfV2",
                         "InlinePdfV2Incognito",
-                        "PdfLauncherActivity",
                         "PdfReuseFragment"
                     ]
                 }
