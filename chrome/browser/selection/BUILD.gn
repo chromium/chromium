@@ -8,6 +8,8 @@ source_set("selection") {
   sources = [
     "features.cc",
     "features.h",
+    "feedback_zip_builder.cc",
+    "feedback_zip_builder.h",
     "metrics_logger.cc",
     "metrics_logger.h",
     "suggestion.cc",
@@ -37,6 +39,7 @@ source_set("selection") {
     "//content/public/browser",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
+    "//third_party/zlib/google:zip",
     "//ui/gfx/codec",
     "//ui/gfx/geometry:geometry_skia",
   ]
@@ -70,6 +73,7 @@ source_set("unit_tests") {
     "//services/metrics/public/cpp:ukm_builders",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/zlib/google:zip",
     "//ui/gfx/codec",
   ]
 }

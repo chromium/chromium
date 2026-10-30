@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/threading/thread_restrictions.h"
+#include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/glic/glic_selection_observer.h"
 #include "chrome/browser/glic/glic_warming_checks.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
@@ -1458,7 +1462,13 @@ class SelectionOverlayDogfoodFeedbackBrowserTest
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayDogfoodFeedbackBrowserTest,
                        OpenDogfoodFeedbackOpensUrlInNewTab) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
   tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  DownloadPrefs::FromBrowserContext(tab->GetProfile())
+      ->SetDownloadPath(temp_dir.GetPath());
   auto* controller =
       SelectionOverlayController::FromTabWebContents(tab->GetContents());
   ASSERT_TRUE(controller);
@@ -1475,9 +1485,13 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayDogfoodFeedbackBrowserTest,
       ->OpenDogfoodFeedback();
 
   EXPECT_EQ(controller->state(), SelectionOverlayController::State::kOff);
-  EXPECT_EQ(tabs->GetTabCount(), initial_tab_count + 1);
+  ASSERT_OK(RunUntilEqual([&]() { return tabs->GetTabCount(); },
+                          initial_tab_count + 1,
+                          "Timeout waiting for feedback tab to open"));
   EXPECT_EQ(tabs->GetActiveTab()->GetContents()->GetVisibleURL(),
             GURL("https://example.com/feedback"));
+  EXPECT_TRUE(base::PathExists(
+      temp_dir.GetPath().AppendASCII("smart_selection_feedback.zip")));
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayBrowserTest,

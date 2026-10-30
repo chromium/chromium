@@ -4,15 +4,19 @@
 
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 
+#include <utility>
+
 #include "base/check_deref.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/glic/glic_selection_observer.h"
 #include "chrome/browser/glic/glic_warming_checks.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
@@ -993,6 +997,7 @@ void SelectionOverlayController::AdjustRegion(
     selection::SelectedRegionPtr target,
     bool is_using_keyboard) {
   session_->active_region_id = target->id;
+  session_->feedback_zip_builder = ::selection::FeedbackZipBuilder();
   if (SelectedRegionData* region_data =
           base::FindOrNull(session_->selected_regions, target->id)) {
     region_data->region = std::move(target);
@@ -1205,7 +1210,8 @@ void SelectionOverlayController::RequestNewSuggestions(
     }
     if (!static_suggestions.empty()) {
       OnSuggestionsReceived(region_id, generation, /*complete=*/false,
-                            std::move(static_suggestions));
+                            std::move(static_suggestions),
+                            ::selection::FeedbackZipBuilder());
     }
   }
 
@@ -1220,7 +1226,8 @@ void SelectionOverlayController::OnSuggestionsReceived(
     const base::UnguessableToken& region_id,
     uint64_t generation,
     bool complete,
-    std::vector<std::unique_ptr<::selection::Suggestion>> suggestions) {
+    std::vector<std::unique_ptr<::selection::Suggestion>> suggestions,
+    ::selection::FeedbackZipBuilder feedback_zip_builder) {
   SelectedRegionData* region_data =
       base::FindOrNull(session_->selected_regions, region_id);
   if (!region_data || region_data->generation != generation) {
@@ -1229,6 +1236,11 @@ void SelectionOverlayController::OnSuggestionsReceived(
 
   if (complete) {
     region_data->suggestions_complete = true;
+    if (session_->active_region_id == region_id &&
+        base::FeatureList::IsEnabled(
+            features::kGlicSelectionOverlayDogfoodFeedback)) {
+      session_->feedback_zip_builder = std::move(feedback_zip_builder);
+    }
   }
 
   region_data->suggestions.reserve(region_data->suggestions.size() +
@@ -1333,9 +1345,24 @@ void SelectionOverlayController::OpenDogfoodFeedback() {
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS()) {
     return;
   }
+  base::FilePath target_zip_path =
+      DownloadPrefs::FromBrowserContext(tab_->GetProfile())
+          ->DownloadPath()
+          .AppendASCII("smart_selection_feedback.zip");
+  session_->feedback_zip_builder.CreateZip(
+      std::move(target_zip_path),
+      base::BindOnce(
+          [](base::WeakPtr<SelectionOverlayController> self, const GURL& url,
+             std::optional<base::FilePath> zip_path) {
+            if (!self || !zip_path.has_value()) {
+              return;
+            }
+            CHECK_DEREF(self->tab_->GetBrowserWindowInterface())
+                .OpenGURL(url,
+                          ui::mojom::WindowOpenDisposition::kNewForegroundTab);
+          },
+          weak_factory_.GetWeakPtr(), url));
   Close();
-  CHECK_DEREF(tab_->GetBrowserWindowInterface())
-      .OpenGURL(url, ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 }
 
 void SelectionOverlayController::Reset() {

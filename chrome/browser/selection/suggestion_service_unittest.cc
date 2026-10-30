@@ -8,9 +8,13 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <utility>
 #include <vector>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_callback_support.h"
@@ -41,6 +45,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/zlib/google/zip.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/rect.h"
@@ -59,6 +64,9 @@ using ::testing::IsEmpty;
 using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::Return;
+
+using SuggestionsFuture =
+    TestFuture<std::vector<std::unique_ptr<Suggestion>>, FeedbackZipBuilder>;
 
 auto SuggestionWithLabel(std::u16string_view label) {
   return Pointee(Property(&Suggestion::GetLabel, label));
@@ -204,10 +212,10 @@ TEST_F(SuggestionServiceUnitTest, ServerSuggestionsDisabledByDefault) {
   EXPECT_CALL(mock_model_executor(), ExecuteModel).Times(0);
 
   AreaOfInterest aoi;
-  TestFuture<std::vector<std::unique_ptr<Suggestion>>> future;
+  SuggestionsFuture future;
   service().RequestSuggestions(aoi, future.GetCallback());
 
-  EXPECT_THAT(future.Take(), IsEmpty());
+  EXPECT_THAT(std::get<0>(future.Take()), IsEmpty());
 
   service().UnregisterTool(&tool);
 }
@@ -227,10 +235,10 @@ TEST_F(SuggestionServiceUnitTest,
   EXPECT_CALL(mock_model_executor(), ExecuteModel).Times(0);
 
   AreaOfInterest aoi;
-  TestFuture<std::vector<std::unique_ptr<Suggestion>>> future;
+  SuggestionsFuture future;
   service().RequestSuggestions(aoi, future.GetCallback());
 
-  EXPECT_THAT(future.Take(), IsEmpty());
+  EXPECT_THAT(std::get<0>(future.Take()), IsEmpty());
 
   service().UnregisterTool(&tool);
 }
@@ -267,10 +275,10 @@ TEST_F(SuggestionServiceUnitTest,
           /*log_entry=*/nullptr));
 
   AreaOfInterest aoi;
-  TestFuture<std::vector<std::unique_ptr<Suggestion>>> future;
+  SuggestionsFuture future;
   service_without_groups.RequestSuggestions(aoi, future.GetCallback());
 
-  EXPECT_THAT(future.Take(),
+  EXPECT_THAT(std::get<0>(future.Take()),
               ElementsAre(SuggestionWithLabel(u"Server Gemini Action")));
 
   service_without_groups.UnregisterTool(&gemini_tool);
@@ -284,10 +292,10 @@ TEST_F(SuggestionServiceUnitTest,
   EXPECT_CALL(mock_model_executor(), ExecuteModel).Times(0);
 
   AreaOfInterest aoi;
-  TestFuture<std::vector<std::unique_ptr<Suggestion>>> future;
+  SuggestionsFuture future;
   service().RequestSuggestions(aoi, future.GetCallback());
 
-  EXPECT_THAT(future.Take(), IsEmpty());
+  EXPECT_THAT(std::get<0>(future.Take()), IsEmpty());
 }
 
 // Tests that server suggestions are requested, parsed, and returned.
@@ -362,10 +370,10 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithServerSuggestions) {
   aoi.screenshot.eraseColor(SK_ColorRED);
   aoi.bounds = gfx::Rect(10, 20, 30, 40);
 
-  TestFuture<std::vector<std::unique_ptr<Suggestion>>> future;
+  SuggestionsFuture future;
   service().RequestSuggestions(aoi, future.GetCallback());
 
-  EXPECT_THAT(future.Take(),
+  EXPECT_THAT(std::get<0>(future.Take()),
               ElementsAre(SuggestionWithLabel(u"Server Gemini Action")));
 
   service().UnregisterTool(&gemini_tool);
@@ -426,9 +434,10 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithJpegScreenshot) {
   aoi.screenshot.eraseColor(SK_ColorRED);
   aoi.bounds = gfx::Rect(10, 20, 30, 40);
 
-  TestFuture<std::vector<std::unique_ptr<Suggestion>>> future;
+  SuggestionsFuture future;
   service().RequestSuggestions(aoi, future.GetCallback());
-  EXPECT_THAT(future.Take(), ElementsAre(SuggestionWithLabel(u"Jpeg Action")));
+  EXPECT_THAT(std::get<0>(future.Take()),
+              ElementsAre(SuggestionWithLabel(u"Jpeg Action")));
 
   service().UnregisterTool(&gemini_tool);
 }
@@ -479,10 +488,10 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithoutApc) {
   aoi.screenshot.eraseColor(SK_ColorRED);
   aoi.bounds = gfx::Rect(10, 20, 30, 40);
 
-  TestFuture<std::vector<std::unique_ptr<Suggestion>>> future;
+  SuggestionsFuture future;
   service().RequestSuggestions(aoi, future.GetCallback());
 
-  EXPECT_THAT(future.Take(),
+  EXPECT_THAT(std::get<0>(future.Take()),
               ElementsAre(SuggestionWithLabel(u"Action Without APC")));
 
   service().UnregisterTool(&gemini_tool);
@@ -547,10 +556,10 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithCroppedScreenshot) {
   aoi.screenshot.eraseColor(SK_ColorRED);
   aoi.bounds = gfx::Rect(10, 20, 30, 40);
 
-  TestFuture<std::vector<std::unique_ptr<Suggestion>>> future;
+  SuggestionsFuture future;
   service().RequestSuggestions(aoi, future.GetCallback());
 
-  EXPECT_THAT(future.Take(),
+  EXPECT_THAT(std::get<0>(future.Take()),
               ElementsAre(SuggestionWithLabel(u"Cropped Action")));
 
   service().UnregisterTool(&gemini_tool);
@@ -613,10 +622,10 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithDownscaledScreenshot) {
   aoi.screenshot.eraseColor(SK_ColorRED);
   aoi.bounds = gfx::Rect(20, 20, 60, 40);
 
-  TestFuture<std::vector<std::unique_ptr<Suggestion>>> future;
+  SuggestionsFuture future;
   service().RequestSuggestions(aoi, future.GetCallback());
 
-  EXPECT_THAT(future.Take(),
+  EXPECT_THAT(std::get<0>(future.Take()),
               ElementsAre(SuggestionWithLabel(u"Downscaled Action")));
 
   service().UnregisterTool(&gemini_tool);
@@ -679,10 +688,10 @@ TEST_F(SuggestionServiceUnitTest,
   aoi.screenshot.eraseColor(SK_ColorRED);
   aoi.bounds = gfx::Rect(10, 10, 20, 20);
 
-  TestFuture<std::vector<std::unique_ptr<Suggestion>>> future;
+  SuggestionsFuture future;
   service().RequestSuggestions(aoi, future.GetCallback());
 
-  EXPECT_THAT(future.Take(),
+  EXPECT_THAT(std::get<0>(future.Take()),
               ElementsAre(SuggestionWithLabel(u"Not Downscaled Action")));
 
   service().UnregisterTool(&gemini_tool);
@@ -752,11 +761,11 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsWithCropAndDownscale) {
   aoi.screenshot.eraseColor(SK_ColorRED);
   aoi.bounds = gfx::Rect(40, 40, 60, 60);
 
-  TestFuture<std::vector<std::unique_ptr<Suggestion>>> future;
+  SuggestionsFuture future;
   service().RequestSuggestions(aoi, future.GetCallback());
 
   EXPECT_THAT(
-      future.Take(),
+      std::get<0>(future.Take()),
       ElementsAre(SuggestionWithLabel(u"Cropped and Downscaled Action")));
 
   service().UnregisterTool(&gemini_tool);
@@ -794,10 +803,10 @@ TEST_F(SuggestionServiceUnitTest, RequestSuggestionsServerError) {
           /*log_entry=*/nullptr));
 
   AreaOfInterest aoi;
-  TestFuture<std::vector<std::unique_ptr<Suggestion>>> future;
+  SuggestionsFuture future;
   service().RequestSuggestions(aoi, future.GetCallback());
 
-  EXPECT_THAT(future.Take(), IsEmpty());
+  EXPECT_THAT(std::get<0>(future.Take()), IsEmpty());
 
   service().UnregisterTool(&gemini_tool);
 }
@@ -855,10 +864,11 @@ class SuggestionServiceMetricsTest : public ChromeRenderViewHostTestHarness {
     aoi.screenshot.allocN32Pixels(100, 100);
     aoi.bounds = gfx::Rect(10, 10, 20, 20);
 
-    TestFuture<std::vector<std::unique_ptr<Suggestion>>> future;
+    SuggestionsFuture future;
     service_->RequestSuggestions(aoi, future.GetCallback());
     task_environment()->AdvanceClock(base::Milliseconds(300));
-    EXPECT_THAT(future.Take(), ElementsAre(SuggestionWithLabel(u"Action")));
+    EXPECT_THAT(std::get<0>(future.Take()),
+                ElementsAre(SuggestionWithLabel(u"Action")));
     return response;
   }
 
@@ -1045,6 +1055,29 @@ TEST_F(SuggestionServiceMetricsTest, RecordsUkmMetricsOnSuccess) {
       entries[0],
       ukm::builders::SmartSelection_Suggestions::kResponse_SuggestionCountName,
       1);
+}
+
+// Tests that `FeedbackZipBuilder::CreateZip` creates a valid ZIP archive at the
+// target path.
+TEST_F(SuggestionServiceUnitTest, CreateFeedbackZip) {
+  base::ScopedTempDir zip_dir;
+  ASSERT_TRUE(zip_dir.CreateUniqueTempDir());
+  const base::FilePath target_zip_path =
+      zip_dir.GetPath().AppendASCII("smart_selection_feedback.zip");
+
+  FeedbackZipBuilder zip_builder;
+  TestFuture<std::optional<base::FilePath>> future;
+  zip_builder.CreateZip(target_zip_path, future.GetCallback());
+
+  std::optional<base::FilePath> zip_path = future.Take();
+  ASSERT_TRUE(zip_path.has_value());
+  EXPECT_EQ(*zip_path, target_zip_path);
+  EXPECT_TRUE(base::PathExists(*zip_path));
+
+  base::ScopedTempDir extract_dir;
+  ASSERT_TRUE(extract_dir.CreateUniqueTempDir());
+  EXPECT_TRUE(zip::Unzip(*zip_path, extract_dir.GetPath()));
+  EXPECT_TRUE(base::DeleteFile(*zip_path));
 }
 
 }  // namespace

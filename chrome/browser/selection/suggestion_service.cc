@@ -455,7 +455,8 @@ void SuggestionService::RequestSuggestions(AreaOfInterest processed_area,
       !IsFeatureGroupEnabled(kSmartSelectionServerSuggestions)) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
-                                  std::vector<std::unique_ptr<Suggestion>>()));
+                                  std::vector<std::unique_ptr<Suggestion>>(),
+                                  FeedbackZipBuilder()));
     return;
   }
 
@@ -520,13 +521,17 @@ void SuggestionService::SendServerSuggestionsRequest(
                                          .annotated_page_content()
                                          .ByteSizeLong();
 
+  FeedbackZipBuilder feedback_zip_builder;
+  // TODO(crbug.com/578362056): Populate the ZIP builder.
+
   // TODO(crbug.com/561489586): Consider adding logging.
   remote_model_executor_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kSmartSelectionSuggestions,
       request, {.execution_timeout = kSmartSelectionServerTimeout.Get()},
       base::BindOnce(&SuggestionService::OnServerSuggestions,
                      weak_factory_.GetWeakPtr(), std::move(processed_area),
-                     std::move(callback), request_start_time,
+                     std::move(callback), std::move(feedback_zip_builder),
+                     request_start_time,
                      /*mes_request_start_time=*/base::TimeTicks::Now(),
                      num_image_bytes, num_apc_bytes));
 }
@@ -534,6 +539,7 @@ void SuggestionService::SendServerSuggestionsRequest(
 void SuggestionService::OnServerSuggestions(
     AreaOfInterest processed_area,
     SuggestionsCallback callback,
+    FeedbackZipBuilder feedback_zip_builder,
     base::TimeTicks request_start_time,
     base::TimeTicks mes_request_start_time,
     size_t num_image_bytes,
@@ -546,7 +552,7 @@ void SuggestionService::OnServerSuggestions(
         proto::SmartSelectionSuggestionsResponse>(result.response.value());
   }
   if (!response) {
-    std::move(callback).Run({});
+    std::move(callback).Run({}, std::move(feedback_zip_builder));
     return;
   }
   std::vector<std::unique_ptr<Suggestion>> suggestions =
@@ -554,7 +560,8 @@ void SuggestionService::OnServerSuggestions(
   LogLatencyMetrics(tab_->GetContents(), request_start_time,
                     mes_request_start_time, num_image_bytes, num_apc_bytes,
                     response->latency_metrics(), suggestions.size());
-  std::move(callback).Run(std::move(suggestions));
+  std::move(callback).Run(std::move(suggestions),
+                          std::move(feedback_zip_builder));
 }
 
 }  // namespace selection

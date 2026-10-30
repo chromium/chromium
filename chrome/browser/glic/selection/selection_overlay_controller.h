@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
 #include "chrome/browser/glic/selection/selection_overlay.mojom.h"
+#include "chrome/browser/selection/feedback_zip_builder.h"
 #include "chrome/browser/selection/mojom/action.mojom-forward.h"
 #include "chrome/browser/selection/suggestion_service.h"
 #include "chrome/browser/ui/lens/overlay_base_controller.h"
@@ -275,7 +276,8 @@ class SelectionOverlayController
       const base::UnguessableToken& region_id,
       uint64_t generation,
       bool complete,
-      std::vector<std::unique_ptr<::selection::Suggestion>> suggestions);
+      std::vector<std::unique_ptr<::selection::Suggestion>> suggestions,
+      ::selection::FeedbackZipBuilder feedback_zip_builder);
   glic::mojom::AdditionalContextPtr CreateAdditionalContext(
       CapturedRegions regions);
 
@@ -326,6 +328,7 @@ class SelectionOverlayController
     // rendered on top of `initial_rgb_screenshot`.
     base::flat_map<base::UnguessableToken, SelectedRegionData> selected_regions;
     std::optional<base::UnguessableToken> active_region_id;
+    ::selection::FeedbackZipBuilder feedback_zip_builder;
     base::OneShotTimer surrounding_text_timer;
     mojo::Remote<selection::SuggestedActionsListener>
         suggested_actions_listener;

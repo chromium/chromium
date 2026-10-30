@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/check_deref.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/timer/timer.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -15,6 +18,7 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/background/glic/glic_background_mode_manager.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
+#include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/glic/browser_ui/glic_selection_widget.h"
 #include "chrome/browser/glic/glic_selection_observer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -2802,6 +2806,12 @@ class SelectionOverlayInteractiveTestWithDogfoodFeedback
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithDogfoodFeedback,
                        ClickDogfoodFeedbackButtonOpensUrlInNewTab) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  DownloadPrefs::FromBrowserContext(browser()->GetProfile())
+      ->SetDownloadPath(temp_dir.GetPath());
+
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
   const DeepQuery kDogfoodFeedbackButton = {"selection-overlay-app",
@@ -2811,9 +2821,11 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithDogfoodFeedback,
   RunTestSequence(
       OpenOverlayFromSmallChip(kActiveTab, kOverlayWebContentsId),
       WaitForElementVisible(kOverlayWebContentsId, kDogfoodFeedbackButton),
+      ObserveState(kActiveTabChanged, browser()->tab_strip_model()),
       ClickElement(kOverlayWebContentsId, kDogfoodFeedbackButton,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(OverlayBaseController::kOverlayId),
+      WaitForState(kActiveTabChanged, true),
       CheckResult([this]() { return browser()->tab_strip_model()->count(); },
                   2),
       CheckResult(
@@ -2823,7 +2835,13 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithDogfoodFeedback,
                 ->GetActiveWebContents()
                 ->GetVisibleURL();
           },
-          GURL("https://example.com/feedback")));
+          GURL("https://example.com/feedback")),
+      CheckResult(
+          [&]() {
+            return base::PathExists(
+                temp_dir.GetPath().AppendASCII("smart_selection_feedback.zip"));
+          },
+          true));
 }
 
 class SelectionOverlayInteractiveTestWithPromptBoxAndDogfoodFeedback
@@ -2843,6 +2861,12 @@ class SelectionOverlayInteractiveTestWithPromptBoxAndDogfoodFeedback
 IN_PROC_BROWSER_TEST_F(
     SelectionOverlayInteractiveTestWithPromptBoxAndDogfoodFeedback,
     ClickDogfoodFeedbackButtonOpensUrlInNewTab) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  DownloadPrefs::FromBrowserContext(browser()->GetProfile())
+      ->SetDownloadPath(temp_dir.GetPath());
+
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
   const DeepQuery kOverlayApp = {"selection-overlay-app"};
   const DeepQuery kSelectionOverlay = {"selection-overlay-app",
@@ -2881,9 +2905,11 @@ IN_PROC_BROWSER_TEST_F(
           "  return Math.abs(pillCenterY - btnCenterY) <= 1 && "
           "      btnRect.left >= pillRect.right;"
           "}"),
+      ObserveState(kActiveTabChanged, browser()->tab_strip_model()),
       ClickElement(kOverlayWebContentsId, kDogfoodFeedbackButton,
                    ExecuteJsMode::kFireAndForget),
       WaitForHide(OverlayBaseController::kOverlayId),
+      WaitForState(kActiveTabChanged, true),
       CheckResult([this]() { return browser()->tab_strip_model()->count(); },
                   2),
       CheckResult(
@@ -2893,7 +2919,13 @@ IN_PROC_BROWSER_TEST_F(
                 ->GetActiveWebContents()
                 ->GetVisibleURL();
           },
-          GURL("https://example.com/feedback")));
+          GURL("https://example.com/feedback")),
+      CheckResult(
+          [&]() {
+            return base::PathExists(
+                temp_dir.GetPath().AppendASCII("smart_selection_feedback.zip"));
+          },
+          true));
 }
 
 namespace {

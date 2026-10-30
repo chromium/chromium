@@ -16,6 +16,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/selection/feedback_zip_builder.h"
 #include "chrome/browser/selection/suggestion.h"
 #include "chrome/browser/selection/suggestion_tool.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -43,7 +44,8 @@ namespace selection {
 
 // Callback signature for suggestions retrieval.
 using SuggestionsCallback = base::OnceCallback<void(
-    std::vector<std::unique_ptr<Suggestion>> suggestions)>;
+    std::vector<std::unique_ptr<Suggestion>> suggestions,
+    FeedbackZipBuilder feedback_zip_builder)>;
 
 // TabFeature associated service for requesting zero-state or context-aware
 // selection suggestions from registered feature tools.
@@ -103,6 +105,7 @@ class SuggestionService {
   void OnServerSuggestions(
       AreaOfInterest processed_area,
       SuggestionsCallback callback,
+      FeedbackZipBuilder feedback_zip_builder,
       base::TimeTicks request_start_time,
       base::TimeTicks mes_request_start_time,
       size_t num_image_bytes,
