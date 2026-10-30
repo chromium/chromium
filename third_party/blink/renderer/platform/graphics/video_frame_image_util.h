@@ -16,6 +16,7 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "media/base/video_transformation.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_snapshot_info.h"
+#include "third_party/blink/renderer/platform/graphics/flush_for_image_listener.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
@@ -43,7 +44,8 @@ class WebGraphicsContext3DProviderWrapper;
 
 // Pool of accelerated SharedImages used to produce AcceleratedStaticBitmapImage
 // snapshots from media::VideoFrames.
-class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool {
+class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool
+    : public FlushForImageObserver {
  public:
   static std::unique_ptr<VideoFrameAcceleratedSnapshotPool> Create(
       const CanvasSnapshotInfo& info);
@@ -52,7 +54,7 @@ class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool {
       delete;
   VideoFrameAcceleratedSnapshotPool& operator=(
       const VideoFrameAcceleratedSnapshotPool&) = delete;
-  ~VideoFrameAcceleratedSnapshotPool();
+  ~VideoFrameAcceleratedSnapshotPool() override;
 
   bool IsValid() const;
   gfx::Size Size() const { return info_.size; }
@@ -67,6 +69,9 @@ class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool {
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper,
       std::unique_ptr<CanvasNon2DResourceProvider> provider);
+
+  // FlushForImageObserver:
+  void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
 
   void FlushRecording(cc::PaintRecord last_recording);
   void EnsureResourceReadyForDraw();

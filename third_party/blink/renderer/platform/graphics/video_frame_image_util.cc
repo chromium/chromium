@@ -210,7 +210,8 @@ VideoFrameAcceleratedSnapshotPool::Create(const CanvasSnapshotInfo& info) {
   auto provider = base::WrapUnique(new CanvasNon2DResourceProvider(
       pool_info.size, pool_info.format, pool_info.alpha_type,
       pool_info.color_space, pool_info.hdr_metadata, context_provider_wrapper,
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, base::DoNothing()));
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, base::DoNothing(),
+      /*register_flush_for_image_observer=*/false));
   auto pool = base::WrapUnique(new VideoFrameAcceleratedSnapshotPool(
       pool_info, std::move(context_provider_wrapper), std::move(provider)));
   return pool->IsValid() ? std::move(pool) : nullptr;
@@ -224,10 +225,15 @@ VideoFrameAcceleratedSnapshotPool::VideoFrameAcceleratedSnapshotPool(
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       provider_(std::move(provider)) {
   CHECK(provider_);
+  FlushForImageListener::Get()->AddObserver(this);
 }
 
-VideoFrameAcceleratedSnapshotPool::~VideoFrameAcceleratedSnapshotPool() =
-    default;
+VideoFrameAcceleratedSnapshotPool::~VideoFrameAcceleratedSnapshotPool() {
+  FlushForImageListener::Get()->RemoveObserver(this);
+}
+
+void VideoFrameAcceleratedSnapshotPool::OnFlushForImage(
+    cc::PaintImage::ContentId content_id) {}
 
 gpu::raster::RasterInterface*
 VideoFrameAcceleratedSnapshotPool::RasterInterface() const {

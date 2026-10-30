@@ -232,7 +232,8 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
     const gfx::HDRMetadata& hdr_metadata,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     gpu::SharedImageUsageSet shared_image_usage_flags,
-    base::OnceClosure context_lost_callback)
+    base::OnceClosure context_lost_callback,
+    bool register_flush_for_image_observer)
     : size_(size),
       format_(format),
       alpha_type_(alpha_type),
@@ -240,6 +241,7 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
       hdr_metadata_(hdr_metadata),
       context_lost_callback_(std::move(context_lost_callback)),
       is_software_(false),
+      register_flush_for_image_observer_(register_flush_for_image_observer),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()),
       recorder_for_external_draws_(
           std::make_unique<MemoryManagedPaintRecorder>(Size(),
@@ -311,7 +313,9 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
   }
 
   resource_ = NewOrRecycledResource();
-  FlushForImageListener::Get()->AddObserver(this);
+  if (register_flush_for_image_observer_) {
+    FlushForImageListener::Get()->AddObserver(this);
+  }
 }
 
 CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
@@ -364,7 +368,7 @@ CanvasNon2DResourceProvider::~CanvasNon2DResourceProvider() {
     shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);
   }
 
-  if (!is_software_) {
+  if (!is_software_ && register_flush_for_image_observer_) {
     FlushForImageListener::Get()->RemoveObserver(this);
   }
 
