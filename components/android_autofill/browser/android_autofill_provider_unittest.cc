@@ -1654,8 +1654,9 @@ TEST_F(AndroidAutofillProviderWithCredManTest, NotifyFocusOnCredManError) {
   EXPECT_CALL(cred_man_delegate(), SetRequestCompletionCallback)
       .WillOnce(SaveArg<0>(&completed_callback));
   FocusFormField(webauthn_email_field());
+  Mock::VerifyAndClearExpectations(&cred_man_delegate());
 
-  // Since CredMan didn't handles this focus, inform the autofill bridge.
+  // Since CredMan didn't handle this focus, inform the autofill bridge.
   EXPECT_CALL(provider_bridge(), OnFocusChanged);
   completed_callback.Run(/*success=*/false);
 }
@@ -1982,6 +1983,47 @@ class AndroidAutofillProviderCredManSpoofSheetStatusTest
     AndroidAutofillProviderWithCredManTest::TearDown();
   }
 
+  url::Origin attacker_origin() const {
+    return url::Origin::Create(GURL(kAttackerOrigin));
+  }
+
+  url::Origin victim_origin() const {
+    return url::Origin::Create(GURL(kVictimOrigin));
+  }
+
+  FormData CreateCrossFrameForm(bool attacker_is_webauthn = false) {
+    FormData form = GetFormData({
+        .fields = {{
+                       .host_frame = LocalFrameToken(
+                           attacker_frame_->GetFrameToken().value()),
+                       .autocomplete_attribute =
+                           attacker_is_webauthn ? "webauthn" : "",
+                       .origin = attacker_origin(),
+                   },
+                   {
+                       .host_frame = LocalFrameToken(
+                           main_frame()->GetFrameToken().value()),
+                       .autocomplete_attribute = "webauthn",
+                       .origin = victim_origin(),
+                   }},
+        .url = std::string(kVictimOrigin) + "/form.html",
+        .main_frame_origin = victim_origin(),
+    });
+    android_autofill_manager().OnFormsSeen({form}, {},
+                                           AutofillManagerTestApi::pass_key());
+    return form;
+  }
+
+  void TriggerVictimCredManSheet(const FormData& form,
+                                 const FormFieldData& victim_field) {
+    test_api(autofill_provider())
+        .StartNewSession(&android_autofill_manager(), form, victim_field);
+    android_autofill_manager().OnFocusOnFormField(
+        form, victim_field.global_id(), AutofillManagerTestApi::pass_key());
+    android_autofill_manager().OnAskForValuesToFillTest(
+        form, victim_field.global_id());
+  }
+
  protected:
   raw_ptr<content::RenderFrameHost> attacker_frame_ = nullptr;
 };
@@ -1991,32 +2033,9 @@ class AndroidAutofillProviderCredManSpoofSheetStatusTest
 // (See crbug.com/519485704)
 TEST_F(AndroidAutofillProviderCredManSpoofSheetStatusTest,
        AttackerSubframeNavDoesNotResetCredManSheetStatus) {
-  const url::Origin attacker_origin =
-      url::Origin::Create(GURL(kAttackerOrigin));
-  const url::Origin victim_origin = url::Origin::Create(GURL(kVictimOrigin));
-
-  // Setup form spanning multiple frames.
-  FormData form = GetFormData({
-      .fields = {{
-                     .host_frame = LocalFrameToken(
-                         attacker_frame_->GetFrameToken().value()),
-                     .origin = attacker_origin,
-                 },
-                 {
-                     .host_frame =
-                         LocalFrameToken(main_frame()->GetFrameToken().value()),
-                     .autocomplete_attribute = "webauthn",
-                     .origin = victim_origin,
-                 }},
-      .url = std::string(kVictimOrigin) + "/form.html",
-      .main_frame_origin = victim_origin,
-  });
-
+  FormData form = CreateCrossFrameForm();
   const FormFieldData& attacker_field = form.fields()[0];
   const FormFieldData& victim_field = form.fields()[1];
-
-  android_autofill_manager().OnFormsSeen({form}, {},
-                                         AutofillManagerTestApi::pass_key());
 
   // Attacker frame queries autofill.
   android_autofill_manager().OnAskForValuesToFillTest(
@@ -2042,44 +2061,16 @@ TEST_F(AndroidAutofillProviderCredManSpoofSheetStatusTest,
 // is active. (See crbug.com/534856303)
 TEST_F(AndroidAutofillProviderCredManSpoofSheetStatusTest,
        FormSubmittedWhileCredManShowingDoesNotResetSession) {
-  const url::Origin attacker_origin =
-      url::Origin::Create(GURL(kAttackerOrigin));
-  const url::Origin victim_origin = url::Origin::Create(GURL(kVictimOrigin));
-
-  // Setup form spanning multiple frames.
-  FormData form = GetFormData({
-      .fields = {{
-                     .host_frame = LocalFrameToken(
-                         attacker_frame_->GetFrameToken().value()),
-                     .origin = attacker_origin,
-                 },
-                 {
-                     .host_frame =
-                         LocalFrameToken(main_frame()->GetFrameToken().value()),
-                     .autocomplete_attribute = "webauthn",
-                     .origin = victim_origin,
-                 }},
-      .url = std::string(kVictimOrigin) + "/form.html",
-      .main_frame_origin = victim_origin,
-  });
-
+  FormData form = CreateCrossFrameForm();
   const FormFieldData& attacker_field = form.fields()[0];
   const FormFieldData& victim_field = form.fields()[1];
 
-  android_autofill_manager().OnFormsSeen({form}, {},
-                                         AutofillManagerTestApi::pass_key());
-
   // Victim frame queries and focuses, starting session and triggering CredMan
   // sheet.
-  test_api(autofill_provider())
-      .StartNewSession(&android_autofill_manager(), form, victim_field);
-  android_autofill_manager().OnFocusOnFormField(
-      form, victim_field.global_id(), AutofillManagerTestApi::pass_key());
-  android_autofill_manager().OnAskForValuesToFillTest(form,
-                                                      victim_field.global_id());
+  TriggerVictimCredManSheet(form, victim_field);
   ASSERT_TRUE(test_api(autofill_provider()).is_credman_sheet_showing());
   ASSERT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
-            victim_origin);
+            victim_origin());
 
   // Attacker subframe attempts to submit form while CredMan is active.
   EXPECT_CALL(provider_bridge(), OnFormSubmitted).Times(0);
@@ -2090,14 +2081,14 @@ TEST_F(AndroidAutofillProviderCredManSpoofSheetStatusTest,
   // Verify sheet status is still showing and session was not reset.
   EXPECT_TRUE(test_api(autofill_provider()).is_credman_sheet_showing());
   EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
-            victim_origin);
+            victim_origin());
 
   // Subsequent AskForValuesToFill from attacker frame should be ignored while
   // CredMan is showing, preventing origin poisoning.
   android_autofill_manager().OnAskForValuesToFillTest(
       form, attacker_field.global_id());
   EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
-            victim_origin);
+            victim_origin());
 }
 
 // Tests that an uncommitted navigation in the frame hosting the CredMan sheet
@@ -2105,44 +2096,16 @@ TEST_F(AndroidAutofillProviderCredManSpoofSheetStatusTest,
 // (See crbug.com/573266324)
 TEST_F(AndroidAutofillProviderCredManSpoofSheetStatusTest,
        UncommittedNavDoesNotResetCredManSheetStatus) {
-  const url::Origin attacker_origin =
-      url::Origin::Create(GURL(kAttackerOrigin));
-  const url::Origin victim_origin = url::Origin::Create(GURL(kVictimOrigin));
-
-  // Setup form spanning multiple frames.
-  FormData form = GetFormData({
-      .fields = {{
-                     .host_frame = LocalFrameToken(
-                         attacker_frame_->GetFrameToken().value()),
-                     .origin = attacker_origin,
-                 },
-                 {
-                     .host_frame =
-                         LocalFrameToken(main_frame()->GetFrameToken().value()),
-                     .autocomplete_attribute = "webauthn",
-                     .origin = victim_origin,
-                 }},
-      .url = std::string(kVictimOrigin) + "/form.html",
-      .main_frame_origin = victim_origin,
-  });
-
+  FormData form = CreateCrossFrameForm();
   const FormFieldData& attacker_field = form.fields()[0];
   const FormFieldData& victim_field = form.fields()[1];
 
-  android_autofill_manager().OnFormsSeen({form}, {},
-                                         AutofillManagerTestApi::pass_key());
-
   // Victim frame queries and focuses, starting session and triggering CredMan
   // sheet.
-  test_api(autofill_provider())
-      .StartNewSession(&android_autofill_manager(), form, victim_field);
-  android_autofill_manager().OnFocusOnFormField(
-      form, victim_field.global_id(), AutofillManagerTestApi::pass_key());
-  android_autofill_manager().OnAskForValuesToFillTest(form,
-                                                      victim_field.global_id());
+  TriggerVictimCredManSheet(form, victim_field);
   ASSERT_TRUE(test_api(autofill_provider()).is_credman_sheet_showing());
   ASSERT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
-            victim_origin);
+            victim_origin());
 
   // Start and abort a navigation on the main frame (which hosts the CredMan
   // sheet) so that DidFinishNavigation() runs with HasCommitted() == false.
@@ -2155,14 +2118,80 @@ TEST_F(AndroidAutofillProviderCredManSpoofSheetStatusTest,
   // Verify sheet status is still showing and session origin is preserved.
   EXPECT_TRUE(test_api(autofill_provider()).is_credman_sheet_showing());
   EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
-            victim_origin);
+            victim_origin());
 
   // Subsequent AskForValuesToFill from attacker frame should be ignored while
   // CredMan is showing, preventing origin poisoning.
   android_autofill_manager().OnAskForValuesToFillTest(
       form, attacker_field.global_id());
   EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
-            victim_origin);
+            victim_origin());
+}
+
+// Tests that a stale completion callback from another frame (that previously
+// opened and closed a CredMan sheet) cannot reset the CredMan sheet status
+// while the victim frame's CredMan sheet is showing (see crbug.com/578671631).
+TEST_F(AndroidAutofillProviderCredManSpoofSheetStatusTest,
+       StaleCredManCallbackFromOtherFrameDoesNotResetCredManSheetStatus) {
+  auto attacker_mock_delegate =
+      std::make_unique<NiceMock<webauthn::MockWebAuthnCredManDelegate>>();
+  auto* attacker_delegate = attacker_mock_delegate.get();
+  ON_CALL(*attacker_delegate, HasPasskeys())
+      .WillByDefault(
+          Return(webauthn::WebAuthnCredManDelegate::State::kHasPasskeys));
+  webauthn::test_api(web_authn_delegate_factory())
+      .EmplaceDelegateForFrame(attacker_frame_,
+                               std::move(attacker_mock_delegate));
+
+  FormData form = CreateCrossFrameForm(/*attacker_is_webauthn=*/true);
+  const FormFieldData& attacker_field = form.fields()[0];
+  const FormFieldData& victim_field = form.fields()[1];
+
+  // 1. Attacker frame focuses its webauthn field, opening and then closing its
+  // own CredMan sheet.
+  base::RepeatingCallback<void(bool)> attacker_completion_callback;
+  EXPECT_CALL(*attacker_delegate, SetRequestCompletionCallback)
+      .WillOnce(SaveArg<0>(&attacker_completion_callback));
+  android_autofill_manager().OnFocusOnFormField(
+      form, attacker_field.global_id(), AutofillManagerTestApi::pass_key());
+  ASSERT_TRUE(test_api(autofill_provider()).is_credman_sheet_showing());
+  Mock::VerifyAndClearExpectations(attacker_delegate);
+
+  // Closing the sheet must scrub the completion callback on the attacker's
+  // delegate.
+  base::RepeatingCallback<void(bool)> scrubbed_callback;
+  EXPECT_CALL(*attacker_delegate, SetRequestCompletionCallback)
+      .WillOnce(SaveArg<0>(&scrubbed_callback));
+  attacker_completion_callback.Run(/*success=*/false);
+  ASSERT_FALSE(test_api(autofill_provider()).is_credman_sheet_showing());
+  EXPECT_NE(scrubbed_callback, attacker_completion_callback);
+  Mock::VerifyAndClearExpectations(attacker_delegate);
+
+  // 2. Reset the provider (e.g. via form submission) so `credman_sheet_status_`
+  // returns to `kNotShown`.
+  test_api(autofill_provider())
+      .StartNewSession(&android_autofill_manager(), form, attacker_field);
+  android_autofill_manager().OnFormSubmitted(
+      form, mojom::SubmissionSource::FORM_SUBMISSION,
+      AutofillManagerTestApi::pass_key());
+
+  // 3. Victim frame starts a session and triggers its own CredMan sheet.
+  TriggerVictimCredManSheet(form, victim_field);
+  ASSERT_TRUE(test_api(autofill_provider()).is_credman_sheet_showing());
+  ASSERT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
+            victim_origin());
+
+  // 4. Invoking the stale completion callback from the attacker frame must be
+  // ignored while the victim frame owns the active CredMan sheet.
+  attacker_completion_callback.Run(/*success=*/false);
+  EXPECT_TRUE(test_api(autofill_provider()).is_credman_sheet_showing());
+
+  // Subsequent AskForValuesToFill from the attacker frame must still be blocked
+  // while CredMan is showing, preventing origin poisoning.
+  android_autofill_manager().OnAskForValuesToFillTest(
+      form, attacker_field.global_id());
+  EXPECT_EQ(test_api(autofill_provider()).last_focused_field_origin(),
+            victim_origin());
 }
 
 using AndroidAutofillProviderPrefillRequestTest = AndroidAutofillProviderTest;

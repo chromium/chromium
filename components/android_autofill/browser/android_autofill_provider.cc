@@ -12,6 +12,7 @@
 #include "base/android/jni_string.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
@@ -164,18 +165,11 @@ void AndroidAutofillProvider::DidFinishNavigation(
 
   if (credman_sheet_rfh_id_ ==
       navigation_handle->GetPreviousRenderFrameHostId()) {
-    if (content::RenderFrameHost* rfh =
-            content::RenderFrameHost::FromID(credman_sheet_rfh_id_)) {
-      if (WebAuthnCredManDelegate* delegate = GetCredManDelegate(rfh)) {
-        // Clear the callback to prevent a race condition where the platform UI
-        // dismissal (triggered by navigation) calls back and overwrites the
-        // `credman_sheet_status_` to `kClosed` after we reset it to
-        // `kNotShown`.
-        delegate->SetRequestCompletionCallback(base::DoNothing());
-      }
-    }
+    // Clear the callback to prevent a race condition where the platform UI
+    // dismissal (triggered by navigation) calls back and overwrites the
+    // `credman_sheet_status_` to `kClosed` after we reset it to `kNotShown`.
+    ClearCredManCompletionCallback();
     credman_sheet_status_ = CredManBottomSheetLifecycle::kNotShown;
-    credman_sheet_rfh_id_ = {};
   }
 }
 
@@ -797,8 +791,9 @@ bool AndroidAutofillProvider::ShowCredManSheet(
     credman_sheet_rfh_id_ = rfh->GetGlobalId();
     delegate->SetRequestCompletionCallback(base::BindRepeating(
         &AndroidAutofillProvider::OnCredManUiClosed,
-        weak_ptr_factory_.GetWeakPtr(), std::move(form_id),
-        std::move(field_to_focus), delegate->HasPasskeys()));
+        weak_ptr_factory_.GetWeakPtr(), credman_sheet_rfh_id_,
+        std::move(form_id), std::move(field_to_focus),
+        delegate->HasPasskeys()));
     delegate->TriggerCredManUi(RequestPasswords(false));
     return true;
   }
@@ -840,15 +835,7 @@ gfx::RectF AndroidAutofillProvider::ToClientAreaBound(
 }
 
 void AndroidAutofillProvider::Reset() {
-  if (credman_sheet_rfh_id_) {
-    if (content::RenderFrameHost* rfh =
-            content::RenderFrameHost::FromID(credman_sheet_rfh_id_)) {
-      if (WebAuthnCredManDelegate* delegate = GetCredManDelegate(rfh)) {
-        delegate->SetRequestCompletionCallback(base::DoNothing());
-      }
-    }
-    credman_sheet_rfh_id_ = {};
-  }
+  ClearCredManCompletionCallback();
 
   // Clear all session-specific state.
   session_state_.reset();
@@ -992,13 +979,33 @@ AndroidAutofillProvider::CachedData::operator=(CachedData&&) = default;
 
 AndroidAutofillProvider::CachedData::~CachedData() = default;
 
+void AndroidAutofillProvider::ClearCredManCompletionCallback() {
+  if (!credman_sheet_rfh_id_) {
+    return;
+  }
+  if (content::RenderFrameHost* rfh =
+          content::RenderFrameHost::FromID(credman_sheet_rfh_id_)) {
+    if (WebAuthnCredManDelegate* delegate = GetCredManDelegate(rfh)) {
+      delegate->SetRequestCompletionCallback(base::DoNothing());
+    }
+  }
+  credman_sheet_rfh_id_ = {};
+}
+
 void AndroidAutofillProvider::OnCredManUiClosed(
+    content::GlobalRenderFrameHostId rfh_id,
     FormGlobalId form_id,
     std::optional<FieldInfo> field_to_focus,
     WebAuthnCredManDelegate::State has_passkeys,
     bool success) {
+  // Ignore stale callbacks from a frame whose sheet was already closed or
+  // reset.
+  if (credman_sheet_status_ != CredManBottomSheetLifecycle::kIsShowing ||
+      credman_sheet_rfh_id_ != rfh_id) {
+    return;
+  }
   credman_sheet_status_ = CredManBottomSheetLifecycle::kClosed;
-  credman_sheet_rfh_id_ = {};
+  ClearCredManCompletionCallback();
   if (keyboard_suppressor_) {
     keyboard_suppressor_->Unsuppress();
   }

@@ -258,11 +258,16 @@ class AndroidAutofillProvider : public AutofillProvider,
   // TODO(crbug.com/40284788): Remove once a fix is landed on the renderer side.
   void SetBottomSheetShownOff();
 
+  // Clears the completion callback on the `WebAuthnCredManDelegate` of
+  // `credman_sheet_rfh_id_` and resets `credman_sheet_rfh_id_`.
+  void ClearCredManCompletionCallback();
+
   // Stops the keyboard suppression. Called when the CredMan UI was closed. If
   // the UI was dismissed without selecting a passkey, `success` will be false.
   // If a `field_to_focus` is given and CredMan wasn't able to sign the
   // user in, attempt to continue an earlier attempt to focus a field.
   void OnCredManUiClosed(
+      content::GlobalRenderFrameHostId rfh_id,
       FormGlobalId form_id,
       std::optional<AndroidAutofillProviderBridge::FieldInfo> field_to_focus,
       webauthn::WebAuthnCredManDelegate::State has_passkeys,
@@ -341,7 +346,8 @@ class AndroidAutofillProvider : public AutofillProvider,
       CredManBottomSheetLifecycle::kNotShown;
 
   // The RenderFrameHost ID of the frame that is currently showing the CredMan
-  // sheet. Used to reset the delegate callback on the correct frame.
+  // sheet. Used to reset the delegate callback on the correct frame and to
+  // ignore completion callbacks from frames that no longer own the sheet.
   content::GlobalRenderFrameHostId credman_sheet_rfh_id_;
 
   // This is used by the keyboard suppressor. We update it with the result of
