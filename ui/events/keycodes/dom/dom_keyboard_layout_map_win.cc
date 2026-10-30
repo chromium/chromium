@@ -13,6 +13,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/dom_keyboard_layout_map_base.h"
@@ -40,7 +41,8 @@ class DomKeyboardLayoutMapWin : public DomKeyboardLayoutMapBase {
 
   // Set of keyboard layout handles provided by the operating system.
   // The handles stored do not need to be released when the vector is destroyed.
-  std::vector<HKL> keyboard_layout_handles_;
+  // RAW_PTR_EXCLUSION: Passed as a contiguous HKL array to external APIs.
+  RAW_PTR_EXCLUSION std::vector<HKL> keyboard_layout_handles_;
 };
 
 DomKeyboardLayoutMapWin::DomKeyboardLayoutMapWin() = default;
