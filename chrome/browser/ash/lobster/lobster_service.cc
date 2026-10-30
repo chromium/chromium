@@ -27,7 +27,6 @@
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
-#include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "components/manta/snapper_provider.h"
 #include "ui/display/screen.h"
@@ -41,11 +40,10 @@ constexpr base::TimeDelta kAnnouncementDelay = base::Milliseconds(200);
 }  // namespace
 
 LobsterService::LobsterService(
-    std::unique_ptr<manta::SnapperProvider> snapper_provider,
+    variations::VariationsService* variations_service,
     Profile* profile,
     signin::IdentityManager* identity_manager,
-    specialized_features::FeatureAccessChecker::VariationsServiceCallback
-        variations_service_callback)
+    std::unique_ptr<manta::SnapperProvider> snapper_provider)
     : profile_(profile),
       // `LobsterService` is only created for regular profiles as specified in
       // the `LobsterServiceProvider` constructor, so the below call should
@@ -58,9 +56,9 @@ LobsterService::LobsterService(
               &candidate_id_generator_))),
       resizer_(std::make_unique<LobsterCandidateResizer>(image_fetcher_.get())),
       system_state_provider_(std::make_unique<LobsterSystemStateProviderImpl>(
+          variations_service,
           profile->GetPrefs(),
           identity_manager,
-          std::move(variations_service_callback),
           /*is_in_demo_mode=*/ash::demo_mode::IsDeviceInDemoMode())),
       announcer_(
           std::make_unique<LobsterLiveRegionAnnouncer>(kAnnouncementViewName)) {

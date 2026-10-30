@@ -13,6 +13,7 @@
 #include "ash/public/cpp/lobster/lobster_enums.h"
 #include "ash/public/cpp/lobster/lobster_system_state.h"
 #include "ash/public/cpp/lobster/lobster_text_input_context.h"
+#include "base/check.h"
 #include "base/containers/fixed_flat_set.h"
 #include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
@@ -111,17 +112,19 @@ specialized_features::FeatureAccessConfig CreateFeatureAccessConfig() {
 }  // namespace
 
 LobsterSystemStateProviderImpl::LobsterSystemStateProviderImpl(
+    variations::VariationsService* variations_service,
     PrefService* pref,
     signin::IdentityManager* identity_manager,
-    specialized_features::FeatureAccessChecker::VariationsServiceCallback
-        variations_service_callback,
     bool is_in_demo_mode)
     : pref_(pref),
-      access_checker_(CreateFeatureAccessConfig(),
+      access_checker_(variations_service,
                       pref_,
                       identity_manager,
-                      std::move(variations_service_callback)),
-      is_in_demo_mode_(is_in_demo_mode) {}
+                      CreateFeatureAccessConfig()),
+      is_in_demo_mode_(is_in_demo_mode) {
+  CHECK(pref_);
+  CHECK(identity_manager);
+}
 
 LobsterSystemStateProviderImpl::~LobsterSystemStateProviderImpl() = default;
 

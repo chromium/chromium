@@ -15,7 +15,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/manta/manta_service.h"
 #include "components/manta/snapper_provider.h"
-#include "components/variations/service/variations_service.h"
 #include "content/public/browser/browser_context.h"
 
 LobsterService* LobsterServiceProvider::GetForProfile(Profile* profile) {
@@ -46,21 +45,16 @@ LobsterServiceProvider::~LobsterServiceProvider() = default;
 
 std::unique_ptr<KeyedService> LobsterServiceProvider::BuildInstanceFor(
     content::BrowserContext* context) {
-  // Exceptionally access g_browser_process as this class lives in
-  // base::NoDestructor.
-  // NOTE: VariationsService does not outlive a ProfileKeyedService, so we need
-  // the callback to avoid a dangling pointer.
-  auto variations_service_callback = base::BindRepeating(
-      []() { return g_browser_process->variations_service(); });
-
   Profile* profile = Profile::FromBrowserContext(context);
   std::unique_ptr<manta::SnapperProvider> snapper_provider =
       manta::MantaServiceFactory::GetForProfile(profile)
           ->CreateSnapperProvider();
+  // Exceptionally access g_browser_process as this class lives in
+  // base::NoDestructor.
   return std::make_unique<LobsterService>(
-      std::move(snapper_provider), profile,
+      g_browser_process->variations_service(), profile,
       IdentityManagerFactory::GetForProfile(profile),
-      std::move(variations_service_callback));
+      std::move(snapper_provider));
 }
 
 std::unique_ptr<KeyedService>

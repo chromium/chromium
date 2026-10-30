@@ -23,14 +23,19 @@ namespace display {
 enum class TabletState;
 }  // namespace display
 
+namespace variations {
+class VariationsService;
+}  // namespace variations
+
 class LobsterSystemStateProviderImpl : public LobsterSystemStateProvider,
                                        public display::DisplayObserver {
  public:
+  // `variations_service`, `pref`, and `identity_manager` must not be null.
+  // `pref` and `identity_manager` must outlive `this`.
   LobsterSystemStateProviderImpl(
+      variations::VariationsService* variations_service,
       PrefService* pref,
       signin::IdentityManager* identity_manager,
-      specialized_features::FeatureAccessChecker::VariationsServiceCallback
-          variations_service_callback,
       bool is_in_demo_mode);
 
   ~LobsterSystemStateProviderImpl() override;

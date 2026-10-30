@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/strings/string_view_util.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
@@ -30,18 +31,28 @@ FeatureAccessConfig& FeatureAccessConfig::operator=(FeatureAccessConfig&&) =
     default;
 
 FeatureAccessChecker::FeatureAccessChecker(
-    FeatureAccessConfig config,
+    variations::VariationsService* variations_service,
     PrefService* prefs,
     signin::IdentityManager* identity_manager,
-    VariationsServiceCallback variations_service_callback)
-    : config_(config),
+    FeatureAccessConfig config)
+    : variations_service_(variations_service),
       prefs_(prefs),
       identity_manager_(identity_manager),
-      variations_service_callback_(std::move(variations_service_callback)) {}
+      config_(std::move(config)) {
+  CHECK(variations_service_);
+  variations_service_observation_.Observe(variations_service_);
+}
 
 FeatureAccessChecker::FeatureAccessChecker() = default;
 
 FeatureAccessChecker::~FeatureAccessChecker() = default;
+
+void FeatureAccessChecker::OnVariationsServiceDestroyed() {
+  // `VariationsService` is destroyed before `KeyedService`s during
+  // `BrowserProcessImpl::StartTearDown()`.
+  variations_service_observation_.Reset();
+  variations_service_ = nullptr;
+}
 
 FeatureAccessFailureSet FeatureAccessChecker::Check() const {
   FeatureAccessFailureSet failures;
@@ -115,13 +126,9 @@ FeatureAccessFailureSet FeatureAccessChecker::Check() const {
   }
 
   if (!config_.country_codes.empty()) {
-    variations::VariationsService* variations_service =
-        variations_service_callback_.is_null()
-            ? nullptr
-            : variations_service_callback_.Run();
-    if (variations_service == nullptr ||
-        !std::ranges::contains(config_.country_codes,
-                               variations_service->GetLatestCountry())) {
+    CHECK(variations_service_);
+    if (!std::ranges::contains(config_.country_codes,
+                               variations_service_->GetLatestCountry())) {
       failures.Put(kCountryCheckFailed);
     }
   }

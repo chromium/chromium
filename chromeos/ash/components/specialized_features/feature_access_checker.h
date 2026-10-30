@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -116,41 +117,42 @@ struct COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
 
 // Creates a class to check different dependencies for specialized features.
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SPECIALIZED_FEATURES)
-    FeatureAccessChecker {
+    FeatureAccessChecker : public variations::VariationsService::Observer {
  public:
-  using VariationsServiceCallback =
-      base::RepeatingCallback<variations::VariationsService*()>;
-
   // The config determines which dependencies to check.
-  // The following objects should not be destroyed before this class is
-  // destroyed:
-  // - prefs
-  // - identity_manager
-  // If any checks require the above dependency and it is destroy, the check
-  // will return a failure.
-  FeatureAccessChecker(FeatureAccessConfig config,
+  // `variations_service` must not be null.
+  // If any checks require `prefs` or `identity_manager` and it is null, the
+  // check will return a failure. `prefs` and `identity_manager` must not be
+  // destroyed before this class is destroyed.
+  FeatureAccessChecker(variations::VariationsService* variations_service,
                        PrefService* prefs,
                        signin::IdentityManager* identity_manager,
-                       VariationsServiceCallback variations_service_callback);
+                       FeatureAccessConfig config);
 
   FeatureAccessChecker(const FeatureAccessChecker&) = delete;
   FeatureAccessChecker& operator=(const FeatureAccessChecker&) = delete;
-  virtual ~FeatureAccessChecker();
+  ~FeatureAccessChecker() override;
 
   // Uses the set config and dependencies to check. Returns a list of errors.
   // For details of errors, please refer the comments of FeatureAccessConfig.
   virtual FeatureAccessFailureSet Check() const;
+
+  // variations::VariationsService::Observer:
+  void OnVariationsServiceDestroyed() override;
 
  protected:
   // Constructor for mock subclass.
   FeatureAccessChecker();
 
  private:
-  FeatureAccessConfig config_;
   // The following raw_ptrs are not owned by this class.
-  raw_ptr<const PrefService> prefs_;
-  raw_ptr<const signin::IdentityManager> identity_manager_;
-  VariationsServiceCallback variations_service_callback_;
+  raw_ptr<variations::VariationsService> variations_service_ = nullptr;
+  raw_ptr<const PrefService> prefs_ = nullptr;
+  raw_ptr<const signin::IdentityManager> identity_manager_ = nullptr;
+  FeatureAccessConfig config_;
+  base::ScopedObservation<variations::VariationsService,
+                          variations::VariationsService::Observer>
+      variations_service_observation_{this};
 };
 
 }  // namespace specialized_features

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/public/cpp/scanner/scanner_profile_scoped_delegate.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromeos/ash/components/specialized_features/feature_access_checker.h"
@@ -33,6 +32,10 @@ namespace signin {
 class IdentityManager;
 }
 
+namespace variations {
+class VariationsService;
+}  // namespace variations
+
 // A ProfileKeyedService for the Scanner feature. This is a top level class
 // that is scoped to a particular profile, and provides access to that profile
 // instance to all sub classes that require a valid profile instance to
@@ -40,13 +43,14 @@ class IdentityManager;
 class ScannerKeyedService : public ash::ScannerProfileScopedDelegate,
                             public KeyedService {
  public:
+  // `variations_service`, `pref_service`, and `identity_manager` must not be
+  // null. `pref_service` and `identity_manager` must outlive `this`.
   ScannerKeyedService(
+      variations::VariationsService* variations_service,
       PrefService* pref_service,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<manta::ScannerProvider> scanner_provider,
-      specialized_features::FeatureAccessChecker::VariationsServiceCallback
-          variations_service_callback);
+      std::unique_ptr<manta::ScannerProvider> scanner_provider);
   ScannerKeyedService(const ScannerKeyedService&) = delete;
   ScannerKeyedService& operator=(const ScannerKeyedService&) = delete;
   ~ScannerKeyedService() override;

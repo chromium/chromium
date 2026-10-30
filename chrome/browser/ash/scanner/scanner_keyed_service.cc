@@ -12,11 +12,11 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/generative_ai_country_restrictions.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
@@ -103,18 +103,19 @@ specialized_features::FeatureAccessConfig CreateFeatureAccessConfig() {
 }  // namespace
 
 ScannerKeyedService::ScannerKeyedService(
+    variations::VariationsService* variations_service,
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::unique_ptr<manta::ScannerProvider> scanner_provider,
-    specialized_features::FeatureAccessChecker::VariationsServiceCallback
-        variations_service_callback)
+    std::unique_ptr<manta::ScannerProvider> scanner_provider)
     : identity_manager_(identity_manager),
-      access_checker_(CreateFeatureAccessConfig(),
+      access_checker_(variations_service,
                       /*prefs=*/pref_service,
                       /*identity_manager=*/identity_manager_,
-                      std::move(variations_service_callback)),
+                      CreateFeatureAccessConfig()),
       scanner_provider_(std::move(scanner_provider)) {
+  CHECK(pref_service);
+  CHECK(identity_manager_);
   if (identity_manager_ != nullptr) {
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(

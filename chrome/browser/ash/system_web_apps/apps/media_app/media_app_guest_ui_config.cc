@@ -11,7 +11,6 @@
 #include "ash/constants/chrome_pref_names.h"
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "base/check_deref.h"
-#include "base/functional/bind.h"
 #include "base/i18n/language_tag.h"
 #include "base/memory/raw_ref.h"
 #include "base/version.h"
@@ -177,11 +176,10 @@ ChromeMediaAppGuestUIDelegate::GetFeatureAccessChecker(
   // guest sessions substitute their off-the-record profile here too, but the
   // AccountId is only annotated on the original profile.
   return std::make_unique<specialized_features::FeatureAccessChecker>(
-      std::move(config), profile->GetPrefs(),
+      g_browser_process->variations_service(), profile->GetPrefs(),
       ash::IdentityManagerProvider::Get().Find(CHECK_DEREF(
           ash::AnnotatedAccountId::Get(profile->GetOriginalProfile()))),
-      base::BindRepeating(
-          []() { return g_browser_process->variations_service(); }));
+      std::move(config));
 }
 
 PrefService* ChromeMediaAppGuestUIDelegate::GetPrefService(
