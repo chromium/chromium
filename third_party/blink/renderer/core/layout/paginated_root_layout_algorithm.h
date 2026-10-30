@@ -132,6 +132,8 @@ class CORE_EXPORT PaginatedRootLayoutAlgorithm
       bool* needs_total_page_count);
 
  private:
+  const LayoutResult* LayoutInternal();
+
   PageContainerResult LayoutPageContainer(
       wtf_size_t page_index,
       wtf_size_t total_page_count,
@@ -139,7 +141,8 @@ class CORE_EXPORT PaginatedRootLayoutAlgorithm
       const CountersAttachmentContext& counters_context,
       const PageAreaLayoutParams& params,
       const PhysicalBoxFragment* existing_page_container = nullptr) const {
-    return LayoutPageContainer(Node(), GetConstraintSpace(), page_index,
+    return LayoutPageContainer(Node(), GetConstraintSpace(),
+                               &container_builder_, page_index,
                                total_page_count, page_name, counters_context,
                                params, existing_page_container);
   }
@@ -147,6 +150,7 @@ class CORE_EXPORT PaginatedRootLayoutAlgorithm
   static PageContainerResult LayoutPageContainer(
       const BlockNode& root_node,
       const ConstraintSpace& parent_space,
+      const BoxFragmentBuilder* builder,
       wtf_size_t page_index,
       wtf_size_t total_page_count,
       const AtomicString& page_name,

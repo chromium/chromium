@@ -72,6 +72,9 @@ LogicalSize CalculateContainingBlockSize(const BoxFragmentBuilder& builder,
   if (InvolvedInBlockFragmentation(builder) &&
       RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
     if (builder.IsFragmentainerBoxType()) {
+      // The containing block size of a page area does not depend on content in
+      // the document, and is already calculated correctly.
+      //
       // A column box does not act as containing block for OOFs, but still runs
       // the OOF step to propagate OOFs to ancestors.
       return container_size;

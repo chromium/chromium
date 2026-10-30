@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/oof_positioned_node.h"
+#include "third_party/blink/renderer/core/layout/pagination_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/space_utils.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -126,8 +127,10 @@ bool BuildFragmentedOofContainerTreeForNode(
   }
 
   const FragmentedOofInfo& info = source->GetFragmentedOofInfo();
+  bool is_paginated_root = containing_block.IsLayoutView();
   return info.WasDiscoveredTooLate() ||
-         containing_block_size != info.ContainingBlockSizeUsed();
+         (!is_paginated_root &&
+          containing_block_size != info.ContainingBlockSizeUsed());
 }
 
 }  // anonymous namespace
@@ -1660,10 +1663,12 @@ bool BuildFragmentedOofContainerTree(const LayoutResult& layout_result,
       needs_relayout |= BuildFragmentedOofContainerTreeForNode(
           logical_descendant, source, fragmented_oof_container_root);
     } else {
-      // TODO(crbug.com/40267498): This should currently not happen, but we need
-      // to handle this situation when adding support for this to paginated
-      // layout.
-      NOTREACHED();
+      // This happens when the containing block of an OOF is the initial
+      // containing block (only for pagination). These will always have the
+      // right dimensions in the first layout pass, but in case we need another
+      // pass because of something else, they need to be in the list, so that
+      // they get picked up and laid out during layout.
+      fragmented_oof_container_root->AddOofPositionedNode(logical_descendant);
     }
   }
 
