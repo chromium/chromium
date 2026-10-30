@@ -92,14 +92,23 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+#include <android/hardware_buffer.h>
+#include <dlfcn.h>
+
+#include "base/android/android_info.h"
 #include "base/android/meminfo_dump_provider.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/tracing/common/graphics_memory_dump_provider_android.h"
+#include "media/base/android/media_codec_bridge_impl.h"
+#include "sandbox/linux/seccomp-bpf-helpers/seccomp_starter_android.h"
 #include "sandbox/linux/services/thread_helpers.h"  // nogncheck
 #include "sandbox/policy/features.h"
+#include "sandbox/policy/linux/bpf_gpu_policy_android.h"
 #include "sandbox/policy/linux/landlock_gpu_policy_android.h"
 #include "sandbox/policy/sandbox_type.h"
+#include "sandbox/policy/switches.h"
+#include "sandbox/sandbox_buildflags.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -142,6 +151,9 @@ bool StartSandboxLinux(gpu::GpuWatchdogThread*,
                        const gpu::GpuPreferences&);
 #elif BUILDFLAG(IS_ANDROID)
 bool StartSandboxAndroid(gpu::GpuWatchdogThread*);
+#if BUILDFLAG(USE_SECCOMP_BPF)
+bool StartSeccompSandboxAndroid();
+#endif
 #elif BUILDFLAG(IS_WIN)
 bool StartSandboxWindows(const sandbox::SandboxInterfaceInfo*);
 #endif
@@ -213,11 +225,24 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
 #elif BUILDFLAG(IS_MAC)
     return sandbox::Seatbelt::IsSandboxed();
 #elif BUILDFLAG(IS_ANDROID)
+    bool landlock_res = true;
     if (base::FeatureList::IsEnabled(
             sandbox::policy::features::kAndroidGpuSandbox)) {
-      return StartSandboxAndroid(watchdog_thread);
+      landlock_res = StartSandboxAndroid(watchdog_thread);
     }
-    return false;
+    bool seccomp_res = true;
+#if BUILDFLAG(USE_SECCOMP_BPF)
+    const base::CommandLine& command_line =
+        *base::CommandLine::ForCurrentProcess();
+    if (!command_line.HasSwitch(sandbox::policy::switches::kNoSandbox) &&
+        !command_line.HasSwitch(
+            sandbox::policy::switches::kDisableSeccompFilterSandbox) &&
+        base::FeatureList::IsEnabled(
+            sandbox::policy::features::kSeccompFilterGpuSandbox)) {
+      seccomp_res = StartSeccompSandboxAndroid();
+    }
+#endif
+    return landlock_res && seccomp_res;
 #else
     return false;
 #endif
@@ -603,6 +628,51 @@ bool StartSandboxAndroid(gpu::GpuWatchdogThread* watchdog_thread) {
 
   return res;
 }
+
+#if BUILDFLAG(USE_SECCOMP_BPF)
+// Once the Seccomp-BPF sandbox is installed, mprotect() and mmap() with
+// PROT_EXEC are disallowed, so dynamic libraries can no longer be loaded.
+// Warm up any Android libraries that are lazily loaded via dlopen() at
+// runtime.
+void WarmUpSeccompSandbox() {
+  // 1. Allocate and release a 1x1 AHardwareBuffer to ensure the Gralloc
+  //    passthrough HAL library is loaded by libui.so / libvndksupport.so.
+  AHardwareBuffer_Desc ahb_desc = {};
+  ahb_desc.width = 1;
+  ahb_desc.height = 1;
+  ahb_desc.layers = 1;
+  ahb_desc.format = AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM;
+  ahb_desc.usage = AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE;
+  AHardwareBuffer* ahb = nullptr;
+  if (AHardwareBuffer_allocate(&ahb_desc, &ahb) == 0 && ahb) {
+    AHardwareBuffer_release(ahb);
+  }
+
+  // 2. Load the ApexCodecs library and create/release a dummy MediaCodec video
+  //    decoder to ensure libcodec2_client.so and Codec2 client stores are
+  //    initialized.
+  dlopen("libcom.android.media.swcodec.apexcodecs.so", RTLD_NOW);
+  media::VideoCodecConfig codec_config;
+  codec_config.codec = media::VideoCodec::kVP8;
+  codec_config.profile = media::VP8PROFILE_ANY;
+  codec_config.initial_expected_coded_size = gfx::Size(64, 64);
+  std::ignore = media::MediaCodecBridgeImpl::CreateVideoDecoder(codec_config);
+}
+
+bool StartSeccompSandboxAndroid() {
+  WarmUpSeccompSandbox();
+
+  sandbox::SeccompStarterAndroid starter(
+      base::android::android_info::sdk_int());
+  starter.set_policy(
+      std::make_unique<sandbox::policy::GpuProcessPolicyAndroid>());
+  if (starter.StartSandbox()) {
+    LOG(WARNING) << "Seccomp-BPF sandbox enabled for Android GPU process.";
+    return true;
+  }
+  return false;
+}
+#endif  // BUILDFLAG(USE_SECCOMP_BPF)
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)

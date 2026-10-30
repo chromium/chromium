@@ -14351,6 +14351,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kFREStringChanges,
                                     kFREStringChangesVariations,
                                     "FREStringChanges")},
+
+    {"seccomp-filter-gpu-sandbox",
+     flag_descriptions::kSeccompFilterGpuSandboxName,
+     flag_descriptions::kSeccompFilterGpuSandboxDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(sandbox::policy::features::kSeccompFilterGpuSandbox)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"persistent-widget-api", flag_descriptions::kPersistentWidgetAPIName,

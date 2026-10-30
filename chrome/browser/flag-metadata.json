@@ -8943,6 +8943,11 @@
     "expiry_milestone": 180
   },
   {
+    "name": "seccomp-filter-gpu-sandbox",
+    "owners": [ "kbr@chromium.org", "//sandbox/OWNERS" ],
+    "expiry_milestone": 179
+  },
+  {
     "name": "secure-payment-confirmation-credential-discovery-mode",
     "owners": [ "smcgruer@chromium.org", "chrome-payments-eng@google.com"],
     "expiry_milestone": 170
