@@ -1040,7 +1040,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(
                     ANDROID_PROGRESS_BAR_CANCEL_ON_WINDOW_INVISIBLE,
                     /* defaultValue= */ false,
-                    /* defaultValueInTests= */ false);
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sAndroidProgressBarVisualUpdate =
             newCachedFlag(
                     ANDROID_PROGRESS_BAR_VISUAL_UPDATE,

@@ -716,6 +716,21 @@
             ]
         }
     ],
+    "AndroidProgressBarCancelOnWindowInvisible": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidProgressBarCancelOnWindowInvisible"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidReaderModeFastFollows": [
         {
             "platforms": [
