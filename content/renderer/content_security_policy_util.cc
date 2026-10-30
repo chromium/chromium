@@ -59,9 +59,9 @@ blink::WebCSPSourceList ToWebCSPSourceList(
     const network::mojom::CSPSourceListPtr& source_list) {
   return {base::ToVector(source_list->sources, ToWebCSPSource),
           ToVectorOfWebStrings(source_list->nonces),
-          base::ToVector(source_list->hashes),
-          base::ToVector(source_list->url_hashes),
-          base::ToVector(source_list->eval_hashes),
+          source_list->hashes,
+          source_list->url_hashes,
+          source_list->eval_hashes,
           source_list->allow_self,
           source_list->allow_star,
           source_list->allow_inline,
