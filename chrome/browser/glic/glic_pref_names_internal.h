@@ -29,6 +29,13 @@ inline constexpr char kGlicLastPromptTime[] = "glic.last_prompt_time";
 // Integer pref storing the last observed ProfileReadyState.
 inline constexpr char kGlicLastProfileReadyState[] =
     "glic.profile_enablement.last_ready_state";
+
+// Android only. Boolean pref caching the last known result of the background
+// actuation capability check (background actuation enabled and Actor
+// notifications allowed). Seeds `GlicEnabling` at startup, so the first
+// `DeviceInfo` matches the stored one until the deferred check runs.
+inline constexpr char kGlicLastCanActuateInBackground[] =
+    "glic.experimental_triggering.last_can_actuate_in_background";
 }  // namespace glic::prefs
 
 #endif  // CHROME_BROWSER_GLIC_GLIC_PREF_NAMES_INTERNAL_H_

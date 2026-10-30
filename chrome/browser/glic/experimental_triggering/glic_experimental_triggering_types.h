@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "build/build_config.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 
 namespace glic {
@@ -26,6 +27,13 @@ inline constexpr char kGlicCapabilityStructuredYields[] = "structured_yields";
 // `TriggerActuationRequest` through to the Glic web client in the invocation
 // payload.
 inline constexpr char kGlicCapabilityPaymentMetadata[] = "payment_metadata";
+// Android only. The device can run a triggered task in the background:
+// background actuation is enabled and Actor notifications are allowed, so the
+// task can start without the user bringing Chrome to the foreground.
+#if BUILDFLAG(IS_ANDROID)
+inline constexpr char kGlicCapabilityBackgroundActuation[] =
+    "background_actuation";
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Outcome of a device opt-in request for experimental triggering.
 enum class DeviceOptInResult {

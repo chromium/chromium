@@ -25,6 +25,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
+import org.chromium.chrome.browser.actor.ActorUtils;
 import org.chromium.chrome.browser.glic.ui.GlicMicPermissionDialogCoordinator;
 import org.chromium.chrome.browser.glic.ui.GlicUiUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -53,6 +54,16 @@ public class GlicHelper {
 
     private static final WeakHashMap<SnackbarManageable, Boolean> sShownSnackbars =
             new WeakHashMap<>();
+
+    /**
+     * Returns whether this device can run a Glic task in the background, i.e. {@link
+     * ActorUtils#isBackgroundActuationEnabled()}. That also requires Actor notifications while the
+     * require-notifications feature param is set, which is the default.
+     */
+    @CalledByNative
+    static boolean canActuateInBackground() {
+        return ActorUtils.isBackgroundActuationEnabled();
+    }
 
     /**
      * Shows a snackbar indicating the microphone is disabled, with a settings action button.

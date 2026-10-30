@@ -233,6 +233,8 @@ source_set("android") {
   sources = [
     "actor_login/glic_actor_login_bridge.cc",
     "actor_login/glic_actor_login_bridge.h",
+    "background_actuation_capability.cc",
+    "background_actuation_capability.h",
     "glic_enabling_android.cc",
     "glic_helper_android.cc",
     "glic_helper_android.h",
@@ -258,6 +260,9 @@ source_set("android") {
     "//components/optimization_guide/core:features",
     "//components/password_manager/core/browser/actor_login:permissions_manager_impl",
     "//components/password_manager/core/browser/ui",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//content/public/browser",
     "//skia",
     "//third_party/jni_zero",
     "//ui/android",

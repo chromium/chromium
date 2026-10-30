@@ -983,6 +983,7 @@ source_set("unit_tests") {
     ]
   } else {
     sources += [
+      "android/background_actuation_capability_unittest.cc",
       "common/glic_tab_observer_android_unittest.cc",
       "widget/glic_side_panel_ui_android_unittest.cc",
     ]
@@ -994,6 +995,8 @@ source_set("unit_tests") {
       "//chrome/browser/ui/android/tab_model:test_support",
       "//chrome/browser/ui/browser_window/test:test_support",
       "//chrome/test:test_support",
+      "//components/prefs:test_support",
+      "//components/signin/public/identity_manager:test_support",
       "//content/test:test_support",
     ]
   }

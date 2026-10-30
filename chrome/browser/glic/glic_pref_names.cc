@@ -152,6 +152,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(prefs::kGlicMarketingAutoOpenCount, 0);
   registry->RegisterStringPref(prefs::kGlicPromotionSourceCohort,
                                std::string());
+#if BUILDFLAG(IS_ANDROID)
+  registry->RegisterBooleanPref(prefs::kGlicLastCanActuateInBackground, false);
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
