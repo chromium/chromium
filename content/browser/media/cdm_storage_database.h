@@ -60,8 +60,6 @@ class CONTENT_EXPORT CdmStorageDatabase {
 
   bool ClearDatabase();
 
-  uint64_t GetDatabaseSize();
-
   void CloseDatabaseForTesting();
 
  private:

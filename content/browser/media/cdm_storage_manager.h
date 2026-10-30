@@ -107,14 +107,9 @@ class CONTENT_EXPORT CdmStorageManager : public media::mojom::CdmStorage,
 
   void DidWriteFile(base::OnceCallback<void(bool)> callback, bool success);
 
-  void DidGetDatabaseSize(const uint64_t size);
-
   void ReportDatabaseOpenError(CdmStorageOpenError error);
 
   const base::FilePath path_;
-
-  // Track CdmStorageDatabase size.
-  bool database_size_reported_ = false;
 
   // All file operations are run through this member.
   base::SequenceBound<CdmStorageDatabase> db_
