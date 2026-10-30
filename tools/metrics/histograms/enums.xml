@@ -11865,6 +11865,7 @@ from previous Chrome versions.
   <int value="-948684341" label="OmniboxBlurWithEscape:enabled"/>
   <int value="-948678625" label="NtpMvcRefactor:enabled"/>
   <int value="-948256052" label="EnableInputInDiagnosticsApp:enabled"/>
+  <int value="-948249426" label="ContextualTasksSidePanelTabState:disabled"/>
   <int value="-948067160" label="AXTreeFixing:disabled"/>
   <int value="-947943345" label="ChildProcessSecurityPolicyRust:enabled"/>
   <int value="-947643308" label="EnableTouchscreensInDiagnosticsApp:disabled"/>
@@ -12179,6 +12180,7 @@ from previous Chrome versions.
       label="WebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess:disabled"/>
   <int value="-852474116" label="(Obsolete) CrOSSuspendToDisk:disabled"/>
   <int value="-851924474" label="FastPairDebugMetadata:disabled"/>
+  <int value="-851855394" label="ContextualTasksSidePanelTabState:enabled"/>
   <int value="-851708732" label="CSSMasonryLayout:disabled"/>
   <int value="-851413329" label="AnnotatorMode:disabled"/>
   <int value="-850821337" label="WebContentsForceDark:enabled"/>

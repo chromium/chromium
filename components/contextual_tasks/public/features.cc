@@ -1300,6 +1300,13 @@ const char kContextualTasksTabBasedSuggestionsDescription[] =
     "Enables sending attached tab context tokens to Search for tab-based "
     "query suggestions.";
 
+const char kContextualTasksSidePanelTabStateName[] =
+    "Contextual Tasks Side Panel Tab State";
+const char kContextualTasksSidePanelTabStateDescription[] =
+    "Enables tab-specific contextual tasks side panel state. Clicking links in "
+    "the side panel opens a new tab instead of focusing an existing tab with "
+    "the same URL.";
+
 const char kContextualTasksBypassDismissedCapName[] =
     "Contextual Tasks Bypass Dismissed Cap";
 const char kContextualTasksBypassDismissedCapDescription[] =
