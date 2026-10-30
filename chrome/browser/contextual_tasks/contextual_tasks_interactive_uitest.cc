@@ -4889,8 +4889,10 @@ class ContextualTasksExtensionLensButtonInteractiveUiTest
     enabled.push_back({kContextualTasksRearchitecture, {}});
     enabled.push_back({kContextualTasksSidePanelRearchitecture, {}});
     enabled.push_back({extensions_features::kApiContextualTasksPrivate, {}});
-    feature_list_.InitWithFeaturesAndParameters(enabled,
-                                                GetDefaultDisabledFeatures());
+    std::vector<base::test::FeatureRef> disabled = GetDefaultDisabledFeatures();
+    std::erase(disabled, kContextualTasksRearchitecture);
+    std::erase(disabled, kContextualTasksSidePanelRearchitecture);
+    feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
   }
 
   void SetUpOnMainThread() override {
@@ -5179,8 +5181,10 @@ class ContextualTasksExtensionTabPickerInteractiveUiTest
     enabled.push_back({kEnableContextualTasksPinButtonInToolbar, {}});
     enabled.push_back({kContextualTasksForceEntryPointEligibility, {}});
     enabled.push_back({extensions_features::kApiContextualTasksPrivate, {}});
-    feature_list_.InitWithFeaturesAndParameters(enabled,
-                                                GetDefaultDisabledFeatures());
+    std::vector<base::test::FeatureRef> disabled = GetDefaultDisabledFeatures();
+    std::erase(disabled, kContextualTasksRearchitecture);
+    std::erase(disabled, kContextualTasksSidePanelRearchitecture);
+    feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
   }
 
   void SetUpOnMainThread() override {
@@ -5946,11 +5950,10 @@ class ContextualTasksSidePanelTabStateInteractiveUiTest
       disabled.push_back(kContextualTasksSidePanelTabState);
     }
     if (IsRearchitectureEnabled()) {
+      std::erase(disabled, kContextualTasksRearchitecture);
+      std::erase(disabled, kContextualTasksSidePanelRearchitecture);
       enabled.push_back({kContextualTasksRearchitecture, {}});
       enabled.push_back({kContextualTasksSidePanelRearchitecture, {}});
-    } else {
-      disabled.push_back(kContextualTasksRearchitecture);
-      disabled.push_back(kContextualTasksSidePanelRearchitecture);
     }
     feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
   }

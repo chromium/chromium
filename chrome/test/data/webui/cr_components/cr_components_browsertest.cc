@@ -313,7 +313,10 @@ class CrComponentsComposeboxTest : public WebUIMochaBrowserTest {
   CrComponentsComposeboxTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{contextual_tasks::kContextualTasks},
-        /*disabled_features=*/{lens::features::kLensSendRawFileMediaTypes});
+        /*disabled_features=*/{
+            contextual_tasks::kContextualTasksRearchitecture,
+            contextual_tasks::kContextualTasksSidePanelRearchitecture,
+            lens::features::kLensSendRawFileMediaTypes});
 
     set_test_loader_host(chrome::kChromeUIContextualTasksHost);
   }

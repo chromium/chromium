@@ -117,6 +117,8 @@ class ParameterizedLensOverlayControllerCUJTest
     std::vector<base::test::FeatureRef> disabled_features = {
         contextual_tasks::kContextualTasks,
         contextual_tasks::kContextualTasksSidePanel,
+        contextual_tasks::kContextualTasksRearchitecture,
+        contextual_tasks::kContextualTasksSidePanelRearchitecture,
         features::kNonBlockingOsClipboardReads};
 
     if (GetParam()) {
@@ -853,6 +855,8 @@ class LensPreselectionBubbleOmniboxFocusInteractiveUiTest
         /*disabled_features=*/{
             contextual_tasks::kContextualTasks,
             contextual_tasks::kContextualTasksSidePanel,
+            contextual_tasks::kContextualTasksRearchitecture,
+            contextual_tasks::kContextualTasksSidePanelRearchitecture,
             lens::features::kLensOverlayContextualSearchbox,
             lens::features::kLensOverlayNonBlockingPrivacyNotice,
             features::kNonBlockingOsClipboardReads});
@@ -1083,7 +1087,11 @@ class LensOverlayControllerEduActionChipTest
         {base::test::FeatureRefAndParams(
             lens::features::kLensOverlayEduActionChip,
             {{"max-shown-count", "5"}})},
-        {features::kNonBlockingOsClipboardReads});
+        {contextual_tasks::kContextualTasks,
+         contextual_tasks::kContextualTasksSidePanel,
+         contextual_tasks::kContextualTasksRearchitecture,
+         contextual_tasks::kContextualTasksSidePanelRearchitecture,
+         features::kNonBlockingOsClipboardReads});
   }
 
   void SetupOptimizationFilter() {

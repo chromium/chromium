@@ -57,7 +57,9 @@ class ContextualTasksUiServiceInteractiveUiTest
     // `ContextualTasksUiServiceSidePanelTabStateInteractiveUiTest`.
     scoped_feature_list_.InitWithFeatures(
         {kContextualTasks, kContextualTasksForceEntryPointEligibility},
-        {kContextualTasksSidePanelTabState});
+        {kContextualTasksRearchitecture,
+         kContextualTasksSidePanelRearchitecture,
+         kContextualTasksSidePanelTabState});
   }
 
  protected:
@@ -1249,8 +1251,10 @@ class DisabledContextualTasksUiServiceInteractiveUiTest
     : public InteractiveBrowserTest {
  public:
   DisabledContextualTasksUiServiceInteractiveUiTest() {
-    scoped_feature_list_.InitWithFeatures({kContextualTasksUrlRedirectToAimUrl},
-                                          {kContextualTasks});
+    scoped_feature_list_.InitWithFeatures(
+        {kContextualTasksUrlRedirectToAimUrl},
+        {kContextualTasks, kContextualTasksRearchitecture,
+         kContextualTasksSidePanelRearchitecture});
   }
 
  protected:
@@ -1291,7 +1295,9 @@ class MockEligibilityServiceContextualTasksUiServiceInteractiveUiTest
  public:
   MockEligibilityServiceContextualTasksUiServiceInteractiveUiTest() {
     scoped_feature_list_.InitWithFeatures(
-        {kContextualTasksUrlRedirectToAimUrl, kContextualTasks}, {});
+        {kContextualTasksUrlRedirectToAimUrl, kContextualTasks},
+        {kContextualTasksRearchitecture,
+         kContextualTasksSidePanelRearchitecture});
   }
 
  protected:

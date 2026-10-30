@@ -65,7 +65,8 @@ class GlicMessagingBrowserTest : public GlicPrivateApiTestBase {
          {extensions_features::kApiGlicAccessFromPromotionPage, {}},
          {features::kGlicActor, {}},
          {features::kGlicActorPolicyControlExemption, {}}},
-        {});
+        {contextual_tasks::kContextualTasksRearchitecture,
+         contextual_tasks::kContextualTasksSidePanelRearchitecture});
   }
 
  protected:

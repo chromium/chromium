@@ -606,6 +606,7 @@ class ToolbarViewDefaultInteriorMarginBrowserTest
             contextual_tasks::kContextualTasks,
             contextual_tasks::kContextualTasksSidePanel,
             contextual_tasks::kContextualTasksRearchitecture,
+            contextual_tasks::kContextualTasksSidePanelRearchitecture,
             contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint,
             features::kWebUIBackForwardButton});
   }

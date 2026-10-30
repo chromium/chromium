@@ -706,7 +706,8 @@ class ContextualTasksNoMockBrowserTest : public InProcessBrowserTest {
     feature_list_.InitWithFeatures(
         {contextual_tasks::kContextualTasks,
          contextual_tasks::kContextualTasksForceEntryPointEligibility},
-        {});
+        {contextual_tasks::kContextualTasksRearchitecture,
+         contextual_tasks::kContextualTasksSidePanelRearchitecture});
   }
 
  private:

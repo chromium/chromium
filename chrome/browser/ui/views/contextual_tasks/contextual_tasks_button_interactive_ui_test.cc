@@ -459,7 +459,8 @@ class ContextualTasksEphemeralButtonInteractiveTestMixin
   }
 
   virtual std::vector<base::test::FeatureRef> GetDisabledFeatures() {
-    return {};
+    return {contextual_tasks::kContextualTasksRearchitecture,
+            contextual_tasks::kContextualTasksSidePanelRearchitecture};
   }
 
   // Side panel animations hide the timing windows that rapid clicks expose, so
@@ -1319,7 +1320,8 @@ class ContextualTasksEphemeralBrandedButtonInteractiveTest
         {{contextual_tasks::kContextualTasks, {}},
          {contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint,
           {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"}}}},
-        {});
+        {contextual_tasks::kContextualTasksRearchitecture,
+         contextual_tasks::kContextualTasksSidePanelRearchitecture});
     InteractiveBrowserTest::SetUp();
   }
 
@@ -1811,7 +1813,10 @@ class ContextualTasksEphemeralButtonCobrowseDisabledInteractiveTest
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        GetEnabledFeatures(), {contextual_tasks::kContextualTasks});
+        GetEnabledFeatures(),
+        {contextual_tasks::kContextualTasks,
+         contextual_tasks::kContextualTasksRearchitecture,
+         contextual_tasks::kContextualTasksSidePanelRearchitecture});
     InteractiveBrowserTest::SetUp();
   }
 
@@ -3409,7 +3414,9 @@ class ContextualTasksNonBrandedEntryPointCircleHighlightInteractiveTest
   }
 
   std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
-    return {contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint};
+    return {contextual_tasks::kContextualTasksRearchitecture,
+            contextual_tasks::kContextualTasksSidePanelRearchitecture,
+            contextual_tasks::kContextualTasksEphemeralBrandedEntryPoint};
   }
 };
 

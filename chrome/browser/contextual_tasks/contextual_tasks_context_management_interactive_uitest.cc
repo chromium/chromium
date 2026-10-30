@@ -1574,6 +1574,8 @@ class ContextualTasksOmniboxContextManagementInteractiveUiTest
             {lens::features::kLensOverlayContextualSearchbox, {}},
         },
         /*disabled_features=*/{
+            kContextualTasksRearchitecture,
+            kContextualTasksSidePanelRearchitecture,
             // Keep `kOmniboxElementId` a Views element so focus and key presses
             // target it directly.
             features::kWebUILocationBar,
