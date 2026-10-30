@@ -11,7 +11,7 @@ import {createAutocompleteMatch} from 'chrome://resources/cr_components/composeb
 import {createAutocompleteResultForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {RenderType, SideType} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {SuggestStyle} from 'chrome://resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
+import {SecondaryTextPlacement, SuggestStyle} from 'chrome://resources/mojo/components/omnibox/browser/suggest_template_info.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {createSuggestTemplateInfo} from 'chrome://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -234,6 +234,100 @@ suite('ComposeboxDropdown', () => {
         await microtasksFinished();
 
         assertTrue(scrollCalled);
+      });
+
+  // Places the dropdown below a fixed-height input stub inside a
+  // height-capped, overflow: hidden flex column, like the composebox card.
+  function appendDropdownToHeightCappedParent(): HTMLElement {
+    const parentContainer = document.createElement('div');
+    parentContainer.style.display = 'flex';
+    parentContainer.style.flexDirection = 'column';
+    parentContainer.style.height = '180px';
+    parentContainer.style.overflow = 'hidden';
+
+    const inputStub = document.createElement('div');
+    inputStub.style.height = '80px';
+    inputStub.style.flexShrink = '0';
+
+    parentContainer.appendChild(inputStub);
+    parentContainer.appendChild(dropdown);
+    document.body.appendChild(parentContainer);
+    return parentContainer;
+  }
+
+  // Creates matches that render their secondary text on a second line.
+  function createTwoLineMatches(count: number, suggestionGroupId = -1) {
+    return Array.from(
+        {length: count},
+        (_, i) => createAutocompleteMatch({
+          suggestTemplate: createSuggestTemplateInfo({
+            primaryText: `Match ${i + 1}`,
+            secondaryText: `Description ${i + 1}`,
+            secondaryTextPlacement: SecondaryTextPlacement.kBelowPrimaryText,
+          }),
+          suggestionGroupId,
+        }));
+  }
+
+  test(
+      'vertical matches container scrolls independently without scrolling parent',
+      async () => {
+        const parentContainer = appendDropdownToHeightCappedParent();
+        dropdown.richImageSuggestionsEnabled = false;
+        dropdown.result = createAutocompleteResultForTesting({
+          matches: createTwoLineMatches(5),
+        });
+        await microtasksFinished();
+
+        const matches =
+            dropdown.shadowRoot.querySelectorAll('cr-composebox-match');
+        assertEquals(5, matches.length);
+        assertTrue(!!matches[4]!.shadowRoot.querySelector('#secondaryText'));
+
+        const verticalContainer =
+            dropdown.shadowRoot.querySelector<HTMLElement>('.matches.vertical');
+        assertTrue(!!verticalContainer);
+        assertEquals('auto', getComputedStyle(verticalContainer).overflowY);
+        assertEquals('0px', getComputedStyle(verticalContainer).minHeight);
+
+        dropdown.selectedMatchIndex = 4;
+        await microtasksFinished();
+
+        assertTrue(verticalContainer.scrollTop > 0);
+        assertEquals(0, parentContainer.scrollTop);
+      });
+
+  test(
+      'group header stays pinned while vertical matches container scrolls',
+      async () => {
+        const parentContainer = appendDropdownToHeightCappedParent();
+        dropdown.richImageSuggestionsEnabled = true;
+        dropdown.result = createAutocompleteResultForTesting({
+          suggestionGroupsMap: {
+            100: {
+              header: 'Recent searches',
+              renderType: RenderType.kDefaultVertical,
+              sideType: SideType.kDefaultPrimary,
+            },
+          },
+          matches: createTwoLineMatches(5, 100),
+        });
+        await microtasksFinished();
+
+        const header =
+            dropdown.shadowRoot.querySelector<HTMLElement>('.header');
+        assertTrue(!!header);
+        const verticalContainer =
+            dropdown.shadowRoot.querySelector<HTMLElement>('.matches.vertical');
+        assertTrue(!!verticalContainer);
+        const headerTop = header.getBoundingClientRect().top;
+
+        dropdown.selectedMatchIndex = 4;
+        await microtasksFinished();
+
+        assertTrue(verticalContainer.scrollTop > 0);
+        assertEquals(headerTop, header.getBoundingClientRect().top);
+        assertEquals(0, parentContainer.scrollTop);
       });
 
   test('tracks isImageBatchLoading_ for rich image suggestions', async () => {
