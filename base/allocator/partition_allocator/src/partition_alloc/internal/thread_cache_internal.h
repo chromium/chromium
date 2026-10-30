@@ -208,9 +208,17 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   // The slot comes from the bucket at index |bucket_index| from the partition
   // this cache is for.
   //
+  // When `allow_clear_bucket` is false, refuses insertion once the bucket
+  // reaches its post-clearing target (`(limit + 1) / 2`) so bulk callers that
+  // already batch-free to the root avoid repeatedly overflowing and walking the
+  // freelist via `ClearBucket()`.
+  // TODO(crbug.com/579744817): Remove `allow_clear_bucket` once dedicated
+  // batch-free support is implemented in `ThreadCache`.
+  //
   // Returns the slot size if the insertion succeeds, `nullopt` otherwise.
   // Insertion can fail either because the cache is full or the
   // allocation was too large.
+  template <bool allow_clear_bucket = true>
   PA_ALWAYS_INLINE std::optional<size_t> MaybePutInCache(
       UntaggedSlotStart slot_start,
       size_t bucket_index);
@@ -431,6 +439,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   friend class tools::ThreadCacheInspector;
 };
 
+template <bool allow_clear_bucket>
 PA_ALWAYS_INLINE std::optional<size_t> ThreadCache::MaybePutInCache(
     UntaggedSlotStart slot_start,
     size_t bucket_index) {
@@ -447,18 +456,33 @@ PA_ALWAYS_INLINE std::optional<size_t> ThreadCache::MaybePutInCache(
 
   PA_DCHECK(bucket.count != 0 || bucket.freelist_head == nullptr);
 
-  PutInBucket(bucket, slot_start);
-  cached_memory_ += bucket.slot_size;
-  PA_INCREMENT_COUNTER(GetEnclosingTls()->thread_cache_stats.cache_fill_hits);
-
   // Relaxed ordering: we don't care about having an up-to-date or consistent
   // value, just want it to not change while we are using it, hence using
   // relaxed ordering, and loading into a local variable. Without it, we are
   // gambling that the compiler would not issue multiple loads.
   uint8_t limit = bucket.limit.load(std::memory_order_relaxed);
-  // Batched deallocation, amortizing lock acquisitions.
-  if (bucket.count > limit) [[unlikely]] {
-    ClearBucket(bucket, limit / 2);
+  if constexpr (!allow_clear_bucket) {
+    if (bucket.count >= (limit + 1) / 2) {
+      PA_INCREMENT_COUNTER(
+          GetEnclosingTls()->thread_cache_stats.cache_fill_misses);
+      if (should_purge_.load(std::memory_order_relaxed)) [[unlikely]] {
+        PurgeInternal();
+      }
+      return std::nullopt;
+    }
+  }
+
+  PutInBucket(bucket, slot_start);
+  cached_memory_ += bucket.slot_size;
+  PA_INCREMENT_COUNTER(GetEnclosingTls()->thread_cache_stats.cache_fill_hits);
+
+  if constexpr (allow_clear_bucket) {
+    // Batched deallocation, amortizing lock acquisitions.
+    if (bucket.count > limit) [[unlikely]] {
+      ClearBucket(bucket, limit / 2);
+    }
+  } else {
+    PA_DCHECK(bucket.count <= limit);
   }
 
   if (should_purge_.load(std::memory_order_relaxed)) [[unlikely]] {

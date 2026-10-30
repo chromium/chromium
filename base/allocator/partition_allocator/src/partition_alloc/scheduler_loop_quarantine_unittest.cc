@@ -444,6 +444,56 @@ TYPED_TEST(ThreadBoundSchedulerLoopQuarantineTest,
   EXPECT_EQ(1, branch->PausedCountForTesting());
 }
 
+TYPED_TEST(ThreadBoundSchedulerLoopQuarantineTest,
+           BulkPurgeAvoidsThreadCacheOverflow) {
+  auto* branch = this->GetQuarantineBranch();
+  auto* root = this->GetQuarantineRoot();
+  auto* allocator_root = this->GetPartitionRoot();
+  auto* tcache = allocator_root->thread_cache_for_testing();
+  ASSERT_TRUE(internal::ThreadCache::IsValid(tcache));
+
+  QuarantineConfig config = this->GetConfig();
+  config.branch_capacity_in_bytes = 1024 * 1024;
+  config.enable_quarantine = true;
+  config.enable_task_controlled_purge = true;
+  config.pause_in_between_tasks = true;
+  branch->Configure(*root, config);
+
+  tcache->Purge();
+  branch->OnTaskStart();
+
+  constexpr size_t kAllocSize = 32;
+  constexpr size_t kCount = 128;
+  std::vector<void*> ptrs;
+  ptrs.reserve(kCount);
+  for (size_t i = 0; i < kCount; ++i) {
+    ptrs.push_back(allocator_root->Alloc(kAllocSize));
+  }
+  auto* slot_span = internal::SlotSpanMetadata::FromSlotStart(
+      SlotStart::Unchecked(ptrs[0]).Untag(), allocator_root);
+  const size_t bucket_index =
+      allocator_root->SlotSpanToBucketSizeDetails(slot_span).bucket_index();
+  const uint8_t limit = tcache->bucket_for_testing(bucket_index)
+                            .limit.load(std::memory_order_relaxed);
+  ASSERT_GT(limit, 1u);
+
+  tcache->Purge();
+  ASSERT_EQ(0u, tcache->bucket_count_for_testing(bucket_index));
+
+  for (void* ptr : ptrs) {
+    this->Quarantine(ptr);
+  }
+  EXPECT_EQ(kCount, this->GetStats().count);
+
+  // Full task-end purge should replenish the bucket up to its post-clearing
+  // target (`(limit + 1) / 2`) and batch-free the remaining slots directly to
+  // the root without overflowing `limit`.
+  branch->OnTaskFinish();
+  EXPECT_EQ(0u, this->GetStats().count);
+  EXPECT_EQ(static_cast<size_t>((limit + 1) / 2),
+            tcache->bucket_count_for_testing(bucket_index));
+}
+
 }  // namespace
 
 #endif  // !PA_BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
