@@ -682,15 +682,6 @@ template <wtf_size_t kInlineCapacity>
 String::String(const Vector<UChar, kInlineCapacity>& vector)
     : impl_(vector.size() ? StringImpl::Create(vector) : StringImpl::empty_) {}
 
-#ifdef __OBJC__
-// This is for situations in WebKit where the long standing behavior has been
-// "nil if empty", so we try to maintain longstanding behavior for the sake of
-// entrenched clients
-inline NSString* NsStringNilIfEmpty(const String& str) {
-  return str.empty() ? nil : (NSString*)str;
-}
-#endif
-
 // Compare strings using code units, matching Javascript string ordering.  See
 // https://infra.spec.whatwg.org/#code-unit-less-than.
 WTF_EXPORT int CodeUnitCompare(const String&, const String&);

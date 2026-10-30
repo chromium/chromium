@@ -38,9 +38,7 @@ void SetIsBeforeThreadCreatedForTest() {
 
 ThreadSpecific<Threading>* Threading::static_data_;
 
-Threading::Threading()
-    : cached_converter_icu_(new IcuConverterWrapper),
-      thread_id_(CurrentThread()) {}
+Threading::Threading() : cached_converter_icu_(new IcuConverterWrapper) {}
 
 Threading::~Threading() = default;
 

@@ -72,8 +72,6 @@ class WTF_EXPORT Threading {
 
   IcuConverterWrapper& CachedConverterIcu() { return *cached_converter_icu_; }
 
-  base::PlatformThreadId ThreadId() const { return thread_id_; }
-
   // Must be called on the main thread before any callers to wtfThreadData().
   static void Initialize();
 
@@ -83,8 +81,6 @@ class WTF_EXPORT Threading {
 
  private:
   std::unique_ptr<IcuConverterWrapper> cached_converter_icu_;
-
-  base::PlatformThreadId thread_id_;
 
 #if BUILDFLAG(IS_WIN) && defined(COMPILER_MSVC)
   size_t thread_stack_size_ = 0u;

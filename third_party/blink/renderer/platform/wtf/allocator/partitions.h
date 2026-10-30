@@ -76,12 +76,6 @@ class WTF_EXPORT Partitions {
     return buffer_root_;
   }
 
-  ALWAYS_INLINE static size_t ComputeAllocationSize(size_t count, size_t size) {
-    base::CheckedNumeric<size_t> total = count;
-    total *= size;
-    return total.ValueOrDie();
-  }
-
   static size_t TotalSizeOfCommittedPages();
 
   static size_t TotalActiveBytes();

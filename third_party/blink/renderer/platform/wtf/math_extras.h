@@ -313,11 +313,6 @@ constexpr LimitType ClampToWithNaNTo0(
   return ClampTo<LimitType, ValueType>(value);
 }
 
-constexpr bool IsWithinIntRange(float x) {
-  return x > static_cast<float>(std::numeric_limits<int>::min()) &&
-         x < static_cast<float>(std::numeric_limits<int>::max());
-}
-
 static constexpr size_t GreatestCommonDivisor(size_t a, size_t b) {
   return b ? GreatestCommonDivisor(b, a % b) : a;
 }

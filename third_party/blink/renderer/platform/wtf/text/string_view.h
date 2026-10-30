@@ -415,15 +415,6 @@ class WTF_EXPORT StringView {
 
   // Functions creating new string(s) from `this` string ------------
 
-  // This will return a StringView with a version of |this| that has all ASCII
-  // characters lowercased. The returned StringView is guarantee to be valid for
-  // as long as |backing_store| is valid.
-  //
-  // The odd lifetime of the returned object occurs because lowercasing may
-  // require allocation. When that happens, |backing_store| is used as the
-  // backing store and the returned StringView has the same lifetime.
-  StringView LowerAsciiMaybeUsingBuffer(StackBackingStore& backing_store) const;
-
   // Returns a substring removing leading and trailing white spaces.
   // This function removes spaces, \n, \t, \r, \f, \v, and unicode spaces such
   // as U+2000 and U+3000.
