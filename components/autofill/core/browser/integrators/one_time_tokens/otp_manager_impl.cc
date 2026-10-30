@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#include "components/autofill/core/browser/integrators/one_time_tokens/form_cache_query_util.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_field_detector.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_metrics_tracker.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_phish_guard_delegate.h"
@@ -217,20 +218,8 @@ void OtpManagerImpl::MaybeRetrieveGmailOtp() {
 void OtpManagerImpl::OnGmailOtpFillingEnabledPrefChanged() {
   if (!sms_otp_service_ || owner_->driver().IsEmbedded() ||
       !owner_->driver().IsActive() || !UserOptedIntoGmailOtpFilling() ||
-      !IsOtpFieldDetected() || AnyOtpFieldContainsTypedInput()) {
-    return;
-  }
-  bool has_otp_form_in_frame = false;
-  owner_->ForEachCachedForm(
-      [&has_otp_form_in_frame](const FormStructure& form) {
-        if (has_otp_form_in_frame) {
-          return;
-        }
-        if (OtpFieldDetector::IsOtpForm(form)) {
-          has_otp_form_in_frame = true;
-        }
-      });
-  if (!has_otp_form_in_frame) {
+      !IsOtpFieldDetected() || AnyOtpFieldContainsTypedInput() ||
+      !HasOtpForm(*owner_)) {
     return;
   }
   MaybeRetrieveGmailOtp();
@@ -676,42 +665,11 @@ void OtpManagerImpl::MaybeShowOtpSuggestionsForGmail(
 
 const AutofillField* OtpManagerImpl::GetTargetOtpField() const {
   if (currently_focused_field_id_) {
-    const FormStructure* form = nullptr;
-    const AutofillField* field = nullptr;
-    if (currently_focused_form_id_) {
-      AutofillManager::FormAndField form_and_field = owner_->FindFormAndField(
-          *currently_focused_form_id_, *currently_focused_field_id_);
-      form = form_and_field.form_structure;
-      field = form_and_field.autofill_field;
-    }
-    if (!field) {
-      // AutofillManager provides an overload `FindCachedFormById(const
-      // FieldGlobalId&)` that searches cached forms for the one containing the
-      // given field ID.
-      form = owner_->FindCachedFormById(*currently_focused_field_id_);
-      if (form) {
-        field = form->GetFieldById(*currently_focused_field_id_);
-      }
-    }
-    return (form && field && OtpFieldDetector::IsOtpForm(*form) &&
-            OtpFieldDetector::IsOtpField(*form, *field))
-               ? field
-               : nullptr;
+    return FindOtpField(*owner_, currently_focused_form_id_,
+                        *currently_focused_field_id_)
+        .autofill_field;
   }
-
-  const AutofillField* target_field = nullptr;
-  owner_->ForEachCachedForm([&target_field](const FormStructure& form) {
-    if (target_field || !OtpFieldDetector::IsOtpForm(form)) {
-      return;
-    }
-    for (const std::unique_ptr<AutofillField>& field : form.fields()) {
-      if (OtpFieldDetector::IsOtpField(form, *field)) {
-        target_field = field.get();
-        return;
-      }
-    }
-  });
-  return target_field;
+  return FirstEligibleOtpField(*owner_).autofill_field;
 }
 
 bool OtpManagerImpl::IsOtpDeliveryBlocked() {
@@ -724,18 +682,7 @@ bool OtpManagerImpl::IsOtpFieldDetected() const {
 }
 
 bool OtpManagerImpl::AnyOtpFieldContainsTypedInput() const {
-  bool has_typed_input = false;
-  owner_->ForEachCachedForm([&has_typed_input](const FormStructure& form) {
-    if (has_typed_input) {
-      return;
-    }
-    has_typed_input =
-        std::ranges::any_of(form.fields(), [&form](const auto& field) {
-          return OtpFieldDetector::IsOtpField(form, *field) &&
-                 field->all_modifiers().contains(FieldModifier::kUser);
-        });
-  });
-  return has_typed_input;
+  return autofill::AnyOtpFieldContainsTypedInput(*owner_);
 }
 
 bool OtpManagerImpl::UserOptedIntoGmailOtpFilling() const {
