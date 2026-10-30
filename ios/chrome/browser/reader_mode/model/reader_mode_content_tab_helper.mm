@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_tab_helper.h"
 
-#import "base/no_destructor.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "ios/chrome/browser/dom_distiller/model/constants.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
@@ -30,11 +29,8 @@ bool IsIframeHostAllowed(const GURL& url) {
   if (!url.is_valid()) {
     return false;
   }
-  // Wrap the shared regex in anchors for strict host matching.
-  static const base::NoDestructor<std::string> anchored_regex(
-      std::string("^") + kAllowedVideoRegex + "$");
-  static const base::NoDestructor<re2::RE2> allowed_iframe_pattern(
-      *anchored_regex, re2::RE2::CannedOptions(re2::RE2::Quiet));
+  static constexpr re2::LazyRE2 allowed_iframe_pattern = {kAllowedVideoRegex,
+                                                          re2::RE2::Quiet};
   return re2::RE2::FullMatch(url.host(), *allowed_iframe_pattern);
 }
 
