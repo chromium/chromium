@@ -1385,7 +1385,7 @@ static bool HaveSameOutOfFlowAncestor(const Node& anchor_node,
       if (ancestor->IsOutOfFlowPositioned()) {
         return ancestor;
       }
-      ancestor = ancestor->ContainingBlock();
+      ancestor = ancestor->ContainingBox();
     }
     return static_cast<LayoutObject*>(nullptr);
   };

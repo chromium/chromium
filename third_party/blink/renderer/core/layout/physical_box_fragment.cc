@@ -555,9 +555,8 @@ PhysicalOffset PhysicalBoxFragment::OffsetFromOwnerLayoutBox() const {
 
   // When LTR, compute the offset from the first fragment. The first fragment is
   // at the left top of the |LayoutBox| regardless of the writing mode.
-  const auto* containing_block = owner_box->ContainingBlock();
-  const ComputedStyle& containing_block_style = containing_block->Style();
-  if (IsLtr(containing_block_style.Direction())) {
+  const ComputedStyle& container_style = owner_box->ContainingBox()->Style();
+  if (IsLtr(container_style.Direction())) {
     DCHECK_EQ(IsFirstForNode(), this == owner_box->GetPhysicalFragment(0));
     if (IsFirstForNode())
       return PhysicalOffset();

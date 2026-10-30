@@ -2020,13 +2020,13 @@ OutOfFlowLayoutPart::NodeInfo OutOfFlowLayoutPart::SetupNodeInfo(
                                 : container_builder_.GetLayoutObject();
 
   if (container) {
-    DCHECK_EQ(container, node.GetLayoutBox()->ContainingBlock());
+    DCHECK_EQ(container, node.GetLayoutBox()->ContainingBox());
   } else {
     // If there's no layout object associated, the containing fragment should be
     // a page, and the containing block of the node should be the LayoutView.
     DCHECK_EQ(containing_block_fragment->GetBoxType(),
               PhysicalFragment::kPageArea);
-    DCHECK_EQ(node.GetLayoutBox()->ContainingBlock(),
+    DCHECK_EQ(node.GetLayoutBox()->ContainingBox(),
               node.GetLayoutBox()->View());
   }
 #endif
@@ -2955,7 +2955,7 @@ bool OutOfFlowLayoutPart::IsContainingBlockForCandidate(
     DCHECK(candidate.InlineContainer()->CanContainOutOfFlowPositionedElement(
         position));
     return container_builder_.GetLayoutObject() ==
-           candidate.Node().GetLayoutBox()->ContainingBlock();
+           candidate.Node().GetLayoutBox()->ContainingBox();
   }
   return (is_absolute_container_ && position == EPosition::kAbsolute) ||
          (is_fixed_container_ && position == EPosition::kFixed);
@@ -3427,7 +3427,7 @@ void OutOfFlowLayoutPart::SaveStaticPositionOnPaintLayer(
   const LayoutObject* parent = layout_box->Parent();
   const LayoutObject* container = container_builder_.GetLayoutObject();
   if (parent == container ||
-      (parent->IsLayoutInline() && parent->ContainingBlock() == container)) {
+      (parent->IsLayoutInline() && parent->ContainingBox() == container)) {
     DCHECK(layout_box->Layer());
     if (const auto* break_token = container_builder_.PreviousBreakToken()) {
       // Include the block contribution from previous columns.

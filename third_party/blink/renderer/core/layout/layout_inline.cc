@@ -375,7 +375,7 @@ LayoutBlockFlow* LayoutInline::CreateAnonymousContainerForBlockChildren()
   // children we will want to special-case them here too. Writing-mode would be
   // one if it didn't create a formatting context of its own, removing the need
   // for continuations.
-  new_style_builder.SetDirection(ContainingBlock()->Style().Direction());
+  new_style_builder.SetDirection(ContainingBox()->Style().Direction());
 
   return LayoutBlockFlow::CreateAnonymous(GetDocument(),
                                           *new_style_builder.TakeStyle());
@@ -585,7 +585,7 @@ PhysicalBoxStrut LayoutInline::MarginOutsets() const {
     }
     if (margin.IsPercent() || margin.IsCalculated()) {
       return MinimumValueForLength(margin,
-                                   ContainingBlock()->ContentLogicalWidth());
+                                   ContainingBox()->ContentLogicalWidth());
     }
     return LayoutUnit();
   };
@@ -953,7 +953,7 @@ void LayoutInline::AddDraggableRegions(Vector<DraggableRegionValue>& regions) {
   region.bounds = PhysicalLinesBoundingBox();
   // TODO(crbug.com/966048): We probably want to also cover continuations.
 
-  LayoutObject* container = ContainingBlock();
+  LayoutObject* container = ContainingBox();
   if (!container)
     container = this;
 

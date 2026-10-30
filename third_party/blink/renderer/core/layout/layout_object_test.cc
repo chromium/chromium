@@ -380,39 +380,37 @@ TEST_F(LayoutObjectTest, UseCountContainWithoutContentVisibility) {
 }
 
 // Containing block test.
-TEST_F(LayoutObjectTest, ContainingBlockLayoutViewShouldBeNull) {
-  EXPECT_EQ(nullptr, GetLayoutView().ContainingBlock());
+TEST_F(LayoutObjectTest, ContainingBoxLayoutViewShouldBeNull) {
+  EXPECT_EQ(nullptr, GetLayoutView().ContainingBox());
 }
 
-TEST_F(LayoutObjectTest, ContainingBlockBodyShouldBeDocumentElement) {
-  EXPECT_EQ(GetDocument().body()->GetLayoutObject()->ContainingBlock(),
+TEST_F(LayoutObjectTest, ContainingBoxBodyShouldBeDocumentElement) {
+  EXPECT_EQ(GetDocument().body()->GetLayoutObject()->ContainingBox(),
             GetDocument().documentElement()->GetLayoutObject());
 }
 
-TEST_F(LayoutObjectTest, ContainingBlockDocumentElementShouldBeLayoutView) {
-  EXPECT_EQ(
-      GetDocument().documentElement()->GetLayoutObject()->ContainingBlock(),
-      GetLayoutView());
+TEST_F(LayoutObjectTest, ContainingBoxDocumentElementShouldBeLayoutView) {
+  EXPECT_EQ(GetDocument().documentElement()->GetLayoutObject()->ContainingBox(),
+            GetLayoutView());
 }
 
-TEST_F(LayoutObjectTest, ContainingBlockStaticLayoutObjectShouldBeParent) {
+TEST_F(LayoutObjectTest, ContainingBoxStaticLayoutObjectShouldBeParent) {
   SetBodyInnerHTML("<foo style='position:static'></foo>");
   LayoutObject* body_layout_object = GetDocument().body()->GetLayoutObject();
   LayoutObject* layout_object = body_layout_object->SlowFirstChild();
-  EXPECT_EQ(layout_object->ContainingBlock(), body_layout_object);
+  EXPECT_EQ(layout_object->ContainingBox(), body_layout_object);
 }
 
-TEST_F(LayoutObjectTest,
-       ContainingBlockAbsoluteLayoutObjectShouldBeLayoutView) {
+TEST_F(LayoutObjectTest, ContainingBoxAbsoluteLayoutObjectShouldBeLayoutView) {
   SetBodyInnerHTML("<foo style='position:absolute'></foo>");
   LayoutObject* layout_object =
       GetDocument().body()->GetLayoutObject()->SlowFirstChild();
-  EXPECT_EQ(layout_object->ContainingBlock(), GetLayoutView());
+  EXPECT_EQ(layout_object->ContainingBox(), GetLayoutView());
 }
 
 TEST_F(
     LayoutObjectTest,
-    ContainingBlockAbsoluteLayoutObjectShouldBeNonStaticallyPositionedBlockAncestor) {
+    ContainingBoxAbsoluteLayoutObjectShouldBeNonStaticallyPositionedBlockAncestor) {
   SetBodyInnerHTML(R"HTML(
     <div style='position:relative; left:20px'>
       <bar style='position:absolute; left:2px; top:10px'></bar>
@@ -428,16 +426,16 @@ TEST_F(
       containing_blocklayout_object->CanContainOutOfFlowPositionedElement(
           EPosition::kFixed));
   EXPECT_EQ(layout_object->Container(), containing_blocklayout_object);
-  EXPECT_EQ(layout_object->ContainingBlock(), containing_blocklayout_object);
-  EXPECT_EQ(layout_object->ContainingBlockForAbsolutePosition(),
+  EXPECT_EQ(layout_object->ContainingBox(), containing_blocklayout_object);
+  EXPECT_EQ(layout_object->ContainingBoxForAbsolutePosition(),
             containing_blocklayout_object);
-  EXPECT_EQ(layout_object->ContainingBlockForFixedPosition(), GetLayoutView());
+  EXPECT_EQ(layout_object->ContainingBoxForFixedPosition(), GetLayoutView());
   auto offset =
       layout_object->OffsetFromContainer(containing_blocklayout_object);
   EXPECT_EQ(PhysicalOffset(2, 10), offset);
 }
 
-TEST_F(LayoutObjectTest, ContainingBlockFixedPosUnderFlattened3D) {
+TEST_F(LayoutObjectTest, ContainingBoxFixedPosUnderFlattened3D) {
   SetBodyInnerHTML(R"HTML(
     <div id=container style='transform-style: preserve-3d; opacity: 0.9'>
       <div id=target style='position:fixed'></div>
@@ -449,7 +447,7 @@ TEST_F(LayoutObjectTest, ContainingBlockFixedPosUnderFlattened3D) {
   EXPECT_EQ(container, target->Container());
 }
 
-TEST_F(LayoutObjectTest, ContainingBlockFixedLayoutObjectInTransformedDiv) {
+TEST_F(LayoutObjectTest, ContainingBoxFixedLayoutObjectInTransformedDiv) {
   SetBodyInnerHTML(R"HTML(
     <div style='transform:translateX(0px)'>
       <bar style='position:fixed'></bar>
@@ -465,14 +463,14 @@ TEST_F(LayoutObjectTest, ContainingBlockFixedLayoutObjectInTransformedDiv) {
       containing_blocklayout_object->CanContainOutOfFlowPositionedElement(
           EPosition::kFixed));
   EXPECT_EQ(layout_object->Container(), containing_blocklayout_object);
-  EXPECT_EQ(layout_object->ContainingBlock(), containing_blocklayout_object);
-  EXPECT_EQ(layout_object->ContainingBlockForAbsolutePosition(),
+  EXPECT_EQ(layout_object->ContainingBox(), containing_blocklayout_object);
+  EXPECT_EQ(layout_object->ContainingBoxForAbsolutePosition(),
             containing_blocklayout_object);
-  EXPECT_EQ(layout_object->ContainingBlockForFixedPosition(),
+  EXPECT_EQ(layout_object->ContainingBoxForFixedPosition(),
             containing_blocklayout_object);
 }
 
-TEST_F(LayoutObjectTest, ContainingBlockFixedLayoutObjectInBody) {
+TEST_F(LayoutObjectTest, ContainingBoxFixedLayoutObjectInBody) {
   SetBodyInnerHTML("<div style='position:fixed'></div>");
   LayoutObject* layout_object =
       GetDocument().body()->GetLayoutObject()->SlowFirstChild();
@@ -481,13 +479,12 @@ TEST_F(LayoutObjectTest, ContainingBlockFixedLayoutObjectInBody) {
   EXPECT_FALSE(
       layout_object->CanContainOutOfFlowPositionedElement(EPosition::kFixed));
   EXPECT_EQ(layout_object->Container(), GetLayoutView());
-  EXPECT_EQ(layout_object->ContainingBlock(), GetLayoutView());
-  EXPECT_EQ(layout_object->ContainingBlockForAbsolutePosition(),
-            GetLayoutView());
-  EXPECT_EQ(layout_object->ContainingBlockForFixedPosition(), GetLayoutView());
+  EXPECT_EQ(layout_object->ContainingBox(), GetLayoutView());
+  EXPECT_EQ(layout_object->ContainingBoxForAbsolutePosition(), GetLayoutView());
+  EXPECT_EQ(layout_object->ContainingBoxForFixedPosition(), GetLayoutView());
 }
 
-TEST_F(LayoutObjectTest, ContainingBlockAbsoluteLayoutObjectInBody) {
+TEST_F(LayoutObjectTest, ContainingBoxAbsoluteLayoutObjectInBody) {
   SetBodyInnerHTML("<div style='position:absolute'></div>");
   LayoutObject* layout_object =
       GetDocument().body()->GetLayoutObject()->SlowFirstChild();
@@ -496,15 +493,14 @@ TEST_F(LayoutObjectTest, ContainingBlockAbsoluteLayoutObjectInBody) {
   EXPECT_FALSE(
       layout_object->CanContainOutOfFlowPositionedElement(EPosition::kFixed));
   EXPECT_EQ(layout_object->Container(), GetLayoutView());
-  EXPECT_EQ(layout_object->ContainingBlock(), GetLayoutView());
-  EXPECT_EQ(layout_object->ContainingBlockForAbsolutePosition(),
-            GetLayoutView());
-  EXPECT_EQ(layout_object->ContainingBlockForFixedPosition(), GetLayoutView());
+  EXPECT_EQ(layout_object->ContainingBox(), GetLayoutView());
+  EXPECT_EQ(layout_object->ContainingBoxForAbsolutePosition(), GetLayoutView());
+  EXPECT_EQ(layout_object->ContainingBoxForFixedPosition(), GetLayoutView());
 }
 
 TEST_F(
     LayoutObjectTest,
-    ContainingBlockAbsoluteLayoutObjectShouldNotBeNonStaticallyPositionedInlineAncestor) {
+    ContainingBoxAbsoluteLayoutObjectShouldNotBeNonStaticallyPositionedInlineAncestor) {
   // Test note: We can't use a raw string literal here, since extra whitespace
   // causes failures.
   SetBodyInnerHTML(
@@ -528,10 +524,10 @@ TEST_F(
   EXPECT_EQ(nullptr, layout_object->NextSibling());
 
   EXPECT_EQ(layout_object->Container(), span_layout_object);
-  EXPECT_EQ(layout_object->ContainingBlock(), body_layout_object);
-  EXPECT_EQ(layout_object->ContainingBlockForAbsolutePosition(),
+  EXPECT_EQ(layout_object->ContainingBox(), body_layout_object);
+  EXPECT_EQ(layout_object->ContainingBoxForAbsolutePosition(),
             body_layout_object);
-  EXPECT_EQ(layout_object->ContainingBlockForFixedPosition(), GetLayoutView());
+  EXPECT_EQ(layout_object->ContainingBoxForFixedPosition(), GetLayoutView());
 }
 
 TEST_F(LayoutObjectTest, PaintingLayerOfOverflowClipLayerUnderColumnSpanAll) {
@@ -568,7 +564,7 @@ TEST_F(LayoutObjectTest, FloatUnderBlock) {
   EXPECT_EQ(layered_div->Layer(), layered_div->PaintingLayer());
   EXPECT_EQ(layered_div->Layer(), floating->PaintingLayer());
   EXPECT_EQ(container, floating->Container());
-  EXPECT_EQ(container, floating->ContainingBlock());
+  EXPECT_EQ(container, floating->ContainingBox());
 }
 
 TEST_F(LayoutObjectTest, InlineFloatMismatch) {
@@ -610,7 +606,7 @@ TEST_F(LayoutObjectTest, FloatUnderInline) {
   // LayoutNG paints these within the correct inline-level layer.
   EXPECT_EQ(layered_span->Layer(), floating->PaintingLayer());
   EXPECT_EQ(layered_span, floating->Container());
-  EXPECT_EQ(container, floating->ContainingBlock());
+  EXPECT_EQ(container, floating->ContainingBox());
 
   LayoutObject::AncestorSkipInfo skip_info(layered_span);
   EXPECT_EQ(layered_span, floating->Container(&skip_info));
@@ -2183,11 +2179,11 @@ TEST_F(LayoutObjectTest, NoEllipsisForAnonymousBlockWithNonBlockParent) {
   const LayoutObject* text_layout = GetLayoutObjectByElementId("text");
   ASSERT_TRUE(text_layout);
 
-  // ContainingBlockForTextOverflow() returns nullptr because the parent is a
+  // ContainerForTextOverflow() returns nullptr because the parent is a
   // flex container (non-block-container).
-  EXPECT_EQ(nullptr, text_layout->ContainingBlockForTextOverflow());
+  EXPECT_EQ(nullptr, text_layout->ContainerForTextOverflow());
 
-  // Since ContainingBlockForTextOverflow() is nullptr, no block will have
+  // Since ContainingerForTextOverflow() is nullptr, no block will have
   // ShouldTruncateOverflowingText() set to true. Verify this on the anonymous
   // block flow inside the flex container.
   const LayoutObject* flex_layout = GetLayoutObjectByElementId("flex");

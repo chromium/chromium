@@ -323,8 +323,8 @@ bool RootScrollerController::IsValidImplicit(const Element& element) const {
   // If any of the ancestors clip overflow, don't promote. Promoting a
   // descendant of an overflow clip means it may not resize when the URL bar
   // hides so we'd leave a portion of the page hidden/unreachable.
-  for (LayoutBox* ancestor = element.GetLayoutObject()->ContainingBlock();
-       ancestor; ancestor = ancestor->ContainingBlock()) {
+  for (LayoutBox* ancestor = element.GetLayoutObject()->ContainingBox();
+       ancestor; ancestor = ancestor->ContainingBox()) {
     // The LayoutView is allowed to have a clip (since its clip is resized by
     // the URL bar movement). Test it for scrolling so that we only promote if
     // we know we won't block scrolling the main document.

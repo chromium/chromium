@@ -1543,9 +1543,8 @@ void BlockNode::UpdateMarginPaddingInfoIfNeeded(
     // Copy back the %-size so that |LayoutBoxModelObject::ComputedCSSPadding|
     // is able to return the correct value. This isn't ideal, but eventually
     // we'll answer these queries from the fragment.
-    const auto* containing_block = box_->ContainingBlock();
-    if (containing_block && containing_block->IsLayoutGridOrGridLanes())
-        [[unlikely]] {
+    const auto* container = box_->ContainingBox();
+    if (container && container->IsLayoutGridOrGridLanes()) [[unlikely]] {
       box_->SetOverrideContainingBlockContentLogicalWidth(
           space.MarginPaddingPercentageResolutionSize().inline_size);
     }
@@ -1573,7 +1572,7 @@ void BlockNode::UpdateShapeOutsideInfoIfNeeded(
   // computing the shape area. There may be an issue with the new fragmentation
   // model and computing the correct sizes of shapes.
   ShapeOutsideInfo* shape_outside = box_->GetShapeOutsideInfo();
-  WritingMode writing_mode = box_->ContainingBlock()->Style().GetWritingMode();
+  WritingMode writing_mode = box_->ContainingBox()->Style().GetWritingMode();
   BoxStrut margins = ComputePhysicalMargins(constraint_space, Style())
                          .ConvertToLogical({writing_mode, TextDirection::kLtr});
   shape_outside->SetReferenceBoxLogicalSize(

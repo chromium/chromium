@@ -294,18 +294,18 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   FRIEND_TEST_ALL_PREFIXES(LayoutObjectTest, MutableForPaintingClearPaintFlags);
   FRIEND_TEST_ALL_PREFIXES(
       LayoutObjectTest,
-      ContainingBlockAbsoluteLayoutObjectShouldBeNonStaticallyPositionedBlockAncestor);
+      ContainingBoxAbsoluteLayoutObjectShouldBeNonStaticallyPositionedBlockAncestor);
   FRIEND_TEST_ALL_PREFIXES(LayoutObjectTest,
-                           ContainingBlockFixedLayoutObjectInTransformedDiv);
+                           ContainingBoxFixedLayoutObjectInTransformedDiv);
   FRIEND_TEST_ALL_PREFIXES(LayoutObjectTest,
-                           ContainingBlockFixedLayoutObjectInTransformedDiv);
+                           ContainingBoxFixedLayoutObjectInTransformedDiv);
   FRIEND_TEST_ALL_PREFIXES(LayoutObjectTest,
-                           ContainingBlockFixedLayoutObjectInBody);
+                           ContainingBoxFixedLayoutObjectInBody);
   FRIEND_TEST_ALL_PREFIXES(LayoutObjectTest,
-                           ContainingBlockAbsoluteLayoutObjectInBody);
+                           ContainingBoxAbsoluteLayoutObjectInBody);
   FRIEND_TEST_ALL_PREFIXES(
       LayoutObjectTest,
-      ContainingBlockAbsoluteLayoutObjectShouldNotBeNonStaticallyPositionedInlineAncestor);
+      ContainingBoxAbsoluteLayoutObjectShouldNotBeNonStaticallyPositionedInlineAncestor);
   FRIEND_TEST_ALL_PREFIXES(LayoutObjectTest, VisualRect);
 
   friend class VisualRectMappingTest;
@@ -491,11 +491,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // context root. |this| is required to be an object that participates in an
   // inline formatting context (i.e. something inline-level, or a float).
   LayoutBlockFlow* FragmentItemsContainer() const;
-
-  // Return the containing NG block, if the containing block is an NG block,
-  // or the LayoutMedia parent.
-  // Nullptr otherwise.
-  LayoutBox* ContainingNGBox() const;
 
   // Return the nearest fragmentation context root, if any.
   LayoutBox* ContainingFragmentationContextRoot() const;
@@ -2292,31 +2287,24 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   void SetModifiedStyleOutsideStyleRecalc(const ComputedStyle&,
                                           ApplyStyleChanges);
 
-  // This function returns an enclosing non-anonymous LayoutBlock for this
+  // This function returns an enclosing non-anonymous LayoutBox for this
   // element. This function is not always returning the containing block as
   // defined by CSS. In particular:
-  // - if the CSS containing block is a relatively positioned inline,
-  //   the function returns the inline's enclosing non-anonymous LayoutBlock.
-  //   This means that a LayoutInline would be skipped (expected as it's not a
-  //   LayoutBlock) but so would be an inline LayoutNGTable or LayoutBlockFlow.
-  //   TODO(jchaffraix): Is that REALLY what we want here?
+  // - if the CSS containing block is a relatively positioned inline, the
+  //   function returns the inline's enclosing non-anonymous LayoutBlockFlow.
   // - if the CSS containing block is anonymous, we find its enclosing
-  //   non-anonymous LayoutBlock.
-  //   Note that in the previous examples, the returned LayoutBlock has no
+  //   non-anonymous LayoutBox.
+  //   Note that in the previous examples, the returned LayoutBox has no
   //   logical relationship to the original element.
-  //
-  // LayoutBlocks are the one that handle laying out positioned elements,
-  // thus this function is important during layout, to insert the positioned
-  // elements into the correct LayoutBlock.
   //
   // See container() for the function that returns the containing block.
   // See layout_block.h for some extra explanations on containing blocks.
-  LayoutBox* ContainingBlock(AncestorSkipInfo* = nullptr) const;
+  LayoutBox* ContainingBox(AncestorSkipInfo* = nullptr) const;
 
   // Returns the containing block that owns the text-overflow style,
   // resolving anonymous blocks to their parent. Returns nullptr if the
   // resolved parent is not a block container (e.g., flex or inline).
-  LayoutObject* ContainingBlockForTextOverflow() const;
+  LayoutObject* ContainerForTextOverflow() const;
 
   // Returns the object whose scroll state decides whether text laid out in
   // this block container should be truncated. This is normally the block
@@ -2331,7 +2319,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // or null if there is none.
   LayoutObject* NearestAncestorForElement() const;
 
-  LayoutBox* InclusiveContainingBlock(AncestorSkipInfo* = nullptr);
+  LayoutBox* InclusiveContainingBox(AncestorSkipInfo* = nullptr);
 
   // Returns the nearest ancestor scroll container in any axis.
   const LayoutBox* ContainingScrollContainer(
@@ -3659,11 +3647,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
   // Returns ContainerForAbsolutePosition() if it's a LayoutBlock, or the
   // containing LayoutBlock of it.
-  LayoutBox* ContainingBlockForAbsolutePosition(
+  LayoutBox* ContainingBoxForAbsolutePosition(
       AncestorSkipInfo* = nullptr) const;
   // Returns ContainerForFixedPosition() if it's a LayoutBlock, or the
   // containing LayoutBlock of it.
-  LayoutBox* ContainingBlockForFixedPosition(AncestorSkipInfo* = nullptr) const;
+  LayoutBox* ContainingBoxForFixedPosition(AncestorSkipInfo* = nullptr) const;
 
   // Returns the first line style declared in CSS. The style may be declared on
   // an ancestor block (see LayoutBlock::FirstLineStyleParentBlock) that applies

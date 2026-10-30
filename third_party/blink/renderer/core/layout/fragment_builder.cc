@@ -1368,7 +1368,7 @@ void FragmentBuilder::AdjustFixedposContainerInfo(
       // Candidates whose containing block is inline are always positioned
       // inside closest parent block flow.
       if (box_fragment->GetLayoutObject() ==
-          fixedpos_inline_container->Container()->ContainingBlock()) {
+          fixedpos_inline_container->Container()->ContainingBox()) {
         *fixedpos_containing_block_fragment = box_fragment;
       }
     }

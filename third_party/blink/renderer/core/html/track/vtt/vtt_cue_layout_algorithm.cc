@@ -181,7 +181,7 @@ LayoutUnit VttCueLayoutAlgorithm::ComputeInitialPositionAdjustment(
 //
 // static
 PhysicalRect VttCueLayoutAlgorithm::CueBoundingBox(const LayoutBox& cue_box) {
-  const LayoutBox* container = cue_box.ContainingBlock();
+  const LayoutBox* container = cue_box.ContainingBox();
   PhysicalRect border_box =
       cue_box.LocalToAncestorRect(cue_box.PhysicalBorderBoxRect(), container);
   const PhysicalSize size = container->StitchedSize();
@@ -244,7 +244,7 @@ void VttCueLayoutAlgorithm::AdjustPositionWithSnapToLines() {
     return;
 
   const bool is_horizontal = cue_box.IsHorizontalWritingMode();
-  const LayoutBox& container = *cue_box.ContainingBlock();
+  const LayoutBox& container = *cue_box.ContainingBox();
 
   // 1. Horizontal: Let full dimension be the height of video's rendering area.
   //    Vertical: Let full dimension be the width of video's rendering area.
@@ -383,7 +383,7 @@ void VttCueLayoutAlgorithm::AdjustPositionWithoutSnapToLines() {
   }
 
   const bool is_horizontal = cue_box.IsHorizontalWritingMode();
-  const LayoutBox& container = *cue_box.ContainingBlock();
+  const LayoutBox& container = *cue_box.ContainingBox();
   const PhysicalRect area(PhysicalOffset(), container.StitchedSize());
 
   PhysicalRect bounding_box = CueBoundingBox(cue_box);

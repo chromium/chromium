@@ -216,10 +216,9 @@ TEST_P(MapCoordinatesTest, TextInRelPosInline) {
   LayoutObject* text = br->NextSibling();
   ASSERT_TRUE(text->IsText());
   PhysicalOffset mapped_point =
-      MapLocalToAncestor(text, text->ContainingBlock(), PhysicalOffset(10, 30));
+      MapLocalToAncestor(text, text->ContainingBox(), PhysicalOffset(10, 30));
   EXPECT_EQ(PhysicalOffset(10, 30), mapped_point);
-  mapped_point =
-      MapAncestorToLocal(text, text->ContainingBlock(), mapped_point);
+  mapped_point = MapAncestorToLocal(text, text->ContainingBox(), mapped_point);
   EXPECT_EQ(PhysicalOffset(10, 30), mapped_point);
 }
 
@@ -464,9 +463,9 @@ TEST_P(MapCoordinatesTest, FixedPosAuto) {
   ASSERT_TRUE(IsA<LayoutView>(view));
 
   PhysicalOffset mapped_point =
-      MapLocalToAncestor(target, target->ContainingBlock(), PhysicalOffset());
+      MapLocalToAncestor(target, target->ContainingBox(), PhysicalOffset());
   EXPECT_EQ(PhysicalOffset(36, 61), mapped_point);
-  mapped_point = MapAncestorToLocal(target, target->ContainingBlock(),
+  mapped_point = MapAncestorToLocal(target, target->ContainingBox(),
                                     PhysicalOffset(36, 61));
   EXPECT_EQ(PhysicalOffset(), mapped_point);
 
@@ -1115,18 +1114,17 @@ TEST_P(MapCoordinatesTest, FlippedBlocksWritingModeWithText) {
   // Map to the nearest container. Nothing special should happen because
   // everything is in physical coordinates.
   PhysicalOffset mapped_point =
-      MapLocalToAncestor(text, text->ContainingBlock(), PhysicalOffset(75, 10));
+      MapLocalToAncestor(text, text->ContainingBox(), PhysicalOffset(75, 10));
   EXPECT_EQ(PhysicalOffset(75, 10), mapped_point);
-  mapped_point =
-      MapAncestorToLocal(text, text->ContainingBlock(), mapped_point);
+  mapped_point = MapAncestorToLocal(text, text->ContainingBox(), mapped_point);
   EXPECT_EQ(PhysicalOffset(75, 10), mapped_point);
 
   // Map to a container further up in the tree.
   mapped_point = MapLocalToAncestor(
-      text, text->ContainingBlock()->ContainingBlock(), PhysicalOffset(75, 10));
+      text, text->ContainingBox()->ContainingBox(), PhysicalOffset(75, 10));
   EXPECT_EQ(PhysicalOffset(80, 10), mapped_point);
   mapped_point = MapAncestorToLocal(
-      text, text->ContainingBlock()->ContainingBlock(), mapped_point);
+      text, text->ContainingBox()->ContainingBox(), mapped_point);
   EXPECT_EQ(PhysicalOffset(75, 10), mapped_point);
 }
 
@@ -1159,27 +1157,26 @@ TEST_P(MapCoordinatesTest, FlippedBlocksWritingModeWithInline) {
   // everything is in physical coordinates.
   mapped_point =
       MapLocalToAncestor(To<LayoutBoxModelObject>(target->Parent()),
-                         target->ContainingBlock(), PhysicalOffset(75, 10));
+                         target->ContainingBox(), PhysicalOffset(75, 10));
   EXPECT_EQ(PhysicalOffset(75, 10), mapped_point);
   mapped_point = MapAncestorToLocal(To<LayoutBoxModelObject>(target->Parent()),
-                                    target->ContainingBlock(), mapped_point);
+                                    target->ContainingBox(), mapped_point);
   EXPECT_EQ(PhysicalOffset(75, 10), mapped_point);
 
   // Now map from the innermost inline to the nearest container in one go.
-  mapped_point = MapLocalToAncestor(target, target->ContainingBlock(),
+  mapped_point = MapLocalToAncestor(target, target->ContainingBox(),
                                     PhysicalOffset(75, 10));
   EXPECT_EQ(PhysicalOffset(75, 10), mapped_point);
   mapped_point =
-      MapAncestorToLocal(target, target->ContainingBlock(), mapped_point);
+      MapAncestorToLocal(target, target->ContainingBox(), mapped_point);
   EXPECT_EQ(PhysicalOffset(75, 10), mapped_point);
 
   // Map to a container further up in the tree.
-  mapped_point =
-      MapLocalToAncestor(target, target->ContainingBlock()->ContainingBlock(),
-                         PhysicalOffset(75, 10));
+  mapped_point = MapLocalToAncestor(
+      target, target->ContainingBox()->ContainingBox(), PhysicalOffset(75, 10));
   EXPECT_EQ(PhysicalOffset(82, 10), mapped_point);
   mapped_point = MapAncestorToLocal(
-      target, target->ContainingBlock()->ContainingBlock(), mapped_point);
+      target, target->ContainingBox()->ContainingBox(), mapped_point);
   EXPECT_EQ(PhysicalOffset(75, 10), mapped_point);
 }
 

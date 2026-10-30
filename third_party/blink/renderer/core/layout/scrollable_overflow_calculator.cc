@@ -333,9 +333,9 @@ PhysicalRect ScrollableOverflowCalculator::ScrollableOverflowForPropagation(
     LayoutObject::AncestorSkipInfo skip_info(node_.GetLayoutBox());
     OverflowClipAxes clipped_axes = kNoOverflowClip;
     for (const LayoutObject* walker =
-             child_fragment.GetLayoutObject()->ContainingBlock(&skip_info);
+             child_fragment.GetLayoutObject()->ContainingBox(&skip_info);
          walker != node_.GetLayoutBox() && !skip_info.AncestorSkipped();
-         walker = walker->ContainingBlock(&skip_info)) {
+         walker = walker->ContainingBox(&skip_info)) {
       if (OverflowClipAxes axes_to_clip = walker->GetOverflowClipAxes()) {
         // Shrink the overflow rectangle to be at most 1px large along the axes
         // to be clipped. Unconditionally setting it to 0 would prevent us from

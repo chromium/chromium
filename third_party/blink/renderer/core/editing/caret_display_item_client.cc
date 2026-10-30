@@ -82,7 +82,7 @@ LayoutBlock* CaretLayoutBlock(const Node* node,
   bool painted_by_block = caret_layout_object && CaretRendersInsideNode(node);
   return painted_by_block
              ? const_cast<LayoutBlock*>(caret_layout_object)
-             : DynamicTo<LayoutBlock>(layout_object->ContainingBlock());
+             : DynamicTo<LayoutBlock>(layout_object->ContainingBox());
 }
 
 PhysicalRect MapCaretRectToCaretPainter(const LayoutBlock* caret_block,
@@ -198,7 +198,7 @@ CaretDisplayItemClient::ComputeCaretRectAndPainterBlock(
       DCHECK_EQ(caret_block, CaretLayoutBlock(caret_position.AnchorNode(),
                                               caret_rect.layout_object));
     } else if (caret_block != caret_rect.layout_object) {
-      DCHECK_EQ(caret_block, caret_rect.layout_object->ContainingBlock());
+      DCHECK_EQ(caret_block, caret_rect.layout_object->ContainingBox());
     }
   } else {
     caret_block =

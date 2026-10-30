@@ -54,9 +54,9 @@ static const LayoutBox* EnclosingScrollableAncestor(
 
   // Trace up the containingBlocks until we reach either the layoutObject view
   // or a scrollable object.
-  const LayoutBox* container = layout_object->ContainingBlock();
+  const LayoutBox* container = layout_object->ContainingBox();
   while (!container->IsScrollContainer() && !IsA<LayoutView>(container))
-    container = container->ContainingBlock();
+    container = container->ContainingBox();
   return container;
 }
 

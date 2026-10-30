@@ -244,8 +244,9 @@ std::optional<LayoutBox*> GetScrollParent(
   // we're in a position:fixed element, we want to immediately bubble up across
   // the frame boundary since scrolling the frame won't affect the box's
   // position.
-  if (box.ContainingBlock() && !is_fixed_to_frame)
-    return box.ContainingBlock();
+  if (box.ContainingBox() && !is_fixed_to_frame) {
+    return box.ContainingBox();
+  }
 
   // Otherwise, we're bubbling across a frame boundary. We may be
   // prevented from doing so for security or policy reasons. If so, we're
@@ -580,7 +581,7 @@ ScrollableArea* GetScrollableAreaForLayoutBox(
     bool make_visible_in_visual_viewport) {
   if (box.IsScrollContainer() && !box.IsLayoutView()) {
     return box.GetScrollableArea();
-  } else if (!box.ContainingBlock()) {
+  } else if (!box.ContainingBox()) {
     return make_visible_in_visual_viewport
                ? box.GetFrameView()->GetScrollableArea()
                : box.GetFrameView()->LayoutViewport();

@@ -2992,7 +2992,7 @@ std::unique_ptr<protocol::DictionaryValue> BuildImcbInfo(
     return nullptr;
   }
 
-  LayoutBox* container = box->ContainingBlock();
+  LayoutBox* container = box->ContainingBox();
   if (!container) {
     return nullptr;
   }

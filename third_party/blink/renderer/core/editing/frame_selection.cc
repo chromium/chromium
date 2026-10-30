@@ -568,7 +568,7 @@ void FrameSelection::UpdateTextOverflowOfSelectionFocus(const Element& element,
     return;
   }
   LayoutObject* style_owner =
-      focus_node->GetLayoutObject()->ContainingBlockForTextOverflow();
+      focus_node->GetLayoutObject()->ContainerForTextOverflow();
   if (!style_owner || style_owner->ContainsSelectionFocus() == focused) {
     return;
   }

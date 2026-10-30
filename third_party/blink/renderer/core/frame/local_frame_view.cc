@@ -842,9 +842,9 @@ void LocalFrameView::PerformLayout() {
       // tree spine of a common ancestor.
       HeapHashMap<Member<const LayoutBox>, unsigned> fragment_tree_spines;
       for (auto& root : layout_subtree_root_list_.Unordered()) {
-        const LayoutBox* container_box = root->ContainingNGBox();
-        if (container_box && container_box->PhysicalFragmentCount()) {
-          auto add_result = fragment_tree_spines.insert(container_box, 0);
+        const LayoutBox* container = root->ContainingBox();
+        if (container && container->PhysicalFragmentCount()) {
+          auto add_result = fragment_tree_spines.insert(container, 0);
           ++add_result.stored_value->value;
         }
       }
@@ -859,9 +859,9 @@ void LocalFrameView::PerformLayout() {
           continue;
         }
         bool should_rebuild_fragments = false;
-        LayoutBox* container_box = root->ContainingNGBox();
-        if (container_box) {
-          auto it = fragment_tree_spines.find(container_box);
+        LayoutBox* container = root->ContainingBox();
+        if (container) {
+          auto it = fragment_tree_spines.find(container);
           DCHECK(it == fragment_tree_spines.end() || it->value > 0);
           // Ensure fragment-tree consistency just after all the cb's
           // descendants have completed their subtree layout.
@@ -873,13 +873,14 @@ void LocalFrameView::PerformLayout() {
           continue;
 
         if (should_rebuild_fragments)
-          container_box->RebuildFragmentTreeSpine();
+          container->RebuildFragmentTreeSpine();
 
         // We need to ensure that we mark up all layoutObjects up to the
         // LayoutView for paint invalidation. This simplifies our code as we
         // just always do a full tree walk.
-        if (LayoutObject* container = root_layout_object.Container())
-          container->SetShouldCheckForPaintInvalidation();
+        if (LayoutObject* root_container = root_layout_object.Container()) {
+          root_container->SetShouldCheckForPaintInvalidation();
+        }
       }
       layout_subtree_root_list_.Clear();
 #if EXPENSIVE_DCHECKS_ARE_ON()

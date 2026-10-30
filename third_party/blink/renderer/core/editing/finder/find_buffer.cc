@@ -50,8 +50,8 @@ const LayoutBlockFlow* GetInlineFormattingContext(const Node& node) {
   // For <textarea>, ignore internal anonymous IFCs for backward compatibility.
   if (block_flow && block_flow->IsAnonymous() &&
       node.IsInUserAgentShadowRoot()) {
-    for (const LayoutBox* parent = block_flow->ContainingBlock(); parent;
-         parent = parent->ContainingBlock()) {
+    for (const LayoutBox* parent = block_flow->ContainingBox(); parent;
+         parent = parent->ContainingBox()) {
       if (!parent->IsAnonymous() && parent->IsLayoutBlockFlow()) {
         return To<LayoutBlockFlow>(parent);
       }

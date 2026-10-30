@@ -4362,7 +4362,7 @@ float AXNodeObject::GetTextIndent() const {
     return 0.0f;
 
   const auto* layout_block =
-      DynamicTo<LayoutBlock>(GetLayoutObject()->InclusiveContainingBlock());
+      DynamicTo<LayoutBlock>(GetLayoutObject()->InclusiveContainingBox());
   if (!layout_block)
     return 0.0f;
   float text_indent = layout_block->TextIndentOffset().ToFloat();

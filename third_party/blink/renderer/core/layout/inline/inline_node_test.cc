@@ -1322,14 +1322,14 @@ TEST_F(InlineNodeTest, ClearFirstInlineFragmentOnSplitFlow) {
   EXPECT_TRUE(after_layout);
 
   // Check it is the one owned by the new root inline formatting context.
-  LayoutBox* inner_span_cb = inner_span->GetLayoutObject()->ContainingBlock();
+  LayoutBox* inner_span_box = inner_span->GetLayoutObject()->ContainingBox();
   LayoutObject* container = GetLayoutObjectByElementId("container");
-  EXPECT_EQ(inner_span_cb, container);
-  InlineCursor inner_span_cb_cursor(*To<LayoutBlockFlow>(inner_span_cb));
-  inner_span_cb_cursor.MoveToFirstLine();
-  inner_span_cb_cursor.MoveToFirstChild();
-  EXPECT_TRUE(inner_span_cb_cursor);
-  EXPECT_EQ(inner_span_cb_cursor.Current().GetLayoutObject(),
+  EXPECT_EQ(inner_span_box, container);
+  InlineCursor inner_span_box_cursor(*To<LayoutBlockFlow>(inner_span_box));
+  inner_span_box_cursor.MoveToFirstLine();
+  inner_span_box_cursor.MoveToFirstChild();
+  EXPECT_TRUE(inner_span_box_cursor);
+  EXPECT_EQ(inner_span_box_cursor.Current().GetLayoutObject(),
             outer_span->GetLayoutObject());
 }
 

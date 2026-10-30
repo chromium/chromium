@@ -7254,7 +7254,7 @@ void Element::SetTargetedSnapAreaIdsForSnapContainers() {
       box = box->ContainingScrollContainer();
       continue;
     }
-    box = box->ContainingBlock();
+    box = box->ContainingBox();
   }
 }
 
@@ -7266,7 +7266,7 @@ void Element::ClearTargetedSnapAreaIdsForSnapContainers() {
         scrollable_area->SetTargetedSnapAreaId(std::nullopt);
       }
     }
-    box = box->ContainingBlock();
+    box = box->ContainingBox();
   }
 }
 

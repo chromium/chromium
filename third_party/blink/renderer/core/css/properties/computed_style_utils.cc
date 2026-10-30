@@ -893,7 +893,7 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
   if ((offset.IsPercent() || offset.IsCalculated()) && box) {
     const LayoutUnit containing_block_size =
         is_horizontal_property ==
-                box->ContainingBlock()->IsHorizontalWritingMode()
+                box->ContainingBox()->IsHorizontalWritingMode()
             ? box->ContainingBlockLogicalWidthForContent()
             : box->ContainingBlockLogicalHeightForRelPositioned();
     UseCounter::Count(box->GetDocument(),
@@ -916,7 +916,7 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
       if (box) {
         LayoutUnit containing_block_size =
             is_horizontal_property ==
-                    layout_object->ContainingBlock()->IsHorizontalWritingMode()
+                    layout_object->ContainingBox()->IsHorizontalWritingMode()
                 ? box->ContainingBlockLogicalWidthForContent()
                 : box->ContainingBlockLogicalHeightForRelPositioned();
         return ZoomAdjustedPixelValue(

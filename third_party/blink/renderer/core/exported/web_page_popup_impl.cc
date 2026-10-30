@@ -116,7 +116,7 @@ Node* FindFirstScroller(Node* event_target) {
     if (CanScroll(node)) {
       return node;
     }
-    box = box->ContainingBlock();
+    box = box->ContainingBox();
   }
   return nullptr;
 }

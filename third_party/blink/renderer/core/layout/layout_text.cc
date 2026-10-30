@@ -760,7 +760,7 @@ void LayoutText::LogicalStartingPointAndHeight(
       logical_starting_point = {physical_offset.left, physical_offset.top};
       return;
     }
-    PhysicalSize outer_size = ContainingBlock()->StitchedSize();
+    PhysicalSize outer_size = ContainingBox()->StitchedSize();
     logical_starting_point =
         WritingModeConverter(Style().GetWritingDirection(), outer_size)
             .ToLogical(physical_offset, cursor.Current().Size());

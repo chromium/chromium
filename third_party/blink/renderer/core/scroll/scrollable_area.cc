@@ -1497,7 +1497,7 @@ LayoutBox* GetEnclosingLayoutBoxCrossingDocumentBoundary(
   return IsA<LayoutView>(layout_box)
              ? static_cast<LayoutBox*>(
                    layout_box->GetFrame()->OwnerLayoutObject())
-             : static_cast<LayoutBox*>(layout_box->ContainingBlock());
+             : layout_box->ContainingBox();
 }
 
 ScrollableArea* GetNearestScrollableArea(LayoutBox* current_box) {

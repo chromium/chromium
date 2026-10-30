@@ -63,7 +63,7 @@ void ShapeOutsideInfo::SetReferenceBoxLogicalSize(
     LogicalSize margin_size) {
   Document& document = layout_box_->GetDocument();
   const WritingDirectionMode writing_direction =
-      layout_box_->ContainingBlock()->Style().GetWritingDirection();
+      layout_box_->ContainingBox()->Style().GetWritingDirection();
 
   LogicalSize margin_box_for_use_counter = new_reference_box_logical_size;
   margin_box_for_use_counter.Expand(margin_size.inline_size,
@@ -140,9 +140,8 @@ static PhysicalRect GetShapeImagePhysicalMarginRect(
 }
 
 PhysicalSize ShapeOutsideInfo::ReferenceBoxPhysicalSize() const {
-  return ToPhysicalSize(
-      reference_box_logical_size_,
-      layout_box_->ContainingBlock()->Style().GetWritingMode());
+  return ToPhysicalSize(reference_box_logical_size_,
+                        layout_box_->ContainingBox()->Style().GetWritingMode());
 }
 
 std::unique_ptr<Shape> ShapeOutsideInfo::CreateShapeForImage(
@@ -198,8 +197,7 @@ const Shape& ShapeOutsideInfo::ComputedShape() const {
   base::AutoReset<bool> is_in_computing_shape(&is_computing_shape_, true);
 
   const ComputedStyle& style = layout_box_->Style();
-  const ComputedStyle& container_style =
-      layout_box_->ContainingBlock()->Style();
+  const ComputedStyle& container_style = layout_box_->ContainingBox()->Style();
 
   WritingMode writing_mode = container_style.GetWritingMode();
   float margin =
@@ -250,8 +248,7 @@ LogicalOffset ShapeOutsideInfo::LogicalStartOffset() const {
         return layout_box_->BorderOutsets() + layout_box_->PaddingOutsets();
     }
   })();
-  const ComputedStyle& container_style =
-      layout_box_->ContainingBlock()->Style();
+  const ComputedStyle& container_style = layout_box_->ContainingBox()->Style();
   return outsets.ConvertToLogical(container_style.GetWritingDirection())
       .StartOffset();
 }

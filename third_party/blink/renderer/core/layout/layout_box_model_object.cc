@@ -251,7 +251,7 @@ void LayoutBoxModelObject::StyleDidChange(
   }
 
   if (old_style && Parent()) {
-    LayoutBox* container = InclusiveContainingBlock();
+    LayoutBox* container = InclusiveContainingBox();
 
     if ((could_contain_fixed && !can_contain_fixed) ||
         (could_contain_absolute && !can_contain_absolute)) {
@@ -264,16 +264,18 @@ void LayoutBoxModelObject::StyleDidChange(
       // Remove our absolute positioned descendants from their current
       // containing block.
       // They will be inserted into our positioned objects list during layout.
-      if (LayoutBox* cb = container->ContainingBlockForAbsolutePosition()) {
-        cb->RemovePositionedObjects(this);
+      if (LayoutBox* absolute_container =
+              container->ContainingBoxForAbsolutePosition()) {
+        absolute_container->RemovePositionedObjects(this);
       }
     }
     if (!could_contain_fixed && can_contain_fixed) {
       // Remove our fixed positioned descendants from their current containing
       // block.
       // They will be inserted into our positioned objects list during layout.
-      if (LayoutBox* cb = container->ContainingBlockForFixedPosition()) {
-        cb->RemovePositionedObjects(this);
+      if (LayoutBox* fixed_container =
+              container->ContainingBoxForFixedPosition()) {
+        fixed_container->RemovePositionedObjects(this);
       }
     }
   }
@@ -542,7 +544,7 @@ PhysicalRect LayoutBoxModelObject::ApplyFiltersToRect(
 
 LayoutBox* LayoutBoxModelObject::StickyContainer() const {
   NOT_DESTROYED();
-  return ContainingBlock();
+  return ContainingBox();
 }
 
 StickyConstraintsData LayoutBoxModelObject::ComputeStickyPositionConstraints(
@@ -571,7 +573,7 @@ StickyConstraintsData LayoutBoxModelObject::ComputeStickyPositionConstraints(
         sticky_container->Parent()->IsFieldset()) {
       break;
     }
-    sticky_container = sticky_container->ContainingBlock();
+    sticky_container = sticky_container->ContainingBox();
   }
 
   const auto* scroll_container = scroll_container_layer.GetLayoutBox();
@@ -861,7 +863,7 @@ PhysicalBoxStrut LayoutBoxModelObject::ComputedPaddingOutsets() const {
 
 LayoutUnit LayoutBoxModelObject::ContainingBlockLogicalWidthForContent() const {
   NOT_DESTROYED();
-  return ContainingBlock()->ContentLogicalWidth();
+  return ContainingBox()->ContentLogicalWidth();
 }
 
 LogicalRect LayoutBoxModelObject::LocalCaretRectForEmptyElement(

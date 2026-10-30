@@ -1463,7 +1463,7 @@ namespace {
 
 gfx::RectF GetReferenceBox(const LayoutBox* box, CoordBox coord_box) {
   if (box) {
-    if (const LayoutBox* containing_block = box->ContainingBlock()) {
+    if (const LayoutBox* container = box->ContainingBox()) {
       // In SVG contexts, all values behave as view-box.
       if (box->IsSVG()) {
         return gfx::RectF(SVGViewportResolver(*box).ResolveViewport());
@@ -1472,13 +1472,13 @@ gfx::RectF GetReferenceBox(const LayoutBox* box, CoordBox coord_box) {
       switch (coord_box) {
         case CoordBox::kFillBox:
         case CoordBox::kContentBox:
-          return gfx::RectF(containing_block->PhysicalContentBoxRect());
+          return gfx::RectF(container->PhysicalContentBoxRect());
         case CoordBox::kPaddingBox:
-          return gfx::RectF(containing_block->PhysicalPaddingBoxRect());
+          return gfx::RectF(container->PhysicalPaddingBoxRect());
         case CoordBox::kViewBox:
         case CoordBox::kStrokeBox:
         case CoordBox::kBorderBox:
-          return gfx::RectF(containing_block->PhysicalBorderBoxRect());
+          return gfx::RectF(container->PhysicalBorderBoxRect());
       }
     }
   }
@@ -1487,12 +1487,11 @@ gfx::RectF GetReferenceBox(const LayoutBox* box, CoordBox coord_box) {
   return gfx::RectF();
 }
 
-gfx::PointF GetOffsetFromContainingBlock(const LayoutBox* box) {
+gfx::PointF GetOffsetFromContainingBox(const LayoutBox* box) {
   if (box) {
-    if (const LayoutBox* containing_block = box->ContainingBlock()) {
-      gfx::PointF offset =
-          box->LocalToAncestorPoint(gfx::PointF(), containing_block,
-                                    {MapCoordinatesMode::kIgnoreTransforms});
+    if (const LayoutBox* container = box->ContainingBox()) {
+      gfx::PointF offset = box->LocalToAncestorPoint(
+          gfx::PointF(), container, {MapCoordinatesMode::kIgnoreTransforms});
       return offset;
     }
   }
@@ -1631,8 +1630,7 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
       case BasicShape::kStyleRayType: {
         const gfx::RectF reference_box = GetReferenceBox(box, coord_box);
         const gfx::PointF offset_from_reference_box =
-            GetOffsetFromContainingBlock(box) -
-            reference_box.OffsetFromOrigin();
+            GetOffsetFromContainingBox(box) - reference_box.OffsetFromOrigin();
         const gfx::SizeF& reference_box_size = reference_box.size();
         const StyleRay& ray = To<StyleRay>(basic_shape);
         // Specifies the origin of the ray, where the ray’s line begins (the 0%
@@ -1665,8 +1663,7 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
       case BasicShape::kStyleShapeType: {
         const gfx::RectF reference_box = GetReferenceBox(box, coord_box);
         const gfx::PointF offset_from_reference_box =
-            GetOffsetFromContainingBlock(box) -
-            reference_box.OffsetFromOrigin();
+            GetOffsetFromContainingBox(box) - reference_box.OffsetFromOrigin();
         const gfx::SizeF& reference_box_size = reference_box.size();
         const gfx::PointF starting_point = GetStartingPointOfThePath(
             offset_from_reference_box, position, reference_box_size);
@@ -1679,11 +1676,11 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
       }
     }
   } else if (IsA<CoordBoxOffsetPathOperation>(offset_path)) {
-    if (box && box->ContainingBlock()) {
-      const ComputedStyle& style = box->ContainingBlock()->Style();
+    if (box && box->ContainingBox()) {
+      const ComputedStyle& style = box->ContainingBox()->Style();
       const gfx::RectF reference_box = GetReferenceBox(box, coord_box);
       const gfx::PointF offset_from_reference_box =
-          GetOffsetFromContainingBlock(box) - reference_box.OffsetFromOrigin();
+          GetOffsetFromContainingBox(box) - reference_box.OffsetFromOrigin();
       const gfx::SizeF& reference_box_size = reference_box.size();
       const bool has_ordinary_rounded_corners =
           style.CornerTopLeftShape() == Superellipse::Round() &&
