@@ -200,33 +200,14 @@ void FaviconHandler::FetchFavicon(const GURL& page_url, bool is_same_document) {
     return;
   }
 
-  cancelable_task_tracker_for_page_url_.TryCancelAll();
-  cancelable_task_tracker_for_candidates_.TryCancelAll();
-
   // We generally clear `page_urls_` and start clean unless there are obvious
   // reasons to think URLs share favicons: the navigation must be within the
   // same document (e.g. fragment navigation) AND it happened so early that no
   // candidates were received for the previous URL(s) (e.g. redirect-like
   // history.replaceState() during page load).
-  if (!is_same_document || candidates_received_) {
-    page_urls_.clear();
-  }
+  ResetState(/*reset_page_urls=*/!is_same_document || candidates_received_);
   page_urls_.insert(page_url);
   last_page_url_ = page_url;
-
-  initial_history_result_expired_or_incomplete_ = false;
-  redownload_icons_ = false;
-  got_favicon_from_history_ = false;
-  manifest_download_request_.Cancel();
-  image_download_request_.Cancel();
-  candidates_received_ = false;
-  manifest_url_ = GURL();
-  non_manifest_original_candidates_.clear();
-  final_candidates_.reset();
-  notification_icon_url_ = GURL();
-  notification_icon_type_ = favicon_base::IconType::kInvalid;
-  current_candidate_index_ = 0u;
-  best_favicon_ = DownloadedFavicon();
 
   // Request the favicon from the history service. In parallel to this the
   // renderer is going to notify us (well WebContents) when the favicon url is
@@ -244,6 +225,34 @@ void FaviconHandler::FetchFavicon(const GURL& page_url, bool is_same_document) {
   } else {
     OnFaviconDataForInitialURLFromFaviconService({});
   }
+}
+
+void FaviconHandler::CancelPendingFaviconRequests() {
+  ResetState(/*reset_page_urls=*/true);
+}
+
+void FaviconHandler::ResetState(bool reset_page_urls) {
+  cancelable_task_tracker_for_page_url_.TryCancelAll();
+  cancelable_task_tracker_for_candidates_.TryCancelAll();
+
+  if (reset_page_urls) {
+    page_urls_.clear();
+  }
+  last_page_url_ = GURL();
+
+  initial_history_result_expired_or_incomplete_ = false;
+  redownload_icons_ = false;
+  got_favicon_from_history_ = false;
+  manifest_download_request_.Cancel();
+  image_download_request_.Cancel();
+  candidates_received_ = false;
+  manifest_url_ = GURL();
+  non_manifest_original_candidates_.clear();
+  final_candidates_.reset();
+  notification_icon_url_ = GURL();
+  notification_icon_type_ = favicon_base::IconType::kInvalid;
+  current_candidate_index_ = 0u;
+  best_favicon_ = DownloadedFavicon();
 }
 
 bool FaviconHandler::ShouldDownloadNextCandidate() const {

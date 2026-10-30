@@ -1840,6 +1840,51 @@ TEST_F(FaviconHandlerTest, SetFaviconsForMultipleUrlsWithinDocument) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(FaviconHandlerTest, SetFaviconsForLastPageUrlAfterCandidatesReceived) {
+  const GURL kDifferentPageURL("http://www.google.com/other");
+  auto handler = RunHandlerWithSimpleFaviconCandidates({kIconURL16x16});
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(favicon_service_,
+              SetFavicons(base::flat_set<GURL>{kDifferentPageURL},
+                          kIconURL12x12, _, _));
+  EXPECT_CALL(delegate_,
+              OnFaviconUpdated(kDifferentPageURL,
+                               FaviconDriverObserver::NON_TOUCH_16_DIP,
+                               kIconURL12x12, _, _))
+      .WillOnce(testing::InvokeWithoutArgs([&] { run_loop.Quit(); }));
+
+  handler->FetchFavicon(kDifferentPageURL, /*is_same_document=*/true);
+  handler->OnUpdateCandidates(
+      kDifferentPageURL, {FaviconURL(kIconURL12x12, kFavicon, kEmptySizes)},
+      /*manifest_url=*/GURL());
+  run_loop.Run();
+}
+
+TEST_F(FaviconHandlerTest, CancelPendingFaviconRequests) {
+  delegate_.fake_image_downloader().SetRunCallbackManuallyForUrl(kIconURL16x16);
+
+  EXPECT_CALL(favicon_service_, SetFavicons).Times(0);
+  EXPECT_CALL(delegate_, OnFaviconUpdated).Times(0);
+
+  std::unique_ptr<FaviconHandler> handler =
+      RunHandlerWithSimpleFaviconCandidates({kIconURL16x16});
+  ASSERT_TRUE(delegate_.fake_image_downloader().HasPendingManualCallback());
+  ASSERT_TRUE(handler->HasPendingTasksForTest());
+
+  handler->CancelPendingFaviconRequests();
+  EXPECT_FALSE(handler->HasPendingTasksForTest());
+
+  // Completing the canceled download and sending late candidates for the
+  // canceled page should both be ignored.
+  EXPECT_TRUE(delegate_.fake_image_downloader().RunCallbackManually());
+  delegate_.ClearDownloads();
+  handler->OnUpdateCandidates(
+      kPageURL, {FaviconURL(kIconURL12x12, kFavicon, kEmptySizes)},
+      /*manifest_url=*/GURL());
+  EXPECT_THAT(delegate_.downloads(), IsEmpty());
+}
+
 // Manifests are currently enabled by default. Leaving this fixture for
 // logical grouping and blame layer.
 class FaviconHandlerManifestsEnabledTest : public FaviconHandlerTest {

@@ -240,7 +240,14 @@ void ContentFaviconDriver::DidStartNavigation(
 void ContentFaviconDriver::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
+      !navigation_handle->HasCommitted()) {
+    return;
+  }
+
+  if (navigation_handle->IsErrorPage()) {
+    // Error pages replace the committed entry without fetching a favicon.
+    // Cancel pending work so the previous page's icon cannot update this entry.
+    CancelPendingFaviconRequests();
     return;
   }
 

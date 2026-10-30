@@ -9,22 +9,29 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/test_simple_task_runner.h"
 #include "build/build_config.h"
 #include "components/favicon/core/favicon_client.h"
+#include "components/favicon/core/favicon_driver_observer.h"
 #include "components/favicon/core/favicon_handler.h"
 #include "components/favicon/core/test/favicon_driver_impl_test_helper.h"
 #include "components/favicon/core/test/mock_favicon_service.h"
 #include "content/public/browser/invalidate_type.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
@@ -347,6 +354,44 @@ TEST_F(ContentFaviconDriverTestNoFaviconService,
   // which should trigger notifying the callback for the manifest and *not*
   // crash.
   DeleteContents();
+}
+
+// Regression test for https://crbug.com/549900459.
+TEST_F(ContentFaviconDriverTest, StaleEntryAfterCommittedErrorPage) {
+  const GURL kFailedURL = GURL("https://does-not-resolve.example/");
+
+  ContentFaviconDriver* favicon_driver =
+      ContentFaviconDriver::FromWebContents(web_contents());
+  FaviconDriverImplTestHelper::RecreateHandlerForType(
+      favicon_driver, FaviconDriverObserver::NON_TOUCH_16_DIP);
+
+  bool has_run_result_callback = false;
+  auto lookup_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+  EXPECT_CALL(favicon_service_, GetFaviconForPageURL(kPageURL, _, _, _, _))
+      .WillOnce([&](auto, auto, auto,
+                    favicon_base::FaviconResultsCallback lookup_callback,
+                    base::CancelableTaskTracker* lookup_tracker) {
+        return lookup_tracker->PostTask(lookup_runner.get(), FROM_HERE,
+                                        base::BindLambdaForTesting([&] {
+                                          has_run_result_callback = true;
+                                        }));
+      });
+
+  web_contents_tester()->NavigateAndCommit(kPageURL);
+  ASSERT_TRUE(lookup_runner->HasPendingTask());
+
+  // Keep the lookup pending until the error page has committed.
+  auto failed = content::NavigationSimulator::CreateBrowserInitiated(
+      kFailedURL, web_contents());
+  failed->Fail(net::ERR_NAME_NOT_RESOLVED);
+  failed->CommitErrorPage();
+  ASSERT_EQ(kFailedURL,
+            web_contents()->GetController().GetLastCommittedEntry()->GetURL());
+
+  lookup_runner->RunPendingTasks();
+  EXPECT_FALSE(lookup_runner->HasPendingTask());
+  EXPECT_FALSE(favicon_driver->HasPendingTasksForTest());
+  EXPECT_FALSE(has_run_result_callback);
 }
 
 }  // namespace

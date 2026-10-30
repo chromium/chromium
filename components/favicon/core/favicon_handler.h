@@ -155,6 +155,11 @@ class FaviconHandler {
   // For testing.
   const std::vector<GURL> GetIconURLs() const;
 
+  // Cancels pending favicon work and resets internal state for the previous
+  // page. Called when a committed navigation will not start a new favicon
+  // lookup (e.g. an error page).
+  void CancelPendingFaviconRequests();
+
   // Returns whether the handler is waiting for a download to complete or for
   // data from the CoreFaviconService. Reserved for testing.
   bool HasPendingTasksForTest();
@@ -195,6 +200,10 @@ class FaviconHandler {
   // handler's type.
   static favicon_base::IconTypeSet GetIconTypesFromHandlerType(
       FaviconDriverObserver::NotificationIconType handler_type);
+
+  // Cancels any in-flight tasks/downloads and resets per-navigation state.
+  // Clears `page_urls_` when `reset_page_urls` is true.
+  void ResetState(bool reset_page_urls);
 
   // Called with the result of looking up cached icon data for the manifest's
   // URL, which is used as icon URL.

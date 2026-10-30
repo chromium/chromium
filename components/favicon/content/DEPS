@@ -7,6 +7,9 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "content_favicon_driver_unittest\.cc": [
+    "+net/base/net_errors.h",
+  ],
   "content_favicon_util_unittest\.cc": [
     "+net/base/net_errors.h",
   ],

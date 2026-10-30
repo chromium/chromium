@@ -49,6 +49,11 @@ class FaviconDriverImpl : public FaviconDriver,
   // failures.
   void SetFaviconOutOfDateForPage(const GURL& url, bool force_reload);
 
+  // Cancels pending favicon work for all handlers and clears their page URLs.
+  // Call for committed navigations that do not call FetchFavicon(), such as
+  // error pages.
+  void CancelPendingFaviconRequests();
+
   // Broadcasts new favicon URL candidates to FaviconHandlers.
   void OnUpdateCandidates(const GURL& page_url,
                           const std::vector<FaviconURL>& candidates,
