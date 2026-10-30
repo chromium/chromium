@@ -177,7 +177,7 @@ bool ChromeRLZTrackerDelegate::ClearReferral() {
 
 void ChromeRLZTrackerDelegate::SetOmniboxSearchCallback(
     base::OnceClosure callback) {
-  DCHECK(!callback.is_null());
+  CHECK(!callback.is_null(), base::NotFatalUntil::M163);
   omnibox_url_opened_subscription_ =
       OmniboxEventGlobalTracker::GetInstance()->RegisterCallback(
           base::BindRepeating(&ChromeRLZTrackerDelegate::OnURLOpenedFromOmnibox,
@@ -187,7 +187,7 @@ void ChromeRLZTrackerDelegate::SetOmniboxSearchCallback(
 
 void ChromeRLZTrackerDelegate::SetHomepageSearchCallback(
     base::OnceClosure callback) {
-  DCHECK(!callback.is_null());
+  CHECK(!callback.is_null(), base::NotFatalUntil::M163);
   on_homepage_search_callback_ = std::move(callback);
 }
 

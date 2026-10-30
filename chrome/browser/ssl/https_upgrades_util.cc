@@ -50,7 +50,8 @@ bool IsHostnameInHttpAllowlist(const GURL& url, PrefService* prefs) {
 
 void AllowHttpForHostnamesForTesting(const std::vector<std::string>& hostnames,
                                      PrefService* prefs) {
-  DCHECK(prefs->GetList(prefs::kHttpAllowlist).empty());
+  CHECK(prefs->GetList(prefs::kHttpAllowlist).empty(),
+        base::NotFatalUntil::M163);
 
   base::ListValue allowed_hosts;
   for (const std::string& hostname : hostnames) {

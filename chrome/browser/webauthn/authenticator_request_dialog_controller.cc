@@ -578,15 +578,17 @@ void AuthenticatorRequestDialogController::OnGPMRecoverSecurityDomainClosed() {
 
 void AuthenticatorRequestDialogController::
     ContinueWithFlowAfterBleAdapterPowered() {
-  DCHECK(model_->step() == Step::kBlePowerOnManual ||
-         model_->step() == Step::kBlePowerOnAutomatic);
-  DCHECK(model_->ble_adapter_is_powered);
+  CHECK(model_->step() == Step::kBlePowerOnManual ||
+            model_->step() == Step::kBlePowerOnAutomatic,
+        base::NotFatalUntil::M163);
+  CHECK(model_->ble_adapter_is_powered, base::NotFatalUntil::M163);
 
   std::move(after_ble_adapter_powered_).Run();
 }
 
 void AuthenticatorRequestDialogController::PowerOnBleAdapter() {
-  DCHECK_EQ(model_->step(), Step::kBlePowerOnAutomatic);
+  CHECK_EQ(model_->step(), Step::kBlePowerOnAutomatic,
+           base::NotFatalUntil::M163);
   if (!bluetooth_adapter_power_on_callback_) {
     return;
   }
@@ -596,7 +598,7 @@ void AuthenticatorRequestDialogController::PowerOnBleAdapter() {
 
 void AuthenticatorRequestDialogController::OpenBlePreferences() {
 #if BUILDFLAG(IS_MAC)
-  DCHECK_EQ(model_->step(), Step::kBlePermissionMac);
+  CHECK_EQ(model_->step(), Step::kBlePermissionMac, base::NotFatalUntil::M163);
   base::mac::OpenSystemSettingsPane(
       base::mac::SystemSettingsPane::kPrivacySecurity_Bluetooth);
 #endif  // IS_MAC
@@ -664,7 +666,8 @@ void AuthenticatorRequestDialogController::OnRequestComplete() {
 }
 
 void AuthenticatorRequestDialogController::OnResidentCredentialConfirmed() {
-  DCHECK_EQ(model_->step(), Step::kResidentCredentialConfirmation);
+  CHECK_EQ(model_->step(), Step::kResidentCredentialConfirmation,
+           base::NotFatalUntil::M163);
   HideDialogAndDispatchToPlatformAuthenticator(AuthenticatorType::kWinNative);
 }
 
@@ -744,11 +747,12 @@ bool AuthenticatorRequestDialogController::is_request_complete() const {
 void AuthenticatorRequestDialogController::StartFlow(
     TransportAvailabilityInfo transport_availability,
     PasswordCredentials passwords) {
-  DCHECK(!started_);
-  DCHECK_EQ(model_->step(), Step::kNotStarted);
-  DCHECK_EQ(
+  CHECK(!started_, base::NotFatalUntil::M163);
+  CHECK_EQ(model_->step(), Step::kNotStarted, base::NotFatalUntil::M163);
+  CHECK_EQ(
       transport_availability.attestation_conveyance_preference.has_value(),
-      transport_availability.request_type == FidoRequestType::kMakeCredential);
+      transport_availability.request_type == FidoRequestType::kMakeCredential,
+      base::NotFatalUntil::M163);
 
   started_ = true;
   transport_availability_ = std::move(transport_availability);
@@ -1153,7 +1157,8 @@ void AuthenticatorRequestDialogController::OnBleStatusKnown(
 }
 
 void AuthenticatorRequestDialogController::TryUsbDevice() {
-  DCHECK_EQ(model_->step(), Step::kUsbInsertAndActivate);
+  CHECK_EQ(model_->step(), Step::kUsbInsertAndActivate,
+           base::NotFatalUntil::M163);
 }
 
 void AuthenticatorRequestDialogController::StartPlatformAuthenticatorFlow() {
@@ -1240,12 +1245,12 @@ void AuthenticatorRequestDialogController::OnRequestTimeout() {
 }
 
 void AuthenticatorRequestDialogController::OnActivatedKeyNotRegistered() {
-  DCHECK(!is_request_complete());
+  CHECK(!is_request_complete(), base::NotFatalUntil::M163);
   SetCurrentStep(Step::kKeyNotRegistered);
 }
 
 void AuthenticatorRequestDialogController::OnActivatedKeyAlreadyRegistered() {
-  DCHECK(!is_request_complete());
+  CHECK(!is_request_complete(), base::NotFatalUntil::M163);
   SetCurrentStep(Step::kKeyAlreadyRegistered);
 }
 
@@ -1436,8 +1441,9 @@ void AuthenticatorRequestDialogController::AddAuthenticator(
   // Only the webauthn.dll authenticator omits a transport completely. This
   // makes sense given how it works, but here it is treated as a platform
   // authenticator and so given a `kInternal` transport.
-  DCHECK(authenticator.AuthenticatorTransport() ||
-         authenticator.GetType() == AuthenticatorType::kWinNative);
+  CHECK(authenticator.AuthenticatorTransport() ||
+            authenticator.GetType() == AuthenticatorType::kWinNative,
+        base::NotFatalUntil::M163);
   const AuthenticatorTransport transport =
       authenticator.AuthenticatorTransport().value_or(
           AuthenticatorTransport::kInternal);
@@ -1486,7 +1492,7 @@ AuthenticatorType AuthenticatorRequestDialogController::OnAccountPreselected(
       << "OnAccountPreselected() called with unknown credential_id "
       << base::HexEncode(credential_id);
   const AuthenticatorType source = cred->source;
-  DCHECK(account_preselected_callback_);
+  CHECK(account_preselected_callback_, base::NotFatalUntil::M163);
   account_preselected_callback_.Run(*cred);
   model_->preselected_cred = *cred;
 
@@ -1552,7 +1558,8 @@ void AuthenticatorRequestDialogController::StartInlineBioEnrollment(
 
 void AuthenticatorRequestDialogController::OnSampleCollected(
     int bio_samples_remaining) {
-  DCHECK(model_->step() == Step::kInlineBioEnrollment);
+  CHECK(model_->step() == Step::kInlineBioEnrollment,
+        base::NotFatalUntil::M163);
 
   model_->bio_samples_remaining = bio_samples_remaining;
   if (!model_->max_bio_samples) {
@@ -1756,14 +1763,15 @@ void AuthenticatorRequestDialogController::SetCurrentStep(Step step) {
 
 void AuthenticatorRequestDialogController::StartGuidedFlowForTransport(
     AuthenticatorTransport transport) {
-  DCHECK(model_->step() == Step::kMechanismSelection ||
-         model_->step() == Step::kUsbInsertAndActivate ||
-         model_->step() == Step::kPasskeyAutofill ||
-         model_->step() == Step::kChromeProfileCreatePasskey ||
-         model_->step() == Step::kPreSelectAccount ||
-         model_->step() == Step::kSelectPriorityMechanism ||
-         model_->step() == Step::kSelectAccount ||
-         model_->step() == Step::kNotStarted);
+  CHECK(model_->step() == Step::kMechanismSelection ||
+            model_->step() == Step::kUsbInsertAndActivate ||
+            model_->step() == Step::kPasskeyAutofill ||
+            model_->step() == Step::kChromeProfileCreatePasskey ||
+            model_->step() == Step::kPreSelectAccount ||
+            model_->step() == Step::kSelectPriorityMechanism ||
+            model_->step() == Step::kSelectAccount ||
+            model_->step() == Step::kNotStarted,
+        base::NotFatalUntil::M163);
   switch (transport) {
     case AuthenticatorTransport::kUsbHumanInterfaceDevice:
       SetCurrentStep(Step::kUsbInsertAndActivate);
@@ -1788,7 +1796,8 @@ void AuthenticatorRequestDialogController::StartHybridFlow() {
 }
 
 void AuthenticatorRequestDialogController::StartWinNativeApi() {
-  DCHECK(transport_availability_.has_win_native_api_authenticator);
+  CHECK(transport_availability_.has_win_native_api_authenticator,
+        base::NotFatalUntil::M163);
   if (transport_availability_.request_is_internal_only &&
       !transport_availability_.win_is_uvpaa) {
     model_->offer_try_again_in_ui = false;
@@ -1806,7 +1815,7 @@ void AuthenticatorRequestDialogController::StartWinNativeApi() {
 }
 
 void AuthenticatorRequestDialogController::StartICloudKeychain() {
-  DCHECK(transport_availability_.has_icloud_keychain);
+  CHECK(transport_availability_.has_icloud_keychain, base::NotFatalUntil::M163);
   if (transport_availability_.has_icloud_keychain_credential ==
           device::FidoRequestHandlerBase::RecognizedCredential::
               kHasRecognizedCredential &&

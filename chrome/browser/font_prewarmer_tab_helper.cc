@@ -209,7 +209,7 @@ void FontPrewarmerTabHelper::DidStartNavigation(
   if (expected_render_process_host_id_) {
     content::RenderProcessHost* rph =
         content::RenderProcessHost::FromID(expected_render_process_host_id_);
-    DCHECK(rph);
+    CHECK(rph, base::NotFatalUntil::M163);
     FontPrewarmerCoordinator::ForProfile(GetProfile()).SendFontsToPrewarm(rph);
   }
 }
@@ -220,7 +220,7 @@ void FontPrewarmerTabHelper::ReadyToCommitNavigation(
     return;
 
   content::RenderFrameHost* rfh = navigation_handle->GetRenderFrameHost();
-  DCHECK(rfh);
+  CHECK(rfh, base::NotFatalUntil::M163);
   FontPrewarmerCoordinator& coordinator =
       FontPrewarmerCoordinator::ForProfile(GetProfile());
   if (expected_render_process_host_id_ != rfh->GetProcess()->GetID()) {

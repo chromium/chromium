@@ -75,7 +75,7 @@ int g_http_port_for_testing = 0;
 // port changed. For tests, the HTTPS port used can be overridden with
 // HttpsUpgradesInterceptor::SetHttpsPortForTesting().
 GURL UpgradeUrlToHttps(const GURL& url) {
-  DCHECK(!url.SchemeIsCryptographic());
+  CHECK(!url.SchemeIsCryptographic(), base::NotFatalUntil::M163);
 
   // Replace scheme with HTTPS.
   GURL::Replacements upgrade_url;
@@ -90,7 +90,7 @@ GURL UpgradeUrlToHttps(const GURL& url) {
   if (https_port_for_testing) {
     // Only reached in testing, where the original URL will always have a
     // non-default port.
-    DCHECK(!url.GetPort().empty());
+    CHECK(!url.GetPort().empty(), base::NotFatalUntil::M163);
     upgrade_url.SetPortStr(port_str);
   }
 

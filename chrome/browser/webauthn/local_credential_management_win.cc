@@ -73,7 +73,8 @@ class CredentialPresenceCacher : public ProfileObserver {
   // ProfileObserver:
 
   void OnProfileWillBeDestroyed(Profile* profile) override {
-    DCHECK(profile_observation_.IsObservingSource(profile));
+    CHECK(profile_observation_.IsObservingSource(profile),
+          base::NotFatalUntil::M163);
     profile_observation_.Reset();
   }
 

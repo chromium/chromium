@@ -317,7 +317,7 @@ void StorageAccessGrantPermissionContext::DecidePermissionForTesting(
 void StorageAccessGrantPermissionContext::DecidePermission(
     std::unique_ptr<permissions::PermissionRequestData> request_data,
     permissions::BrowserPermissionCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   CHECK(request_data->requesting_origin.is_valid());
   CHECK(request_data->embedding_origin.is_valid());
 
@@ -542,7 +542,7 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSet(
   CHECK(decision.overall_decision != PermissionDecision::kAllowThisTime);
   CHECK(decision.is_final);
   CHECK(!persist || (decision.overall_decision != PermissionDecision::kNone));
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   RequestOutcome outcome =
       RequestOutcomeFromPrompt(decision.overall_decision, persist);
   if (outcome == RequestOutcome::kReusedPreviousDecision) {
@@ -586,7 +586,7 @@ void StorageAccessGrantPermissionContext::NotifyPermissionSetInternal(
     bool persist,
     PermissionDecision decision,
     RequestOutcome outcome) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   RecordOutcomeSample(outcome,
                       net::SchemefulSite(request_data.requesting_origin));

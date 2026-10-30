@@ -29,7 +29,7 @@ SecurityEventRecorderFactory* SecurityEventRecorderFactory::GetInstance() {
 // static
 SecurityEventRecorder* SecurityEventRecorderFactory::GetForProfile(
     Profile* profile) {
-  DCHECK(!profile->IsOffTheRecord());
+  CHECK(!profile->IsOffTheRecord(), base::NotFatalUntil::M163);
   return static_cast<SecurityEventRecorder*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }

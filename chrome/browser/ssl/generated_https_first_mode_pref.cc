@@ -72,8 +72,9 @@ void GeneratedHttpsFirstModePref::OnSourcePreferencesChanged() {
 
 void GeneratedHttpsFirstModePref::OnAdvancedProtectionStatusChanged(
     bool enabled) {
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kHttpsFirstModeForAdvancedProtectionUsers));
+  CHECK(base::FeatureList::IsEnabled(
+            features::kHttpsFirstModeForAdvancedProtectionUsers),
+        base::NotFatalUntil::M163);
   NotifyObservers(kGeneratedHttpsFirstModePref);
 }
 

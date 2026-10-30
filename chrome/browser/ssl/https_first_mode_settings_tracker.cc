@@ -142,7 +142,7 @@ base::Clock* GetClock() {
 // Returns the HTTP URL from `http_url` using the test port numbers, if any.
 // TODO(crbug.com/40904694): Refactor and merge with UpgradeUrlToHttps().
 GURL GetHttpUrlFromHttps(const GURL& https_url) {
-  DCHECK(https_url.SchemeIsCryptographic());
+  CHECK(https_url.SchemeIsCryptographic(), base::NotFatalUntil::M163);
 
   // Replace scheme with HTTP.
   GURL::Replacements upgrade_url;
@@ -160,7 +160,7 @@ GURL GetHttpUrlFromHttps(const GURL& https_url) {
     // TODO(crbug.com/40904694): Remove this exception.
     if (https_url != GURL(security_interstitials::HttpsOnlyModeBlockingPage::
                               kLearnMoreLink)) {
-      DCHECK(!https_url.GetPort().empty());
+      CHECK(!https_url.GetPort().empty(), base::NotFatalUntil::M163);
       upgrade_url.SetPortStr(port_str);
     }
   }
@@ -633,8 +633,9 @@ void HttpsFirstModeService::MaybeEnableHttpsFirstModeForEngagedSites(
   }
   // Consider amending the SiteEngagementService API to take a callback so we
   // can exactly retrieve all the origins with score >= kHttpsAddThreshold.
-  DCHECK_GE(kHttpsAddThreshold.Get(),
-            site_engagement::SiteEngagementScore::GetHighEngagementBoundary());
+  CHECK_GE(kHttpsAddThreshold.Get(),
+           site_engagement::SiteEngagementScore::GetHighEngagementBoundary(),
+           base::NotFatalUntil::M163);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
       {base::TaskPriority::USER_BLOCKING,
@@ -653,7 +654,7 @@ void HttpsFirstModeService::MaybeEnableHttpsFirstModeForEngagedSites(
 void HttpsFirstModeService::ProcessEngagedSitesList(
     base::OnceClosure done_callback,
     const std::vector<site_engagement::mojom::SiteEngagementDetails>& details) {
-  DCHECK(IsBalancedModeAvailable());
+  CHECK(IsBalancedModeAvailable(), base::NotFatalUntil::M163);
 
   StatefulSSLHostStateDelegate* state =
       static_cast<StatefulSSLHostStateDelegate*>(
@@ -686,10 +687,10 @@ void HttpsFirstModeService::ProcessEngagedSitesList(
   // Enable highly engaged https origins.
   for (const site_engagement::mojom::SiteEngagementDetails& detail : details) {
     const GURL& origin = detail.origin;
-    DCHECK(origin.SchemeIsHTTPOrHTTPS());
-    DCHECK_GE(
-        detail.total_score,
-        site_engagement::SiteEngagementScore::GetHighEngagementBoundary());
+    CHECK(origin.SchemeIsHTTPOrHTTPS(), base::NotFatalUntil::M163);
+    CHECK_GE(detail.total_score,
+             site_engagement::SiteEngagementScore::GetHighEngagementBoundary(),
+             base::NotFatalUntil::M163);
     if (origin.SchemeIsCryptographic() && origin.port().empty() &&
         detail.total_score >= kHttpsAddThreshold.Get() &&
         engagement_service->GetScore(GetHttpUrlFromHttps(origin)) <=
@@ -703,11 +704,13 @@ void HttpsFirstModeService::ProcessEngagedSitesList(
 
   // Disable low engaged origins that are already enabled.
   for (const GURL& origin : enabled_origins) {
-    DCHECK(state->IsHttpsEnforcedForUrl(origin, partition));
-    DCHECK(origin.SchemeIsCryptographic());
-    DCHECK(origin.SchemeIsHTTPOrHTTPS());
-    DCHECK(origin.port().empty());
-    DCHECK(state->IsHttpsEnforcedForUrl(origin, partition));
+    CHECK(state->IsHttpsEnforcedForUrl(origin, partition),
+          base::NotFatalUntil::M163);
+    CHECK(origin.SchemeIsCryptographic(), base::NotFatalUntil::M163);
+    CHECK(origin.SchemeIsHTTPOrHTTPS(), base::NotFatalUntil::M163);
+    CHECK(origin.port().empty(), base::NotFatalUntil::M163);
+    CHECK(state->IsHttpsEnforcedForUrl(origin, partition),
+          base::NotFatalUntil::M163);
     if (engagement_service->GetScore(origin) <= kHttpsRemoveThreshold.Get() ||
         engagement_service->GetScore(GetHttpUrlFromHttps(origin)) >=
             kHttpRemoveThreshold.Get() ||

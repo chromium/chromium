@@ -48,7 +48,7 @@ void RecordUMA(Event event) {
 }
 
 GURL GetHttpUrl(const GURL& url, int http_fallback_port_for_testing) {
-  DCHECK_EQ(url::kHttpsScheme, url.GetScheme());
+  CHECK_EQ(url::kHttpsScheme, url.GetScheme(), base::NotFatalUntil::M163);
   GURL::Replacements replacements;
   replacements.SetSchemeStr(url::kHttpScheme);
 

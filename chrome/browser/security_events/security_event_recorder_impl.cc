@@ -16,8 +16,8 @@ SecurityEventRecorderImpl::SecurityEventRecorderImpl(
     base::Clock* clock)
     : security_event_sync_bridge_(std::move(security_event_sync_bridge)),
       clock_(clock) {
-  DCHECK(security_event_sync_bridge_);
-  DCHECK(clock_);
+  CHECK(security_event_sync_bridge_, base::NotFatalUntil::M163);
+  CHECK(clock_, base::NotFatalUntil::M163);
 }
 
 SecurityEventRecorderImpl::~SecurityEventRecorderImpl() = default;

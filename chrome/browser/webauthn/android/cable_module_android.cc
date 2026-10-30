@@ -67,13 +67,15 @@ class SystemInterface : public RegistrationState::SystemInterface {
       base::RepeatingCallback<void(
           std::unique_ptr<device::cablev2::authenticator::Registration::Event>)>
           event_callback) override {
-    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+    CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+          base::NotFatalUntil::M163);
     return device::cablev2::authenticator::Register(
         GetDriver(), type, std::move(on_ready), std::move(event_callback));
   }
 
   void CanDeviceSupportCable(base::OnceCallback<void(bool)> callback) override {
-    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+    CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+          base::NotFatalUntil::M163);
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT},
         base::BindOnce(
@@ -82,7 +84,8 @@ class SystemInterface : public RegistrationState::SystemInterface {
   }
 
   void AmInWorkProfile(base::OnceCallback<void(bool)> callback) override {
-    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+    CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+          base::NotFatalUntil::M163);
 
     // Checking whether an app is in a work profile is costly. We assume that a
     // given Chrome profile never moves between being in a work profile or not
@@ -111,8 +114,9 @@ class SystemInterface : public RegistrationState::SystemInterface {
   void GetPrelinkFromPlayServices(
       base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback)
       override {
-    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-    DCHECK(!prelink_callback_);
+    CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+          base::NotFatalUntil::M163);
+    CHECK(!prelink_callback_, base::NotFatalUntil::M163);
     prelink_callback_ = std::move(callback);
     base::ThreadPool::PostTask(
         FROM_HERE, {base::TaskPriority::BEST_EFFORT},
@@ -124,7 +128,8 @@ class SystemInterface : public RegistrationState::SystemInterface {
   }
 
   void RefreshLocalDeviceInfo() override {
-    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+    CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+          base::NotFatalUntil::M163);
     DeviceInfoSyncServiceFactory::GetForProfile(
         ProfileManager::GetPrimaryUserProfile())
         ->RefreshLocalDeviceInfo();
@@ -134,14 +139,16 @@ class SystemInterface : public RegistrationState::SystemInterface {
   // Play Services.
   void OnHavePlayServicesLinkingInformation(
       std::optional<std::vector<uint8_t>> cbor) {
-    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+    CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+          base::NotFatalUntil::M163);
     std::move(prelink_callback_).Run(std::move(cbor));
   }
 
   // Called when the Java code has finished checking if we're running in a work
   // profile.
   void OnHaveWorkProfileResult(bool in_work_profile) {
-    DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+    CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+          base::NotFatalUntil::M163);
 
     g_browser_process->local_state()->SetString(
         kWorkProfilePrefName,
@@ -194,7 +201,8 @@ RegistrationState* GetRegistrationState() {
 
 syncer::DeviceInfo::PhoneAsASecurityKeyInfo::StatusOrInfo
 GetSyncDataIfRegisteredInternal() {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M163);
 
   RegistrationState* state = GetRegistrationState();
   if (!state->have_data_for_sync()) {
@@ -356,7 +364,8 @@ syncer::DeviceInfo::PhoneAsASecurityKeyInfo::StatusOrInfo CacheResult(
 }  // namespace internal
 
 void RegisterForCloudMessages() {
-  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  CHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI),
+        base::NotFatalUntil::M163);
 
   GetRegistrationState()->Register();
 }

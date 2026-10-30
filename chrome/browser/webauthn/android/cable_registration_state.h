@@ -77,7 +77,7 @@ class RegistrationState {
   bool am_in_work_profile() const { return *am_in_work_profile_; }
   const std::optional<std::vector<uint8_t>>& link_data_from_play_services()
       const {
-    DCHECK(have_link_data_from_play_services_);
+    CHECK(have_link_data_from_play_services_, base::NotFatalUntil::M163);
     return link_data_from_play_services_;
   }
 

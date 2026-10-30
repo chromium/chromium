@@ -372,7 +372,8 @@ std::string GetManifest() {
   std::string manifest_contents(
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_PDF_MANIFEST));
-  DCHECK(manifest_contents.find(kNameTag) != std::string::npos);
+  CHECK(manifest_contents.find(kNameTag) != std::string::npos,
+        base::NotFatalUntil::M163);
   base::ReplaceFirstSubstringAfterOffset(&manifest_contents, 0, kNameTag,
                                          kExtensionName);
 

@@ -84,7 +84,7 @@ ThemeSyncableService::ThemeSyncableService(Profile* profile,
       use_system_theme_by_default_(false) {
   CHECK(profile_);
   CHECK(profile_->GetPrefs());
-  DCHECK(theme_service_);
+  CHECK(theme_service_, base::NotFatalUntil::M163);
   theme_service_->AddObserver(this);
 
   // Listen to NtpCustomBackgroundDict pref changes. This is done because
@@ -152,9 +152,9 @@ ThemeSyncableService::MergeDataAndStartSyncing(
     syncer::DataType type,
     const syncer::SyncDataList& initial_sync_data,
     std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(!sync_processor_.get());
-  DCHECK(sync_processor.get());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK(!sync_processor_.get(), base::NotFatalUntil::M163);
+  CHECK(sync_processor.get(), base::NotFatalUntil::M163);
 
   sync_processor_ = std::move(sync_processor);
 
@@ -258,8 +258,8 @@ void ThemeSyncableService::OnBrowserShutdown(syncer::DataType type) {
 
 syncer::SyncDataList ThemeSyncableService::GetAllSyncDataForTesting(
     syncer::DataType type) const {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK_EQ(type, syncer::THEMES);
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
+  CHECK_EQ(type, syncer::THEMES, base::NotFatalUntil::M163);
 
   syncer::SyncDataList list;
   if (IsCurrentThemeSyncable()) {
@@ -274,7 +274,7 @@ syncer::SyncDataList ThemeSyncableService::GetAllSyncDataForTesting(
 std::optional<syncer::ModelError> ThemeSyncableService::ProcessSyncChanges(
     const base::Location& from_here,
     const syncer::SyncChangeList& change_list) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(thread_checker_.CalledOnValidThread(), base::NotFatalUntil::M163);
 
   if (!sync_processor_.get()) {
     return syncer::ModelError(
@@ -319,7 +319,7 @@ base::WeakPtr<syncer::SyncableService> ThemeSyncableService::AsWeakPtr() {
 
 std::string ThemeSyncableService::GetClientTag(
     const syncer::EntityData& entity_data) const {
-  DCHECK(entity_data.specifics.has_theme());
+  CHECK(entity_data.specifics.has_theme(), base::NotFatalUntil::M163);
   // Theme always returns the same client tag as there is only one single theme
   // entity.
   return kSyncEntityClientTag;
@@ -511,7 +511,7 @@ ThemeSyncableService::GetThemeSpecificsFromCurrentTheme() const {
           : nullptr;
   if (current_extension) {
     // Using custom theme and it's an extension.
-    DCHECK(current_extension->is_theme());
+    CHECK(current_extension->is_theme(), base::NotFatalUntil::M163);
     theme_specifics.set_use_custom_theme(true);
     theme_specifics.set_custom_theme_name(current_extension->name());
     theme_specifics.set_custom_theme_id(current_extension->id());

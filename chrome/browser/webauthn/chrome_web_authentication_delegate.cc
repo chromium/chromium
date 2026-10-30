@@ -421,7 +421,7 @@ ChromeWebAuthenticationDelegate::GetTouchIdAuthenticatorConfig(
 content::WebAuthenticationDelegate::ChromeOSGenerateRequestIdCallback
 ChromeWebAuthenticationDelegate::GetGenerateRequestIdCallback(
     content::RenderFrameHost* render_frame_host) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   auto* window = render_frame_host->GetNativeView();
   auto* toplevel_window = window ? window->GetToplevelWindow() : nullptr;
   return chromeos::webauthn::WebAuthnRequestRegistrar::Get()

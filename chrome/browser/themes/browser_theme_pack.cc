@@ -563,7 +563,7 @@ class ControlButtonBackgroundImageSource : public gfx::CanvasImageSource {
       : gfx::CanvasImageSource(dest_size),
         background_color_(background_color),
         bg_image_(bg_image) {
-    DCHECK(!bg_image.isNull());
+    CHECK(!bg_image.isNull(), base::NotFatalUntil::M163);
   }
 
   ControlButtonBackgroundImageSource(
@@ -597,13 +597,13 @@ bool IsColorGrayscale(SkColor color) {
 }  // namespace
 
 BrowserThemePack::~BrowserThemePack() {
-  DCHECK(!data_pack_ || using_data_pack_);
+  CHECK(!data_pack_ || using_data_pack_, base::NotFatalUntil::M163);
 
   if (using_data_pack_) {
     if (data_pack_) {
       auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-      DCHECK(task_runner);
+      CHECK(task_runner, base::NotFatalUntil::M163);
       task_runner->DeleteSoon(FROM_HERE, std::move(data_pack_));
     }
   } else {
@@ -617,7 +617,7 @@ BrowserThemePack::~BrowserThemePack() {
 }
 
 void BrowserThemePack::SetColor(int id, SkColor color) {
-  DCHECK(colors_);
+  CHECK(colors_, base::NotFatalUntil::M163);
 
   int first_available_color = -1;
   for (size_t i = 0; i < kColorsArrayLength; ++i) {
@@ -630,13 +630,13 @@ void BrowserThemePack::SetColor(int id, SkColor color) {
     }
   }
 
-  DCHECK_NE(-1, first_available_color);
+  CHECK_NE(-1, first_available_color, base::NotFatalUntil::M163);
   UNSAFE_TODO(colors_[first_available_color]).id = id;
   UNSAFE_TODO(colors_[first_available_color]).color = color;
 }
 
 void BrowserThemePack::SetTint(int id, color_utils::HSL tint) {
-  DCHECK(tints_);
+  CHECK(tints_, base::NotFatalUntil::M163);
 
   int first_available_index = -1;
   for (size_t i = 0; i < kTintTableLength; ++i) {
@@ -651,7 +651,7 @@ void BrowserThemePack::SetTint(int id, color_utils::HSL tint) {
     }
   }
 
-  DCHECK_NE(-1, first_available_index);
+  CHECK_NE(-1, first_available_index, base::NotFatalUntil::M163);
   UNSAFE_TODO(tints_[first_available_index]).id = id;
   UNSAFE_TODO(tints_[first_available_index]).h = tint.h;
   UNSAFE_TODO(tints_[first_available_index]).s = tint.s;
@@ -659,7 +659,7 @@ void BrowserThemePack::SetTint(int id, color_utils::HSL tint) {
 }
 
 void BrowserThemePack::SetDisplayProperty(int id, int value) {
-  DCHECK(display_properties_);
+  CHECK(display_properties_, base::NotFatalUntil::M163);
 
   int first_available_index = -1;
   for (size_t i = 0; i < kDisplayPropertiesSize; ++i) {
@@ -673,7 +673,7 @@ void BrowserThemePack::SetDisplayProperty(int id, int value) {
     }
   }
 
-  DCHECK_NE(-1, first_available_index);
+  CHECK_NE(-1, first_available_index, base::NotFatalUntil::M163);
   UNSAFE_TODO(display_properties_[first_available_index]).id = id;
   UNSAFE_TODO(display_properties_[first_available_index]).property = value;
 }
@@ -692,9 +692,9 @@ SkColor BrowserThemePack::ComputeImageColor(const gfx::Image& image,
 void BrowserThemePack::BuildFromExtension(
     const extensions::Extension* extension,
     BrowserThemePack* pack) {
-  DCHECK(extension);
-  DCHECK(extension->is_theme());
-  DCHECK(!pack->is_valid());
+  CHECK(extension, base::NotFatalUntil::M163);
+  CHECK(extension->is_theme(), base::NotFatalUntil::M163);
+  CHECK(!pack->is_valid(), base::NotFatalUntil::M163);
 
   // NOTE! If you make any changes here, please update kThemePackVersion.
 
@@ -726,7 +726,7 @@ void BrowserThemePack::BuildFromExtension(
 scoped_refptr<BrowserThemePack> BrowserThemePack::BuildFromDataPack(
     const base::FilePath& path,
     std::string_view expected_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   // Allow IO on UI thread due to deep-seated theme design issues.
   // (see http://crbug.com/40558197)
   base::ScopedAllowBlocking scoped_allow_blocking;
@@ -1123,14 +1123,14 @@ void BrowserThemePack::InitDisplayProperties() {
 }
 
 void BrowserThemePack::SetHeaderId(const Extension* extension) {
-  DCHECK(header_);
+  CHECK(header_, base::NotFatalUntil::M163);
   const std::string& id = extension->id();
   UNSAFE_TODO(
       memcpy(header_->theme_id, id.c_str(), crx_file::id_util::kIdSize));
 }
 
 void BrowserThemePack::SetTintsFromJSON(const base::DictValue* tints_value) {
-  DCHECK(tints_);
+  CHECK(tints_, base::NotFatalUntil::M163);
 
   if (!tints_value) {
     return;
@@ -1177,7 +1177,7 @@ void BrowserThemePack::SetTintsFromJSON(const base::DictValue* tints_value) {
 }
 
 void BrowserThemePack::SetColorsFromJSON(const base::DictValue* colors_value) {
-  DCHECK(colors_);
+  CHECK(colors_, base::NotFatalUntil::M163);
 
   std::map<int, SkColor> temp_colors;
   if (colors_value) {
@@ -1259,7 +1259,7 @@ void BrowserThemePack::ReadColorsFromJSON(const base::DictValue& colors_value,
 
 void BrowserThemePack::SetDisplayPropertiesFromJSON(
     const base::DictValue* display_properties_value) {
-  DCHECK(display_properties_);
+  CHECK(display_properties_, base::NotFatalUntil::M163);
 
   if (!display_properties_value) {
     return;

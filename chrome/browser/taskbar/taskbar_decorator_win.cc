@@ -66,7 +66,8 @@ void SetOverlayIcon(HWND hwnd,
 
   base::win::ScopedGDIObject<HICON> icon;
   if (bitmap) {
-    DCHECK_GE(bitmap.get()->width(), bitmap.get()->height());
+    CHECK_GE(bitmap.get()->width(), bitmap.get()->height(),
+             base::NotFatalUntil::M163);
 
     // Maintain aspect ratio on resize, but prefer more square.
     // (We used to round down here, but rounding up produces nicer results.)
@@ -74,7 +75,7 @@ void SetOverlayIcon(HWND hwnd,
         kOverlayIconSize *
         (static_cast<float>(bitmap.get()->height()) / bitmap.get()->width()));
 
-    DCHECK_GE(kOverlayIconSize, resized_height);
+    CHECK_GE(kOverlayIconSize, resized_height, base::NotFatalUntil::M163);
     // Since the target size is so small, we use our best resizer.
     SkBitmap sk_icon = skia::ImageOperations::Resize(
         *bitmap.get(), skia::ImageOperations::RESIZE_LANCZOS3, kOverlayIconSize,

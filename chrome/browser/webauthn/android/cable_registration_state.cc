@@ -26,8 +26,8 @@ RegistrationState::RegistrationState(std::unique_ptr<SystemInterface> interface)
 RegistrationState::~RegistrationState() = default;
 
 void RegistrationState::Register() {
-  DCHECK(!linking_registration_);
-  DCHECK(!sync_registration_);
+  CHECK(!linking_registration_, base::NotFatalUntil::M163);
+  CHECK(!sync_registration_, base::NotFatalUntil::M163);
 
   linking_registration_ = interface_->NewRegistration(
       device::cablev2::authenticator::Registration::Type::LINKING,
@@ -79,7 +79,7 @@ bool RegistrationState::have_play_services_data() const {
 }
 
 void RegistrationState::QueryPlayServices() {
-  DCHECK(!play_services_query_pending_);
+  CHECK(!play_services_query_pending_, base::NotFatalUntil::M163);
 
   play_services_query_pending_ = true;
   interface_->GetPrelinkFromPlayServices(
@@ -89,7 +89,7 @@ void RegistrationState::QueryPlayServices() {
 
 void RegistrationState::OnHavePlayServicesLinkingInformation(
     std::optional<std::vector<uint8_t>> cbor) {
-  DCHECK(play_services_query_pending_);
+  CHECK(play_services_query_pending_, base::NotFatalUntil::M163);
 
   play_services_query_pending_ = false;
   link_data_from_play_services_ = std::move(cbor);

@@ -115,7 +115,7 @@ bool SSLErrorControllerClient::CanLaunchDateAndTimeSettings() {
 }
 
 void SSLErrorControllerClient::LaunchDateAndTimeSettings() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
 #if BUILDFLAG(IS_CHROMEOS)
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(

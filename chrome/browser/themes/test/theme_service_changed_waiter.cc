@@ -10,7 +10,7 @@ namespace test {
 
 ThemeServiceChangedWaiter::ThemeServiceChangedWaiter(ThemeService* service)
     : service_(service) {
-  DCHECK(service_);
+  CHECK(service_, base::NotFatalUntil::M163);
   service_->AddObserver(this);
 }
 
