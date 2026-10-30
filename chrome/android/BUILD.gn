@@ -2648,8 +2648,8 @@ if (_is_default_toolchain) {
       webview_basename = "SystemWebView64.minimal.apks"
     }
 
-    # Used by android-desktop-*-binary-size and diagnose_bloat.py.
-    # android-binary-size builds only chrome_public_minimal_apks for 64-bit.
+    # For use with "diagnose_bloat.py --target". The binary size trybots build
+    # only chrome_public_minimal_apks for 64-bit.
     group("chrome_and_webview_64_minimal_apks") {
       deps = [
         ":chrome_public_minimal_apks",
@@ -2722,6 +2722,31 @@ if (_is_default_toolchain) {
         "lib.unstripped/libchrome.so",
       ]
       supersize_input_file = "apks/Chrome64.ssargs"
+    }
+  }
+
+  if (is_official_build && is_desktop_android) {
+    # Desktop devices are 64-bit only, so android-desktop-*-binary-size
+    # measures only 64-bit Chrome (including Java).
+    write_ssargs("ssargs_chrome_desktop") {
+      ssargs_path = "$root_build_dir/apks/ChromeDesktop.ssargs"
+      abi_filter = android_app_abi
+      chrome_basename = "ChromePublic.minimal.apks"
+    }
+
+    android_size_bot_config("desktop_resource_size_config") {
+      name = "ChromeDesktop"
+      mapping_files = [ "apks/ChromePublic.aab.mapping" ]
+      archive_files = mapping_files + [
+                        "apks/ChromePublic.minimal.apks",
+                        "apks/ChromePublic.aab.R.txt",
+                        "lib.unstripped/libchrome.so",
+                      ]
+      to_resource_sizes_py = {
+        apk_name = "apks/ChromeDesktop"
+        chrome = "apks/ChromePublic.minimal.apks"
+      }
+      supersize_input_file = "apks/ChromeDesktop.ssargs"
     }
   }
 
