@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_helper.h"
 #include "chrome/browser/ui/webui/signin/signin_email_confirmation_dialog.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -174,7 +175,8 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
       GURL("chrome://signin-error/"));
   content_observer.StartWatchingNewWebContents();
   auto* signin_view_controller = SigninViewController::From(browser());
-  signin_view_controller->ShowModalSigninErrorDialog();
+  signin_view_controller->ShowModalSigninErrorDialog(
+      SigninUIError::NoProfile("user@gmail.com"));
   EXPECT_TRUE(signin_view_controller->ShowsModalDialog());
   content_observer.Wait();
 

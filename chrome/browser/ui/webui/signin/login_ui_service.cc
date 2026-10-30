@@ -21,7 +21,8 @@ void LoginUIService::DisplayLoginResult(BrowserWindowInterface& browser_window,
   last_login_error_ = error;
   // TODO(crbug.com/40225985): Check if the condition should be `!error.IsOk()`
   if (!error.message().empty()) {
-    SigninViewController::From(&browser_window)->ShowModalSigninErrorDialog();
+    SigninViewController::From(&browser_window)
+        ->ShowModalSigninErrorDialog(error);
   }
 #endif
 }

@@ -21,10 +21,9 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_service.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_service_factory.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -111,8 +110,7 @@ DiceTabHelper::GetShowSigninErrorCallbackForBrowser() {
     if (!browser) {
       return;
     }
-    LoginUIServiceFactory::GetForProfile(profile)->DisplayLoginResult(*browser,
-                                                                      error);
+    SigninViewController::From(browser)->ShowModalSigninErrorDialog(error);
   });
 }
 

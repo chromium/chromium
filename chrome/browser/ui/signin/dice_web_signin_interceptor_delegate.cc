@@ -29,8 +29,6 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -342,9 +340,7 @@ void DiceWebSigninInterceptorDelegate::ShowSigninError(
     return;
   }
 
-  LoginUIServiceFactory::GetForProfile(
-      Profile::FromBrowserContext(web_contents->GetBrowserContext()))
-      ->DisplayLoginResult(*browser, error);
+  SigninViewController::From(browser)->ShowModalSigninErrorDialog(error);
 }
 
 // static

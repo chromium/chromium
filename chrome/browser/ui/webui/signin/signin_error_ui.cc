@@ -18,8 +18,6 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_error_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/common/url_constants.h"
@@ -43,8 +41,7 @@ bool SigninErrorUIConfig::IsWebUIEnabled(
   return !profile->IsOffTheRecord() || profile->IsSystemProfile();
 }
 
-SigninErrorUI::SigninErrorUI(content::WebUI* web_ui)
-    : SigninWebDialogUI(web_ui) {}
+SigninErrorUI::SigninErrorUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {}
 
 // static
 std::u16string SigninErrorUI::GetTitle(const std::u16string& email) {
@@ -58,8 +55,11 @@ std::u16string SigninErrorUI::GetTitle(const std::u16string& email) {
 }
 
 void SigninErrorUI::InitializeMessageHandlerWithBrowser(
-    BrowserWindowInterface* browser) {
+    BrowserWindowInterface* browser,
+    const SigninUIError& error) {
   CHECK(browser, base::NotFatalUntil::M162);
+  CHECK(!error.IsOk());
+  CHECK(!error.email().empty(), base::NotFatalUntil::M162);
   Profile* webui_profile = Profile::FromWebUI(web_ui());
   std::unique_ptr<SigninErrorHandler> handler =
       std::make_unique<SigninErrorHandler>(browser);
@@ -82,22 +82,17 @@ void SigninErrorUI::InitializeMessageHandlerWithBrowser(
   };
   source->AddResourcePaths(kResources);
 
-  // Retrieve the last signin error message and email used.
-  LoginUIService* login_ui_service =
-      LoginUIServiceFactory::GetForProfile(webui_profile);
-  const SigninUIError last_login_error = login_ui_service->GetLastLoginError();
-  source->AddString("signinErrorTitle", GetTitle(last_login_error.email()));
+  source->AddString("signinErrorTitle", GetTitle(error.email()));
 
   // Tweak the dialog UI depending on whether the signin error is
   // username-in-use error and the error UI is shown with a browser window.
   std::u16string existing_name;
-  if (last_login_error.type() ==
+  if (error.type() ==
       SigninUIError::Type::kAccountAlreadyUsedByAnotherProfile) {
     ProfileAttributesEntry* entry =
         g_browser_process->profile_manager()
             ->GetProfileAttributesStorage()
-            .GetProfileAttributesWithPath(
-                last_login_error.another_profile_path());
+            .GetProfileAttributesWithPath(error.another_profile_path());
     CHECK(entry, base::NotFatalUntil::M162);
     CHECK(entry->IsAuthenticated() || entry->CanBeManaged(),
           base::NotFatalUntil::M162);
@@ -110,7 +105,8 @@ void SigninErrorUI::InitializeMessageHandlerWithBrowser(
     existing_name =
         gfx::TruncateString(existing_name, 10, gfx::CHARACTER_BREAK);
   } else {
-    source->AddString("signinErrorMessage", last_login_error.message());
+    CHECK(!error.message().empty());
+    source->AddString("signinErrorMessage", error.message());
   }
 
   // Add button label strings.
@@ -129,3 +125,5 @@ void SigninErrorUI::InitializeMessageHandlerWithBrowser(
   source->AddLocalizedStrings(strings);
   web_ui()->AddMessageHandler(std::move(handler));
 }
+
+WEB_UI_CONTROLLER_TYPE_IMPL(SigninErrorUI)

@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_view_test_utils.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -505,7 +506,8 @@ IN_PROC_BROWSER_TEST_P(DeviceSignalsDisclaimerStartupInteractiveTest,
   // dialog). This should close the existing disclaimer dialog.
   views::NamedWidgetShownWaiter error_dialog_waiter(
       views::test::AnyWidgetTestPasskey{}, "SigninViewControllerDelegateViews");
-  SigninViewController::From(browser())->ShowModalSigninErrorDialog();
+  SigninViewController::From(browser())->ShowModalSigninErrorDialog(
+      SigninUIError::NoProfile("email@example.com"));
   error_dialog_waiter.WaitIfNeededAndGet();
 
   EXPECT_TRUE(ShowsModalDialog(browser()));

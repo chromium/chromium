@@ -5,16 +5,18 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_ERROR_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_ERROR_UI_H_
 
-#include "chrome/browser/ui/webui/signin/signin_web_dialog_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
+#include "ui/web_dialogs/web_dialog_ui.h"
+
+class BrowserWindowInterface;
+class SigninErrorUI;
+class SigninUIError;
 
 namespace content {
 class WebUI;
 }  // namespace content
-
-class SigninErrorUI;
 
 class SigninErrorUIConfig : public content::DefaultWebUIConfig<SigninErrorUI> {
  public:
@@ -26,7 +28,7 @@ class SigninErrorUIConfig : public content::DefaultWebUIConfig<SigninErrorUI> {
   bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
-class SigninErrorUI : public SigninWebDialogUI {
+class SigninErrorUI : public ui::WebDialogUI {
  public:
   explicit SigninErrorUI(content::WebUI* web_ui);
 
@@ -37,9 +39,12 @@ class SigninErrorUI : public SigninWebDialogUI {
 
   static std::u16string GetTitle(const std::u16string& email);
 
-  // SigninWebDialogUI:
-  void InitializeMessageHandlerWithBrowser(
-      BrowserWindowInterface* browser) override;
+  // Creates a WebUI message handler with the specified browser and error and
+  // adds it to the web UI.
+  void InitializeMessageHandlerWithBrowser(BrowserWindowInterface* browser,
+                                           const SigninUIError& error);
+
+  WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_ERROR_UI_H_

@@ -43,6 +43,7 @@
 class AccountInfo;
 class BrowserWindowInterface;
 class Profile;
+class SigninUIError;
 class TabStripModel;
 struct CoreAccountId;
 struct CoreAccountInfo;
@@ -216,9 +217,11 @@ class SigninViewController {
       std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
           create_param);
 
-  // Shows the modal sign-in error dialog as a browser-modal dialog on top of
-  // the |browser_|'s window.
-  void ShowModalSigninErrorDialog();
+#if !BUILDFLAG(IS_CHROMEOS)
+  // If `error.message()` is not empty, shows the modal sign-in error dialog as
+  // a browser-modal dialog on top of the `browser_`'s window.
+  void ShowModalSigninErrorDialog(const SigninUIError& error);
+#endif
 
   // Returns true if the modal dialog is shown.
   bool ShowsModalDialog();

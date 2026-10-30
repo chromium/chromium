@@ -9,15 +9,14 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_util.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_post_sign_in_adapter.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_sign_in_provider.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
@@ -29,8 +28,7 @@ void ShowLoginErrorForBrowser(const SigninUIError& error,
     // opening a browser window was not possible.
     return;
   }
-  LoginUIServiceFactory::GetForProfile(browser->GetProfile())
-      ->DisplayLoginResult(*browser, error);
+  SigninViewController::From(browser)->ShowModalSigninErrorDialog(error);
 }
 
 }  // namespace

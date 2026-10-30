@@ -107,6 +107,10 @@
 #include "extensions/common/extension.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 namespace {
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -696,12 +700,20 @@ void SigninViewController::ShowModalManagedUserNoticeDialog(
 #endif
 }
 
-void SigninViewController::ShowModalSigninErrorDialog() {
+#if !BUILDFLAG(IS_CHROMEOS)
+void SigninViewController::ShowModalSigninErrorDialog(
+    const SigninUIError& error) {
+  // TODO(crbug.com/40225985): Check if the condition should be `!error.IsOk()`.
+  if (error.message().empty()) {
+    return;
+  }
   CloseModalSignin();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
-      SigninViewControllerDelegate::CreateSigninErrorDelegate(&browser_.get()),
+      SigninViewControllerDelegate::CreateSigninErrorDelegate(&browser_.get(),
+                                                              error),
       GetOnModalDialogClosedCallback());
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 bool SigninViewController::ShowsModalDialog() {
   return dialog_ != nullptr;
