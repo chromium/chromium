@@ -16832,6 +16832,23 @@
             ]
         }
     ],
+    "SkipRedundantWindowPosCalls": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SkipRedundantMaximizedFrameChange",
+                        "SkipRedundantSendFrameChanged",
+                        "SkipRedundantWindowActivation"
+                    ]
+                }
+            ]
+        }
+    ],
     "SkipUrlInvalidationForUnchangedSameDocumentReplacement": [
         {
             "platforms": [
