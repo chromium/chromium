@@ -67,13 +67,14 @@ public class PaymentManifestVerifier
         /**
          * Called when a part of verification has failed.
          *
+         * @param methodName The payment method name whose verification has failed.
          * @param errorMessage Developer facing error message.
          */
-        void onVerificationError(String errorMessage);
+        void onVerificationError(GURL methodName, String errorMessage);
 
         /**
-         * Called when the manifest has been fully verified. No more valid apps or origins will
-         * be found after this call.
+         * Called when the manifest has been fully verified. No more valid apps or origins will be
+         * found after this call.
          */
         void onFinishedVerification();
 
@@ -596,15 +597,13 @@ public class PaymentManifestVerifier
         if (mAtLeastOneManifestFailedToDownloadOrParse) return;
         mAtLeastOneManifestFailedToDownloadOrParse = true;
 
-        // Do not forward `errorMessage` for web app manifest download failures, because it contains
-        // the web app manifest URL, which comes from the cross-origin payment method manifest and
-        // should not be exposed to the merchant website. Instead, skip calling
-        // `onVerificationError()` so that if no payment apps are available, the payment request
-        // falls back to the generic NotSupportedError message (matching
-        // `onManifestParseFailure()`).
-        // The detailed message is still logged above and in DevTools by the downloader.
+        // Forward only payment method manifest download failures, with `mMethodName`, so that the
+        // caller can drop errors for payment methods that the merchant did not request. Never
+        // forward web app manifest download failures, because their URLs come from
+        // `default_applications` in the payment method manifest and must not be exposed to the
+        // merchant. The detailed message is still logged above and in DevTools by the downloader.
         if (!mIsDownloadingWebAppManifests) {
-            mCallback.onVerificationError(errorMessage);
+            mCallback.onVerificationError(mMethodName, errorMessage);
         }
 
         if (mIsManifestCacheStaleOrUnusable) mCallback.onFinishedVerification();

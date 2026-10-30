@@ -226,6 +226,7 @@ public class PaymentManifestVerifierTest {
 
         Mockito.verify(mCallback, Mockito.never())
                 .onValidDefaultPaymentApp(Mockito.any(GURL.class), Mockito.any(ResolveInfo.class));
+        Mockito.verify(mCallback).onVerificationError(mMethodName, ERROR_MESSAGE);
     }
 
     @SmallTest
@@ -273,6 +274,8 @@ public class PaymentManifestVerifierTest {
 
         Mockito.verify(mCallback, Mockito.never())
                 .onValidDefaultPaymentApp(Mockito.any(GURL.class), Mockito.any(ResolveInfo.class));
+        Mockito.verify(mCallback, Mockito.never())
+                .onVerificationError(Mockito.any(), Mockito.any());
         Mockito.verify(mCallback).onFinishedVerification();
         Mockito.verify(mCallback).onFinishedUsingResources();
     }

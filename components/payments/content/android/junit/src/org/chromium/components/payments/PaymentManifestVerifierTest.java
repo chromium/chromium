@@ -169,8 +169,33 @@ public class PaymentManifestVerifierTest {
         mVerifier.onManifestDownloadFailure(
                 "Unable to download payment manifest \"" + webAppManifestUrl.getSpec() + "\".");
 
-        verify(mCallback, never()).onVerificationError(any());
+        verify(mCallback, never()).onVerificationError(any(), any());
         verify(mCallback).onFinishedVerification();
         verify(mCallback).onFinishedUsingResources();
+    }
+
+    /**
+     * Verifies that a payment method manifest download failure is reported to onVerificationError
+     * together with the payment method name, so the caller can decide whether the error is safe to
+     * expose to the merchant.
+     */
+    @Test
+    @Feature({"Payments"})
+    public void testPaymentMethodManifestDownloadFailure_ReportsErrorWithMethodName() {
+        when(mCache.getPaymentMethodManifest(eq(PAYMENT_METHOD), any())).thenReturn(true);
+
+        // Start verification, simulating a cache miss for the payment method manifest.
+        mVerifier.verify();
+        mVerifier.onPaymentMethodManifestFetched(new String[0]);
+        verify(mDownloader)
+                .downloadPaymentMethodManifest(eq(mMerchantOrigin), eq(mMethodName), eq(mVerifier));
+
+        String error = "Unable to download payment manifest \"" + PAYMENT_METHOD + "\".";
+        mVerifier.onManifestDownloadFailure(error);
+
+        verify(mCallback).onVerificationError(eq(mMethodName), eq(error));
+        verify(mCallback).onFinishedVerification();
+        verify(mCallback).onFinishedUsingResources();
+        verify(mCallback, never()).onValidDefaultPaymentApp(any(), any());
     }
 }

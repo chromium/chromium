@@ -71,6 +71,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /** Tests for the native Android payment app finder. */
 @RunWith(BaseJUnit4ClassRunner.class)
@@ -469,30 +470,7 @@ public class AndroidPaymentAppFinderUnitTest {
     }
 
     public void runTestForQueryBobPayWithOneApp(boolean bypassIsReadyToPayService) {
-        List<ResolveInfo> activities = new ArrayList<>();
-        ResolveInfo bobPay = new ResolveInfo();
-        bobPay.activityInfo = new ActivityInfo();
-        bobPay.activityInfo.packageName = "com.bobpay.app";
-        bobPay.activityInfo.name = "com.bobpay.app.WebPaymentActivity";
-        bobPay.activityInfo.applicationInfo = new ApplicationInfo();
-        Bundle bobPayMetaData = new Bundle();
-        bobPayMetaData.putString(
-                AndroidPaymentAppFinder.META_DATA_NAME_OF_DEFAULT_PAYMENT_METHOD_NAME,
-                "https://bobpay.test");
-        bobPayMetaData.putInt(AndroidPaymentAppFinder.META_DATA_NAME_OF_PAYMENT_METHOD_NAMES, 1);
-        bobPay.activityInfo.metaData = bobPayMetaData;
-        activities.add(bobPay);
-
-        Mockito.when(mPackageManagerDelegate.getAppLabel(Mockito.any(ResolveInfo.class)))
-                .thenReturn("A non-empty label");
-        Mockito.when(mPackageManagerDelegate.getActivitiesThatCanRespondToIntentWithMetaData(
-                             ArgumentMatchers.argThat(sPayIntentArgumentMatcher)))
-                .thenReturn(activities);
-
-        Mockito.when(mPackageManagerDelegate.getStringArrayResourceForApplication(
-                             ArgumentMatchers.eq(bobPay.activityInfo.applicationInfo),
-                             ArgumentMatchers.eq(1)))
-                .thenReturn(new String[] {"https://bobpay.test", "basic-card"});
+        installBobPayWithPaymentMethodNames("https://bobpay.test", "basic-card");
 
         Mockito.when(
                         mPackageManagerDelegate.getServicesThatCanRespondToIntent(
@@ -511,42 +489,6 @@ public class AndroidPaymentAppFinderUnitTest {
                                                         WebPaymentIntentHelper
                                                                 .ACTION_UPDATE_PAYMENT_DETAILS)))))
                 .thenReturn(createService("PaymentDetailsUpdate"));
-
-        PackageInfo bobPayPackageInfo = new PackageInfo();
-        bobPayPackageInfo.versionCode = 10;
-        bobPayPackageInfo.signatures = new Signature[1];
-        bobPayPackageInfo.signatures[0] = PaymentManifestVerifierTest.BOB_PAY_SIGNATURE;
-        Mockito.when(mPackageManagerDelegate.getPackageInfoWithSignatures("com.bobpay.app"))
-                .thenReturn(bobPayPackageInfo);
-
-        PaymentManifestDownloader downloader =
-                new PaymentManifestDownloader() {
-                    @Override
-                    public void initialize(
-                            WebContents webContents,
-                            RenderFrameHost renderFrameHost,
-                            CSPChecker cspChecker) {}
-
-                    @Override
-                    public void downloadPaymentMethodManifest(
-                            Origin merchantOrigin, GURL url, ManifestDownloadCallback callback) {
-                        callback.onPaymentMethodManifestDownloadSuccess(
-                                url,
-                                PaymentManifestDownloader.createOpaqueOriginForTest(),
-                                "some content here");
-                    }
-
-                    @Override
-                    public void downloadWebAppManifest(
-                            Origin paynentMethodManifestOrigin,
-                            GURL url,
-                            ManifestDownloadCallback callback) {
-                        callback.onWebAppManifestDownloadSuccess("some content here");
-                    }
-
-                    @Override
-                    public void destroy() {}
-                };
 
         PaymentManifestParser parser =
                 new PaymentManifestParser() {
@@ -579,7 +521,7 @@ public class AndroidPaymentAppFinderUnitTest {
         PaymentAppFactoryDelegate delegate =
                 findApps(
                         new String[] {"https://bobpay.test"},
-                        downloader,
+                        createDownloader(Set.of()),
                         parser,
                         mPackageManagerDelegate,
                         bypassIsReadyToPayService);
@@ -587,6 +529,88 @@ public class AndroidPaymentAppFinderUnitTest {
         Mockito.verify(delegate, Mockito.times(1))
                 .onPaymentAppCreated(
                         ArgumentMatchers.argThat(Matches.paymentAppIdentifier("com.bobpay.app")));
+        Mockito.verify(delegate).onDoneCreatingPaymentApps(/* factory= */ null);
+    }
+
+    /**
+     * Verifies that a download failure of an app's default payment method manifest is not exposed
+     * to the merchant when the merchant did not request that payment method. The default method
+     * manifest is downloaded only to verify the app's identity.
+     */
+    @SmallTest
+    @Test
+    @UiThreadTest
+    public void testUnrequestedDefaultMethodManifestDownloadFailure_NotExposedToMerchant() {
+        installBobPayWithPaymentMethodNames("https://alicepay.test");
+
+        // The "https://alicepay.test" payment method manifest is downloaded successfully, but the
+        // mocked parser fails to parse it, which does not report any error.
+        PaymentAppFactoryDelegate delegate =
+                findApps(
+                        new String[] {"https://alicepay.test"},
+                        createDownloader(/* failingHosts= */ Set.of("bobpay.test")),
+                        mPaymentManifestParser,
+                        mPackageManagerDelegate);
+
+        Mockito.verify(delegate, Mockito.never())
+                .onPaymentAppCreationError(Mockito.anyString(), Mockito.anyInt());
+        verifyNoAppsFound(delegate);
+    }
+
+    /**
+     * Verifies that when both the requested and the unrequested payment method manifests fail to
+     * download, only the error for the requested payment method is exposed to the merchant.
+     */
+    @SmallTest
+    @Test
+    @UiThreadTest
+    public void testRequestedAndUnrequestedManifestDownloadFailures_OnlyRequestedErrorExposed() {
+        installBobPayWithPaymentMethodNames("https://alicepay.test");
+
+        PaymentAppFactoryDelegate delegate =
+                findApps(
+                        new String[] {"https://alicepay.test"},
+                        createDownloader(
+                                /* failingHosts= */ Set.of("bobpay.test", "alicepay.test")),
+                        mPaymentManifestParser,
+                        mPackageManagerDelegate);
+
+        Mockito.verify(delegate)
+                .onPaymentAppCreationError(
+                        Mockito.eq(
+                                "Unable to download payment manifest \"https://alicepay.test/\"."),
+                        Mockito.eq(AppCreationFailureReason.UNKNOWN));
+        Mockito.verify(delegate, Mockito.never())
+                .onPaymentAppCreationError(
+                        ArgumentMatchers.contains("bobpay.test"), Mockito.anyInt());
+        Mockito.verify(delegate, Mockito.never())
+                .onPaymentAppCreated(Mockito.any(PaymentApp.class));
+        Mockito.verify(delegate).onDoneCreatingPaymentApps(/* factory= */ null);
+    }
+
+    /**
+     * Verifies that a download failure of an app's default payment method manifest is still exposed
+     * to the merchant when the merchant requested that payment method.
+     */
+    @SmallTest
+    @Test
+    @UiThreadTest
+    public void testRequestedDefaultMethodManifestDownloadFailure_ExposedToMerchant() {
+        installBobPayWithPaymentMethodNames("https://alicepay.test");
+
+        PaymentAppFactoryDelegate delegate =
+                findApps(
+                        new String[] {"https://bobpay.test"},
+                        createDownloader(Set.of("bobpay.test")),
+                        mPaymentManifestParser,
+                        mPackageManagerDelegate);
+
+        Mockito.verify(delegate)
+                .onPaymentAppCreationError(
+                        Mockito.eq("Unable to download payment manifest \"https://bobpay.test/\"."),
+                        Mockito.eq(AppCreationFailureReason.UNKNOWN));
+        Mockito.verify(delegate, Mockito.never())
+                .onPaymentAppCreated(Mockito.any(PaymentApp.class));
         Mockito.verify(delegate).onDoneCreatingPaymentApps(/* factory= */ null);
     }
 
@@ -623,5 +647,88 @@ public class AndroidPaymentAppFinderUnitTest {
         public boolean matches(PaymentApp app) {
             return app.getIdentifier().equals(mExpectedAppIdentifier);
         }
+    }
+
+    /**
+     * Installs "com.bobpay.app" whose default payment method is "https://bobpay.test" and whose
+     * org.chromium.payment_method_names resource contains `paymentMethodNames`.
+     */
+    private void installBobPayWithPaymentMethodNames(String... paymentMethodNames) {
+        ResolveInfo bobPay = new ResolveInfo();
+        bobPay.activityInfo = new ActivityInfo();
+        bobPay.activityInfo.packageName = "com.bobpay.app";
+        bobPay.activityInfo.name = "com.bobpay.app.WebPaymentActivity";
+        bobPay.activityInfo.applicationInfo = new ApplicationInfo();
+        Bundle bobPayMetaData = new Bundle();
+        bobPayMetaData.putString(
+                AndroidPaymentAppFinder.META_DATA_NAME_OF_DEFAULT_PAYMENT_METHOD_NAME,
+                "https://bobpay.test");
+        bobPayMetaData.putInt(AndroidPaymentAppFinder.META_DATA_NAME_OF_PAYMENT_METHOD_NAMES, 1);
+        bobPay.activityInfo.metaData = bobPayMetaData;
+        List<ResolveInfo> activities = new ArrayList<>();
+        activities.add(bobPay);
+
+        Mockito.when(mPackageManagerDelegate.getAppLabel(Mockito.any(ResolveInfo.class)))
+                .thenReturn("A non-empty label");
+        Mockito.when(
+                        mPackageManagerDelegate.getActivitiesThatCanRespondToIntentWithMetaData(
+                                ArgumentMatchers.argThat(sPayIntentArgumentMatcher)))
+                .thenReturn(activities);
+        Mockito.when(
+                        mPackageManagerDelegate.getStringArrayResourceForApplication(
+                                ArgumentMatchers.eq(bobPay.activityInfo.applicationInfo),
+                                ArgumentMatchers.eq(1)))
+                .thenReturn(paymentMethodNames);
+
+        PackageInfo bobPayPackageInfo = new PackageInfo();
+        bobPayPackageInfo.versionCode = 10;
+        bobPayPackageInfo.signatures =
+                new Signature[] {PaymentManifestVerifierTest.BOB_PAY_SIGNATURE};
+        Mockito.when(mPackageManagerDelegate.getPackageInfoWithSignatures("com.bobpay.app"))
+                .thenReturn(bobPayPackageInfo);
+    }
+
+    /**
+     * Creates a downloader that fails to download the manifests whose URL host is in
+     * `failingHosts`, and successfully downloads all other manifests.
+     */
+    private static PaymentManifestDownloader createDownloader(Set<String> failingHosts) {
+        return new PaymentManifestDownloader() {
+            @Override
+            public void initialize(
+                    WebContents webContents,
+                    RenderFrameHost renderFrameHost,
+                    CSPChecker cspChecker) {}
+
+            @Override
+            public void downloadPaymentMethodManifest(
+                    Origin merchantOrigin, GURL url, ManifestDownloadCallback callback) {
+                if (failingHosts.contains(url.getHost())) {
+                    callback.onManifestDownloadFailure(
+                            "Unable to download payment manifest \"" + url.getSpec() + "\".");
+                } else {
+                    callback.onPaymentMethodManifestDownloadSuccess(
+                            url,
+                            PaymentManifestDownloader.createOpaqueOriginForTest(),
+                            "some content here");
+                }
+            }
+
+            @Override
+            public void downloadWebAppManifest(
+                    Origin paymentMethodManifestOrigin,
+                    GURL url,
+                    ManifestDownloadCallback callback) {
+                if (failingHosts.contains(url.getHost())) {
+                    callback.onManifestDownloadFailure(
+                            "Unable to download payment manifest \"" + url.getSpec() + "\".");
+                } else {
+                    callback.onWebAppManifestDownloadSuccess("some content here");
+                }
+            }
+
+            @Override
+            public void destroy() {}
+        };
     }
 }
