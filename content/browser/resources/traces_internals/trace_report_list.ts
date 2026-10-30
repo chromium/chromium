@@ -19,8 +19,8 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './trace_report_list.css.js';
 import {getHtml} from './trace_report_list.html.js';
 // clang-format on
-import {TracesBrowserProxy} from './traces_browser_proxy.js';
-import type {ClientTraceReport} from './traces_internals.mojom-webui.js';
+import {browserProxyFactory} from './traces_internals.mojom-webui.js';
+import type {BrowserProxy, ClientTraceReport} from './traces_internals.mojom-webui.js';
 
 export enum NotificationType {
   UPDATE = 'Update',
@@ -65,8 +65,7 @@ export class TraceReportListElement extends CrLitElement {
     };
   }
 
-  private traceReportProxy_: TracesBrowserProxy =
-      TracesBrowserProxy.getInstance();
+  private traceReportProxy_: BrowserProxy = browserProxyFactory.getInstance();
   protected accessor traces_: ClientTraceReport[] = [];
   protected accessor isLoading_: boolean = false;
   protected accessor notification_: Readonly<Notification>|undefined =

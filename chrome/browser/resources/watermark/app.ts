@@ -15,7 +15,8 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {PageHandlerFactory, PageHandlerRemote} from './watermark.mojom-webui.js';
+import {browserProxyFactory} from './watermark.mojom-webui.js';
+import type {PageHandlerInterface} from './watermark.mojom-webui.js';
 
 export const FONT_SIZE_MIN = 1;
 export const FONT_SIZE_MAX = 500;
@@ -60,13 +61,11 @@ export class WatermarkAppElement extends CrLitElement {
   protected accessor opacityTicks_: SliderTick[] = [];
   protected accessor watermarkText_: string = 'Watermark Test Page';
   protected accessor isFontSizeInvalid_: boolean = false;
-  private pageHandler_: PageHandlerRemote;
+  private pageHandler_: PageHandlerInterface =
+      browserProxyFactory.getInstance().handler;
 
   constructor() {
     super();
-    this.pageHandler_ = new PageHandlerRemote();
-    const factory = PageHandlerFactory.getRemote();
-    factory.createPageHandler(this.pageHandler_.$.bindNewPipeAndPassReceiver());
 
     for (let i = 0; i <= 100; i++) {
       this.opacityTicks_.push({label: String(i), value: i});

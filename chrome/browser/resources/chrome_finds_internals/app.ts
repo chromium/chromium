@@ -9,7 +9,8 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './chrome_finds_internals.mojom-webui.js';
+import {browserProxyFactory} from './chrome_finds_internals.mojom-webui.js';
+import type {BrowserProxy} from './chrome_finds_internals.mojom-webui.js';
 
 export class ChromeFindsInternalsAppElement extends CrLitElement {
   static get is() {
@@ -36,17 +37,11 @@ export class ChromeFindsInternalsAppElement extends CrLitElement {
   protected accessor historyJson_: string = '';
   protected accessor logs_: string[] = [];
 
-  private handler_: PageHandlerRemote = new PageHandlerRemote();
-  private callbackRouter_: PageCallbackRouter = new PageCallbackRouter();
+  private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
 
   constructor() {
     super();
-    const factory = PageHandlerFactory.getRemote();
-    factory.createPageHandler(
-        this.callbackRouter_.$.bindNewPipeAndPassRemote(),
-        this.handler_.$.bindNewPipeAndPassReceiver());
-
-    this.callbackRouter_.logMessageAdded.addListener(message => {
+    this.browserProxy_.callbackRouter.logMessageAdded.addListener(message => {
       this.appendLog_(message);
     });
   }
@@ -68,13 +63,14 @@ export class ChromeFindsInternalsAppElement extends CrLitElement {
 
   protected onRunFindsModelClick_() {
     this.appendLog_('Triggering Finds Service...');
-    this.handler_.getFindsServiceModelResponse();
+    this.browserProxy_.handler.getFindsServiceModelResponse();
   }
 
   protected async onDumpHistoryClick_() {
     this.appendLog_(
         `Requesting history JSON (count: ${this.historyCount_})...`);
-    const {json} = await this.handler_.getHistoryJson(this.historyCount_);
+    const {json} =
+        await this.browserProxy_.handler.getHistoryJson(this.historyCount_);
     this.historyJson_ = json;
     this.appendLog_('History JSON received.');
   }

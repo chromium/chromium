@@ -15,9 +15,8 @@ import {getCss} from './trace_report.css.js';
 import {getHtml} from './trace_report.html.js';
 import {Notification, NotificationType} from './trace_report_list.js';
 import {downloadTraceData, getTokenAsUuidString} from './trace_util.js';
-import {TracesBrowserProxy} from './traces_browser_proxy.js';
-import type {ClientTraceReport} from './traces_internals.mojom-webui.js';
-import {ReportUploadState, SkipUploadReason} from './traces_internals.mojom-webui.js';
+import type {BrowserProxy, ClientTraceReport} from './traces_internals.mojom-webui.js';
+import {browserProxyFactory, ReportUploadState, SkipUploadReason} from './traces_internals.mojom-webui.js';
 
 export class TraceReportElement extends CrLitElement {
   static get is() {
@@ -40,8 +39,7 @@ export class TraceReportElement extends CrLitElement {
     };
   }
 
-  private traceReportProxy_: TracesBrowserProxy =
-      TracesBrowserProxy.getInstance();
+  private traceReportProxy_: BrowserProxy = browserProxyFactory.getInstance();
 
   protected accessor trace: ClientTraceReport|null = null;
   protected accessor isHeader: boolean = false;

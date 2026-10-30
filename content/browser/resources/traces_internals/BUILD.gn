@@ -71,7 +71,6 @@ build_webui("build") {
     "trace_report_list.html.ts",
     "trace_report_list.ts",
     "trace_util.ts",
-    "traces_browser_proxy.ts",
     "tracing_scenario.html.ts",
     "tracing_scenario.ts",
     "tracing_scenarios_config.html.ts",

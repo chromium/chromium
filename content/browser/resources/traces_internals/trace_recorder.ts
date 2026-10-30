@@ -28,8 +28,8 @@ import type {EtwConfig} from './perfetto_config.js';
 import {getCss} from './trace_recorder.css.js';
 import {getHtml} from './trace_recorder.html.js';
 import {downloadTraceData} from './trace_util.js';
-import {TracesBrowserProxy} from './traces_browser_proxy.js';
-import type {TraceCategory} from './traces_internals.mojom-webui.js';
+import {browserProxyFactory} from './traces_internals.mojom-webui.js';
+import type {BrowserProxy, TraceCategory} from './traces_internals.mojom-webui.js';
 
 enum TracingState {
   IDLE = 'Idle',
@@ -136,7 +136,7 @@ export class TraceRecorderElement extends CrLitElement {
     };
   }
 
-  private browserProxy_: TracesBrowserProxy = TracesBrowserProxy.getInstance();
+  private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
 
   // Bound method for router events
   private boundLoadConfigFromUrl_ = this.loadConfigFromUrl_.bind(this);
