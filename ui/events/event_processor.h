@@ -46,6 +46,10 @@ class EVENTS_EXPORT EventProcessor : public EventDispatcherDelegate,
   // members in the event processor as necessary.
   virtual void OnEventProcessingStarted(Event* event);
 
+  // Invoked when no target was found for |event|, so it is not dispatched to
+  // any target. |event| is the event that would have been dispatched.
+  virtual void OnEventTargetNotFound(Event* event);
+
   // Invoked when the processing of |event| has finished (i.e., when no further
   // dispatching of |event| will be performed by this EventProcessor). Note
   // that the last target to which |event| was dispatched may have been

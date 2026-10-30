@@ -68,6 +68,13 @@ EventDispatchDetails EventProcessor::OnEventFromSource(Event* event) {
         return details;
       }
     } else {
+      if (!target) {
+        OnEventTargetNotFound(event_to_dispatch);
+        if (!weak_this) {
+          details.dispatcher_destroyed = true;
+          return details;
+        }
+      }
       while (target) {
         details = DispatchEvent(target, event_to_dispatch);
 
@@ -104,6 +111,8 @@ EventDispatchDetails EventProcessor::OnEventFromSource(Event* event) {
 
 void EventProcessor::OnEventProcessingStarted(Event* event) {
 }
+
+void EventProcessor::OnEventTargetNotFound(Event* event) {}
 
 void EventProcessor::OnEventProcessingFinished(Event* event) {}
 

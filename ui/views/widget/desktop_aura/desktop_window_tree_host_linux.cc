@@ -12,9 +12,12 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
 #include "base/scoped_observation.h"
+#include "ui/aura/env.h"
+#include "ui/aura/env_input_state_controller.h"
 #include "ui/aura/null_window_targeter.h"
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window.h"
@@ -167,6 +170,19 @@ base::OnceClosure DesktopWindowTreeHostLinux::DisableEventListening() {
   // Allows to open multiple file-pickers. See https://crbug.com/678982
   modal_dialog_counter_++;
   if (modal_dialog_counter_ == 1) {
+    // The modal dialog may consume any in-progress mouse or touch release, so
+    // clear tracked button and press state and cancel active touches before
+    // installing the null targeter. The counter is incremented first so a
+    // dialog opened re-entrantly during the cleanup does not repeat it.
+    auto* env = aura::Env::GetInstance();
+    env->set_mouse_button_flags(0);
+    env->env_controller()->ResetLeftMousePress();
+    OnLostMouseGrab();
+    auto weak_this = weak_factory_.GetWeakPtr();
+    window()->CleanupGestureState();
+    if (!weak_this) {
+      return base::DoNothing();
+    }
     // ScopedWindowTargeter is used to temporarily replace the event-targeter
     // with NullWindowEventTargeter to make |dialog| modal.
     targeter_for_modal_ = std::make_unique<aura::ScopedWindowTargeter>(

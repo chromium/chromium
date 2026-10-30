@@ -56,6 +56,9 @@ class AURA_EXPORT EnvInputStateController : public WindowObserver {
   // not check whether the left mouse button is still down.
   bool ConsumeLeftMousePressForDrag(const Window* window);
 
+  // Clears any recorded left mouse press target.
+  void ResetLeftMousePress();
+
  private:
   friend class test::EnvTestHelper;
 
@@ -82,7 +85,6 @@ class AURA_EXPORT EnvInputStateController : public WindowObserver {
   // Records that the left mouse button was pressed on `window`, which may be
   // null if the press should not be associated with any window.
   void SetLeftMousePress(Window* window);
-  void ResetLeftMousePress();
 
   // Starts observing `window` if it is not already observed.
   void ObserveTarget(Window* window);

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <tuple>
 #include <utility>
 
 #include "base/check_op.h"
@@ -56,6 +57,21 @@ bool IsNonClientLocation(Window* target, const gfx::Point& location) {
 
 Window* ConsumerToWindow(ui::GestureConsumer* consumer) {
   return consumer ? static_cast<Window*>(consumer) : nullptr;
+}
+
+// Returns the window in the subtree rooted at `window` that is `consumer`, or
+// null if `consumer` is not in that subtree.
+Window* FindWindowForGestureConsumer(Window* window,
+                                     const ui::GestureConsumer* consumer) {
+  if (static_cast<const ui::GestureConsumer*>(window) == consumer) {
+    return window;
+  }
+  for (Window* child : window->children()) {
+    if (Window* found = FindWindowForGestureConsumer(child, consumer)) {
+      return found;
+    }
+  }
+  return nullptr;
 }
 
 bool IsEventCandidateForHold(const ui::Event& event) {
@@ -521,6 +537,57 @@ void WindowEventDispatcher::OnEventProcessingStarted(ui::Event* event) {
   // coordinate system to |window()|'s coordinate system.
   if (event->IsLocatedEvent() && !is_dispatched_held_event(*event)) {
     TransformEventForDeviceScaleFactor(static_cast<ui::LocatedEvent*>(event));
+  }
+}
+
+void WindowEventDispatcher::OnEventTargetNotFound(ui::Event* event) {
+  // Aura's input state, gesture lock, and pressed handler are normally updated
+  // in PreDispatchEvent(), which an event without a target never reaches (e.g.
+  // while a NullWindowTargeter is installed for a modal dialog). Events that
+  // end a touch or a mouse button press must still clear that state so Aura
+  // does not keep reporting the touch or button as held, its press as available
+  // to start a drag, or the previous target as locked to subsequent input.
+  Env* env = Env::GetInstance();
+  if (event->type() == ui::EventType::kTouchReleased ||
+      event->type() == ui::EventType::kTouchCancelled) {
+    const ui::TouchEvent& touch_event = *event->AsTouchEvent();
+    env->env_controller()->UpdateStateForTouchEvent(window(), touch_event);
+    if (touch_cancel_window_ &&
+        event->type() == ui::EventType::kTouchCancelled) {
+      // A cancel synthesized by CancelActiveTouches() below, which found no
+      // target either. It is dispatched to the window directly.
+      Window* target = touch_cancel_window_.get();
+      ui::TouchEvent cancel(touch_event);
+      cancel.ConvertLocationToTarget(window(), target);
+      std::ignore = DispatchEvent(target, &cancel);
+      return;
+    }
+    // The gesture recognizer is shared by all hosts, so only a touch locked to
+    // a window under this host's root window is ended here.
+    ui::GestureConsumer* consumer =
+        env->gesture_recognizer()->GetTouchLockedTarget(touch_event);
+    Window* locked_window =
+        consumer ? FindWindowForGestureConsumer(window(), consumer) : nullptr;
+    if (locked_window) {
+      // Cancel every active touch on the window the touch is locked to,
+      // including this one, so the window sees each of its touches and its
+      // gesture end. A cancel is used rather than the release so the touch
+      // cannot activate anything. All touches are cancelled since any cancel
+      // ends the window's gesture, after which its remaining touches would
+      // never be delivered. The cancels are dispatched to the window directly
+      // if the targeter finds no target for them either.
+      base::WeakPtr<Window> previous_touch_cancel_window = std::exchange(
+          touch_cancel_window_, locked_window->GetWeakPtrAsWindow());
+      auto weak_this = weak_ptr_factory_.GetWeakPtr();
+      env->gesture_recognizer()->CancelActiveTouches(locked_window);
+      if (weak_this) {
+        touch_cancel_window_ = std::move(previous_touch_cancel_window);
+      }
+    }
+  } else if (event->type() == ui::EventType::kMouseReleased) {
+    env->env_controller()->UpdateStateForMouseEvent(
+        window(), /*target=*/nullptr, *event->AsMouseEvent());
+    mouse_pressed_handler_ = nullptr;
   }
 }
 
