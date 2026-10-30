@@ -80,35 +80,11 @@ foreach(_jdk, _jdks) {
     java_paths_for_inputs += [ "${_jdk.home}/$_lib$_ext" ]
   }
 }
-
-# GraalVM native-images are used in place of .jar files on linux-x64 hosts, and
-# by remote actions (which always run on linux-x64, using the Linux JDK).
-if (host_os == "linux") {
-  _native_image_jdk_home = android_jdk_home
-} else {
-  _native_image_jdk_home = "//third_party/jdk/linux-amd64"
+javac_paths_for_inputs = java_paths_for_inputs
+if (host_os == "linux" && host_cpu == "x64") {
+  javac_paths_for_inputs += [ "$android_jdk_home/bin/javac-graalvm" ]
 }
-
-# Actions that can use a GraalVM native-image should always list it (and
-# native_image_java_paths_for_inputs) as inputs since remote actions use it, and
-# list its .jar and java_paths_for_inputs only when this is false (when local
-# actions use the JVM).
-use_native_image_inputs = host_os == "linux" && host_cpu == "x64"
-
-# JDK files that native-images read via -Djava.home.
-native_image_java_paths_for_inputs = [
-  "$_native_image_jdk_home/lib/ct.sym",
-  "$_native_image_jdk_home/lib/jrt-fs.jar",
-  "$_native_image_jdk_home/lib/modules",
-]
-
-javac_paths_for_inputs = native_image_java_paths_for_inputs
-
-# Non-x64 Linux JDKs do not ship javac-graalvm.
-if (host_os != "linux" || host_cpu == "x64") {
-  javac_paths_for_inputs += [ "$_native_image_jdk_home/bin/javac-graalvm" ]
-}
-if (!use_native_image_inputs) {
-  # Local actions on other hosts run javac on the JVM.
-  javac_paths_for_inputs += java_paths_for_inputs
+if (use_remoteexec && host_os != "linux") {
+  javac_paths_for_inputs +=
+      [ "//third_party/jdk/linux-amd64/bin/javac-graalvm" ]
 }
