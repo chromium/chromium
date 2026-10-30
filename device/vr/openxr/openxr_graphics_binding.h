@@ -331,7 +331,7 @@ class OpenXrGraphicsBinding {
   bool overlay_visible_ = false;
 
   // This will only be valid if `fb_composition_layer_ext_enabled_` is true.
-  XrCompositionLayerImageLayoutFB y_flip_layer_layout_;
+  XrCompositionLayerImageLayoutFB y_flip_layer_layout_{};
 };
 
 }  // namespace device
