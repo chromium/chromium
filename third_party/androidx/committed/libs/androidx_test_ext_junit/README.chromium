@@ -1,7 +1,7 @@
 Name: AndroidX Test Library
 Short Name: junit
-URL: https://dl.google.com/dl/android/maven2/androidx/test/ext/junit/1.4.0-alpha01/junit-1.4.0-alpha01.aar
-Version: 1.4.0-alpha01
+URL: https://dl.google.com/dl/android/maven2/androidx/test/ext/junit/1.4.0-alpha03/junit-1.4.0-alpha03.aar
+Version: 1.4.0-alpha03
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
