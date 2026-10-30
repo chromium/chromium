@@ -120,10 +120,10 @@ public class SensitiveContentTest {
         assertNotSensitive(mPage);
 
         CtaPageStation page = mPage.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
-        assertSensitive(page);
+        waitUntilSensitive(page);
 
         page = page.loadWebPageProgrammatically(mTestServer.getURL(NOT_SENSITIVE_FILE));
-        assertNotSensitive(page);
+        waitUntilNotSensitive(page);
     }
 
     @Test
@@ -144,24 +144,25 @@ public class SensitiveContentTest {
 
         assertFalse(observer.getContentSensitivity());
         CtaPageStation page = mPage.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
-        assertSensitive(page);
+        waitUntilSensitive(page);
         assertTrue(observer.getContentSensitivity());
 
         page = page.loadWebPageProgrammatically(mTestServer.getURL(NOT_SENSITIVE_FILE));
-        assertNotSensitive(page);
+        waitUntilNotSensitive(page);
         assertFalse(observer.getContentSensitivity());
 
         // After observation is removed, the observer will not be notified anymore.
         ThreadUtils.runOnUiThreadBlocking(() -> client.removeObserver(observer));
         page = page.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
-        assertSensitive(page);
+        waitUntilSensitive(page);
         assertFalse(observer.getContentSensitivity());
     }
 
     @Test
     @MediumTest
     public void testSwapViewAndroidDelegate() {
-        mPage.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
+        CtaPageStation page = mPage.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
+        waitUntilSensitive(page);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -179,7 +180,7 @@ public class SensitiveContentTest {
                             "",
                             newViewAndroidDelegate,
                             newContainerView,
-                            null,
+                            mCtaTestRule.getActivity().getWindowAndroid(),
                             WebContents.createDefaultInternalsHolder());
                     pollUiThreadNested(
                             () ->
@@ -197,11 +198,11 @@ public class SensitiveContentTest {
         assertFalse(tab.getTabHasSensitiveContent());
 
         CtaPageStation page = mPage.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
-        assertSensitive(page);
+        waitUntilSensitive(page);
         assertTrue(tab.getTabHasSensitiveContent());
 
         page = page.loadWebPageProgrammatically(mTestServer.getURL(NOT_SENSITIVE_FILE));
-        assertNotSensitive(page);
+        waitUntilNotSensitive(page);
         assertFalse(tab.getTabHasSensitiveContent());
     }
 
@@ -387,8 +388,9 @@ public class SensitiveContentTest {
         // Open a third tab.
         page = page.openNewTabFast();
         // Load sensitive content into the third tab.
+        final Tab thirdTab = page.loadedTabElement.value();
         page = page.loadWebPageProgrammatically(mTestServer.getURL(SENSITIVE_FILE));
-        assertTrue(page.loadedTabElement.value().getTabHasSensitiveContent());
+        pollUiThread(() -> thirdTab.getTabHasSensitiveContent());
         // Open a fourth tab.
         page = page.openNewTabFast();
 
@@ -411,7 +413,7 @@ public class SensitiveContentTest {
         page = partialSwipe.finishSwipe(WebPageStation.newBuilder());
         // After the swipe ends, the content container should return to not being sensitive.
         assertNotSensitive(page.getActivity());
-        assertSensitive(page);
+        waitUntilSensitive(page);
 
         // Swiping from a sensitive tab to a not sensitive one should mark the content container as
         // sensitive.
@@ -450,8 +452,15 @@ public class SensitiveContentTest {
         assertNotEquals(View.CONTENT_SENSITIVITY_SENSITIVE, getPageContentSensitivity(page));
     }
 
-    private void assertSensitive(CtaPageStation page) {
-        assertEquals(View.CONTENT_SENSITIVITY_SENSITIVE, getPageContentSensitivity(page));
+    // TODO(crbug.com/579299331): Measure typical time-to-sensitive (e.g. via
+    // LatencyUntilSensitive histograms and CQ/CI bots) and set an explicit timeout instead of
+    // CriteriaHelper's default 3s.
+    private void waitUntilNotSensitive(CtaPageStation page) {
+        pollUiThread(() -> getPageContentSensitivity(page) != View.CONTENT_SENSITIVITY_SENSITIVE);
+    }
+
+    private void waitUntilSensitive(CtaPageStation page) {
+        pollUiThread(() -> getPageContentSensitivity(page) == View.CONTENT_SENSITIVITY_SENSITIVE);
     }
 
     private int getPageContentSensitivity(CtaPageStation page) {
