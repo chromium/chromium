@@ -685,15 +685,9 @@ void ManagedConfigurationAPI::OnConfigurationPolicyChanged() {
     // across browser sessions (and therefore are not in `origins_`).
     ScopedDictPrefUpdate update(profile_->GetPrefs(),
                                 prefs::kLastManagedConfigurationHashForOrigin);
-    std::vector<std::string> stale_keys;
-    for (auto [encoded_origin, _] : *update) {
-      if (!current_encoded_origins.contains(encoded_origin)) {
-        stale_keys.push_back(encoded_origin);
-      }
-    }
-    for (const std::string& key : stale_keys) {
-      update->Remove(key);
-    }
+    update->EraseIf([&](const auto& entry) {
+      return !current_encoded_origins.contains(entry.first);
+    });
   }
 
   managed_origins_.swap(current_origins);

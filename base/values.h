@@ -431,6 +431,17 @@ class BASE_EXPORT GSL_OWNER DictValue {
   // entry or `std::nullopt` otherwise.
   std::optional<Value> Extract(std::string_view key);
 
+  // Erases all entries for which `predicate` evaluates to true from this
+  // dictionary. `predicate` is passed each entry as a `DictValue::value_type`
+  // (`std::pair<const std::string&, const Value&>`). Returns the number of
+  // entries erased.
+  template <typename Predicate>
+  size_t EraseIf(Predicate predicate) {
+    return base::EraseIf(storage_, [&](const auto& pair) {
+      return predicate(value_type(pair.first, *pair.second));
+    });
+  }
+
   // Equivalent to the above methods but operating on paths instead of keys.
   // A path is shorthand syntax for referring to a key nested inside
   // intermediate dictionaries, with components delimited by ".". Paths may
@@ -656,6 +667,8 @@ class BASE_EXPORT GSL_OWNER DictValue {
 // - `Extract()`: If the key is present in the dictionary, removes the key from
 //       the dictionary and transfers ownership of `Value` to the caller.
 //       Otherwise, returns `std::nullopt`.
+// - `EraseIf()`: Erase all entries matching an arbitrary predicate from the
+//       dictionary.
 //
 // Dictionaries also support an additional set of helper methods that operate on
 // "paths": `FindByDottedPath()`, `SetByDottedPath()`, `RemoveByDottedPath()`,

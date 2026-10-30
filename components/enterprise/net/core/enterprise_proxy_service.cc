@@ -574,15 +574,9 @@ void EnterpriseProxyService::RecreateProvisioningDomainManagers(
 
   // Prune cache entries for policy hashes that are no longer configured.
   ScopedDictPrefUpdate update(pref_service_, kProvisioningDomainProxyConfigs);
-  std::vector<std::string> keys_to_remove;
-  for (const auto [key, value] : *update) {
-    if (!active_policy_hashes.contains(key)) {
-      keys_to_remove.push_back(key);
-    }
-  }
-  for (const auto& key : keys_to_remove) {
-    update->Remove(key);
-  }
+  update->EraseIf([&](const auto& entry) {
+    return !active_policy_hashes.contains(entry.first);
+  });
 
   const net::ProxyConfig::DynamicRoutingConfig new_routing_config =
       GetDynamicRoutingConfig();

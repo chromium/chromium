@@ -1667,6 +1667,7 @@ TEST(ValuesTest, StringValue) {
   ASSERT_EQ(std::string("utf16"), utf16_value->GetString());
 }
 
+// Tests that calling `clear()` on a `DictValue` removes all its entries.
 TEST(ValuesTest, DictionaryDeletion) {
   std::string key = "test";
   DictValue dict;
@@ -1679,6 +1680,76 @@ TEST(ValuesTest, DictionaryDeletion) {
   EXPECT_EQ(0U, dict.size());
 }
 
+// Tests that `DictValue::EraseIf()` removes matching entries from a `DictValue`
+// and returns the count of erased entries.
+TEST(ValuesTest, DictEraseIf) {
+  DictValue dict;
+  dict.Set("a", 1);
+  dict.Set("b", 2);
+  dict.Set("c", 3);
+  dict.Set("d", 4);
+
+  // Erase by value.
+  EXPECT_EQ(2u, dict.EraseIf([](const auto& entry) {
+    return entry.second.GetInt() % 2 == 0;
+  }));
+  EXPECT_EQ(2u, dict.size());
+  EXPECT_EQ(1, dict.FindInt("a"));
+  EXPECT_EQ(nullptr, dict.Find("b"));
+  EXPECT_EQ(3, dict.FindInt("c"));
+  EXPECT_EQ(nullptr, dict.Find("d"));
+
+  // Erase by key.
+  DictValue keys_to_keep;
+  keys_to_keep.Set("a", 1);
+  EXPECT_EQ(1u, dict.EraseIf([&](const auto& entry) {
+    return !keys_to_keep.contains(entry.first);
+  }));
+  EXPECT_EQ(1u, dict.size());
+  EXPECT_EQ(1, dict.FindInt("a"));
+  EXPECT_EQ(nullptr, dict.Find("c"));
+
+  // Erase remaining with structured binding.
+  EXPECT_EQ(1u, dict.EraseIf([](const auto& entry) {
+    const auto& [key, value] = entry;
+    return key == "a" && value == Value(1);
+  }));
+  EXPECT_TRUE(dict.empty());
+}
+
+// Tests edge cases for `DictValue::EraseIf()`, including empty dictionaries and
+// predicates matching all or no entries.
+TEST(ValuesTest, DictEraseIfEdgeCases) {
+  // Calling `EraseIf()` on an empty dictionary returns 0.
+  {
+    DictValue empty_dict;
+    EXPECT_EQ(0u, empty_dict.EraseIf([](const auto&) { return true; }));
+    EXPECT_TRUE(empty_dict.empty());
+  }
+
+  // Predicate matching none leaves dictionary unchanged.
+  {
+    DictValue dict;
+    dict.Set("a", 1);
+    dict.Set("b", 2);
+    EXPECT_EQ(0u, dict.EraseIf([](const auto&) { return false; }));
+    EXPECT_EQ(2u, dict.size());
+    EXPECT_EQ(1, dict.FindInt("a"));
+    EXPECT_EQ(2, dict.FindInt("b"));
+  }
+
+  // Predicate matching all empties the dictionary.
+  {
+    DictValue dict;
+    dict.Set("a", 1);
+    dict.Set("b", 2);
+    EXPECT_EQ(2u, dict.EraseIf([](const auto&) { return true; }));
+    EXPECT_TRUE(dict.empty());
+  }
+}
+
+// Tests that `DictValue::Set()` returns a pointer to the inserted or updated
+// `Value`.
 TEST(ValuesTest, DictionarySetReturnsPointer) {
   {
     DictValue dict;
