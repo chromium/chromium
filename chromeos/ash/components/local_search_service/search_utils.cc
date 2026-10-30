@@ -22,8 +22,8 @@
 
 namespace ash::local_search_service {
 
-float ExactPrefixMatchScore(const std::u16string& query,
-                            const std::u16string& text) {
+float ExactPrefixMatchScore(std::u16string_view query,
+                            std::u16string_view text) {
   const size_t query_len = query.size();
   if (query_len == 0)
     return 0;

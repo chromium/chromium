@@ -28,6 +28,7 @@ using WeightedContentWithId = std::tuple<std::string, std::string, float>;
 std::vector<Data> CreateTestData(
     const std::map<std::string, std::vector<ContentWithId>>& input) {
   std::vector<Data> output;
+  output.reserve(input.size());
   for (const auto& item : input) {
     Data data;
     data.id = item.first;
@@ -37,12 +38,12 @@ std::vector<Data> CreateTestData(
     // non-en data in tests.
     data.locale = base::i18n::GetKnownLanguageTag("en");
     std::vector<Content>& contents = data.contents;
+    contents.reserve(item.second.size());
     for (const auto& content_with_id : item.second) {
-      const Content content(content_with_id.first,
+      contents.emplace_back(content_with_id.first,
                             base::UTF8ToUTF16(content_with_id.second));
-      contents.push_back(content);
     }
-    output.push_back(data);
+    output.push_back(std::move(data));
   }
   return output;
 }
@@ -52,6 +53,7 @@ std::vector<Data> CreateTestData(
                    std::vector<std::tuple<std::string, std::string, float>>>&
         input) {
   std::vector<Data> output;
+  output.reserve(input.size());
   for (const auto& item : input) {
     Data data;
     data.id = item.first;
@@ -61,14 +63,14 @@ std::vector<Data> CreateTestData(
     // non-en data in tests.
     data.locale = base::i18n::GetKnownLanguageTag("en");
     std::vector<Content>& contents = data.contents;
+    contents.reserve(item.second.size());
     for (const auto& weighted_content_with_id : item.second) {
-      const Content content(
+      contents.emplace_back(
           std::get<0>(weighted_content_with_id),
           base::UTF8ToUTF16(std::get<1>(weighted_content_with_id)),
           std::get<2>(weighted_content_with_id));
-      contents.push_back(content);
     }
-    output.push_back(data);
+    output.push_back(std::move(data));
   }
   return output;
 }

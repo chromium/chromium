@@ -70,8 +70,11 @@ void UpdateData(const std::string& id,
                 const std::vector<Content>& contents,
                 KeyToTagVector* data) {
   DCHECK(data);
-  (*data)[id] = std::vector<TokenizedStringWithId>();
-  TokenizeSearchTags(contents, &((*data)[id]));
+  auto [it, inserted] = data->try_emplace(id);
+  if (!inserted) {
+    it->second.clear();
+  }
+  TokenizeSearchTags(contents, &it->second);
 }
 
 }  // namespace

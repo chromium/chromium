@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_LOCAL_SEARCH_SERVICE_SEARCH_UTILS_H_
 
 #include <string>
+#include <string_view>
 
 namespace ash::local_search_service {
 
@@ -13,8 +14,8 @@ struct Result;
 
 // Score is non-zero if |query| is a prefix of |text|. No case normalization is
 // done.
-float ExactPrefixMatchScore(const std::u16string& query,
-                            const std::u16string& text);
+float ExactPrefixMatchScore(std::u16string_view query,
+                            std::u16string_view text);
 
 // Returns block matching ratio between |query| and |text|. No case
 // normalization is done.
