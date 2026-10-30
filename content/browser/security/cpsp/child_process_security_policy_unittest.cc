@@ -1879,6 +1879,92 @@ TEST_P(ChildProcessSecurityPolicyTest, MatchesCommittedOrigin) {
   EXPECT_TRUE(matches_committed_origin("file://localhost/", false));
 }
 
+// Verifies that adding an origin that has already been committed in a process
+// does not create a duplicate entry in the process's committed origins, while
+// distinct opaque origins with the same precursor are tracked separately.
+TEST_P(ChildProcessSecurityPolicyTest, AddCommittedOriginIgnoresDuplicates) {
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+
+  MockRenderProcessHost process(browser_context());
+  LockProcessIfNeeded(process.GetID(), browser_context());
+  const ChildProcessId process_id = process.GetID();
+  const int renderer_id = process.GetDeprecatedID();
+  EXPECT_EQ(0u, p->GetCommittedOriginCountForTesting(process_id));
+
+  auto foo_origin = url::Origin::Create(GURL("http://foo.com"));
+  p->AddCommittedOrigin(renderer_id, foo_origin);
+  EXPECT_EQ(1u, p->GetCommittedOriginCountForTesting(process_id));
+
+  // Adding the same origin again, including a separately constructed copy,
+  // should be a no-op.
+  p->AddCommittedOrigin(renderer_id, foo_origin);
+  p->AddCommittedOrigin(renderer_id,
+                        url::Origin::Create(GURL("http://foo.com/path")));
+  EXPECT_EQ(1u, p->GetCommittedOriginCountForTesting(process_id));
+
+  // A different origin should be added.
+  p->AddCommittedOrigin(renderer_id,
+                        url::Origin::Create(GURL("http://bar.com")));
+  EXPECT_EQ(2u, p->GetCommittedOriginCountForTesting(process_id));
+
+  // Opaque origins are distinguished by their nonces, so adding the same
+  // opaque origin twice should only add one entry, but a second opaque origin
+  // with the same precursor should be added separately.
+  auto opaque_with_foo_precursor = foo_origin.DeriveNewOpaqueOrigin();
+  p->AddCommittedOrigin(renderer_id, opaque_with_foo_precursor);
+  EXPECT_EQ(3u, p->GetCommittedOriginCountForTesting(process_id));
+  p->AddCommittedOrigin(renderer_id, opaque_with_foo_precursor);
+  EXPECT_EQ(3u, p->GetCommittedOriginCountForTesting(process_id));
+  p->AddCommittedOrigin(renderer_id, foo_origin.DeriveNewOpaqueOrigin());
+  EXPECT_EQ(4u, p->GetCommittedOriginCountForTesting(process_id));
+}
+
+// Verifies that committed origin checks continue to work after the process is
+// removed while a Handle still exists, and stop working once the Handle is
+// gone.
+TEST_P(ChildProcessSecurityPolicyTest, CommittedOriginsAfterProcessRemoval) {
+  ChildProcessSecurityPolicyImpl* p =
+      ChildProcessSecurityPolicyImpl::GetInstance();
+
+  const GURL foo_url("http://foo.com/");
+  auto foo_origin = url::Origin::Create(foo_url);
+
+  auto process = std::make_unique<MockRenderProcessHost>(browser_context());
+  const ChildProcessId process_id = process->GetID();
+  const int renderer_id = process->GetDeprecatedID();
+  LockProcessIfNeeded(process_id, browser_context());
+  p->AddCommittedOrigin(renderer_id, foo_origin);
+  EXPECT_TRUE(p->MatchesCommittedOriginForTesting(process_id, foo_url, false));
+  EXPECT_TRUE(p->CanAccessDataForOrigin(renderer_id, foo_origin));
+  EXPECT_TRUE(p->HostsOrigin(renderer_id, foo_origin));
+
+  // Creating a Handle should make the ProcessState live beyond Remove(), which
+  // happens when the RenderProcessHost is destroyed.
+  auto handle = p->CreateHandle(process_id);
+  process.reset();
+  EXPECT_TRUE(p->MatchesCommittedOriginForTesting(process_id, foo_url, false));
+  EXPECT_EQ(1u, p->GetCommittedOriginCountForTesting(process_id));
+  EXPECT_TRUE(p->CanAccessDataForOrigin(renderer_id, foo_origin));
+  EXPECT_TRUE(handle.CanAccessDataForOrigin(foo_origin));
+  EXPECT_TRUE(p->HostsOrigin(renderer_id, foo_origin));
+
+  // Invalidate `handle` so it does not preserve process state anymore.
+  handle = ChildProcessSecurityPolicyImpl::Handle();
+
+  // Post a task to the IO loop that then posts a task to the UI loop.
+  // This should cause the |run_loop| to return after the removal has completed.
+  base::RunLoop run_loop;
+  GetIOThreadTaskRunner({})->PostTaskAndReply(FROM_HERE, base::DoNothing(),
+                                              run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_FALSE(p->MatchesCommittedOriginForTesting(process_id, foo_url, false));
+  EXPECT_EQ(0u, p->GetCommittedOriginCountForTesting(process_id));
+  EXPECT_FALSE(p->CanAccessDataForOrigin(renderer_id, foo_origin));
+  EXPECT_FALSE(p->HostsOrigin(renderer_id, foo_origin));
+}
+
 TEST_P(ChildProcessSecurityPolicyTest, SandboxedProcessEnforcements) {
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();

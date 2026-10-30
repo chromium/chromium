@@ -634,6 +634,10 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
     committed_origins_.emplace(origin);
   }
 
+  size_t GetCommittedOriginCountForTesting() const {
+    return committed_origins_.size();
+  }
+
   std::string GetCommittedOriginsAsStringForDebugging() const {
     std::string str;
     for (auto& origin : committed_origins_) {
@@ -2512,6 +2516,16 @@ bool ChildProcessSecurityPolicyImpl::MatchesCommittedOriginForTesting(
                                                  url_is_for_precursor_origin);
   }
   return false;
+}
+
+size_t ChildProcessSecurityPolicyImpl::GetCommittedOriginCountForTesting(
+    ChildProcessId child_id) {
+  base::AutoLock lock(lock_);
+
+  if (auto* process_state = process_states_.GetProcessStateForQuery(child_id)) {
+    return process_state->GetCommittedOriginCountForTesting();  // IN-TEST
+  }
+  return 0;
 }
 
 CanCommitStatus ChildProcessSecurityPolicyImpl::CanCommitOriginAndUrl(

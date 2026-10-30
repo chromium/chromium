@@ -837,6 +837,10 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                                         const GURL& url,
                                         bool url_is_for_precursor_origin);
 
+  // Returns the number of committed origins tracked for the process
+  // `child_id`, or 0 if the process isn't found.
+  size_t GetCommittedOriginCountForTesting(ChildProcessId child_id);
+
   // Exposes LookupOriginAgentClusterState() for tests.
   std::optional<OriginAgentClusterIsolationState>
   LookupOriginAgentClusterStateForTesting(
