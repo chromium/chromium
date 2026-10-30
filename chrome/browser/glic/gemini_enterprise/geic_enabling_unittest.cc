@@ -239,6 +239,26 @@ TEST_F(GeicEnablingTest, CanonicalizesHomeCidPath) {
   EXPECT_EQ(
       GURL("https://business.gemini.google/side-panel?configId=abc#section"),
       ResolvePolicyUrl("https://business.gemini.google/home/cid/abc#section"));
+
+  // Regional location segments (/<location>/home/cid/<configId>)
+  EXPECT_EQ(
+      GURL("https://vertexaisearch.cloud.google/side-panel?configId=abc123&"
+           "location=us"),
+      ResolvePolicyUrl(
+          "https://vertexaisearch.cloud.google/us/home/cid/abc123"));
+  EXPECT_EQ(
+      GURL("https://vertexaisearch.cloud.google/side-panel?configId=abc123&"
+           "location=eu"),
+      ResolvePolicyUrl(
+          "https://vertexaisearch.cloud.google/eu/home/cid/abc123/"));
+  EXPECT_EQ(GURL("https://vertexaisearch.cloud.google/side-panel?foo=bar&"
+                 "configId=abc&location=eu"),
+            ResolvePolicyUrl(
+                "https://vertexaisearch.cloud.google/eu/home/cid/abc?foo=bar"));
+  EXPECT_EQ(GURL("https://vertexaisearch.cloud.google/side-panel?configId=abc&"
+                 "location=eu#section"),
+            ResolvePolicyUrl(
+                "https://vertexaisearch.cloud.google/eu/home/cid/abc#section"));
 }
 
 TEST_F(GeicEnablingTest, LeavesNonHomeCidPathsAlone) {
@@ -252,6 +272,15 @@ TEST_F(GeicEnablingTest, LeavesNonHomeCidPathsAlone) {
             ResolvePolicyUrl("https://business.gemini.google/home/cid/"));
   EXPECT_EQ(GURL("https://business.gemini.google/home/other/abc"),
             ResolvePolicyUrl("https://business.gemini.google/home/other/abc"));
+  EXPECT_EQ(
+      GURL("https://vertexaisearch.cloud.google/us/home/cid/"),
+      ResolvePolicyUrl("https://vertexaisearch.cloud.google/us/home/cid/"));
+  EXPECT_EQ(GURL("https://vertexaisearch.cloud.google/us/home/other/abc"),
+            ResolvePolicyUrl(
+                "https://vertexaisearch.cloud.google/us/home/other/abc"));
+  EXPECT_EQ(
+      GURL("https://vertexaisearch.cloud.google/a/b/home/cid/abc"),
+      ResolvePolicyUrl("https://vertexaisearch.cloud.google/a/b/home/cid/abc"));
 }
 
 TEST_F(GeicEnablingTest, ResolveGeicGuestUrlPrecedence) {

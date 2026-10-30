@@ -48,32 +48,49 @@ bool IsValidGuestUrl(const GURL& url) {
   return url.SchemeIs(url::kHttpsScheme) && IsAllowedGeminiEnterpriseHost(url);
 }
 
-// Rewrites standalone Gemini Enterprise web app URLs (`/home/cid/<configId>`)
-// to the side-panel endpoint (`/side-panel?configId=<configId>`) at consumption
-// time rather than in the policy handler so the stored policy pref retains the
-// raw web application URL and CLI/Finch overrides are canonicalized as well.
+// Rewrites standalone Gemini Enterprise web app URLs (`/home/cid/<configId>` or
+// `/<location>/home/cid/<configId>`) to the side-panel endpoint
+// (`/side-panel?configId=<configId>` or
+// `/side-panel?configId=<configId>&location=<location>`) at consumption time
+// rather than in the policy handler so the stored policy pref retains the raw
+// web application URL and CLI/Finch overrides are canonicalized as well.
 GURL CanonicalizeGuestUrl(const GURL& input_url) {
   if (!input_url.is_valid()) {
     return GURL();
   }
 
-  static constexpr std::string_view kHomeCidPrefix = "/home/cid/";
+  static constexpr std::string_view kHomeCidMarker = "/home/cid/";
   std::string_view path = input_url.path();
-  if (!path.starts_with(kHomeCidPrefix)) {
-    return input_url;
+  std::string_view location;
+  std::string_view config_id;
+
+  size_t marker_pos = path.find(kHomeCidMarker);
+  if (marker_pos == 0) {
+    config_id = path.substr(kHomeCidMarker.size());
+  } else if (marker_pos != std::string_view::npos && marker_pos > 1) {
+    // Expected path: "/<location>/home/cid/..."
+    std::string_view prefix = path.substr(1, marker_pos - 1);
+    if (prefix.find('/') == std::string_view::npos) {
+      location = prefix;
+      config_id = path.substr(marker_pos + kHomeCidMarker.size());
+    }
   }
-  path.remove_prefix(kHomeCidPrefix.size());
-  if (path.ends_with("/")) {
-    path.remove_suffix(1);
+
+  if (config_id.ends_with("/")) {
+    config_id.remove_suffix(1);
   }
-  if (path.empty()) {
+  if (config_id.empty()) {
     return input_url;
   }
 
   GURL::Replacements replacements;
   replacements.SetPathStr("/side-panel");
-  return net::AppendOrReplaceQueryParameter(
-      input_url.ReplaceComponents(replacements), "configId", path);
+  GURL result = net::AppendOrReplaceQueryParameter(
+      input_url.ReplaceComponents(replacements), "configId", config_id);
+  if (!location.empty()) {
+    result = net::AppendOrReplaceQueryParameter(result, "location", location);
+  }
+  return result;
 }
 
 // Why a guest URL source didn't produce a usable URL.
