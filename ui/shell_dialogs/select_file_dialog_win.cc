@@ -41,7 +41,7 @@ namespace {
 // found. 'file_ext' must be in form ".txt".
 bool GetRegistryDescriptionFromExtension(const std::u16string& file_ext,
                                          std::u16string* reg_description) {
-  DCHECK(reg_description);
+  CHECK(reg_description, base::NotFatalUntil::M163);
   base::win::RegKey reg_ext(HKEY_CLASSES_ROOT, base::as_wcstr(file_ext),
                             KEY_READ);
   std::wstring reg_app;
@@ -76,7 +76,7 @@ std::vector<FileFilterSpec> FormatFilterForExtensions(
   const std::u16string all_desc =
       l10n_util::GetStringUTF16(IDS_APP_SAVEAS_ALL_FILES);
 
-  DCHECK(file_ext.size() >= ext_desc.size());
+  CHECK(file_ext.size() >= ext_desc.size(), base::NotFatalUntil::M163);
 
   if (file_ext.empty())
     include_all_files = true;
@@ -99,7 +99,7 @@ std::vector<FileFilterSpec> FormatFilterForExtensions(
     }
 
     if (desc.empty()) {
-      DCHECK(ext.find(u'.') != std::u16string::npos);
+      CHECK(ext.find(u'.') != std::u16string::npos, base::NotFatalUntil::M163);
       std::u16string first_extension = ext.substr(ext.find(u'.'));
       size_t first_separator_index = first_extension.find(u';');
       if (first_separator_index != std::u16string::npos)
@@ -298,7 +298,7 @@ void SelectFileDialogImpl::OnSelectFileExecuted(
         case SELECT_EXISTING_FOLDER:
         case SELECT_SAVEAS_FILE:
         case SELECT_OPEN_FILE:
-          DCHECK_EQ(paths.size(), 1u);
+          CHECK_EQ(paths.size(), 1u, base::NotFatalUntil::M163);
           listener_->FileSelected(SelectedFileInfo(paths[0]), index);
           break;
         case SELECT_OPEN_MULTI_FILE:

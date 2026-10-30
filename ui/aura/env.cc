@@ -100,7 +100,7 @@ Env::~Env() {
 
 // static
 std::unique_ptr<Env> Env::CreateInstance() {
-  DCHECK(!g_primary_instance);
+  CHECK(!g_primary_instance, base::NotFatalUntil::M163);
   // No make_unique as constructor is private.
   std::unique_ptr<Env> env(new Env());
   if (!env->Init())

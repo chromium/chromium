@@ -96,7 +96,7 @@ void RecyclableCompositorMac::InvalidateSurface() {
 
 void RecyclableCompositorMac::OnCompositingDidCommit(
     ui::Compositor* compositor_that_did_commit) {
-  DCHECK_EQ(compositor_that_did_commit, compositor());
+  CHECK_EQ(compositor_that_did_commit, compositor(), base::NotFatalUntil::M163);
   accelerated_widget_mac_->SetSuspended(false);
 }
 

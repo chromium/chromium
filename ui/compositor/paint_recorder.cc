@@ -30,7 +30,7 @@ PaintRecorder::PaintRecorder(const PaintContext& context,
       cache_(cache),
       recording_size_(recording_size) {
 #if DCHECK_IS_ON()
-  DCHECK(!context_->inside_paint_recorder_);
+  CHECK(!context_->inside_paint_recorder_, base::NotFatalUntil::M163);
   context_->inside_paint_recorder_ = true;
 #endif
   if (context_->is_pixel_canvas()) {
@@ -64,7 +64,7 @@ PaintRecorder::~PaintRecorder() {
     cache_->SetPaintRecord(record, context_->device_scale_factor());
   }
 
-  DCHECK(context_->list_);
+  CHECK(context_->list_, base::NotFatalUntil::M163);
   context_->list_->StartPaint();
   context_->list_->push<cc::DrawRecordOp>(std::move(record));
   gfx::Rect bounds_in_layer = context_->ToLayerSpaceBounds(recording_size_);

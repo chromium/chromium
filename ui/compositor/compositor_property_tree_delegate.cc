@@ -29,7 +29,7 @@ void CompositorPropertyTreeDelegate::UpdatePropertyTreesIfNeeded() {
                "CompositorPropertyTreeDelegate::UpdatePropertyTreesIfNeeded");
   cc::PropertyTreeBuilder::BuildPropertyTrees(host());
 
-  DCHECK(compositor_);
+  CHECK(compositor_, base::NotFatalUntil::M163);
   compositor_->CheckPropertyTrees();
 
   TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("cc.debug"),

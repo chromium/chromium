@@ -311,7 +311,8 @@ bool RunOpenFileDialog(HWND owner,
   if (FAILED(selected_items->GetCount(&result_count)))
     return false;
 
-  DCHECK(result_count == 1 || (dialog_options & FOS_ALLOWMULTISELECT));
+  CHECK(result_count == 1 || (dialog_options & FOS_ALLOWMULTISELECT),
+        base::NotFatalUntil::M163);
 
   std::vector<base::FilePath> result(result_count);
   for (DWORD i = 0; i < result_count; ++i) {
@@ -341,7 +342,7 @@ bool ExecuteSelectFolder(HWND owner,
                          const std::u16string& title,
                          const base::FilePath& default_path,
                          std::vector<base::FilePath>* paths) {
-  DCHECK(paths);
+  CHECK(paths, base::NotFatalUntil::M163);
 
   std::u16string new_title = title;
   if (new_title.empty() && type == SelectFileDialog::SELECT_UPLOAD_FOLDER) {
@@ -394,10 +395,10 @@ bool ExecuteSaveFile(HWND owner,
                      const std::wstring& def_ext,
                      int* filter_index,
                      base::FilePath* path) {
-  DCHECK(path);
+  CHECK(path, base::NotFatalUntil::M163);
   // Having an empty filter for a bad user experience. We should always
   // specify a filter when saving.
-  DCHECK(!filter.empty());
+  CHECK(!filter.empty(), base::NotFatalUntil::M163);
 
   DWORD dialog_options = FOS_OVERWRITEPROMPT;
 

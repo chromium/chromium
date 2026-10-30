@@ -40,7 +40,7 @@ void LayerTextured::AddDeferredPaintRequest() {
 }
 
 void LayerTextured::RemoveDeferredPaintRequest() {
-  DCHECK_GT(deferred_paint_requests_, 0u);
+  CHECK_GT(deferred_paint_requests_, 0u, base::NotFatalUntil::M163);
 
   --deferred_paint_requests_;
   TRACE_COUNTER("ui",

@@ -87,8 +87,8 @@ DelegatedFrameHostAndroid::DelegatedFrameHostAndroid(
       host_frame_sink_manager_(host_frame_sink_manager),
       client_(client),
       frame_evictor_(std::make_unique<viz::FrameEvictor>(this)) {
-  DCHECK(view_);
-  DCHECK(client_);
+  CHECK(view_, base::NotFatalUntil::M163);
+  CHECK(client_, base::NotFatalUntil::M163);
 
   constexpr bool is_transparent = false;
   content_layer_ = CreateSurfaceLayer(
@@ -180,7 +180,7 @@ void DelegatedFrameHostAndroid::CopyFromCompositingSurface(
     base::OnceCallback<
         void(const base::expected<viz::CopyOutputBitmapWithMetadata,
                                   viz::CopyOutputResult::Error>&)> callback) {
-  DCHECK(CanCopyFromCompositingSurface());
+  CHECK(CanCopyFromCompositingSurface(), base::NotFatalUntil::M163);
 
   const viz::SurfaceId surface_id(frame_sink_id_, local_surface_id_);
 
@@ -240,8 +240,8 @@ void DelegatedFrameHostAndroid::CopySharedImageFromCompositingSurface(
     bool capture_exact_surface_id) {
   TRACE_EVENT(
       "ui", "DelegatedFrameHostAndroid::CopySharedImageFromCompositingSurface");
-  DCHECK(context_provider);
-  DCHECK(CanCopyFromCompositingSurface());
+  CHECK(context_provider, base::NotFatalUntil::M163);
+  CHECK(CanCopyFromCompositingSurface(), base::NotFatalUntil::M163);
 
   auto* shared_image_interface = context_provider->SharedImageInterface();
   CHECK(shared_image_interface);

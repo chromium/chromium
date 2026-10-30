@@ -258,7 +258,7 @@ void DisplayLinkMacMojo::OnDisplayAdded(const display::Display& new_display) {
 
 void DisplayLinkMacMojo::DisplayAddedOnVSyncThread(int64_t vsync_display_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(vsync_thread_sequence_checker_);
-  DCHECK(external_begin_frame_controller_);
+  CHECK(external_begin_frame_controller_, base::NotFatalUntil::M163);
 
   if (auto it = display_links_.find(vsync_display_id);
       it != display_links_.end()) {
@@ -285,7 +285,7 @@ void DisplayLinkMacMojo::DisplayAddedOnVSyncThread(int64_t vsync_display_id) {
   auto result = display_links_.insert(
       std::make_pair(display_id, std::move(display_link_mac)));
   bool inserted = result.second;
-  DCHECK(inserted);
+  CHECK(inserted, base::NotFatalUntil::M163);
 
   vsync_callbacks_.insert(std::make_pair(display_id, nullptr));
 
@@ -310,7 +310,7 @@ void DisplayLinkMacMojo::OnDisplaysRemoved(
 void DisplayLinkMacMojo::DisplaysRemovedOnVSyncThread(
     std::vector<int64_t> display_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(vsync_thread_sequence_checker_);
-  DCHECK(external_begin_frame_controller_);
+  CHECK(external_begin_frame_controller_, base::NotFatalUntil::M163);
 
   for (auto display_id : display_ids) {
     if (auto it = display_links_.find(display_id); it == display_links_.end()) {

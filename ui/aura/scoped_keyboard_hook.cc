@@ -14,7 +14,7 @@ ScopedKeyboardHook::ScopedKeyboardHook() = default;
 ScopedKeyboardHook::ScopedKeyboardHook(
     base::WeakPtr<WindowTreeHost> window_tree_host)
     : window_tree_host_(window_tree_host) {
-  DCHECK(window_tree_host_);
+  CHECK(window_tree_host_, base::NotFatalUntil::M163);
 }
 
 ScopedKeyboardHook::~ScopedKeyboardHook() {

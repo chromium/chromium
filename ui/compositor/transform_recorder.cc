@@ -25,7 +25,7 @@ TransformRecorder::~TransformRecorder() {
 }
 
 void TransformRecorder::Transform(const gfx::Transform& transform) {
-  DCHECK(!transformed_);
+  CHECK(!transformed_, base::NotFatalUntil::M163);
   if (transform.IsIdentity())
     return;
 

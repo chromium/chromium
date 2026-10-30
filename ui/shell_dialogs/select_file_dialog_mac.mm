@@ -53,7 +53,7 @@ void SelectFileDialogImpl::FileWasSelected(
     const std::vector<std::string>& file_tags) {
   auto it = std::ranges::find(dialog_data_list_, dialog_data,
                               [](const DialogData& d) { return &d; });
-  DCHECK(it != dialog_data_list_.end());
+  CHECK(it != dialog_data_list_.end(), base::NotFatalUntil::M163);
   dialog_data_list_.erase(it);
 
   if (dialog_closed_callback_for_testing_)
@@ -84,9 +84,10 @@ void SelectFileDialogImpl::SelectFileImpl(
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow gfx_window,
     const GURL* caller) {
-  DCHECK(type == SELECT_FOLDER || type == SELECT_UPLOAD_FOLDER ||
-         type == SELECT_EXISTING_FOLDER || type == SELECT_OPEN_FILE ||
-         type == SELECT_OPEN_MULTI_FILE || type == SELECT_SAVEAS_FILE);
+  CHECK(type == SELECT_FOLDER || type == SELECT_UPLOAD_FOLDER ||
+            type == SELECT_EXISTING_FOLDER || type == SELECT_OPEN_FILE ||
+            type == SELECT_OPEN_MULTI_FILE || type == SELECT_SAVEAS_FILE,
+        base::NotFatalUntil::M163);
 
   hasMultipleFileTypeChoices_ =
       file_types ? file_types->extensions.size() > 1 : true;

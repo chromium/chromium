@@ -32,9 +32,9 @@ void LayerWithExternalTexture::SetTransferableResource(
     const viz::TransferableResource& resource,
     viz::ReleaseCallback release_callback,
     gfx::Size texture_size_in_dip) {
-  DCHECK(!resource.is_empty());
-  DCHECK(release_callback);
-  DCHECK(!resource.GetIsSoftware());
+  CHECK(!resource.is_empty(), base::NotFatalUntil::M163);
+  CHECK(release_callback, base::NotFatalUntil::M163);
+  CHECK(!resource.GetIsSoftware(), base::NotFatalUntil::M163);
 
   if (transfer_release_callback_) {
     std::move(transfer_release_callback_).Run(gpu::SyncToken(), false);

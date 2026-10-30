@@ -55,7 +55,8 @@ WindowAndroid::ScopedSelectionHandles::ScopedSelectionHandles(
 }
 
 WindowAndroid::ScopedSelectionHandles::~ScopedSelectionHandles() {
-  DCHECK_GT(window_->selection_handles_active_count_, 0);
+  CHECK_GT(window_->selection_handles_active_count_, 0,
+           base::NotFatalUntil::M163);
 
   if (--window_->selection_handles_active_count_ == 0) {
     JNIEnv* env = AttachCurrentThread();
@@ -122,9 +123,9 @@ ScopedJavaLocalRef<JWindowAndroid> WindowAndroid::GetJavaObject() {
 
 WindowAndroid::~WindowAndroid() {
   DCHECK(parent_ == nullptr) << "WindowAndroid must be a root view.";
-  DCHECK(!compositor_);
+  CHECK(!compositor_, base::NotFatalUntil::M163);
   RemoveAllChildren(true);
-  DCHECK(!pointer_locking_view_);
+  CHECK(!pointer_locking_view_, base::NotFatalUntil::M163);
   java_window_->clearNativePointer(AttachCurrentThread());
 }
 
@@ -357,7 +358,7 @@ bool WindowAndroid::CanRequestPermission(const std::string& permission) {
 }
 
 WindowAndroid* WindowAndroid::GetWindowAndroid() const {
-  DCHECK(parent_ == nullptr);
+  CHECK(parent_ == nullptr, base::NotFatalUntil::M163);
   return const_cast<WindowAndroid*>(this);
 }
 
@@ -376,9 +377,9 @@ display::Display WindowAndroid::GetDisplayWithWindowColorSpace() {
 }
 
 bool WindowAndroid::RequestPointerLock(ViewAndroid& view_android) {
-  DCHECK(view_android.GetWindowAndroid() == this);
-  DCHECK(view_android.GetContainerView());
-  DCHECK(pointer_locking_view_ == nullptr);
+  CHECK(view_android.GetWindowAndroid() == this, base::NotFatalUntil::M163);
+  CHECK(view_android.GetContainerView(), base::NotFatalUntil::M163);
+  CHECK(pointer_locking_view_ == nullptr, base::NotFatalUntil::M163);
 
   JNIEnv* env = AttachCurrentThread();
   bool has_lock = Java_WindowAndroid_requestPointerLock(
@@ -396,7 +397,7 @@ bool WindowAndroid::HasPointerLock(ViewAndroid& view_android) {
 }
 
 void WindowAndroid::ReleasePointerLock(ViewAndroid& view_android) {
-  DCHECK(&view_android == pointer_locking_view_);
+  CHECK(&view_android == pointer_locking_view_, base::NotFatalUntil::M163);
   pointer_locking_view_ = nullptr;
 
   JNIEnv* env = AttachCurrentThread();

@@ -39,7 +39,7 @@ cc::ScrollState CreateScrollState(const ScrollEvent& scroll, bool is_begin) {
 ScrollInputHandler::ScrollInputHandler(
     const base::WeakPtr<cc::InputHandler>& input_handler)
     : input_handler_weak_ptr_(input_handler) {
-  DCHECK(input_handler_weak_ptr_);
+  CHECK(input_handler_weak_ptr_, base::NotFatalUntil::M163);
   input_handler_weak_ptr_->BindToClient(this);
 }
 
@@ -70,7 +70,7 @@ bool ScrollInputHandler::OnScrollEvent(const ScrollEvent& event,
 
   // Falling back to the main thread should never be required when an explicit
   // ElementId is provided.
-  DCHECK(result.main_thread_hit_test_reasons.empty());
+  CHECK(result.main_thread_hit_test_reasons.empty(), base::NotFatalUntil::M163);
 
   input_handler_weak_ptr_->ScrollUpdate(CreateScrollState(event, false),
                                         base::TimeDelta());
@@ -80,7 +80,7 @@ bool ScrollInputHandler::OnScrollEvent(const ScrollEvent& event,
 }
 
 void ScrollInputHandler::WillShutdown() {
-  DCHECK(input_handler_weak_ptr_);
+  CHECK(input_handler_weak_ptr_, base::NotFatalUntil::M163);
   input_handler_weak_ptr_.reset();
 }
 

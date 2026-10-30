@@ -51,7 +51,7 @@ void HandleViewResources::LoadIfNecessary(const JavaRef<jobject>& context) {
 
 const SkBitmap& HandleViewResources::GetBitmap(
     ui::TouchHandleOrientation orientation) {
-  DCHECK(loaded_);
+  CHECK(loaded_, base::NotFatalUntil::M163);
   switch (orientation) {
     case ui::TouchHandleOrientation::LEFT:
       return left_bitmap_;
@@ -65,7 +65,7 @@ const SkBitmap& HandleViewResources::GetBitmap(
 }
 
 float HandleViewResources::GetDrawableHorizontalPaddingRatio() const {
-  DCHECK(loaded_);
+  CHECK(loaded_, base::NotFatalUntil::M163);
   return drawable_horizontal_padding_ratio_;
 }
 

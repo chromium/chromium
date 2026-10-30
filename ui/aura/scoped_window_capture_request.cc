@@ -53,8 +53,8 @@ ScopedWindowCaptureRequest::ScopedWindowCaptureRequest(Window* window)
 
 void ScopedWindowCaptureRequest::AttachToCurrentWindow(
     bool increment_requests) {
-  DCHECK(window_);
-  DCHECK(!window_->IsRootWindow());
+  CHECK(window_, base::NotFatalUntil::M163);
+  CHECK(!window_->IsRootWindow(), base::NotFatalUntil::M163);
   if (increment_requests)
     window_->OnScopedWindowCaptureRequestAdded();
   window_->AddObserver(this);

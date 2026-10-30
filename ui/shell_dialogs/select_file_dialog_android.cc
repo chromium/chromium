@@ -90,7 +90,8 @@ void SelectFileDialogImpl::OnMultipleFilesSelected(
   std::vector<ui::SelectedFileInfo> selected_files;
 
   jsize length = env->GetArrayLength(filepaths.obj());
-  DCHECK(length == env->GetArrayLength(display_names.obj()));
+  CHECK(length == env->GetArrayLength(display_names.obj()),
+        base::NotFatalUntil::M163);
   for (int i = 0; i < length; ++i) {
     auto path_ref = jni_zero::AdoptRef(
         env,

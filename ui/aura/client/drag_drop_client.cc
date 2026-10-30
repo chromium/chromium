@@ -17,13 +17,15 @@ DEFINE_UI_CLASS_PROPERTY_KEY(DragDropClient*,
                              nullptr)
 
 void SetDragDropClient(Window* root_window, DragDropClient* client) {
-  DCHECK_EQ(root_window->GetRootWindow(), root_window);
+  CHECK_EQ(root_window->GetRootWindow(), root_window,
+           base::NotFatalUntil::M163);
   root_window->SetProperty(kRootWindowDragDropClientKey, client);
 }
 
 DragDropClient* GetDragDropClient(Window* root_window) {
   if (root_window)
-    DCHECK_EQ(root_window->GetRootWindow(), root_window);
+    CHECK_EQ(root_window->GetRootWindow(), root_window,
+             base::NotFatalUntil::M163);
   return root_window ?
       root_window->GetProperty(kRootWindowDragDropClientKey) : NULL;
 }

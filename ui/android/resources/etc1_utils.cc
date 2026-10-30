@@ -77,14 +77,14 @@ unsigned int RoundUpMod4(int a) {
 // for SkPixelRefs wrapping encoded data for ETC1 compressed bitmaps. We ideally
 // shouldn't be using SkPixelRefs to wrap encoded data.
 size_t ETC1RowBytes(int width) {
-  DCHECK_EQ(width & 1, 0);
+  CHECK_EQ(width & 1, 0, base::NotFatalUntil::M163);
   return width / 2;
 }
 
 gfx::Size GetETCEncodedSize(const gfx::Size& bitmap_size, bool supports_npot) {
   CHECK_GE(bitmap_size.width(), 0);
   CHECK_GE(bitmap_size.height(), 0);
-  DCHECK(!bitmap_size.IsEmpty());
+  CHECK(!bitmap_size.IsEmpty(), base::NotFatalUntil::M163);
 
   if (!supports_npot) {
     return gfx::Size(NextPowerOfTwo(RoundUpMod4(bitmap_size.width())),
@@ -238,7 +238,7 @@ bool Etc1::WriteToFile(base::File* file,
       base::checked_cast<uint32_t>(content_size.height()));
   etc1_pkm_format_header(header_writer.Skip<ETC_PKM_HEADER_SIZE>()->data(),
                          width, height);
-  DCHECK_EQ(header_writer.remaining(), 0u);
+  CHECK_EQ(header_writer.remaining(), 0u, base::NotFatalUntil::M163);
   if (file->WriteAtCurrentPos(header) != header.size()) {
     return false;
   }
@@ -257,7 +257,7 @@ bool Etc1::WriteToFile(base::File* file,
   base::SpanWriter<uint8_t> trailer_writer(trailer);
   trailer_writer.WriteU32BigEndian(kCurrentExtraVersion);
   trailer_writer.Write(base::FloatToBigEndian(1.f / scale));
-  DCHECK_EQ(trailer_writer.remaining(), 0u);
+  CHECK_EQ(trailer_writer.remaining(), 0u, base::NotFatalUntil::M163);
   if (file->WriteAtCurrentPos(trailer) != trailer.size()) {
     return false;
   }

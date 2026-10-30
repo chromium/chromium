@@ -32,7 +32,7 @@ void LayerMirror::OnDeviceScaleFactorChanged(float old_device_scale_factor,
                                              float new_device_scale_factor) {}
 
 void LayerMirror::LayerDestroyed(Layer* layer) {
-  DCHECK_EQ(dest_, layer);
+  CHECK_EQ(dest_, layer, base::NotFatalUntil::M163);
   source_->OnMirrorDestroyed(this);
 }
 

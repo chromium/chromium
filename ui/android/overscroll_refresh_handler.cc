@@ -70,7 +70,7 @@ ScopedJavaLocalRef<jobject> OverscrollRefreshHandler::GetRefreshHandlerChecked(
     JNIEnv* env) const {
   auto refresh_handler = Java_OverscrollRefreshHandler_getRef(
       env, reinterpret_cast<intptr_t>(this));
-  DCHECK(!refresh_handler.is_null());
+  CHECK(!refresh_handler.is_null(), base::NotFatalUntil::M163);
   return refresh_handler;
 }
 

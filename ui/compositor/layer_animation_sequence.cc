@@ -42,7 +42,7 @@ LayerAnimationSequence::~LayerAnimationSequence() {
 }
 
 void LayerAnimationSequence::Start(LayerAnimationDelegate* delegate) {
-  DCHECK(start_time_ != base::TimeTicks());
+  CHECK(start_time_ != base::TimeTicks(), base::NotFatalUntil::M163);
 
   last_progressed_fraction_ = 0.0;
   if (elements_.empty())
@@ -70,7 +70,7 @@ void LayerAnimationSequence::Start(LayerAnimationDelegate* delegate) {
 
 void LayerAnimationSequence::Progress(base::TimeTicks now,
                                       LayerAnimationDelegate* delegate) {
-  DCHECK(start_time_ != base::TimeTicks());
+  CHECK(start_time_ != base::TimeTicks(), base::NotFatalUntil::M163);
   bool redraw_required = false;
 
   if (elements_.empty())
@@ -111,7 +111,7 @@ void LayerAnimationSequence::Progress(base::TimeTicks now,
     last_progressed_fraction_ =
         elements_[current_index]->last_progressed_fraction();
     current_index = last_element_ % elements_.size();
-    DCHECK_GT(last_element_, 0u);
+    CHECK_GT(last_element_, 0u, base::NotFatalUntil::M163);
     just_completed_sequence = current_index == 0;
   }
 
@@ -281,7 +281,7 @@ void LayerAnimationSequence::OnThreadedAnimationStarted(
     elements_[current_index]->properties();
   LayerAnimationElement::AnimatableProperty event_property =
       LayerAnimationElement::ToAnimatableProperty(target_property);
-  DCHECK(element_properties & event_property);
+  CHECK(element_properties & event_property, base::NotFatalUntil::M163);
   elements_[current_index]->set_effective_start_time(monotonic_time);
 }
 

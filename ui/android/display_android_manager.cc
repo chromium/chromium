@@ -47,7 +47,7 @@ static std::optional<bool> is_display_topology_available = std::nullopt;
 void SetScreenAndroid(bool use_display_wide_color_gamut) {
   TRACE_EVENT0("startup", "SetScreenAndroid");
   // Do not override existing Screen.
-  DCHECK_EQ(display::Screen::Get(), nullptr);
+  CHECK_EQ(display::Screen::Get(), nullptr, base::NotFatalUntil::M163);
 
   DisplayAndroidManager* manager =
       new DisplayAndroidManager(use_display_wide_color_gamut);
@@ -195,8 +195,10 @@ void DisplayAndroidManager::DoUpdateDisplay(display::Display* display,
   }
 
   display->SetRotationAsDegree(rotation_degrees);
-  DCHECK_EQ(rotation_degrees, display->RotationAsDegree());
-  DCHECK_EQ(rotation_degrees, display->PanelRotationAsDegree());
+  CHECK_EQ(rotation_degrees, display->RotationAsDegree(),
+           base::NotFatalUntil::M163);
+  CHECK_EQ(rotation_degrees, display->PanelRotationAsDegree(),
+           base::NotFatalUntil::M163);
   display->set_color_depth(bits_per_pixel);
   display->set_depth_per_component(bits_per_component);
   display->set_is_monochrome(bits_per_component == 0);

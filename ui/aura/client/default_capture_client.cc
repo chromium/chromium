@@ -26,7 +26,7 @@ base::WeakPtr<Window>& GetGlobalCaptureWindowRef() {
 
 DefaultCaptureClient::DefaultCaptureClient(Window* root_window)
     : root_window_(root_window), capture_window_(nullptr) {
-  DCHECK(root_window_);
+  CHECK(root_window_, base::NotFatalUntil::M163);
   SetCaptureClient(root_window_, this);
 }
 
@@ -53,12 +53,13 @@ void DefaultCaptureClient::SetCapture(Window* window) {
 
   CaptureDelegate* capture_delegate = nullptr;
   if (capture_window_) {
-    DCHECK(!root_window_ || root_window_ == capture_window_->GetRootWindow());
+    CHECK(!root_window_ || root_window_ == capture_window_->GetRootWindow(),
+          base::NotFatalUntil::M163);
     capture_delegate = capture_window_->GetHost()->dispatcher();
     capture_delegate->SetNativeCapture();
   } else {
-    DCHECK(!root_window_ ||
-           root_window_ == old_capture_window->GetRootWindow());
+    CHECK(!root_window_ || root_window_ == old_capture_window->GetRootWindow(),
+          base::NotFatalUntil::M163);
     capture_delegate = old_capture_window->GetHost()->dispatcher();
     capture_delegate->ReleaseNativeCapture();
   }

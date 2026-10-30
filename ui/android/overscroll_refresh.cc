@@ -47,7 +47,7 @@ OverscrollRefresh::OverscrollRefresh(OverscrollRefreshHandler* handler,
       overflow_y_hidden_(false),
       edge_width_(edge_width),
       handler_(handler) {
-  DCHECK(handler);
+  CHECK(handler, base::NotFatalUntil::M163);
 }
 
 OverscrollRefresh::OverscrollRefresh()
@@ -114,9 +114,9 @@ void OverscrollRefresh::OnOverscrolled(const cc::OverscrollBehavior& behavior,
       type = OverscrollAction::kPullFromBottomEdge;
     }
   } else if (in_x_direction) {
-    DCHECK_GE(viewport_width_, 0);
-    DCHECK_LE(scroll_begin_x_, viewport_width_);
-    DCHECK_GE(scroll_begin_x_, 0);
+    CHECK_GE(viewport_width_, 0, base::NotFatalUntil::M163);
+    CHECK_LE(scroll_begin_x_, viewport_width_, base::NotFatalUntil::M163);
+    CHECK_GE(scroll_begin_x_, 0, base::NotFatalUntil::M163);
     bool scroll_from_edge = scroll_begin_x_ < edge_width_ ||
                             viewport_width_ - scroll_begin_x_ < edge_width_;
     bool touchpad_swipe_to_navigate =

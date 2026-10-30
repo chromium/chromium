@@ -125,8 +125,8 @@ TotalAnimationThroughputReporter::TotalAnimationThroughputReporter(
       report_repeating_callback_(repeating_callback),
       report_once_callback_(std::move(once_callback)),
       should_delete_(should_delete) {
-  DCHECK_NE(report_repeating_callback_.is_null(),
-            report_once_callback_.is_null());
+  CHECK_NE(report_repeating_callback_.is_null(),
+           report_once_callback_.is_null(), base::NotFatalUntil::M163);
 
   compositor_->AddObserver(this);
   if (!compositor->animation_observer_list_.empty())

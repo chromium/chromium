@@ -55,7 +55,7 @@ ViewAndroid::ScopedAnchorView::ScopedAnchorView(
       env, reinterpret_cast<intptr_t>(this), jview);
 
   // If there's a view, then we need a delegate to remove it.
-  DCHECK(!jdelegate.is_null() || jview.is_null());
+  CHECK(!jdelegate.is_null() || jview.is_null(), base::NotFatalUntil::M163);
 }
 
 ViewAndroid::ScopedAnchorView::ScopedAnchorView() {}
@@ -161,8 +161,8 @@ ScopedJavaLocalRef<jobject> ViewAndroid::GetEventForwarder() {
 }
 
 void ViewAndroid::AddChild(ViewAndroid* child) {
-  DCHECK(child);
-  DCHECK(!std::ranges::contains(children_, child));
+  CHECK(child, base::NotFatalUntil::M163);
+  CHECK(!std::ranges::contains(children_, child), base::NotFatalUntil::M163);
   DCHECK(!RootPathHasEventForwarder(this) || !SubtreeHasEventForwarder(child))
       << "Some view tree path will have more than one event forwarder "
          "if the child is added.";
@@ -222,7 +222,7 @@ bool ViewAndroid::SubtreeHasEventForwarder(ViewAndroid* view) {
 }
 
 void ViewAndroid::MoveToFront(ViewAndroid* child) {
-  DCHECK(child);
+  CHECK(child, base::NotFatalUntil::M163);
   auto it = std::ranges::find(children_, child);
   CHECK(it != children_.end());
 
@@ -234,7 +234,7 @@ void ViewAndroid::MoveToFront(ViewAndroid* child) {
 }
 
 void ViewAndroid::MoveToBack(ViewAndroid* child) {
-  DCHECK(child);
+  CHECK(child, base::NotFatalUntil::M163);
   auto it = std::ranges::find(children_, child);
   CHECK(it != children_.end());
 
@@ -340,8 +340,8 @@ void ViewAndroid::RemoveAllChildren(bool attached_to_window) {
 }
 
 void ViewAndroid::RemoveChild(ViewAndroid* child) {
-  DCHECK(child);
-  DCHECK_EQ(child->parent_, this);
+  CHECK(child, base::NotFatalUntil::M163);
+  CHECK_EQ(child->parent_, this, base::NotFatalUntil::M163);
 
   if (GetWindowAndroid()) {
     child->OnDetachedFromWindow();
@@ -630,7 +630,7 @@ void ViewAndroid::OnVerticalScrollDirectionChanged(bool direction_up,
 
 void ViewAndroid::OnSizeChanged(int width, int height) {
   // Match-parent view must not receive size events.
-  DCHECK(!match_parent());
+  CHECK(!match_parent(), base::NotFatalUntil::M163);
 
   gfx::Size size_device_px(width, height);
 

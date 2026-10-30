@@ -157,7 +157,7 @@ bool WindowTreeHostPlatform::CaptureSystemKeyEventsImpl(
   // Only one KeyboardHook should be active at a time, otherwise there will be
   // problems with event routing (i.e. which Hook takes precedence) and
   // destruction ordering.
-  DCHECK(!keyboard_hook_);
+  CHECK(!keyboard_hook_, base::NotFatalUntil::M163);
   keyboard_hook_ = ui::KeyboardHook::CreateModifierKeyboardHook(
       std::move(dom_codes), GetAcceleratedWidget(),
       base::BindRepeating(
@@ -291,7 +291,7 @@ void WindowTreeHostPlatform::OnBoundsChanged(const BoundsChange& change) {
       return;
   }
 
-  DCHECK_GT(on_bounds_changed_recursion_depth_, 0);
+  CHECK_GT(on_bounds_changed_recursion_depth_, 0, base::NotFatalUntil::M163);
   if (--on_bounds_changed_recursion_depth_ == 0) {
     observers().Notify(&WindowTreeHostObserver::OnHostDidProcessBoundsChange,
                        this);
@@ -337,7 +337,7 @@ void WindowTreeHostPlatform::OnWillDestroyAcceleratedWidget() {}
 
 void WindowTreeHostPlatform::OnAcceleratedWidgetDestroyed() {
   gfx::AcceleratedWidget widget = compositor()->ReleaseAcceleratedWidget();
-  DCHECK_EQ(widget, widget_);
+  CHECK_EQ(widget, widget_, base::NotFatalUntil::M163);
   widget_ = gfx::kNullAcceleratedWidget;
 }
 
@@ -347,7 +347,7 @@ void WindowTreeHostPlatform::OnCursorUpdate() {
   client::CursorClient* cursor_client = client::GetCursorClient(window());
   if (cursor_client) {
     auto display = display::Screen::Get()->GetDisplayNearestWindow(window());
-    DCHECK(display.is_valid());
+    CHECK(display.is_valid(), base::NotFatalUntil::M163);
     cursor_client->SetDisplay(display);
   }
 }

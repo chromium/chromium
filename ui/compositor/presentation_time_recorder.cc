@@ -53,7 +53,7 @@ class PresentationTimeRecorder::PresentationTimeRecorderInternal
       state_ = COMMITTED;
   }
   void OnCompositingShuttingDown(ui::Compositor* compositor) override {
-    DCHECK_EQ(compositor_, compositor);
+    CHECK_EQ(compositor_, compositor, base::NotFatalUntil::M163);
     compositor_->RemoveObserver(this);
     compositor_ = nullptr;
     if (!recording_)
@@ -78,7 +78,7 @@ class PresentationTimeRecorder::PresentationTimeRecorderInternal
   int present_count() const { return present_count_; }
 
   ~PresentationTimeRecorderInternal() override {
-    DCHECK(!recording_);
+    CHECK(!recording_, base::NotFatalUntil::M163);
     const int average_latency_ms =
         present_count_ ? total_latency_ms_ / present_count_ : 0;
     VLOG(1) << "Finished Recording FrameTime: average latency="

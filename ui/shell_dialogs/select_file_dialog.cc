@@ -145,7 +145,7 @@ void SelectFileDialog::SelectFile(
     const base::FilePath::StringType& default_extension,
     gfx::NativeWindow owning_window,
     const GURL* caller) {
-  DCHECK(listener_);
+  CHECK(listener_, base::NotFatalUntil::M163);
 
   if (select_file_policy_.get() &&
       !select_file_policy_->CanOpenSelectFileDialog()) {
@@ -174,7 +174,7 @@ bool SelectFileDialog::HasMultipleFileTypeChoices() {
 SelectFileDialog::SelectFileDialog(Listener* listener,
                                    std::unique_ptr<ui::SelectFilePolicy> policy)
     : listener_(listener), select_file_policy_(std::move(policy)) {
-  DCHECK(listener_);
+  CHECK(listener_, base::NotFatalUntil::M163);
 }
 
 SelectFileDialog::~SelectFileDialog() {}

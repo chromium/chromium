@@ -10,7 +10,7 @@
 namespace ui {
 
 bool CompositorMetricsReportChecker::WaitUntilReported() {
-  DCHECK(!reported_);
+  CHECK(!reported_, base::NotFatalUntil::M163);
   test_base_->Advance(base::Seconds(5));
   return reported_;
 }

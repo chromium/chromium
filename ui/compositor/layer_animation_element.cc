@@ -382,7 +382,8 @@ class GradientMaskTransition : public LayerAnimationElement {
     auto gradient_mask = gfx::LinearGradient(
         gfx::Tween::FloatValueBetween(t, start_.angle(), target_.angle()));
 
-    DCHECK_EQ(start_.step_count(), target_.step_count());
+    CHECK_EQ(start_.step_count(), target_.step_count(),
+             base::NotFatalUntil::M163);
     for (auto i = 0; i < static_cast<int>(start_.step_count()); ++i) {
       gradient_mask.AddStep(
           gfx::Tween::FloatValueBetween(t, start_.steps()[i].fraction,
@@ -441,7 +442,7 @@ class ThreadedLayerAnimationElement : public LayerAnimationElement {
     if (Started() && IsThreaded(delegate)) {
       LayerThreadedAnimationDelegate* threaded =
           delegate->GetThreadedAnimationDelegate();
-      DCHECK(threaded);
+      CHECK(threaded, base::NotFatalUntil::M163);
       threaded->RemoveThreadedAnimation(keyframe_model_id());
     }
 
@@ -453,13 +454,13 @@ class ThreadedLayerAnimationElement : public LayerAnimationElement {
     if (delegate && Started() && IsThreaded(delegate)) {
       LayerThreadedAnimationDelegate* threaded =
           delegate->GetThreadedAnimationDelegate();
-      DCHECK(threaded);
+      CHECK(threaded, base::NotFatalUntil::M163);
       threaded->RemoveThreadedAnimation(keyframe_model_id());
     }
   }
 
   void RequestEffectiveStart(LayerAnimationDelegate* delegate) override {
-    DCHECK(animation_group_id());
+    CHECK(animation_group_id(), base::NotFatalUntil::M163);
     if (!IsThreaded(delegate)) {
       set_effective_start_time(requested_start_time());
       return;
@@ -470,7 +471,7 @@ class ThreadedLayerAnimationElement : public LayerAnimationElement {
 
     LayerThreadedAnimationDelegate* threaded =
         delegate->GetThreadedAnimationDelegate();
-    DCHECK(threaded);
+    CHECK(threaded, base::NotFatalUntil::M163);
     threaded->AddThreadedAnimation(std::move(keyframe_model));
   }
 
@@ -673,8 +674,8 @@ LayerAnimationElement::~LayerAnimationElement() = default;
 
 void LayerAnimationElement::Start(LayerAnimationDelegate* delegate,
                                   int animation_group_id) {
-  DCHECK(requested_start_time_ != base::TimeTicks());
-  DCHECK(first_frame_);
+  CHECK(requested_start_time_ != base::TimeTicks(), base::NotFatalUntil::M163);
+  CHECK(first_frame_, base::NotFatalUntil::M163);
   animation_group_id_ = animation_group_id;
   last_progressed_fraction_ = 0.0;
   OnStart(delegate);
@@ -684,8 +685,8 @@ void LayerAnimationElement::Start(LayerAnimationDelegate* delegate,
 
 bool LayerAnimationElement::Progress(base::TimeTicks now,
                                      LayerAnimationDelegate* delegate) {
-  DCHECK(requested_start_time_ != base::TimeTicks());
-  DCHECK(!first_frame_);
+  CHECK(requested_start_time_ != base::TimeTicks(), base::NotFatalUntil::M163);
+  CHECK(!first_frame_, base::NotFatalUntil::M163);
 
   bool need_draw;
   double t = 1.0;
@@ -759,7 +760,7 @@ void LayerAnimationElement::Abort(LayerAnimationDelegate* delegate) {
 
 void LayerAnimationElement::RequestEffectiveStart(
     LayerAnimationDelegate* delegate) {
-  DCHECK(requested_start_time_ != base::TimeTicks());
+  CHECK(requested_start_time_ != base::TimeTicks(), base::NotFatalUntil::M163);
   effective_start_time_ = requested_start_time_;
 }
 

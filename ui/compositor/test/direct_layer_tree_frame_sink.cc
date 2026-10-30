@@ -90,8 +90,9 @@ void DirectLayerTreeFrameSink::DetachFromClient() {
 void DirectLayerTreeFrameSink::SubmitCompositorFrame(
     viz::CompositorFrame frame,
     bool hit_test_data_changed) {
-  DCHECK(frame.metadata.begin_frame_ack.has_damage);
-  DCHECK(frame.metadata.begin_frame_ack.frame_id.IsSequenceValid());
+  CHECK(frame.metadata.begin_frame_ack.has_damage, base::NotFatalUntil::M163);
+  CHECK(frame.metadata.begin_frame_ack.frame_id.IsSequenceValid(),
+        base::NotFatalUntil::M163);
 
   if (frame.size_in_pixels() != last_swap_frame_size_ ||
       frame.device_scale_factor() != device_scale_factor_ ||
@@ -113,8 +114,9 @@ void DirectLayerTreeFrameSink::SubmitCompositorFrame(
     // Do not send duplicate hit-test data.
     if (viz::HitTestRegionList::IsEqual(*hit_test_region_list,
                                         last_hit_test_data_)) {
-      DCHECK(!viz::HitTestRegionList::IsEqual(*hit_test_region_list,
-                                              viz::HitTestRegionList()));
+      CHECK(!viz::HitTestRegionList::IsEqual(*hit_test_region_list,
+                                             viz::HitTestRegionList()),
+            base::NotFatalUntil::M163);
       hit_test_region_list = std::nullopt;
     } else {
       last_hit_test_data_ = *hit_test_region_list;
@@ -131,8 +133,8 @@ void DirectLayerTreeFrameSink::SubmitCompositorFrame(
 void DirectLayerTreeFrameSink::DidNotProduceFrame(
     const viz::BeginFrameAck& ack,
     cc::FrameSkippedReason reason) {
-  DCHECK(!ack.has_damage);
-  DCHECK(ack.frame_id.IsSequenceValid());
+  CHECK(!ack.has_damage, base::NotFatalUntil::M163);
+  CHECK(ack.frame_id.IsSequenceValid(), base::NotFatalUntil::M163);
   support_->DidNotProduceFrame(ack);
 }
 

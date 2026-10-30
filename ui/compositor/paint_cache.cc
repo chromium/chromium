@@ -18,7 +18,7 @@ bool PaintCache::UseCache(const PaintContext& context,
   if (!record_ || context.device_scale_factor() != device_scale_factor_) {
     return false;
   }
-  DCHECK(context.list_);
+  CHECK(context.list_, base::NotFatalUntil::M163);
   context.list_->StartPaint();
   context.list_->push<cc::DrawRecordOp>(*record_);
   gfx::Rect bounds_in_layer = context.ToLayerSpaceBounds(size_in_context);

@@ -57,7 +57,7 @@ class COMPOSITOR_EXPORT PaintContext {
   // re-painted. When false, re-painting can be skipped. Bounds should be in
   // the local space with offsets up to the painting root in the PaintContext.
   bool IsRectInvalid(const gfx::Rect& bounds) const {
-    DCHECK(CanCheckInvalid());
+    CHECK(CanCheckInvalid(), base::NotFatalUntil::M163);
     return invalidation_.Intersects(bounds + offset_);
   }
 

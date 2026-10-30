@@ -370,7 +370,7 @@ client::WindowType Window::GetType() const {
 
 void Window::SetType(client::WindowType type) {
   // Cannot change type after the window is initialized.
-  DCHECK(!layer());
+  CHECK(!layer(), base::NotFatalUntil::M163);
   if (type == type_)
     return;
   DUMP_WILL_BE_CHECK(!is_destroying_);
@@ -472,7 +472,8 @@ void Window::Show() {
   // It is not allowed that a window is visible but the layers alpha is fully
   // transparent since the window would still be considered to be active but
   // could not be seen.
-  DCHECK(!visible_ || layer()->GetTargetOpacity() > 0.0f);
+  CHECK(!visible_ || layer()->GetTargetOpacity() > 0.0f,
+        base::NotFatalUntil::M163);
   SetVisibleInternal(true);
 }
 

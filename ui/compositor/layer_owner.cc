@@ -36,7 +36,7 @@ void LayerOwner::RemoveObserver(Observer* observer) {
 }
 
 void LayerOwner::SetLayer(std::unique_ptr<Layer> layer) {
-  DCHECK(!OwnsLayer());
+  CHECK(!OwnsLayer(), base::NotFatalUntil::M163);
   layer_owner_ = std::move(layer);
   layer_ = layer_owner_.get();
   layer_->owner_ = this;

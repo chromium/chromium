@@ -19,7 +19,7 @@ BeginMainFrameWaiter::~BeginMainFrameWaiter() {
 }
 
 void BeginMainFrameWaiter::OnDidBeginMainFrame(ui::Compositor* compositor) {
-  DCHECK_EQ(compositor_, compositor);
+  CHECK_EQ(compositor_, compositor, base::NotFatalUntil::M163);
   begin_main_frame_received_ = true;
   if (run_loop_.running()) {
     run_loop_.Quit();

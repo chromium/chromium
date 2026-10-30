@@ -12,7 +12,8 @@ namespace aura {
 namespace client {
 
 void SetFocusClient(Window* root_window, FocusClient* client) {
-  DCHECK_EQ(root_window->GetRootWindow(), root_window);
+  CHECK_EQ(root_window->GetRootWindow(), root_window,
+           base::NotFatalUntil::M163);
   root_window->SetProperty(kFocusClientKey, client);
 }
 

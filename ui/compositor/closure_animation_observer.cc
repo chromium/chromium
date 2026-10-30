@@ -8,7 +8,7 @@ namespace ui {
 
 ClosureAnimationObserver::ClosureAnimationObserver(base::OnceClosure closure)
     : closure_(std::move(closure)) {
-  DCHECK(!closure_.is_null());
+  CHECK(!closure_.is_null(), base::NotFatalUntil::M163);
 }
 
 ClosureAnimationObserver::~ClosureAnimationObserver() {

@@ -60,7 +60,7 @@ LayerAnimator::~LayerAnimator() {
   }
   ClearAnimationsInternal();
   delegate_ = nullptr;
-  DCHECK(!animation_->animation_timeline());
+  CHECK(!animation_->animation_timeline(), base::NotFatalUntil::M163);
 }
 
 // static
@@ -158,13 +158,13 @@ void LayerAnimator::SwitchToLayer(scoped_refptr<cc::Layer> new_layer) {
 }
 
 void LayerAnimator::AttachLayerAndTimeline(Compositor* compositor) {
-  DCHECK(compositor);
+  CHECK(compositor, base::NotFatalUntil::M163);
 
   cc::AnimationTimeline* timeline = compositor->GetAnimationTimeline();
-  DCHECK(timeline);
+  CHECK(timeline, base::NotFatalUntil::M163);
   timeline->AttachAnimation(animation_);
 
-  DCHECK(delegate_->GetCcLayer());
+  CHECK(delegate_->GetCcLayer(), base::NotFatalUntil::M163);
   AttachLayerToAnimation(delegate_->GetCcLayer()->id());
 
   for (auto& layer_animation_sequence : animation_queue_)
@@ -172,10 +172,10 @@ void LayerAnimator::AttachLayerAndTimeline(Compositor* compositor) {
 }
 
 void LayerAnimator::DetachLayerAndTimeline(Compositor* compositor) {
-  DCHECK(compositor);
+  CHECK(compositor, base::NotFatalUntil::M163);
 
   cc::AnimationTimeline* timeline = compositor->GetAnimationTimeline();
-  DCHECK(timeline);
+  CHECK(timeline, base::NotFatalUntil::M163);
 
   DetachLayerFromAnimation();
   timeline->DetachAnimation(animation_);
@@ -190,7 +190,7 @@ void LayerAnimator::AttachLayerToAnimation(int layer_id) {
   if (!animation_->element_id())
     animation_->AttachElement(element_id);
   else
-    DCHECK_EQ(animation_->element_id(), element_id);
+    CHECK_EQ(animation_->element_id(), element_id, base::NotFatalUntil::M163);
 
   animation_->set_animation_delegate(this);
 }
@@ -371,7 +371,7 @@ void LayerAnimator::StopAnimatingProperty(
     if (!running)
       break;
     // As was mentioned above, this sequence must be alive.
-    DCHECK(running->is_sequence_alive());
+    CHECK(running->is_sequence_alive(), base::NotFatalUntil::M163);
     FinishAnimation(running->sequence(), false);
   }
 }
@@ -422,7 +422,7 @@ void LayerAnimator::OnThreadedAnimationStarted(
   RunningAnimation* running = GetRunningAnimation(property);
   if (!running)
     return;
-  DCHECK(running->is_sequence_alive());
+  CHECK(running->is_sequence_alive(), base::NotFatalUntil::M163);
 
   if (running->sequence()->animation_group_id() != group_id)
     return;
@@ -454,7 +454,7 @@ void LayerAnimator::OnThreadedAnimationStarted(
 }
 
 void LayerAnimator::AddToCollection(LayerAnimatorCollection* collection) {
-  DCHECK_EQ(collection, GetLayerAnimatorCollection());
+  CHECK_EQ(collection, GetLayerAnimatorCollection(), base::NotFatalUntil::M163);
   if (is_animating() && !is_started_) {
     collection->StartAnimator(this);
     is_started_ = true;
@@ -462,13 +462,14 @@ void LayerAnimator::AddToCollection(LayerAnimatorCollection* collection) {
 }
 
 void LayerAnimator::RemoveFromCollection(LayerAnimatorCollection* collection) {
-  DCHECK_EQ(collection, GetLayerAnimatorCollection());
+  CHECK_EQ(collection, GetLayerAnimatorCollection(), base::NotFatalUntil::M163);
   if (is_started_) {
     collection->StopAnimator(this);
     is_started_ = false;
   }
-  DCHECK(!animation_->element_animations() ||
-         !animation_->element_animations()->HasTickingKeyframeEffect());
+  CHECK(!animation_->element_animations() ||
+            !animation_->element_animations()->HasTickingKeyframeEffect(),
+        base::NotFatalUntil::M163);
 }
 
 // LayerAnimator protected -----------------------------------------------------
@@ -535,7 +536,7 @@ void LayerAnimator::StopAnimatingInternal(bool abort) {
     if (running_animations_.empty())
       ProcessQueue();
 
-    DCHECK(!running_animations_.empty());
+    CHECK(!running_animations_.empty(), base::NotFatalUntil::M163);
 
     // Still no luck, let's just bail and clear all animations.
     if (running_animations_.empty()) {
@@ -756,7 +757,7 @@ void LayerAnimator::ImmediatelySetNewTarget(LayerAnimationSequence* sequence) {
     return;
 
   LayerAnimationSequence* removed = RemoveAnimation(sequence);
-  DCHECK(removed == nullptr || removed == sequence);
+  CHECK(removed == nullptr || removed == sequence, base::NotFatalUntil::M163);
   if (!weak_sequence_ptr.get())
     return;
 
@@ -957,7 +958,7 @@ void LayerAnimator::ClearAnimationsInternal() {
       removed->Abort(delegate());
   }
   // This *should* have cleared the list of running animations.
-  DCHECK(running_animations_.empty());
+  CHECK(running_animations_.empty(), base::NotFatalUntil::M163);
   running_animations_.clear();
   animation_queue_.clear();
   UpdateAnimationState();

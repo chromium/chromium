@@ -73,7 +73,7 @@ ResourceManagerImpl::ResourceManagerImpl(gfx::NativeWindow native_window) {
   java_obj_.Reset(
       env, Java_ResourceManager_create(env, native_window->GetJavaObject(),
                                        reinterpret_cast<intptr_t>(this)));
-  DCHECK(!java_obj_.is_null());
+  CHECK(!java_obj_.is_null(), base::NotFatalUntil::M163);
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "android::ResourceManagerImpl",
       base::SingleThreadTaskRunner::GetCurrentDefault());
@@ -86,8 +86,8 @@ ResourceManagerImpl::~ResourceManagerImpl() {
 }
 
 void ResourceManagerImpl::Init(cc::UIResourceManager* ui_resource_manager) {
-  DCHECK(!ui_resource_manager_);
-  DCHECK(ui_resource_manager);
+  CHECK(!ui_resource_manager_, base::NotFatalUntil::M163);
+  CHECK(ui_resource_manager, base::NotFatalUntil::M163);
   ui_resource_manager_ = ui_resource_manager;
 }
 
@@ -98,8 +98,8 @@ ResourceManagerImpl::GetJavaObject() {
 
 Resource* ResourceManagerImpl::GetResource(AndroidResourceType res_type,
                                            int res_id) {
-  DCHECK_GE(res_type, ANDROID_RESOURCE_TYPE_FIRST);
-  DCHECK_LE(res_type, ANDROID_RESOURCE_TYPE_LAST);
+  CHECK_GE(res_type, ANDROID_RESOURCE_TYPE_FIRST, base::NotFatalUntil::M163);
+  CHECK_LE(res_type, ANDROID_RESOURCE_TYPE_LAST, base::NotFatalUntil::M163);
 
   auto item = resources_[res_type].find(res_id);
 
@@ -164,7 +164,7 @@ Resource* ResourceManagerImpl::GetStaticResourceWithTint(
   }
 
   Resource* base_image = GetResource(ANDROID_RESOURCE_TYPE_STATIC, res_id);
-  DCHECK(base_image);
+  CHECK(base_image, base::NotFatalUntil::M163);
 
   std::unique_ptr<Resource> tinted_resource = base_image->CreateForCopy();
 
@@ -224,8 +224,8 @@ void ResourceManagerImpl::ClearTintedResourceCache(JNIEnv* env) {
 
 void ResourceManagerImpl::PreloadResource(AndroidResourceType res_type,
                                           int res_id) {
-  DCHECK_GE(res_type, ANDROID_RESOURCE_TYPE_FIRST);
-  DCHECK_LE(res_type, ANDROID_RESOURCE_TYPE_LAST);
+  CHECK_GE(res_type, ANDROID_RESOURCE_TYPE_FIRST, base::NotFatalUntil::M163);
+  CHECK_LE(res_type, ANDROID_RESOURCE_TYPE_LAST, base::NotFatalUntil::M163);
 
   // Don't send out a query if the resource is already loaded.
   if (resources_[res_type].contains(res_id)) {
@@ -242,8 +242,8 @@ void ResourceManagerImpl::OnResourceReady(JNIEnv* env,
                                           int32_t width,
                                           int32_t height,
                                           int64_t native_resource) {
-  DCHECK_GE(res_type, ANDROID_RESOURCE_TYPE_FIRST);
-  DCHECK_LE(res_type, ANDROID_RESOURCE_TYPE_LAST);
+  CHECK_GE(res_type, ANDROID_RESOURCE_TYPE_FIRST, base::NotFatalUntil::M163);
+  CHECK_LE(res_type, ANDROID_RESOURCE_TYPE_LAST, base::NotFatalUntil::M163);
   TRACE_EVENT2("ui", "ResourceManagerImpl::OnResourceReady",
                "resource_type", res_type,
                "resource_id", res_id);

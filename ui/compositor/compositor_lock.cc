@@ -71,7 +71,7 @@ void CompositorLockManager::TimeoutLocks() {
   for (ui::CompositorLock* lock : locks) {
     lock->TimeoutLock();
   }
-  DCHECK(active_locks_.empty());
+  CHECK(active_locks_.empty(), base::NotFatalUntil::M163);
 }
 
 CompositorLock::CompositorLock(CompositorLockClient* client,

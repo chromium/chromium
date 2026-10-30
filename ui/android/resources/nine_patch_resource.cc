@@ -13,7 +13,8 @@ namespace ui {
 
 // static
 NinePatchResource* NinePatchResource::From(Resource* resource) {
-  DCHECK_EQ(Type::NINE_PATCH_BITMAP, resource->type());
+  CHECK_EQ(Type::NINE_PATCH_BITMAP, resource->type(),
+           base::NotFatalUntil::M163);
   return static_cast<NinePatchResource*>(resource);
 }
 

@@ -52,7 +52,7 @@ ScopedJavaLocalRef<jobject> EventForwarder::GetOrCreateJavaObject(JNIEnv* env) {
         Java_EventForwarder_create(env, reinterpret_cast<int64_t>(this),
                                    features::IsTouchDragAndDropEnabled());
   }
-  DCHECK(!java_obj.is_null());
+  CHECK(!java_obj.is_null(), base::NotFatalUntil::M163);
   return java_obj;
 }
 

@@ -247,7 +247,7 @@ InProcessContextFactory::InProcessContextFactory(
           switches::kDisableVsyncForTests)),
       host_frame_sink_manager_(host_frame_sink_manager),
       frame_sink_manager_(frame_sink_manager) {
-  DCHECK(host_frame_sink_manager);
+  CHECK(host_frame_sink_manager, base::NotFatalUntil::M163);
   DCHECK_NE(gl::GetGLImplementation(), gl::kGLImplementationNone)
       << "If running tests, ensure that main() is calling "
       << "gl::GLSurfaceTestSupport::InitializeOneOff()";
@@ -259,7 +259,7 @@ InProcessContextFactory::InProcessContextFactory(
 }
 
 InProcessContextFactory::~InProcessContextFactory() {
-  DCHECK(per_compositor_data_.empty());
+  CHECK(per_compositor_data_.empty(), base::NotFatalUntil::M163);
 }
 
 void InProcessContextFactory::SetRefreshRateForTests(double refresh_rate) {
@@ -385,7 +385,7 @@ void InProcessContextFactory::RemoveCompositor(Compositor* compositor) {
     return;
   PerCompositorData* data = it->second.get();
   frame_sink_manager_->UnregisterBeginFrameSource(data->begin_frame_source());
-  DCHECK(data);
+  CHECK(data, base::NotFatalUntil::M163);
   per_compositor_data_.erase(it);
 }
 
@@ -466,7 +466,7 @@ void InProcessContextFactory::ResetDisplayOutputParameters(
 
 InProcessContextFactory::PerCompositorData*
 InProcessContextFactory::CreatePerCompositorData(Compositor* compositor) {
-  DCHECK(!per_compositor_data_[compositor]);
+  CHECK(!per_compositor_data_[compositor], base::NotFatalUntil::M163);
 
   gfx::AcceleratedWidget widget = compositor->widget();
 

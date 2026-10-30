@@ -20,8 +20,8 @@ EventInjector::~EventInjector() = default;
 
 ui::EventDispatchDetails EventInjector::Inject(WindowTreeHost* host,
                                                ui::Event* event) {
-  DCHECK(host);
-  DCHECK(event);
+  CHECK(host, base::NotFatalUntil::M163);
+  CHECK(event, base::NotFatalUntil::M163);
 
   if (event->IsLocatedEvent()) {
     ui::LocatedEvent* located_event = event->AsLocatedEvent();

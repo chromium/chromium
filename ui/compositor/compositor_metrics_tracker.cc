@@ -16,7 +16,7 @@ CompositorMetricsTracker::CompositorMetricsTracker(
     TrackerId id,
     base::WeakPtr<CompositorMetricsTrackerHost> host)
     : id_(id), host_(std::move(host)) {
-  DCHECK(host_);
+  CHECK(host_, base::NotFatalUntil::M163);
 }
 
 CompositorMetricsTracker::CompositorMetricsTracker(
@@ -46,15 +46,15 @@ CompositorMetricsTracker::~CompositorMetricsTracker() {
 void CompositorMetricsTracker::Start(
     CompositorMetricsTrackerHost::ReportCallback callback) {
   // Start after `host_` destruction is likely an error.
-  DCHECK(host_);
-  DCHECK_EQ(state_, State::kNotStarted);
+  CHECK(host_, base::NotFatalUntil::M163);
+  CHECK_EQ(state_, State::kNotStarted, base::NotFatalUntil::M163);
 
   state_ = State::kStarted;
   host_->StartMetricsTracker(id_, std::move(callback));
 }
 
 bool CompositorMetricsTracker::Stop() {
-  DCHECK_EQ(state_, State::kStarted);
+  CHECK_EQ(state_, State::kStarted, base::NotFatalUntil::M163);
 
   if (host_ && host_->StopMetricsTracker(id_)) {
     state_ = State::kWaitForReport;

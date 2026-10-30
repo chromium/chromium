@@ -44,7 +44,7 @@ class AnimationThroughputReporter::AnimationTracker
                                 base::Unretained(this))),
         animator_(animator),
         report_callback_(std::move(report_callback)) {
-    DCHECK(report_callback_);
+    CHECK(report_callback_, base::NotFatalUntil::M163);
   }
 
   AnimationTracker(const AnimationTracker& other) = delete;
