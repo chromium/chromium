@@ -9,6 +9,7 @@
  */
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import './autofill_page.js';
+import './autofill_page_v2.js';
 
 import type {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -52,12 +53,15 @@ export class SettingsAutofillPageIndexElement extends
   static override get properties() {
     return {
       routes_: {type: Object},
+      isSettingsRefresh2026Enabled_: {type: Boolean},
       isShoppingEnabled_: {type: Boolean},
       showSuggestionsFromGeminiSettings_: {type: Boolean},
     };
   }
 
   protected accessor routes_: SettingsRoutes = routes;
+  protected accessor isSettingsRefresh2026Enabled_: boolean =
+      loadTimeData.getString('settingsRefresh2026') !== '';
   protected accessor isShoppingEnabled_: boolean =
       loadTimeData.getBoolean('shoppingIntegrationEnabled');
   protected accessor showSuggestionsFromGeminiSettings_: boolean =

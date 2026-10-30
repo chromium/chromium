@@ -11,7 +11,12 @@ export function getHtml(this: SettingsAutofillPageIndexElement) {
 <cr-view-manager id="viewManager" class="cr-centered-card-container"
     ?show-all="${this.shouldShowAll}">
 
-  <settings-autofill-page slot="view" id="parent"></settings-autofill-page>
+  ${this.isSettingsRefresh2026Enabled_ ? html`
+    <settings-autofill-page-v2 slot="view" id="parent">
+    </settings-autofill-page-v2>
+  ` : html`
+    <settings-autofill-page slot="view" id="parent"></settings-autofill-page>
+  `}
 
   <settings-contact-info-page slot="view" id="contactInfo"
       data-parent-view-id="parent"

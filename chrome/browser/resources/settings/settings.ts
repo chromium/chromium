@@ -73,6 +73,7 @@ export {HomeUrlInputElement} from './appearance_page/home_url_input.js';
 export {SettingsAutofillAiEntriesListElement} from './autofill_page/autofill_ai_entries_list.js';
 export {SettingsAutofillPageElement} from './autofill_page/autofill_page.js';
 export {SettingsAutofillPageIndexElement} from './autofill_page/autofill_page_index.js';
+export {SettingsAutofillPageV2Element} from './autofill_page/autofill_page_v2.js';
 export {CollapsibleAutofillSettingsCardElement} from './autofill_page/collapsible_autofill_settings_card.js';
 export {PasswordManagerImpl, PasswordManagerPage} from './autofill_page/passwords/password_manager_proxy.js';
 export type {PasswordManagerProxy} from './autofill_page/passwords/password_manager_proxy.js';
