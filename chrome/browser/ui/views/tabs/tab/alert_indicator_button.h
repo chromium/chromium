@@ -125,6 +125,7 @@ class AlertIndicatorButton : public views::ImageButton,
  private:
   friend class TabContentsTest;
   friend class TabTest;
+  friend class TabViewTestBase;
   class FadeAnimationDelegate;
 
   // Returns a non-continuous Animation that performs a fade-in or fade-out

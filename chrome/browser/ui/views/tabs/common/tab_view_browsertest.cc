@@ -58,18 +58,24 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_test_api.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/animation/animation_test_api.h"
+#include "ui/gfx/color_utils.h"
+#include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/mock_activation_controller.h"
 #include "ui/views/widget/widget_utils.h"
+#include "url/gurl.h"
+#include "url/url_constants.h"
 
 class TestWebContentsObserver : public content::WebContentsObserver {
  public:
@@ -197,6 +203,34 @@ class TabViewTestBase
     ASSERT_TRUE(base::test::RunUntil([&]() { return !view->needs_layout(); }));
   }
 
+  static void LayoutTab(TabView* tab) {
+    tab->InvalidateLayout();
+    tab->SetBoundsRect(tab->bounds());
+  }
+
+  static AlertIndicatorButton* GetAlertIndicator(TabView* tab) {
+    return views::AsViewClass<AlertIndicatorButton>(
+        tab->GetViewByElementId(kTabAlertIndicatorButtonElementId));
+  }
+
+  static void StopFadeAnimationIfNecessary(TabView* tab) {
+    if (gfx::Animation* fade_animation =
+            GetAlertIndicator(tab)->fade_animation_.get()) {
+      fade_animation->Stop();
+    }
+  }
+
+  static base::Time GetCameraMicIndicatorStartTime(TabView* tab) {
+    return GetAlertIndicator(tab)->camera_mic_indicator_start_time_;
+  }
+
+  static void SetCameraMicIndicatorStartTime(TabView* tab, base::Time time) {
+    GetAlertIndicator(tab)->camera_mic_indicator_start_time_ = time;
+  }
+
+  static base::TimeDelta GetFadeoutAnimationDuration(TabView* tab) {
+    return GetAlertIndicator(tab)->fadeout_animation_duration_for_testing_;
+  }
   TabView* GetTabView(int index) {
     auto* region_view = views::AsViewClass<BaseTabStripRegionView>(
         BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view());
@@ -389,12 +423,15 @@ IN_PROC_BROWSER_TEST_P(TabViewTest, TitleLoading) {
 IN_PROC_BROWSER_TEST_P(TabViewTest, AlertIndicatorDataChanged) {
   TabCollectionNode* tab_node = unpinned_collection_node()->children()[0].get();
   TabView* tab_view = views::AsViewClass<TabView>(tab_node->view());
-  auto* alert_indicator =
-      BrowserElementsViews::From(browser())->GetViewAs<AlertIndicatorButton>(
-          kTabAlertIndicatorButtonElementId);
+  auto* alert_indicator = GetAlertIndicator(tab_view);
+  auto* icon = tab_view->GetTabIconForTesting();
+  auto* close_button = tab_view->close_button_for_testing();
 
-  // The alert indicator should not be visible initially.
+  // The alert indicator should not be visible initially; icon and close button
+  // are visible on an active unpinned tab.
+  ASSERT_TRUE(icon->GetVisible());
   ASSERT_FALSE(alert_indicator->GetVisible());
+  ASSERT_TRUE(close_button->GetVisible());
   ASSERT_EQ(std::nullopt, alert_indicator->alert_state_for_testing());
   ASSERT_EQ(std::nullopt, alert_indicator->showing_alert_state());
 
@@ -407,7 +444,9 @@ IN_PROC_BROWSER_TEST_P(TabViewTest, AlertIndicatorDataChanged) {
   tab_strip_model()->NotifyTabChanged(tab_strip_model()->GetActiveTab(),
                                       TabChangeType::kAll);
   WaitForLayout(tab_view);
+  EXPECT_TRUE(icon->GetVisible());
   EXPECT_TRUE(alert_indicator->GetVisible());
+  EXPECT_TRUE(close_button->GetVisible());
   EXPECT_EQ(tabs::TabAlert::kAudioPlaying,
             alert_indicator->alert_state_for_testing());
   EXPECT_EQ(tabs::TabAlert::kAudioPlaying,
@@ -418,6 +457,9 @@ IN_PROC_BROWSER_TEST_P(TabViewTest, AlertIndicatorDataChanged) {
   tab_strip_model()->NotifyTabChanged(tab_strip_model()->GetActiveTab(),
                                       TabChangeType::kAll);
   WaitForLayout(tab_view);
+  EXPECT_TRUE(icon->GetVisible());
+  EXPECT_TRUE(alert_indicator->GetVisible());
+  EXPECT_TRUE(close_button->GetVisible());
   EXPECT_EQ(tabs::TabAlert::kAudioMuting,
             alert_indicator->alert_state_for_testing());
   EXPECT_EQ(tabs::TabAlert::kAudioMuting,
@@ -435,10 +477,98 @@ IN_PROC_BROWSER_TEST_P(TabViewTest, AlertIndicatorDataChanged) {
   tab_strip_model()->NotifyTabChanged(tab_strip_model()->GetActiveTab(),
                                       TabChangeType::kAll);
   WaitForLayout(tab_view);
+  EXPECT_TRUE(icon->GetVisible());
   EXPECT_TRUE(alert_indicator->GetVisible());
+  EXPECT_TRUE(close_button->GetVisible());
   EXPECT_EQ(std::nullopt, alert_indicator->alert_state_for_testing());
   EXPECT_EQ(tabs::TabAlert::kAudioMuting,
             alert_indicator->showing_alert_state());
+
+  // Stop the fade animation to verify that the indicator hides and the icon and
+  // close button remain visible.
+  StopFadeAnimationIfNecessary(tab_view);
+  WaitForLayout(tab_view);
+  EXPECT_TRUE(icon->GetVisible());
+  EXPECT_FALSE(alert_indicator->GetVisible());
+  EXPECT_TRUE(close_button->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_P(TabViewTest, AlertIndicatorDataChanged_PinnedTab) {
+  AppendPinnedTab();
+  content::WebContents* web_contents = tab_strip_model()->GetWebContentsAt(0);
+  ASSERT_TRUE(content::NavigateToURL(web_contents, GURL(url::kAboutBlankURL)));
+  tab_strip_model()->ActivateTabAt(1);
+  TabView* media_tab = GetTabView(0);
+  ASSERT_TRUE(media_tab);
+  WaitForLayout(media_tab);
+
+  auto* icon = media_tab->GetTabIconForTesting();
+  auto* alert_indicator = GetAlertIndicator(media_tab);
+  auto* close_button = media_tab->close_button_for_testing();
+
+  // Pinned inactive tab only has an icon; close button and alert indicator are
+  // hidden.
+  ASSERT_TRUE(icon->GetVisible());
+  ASSERT_FALSE(alert_indicator->GetVisible());
+  ASSERT_FALSE(close_button->GetVisible());
+  ASSERT_EQ(std::nullopt, alert_indicator->alert_state_for_testing());
+  ASSERT_EQ(std::nullopt, alert_indicator->showing_alert_state());
+
+  // After changing the tab alert state, expect the indicator to be visible and
+  // the icon to be hidden (swapped).
+  base::ScopedClosureRunner scoped_closure_runner = web_contents->MarkAudible();
+  web_contents->SetAudioMuted(false);
+  tab_strip_model()->NotifyTabChanged(tab_strip_model()->GetTabAtIndex(0),
+                                      TabChangeType::kAll);
+  WaitForLayout(media_tab);
+  EXPECT_FALSE(icon->GetVisible());
+  EXPECT_TRUE(alert_indicator->GetVisible());
+  EXPECT_FALSE(close_button->GetVisible());
+  EXPECT_EQ(tabs::TabAlert::kAudioPlaying,
+            alert_indicator->alert_state_for_testing());
+  EXPECT_EQ(tabs::TabAlert::kAudioPlaying,
+            alert_indicator->showing_alert_state());
+
+  // After changing the tab alert, expect the indicator state to change while
+  // the icon remains hidden.
+  web_contents->SetAudioMuted(true);
+  tab_strip_model()->NotifyTabChanged(tab_strip_model()->GetTabAtIndex(0),
+                                      TabChangeType::kAll);
+  WaitForLayout(media_tab);
+  EXPECT_FALSE(icon->GetVisible());
+  EXPECT_TRUE(alert_indicator->GetVisible());
+  EXPECT_FALSE(close_button->GetVisible());
+  EXPECT_EQ(tabs::TabAlert::kAudioMuting,
+            alert_indicator->alert_state_for_testing());
+  EXPECT_EQ(tabs::TabAlert::kAudioMuting,
+            alert_indicator->showing_alert_state());
+
+  // After removing the tab alert, expect the indicator to still be visible
+  // (because it is fading out) and the icon to remain hidden.
+  scoped_closure_runner.RunAndReset();
+  // There is a 2 second hysteresis for the audible state, controlled by
+  // RecentlyAudibleHelper. Fire the timer manually to remove the tab alert.
+  RecentlyAudibleHelper* recently_audible_helper =
+      RecentlyAudibleHelper::FromWebContents(web_contents);
+  recently_audible_helper->SetNotRecentlyAudibleForTesting();
+  recently_audible_helper->FireRecentlyAudibleTimerForTesting();
+  tab_strip_model()->NotifyTabChanged(tab_strip_model()->GetTabAtIndex(0),
+                                      TabChangeType::kAll);
+  WaitForLayout(media_tab);
+  EXPECT_FALSE(icon->GetVisible());
+  EXPECT_TRUE(alert_indicator->GetVisible());
+  EXPECT_FALSE(close_button->GetVisible());
+  EXPECT_EQ(std::nullopt, alert_indicator->alert_state_for_testing());
+  EXPECT_EQ(tabs::TabAlert::kAudioMuting,
+            alert_indicator->showing_alert_state());
+
+  // Stop the fade animation directly to verify that the indicator hides and the
+  // icon is restored.
+  StopFadeAnimationIfNecessary(media_tab);
+  WaitForLayout(media_tab);
+  EXPECT_TRUE(icon->GetVisible());
+  EXPECT_FALSE(alert_indicator->GetVisible());
+  EXPECT_FALSE(close_button->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(TabViewTest, AlertIndicatorMuteEnabled) {
@@ -885,6 +1015,220 @@ IN_PROC_BROWSER_TEST_P(TabViewTest,
   EXPECT_TRUE(tab_strip_model()->IsTabSelected(1));
   EXPECT_TRUE(tab_view_1->HasFocus());
   EXPECT_TRUE(region_view->pane_has_focus());
+}
+
+// Regression test for http://crbug.com/40310973. Performing layout more than
+// once shouldn't change the insets of the close button.
+IN_PROC_BROWSER_TEST_P(TabViewTest, CloseButtonLayout) {
+  TabView* tab_view = GetTabView(0);
+  ASSERT_TRUE(tab_view);
+  tab_view->SetBounds(0, 0, 100, 50);
+  LayoutTab(tab_view);
+  gfx::Insets close_button_insets =
+      tab_view->close_button_for_testing()->GetInsets();
+  LayoutTab(tab_view);
+  gfx::Insets close_button_insets_2 =
+      tab_view->close_button_for_testing()->GetInsets();
+  EXPECT_EQ(close_button_insets.top(), close_button_insets_2.top());
+  EXPECT_EQ(close_button_insets.left(), close_button_insets_2.left());
+  EXPECT_EQ(close_button_insets.bottom(), close_button_insets_2.bottom());
+  EXPECT_EQ(close_button_insets.right(), close_button_insets_2.right());
+}
+
+// Regression test for http://crbug.com/40468176. Ensure TabCloseButton does not
+// get focus on right click.
+IN_PROC_BROWSER_TEST_P(TabViewTest, CloseButtonFocus) {
+  TabView* tab_view = GetTabView(0);
+  ASSERT_TRUE(tab_view);
+  TabCloseButton* tab_close_button = tab_view->close_button_for_testing();
+
+  ui::MouseEvent right_click_event(ui::EventType::kMousePressed, gfx::Point(),
+                                   gfx::Point(), base::TimeTicks(),
+                                   ui::EF_RIGHT_MOUSE_BUTTON, 0);
+  tab_close_button->OnMousePressed(right_click_event);
+  EXPECT_NE(tab_close_button,
+            tab_close_button->GetFocusManager()->GetFocusedView());
+}
+
+IN_PROC_BROWSER_TEST_P(TabViewTest, TitleHiddenWhenSmall) {
+  TabView* tab_view = GetTabView(0);
+  ASSERT_TRUE(tab_view);
+  tab_view->SetBounds(0, 0, 100, 50);
+  LayoutTab(tab_view);
+  EXPECT_TRUE(tab_view->title_for_testing()->GetVisible());
+  EXPECT_GT(tab_view->title_for_testing()->bounds().width(), 0);
+  tab_view->SetBounds(0, 0, 0, 50);
+  LayoutTab(tab_view);
+  EXPECT_TRUE(!tab_view->title_for_testing()->GetVisible() ||
+              tab_view->title_for_testing()->bounds().width() == 0);
+}
+
+IN_PROC_BROWSER_TEST_P(TabViewTest,
+                       FaviconDoesntMoveWhenShowingAlertIndicator) {
+  AppendTab();
+  TabView* tab_view = GetTabView(0);
+  ASSERT_TRUE(tab_view);
+
+  for (bool is_active_tab : {false, true}) {
+    tab_strip_model()->ActivateTabAt(is_active_tab ? 0 : 1);
+    WaitForLayout(tab_view);
+
+    views::View* icon = tab_view->GetTabIconForTesting();
+    int icon_x = icon->x();
+    tabs::TabData data = tab_view->data();
+    data.alert_state = {tabs::TabAlert::kAudioPlaying};
+    tab_view->SetDataForTesting(data);
+    WaitForLayout(tab_view);
+    EXPECT_EQ(icon_x, icon->x());
+
+    data.alert_state = std::nullopt;
+    tab_view->SetDataForTesting(data);
+    StopFadeAnimationIfNecessary(tab_view);
+    WaitForLayout(tab_view);
+  }
+}
+
+// Regression test for crbug.com/41413304. Ensures tab title text has sufficient
+// contrast against the tab background across different active/inactive color
+// schemes.
+IN_PROC_BROWSER_TEST_P(TabViewTest, TitleTextHasSufficientContrast) {
+  constexpr SkColor kDarkGray = SkColorSetRGB(0x22, 0x22, 0x22);
+  constexpr SkColor kLightGray = SkColorSetRGB(0x99, 0x99, 0x99);
+  struct ColorScheme {
+    SkColor bg_active;
+    SkColor fg_active;
+    SkColor bg_inactive;
+    SkColor fg_inactive;
+  } color_schemes[] = {
+      {
+          SK_ColorBLACK,
+          SK_ColorWHITE,
+          SK_ColorBLACK,
+          SK_ColorWHITE,
+      },
+      {
+          SK_ColorBLACK,
+          SK_ColorWHITE,
+          SK_ColorWHITE,
+          SK_ColorBLACK,
+      },
+      {
+          kDarkGray,
+          kLightGray,
+          kDarkGray,
+          kLightGray,
+      },
+  };
+
+  AppendTab();
+  TabView* tab_view = GetTabView(0);
+  ASSERT_TRUE(tab_view);
+
+  for (const auto& colors : color_schemes) {
+    tab_view->GetColorProvider()->SetColorForTesting(
+        kColorTabBackgroundActiveFrameActive, colors.bg_active);
+    tab_view->GetColorProvider()->SetColorForTesting(
+        kColorTabBackgroundActiveFrameInactive, colors.bg_active);
+    tab_view->GetColorProvider()->SetColorForTesting(
+        kColorTabBackgroundInactiveFrameActive, colors.bg_inactive);
+    tab_view->GetColorProvider()->SetColorForTesting(
+        kColorTabBackgroundInactiveFrameInactive, colors.bg_inactive);
+    tab_view->GetColorProvider()->SetColorForTesting(
+        kColorTabForegroundActiveFrameActive, colors.fg_active);
+    tab_view->GetColorProvider()->SetColorForTesting(
+        kColorTabForegroundActiveFrameInactive, colors.fg_active);
+    tab_view->GetColorProvider()->SetColorForTesting(
+        kColorTabForegroundInactiveFrameActive, colors.fg_inactive);
+    tab_view->GetColorProvider()->SetColorForTesting(
+        kColorTabForegroundInactiveFrameInactive, colors.fg_inactive);
+    for (bool is_active : {true, false}) {
+      tab_strip_model()->ActivateTabAt(is_active ? 0 : 1);
+      const SkColor fg_color = tab_view->title_for_testing()->GetEnabledColor();
+      const SkColor bg_color = TabStyle::Get()->GetTabBackgroundColor(
+          is_active ? TabStyle::TabSelectionState::kActive
+                    : TabStyle::TabSelectionState::kInactive,
+          /*hovered=*/false, tab_view->GetWidget()->ShouldPaintAsActive(),
+          tab_view->GetColorProvider());
+      const float contrast = color_utils::GetContrastRatio(fg_color, bg_color);
+      EXPECT_GE(contrast, color_utils::kMinimumReadableContrastRatio);
+    }
+  }
+}
+
+// Verifies that the alert indicator for a camera and/or mic is visible at
+// least for 5 seconds even if a camera/mic stopped being used.
+IN_PROC_BROWSER_TEST_P(TabViewTest, MinHoldDurationTest) {
+  TabView* media_tab = GetTabView(0);
+  ASSERT_TRUE(media_tab);
+  WaitForLayout(media_tab);
+
+  auto* alert_indicator = GetAlertIndicator(media_tab);
+  EXPECT_FALSE(alert_indicator->GetVisible());
+  EXPECT_EQ(base::Time(), GetCameraMicIndicatorStartTime(media_tab));
+
+  tabs::TabData start_media = media_tab->data();
+  start_media.alert_state = {tabs::TabAlert::kMediaRecording};
+  media_tab->SetDataForTesting(start_media);
+  WaitForLayout(media_tab);
+
+  EXPECT_TRUE(alert_indicator->GetVisible());
+  EXPECT_NE(base::Time(), GetCameraMicIndicatorStartTime(media_tab));
+
+  tabs::TabData stop_media = media_tab->data();
+  stop_media.alert_state = std::nullopt;
+  media_tab->SetDataForTesting(stop_media);
+  WaitForLayout(media_tab);
+
+  // The indicator's start time should be reset and the fadeout duration should
+  // hold for ~5 seconds.
+  EXPECT_EQ(base::Time(), GetCameraMicIndicatorStartTime(media_tab));
+  EXPECT_GT(GetFadeoutAnimationDuration(media_tab), base::Seconds(4));
+  EXPECT_LE(GetFadeoutAnimationDuration(media_tab), base::Seconds(5));
+}
+
+// Verifies that the alert indicator for a camera and/or mic has a 1-second
+// fadeout animation after it was visible for longer than 5 seconds.
+IN_PROC_BROWSER_TEST_P(TabViewTest, 1SecondFadeoutAnimationTest) {
+  TabView* media_tab = GetTabView(0);
+  ASSERT_TRUE(media_tab);
+  WaitForLayout(media_tab);
+
+  auto* alert_indicator = GetAlertIndicator(media_tab);
+  EXPECT_FALSE(alert_indicator->GetVisible());
+  EXPECT_EQ(base::Time(), GetCameraMicIndicatorStartTime(media_tab));
+
+  tabs::TabData start_media = media_tab->data();
+  start_media.alert_state = {tabs::TabAlert::kMediaRecording};
+  media_tab->SetDataForTesting(start_media);
+  WaitForLayout(media_tab);
+
+  EXPECT_TRUE(alert_indicator->GetVisible());
+  EXPECT_NE(base::Time(), GetCameraMicIndicatorStartTime(media_tab));
+
+  // Simulate the indicator having been displayed for 6 seconds.
+  SetCameraMicIndicatorStartTime(
+      media_tab, GetCameraMicIndicatorStartTime(media_tab) - base::Seconds(6));
+
+  tabs::TabData stop_media = media_tab->data();
+  stop_media.alert_state = std::nullopt;
+  media_tab->SetDataForTesting(stop_media);
+  WaitForLayout(media_tab);
+
+  // The indicator's start time should be reset and the fadeout duration should
+  // be 1 second.
+  EXPECT_EQ(base::Time(), GetCameraMicIndicatorStartTime(media_tab));
+  EXPECT_EQ(base::Seconds(1), GetFadeoutAnimationDuration(media_tab));
+}
+
+IN_PROC_BROWSER_TEST_P(TabViewTest, TabCloseButtonSizeInTouchMode) {
+  ui::TouchUiController::TouchUiScoperForTesting scoper(true);
+
+  TabView* tab_view = GetTabView(0);
+  ASSERT_TRUE(tab_view);
+
+  TabCloseButton* button = tab_view->close_button_for_testing();
+  EXPECT_EQ(24, GetLayoutConstant(LayoutConstant::kTabCloseButtonSize));
+  EXPECT_EQ(gfx::Size(36, 36), button->GetPreferredSize());
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -1378,10 +1722,149 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest,
 
 class HorizontalTabViewTest : public TabViewTestBase {
  public:
+  const std::vector<base::test::FeatureRef> GetDisabledFeatures() override {
+    auto disabled = VerticalTabsBrowserTestMixin<
+        InProcessBrowserTest>::GetDisabledFeatures();
+    disabled.push_back(features::kTabStripDeclutter);
+    return disabled;
+  }
+
   void SetUpOnMainThread() override {
     TabViewTestBase::SetUpOnMainThread();
     ExitVerticalTabsMode();
     ResetTabHoverStates();
+  }
+
+  static int VisibleIconCount(TabView& tab) {
+    return tab.GetTabIconForTesting()->GetVisible() +
+           GetAlertIndicator(&tab)->GetVisible() +
+           tab.close_button_for_testing()->GetVisible();
+  }
+
+  static void CheckForExpectedLayoutAndVisibilityOfElements(TabView& tab) {
+    TabIcon* const icon = tab.GetTabIconForTesting();
+    AlertIndicatorButton* const alert_indicator = GetAlertIndicator(&tab);
+    TabCloseButton* const close_button = tab.close_button_for_testing();
+    TabTitle* const title = tab.title_for_testing();
+
+    const bool showing_icon = icon->GetVisible();
+    const bool showing_alert_indicator = alert_indicator->GetVisible();
+    const bool showing_close_button = close_button->GetVisible();
+    const int visible_icon_count = VisibleIconCount(tab);
+    const bool has_alert = tab.data().alert_state.has_value();
+
+    // Check whether elements are visible when they are supposed to be, given
+    // TabView size and tabs::TabData state.
+    if (tab.pinned()) {
+      EXPECT_EQ(1, visible_icon_count);
+      EXPECT_EQ(!has_alert, showing_icon);
+      EXPECT_EQ(has_alert, showing_alert_indicator);
+      EXPECT_FALSE(title->GetVisible());
+      EXPECT_FALSE(showing_close_button);
+    } else if (tab.IsActive()) {
+      EXPECT_TRUE(showing_close_button);
+      switch (visible_icon_count) {
+        case 1:
+          EXPECT_FALSE(showing_icon);
+          EXPECT_FALSE(showing_alert_indicator);
+          break;
+        case 2:
+          EXPECT_EQ(!has_alert, showing_icon);
+          EXPECT_EQ(has_alert, showing_alert_indicator);
+          break;
+        default:
+          EXPECT_EQ(3, visible_icon_count);
+          EXPECT_TRUE(has_alert);
+          break;
+      }
+    } else {  // Tab not active and not pinned tab.
+      switch (visible_icon_count) {
+        case 1:
+          EXPECT_FALSE(showing_close_button);
+          EXPECT_EQ(!has_alert, showing_icon);
+          EXPECT_EQ(has_alert, showing_alert_indicator);
+          break;
+        case 2:
+          EXPECT_TRUE(showing_icon);
+          EXPECT_EQ(has_alert, showing_alert_indicator);
+          break;
+        default:
+          EXPECT_EQ(3, visible_icon_count);
+          EXPECT_TRUE(has_alert);
+      }
+    }
+
+    // Check the tab icon's positioning. Icons should be positioned at the
+    // start of the tab. Favicons should be centered within their icons. We
+    // extend the bounds vertically down along the tab so that the crashed tabs
+    // and alerts icons can be placed. This means that the true bounds are not
+    // centered on the contents bounds.
+    const gfx::Rect contents_bounds = tab.GetContentsBounds();
+    const gfx::Rect alert_bounds = alert_indicator->bounds();
+    const bool center_icon = !tab.pinned() && !tab.IsActive() &&
+                             contents_bounds.width() <
+                                 (showing_alert_indicator ? alert_bounds.width()
+                                                          : gfx::kFaviconSize);
+    if (showing_icon) {
+      gfx::Rect icon_bounds = icon->bounds();
+      icon_bounds.Inset(icon->GetInsets());
+      if (center_icon) {
+        EXPECT_LE(icon_bounds.x(), contents_bounds.x());
+      } else {
+        EXPECT_LE(contents_bounds.x(), icon_bounds.x());
+      }
+      if (title->GetVisible()) {
+        EXPECT_LE(icon->bounds().right(), title->x());
+      }
+
+      // Tab Icon content now exactly fits the content bounds.
+      EXPECT_EQ(icon_bounds.y(), contents_bounds.y());
+      EXPECT_GE(icon->bounds().bottom(), contents_bounds.bottom());
+    }
+
+    if (showing_icon && showing_alert_indicator) {
+      // When checking for overlap, other views should not overlap the main
+      // favicon (covered by kFaviconSize) but can overlap the extra space
+      // reserved for the attention indicator.
+      int icon_visual_right = icon->bounds().x() + gfx::kFaviconSize;
+      EXPECT_LE(icon_visual_right, alert_bounds.x());
+    }
+
+    if (showing_alert_indicator) {
+      if (title->GetVisible()) {
+        EXPECT_LE(title->bounds().right(), alert_bounds.x());
+      }
+      if (center_icon) {
+        EXPECT_LE(contents_bounds.right(), alert_bounds.right());
+      } else {
+        EXPECT_LE(alert_bounds.right(), contents_bounds.right());
+      }
+
+      // The alert indicator should be centered in the content bounds.
+      EXPECT_EQ(alert_bounds.CenterPoint().y(),
+                contents_bounds.CenterPoint().y());
+    }
+
+    const int close_button_visual_x =
+        close_button->bounds().x() + close_button->GetInsets().left();
+    if (showing_alert_indicator && showing_close_button) {
+      // Note: The alert indicator can overlap the left-insets of the close box,
+      // but should otherwise be to the left of the close button.
+      EXPECT_LE(alert_bounds.right(), close_button_visual_x);
+    }
+    if (showing_close_button) {
+      // Note: The title bounds can overlap the left-insets of the close box,
+      // but should otherwise be to the left of the close button.
+      if (title->GetVisible()) {
+        EXPECT_LE(title->bounds().right(), close_button_visual_x);
+      }
+
+      // The close button has a larger hit target than the content bounds.
+      const gfx::Rect close_bounds = close_button->bounds();
+      EXPECT_LE(close_bounds.right(), tab.GetLocalBounds().right());
+      EXPECT_LE(close_bounds.y(), contents_bounds.y());
+      EXPECT_LE(contents_bounds.bottom(), close_bounds.bottom());
+    }
   }
 };
 
@@ -1389,18 +1872,21 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest, TitleAnimation) {
   TabView* tab_view = GetTabView(0);
   tabs::TabData tab_data = tab_view->data();
   ASSERT_TRUE(tab_data.should_display_favicon);
+  const views::View* icon = tab_view->GetTabIconForTesting();
   TabTitle* title = tab_view->title_for_testing();
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return !static_cast<TabCollectionAnimatingLayoutManager*>(
                 unpinned_collection_node()->view()->GetLayoutManager())
                 ->is_animating();
   }));
+  EXPECT_TRUE(icon->GetVisible());
   const int title_x_with_favicon = title->x();
   const int title_x_no_favicon =
       tab_view->tab_styling()->GetContentsInsets().left();
+  EXPECT_EQ(icon->x() + icon->GetInsets().left(), title_x_no_favicon);
 
   // When the favicon stops showing, the title should animate towards the left
-  // to the beginning of the tab.
+  // to the beginning of the tab (where the favicon was).
   tab_data.should_display_favicon = false;
   tab_view->SetDataForTesting(tab_data);
   int prev_title_bounds_x = title_x_with_favicon;
@@ -1413,6 +1899,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest, TitleAnimation) {
     prev_title_bounds_x = title->x();
     return false;
   }));
+  EXPECT_FALSE(icon->GetVisible());
 
   // When the favicon is shown, the title should animate towards the right so
   // that it is after the favicon.
@@ -1428,6 +1915,7 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest, TitleAnimation) {
     prev_title_bounds_x = title->bounds().x();
     return false;
   }));
+  EXPECT_TRUE(icon->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest, HorizontalSeparators) {
@@ -1672,6 +2160,240 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest,
   EXPECT_FALSE(second_tab->tab_styling()->delegate()->IsRightSplitTab());
   EXPECT_FALSE(first_tab->tab_styling()->delegate()->IsLeftSplitTab());
   EXPECT_TRUE(first_tab->tab_styling()->delegate()->IsRightSplitTab());
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest, HitTest) {
+  TabView* tab_view = GetTabView(0);
+  ASSERT_TRUE(tab_view);
+
+  // Attempt to click on the left curved extender. This is not a part of the
+  // hit target.
+  // x ╭─────────╮
+  //   │ Content │
+  // ┏─╯         ╰─┐
+  int middle_y = tab_view->height() / 2;
+  EXPECT_FALSE(tab_view->HitTestPoint(gfx::Point(0, middle_y)));
+
+  // Attempt to click above the tab. This is not a part of the hit target.
+  //        x
+  //   ╭─────────╮
+  //   │ Content │
+  // ┏─╯         ╰─┐
+  int middle_x = tab_view->width() / 2;
+  int tab_starting_y = GetLayoutConstant(LayoutConstant::kTabStripHeight) -
+                       GetLayoutConstant(LayoutConstant::kTabHeight);
+  EXPECT_FALSE(
+      tab_view->HitTestPoint(gfx::Point(middle_x, tab_starting_y - 1)));
+
+  // Attempt to click on the top pixel of the tab. This should be part of the
+  // hit target.
+  //   ╭────x────╮
+  //   │ Content │
+  // ┏─╯         ╰─┐
+  EXPECT_TRUE(tab_view->HitTestPoint(gfx::Point(middle_x, tab_starting_y)));
+
+  // In maximized mode, attempt to click on the top pixel of the tab and in the
+  // padding above the tab. This should be part of the hit target.
+  //   ╭────x────╮
+  //   │ Content │
+  // ┏─╯         ╰─┐
+  // Maximize() is asynchronous on Linux (X11/Wayland), so wait until
+  // IsMaximized() updates and BrowserFrameView::IsFrameCondensed() is true.
+  tab_view->GetWidget()->Maximize();
+  ASSERT_TRUE(ui_test_utils::WaitForMaximized(browser()));
+  WaitForLayout(tab_view);
+  EXPECT_TRUE(tab_view->HitTestPoint(gfx::Point(middle_x, tab_starting_y)));
+  EXPECT_TRUE(tab_view->HitTestPoint(gfx::Point(middle_x, tab_starting_y - 1)));
+
+  // Attempt to click on the left curved extender. This is not a part of the
+  // hit target.
+  // x ╭─────────╮
+  //   │ Content │
+  // ┏─╯         ╰─┐
+  EXPECT_FALSE(tab_view->HitTestPoint(gfx::Point(0, tab_starting_y)));
+
+  // Attempt to click on the right curved extender. This is not a part of the
+  // hit target.
+  //   ╭─────────╮ x
+  //   │ Content │
+  // ┏─╯         ╰─┐
+  EXPECT_FALSE(tab_view->HitTestPoint(
+      gfx::Point(tab_view->width() - 1, tab_starting_y)));
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest, LayoutAndVisibilityOfElements) {
+  static const std::optional<tabs::TabAlert> kAlertStatesToTest[] = {
+      std::nullopt,
+      tabs::TabAlert::kTabCapturing,
+      tabs::TabAlert::kAudioPlaying,
+      tabs::TabAlert::kAudioMuting,
+      tabs::TabAlert::kPipPlaying,
+  };
+
+  AppendTab();
+
+  // Perform layout over all possible combinations, checking for correct
+  // results.
+  for (bool is_pinned_tab : {false, true}) {
+    tab_strip_model()->SetTabPinned(0, is_pinned_tab);
+    for (bool is_active_tab : {false, true}) {
+      tab_strip_model()->ActivateTabAt(is_active_tab ? 0 : 1);
+      RunScheduledLayouts();
+      TabView* tab_view = GetTabView(0);
+      ASSERT_TRUE(tab_view);
+      for (std::optional<tabs::TabAlert> alert_state : kAlertStatesToTest) {
+        SCOPED_TRACE(
+            ::testing::Message()
+            << (is_active_tab ? "Active" : "Inactive") << ' '
+            << (is_pinned_tab ? "Pinned " : "") << "Tab with alert_state="
+            << (alert_state ? static_cast<int>(alert_state.value()) : -1));
+
+        tabs::TabData data = tab_view->data();
+        data.alert_state = alert_state;
+        tab_view->SetDataForTesting(std::move(data));
+        StopFadeAnimationIfNecessary(tab_view);
+
+        // Test layout for every width from standard to minimum.
+        if (is_pinned_tab) {
+          const int pinned_width =
+              TabStyle::Get()->GetPinnedWidth(/*is_split=*/false);
+          tab_view->SetBounds(0, 0, pinned_width,
+                              TabStyle::Get()->GetStandardHeight());
+          LayoutTab(tab_view);
+          CheckForExpectedLayoutAndVisibilityOfElements(*tab_view);
+        } else {
+          const int max_width =
+              TabStyle::Get()->GetStandardWidth(/*is_split=*/false);
+          const int min_width =
+              is_active_tab ? TabStyle::Get()->GetMinimumActiveWidth(
+                                  /*is_split=*/false)
+                            : TabStyle::Get()->GetMinimumInactiveWidth();
+          for (int width = max_width; width >= min_width; --width) {
+            SCOPED_TRACE(::testing::Message() << "width=" << width);
+            tab_view->SetBounds(0, 0, width,
+                                TabStyle::Get()->GetStandardHeight());
+            LayoutTab(tab_view);
+            CheckForExpectedLayoutAndVisibilityOfElements(*tab_view);
+          }
+        }
+      }
+    }
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest, SmallTabsHideCloseButton) {
+  AppendTab();
+  tab_strip_model()->ActivateTabAt(1);
+
+  TabView* tab_view = GetTabView(0);
+  ASSERT_TRUE(tab_view);
+  EXPECT_FALSE(tab_view->IsActive());
+
+  constexpr int kMinimumContentsWidthForCloseButtons = 68;
+  const int height = GetLayoutConstant(LayoutConstant::kTabHeight);
+  const int width = tab_view->tab_styling()->GetContentsInsets().width() +
+                    kMinimumContentsWidthForCloseButtons;
+  tab_view->SetBounds(0, 0, width, height);
+  LayoutTab(tab_view);
+  const views::View* close = tab_view->close_button_for_testing();
+  EXPECT_TRUE(close->GetVisible());
+
+  // Shrink the tab. The close button should disappear.
+  tab_view->SetBounds(0, 0, width - 1, height);
+  LayoutTab(tab_view);
+  EXPECT_FALSE(close->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest,
+                       ExtraAlertPaddingNotShownOnSmallActiveTab) {
+  TabView* tab_view = GetTabView(0);
+  ASSERT_TRUE(tab_view);
+  EXPECT_TRUE(tab_view->IsActive());
+
+  tabs::TabData data = tab_view->data();
+  data.alert_state = tabs::TabAlert::kAudioPlaying;
+  tab_view->SetDataForTesting(std::move(data));
+
+  const int height = GetLayoutConstant(LayoutConstant::kTabHeight);
+  tab_view->SetBounds(0, 0, 200, height);
+  LayoutTab(tab_view);
+  EXPECT_TRUE(tab_view->GetTabIconForTesting()->GetVisible());
+  const views::View* close = tab_view->close_button_for_testing();
+  const views::View* alert = GetAlertIndicator(tab_view);
+  const int original_spacing = close->x() - alert->bounds().right();
+
+  tab_view->SetBounds(0, 0, 90, height);
+  LayoutTab(tab_view);
+  EXPECT_FALSE(tab_view->GetTabIconForTesting()->GetVisible());
+
+  tab_view->SetBounds(0, 0, 76, height);
+  LayoutTab(tab_view);
+  EXPECT_TRUE(close->GetVisible());
+  EXPECT_TRUE(alert->GetVisible());
+
+  // The alert indicator moves closer because the extra padding is gone.
+  EXPECT_LT(close->x() - alert->bounds().right(), original_spacing);
+
+  tab_view->SetBounds(0, 0, 75, height);
+  LayoutTab(tab_view);
+  EXPECT_TRUE(close->GetVisible());
+  EXPECT_FALSE(alert->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest, DiscardIndicatorResponsiveness) {
+  AppendTab();
+  tab_strip_model()->ActivateTabAt(1);
+
+  TabView* tab_view = GetTabView(0);
+  ASSERT_TRUE(tab_view);
+  EXPECT_FALSE(tab_view->IsActive());
+
+  struct TestCase {
+    int tab_width;
+    int expected_radius;
+  };
+  const TestCase kTestCases[] = {
+      {256, 2}, {45, 2}, {44, 2}, {43, 0}, {32, 0},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    tab_view->SetBounds(0, 0, test_case.tab_width,
+                        GetLayoutConstant(LayoutConstant::kTabHeight));
+    LayoutTab(tab_view);
+    EXPECT_EQ(test_case.expected_radius,
+              tab_view->GetTabIconForTesting()
+                  ->GetIncreasedDiscardIndicatorRadiusForTesting())
+        << "for tab_width=" << test_case.tab_width;
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabViewTest, HideContentsWhenVeryNarrow) {
+  const gfx::AnimationTestApi::RenderModeResetter enable_rich_animations =
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED);
+
+  AppendTab();
+  TabView* tab_view = GetTabView(1);
+  ASSERT_TRUE(tab_view);
+
+  tabs::TabData data = tab_view->data();
+  data.alert_state = tabs::TabAlert::kAudioPlaying;
+  tab_view->SetDataForTesting(std::move(data));
+
+  // Closing the tab puts `tab_view` into the closing state so its layout allows
+  // widths narrower than `GetMinimumInactiveWidth()` during the exit animation.
+  tab_strip_model()->CloseWebContentsAt(1, TabCloseTypes::CLOSE_USER_GESTURE);
+  ASSERT_TRUE(tab_view->IsClosing());
+
+  for (int width : {1, 0}) {
+    tab_view->SetBounds(0, 0, width,
+                        GetLayoutConstant(LayoutConstant::kTabHeight));
+    LayoutTab(tab_view);
+    EXPECT_FALSE(tab_view->GetTabIconForTesting()->GetVisible());
+    EXPECT_FALSE(GetAlertIndicator(tab_view)->GetVisible());
+    EXPECT_FALSE(tab_view->close_button_for_testing()->GetVisible());
+    EXPECT_FALSE(tab_view->title_for_testing()->GetVisible());
+  }
 }
 
 class HorizontalTabViewPinnedStylingEnabledTest : public HorizontalTabViewTest {
