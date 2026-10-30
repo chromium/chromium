@@ -3834,6 +3834,7 @@ EGL_EXTENSIONS_EXTRA = [
   'EGL_ANGLE_global_fence_sync',
   'EGL_ANGLE_iosurface_client_buffer',
   'EGL_ANGLE_keyed_mutex',
+  'EGL_ANGLE_query_renderer_strings',
   'EGL_ANGLE_robust_resource_initialization',
   'EGL_ANGLE_surface_orientation',
   'EGL_ANGLE_window_fixed_size',

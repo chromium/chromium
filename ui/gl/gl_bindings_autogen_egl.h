@@ -417,6 +417,7 @@ struct GL_EXPORT DisplayExtensionsEGL {
   bool b_EGL_ANGLE_metal_shared_event_sync;
   bool b_EGL_ANGLE_no_error;
   bool b_EGL_ANGLE_power_preference;
+  bool b_EGL_ANGLE_query_renderer_strings;
   bool b_EGL_ANGLE_query_surface_pointer;
   bool b_EGL_ANGLE_robust_resource_initialization;
   bool b_EGL_ANGLE_stream_producer_d3d_texture;

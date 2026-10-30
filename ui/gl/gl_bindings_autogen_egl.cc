@@ -365,6 +365,8 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
   b_EGL_ANGLE_no_error = gfx::HasExtension(extensions, "EGL_ANGLE_no_error");
   b_EGL_ANGLE_power_preference =
       gfx::HasExtension(extensions, "EGL_ANGLE_power_preference");
+  b_EGL_ANGLE_query_renderer_strings =
+      gfx::HasExtension(extensions, "EGL_ANGLE_query_renderer_strings");
   b_EGL_ANGLE_query_surface_pointer =
       gfx::HasExtension(extensions, "EGL_ANGLE_query_surface_pointer");
   b_EGL_ANGLE_robust_resource_initialization =
