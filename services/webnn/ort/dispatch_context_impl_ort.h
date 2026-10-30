@@ -5,6 +5,8 @@
 #ifndef SERVICES_WEBNN_ORT_DISPATCH_CONTEXT_IMPL_ORT_H_
 #define SERVICES_WEBNN_ORT_DISPATCH_CONTEXT_IMPL_ORT_H_
 
+#include <vector>
+
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -78,6 +80,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) DispatchContextImplOrt final
 
  private:
   ~DispatchContextImplOrt() override;
+
+  // WebNNContextImpl:
+  std::vector<mojom::WebNNExecutionProviderDetailsPtr>
+  GetExecutionProvidersInfo() const override;
 
   // mojom::WebNNModelLoader:
   void LoadCompiledGraph(mojom::CompiledGraphPtr compiled_graph,

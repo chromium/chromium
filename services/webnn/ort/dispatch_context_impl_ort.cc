@@ -95,6 +95,14 @@ DispatchContextImplOrt::DispatchContextImplOrt(
 
 DispatchContextImplOrt::~DispatchContextImplOrt() = default;
 
+std::vector<mojom::WebNNExecutionProviderDetailsPtr>
+DispatchContextImplOrt::GetExecutionProvidersInfo() const {
+  // The session is bound only to the EP device the Compiler process compiles
+  // for, so don't report the EPs selected by device type.
+  return env()->GetEpDetailsForDevice(
+      session_options()->first_selected_device());
+}
+
 void DispatchContextImplOrt::CreateGraphBuilder(
     mojo::PendingReceiver<mojom::WebNNGraphBuilder> /*receiver*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

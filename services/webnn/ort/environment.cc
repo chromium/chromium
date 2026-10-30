@@ -1213,6 +1213,14 @@ Environment::GetSelectedEpDetails(OrtHardwareDeviceType device_type) const {
   return ep_list;
 }
 
+std::vector<mojom::WebNNExecutionProviderDetailsPtr>
+Environment::GetEpDetailsForDevice(const OrtEpDevice* ep_device) const {
+  CHECK(ep_device);
+  auto ep_list = ConvertEpListForIntrospection(base::span_from_ref(ep_device));
+  ep_list.front()->first_selected = true;
+  return ep_list;
+}
+
 EpWorkarounds Environment::GetEpWorkarounds(
     OrtHardwareDeviceType device_type) const {
   EpWorkarounds workarounds;

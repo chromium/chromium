@@ -128,6 +128,12 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Environment
   std::vector<mojom::WebNNExecutionProviderDetailsPtr> GetSelectedEpDetails(
       OrtHardwareDeviceType device_type) const;
 
+  // Returns the execution provider details of `ep_device` marked as first
+  // selected. This is used for introspection purposes in WebNN Internals when
+  // the EP device is fixed rather than selected by device type.
+  std::vector<mojom::WebNNExecutionProviderDetailsPtr> GetEpDetailsForDevice(
+      const OrtEpDevice* ep_device) const;
+
   // Get combined EP workarounds for the EPs that will be selected according to
   // the given device type.
   EpWorkarounds GetEpWorkarounds(OrtHardwareDeviceType device_type) const;
