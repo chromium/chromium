@@ -23,6 +23,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -1044,6 +1045,9 @@ public class WebContentsAccessibilityTreeTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.BAKLAVA,
+            message = "https://crbug.com/579553983")
     public void test_ariaSortHtmlTable() {
         Assume.assumeTrue(
                 "Requires Android 16 QPR2 (36.1) or higher",
@@ -1120,6 +1124,9 @@ public class WebContentsAccessibilityTreeTest {
     @Test
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.BAKLAVA,
+            message = "https://crbug.com/579553983")
     public void test_ariaTabpanel() {
         Assume.assumeTrue(
                 "Requires Android 16 QPR2 (36.1) or higher",
@@ -1503,6 +1510,9 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.BAKLAVA,
+            message = "https://crbug.com/579553983")
     public void test_ariaApgPatternThirdPartyDataGrids() {
         performApgPatternThirdPartyTest("grid/examples/data-grids.html");
     }
@@ -1720,6 +1730,9 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.BAKLAVA,
+            message = "https://crbug.com/579553983")
     public void test_ariaApgPatternThirdPartySortableTable() {
         performApgPatternThirdPartyTest("table/examples/sortable-table.html");
     }

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.thumbnail.generator;
 
+import android.os.Build;
+
 import androidx.test.filters.LargeTest;
 
 import org.junit.Assert;
@@ -160,6 +162,9 @@ public class ThumbnailMediaParserTest {
     @Feature({"MediaParser"})
     // TODO(crbug.com/528212805): Re-enable after flakiness is fixed.
     @DisableIf.Device(DeviceFormFactor.DESKTOP)
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.BAKLAVA,
+            message = "https://crbug.com/579553791")
     public void testParseVideoThumbnailH265() {
         String filePath = UrlUtils.getIsolatedTestRoot() + "/media/test/data/bear-hevc-frag.mp4";
         MediaParserResult result = parseMediaFile(filePath, "video/mp4");

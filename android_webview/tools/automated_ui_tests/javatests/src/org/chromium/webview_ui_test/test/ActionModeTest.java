@@ -40,6 +40,7 @@ import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Intent;
+import android.os.Build;
 import android.view.MenuItem;
 
 import androidx.test.espresso.NoMatchingViewException;
@@ -64,6 +65,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.webview_ui_test.R;
 import org.chromium.webview_ui_test.WebViewUiTestActivity;
@@ -133,6 +135,9 @@ public class ActionModeTest {
     @Test
     @SmallTest
     @UseLayout("edittext_webview")
+    @DisableIf.Build(
+            sdk_is_greater_than = Build.VERSION_CODES.BAKLAVA,
+            message = "https://crbug.com/579554355")
     public void testShare() {
         Assume.assumeFalse("Share is not supported on Automotive", DeviceInfo.isAutomotive());
         Intents.init();
