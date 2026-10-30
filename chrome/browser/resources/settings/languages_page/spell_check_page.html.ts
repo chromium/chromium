@@ -14,7 +14,8 @@ export function getHtml(this: SettingsSpellCheckPageElement) {
       .subLabel="${this.getSpellCheckSubLabel_()}"
       pref-key="browser.enable_spellchecking"
       ?disabled="${this.isSpellCheckToggleDisabled_()}"
-      @settings-boolean-control-change="${this.onEnableSpellcheckingToggleSettingsBooleanControlChange_}">
+      @settings-boolean-control-change="${
+          this.onEnableSpellcheckingToggleSettingsBooleanControlChange_}">
   </settings-toggle-button>
 <if expr="_google_chrome or not is_macosx">
   <cr-collapse id="spellCheckCollapse"
@@ -25,21 +26,19 @@ export function getHtml(this: SettingsSpellCheckPageElement) {
           pref-key="spellcheck.use_spelling_service"
           @change="${this.onSelectedSpellingServiceChange_}">
         <controlled-radio-button class="spell-check-radio-button"
-            id="spellingServiceDisable"
-            label="$i18n{spellCheckBasicLabel}" name="false"
-            pref-key="spellcheck.use_spelling_service">
+            id="spellingServiceDisable" label="$i18n{spellCheckBasicLabel}"
+            name="false" pref-key="spellcheck.use_spelling_service">
         </controlled-radio-button>
         <controlled-radio-button class="spell-check-radio-button enhanced"
-            id="spellingServiceEnable"
-            label="$i18n{spellCheckEnhancedLabel}" name="true"
-            pref-key="spellcheck.use_spelling_service">
+            id="spellingServiceEnable" label="$i18n{spellCheckEnhancedLabel}"
+            name="true" pref-key="spellcheck.use_spelling_service">
           <div class="secondary enhanced-spellcheck-description">
             $i18n{spellCheckEnhancedDescription}
           </div>
         </controlled-radio-button>
       </settings-radio-group>
     </div>
-</if> <!-- _google_chrome -->
+</if>
 <if expr="not is_macosx">
     <div id="spellCheckLanguagesList"
         ?hidden="${this.shouldHideSpellCheckLanguages_()}">
@@ -54,13 +53,15 @@ export function getHtml(this: SettingsSpellCheckPageElement) {
                 data-index="${index}"
                 ?disabled="${this.isSpellCheckNameClickDisabled_(item)}">
               ${item.language.displayName}
-              <div ?hidden="${!this.errorsGreaterThan_(
-                  item.downloadDictionaryFailureCount, 0)}">
+              <div
+                  ?hidden="${!this.errorsGreaterThan_(
+                      item.downloadDictionaryFailureCount, 0)}">
                 <cr-icon icon="cr:error-filled"></cr-icon>
                 $i18n{languagesDictionaryDownloadError}
               </div>
-              <div ?hidden="${!this.errorsGreaterThan_(
-                  item.downloadDictionaryFailureCount, 1)}">
+              <div
+                  ?hidden="${!this.errorsGreaterThan_(
+                      item.downloadDictionaryFailureCount, 1)}">
                 $i18n{languagesDictionaryDownloadErrorHelp}
               </div>
             </div>
@@ -81,13 +82,13 @@ export function getHtml(this: SettingsSpellCheckPageElement) {
               </cr-toggle>
             ` : html`
               <cr-policy-pref-indicator
-                  .pref="${this.getIndicatorPrefForManagedSpellcheckLanguage_(
-                      item.spellCheckEnabled)}"
+                  .pref="${
+                      this.getIndicatorPrefForManagedSpellcheckLanguage_(
+                          item.spellCheckEnabled)}"
                   ?hidden="${this.errorsGreaterThan_(
                       item.downloadDictionaryFailureCount, 0)}">
               </cr-policy-pref-indicator>
-              <cr-toggle disabled
-                  ?checked="${item.spellCheckEnabled}"
+              <cr-toggle disabled ?checked="${item.spellCheckEnabled}"
                   aria-label="${item.language.displayName}"
                   ?hidden="${this.errorsGreaterThan_(
                       item.downloadDictionaryFailureCount, 0)}">
@@ -101,9 +102,9 @@ export function getHtml(this: SettingsSpellCheckPageElement) {
         id="spellCheckSubpageTrigger" label="$i18n{manageSpellCheck}"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
-</if> <!-- not is_macosx -->
+</if>
   </cr-collapse>
-</if> <!-- _google_chrome or not is_macosx -->
+</if>
 </settings-section>
 <!--_html_template_end_-->`;
 }

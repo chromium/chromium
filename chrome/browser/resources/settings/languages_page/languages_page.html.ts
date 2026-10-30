@@ -9,119 +9,121 @@ import type {SettingsLanguagesPageElement} from './languages_page.js';
 export function getHtml(this: SettingsLanguagesPageElement) {
   return html`<!--_html_template_start_-->
 <settings-section page-title="$i18n{languagesCardTitle}">
-<div id="languagesSection">
-  <div class="cr-row continuation">
-    <div id="languagesSectionHeader" class="flex">
-      <div>$i18n{preferredLanguagesHeader}</div>
-      <div class="secondary">$i18n{preferredLanguagesDesc}</div>
-    </div>
-    <cr-button id="addLanguages" class="cr-button-gap header-aligned-button"
-        ?disabled="${!this.canEnableSomeSupportedLanguage_}"
-        @click="${this.onAddLanguagesClick_}">
-      $i18n{addLanguages}
-    </cr-button>
-  </div>
-  <div class="list-frame vertical-list" role="list">
-    ${this.enabledLanguages_.map((item, index) => html`
-      <div class="list-item ${this.getLanguageItemClass_(item.language.code)}
-          ${this.isTranslationTarget_(item.language.code, this.translateTarget_)}"
-          role="listitem">
-        <div class="start cr-padded-text">
-          <div title="${item.language.nativeDisplayName}" role="none">
-            ${this.formatIndex_(index)}. ${item.language.displayName}
-          </div>
-          <div class="target-info secondary">
-            $i18n{translateTargetLabel}
-          </div>
-<if expr="is_win">
-          <div class="explain-selected"
-              ?hidden="${!this.isProspectiveUiLanguage_(
-                  item.language.code,
-                  this.prospectiveUILanguage_)}">
-            $i18n{isDisplayedInThisLanguage}
-          </div>
-</if> <!-- is_win -->
-        </div>
-<if expr="is_win">
-        ${this.isRestartRequired_(
-            item.language.code, this.prospectiveUILanguage_) ? html`
-          <cr-button id="restartButton" @click="${this.onRestartClick_}">
-            $i18n{restart}
-          </cr-button>
-        ` : ''}
-</if> <!-- is_win -->
-        <cr-icon-button class="icon-more-vert"
-            title="$i18n{moreActions}"
-            id="more-${item.language.code}"
-            data-index="${index}"
-            @click="${this.onDotsClick_}">
-        </cr-icon-button>
+  <div id="languagesSection">
+    <div class="cr-row continuation">
+      <div id="languagesSectionHeader" class="flex">
+        <div>$i18n{preferredLanguagesHeader}</div>
+        <div class="secondary">$i18n{preferredLanguagesDesc}</div>
       </div>
-    `)}
-  </div>
-  <cr-lazy-render-lit id="menu" .template="${() => html`
-    <cr-action-menu role-description="$i18n{menu}"
-        class="${this.isWindows_() ? 'complex' : ''}"
-        @close="${this.onMenuClose_}">
+      <cr-button id="addLanguages" class="cr-button-gap header-aligned-button"
+          ?disabled="${!this.canEnableSomeSupportedLanguage_}"
+          @click="${this.onAddLanguagesClick_}">
+        $i18n{addLanguages}
+      </cr-button>
+    </div>
+    <div class="list-frame vertical-list" role="list">
+      ${this.enabledLanguages_.map((item, index) => html`
+        <div
+            class="list-item ${this.getLanguageItemClass_(item.language.code)}
+          ${this.isTranslationTarget_(
+                item.language.code, this.translateTarget_)}"
+            role="listitem">
+          <div class="start cr-padded-text">
+            <div title="${item.language.nativeDisplayName}" role="none">
+              ${this.formatIndex_(index)}. ${item.language.displayName}
+            </div>
+            <div class="target-info secondary">
+              $i18n{translateTargetLabel}
+            </div>
 <if expr="is_win">
-      <cr-checkbox id="uiLanguageItem"
-          class="dropdown-item"
-          ?checked="${this.isProspectiveUiLanguage_(
-              this.detailLanguage_?.language.code ?? '',
-              this.prospectiveUILanguage_)}"
-          @change="${this.onUiLanguageChange_}"
-          ?disabled="${this.disableUiLanguageCheckbox_(
-              this.detailLanguage_, this.prospectiveUILanguage_)}" noink>
-        <span>
-          $i18n{displayInThisLanguage}
-        </span>
-        <cr-icon class="policy" icon="cr20:domain"
-            ?hidden="${!this.detailLanguage_?.language.isProhibitedLanguage}">
-        </cr-icon>
-      </cr-checkbox>
-</if> <!-- is_win -->
-      <button class="dropdown-item" role="menuitem"
-          @click="${this.onMoveToTopClick_}"
-          ?hidden="${this.isNthLanguage_(0)}">
-        $i18n{moveToTop}
-      </button>
-      <button class="dropdown-item" role="menuitem"
-          @click="${this.onMoveUpClick_}"
-          ?hidden="${!this.showMoveUp_()}">
-        $i18n{moveUp}
-      </button>
-      <button class="dropdown-item" role="menuitem"
-          @click="${this.onMoveDownClick_}"
-          ?hidden="${!this.showMoveDown_()}">
-        $i18n{moveDown}
-      </button>
-      <button class="dropdown-item" role="menuitem"
-          @click="${this.onRemoveLanguageClick_}"
-          ?disabled="${!this.detailLanguage_?.removable}">
-        $i18n{removeLanguage}
-      </button>
-    </cr-action-menu>
-  `}">
-  </cr-lazy-render-lit>
-</div>
-${this.showAddLanguagesDialog_ ? html`
-  <settings-add-languages-dialog
-      .languages="${this.addLanguagesDialogLanguages_}"
-      @languages-added="${this.onLanguagesAdded_}"
-      @close="${this.onAddLanguagesDialogClose_}">
-  </settings-add-languages-dialog>
-` : ''}
-${this.showManagedLanguageDialog_ ? html`
-  <managed-dialog @close="${this.onManagedLanguageDialogClose_}"
-      title="$i18n{languageManagedDialogTitle}"
-      body="$i18n{languageManagedDialogBody}">
-  </managed-dialog>
-` : ''}
-${this.shouldShowRelaunchDialog ? html`
-  <relaunch-confirmation-dialog .restartType="${this.restartTypeEnum.RESTART}"
-      @close="${this.onRelaunchDialogClose}">
-  </relaunch-confirmation-dialog>
-` : ''}
+            <div class="explain-selected"
+                ?hidden="${!this.isProspectiveUiLanguage_(
+                    item.language.code, this.prospectiveUILanguage_)}">
+              $i18n{isDisplayedInThisLanguage}
+            </div>
+</if>
+          </div>
+<if expr="is_win">
+          ${this.isRestartRequired_(
+              item.language.code, this.prospectiveUILanguage_) ?
+              html`
+            <cr-button id="restartButton" @click="${this.onRestartClick_}">
+              $i18n{restart}
+            </cr-button>
+          ` : ''}
+</if>
+          <cr-icon-button class="icon-more-vert" title="$i18n{moreActions}"
+              id="more-${item.language.code}" data-index="${index}"
+              @click="${this.onDotsClick_}">
+          </cr-icon-button>
+        </div>
+      `)}
+    </div>
+    <cr-lazy-render-lit id="menu"
+        .template="${() => html`
+          <cr-action-menu role-description="$i18n{menu}"
+              class="${this.isWindows_() ? 'complex' : ''}"
+              @close="${this.onMenuClose_}">
+<if expr="is_win">
+            <cr-checkbox id="uiLanguageItem" class="dropdown-item"
+                ?checked="${this.isProspectiveUiLanguage_(
+                    this.detailLanguage_?.language.code ?? '',
+                    this.prospectiveUILanguage_)}"
+                @change="${this.onUiLanguageChange_}"
+                ?disabled="${this.disableUiLanguageCheckbox_(
+                    this.detailLanguage_, this.prospectiveUILanguage_)}"
+                noink>
+              <span>
+                $i18n{displayInThisLanguage}
+              </span>
+              <cr-icon class="policy" icon="cr20:domain"
+                  ?hidden="${
+                      !this.detailLanguage_?.language.isProhibitedLanguage}">
+              </cr-icon>
+            </cr-checkbox>
+</if>
+            <button class="dropdown-item" role="menuitem"
+                @click="${this.onMoveToTopClick_}"
+                ?hidden="${this.isNthLanguage_(0)}">
+              $i18n{moveToTop}
+            </button>
+            <button class="dropdown-item" role="menuitem"
+                @click="${this.onMoveUpClick_}"
+                ?hidden="${!this.showMoveUp_()}">
+              $i18n{moveUp}
+            </button>
+            <button class="dropdown-item" role="menuitem"
+                @click="${this.onMoveDownClick_}"
+                ?hidden="${!this.showMoveDown_()}">
+              $i18n{moveDown}
+            </button>
+            <button class="dropdown-item" role="menuitem"
+                @click="${this.onRemoveLanguageClick_}"
+                ?disabled="${!this.detailLanguage_?.removable}">
+              $i18n{removeLanguage}
+            </button>
+          </cr-action-menu>
+        `}">
+    </cr-lazy-render-lit>
+  </div>
+  ${this.showAddLanguagesDialog_ ? html`
+    <settings-add-languages-dialog
+        .languages="${this.addLanguagesDialogLanguages_}"
+        @languages-added="${this.onLanguagesAdded_}"
+        @close="${this.onAddLanguagesDialogClose_}">
+    </settings-add-languages-dialog>
+  ` : ''}
+  ${this.showManagedLanguageDialog_ ? html`
+    <managed-dialog @close="${this.onManagedLanguageDialogClose_}"
+        title="$i18n{languageManagedDialogTitle}"
+        body="$i18n{languageManagedDialogBody}">
+    </managed-dialog>
+  ` : ''}
+  ${this.shouldShowRelaunchDialog ? html`
+    <relaunch-confirmation-dialog .restartType="${this.restartTypeEnum.RESTART}"
+        @close="${this.onRelaunchDialogClose}">
+    </relaunch-confirmation-dialog>
+  ` : ''}
 </settings-section>
 <!--_html_template_end_-->`;
 }

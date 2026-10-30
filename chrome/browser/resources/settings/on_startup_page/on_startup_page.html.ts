@@ -12,18 +12,15 @@ export function getHtml(this: SettingsOnStartupPageElement) {
 <settings-section page-title="$i18n{onStartup}"
     class="cr-centered-card-container">
   <div class="cr-row first">
-    <settings-radio-group id="onStartupRadioGroup"
-        class="flex"
+    <settings-radio-group id="onStartupRadioGroup" class="flex"
         pref-key="session.restore_on_startup"
         group-aria-label="$i18n{onStartup}">
       <controlled-radio-button name="${PrefValues.OPEN_NEW_TAB}"
           pref-key="session.restore_on_startup"
-          label="$i18n{onStartupOpenNewTab}"
-          no-extension-indicator>
+          label="$i18n{onStartupOpenNewTab}" no-extension-indicator>
       </controlled-radio-button>
       ${this.ntpExtension_ ? html`
-        <extension-controlled-indicator
-            .extensionId="${this.ntpExtension_.id}"
+        <extension-controlled-indicator .extensionId="${this.ntpExtension_.id}"
             .extensionName="${this.ntpExtension_.name}"
             .extensionCanBeDisabled="${this.ntpExtension_.canBeDisabled}">
         </extension-controlled-indicator>
@@ -36,8 +33,7 @@ export function getHtml(this: SettingsOnStartupPageElement) {
           pref-key="session.restore_on_startup"
           label="$i18n{onStartupOpenSpecific}">
       </controlled-radio-button>
-      <controlled-radio-button
-          name="${PrefValues.CONTINUE_AND_OPEN_SPECIFIC}"
+      <controlled-radio-button name="${PrefValues.CONTINUE_AND_OPEN_SPECIFIC}"
           pref-key="session.restore_on_startup"
           label="$i18n{onStartupContinueAndOpenSpecific}"
           ?hidden="${!this.showContinueAndOpenSpecific_()}">

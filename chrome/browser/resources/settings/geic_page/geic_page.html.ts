@@ -10,13 +10,9 @@ export function getHtml(this: SettingsGeicPageElement) {
   return html`<!--_html_template_start_-->
 <settings-section page-title="$i18n{geicSectionTitle}">
   <div>
-    <cr-link-row id="geicLinkRow"
-        start-icon="settings20:button-magic"
-        label="$i18n{geicSectionTitle}"
-        @click="${this.onGeicPageClick_}">
-      <div slot="sub-label">
-        $i18n{glicRowSublabel}
-      </div>
+    <cr-link-row id="geicLinkRow" start-icon="settings20:button-magic"
+        label="$i18n{geicSectionTitle}" @click="${this.onGeicPageClick_}">
+      <div slot="sub-label">$i18n{glicRowSublabel}</div>
     </cr-link-row>
   </div>
 </settings-section>

@@ -13,8 +13,8 @@ export function getHtml(this: SettingsAddLanguagesDialogElement) {
     <span>$i18n{addLanguagesDialogTitle}</span>
     <cr-search-field label="$i18n{searchLanguages}" id="search"
         clear-label="$i18n{clearSearch}"
-        @search-changed="${this.onSearchChanged_}"
-        @keydown="${this.onKeydown_}" autofocus>
+        @search-changed="${this.onSearchChanged_}" @keydown="${this.onKeydown_}"
+        autofocus>
     </cr-search-field>
   </div>
   <div id="dialog-body" slot="body" scrollable>

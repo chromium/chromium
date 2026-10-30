@@ -12,8 +12,7 @@ export function getHtml(this: SettingsGeicSubpageElement) {
     route-path="${this.routePath}">
   <div class="section">
     <h2 class="cr-title-text">$i18n{glicPreferencesSection}</h2>
-    <settings-toggle-button
-        id="tabstripButtonToggle"
+    <settings-toggle-button id="tabstripButtonToggle"
         pref-key="glic.pinned_to_tabstrip"
         label="$i18n{glicTabstripButtonToggle}"
         sub-label="$i18n{glicTabstripButtonToggleSublabel}">
@@ -21,17 +20,14 @@ export function getHtml(this: SettingsGeicSubpageElement) {
   </div>
   <div class="section">
     <h2 class="cr-title-text">$i18n{glicDataSection}</h2>
-    <settings-toggle-button
-        id="defaultTabAccessToggle"
+    <settings-toggle-button id="defaultTabAccessToggle"
         pref-key="glic.default_tab_context_enabled"
         label="$i18n{glicDefaultTabAccessToggle}"
         sub-label-with-link="${this.getDefaultTabAccessSubLabel_()}"
         @sub-label-link-clicked="${
             this.onDefaultTabAccessToggleSubLabelLinkClicked_}"
-        no-toggle-on-host-click
-        @click="${this.onDefaultTabAccessExpandClick_}">
-      <div id="defaultTabAccessToggleActions"
-          class="toggle-actions-container"
+        no-toggle-on-host-click @click="${this.onDefaultTabAccessExpandClick_}">
+      <div id="defaultTabAccessToggleActions" class="toggle-actions-container"
           slot="more-actions">
         <cr-expand-button id="defaultTabAccessExpandButton" no-hover
             ?expanded="${this.defaultTabAccessToggleExpanded_}"

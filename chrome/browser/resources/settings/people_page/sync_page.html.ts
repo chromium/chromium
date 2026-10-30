@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
-
 import {ChromeSigninAccessPoint, PageStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
 
 import type {SettingsSyncPageElement} from './sync_page.js';
@@ -11,174 +10,166 @@ import type {SettingsSyncPageElement} from './sync_page.js';
 export function getHtml(this: SettingsSyncPageElement) {
   return html`<!--_html_template_start_-->
 <settings-subpage page-title="$i18n{syncPageTitle}"
-      learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}"
-      route-path="${this.routePath}">
+    learn-more-url="$i18n{syncAndGoogleServicesLearnMoreURL}"
+    route-path="${this.routePath}">
 <if expr="not is_chromeos">
-    ${this.shouldShowSyncAccountControl_() ? html`
-      <settings-sync-account-control embedded-in-subpage
-          .syncStatus="${this.syncStatus_}"
-          promo-label-with-account=
-              "$i18n{peopleSignInSyncPagePromptSecondaryWithAccount}"
-          promo-label-with-no-account=
-              "$i18n{peopleSignInSyncPagePromptSecondaryWithNoAccount}"
-          @sync-setup-done="${this.onSyncSetupDone_}"
-          .accessPoint="${ChromeSigninAccessPoint.SETTINGS}">
-      </settings-sync-account-control>
-    ` : ''}
+  ${this.shouldShowSyncAccountControl_() ? html`
+    <settings-sync-account-control embedded-in-subpage
+        .syncStatus="${this.syncStatus_}"
+        promo-label-with-account="$i18n{peopleSignInSyncPagePromptSecondaryWithAccount}"
+        promo-label-with-no-account="$i18n{peopleSignInSyncPagePromptSecondaryWithNoAccount}"
+        @sync-setup-done="${this.onSyncSetupDone_}"
+        .accessPoint="${ChromeSigninAccessPoint.SETTINGS}">
+    </settings-sync-account-control>
+  ` : ''}
 </if>
-    <div class="cr-row first" ?hidden="${!this.syncDisabledByAdmin_}">
-      <cr-icon id="disabled-by-admin-icon" icon="cr20:domain"></cr-icon>
-      <div class="flex cr-padded-text">
-        $i18n{syncDisabledByAdministrator}
+  <div class="cr-row first" ?hidden="${!this.syncDisabledByAdmin_}">
+    <cr-icon id="disabled-by-admin-icon" icon="cr20:domain"></cr-icon>
+    <div class="flex cr-padded-text">
+      $i18n{syncDisabledByAdministrator}
+    </div>
+  </div>
+
+  ${this.showExistingPassphraseBelowAccount_ ? html`
+    <div id="existingPassphrase" class="list-frame">
+      <div id="existingPassphraseTitle" class="list-item">
+        <div class="start cr-padded-text">
+          <div>$i18n{existingPassphraseTitle}</div>
+          <div id="enterPassphraseLabel" class="secondary"
+              .innerHTML="${this.enterPassphraseLabel_}">
+          </div>
+        </div>
+      </div>
+      <div id="existingPassphraseContainer" class="list-item">
+        <cr-input id="existingPassphraseInput" type="password"
+            .value="${this.existingPassphrase_}"
+            @value-changed="${this.onExistingPassphraseValueChanged_}"
+            placeholder="$i18n{passphrasePlaceholder}"
+            error-message="$i18n{incorrectPassphraseError}"
+            @keypress="${this.onExistingPassphraseKeypress_}">
+          <cr-button id="submitExistingPassphrase" slot="suffix"
+              @click="${this.onSubmitExistingPassphraseClick_}"
+              class="action-button" ?disabled="${!this.existingPassphrase_}">
+            $i18n{submitPassphraseButton}
+          </cr-button>
+        </cr-input>
+      </div>
+      <div id="passphraseRecoverHint" class="list-item">
+        <div class="cr-padded-text">$i18nRaw{passphraseRecover}</div>
       </div>
     </div>
+  ` : ''}
 
-    ${this.showExistingPassphraseBelowAccount_ ? html`
-      <div id="existingPassphrase" class="list-frame">
-        <div id="existingPassphraseTitle" class="list-item">
-            <div class="start cr-padded-text">
-              <div>$i18n{existingPassphraseTitle}</div>
-              <div id="enterPassphraseLabel" class="secondary"
-                  .innerHTML="${this.enterPassphraseLabel_}">
-              </div>
-            </div>
-        </div>
-        <div id="existingPassphraseContainer" class="list-item">
-          <cr-input id="existingPassphraseInput" type="password"
-              .value="${this.existingPassphrase_}"
-              @value-changed="${this.onExistingPassphraseValueChanged_}"
-              placeholder="$i18n{passphrasePlaceholder}"
-              error-message="$i18n{incorrectPassphraseError}"
-              @keypress="${this.onExistingPassphraseKeypress_}">
-            <cr-button id="submitExistingPassphrase" slot="suffix"
-                @click="${this.onSubmitExistingPassphraseClick_}"
-                class="action-button" ?disabled="${!this.existingPassphrase_}">
-              $i18n{submitPassphraseButton}
-            </cr-button>
-          </cr-input>
-        </div>
-        <div id="passphraseRecoverHint" class="list-item">
-          <div class="cr-padded-text">$i18nRaw{passphraseRecover}</div>
-        </div>
-      </div>
-    ` : ''}
+  <div id="sync-separator" ?hidden="${!this.syncSectionDisabled_}"></div>
 
-    <div id="sync-separator" ?hidden="${!this.syncSectionDisabled_}"></div>
+  <div id="sync-section" ?hidden="${this.syncSectionDisabled_}">
+    <div class="cr-row first">
+      <h2 class="cr-title-text">$i18n{sync}</h2>
+    </div>
 
-    <div id="sync-section" ?hidden="${this.syncSectionDisabled_}">
-      <div class="cr-row first">
-        <h2 class="cr-title-text">$i18n{sync}</h2>
-      </div>
+    <div id="${PageStatus.SPINNER}" class="cr-row first cr-padded-text"
+        ?hidden="${!this.isStatus_(PageStatus.SPINNER)}">
+      $i18n{syncLoading}
+    </div>
+    <div id="${PageStatus.CONFIGURE}"
+        ?hidden="${!this.isStatus_(PageStatus.CONFIGURE)}">
+      <div id="other-sync-items" class="list-frame">
+        <cr-link-row id="sync-advanced-row" label="$i18n{syncAdvancedPageTitle}"
+            role-description="$i18n{subpageArrowRoleDescription}"
+            @click="${this.onSyncAdvancedClick_}">
+        </cr-link-row>
 
-      <div id="${PageStatus.SPINNER}" class="cr-row first cr-padded-text"
-          ?hidden="${!this.isStatus_(PageStatus.SPINNER)}">
-        $i18n{syncLoading}
-      </div>
-      <div id="${PageStatus.CONFIGURE}"
-          ?hidden="${!this.isStatus_(PageStatus.CONFIGURE)}">
-        <div id="other-sync-items" class="list-frame">
-          <cr-link-row id="sync-advanced-row"
-              label="$i18n{syncAdvancedPageTitle}"
-              role-description="$i18n{subpageArrowRoleDescription}"
-              @click="${this.onSyncAdvancedClick_}">
+        ${!this.mayShowLinkedGoogleServicesSetting_ ? html`
+          <cr-link-row class="hr" id="activityControlsLinkRowV2"
+              label="$i18n{personalizeGoogleServicesTitleV2}"
+              sub-label="$i18n{personalizeGoogleServicesDesc}"
+              @click="${this.onActivityControlsClick_}" external>
           </cr-link-row>
-
-          ${!this.mayShowLinkedGoogleServicesSetting_ ? html`
-            <cr-link-row class="hr" id="activityControlsLinkRowV2"
-                label="$i18n{personalizeGoogleServicesTitleV2}"
-                sub-label="$i18n{personalizeGoogleServicesDesc}"
-                @click="${this.onActivityControlsClick_}" external>
-            </cr-link-row>
-          ` : html`
-            <cr-expand-button class="hr" id="personalizationExpandButton"
-                ?expanded="${this.personalizationCollapseExpanded_}"
-                @expanded-changed="${
-                    this.onPersonalizationCollapseExpandedChanged_}">
-              $i18n{personalizeGoogleServicesTitleV2}
-              <div class="secondary">
-                $i18n{personalizeGoogleServicesDescWithLinkedServices}
-              </div>
-            </cr-expand-button>
-            <cr-collapse id="personalizationCollapse"
-                ?opened="${this.personalizationCollapseExpanded_}">
-              <cr-link-row external @click="${this.onActivityControlsClick_}"
-                  label="$i18n{personalizeGoogleServicesWaaTitle}">
-              </cr-link-row>
-              <cr-link-row external id="linkedServicesLinkRow"
-                  @click="${this.onLinkedServicesClick_}"
-                  label="$i18n{personalizeGoogleServicesLinkedServicesTitle}"
-                  sub-label=
-                      "$i18n{personalizeGoogleServicesLinkedServicesDesc}">
-              </cr-link-row>
-            </cr-collapse>
-          `}
-
-          <cr-link-row id="syncDashboardLink" class="hr"
-              label="$i18n{manageSyncedDataTitle}"
-              @click="${this.onSyncDashboardLinkClick_}"
-              ?hidden="${!!this.syncStatus_?.supervisedUser}" external>
-          </cr-link-row>
-
-          <cr-expand-button id="encryptionDescription"
-              ?hidden="${!!this.syncPrefs?.passphraseRequired}"
-              ?expanded="${this.encryptionExpanded_}"
-              @expanded-changed="${this.onEncryptionExpandedChanged_}"
-              class="hr">
-            $i18n{encryptionOptionsTitle}
+        ` : html`
+          <cr-expand-button class="hr" id="personalizationExpandButton"
+              ?expanded="${this.personalizationCollapseExpanded_}"
+              @expanded-changed="${
+                  this.onPersonalizationCollapseExpandedChanged_}">
+            $i18n{personalizeGoogleServicesTitleV2}
             <div class="secondary">
-              $i18n{syncDataEncryptedText}
-              <div @click="${this.onResetSyncClick_}"
-                  ?hidden="${!this.syncPrefs?.encryptAllData}">
-                <cr-icon icon="cr:info"
-                    class="passphrase-reset-icon">
-                </cr-icon>
-                $i18nRaw{passphraseResetHintEncryption}
-              </div>
+              $i18n{personalizeGoogleServicesDescWithLinkedServices}
             </div>
           </cr-expand-button>
-
-          <cr-collapse id="encryptionCollapse"
-              ?opened="${this.encryptionExpanded_}">
-            <settings-sync-encryption-options
-                .syncStatus="${this.syncStatus_}" .syncPrefs="${this.syncPrefs}"
-                .existingPassphraseLabel="${this.existingPassphraseLabel_}"
-                @passphrase-changed="${this.onPassphraseChanged_}">
-            </settings-sync-encryption-options>
+          <cr-collapse id="personalizationCollapse"
+              ?opened="${this.personalizationCollapseExpanded_}">
+            <cr-link-row external @click="${this.onActivityControlsClick_}"
+                label="$i18n{personalizeGoogleServicesWaaTitle}">
+            </cr-link-row>
+            <cr-link-row external id="linkedServicesLinkRow"
+                @click="${this.onLinkedServicesClick_}"
+                label="$i18n{personalizeGoogleServicesLinkedServicesTitle}"
+                sub-label="$i18n{personalizeGoogleServicesLinkedServicesDesc}">
+            </cr-link-row>
           </cr-collapse>
+        `}
 
-        </div>
+        <cr-link-row id="syncDashboardLink" class="hr"
+            label="$i18n{manageSyncedDataTitle}"
+            @click="${this.onSyncDashboardLinkClick_}"
+            ?hidden="${!!this.syncStatus_?.supervisedUser}" external>
+        </cr-link-row>
+
+        <cr-expand-button id="encryptionDescription"
+            ?hidden="${!!this.syncPrefs?.passphraseRequired}"
+            ?expanded="${this.encryptionExpanded_}"
+            @expanded-changed="${this.onEncryptionExpandedChanged_}" class="hr">
+          $i18n{encryptionOptionsTitle}
+          <div class="secondary">
+            $i18n{syncDataEncryptedText}
+            <div @click="${this.onResetSyncClick_}"
+                ?hidden="${!this.syncPrefs?.encryptAllData}">
+              <cr-icon icon="cr:info" class="passphrase-reset-icon"></cr-icon>
+              $i18nRaw{passphraseResetHintEncryption}
+            </div>
+          </div>
+        </cr-expand-button>
+
+        <cr-collapse id="encryptionCollapse"
+            ?opened="${this.encryptionExpanded_}">
+          <settings-sync-encryption-options .syncStatus="${this.syncStatus_}"
+              .syncPrefs="${this.syncPrefs}"
+              .existingPassphraseLabel="${this.existingPassphraseLabel_}"
+              @passphrase-changed="${this.onPassphraseChanged_}">
+          </settings-sync-encryption-options>
+        </cr-collapse>
+
       </div>
     </div>
+  </div>
 
-    <div class="cr-row first">
-      <h2 class="cr-title-text">
-        $i18n{nonPersonalizedServicesSectionLabel}
-      </h2>
-    </div>
-    <settings-personalization-options class="list-frame"
-        .syncStatus="${this.syncStatus_}">
-    </settings-personalization-options>
+  <div class="cr-row first">
+    <h2 class="cr-title-text">
+      $i18n{nonPersonalizedServicesSectionLabel}
+    </h2>
+  </div>
+  <settings-personalization-options class="list-frame"
+      .syncStatus="${this.syncStatus_}">
+  </settings-personalization-options>
 
 <if expr="not is_chromeos">
-    ${this.showSetupCancelDialog_ ? html`
-      <cr-dialog id="setupCancelDialog"
-          @close="${this.onSetupCancelDialogClose_}"
-          ignore-popstate show-on-attach>
-        <div slot="title">$i18n{syncSetupCancelDialogTitle}</div>
-        <div slot="body">$i18n{syncSetupCancelDialogBody}</div>
-        <div slot="button-container">
-          <cr-button class="cancel-button"
-              @click="${this.onSetupCancelDialogBackClick_}">
-            $i18n{back}
-          </cr-button>
-          <cr-button class="action-button"
-              @click="${this.onSetupCancelDialogConfirmClick_}">
-            $i18n{cancelSync}
-          </cr-button>
-        </div>
-      </cr-dialog>
-    ` : ''}
+  ${this.showSetupCancelDialog_ ? html`
+    <cr-dialog id="setupCancelDialog" @close="${this.onSetupCancelDialogClose_}"
+        ignore-popstate show-on-attach>
+      <div slot="title">$i18n{syncSetupCancelDialogTitle}</div>
+      <div slot="body">$i18n{syncSetupCancelDialogBody}</div>
+      <div slot="button-container">
+        <cr-button class="cancel-button"
+            @click="${this.onSetupCancelDialogBackClick_}">
+          $i18n{back}
+        </cr-button>
+        <cr-button class="action-button"
+            @click="${this.onSetupCancelDialogConfirmClick_}">
+          $i18n{cancelSync}
+        </cr-button>
+      </div>
+    </cr-dialog>
+  ` : ''}
 </if>
-  </settings-subpage>
+</settings-subpage>
 <!--_html_template_end_-->`;
 }

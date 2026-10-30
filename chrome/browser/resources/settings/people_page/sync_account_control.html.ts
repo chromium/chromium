@@ -9,137 +9,129 @@ import type {SettingsSyncAccountControlElement} from './sync_account_control.js'
 export function getHtml(this: SettingsSyncAccountControlElement) {
   return html`<!--_html_template_start_-->
 <if expr="not is_chromeos">
-    <div id="banner" ?hidden="${this.shouldHideBanner_()}"
-        part="banner"></div>
-    <div class="cr-row first"
-        id="promo-header" ?hidden="${this.shouldHideBanner_()}">
-      <div class="flex cr-padded-text">
-        <h3 id="promo-title" part="title">
-          ${this.getLabel_(this.promoLabelWithAccount,
-              this.promoLabelWithNoAccount)}
-        </h3>
-        <div class="secondary">${this.subLabel_}</div>
+<div id="banner" ?hidden="${this.shouldHideBanner_()}" part="banner"></div>
+<div class="cr-row first" id="promo-header"
+    ?hidden="${this.shouldHideBanner_()}">
+  <div class="flex cr-padded-text">
+    <h3 id="promo-title" part="title">
+      ${this.getLabel_(
+          this.promoLabelWithAccount, this.promoLabelWithNoAccount)}
+    </h3>
+    <div class="secondary">${this.subLabel_}</div>
+  </div>
+  <cr-button class="action-button cr-button-gap" @click="${this.onSigninClick_}"
+      id="signIn" ?disabled="${this.shouldDisableSyncButton_()}"
+      ?hidden="${this.shouldShowAvatarRow_}">
+    $i18n{peopleSignInNoAccountAwareness}
+  </cr-button>
+</div>
+</if>
+${this.shouldShowAvatarRow_ ? html`
+  <div class="cr-row first two-line" id="avatar-row">
+    <div id="avatar-container">
+      <img class="account-icon" alt=""
+          src="${this.getProfileImageSrc_(
+              this.shownAccount_?.avatarImage || null,
+              this.profileAvatarURL_)}">
+<if expr="not is_chromeos">
+      <div id="sync-icon-container" ?hidden="${!this.isSyncing_()}"
+          class="${this.getSyncIconStyle_()}">
+        <cr-icon icon="${this.getSyncIcon_()}"></cr-icon>
       </div>
+</if>
+    </div>
+    <div class="cr-row-gap cr-padded-text flex no-min-width" id="user-info">
+      <div class="text-elide">
+        ${this.getAvatarRowTitle_()}
+      </div>
+      <div class="secondary text-elide"
+          ?hidden="${this.shouldHideSubtitleWithAccountInfoText_()}">
+        ${this.getAccountLabel_()}
+      </div>
+      <div class="secondary"
+          ?hidden="${!this.shouldHideSubtitleWithAccountInfoText_()}">
+        ${this.getAvatarSubtitleLabel_()}
+      </div>
+    </div>
+<if expr="not is_chromeos">
+    <cr-icon-button class="icon-arrow-dropdown cr-button-gap"
+        ?hidden="${!this.shouldAllowAccountSwitch_()}"
+        @click="${this.onMenuButtonClick_}" id="dropdown-arrow"
+        aria-label="$i18n{changeAccount}" aria-expanded="false">
+    </cr-icon-button>
+    <div class="separator" ?hidden="${!this.shouldAllowAccountSwitch_()}"></div>
+    <cr-button id="signout-button" class="cr-button-gap"
+        ?hidden="${this.shouldHideSignoutButton_()}"
+        @click="${this.onSignoutClick_}">
+      $i18n{signOutOfChrome}
+    </cr-button>
+    <cr-button id="turn-off" class="cr-button-gap"
+        ?hidden="${!this.shouldShowTurnOffButton_()}"
+        @click="${this.onTurnOffButtonClick_}"
+        ?disabled="${!!this.syncStatus.firstSetupInProgress}">
+      ${this.getTurnOffSyncLabel_()}
+    </cr-button>
+</if>
+    <cr-button id="sync-error-button" class="action-button cr-button-gap"
+        ?hidden="${!this.shouldShowErrorActionButton_()}"
+        @click="${this.onErrorButtonClick_}"
+        ?disabled="${!!this.syncStatus.firstSetupInProgress}">
+      ${this.syncStatus.statusActionText}
+    </cr-button>
+<if expr="not is_chromeos">
+    <cr-button class="action-button cr-button-gap"
+        @click="${this.onSyncButtonClick_}" id="account-aware"
+        ?hidden="${!this.shouldShowAccountAwareSigninButton_()}">
+      <img class="account-icon small" alt=""
+          src="${this.getAccountImageSrc_(
+              this.shownAccount_?.avatarImage || null)}"
+          slot="prefix-icon">
+      ${this.getAccountAwareSigninButtonLabel_()}
+    </cr-button>
+    <div id="setup-buttons" ?hidden="${!this.showSetupButtons_}"
+        class="cr-button-gap">
+      <cr-button @click="${this.onSetupCancelClick_}">$i18n{cancel}</cr-button>
       <cr-button class="action-button cr-button-gap"
-          @click="${this.onSigninClick_}"
-          id="signIn"
-          ?disabled="${this.shouldDisableSyncButton_()}"
-          ?hidden="${this.shouldShowAvatarRow_}">
-        $i18n{peopleSignInNoAccountAwareness}
+          @click="${this.onSetupConfirmClick_}">
+        $i18n{confirm}
       </cr-button>
     </div>
-    </if>
-    ${this.shouldShowAvatarRow_ ? html`
-      <div class="cr-row first two-line" id="avatar-row">
-        <div id="avatar-container">
-          <img class="account-icon" alt=""
-              src="${this.getProfileImageSrc_(
-                this.shownAccount_?.avatarImage || null,
-                this.profileAvatarURL_)}">
-          <if expr="not is_chromeos">
-          <div id="sync-icon-container"
-              ?hidden="${!this.isSyncing_()}"
-              class="${this.getSyncIconStyle_()}">
-            <cr-icon icon="${this.getSyncIcon_()}"></cr-icon>
-          </div>
-          </if>
-        </div>
-        <div class="cr-row-gap cr-padded-text flex no-min-width" id="user-info">
-          <div class="text-elide">
-            ${this.getAvatarRowTitle_()}
-          </div>
-          <div class="secondary text-elide"
-              ?hidden="${this.shouldHideSubtitleWithAccountInfoText_()}">
-            ${this.getAccountLabel_()}
-          </div>
-          <div class="secondary"
-              ?hidden="${!this.shouldHideSubtitleWithAccountInfoText_()}">
-            ${this.getAvatarSubtitleLabel_()}
-          </div>
-        </div>
-        <if expr="not is_chromeos">
-        <cr-icon-button class="icon-arrow-dropdown cr-button-gap"
-            ?hidden="${!this.shouldAllowAccountSwitch_()}"
-            @click="${this.onMenuButtonClick_}" id="dropdown-arrow"
-            aria-label="$i18n{changeAccount}"
-            aria-expanded="false">
-        </cr-icon-button>
-        <div class="separator"
-            ?hidden="${!this.shouldAllowAccountSwitch_()}">
-        </div>
-        <cr-button id="signout-button" class="cr-button-gap"
-            ?hidden="${this.shouldHideSignoutButton_()}"
-            @click="${this.onSignoutClick_}">
-          $i18n{signOutOfChrome}
-        </cr-button>
-        <cr-button id="turn-off"
-            class="cr-button-gap"
-            ?hidden="${!this.shouldShowTurnOffButton_()}"
-            @click="${this.onTurnOffButtonClick_}"
-            ?disabled="${!!this.syncStatus.firstSetupInProgress}">
-          ${this.getTurnOffSyncLabel_()}
-        </cr-button>
-        </if>
-        <cr-button id="sync-error-button" class="action-button cr-button-gap"
-            ?hidden="${!this.shouldShowErrorActionButton_()}"
-            @click="${this.onErrorButtonClick_}"
-            ?disabled="${!!this.syncStatus.firstSetupInProgress}">
-          ${this.syncStatus.statusActionText}
-        </cr-button>
-        <if expr="not is_chromeos">
-        <cr-button class="action-button cr-button-gap"
-            @click="${this.onSyncButtonClick_}" id="account-aware"
-            ?hidden="${!this.shouldShowAccountAwareSigninButton_()}">
-          <img class="account-icon small" alt=""
-              src="${this.getAccountImageSrc_(
-                  this.shownAccount_?.avatarImage || null)}"
-              slot="prefix-icon">
-          ${this.getAccountAwareSigninButtonLabel_()}
-        </cr-button>
-        <div id="setup-buttons" ?hidden="${!this.showSetupButtons_}"
-            class="cr-button-gap">
-          <cr-button @click="${this.onSetupCancelClick_}">$i18n{cancel}</cr-button>
-          <cr-button class="action-button cr-button-gap"
-              @click="${this.onSetupConfirmClick_}">
-            $i18n{confirm}
-          </cr-button>
-        </div>
-        <div id="signin-paused-buttons"
-            ?hidden="${!this.shouldShowSigninPausedButtons_}">
-          <cr-button class="cr-button-gap" id="remove-account-button"
-              ?hidden="${this.shouldHideRemoveAccountButton_()}"
-              @click="${this.onSignoutClick_}">
-            $i18n{pendingSecondaryButton}
-          </cr-button>
-          <cr-button class="action-button cr-button-gap"
-              @click="${this.onSigninClick_}">
-            $i18n{verifyAccount}
-          </cr-button>
-        </div>
-        </if>
+    <div id="signin-paused-buttons"
+        ?hidden="${!this.shouldShowSigninPausedButtons_}">
+      <cr-button class="cr-button-gap" id="remove-account-button"
+          ?hidden="${this.shouldHideRemoveAccountButton_()}"
+          @click="${this.onSignoutClick_}">
+        $i18n{pendingSecondaryButton}
+      </cr-button>
+      <cr-button class="action-button cr-button-gap"
+          @click="${this.onSigninClick_}">
+        $i18n{verifyAccount}
+      </cr-button>
+    </div>
+</if>
 
-      </div>
-      <if expr="not is_chromeos">
-      ${this.shouldAllowAccountSwitch_() ? html`
-        <cr-action-menu id="menu" auto-reposition
-            role-description="$i18n{menu}" @close="${this.onDropdownClose_}">
-          ${this.storedAccounts_.map((item, index) => html`
-            <button class="dropdown-item" @click="${this.onAccountClick_}"
-                data-index="${index}">
-              <img class="account-icon small" alt=""
-                  src="${this.getAccountImageSrc_(item.avatarImage || null)}">
-              <span>${item.email}</span>
-            </button>
-          `)}
-          <button class="dropdown-item" @click="${this.onSigninClick_}"
-              ?disabled="${!!this.syncStatus.firstSetupInProgress}"
-              id="sign-in-item">
-            <cr-icon icon="cr:add" class="account-icon small" alt=""></cr-icon>
-            <span>$i18n{useAnotherAccount}</span>
-          </button>
-        </cr-action-menu>
-      ` : ''}
-      </if>
-    ` : ''}
+  </div>
+<if expr="not is_chromeos">
+  ${this.shouldAllowAccountSwitch_() ? html`
+    <cr-action-menu id="menu" auto-reposition role-description="$i18n{menu}"
+        @close="${this.onDropdownClose_}">
+      ${this.storedAccounts_.map((item, index) => html`
+        <button class="dropdown-item" @click="${this.onAccountClick_}"
+            data-index="${index}">
+          <img class="account-icon small" alt=""
+              src="${this.getAccountImageSrc_(item.avatarImage || null)}">
+          <span>${item.email}</span>
+        </button>
+      `)}
+      <button class="dropdown-item" @click="${this.onSigninClick_}"
+          ?disabled="${!!this.syncStatus.firstSetupInProgress}"
+          id="sign-in-item">
+        <cr-icon icon="cr:add" class="account-icon small" alt=""></cr-icon>
+        <span>$i18n{useAnotherAccount}</span>
+      </button>
+    </cr-action-menu>
+  ` : ''}
+</if>
+` : ''}
 <!--_html_template_end_-->`;
 }

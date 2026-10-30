@@ -12,8 +12,7 @@ ${this.selectedPermissionToRemove_ ? html`
   <settings-simple-confirmation-dialog
       title-text="$i18n{glicRemoveActorLoginDialogTitle}"
       body-text="${this.getRemoveDialogDescription_()}"
-      confirm-text="$i18n{remove}"
-      @close="${this.onRemoveDialogClose_}">
+      confirm-text="$i18n{remove}" @close="${this.onRemoveDialogClose_}">
   </settings-simple-confirmation-dialog>
 ` : ''}
 <settings-subpage page-title="$i18n{glicActorLoginPermissionsSectionTitle}"
@@ -43,14 +42,12 @@ ${this.selectedPermissionToRemove_ ? html`
           <div class="permission-item">
             <div class="url-column">${item.displayName}</div>
             <div class="username-column">${item.username}</div>
-            <cr-icon-button
-                class="icon-clear"
-                data-index="${index}"
+            <cr-icon-button class="icon-clear" data-index="${index}"
                 @click="${this.onRemoveActorLoginPermissionClick_}"
                 title="$i18n{remove}"
                 aria-label="${this.i18n(
-                        'glicRevokeActorLoginPermissionAriaLabel',
-                        item.displayName)}">
+                    'glicRevokeActorLoginPermissionAriaLabel',
+                    item.displayName)}">
             </cr-icon-button>
           </div>
         </div>

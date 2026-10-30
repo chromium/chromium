@@ -11,8 +11,7 @@ export function getHtml(this: ExceptionEntryElement) {
 <div class="list-item">
   <div class="start text-elide">${this.entry.site}</div>
   ${this.entry.managed ? html`
-    <cr-policy-pref-indicator
-        .pref="${this.exceptionsManagedPref_}"
+    <cr-policy-pref-indicator .pref="${this.exceptionsManagedPref_}"
         @mouseenter="${this.onShowTooltipMouseenter_}"
         @focus="${this.onShowTooltipFocus_}">
     </cr-policy-pref-indicator>

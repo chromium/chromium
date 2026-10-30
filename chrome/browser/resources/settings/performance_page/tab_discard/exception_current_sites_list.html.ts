@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
 import type {ExceptionCurrentSitesListElement} from './exception_current_sites_list.js';
 
 export function getHtml(this: ExceptionCurrentSitesListElement) {
@@ -12,8 +13,7 @@ export function getHtml(this: ExceptionCurrentSitesListElement) {
   <settings-focus-list-container id="list"
       ?hidden="${!this.currentSites_.length}">
     ${this.currentSites_.map(item => html`
-      <cr-checkbox ?checked="${this.isSelectedSite_(item)}"
-          data-site="${item}"
+      <cr-checkbox ?checked="${this.isSelectedSite_(item)}" data-site="${item}"
           @change="${this.onSelectionChange_}">
         <div class="label-slot">
           <site-favicon .url="${item}"></site-favicon>

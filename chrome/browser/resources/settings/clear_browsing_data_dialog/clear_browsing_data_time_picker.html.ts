@@ -12,8 +12,7 @@ export function getHtml(this: SettingsClearBrowsingDataTimePickerElement) {
   ${this.expandedOptionList_.map(item => html`
     <cr-chip class="time-period-chip"
         ?selected="${this.isTimePeriodSelected_(item.value)}"
-        data-time-period="${item.value}"
-        @click="${this.onTimePeriodClick_}">
+        data-time-period="${item.value}" @click="${this.onTimePeriodClick_}">
       <cr-icon icon="cr:check"
           ?hidden="${!this.isTimePeriodSelected_(item.value)}">
       </cr-icon>
@@ -30,8 +29,7 @@ export function getHtml(this: SettingsClearBrowsingDataTimePickerElement) {
         <cr-action-menu role-description="$i18n{menu}"
             @close="${this.onMoreOptionsMenuClose_}">
           ${this.moreOptionList_.map(item => html`
-            <button class="dropdown-item"
-                data-time-period="${item.value}"
+            <button class="dropdown-item" data-time-period="${item.value}"
                 @click="${this.onMenuTimePeriodClick_}">
               ${item.label}
             </button>

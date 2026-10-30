@@ -5,95 +5,94 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {ImportDataStatus} from './import_data_browser_proxy.js';
-
 import type {SettingsImportDataDialogElement} from './import_data_dialog.js';
 
 export function getHtml(this: SettingsImportDataDialogElement) {
   return html`<!--_html_template_start_-->
-<cr-dialog id="dialog" close-text="$i18n{close}"
-        ignore-popstate>
-      <div slot="title">$i18n{importTitle}</div>
-      <div slot="body">
-        <div ?hidden="${!this.hasImportStatus_(ImportDataStatus.SUCCEEDED)}">
-          <cr-icon id="successIcon" icon="cr:check-circle"></cr-icon>
-          <div ?hidden="${!this.importDialogBookmarksPref_?.value}">
-            <div class="description">$i18n{importSuccess}</div>
-            <settings-toggle-button
-                label="$i18n{showBookmarksBar}"
-                pref-key="bookmark_bar.show_on_all_tabs">
-            </settings-toggle-button>
-          </div>
-        </div>
+<cr-dialog id="dialog" close-text="$i18n{close}" ignore-popstate>
+  <div slot="title">$i18n{importTitle}</div>
+  <div slot="body">
+    <div ?hidden="${!this.hasImportStatus_(ImportDataStatus.SUCCEEDED)}">
+      <cr-icon id="successIcon" icon="cr:check-circle"></cr-icon>
+      <div ?hidden="${!this.importDialogBookmarksPref_?.value}">
+        <div class="description">$i18n{importSuccess}</div>
+        <settings-toggle-button label="$i18n{showBookmarksBar}"
+            pref-key="bookmark_bar.show_on_all_tabs">
+        </settings-toggle-button>
+      </div>
+    </div>
 
-        <div ?hidden="${this.hasImportStatus_(ImportDataStatus.SUCCEEDED)}">
-          <select id="browserSelect" class="md-select"
-              aria-label="$i18n{importFromLabel}"
-              @change="${this.onBrowserProfileSelectionChange_}">
-            ${this.browserProfiles_.map(item => html`
-              <option value="${item.index}">
-                ${this.getProfileDisplayName_(item.name, item.profileName)}
-              </option>
-            `)}
-          </select>
-          <div class="description">$i18n{importDescription}</div>
+    <div ?hidden="${this.hasImportStatus_(ImportDataStatus.SUCCEEDED)}">
+      <select id="browserSelect" class="md-select"
+          aria-label="$i18n{importFromLabel}"
+          @change="${this.onBrowserProfileSelectionChange_}">
+        ${this.browserProfiles_.map(item => html`
+          <option value="${item.index}">
+            ${this.getProfileDisplayName_(item.name, item.profileName)}
+          </option>
+        `)}
+      </select>
+      <div class="description">$i18n{importDescription}</div>
 
-          <!--
+      <!--
             A parent div is needed here to prevent bugs caused by elements
             becoming hidden interfering with NVDA reading out changes to the
             select menu. The checkboxes just need to have a different parent
             than the select menu.
             See https://github.com/nvaccess/nvda/issues/13116.
           -->
-          <div>
-            <settings-checkbox id="importDialogHistory"
-                ?hidden="${!this.selected_.history}"
-                pref-key="import_dialog_history"
-                label="$i18n{importHistory}" no-set-pref>
-            </settings-checkbox>
-            <settings-checkbox id="importDialogBookmarks"
-                ?hidden="${!this.selected_.favorites}"
-                pref-key="import_dialog_bookmarks"
-                label="$i18n{importFavorites}" no-set-pref>
-            </settings-checkbox>
-            <settings-checkbox id="importDialogSavedPasswords"
-                ?hidden="${!this.selected_.passwords}"
-                pref-key="import_dialog_saved_passwords"
-                label="$i18n{importPasswords}" no-set-pref>
-            </settings-checkbox>
-            <settings-checkbox id="importDialogSearchEngine"
-                ?hidden="${!this.selected_.search}"
-                pref-key="import_dialog_search_engine"
-                label="$i18n{importSearch}" no-set-pref>
-            </settings-checkbox>
-            <settings-checkbox id="importDialogAutofillFormData"
-                ?hidden="${!this.selected_.autofillFormData}"
-                pref-key="import_dialog_autofill_form_data"
-                label="$i18n{importAutofillFormData}" no-set-pref>
-            </settings-checkbox>
-          </div>
-        </div>
+      <div>
+        <settings-checkbox id="importDialogHistory"
+            ?hidden="${!this.selected_.history}"
+            pref-key="import_dialog_history" label="$i18n{importHistory}"
+            no-set-pref>
+        </settings-checkbox>
+        <settings-checkbox id="importDialogBookmarks"
+            ?hidden="${!this.selected_.favorites}"
+            pref-key="import_dialog_bookmarks" label="$i18n{importFavorites}"
+            no-set-pref>
+        </settings-checkbox>
+        <settings-checkbox id="importDialogSavedPasswords"
+            ?hidden="${!this.selected_.passwords}"
+            pref-key="import_dialog_saved_passwords"
+            label="$i18n{importPasswords}" no-set-pref>
+        </settings-checkbox>
+        <settings-checkbox id="importDialogSearchEngine"
+            ?hidden="${!this.selected_.search}"
+            pref-key="import_dialog_search_engine" label="$i18n{importSearch}"
+            no-set-pref>
+        </settings-checkbox>
+        <settings-checkbox id="importDialogAutofillFormData"
+            ?hidden="${!this.selected_.autofillFormData}"
+            pref-key="import_dialog_autofill_form_data"
+            label="$i18n{importAutofillFormData}" no-set-pref>
+        </settings-checkbox>
       </div>
-      <div slot="button-container">
-        <div class="spinner"
-            ?hidden="${!this.hasImportStatus_(ImportDataStatus.IN_PROGRESS)}">
-        </div>
-        <cr-button id="cancel" class="cancel-button"
-            ?hidden="${this.hasImportStatus_(ImportDataStatus.SUCCEEDED)}"
-            ?disabled="${this.hasImportStatus_(ImportDataStatus.IN_PROGRESS)}"
-            @click="${this.onCloseClick_}">
-          $i18n{cancel}
-        </cr-button>
-        <cr-button id="import" class="action-button"
-            ?hidden="${this.hasImportStatus_(ImportDataStatus.SUCCEEDED)}"
-            ?disabled="${this.shouldDisableImport_()}"
-            @click="${this.onActionButtonClick_}">
-          ${this.getActionButtonText_()}
-        </cr-button>
+    </div>
+  </div>
+  <div slot="button-container">
+    <div class="spinner"
+        ?hidden="${!this.hasImportStatus_(ImportDataStatus.IN_PROGRESS)}">
+    </div>
+    <cr-button id="cancel" class="cancel-button"
+        ?hidden="${this.hasImportStatus_(ImportDataStatus.SUCCEEDED)}"
+        ?disabled="${this.hasImportStatus_(ImportDataStatus.IN_PROGRESS)}"
+        @click="${this.onCloseClick_}">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button id="import" class="action-button"
+        ?hidden="${this.hasImportStatus_(ImportDataStatus.SUCCEEDED)}"
+        ?disabled="${this.shouldDisableImport_()}"
+        @click="${this.onActionButtonClick_}">
+      ${this.getActionButtonText_()}
+    </cr-button>
 
-        <cr-button id="done" class="action-button"
-            ?hidden="${!this.hasImportStatus_(ImportDataStatus.SUCCEEDED)}"
-            @click="${this.onCloseClick_}">$i18n{done}</cr-button>
-      </div>
-    </cr-dialog>
+    <cr-button id="done" class="action-button"
+        ?hidden="${!this.hasImportStatus_(ImportDataStatus.SUCCEEDED)}"
+        @click="${this.onCloseClick_}">
+      $i18n{done}
+    </cr-button>
+  </div>
+</cr-dialog>
 <!--_html_template_end_-->`;
 }

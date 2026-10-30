@@ -7,15 +7,13 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {SettingsStartupUrlsPageElement} from './startup_urls_page.js';
 
 export function getHtml(this: SettingsStartupUrlsPageElement) {
-  // clang-format off
   return html`<!--_html_template_start_-->
 <div id="outer" class="flex list-frame">
   <div id="container" class="scroll-container cr-scrollable" scrollable>
     <div class="cr-scrollable-top"></div>
     <settings-focus-list-container id="list" focusgroup="toolbar block">
       ${this.startupPages_.map(item => html`
-        <settings-startup-url-entry
-            .model="${item}"
+        <settings-startup-url-entry .model="${item}"
             ?editable="${this.shouldAllowUrlsEdit_()}">
         </settings-startup-url-entry>
       `)}
@@ -41,7 +39,8 @@ export function getHtml(this: SettingsStartupUrlsPageElement) {
     <extension-controlled-indicator
         .extensionId="${this.startupUrlsPref_.extensionId}"
         .extensionName="${this.startupUrlsPref_.controlledByName!}"
-        .extensionCanBeDisabled="${this.startupUrlsPref_.extensionCanBeDisabled!}">
+        .extensionCanBeDisabled="${
+            this.startupUrlsPref_.extensionCanBeDisabled!}">
     </extension-controlled-indicator>
   ` : ''}
 </div>
@@ -51,5 +50,4 @@ ${this.showStartupUrlDialog_ ? html`
   </settings-startup-url-dialog>
 ` : ''}
 <!--_html_template_end_-->`;
-  // clang-format on
 }

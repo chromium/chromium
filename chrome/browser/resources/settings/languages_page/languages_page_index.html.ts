@@ -17,8 +17,7 @@ export function getHtml(this: SettingsLanguagesPageIndexElement) {
   <settings-spell-check-page slot="view" id="spellCheck">
   </settings-spell-check-page>
 
-  <settings-translate-page slot="view" id="translate">
-  </settings-translate-page>
+  <settings-translate-page slot="view" id="translate"></settings-translate-page>
 
 <if expr="not is_macosx">
   <settings-edit-dictionary-page slot="view" id="editDictionary"

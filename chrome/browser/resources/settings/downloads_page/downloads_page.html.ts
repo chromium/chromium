@@ -29,13 +29,10 @@ export function getHtml(this: SettingsDownloadsPageElement) {
         label="$i18n{changeDownloadLocation}"
         aria-labelledby="locationLabel defaultDownloadPath"
         @click="${this.onChangeDownloadsPathClick_}"
-        pref-key="download.default_directory"
-        end-justified>
+        pref-key="download.default_directory" end-justified>
     </controlled-button>
   </div>
-  <settings-toggle-button
-      class="hr"
-      pref-key="download.prompt_for_download"
+  <settings-toggle-button class="hr" pref-key="download.prompt_for_download"
       label="$i18n{promptForDownload}">
   </settings-toggle-button>
   ${this.autoOpenDownloads_ ? html`
@@ -49,8 +46,7 @@ export function getHtml(this: SettingsDownloadsPageElement) {
     </div>
   ` : ''}
   ${this.downloadBubblePartialViewControlledByPref_ ? html`
-    <settings-toggle-button id="showDownloadsToggle"
-        class="hr"
+    <settings-toggle-button id="showDownloadsToggle" class="hr"
         pref-key="download_bubble.partial_view_enabled"
         label="$i18n{showDownloadsWhenFinished}">
     </settings-toggle-button>

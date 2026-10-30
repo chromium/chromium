@@ -11,10 +11,8 @@ export function getHtml(this: SettingsGlicPageElement) {
 <settings-section page-title="$i18n{glicSectionTitle}">
   <div>
     <!-- TODO(crbug.com/393445109) Placeholder for final icons. -->
-    <cr-link-row id="glicLinkRow"
-        start-icon="${this.startIcon_}"
-        label="$i18n{glicRowLabel}"
-        @click="${this.onGlicPageClick_}">
+    <cr-link-row id="glicLinkRow" start-icon="${this.startIcon_}"
+        label="$i18n{glicRowLabel}" @click="${this.onGlicPageClick_}">
 
       <div slot="sub-label">
         $i18n{glicRowSublabel}

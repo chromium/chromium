@@ -9,41 +9,41 @@ import type {SettingsSignoutDialogElement} from './signout_dialog.js';
 export function getHtml(this: SettingsSignoutDialogElement) {
   return html`<!--_html_template_start_-->
 <cr-dialog id="dialog" ignore-enter-key close-text="$i18n{close}">
-      <div slot="title">$i18n{syncDisconnectTitle}</div>
-      <div id="dialog-body" slot="body"
-          .innerHTML="${this.getDisconnectExplanationHtml_()}"></div>
-      <div slot="button-container">
-        <cr-button id="disconnectCancel" class="cancel-button"
-            @click="${this.onDisconnectCancelClick_}">
-          $i18n{cancel}
-        </cr-button>
-        <cr-button id="disconnectConfirm" class="action-button"
-            @click="${this.onDisconnectConfirmClick_}">
-          $i18n{syncDisconnect}
-        </cr-button>
-      </div>
+  <div slot="title">$i18n{syncDisconnectTitle}</div>
+  <div id="dialog-body" slot="body"
+      .innerHTML="${this.getDisconnectExplanationHtml_()}">
+  </div>
+  <div slot="button-container">
+    <cr-button id="disconnectCancel" class="cancel-button"
+        @click="${this.onDisconnectCancelClick_}">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button id="disconnectConfirm" class="action-button"
+        @click="${this.onDisconnectConfirmClick_}">
+      $i18n{syncDisconnect}
+    </cr-button>
+  </div>
 <if expr="(not is_chromeos and is_posix) or is_win or is_macosx">
-      <div id="wideFooter" slot="footer">
-        <div class="cr-row first">
-          <cr-checkbox id="deleteProfile" class="flex"
-              ?checked="${this.deleteProfile_}"
-              @checked-changed="${this.onDeleteProfileCheckedChanged_}">
-            $i18n{syncDisconnectDeleteProfile}
-          </cr-checkbox>
-          <cr-expand-button
-              no-hover
-              ?expanded="${this.deleteProfileWarningVisible_}"
-              @expanded-changed="${this.onDeleteProfileWarningVisibleExpandedChanged_}"
-              aria-label="$i18n{deleteProfileWarningExpandA11yLabel}">
-          </cr-expand-button>
-        </div>
-        <cr-collapse ?opened="${this.deleteProfileWarningVisible_}">
-          <div class="delete-profile-warning">
-            ${this.deleteProfileWarning_}
-          </div>
-        </cr-collapse>
+  <div id="wideFooter" slot="footer">
+    <div class="cr-row first">
+      <cr-checkbox id="deleteProfile" class="flex"
+          ?checked="${this.deleteProfile_}"
+          @checked-changed="${this.onDeleteProfileCheckedChanged_}">
+        $i18n{syncDisconnectDeleteProfile}
+      </cr-checkbox>
+      <cr-expand-button no-hover
+          ?expanded="${this.deleteProfileWarningVisible_}" @expanded-changed="${
+              this.onDeleteProfileWarningVisibleExpandedChanged_}"
+          aria-label="$i18n{deleteProfileWarningExpandA11yLabel}">
+      </cr-expand-button>
+    </div>
+    <cr-collapse ?opened="${this.deleteProfileWarningVisible_}">
+      <div class="delete-profile-warning">
+        ${this.deleteProfileWarning_}
       </div>
+    </cr-collapse>
+  </div>
 </if>
-    </cr-dialog>
+</cr-dialog>
 <!--_html_template_end_-->`;
 }

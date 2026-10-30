@@ -3,15 +3,14 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
-import type {SpeedPageElement} from './speed_page.js';
+
 import {NetworkPredictionOptions} from './constants.js';
+import type {SpeedPageElement} from './speed_page.js';
 
 export function getHtml(this: SpeedPageElement) {
   return html`<!--_html_template_start_-->
-<settings-section
-    ?show-send-feedback-button="${this.showSendFeedbackButton_()}"
-    @send-feedback="${this.onSendFeedback_}"
-    page-title="$i18n{speedPageTitle}">
+<settings-section ?show-send-feedback-button="${this.showSendFeedbackButton_()}"
+    @send-feedback="${this.onSendFeedback_}" page-title="$i18n{speedPageTitle}">
 
   <settings-toggle-button id="preloadingToggle"
       pref-key="net.network_prediction_options"

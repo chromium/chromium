@@ -3,16 +3,17 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
+
 import type {SettingsMemoryPageElement} from './memory_page.js';
 import {MemorySaverModeAggressiveness} from './performance_metrics_proxy.js';
 
 export function getHtml(this: SettingsMemoryPageElement) {
   return html`<!--_html_template_start_-->
-<settings-section
-    ?show-send-feedback-button="${this.showSendFeedbackButton_()}"
+<settings-section ?show-send-feedback-button="${this.showSendFeedbackButton_()}"
     @send-feedback="${this.onSendFeedback_}"
     page-title="$i18n{memoryPageTitle}">
-  <settings-toggle-button id="toggleButton" @change="${this.onMemorySaverModeChange_}"
+  <settings-toggle-button id="toggleButton"
+      @change="${this.onMemorySaverModeChange_}"
       pref-key="performance_tuning.high_efficiency_mode.state"
       label="$i18n{memorySaverModeLabel}"
       sub-label-with-link="$i18n{memorySaverModeDescription}"

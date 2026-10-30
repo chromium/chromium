@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
-
 import {ChromeSigninAccessPoint} from '/shared/settings/people_page/sync_browser_proxy.js';
 
 import type {SettingsAccountPageElement} from './account_page.js';
@@ -46,13 +45,13 @@ export function getHtml(this: SettingsAccountPageElement) {
             ?hidden="${!!this.syncStatus_?.hasError}" external>
         </cr-link-row>
 
-        <if expr="is_chromeos">
-          <!-- Manage accounts on this device -->
-          <cr-link-row id="manage-device-accounts" class="hr"
-              label="$i18n{manageDeviceAccounts}"
-              @click="${this.onManageDeviceAccountsClick_}" external>
-          </cr-link-row>
-        </if>
+<if expr="is_chromeos">
+        <!-- Manage accounts on this device -->
+        <cr-link-row id="manage-device-accounts" class="hr"
+            label="$i18n{manageDeviceAccounts}"
+            @click="${this.onManageDeviceAccountsClick_}" external>
+        </cr-link-row>
+</if>
 
         <!-- Control how browsing history is used -->
         ${!this.mayShowLinkedGoogleServicesSetting_ ? html`
@@ -88,17 +87,14 @@ export function getHtml(this: SettingsAccountPageElement) {
         <cr-expand-button id="encryptionDescription"
             ?hidden="${!!this.syncPrefs?.passphraseRequired}"
             ?expanded="${this.encryptionExpanded_}"
-            @expanded-changed="${this.onEncryptionExpandedChanged_}"
-            class="hr">
+            @expanded-changed="${this.onEncryptionExpandedChanged_}" class="hr">
           $i18n{encryptionOptionsTitle}
           <div class="secondary">
             $i18n{syncDataEncryptedText}
             <div @click="${this.onResetSyncClick_}"
                 ?hidden="${!this.syncPrefs?.encryptAllData}"
                 class="passphrase-reset-container">
-              <cr-icon icon="cr:info"
-                  class="passphrase-reset-icon">
-              </cr-icon>
+              <cr-icon icon="cr:info" class="passphrase-reset-icon"></cr-icon>
               <span>$i18nRaw{passphraseResetHintEncryption}</span>
             </div>
           </div>
@@ -106,10 +102,8 @@ export function getHtml(this: SettingsAccountPageElement) {
 
         <cr-collapse id="encryptionCollapse"
             ?opened="${this.encryptionExpanded_}">
-          <settings-sync-encryption-options
-              .syncStatus="${this.syncStatus_}"
-              .syncPrefs="${this.syncPrefs}"
-              @sync-prefs-changed="${
+          <settings-sync-encryption-options .syncStatus="${this.syncStatus_}"
+              .syncPrefs="${this.syncPrefs}" @sync-prefs-changed="${
                   this.onSyncEncryptionOptionsSyncPrefsChanged_}"
               .existingPassphraseLabel="${this.existingPassphraseLabel_}">
           </settings-sync-encryption-options>

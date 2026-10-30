@@ -11,7 +11,8 @@ export function getHtml(this: SettingsOtherGoogleDataDialogElement) {
 <cr-dialog id="dialog" show-on-attach>
   <div slot="title">
     <cr-icon-button class="icon-arrow-back" aria-label="$i18n{back}"
-        @click="${this.onBackOrCancelClick_}" autofocus></cr-icon-button>
+        @click="${this.onBackOrCancelClick_}" autofocus>
+    </cr-icon-button>
     ${this.computeDialogTitle_()}
   </div>
   <div slot="body">

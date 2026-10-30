@@ -9,54 +9,52 @@ import type {SettingsSyncEncryptionOptionsElement} from './sync_encryption_optio
 export function getHtml(this: SettingsSyncEncryptionOptionsElement) {
   return html`<!--_html_template_start_-->
 ${!this.syncPrefs?.passphraseRequired ? html`
-      <div id="encryptionRadioGroupContainer" class="list-frame">
-        <cr-radio-group
-            id="encryptionRadioGroup"
-            .selected="${this.selectedEncryptionRadio_()}"
-            @selected-changed="${this.onEncryptionRadioSelectedChanged_}"
-            ?disabled="${this.disableEncryptionOptions_}">
-          <cr-radio-button name="encrypt-with-google" class="list-item"
-              aria-label="$i18n{encryptWithGoogleCredentialsLabel}">
-            $i18n{encryptWithGoogleCredentialsLabel}
-          </cr-radio-button>
-          <cr-radio-button name="encrypt-with-passphrase"
-              class="list-item">
-            <span ?hidden="${!this.existingPassphraseLabel}">
-              ${this.existingPassphraseLabel}
-            </span>
-            <span @click="${this.onLearnMoreClick_}"
-                ?hidden="${!!this.existingPassphraseLabel}">
-              $i18nRaw{encryptWithSyncPassphraseLabel}
-            </span>
-            ${this.creatingNewPassphrase_ ? html`
-              <div id="create-password-box">
-                <div class="list-item">
-                  <span>$i18nRaw{passphraseExplanationText}</span>
-                </div>
-                <cr-input id="passphraseInput" type="password"
-                    .value="${this.passphrase_}"
-                    @value-changed="${this.onPassphraseValueChanged_}"
-                    placeholder="$i18n{passphrasePlaceholder}"
-                    error-message="$i18n{emptyPassphraseError}"
-                    @keypress="${this.onNewPassphraseInputKeypress_}">
-                </cr-input>
-                <cr-input id="passphraseConfirmationInput" type="password"
-                    .value="${this.confirmation_}"
-                    @value-changed="${this.onConfirmationValueChanged_}"
-                    placeholder="$i18n{passphraseConfirmationPlaceholder}"
-                    error-message="$i18n{mismatchedPassphraseError}"
-                    @keypress="${this.onNewPassphraseInputKeypress_}">
-                </cr-input>
-                <cr-button id="saveNewPassphrase" class="action-button"
-                    @click="${this.onSaveNewPassphraseClick_}"
-                    ?disabled="${!this.isSaveNewPassphraseEnabled_()}">
-                  $i18n{save}
-                </cr-button>
-              </div>
-            ` : ''}
-          </cr-radio-button>
-        </cr-radio-group>
-      </div>
-    ` : ''}
+  <div id="encryptionRadioGroupContainer" class="list-frame">
+    <cr-radio-group id="encryptionRadioGroup"
+        .selected="${this.selectedEncryptionRadio_()}"
+        @selected-changed="${this.onEncryptionRadioSelectedChanged_}"
+        ?disabled="${this.disableEncryptionOptions_}">
+      <cr-radio-button name="encrypt-with-google" class="list-item"
+          aria-label="$i18n{encryptWithGoogleCredentialsLabel}">
+        $i18n{encryptWithGoogleCredentialsLabel}
+      </cr-radio-button>
+      <cr-radio-button name="encrypt-with-passphrase" class="list-item">
+        <span ?hidden="${!this.existingPassphraseLabel}">
+          ${this.existingPassphraseLabel}
+        </span>
+        <span @click="${this.onLearnMoreClick_}"
+            ?hidden="${!!this.existingPassphraseLabel}">
+          $i18nRaw{encryptWithSyncPassphraseLabel}
+        </span>
+        ${this.creatingNewPassphrase_ ? html`
+          <div id="create-password-box">
+            <div class="list-item">
+              <span>$i18nRaw{passphraseExplanationText}</span>
+            </div>
+            <cr-input id="passphraseInput" type="password"
+                .value="${this.passphrase_}"
+                @value-changed="${this.onPassphraseValueChanged_}"
+                placeholder="$i18n{passphrasePlaceholder}"
+                error-message="$i18n{emptyPassphraseError}"
+                @keypress="${this.onNewPassphraseInputKeypress_}">
+            </cr-input>
+            <cr-input id="passphraseConfirmationInput" type="password"
+                .value="${this.confirmation_}"
+                @value-changed="${this.onConfirmationValueChanged_}"
+                placeholder="$i18n{passphraseConfirmationPlaceholder}"
+                error-message="$i18n{mismatchedPassphraseError}"
+                @keypress="${this.onNewPassphraseInputKeypress_}">
+            </cr-input>
+            <cr-button id="saveNewPassphrase" class="action-button"
+                @click="${this.onSaveNewPassphraseClick_}"
+                ?disabled="${!this.isSaveNewPassphraseEnabled_()}">
+              $i18n{save}
+            </cr-button>
+          </div>
+        ` : ''}
+      </cr-radio-button>
+    </cr-radio-group>
+  </div>
+` : ''}
 <!--_html_template_end_-->`;
 }
