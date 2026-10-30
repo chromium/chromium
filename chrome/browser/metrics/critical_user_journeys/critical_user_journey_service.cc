@@ -152,9 +152,15 @@ void CriticalUserJourneyService::OnJourneyEnded(
           CriticalUserJourneyHaTSEvent::kFailed, params.failure_callback);
 
       auto product_specific_string_data = params.product_specific_string_data;
-      product_specific_string_data[kCujTerminalStateKey] =
-          is_abandoned ? kCujTerminalStateAbandoned
-                       : kCujTerminalStateCompleted;
+      product_specific_string_data[kCujJourneyOutcomeKey] =
+          is_abandoned ? kCujJourneyOutcomeAbandoned
+                       : kCujJourneyOutcomeCompleted;
+      product_specific_string_data[kCujJourneyNameKey] =
+          session->journey()->name();
+      product_specific_string_data[kCujEntryStepKey] =
+          session->hats_entry_point();
+      product_specific_string_data[kCujJourneyDurationKey] =
+          GetCujDurationBucket(session->GetTotalDuration());
 
       hats_service->LaunchSurvey(
           params.trigger, std::move(success_callback),

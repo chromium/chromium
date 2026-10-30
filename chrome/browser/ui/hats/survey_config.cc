@@ -676,7 +676,9 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       DownloadWarningHatsProductSpecificData::GetStringDataFields(
           DownloadWarningHatsType::kDownloadsPageIgnore));
 
-  std::vector<std::string> cuj_string_psd_fields{metrics::kCujTerminalStateKey};
+  std::vector<std::string> cuj_string_psd_fields{
+      metrics::kCujJourneyOutcomeKey, metrics::kCujJourneyNameKey,
+      metrics::kCujEntryStepKey, metrics::kCujJourneyDurationKey};
   survey_configs.emplace_back(
       &metrics::kHappinessTrackingSurveysForDownloadJourney,
       metrics::kHatsSurveyTriggerDownloadJourney,

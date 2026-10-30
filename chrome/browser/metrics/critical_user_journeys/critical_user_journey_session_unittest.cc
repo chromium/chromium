@@ -31,6 +31,7 @@ namespace {
 BASE_FEATURE(kTestJourney, base::FEATURE_ENABLED_BY_DEFAULT);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementId1);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementId2);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementId3);
 constexpr ui::ElementContext kTestContext =
     ui::ElementContext::CreateFakeContextForTesting(1);
 }  // namespace
@@ -426,6 +427,61 @@ TEST_F(CriticalUserJourneySessionTest,
       CriticalUserJourneySession::JourneyResult::kCompleted, 1);
   histogram_tester.ExpectBucketCount(
       "CriticalUserJourney.TestJourney.StepReached", 2, 1);
+}
+
+TEST_F(CriticalUserJourneySessionTest, GetCujDurationBucketBoundaries) {
+  EXPECT_EQ(GetCujDurationBucket(base::Milliseconds(0)), "<2s");
+  EXPECT_EQ(GetCujDurationBucket(base::Milliseconds(1999)), "<2s");
+  EXPECT_EQ(GetCujDurationBucket(base::Seconds(2)), "2s-5s");
+  EXPECT_EQ(GetCujDurationBucket(base::Milliseconds(4999)), "2s-5s");
+  EXPECT_EQ(GetCujDurationBucket(base::Seconds(5)), "5s-15s");
+  EXPECT_EQ(GetCujDurationBucket(base::Milliseconds(14999)), "5s-15s");
+  EXPECT_EQ(GetCujDurationBucket(base::Seconds(15)), "15s-60s");
+  EXPECT_EQ(GetCujDurationBucket(base::Milliseconds(59999)), "15s-60s");
+  EXPECT_EQ(GetCujDurationBucket(base::Seconds(60)), ">60s");
+  EXPECT_EQ(GetCujDurationBucket(base::Seconds(120)), ">60s");
+}
+
+TEST_F(CriticalUserJourneySessionTest,
+       HatsEntryPointReportsMatchedTriggerLabel) {
+  auto journey =
+      CriticalUserJourney::Builder(&kTestJourney)
+          .AddAnyOf({Branch(kTestElementId1,
+                            ui::InteractionSequence::StepType::kShown, 1)
+                         .SetHatsEntryPoint("toolbar_button"),
+                     Branch(kTestElementId3,
+                            ui::InteractionSequence::StepType::kShown, 2)
+                         .SetHatsEntryPoint("app_menu")})
+          .AddStep(kTestElementId2, ui::InteractionSequence::StepType::kShown,
+                   3)
+          .Build();
+
+  auto session = std::make_unique<CriticalUserJourneySession>(journey.get());
+  ui::test::TestElement el3(kTestElementId3, kTestContext);
+  el3.Show();
+  session->Start(/*first_step_metric_id=*/2, &el3);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(session->hats_entry_point(), "app_menu");
+  EXPECT_EQ(session->first_reached_metric_id(), 2);
+}
+
+TEST_F(CriticalUserJourneySessionTest, HatsEntryPointDefaultsWithoutLabel) {
+  auto journey = CriticalUserJourney::Builder(&kTestJourney)
+                     .AddStep(kTestElementId1,
+                              ui::InteractionSequence::StepType::kShown, 1)
+                     .AddStep(kTestElementId2,
+                              ui::InteractionSequence::StepType::kShown, 2)
+                     .Build();
+
+  auto session = std::make_unique<CriticalUserJourneySession>(journey.get());
+  ui::test::TestElement el1(kTestElementId1, kTestContext);
+  el1.Show();
+  session->Start(/*first_step_metric_id=*/std::nullopt, &el1);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(session->hats_entry_point(), kCujDefaultEntryStep);
+  EXPECT_EQ(session->first_reached_metric_id(), 1);
 }
 
 using CriticalUserJourneySessionDeathTest = CriticalUserJourneySessionTest;

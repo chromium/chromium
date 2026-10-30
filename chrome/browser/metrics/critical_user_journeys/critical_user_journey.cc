@@ -5,12 +5,30 @@
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
+#include "base/time/time.h"
 #include "ui/base/interaction/interaction_sequence.h"
 
 namespace metrics {
+
+std::string GetCujDurationBucket(base::TimeDelta duration) {
+  if (duration < base::Seconds(2)) {
+    return "<2s";
+  }
+  if (duration < base::Seconds(5)) {
+    return "2s-5s";
+  }
+  if (duration < base::Seconds(15)) {
+    return "5s-15s";
+  }
+  if (duration < base::Minutes(1)) {
+    return "15s-60s";
+  }
+  return ">60s";
+}
 
 Branch::Branch(ui::ElementIdentifier id,
                ui::InteractionSequence::StepType type,
@@ -23,6 +41,10 @@ Branch::Branch(ui::CustomElementEventType event_type, int metric_id)
       metric_id(metric_id) {}
 
 Branch::~Branch() = default;
+Branch::Branch(const Branch&) = default;
+Branch& Branch::operator=(const Branch&) = default;
+Branch::Branch(Branch&&) noexcept = default;
+Branch& Branch::operator=(Branch&&) noexcept = default;
 
 HatsParams::HatsParams() = default;
 HatsParams::HatsParams(const HatsParams&) = default;
@@ -83,6 +105,7 @@ CriticalUserJourney::Builder& CriticalUserJourney::Builder::AddAnyOf(
     built_branch->steps()[0]->is_exit_branch = branch.is_exit_branch;
     built_branch->steps()[0]->min_dwell_duration = branch.min_dwell_duration;
     built_branch->steps()[0]->in_exit_branch_group = has_exit_branch;
+    built_branch->steps()[0]->hats_entry_point = branch.hats_entry_point;
     step->branches.push_back(std::move(built_branch));
   }
   steps_.push_back(std::move(step));

@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <variant>
 #include <vector>
@@ -17,18 +18,28 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_step.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_sequence.h"
 
 namespace metrics {
 
-// HaTS product-specific string data (PSD) key and values that report how a
-// journey ended. Shared by CriticalUserJourneyService and the HaTS survey
-// configs so the allowlisted field name cannot drift.
-inline constexpr char kCujTerminalStateKey[] = "cuj_terminal_state";
-inline constexpr char kCujTerminalStateCompleted[] = "completed";
-inline constexpr char kCujTerminalStateAbandoned[] = "abandoned";
+// HaTS product-specific string data (PSD) keys and values attached to every
+// CUJ survey. Shared by CriticalUserJourneyService and the HaTS survey configs
+// so the allowlisted field names cannot drift. PSD keys and values are shown
+// verbatim to users, so they use plain English per
+// go/privacy-guidelines-hats-in-chrome.
+inline constexpr char kCujJourneyOutcomeKey[] = "Journey outcome";
+inline constexpr char kCujJourneyOutcomeCompleted[] = "completed";
+inline constexpr char kCujJourneyOutcomeAbandoned[] = "abandoned";
+inline constexpr char kCujJourneyNameKey[] = "Journey name";
+inline constexpr char kCujEntryStepKey[] = "Entry step";
+inline constexpr char kCujJourneyDurationKey[] = "Journey duration in seconds";
+
+// Returns a coarse duration bucket string ("<2s", "2s-5s", "5s-15s",
+// "15s-60s", ">60s") for HaTS product-specific string data.
+std::string GetCujDurationBucket(base::TimeDelta duration);
 
 // Helper used to define alternative paths (branches) within a journey step.
 struct Branch {
@@ -49,7 +60,7 @@ struct Branch {
 
   // Marks this branch as an exit branch: reaching it ends the journey with
   // JourneyResult::kAbandoned instead of kCompleted, and any HaTS survey is
-  // launched with `kCujTerminalStateKey` set to `kCujTerminalStateAbandoned`.
+  // launched with `kCujJourneyOutcomeKey` set to `kCujJourneyOutcomeAbandoned`.
   //
   // If `min_dwell` is non-zero and the branch is reached sooner than
   // that after the previous step, the journey ends with
@@ -65,7 +76,25 @@ struct Branch {
     return *this;
   }
 
+  // Tags this branch with a plain-English name for the UI surface that started
+  // the journey (for example, "app_menu" or "toolbar_button"). Use this when a
+  // journey's first step is an `AddAnyOf()` group with multiple UI entry
+  // points and HaTS survey analysis needs to distinguish which entry point the
+  // user took.
+  //
+  // Sent as the `kCujEntryStepKey` ("Entry step") field in HaTS
+  // product-specific data (PSD), which is shown verbatim to users in the
+  // survey privacy disclosure. Ignored on branches after the first step.
+  Branch& SetHatsEntryPoint(std::string_view entry_point) {
+    hats_entry_point = std::string(entry_point);
+    return *this;
+  }
+
   ~Branch();
+  Branch(const Branch&);
+  Branch& operator=(const Branch&);
+  Branch(Branch&&) noexcept;
+  Branch& operator=(Branch&&) noexcept;
 
   ui::ElementIdentifier id;
   ui::InteractionSequence::StepType type;
@@ -73,6 +102,9 @@ struct Branch {
   int metric_id;
   bool is_exit_branch = false;
   base::TimeDelta min_dwell_duration = base::TimeDelta();
+  // Plain-English UI entry-point label sent as `kCujEntryStepKey` in HaTS
+  // product-specific data (PSD) when this branch starts the journey.
+  std::string hats_entry_point = kCujDefaultEntryStep;
 };
 
 // Configuration parameters for triggering a HaTS survey upon journey

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_METRICS_CRITICAL_USER_JOURNEYS_CRITICAL_USER_JOURNEY_STEP_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/time/time.h"
@@ -15,6 +16,11 @@
 namespace metrics {
 
 class CriticalUserJourney;
+
+// Default "Entry step" value sent in HaTS product-specific data (PSD) when the
+// step that started the journey has no custom entry-point label (see
+// `Branch::SetHatsEntryPoint()`).
+inline constexpr char kCujDefaultEntryStep[] = "default";
 
 // Represents a single stage in a Critical User Journey (CUJ).
 // Maps a UI interaction to a metric ID to track user progress. Supports
@@ -29,6 +35,9 @@ class CriticalUserJourneyStep : public ui::InteractionSequence::Step {
   base::TimeDelta time_out_duration = base::TimeDelta();
   base::TimeDelta min_dwell_duration = base::TimeDelta();
   bool is_exit_branch = false;
+  // Plain-English label for the UI entry point that started the journey,
+  // reported as the "Entry step" HaTS product-specific data (PSD) value.
+  std::string hats_entry_point = kCujDefaultEntryStep;
   // True for every branch step of an AddAnyOf() that contains an exit branch.
   // Such steps do not require their element to be visible when the branches
   // start (see CriticalUserJourneySession::BuildSequence()).

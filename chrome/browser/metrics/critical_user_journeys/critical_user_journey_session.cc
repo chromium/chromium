@@ -5,6 +5,7 @@
 #include "chrome/browser/metrics/critical_user_journeys/critical_user_journey_session.h"
 
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
@@ -24,6 +25,13 @@ CriticalUserJourneySession::CriticalUserJourneySession(
     : journey_(journey) {}
 
 CriticalUserJourneySession::~CriticalUserJourneySession() = default;
+
+base::TimeDelta CriticalUserJourneySession::GetTotalDuration() const {
+  if (journey_start_time_.is_null()) {
+    return base::TimeDelta();
+  }
+  return base::TimeTicks::Now() - journey_start_time_;
+}
 
 void CriticalUserJourneySession::Start(std::optional<int> first_step_metric_id,
                                        ui::TrackedElement* element) {
@@ -92,6 +100,7 @@ ui::InteractionSequence::Builder CriticalUserJourneySession::BuildSequence(
 
       const int metric_id =
           first_step_metric_id.value_or(trigger_step->metric_id);
+      hats_entry_point_ = trigger_step->hats_entry_point;
       if (trigger_step->type == ui::InteractionSequence::StepType::kShown) {
         builder.AddStep(ui::InteractionSequence::WithInitialElement(
             initial_element,
@@ -183,6 +192,7 @@ void CriticalUserJourneySession::OnStepStarted(
   base::TimeTicks now = base::TimeTicks::Now();
 
   if (last_reached_metric_id_ == kNoMetricId) {
+    first_reached_metric_id_ = metric_id;
     journey_start_time_ = now;
   } else {
     base::TimeDelta step_duration = now - last_step_time_;

@@ -120,7 +120,11 @@ TEST_F(CriticalUserJourneyServiceTest, HaTSSurveyLogging) {
 
   run_loop.Run();
 
-  EXPECT_EQ(captured_psd[kCujTerminalStateKey], kCujTerminalStateCompleted);
+  EXPECT_EQ(captured_psd[kCujJourneyOutcomeKey], kCujJourneyOutcomeCompleted);
+  EXPECT_EQ(captured_psd[kCujJourneyNameKey], "TestJourney");
+  EXPECT_EQ(captured_psd[kCujEntryStepKey], kCujDefaultEntryStep);
+  EXPECT_FALSE(captured_psd[kCujJourneyDurationKey].empty());
+  EXPECT_EQ(captured_psd.size(), 4u);
 
   // Verify histograms.
   const std::string hats_event_histogram =
@@ -180,7 +184,11 @@ TEST_F(CriticalUserJourneyServiceTest, HaTSSurveyAbandonedExitBranchPSD) {
 
   run_loop.Run();
 
-  EXPECT_EQ(captured_psd[kCujTerminalStateKey], kCujTerminalStateAbandoned);
+  EXPECT_EQ(captured_psd[kCujJourneyOutcomeKey], kCujJourneyOutcomeAbandoned);
+  EXPECT_EQ(captured_psd[kCujJourneyNameKey], "TestJourney");
+  EXPECT_EQ(captured_psd[kCujEntryStepKey], kCujDefaultEntryStep);
+  EXPECT_FALSE(captured_psd[kCujJourneyDurationKey].empty());
+  EXPECT_EQ(captured_psd.size(), 4u);
   histograms.ExpectUniqueSample(
       "CriticalUserJourney.TestJourney.Result",
       CriticalUserJourneySession::JourneyResult::kAbandoned, 1);
