@@ -445,12 +445,10 @@ v8::Local<v8::FunctionTemplate> CreateFunctionTemplate(
       isolate->GetCppHeap()->GetAllocationHandle(), std::move(callback),
       std::move(invoker_options));
 
-  v8::Local<v8::FunctionTemplate> tmpl = v8::FunctionTemplate::New(
-      isolate, nullptr, v8::Local<v8::Value>(), v8::Local<v8::Signature>(), 0,
+  return v8::FunctionTemplate::New(
+      isolate, &internal::Dispatcher<Sig>::DispatchToCallback,
+      holder->GetHandle(isolate), v8::Local<v8::Signature>(), 0,
       v8::ConstructorBehavior::kThrow);
-  tmpl->SetCallHandler(&internal::Dispatcher<Sig>::DispatchToCallback,
-                       holder->GetHandle(isolate));
-  return tmpl;
 }
 
 // CreateDataPropertyCallback creates a v8::AccessorNameGetterCallback and
@@ -461,7 +459,7 @@ v8::Local<v8::FunctionTemplate> CreateFunctionTemplate(
 // It is expected that these will be passed to v8::Template::SetLazyDataProperty
 // or another similar function.
 template <typename Sig>
-std::pair<v8::AccessorNameGetterCallback, v8::Local<v8::Value>>
+std::pair<v8::AccessorNameGetterCallback, v8::Local<v8::Data>>
 CreateDataPropertyCallback(v8::Isolate* isolate,
                            base::RepeatingCallback<Sig> callback,
                            InvokerOptions invoker_options = {}) {
@@ -469,11 +467,8 @@ CreateDataPropertyCallback(v8::Isolate* isolate,
   HolderT* holder = cppgc::MakeGarbageCollected<HolderT>(
       isolate->GetCppHeap()->GetAllocationHandle(), std::move(callback),
       std::move(invoker_options));
-  v8::Local<v8::Data> data = holder->GetHandle(isolate);
-  // TODO(567169217): Remove reinterpret_cast once
-  // v8::Template::SetLazyDataProperty accepts v8::Local<v8::Data>.
   return {&internal::Dispatcher<Sig>::DispatchToCallbackForProperty,
-          *reinterpret_cast<v8::Local<v8::Value>*>(&data)};
+          holder->GetHandle(isolate)};
 }
 
 // The same as above for a function or member function that is known at
@@ -503,7 +498,7 @@ v8::Local<v8::FunctionTemplate> CreateFunctionTemplate(
 // CreateFunctionTemplate<kTarget>() above.
 template <auto kTarget>
   requires(internal::kIsFunctionOrMethodPointer<decltype(kTarget)>)
-std::pair<v8::AccessorNameGetterCallback, v8::Local<v8::Value>>
+std::pair<v8::AccessorNameGetterCallback, v8::Local<v8::Data>>
 CreateDataPropertyCallback(v8::Isolate* isolate,
                            const char* holder_type = nullptr) {
   return {&internal::DirectDispatcher<kTarget>::DispatchToTargetForProperty,

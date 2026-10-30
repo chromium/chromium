@@ -169,7 +169,7 @@ ObjectTemplateBuilder& ObjectTemplateBuilder::SetPropertyImpl(
 ObjectTemplateBuilder& ObjectTemplateBuilder::SetLazyDataPropertyImpl(
     const std::string_view& name,
     v8::AccessorNameGetterCallback callback,
-    v8::Local<v8::Value> data) {
+    v8::Local<v8::Data> data) {
   template_->SetLazyDataProperty(StringToSymbol(isolate_, name), callback,
                                  data);
   return *this;
