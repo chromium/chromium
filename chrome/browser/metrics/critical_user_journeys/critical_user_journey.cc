@@ -32,13 +32,17 @@ std::string GetCujDurationBucket(base::TimeDelta duration) {
 
 Branch::Branch(ui::ElementIdentifier id,
                ui::InteractionSequence::StepType type,
-               int metric_id)
-    : id(id), type(type), metric_id(metric_id) {}
+               int metric_id,
+               ui::InteractionSequence::ContextMode context_mode)
+    : id(id), type(type), metric_id(metric_id), context_mode(context_mode) {}
 
-Branch::Branch(ui::CustomElementEventType event_type, int metric_id)
+Branch::Branch(ui::CustomElementEventType event_type,
+               int metric_id,
+               ui::InteractionSequence::ContextMode context_mode)
     : type(ui::InteractionSequence::StepType::kCustomEvent),
       custom_event_type(event_type),
-      metric_id(metric_id) {}
+      metric_id(metric_id),
+      context_mode(context_mode) {}
 
 Branch::~Branch() = default;
 Branch::Branch(const Branch&) = default;
@@ -95,10 +99,11 @@ CriticalUserJourney::Builder& CriticalUserJourney::Builder::AddAnyOf(
     CriticalUserJourney::Builder cuj_builder =
         CriticalUserJourney::Builder(nullptr);
     if (branch.id) {
-      cuj_builder.AddStep(branch.id, branch.type, branch.metric_id);
+      cuj_builder.AddStep(branch.id, branch.type, branch.metric_id,
+                          branch.context_mode);
     } else {
       cuj_builder.AddStep(branch.custom_event_type, branch.type,
-                          branch.metric_id);
+                          branch.metric_id, branch.context_mode);
     }
     auto built_branch = cuj_builder.Build();
     CHECK(!built_branch->steps().empty());

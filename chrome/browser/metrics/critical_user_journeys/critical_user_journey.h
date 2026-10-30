@@ -47,18 +47,34 @@ std::string GetCujDurationBucket(base::TimeDelta duration);
 struct Branch {
   Branch(ui::ElementIdentifier id,
          ui::InteractionSequence::StepType type,
-         int metric_id);
-  Branch(ui::CustomElementEventType event_type, int metric_id);
+         int metric_id,
+         ui::InteractionSequence::ContextMode context_mode =
+             ui::InteractionSequence::ContextMode::kInitial);
+  Branch(ui::CustomElementEventType event_type,
+         int metric_id,
+         ui::InteractionSequence::ContextMode context_mode =
+             ui::InteractionSequence::ContextMode::kInitial);
 
   template <typename T, typename = std::enable_if_t<std::is_enum_v<T>>>
   Branch(ui::ElementIdentifier id,
          ui::InteractionSequence::StepType type,
-         T metric_id)
-      : Branch(id, type, static_cast<int>(metric_id)) {}
+         T metric_id,
+         ui::InteractionSequence::ContextMode context_mode =
+             ui::InteractionSequence::ContextMode::kInitial)
+      : Branch(id, type, static_cast<int>(metric_id), context_mode) {}
 
   template <typename T, typename = std::enable_if_t<std::is_enum_v<T>>>
-  Branch(ui::CustomElementEventType event_type, T metric_id)
-      : Branch(event_type, static_cast<int>(metric_id)) {}
+  Branch(ui::CustomElementEventType event_type,
+         T metric_id,
+         ui::InteractionSequence::ContextMode context_mode =
+             ui::InteractionSequence::ContextMode::kInitial)
+      : Branch(event_type, static_cast<int>(metric_id), context_mode) {}
+
+  // Sets the interaction sequence context mode for this branch step.
+  Branch& SetContextMode(ui::InteractionSequence::ContextMode mode) {
+    context_mode = mode;
+    return *this;
+  }
 
   // Marks this branch as an exit branch: reaching it ends the journey with
   // JourneyResult::kAbandoned instead of kCompleted, and any HaTS survey is
@@ -116,6 +132,8 @@ struct Branch {
   // Plain-English UI entry-point label sent as `kCujEntryStepKey` in HaTS
   // product-specific data (PSD) when this branch starts the journey.
   std::string hats_entry_point = kCujDefaultEntryStep;
+  ui::InteractionSequence::ContextMode context_mode =
+      ui::InteractionSequence::ContextMode::kInitial;
 };
 
 // Configuration parameters for triggering a HaTS survey upon journey
