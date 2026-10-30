@@ -1197,6 +1197,28 @@ void WebContentsImpl::WebContentsObserverList::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+void WebContentsImpl::WebContentsObserverList::
+    NotifyObserversUntilNavigationDeleted(
+        NavigationObserverMethod observer_method,
+        NavigationHandle* navigation_handle) {
+  TRACE_EVENT0(
+      TRACE_DISABLED_BY_DEFAULT("content.verbose"),
+      "WebContentsObserverList::NotifyObserversUntilNavigationDeleted");
+  base::AutoReset<bool> scope(&is_notifying_observers_, true);
+  base::WeakPtr<NavigationRequest> weak_navigation_request =
+      NavigationRequest::From(navigation_handle)->GetWeakPtr();
+  for (WebContentsObserver& observer : observers_) {
+    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
+                 "Dispatching WebContentsObserver callback");
+    (observer.*observer_method)(navigation_handle);
+    if (!weak_navigation_request) {
+      // An observer deleted the NavigationRequest. Don't notify the remaining
+      // observers, as they would get a dangling NavigationHandle.
+      return;
+    }
+  }
+}
+
 // WebContentsImpl -------------------------------------------------------------
 
 namespace {
@@ -8056,8 +8078,10 @@ void WebContentsImpl::DidStartNavigation(NavigationHandle* navigation_handle) {
   const GURL url = navigation_handle->GetURL();
 
   base::ElapsedTimer duration;
-  observers_.NotifyObservers(&WebContentsObserver::DidStartNavigation,
-                             navigation_handle);
+  // On Android, a WebView app can delete the NavigationRequest here, e.g. by
+  // calling stopLoading() from onNavigationStarted().
+  observers_.NotifyObserversUntilNavigationDeleted(
+      &WebContentsObserver::DidStartNavigation, navigation_handle);
   // WARNING: DO NOT use |navigation_handle| after this point. An observer may
   // have destroyed the NavigationRequest, rendering the pointer invalid. See
   // crbug.com/504574017. We set `navigation_handle` to nullptr here to prevent
@@ -8108,8 +8132,10 @@ void WebContentsImpl::DidRedirectNavigation(
 
   {
     SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.DidRedirectNavigation");
-    observers_.NotifyObservers(&WebContentsObserver::DidRedirectNavigation,
-                               navigation_handle);
+    // On Android, a WebView app can delete the NavigationRequest here, e.g. by
+    // calling stopLoading() from onNavigationRedirected().
+    observers_.NotifyObserversUntilNavigationDeleted(
+        &WebContentsObserver::DidRedirectNavigation, navigation_handle);
   }
   // WARNING: DO NOT use |navigation_handle| after this point. An observer may
   // have destroyed the NavigationRequest, rendering the pointer invalid. See
@@ -8154,8 +8180,12 @@ void WebContentsImpl::ReadyToCommitNavigation(
     }
   }
 
-  observers_.NotifyObservers(&WebContentsObserver::ReadyToCommitNavigation,
-                             navigation_handle);
+  // Observers can also delete the NavigationRequest at this point on Android
+  // (which lacks `is_safe_to_delete_` protections), so use
+  // NotifyObserversUntilNavigationDeleted() instead of NotifyObservers() here
+  // as well.
+  observers_.NotifyObserversUntilNavigationDeleted(
+      &WebContentsObserver::ReadyToCommitNavigation, navigation_handle);
   // WARNING: DO NOT use |navigation_handle| after this point. An observer may
   // have destroyed the NavigationRequest, rendering the pointer invalid. See
   // crbug.com/504574017. We set `navigation_handle` to nullptr here to prevent
@@ -8216,6 +8246,10 @@ void WebContentsImpl::DidFinishNavigation(NavigationHandle* navigation_handle) {
 
   {
     SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.DidFinishNavigation");
+    // All observers need this to clean up. Unlike in DidStartNavigation(), an
+    // observer can't delete the NavigationRequest here (even from
+    // onNavigationCompleted() in Android WebView apps), since this
+    // NavigationRequest's owner has already released it.
     observers_.NotifyObservers(&WebContentsObserver::DidFinishNavigation,
                                navigation_handle);
   }
