@@ -10354,6 +10354,32 @@ url::Origin NavigationRequest::GetOriginForURLLoaderFactoryBeforeResponse(
   bool use_opaque_origin =
       (sandbox_flags & network::mojom::WebSandboxFlags::kOrigin) ==
       network::mojom::WebSandboxFlags::kOrigin;
+
+  // Documents in PDF processes are given an opaque origin with a precursor as
+  // well, since they should not need any access to data from the origin the PDF
+  // was served from. This makes origin-based security checks (e.g., for
+  // storage) deny such access by default, without having to consult the
+  // is_pdf() bit on SiteInfo/ProcessLock in each individual check. See
+  // https://crbug.com/559567801.
+  //
+  // Note that this only affects the document's origin. SiteInfo and ProcessLock
+  // don't support opaque origins yet, so they still use the PDF's real site
+  // along with the is_pdf() bit, and the process model is unchanged. Checks
+  // that are based on the ProcessLock rather than the document's origin (e.g.,
+  // CanAccessDataForOrigin in ChildProcessSecurityPolicyImpl) still need to
+  // check is_pdf(), similarly to is_sandboxed() for isolated sandboxed frames.
+  // TODO(crbug.com/579049925): Consider supporting opaque origins with
+  // precursors in SiteInfo/ProcessLock, so that such checks no longer need the
+  // is_pdf()/is_sandboxed() bits.
+  //
+  // TODO(crbug.com/559567801): As with sandboxed documents, a new nonce is
+  // derived on every call, so different callers within the same navigation may
+  // see different opaque origins (all with the same precursor). Consider
+  // computing the opaque origin once per response for both cases.
+  if (IsPdf() && base::FeatureList::IsEnabled(features::kPdfOpaqueOrigin)) {
+    use_opaque_origin = true;
+  }
+
   if (use_opaque_origin) {
     origin = origin.DeriveNewOpaqueOrigin();
   }

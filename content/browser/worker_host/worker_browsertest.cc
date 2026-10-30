@@ -545,10 +545,28 @@ IN_PROC_BROWSER_TEST_F(WorkerTest, DedicatedWorkerBlockedForPdfProcess) {
   // Attempting to create a dedicated worker from a PDF frame triggers the
   // renderer to request blink.mojom.DedicatedWorkerHostFactory from
   // RenderFrameHost. The browser must reject this and terminate the process.
-  RenderProcessHostBadIpcMessageWaiter kill_waiter(frame->GetProcess());
-  ExecuteScriptAsync(frame, "new Worker('/workers/worker_common.js');");
-  EXPECT_EQ(bad_message::RFH_DEDICATED_WORKER_HOST_FACTORY_PDF_PROCESS_BLOCKED,
-            kill_waiter.Wait());
+  if (base::FeatureList::IsEnabled(features::kPdfOpaqueOrigin)) {
+    // With an opaque origin, the worker script URL is cross-origin to the
+    // document, so Blink throws a SecurityError before the renderer ever asks
+    // the browser for a DedicatedWorkerHostFactory. Nothing to terminate.
+    EXPECT_EQ("SecurityError", EvalJs(frame, R"(
+      (() => {
+        try {
+          new Worker('/workers/worker_common.js');
+          return 'no error';
+        } catch (e) {
+          return e.name;
+        }
+      })()
+    )"));
+    EXPECT_TRUE(frame->IsRenderFrameLive());
+  } else {
+    RenderProcessHostBadIpcMessageWaiter kill_waiter(frame->GetProcess());
+    ExecuteScriptAsync(frame, "new Worker('/workers/worker_common.js');");
+    EXPECT_EQ(
+        bad_message::RFH_DEDICATED_WORKER_HOST_FACTORY_PDF_PROCESS_BLOCKED,
+        kill_waiter.Wait());
+  }
 
   // Control: the same page committed normally can create dedicated workers.
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -651,15 +669,29 @@ IN_PROC_BROWSER_TEST_F(PdfWorkerTest, PdfCannotUseSharedWorker) {
       ssl_server()->GetURL("a.test", "/workers/messageport_worker.js");
   static constexpr char kConnectSharedWorker[] = R"(
     new Promise(resolve => {
-      window.worker = new SharedWorker("/workers/messageport_worker.js");
+      try {
+        window.worker = new SharedWorker("/workers/messageport_worker.js");
+      } catch (e) {
+        resolve(e.name);
+        return;
+      }
       window.worker.onerror = (e) => resolve("Worker blocked.");
       window.worker.port.onmessage = (e) => resolve(e.data);
     })
   )";
 
+  // With `features::kPdfOpaqueOrigin`, the PDF frame has an opaque origin, so
+  // Blink throws a SecurityError before the renderer ever asks the browser for
+  // a SharedWorkerConnector. Otherwise, the browser blocks the connection and
+  // the worker's error event fires.
+  const char* expected_pdf_result =
+      base::FeatureList::IsEnabled(features::kPdfOpaqueOrigin)
+          ? "SecurityError"
+          : "Worker blocked.";
+
   // 1. A PDF frame attempting to create a shared worker is blocked.
   ASSERT_TRUE(NavigateToURLWithPdf(shell()->web_contents(), page_url));
-  EXPECT_EQ("Worker blocked.",
+  EXPECT_EQ(expected_pdf_result,
             EvalJs(shell()->web_contents(), kConnectSharedWorker));
   EXPECT_FALSE(GetSharedWorkerHost(worker_url));
 
@@ -678,7 +710,7 @@ IN_PROC_BROWSER_TEST_F(PdfWorkerTest, PdfCannotUseSharedWorker) {
 
   // 3. A PDF frame is also blocked from connecting to the existing shared
   // worker, and the existing worker host remains unaffected.
-  EXPECT_EQ("Worker blocked.",
+  EXPECT_EQ(expected_pdf_result,
             EvalJs(shell()->web_contents(), kConnectSharedWorker));
   EXPECT_EQ(host, GetSharedWorkerHost(worker_url));
   EXPECT_EQ(std::vector<GlobalRenderFrameHostId>{ordinary_rfh->GetGlobalId()},

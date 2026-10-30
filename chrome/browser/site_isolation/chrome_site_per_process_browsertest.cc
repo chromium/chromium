@@ -455,9 +455,27 @@ IN_PROC_BROWSER_TEST_F(ChromeSitePerProcessOopifPDFTest,
   EXPECT_TRUE(pdf_frame->GetProcess()->IsPdf());
 
   // When accessed from the PDF document, both localStorage and sessionStorage
-  // should be null. These accesses shouldn't lead to a renderer kill.
-  EXPECT_EQ(base::Value(), content::EvalJs(pdf_frame, "window.localStorage"));
-  EXPECT_EQ(base::Value(), content::EvalJs(pdf_frame, "window.sessionStorage"));
+  // should fail gracefully. These accesses shouldn't lead to a renderer kill.
+  if (base::FeatureList::IsEnabled(features::kPdfOpaqueOrigin)) {
+    // With an opaque origin, storage access throws a SecurityError, which is
+    // the standard behavior for opaque origins (and no longer requires the
+    // PDF-specific `IsDomStorageDisabled()` hack in the renderer).
+    auto try_storage = [](const char* property) {
+      return base::StringPrintf(
+          "(() => { try { window.%s; return 'no error'; }"
+          " catch (e) { return e.name; } })();",
+          property);
+    };
+    EXPECT_EQ("SecurityError",
+              content::EvalJs(pdf_frame, try_storage("localStorage")));
+    EXPECT_EQ("SecurityError",
+              content::EvalJs(pdf_frame, try_storage("sessionStorage")));
+  } else {
+    // Otherwise, both interfaces are null, via `IsDomStorageDisabled()`.
+    EXPECT_EQ(base::Value(), content::EvalJs(pdf_frame, "window.localStorage"));
+    EXPECT_EQ(base::Value(),
+              content::EvalJs(pdf_frame, "window.sessionStorage"));
+  }
   EXPECT_TRUE(pdf_frame->IsRenderFrameLive());
 }
 

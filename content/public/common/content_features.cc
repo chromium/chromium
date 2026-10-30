@@ -800,6 +800,15 @@ BASE_FEATURE(kOriginIsolationHeader, base::FEATURE_ENABLED_BY_DEFAULT);
 // History navigation in response to horizontal overscroll (aka gesture-nav).
 BASE_FEATURE(kOverscrollHistoryNavigation, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, documents that commit in a PDF renderer process (i.e., the
+// content frame that hosts PDFium, not the PDF extension frame) commit with an
+// opaque origin with a precursor, rather than with the origin the PDF was
+// served from. PDF documents do not need access to data from their own origin,
+// and using an opaque origin makes the existing origin-based security checks
+// deny such access by default, similarly to CSP sandboxed documents. See
+// https://crbug.com/559567801.
+BASE_FEATURE(kPdfOpaqueOrigin, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether web apps can run periodic tasks upon network connectivity.
 BASE_FEATURE(kPeriodicBackgroundSync, base::FEATURE_DISABLED_BY_DEFAULT);
 

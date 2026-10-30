@@ -6,6 +6,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -27,6 +28,7 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -855,7 +857,15 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, CookiesBlockedForPdfProcess) {
 
   // The PDF process must not be able to read or write cookies for the committed
   // origin.
-  EXPECT_EQ("", GetCookieFromJS(frame));
+  if (base::FeatureList::IsEnabled(features::kPdfOpaqueOrigin)) {
+    // With an opaque origin, `document.cookie` throws a SecurityError rather
+    // than returning an empty string.
+    EXPECT_EQ("SecurityError", EvalJs(frame,
+                                      "(() => { try { return document.cookie; }"
+                                      " catch (e) { return e.name; } })()"));
+  } else {
+    EXPECT_EQ("", GetCookieFromJS(frame));
+  }
   std::ignore = EvalJs(frame, "document.cookie = 'B=2'");
   EXPECT_EQ("A=1", GetCookiesDirect(tab, url));
 }

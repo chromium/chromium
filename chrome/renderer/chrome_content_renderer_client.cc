@@ -944,6 +944,10 @@ bool ChromeContentRendererClient::IsDomStorageDisabled() const {
   // opaque origins). This avoids a renderer kill by the browser process which
   // isn't expecting PDF renderer processes to ever use DOM storage
   // interfaces. See https://crbug.com/357014503.
+  //
+  // TODO(crbug.com/559567801): Remove this once `features::kPdfOpaqueOrigin`
+  // ships, since PDF documents will then have opaque origins, for which DOM
+  // storage access already throws a SecurityError.
   return pdf::IsPdfRenderer();
 #else
   return false;
@@ -958,6 +962,10 @@ bool ChromeContentRendererClient::AreDedicatedWorkersDisabled() const {
   // throws a SecurityError DOMException. This avoids a renderer kill by the
   // browser process which isn't expecting PDF renderer processes to ever create
   // dedicated workers. See https://crbug.com/553118313.
+  //
+  // TODO(crbug.com/559567801): Remove this once `features::kPdfOpaqueOrigin`
+  // ships, since PDF documents will then have opaque origins, for which
+  // creating a dedicated worker already throws a SecurityError.
   return pdf::IsPdfRenderer();
 #else
   return false;
