@@ -7,6 +7,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/test_future.h"
 #import "components/commerce/core/mock_shopping_service.h"
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/pref_registry/pref_registry_syncable.h"
@@ -19,10 +20,14 @@
 #import "ios/chrome/browser/content_suggestions/magic_stack/coordinator/magic_stack_ranking_model.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_collection_view.h"
 #import "ios/chrome/browser/content_suggestions/magic_stack/ui/magic_stack_module_container_delegate.h"
+#import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_item.h"
+#import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_collection_view.h"
+#import "ios/chrome/browser/content_suggestions/most_visited_tiles/ui/most_visited_tiles_config.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_magic_stack_mediator.h"
 #import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_ntp_customization_coordinator.h"
 #import "ios/chrome/browser/content_suggestions/tips/model/tips_metrics.h"
+#import "ios/chrome/browser/content_suggestions/ui/content_suggestions_view_controller.h"
 #import "ios/chrome/browser/content_suggestions/ui/content_suggestions_view_controller_audience.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
@@ -51,6 +56,7 @@
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_variations_service.h"
 #import "ios/chrome/test/scoped_key_window.h"
@@ -69,6 +75,7 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
     ProfileIOS* profile) {
   return std::make_unique<feature_engagement::test::MockTracker>();
 }
+
 }  // namespace
 
 @interface ContentSuggestionsCoordinator (Testing) <
@@ -317,5 +324,41 @@ TEST_F(ContentSuggestionsCoordinatorTest,
   histogram_tester.ExpectBucketCount(
       kTipsNTPCustomizationPromoActionHistogram,
       IOSTipsNTPCustomizationPromoAction::kCancelled, 1);
+  EXPECT_OCMOCK_VERIFY(mockDelegate);
+}
+
+// Tests that changing the content size of MostVisitedTilesCollectionView
+// defers notifying the ContentSuggestionsDelegate until the next task runner
+// cycle to prevent re-entrant layout passes.
+TEST_F(ContentSuggestionsCoordinatorTest,
+       TestMostVisitedTilesContentSizeChangeDefersUpdate) {
+  [coordinator_.viewController loadViewIfNeeded];
+
+  MostVisitedTilesConfig* config =
+      [[MostVisitedTilesConfig alloc] initWithLayoutGuideCenter:nil];
+  MostVisitedItem* item = [[MostVisitedItem alloc] init];
+  config.mostVisitedItems = @[ item ];
+  [coordinator_.viewController setMostVisitedTilesConfig:config];
+
+  MostVisitedTilesCollectionView* collection_view =
+      chrome_test_util::FindViewByClass<MostVisitedTilesCollectionView>(
+          coordinator_.viewController.view);
+  ASSERT_TRUE(collection_view != nil);
+
+  id mockDelegate =
+      OCMStrictProtocolMock(@protocol(ContentSuggestionsDelegate));
+  coordinator_.delegate = mockDelegate;
+
+  // Change content size while mockDelegate has no expectations registered yet.
+  // Proves contentSuggestionsWasUpdated is not called synchronously.
+  [collection_view setContentSize:CGSizeMake(300, 120)];
+
+  base::test::TestFuture<void> updated_future;
+  base::RepeatingClosure callback = updated_future.GetRepeatingCallback();
+  OCMStub([mockDelegate contentSuggestionsWasUpdated]).andDo(^(NSInvocation*) {
+    callback.Run();
+  });
+
+  EXPECT_TRUE(updated_future.Wait());
   EXPECT_OCMOCK_VERIFY(mockDelegate);
 }
