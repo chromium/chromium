@@ -7,12 +7,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <atomic>
 #include <memory>
 #include <string>
 #include <utility>
 
-#include "base/compiler_specific.h"
-#include "base/containers/span_writer.h"
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
@@ -180,11 +180,13 @@ class InputSyncWriterTest : public testing::Test {
     socket_->Read(1);
 
     size_t segment_id = current_renderer_side_buffer_ % kSegments;
-    uint8_t* ptr =
-        static_cast<uint8_t*>(renderer_shared_memory_mapping_.memory());
-    UNSAFE_TODO(ptr += segment_id * segment_length_);
+    auto segment = base::span(renderer_shared_memory_mapping_)
+                       .subspan(segment_id * segment_length_, segment_length_);
+    // Each segment contains an aligned header followed by variable-length
+    // audio data, so its stride is segment_length_, not
+    // sizeof(AudioInputBuffer).
     media::AudioInputBuffer* buffer =
-        reinterpret_cast<media::AudioInputBuffer*>(ptr);
+        reinterpret_cast<media::AudioInputBuffer*>(segment.data());
     std::atomic_ref<uint32_t> has_unread_data(buffer->params.has_unread_data);
     EXPECT_EQ(has_unread_data.load(std::memory_order_relaxed), 1u);
     has_unread_data.store(0, std::memory_order_release);
@@ -211,7 +213,7 @@ class InputSyncWriterTest : public testing::Test {
   base::WritableSharedMemoryMapping renderer_shared_memory_mapping_;
   media::AudioParameters params_;
   int current_renderer_side_buffer_ = 0;
-  int segment_length_;
+  size_t segment_length_;
 };
 
 TEST_F(InputSyncWriterTest, SingleWriteAndRead) {

@@ -7,6 +7,7 @@
 #include <atomic>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -55,9 +56,9 @@ void AudioOutputDeviceThreadCallback::MapSharedMemory() {
   shared_memory_mapping_ = shared_memory_region_.MapAt(0, memory_length_);
   CHECK(shared_memory_mapping_.IsValid());
 
-  base::span<uint8_t> data = shared_memory_mapping_.GetMemoryAsSpan<uint8_t>();
   base::span<uint8_t> audio_data_span =
-      data.subspan<sizeof(media::AudioOutputBufferParameters)>();
+      base::span(shared_memory_mapping_)
+          .subspan<sizeof(media::AudioOutputBufferParameters)>();
 
   const media::AudioOutputBuffer* buffer =
       shared_memory_mapping_.GetMemoryAs<media::AudioOutputBuffer>();
@@ -74,8 +75,7 @@ void AudioOutputDeviceThreadCallback::Process(uint32_t control_signal) {
   callback_num_++;
 
   media::AudioOutputBuffer* buffer =
-      reinterpret_cast<media::AudioOutputBuffer*>(
-          shared_memory_mapping_.memory());
+      shared_memory_mapping_.GetMemoryAs<media::AudioOutputBuffer>();
   // Read the glitch info.
   media::AudioGlitchInfo glitch_info =
       buffer_helper_.GetGlitchIncrementSinceLastCall(buffer->params);

@@ -43,7 +43,7 @@ void ValidateReceivedFrame(const ReceivedFrame& frame,
 
   auto handle = frame.buffer.handle_provider->GetHandleForInProcessAccess();
 
-  FakeCameraStream::ValidateFrameData(handle->data().data(), coded_size, salt);
+  FakeCameraStream::ValidateFrameData(handle->const_data(), coded_size, salt);
 }
 
 // VideoCaptureBufferHandle implementation that references memory allocated on

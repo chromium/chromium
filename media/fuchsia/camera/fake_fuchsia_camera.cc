@@ -6,12 +6,16 @@
 
 #include <fuchsia/sysmem/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
+#include <stddef.h>
 
-#include "base/compiler_specific.h"
+#include <utility>
+
+#include "base/containers/span.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/process/process_handle.h"
 #include "base/task/current_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,23 +32,26 @@ uint8_t GetTestFrameValue(gfx::Size size, int x, int y, uint8_t salt) {
   return static_cast<uint8_t>(y + x * size.height() + salt);
 }
 
-// Fills one plane of a test frame. |data| points at the location of the pixel
+// Fills one plane of a test frame. |data| starts at the location of the pixel
 // (0, 0). |orientation| specifies frame orientation transformation that will be
 // applied on the receiving end, so this function applies _reverse_ of the
 // |orientation| transformation.
-void FillPlane(uint8_t* data,
+void FillPlane(base::span<uint8_t> data,
                gfx::Size size,
-               int x_step,
-               int y_step,
+               ptrdiff_t x_step,
+               ptrdiff_t y_step,
                fuchsia::camera3::Orientation orientation,
                uint8_t salt) {
+  // Keep the origin and steps signed while reversing or swapping axes. Only
+  // the final offset is converted to an index into the original plane span.
+  ptrdiff_t origin = 0;
   // First flip X axis for flipped orientation.
   if (orientation == fuchsia::camera3::Orientation::UP_FLIPPED ||
       orientation == fuchsia::camera3::Orientation::DOWN_FLIPPED ||
       orientation == fuchsia::camera3::Orientation::RIGHT_FLIPPED ||
       orientation == fuchsia::camera3::Orientation::LEFT_FLIPPED) {
     // Move the origin to the top right corner and flip the X axis.
-    UNSAFE_TODO(data += (size.width() - 1)) * x_step;
+    origin += (size.width() - 1) * x_step;
     x_step = -x_step;
   }
 
@@ -55,19 +62,18 @@ void FillPlane(uint8_t* data,
 
     case fuchsia::camera3::Orientation::DOWN:
     case fuchsia::camera3::Orientation::DOWN_FLIPPED:
-      // Move |data| to point to the bottom right corner and reverse direction
+      // Move the origin to the bottom right corner and reverse direction
       // of both axes.
-      UNSAFE_TODO(data += (size.width() - 1)) * x_step +
-          (size.height() - 1) * y_step;
+      origin += (size.width() - 1) * x_step + (size.height() - 1) * y_step;
       x_step = -x_step;
       y_step = -y_step;
       break;
 
     case fuchsia::camera3::Orientation::LEFT:
     case fuchsia::camera3::Orientation::LEFT_FLIPPED:
-      // Rotate 90 degrees clockwise by moving |data| to point to the right top
+      // Rotate 90 degrees clockwise by moving the origin to the top right
       // corner, swapping the axes and reversing direction of the Y axis.
-      UNSAFE_TODO(data += (size.width() - 1)) * x_step;
+      origin += (size.width() - 1) * x_step;
       size = gfx::Size(size.height(), size.width());
       std::swap(x_step, y_step);
       y_step = -y_step;
@@ -75,10 +81,10 @@ void FillPlane(uint8_t* data,
 
     case fuchsia::camera3::Orientation::RIGHT:
     case fuchsia::camera3::Orientation::RIGHT_FLIPPED:
-      // Rotate 90 degrees counter-clockwise by moving |data| to point to the
+      // Rotate 90 degrees counter-clockwise by moving the origin to the
       // bottom left corner, swapping the axes and reversing direction of the X
       // axis.
-      UNSAFE_TODO(data += (size.height() - 1)) * y_step;
+      origin += (size.height() - 1) * y_step;
       size = gfx::Size(size.height(), size.width());
       std::swap(x_step, y_step);
       x_step = -x_step;
@@ -87,13 +93,13 @@ void FillPlane(uint8_t* data,
 
   for (int y = 0; y < size.height(); ++y) {
     for (int x = 0; x < size.width(); ++x) {
-      UNSAFE_TODO(data[x * x_step + y * y_step]) =
+      data[base::checked_cast<size_t>(origin + x * x_step + y * y_step)] =
           GetTestFrameValue(size, x, y, salt);
     }
   }
 }
 
-void ValidatePlane(const uint8_t* data,
+void ValidatePlane(base::span<const uint8_t> data,
                    gfx::Size size,
                    size_t x_step,
                    size_t y_step,
@@ -101,8 +107,8 @@ void ValidatePlane(const uint8_t* data,
   for (int y = 0; y < size.height(); ++y) {
     for (int x = 0; x < size.width(); ++x) {
       SCOPED_TRACE(testing::Message() << "x=" << x << " y=" << y);
-      UNSAFE_TODO(EXPECT_EQ(data[x * x_step + y * y_step],
-                            GetTestFrameValue(size, x, y, salt)));
+      EXPECT_EQ(data[x * x_step + y * y_step],
+                GetTestFrameValue(size, x, y, salt));
     }
   }
 }
@@ -115,24 +121,25 @@ const gfx::Size FakeCameraStream::kMaxFrameSize = gfx::Size(100, 60);
 const gfx::Size FakeCameraStream::kDefaultFrameSize = gfx::Size(60, 40);
 
 // static
-void FakeCameraStream::ValidateFrameData(const uint8_t* data,
+void FakeCameraStream::ValidateFrameData(base::span<const uint8_t> data,
                                          gfx::Size size,
                                          uint8_t salt) {
-  const uint8_t* y_plane = data;
+  const size_t y_plane_size = base::checked_cast<size_t>(size.GetArea());
+  auto [y_plane, chroma] = data.split_at(y_plane_size);
   {
     SCOPED_TRACE("Y plane");
     ValidatePlane(y_plane, size, 1, size.width(), salt + kYPlaneSalt);
   }
 
   gfx::Size uv_size(size.width() / 2, size.height() / 2);
-  const uint8_t* u_plane = UNSAFE_TODO(y_plane + size.width()) * size.height();
+  const size_t uv_plane_size = base::checked_cast<size_t>(uv_size.GetArea());
+  auto [u_plane, v_plane] =
+      chroma.first(2 * uv_plane_size).split_at(uv_plane_size);
   {
     SCOPED_TRACE("U plane");
     ValidatePlane(u_plane, uv_size, 1, uv_size.width(), salt + kUPlaneSalt);
   }
 
-  const uint8_t* v_plane =
-      UNSAFE_TODO(u_plane + uv_size.width()) * uv_size.height();
   {
     SCOPED_TRACE("V plane");
     ValidatePlane(v_plane, uv_size, 1, uv_size.width(), salt + kVPlaneSalt);
@@ -235,18 +242,21 @@ void FakeCameraStream::ProduceFrame(base::TimeTicks timestamp, uint8_t salt) {
                        (resolution_.height() + 1) & ~1);
 
   // Fill Y plane.
-  uint8_t* y_plane = reinterpret_cast<uint8_t*>(buffer->mapping.memory());
-  size_t stride = kMaxFrameSize.width();
+  const size_t y_plane_size =
+      base::checked_cast<size_t>(kMaxFrameSize.GetArea());
+  auto data = base::span(buffer->mapping);
+  auto y_plane = data.first(y_plane_size);
+  const int stride = kMaxFrameSize.width();
   FillPlane(y_plane, coded_size, /*x_step=*/1, /*y_step=*/stride, orientation_,
             salt + kYPlaneSalt);
 
   // Fill UV plane.
   gfx::Size uv_size(coded_size.width() / 2, coded_size.height() / 2);
-  uint8_t* uv_plane =
-      UNSAFE_TODO(y_plane + kMaxFrameSize.width()) * kMaxFrameSize.height();
+  const size_t uv_plane_size = y_plane_size / 2;
+  auto uv_plane = data.subspan(y_plane_size, uv_plane_size);
   FillPlane(uv_plane, uv_size, /*x_step=*/2, /*y_step=*/stride, orientation_,
             salt + kUPlaneSalt);
-  FillPlane(UNSAFE_TODO(uv_plane + 1), uv_size, /*x_step=*/2, /*y_step=*/stride,
+  FillPlane(uv_plane.subspan<1>(), uv_size, /*x_step=*/2, /*y_step=*/stride,
             orientation_, salt + kVPlaneSalt);
 
   // Create FrameInfo.
