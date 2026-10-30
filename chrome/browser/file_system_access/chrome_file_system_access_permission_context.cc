@@ -88,7 +88,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"  // nogncheck crbug.com/40147906
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_page_action_controller.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"  // nogncheck
@@ -4161,10 +4160,8 @@ void ChromeFileSystemAccessPermissionContext::DoUsageIconUpdate() {
         if (!tab_interface) {
           return true;
         }
-        auto* const tab_features = tab_interface->GetTabFeatures();
-        CHECK(tab_features);
         UpdatePageAction(
-            tab_features->file_system_access_page_action_controller());
+            FileSystemAccessPageActionController::From(tab_interface));
         return true;
       });
 #endif

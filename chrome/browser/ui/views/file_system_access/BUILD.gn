@@ -27,6 +27,7 @@ source_set("file_system_access") {
     public_deps += [
       "//chrome/browser/file_system_access",
       "//chrome/browser/ui/views/location_bar",
+      "//ui/base/unowned_user_data",
     ]
   }
 }

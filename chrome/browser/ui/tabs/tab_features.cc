@@ -557,7 +557,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           .CreateInstance<FileSystemAccessPermissionRequestManager>(tab, tab);
   if (page_action_controller_->ActionExists(kActionShowFileSystemAccess)) {
     file_system_access_page_action_controller_ =
-        std::make_unique<FileSystemAccessPageActionController>(tab);
+        GetUserDataFactory()
+            .CreateInstance<FileSystemAccessPageActionController>(tab, tab);
   }
 
   if (page_action_controller_->ActionExists(kActionShowZoomBubble)) {

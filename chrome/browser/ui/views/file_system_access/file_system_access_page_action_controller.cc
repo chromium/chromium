@@ -17,12 +17,22 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 
+DEFINE_USER_DATA(FileSystemAccessPageActionController);
+
 FileSystemAccessPageActionController::FileSystemAccessPageActionController(
     tabs::TabInterface& tab_interface)
-    : tabs::ContentsObservingTabFeature(tab_interface) {}
+    : tabs::ContentsObservingTabFeature(tab_interface),
+      scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
+}
 
 FileSystemAccessPageActionController::~FileSystemAccessPageActionController() =
     default;
+
+// static
+FileSystemAccessPageActionController*
+FileSystemAccessPageActionController::From(tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
 
 void FileSystemAccessPageActionController::UpdateVisibility() {
   bool has_write_access = false;
