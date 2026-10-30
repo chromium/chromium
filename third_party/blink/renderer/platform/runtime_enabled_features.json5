@@ -4501,7 +4501,7 @@
     // Optimization for monospace text.
     {
       name: "MonospaceGlyphCompaction",
-      status: "test",
+      status: "stable",
     },
     // Move the selection to the last position in the list item. See
     // https://crbug.com/331841851
