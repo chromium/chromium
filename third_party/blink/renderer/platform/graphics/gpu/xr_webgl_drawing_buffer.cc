@@ -337,6 +337,14 @@ XRWebGLDrawingBuffer::DoneWithSharedBuffer() {
     gl->DiscardFramebufferEXT(GL_FRAMEBUFFER, 2, kAttachments);
   }
 
+  // Detach the shared buffer from the framebuffer to prevent access to an
+  // orphaned attachment.
+  gl->BindFramebuffer(GL_FRAMEBUFFER, WantExplicitResolve()
+                                          ? resolved_framebuffer_
+                                          : framebuffer_);
+  gl->FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                           0, 0);
+
   // Always bind to the default framebuffer as a hint to the GPU to start
   // rendering now.
   gl->BindFramebuffer(GL_FRAMEBUFFER, 0);
