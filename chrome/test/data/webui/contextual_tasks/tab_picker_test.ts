@@ -900,6 +900,34 @@ suite('TabPickerTest', () => {
         assertEquals(tab0.tabId, deletedTabId);
         await microtasksFinished();
         assertEquals('Sharing 1 tab', label.textContent.trim());
+
+        // If onTabContextUpdated fires while the tab menu is open (e.g. an
+        // attached tab navigates or closes), tab suggestions are refreshed.
+        const updatedTab2 =
+            createTabInfo(3, 'Tab Three Navigated', 'https://example.com/3b');
+        testProxy.resetResolver('getRecentTabs');
+        testProxy.setRecentTabs([tab1, updatedTab2]);
+        extensionBrowserProxy.callbackRouterRemote.onTabContextUpdated([], []);
+        await extensionBrowserProxy.callbackRouterRemote.$.flushForTesting();
+        await testProxy.whenCalled('getRecentTabs');
+        await microtasksFinished();
+
+        const refreshedItems =
+            app.$.tabMenu.querySelectorAll<HTMLButtonElement>('.dropdown-item');
+        assertEquals(2, refreshedItems.length);
+        assertEquals(
+            'Tab Three Navigated',
+            refreshedItems[1]!.querySelector('.tab-title')!.textContent.trim());
+
+        // If all eligible tabs are closed while the menu is open, the menu
+        // closes automatically.
+        testProxy.resetResolver('getRecentTabs');
+        testProxy.setRecentTabs([]);
+        extensionBrowserProxy.callbackRouterRemote.onTabContextUpdated([], []);
+        await extensionBrowserProxy.callbackRouterRemote.$.flushForTesting();
+        await testProxy.whenCalled('getRecentTabs');
+        await microtasksFinished();
+        assertFalse(app.$.tabMenu.open);
       });
 
   test(

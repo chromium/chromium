@@ -111,6 +111,8 @@ void UpdateContextualSearchWebContentsHelperForTask(
     session_handle->SetSubmittedContextTokens(
         existing_session->GetSubmittedContextTokens());
     session_handle->SetPersistedTabs(existing_session->GetPersistedTabs());
+    session_handle->SetRestoredTabs(
+        existing_session->GetTabContextState().restored);
     session_handle->set_deselected_tabs_urls(
         existing_session->deselected_tabs_urls());
   } else {

@@ -3738,6 +3738,13 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
 
   ON_CALL(*session_handle_ptr, GetController())
       .WillByDefault(Return(&mock_context_controller));
+  ON_CALL(*session_handle_ptr, CreateContextToken())
+      .WillByDefault([session_handle_ptr]() {
+        auto token = base::UnguessableToken::Create();
+        session_handle_ptr->GetUploadedContextTokensForTesting().push_back(
+            token);
+        return token;
+      });
   ON_CALL(mock_context_controller, GetFileInfo(token2))
       .WillByDefault(Return(&submitted_file2));
   ON_CALL(mock_context_controller, GetFileInfo(token3))

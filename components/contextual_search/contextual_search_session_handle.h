@@ -108,6 +108,9 @@ struct TabContextState {
 
   bool operator==(const TabContextState& other) const;
 
+  // Returns whether `tab_id` is present in either `attached` or `restored`.
+  bool ContainsTab(SessionID tab_id) const;
+
   // Tabs attached in this session, in the order they were attached. Kept in
   // sync by `StartTabContextUploadFlow()`, `AttachTabPendingUpload()`,
   // `AddPendingDelayedTab()`, `DeleteFile()` and

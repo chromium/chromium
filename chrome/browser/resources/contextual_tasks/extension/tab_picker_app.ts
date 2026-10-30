@@ -93,6 +93,9 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
   // Tracks the latest open request so an in-flight async fetch does not open
   // the menu after the pointer leaves the trigger or the menu is closed.
   private openMenuRequestId_: number = 0;
+  // Tracks the latest suggestions fetch so out-of-order getRecentTabs()
+  // responses do not overwrite newer suggestions.
+  private fetchSuggestionsRequestId_: number = 0;
   private listenerIds_: number[] = [];
   private browserProxy_: TabPickerBrowserProxy =
       TabPickerBrowserProxyImpl.getInstance();
@@ -111,15 +114,23 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
 
     const callbackRouter =
         ExtensionBrowserProxyImpl.getInstance().callbackRouter;
-    this.listenerIds_.push(
-        callbackRouter.onTabContextUpdated.addListener((tabs: TabInfo[]) => {
+    this.listenerIds_.push(callbackRouter.onTabContextUpdated.addListener(
+        async (tabs: TabInfo[]) => {
           this.selectedTabs = tabs;
+          if (this.$.tabMenu.open) {
+            await this.fetchTabSuggestions_();
+            if (this.isConnected && !this.hasTabSuggestions_ &&
+                this.$.tabMenu.open) {
+              this.$.tabMenu.close();
+            }
+          }
         }));
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     ++this.openMenuRequestId_;
+    ++this.fetchSuggestionsRequestId_;
     this.cancelCloseTimer_();
     const callbackRouter =
         ExtensionBrowserProxyImpl.getInstance().callbackRouter;
@@ -168,8 +179,12 @@ export class TabPickerAppElement extends TabPickerAppElementBase {
 
   private async fetchTabSuggestions_(
       recordInitialLoadLatency: boolean = false) {
+    const requestId = ++this.fetchSuggestionsRequestId_;
     try {
       const {tabs} = await this.browserProxy_.getRecentTabs();
+      if (requestId !== this.fetchSuggestionsRequestId_ || !this.isConnected) {
+        return;
+      }
       this.tabSuggestions = tabs || [];
       this.recentTabId =
           this.tabSuggestions.length > 0 ? this.tabSuggestions[0]!.tabId : null;

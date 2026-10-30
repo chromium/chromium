@@ -5851,4 +5851,168 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
   handshake_run_loop.Run();
 }
 
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksExtensionHandlerBrowserTest,
+    SubmittedTabNavigationAndClose_ImmediatelyUpdatesTabCoinsAndReportsRemovedContexts) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url1 = embedded_test_server()->GetURL("/title1.html");
+  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
+
+  // Open two additional tabs so we can test navigating one and closing the
+  // other while keeping `web_contents_` alive as the extension host.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url1, WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  tabs::TabInterface* tab1 = TabListInterface::From(browser())->GetActiveTab();
+  ASSERT_NE(tab1, nullptr);
+  const int32_t tab1_handle_id = tab1->GetHandle().raw_value();
+  const SessionID tab1_session_id =
+      sessions::SessionTabHelper::IdForTab(tab1->GetContents());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url1, WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  tabs::TabInterface* tab2 = TabListInterface::From(browser())->GetActiveTab();
+  ASSERT_NE(tab2, nullptr);
+  const int32_t tab2_handle_id = tab2->GetHandle().raw_value();
+  const SessionID tab2_session_id =
+      sessions::SessionTabHelper::IdForTab(tab2->GetContents());
+
+  auto* user_data =
+      ContextualTasksWebContentsUserData::FromWebContents(web_contents_);
+  ASSERT_NE(user_data, nullptr);
+  user_data->RecordTabIdMapping(tab1_handle_id, tab1_session_id.id());
+  user_data->RecordTabIdMapping(tab2_handle_id, tab2_session_id.id());
+
+  // Attach and submit both tabs on Turn 1.
+  base::UnguessableToken token1 = base::UnguessableToken::Create();
+  base::UnguessableToken token2 = base::UnguessableToken::Create();
+  mock_session_handle_->GetUploadedContextTokensForTesting().push_back(token1);
+  mock_session_handle_->GetUploadedContextTokensForTesting().push_back(token2);
+  mock_session_handle_->AttachTabPendingUpload(token1, tab1_session_id.id(),
+                                               url1, "Title 1");
+  mock_session_handle_->AttachTabPendingUpload(token2, tab2_session_id.id(),
+                                               url1, "Title 1");
+
+  contextual_search::FileInfo file_info1;
+  file_info1.file_token = token1;
+  file_info1.tab_session_id = tab1_session_id;
+  file_info1.tab_url = url1;
+  lens::LensOverlayRequestId req_id1;
+  req_id1.set_uuid(1001);
+  file_info1.request_id = req_id1;
+
+  contextual_search::FileInfo file_info2;
+  file_info2.file_token = token2;
+  file_info2.tab_session_id = tab2_session_id;
+  file_info2.tab_url = url1;
+  lens::LensOverlayRequestId req_id2;
+  req_id2.set_uuid(1002);
+  file_info2.request_id = req_id2;
+
+  ON_CALL(*mock_controller_, GetFileInfo(token1))
+      .WillByDefault(Return(&file_info1));
+  ON_CALL(*mock_controller_, GetFileInfo(token2))
+      .WillByDefault(Return(&file_info2));
+  ON_CALL(*mock_session_handle_, GetUploadedContextFileInfos())
+      .WillByDefault(Return(
+          std::vector<contextual_search::FileInfo>{file_info1, file_info2}));
+
+  auto submit =
+      [&](base::OnceCallback<void(
+              const lens::ClientToSearchMessage::OnSubmitQueryResponse&)>
+              on_response) {
+        base::RunLoop run_loop;
+        EXPECT_CALL(mock_page_, PostSearchMessage(_))
+            .WillRepeatedly([&](mojo_base::ProtoWrapper wrapper) {
+              auto message = wrapper.As<lens::ClientToSearchMessage>();
+              if (!message.has_value() ||
+                  !message->has_on_submit_query_response() || !on_response) {
+                return;
+              }
+              std::move(on_response).Run(message->on_submit_query_response());
+              run_loop.Quit();
+            });
+        lens::SearchToClientMessage request;
+        request.mutable_on_submit_query_request();
+        const size_t size = request.ByteSizeLong();
+        std::vector<uint8_t> serialized_message(size);
+        request.SerializeToArray(serialized_message.data(), size);
+        SimulateUserInteraction();
+        handler_->OnWebviewMessage(serialized_message, std::nullopt);
+        run_loop.Run();
+        mock_page_.FlushForTesting();
+        testing::Mock::VerifyAndClearExpectations(&mock_page_);
+      };
+
+  submit(base::BindLambdaForTesting(
+      [&](const lens::ClientToSearchMessage::OnSubmitQueryResponse& response) {
+        ASSERT_EQ(2, response.added_contexts_size());
+        EXPECT_EQ(0, response.removed_contexts_size());
+      }));
+  ON_CALL(*mock_session_handle_, GetUploadedContextFileInfos())
+      .WillByDefault(Return(std::vector<contextual_search::FileInfo>{}));
+  ASSERT_EQ(2u, mock_session_handle_->GetTabContextState().attached.size());
+
+  // 1. Navigate `tab1` to `url2`. `OnTabContextUpdated` must fire immediately
+  // with only `tab2` remaining in the tab coin list.
+  {
+    base::RunLoop tab_context_loop;
+    std::vector<int32_t> updated_tab_ids;
+    EXPECT_CALL(mock_page_, OnTabContextUpdated(_, _))
+        .WillOnce([&](std::vector<searchbox::mojom::TabInfoPtr> tabs,
+                      const std::vector<int32_t>& submitted_ids) {
+          for (const auto& t : tabs) {
+            updated_tab_ids.push_back(t->tab_id);
+          }
+          tab_context_loop.Quit();
+        });
+    ASSERT_TRUE(content::NavigateToURL(tab1->GetContents(), url2));
+    tab_context_loop.Run();
+    EXPECT_THAT(updated_tab_ids, testing::ElementsAre(tab2_handle_id));
+    testing::Mock::VerifyAndClearExpectations(&mock_page_);
+  }
+
+  // Submitting Turn 2 must report `req_id1` (1001) in `removed_contexts` and
+  // mark `file_info1` superseded.
+  submit(base::BindLambdaForTesting(
+      [&](const lens::ClientToSearchMessage::OnSubmitQueryResponse& response) {
+        EXPECT_EQ(0, response.added_contexts_size());
+        ASSERT_EQ(1, response.removed_contexts_size());
+        EXPECT_EQ(1001u, response.removed_contexts(0).request_id().uuid());
+      }));
+  EXPECT_TRUE(file_info1.is_superceded);
+
+  // Navigating `tab1` back to `url1` after Turn 2 must not resurrect its
+  // context or cause it to be recontextualized on Turn 3.
+  ASSERT_TRUE(content::NavigateToURL(tab1->GetContents(), url1));
+
+  // 2. Close `tab2`. `OnTabContextUpdated` must fire immediately with an empty
+  // tab coin list.
+  {
+    base::RunLoop tab_context_loop;
+    size_t remaining_tabs = 99;
+    EXPECT_CALL(mock_page_, OnTabContextUpdated(_, _))
+        .WillOnce([&](std::vector<searchbox::mojom::TabInfoPtr> tabs,
+                      const std::vector<int32_t>& submitted_ids) {
+          remaining_tabs = tabs.size();
+          tab_context_loop.Quit();
+        });
+    TabListInterface::From(browser())->CloseTab(tab2->GetHandle());
+    tab_context_loop.Run();
+    EXPECT_EQ(0u, remaining_tabs);
+    testing::Mock::VerifyAndClearExpectations(&mock_page_);
+  }
+
+  // Submitting Turn 3 must report `req_id2` (1002) in `removed_contexts` and
+  // mark `file_info2` superseded, without re-adding `tab1`.
+  submit(base::BindLambdaForTesting(
+      [&](const lens::ClientToSearchMessage::OnSubmitQueryResponse& response) {
+        EXPECT_EQ(0, response.added_contexts_size());
+        ASSERT_EQ(1, response.removed_contexts_size());
+        EXPECT_EQ(1002u, response.removed_contexts(0).request_id().uuid());
+      }));
+  EXPECT_TRUE(file_info2.is_superceded);
+}
+
 }  // namespace contextual_tasks

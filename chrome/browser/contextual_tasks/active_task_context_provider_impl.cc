@@ -8,12 +8,14 @@
 #include <map>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_web_contents_user_data.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -28,6 +30,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
 #include "content/public/common/url_constants.h"
 
@@ -55,11 +58,16 @@ std::set<tabs::TabHandle> GetTabsFromContext(
   // (e.g. cleared by a manual smart tab sharing toggle).
   const bool check_session_tokens =
       session_handle &&
-      base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox);
+      (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) ||
+       IsContextualTasksRearchitectureEnabled() ||
+       IsContextualTasksSidePanelRearchitectureEnabled());
   auto is_tracked_by_session = [session_handle,
                                 check_session_tokens](SessionID id) {
-    return !check_session_tokens ||
-           !session_handle->GetTokenForTab(id).is_empty();
+    if (!check_session_tokens) {
+      return true;
+    }
+    return !session_handle->GetTokenForTab(id).is_empty() ||
+           session_handle->GetTabContextState().ContainsTab(id);
   };
 
   // Add the tabs from context if they exist in the current browser window.
@@ -94,7 +102,8 @@ std::set<tabs::TabHandle> GetTabsFromContext(
     }
   }
 
-  if (session_handle && IsContextualTasksSidePanelRearchitectureEnabled()) {
+  if (session_handle && (IsContextualTasksRearchitectureEnabled() ||
+                         IsContextualTasksSidePanelRearchitectureEnabled())) {
     const auto uploaded_tokens = session_handle->GetUploadedContextTokens();
     for (const auto& attached_tab :
          session_handle->GetTabContextState().attached) {
@@ -112,6 +121,18 @@ std::set<tabs::TabHandle> GetTabsFromContext(
         context_session_ids_url_map.try_emplace(
             id, std::make_pair(attached_tab.url,
                                base::UTF8ToUTF16(attached_tab.title)));
+      }
+    }
+    for (const auto& restored_tab :
+         session_handle->GetTabContextState().restored) {
+      if (!restored_tab.tab_id.has_value()) {
+        continue;
+      }
+      SessionID id = SessionID::FromSerializedValue(*restored_tab.tab_id);
+      if (id.is_valid()) {
+        context_session_ids_url_map.try_emplace(
+            id, std::make_pair(restored_tab.url,
+                               base::UTF8ToUTF16(restored_tab.title)));
       }
     }
   }
@@ -136,9 +157,13 @@ std::set<tabs::TabHandle> GetTabsFromContext(
     if (matching_attachment != context_session_ids_url_map.end()) {
       // Verify if the tab's current URL is equivalent to the context URL.
       // If not, the tab has navigated away and is removed from context.
-      if (omnibox::IsTabDeselectionInComposeboxEnabled() ||
-          IsContextualTasksRearchitectureEnabled() ||
-          IsContextualTasksSidePanelRearchitectureEnabled()) {
+      const bool check_url_equivalence =
+          omnibox::IsTabDeselectionInComposeboxEnabled() ||
+          ((IsContextualTasksRearchitectureEnabled() ||
+            IsContextualTasksSidePanelRearchitectureEnabled()) &&
+           !matching_attachment->second.first.is_empty() &&
+           !web_contents->GetLastCommittedURL().is_empty());
+      if (check_url_equivalence) {
         bool is_equivalent =
             session_handle
                 ? session_handle->AreUrlsEquivalent(
@@ -175,6 +200,57 @@ ActiveTaskContextProvider* ActiveTaskContextProvider::From(
 
 DEFINE_USER_DATA(ActiveTaskContextProvider);
 
+// Observes committed primary main-frame cross-document navigations on a single
+// browser tab so `ActiveTaskContextProviderImpl` can clear stale local tab
+// underlines and notify open Contextual Tasks sessions when an attached tab
+// navigates away. Owned in `tab_navigation_observers_` (keyed by
+// `tabs::TabInterface*`); created when a tab is added to the window's
+// `TabListInterface`, retargeted when its `WebContents` is discarded/replaced,
+// and destroyed when the tab is removed or `ActiveTaskContextProviderImpl` is
+// torn down.
+class ActiveTaskContextProviderImpl::TabNavigationObserver
+    : public content::WebContentsObserver {
+ public:
+  TabNavigationObserver(ActiveTaskContextProviderImpl& owner,
+                        tabs::TabInterface* tab)
+      : content::WebContentsObserver(tab ? tab->GetContents() : nullptr),
+        owner_(owner),
+        tab_(tab),
+        last_committed_url_(
+            web_contents() ? web_contents()->GetLastCommittedURL() : GURL()) {}
+  ~TabNavigationObserver() override = default;
+
+  void Reobserve(content::WebContents* contents) {
+    Observe(contents);
+    last_committed_url_ =
+        web_contents() ? web_contents()->GetLastCommittedURL() : GURL();
+  }
+
+  void UpdateLastCommittedUrl() {
+    if (web_contents()) {
+      last_committed_url_ = web_contents()->GetLastCommittedURL();
+    }
+  }
+
+  // content::WebContentsObserver:
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    if (!navigation_handle->IsInPrimaryMainFrame() ||
+        !navigation_handle->HasCommitted() ||
+        navigation_handle->IsSameDocument()) {
+      return;
+    }
+    GURL previous_url = last_committed_url_;
+    last_committed_url_ = navigation_handle->GetURL();
+    owner_->OnTabNavigated(tab_, previous_url);
+  }
+
+ private:
+  const raw_ref<ActiveTaskContextProviderImpl> owner_;
+  raw_ptr<tabs::TabInterface> tab_;
+  GURL last_committed_url_;
+};
+
 ActiveTaskContextProviderImpl::ActiveTaskContextProviderImpl(
     BrowserWindowInterface* browser_window,
     ContextualTasksService* contextual_tasks_service)
@@ -195,6 +271,9 @@ void ActiveTaskContextProviderImpl::SetContextualTasksPanelController(
     auto* tab_list_interface = TabListInterface::From(browser_window_);
     if (tab_list_interface) {
       tab_list_interface->AddTabListInterfaceObserver(this);
+      for (int i = 0; i < tab_list_interface->GetTabCount(); ++i) {
+        ObserveTab(tab_list_interface->GetTab(i));
+      }
       // Observe the active tab's WebContents on startup.
       OnActiveTabChanged(*tab_list_interface,
                          tab_list_interface->GetActiveTab());
@@ -208,6 +287,13 @@ void ActiveTaskContextProviderImpl::SetContextualTasksPanelController(
 void ActiveTaskContextProviderImpl::AddLocalTabUnderline(
     tabs::TabHandle tab_handle) {
   auto* tab_list = TabListInterface::From(browser_window_);
+  if (tabs::TabInterface* tab = tab_handle.Get()) {
+    ObserveTab(tab);
+    if (auto it = tab_navigation_observers_.find(tab);
+        it != tab_navigation_observers_.end()) {
+      it->second->UpdateLastCommittedUrl();
+    }
+  }
   auto* active_tab = tab_list ? tab_list->GetActiveTab() : nullptr;
   tabs::TabHandle owner_handle =
       active_tab ? active_tab->GetHandle() : tabs::TabHandle::Null();
@@ -229,6 +315,7 @@ void ActiveTaskContextProviderImpl::ClearAllLocalTabUnderlines() {
 }
 
 ActiveTaskContextProviderImpl::~ActiveTaskContextProviderImpl() {
+  tab_navigation_observers_.clear();
   for (auto& observer : observers_) {
     observer.OnActiveTaskContextProviderDestroyed();
   }
@@ -247,14 +334,183 @@ void ActiveTaskContextProviderImpl::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
+void ActiveTaskContextProviderImpl::OnTabAdded(TabListInterface& tab_list,
+                                               tabs::TabInterface* tab,
+                                               int index) {
+  ObserveTab(tab);
+}
+
 void ActiveTaskContextProviderImpl::OnActiveTabChanged(
     TabListInterface& tab_list,
     tabs::TabInterface* active_tab) {
+  ObserveTab(active_tab);
   // Start observing the new active tab's WebContents.
   Observe(active_tab ? active_tab->GetContents() : nullptr);
 
   // Update the context based on the new active tab.
   RefreshContext();
+}
+
+void ActiveTaskContextProviderImpl::OnTabRemoved(
+    TabListInterface& tab_list,
+    tabs::TabInterface* tab,
+    TabRemovedReason removed_reason) {
+  if (!tab) {
+    return;
+  }
+  tab_navigation_observers_.erase(tab);
+  const tabs::TabHandle handle = tab->GetHandle();
+  local_tab_underlines_.erase(handle);
+  for (auto& [owner_handle, underlines] : local_tab_underlines_) {
+    underlines.erase(handle);
+  }
+
+  if (content::WebContents* contents = tab->GetContents()) {
+    SessionID tab_session_id = sessions::SessionTabHelper::IdForTab(contents);
+    NotifyTabClosedOrNavigated(tab_session_id, std::nullopt, std::nullopt);
+  }
+
+  RefreshContext();
+}
+
+void ActiveTaskContextProviderImpl::OnWebContentsReplaced(
+    TabListInterface& tab_list,
+    tabs::TabInterface* tab,
+    content::WebContents* old_contents,
+    content::WebContents* new_contents) {
+  if (!tab) {
+    return;
+  }
+  auto it = tab_navigation_observers_.find(tab);
+  if (it != tab_navigation_observers_.end()) {
+    it->second->Reobserve(new_contents);
+  } else {
+    ObserveTab(tab);
+  }
+}
+
+void ActiveTaskContextProviderImpl::OnTabListDestroyed(
+    TabListInterface& tab_list) {
+  tab_navigation_observers_.clear();
+}
+
+void ActiveTaskContextProviderImpl::ObserveTab(tabs::TabInterface* tab) {
+  if (!tab || !tab->GetContents()) {
+    return;
+  }
+  auto it = tab_navigation_observers_.find(tab);
+  if (it == tab_navigation_observers_.end()) {
+    tab_navigation_observers_.emplace(
+        tab, std::make_unique<TabNavigationObserver>(*this, tab));
+  } else if (it->second->web_contents() != tab->GetContents()) {
+    it->second->Reobserve(tab->GetContents());
+  }
+}
+
+void ActiveTaskContextProviderImpl::OnTabNavigated(tabs::TabInterface* tab,
+                                                   const GURL& previous_url) {
+  if (!tab || !tab->GetContents()) {
+    return;
+  }
+  content::WebContents* contents = tab->GetContents();
+  SessionID tab_session_id = sessions::SessionTabHelper::IdForTab(contents);
+  GURL current_url = contents->GetLastCommittedURL();
+  std::string current_title = base::UTF16ToUTF8(tab->GetTitle());
+
+  const bool session_removed =
+      NotifyTabClosedOrNavigated(tab_session_id, current_url, current_title);
+
+  bool url_changed = false;
+  if (!previous_url.is_empty() && !current_url.is_empty()) {
+    // Pass empty titles so URL equivalence is evaluated purely on the URLs
+    // (ignoring `current_title` vs. an untracked previous title).
+    url_changed =
+        session_handle_
+            ? !session_handle_->AreUrlsEquivalent(previous_url, "", current_url,
+                                                  "")
+            : (previous_url.GetWithoutRef() != current_url.GetWithoutRef());
+  }
+
+  if (session_removed || url_changed) {
+    for (auto& [owner_handle, underlines] : local_tab_underlines_) {
+      underlines.erase(tab->GetHandle());
+    }
+  }
+
+  RefreshContext();
+}
+
+bool ActiveTaskContextProviderImpl::NotifyTabClosedOrNavigated(
+    SessionID tab_session_id,
+    std::optional<GURL> current_url,
+    std::optional<std::string> current_title) {
+  if (!tab_session_id.is_valid()) {
+    return false;
+  }
+  bool any_removed = false;
+  // Each session handle is notified at most once, even if it is reachable from
+  // multiple WebContents (e.g. the active panel WebContents is also in the
+  // panel WebContents list).
+  std::set<contextual_search::ContextualSearchSessionHandle*> notified_handles;
+
+  auto notify_session_handle =
+      [&](contextual_search::ContextualSearchSessionHandle* handle) {
+        if (!handle || !notified_handles.insert(handle).second) {
+          return;
+        }
+        const size_t attached_before =
+            handle->GetTabContextState().attached.size();
+        const size_t restored_before =
+            handle->GetTabContextState().restored.size();
+        auto removed = handle->OnTabClosedOrNavigated(
+            tab_session_id, current_url, current_title);
+        if (!removed.empty() ||
+            handle->GetTabContextState().attached.size() != attached_before ||
+            handle->GetTabContextState().restored.size() != restored_before) {
+          any_removed = true;
+        }
+      };
+
+  auto notify_web_contents = [&](content::WebContents* wc) {
+    if (!wc) {
+      return;
+    }
+    if (auto* user_data =
+            ContextualTasksWebContentsUserData::FromWebContents(wc)) {
+      auto* handle = user_data->GetExistingContextualSessionHandle();
+      if (!handle || !notified_handles.insert(handle).second) {
+        return;
+      }
+      if (user_data->OnBrowserTabClosedOrNavigated(tab_session_id, current_url,
+                                                   current_title)) {
+        any_removed = true;
+      }
+    } else if (auto* helper =
+                   ContextualSearchWebContentsHelper::FromWebContents(wc)) {
+      notify_session_handle(helper->session_handle());
+    }
+  };
+
+  if (contextual_tasks_panel_controller_) {
+    for (content::WebContents* panel_wc :
+         contextual_tasks_panel_controller_->GetPanelWebContentsList()) {
+      notify_web_contents(panel_wc);
+    }
+    notify_web_contents(
+        contextual_tasks_panel_controller_->GetActiveWebContents());
+  }
+
+  if (auto* tab_list = TabListInterface::From(browser_window_)) {
+    for (int i = 0; i < tab_list->GetTabCount(); ++i) {
+      if (tabs::TabInterface* open_tab = tab_list->GetTab(i)) {
+        notify_web_contents(open_tab->GetContents());
+      }
+    }
+  }
+
+  notify_session_handle(session_handle_.get());
+
+  return any_removed;
 }
 
 void ActiveTaskContextProviderImpl::PrimaryPageChanged(content::Page& page) {
@@ -386,6 +642,14 @@ void ActiveTaskContextProviderImpl::OnGetContextForTask(
   }
 
   if (context) {
+    // Ensure all existing tabs are observed for navigation even if they were
+    // populated in `TabListInterface` without firing `OnTabAdded` (e.g., in
+    // tests or before panel controller initialization).
+    if (auto* tab_list = TabListInterface::From(browser_window_)) {
+      for (int i = 0; i < tab_list->GetTabCount(); ++i) {
+        ObserveTab(tab_list->GetTab(i));
+      }
+    }
     backend_context_tabs_ =
         GetTabsFromContext(*context, browser_window_, session_handle_.get());
   } else {

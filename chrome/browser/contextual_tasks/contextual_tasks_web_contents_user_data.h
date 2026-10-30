@@ -205,6 +205,8 @@ class ContextualTasksWebContentsUserData
   void RemoveLensCrop();
 
   contextual_search::ContextualSearchSessionHandle*
+  GetExistingContextualSessionHandle();
+  contextual_search::ContextualSearchSessionHandle*
   GetOrCreateContextualSessionHandle();
   std::optional<base::UnguessableToken> GetLensOverlayToken();
 #if !BUILDFLAG(IS_ANDROID)
@@ -219,6 +221,9 @@ class ContextualTasksWebContentsUserData
   std::vector<contextual_search::TabInfo> GetSelectedTabs();
   void DeleteContext(const base::UnguessableToken& file_token);
   void DeleteTabContext(int32_t tab_id);
+  bool OnBrowserTabClosedOrNavigated(SessionID tab_session_id,
+                                     std::optional<GURL> current_url,
+                                     std::optional<std::string> current_title);
   void ClearFiles(bool should_block_auto_suggested_tabs = false);
   void ClearInputPlateState();
 
