@@ -122,7 +122,7 @@ public class UmaActivityObserver implements DestroyObserver {
                 if (mActivityType == sActiveObserver.mActivityType) {
                     return;
                 }
-                endUmaSession();
+                sActiveObserver.endUmaSession();
             }
             // Stage the activity type value such that it can be picked up when the new
             // UMA record is opened as a part of the subsequent session resume.
@@ -151,7 +151,7 @@ public class UmaActivityObserver implements DestroyObserver {
             }
             endUmaSessionInternal(true, true);
         } else {
-            if (sActiveObserver == null) {
+            if (sActiveObserver != this) {
                 return;
             }
             sActiveObserver = null;
@@ -187,6 +187,8 @@ public class UmaActivityObserver implements DestroyObserver {
 
     @Override
     public void onDestroy() {
+        mLatestTabModelSelector = null;
+        mLatestAndroidPermissionDelegate = null;
         if (sActiveObserver == null) return; // Ensures native library has been initialized.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.UMA_SESSION_CORRECTNESS_FIXES)) {
             endUmaSessionInternal(true, true);

@@ -19,10 +19,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.EnableLeakChecks;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -183,5 +188,31 @@ public class PublicTransitLeakTest {
         var page = mChromeTabbedActivityTestRule.startOnBlankPage();
         var ntp = page.openNewTabFast();
         ntp.openNewIncognitoTabOrWindowFast();
+    }
+
+    @Test
+    @LargeTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP)
+    public void customTabActivityAfterChromeTabbedActivityTest() {
+        Intent intent =
+                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
+                        ApplicationProvider.getApplicationContext(),
+                        mChromeTabbedActivityTestRule
+                                .getTestServer()
+                                .getURL("/chrome/test/data/android/google.html"));
+        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+        mChromeTabbedActivityTestRule.startOnBlankPage();
+        var cta = mChromeTabbedActivityTestRule.getActivity();
+        var cct = mCustomTabActivityTestRule.getActivity();
+        CriteriaHelper.pollUiThread(
+                () -> ApplicationStatus.getStateForActivity(cct) == ActivityState.STOPPED);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> ApiCompatibilityUtils.moveTaskToFront(cta, cct.getTaskId(), 0));
+        CriteriaHelper.pollUiThread(
+                () ->
+                        ApplicationStatus.getStateForActivity(cct) == ActivityState.RESUMED
+                                && ApplicationStatus.getStateForActivity(cta)
+                                        == ActivityState.STOPPED);
+        mChromeTabbedActivityTestRule.finishActivity();
     }
 }
