@@ -4,6 +4,7 @@
 
 package org.chromium.components.webauthn;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
@@ -97,6 +98,21 @@ public class GmsCoreUtils {
                     TaskTraits.UI_USER_VISIBLE,
                     () -> {
                         callback.onFailure(e);
+                    });
+        };
+    }
+
+    /**
+     * Returns a CompleteListener callback that wraps another CompleteListener callback, but posts
+     * the inner callback's invocation to the UI thread to avoid contention over state. Task
+     * completion callbacks can be run on a different thread from the one that started the task.
+     */
+    public static <T> OnCompleteListener<T> wrapCompleteCallback(OnCompleteListener<T> callback) {
+        return (task) -> {
+            PostTask.runOrPostTask(
+                    TaskTraits.UI_USER_VISIBLE,
+                    () -> {
+                        callback.onComplete(task);
                     });
         };
     }

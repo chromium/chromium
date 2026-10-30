@@ -19,6 +19,8 @@ import android.os.Looper;
 import android.os.Parcel;
 import android.os.ResultReceiver;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.google.android.gms.common.api.Api;
 import com.google.android.gms.common.api.Api.ApiOptions;
 import com.google.android.gms.common.api.ApiException;
@@ -33,11 +35,14 @@ import com.google.android.gms.common.internal.GmsClient;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.TaskCompletionSource;
 
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.webauthn.AndroidApiCallMetrics.ApiCallEvent;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -80,8 +85,10 @@ import java.util.List;
  * }</pre>
  */
 @NullMarked
-public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
+public class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
     private static final String TAG = "Fido2ApiCall";
+    private static final String GMSCORE_API_CALL_HISTOGRAM_PREFIX =
+            "WebAuthentication.Android.GmsCoreApiCall.";
 
     public static class Fido2ApiCallParams {
         public final Api<ApiOptions.NoOptions> mApi;
@@ -310,6 +317,37 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
         return p;
     }
 
+    private static @Nullable String getHistogramNameForMethod(int methodId) {
+        String operation =
+                switch (methodId) {
+                    case METHOD_APP_ISUVPAA -> "AppIsUvpaa";
+                    case METHOD_APP_REGISTER -> "AppRegister";
+                    case METHOD_APP_SIGN -> "AppSign";
+                    case METHOD_BROWSER_GETCREDENTIALS -> "BrowserGetCredentials";
+                    case METHOD_BROWSER_HYBRID_SIGN -> "BrowserHybridSign";
+                    case METHOD_BROWSER_ISUVPAA -> "BrowserIsUvpaa";
+                    case METHOD_BROWSER_REGISTER -> "BrowserRegister";
+                    case METHOD_BROWSER_SIGN -> "BrowserSign";
+                    case METHOD_GET_LINK_INFO -> "FirstPartyGetLinkInfo";
+                    case METHOD_LIST_PASSKEYS_FOR_RP -> "PersistentListPasskeysForRp";
+                    default -> null;
+                };
+        assert operation != null : "Unknown Fido2ApiCall methodId: " + methodId;
+        return operation == null ? null : GMSCORE_API_CALL_HISTOGRAM_PREFIX + operation;
+    }
+
+    private static boolean isPendingIntentMethod(int methodId) {
+        return switch (methodId) {
+            case METHOD_APP_REGISTER,
+                    METHOD_APP_SIGN,
+                    METHOD_BROWSER_HYBRID_SIGN,
+                    METHOD_BROWSER_REGISTER,
+                    METHOD_BROWSER_SIGN ->
+                    true;
+            default -> false;
+        };
+    }
+
     /**
      * Make a Binder call to Play Services.
      *
@@ -322,6 +360,31 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
     public <Result> Task<Result> run(
             int methodId, int transactionId, Parcel args, Callback<Result> callback) {
         log(TAG, "run method: " + methodId);
+        String histogramName = getHistogramNameForMethod(methodId);
+        AndroidApiCallMetrics.OneShotRecorder recorder =
+                histogramName == null ? null : AndroidApiCallMetrics.startCall(histogramName);
+        Task<Result> task;
+        try {
+            task = runBinderCall(methodId, transactionId, args, callback);
+        } catch (RuntimeException e) {
+            if (recorder != null) {
+                // run() can be called off the UI thread (e.g. METHOD_GET_LINK_INFO), but outcomes
+                // must be recorded on the UI thread.
+                PostTask.runOrPostTask(
+                        TaskTraits.UI_USER_VISIBLE, () -> recorder.finish(ApiCallEvent.FAILED));
+            }
+            throw e;
+        }
+        if (recorder != null) {
+            AndroidApiCallMetrics.attachToTask(
+                    task, recorder, /* nullResultIsFailure= */ isPendingIntentMethod(methodId));
+        }
+        return task;
+    }
+
+    @VisibleForTesting
+    <Result> Task<Result> runBinderCall(
+            int methodId, int transactionId, Parcel args, Callback<Result> callback) {
         return doRead(
                 TaskApiCall.<FidoClient, Result>builder()
                         .run(

@@ -25,6 +25,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.credentials.CredentialManager;
 import android.net.Uri;
 import android.os.Build;
@@ -52,6 +53,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadow.api.Shadow;
 import org.robolectric.shadows.ShadowApplication;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.TriState;
@@ -70,6 +72,8 @@ import org.chromium.blink.mojom.PublicKeyCredentialReportOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.webauthn.AndroidApiCallMetrics.ApiCallEvent;
+import org.chromium.components.webauthn.Fido2CredentialRequest.Fido2ApiRequestType;
 import org.chromium.components.webauthn.cred_man.CredManHelper;
 import org.chromium.components.webauthn.cred_man.CredManSupportProvider;
 import org.chromium.components.webauthn.cred_man.ShadowCredentialManager;
@@ -92,6 +96,12 @@ import java.util.concurrent.atomic.AtomicReference;
 @Config(shadows = {ShadowCredentialManager.class})
 @DisableFeatures({WebauthnFeatures.WEBAUTHN_ANDROID_CRED_MAN_FOR_DEV})
 public class Fido2CredentialRequestRobolectricTest {
+    private static final String REGISTER_INTENT_HISTOGRAM =
+            "WebAuthentication.Android.GmsCoreApiCall.RegisterPendingIntent";
+    private static final String SIGN_INTENT_HISTOGRAM =
+            "WebAuthentication.Android.GmsCoreApiCall.SignPendingIntent";
+    private static final String HYBRID_SIGN_INTENT_HISTOGRAM =
+            "WebAuthentication.Android.GmsCoreApiCall.HybridSignPendingIntent";
     private static final String TEST_CHANNEL_EXTRA = "stable";
     private static final Boolean TEST_INCOGNITO_EXTRA = true;
     private static final String TEST_CLIENT_DATA_JSON = "{ClientDataJSON}";
@@ -106,6 +116,7 @@ public class Fido2CredentialRequestRobolectricTest {
     private FakeFido2ApiCallHelper mFido2ApiCallHelper;
 
     @Mock private RenderFrameHost mFrameHost;
+    @Mock private WebauthnRequestCallback mRequestCallbackMock;
     @Mock GURLUtils.Natives mGURLUtilsJniMock;
     @Mock WebauthnBrowserBridge mBrowserBridgeMock;
     @Mock CredManHelper mCredManHelperMock;
@@ -1179,6 +1190,180 @@ public class Fido2CredentialRequestRobolectricTest {
 
         verify(mockHelper).handleReportRequest(eq(options), eq(null));
         assertThat(mCallback.getStatus()).isEqualTo(Integer.valueOf(AuthenticatorStatus.SUCCESS));
+    }
+
+    @Test
+    public void testIntentMetrics_outcomes() {
+        assertIntentOutcome(
+                Fido2ApiRequestType.MAKE_CREDENTIAL,
+                Activity.RESULT_OK,
+                Fido2ApiTestHelper.createRuntimeMakeCredentialIntent(),
+                ApiCallEvent.SUCCEEDED);
+        assertIntentOutcome(
+                Fido2ApiRequestType.GET_ASSERTION,
+                Activity.RESULT_OK,
+                Fido2ApiTestHelper.createRuntimeGetAssertionIntent(),
+                ApiCallEvent.SUCCEEDED);
+        assertIntentOutcome(
+                Fido2ApiRequestType.GET_ASSERTION_LEGACY,
+                Activity.RESULT_CANCELED,
+                null,
+                ApiCallEvent.CANCELLED);
+        assertIntentOutcome(
+                Fido2ApiRequestType.GET_ASSERTION_HYBRID,
+                Activity.RESULT_OK,
+                Fido2ApiTestHelper.createErrorIntent(
+                        Fido2Api.NOT_ALLOWED_ERR, Fido2CredentialRequest.CANCELLED_ERROR_MSG),
+                ApiCallEvent.CANCELLED);
+        assertIntentOutcome(
+                Fido2ApiRequestType.GET_ASSERTION,
+                Activity.RESULT_OK,
+                Fido2ApiTestHelper.createErrorIntent(Fido2Api.TIMEOUT_ERR, "timeout"),
+                ApiCallEvent.TIMED_OUT);
+        assertIntentOutcome(
+                Fido2ApiRequestType.GET_ASSERTION,
+                Activity.RESULT_OK,
+                Fido2ApiTestHelper.createErrorIntent(Fido2Api.UNKNOWN_ERR, "error"),
+                ApiCallEvent.FAILED);
+        assertIntentOutcome(
+                Fido2ApiRequestType.MAKE_CREDENTIAL, Activity.RESULT_OK, null, ApiCallEvent.FAILED);
+    }
+
+    @Test
+    public void testIntentMetrics_unresolvedThenResultWithoutRequestCallback() {
+        // A launched PendingIntent without a result yet is a bare STARTED.
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SIGN_INTENT_HISTOGRAM, ApiCallEvent.STARTED);
+        Callback<Pair<Integer, Intent>> intentCallback =
+                startIntent(Fido2ApiRequestType.GET_ASSERTION);
+        watcher.assertExpected();
+
+        // The request callback may already be gone (e.g. the frame closed) when the result arrives.
+        watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SIGN_INTENT_HISTOGRAM, ApiCallEvent.CANCELLED);
+        Mockito.when(mAuthenticationContextProviderMock.getRequestCallback()).thenReturn(null);
+        intentCallback.onResult(new Pair<>(Activity.RESULT_CANCELED, null));
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testIntentMetrics_noPendingIntentOrLaunchFailure_recordsNothing() {
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder().expectNoRecords(REGISTER_INTENT_HISTOGRAM).build();
+        setRequestCallback(Fido2ApiRequestType.MAKE_CREDENTIAL);
+        mRequest.onGotPendingIntent(null, Fido2ApiRequestType.MAKE_CREDENTIAL);
+        // The mocked FidoIntentSender fails to launch the PendingIntent.
+        Mockito.when(mAuthenticationContextProviderMock.getIntentSender())
+                .thenReturn(Mockito.mock(FidoIntentSender.class));
+        mRequest.onGotPendingIntent(
+                Mockito.mock(PendingIntent.class), Fido2ApiRequestType.MAKE_CREDENTIAL);
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testIntentMetrics_overlappingIntents_recordEachLifecycle() {
+        // Each PendingIntent launched by a request (e.g. a Conditional UI retry) records its own
+        // lifecycle, even if the earlier one reports back after the later one.
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecordTimes(SIGN_INTENT_HISTOGRAM, ApiCallEvent.STARTED, 2)
+                        .expectIntRecord(SIGN_INTENT_HISTOGRAM, ApiCallEvent.CANCELLED)
+                        .expectIntRecord(SIGN_INTENT_HISTOGRAM, ApiCallEvent.SUCCEEDED)
+                        .build();
+        setRequestCallback(Fido2ApiRequestType.GET_ASSERTION);
+        List<Callback<Pair<Integer, Intent>>> intentCallbacks = captureIntentCallbacks();
+        mRequest.onGotPendingIntent(
+                Mockito.mock(PendingIntent.class), Fido2ApiRequestType.GET_ASSERTION);
+        mRequest.onGotPendingIntent(
+                Mockito.mock(PendingIntent.class), Fido2ApiRequestType.GET_ASSERTION);
+        intentCallbacks
+                .get(1)
+                .onResult(
+                        new Pair<>(
+                                Activity.RESULT_OK,
+                                Fido2ApiTestHelper.createRuntimeGetAssertionIntent()));
+        intentCallbacks.get(0).onResult(new Pair<>(Activity.RESULT_CANCELED, null));
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testIntentMetrics_webViewResultThenActivityResult_recordsOneOutcome() {
+        Mockito.when(mModeProviderMock.getWebauthnMode(any())).thenReturn(WebauthnMode.APP);
+        HistogramWatcher watcher = expectApiCall(SIGN_INTENT_HISTOGRAM, ApiCallEvent.SUCCEEDED);
+        Callback<Pair<Integer, Intent>> intentCallback =
+                startIntent(Fido2ApiRequestType.GET_ASSERTION);
+        ResultReceiver resultReceiver =
+                mRequest.getMaybeResultReceiver(Fido2ApiRequestType.GET_ASSERTION);
+        assertThat(resultReceiver).isNotNull();
+        resultReceiver.send(
+                Activity.RESULT_OK,
+                Fido2ApiTestHelper.createRuntimeGetAssertionIntent().getExtras());
+        ShadowLooper.idleMainLooper();
+        intentCallback.onResult(new Pair<>(Activity.RESULT_CANCELED, null));
+        watcher.assertExpected();
+    }
+
+    /** Expects exactly one STARTED and one {@code terminalEvent} sample in {@code histogram}. */
+    private static HistogramWatcher expectApiCall(
+            String histogram, @ApiCallEvent int terminalEvent) {
+        return HistogramWatcher.newBuilder()
+                .expectIntRecords(histogram, ApiCallEvent.STARTED, terminalEvent)
+                .build();
+    }
+
+    private void assertIntentOutcome(
+            @Fido2ApiRequestType int requestType,
+            int resultCode,
+            @Nullable Intent data,
+            @ApiCallEvent int expectedOutcome) {
+        String histogram =
+                switch (requestType) {
+                    case Fido2ApiRequestType.MAKE_CREDENTIAL -> REGISTER_INTENT_HISTOGRAM;
+                    case Fido2ApiRequestType.GET_ASSERTION_HYBRID -> HYBRID_SIGN_INTENT_HISTOGRAM;
+                    default -> SIGN_INTENT_HISTOGRAM;
+                };
+        HistogramWatcher watcher = expectApiCall(histogram, expectedOutcome);
+        startIntent(requestType).onResult(new Pair<>(resultCode, data));
+        watcher.assertExpected();
+    }
+
+    /** Launches a PendingIntent on a fresh request and returns its result callback. */
+    private Callback<Pair<Integer, Intent>> startIntent(@Fido2ApiRequestType int requestType) {
+        resetFido2CredentialRequest();
+        setRequestCallback(requestType);
+        List<Callback<Pair<Integer, Intent>>> intentCallbacks = captureIntentCallbacks();
+        mRequest.onGotPendingIntent(Mockito.mock(PendingIntent.class), requestType);
+        return intentCallbacks.get(0);
+    }
+
+    private void setRequestCallback(@Fido2ApiRequestType int requestType) {
+        Mockito.when(mRequestCallbackMock.getCallbackType())
+                .thenReturn(
+                        requestType == Fido2ApiRequestType.MAKE_CREDENTIAL
+                                ? WebauthnRequestCallback.CallbackType.MAKE_CREDENTIAL
+                                : WebauthnRequestCallback.CallbackType.GET_CREDENTIAL);
+        Mockito.when(mAuthenticationContextProviderMock.getRequestCallback())
+                .thenReturn(mRequestCallbackMock);
+    }
+
+    /** Makes PendingIntents launch successfully, and captures their result callbacks. */
+    private List<Callback<Pair<Integer, Intent>>> captureIntentCallbacks() {
+        List<Callback<Pair<Integer, Intent>>> intentCallbacks = new ArrayList<>();
+        FidoIntentSender intentSender = Mockito.mock(FidoIntentSender.class);
+        doAnswer(invocation -> intentCallbacks.add(invocation.getArgument(1)))
+                .when(intentSender)
+                .showIntent(any(), any());
+        Mockito.when(mAuthenticationContextProviderMock.getIntentSender()).thenReturn(intentSender);
+        return intentCallbacks;
+    }
+
+    private void resetFido2CredentialRequest() {
+        mRequest = new Fido2CredentialRequest(mAuthenticationContextProviderMock);
+        mRequest.overrideBrowserBridgeForTesting(mBrowserBridgeMock);
+        mRequest.setCredManHelperForTesting(mCredManHelperMock);
+        mRequest.setBarrierForTesting(mBarrierMock);
     }
 
     private void handleMakeCredentialRequest(Bundle browserOptions) {

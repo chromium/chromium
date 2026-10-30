@@ -6,6 +6,11 @@ package org.chromium.components.webauthn;
 
 import androidx.annotation.IntDef;
 
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.identitycredentials.CreateCredentialException;
+import com.google.android.gms.tasks.Task;
+
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -126,5 +131,54 @@ public final class AndroidApiCallMetrics {
 
     public static DeferredOneShotRecorder deferredCall(String histogramName) {
         return new DeferredOneShotRecorder(histogramName);
+    }
+
+    public static @ApiCallEvent int classifyTaskException(@Nullable Exception e) {
+        if (e instanceof CreateCredentialException createException
+                && CreateCredentialException.ERROR_TYPE_USER_CANCELED.equals(
+                        createException.getType())) {
+            return ApiCallEvent.CANCELLED;
+        }
+        if (e instanceof ApiException apiException) {
+            switch (apiException.getStatusCode()) {
+                case CommonStatusCodes.TIMEOUT:
+                    return ApiCallEvent.TIMED_OUT;
+                case CommonStatusCodes.CANCELED:
+                    return ApiCallEvent.CANCELLED;
+                default:
+                    return ApiCallEvent.FAILED;
+            }
+        }
+        return ApiCallEvent.FAILED;
+    }
+
+    public static <Result> Task<Result> attachToTask(Task<Result> task, OneShotRecorder recorder) {
+        return attachToTask(task, recorder, /* nullResultIsFailure= */ false);
+    }
+
+    /**
+     * Records the terminal outcome of {@code task} on {@code recorder}, on the UI thread. A
+     * successful task with a null result is recorded as {@link ApiCallEvent#FAILED} if {@code
+     * nullResultIsFailure}.
+     */
+    public static <Result> Task<Result> attachToTask(
+            Task<Result> task, OneShotRecorder recorder, boolean nullResultIsFailure) {
+        task.addOnCompleteListener(
+                Runnable::run,
+                GmsCoreUtils.wrapCompleteCallback(
+                        completedTask -> {
+                            if (completedTask.isCanceled()) {
+                                recorder.finish(ApiCallEvent.CANCELLED);
+                            } else if (completedTask.isSuccessful()) {
+                                recorder.finish(
+                                        nullResultIsFailure && completedTask.getResult() == null
+                                                ? ApiCallEvent.FAILED
+                                                : ApiCallEvent.SUCCEEDED);
+                            } else {
+                                recorder.finish(
+                                        classifyTaskException(completedTask.getException()));
+                            }
+                        }));
+        return task;
     }
 }

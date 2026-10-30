@@ -724,6 +724,48 @@ public class Fido2ApiTestHelper {
         return intent;
     }
 
+    /**
+     * Builds a successful makeCredential response intent at runtime. Unlike the serialized
+     * responses above, Robolectric's Parcel can parse it. Also mocks the attestation object
+     * parsing, which needs native code.
+     */
+    public static Intent createRuntimeMakeCredentialIntent() {
+        Fido2ApiJni.setInstanceForTesting(
+                (attestationObject, result) -> {
+                    result.authenticatorData = TEST_AUTHENTICATOR_DATA;
+                    result.attestationObject = attestationObject;
+                    return true;
+                });
+        return createRuntimeSuccessIntent(/* responseTag= */ 4, /* lastFieldTag= */ 4);
+    }
+
+    /** Like {@link #createRuntimeMakeCredentialIntent()}, but for getAssertion. */
+    public static Intent createRuntimeGetAssertionIntent() {
+        return createRuntimeSuccessIntent(/* responseTag= */ 5, /* lastFieldTag= */ 5);
+    }
+
+    private static Intent createRuntimeSuccessIntent(int responseTag, int lastFieldTag) {
+        Parcel parcel = Parcel.obtain();
+        final int a = writeHeader(OBJECT_MAGIC, parcel);
+        final int b = writeHeader(responseTag, parcel);
+        final int c = writeHeader(OBJECT_MAGIC, parcel);
+        // Byte array fields: key handle, clientDataJSON, then either the attestation object or the
+        // authenticator data and signature.
+        for (int tag = 2; tag <= lastFieldTag; tag++) {
+            int z = writeHeader(tag, parcel);
+            parcel.writeByteArray(new byte[] {(byte) tag});
+            writeLength(z, parcel);
+        }
+        writeLength(c, parcel);
+        writeLength(b, parcel);
+        writeLength(a, parcel);
+
+        Intent intent = new Intent();
+        intent.putExtra(Fido2Api.CREDENTIAL_EXTRA, parcel.marshall());
+        parcel.recycle();
+        return intent;
+    }
+
     /** Creates a PaymentOptions object with normal values. */
     public static PaymentOptions createPaymentOptions() {
         PaymentOptions options = new PaymentOptions();

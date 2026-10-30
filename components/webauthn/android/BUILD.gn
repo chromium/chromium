@@ -232,6 +232,7 @@ robolectric_library("junit") {
   deps = [
     ":java",
     ":test_support_java",
+    "$google_play_services_package:google_play_services_basement_java",
     "$google_play_services_package:google_play_services_identity_credentials_java",
     "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",

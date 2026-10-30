@@ -163,6 +163,11 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
     // CredMan API.
     private byte @Nullable [] mClientDataJson;
 
+    // Tracks the currently active GMSCore FIDO2 PendingIntent UI session for WebView ResultReceiver
+    // and direct test callbacks; each showIntent callback also captures its own session recorder so
+    // Conditional UI retries record independent lifecycles.
+    private AndroidApiCallMetrics.@Nullable DeferredOneShotRecorder mActiveFido2IntentRecorder;
+
     /**
      * Constructs the object.
      *
@@ -1402,9 +1407,59 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
                         (e) -> onBinderCallException(e, Fido2ApiRequestType.GET_ASSERTION_HYBRID));
     }
 
+    private static final String REGISTER_PENDING_INTENT_HISTOGRAM =
+            "WebAuthentication.Android.GmsCoreApiCall.RegisterPendingIntent";
+    private static final String SIGN_PENDING_INTENT_HISTOGRAM =
+            "WebAuthentication.Android.GmsCoreApiCall.SignPendingIntent";
+    private static final String HYBRID_SIGN_PENDING_INTENT_HISTOGRAM =
+            "WebAuthentication.Android.GmsCoreApiCall.HybridSignPendingIntent";
+
+    private static String intentHistogramForRequestType(@Fido2ApiRequestType int requestType) {
+        switch (requestType) {
+            case Fido2ApiRequestType.MAKE_CREDENTIAL:
+                return REGISTER_PENDING_INTENT_HISTOGRAM;
+            case Fido2ApiRequestType.GET_ASSERTION:
+            case Fido2ApiRequestType.GET_ASSERTION_LEGACY:
+                return SIGN_PENDING_INTENT_HISTOGRAM;
+            case Fido2ApiRequestType.GET_ASSERTION_HYBRID:
+                return HYBRID_SIGN_PENDING_INTENT_HISTOGRAM;
+            default:
+                assert false : "Unknown Fido2ApiRequestType: " + requestType;
+                return SIGN_PENDING_INTENT_HISTOGRAM;
+        }
+    }
+
+    private static @AndroidApiCallMetrics.ApiCallEvent int classifyFido2ResponseOutcome(
+            @Nullable Object response, @Fido2ApiRequestType int requestType) {
+        if (response == null) {
+            return AndroidApiCallMetrics.ApiCallEvent.FAILED;
+        }
+        if (response instanceof Pair) {
+            @SuppressWarnings("unchecked") // Checked by instanceof Pair above.
+            Pair<Integer, @Nullable String> error = (Pair<Integer, @Nullable String>) response;
+            if (error.first == Fido2Api.TIMEOUT_ERR) {
+                return AndroidApiCallMetrics.ApiCallEvent.TIMED_OUT;
+            }
+            if (error.first == Fido2Api.NOT_ALLOWED_ERR
+                    && error.second != null
+                    && error.second.contains(CANCELLED_ERROR_MSG)) {
+                return AndroidApiCallMetrics.ApiCallEvent.CANCELLED;
+            }
+            return AndroidApiCallMetrics.ApiCallEvent.FAILED;
+        }
+        if (requestType == Fido2ApiRequestType.MAKE_CREDENTIAL) {
+            return response instanceof MakeCredentialAuthenticatorResponse
+                    ? AndroidApiCallMetrics.ApiCallEvent.SUCCEEDED
+                    : AndroidApiCallMetrics.ApiCallEvent.FAILED;
+        }
+        return response instanceof GetAssertionAuthenticatorResponse
+                ? AndroidApiCallMetrics.ApiCallEvent.SUCCEEDED
+                : AndroidApiCallMetrics.ApiCallEvent.FAILED;
+    }
+
     // Handles a PendingIntent from the GMSCore FIDO library.
-    private void onGotPendingIntent(
-            PendingIntent pendingIntent, @Fido2ApiRequestType int requestType) {
+    @VisibleForTesting
+    void onGotPendingIntent(PendingIntent pendingIntent, @Fido2ApiRequestType int requestType) {
         log(TAG, "onGotPendingIntent");
         if (pendingIntent == null) {
             logError(TAG, "Didn't receive a pending intent.");
@@ -1416,9 +1471,19 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
             return;
         }
 
+        final AndroidApiCallMetrics.DeferredOneShotRecorder intentRecorder =
+                AndroidApiCallMetrics.deferredCall(intentHistogramForRequestType(requestType));
+        mActiveFido2IntentRecorder = intentRecorder;
         Callback<Pair<Integer, @Nullable Intent>> callback =
-                (result) -> onResult((Pair<Integer, @Nullable Intent>) result, requestType);
+                (result) ->
+                        onResult(
+                                (Pair<Integer, @Nullable Intent>) result,
+                                requestType,
+                                intentRecorder);
         if (!mAuthenticationContextProvider.getIntentSender().showIntent(pendingIntent, callback)) {
+            if (mActiveFido2IntentRecorder == intentRecorder) {
+                mActiveFido2IntentRecorder = null;
+            }
             logError(TAG, "Failed to send intent to FIDO API");
             returnErrorAndResetCallback(
                     AuthenticatorStatus.UNKNOWN_ERROR,
@@ -1427,6 +1492,7 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
                             requestType, /* success= */ false, /* ukmOutcome= */ null));
             return;
         }
+        intentRecorder.markStarted();
     }
 
     private void onBinderCallException(Exception e, @Fido2ApiRequestType int requestType) {
@@ -1438,7 +1504,8 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
                         requestType, /* success= */ false, /* ukmOutcome= */ null));
     }
 
-    private @Nullable ResultReceiver getMaybeResultReceiver(@Fido2ApiRequestType int requestType) {
+    @VisibleForTesting
+    @Nullable ResultReceiver getMaybeResultReceiver(@Fido2ApiRequestType int requestType) {
         // The FIDO API traditionally returned a PendingIntent, which the calling app was expected
         // to invoke and then receive the result from the Activity it launched.
         //
@@ -1470,6 +1537,12 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
                 logError(TAG, "Failed to parse FIDO2 API response from ResultReceiver", e);
                 response = null;
             }
+        }
+
+        AndroidApiCallMetrics.DeferredOneShotRecorder intentRecorder = mActiveFido2IntentRecorder;
+        if (intentRecorder != null) {
+            mActiveFido2IntentRecorder = null;
+            intentRecorder.finish(classifyFido2ResponseOutcome(response, requestType));
         }
 
         Integer browserAssistedLoginType = null;
@@ -1531,6 +1604,13 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
     // Handles the result.
     public void onResult(
             Pair<Integer, @Nullable Intent> result, @Fido2ApiRequestType int requestType) {
+        onResult(result, requestType, mActiveFido2IntentRecorder);
+    }
+
+    private void onResult(
+            Pair<Integer, @Nullable Intent> result,
+            @Fido2ApiRequestType int requestType,
+            AndroidApiCallMetrics.@Nullable DeferredOneShotRecorder intentRecorder) {
         log(TAG, "onResult");
         final int resultCode = result.first;
         final @Nullable Intent data = result.second;
@@ -1558,17 +1638,19 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
 
             case Activity.RESULT_CANCELED:
                 WebauthnRequestCallback callback =
-                        assumeNonNull(mAuthenticationContextProvider.getRequestCallback());
-                switch (callback.getCallbackType()) {
-                    case WebauthnRequestCallback.CallbackType.GET_CREDENTIAL:
-                        getAssertionOutcome = GetAssertionOutcome.USER_CANCELLATION;
-                        break;
-                    case WebauthnRequestCallback.CallbackType.MAKE_CREDENTIAL:
-                        makeCredentialOutcome = MakeCredentialOutcome.USER_CANCELLATION;
-                        break;
-                    case WebauthnRequestCallback.CallbackType.REPORT:
-                        assert false;
-                        break;
+                        mAuthenticationContextProvider.getRequestCallback();
+                if (callback != null) {
+                    switch (callback.getCallbackType()) {
+                        case WebauthnRequestCallback.CallbackType.GET_CREDENTIAL:
+                            getAssertionOutcome = GetAssertionOutcome.USER_CANCELLATION;
+                            break;
+                        case WebauthnRequestCallback.CallbackType.MAKE_CREDENTIAL:
+                            makeCredentialOutcome = MakeCredentialOutcome.USER_CANCELLATION;
+                            break;
+                        case WebauthnRequestCallback.CallbackType.REPORT:
+                            assert false;
+                            break;
+                    }
                 }
                 errorCode = AuthenticatorStatus.NOT_ALLOWED_ERROR;
                 break;
@@ -1576,6 +1658,18 @@ public class Fido2CredentialRequest implements WebauthnBrowserBridge.Provider {
             default:
                 logError(TAG, "FIDO2 PendingIntent resulted in code: " + resultCode);
                 break;
+        }
+
+        if (intentRecorder != null) {
+            if (mActiveFido2IntentRecorder == intentRecorder) {
+                mActiveFido2IntentRecorder = null;
+            }
+            @AndroidApiCallMetrics.ApiCallEvent
+            int intentOutcome =
+                    resultCode == Activity.RESULT_CANCELED
+                            ? AndroidApiCallMetrics.ApiCallEvent.CANCELLED
+                            : classifyFido2ResponseOutcome(response, requestType);
+            intentRecorder.finish(intentOutcome);
         }
 
         Integer browserAssistedLoginType = null;

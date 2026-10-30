@@ -124,6 +124,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.Android.GmsCoreApiCall.{Operation}"
+    enum="WebAuthenticationAndroidApiCallEvent" expires_after="2027-11-01">
+  <owner>derinel@google.com</owner>
+  <owner>kenrb@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the lifecycle (Started and terminal outcome: Succeeded, Cancelled,
+    TimedOut, or Failed) of {Operation} on Android. Comparing Started against
+    the sum of terminal outcomes surfaces silent hangs or wedged calls.
+  </summary>
+  <token key="Operation">
+    <variant name="AppIsUvpaa"
+        summary="GMSCore IFido2AppService UVPAA Binder calls"/>
+    <variant name="AppRegister"
+        summary="GMSCore IFido2AppService register Binder calls"/>
+    <variant name="AppSign"
+        summary="GMSCore IFido2AppService sign Binder calls"/>
+    <variant name="BrowserGetCredentials"
+        summary="GMSCore IFido2PrivilegedService getCredentialList calls"/>
+    <variant name="BrowserHybridSign"
+        summary="GMSCore IFido2PrivilegedService hybrid sign Binder calls"/>
+    <variant name="BrowserIsUvpaa"
+        summary="GMSCore IFido2PrivilegedService UVPAA Binder calls"/>
+    <variant name="BrowserRegister"
+        summary="GMSCore IFido2PrivilegedService register Binder calls"/>
+    <variant name="BrowserSign"
+        summary="GMSCore IFido2PrivilegedService sign Binder calls"/>
+    <variant name="FirstPartyGetLinkInfo"
+        summary="GMSCore IFido2FirstPartyService getLinkInfo Binder calls"/>
+    <variant name="HybridSignPendingIntent"
+        summary="GMSCore FIDO2 hybrid sign PendingIntent UI sessions"/>
+    <variant name="PersistentListPasskeysForRp"
+        summary="GMSCore IFidoPersistentService listPasskeysForRp calls"/>
+    <variant name="RegisterPendingIntent"
+        summary="GMSCore FIDO2 register PendingIntent UI sessions"/>
+    <variant name="SignPendingIntent"
+        summary="GMSCore FIDO2 sign PendingIntent UI sessions"/>
+  </token>
+</histogram>
+
 <histogram name="WebAuthentication.Android.GmsCoreGetCredentialsResult"
     enum="GmsCoreGetCredentialsResult" expires_after="2027-04-18">
   <owner>derinel@google.com</owner>
