@@ -63,8 +63,8 @@ void LogWidgetKitAction(WidgetKitExtensionAction action) {
 
 // LINT.IfChange
 // TODO(crbug.com/462018636): This code will be soon migrated to
-// task_request_url_context.mm, so any change should be reflected also there.
-// Contact fedegermi for additional information or support.
+// task_request_for_xcallback_url_context.mm, so any change should be reflected
+// also there. Contact fedegermi for additional information or support.
 TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
     const std::string& poa_param) {
   if (poa_param == kPostOpeningActionDefaultBrowserSettings) {
@@ -72,7 +72,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
   }
   return NO_ACTION;
 }
-// LINT.ThenChange(//ios/chrome/app/task_request_url_context.mm)
+// LINT.ThenChange(//ios/chrome/app/task_request_for_xcallback_url_context.mm)
 
 }  // namespace
 

@@ -6,6 +6,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import <map>
+#import <string>
+
 #import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
@@ -14,8 +17,21 @@
 #import "ios/chrome/app/startup/app_startup_utils.h"
 #import "ios/chrome/app/task_request_url_context_private.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/x_callback_url.h"
+#import "net/base/apple/url_conversions.h"
+#import "url/gurl.h"
 
 namespace {
+
+// Maps the `poa` query parameter of the `/open` command to the post-opening
+// action to trigger once the tab is opened.
+TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
+    const std::string& poa_param) {
+  if (poa_param == kPostOpeningActionDefaultBrowserSettings) {
+    return TabOpeningPostOpeningAction::SHOW_DEFAULT_BROWSER_SETTINGS;
+  }
+  return TabOpeningPostOpeningAction::NO_ACTION;
+}
 
 // Returns the command dispatch time from the shared defaults.
 NSDate* ExtractCommandTimeFromSharedDefaults(UIOpenURLContext* URLContext) {
@@ -78,7 +94,33 @@ NSDate* ExtractCommandTimeFromSharedDefaults(UIOpenURLContext* URLContext) {
 }
 
 - (void)handleCommandWithSceneState:(SceneState*)sceneState {
-  // TODO(crbug.com/493816082): Add implementation.
+  if (IsXCallbackOpenCommandPath([self.URLContext.URL path])) {
+    [self handleOpenCommandWithSceneState:sceneState];
+  }
+  // TODO(crbug.com/493816082): Handle the `/app-group-command` command.
+}
+
+#pragma mark - Private
+
+// Opens the http(s) URL passed in the `url` query parameter of the `/open`
+// command. Requests with a missing or non-http(s) URL are discarded.
+- (void)handleOpenCommandWithSceneState:(SceneState*)sceneState {
+  std::map<std::string, std::string> parameters =
+      ExtractQueryParametersFromXCallbackURL(
+          net::GURLWithNSURL(self.URLContext.URL));
+  GURL externalURL(parameters[kXCallbackOpenCommandURLParameter]);
+  if (!externalURL.is_valid() || !externalURL.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
+  [self openTabWithSceneState:sceneState
+                  externalURL:externalURL
+                   virtualURL:GURL()
+                   targetMode:ApplicationModeForTabOpening::UNDETERMINED
+            postOpeningAction:XCallbackPoaToPostOpeningAction(
+                                  parameters[kPostOpeningActionParameter])
+        postOpeningCompletion:nil
+             fromWidgetOrSiri:NO];
 }
 
 @end

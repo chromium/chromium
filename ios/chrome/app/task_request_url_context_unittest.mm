@@ -805,3 +805,81 @@ TEST_F(TaskRequestForURLContextTest, TestGoogleOneDeepLinkDisabled) {
             TabOpeningPostOpeningAction::NO_ACTION);
   EXPECT_TRUE(tab_opener.dismissOmnibox);
 }
+
+// Tests that X-Callback `/open` URLs open the `url` parameter in a new tab and
+// map the `poa` parameter to the expected post-opening action.
+TEST_F(TaskRequestForURLContextTest, TestXCallbackOpenCommandExecution) {
+  struct TestCase {
+    NSString* url_string;
+    TabOpeningPostOpeningAction expected_action;
+  } test_cases[] = {
+      {@"googlechrome://x-callback-url/open?url=https%3A%2F%2Fwww.example.com",
+       TabOpeningPostOpeningAction::NO_ACTION},
+      {@"googlechrome://x-callback-url/open?url=https%3A%2F%2Fwww.example.com"
+       @"&poa=default-browser-settings",
+       TabOpeningPostOpeningAction::SHOW_DEFAULT_BROWSER_SETTINGS},
+      {@"googlechrome://x-callback-url/open?url=https%3A%2F%2Fwww.example.com"
+       @"&poa=unknown",
+       TabOpeningPostOpeningAction::NO_ACTION},
+  };
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(base::SysNSStringToUTF8(test_case.url_string));
+    UIOpenURLContext* context =
+        CreateMockURLContext([NSURL URLWithString:test_case.url_string]);
+    TaskRequestForURLContext* request =
+        [TaskRequestForURLContext taskRequestWithURLContext:context
+                                                 sceneState:scene_state_
+                                                isColdStart:YES];
+    ASSERT_NE(request, nil);
+
+    TaskRequestURLContextTestTabOpener* tab_opener =
+        [[TaskRequestURLContextTestTabOpener alloc]
+            initWithSceneState:scene_state_];
+    scene_state_.controller = tab_opener;
+
+    [request execute];
+
+    EXPECT_EQ(tab_opener.targetMode,
+              ApplicationModeForTabOpening::UNDETERMINED);
+    EXPECT_EQ(tab_opener.urlLoadParams.web_params.url,
+              GURL("https://www.example.com"));
+    EXPECT_TRUE(tab_opener.urlLoadParams.web_params.virtual_url.is_empty());
+    EXPECT_TRUE(tab_opener.dismissOmnibox);
+    EXPECT_EQ(tab_opener.completionAction, test_case.expected_action);
+    EXPECT_TRUE(tab_opener.completionActionExecuted);
+  }
+}
+
+// Tests that X-Callback URLs with a missing or non-http(s) `url` parameter, or
+// with an unsupported command, do not open a tab.
+TEST_F(TaskRequestForURLContextTest, TestXCallbackInvalidCommandIgnored) {
+  NSString* url_strings[] = {
+      @"googlechrome://x-callback-url/open",
+      @"googlechrome://x-callback-url/open?url=invalid",
+      @"googlechrome://x-callback-url/open?url=chrome%3A%2F%2Fsettings",
+      @"googlechrome://x-callback-url/open?url=javascript%3Aalert(1)",
+      @"googlechrome://x-callback-url/other?url=https%3A%2F%2Fwww.example.com",
+  };
+
+  for (NSString* url_string : url_strings) {
+    SCOPED_TRACE(base::SysNSStringToUTF8(url_string));
+    UIOpenURLContext* context =
+        CreateMockURLContext([NSURL URLWithString:url_string]);
+    TaskRequestForURLContext* request =
+        [TaskRequestForURLContext taskRequestWithURLContext:context
+                                                 sceneState:scene_state_
+                                                isColdStart:YES];
+    ASSERT_NE(request, nil);
+
+    TaskRequestURLContextTestTabOpener* tab_opener =
+        [[TaskRequestURLContextTestTabOpener alloc]
+            initWithSceneState:scene_state_];
+    scene_state_.controller = tab_opener;
+
+    [request execute];
+
+    EXPECT_TRUE(tab_opener.urlLoadParams.web_params.url.is_empty());
+    EXPECT_FALSE(tab_opener.completionActionExecuted);
+  }
+}
