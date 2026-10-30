@@ -465,5 +465,43 @@ touchEnd with 0 touch points
 type: touchend
 ----Touches----
 
+------- Sequence 12 ------
+
+Dispatching event:
+touchStart with 1 touch points
+{
+    error : {
+        code : -32602
+        message : TouchPoint id '-1' is out of valid range.
+    }
+    id : <number>
+    sessionId : <string>
+}
+
+
+Dispatching event:
+touchStart with 1 touch points
+{
+    error : {
+        code : -32602
+        message : TouchPoint id '2147483646' is out of valid range.
+    }
+    id : <number>
+    sessionId : <string>
+}
+
+
+Dispatching event:
+touchStart with 1 touch points
+{
+    error : {
+        code : -32602
+        message : TouchPoint id '2147483647' is out of valid range.
+    }
+    id : <number>
+    sessionId : <string>
+}
+
+
 ------- Done ------
 

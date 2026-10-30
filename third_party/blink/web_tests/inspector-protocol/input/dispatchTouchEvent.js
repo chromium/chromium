@@ -329,5 +329,13 @@
     touchPoints: []
   });
 
+  await log('\n------- Sequence 12 ------');
+  await dispatchEvent(
+      {type: 'touchStart', touchPoints: [{x: 100, y: 100, id: -1}]});
+  await dispatchEvent(
+      {type: 'touchStart', touchPoints: [{x: 100, y: 100, id: 2147483646}]});
+  await dispatchEvent(
+      {type: 'touchStart', touchPoints: [{x: 100, y: 100, id: 2147483647}]});
+
   await log('\n------- Done ------');
 });

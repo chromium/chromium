@@ -562,6 +562,10 @@ CreateWebTouchEvents(
     if (point->HasId()) {
       with_id++;
     }
+    if (id < 0 || id >= std::numeric_limits<int>::max() - 1) {
+      return base::unexpected(Response::InvalidParams(
+          base::StringPrintf("TouchPoint id '%d' is out of valid range.", id)));
+    }
     std::string message = ValidatePointerEventProperties(
         point->GetForce(1.0f), point->GetTangentialPressure(0.0f),
         point->GetTiltX(0.0f), point->GetTiltY(0.0f), point->GetTwist(0));
@@ -1866,6 +1870,11 @@ void InputHandler::DispatchSyntheticPointerActionTouch(
     int id = point->GetId(i);  // index |i| is default for the id.
     if (point->HasId())
       with_id++;
+    if (id < 0 || id >= std::numeric_limits<int>::max() - 1) {
+      callback->sendFailure(Response::InvalidParams(
+          base::StringPrintf("TouchPoint id '%d' is out of valid range.", id)));
+      return;
+    }
 
     SyntheticPointerActionParams::PointerActionType action_type =
         SyntheticPointerActionParams::PointerActionType::MOVE;

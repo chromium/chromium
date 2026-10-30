@@ -537,6 +537,7 @@ void TouchEventManager::UpdateTouchAttributeMapsForPointerDown(
     TouchAction effective_touch_action) {
   DCHECK(event.GetType() == WebInputEvent::Type::kPointerDown);
   DCHECK(touch_node);
+  DCHECK(TouchAttributeMap::IsValidKey(event.id));
 
   // Ideally we'd DCHECK(!touch_attribute_map_.Contains(event.id))
   // since we shouldn't get a touchstart for a touch that's already
@@ -583,6 +584,7 @@ void TouchEventManager::HandleTouchPoint(
   DCHECK_GE(event.GetType(), WebInputEvent::Type::kPointerTypeFirst);
   DCHECK_LE(event.GetType(), WebInputEvent::Type::kPointerTypeLast);
   DCHECK_NE(event.GetType(), WebInputEvent::Type::kPointerCausedUaAction);
+  DCHECK(TouchAttributeMap::IsValidKey(event.id));
 
   if (touch_attribute_map_.empty()) {
     // Ideally we'd DCHECK(!m_touchSequenceDocument) here since we should
