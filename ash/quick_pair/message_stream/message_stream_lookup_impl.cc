@@ -77,7 +77,7 @@ void MessageStreamLookupImpl::RemoveObserver(
 MessageStreamLookupImpl::~MessageStreamLookupImpl() = default;
 
 MessageStream* MessageStreamLookupImpl::GetMessageStream(
-    const std::string& device_address) {
+    std::string_view device_address) {
   auto it = message_streams_.find(device_address);
   // If we don't have a MessageStream for the device at |device_address|, return
   // a nullptr.

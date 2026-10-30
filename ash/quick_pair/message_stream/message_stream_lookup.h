@@ -6,6 +6,7 @@
 #define ASH_QUICK_PAIR_MESSAGE_STREAM_MESSAGE_STREAM_LOOKUP_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/observer_list_types.h"
 
@@ -36,8 +37,7 @@ class MessageStreamLookup {
 
   // To retrieve an existing instance of a MessageStream, retrieve an instance
   // this way.
-  virtual MessageStream* GetMessageStream(
-      const std::string& device_address) = 0;
+  virtual MessageStream* GetMessageStream(std::string_view device_address) = 0;
 };
 
 }  // namespace quick_pair

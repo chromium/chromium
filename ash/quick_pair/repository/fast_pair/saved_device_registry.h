@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
@@ -37,12 +38,12 @@ class SavedDeviceRegistry {
 
   // Saves the account association (|mac_address|, |account_key|) to disk.
   // Returns true on success, false on failure.
-  bool SaveAccountAssociation(const std::string& mac_address,
+  bool SaveAccountAssociation(std::string_view mac_address,
                               const std::vector<uint8_t>& account_key);
 
   // Deletes the |mac_address| -> account key record from prefs based on
   // |mac address|. Returns true on success, false on failure.
-  bool DeleteAccountKey(const std::string& mac_address);
+  bool DeleteAccountKey(std::string_view mac_address);
 
   // Deletes the mac address -> |account_key| record from prefs based on
   // |account_key|. Returns true on success, false on failure.
@@ -51,7 +52,7 @@ class SavedDeviceRegistry {
   // Retrieves an account key from disk if available, otherwise returns an
   // empty vector.
   std::optional<const std::vector<uint8_t>> GetAccountKey(
-      const std::string& mac_address);
+      std::string_view mac_address);
 
   // Checks if the account key is in the registry.
   bool IsAccountKeySavedToRegistry(const std::vector<uint8_t>& account_key);

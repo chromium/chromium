@@ -6,6 +6,7 @@
 #define ASH_QUICK_PAIR_MESSAGE_STREAM_FAKE_MESSAGE_STREAM_LOOKUP_H_
 
 #include <string>
+#include <string_view>
 
 #include "ash/quick_pair/message_stream/message_stream_lookup.h"
 #include "base/containers/flat_map.h"
@@ -32,11 +33,11 @@ class FakeMessageStreamLookup : public MessageStreamLookup {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
 
-  MessageStream* GetMessageStream(const std::string& device_address) override;
+  MessageStream* GetMessageStream(std::string_view device_address) override;
 
   void AddMessageStream(const std::string& device_address,
                         MessageStream* message_stream);
-  void RemoveMessageStream(const std::string& device_address);
+  void RemoveMessageStream(std::string_view device_address);
 
   void NotifyMessageStreamConnected(const std::string& device_address,
                                     MessageStream* message_stream);

@@ -5,6 +5,7 @@
 #include "ash/quick_pair/fast_pair_handshake/fake_fast_pair_handshake_lookup.h"
 
 #include <memory>
+#include <string_view>
 
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
@@ -33,8 +34,7 @@ FastPairHandshake* FakeFastPairHandshakeLookup::Get(
   return it != fast_pair_handshakes_.end() ? it->second.get() : nullptr;
 }
 
-FastPairHandshake* FakeFastPairHandshakeLookup::Get(
-    const std::string& address) {
+FastPairHandshake* FakeFastPairHandshakeLookup::Get(std::string_view address) {
   for (const auto& pair : fast_pair_handshakes_) {
     if (pair.first->classic_address() == address ||
         pair.first->ble_address() == address) {
@@ -49,7 +49,7 @@ bool FakeFastPairHandshakeLookup::Erase(scoped_refptr<Device> device) {
   return fast_pair_handshakes_.erase(device) == 1;
 }
 
-bool FakeFastPairHandshakeLookup::Erase(const std::string& address) {
+bool FakeFastPairHandshakeLookup::Erase(std::string_view address) {
   for (const auto& pair : fast_pair_handshakes_) {
     if (pair.first->classic_address() == address ||
         pair.first->ble_address() == address) {

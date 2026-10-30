@@ -4,6 +4,8 @@
 
 #include "ash/quick_pair/message_stream/fake_message_stream_lookup.h"
 
+#include <string_view>
+
 namespace ash {
 namespace quick_pair {
 
@@ -12,7 +14,7 @@ FakeMessageStreamLookup::FakeMessageStreamLookup() = default;
 FakeMessageStreamLookup::~FakeMessageStreamLookup() = default;
 
 MessageStream* FakeMessageStreamLookup::GetMessageStream(
-    const std::string& device_address) {
+    std::string_view device_address) {
   auto it = message_streams_.find(device_address);
 
   if (it == message_streams_.end())
@@ -44,7 +46,7 @@ void FakeMessageStreamLookup::AddMessageStream(
 }
 
 void FakeMessageStreamLookup::RemoveMessageStream(
-    const std::string& device_address) {
+    std::string_view device_address) {
   message_streams_.erase(device_address);
 }
 

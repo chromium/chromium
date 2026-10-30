@@ -5,11 +5,11 @@
 #ifndef ASH_QUICK_PAIR_MESSAGE_STREAM_MESSAGE_STREAM_LOOKUP_IMPL_H_
 #define ASH_QUICK_PAIR_MESSAGE_STREAM_MESSAGE_STREAM_LOOKUP_IMPL_H_
 
-#include "ash/quick_pair/message_stream/message_stream_lookup.h"
-
 #include <string>
+#include <string_view>
 
 #include "ash/quick_pair/message_stream/message_stream.h"
+#include "ash/quick_pair/message_stream/message_stream_lookup.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
@@ -38,7 +38,7 @@ class MessageStreamLookupImpl : public MessageStreamLookup,
   void AddObserver(MessageStreamLookup::Observer* observer) override;
   void RemoveObserver(MessageStreamLookup::Observer* observer) override;
 
-  MessageStream* GetMessageStream(const std::string& device_address) override;
+  MessageStream* GetMessageStream(std::string_view device_address) override;
 
  private:
   // Enum class to bind to attempts to create RFCOMM channels for logging which

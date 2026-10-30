@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/common/pair_failure.h"
@@ -44,13 +45,13 @@ class FastPairHandshakeLookup {
   virtual FastPairHandshake* Get(scoped_refptr<Device> device) = 0;
 
   // Get an existing instance for |address|.
-  virtual FastPairHandshake* Get(const std::string& address) = 0;
+  virtual FastPairHandshake* Get(std::string_view address) = 0;
 
   // Erases the FastPairHandshake instance for |device| if exists.
   virtual bool Erase(scoped_refptr<Device> device) = 0;
 
   // Erases the FastPairHandshake instance for |address| if exists.
-  virtual bool Erase(const std::string& address) = 0;
+  virtual bool Erase(std::string_view address) = 0;
 
   // Deletes all existing FastPairHandshake instances.
   virtual void Clear() = 0;

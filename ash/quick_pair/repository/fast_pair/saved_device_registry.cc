@@ -5,6 +5,7 @@
 #include "ash/quick_pair/repository/fast_pair/saved_device_registry.h"
 
 #include <string>
+#include <string_view>
 
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 #include "base/base64.h"
@@ -36,7 +37,7 @@ void SavedDeviceRegistry::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 bool SavedDeviceRegistry::SaveAccountAssociation(
-    const std::string& mac_address,
+    std::string_view mac_address,
     const std::vector<uint8_t>& account_key) {
   PrefService* pref_service =
       QuickPairBrowserDelegate::Get()->GetActivePrefService();
@@ -54,7 +55,7 @@ bool SavedDeviceRegistry::SaveAccountAssociation(
   return true;
 }
 
-bool SavedDeviceRegistry::DeleteAccountKey(const std::string& mac_address) {
+bool SavedDeviceRegistry::DeleteAccountKey(std::string_view mac_address) {
   PrefService* pref_service =
       QuickPairBrowserDelegate::Get()->GetActivePrefService();
   if (!pref_service) {
@@ -101,7 +102,7 @@ bool SavedDeviceRegistry::DeleteAccountKey(
 }
 
 std::optional<const std::vector<uint8_t>> SavedDeviceRegistry::GetAccountKey(
-    const std::string& mac_address) {
+    std::string_view mac_address) {
   PrefService* pref_service =
       QuickPairBrowserDelegate::Get()->GetActivePrefService();
   if (!pref_service) {

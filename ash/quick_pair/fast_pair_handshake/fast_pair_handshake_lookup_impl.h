@@ -5,6 +5,8 @@
 #ifndef ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAST_PAIR_HANDSHAKE_LOOKUP_IMPL_H_
 #define ASH_QUICK_PAIR_FAST_PAIR_HANDSHAKE_FAST_PAIR_HANDSHAKE_LOOKUP_IMPL_H_
 
+#include <string_view>
+
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
 #include "base/no_destructor.h"
 
@@ -24,9 +26,9 @@ class FastPairHandshakeLookupImpl : public FastPairHandshakeLookup {
 
   // FastPairHandshakeLookup:
   FastPairHandshake* Get(scoped_refptr<Device> device) override;
-  FastPairHandshake* Get(const std::string& address) override;
+  FastPairHandshake* Get(std::string_view address) override;
   bool Erase(scoped_refptr<Device> device) override;
-  bool Erase(const std::string& address) override;
+  bool Erase(std::string_view address) override;
   void Clear() override;
   void Create(scoped_refptr<device::BluetoothAdapter> adapter,
               scoped_refptr<Device> device,
