@@ -231,7 +231,6 @@ ProxyProvisioningDomainManager::ProxyProvisioningDomainManager(
     }
   }
 
-  is_initial_refresh_pending_ = true;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&ProxyProvisioningDomainManager::StartRefreshInternal,
@@ -256,23 +255,14 @@ void ProxyProvisioningDomainManager::ForceRefresh() {
   consecutive_transient_failures_ = 0;
   expiration_timer_.Stop();
   if (is_refresh_in_progress()) {
-    CancelRefreshInternal();
+    CancelRefresh();
   }
   StartRefreshInternal(/*force=*/true);
 }
 
 void ProxyProvisioningDomainManager::CancelRefresh() {
-  const bool was_refresh_in_progress = is_refresh_in_progress();
-  CancelRefreshInternal();
-  if (was_refresh_in_progress) {
-    TransitionToState(ProvisioningDomainProxyConfig::State::kRefreshNeeded);
-  }
-}
-
-void ProxyProvisioningDomainManager::CancelRefreshInternal() {
   expiration_timer_.Stop();
   weak_factory_.InvalidateWeakPtrs();
-  is_initial_refresh_pending_ = false;
   fetcher_.reset();
 }
 
@@ -329,7 +319,6 @@ void ProxyProvisioningDomainManager::ScheduleProactiveRefresh() {
 }
 
 void ProxyProvisioningDomainManager::StartRefreshInternal(bool force) {
-  is_initial_refresh_pending_ = false;
   if (state() == ProvisioningDomainProxyConfig::State::kFailedPermanent) {
     return;
   }

@@ -238,14 +238,6 @@ class EnterpriseProxyService
   void RecreateProvisioningDomainManagers(
       const base::ListValue& policy_domains);
 
-  // Updates `refreshing_managers_` for `domain_manager` based on
-  // `is_refresh_in_progress()`, and persists `domain_manager`'s configuration
-  // to the `kProvisioningDomainProxyConfigs` pref cache when it is in a
-  // cacheable state (`kValid` or `kRefreshNeeded`). Does not emit NetLog events
-  // or notify observers so callers can batch updates across multiple managers.
-  void UpdateManagerRefreshStateAndCache(
-      ProxyProvisioningDomainManager* domain_manager);
-
   // Represents an in-flight OAuth token fetch for a proxy authentication
   // challenge, grouping callbacks for duplicate requests to the same proxy.
   struct PendingAuthRequest;

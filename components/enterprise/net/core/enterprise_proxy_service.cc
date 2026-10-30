@@ -445,32 +445,29 @@ void EnterpriseProxyService::Shutdown() {
   observers_.Clear();
 }
 
-void EnterpriseProxyService::UpdateManagerRefreshStateAndCache(
+void EnterpriseProxyService::OnProvisioningDomainStateChanged(
     ProxyProvisioningDomainManager* domain_manager) {
+  const size_t old_count = refreshing_managers_.size();
+
   if (domain_manager->is_refresh_in_progress()) {
     refreshing_managers_.insert(domain_manager);
   } else {
     refreshing_managers_.erase(domain_manager);
-  }
-
-  // Only persist valid or refresh-needed states; do not overwrite previously
-  // cached configurations with in-flight fetches or failure states.
-  const ProvisioningDomainProxyConfig::State state = domain_manager->state();
-  if (state == ProvisioningDomainProxyConfig::State::kValid ||
-      state == ProvisioningDomainProxyConfig::State::kRefreshNeeded) {
-    std::string policy_hash = ComputePolicyHash(domain_manager->policy());
-    if (!policy_hash.empty()) {
-      ScopedDictPrefUpdate update(pref_service_,
-                                  kProvisioningDomainProxyConfigs);
-      update->Set(policy_hash, domain_manager->ToDict());
+    // Do not overwrite previously cached valid configurations with transient
+    // or blocked failure states.
+    if (domain_manager->state() !=
+            ProvisioningDomainProxyConfig::State::kFailedTransient &&
+        domain_manager->state() !=
+            ProvisioningDomainProxyConfig::State::kFailedBlocked) {
+      std::string policy_hash = ComputePolicyHash(domain_manager->policy());
+      if (!policy_hash.empty()) {
+        ScopedDictPrefUpdate update(pref_service_,
+                                    kProvisioningDomainProxyConfigs);
+        update->Set(policy_hash, domain_manager->ToDict());
+      }
     }
   }
-}
 
-void EnterpriseProxyService::OnProvisioningDomainStateChanged(
-    ProxyProvisioningDomainManager* domain_manager) {
-  const size_t old_count = refreshing_managers_.size();
-  UpdateManagerRefreshStateAndCache(domain_manager);
   const size_t new_count = refreshing_managers_.size();
 
   if (old_count == 0 && new_count > 0) {
@@ -570,17 +567,9 @@ void EnterpriseProxyService::RecreateProvisioningDomainManagers(
     if (!policy_hash.empty()) {
       active_policy_hashes.insert(policy_hash);
     }
-    ProxyProvisioningDomainManager* manager_ptr = manager.get();
-    provisioning_domain_observations_.AddObservation(manager_ptr);
+    provisioning_domain_observations_.AddObservation(manager.get());
+    OnProvisioningDomainStateChanged(manager.get());
     provisioning_domain_managers_.push_back(std::move(manager));
-    UpdateManagerRefreshStateAndCache(manager_ptr);
-  }
-
-  if (!refreshing_managers_.empty()) {
-    VLOG_POLICY(1, ENTERPRISE_PROXY)
-        << "Enterprise proxy configuration refresh in progress; pausing "
-           "network traffic.";
-    net_log_.BeginEvent(net::NetLogEventType::ENTERPRISE_PROXY_NETWORK_PAUSE);
   }
 
   // Prune cache entries for policy hashes that are no longer configured.

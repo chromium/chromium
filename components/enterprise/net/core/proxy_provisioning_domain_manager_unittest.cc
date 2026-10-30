@@ -304,52 +304,13 @@ TEST_F(ProxyProvisioningDomainManagerTest, CancelRefreshAbortsInFlightRequest) {
   MockDomainObserver observer;
   manager->AddObserver(&observer);
 
-  ExpectStateTransitions(
-      observer, manager.get(),
-      {ProvisioningDomainProxyConfig::State::kFetching,
-       ProvisioningDomainProxyConfig::State::kRefreshNeeded});
-
-  // Wait for initial task to start the fetch.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return manager->state() == ProvisioningDomainProxyConfig::State::kFetching;
-  }));
+  // Wait for initial task to start refresh.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return manager->is_refresh_in_progress(); }));
   EXPECT_TRUE(manager->is_refresh_in_progress());
   EXPECT_EQ(1, test_url_loader_factory_.NumPending());
 
   manager->CancelRefresh();
-  EXPECT_FALSE(manager->is_refresh_in_progress());
-  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kRefreshNeeded,
-            manager->state());
-
-  manager->RemoveObserver(&observer);
-}
-
-TEST_F(ProxyProvisioningDomainManagerTest,
-       CancelRefreshImmediatelyAfterConstruction) {
-  auto auth_service = CreateAuthService();
-  auto manager = CreateManager(CreateTestPolicyConfig(), auth_service.get());
-
-  MockDomainObserver observer;
-  manager->AddObserver(&observer);
-  ExpectStateTransitions(
-      observer, manager.get(),
-      {ProvisioningDomainProxyConfig::State::kRefreshNeeded});
-
-  // Immediately upon construction (before the posted StartRefreshInternal task
-  // runs), is_refresh_in_progress() is true while in kRefreshNeeded.
-  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kRefreshNeeded,
-            manager->state());
-  EXPECT_TRUE(manager->is_refresh_in_progress());
-  EXPECT_TRUE(test_url_loader_factory_.pending_requests()->empty());
-
-  manager->CancelRefresh();
-  EXPECT_FALSE(manager->is_refresh_in_progress());
-  EXPECT_EQ(ProvisioningDomainProxyConfig::State::kRefreshNeeded,
-            manager->state());
-
-  // Draining pending tasks via `NumPending()` should not start a fetch after
-  // cancellation.
-  EXPECT_EQ(0, test_url_loader_factory_.NumPending());
   EXPECT_FALSE(manager->is_refresh_in_progress());
 
   manager->RemoveObserver(&observer);
@@ -730,7 +691,6 @@ TEST_F(ProxyProvisioningDomainManagerTest, RestoresFromCachedConfigDict) {
   EXPECT_EQ(3u, restored_config.routing_rules.size());
   EXPECT_EQ(ProvisioningDomainProxyConfig::State::kRefreshNeeded,
             manager->state());
-  EXPECT_TRUE(manager->is_refresh_in_progress());
 
   EXPECT_TRUE(restored_config.proxy_endpoints.contains("proxy1"));
   EXPECT_TRUE(restored_config.proxy_endpoints.contains("proxy2"));

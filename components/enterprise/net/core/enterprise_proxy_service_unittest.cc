@@ -273,12 +273,14 @@ TEST_F(EnterpriseProxyServiceTest, MultiDomainServiceLifecycle) {
       });
 
   // Phase 2 Expectations: Policy update reducing to 1 domain immediately drops
-  // domain2's route while keeping domain1's cached route and marking the
-  // refresh as in progress, then completes the refresh.
+  // domain2's route while keeping domain1's cached route, then refreshes.
   EXPECT_CALL(observer, OnDynamicProxyConfigsStatusChanged())
       .WillOnce([&]() {
-        EXPECT_TRUE(service_->GetDynamicRoutingConfig().is_update_in_progress);
+        EXPECT_FALSE(service_->GetDynamicRoutingConfig().is_update_in_progress);
         EXPECT_EQ(1u, service_->GetDynamicRoutingConfig().routing_rules.size());
+      })
+      .WillOnce([&]() {
+        EXPECT_TRUE(service_->GetDynamicRoutingConfig().is_update_in_progress);
       })
       .WillOnce([&]() {
         EXPECT_FALSE(service_->GetDynamicRoutingConfig().is_update_in_progress);
@@ -690,13 +692,6 @@ TEST_F(EnterpriseProxyServiceTest,
   service_.reset();
   CreateService();
 
-  // Immediately upon startup (before any posted tasks run), the service must
-  // report that a refresh is in progress so network requests wait for fresh
-  // routing rules.
-  EXPECT_TRUE(service_->IsRefreshInProgress());
-  EXPECT_TRUE(service_->GetDynamicRoutingConfig().is_update_in_progress);
-  EXPECT_EQ(1u, service_->GetDynamicRoutingConfig().routing_rules.size());
-
   // Verify active routes are immediately available from cache BEFORE
   // simulating network response.
   const auto endpoint = service_->FindMatchingProxyEndpoint(
@@ -707,36 +702,6 @@ TEST_F(EnterpriseProxyServiceTest,
   EXPECT_EQ(AuthType::kProfileBearerToken, endpoint->auth->type);
   EXPECT_EQ(AuthScope::kCloudSecureGateway, endpoint->auth->scope);
   EXPECT_EQ(2u, endpoint->extra_headers.size());
-}
-
-TEST_F(EnterpriseProxyServiceTest,
-       MarksRefreshInProgressOnStartupWithoutPriorCache) {
-  // Configure a domain in policy before creating the service, with no prior
-  // cached configuration in `kProvisioningDomainProxyConfigs`.
-  base::ListValue policy_domains;
-  policy_domains.Append(CreateDomainPolicyEntry(kTestDomain1));
-  pref_service_.SetList(kProxyProvisioningDomains, std::move(policy_domains));
-  ASSERT_TRUE(pref_service_.GetDict(kProvisioningDomainProxyConfigs).empty());
-
-  CreateService();
-
-  // Immediately upon startup (before any posted tasks run), the service must
-  // report that a refresh is in progress so network requests wait for the
-  // initial PvD fetch.
-  EXPECT_TRUE(service_->IsRefreshInProgress());
-  EXPECT_TRUE(service_->GetDynamicRoutingConfig().is_update_in_progress);
-  EXPECT_TRUE(service_->GetDynamicRoutingConfig().routing_rules.empty());
-  EXPECT_TRUE(test_url_loader_factory_.pending_requests()->empty());
-
-  // Once the posted startup task runs and the fetch completes,
-  // `IsRefreshInProgress()` becomes false and routing rules are populated.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return test_url_loader_factory_.NumPending() == 1; }));
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      "https://domain1.example.com/.well-known/pvd", kValidPvdJson1);
-  EXPECT_FALSE(service_->IsRefreshInProgress());
-  EXPECT_FALSE(service_->GetDynamicRoutingConfig().is_update_in_progress);
-  EXPECT_EQ(1u, service_->GetDynamicRoutingConfig().routing_rules.size());
 }
 
 TEST_F(EnterpriseProxyServiceTest, NetworkChangeTriggersRefresh) {

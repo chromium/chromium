@@ -84,9 +84,7 @@ class ProxyProvisioningDomainManager {
   ProvisioningDomainProxyConfig::State state() const {
     return fetched_config_.state;
   }
-  bool is_refresh_in_progress() const {
-    return fetcher_ != nullptr || is_initial_refresh_pending_;
-  }
+  bool is_refresh_in_progress() const { return fetcher_ != nullptr; }
 
   bool IsExpirationTimerRunningForTesting() const {
     return expiration_timer_.IsRunning();
@@ -107,7 +105,6 @@ class ProxyProvisioningDomainManager {
   // expiration TTL.
   void ScheduleProactiveRefresh();
   void StartRefreshInternal(bool force);
-  void CancelRefreshInternal();
   void OnRefreshComplete(ProvisioningDomainFetchResult result);
   void TransitionToState(ProvisioningDomainProxyConfig::State new_state);
   void NotifyIfStateChanged();
@@ -120,7 +117,6 @@ class ProxyProvisioningDomainManager {
   GetURLLoaderFactoryCallback url_loader_factory_callback_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<ProvisioningDomainFetcher> fetcher_;
-  bool is_initial_refresh_pending_ = false;
   base::OneShotTimer expiration_timer_;
   int consecutive_transient_failures_ = 0;
 
