@@ -267,6 +267,14 @@ defense in-depth strategy. Therefore, evading the blocklist in some manner is
 not deemed as a security bug, especially as it requires user's explicit
 selection on a file or a directory from the file picker.
 
+In particular, the blocklist cannot exhaustively enumerate every third-party
+application, shell, editor, package manager, or build tool configuration file,
+dotfile, or project script that another local program might read or execute
+when run by the user. Once a user explicitly selects a file or directory in the
+file picker, the site is granted access to the user-selected location; finding
+an unblocked application configuration file or project file is not considered a
+security bug.
+
 <a name="TOC-I-can-download-a-file-with-an-unsafe-extension-but-a-different-extension-or-file-type-is-shown-to-the-user-"></a>
 ### I can download a file with an unsafe extension but a different extension or file type is shown to the user - is this a security bug?
 
