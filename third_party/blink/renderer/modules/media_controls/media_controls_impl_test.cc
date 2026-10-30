@@ -1976,4 +1976,120 @@ TEST_F(MediaControlsImplTest, TextTrackElementsAreReadOnly) {
   }
 }
 
+TEST_F(MediaControlsImplTest, MediaControlElementsAreReadOnly) {
+  GetDocument().head()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      audio::-webkit-media-controls,
+      video::-webkit-media-controls,
+      audio::-webkit-media-controls-enclosure,
+      video::-webkit-media-controls-enclosure,
+      audio::-webkit-media-controls-panel,
+      video::-webkit-media-controls-panel,
+      audio::-webkit-media-controls-overlay-enclosure,
+      video::-webkit-media-controls-overlay-enclosure,
+      video::-webkit-media-controls-overlay-play-button,
+      audio::-webkit-media-controls-play-button,
+      video::-webkit-media-controls-play-button,
+      audio::-webkit-media-controls-mute-button,
+      video::-webkit-media-controls-mute-button,
+      audio::-webkit-media-controls-fullscreen-button,
+      video::-webkit-media-controls-fullscreen-button,
+      audio::-webkit-media-controls-toggle-closed-captions-button,
+      video::-webkit-media-controls-toggle-closed-captions-button,
+      audio::-webkit-media-controls-timeline,
+      video::-webkit-media-controls-timeline,
+      audio::-webkit-media-controls-volume-control-container,
+      video::-webkit-media-controls-volume-control-container,
+      audio::-webkit-media-controls-volume-control-hover-background,
+      video::-webkit-media-controls-volume-control-hover-background,
+      audio::-webkit-media-controls-volume-slider,
+      video::-webkit-media-controls-volume-slider,
+      audio::-webkit-media-controls-current-time-display,
+      video::-webkit-media-controls-current-time-display,
+      audio::-webkit-media-controls-time-remaining-display,
+      video::-webkit-media-controls-time-remaining-display,
+      audio::-webkit-media-text-track-container,
+      audio::-internal-media-controls-overlay-cast-button,
+      video::-internal-media-controls-overlay-cast-button {
+        -webkit-user-modify: read-write;
+      }
+    </style>
+  )HTML");
+
+  GetDocument().body()->AppendChild(
+      GetDocument().CreateRawElement(html_names::kAudioTag));
+  auto& audio = To<HTMLMediaElement>(*QuerySelector("audio"));
+  audio.SetBooleanAttribute(html_names::kControlsAttr, true);
+  audio.UpdateTextTrackDisplay();
+
+  LoadMediaWithDuration(10.0);
+  SetReady();
+  UpdateAllLifecyclePhasesForTest();
+
+  ShadowRoot* video_shadow_root =
+      MediaControls().MediaElement().UserAgentShadowRoot();
+  ASSERT_TRUE(video_shadow_root);
+
+  for (const char* pseudo_id :
+       {"-webkit-media-controls", "-webkit-media-controls-enclosure",
+        "-webkit-media-controls-panel",
+        "-webkit-media-controls-overlay-enclosure",
+        "-webkit-media-controls-volume-control-container",
+        "-webkit-media-controls-volume-control-hover-background",
+        "-webkit-media-controls-current-time-display",
+        "-webkit-media-controls-time-remaining-display"}) {
+    Element* element =
+        GetElementByShadowPseudoId(*video_shadow_root, pseudo_id);
+    ASSERT_TRUE(element) << pseudo_id;
+    const ComputedStyle* style = element->EnsureComputedStyle();
+    ASSERT_TRUE(style) << pseudo_id;
+    EXPECT_EQ(style->UsedUserModify(), EUserModify::kReadOnly) << pseudo_id;
+    EXPECT_FALSE(element->IsFocusable()) << pseudo_id;
+  }
+
+  for (const char* pseudo_id :
+       {"-webkit-media-controls-overlay-play-button",
+        "-webkit-media-controls-play-button",
+        "-webkit-media-controls-mute-button",
+        "-webkit-media-controls-fullscreen-button",
+        "-webkit-media-controls-toggle-closed-captions-button",
+        "-webkit-media-controls-timeline",
+        "-webkit-media-controls-volume-slider",
+        "-internal-media-controls-overlay-cast-button"}) {
+    Element* element =
+        GetElementByShadowPseudoId(*video_shadow_root, pseudo_id);
+    ASSERT_TRUE(element) << pseudo_id;
+    const ComputedStyle* style = element->EnsureComputedStyle();
+    ASSERT_TRUE(style) << pseudo_id;
+    EXPECT_EQ(style->UsedUserModify(), EUserModify::kReadOnly) << pseudo_id;
+  }
+
+  ShadowRoot* audio_shadow_root = audio.UserAgentShadowRoot();
+  ASSERT_TRUE(audio_shadow_root);
+
+  for (const char* pseudo_id :
+       {"-webkit-media-controls", "-webkit-media-controls-enclosure",
+        "-webkit-media-controls-panel",
+        "-webkit-media-controls-overlay-enclosure",
+        "-webkit-media-controls-play-button",
+        "-webkit-media-controls-mute-button",
+        "-webkit-media-controls-fullscreen-button",
+        "-webkit-media-controls-toggle-closed-captions-button",
+        "-webkit-media-controls-timeline",
+        "-webkit-media-controls-volume-control-container",
+        "-webkit-media-controls-volume-control-hover-background",
+        "-webkit-media-controls-volume-slider",
+        "-webkit-media-controls-current-time-display",
+        "-webkit-media-controls-time-remaining-display",
+        "-webkit-media-text-track-container",
+        "-internal-media-controls-overlay-cast-button"}) {
+    Element* element =
+        GetElementByShadowPseudoId(*audio_shadow_root, pseudo_id);
+    ASSERT_TRUE(element) << pseudo_id;
+    const ComputedStyle* style = element->EnsureComputedStyle();
+    ASSERT_TRUE(style) << pseudo_id;
+    EXPECT_EQ(style->UsedUserModify(), EUserModify::kReadOnly) << pseudo_id;
+  }
+}
+
 }  // namespace blink
