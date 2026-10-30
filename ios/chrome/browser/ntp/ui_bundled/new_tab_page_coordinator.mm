@@ -580,15 +580,19 @@
   _identityManager = nullptr;
   _sharedURLLoaderFactory = nullptr;
 
-  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-
-  if (arm == AimButtonRefactorArm::kAttachImageQuickAction ||
-      arm == AimButtonRefactorArm::kImageGenerationQuickAction) {
-    [self dismissComposeboxPicker];
-    [_composeboxInputStateManager disconnect];
-    _composeboxInputStateManager.delegate = nil;
-    _composeboxInputStateManager = nil;
-    _contextualSearchSession.reset();
+  switch (GetAimButtonRefactorArm()) {
+    case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
+    case AimButtonRefactorArm::kImageGenerationQuickAction:
+    case AimButtonRefactorArm::kAttachImageQuickAction:
+      [_composeboxInputStateManager disconnect];
+      _composeboxInputStateManager = nil;
+      _contextualSearchSession.reset();
+      break;
+    case AimButtonRefactorArm::kAimAsModule:
+    case AimButtonRefactorArm::kAimAsMvt:
+    case AimButtonRefactorArm::kNoChips:
+    case AimButtonRefactorArm::kDisabled:
+      break;
   }
 
   self.started = NO;
@@ -894,17 +898,25 @@
     [self createMenuCoordinator];
   }
 
-  AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-  if (arm == AimButtonRefactorArm::kAttachImageQuickAction ||
-      arm == AimButtonRefactorArm::kImageGenerationQuickAction) {
-    [self createComposeboxInputStateManager];
+  switch (GetAimButtonRefactorArm()) {
+    case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
+    case AimButtonRefactorArm::kImageGenerationQuickAction:
+    case AimButtonRefactorArm::kAttachImageQuickAction:
+      [self createComposeboxInputStateManager];
+      break;
+    case AimButtonRefactorArm::kAimAsModule:
+    case AimButtonRefactorArm::kAimAsMvt:
+    case AimButtonRefactorArm::kNoChips:
+    case AimButtonRefactorArm::kDisabled:
+      break;
   }
 }
 
 // Create instance of composeboxInputStateManager for AIM quick actions.
 - (void)createComposeboxInputStateManager {
   AimButtonRefactorArm arm = GetAimButtonRefactorArm();
-  CHECK(arm == AimButtonRefactorArm::kAttachImageQuickAction ||
+  CHECK(arm == AimButtonRefactorArm::kFocusComposeboxAimQuickAction ||
+        arm == AimButtonRefactorArm::kAttachImageQuickAction ||
         arm == AimButtonRefactorArm::kImageGenerationQuickAction);
 
   ProfileIOS* profile = self.browser->GetProfile();
@@ -2508,10 +2520,6 @@
 
 // Returns `YES` if conditions to focus on Composebox for AI Mode are met.
 - (BOOL)canFocusComposeboxForAIM {
-  if (!_aimEligibilityService->IsFuseboxEligible()) {
-    return NO;
-  }
-
   switch (GetAimButtonRefactorArm()) {
     case AimButtonRefactorArm::kAimAsMvt:
     case AimButtonRefactorArm::kAimAsModule:
@@ -2521,7 +2529,7 @@
     case AimButtonRefactorArm::kAttachImageQuickAction:
     case AimButtonRefactorArm::kImageGenerationQuickAction:
     case AimButtonRefactorArm::kFocusComposeboxAimQuickAction:
-      return YES;
+      return [_composeboxInputStateManager isEligibleToAIM];
   }
 }
 
