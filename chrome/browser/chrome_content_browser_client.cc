@@ -143,6 +143,7 @@
 #include "chrome/browser/payments/payment_request_display_manager_factory.h"
 #include "chrome/browser/performance_manager/public/chrome_browser_main_extra_parts_performance_manager.h"
 #include "chrome/browser/performance_manager/public/chrome_content_browser_client_performance_manager_part.h"
+#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/picture_in_picture/scoped_tuck_picture_in_picture.h"
 #include "chrome/browser/picture_in_picture/video_overlay_window.h"
@@ -586,7 +587,6 @@
 #include "chrome/browser/loader/fetch_keepalive_process_manager.h"
 #include "chrome/browser/metrics/usage_scenario/chrome_responsiveness_calculator_delegate.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
-#include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
 #include "chrome/browser/screen_ai/screen_ai_install_state.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -4613,7 +4613,6 @@ bool ChromeContentBrowserClient::CanCreateWindow(
             web_contents),
         base::NotFatalUntil::M163);
 
-#if !BUILDFLAG(IS_ANDROID)
   // For Automatic Document Picture-in-Picture, the window creation is
   // authorized by the browser rather than a user gesture. If AutoPip
   // preconditions are met, permit the window creation.
@@ -4625,7 +4624,6 @@ bool ChromeContentBrowserClient::CanCreateWindow(
       return true;
     }
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   if (disposition == WindowOpenDisposition::kNewSplitView && !user_gesture) {
     disposition = WindowOpenDisposition::kNewForegroundTab;
