@@ -18,7 +18,7 @@ bool ShouldTrackURLForRestore(const GURL& url) {
 }
 
 int GetNavigationIndexToSelect(const sessions::SessionTab& tab) {
-  DCHECK(!tab.navigations.empty());
+  CHECK(!tab.navigations.empty(), base::NotFatalUntil::M163);
   const int selected_index =
       std::max(0, std::min(tab.current_navigation_index,
                            static_cast<int>(tab.navigations.size() - 1)));

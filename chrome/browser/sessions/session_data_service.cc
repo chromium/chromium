@@ -37,9 +37,9 @@ SessionDataService::SessionDataService(
     Profile* profile,
     std::unique_ptr<SessionDataDeleter> deleter)
     : profile_(profile), deleter_(std::move(deleter)) {
-  DCHECK(profile_);
-  DCHECK(!profile_->IsOffTheRecord());
-  DCHECK(deleter_);
+  CHECK(profile_, base::NotFatalUntil::M163);
+  CHECK(!profile_->IsOffTheRecord(), base::NotFatalUntil::M163);
+  CHECK(deleter_, base::NotFatalUntil::M163);
 
   Status last_status = static_cast<Status>(
       profile_->GetPrefs()->GetInteger(kSessionDataStatusPref));

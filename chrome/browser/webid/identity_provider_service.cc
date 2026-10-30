@@ -30,7 +30,7 @@ void IdentityProviderService::Fetch(
     const std::optional<std::string>& body,
     const base::flat_map<std::string, std::string>& headers,
     base::OnceCallback<void(const std::optional<std::string>&)> callback) {
-  DCHECK(!callback_);
+  CHECK(!callback_, base::NotFatalUntil::M163);
   JNIEnv* env = base::android::AttachCurrentThread();
   callback_ = std::move(callback);
   std::vector<std::string> header_keys;

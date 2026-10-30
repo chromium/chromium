@@ -36,7 +36,7 @@ bool ContextMenuContentTypePlatformApp::SupportsGroup(int group) {
   if (!platform_app)
     return false;
 
-  DCHECK(platform_app->is_platform_app());
+  CHECK(platform_app->is_platform_app(), base::NotFatalUntil::M163);
 
   switch (group) {
     // Add undo/redo, cut/copy/paste etc for text fields.

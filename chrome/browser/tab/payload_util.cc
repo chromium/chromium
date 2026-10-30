@@ -21,16 +21,18 @@ constexpr size_t kNonceLength = 12;
 }  // namespace
 
 std::vector<uint8_t> GenerateKeyForOtrPayloads() {
-  DCHECK_EQ(kKeyLength,
-            crypto::aead::KeySizeFor(crypto::aead::AES_128_CTR_HMAC_SHA256));
+  CHECK_EQ(kKeyLength,
+           crypto::aead::KeySizeFor(crypto::aead::AES_128_CTR_HMAC_SHA256),
+           base::NotFatalUntil::M163);
   return crypto::RandBytesAsVector(kKeyLength);
 }
 
 std::vector<uint8_t> SealPayload(base::span<const uint8_t> key,
                                  base::span<const uint8_t> payload,
                                  StorageId storage_id) {
-  DCHECK_EQ(kNonceLength,
-            crypto::aead::NonceSizeFor(crypto::aead::AES_128_CTR_HMAC_SHA256));
+  CHECK_EQ(kNonceLength,
+           crypto::aead::NonceSizeFor(crypto::aead::AES_128_CTR_HMAC_SHA256),
+           base::NotFatalUntil::M163);
   auto nonce = crypto::RandBytesAsArray<kNonceLength>();
   auto bytes = crypto::aead::Seal(crypto::aead::AES_128_CTR_HMAC_SHA256, key,
                                   payload, nonce, storage_id.AsBytes());

@@ -31,16 +31,18 @@ IdentityProviderPermissionRequest::~IdentityProviderPermissionRequest() =
 void IdentityProviderPermissionRequest::PermissionDecided(
     const permissions::PermissionPromptDecision& decision,
     const permissions::PermissionRequestData& request_data) {
-  DCHECK(decision.overall_decision != PermissionDecision::kAllowThisTime);
+  CHECK(decision.overall_decision != PermissionDecision::kAllowThisTime,
+        base::NotFatalUntil::M163);
   CHECK(std::holds_alternative<std::monostate>(decision.prompt_options));
-  DCHECK(decision.is_final);
+  CHECK(decision.is_final, base::NotFatalUntil::M163);
 
   if (decision.overall_decision == PermissionDecision::kAllow) {
     std::move(callback_).Run(true);
   } else if (decision.overall_decision == PermissionDecision::kDeny) {
     std::move(callback_).Run(false);
   } else {
-    DCHECK_EQ(PermissionDecision::kNone, decision.overall_decision);
+    CHECK_EQ(PermissionDecision::kNone, decision.overall_decision,
+             base::NotFatalUntil::M163);
     std::move(callback_).Run(false);
   }
 }

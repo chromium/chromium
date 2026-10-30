@@ -232,7 +232,7 @@ void StorageRestoreOrchestrator::OnChildMoved(
 
 void StorageRestoreOrchestrator::SaveStructureSnapshot(
     bool clear_unused_nodes) {
-  DCHECK(!clear_unused_nodes);
+  CHECK(!clear_unused_nodes, base::NotFatalUntil::M163);
   if (is_restore_cancelled_) {
     return;
   }

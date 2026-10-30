@@ -100,7 +100,8 @@ std::unique_ptr<LinkToTextMenuObserver> LinkToTextMenuObserver::Create(
     return nullptr;
   }
 
-  DCHECK(content::RenderFrameHost::FromID(render_frame_host_id));
+  CHECK(content::RenderFrameHost::FromID(render_frame_host_id),
+        base::NotFatalUntil::M163);
   return base::WrapUnique(new LinkToTextMenuObserver(
       proxy, render_frame_host_id, toast_controller));
 }
@@ -171,7 +172,7 @@ bool LinkToTextMenuObserver::IsCommandIdSupported(int command_id) {
 
 bool LinkToTextMenuObserver::IsCommandIdEnabled(int command_id) {
   // This should only be called for the command for copying link to text.
-  DCHECK(IsCommandIdSupported(command_id));
+  CHECK(IsCommandIdSupported(command_id), base::NotFatalUntil::M163);
 
   // If a link generation was needed, only enable the command if a link was
   // successfully generated.
@@ -185,7 +186,7 @@ bool LinkToTextMenuObserver::IsCommandIdEnabled(int command_id) {
 
 void LinkToTextMenuObserver::ExecuteCommand(int command_id) {
   // This should only be called for the command for copying link to text.
-  DCHECK(IsCommandIdSupported(command_id));
+  CHECK(IsCommandIdSupported(command_id), base::NotFatalUntil::M163);
 
   if (command_id == IDC_CONTENT_CONTEXT_COPYLINKTOTEXT) {
     ExecuteCopyLinkToText();
@@ -292,7 +293,7 @@ void LinkToTextMenuObserver::StartLinkGenerationRequestWithTimeout() {
 }
 
 void LinkToTextMenuObserver::ExecuteCopyLinkToText() {
-  DCHECK(generated_link_.has_value());
+  CHECK(generated_link_.has_value(), base::NotFatalUntil::M163);
 
   CopyTextToClipboard(generated_link_.value());
 

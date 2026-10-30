@@ -94,7 +94,7 @@ void OnLaunchOptionsCreated(const std::string& command,
 void RunCommand(const std::string& command,
                 const base::FilePath& working_directory,
                 const std::string& arg) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   base::nix::CreateLaunchOptionsWithXdgActivation(
       base::BindOnce(&OnLaunchOptionsCreated, command, working_directory, arg));
 }
@@ -182,7 +182,7 @@ class PortalHelper {
   }
 
   void OnApiTypeSet(const PendingRequest& request) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
     CHECK(api_type_.has_value());
     if (const base::FilePath* path = std::get_if<base::FilePath>(&request)) {
       switch (*api_type_) {
@@ -208,7 +208,7 @@ class PortalHelper {
   }
 
   void ProcessPendingRequests() {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
     CHECK(!pending_requests_.empty());
     while (!pending_requests_.empty()) {
@@ -218,7 +218,7 @@ class PortalHelper {
   }
 
   void CheckPortalRunningResponse(std::optional<bool> is_running) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
     if (is_running.value_or(false)) {
       api_type_ = ApiType::kPortal;
       ProcessPendingRequests();
@@ -235,7 +235,7 @@ class PortalHelper {
   }
 
   void CheckFileManagerRunningResponse(std::optional<bool> is_running) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
     if (is_running.value_or(false)) {
       api_type_ = ApiType::kFileManager;
     } else {
@@ -246,7 +246,7 @@ class PortalHelper {
   }
 
   void ShowItemUsingPortal(const base::FilePath& full_path) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
     CHECK(api_type_.has_value());
     CHECK_EQ(*api_type_, ApiType::kPortal);
     base::ThreadPool::PostTaskAndReplyWithResult(
@@ -266,7 +266,7 @@ class PortalHelper {
 
   void ShowItemUsingPortalFdOpened(const base::FilePath& full_path,
                                    base::ScopedFD fd) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
     if (!bus_) {
       return;
     }
@@ -285,7 +285,7 @@ class PortalHelper {
   void ShowItemUsingPortalWithToken(const base::FilePath& full_path,
                                     base::ScopedFD fd,
                                     std::string activation_token) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
     if (!bus_) {
       return;
     }
@@ -312,7 +312,7 @@ class PortalHelper {
       dbus_xdg::Request* request,
       const base::FilePath& full_path,
       base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
     if (!results.has_value() &&
         results.error() != dbus_xdg::ResponseError::kRequestCancelledByUser) {
@@ -322,7 +322,7 @@ class PortalHelper {
   }
 
   void OpenExternalUsingPortal(const GURL& url) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
     CHECK(api_type_.has_value());
     CHECK_EQ(*api_type_, ApiType::kPortal);
     if (url.SchemeIs("file")) {
@@ -350,7 +350,7 @@ class PortalHelper {
   }
 
   void OpenExternalUsingPortalFdOpened(const GURL& url, base::ScopedFD fd) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
     if (!bus_) {
       return;
     }
@@ -367,7 +367,7 @@ class PortalHelper {
   void OpenExternalUsingPortalWithToken(const GURL& url,
                                         base::ScopedFD fd,
                                         std::string activation_token) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
     if (!bus_) {
       return;
     }
@@ -401,7 +401,7 @@ class PortalHelper {
       dbus_xdg::Request* request,
       const GURL& url,
       base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
     if (!results.has_value() &&
         results.error() != dbus_xdg::ResponseError::kRequestCancelledByUser) {
@@ -411,7 +411,7 @@ class PortalHelper {
   }
 
   void ShowItemUsingFileManager(const base::FilePath& full_path) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
     if (!bus_) {
       return;
     }
@@ -438,7 +438,7 @@ class PortalHelper {
   void ShowItemUsingFileManagerResponse(
       const base::FilePath& full_path,
       dbus_utils::CallMethodResultSig<""> response) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
     if (!response.has_value()) {
       // If the bus call fails, at least open the parent folder.
       OpenParentFolderFallback(full_path);
@@ -505,12 +505,12 @@ void PlatformOpenVerifiedItem(const base::FilePath& path, OpenItemType type) {
 }  // namespace internal
 
 void ShowItemInFolder(Profile*, const base::FilePath& full_path) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   PortalHelper::GetInstance().ShowItemInFolder(full_path);
 }
 
 void OpenExternal(const GURL& url) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
   PortalHelper::GetInstance().OpenExternal(url);
 }
 

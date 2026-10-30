@@ -248,7 +248,7 @@ void ExitTypeService::CheckUserAckedCrash() {
 
 void ExitTypeService::CrashedLockDestroyed() {
   --crashed_lock_count_;
-  DCHECK_GE(crashed_lock_count_, 0);
+  CHECK_GE(crashed_lock_count_, 0, base::NotFatalUntil::M163);
   if (crashed_lock_count_ == 0) {
     CheckUserAckedCrash();
   }

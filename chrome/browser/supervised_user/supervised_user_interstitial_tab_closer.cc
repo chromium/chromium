@@ -19,7 +19,7 @@ TabCloser::~TabCloser() = default;
 // static
 void TabCloser::CheckIfInBrowserThenCloseTab(
     content::WebContents* web_contents) {
-  DCHECK(web_contents);
+  CHECK(web_contents, base::NotFatalUntil::M163);
   // Close the tab only if there is a browser for it (which is not the case
   // for example in a <webview>).
 #if !BUILDFLAG(IS_ANDROID)
@@ -44,7 +44,7 @@ void TabCloser::CloseTabImpl() {
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
           &GetWebContents());
-  DCHECK(browser);
+  CHECK(browser, base::NotFatalUntil::M163);
   if (browser->GetAllTabInterfaces().size() <= 1) {
     // Don't close the last tab in the window.
     GetWebContents().RemoveUserData(UserDataKey());

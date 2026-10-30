@@ -73,7 +73,7 @@ void ProfilePrefStoreManager::ClearResetTime(PrefService* pref_service) {
 // static
 void ProfilePrefStoreManager::SetPreferenceValidationRegistryPathForTesting(
     const std::wstring* path) {
-  DCHECK(!path->empty());
+  CHECK(!path->empty(), base::NotFatalUntil::M163);
   g_preference_validation_registry_path_for_testing = path;
 }
 #endif  // BUILDFLAG(IS_WIN)

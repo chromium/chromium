@@ -119,7 +119,7 @@ void StorageLoadedData::Builder::AddNode(
     return;
   }
 
-  DCHECK(children.has_value());
+  CHECK(children.has_value(), base::NotFatalUntil::M163);
   std::optional<tabs_pb::Children> children_proto =
       ParseChildren(id, *children, children_map_);
   if (!children_proto.has_value()) {
@@ -171,7 +171,7 @@ void StorageLoadedData::Builder::AddDivergentNode(
     TabStorageType type,
     std::optional<base::span<const uint8_t>> children,
     base::PassKey<TabStateStorageDatabase> passkey) {
-  DCHECK(children.has_value());
+  CHECK(children.has_value(), base::NotFatalUntil::M163);
   std::optional<tabs_pb::Children> children_proto =
       ParseChildren(id, *children, divergent_children_map_);
   if (!children_proto.has_value()) {

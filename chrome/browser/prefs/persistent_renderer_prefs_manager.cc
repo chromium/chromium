@@ -25,7 +25,7 @@ void PersistentRendererPrefsManager::BindFrameReceiver(
     content::RenderFrameHost* frame,
     mojo::PendingReceiver<blink::mojom::PersistentRendererPrefsService>
         receiver) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   auto* profile = Profile::FromBrowserContext(frame->GetBrowserContext());
 

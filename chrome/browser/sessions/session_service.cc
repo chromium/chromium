@@ -248,7 +248,7 @@ bool SessionService::RestoreIfNecessary(const StartupTabs& startup_tabs,
 }
 
 void SessionService::MoveCurrentSessionToLastSession() {
-  DCHECK(is_saving_enabled());
+  CHECK(is_saving_enabled(), base::NotFatalUntil::M163);
   pending_tab_close_ids_.clear();
   window_closing_ids_.clear();
   pending_window_close_ids_.clear();
@@ -650,7 +650,7 @@ void SessionService::BuildCommandsForTab(
     std::optional<split_tabs::SplitTabId> split,
     bool is_pinned,
     IdToRange* tab_to_available_range) {
-  DCHECK(is_saving_enabled());
+  CHECK(is_saving_enabled(), base::NotFatalUntil::M163);
   SessionServiceBase::BuildCommandsForTab(window_id, tab, index_in_window,
                                           group, split, is_pinned,
                                           tab_to_available_range);
@@ -684,7 +684,7 @@ void SessionService::BuildCommandsForTab(
 }
 
 void SessionService::ScheduleResetCommands() {
-  DCHECK(is_saving_enabled());
+  CHECK(is_saving_enabled(), base::NotFatalUntil::M163);
   command_storage_manager()->set_pending_reset(true);
   command_storage_manager()->ClearPendingCommands();
   tab_to_available_range()->clear();

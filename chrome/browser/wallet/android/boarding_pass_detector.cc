@@ -17,7 +17,8 @@ namespace {
 // Gets the Mojo remote for the BoardingPassExtractor service.
 mojo::Remote<mojom::BoardingPassExtractor> GetBoardingPassExtractorRemote(
     content::WebContents* web_contents) {
-  DCHECK(web_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
+  CHECK(web_contents->GetPrimaryMainFrame()->IsRenderFrameLive(),
+        base::NotFatalUntil::M163);
   mojo::Remote<mojom::BoardingPassExtractor> remote;
   web_contents->GetPrimaryMainFrame()->GetRemoteInterfaces()->GetInterface(
       remote.BindNewPipeAndPassReceiver());

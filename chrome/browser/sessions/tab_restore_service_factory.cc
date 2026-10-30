@@ -19,7 +19,7 @@ namespace {
 std::unique_ptr<KeyedService> BuildTemplateService(
     content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  DCHECK(!profile->IsOffTheRecord());
+  CHECK(!profile->IsOffTheRecord(), base::NotFatalUntil::M163);
   auto client = std::make_unique<ChromeTabRestoreServiceClient>(profile);
   return std::make_unique<sessions::TabRestoreServiceImpl>(
       std::move(client), profile->GetPrefs(), /*time_factory=*/nullptr,

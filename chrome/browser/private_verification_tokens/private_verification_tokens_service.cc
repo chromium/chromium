@@ -134,7 +134,7 @@ std::unique_ptr<PrivateVerificationTokensService>
 PrivateVerificationTokensService::Create(
     const base::FilePath& data_directory,
     HostContentSettingsMap* host_content_settings_map) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 
   if (data_directory.empty()) {
     return nullptr;
@@ -159,13 +159,13 @@ PrivateVerificationTokensService::Create(
 PrivateVerificationTokensService::PrivateVerificationTokensService(
     HostContentSettingsMap* host_content_settings_map)
     : host_content_settings_map_(host_content_settings_map) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
 }
 
 PrivateVerificationTokensService::~PrivateVerificationTokensService() = default;
 
 void PrivateVerificationTokensService::Shutdown() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   if (is_shutting_down_) {
     return;
   }
@@ -182,17 +182,17 @@ void PrivateVerificationTokensService::Shutdown() {
 }
 
 void PrivateVerificationTokensService::AddObserver(Observer* observer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   observers_.AddObserver(observer);
 }
 
 void PrivateVerificationTokensService::RemoveObserver(Observer* observer) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   observers_.RemoveObserver(observer);
 }
 
 bool PrivateVerificationTokensService::is_initialized() const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   return store_ && store_->is_initialized();
 }
 
@@ -210,7 +210,7 @@ void PrivateVerificationTokensService::StoreTokens(
     std::vector<private_verification_tokens::PrivateVerificationTokensToken>
         tokens,
     base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   if (is_shutting_down_) {
     std::move(callback).Run();
     return;
@@ -254,7 +254,7 @@ void PrivateVerificationTokensService::StoreTokens(
 
 void PrivateVerificationTokensService::GetTokenIssuers(
     base::OnceCallback<void(std::vector<url::Origin>)> callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   if (is_shutting_down_) {
     std::move(callback).Run({});
     return;
@@ -281,7 +281,7 @@ void PrivateVerificationTokensService::GetTokenIssuers(
 void PrivateVerificationTokensService::GetAllTokens(
     base::OnceCallback<
         void(std::vector<private_verification_tokens::TokenWithId>)> callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   if (is_shutting_down_) {
     std::move(callback).Run({});
     return;
@@ -303,7 +303,7 @@ void PrivateVerificationTokensService::DeleteTokens(
     base::Time delete_end,
     base::OnceClosure callback,
     std::optional<std::vector<url::Origin>> issuers) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   if ((issuers.has_value() && issuers->empty()) || is_shutting_down_) {
     std::move(callback).Run();
     return;
@@ -370,7 +370,7 @@ void PrivateVerificationTokensService::DeleteTokensByFilter(
 void PrivateVerificationTokensService::MaybeFetchTokens(
     const GURL& request_url,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   if (is_shutting_down_ || !url_loader_factory) {
     return;
   }
@@ -487,7 +487,7 @@ void PrivateVerificationTokensService::OnFetchTokensCompleted(
     base::TimeTicks fetch_start_time,
     base::expected<std::string, private_verification_tokens::TryGetTokensResult>
         result) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   active_fetchers_.erase(issuer);
 
   if (!result.has_value()) {
@@ -538,7 +538,7 @@ std::optional<std::pair<int64_t, std::string>>
 PrivateVerificationTokensService::GetTokenForRedemption(
     const url::Origin& redeemer_origin,
     Profile* profile) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   if (is_shutting_down_ || !is_initialized() || !issuer_config_) {
     return std::nullopt;
   }
@@ -600,7 +600,7 @@ PrivateVerificationTokensService::GetTokenForRedemption(
 void PrivateVerificationTokensService::TrackerInsert(
     Profile* profile,
     const url::Origin& redeemer_origin) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   CHECK(profile);
   if (!profile->IsOffTheRecord()) {
     return;
@@ -617,7 +617,7 @@ void PrivateVerificationTokensService::TrackerInsert(
 
 void PrivateVerificationTokensService::DeleteToken(int64_t token_id,
                                                    base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   if (is_shutting_down_ || !store_) {
     if (callback) {
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -649,7 +649,7 @@ void PrivateVerificationTokensService::DeleteToken(int64_t token_id,
 
 bool PrivateVerificationTokensService::IsRegisteredRedeemer(
     const url::Origin& redeemer_origin) const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   if (!issuer_config_) {
     return false;
   }

@@ -89,14 +89,14 @@ SessionStartupPref::Type SessionStartupPref::GetDefaultStartupType() {
 // static
 void SessionStartupPref::SetStartupPref(Profile* profile,
                                         const SessionStartupPref& pref) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M163);
   SetStartupPref(profile->GetPrefs(), pref);
 }
 
 // static
 void SessionStartupPref::SetStartupPref(PrefService* prefs,
                                         const SessionStartupPref& pref) {
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M163);
 
   if (!SessionStartupPref::TypeIsManaged(prefs))
     prefs->SetInteger(prefs::kRestoreOnStartup, TypeToPrefValue(pref.type));
@@ -114,7 +114,7 @@ void SessionStartupPref::SetStartupPref(PrefService* prefs,
 
 // static
 SessionStartupPref SessionStartupPref::GetStartupPref(const Profile* profile) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M163);
 
   // Guest sessions should not store any state, therefore they should never
   // trigger a restore during startup.
@@ -126,7 +126,7 @@ SessionStartupPref SessionStartupPref::GetStartupPref(const Profile* profile) {
 // static
 SessionStartupPref SessionStartupPref::GetStartupPref(
     const PrefService* prefs) {
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M163);
 
   SessionStartupPref pref(
       PrefValueToType(prefs->GetInteger(prefs::kRestoreOnStartup)));
@@ -142,37 +142,37 @@ SessionStartupPref SessionStartupPref::GetStartupPref(
 
 // static
 bool SessionStartupPref::TypeIsManaged(const PrefService* prefs) {
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M163);
   const PrefService::Preference* pref_restore =
       prefs->FindPreference(prefs::kRestoreOnStartup);
-  DCHECK(pref_restore);
+  CHECK(pref_restore, base::NotFatalUntil::M163);
   return pref_restore->IsManaged();
 }
 
 // static
 bool SessionStartupPref::URLsAreManaged(const PrefService* prefs) {
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M163);
   const PrefService::Preference* pref_urls =
       prefs->FindPreference(prefs::kURLsToRestoreOnStartup);
-  DCHECK(pref_urls);
+  CHECK(pref_urls, base::NotFatalUntil::M163);
   return pref_urls->IsManaged();
 }
 
 // static
 bool SessionStartupPref::TypeHasRecommendedValue(const PrefService* prefs) {
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M163);
   const PrefService::Preference* pref_restore =
       prefs->FindPreference(prefs::kRestoreOnStartup);
-  DCHECK(pref_restore);
+  CHECK(pref_restore, base::NotFatalUntil::M163);
   return pref_restore->GetRecommendedValue() != nullptr;
 }
 
 // static
 bool SessionStartupPref::TypeIsDefault(const PrefService* prefs) {
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M163);
   const PrefService::Preference* pref_restore =
       prefs->FindPreference(prefs::kRestoreOnStartup);
-  DCHECK(pref_restore);
+  CHECK(pref_restore, base::NotFatalUntil::M163);
   return pref_restore->IsDefaultValue();
 }
 

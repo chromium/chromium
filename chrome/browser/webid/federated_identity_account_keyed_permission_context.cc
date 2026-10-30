@@ -189,7 +189,7 @@ FederatedIdentityAccountKeyedPermissionContext::GetLastUsedTimestamp(
     CHECK(timestamp);
     std::optional<base::Time> time = base::ValueToTime(timestamp);
     // We stored a time in here, so it shouldn't fail when retrieving it.
-    DCHECK(time);
+    CHECK(time, base::NotFatalUntil::M163);
     return time.value_or(base::Time());
   }
   // We do not expect this to happen, but account was found and no timestamp in
@@ -334,7 +334,7 @@ void FederatedIdentityAccountKeyedPermissionContext::OnSetRequiresUserMediation(
 
 std::string FederatedIdentityAccountKeyedPermissionContext::GetKeyForObject(
     const base::DictValue& object) {
-  DCHECK(IsValidObject(object));
+  CHECK(IsValidObject(object), base::NotFatalUntil::M163);
   const std::string* rp_requester_origin = object.FindString(kRpRequesterKey);
   const std::string* rp_embedder_origin = object.FindString(kRpEmbedderKey);
   const std::string* idp_origin = object.FindString(kSharingIdpKey);
@@ -354,7 +354,7 @@ bool FederatedIdentityAccountKeyedPermissionContext::IsValidObject(
 std::u16string
 FederatedIdentityAccountKeyedPermissionContext::GetObjectDisplayName(
     const base::DictValue& object) {
-  DCHECK(IsValidObject(object));
+  CHECK(IsValidObject(object), base::NotFatalUntil::M163);
   return base::UTF8ToUTF16(*object.FindString(kSharingIdpKey));
 }
 

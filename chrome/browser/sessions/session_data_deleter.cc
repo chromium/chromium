@@ -176,10 +176,10 @@ SessionDataDeleter::~SessionDataDeleter() = default;
 
 void SessionDataDeleter::DeleteSessionOnlyData(bool skip_session_cookies,
                                                base::OnceClosure callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  CHECK_CURRENTLY_ON(content::BrowserThread::UI, base::NotFatalUntil::M163);
   // As this function is creating KeepAlives, it should not be
   // called during shutdown.
-  DCHECK(!browser_shutdown::IsTryingToQuit());
+  CHECK(!browser_shutdown::IsTryingToQuit(), base::NotFatalUntil::M163);
 
   SessionStartupPref startup_pref =
       StartupBrowserCreator::GetSessionStartupPref(

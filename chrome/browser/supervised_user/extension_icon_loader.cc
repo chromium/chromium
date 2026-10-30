@@ -21,7 +21,7 @@ ExtensionIconLoader::~ExtensionIconLoader() = default;
 void ExtensionIconLoader::Load(const extensions::Extension& extension,
                                content::BrowserContext* context,
                                IconLoadCallback icon_load_callback) {
-  DCHECK(context);
+  CHECK(context, base::NotFatalUntil::M163);
 
   icon_load_callback_ = std::move(icon_load_callback);
   auto load_image_callback =

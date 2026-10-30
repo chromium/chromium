@@ -139,7 +139,7 @@ void RadialGradientQuadRenderer::Draw(
     float opacity,
     const gfx::SizeF& element_size,
     const CornerRadii& radii) {
-  DCHECK(opacity > 0.f);
+  CHECK(opacity > 0.f, base::NotFatalUntil::M163);
   if (SkColorGetA(edge_color) == SK_AlphaTRANSPARENT &&
       SkColorGetA(center_color) == SK_AlphaTRANSPARENT) {
     return;

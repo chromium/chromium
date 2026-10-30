@@ -54,11 +54,11 @@ content::WebContents* SessionRestore::RestoreForeignSessionTab(
     const sessions::SessionTab& session_tab,
     ui::mojom::WindowOpenDisposition disposition,
     bool skip_renderer_creation) {
-  DCHECK(session_tab.navigations.size() > 0);
+  CHECK(session_tab.navigations.size() > 0, base::NotFatalUntil::M163);
   content::BrowserContext* context = web_contents->GetBrowserContext();
   Profile* profile = Profile::FromBrowserContext(context);
   TabModel* tab_model = TabModelList::GetTabModelForWebContents(web_contents);
-  DCHECK(tab_model);
+  CHECK(tab_model, base::NotFatalUntil::M163);
   std::vector<std::unique_ptr<content::NavigationEntry>> entries =
       sessions::ContentSerializedNavigationBuilder::ToNavigationEntries(
           session_tab.navigations, profile);
@@ -72,7 +72,8 @@ content::WebContents* SessionRestore::RestoreForeignSessionTab(
         content::WebContents::CreateParams::kNoRendererProcess;
   }
   // Ensure that skipping renderer creation is only enabled for background tabs.
-  DCHECK(skip_renderer_creation ? is_background_tab : true);
+  CHECK(skip_renderer_creation ? is_background_tab : true,
+        base::NotFatalUntil::M163);
   std::unique_ptr<content::WebContents> new_web_contents =
       content::WebContents::Create(create_params);
 
@@ -82,7 +83,7 @@ content::WebContents* SessionRestore::RestoreForeignSessionTab(
       selected_index, content::RestoreType::kRestored, &entries);
 
   TabAndroid* current_tab = TabAndroid::FromWebContents(web_contents);
-  DCHECK(current_tab);
+  CHECK(current_tab, base::NotFatalUntil::M163);
   // Fake replacing the current tab's WebContents with a new one by creating and
   // selecting a new tab then closing the old one. Using the current tab as the
   // parent will ensure group state, position, etc. should be kept.
@@ -95,8 +96,9 @@ content::WebContents* SessionRestore::RestoreForeignSessionTab(
     tab_model->CloseTab(current_tab->GetHandle());
     return raw_new_web_contents;
   }
-  DCHECK(disposition == ui::mojom::WindowOpenDisposition::kNewForegroundTab ||
-         disposition == ui::mojom::WindowOpenDisposition::kNewBackgroundTab);
+  CHECK(disposition == ui::mojom::WindowOpenDisposition::kNewForegroundTab ||
+            disposition == ui::mojom::WindowOpenDisposition::kNewBackgroundTab,
+        base::NotFatalUntil::M163);
   // Do not select a tab here it will interrupt bulk session restores.
   TabModel::TabLaunchType launch_type =
       disposition == ui::mojom::WindowOpenDisposition::kNewForegroundTab

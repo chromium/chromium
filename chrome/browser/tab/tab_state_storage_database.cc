@@ -92,7 +92,7 @@ bool ExecuteSql(sql::Database* db, base::cstring_view sql_command) {
 }
 
 bool CreateSchema(sql::Database* db, sql::MetaTable* meta_table) {
-  DCHECK(db->HasActiveTransactions());
+  CHECK(db->HasActiveTransactions(), base::NotFatalUntil::M163);
 
   if (!ExecuteSql(db, kCreateTabSchemaSql)) {
     DLOG(ERROR) << "Failed to create tab schema.";
@@ -252,7 +252,7 @@ bool TabStateStorageDatabase::SaveNode(OpenTransaction* transaction,
     // Pretend we succeeded to avoid rollback.
     return true;
   }
-  DCHECK(OpenTransaction::IsValid(transaction));
+  CHECK(OpenTransaction::IsValid(transaction), base::NotFatalUntil::M163);
 
   if (is_off_the_record) {
     auto maybe_payload = Seal(id, window_tag, payload);
@@ -267,7 +267,7 @@ bool TabStateStorageDatabase::SaveNode(OpenTransaction* transaction,
       "(id, window_tag, is_off_the_record, type, payload, children)"
       "VALUES (?,?,?,?,?,?)";
 
-  DCHECK(db_.IsSQLValid(kInsertNodeSql));
+  CHECK(db_.IsSQLValid(kInsertNodeSql), base::NotFatalUntil::M163);
 
   sql::Statement write_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kInsertNodeSql));
@@ -287,7 +287,7 @@ bool TabStateStorageDatabase::SaveNodePayload(OpenTransaction* transaction,
                                               std::string_view window_tag,
                                               bool is_off_the_record,
                                               std::vector<uint8_t> payload) {
-  DCHECK(OpenTransaction::IsValid(transaction));
+  CHECK(OpenTransaction::IsValid(transaction), base::NotFatalUntil::M163);
 
   if (is_off_the_record) {
     auto maybe_payload = Seal(id, window_tag, payload);
@@ -302,7 +302,7 @@ bool TabStateStorageDatabase::SaveNodePayload(OpenTransaction* transaction,
       "SET payload = ? "
       "WHERE id = ?";
 
-  DCHECK(db_.IsSQLValid(kUpdatePayloadSql));
+  CHECK(db_.IsSQLValid(kUpdatePayloadSql), base::NotFatalUntil::M163);
 
   sql::Statement write_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kUpdatePayloadSql));
@@ -316,14 +316,14 @@ bool TabStateStorageDatabase::SaveNodePayload(OpenTransaction* transaction,
 bool TabStateStorageDatabase::SaveNodeChildren(OpenTransaction* transaction,
                                                StorageId id,
                                                std::vector<uint8_t> children) {
-  DCHECK(OpenTransaction::IsValid(transaction));
+  CHECK(OpenTransaction::IsValid(transaction), base::NotFatalUntil::M163);
 
   static constexpr char kUpdateChildrenSql[] =
       "UPDATE nodes "
       "SET children = ? "
       "WHERE id = ?";
 
-  DCHECK(db_.IsSQLValid(kUpdateChildrenSql));
+  CHECK(db_.IsSQLValid(kUpdateChildrenSql), base::NotFatalUntil::M163);
 
   sql::Statement write_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kUpdateChildrenSql));
@@ -339,14 +339,14 @@ bool TabStateStorageDatabase::SaveDivergentNode(OpenTransaction* transaction,
                                                 std::string_view window_tag,
                                                 bool is_off_the_record,
                                                 std::vector<uint8_t> children) {
-  DCHECK(OpenTransaction::IsValid(transaction));
+  CHECK(OpenTransaction::IsValid(transaction), base::NotFatalUntil::M163);
 
   static constexpr char kInsertDivergentNodeSql[] =
       "INSERT OR REPLACE INTO divergent_nodes"
       "(id, window_tag, is_off_the_record, children)"
       "VALUES (?,?,?,?)";
 
-  DCHECK(db_.IsSQLValid(kInsertDivergentNodeSql));
+  CHECK(db_.IsSQLValid(kInsertDivergentNodeSql), base::NotFatalUntil::M163);
 
   sql::Statement write_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kInsertDivergentNodeSql));
@@ -361,13 +361,13 @@ bool TabStateStorageDatabase::SaveDivergentNode(OpenTransaction* transaction,
 
 bool TabStateStorageDatabase::RemoveNode(OpenTransaction* transaction,
                                          StorageId id) {
-  DCHECK(OpenTransaction::IsValid(transaction));
+  CHECK(OpenTransaction::IsValid(transaction), base::NotFatalUntil::M163);
 
   static constexpr char kDeleteNodeSql[] =
       "DELETE FROM nodes "
       "WHERE id = ?";
 
-  DCHECK(db_.IsSQLValid(kDeleteNodeSql));
+  CHECK(db_.IsSQLValid(kDeleteNodeSql), base::NotFatalUntil::M163);
 
   sql::Statement write_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kDeleteNodeSql));
@@ -378,7 +378,7 @@ bool TabStateStorageDatabase::RemoveNode(OpenTransaction* transaction,
 
 OpenTransaction* TabStateStorageDatabase::CreateTransaction() {
   if (!open_transaction_) {
-    DCHECK_EQ(0, open_transaction_count_);
+    CHECK_EQ(0, open_transaction_count_, base::NotFatalUntil::M163);
     open_transaction_.emplace(&db_, base::PassKey<TabStateStorageDatabase>());
     sql::Transaction* transaction_ptr =
         open_transaction_->GetTransaction(base::PassKey<TabStateStorageDatabase>());
@@ -396,7 +396,7 @@ bool TabStateStorageDatabase::CloseTransaction(
     OpenTransaction* open_transaction) {
   DCHECK(open_transaction_) << "There is no open transaction.";
   DCHECK_EQ(open_transaction, &*open_transaction_) << "Transaction mismatch.";
-  DCHECK_GT(open_transaction_count_, 0);
+  CHECK_GT(open_transaction_count_, 0, base::NotFatalUntil::M163);
 
   open_transaction_count_--;
   if (open_transaction_count_ > 0) {
@@ -554,7 +554,7 @@ void TabStateStorageDatabase::ClearDivergenceWindow(
 
 bool TabStateStorageDatabase::ClearAllWindowsExcept(
     const std::vector<std::string>& window_tags) {
-  DCHECK(!window_tags.empty());
+  CHECK(!window_tags.empty(), base::NotFatalUntil::M163);
   OpenTransaction* transaction = CreateTransaction();
   const std::string tag_placeholders = base::JoinString(
       std::vector<std::string_view>(window_tags.size(), "?"), ",");

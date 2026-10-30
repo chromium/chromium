@@ -63,9 +63,10 @@ SpellingMenuObserver::SpellingMenuObserver(RenderViewContextMenuProxy* proxy)
 SpellingMenuObserver::~SpellingMenuObserver() = default;
 
 void SpellingMenuObserver::InitMenu(const content::ContextMenuParams& params) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!params.misspelled_word.empty() ||
-         params.dictionary_suggestions.empty());
+  CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M163);
+  CHECK(
+      !params.misspelled_word.empty() || params.dictionary_suggestions.empty(),
+      base::NotFatalUntil::M163);
 
   // Exit if we are not in an editable element because we add a menu item only
   // for editable elements.
@@ -241,14 +242,14 @@ bool SpellingMenuObserver::IsCommandIdSupported(int command_id) {
 }
 
 bool SpellingMenuObserver::IsCommandIdChecked(int command_id) {
-  DCHECK(IsCommandIdSupported(command_id));
+  CHECK(IsCommandIdSupported(command_id), base::NotFatalUntil::M163);
   Profile* profile = Profile::FromBrowserContext(proxy_->GetBrowserContext());
   return command_id == IDC_CONTENT_CONTEXT_SPELLING_TOGGLE &&
          integrate_spelling_service_.GetValue() && !profile->IsOffTheRecord();
 }
 
 bool SpellingMenuObserver::IsCommandIdEnabled(int command_id) {
-  DCHECK(IsCommandIdSupported(command_id));
+  CHECK(IsCommandIdSupported(command_id), base::NotFatalUntil::M163);
 
   if (command_id >= IDC_SPELLCHECK_SUGGESTION_0 &&
       command_id <= IDC_SPELLCHECK_SUGGESTION_LAST) {
@@ -356,7 +357,7 @@ void SpellingMenuObserver::ToggleSpellingService() {
 }
 
 void SpellingMenuObserver::ExecuteCommand(int command_id) {
-  DCHECK(IsCommandIdSupported(command_id));
+  CHECK(IsCommandIdSupported(command_id), base::NotFatalUntil::M163);
 
   if (command_id >= IDC_SPELLCHECK_SUGGESTION_0 &&
       command_id <= IDC_SPELLCHECK_SUGGESTION_LAST) {

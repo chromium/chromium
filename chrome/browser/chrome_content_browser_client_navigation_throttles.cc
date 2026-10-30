@@ -204,12 +204,12 @@ void HandleSSLErrorWrapper(
     const net::SSLInfo& ssl_info,
     const GURL& request_url,
     SSLErrorHandler::BlockingPageReadyCallback blocking_page_ready_callback) {
-  DCHECK(request_url.SchemeIsCryptographic());
+  CHECK(request_url.SchemeIsCryptographic(), base::NotFatalUntil::M163);
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   // Profile should always outlive a WebContents
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M163);
 
   captive_portal::CaptivePortalService* captive_portal_service = nullptr;
 

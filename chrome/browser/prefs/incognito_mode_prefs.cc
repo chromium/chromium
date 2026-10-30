@@ -163,7 +163,7 @@ IncognitoModePrefs::IncognitoModeType IncognitoModePrefs::GetIncognitoModeType(
 IncognitoModeAvailability IncognitoModePrefs::GetAvailabilityInternal(
     const Profile* profile,
     GetAvailabilityMode mode) {
-  DCHECK(profile);
+  CHECK(profile, base::NotFatalUntil::M163);
 
   IncognitoModeAvailability result = kDefaultAvailability;
   // Enterprise Isolated Mode has higher priority than the Incognito mode
@@ -172,11 +172,11 @@ IncognitoModeAvailability IncognitoModePrefs::GetAvailabilityInternal(
     result = IncognitoModeAvailability::kEnabled;
   } else {
     const PrefService* pref_service = profile->GetPrefs();
-    DCHECK(pref_service);
+    CHECK(pref_service, base::NotFatalUntil::M163);
     int pref_value = pref_service->GetInteger(
         policy::policy_prefs::kIncognitoModeAvailability);
     bool valid = IntToAvailability(pref_value, &result);
-    DCHECK(valid);
+    CHECK(valid, base::NotFatalUntil::M163);
   }
 
   if (result != IncognitoModeAvailability::kDisabled &&

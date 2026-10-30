@@ -82,12 +82,12 @@ SessionRestoreStatsCollector::SessionRestoreStatsCollector(
       hidden_or_occluded_tab_ignored_(false),
       restore_started_(restore_started),
       reporting_delegate_(std::move(reporting_delegate)) {
-  DCHECK(!g_instance);
+  CHECK(!g_instance, base::NotFatalUntil::M163);
   g_instance = this;
 }
 
 SessionRestoreStatsCollector::~SessionRestoreStatsCollector() {
-  DCHECK_EQ(g_instance, this);
+  CHECK_EQ(g_instance, this, base::NotFatalUntil::M163);
   g_instance = nullptr;
 }
 
@@ -213,7 +213,7 @@ void SessionRestoreStatsCollector::RegisterObserverForTab(WebContents* tab) {
 
   // Assume that tabs do not start out hidden or occluded.
   auto result = tracked_tabs_occluded_map_.emplace(rwh, false);
-  DCHECK(result.second);
+  CHECK(result.second, base::NotFatalUntil::M163);
   render_widget_host_observations_.AddObservation(rwh);
 }
 

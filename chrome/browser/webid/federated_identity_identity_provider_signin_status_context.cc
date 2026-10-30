@@ -224,6 +224,6 @@ void FederatedIdentityIdentityProviderSigninStatusContext::
 std::u16string
 FederatedIdentityIdentityProviderSigninStatusContext::GetObjectDisplayName(
     const base::DictValue& object) {
-  DCHECK(IsValidObject(object));
+  CHECK(IsValidObject(object), base::NotFatalUntil::M163);
   return base::UTF8ToUTF16(*object.FindString(kIdpKey));
 }

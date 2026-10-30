@@ -113,6 +113,6 @@ void AccessibilityLabelsBubbleModel::OpenHelpPage() {
 
 void AccessibilityLabelsBubbleModel::SetPref(bool enabled) {
   PrefService* prefs = profile_->GetPrefs();
-  DCHECK(prefs);
+  CHECK(prefs, base::NotFatalUntil::M163);
   prefs->SetBoolean(prefs::kAccessibilityImageLabelsEnabled, enabled);
 }

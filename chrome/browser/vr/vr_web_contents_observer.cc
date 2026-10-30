@@ -13,7 +13,7 @@ VrWebContentsObserver::VrWebContentsObserver(content::WebContents* web_contents,
 VrWebContentsObserver::~VrWebContentsObserver() = default;
 
 void VrWebContentsObserver::WebContentsDestroyed() {
-  DCHECK(on_destroy_);
+  CHECK(on_destroy_, base::NotFatalUntil::M163);
   std::move(on_destroy_).Run();
 }
 

@@ -47,7 +47,7 @@ CameraModel CameraModelViewProjFromXRView(
   model.view_matrix = view->geometry->mojo_from_view;
 
   bool is_invertible = model.view_matrix.GetInverse(&model.view_matrix);
-  DCHECK(is_invertible);
+  CHECK(is_invertible, base::NotFatalUntil::M163);
 
   const auto& fov = view->geometry->field_of_view;
   float up_tan = tanf(base::DegToRad(fov->up_degrees));
@@ -147,8 +147,8 @@ void GraphicsDelegate::SetXrViews(
     }
   }
 
-  DCHECK(left_);
-  DCHECK(right_);
+  CHECK(left_, base::NotFatalUntil::M163);
+  CHECK(right_, base::NotFatalUntil::M163);
 #if BUILDFLAG(IS_ANDROID)
   // The overlay only renders small 2D UI indicators and is composited with
   // linear filtering, so half-resolution per axis (4x fewer pixels) keeps the
@@ -189,8 +189,8 @@ gfx::RectF GraphicsDelegate::GetRight() {
 }
 
 FovRectangles GraphicsDelegate::GetRecommendedFovs() {
-  DCHECK(left_);
-  DCHECK(right_);
+  CHECK(left_, base::NotFatalUntil::M163);
+  CHECK(right_, base::NotFatalUntil::M163);
   FovRectangle left = {
       left_->geometry->field_of_view->left_degrees,
       left_->geometry->field_of_view->right_degrees,

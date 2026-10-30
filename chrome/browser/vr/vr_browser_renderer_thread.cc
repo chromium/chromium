@@ -46,7 +46,7 @@ VRBrowserRendererThread::VRBrowserRendererThread(
     const std::vector<device::mojom::XRViewPtr>& views)
     : overlay_(std::move(overlay)),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
-  DCHECK(instance_for_testing_ == nullptr);
+  CHECK(instance_for_testing_ == nullptr, base::NotFatalUntil::M163);
   instance_for_testing_ = this;
 
   for (auto& view : views) {
@@ -216,7 +216,7 @@ void VRBrowserRendererThread::SetVisibleExternalPromptNotification(
     // so if we don't have a ui_ object and we need one, ensure that it's being
     // spun back up.
     if (prompt != ExternalPromptNotificationType::kPromptNone) {
-      DCHECK(started_);
+      CHECK(started_, base::NotFatalUntil::M163);
     }
     return;
   }
@@ -286,7 +286,7 @@ void VRBrowserRendererThread::OnGraphicsReady(
   graphics_ = initializing_graphics.get();
 
   // We should have received valid views from the ui host before rendering.
-  DCHECK(!default_views_.empty());
+  CHECK(!default_views_.empty(), base::NotFatalUntil::M163);
   graphics_->SetXrViews(default_views_);
 
   graphics_->BindContext();
@@ -349,7 +349,7 @@ device::mojom::XRRenderInfoPtr ValidateFrameData(
         // If testing with unexpectedly high values, catch on debug builds
         // rather than silently change data.  On release builds its better to
         // be safe and validate.
-        DCHECK(false);
+        CHECK(false, base::NotFatalUntil::M163);
       }
     }
   }  // if (data->mojo_from_viewer)
@@ -402,10 +402,10 @@ void VRBrowserRendererThread::OnPose(int request_id,
     return;
 
   // Deliver pose to input and scheduler.
-  DCHECK(data);
-  DCHECK(data->mojo_from_viewer);
-  DCHECK(data->mojo_from_viewer->orientation);
-  DCHECK(data->mojo_from_viewer->position);
+  CHECK(data, base::NotFatalUntil::M163);
+  CHECK(data->mojo_from_viewer, base::NotFatalUntil::M163);
+  CHECK(data->mojo_from_viewer->orientation, base::NotFatalUntil::M163);
+  CHECK(data->mojo_from_viewer->position, base::NotFatalUntil::M163);
   const gfx::Point3F& pos = *data->mojo_from_viewer->position;
 
   // The incoming pose represents where the headset is in "world space".  So

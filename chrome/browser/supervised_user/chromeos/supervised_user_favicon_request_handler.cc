@@ -37,7 +37,7 @@ SupervisedUserFaviconRequestHandler::~SupervisedUserFaviconRequestHandler() =
 
 void SupervisedUserFaviconRequestHandler::StartFaviconFetch(
     base::OnceClosure on_fetched_callback) {
-  DCHECK(!network_request_completed_);
+  CHECK(!network_request_completed_, base::NotFatalUntil::M163);
   on_fetched_callback_ = std::move(on_fetched_callback);
   FetchFaviconFromCache();
 }

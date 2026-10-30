@@ -767,8 +767,10 @@ int GetUmaValueMax(UmaEnumIdLookupType type) {
 
 // Collapses large ranges of ids before looking for UMA enum.
 int CollapseCommandsForUMA(int id) {
-  DCHECK(!RenderViewContextMenu::IsContentCustomCommandId(id));
-  DCHECK(!ContextMenuMatcher::IsExtensionsCustomCommandId(id));
+  CHECK(!RenderViewContextMenu::IsContentCustomCommandId(id),
+        base::NotFatalUntil::M163);
+  CHECK(!ContextMenuMatcher::IsExtensionsCustomCommandId(id),
+        base::NotFatalUntil::M163);
 
   if (id >= IDC_CONTENT_CONTEXT_PROTOCOL_HANDLER_FIRST &&
       id <= IDC_CONTENT_CONTEXT_PROTOCOL_HANDLER_LAST) {
@@ -1220,7 +1222,7 @@ void RenderViewContextMenu::AppendCurrentExtensionItems() {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 std::u16string RenderViewContextMenu::FormatURLForClipboard(const GURL& url) {
-  DCHECK(url.is_valid());
+  CHECK(url.is_valid(), base::NotFatalUntil::M163);
 
   GURL url_to_format = url;
   url_formatter::FormatUrlTypes format_types;
@@ -1433,7 +1435,7 @@ void RenderViewContextMenu::InitMenu() {
     AppendRevisedTextSelectionSection();
   } else if (content_type_->SupportsGroup(
                  ContextMenuContentType::ITEM_GROUP_COPY)) {
-    DCHECK(!editable);
+    CHECK(!editable, base::NotFatalUntil::M163);
     AppendCopyItem();
     AppendLinkToTextItems();
   }
@@ -1561,16 +1563,18 @@ void RenderViewContextMenu::InitMenu() {
 
   if (content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_ALL_EXTENSION)) {
-    DCHECK(!content_type_->SupportsGroup(
-        ContextMenuContentType::ITEM_GROUP_CURRENT_EXTENSION));
+    CHECK(!content_type_->SupportsGroup(
+              ContextMenuContentType::ITEM_GROUP_CURRENT_EXTENSION),
+          base::NotFatalUntil::M163);
     extensions::context_menu_helpers::PopulateExtensionItems(
         browser_context_, params_, extension_items_);
   }
 
   if (content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_CURRENT_EXTENSION)) {
-    DCHECK(!content_type_->SupportsGroup(
-        ContextMenuContentType::ITEM_GROUP_ALL_EXTENSION));
+    CHECK(!content_type_->SupportsGroup(
+              ContextMenuContentType::ITEM_GROUP_ALL_EXTENSION),
+          base::NotFatalUntil::M163);
     AppendCurrentExtensionItems();
   }
 
@@ -2168,7 +2172,7 @@ void RenderViewContextMenu::AppendLinkItems() {
       }
 
       if (multiple_profiles_open_ || has_active_profiles) {
-        DCHECK(!target_profiles_entries.empty());
+        CHECK(!target_profiles_entries.empty(), base::NotFatalUntil::M163);
         profiles::PlaceholderAvatarIconParams icon_params =
             GetPlaceholderAvatarIconParamsVisibleAgainstColor(
                 GetWebContents()->GetColorProvider().GetColor(
@@ -3049,7 +3053,7 @@ void RenderViewContextMenu::AppendRotationItems() {
 }
 
 void RenderViewContextMenu::AppendSearchProvider() {
-  DCHECK(browser_context_);
+  CHECK(browser_context_, base::NotFatalUntil::M163);
 
   if (!IsSearchAllowedByPolicy()) {
     return;
@@ -4007,7 +4011,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     }
 
     case IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW:
-      DCHECK(!IsInProgressiveWebApp());
+      CHECK(!IsInProgressiveWebApp(), base::NotFatalUntil::M163);
       OpenURLWithExtraHeaders(
           params_.link_url, params_.frame_url, params_.frame_origin,
           ui::mojom::WindowOpenDisposition::kNewWindow,
@@ -4616,7 +4620,7 @@ const policy::DlpRulesManager* RenderViewContextMenu::GetDlpRulesManager()
 bool RenderViewContextMenu::IsSaveAsItemAllowedByPolicy(
     const GURL& item_url) const {
   PrefService* local_state = g_browser_process->local_state();
-  DCHECK(local_state);
+  CHECK(local_state, base::NotFatalUntil::M163);
   // Check if file-selection dialogs are forbidden by policy.
   if (!local_state->GetBoolean(prefs::kAllowFileSelectionDialogs)) {
     return false;
@@ -5124,8 +5128,9 @@ void RenderViewContextMenu::ExecProtocolHandler(int event_flags,
 }
 
 void RenderViewContextMenu::ExecOpenLinkInProfile(int profile_index) {
-  DCHECK_GE(profile_index, 0);
-  DCHECK_LE(profile_index, static_cast<int>(profile_link_paths_.size()));
+  CHECK_GE(profile_index, 0, base::NotFatalUntil::M163);
+  CHECK_LE(profile_index, static_cast<int>(profile_link_paths_.size()),
+           base::NotFatalUntil::M163);
 
   base::FilePath profile_path = profile_link_paths_[profile_index];
   profiles::SwitchToProfile(
@@ -5241,8 +5246,8 @@ void RenderViewContextMenu::ExecInspectElement() {
 
 void RenderViewContextMenu::ExecInspectBackgroundPage() {
   const Extension* platform_app = GetExtension();
-  DCHECK(platform_app);
-  DCHECK(platform_app->is_platform_app());
+  CHECK(platform_app, base::NotFatalUntil::M163);
+  CHECK(platform_app->is_platform_app(), base::NotFatalUntil::M163);
 
   extensions::devtools_util::InspectBackgroundPage(
       platform_app, GetProfile(), DevToolsOpenedByAction::kContextMenuInspect);
@@ -5765,8 +5770,8 @@ void RenderViewContextMenu::ExecRotateCCW() {
 
 void RenderViewContextMenu::ExecReloadPackagedApp() {
   const Extension* platform_app = GetExtension();
-  DCHECK(platform_app);
-  DCHECK(platform_app->is_platform_app());
+  CHECK(platform_app, base::NotFatalUntil::M163);
+  CHECK(platform_app->is_platform_app(), base::NotFatalUntil::M163);
 
   extensions::ExtensionRegistrar::Get(browser_context_)
       ->ReloadExtension(platform_app->id());
@@ -5774,8 +5779,8 @@ void RenderViewContextMenu::ExecReloadPackagedApp() {
 
 void RenderViewContextMenu::ExecRestartPackagedApp() {
   const Extension* platform_app = GetExtension();
-  DCHECK(platform_app);
-  DCHECK(platform_app->is_platform_app());
+  CHECK(platform_app, base::NotFatalUntil::M163);
+  CHECK(platform_app->is_platform_app(), base::NotFatalUntil::M163);
 
   apps::AppLoadService::Get(GetProfile())
       ->RestartApplication(platform_app->id());
@@ -5824,7 +5829,7 @@ void RenderViewContextMenu::ExecTranslate() {
 
   translate::TranslateManager* manager =
       chrome_translate_client->GetTranslateManager();
-  DCHECK(manager);
+  CHECK(manager, base::NotFatalUntil::M163);
   manager->ShowTranslateUI(/*auto_translate=*/true,
                            /*triggered_from_menu=*/true);
 }

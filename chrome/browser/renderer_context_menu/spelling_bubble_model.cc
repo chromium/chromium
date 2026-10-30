@@ -77,7 +77,7 @@ void SpellingBubbleModel::OpenHelpPage() {
 
 void SpellingBubbleModel::SetPref(bool enabled) {
   PrefService* pref = profile_->GetPrefs();
-  DCHECK(pref);
+  CHECK(pref, base::NotFatalUntil::M163);
   pref->SetBoolean(spellcheck::prefs::kSpellCheckUseSpellingService, enabled);
 
   // If the user has explicitly opted in to using the spelling service,

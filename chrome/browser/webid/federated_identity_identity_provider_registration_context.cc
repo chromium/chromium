@@ -80,7 +80,7 @@ void FederatedIdentityIdentityProviderRegistrationContext::UnregisterIdP(
 std::string
 FederatedIdentityIdentityProviderRegistrationContext::GetKeyForObject(
     const base::DictValue& object) {
-  DCHECK(IsValidObject(object));
+  CHECK(IsValidObject(object), base::NotFatalUntil::M163);
   return *object.FindString(kIdPRegistrationKey);
 }
 
@@ -92,6 +92,6 @@ bool FederatedIdentityIdentityProviderRegistrationContext::IsValidObject(
 std::u16string
 FederatedIdentityIdentityProviderRegistrationContext::GetObjectDisplayName(
     const base::DictValue& object) {
-  DCHECK(IsValidObject(object));
+  CHECK(IsValidObject(object), base::NotFatalUntil::M163);
   return base::UTF8ToUTF16(*object.FindString(kIdPRegistrationKey));
 }

@@ -49,7 +49,7 @@ bool AccessibilityLabelsMenuObserver::IsCommandIdSupported(int command_id) {
 }
 
 bool AccessibilityLabelsMenuObserver::IsCommandIdChecked(int command_id) {
-  DCHECK(IsCommandIdSupported(command_id));
+  CHECK(IsCommandIdSupported(command_id), base::NotFatalUntil::M163);
   Profile* profile = Profile::FromBrowserContext(proxy_->GetBrowserContext());
 
   if (command_id == IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_TOGGLE ||
@@ -62,7 +62,7 @@ bool AccessibilityLabelsMenuObserver::IsCommandIdChecked(int command_id) {
 }
 
 bool AccessibilityLabelsMenuObserver::IsCommandIdEnabled(int command_id) {
-  DCHECK(IsCommandIdSupported(command_id));
+  CHECK(IsCommandIdSupported(command_id), base::NotFatalUntil::M163);
   if (command_id == IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_TOGGLE ||
       command_id == IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS ||
       command_id == IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_TOGGLE_ONCE) {
@@ -72,7 +72,7 @@ bool AccessibilityLabelsMenuObserver::IsCommandIdEnabled(int command_id) {
 }
 
 void AccessibilityLabelsMenuObserver::ExecuteCommand(int command_id) {
-  DCHECK(IsCommandIdSupported(command_id));
+  CHECK(IsCommandIdSupported(command_id), base::NotFatalUntil::M163);
   Profile* profile = Profile::FromBrowserContext(proxy_->GetBrowserContext());
   if (command_id == IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_TOGGLE) {
     // When a user enables the accessibility labeling item, we

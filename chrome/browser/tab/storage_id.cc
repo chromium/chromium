@@ -28,12 +28,12 @@ std::array<uint8_t, kStorageIdBlobSizeBytes> StorageIdToBlob(StorageId id) {
 }
 
 StorageId StorageIdFromBlob(base::span<const uint8_t> id) {
-  DCHECK_EQ(id.size(), kStorageIdBlobSizeBytes);
+  CHECK_EQ(id.size(), kStorageIdBlobSizeBytes, base::NotFatalUntil::M163);
   uint64_t high = base::U64FromLittleEndian(id.take_first<8u>());
   uint64_t low = base::U64FromLittleEndian(id.take_first<8u>());
   std::optional<base::UnguessableToken> maybe_token =
       base::UnguessableToken::Deserialize(high, low);
-  DCHECK(maybe_token.has_value());
+  CHECK(maybe_token.has_value(), base::NotFatalUntil::M163);
   return *maybe_token;
 }
 
@@ -45,7 +45,7 @@ void StorageIdToTokenProto(StorageId id, tabs_pb::Token* token) {
 StorageId StorageIdFromTokenProto(const tabs_pb::Token& token) {
   std::optional<base::UnguessableToken> maybe_token =
       base::UnguessableToken::Deserialize(token.high(), token.low());
-  DCHECK(maybe_token.has_value());
+  CHECK(maybe_token.has_value(), base::NotFatalUntil::M163);
   return *maybe_token;
 }
 

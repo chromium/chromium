@@ -128,7 +128,7 @@ void TabStateStorageService::OnScopedBatchDestroyed() {
 }
 
 void TabStateStorageService::Save(const TabInterface* tab) {
-  DCHECK(packager_);
+  CHECK(packager_, base::NotFatalUntil::M163);
 
   const TabCollection* parent = tab->GetParentCollection();
   DCHECK(tab->GetParentCollection()) << "Tab must have a parent collection";
@@ -149,7 +149,7 @@ void TabStateStorageService::Save(std::string window_tag,
 }
 
 void TabStateStorageService::Save(const TabCollection* collection) {
-  DCHECK(packager_);
+  CHECK(packager_, base::NotFatalUntil::M163);
 
   std::string window_tag = packager_->GetWindowTag(collection);
   bool is_off_the_record = packager_->IsOffTheRecord(collection);
@@ -164,7 +164,7 @@ void TabStateStorageService::Save(const TabCollection* collection) {
 }
 
 void TabStateStorageService::SavePayload(const TabCollection* collection) {
-  DCHECK(packager_);
+  CHECK(packager_, base::NotFatalUntil::M163);
 
   StorageId storage_id = GetStorageId(collection);
   ApplyUpdate([&](TabStateStorageUpdaterBuilder& builder) {
@@ -173,7 +173,7 @@ void TabStateStorageService::SavePayload(const TabCollection* collection) {
 }
 
 void TabStateStorageService::SaveChildren(const TabCollection* collection) {
-  DCHECK(packager_);
+  CHECK(packager_, base::NotFatalUntil::M163);
 
   StorageId storage_id = GetStorageId(collection);
   ApplyUpdate([&](TabStateStorageUpdaterBuilder& builder) {
@@ -184,7 +184,7 @@ void TabStateStorageService::SaveChildren(const TabCollection* collection) {
 void TabStateStorageService::SaveDivergentChildren(
     const TabCollection* collection,
     base::PassKey<StorageRestoreOrchestrator>) {
-  DCHECK(packager_);
+  CHECK(packager_, base::NotFatalUntil::M163);
 
   StorageId storage_id = GetStorageId(collection);
   ApplyUpdate([&](TabStateStorageUpdaterBuilder& builder) {
@@ -193,7 +193,7 @@ void TabStateStorageService::SaveDivergentChildren(
 }
 
 void TabStateStorageService::Remove(const TabInterface* tab) {
-  DCHECK(packager_);
+  CHECK(packager_, base::NotFatalUntil::M163);
 
   ApplyUpdate([&](TabStateStorageUpdaterBuilder& builder) {
     builder.RemoveNode(GetStorageId(tab));
@@ -201,7 +201,7 @@ void TabStateStorageService::Remove(const TabInterface* tab) {
 }
 
 void TabStateStorageService::Remove(const TabCollection* collection) {
-  DCHECK(packager_);
+  CHECK(packager_, base::NotFatalUntil::M163);
 
   ApplyUpdate([&](TabStateStorageUpdaterBuilder& builder) {
     builder.RemoveNode(GetStorageId(collection));
@@ -209,7 +209,7 @@ void TabStateStorageService::Remove(const TabCollection* collection) {
 }
 
 void TabStateStorageService::Remove(StorageId id) {
-  DCHECK(packager_);
+  CHECK(packager_, base::NotFatalUntil::M163);
 
   ApplyUpdate(
       [&](TabStateStorageUpdaterBuilder& builder) { builder.RemoveNode(id); });
@@ -256,7 +256,7 @@ void TabStateStorageService::LoadAllNodes(std::string_view window_tag,
   // has been fully constructed and passed back to the UI thread.
   std::unique_ptr<RestoreEntityTracker> tracker =
       tracker_factory_.Run(on_tab_association, on_collection_association);
-  DCHECK(tracker);
+  CHECK(tracker, base::NotFatalUntil::M163);
   auto builder = std::make_unique<StorageLoadedData::Builder>(
       window_tag, is_off_the_record, std::move(tracker));
   tab_backend_.LoadAllNodes(window_tag, is_off_the_record, std::move(builder),
@@ -301,13 +301,13 @@ void TabStateStorageService::ClearNodesForWindowExcept(
 
 std::string TabStateStorageService::GetWindowTag(
     const TabCollection* collection) const {
-  DCHECK(packager_);
+  CHECK(packager_, base::NotFatalUntil::M163);
   return packager_->GetWindowTag(collection);
 }
 
 bool TabStateStorageService::IsOffTheRecord(
     const TabCollection* collection) const {
-  DCHECK(packager_);
+  CHECK(packager_, base::NotFatalUntil::M163);
   return packager_->IsOffTheRecord(collection);
 }
 
