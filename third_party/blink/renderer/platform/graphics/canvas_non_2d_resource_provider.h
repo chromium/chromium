@@ -216,7 +216,8 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       gpu::SharedImageUsageSet shared_image_usage_flags,
       base::OnceClosure context_lost_callback = {},
-      bool register_flush_for_image_observer = true);
+      bool register_flush_for_image_observer = true,
+      bool register_destruction_observer = true);
   CanvasNon2DResourceProvider(gfx::Size,
                               viz::SharedImageFormat,
                               SkAlphaType,
@@ -285,6 +286,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
 
   const bool is_software_;
   const bool register_flush_for_image_observer_ = true;
+  const bool register_destruction_observer_ = true;
 
   mutable sk_sp<SkSurface> surface_;
   uint32_t snapshot_sk_image_id_ = 0u;

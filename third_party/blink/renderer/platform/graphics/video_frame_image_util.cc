@@ -211,7 +211,8 @@ VideoFrameAcceleratedSnapshotPool::Create(const CanvasSnapshotInfo& info) {
       pool_info.size, pool_info.format, pool_info.alpha_type,
       pool_info.color_space, pool_info.hdr_metadata, context_provider_wrapper,
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, base::DoNothing(),
-      /*register_flush_for_image_observer=*/false));
+      /*register_flush_for_image_observer=*/false,
+      /*register_destruction_observer=*/false));
   auto pool = base::WrapUnique(new VideoFrameAcceleratedSnapshotPool(
       pool_info, std::move(context_provider_wrapper), std::move(provider)));
   return pool->IsValid() ? std::move(pool) : nullptr;
@@ -225,11 +226,23 @@ VideoFrameAcceleratedSnapshotPool::VideoFrameAcceleratedSnapshotPool(
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       provider_(std::move(provider)) {
   CHECK(provider_);
+  if (context_provider_wrapper_) {
+    context_provider_wrapper_->AddObserver(this);
+  }
   FlushForImageListener::Get()->AddObserver(this);
 }
 
 VideoFrameAcceleratedSnapshotPool::~VideoFrameAcceleratedSnapshotPool() {
+  if (context_provider_wrapper_) {
+    context_provider_wrapper_->RemoveObserver(this);
+  }
   FlushForImageListener::Get()->RemoveObserver(this);
+}
+
+void VideoFrameAcceleratedSnapshotPool::OnContextDestroyed() {
+  if (provider_->image_pool_) {
+    provider_->image_pool_->Clear();
+  }
 }
 
 void VideoFrameAcceleratedSnapshotPool::OnFlushForImage(

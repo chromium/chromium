@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_snapshot_info.h"
 #include "third_party/blink/renderer/platform/graphics/flush_for_image_listener.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
+#include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "ui/gfx/color_space.h"
@@ -40,12 +41,12 @@ namespace blink {
 class CanvasNon2DResourceProvider;
 class CanvasResourceSharedImage;
 class StaticBitmapImage;
-class WebGraphicsContext3DProviderWrapper;
 
 // Pool of accelerated SharedImages used to produce AcceleratedStaticBitmapImage
 // snapshots from media::VideoFrames.
 class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool
-    : public FlushForImageObserver {
+    : public FlushForImageObserver,
+      public WebGraphicsContext3DProviderWrapper::DestructionObserver {
  public:
   static std::unique_ptr<VideoFrameAcceleratedSnapshotPool> Create(
       const CanvasSnapshotInfo& info);
@@ -72,6 +73,9 @@ class PLATFORM_EXPORT VideoFrameAcceleratedSnapshotPool
 
   // FlushForImageObserver:
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
+
+  // WebGraphicsContext3DProviderWrapper::DestructionObserver:
+  void OnContextDestroyed() override;
 
   void FlushRecording(cc::PaintRecord last_recording);
   void EnsureResourceReadyForDraw();

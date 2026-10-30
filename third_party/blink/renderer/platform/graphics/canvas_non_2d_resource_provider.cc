@@ -233,7 +233,8 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     gpu::SharedImageUsageSet shared_image_usage_flags,
     base::OnceClosure context_lost_callback,
-    bool register_flush_for_image_observer)
+    bool register_flush_for_image_observer,
+    bool register_destruction_observer)
     : size_(size),
       format_(format),
       alpha_type_(alpha_type),
@@ -242,6 +243,7 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
       context_lost_callback_(std::move(context_lost_callback)),
       is_software_(false),
       register_flush_for_image_observer_(register_flush_for_image_observer),
+      register_destruction_observer_(register_destruction_observer),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()),
       recorder_for_external_draws_(
           std::make_unique<MemoryManagedPaintRecorder>(Size(),
@@ -249,7 +251,9 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
       context_provider_wrapper_(std::move(context_provider_wrapper)) {
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
   if (context_provider_wrapper_) {
-    context_provider_wrapper_->AddObserver(this);
+    if (register_destruction_observer_) {
+      context_provider_wrapper_->AddObserver(this);
+    }
     raster_context_provider_ = base::WrapRefCounted(
         context_provider_wrapper_->ContextProvider().RasterContextProvider());
   }
@@ -358,7 +362,7 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
 
 CanvasNon2DResourceProvider::~CanvasNon2DResourceProvider() {
   CanvasMemoryDumpProvider::Instance()->UnregisterClient(this);
-  if (context_provider_wrapper_) {
+  if (context_provider_wrapper_ && register_destruction_observer_) {
     context_provider_wrapper_->RemoveObserver(this);
   }
   if (raster_context_provider_) {
