@@ -23,6 +23,7 @@
 
 namespace safe_browsing {
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 class MockThrottleDelegate : public blink::URLLoaderThrottle::Delegate {
  public:
   ~MockThrottleDelegate() override = default;
@@ -56,58 +57,6 @@ class SBRendererUrlLoaderThrottleTest : public ::testing::Test {
   std::unique_ptr<RendererURLLoaderThrottle> throttle_;
 };
 
-TEST_F(SBRendererUrlLoaderThrottleTest, DoesNotDeferHttpsImageUrl) {
-  GURL url("https://example.com/");
-  bool defer = false;
-  network::ResourceRequest request =
-      GetResourceRequest(url, network::mojom::RequestDestination::kImage);
-  throttle_->WillStartRequest(&request, &defer);
-  message_loop_.RunUntilIdle();
-
-  auto response_head = network::mojom::URLResponseHead::New();
-  throttle_->WillProcessResponse(url, response_head.get(), &defer);
-  EXPECT_FALSE(defer);
-}
-
-TEST_F(SBRendererUrlLoaderThrottleTest, DoesNotDeferHttpsScriptUrl) {
-  GURL url("https://example.com/");
-  bool defer = false;
-  network::ResourceRequest request =
-      GetResourceRequest(url, network::mojom::RequestDestination::kScript);
-  throttle_->WillStartRequest(&request, &defer);
-  message_loop_.RunUntilIdle();
-
-  auto response_head = network::mojom::URLResponseHead::New();
-  throttle_->WillProcessResponse(url, response_head.get(), &defer);
-  EXPECT_FALSE(defer);
-}
-
-TEST_F(SBRendererUrlLoaderThrottleTest, DoesNotDeferChromeUrl) {
-  GURL url("chrome://settings/");
-  bool defer = false;
-  network::ResourceRequest request =
-      GetResourceRequest(url, network::mojom::RequestDestination::kScript);
-  throttle_->WillStartRequest(&request, &defer);
-
-  auto response_head = network::mojom::URLResponseHead::New();
-  throttle_->WillProcessResponse(url, response_head.get(), &defer);
-  EXPECT_FALSE(defer);
-}
-
-TEST_F(SBRendererUrlLoaderThrottleTest, DoesNotDeferIframeUrl) {
-  GURL url("https://example.com/");
-  bool defer = false;
-  network::ResourceRequest request =
-      GetResourceRequest(url, network::mojom::RequestDestination::kIframe);
-  throttle_->WillStartRequest(&request, &defer);
-  message_loop_.RunUntilIdle();
-
-  auto response_head = network::mojom::URLResponseHead::New();
-  throttle_->WillProcessResponse(url, response_head.get(), &defer);
-  EXPECT_FALSE(defer);
-}
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 class MockExtensionWebRequestReporter
     : public mojom::ExtensionWebRequestReporter {
  public:

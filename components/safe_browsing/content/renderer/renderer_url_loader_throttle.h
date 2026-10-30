@@ -20,6 +20,9 @@ namespace safe_browsing {
 
 // RendererURLLoaderThrottle is used in renderer processes to send extension web
 // request data to the browser process for extension telemetry.
+// TODO(crbug.com/324108312): Build and instantiate RendererURLLoaderThrottle
+// only when BUILDFLAG(ENABLE_EXTENSIONS) is true, since it is now a no-op
+// when extensions are disabled.
 class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
   // TODO(crbug.com/324108312): Remove this default constructor once
@@ -39,14 +42,6 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
-                           DoesNotDeferHttpsImageUrl);
-  FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
-                           DoesNotDeferHttpsScriptUrl);
-  FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
-                           DoesNotDeferChromeUrl);
-  FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
-                           DoesNotDeferIframeUrl);
-  FRIEND_TEST_ALL_PREFIXES(SBRendererUrlLoaderThrottleTest,
                            WillRedirectRequest_ProviderDestroyed_NoCrash);
 
   // blink::URLLoaderThrottle implementation.
@@ -58,10 +53,6 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
       const network::mojom::URLResponseHead& response_head,
       bool* defer,
       network::HttpRequestHeadersUpdateParams* headers_update_params) override;
-  void WillProcessResponse(const GURL& response_url,
-                           network::mojom::URLResponseHead* response_head,
-                           bool* defer) override;
-  const char* NameForLoggingWillProcessResponse() override;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Bind the pipe created in DetachFromCurrentSequence to the current

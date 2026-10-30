@@ -4,31 +4,14 @@
 
 #include "components/safe_browsing/content/renderer/renderer_url_loader_throttle.h"
 
-#include "base/check_op.h"
-#include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
-#include "content/public/common/url_constants.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/resource_request.h"
-#include "services/network/public/mojom/fetch_api.mojom.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"  // nogncheck
 #endif
 
 namespace safe_browsing {
-
-namespace {
-
-// Returns true if the URL is known to be safe. We also require that this URL
-// never redirects to a potentially unsafe URL, because the redirected URLs are
-// also skipped if this function returns true.
-bool KnownSafeUrl(const GURL& url) {
-  return url.SchemeIs(content::kChromeUIScheme);
-}
-
-}  // namespace
 
 RendererURLLoaderThrottle::RendererURLLoaderThrottle() = default;
 
@@ -59,17 +42,6 @@ void RendererURLLoaderThrottle::WillStartRequest(
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   MaybeSendExtensionWebRequestData(request);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-  base::UmaHistogramEnumeration(
-      "SafeBrowsing.RendererThrottle.RequestDestination", request->destination);
-
-  if (KnownSafeUrl(request->url)) {
-    return;
-  }
-
-  VLOG(2) << __func__ << " : Skipping: " << request->url << " : "
-          << request->destination;
-  CHECK_NE(request->destination, network::mojom::RequestDestination::kDocument);
 }
 
 void RendererURLLoaderThrottle::WillRedirectRequest(
@@ -91,19 +63,6 @@ void RendererURLLoaderThrottle::WillRedirectRequest(
             : mojom::WebRequestContactInitiatorType::kExtension);
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-}
-
-void RendererURLLoaderThrottle::WillProcessResponse(
-    const GURL& response_url,
-    network::mojom::URLResponseHead* response_head,
-    bool* defer) {
-  base::UmaHistogramBoolean(
-      "SafeBrowsing.RendererThrottle.IsCheckCompletedOnProcessResponse",
-      /*sample=*/true);
-}
-
-const char* RendererURLLoaderThrottle::NameForLoggingWillProcessResponse() {
-  return "SafeBrowsingRendererThrottle";
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

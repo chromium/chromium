@@ -2664,31 +2664,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram
-    name="SafeBrowsing.RendererThrottle.IsCheckCompletedOnProcessResponse"
-    enum="BooleanCompleted" expires_after="2026-12-22">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs whether the Safe Browsing check is completed when the renderer URL
-    loader starts to process a response. If not, the renderer URL loader will be
-    deferred until the Safe Browsing check is completed. Logs each time the
-    renderer URL loader dispatches WillProcessResponse() and the Safe Browsing
-    check doesn't block the URL.
-  </summary>
-</histogram>
-
-<histogram name="SafeBrowsing.RendererThrottle.RequestDestination"
-    enum="RequestDestination" expires_after="2027-04-10">
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logs the request destination of the URL that is checked by the renderer URL
-    loader throttle, and whether the URL check was requested. Logged each time
-    WillStartRequest is called.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.ReportUnsafeSite.DialogClosedReason"
     enum="WidgetClosedReason" expires_after="2027-03-21">
   <owner>nwokedi@chromium.org</owner>
