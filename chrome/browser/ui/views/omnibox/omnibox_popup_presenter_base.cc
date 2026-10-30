@@ -136,17 +136,13 @@ void OmniboxPopupPresenterBase::Show() {
     auto timeout = ShouldDeferUntilVisualStateReady();
     base::TimeTicks result_ready_time =
         controller()->autocomplete_controller()->result().result_ready_time();
-    if (timeout.has_value()) {
-      is_deferred_ = true;
-      content->GetWebContents()
-          ->GetPrimaryMainFrame()
-          ->InsertVisualStateCallback(
-              base::BindOnce(&OmniboxPopupPresenterBase::OnVisualStateReady,
-                             visual_state_weak_factory_.GetWeakPtr(),
-                             show_request_time,
-                             result_ready_time,
-                             /*from_fallback=*/false));
-
+    is_deferred_ = timeout.has_value();
+    content->GetWebContents()->GetPrimaryMainFrame()->InsertVisualStateCallback(
+        base::BindOnce(&OmniboxPopupPresenterBase::OnVisualStateReady,
+                       visual_state_weak_factory_.GetWeakPtr(),
+                       show_request_time, result_ready_time,
+                       /*from_fallback=*/false));
+    if (is_deferred_) {
       // Add a backup timer in case the visual state callback is never called.
       // The visual state callback should always be called, but this fallback
       // ensures that if that assumption is ever broken, the UI will eventually
@@ -161,14 +157,6 @@ void OmniboxPopupPresenterBase::Show() {
                          /*success=*/false),
           timeout.value());
     } else {
-      content->GetWebContents()
-          ->GetPrimaryMainFrame()
-          ->InsertVisualStateCallback(
-              base::BindOnce(&OmniboxPopupPresenterBase::OnVisualStateReady,
-                             visual_state_weak_factory_.GetWeakPtr(),
-                             show_request_time,
-                             result_ready_time,
-                             /*from_fallback=*/false));
       ShowWidget(show_request_time);
     }
   }
