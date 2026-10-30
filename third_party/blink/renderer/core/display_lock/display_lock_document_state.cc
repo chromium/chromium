@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
@@ -375,11 +377,15 @@ void DisplayLockDocumentState::ForcedRangeInfo::ForceLockIfNeeded(
 
 // ScopedForcedActivatableDisplayLocks implementation -----------
 DisplayLockDocumentState::ScopedForceActivatableDisplayLocks::
-    ScopedForceActivatableDisplayLocks(DisplayLockDocumentState* state)
-    : state_(state) {
-  if (++state_->activatable_display_locks_forced_ == 1) {
+    ScopedForceActivatableDisplayLocks() = default;
+
+DisplayLockDocumentState::ScopedForceActivatableDisplayLocks::
+    ScopedForceActivatableDisplayLocks(DisplayLockDocumentState* state) {
+  CHECK(state);
+  states_.push_back(state);
+  if (++state->activatable_display_locks_forced_ == 1) {
     HeapVector<Member<DisplayLockContext>> contexts(
-        state_->display_lock_contexts_);
+        state->display_lock_contexts_);
     for (auto& context : contexts) {
       if (context->HasElement()) {
         context->DidForceActivatableDisplayLocks();
@@ -398,25 +404,21 @@ DisplayLockDocumentState::ScopedForceActivatableDisplayLocks::
 
 DisplayLockDocumentState::ScopedForceActivatableDisplayLocks::
     ScopedForceActivatableDisplayLocks(
-        ScopedForceActivatableDisplayLocks&& other)
-    : state_(other.state_) {
-  other.state_ = nullptr;
-}
+        ScopedForceActivatableDisplayLocks&& other) = default;
 
-DisplayLockDocumentState::ScopedForceActivatableDisplayLocks&
-DisplayLockDocumentState::ScopedForceActivatableDisplayLocks::operator=(
+void DisplayLockDocumentState::ScopedForceActivatableDisplayLocks::Add(
     ScopedForceActivatableDisplayLocks&& other) {
-  state_ = other.state_;
-  other.state_ = nullptr;
-  return *this;
+  CHECK_NE(&other, this);
+  states_.append_range(other.states_);
+  other.states_.clear();
 }
 
 DisplayLockDocumentState::ScopedForceActivatableDisplayLocks::
     ~ScopedForceActivatableDisplayLocks() {
-  if (!state_)
-    return;
-  DCHECK(state_->activatable_display_locks_forced_);
-  --state_->activatable_display_locks_forced_;
+  for (DisplayLockDocumentState* state : states_) {
+    CHECK_GT(state->activatable_display_locks_forced_, 0);
+    --state->activatable_display_locks_forced_;
+  }
 }
 
 void DisplayLockDocumentState::NotifyPrintingOrPreviewChanged() {
