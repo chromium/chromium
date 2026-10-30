@@ -11,9 +11,9 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 @implementation BrandingMediator {
-  // Weak pointer to the local state that stores the number of times the
-  // branding has shown and animated.
-  raw_ptr<PrefService, DanglingUntriaged> _localState;
+  // Local state prefs that store the number of times the branding has shown and
+  // animated.
+  raw_ptr<PrefService> _localState;
 }
 
 - (instancetype)initWithLocalState:(PrefService*)localState {
@@ -35,7 +35,7 @@
 }
 
 - (void)disconnect {
-  _localState = nil;
+  _localState = nullptr;
 }
 
 #pragma mark - BrandingViewControllerDelegate
