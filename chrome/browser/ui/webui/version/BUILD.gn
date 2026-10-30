@@ -18,7 +18,7 @@ source_set("version") {
   ]
   deps = [
     "//base",
-    "//chrome/browser:browser_process_impl",
+    "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//components/embedder_support:user_agent",
