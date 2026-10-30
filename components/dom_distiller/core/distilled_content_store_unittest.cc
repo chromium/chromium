@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/dom_distiller/core/article_entry.h"
 #include "components/dom_distiller/core/proto/distilled_article.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -340,6 +341,79 @@ TEST_F(InMemoryContentStoreTest, LoadArticleByURLAfterExpungedFromCache) {
                                      base::Unretained(this)));
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(load_success_);
+}
+
+// Tests that evicting an older cache entry for a URL that has been re-saved
+// under a newer entry ID does not erase the URL mapping for the still-cached
+// newer entry.
+TEST_F(InMemoryContentStoreTest,
+       EvictingStaleEntryPreservesNewerUrlToIdMapping) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+
+  constexpr int kMaxNumArticles = 2;
+  store_ = std::make_unique<InMemoryContentStore>(kMaxNumArticles);
+
+  const GURL shared_url("https://example.com/article");
+  const ArticleEntry first_entry = CreateEntry("entry-1", shared_url);
+  DistilledArticleProto first_proto =
+      CreateDistilledArticleForEntry(first_entry);
+  first_proto.set_title("older title");
+
+  base::test::TestFuture<bool> first_save_future;
+  store_->SaveContent(first_entry, first_proto,
+                      first_save_future.GetCallback());
+  EXPECT_TRUE(first_save_future.Get());
+
+  // Re-save the same URL under a new entry ID, updating `url_to_id_`.
+  const ArticleEntry second_entry = CreateEntry("entry-2", shared_url);
+  DistilledArticleProto second_proto =
+      CreateDistilledArticleForEntry(second_entry);
+  second_proto.set_title("newer title");
+
+  base::test::TestFuture<bool> second_save_future;
+  store_->SaveContent(second_entry, second_proto,
+                      second_save_future.GetCallback());
+  EXPECT_TRUE(second_save_future.Get());
+
+  // Save a third entry for a different URL, evicting `entry-1` while `entry-2`
+  // remains in the LRU cache.
+  const ArticleEntry third_entry =
+      CreateEntry("entry-3", GURL("https://example.com/other"));
+  const DistilledArticleProto third_proto =
+      CreateDistilledArticleForEntry(third_entry);
+
+  base::test::TestFuture<bool> third_save_future;
+  store_->SaveContent(third_entry, third_proto,
+                      third_save_future.GetCallback());
+  EXPECT_TRUE(third_save_future.Get());
+
+  // Looking up `shared_url` with a fresh entry ID should still resolve to
+  // `entry-2` (which also promotes `entry-2` to most-recently-used).
+  const ArticleEntry lookup_entry = CreateEntry("lookup-id", shared_url);
+  base::test::TestFuture<bool, std::unique_ptr<DistilledArticleProto>>
+      load_future;
+  store_->LoadContent(lookup_entry, load_future.GetCallback());
+  EXPECT_TRUE(load_future.Get<0>());
+  ASSERT_TRUE(load_future.Get<1>());
+  EXPECT_EQ(second_proto.SerializeAsString(),
+            load_future.Get<1>()->SerializeAsString());
+
+  // Saving `kMaxNumArticles` more entries evicts `entry-2` as well, removing
+  // `shared_url` from the cache.
+  for (const char* entry_id : {"entry-4", "entry-5"}) {
+    const ArticleEntry extra_entry = CreateEntry(
+        entry_id, GURL(std::string("https://example.com/") + entry_id));
+    base::test::TestFuture<bool> extra_save_future;
+    store_->SaveContent(extra_entry,
+                        CreateDistilledArticleForEntry(extra_entry),
+                        extra_save_future.GetCallback());
+    EXPECT_TRUE(extra_save_future.Get());
+  }
+
+  base::test::TestFuture<bool, std::unique_ptr<DistilledArticleProto>>
+      evicted_load_future;
+  store_->LoadContent(lookup_entry, evicted_load_future.GetCallback());
+  EXPECT_FALSE(evicted_load_future.Get<0>());
 }
 
 }  // namespace dom_distiller

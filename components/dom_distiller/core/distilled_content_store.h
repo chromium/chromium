@@ -64,18 +64,23 @@ class InMemoryContentStore : public DistilledContentStore {
   // The CacheDeletor gets called when anything is removed from the ContentMap.
   class CacheDeletor {
    public:
-    explicit CacheDeletor(InMemoryContentStore* store);
+    CacheDeletor(InMemoryContentStore* store, std::string entry_id);
+    CacheDeletor(const CacheDeletor&);
+    CacheDeletor& operator=(const CacheDeletor&);
     ~CacheDeletor();
     void operator()(DistilledArticleProto* proto);
 
    private:
     raw_ptr<InMemoryContentStore> store_;
+    std::string entry_id_;
   };
 
   void AddUrlToIdMapping(const ArticleEntry& entry,
                          const DistilledArticleProto& proto);
 
-  void EraseUrlToIdMapping(const DistilledArticleProto& proto);
+  // Removes URL-to-ID mappings for `proto` that still point to `entry_id`.
+  void EraseUrlToIdMapping(const DistilledArticleProto& proto,
+                           const std::string& entry_id);
 
   typedef base::LRUCache<std::string,
                          std::unique_ptr<DistilledArticleProto, CacheDeletor>>

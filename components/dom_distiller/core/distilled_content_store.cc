@@ -66,7 +66,8 @@ void InMemoryContentStore::InjectContent(const ArticleEntry& entry,
                                          const DistilledArticleProto& proto) {
   cache_.Put(entry.entry_id,
              std::unique_ptr<DistilledArticleProto, CacheDeletor>(
-                 new DistilledArticleProto(proto), CacheDeletor(this)));
+                 new DistilledArticleProto(proto),
+                 CacheDeletor(this, entry.entry_id)));
   AddUrlToIdMapping(entry, proto);
 }
 
@@ -82,17 +83,28 @@ void InMemoryContentStore::AddUrlToIdMapping(
 }
 
 void InMemoryContentStore::EraseUrlToIdMapping(
-    const DistilledArticleProto& proto) {
+    const DistilledArticleProto& proto,
+    const std::string& entry_id) {
   for (int i = 0; i < proto.pages_size(); i++) {
     const DistilledPageProto& page = proto.pages(i);
-    if (page.has_url()) {
-      url_to_id_.erase(page.url());
+    if (!page.has_url()) {
+      continue;
+    }
+    auto it = url_to_id_.find(page.url());
+    if (it != url_to_id_.end() && it->second == entry_id) {
+      url_to_id_.erase(it);
     }
   }
 }
 
-InMemoryContentStore::CacheDeletor::CacheDeletor(InMemoryContentStore* store)
-    : store_(store) {}
+InMemoryContentStore::CacheDeletor::CacheDeletor(InMemoryContentStore* store,
+                                                 std::string entry_id)
+    : store_(store), entry_id_(std::move(entry_id)) {}
+
+InMemoryContentStore::CacheDeletor::CacheDeletor(const CacheDeletor&) = default;
+
+InMemoryContentStore::CacheDeletor&
+InMemoryContentStore::CacheDeletor::operator=(const CacheDeletor&) = default;
 
 InMemoryContentStore::CacheDeletor::~CacheDeletor() = default;
 
@@ -101,7 +113,7 @@ void InMemoryContentStore::CacheDeletor::operator()(
   // When InMemoryContentStore is deleted, the |store_| pointer becomes invalid,
   // but since the ContentMap is cleared in the InMemoryContentStore destructor,
   // this should never be called after the destructor.
-  store_->EraseUrlToIdMapping(*proto);
+  store_->EraseUrlToIdMapping(*proto, entry_id_);
   delete proto;
 }
 
