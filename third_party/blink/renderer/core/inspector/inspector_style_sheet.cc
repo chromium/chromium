@@ -2741,14 +2741,15 @@ String InspectorStyleSheet::SourceMapURL() {
     return String();
   }
 
-  if (String style_sheet_text; GetText(&style_sheet_text)) {
-    String comment_value =
-        FindMagicComment(style_sheet_text, "sourceMappingURL");
-    if (!comment_value.empty()) {
-      return comment_value;
-    }
+  String header_source_map_url = page_style_sheet_->Contents()->SourceMapURL();
+  if (!header_source_map_url.empty()) {
+    return header_source_map_url;
   }
-  return page_style_sheet_->Contents()->SourceMapURL();
+
+  if (String style_sheet_text; GetText(&style_sheet_text)) {
+    return FindMagicComment(style_sheet_text, "sourceMappingURL");
+  }
+  return String();
 }
 
 const Document* InspectorStyleSheet::GetDocument() {

@@ -105,7 +105,8 @@ StyleSheetContents::StyleSheetContents(const StyleSheetContents& o)
       has_single_owner_document_(true),
       is_used_from_text_cache_(false),
       is_used_from_resource_cache_(false),
-      parser_context_(o.parser_context_) {
+      parser_context_(o.parser_context_),
+      source_map_url_(o.source_map_url_) {
   if (o.private_property_registry_) {
     private_property_registry_ =
         o.private_property_registry_->CopyPrivateRegistry();

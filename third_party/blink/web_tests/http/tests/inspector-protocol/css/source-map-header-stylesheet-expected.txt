@@ -1,0 +1,7 @@
+Tests that SourceMap and X-SourceMap HTTP headers take precedence over sourceMappingURL comments in stylesheets.
+Query "header=/from-header.css.map&comment=/from-comment.css.map": sourceMapURL='/from-header.css.map'
+Query "xheader=/from-x-header.css.map&comment=/from-comment.css.map": sourceMapURL='/from-x-header.css.map'
+Query "header=/from-header.css.map&xheader=/from-x-header.css.map&comment=/from-comment.css.map": sourceMapURL='/from-header.css.map'
+Query "comment=/from-comment.css.map": sourceMapURL='/from-comment.css.map'
+After CSS.setStyleSheetText with SourceMap header: sourceMapURL='/from-header.css.map'
+
