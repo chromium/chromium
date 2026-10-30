@@ -2406,7 +2406,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksExtensionHandlerBrowserTest,
-    OnWebviewMessage_OnSubmitQueryRequest_WithoutRecentInteraction_DoesNotRespond) {
+    OnWebviewMessage_OnSubmitQueryRequest_WithoutRecentInteraction_ReturnsEmptyResponse) {
   content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
   tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents_);
   Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
@@ -2441,18 +2441,26 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_CALL(*mock_session_handle_, GetUploadedContextFileInfos())
       .WillRepeatedly(Return(file_infos));
 
-  handler_->GetOrCreateInputStateModelForTesting()->SetLensCrop(
-      "data:image/png;base64,test_crop");
+  base::WeakPtr<contextual_search::InputStateModel> model =
+      handler_->GetOrCreateInputStateModelForTesting();
+  ASSERT_TRUE(model);
+  model->SetLensCrop("data:image/png;base64,test_crop");
+  mock_page_.FlushForTesting();
 
   // Ensure no user interaction was simulated on web_contents_.
   ASSERT_FALSE(web_contents_->HasRecentInteraction());
 
+  base::RunLoop run_loop;
   EXPECT_CALL(mock_page_, PostSearchMessage(_))
       .WillRepeatedly([&](mojo_base::ProtoWrapper wrapper) {
         auto message = wrapper.As<lens::ClientToSearchMessage>();
-        if (message.has_value()) {
-          EXPECT_FALSE(message->has_on_submit_query_response());
+        if (!message.has_value() || !message->has_on_submit_query_response()) {
+          return;
         }
+        EXPECT_EQ(0, message->on_submit_query_response().added_contexts_size());
+        EXPECT_EQ(0,
+                  message->on_submit_query_response().removed_contexts_size());
+        run_loop.Quit();
       });
 
   lens::SearchToClientMessage request;
@@ -2463,12 +2471,14 @@ IN_PROC_BROWSER_TEST_F(
 
   ContextualTasksWebContentsUserData::GetOrCreateForWebContents(web_contents_)
       ->OnSearchMessageReceived(serialized_message);
+  run_loop.Run();
   mock_page_.FlushForTesting();
+  EXPECT_TRUE(model->GetLensCrop().has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksExtensionHandlerBrowserTest,
-    OnWebviewMessage_OnSubmitQueryRequest_ReplayWithoutNewInteraction_DoesNotRespond) {
+    OnWebviewMessage_OnSubmitQueryRequest_ReplayWithoutNewInteraction_ReturnsEmptyResponse) {
   content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
   tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents_);
   Profile* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
@@ -2539,7 +2549,7 @@ IN_PROC_BROWSER_TEST_F(
       ->OnSearchMessageReceived(serialized_message);
   run_loop1.Run();
   mock_page_.FlushForTesting();
-  EXPECT_FALSE(model->lens_crop().has_value());
+  EXPECT_FALSE(model->GetLensCrop().has_value());
 
   // Set a new crop so that if the replay were processed, it would attach a
   // context and clear the crop.
@@ -2547,17 +2557,23 @@ IN_PROC_BROWSER_TEST_F(
   mock_page_.FlushForTesting();
 
   // 2. Replay the same OnSubmitQueryRequest WITHOUT a new user interaction.
+  base::RunLoop replay_run_loop;
   EXPECT_CALL(mock_page_, PostSearchMessage(_))
       .WillRepeatedly([&](mojo_base::ProtoWrapper wrapper) {
         auto message = wrapper.As<lens::ClientToSearchMessage>();
-        if (message.has_value()) {
-          EXPECT_FALSE(message->has_on_submit_query_response());
+        if (!message.has_value() || !message->has_on_submit_query_response()) {
+          return;
         }
+        EXPECT_EQ(0, message->on_submit_query_response().added_contexts_size());
+        EXPECT_EQ(0,
+                  message->on_submit_query_response().removed_contexts_size());
+        replay_run_loop.Quit();
       });
   ContextualTasksWebContentsUserData::GetOrCreateForWebContents(web_contents_)
       ->OnSearchMessageReceived(serialized_message);
+  replay_run_loop.Run();
   mock_page_.FlushForTesting();
-  EXPECT_TRUE(model->lens_crop().has_value());
+  EXPECT_TRUE(model->GetLensCrop().has_value());
 
   // 3. Simulate a new user interaction and verify submission succeeds again.
   SimulateUserInteraction();
@@ -2577,7 +2593,7 @@ IN_PROC_BROWSER_TEST_F(
       ->OnSearchMessageReceived(serialized_message);
   run_loop2.Run();
   mock_page_.FlushForTesting();
-  EXPECT_FALSE(model->lens_crop().has_value());
+  EXPECT_FALSE(model->GetLensCrop().has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
