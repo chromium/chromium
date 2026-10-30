@@ -736,7 +736,8 @@ TEST_F(WindowAnimationsTest, SetBoundsDirectAnimatedFeatureDisabled) {
 
 // TODO(crbug.com/576888538): Frequently fails due to frame presentation
 // timeout.
-#if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER)
+#if !defined(NDEBUG) || defined(ADDRESS_SANITIZER) || \
+    defined(LEAK_SANITIZER) || defined(MEMORY_SANITIZER)
 #define MAYBE_SetBoundsDirectAnimatedHistograms \
   DISABLED_SetBoundsDirectAnimatedHistograms
 #else
