@@ -400,12 +400,6 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   [_omniboxCoordinator focusOmnibox];
 }
 
-- (void)processContextLibraryWebpageSignalWithURL:(const GURL&)url
-                                            title:(NSString*)title {
-  CHECK(_entrypoint == ComposeboxEntrypoint::kCobrowse);
-  [_mediator processContextLibraryWebpageSignalWithURL:url title:title];
-}
-
 - (void)updateTheme:(ComposeboxTheme*)theme {
   _theme = theme;
   [_viewController updateTheme:theme];

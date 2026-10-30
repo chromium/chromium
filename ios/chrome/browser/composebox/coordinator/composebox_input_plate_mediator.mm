@@ -928,42 +928,6 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   [self.delegate refineWithText:text];
 }
 
-- (void)processContextLibraryWebpageSignalWithURL:(const GURL&)url
-                                            title:(NSString*)title {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  CHECK(_entrypoint == ComposeboxEntrypoint::kCobrowse);
-
-  ComposeboxInputItem* item = [[ComposeboxInputItem alloc]
-      initWithComposeboxInputItemType:ComposeboxInputItemType::
-                                          kComposeboxInputItemTypeTab
-                               source:ComposeboxInputItemSource::
-                                          kContextLibrary];
-  item.title = title;
-  item.tabURL = url;
-  item.state = ComposeboxInputItemState::kLoaded;
-  base::UnguessableToken identifier = item.identifier;
-
-  [_items addItem:item];
-
-  if (_faviconLoader) {
-    __weak __typeof(self) weakSelf = self;
-
-    /// Based on the favicon loader API, this callback could be called twice.
-    auto faviconLoadedBlock = ^(FaviconAttributes* attributes, bool cached) {
-      if (attributes.faviconImage) {
-        [weakSelf didLoadFaviconIcon:attributes.faviconImage
-               forItemWithIdentifier:identifier];
-      }
-    };
-
-    _faviconLoader->FaviconForPageUrl(url, gfx::kFaviconSize, gfx::kFaviconSize,
-                                      /*fallback_to_google_server=*/true,
-                                      faviconLoadedBlock);
-  }
-
-  [self notifyContextChanged];
-}
-
 - (void)processFileURL:(GURL)fileURL isPDF:(BOOL)isPDF {
   [self processFileURL:fileURL isPDF:isPDF completion:nil];
 }

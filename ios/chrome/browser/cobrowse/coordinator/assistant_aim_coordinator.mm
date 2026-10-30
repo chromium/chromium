@@ -749,13 +749,6 @@ class AssistantAIMUIStateProvider
   [_inputPlateCoordinator focusComposebox];
 }
 
-- (void)assistantAIMMediator:(AssistantAIMMediator*)mediator
-    didReceiveContextLibraryWebpageSignalWithURL:(const GURL&)url
-                                           title:(NSString*)title {
-  [_inputPlateCoordinator processContextLibraryWebpageSignalWithURL:url
-                                                              title:title];
-}
-
 - (BOOL)assistantContainer:(AssistantContainerViewController*)container
      shouldPauseScrollView:(UIScrollView*)scrollView
                 forGesture:(UIGestureRecognizer*)otherGesture {

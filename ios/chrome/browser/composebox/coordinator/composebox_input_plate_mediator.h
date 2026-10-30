@@ -177,11 +177,6 @@ class ContextualSearchSessionHandle;
 // Attaches the tabs from the given `selection`.
 - (void)attachTabSelection:(const ComposeboxTabSelection&)selection;
 
-// Processes a webpage context from a context library signal. Called on the
-// cobrowse context only.
-- (void)processContextLibraryWebpageSignalWithURL:(const GURL&)url
-                                            title:(NSString*)title;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_INPUT_PLATE_MEDIATOR_H_
