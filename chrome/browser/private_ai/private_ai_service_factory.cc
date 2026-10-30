@@ -89,7 +89,7 @@ PrivateAiServiceFactory::BuildServiceInstanceForBrowserContext(
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       std::move(network_driver), std::move(oak_session_driver),
-      CreateNetworkContextGetter(profile), kPrivateAiUrl.Get(),
+      CreateNetworkContextGetter(profile), GetPrivateAiServiceUrl(),
       PrivateAiService::GetApiKey(channel), kPrivateAiProxyServerUrl.Get(),
       base::FeatureList::IsEnabled(kPrivateAiUseTokenAttestation), channel);
 }

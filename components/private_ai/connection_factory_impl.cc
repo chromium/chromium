@@ -4,10 +4,13 @@
 
 #include "components/private_ai/connection_factory_impl.h"
 
+#include <memory>
 #include <optional>
+#include <string>
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
@@ -24,6 +27,9 @@
 #include "components/private_ai/phosphor/token_manager.h"
 #include "components/private_ai/secure_channel.h"
 #include "components/private_ai/secure_channel_impl.h"
+#include "components/private_ai/tls_certificate_downloader.h"
+#include "components/private_ai/tls_certificate_repository.h"
+#include "components/private_ai/tls_secure_channel_impl.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/network_context_getter.h"
 
@@ -47,11 +53,19 @@ std::unique_ptr<Connection> CreateConnectionStack(
     base::RepeatingCallback<void(StatusCode)> on_disconnect,
     base::OnceClosure on_established,
     version_info::Channel channel,
+    TlsCertificateRepository* cert_repository,
     network::NetworkContextGetter network_context_getter,
     std::optional<bool> has_chrome_proxy = std::nullopt) {
   std::unique_ptr<SecureChannel::Factory> secure_channel_factory;
   if (secure_channel_override) {
     secure_channel_factory = secure_channel_override.Run();
+  } else if (base::FeatureList::IsEnabled(kPrivateAiUseTlsSession)) {
+    CHECK(cert_repository);
+    secure_channel_factory =
+        std::make_unique<TlsSecureChannelImpl::FactoryImpl>(
+            url, std::move(network_context_getter), logger, oak_session_driver,
+            cert_repository, kPrivateAiExpectedServerName.Get(),
+            has_chrome_proxy);
   } else {
     secure_channel_factory = std::make_unique<SecureChannelImpl::FactoryImpl>(
         url, std::move(network_context_getter), logger, oak_session_driver,
@@ -107,11 +121,29 @@ void ConnectionFactoryImpl::EnableProxy(const GURL& proxy_url) {
   proxy_url_ = proxy_url;
 }
 
+TlsCertificateRepository* ConnectionFactoryImpl::GetOrCreateCertRepository() {
+  if (!cert_repository_) {
+    auto downloader = std::make_unique<TlsCertificateDownloader>(
+        GURL(kPrivateAiTcaRootUrl.Get()), GURL(kPrivateAiOakCtCertUrl.Get()),
+        network_context_getter_);
+    cert_repository_ = std::make_unique<TlsCertificateRepository>(
+        std::move(downloader), kPrivateAiOakCtNamespace.Get(),
+        kPrivateAiOakCtBaseDomain.Get(), network_context_getter_);
+  }
+  return cert_repository_.get();
+}
+
 std::unique_ptr<Connection> ConnectionFactoryImpl::Create(
     proto::FeatureName feature_name,
     base::RepeatingCallback<void(StatusCode)> on_disconnect) {
   auto on_established = base::BindOnce(&RecordConnectionEstablishmentLatency,
                                        base::TimeTicks::Now());
+
+  TlsCertificateRepository* cert_repo = nullptr;
+  if (!secure_channel_override_ &&
+      base::FeatureList::IsEnabled(kPrivateAiUseTlsSession)) {
+    cert_repo = GetOrCreateCertRepository();
+  }
 
   std::unique_ptr<Connection> connection;
   if (!proxy_url_.is_valid()) {
@@ -121,7 +153,7 @@ std::unique_ptr<Connection> ConnectionFactoryImpl::Create(
     connection = CreateConnectionStack(
         url_, feature_name, logger_, token_manager_, secure_channel_override_,
         oak_session_driver_, on_disconnect, std::move(on_established), channel_,
-        network_context_getter_);
+        cert_repo, network_context_getter_);
   } else {
     logger_->LogInfo(FROM_HERE,
                      "Creating connection to Private AI server via proxy: " +
@@ -132,7 +164,7 @@ std::unique_ptr<Connection> ConnectionFactoryImpl::Create(
     auto inner_connection_factory = base::BindOnce(
         &CreateConnectionStack, url_, feature_name, logger_, token_manager_,
         secure_channel_override_, oak_session_driver_, on_disconnect,
-        std::move(on_established), channel_);
+        std::move(on_established), channel_, cert_repo);
 
     connection = std::make_unique<ConnectionProxy>(
         proxy_url_, logger_, token_manager_, network_driver_,

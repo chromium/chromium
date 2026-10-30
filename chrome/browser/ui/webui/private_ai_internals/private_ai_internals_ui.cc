@@ -59,7 +59,7 @@ PrivateAiInternalsUI::PrivateAiInternalsUI(content::WebUI* web_ui)
       source, kPrivateAiInternalsResources,
       IDR_PRIVATE_AI_INTERNALS_PRIVATE_AI_INTERNALS_HTML);
 
-  source->AddString("default_url", kPrivateAiUrl.Get());
+  source->AddString("default_url", GetPrivateAiServiceUrl());
   source->AddString("default_api_key",
                     PrivateAiService::GetApiKey(chrome::GetChannel()).empty()
                         ? ""
