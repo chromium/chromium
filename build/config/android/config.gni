@@ -264,8 +264,10 @@ if (is_android) {
     # The password for the keystore to use for signing builds.
     android_keystore_password = default_android_keystore_password
 
-    # Mark APKs as android:debuggable="true".
-    debuggable_apks = !is_official_build
+    # Mark APKs as android:debuggable="true". Needed for debuggers and
+    # "adb shell run-as" on non-rooted devices, and for wrap.sh. Off by default
+    # because it makes ART slower and skips install-time dexopt.
+    debuggable_apks = enable_wrap_sh && !is_official_build
 
     # Set to false to disable the Errorprone compiler.
     use_errorprone_java_compiler = android_static_analysis != "off"
@@ -335,6 +337,12 @@ if (is_android) {
 
   assert(!optimize_android_resources || !is_java_debug,
          "optimize_android_resources = true requires is_java_debug = false")
+
+  # Android ignores wrap.sh for non-debuggable apps.
+  # https://developer.android.com/ndk/guides/wrap-script#packaging_wrapsh
+  assert(is_official_build || !enable_wrap_sh || debuggable_apks,
+         "is_asan, is_hwasan and android_custom_env require " +
+             "debuggable_apks = true")
 
   if (is_asan) {
     # Disable lint since increasing min_sdk_version can cause ObsoleteSdkInt

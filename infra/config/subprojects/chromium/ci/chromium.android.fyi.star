@@ -785,6 +785,8 @@ ci.builder(
             "x86",
             "clang",
             "asan",
+            # wrap.sh, which ASan needs, only runs for debuggable apps.
+            "debuggable_apks",
             "strip_debug_info",
         ],
     ),

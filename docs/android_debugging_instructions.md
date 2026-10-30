@@ -61,7 +61,8 @@ Generate an [Android Studio](android_studio.md) project, and then use
 ## Debugging Java
 
 For both apk and test targets, pass `--wait-for-java-debugger` to the wrapper
-scripts.
+scripts. Except for junit tests, this requires `debuggable_apks = true` in your
+GN args (off by default).
 
 Examples:
 
@@ -92,7 +93,8 @@ out/Default/bin/run_chrome_junit_tests --wait-for-java-debugger  # Specify custo
 ## Debugging C/C++
 
 While the app is running, use the wrapper script's `lldb` command to enter into
-a lldb shell.
+a lldb shell. Unless your device is rooted, this requires
+`debuggable_apks = true` in your GN args (off by default).
 
 When running with `lldb` attached, the app runs **extremely slowly**.
 
@@ -235,8 +237,8 @@ long as the app is built with debugging enabled, you can use
 `adb shell run-as PACKAGENAME` to execute shell commands using the app's
 authorization, roughly equivalent to `su $user`.
 
-Non-Play-Store builds with `is_official_build=false` will by default set
-`android:debuggable="true"` in the app's manifest to allow debugging.
+This requires `android:debuggable="true"` in the app's manifest, which is off by
+default. To enable it, set `debuggable_apks = true` in your GN args.
 
 For exammple, for a Chromium build, run the following:
 
