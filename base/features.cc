@@ -54,6 +54,10 @@ std::atomic_bool g_i18n_optimizations{true};
 
 // Alphabetical:
 
+// Use Rust base64 (simd) for base::Base64Encode() and
+// base::Base64EncodeAppend().
+BASE_FEATURE(kBase64SimdBase64Encode, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Controls caching within BASE_FEATURE_PARAM(). This is feature-controlled
 // so that ScopedFeatureList can disable it to turn off caching.
 BASE_FEATURE(kFeatureParamWithCache, FEATURE_ENABLED_BY_DEFAULT);

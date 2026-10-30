@@ -9,14 +9,17 @@
 #include <string_view>
 #include <utility>
 
+#include "base/base64_rust_shim.rs.h"
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/containers/span_rust.h"
 #include "base/features.h"
 #include "base/numerics/checked_math.h"
 #include "base/simdutf_shim.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "third_party/modp_b64/modp_b64.h"
+#include "third_party/rust/cxx/v1/cxx.h"
 
 namespace base {
 
@@ -74,6 +77,25 @@ void Base64EncodeAppendSimdutf(span<const uint8_t> input, std::string* output) {
   CHECK_EQ(written_size, write.size());
 }
 
+void Base64EncodeAppendBase64Simd(span<const uint8_t> input,
+                                  std::string* output) {
+  // Ensure `modp_b64_encode_data_len` will not overflow.
+  // For now, use this with Rust base64 as well for consistency.
+  CHECK_LE(input.size(), MODP_B64_MAX_INPUT_LEN);
+
+  size_t encode_data_len = internal::base64_simd_encoded_length(input.size());
+
+  const size_t after_size =
+      CheckAdd(encode_data_len, output->size()).ValueOrDie();
+  output->resize(after_size);
+
+  span<uint8_t> write = as_writable_bytes(span(*output).last(encode_data_len));
+
+  const size_t written_size = internal::base64_simd_encode(
+      SpanToRustSlice(input), rust::Slice<uint8_t>(write.data(), write.size()));
+  CHECK_EQ(written_size, write.size());
+}
+
 }  // namespace
 
 std::string Base64Encode(span<const uint8_t> input) {
@@ -88,6 +110,11 @@ void Base64EncodeAppend(span<const uint8_t> input, std::string* output) {
     return;
   }
 
+  if (FeatureList::IsEnabled(features::kBase64SimdBase64Encode)) {
+    Base64EncodeAppendBase64Simd(input, output);
+    return;
+  }
+
   Base64EncodeAppendModpB64(input, output);
 }
 
@@ -99,6 +126,11 @@ void Base64EncodeAppendModpB64ForTesting(span<const uint8_t> input,
 void Base64EncodeAppendSimdutfForTesting(span<const uint8_t> input,
                                          std::string* output) {
   Base64EncodeAppendSimdutf(input, output);
+}
+
+void Base64EncodeAppendBase64SimdForTesting(span<const uint8_t> input,
+                                            std::string* output) {
+  Base64EncodeAppendBase64Simd(input, output);
 }
 
 std::string Base64Encode(std::string_view input) {

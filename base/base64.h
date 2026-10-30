@@ -29,6 +29,9 @@ BASE_EXPORT void Base64EncodeAppendModpB64ForTesting(span<const uint8_t> input,
                                                      std::string* output);
 BASE_EXPORT void Base64EncodeAppendSimdutfForTesting(span<const uint8_t> input,
                                                      std::string* output);
+BASE_EXPORT void Base64EncodeAppendBase64SimdForTesting(
+    span<const uint8_t> input,
+    std::string* output);
 
 // Encodes the input string in base64.
 BASE_EXPORT std::string Base64Encode(std::string_view input);

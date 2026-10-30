@@ -18,7 +18,13 @@
 
 namespace base {
 
-class Base64Test : public testing::TestWithParam<bool> {
+enum class Base64EncodeImpl {
+  kModpB64,
+  kSimdutf,
+  kBase64Simd,
+};
+
+class Base64Test : public testing::TestWithParam<Base64EncodeImpl> {
  public:
   Base64Test() = default;
   Base64Test(const Base64Test&) = delete;
@@ -26,8 +32,24 @@ class Base64Test : public testing::TestWithParam<bool> {
   ~Base64Test() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatureState(features::kSimdutfBase64Encode,
-                                       GetParam());
+    switch (GetParam()) {
+      case Base64EncodeImpl::kModpB64:
+        feature_list_.InitWithFeatures(
+            /*enabled_features=*/{},
+            /*disabled_features=*/{features::kSimdutfBase64Encode,
+                                   features::kBase64SimdBase64Encode});
+        break;
+      case Base64EncodeImpl::kSimdutf:
+        feature_list_.InitWithFeatures(
+            /*enabled_features=*/{features::kSimdutfBase64Encode},
+            /*disabled_features=*/{features::kBase64SimdBase64Encode});
+        break;
+      case Base64EncodeImpl::kBase64Simd:
+        feature_list_.InitWithFeatures(
+            /*enabled_features=*/{features::kBase64SimdBase64Encode},
+            /*disabled_features=*/{features::kSimdutfBase64Encode});
+        break;
+    }
   }
 
  private:
@@ -183,6 +205,10 @@ TEST_P(Base64Test, Overflow) {
   EXPECT_TRUE(modp_b64_encode_data_len(max_len).IsValid());
 }
 
-INSTANTIATE_TEST_SUITE_P(All, Base64Test, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         Base64Test,
+                         testing::Values(Base64EncodeImpl::kModpB64,
+                                         Base64EncodeImpl::kSimdutf,
+                                         Base64EncodeImpl::kBase64Simd));
 
 }  // namespace base

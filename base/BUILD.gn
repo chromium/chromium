@@ -1149,6 +1149,7 @@ component("base") {
   ]
 
   deps = [
+    ":base64_rust_shim",
     ":check_version_internal",
     ":simdutf_shim",
     "//base/allocator:buildflags",
@@ -2733,6 +2734,15 @@ source_set("simdutf_shim") {
   public = [ "simdutf_shim.h" ]
   sources = [ "simdutf_shim.cc" ]
   deps = [ "//third_party/simdutf" ]
+}
+
+rust_static_library("base64_rust_shim") {
+  visibility = [ ":base" ]
+  allow_unsafe = true  # Needed for FFI that underpins the `cxx` crate.
+  crate_root = "base64_rust_shim.rs"
+  sources = [ "base64_rust_shim.rs" ]
+  cxx_bindings = [ "base64_rust_shim.rs" ]
+  deps = [ "//third_party/rust/base64/v0_23:lib" ]
 }
 
 if (is_android) {

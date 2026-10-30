@@ -16,6 +16,8 @@ namespace base::features {
 // alongside the definition of their values in the .cc file.
 
 // Alphabetical:
+BASE_EXPORT BASE_DECLARE_FEATURE(kBase64SimdBase64Encode);
+
 BASE_EXPORT BASE_DECLARE_FEATURE(kFeatureParamWithCache);
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kFastFilePathIsParent);
