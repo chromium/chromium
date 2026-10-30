@@ -62,6 +62,8 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
 #endif
     // Toggle the Glic panel.
     kPanelToggle,
+    // Print the web client.
+    kPrint,
   };
 
   class Panel {
@@ -74,6 +76,7 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
     virtual bool ActivateBrowser() = 0;
     virtual void Zoom(mojom::ZoomAction action, ZoomSource source) = 0;
     virtual void ShowTitleBarContextMenuAt(gfx::Point event_loc) {}
+    virtual bool Print();
     virtual BrowserWindowInterface* GetBrowserWindowInterface();
 #if !BUILDFLAG(IS_ANDROID)
     virtual bool HasSelectionOverlay() = 0;
@@ -102,6 +105,8 @@ class LocalHotkeyManager : public ui::AcceleratorTarget {
 #endif
       case Command::kPanelToggle:
         return "kPanelToggle";
+      case Command::kPrint:
+        return "kPrint";
     }
   }
 

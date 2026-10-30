@@ -26,6 +26,7 @@ static constexpr std::array kSupportedCommands = {
 #if BUILDFLAG(IS_WIN)
     glic::LocalHotkeyManager::Command::kTitleBarContextMenu,
 #endif
+    glic::LocalHotkeyManager::Command::kPrint,
 };
 
 }  // namespace
@@ -88,6 +89,8 @@ bool PanelFocusDependentHotkeyManager::AcceleratorPressed(
       panel_->ShowTitleBarContextMenuAt(gfx::Point());
       return true;
 #endif  //  BUILDFLAG(IS_WIN)
+    case LocalHotkeyManager::Command::kPrint:
+      return panel_->Print();
 
     default:
       NOTREACHED() << "no handling implemented for "

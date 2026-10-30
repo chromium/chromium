@@ -25,11 +25,22 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "printing/buildflags/buildflags.h"
 #include "ui/base/base_window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget_delegate.h"
+
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "chrome/browser/printing/print_view_manager_common.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 
 #if BUILDFLAG(IS_WIN)
 #include "ui/display/win/screen_win.h"
@@ -224,6 +235,31 @@ void GlicFloatingUi::ShowTitleBarContextMenuAt(gfx::Point event_loc) {
   views::ShowSystemMenuAtScreenPixelLocation(views::HWNDForView(GetGlicView()),
                                              event_loc);
 #endif  // BUILDFLAG(IS_WIN)
+}
+
+bool GlicFloatingUi::Print() {
+#if BUILDFLAG(ENABLE_PRINTING)
+  if (!profile_->GetPrefs()->GetBoolean(::prefs::kPrintingEnabled)) {
+    return false;
+  }
+  content::WebContents* web_contents = delegate_->host().web_client_contents();
+  if (!web_contents) {
+    web_contents = delegate_->host().webui_contents();
+  }
+  if (!web_contents || web_contents->IsCrashed()) {
+    return false;
+  }
+  printing::StartPrint(
+      web_contents,
+#if BUILDFLAG(IS_CHROMEOS)
+      /*print_renderer=*/mojo::NullAssociatedRemote(),
+#endif
+      profile_->GetPrefs()->GetBoolean(::prefs::kPrintPreviewDisabled),
+      /*has_selection=*/false);
+  return true;
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 }
 
 #if !BUILDFLAG(IS_ANDROID)

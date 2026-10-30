@@ -96,6 +96,14 @@ constexpr std::array kZoomResetAccelerators = {
     ui::Accelerator{ui::VKEY_NUMPAD0, kZoomModifier},
     ui::Accelerator{ui::VKEY_NUMPAD0, kZoomModifier | ui::EF_SHIFT_DOWN}};
 
+constexpr std::array kPrintAccelerators = {
+#if BUILDFLAG(IS_MAC)
+    ui::Accelerator{ui::VKEY_P, ui::EF_COMMAND_DOWN}
+#else
+    ui::Accelerator{ui::VKEY_P, ui::EF_CONTROL_DOWN}
+#endif
+};
+
 constexpr auto kCommandToStaticAcceleratorsMap =
     base::MakeFixedFlatMap<LocalHotkeyManager::Command,
                            base::span<const ui::Accelerator>>({
@@ -107,6 +115,7 @@ constexpr auto kCommandToStaticAcceleratorsMap =
         {LocalHotkeyManager::Command::kTitleBarContextMenu,
          kTitleBarContextMenuAccelerators},
 #endif
+        {LocalHotkeyManager::Command::kPrint, kPrintAccelerators},
     });
 
 // Compile-time helper to check if the keys in two maps are disjoint.
@@ -306,6 +315,10 @@ void LocalHotkeyManager::RegisterCommand(Command command) {
   if (!new_registrations.empty()) {
     command_registrations_.emplace(command, std::move(new_registrations));
   }
+}
+
+bool LocalHotkeyManager::Panel::Print() {
+  return false;
 }
 
 BrowserWindowInterface* LocalHotkeyManager::Panel::GetBrowserWindowInterface() {
