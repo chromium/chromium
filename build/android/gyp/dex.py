@@ -24,8 +24,8 @@ import zip_helpers
 
 
 _DEX_XMX = '3G'  # Increase this when __final_dex OOMs.
-_CUSTOM_D8_BINARY_PATH = os.path.join(
-    build_utils.DIR_SOURCE_ROOT, 'third_party', 'r8', 'cipd', 'bin', 'custom_d8'
+_CHROME_D8_BINARY_PATH = os.path.join(
+    build_utils.DIR_SOURCE_ROOT, 'third_party', 'r8', 'cipd', 'bin', 'chrome_d8'
 )
 # For intermediate dex invocations (_CreateIntermediateDexJar), shard inputs
 # across concurrent GraalVM processes targeting ~1.5 MB per shard to avoid
@@ -630,7 +630,7 @@ def main(args):
     )
     if use_custom_d8_binary:
         dex_cmd = [
-            _CUSTOM_D8_BINARY_PATH,
+            _CHROME_D8_BINARY_PATH,
             f'-Djava.home={build_utils.JAVA_HOME}',
             _GRAALVM_XMS_FLAG,
         ]
