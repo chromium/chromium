@@ -1,9 +1,8 @@
 ---
 name: sync-proto-review
 description: >-
-  Reviews changes to Sync protobufs (components/sync/protocol/*.proto) for style,
-  backwards/forwards compatibility, and companion updates. Use when reviewing
-  CLs or diffs that modify Sync protos.
+  Reviews changes to Sync protobufs (components/sync/protocol/*.proto). Use when
+  reviewing CLs or diffs that modify Sync protos.
 ---
 
 # Sync Proto Review
