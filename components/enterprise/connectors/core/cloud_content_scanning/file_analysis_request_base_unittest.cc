@@ -682,7 +682,7 @@ TEST_F(FileAnalysisRequestBaseVirtualFileTest, LargeFileNoHashAndFileTooLarge) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
-  const size_t kLargeFileSize = 251 * 1024 * 1024;  // 251MB
+  const uint64_t kLargeFileSize = 3LL * 1024 * 1024 * 1024;  // 3GB
   base::FilePath file_path = temp_dir.GetPath().AppendASCII("large.pdf");
   {
     base::File file(file_path,
