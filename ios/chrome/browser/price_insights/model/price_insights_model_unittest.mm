@@ -94,11 +94,11 @@ class PriceInsightsModelTest : public PlatformTest {
  protected:
   base::test::ScopedFeatureList features_;
   web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestProfileIOS> test_profile_;
   std::unique_ptr<PriceInsightsModel> price_insights_model_;
   std::unique_ptr<ContextualPanelItemConfiguration> returned_configuration_;
   int fetch_configuration_callback_count;
   std::unique_ptr<web::FakeWebState> web_state_;
-  std::unique_ptr<TestProfileIOS> test_profile_;
   raw_ptr<commerce::MockShoppingService> shopping_service_;
 };
 

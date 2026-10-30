@@ -6,11 +6,13 @@
 
 #import <utility>
 
+#import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_model.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 PriceInsightsModelFactory::PriceInsightsModelFactory(PassKey key)
     : TypedProfileKeyedServiceFactoryIOS(std::move(key), "PriceInsightsModel") {
+  DependsOn(commerce::ShoppingServiceFactory::GetInstance());
 }
 
 std::unique_ptr<KeyedService>
