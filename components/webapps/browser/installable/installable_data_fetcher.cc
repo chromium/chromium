@@ -13,6 +13,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
 
 namespace webapps {
@@ -49,17 +50,21 @@ void InstallableDataFetcher::OnDidGetManifest(
     FetcherCallback finish_callback,
     blink::mojom::ManifestRequestResult result,
     const GURL& manifest_url,
-    blink::mojom::ManifestPtr manifest) {
+    std::optional<blink::Manifest> manifest) {
   InstallableStatusCode error = InstallableStatusCode::NO_ERROR_DETECTED;
-  // An empty manifest signifies an error fetching, parsing, or a
-  // frame/CORS/opaque origin related issue. Otherwise the manifest algorithm
-  // will always populate default values for `start_url`, `id`, and `scope`.
-  if (blink::IsEmptyManifest(manifest) ||
+  // An absent (`std::nullopt`) manifest or failure `result` signifies an error
+  // fetching, parsing, or a frame/CORS/opaque-origin issue. If the site had no
+  // `<link rel=manifest>`, `result` is `kNoManifestSpecified` and `manifest` is
+  // populated with the default manifest for the document URL.
+  if (!manifest.has_value() ||
       result == blink::mojom::ManifestRequestResult::kManifestFailedToFetch ||
       result == blink::mojom::ManifestRequestResult::kManifestFailedToParse) {
     error = InstallableStatusCode::MANIFEST_PARSING_OR_NETWORK_ERROR;
   }
-  page_data_->OnManifestFetched(std::move(manifest), manifest_url, error);
+  blink::mojom::ManifestPtr mojo_manifest =
+      manifest ? blink::ManifestToMojom(*manifest)
+               : blink::mojom::Manifest::New();
+  page_data_->OnManifestFetched(std::move(mojo_manifest), manifest_url, error);
   std::move(finish_callback).Run(error);
 }
 

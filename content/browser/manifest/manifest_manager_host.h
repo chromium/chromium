@@ -42,11 +42,13 @@ class CONTENT_EXPORT ManifestManagerHost
   using GetManifestCallback =
       base::OnceCallback<void(blink::mojom::ManifestRequestResult,
                               const GURL&,
-                              blink::mojom::ManifestPtr)>;
+                              std::optional<blink::Manifest>)>;
 
-  // Calls the given callback with the manifest associated with the main frame.
-  // If the main frame has no manifest or if getting it failed the callback will
-  // have an empty manifest.
+  // Requests the ManifestManager in the frame to get the manifest. If the
+  // document specifies no manifest or fetching/parsing fails, the callback
+  // receives a default manifest derived from the document URL. If the document
+  // cannot have a manifest (e.g. opaque origin) or an unexpected/validation
+  // error occurs, the callback receives `std::nullopt`.
   void GetManifest(GetManifestCallback callback);
 
   base::CallbackListSubscription GetSpecifiedManifest(

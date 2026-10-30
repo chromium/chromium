@@ -21,6 +21,10 @@
 #include "base/android/scoped_java_ref.h"
 #endif
 
+namespace blink {
+class Manifest;
+}  // namespace blink
+
 namespace content {
 
 // Page represents a collection of documents with the same main document.
@@ -72,13 +76,16 @@ class CONTENT_EXPORT Page : public base::SupportsUserData {
   // See https://w3c.github.io/manifest/#web-application-manifest
   virtual const std::optional<GURL>& GetManifestUrl() const = 0;
 
-  // The callback invoked when the renderer responds to a request for the main
-  // frame document's manifest. The url will be empty if the document specifies
-  // no manifest, and the manifest will be empty if any other failures occurred.
+  // Callback for GetManifest. The result field determines the reason for step
+  // failures, the GURL is the URL of the manifest, and the
+  // std::optional<blink::Manifest> is the parsed (or default) manifest. If the
+  // document specifies no manifest or fetching/parsing fails, `manifest` is the
+  // default manifest for the document URL; `manifest` is `std::nullopt` when no
+  // manifest is allowed (e.g. opaque origin) or an unexpected failure occurs.
   using GetManifestCallback =
       base::OnceCallback<void(blink::mojom::ManifestRequestResult,
                               const GURL&,
-                              blink::mojom::ManifestPtr)>;
+                              std::optional<blink::Manifest>)>;
 
   // Requests the manifest URL and the Manifest of the main frame's document.
   // |callback| may be called after the WebContents has been destroyed.

@@ -511,7 +511,7 @@ IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTestWithAuthProxy, Install) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(GetStartUrl())));
 
   base::test::TestFuture<blink::mojom::ManifestRequestResult, const GURL&,
-                         blink::mojom::ManifestPtr>
+                         std::optional<blink::Manifest>>
       manifest_future;
   browser()
       ->GetActiveTabInterface()
@@ -521,14 +521,15 @@ IN_PROC_BROWSER_TEST_P(WebAppPolicyManagerBrowserTestWithAuthProxy, Install) {
   ASSERT_TRUE(manifest_future.Wait());
   ASSERT_EQ(blink::mojom::ManifestRequestResult::kSuccess,
             manifest_future.Get<blink::mojom::ManifestRequestResult>());
-  const blink::mojom::ManifestPtr& manifest =
-      manifest_future.Get<blink::mojom::ManifestPtr>();
+  const std::optional<blink::Manifest>& manifest =
+      manifest_future.Get<std::optional<blink::Manifest>>();
+  ASSERT_TRUE(manifest.has_value());
 
   EXPECT_EQ(kDefaultCustomName,
-            base::UTF16ToASCII(manifest->name.value_or(std::u16string())));
-  ASSERT_EQ(2u, manifest->icons.size());
-  EXPECT_TRUE(manifest->icons[0].src.spec().ends_with("basic-48.png"));
-  EXPECT_TRUE(manifest->icons[1].src.spec().ends_with("basic-192.png"));
+            base::UTF16ToASCII(manifest->name().value_or(std::u16string())));
+  ASSERT_EQ(2u, manifest->icons().size());
+  EXPECT_TRUE(manifest->icons()[0].src.spec().ends_with("basic-48.png"));
+  EXPECT_TRUE(manifest->icons()[1].src.spec().ends_with("basic-192.png"));
 
   base::test::TestFuture<WebAppIconManager::WebAppBitmaps> disk_bitmaps;
   provider().icon_manager().ReadAllIcons(GetAppId(),

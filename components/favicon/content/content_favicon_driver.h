@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_FAVICON_CONTENT_CONTENT_FAVICON_DRIVER_H_
 #define COMPONENTS_FAVICON_CONTENT_CONTENT_FAVICON_DRIVER_H_
 
+#include <optional>
 #include <vector>
 
 #include "components/favicon/core/favicon_driver_impl.h"
@@ -16,6 +17,10 @@
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "url/gurl.h"
+
+namespace blink {
+class Manifest;
+}  // namespace blink
 
 namespace favicon {
 
@@ -71,7 +76,7 @@ class ContentFaviconDriver
   void OnDidDownloadManifest(ManifestDownloadCallback callback,
                              blink::mojom::ManifestRequestResult result,
                              const GURL& manifest_url,
-                             blink::mojom::ManifestPtr manifest);
+                             std::optional<blink::Manifest> manifest);
 
   // FaviconHandler::Delegate implementation.
   int DownloadImage(const GURL& url,

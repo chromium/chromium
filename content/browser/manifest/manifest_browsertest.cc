@@ -168,16 +168,13 @@ class ManifestBrowserTest : public ContentBrowserTest,
 
   void OnGetManifest(blink::mojom::ManifestRequestResult result,
                      const GURL& manifest_url,
-                     blink::mojom::ManifestPtr manifest) {
+                     std::optional<blink::Manifest> manifest) {
     manifest_url_ = manifest_url;
     manifest_ = std::move(manifest);
     message_loop_runner_->Quit();
   }
 
-  const blink::mojom::Manifest& manifest() const {
-    DCHECK(manifest_);
-    return *manifest_;
-  }
+  const std::optional<blink::Manifest>& manifest() const { return manifest_; }
 
   const GURL& manifest_url() const { return manifest_url_; }
 
@@ -241,7 +238,7 @@ class ManifestBrowserTest : public ContentBrowserTest,
   std::unique_ptr<MockWebContentsDelegate> mock_web_contents_delegate_;
   std::unique_ptr<net::EmbeddedTestServer> cors_embedded_test_server_;
   GURL manifest_url_;
-  blink::mojom::ManifestPtr manifest_ = blink::mojom::Manifest::New();
+  std::optional<blink::Manifest> manifest_;
   std::vector<std::string> console_errors_;
   std::vector<GURL> reported_manifest_urls_;
   std::vector<size_t> manifests_reported_when_favicon_url_updated_;
@@ -285,8 +282,8 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, NoManifest) {
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
   GetManifestAndWait();
-  EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
-  EXPECT_TRUE(blink::IsDefaultManifest(manifest(), test_url));
+  EXPECT_TRUE(manifest().has_value());
+  EXPECT_TRUE(blink::IsDefaultManifest(*manifest(), test_url));
   EXPECT_TRUE(manifest_url().is_empty());
   EXPECT_EQ(0, GetConsoleErrorCount());
   EXPECT_TRUE(reported_manifest_urls().empty());
@@ -302,8 +299,8 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, 404Manifest) {
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
   GetManifestAndWait();
-  EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
-  EXPECT_TRUE(blink::IsDefaultManifest(manifest(), test_url));
+  EXPECT_TRUE(manifest().has_value());
+  EXPECT_TRUE(blink::IsDefaultManifest(*manifest(), test_url));
   EXPECT_FALSE(manifest_url().is_empty());
   // 1 error for syntax errors in manifest/thereisnomanifestthere.json.
   EXPECT_EQ(1, GetConsoleErrorCount());
@@ -321,9 +318,9 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, EmptyManifest) {
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
   GetManifestAndWait();
-  EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
+  EXPECT_TRUE(manifest().has_value());
   EXPECT_FALSE(manifest_url().is_empty());
-  ASSERT_EQ(test_url.GetWithoutFilename(), manifest().scope);
+  ASSERT_EQ(test_url.GetWithoutFilename(), manifest()->scope());
   EXPECT_EQ(0, GetConsoleErrorCount());
   ASSERT_EQ(1u, reported_manifest_urls().size());
   EXPECT_EQ(manifest_url(), reported_manifest_urls()[0]);
@@ -340,8 +337,8 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, ParseErrorManifest) {
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
   GetManifestAndWait();
-  EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
-  EXPECT_TRUE(blink::IsDefaultManifest(manifest(), test_url));
+  EXPECT_TRUE(manifest().has_value());
+  EXPECT_TRUE(blink::IsDefaultManifest(*manifest(), test_url));
   EXPECT_FALSE(manifest_url().is_empty());
   EXPECT_EQ(1, GetConsoleErrorCount());
   ASSERT_EQ(1u, reported_manifest_urls().size());
@@ -360,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, SampleManifest) {
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
   GetManifestAndWait();
-  EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
+  EXPECT_TRUE(manifest().has_value());
   EXPECT_FALSE(manifest_url().is_empty());
 
   EXPECT_EQ(0, GetConsoleErrorCount());
@@ -381,8 +378,8 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, DynamicManifest) {
 
   {
     GetManifestAndWait();
-    EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
-    EXPECT_TRUE(blink::IsDefaultManifest(manifest(), test_url));
+    EXPECT_TRUE(manifest().has_value());
+    EXPECT_TRUE(blink::IsDefaultManifest(*manifest(), test_url));
     EXPECT_TRUE(manifest_url().is_empty());
     EXPECT_TRUE(reported_manifest_urls().empty());
   }
@@ -393,8 +390,8 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, DynamicManifest) {
     ASSERT_TRUE(ExecJs(shell(), "setManifestTo('" + manifest_link + "')"));
 
     GetManifestAndWait();
-    EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
-    EXPECT_FALSE(blink::IsDefaultManifest(manifest(), test_url));
+    EXPECT_TRUE(manifest().has_value());
+    EXPECT_FALSE(blink::IsDefaultManifest(*manifest(), test_url));
     EXPECT_FALSE(manifest_url().is_empty());
     expected_manifest_urls.push_back(manifest_url());
     EXPECT_EQ(expected_manifest_urls, reported_manifest_urls());
@@ -405,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, DynamicManifest) {
     ASSERT_TRUE(ExecJs(shell(), "setManifestTo('" + manifest_link + "')"));
 
     GetManifestAndWait();
-    EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
+    EXPECT_TRUE(manifest().has_value());
     EXPECT_FALSE(manifest_url().is_empty());
     expected_manifest_urls.push_back(manifest_url());
     EXPECT_EQ(expected_manifest_urls, reported_manifest_urls());
@@ -416,8 +413,8 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, DynamicManifest) {
 
     GetManifestAndWait();
     // There is always a default manifest.
-    EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
-    EXPECT_TRUE(blink::IsDefaultManifest(manifest(), test_url));
+    EXPECT_TRUE(manifest().has_value());
+    EXPECT_TRUE(blink::IsDefaultManifest(*manifest(), test_url));
     EXPECT_TRUE(manifest_url().is_empty());
     expected_manifest_urls.push_back(manifest_url());
     EXPECT_EQ(expected_manifest_urls, reported_manifest_urls());
@@ -436,9 +433,9 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, FileHandlerManifest) {
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
   GetManifestAndWait();
-  EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
+  EXPECT_TRUE(manifest().has_value());
   EXPECT_FALSE(manifest_url().is_empty());
-  EXPECT_FALSE(manifest().file_handlers.empty());
+  EXPECT_FALSE(manifest()->file_handlers().empty());
   EXPECT_EQ(0, GetConsoleErrorCount());
   ASSERT_EQ(1u, reported_manifest_urls().size());
   EXPECT_EQ(manifest_url(), reported_manifest_urls()[0]);
@@ -465,8 +462,8 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, DISABLED_CorsManifest) {
   ASSERT_TRUE(ExecJs(shell(), "setManifestTo('" + manifest_link + "')"));
 
   GetManifestAndWait();
-  EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
-  EXPECT_TRUE(blink::IsDefaultManifest(manifest(), test_url));
+  EXPECT_TRUE(manifest().has_value());
+  EXPECT_TRUE(blink::IsDefaultManifest(*manifest(), test_url));
   EXPECT_FALSE(manifest_url().is_empty());
   EXPECT_THAT(console_errors(), Contains(HasSubstr("CORS")));
   EXPECT_EQ(1, GetConsoleErrorCount());
@@ -507,7 +504,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, CorsManifestWithAcessControls) {
   ASSERT_TRUE(ExecJs(shell(), "setManifestTo('" + manifest_link + "')"));
 
   GetManifestAndWait();
-  EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
+  EXPECT_TRUE(manifest().has_value());
   EXPECT_FALSE(manifest_url().is_empty());
   EXPECT_EQ(0, GetConsoleErrorCount());
   ASSERT_EQ(1u, reported_manifest_urls().size());
@@ -538,8 +535,8 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, DISABLED_MixedContentManifest) {
   ASSERT_TRUE(ExecJs(shell(), JsReplace("setManifestTo($1)", manifest_link)));
 
   GetManifestAndWait();
-  EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
-  EXPECT_TRUE(blink::IsDefaultManifest(manifest(), test_url));
+  EXPECT_TRUE(manifest().has_value());
+  EXPECT_TRUE(blink::IsDefaultManifest(*manifest(), test_url));
   EXPECT_FALSE(manifest_url().is_empty());
   EXPECT_THAT(console_errors(), Contains(HasSubstr("Mixed Content")));
   ASSERT_EQ(1u, reported_manifest_urls().size());
@@ -557,9 +554,9 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, ParsingErrorsManifest) {
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
   GetManifestAndWait();
-  EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
+  EXPECT_TRUE(manifest().has_value());
   EXPECT_FALSE(manifest_url().is_empty());
-  ASSERT_EQ(test_url.GetWithoutFilename(), manifest().scope);
+  ASSERT_EQ(test_url.GetWithoutFilename(), manifest()->scope());
   EXPECT_EQ(7, GetConsoleErrorCount());
   ASSERT_EQ(1u, reported_manifest_urls().size());
   EXPECT_EQ(manifest_url(), reported_manifest_urls()[0]);
@@ -578,7 +575,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, Navigation) {
     ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
     GetManifestAndWait();
-    EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
+    EXPECT_TRUE(manifest().has_value());
     EXPECT_FALSE(manifest_url().is_empty());
     EXPECT_EQ(0, GetConsoleErrorCount());
     expected_manifest_urls.push_back(manifest_url());
@@ -594,8 +591,8 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, Navigation) {
     ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
     GetManifestAndWait();
-    EXPECT_TRUE(blink::IsDefaultManifest(manifest(), test_url));
-    EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
+    EXPECT_TRUE(blink::IsDefaultManifest(*manifest(), test_url));
+    EXPECT_TRUE(manifest().has_value());
     EXPECT_EQ(0, GetConsoleErrorCount());
     EXPECT_TRUE(manifest_url().is_empty());
     EXPECT_EQ(expected_manifest_urls, reported_manifest_urls());
@@ -610,7 +607,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, Navigation) {
     ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
     GetManifestAndWait();
-    EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
+    EXPECT_TRUE(manifest().has_value());
     EXPECT_FALSE(manifest_url().is_empty());
     EXPECT_EQ(0, GetConsoleErrorCount());
     expected_manifest_urls.push_back(manifest_url());
@@ -710,7 +707,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, PushStateNavigation) {
   }
 
   GetManifestAndWait();
-  EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
+  EXPECT_TRUE(manifest().has_value());
   EXPECT_FALSE(manifest_url().is_empty());
   EXPECT_EQ(0, GetConsoleErrorCount());
   ASSERT_EQ(1u, reported_manifest_urls().size());
@@ -736,7 +733,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, AnchorNavigation) {
   }
 
   GetManifestAndWait();
-  EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
+  EXPECT_TRUE(manifest().has_value());
   EXPECT_FALSE(manifest_url().is_empty());
   EXPECT_EQ(0, GetConsoleErrorCount());
   ASSERT_EQ(1u, reported_manifest_urls().size());
@@ -855,7 +852,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, UseCredentialsSendCookies) {
       shell(), custom_embedded_test_server->GetURL("/index.html")));
 
   GetManifestAndWait();
-  EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
+  EXPECT_TRUE(manifest().has_value());
   EXPECT_FALSE(manifest_url().is_empty());
   EXPECT_EQ(0, GetConsoleErrorCount());
   ASSERT_EQ(1u, reported_manifest_urls().size());
@@ -865,7 +862,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, UseCredentialsSendCookies) {
 
   // The custom embedded test server will fill the name field with the cookie
   // content.
-  EXPECT_EQ(u"foobar", manifest().name);
+  EXPECT_EQ(u"foobar", manifest()->name());
 }
 
 std::unique_ptr<net::test_server::HttpResponse> CustomHandleRequestForNoCookies(
@@ -912,7 +909,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, NoUseCredentialsNoCookies) {
       shell(), custom_embedded_test_server->GetURL("/index.html")));
 
   GetManifestAndWait();
-  EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
+  EXPECT_TRUE(manifest().has_value());
   EXPECT_FALSE(manifest_url().is_empty());
   EXPECT_EQ(0, GetConsoleErrorCount());
   ASSERT_EQ(1u, reported_manifest_urls().size());
@@ -922,7 +919,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, NoUseCredentialsNoCookies) {
 
   // The custom embedded test server will fill set the name to 'no cookies' if
   // it did not find cookies.
-  EXPECT_EQ(u"no cookies", manifest().name);
+  EXPECT_EQ(u"no cookies", manifest()->name());
 }
 
 // This tests that fetching a Manifest from a unique origin always fails,
@@ -939,7 +936,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, UniqueOrigin) {
   // Same-origin manifest will not be fetched from a unique origin, regardless
   // of CORS headers. Manifest URL is still returned though.
   GetManifestAndWait();
-  EXPECT_TRUE(blink::IsEmptyManifest(manifest()));
+  EXPECT_FALSE(manifest().has_value());
   EXPECT_FALSE(manifest_url().is_empty());
   EXPECT_EQ(0, GetConsoleErrorCount());
   EXPECT_EQ(0u, reported_manifest_urls().size());
@@ -949,7 +946,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, UniqueOrigin) {
   ASSERT_TRUE(ExecJs(shell(), "setManifestTo('" + manifest_link + "')"));
 
   GetManifestAndWait();
-  EXPECT_TRUE(blink::IsEmptyManifest(manifest()));
+  EXPECT_FALSE(manifest().has_value());
   EXPECT_FALSE(manifest_url().is_empty());
   EXPECT_EQ(0, GetConsoleErrorCount());
   EXPECT_EQ(0u, reported_manifest_urls().size());
@@ -982,7 +979,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, AboutBlank) {
       new_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
 
   GetManifestAndWait(new_contents->GetPrimaryPage());
-  EXPECT_TRUE(blink::IsEmptyManifest(manifest()));
+  EXPECT_FALSE(manifest().has_value());
   EXPECT_TRUE(manifest_url().is_empty());
 }
 
@@ -1009,9 +1006,9 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
   WebContents* web_contents = shell()->web_contents();
   web_contents->GetPrimaryPage().GetManifest(base::BindLambdaForTesting(
       [&](blink::mojom::ManifestRequestResult, const GURL& url,
-          blink::mojom::ManifestPtr manifest) {
+          std::optional<blink::Manifest> manifest) {
         EXPECT_TRUE(url.is_empty());
-        EXPECT_TRUE(blink::IsEmptyManifest(manifest));
+        EXPECT_FALSE(manifest.has_value());
 
         // Accessing fields on the web_contents at this point in time should be
         // safe.
@@ -1067,13 +1064,13 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserPrerenderingTest,
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
   {
     base::test::TestFuture<blink::mojom::ManifestRequestResult, const GURL&,
-                           blink::mojom::ManifestPtr>
+                           std::optional<blink::Manifest>>
         manifest_future;
     web_contents()->GetPrimaryPage().GetManifest(manifest_future.GetCallback());
     ASSERT_TRUE(manifest_future.Wait());
     EXPECT_FALSE(manifest_future.Get<GURL>().is_empty());
-    EXPECT_FALSE(blink::IsEmptyManifest(
-        *manifest_future.Get<blink::mojom::ManifestPtr>()));
+    EXPECT_TRUE(
+        manifest_future.Get<std::optional<blink::Manifest>>().has_value());
   }
 
   GURL prerender_url =
@@ -1085,26 +1082,26 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserPrerenderingTest,
   {
     // The manifest should be loadable during prerender.
     base::test::TestFuture<blink::mojom::ManifestRequestResult, const GURL&,
-                           blink::mojom::ManifestPtr>
+                           std::optional<blink::Manifest>>
         manifest_future;
     prerender_rfh->GetPage().GetManifest(manifest_future.GetCallback());
     ASSERT_TRUE(manifest_future.Wait());
     EXPECT_FALSE(manifest_future.Get<GURL>().is_empty());
-    EXPECT_FALSE(blink::IsEmptyManifest(
-        *manifest_future.Get<blink::mojom::ManifestPtr>()));
+    EXPECT_TRUE(
+        manifest_future.Get<std::optional<blink::Manifest>>().has_value());
   }
 
   prerender_helper().NavigatePrimaryPage(prerender_url);
   {
     // It should still be valid after prerender.
     base::test::TestFuture<blink::mojom::ManifestRequestResult, const GURL&,
-                           blink::mojom::ManifestPtr>
+                           std::optional<blink::Manifest>>
         manifest_future;
     prerender_rfh->GetPage().GetManifest(manifest_future.GetCallback());
     ASSERT_TRUE(manifest_future.Wait());
     EXPECT_FALSE(manifest_future.Get<GURL>().is_empty());
-    EXPECT_FALSE(blink::IsEmptyManifest(
-        *manifest_future.Get<blink::mojom::ManifestPtr>()));
+    EXPECT_TRUE(
+        manifest_future.Get<std::optional<blink::Manifest>>().has_value());
   }
 }
 
@@ -2063,7 +2060,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
 
   mojo::test::BadMessageObserver bad_message_observer;
   base::test::TestFuture<blink::mojom::ManifestRequestResult, const GURL&,
-                         blink::mojom::ManifestPtr>
+                         std::optional<blink::Manifest>>
       manifest_future;
   shell()->web_contents()->GetPrimaryPage().GetManifest(
       manifest_future.GetCallback());
@@ -2074,8 +2071,7 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
           "RequestManifest reported success but didn't return a manifest"));
   auto [result, url, manifest] = manifest_future.Take();
   EXPECT_EQ(result, blink::mojom::ManifestRequestResult::kUnexpectedFailure);
-  ASSERT_TRUE(manifest);
-  EXPECT_TRUE(blink::IsEmptyManifest(manifest));
+  EXPECT_FALSE(manifest.has_value());
 
   test_api.ClearBinderForName(blink::mojom::ManifestManager::Name_);
 }
@@ -2103,15 +2099,14 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
       });
 
   base::test::TestFuture<blink::mojom::ManifestRequestResult, const GURL&,
-                         blink::mojom::ManifestPtr>
+                         std::optional<blink::Manifest>>
       manifest_future;
   shell()->web_contents()->GetPrimaryPage().GetManifest(
       manifest_future.GetCallback());
 
   auto [result, url, manifest] = manifest_future.Take();
   EXPECT_EQ(result, blink::mojom::ManifestRequestResult::kNoManifestAllowed);
-  ASSERT_TRUE(manifest);
-  EXPECT_TRUE(blink::IsEmptyManifest(manifest));
+  EXPECT_FALSE(manifest.has_value());
 
   test_api.ClearBinderForName(blink::mojom::ManifestManager::Name_);
 }
@@ -2120,14 +2115,13 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
                        GetManifest_OpaqueOriginReturnsNoManifestAllowed) {
   ASSERT_TRUE(NavigateToURL(shell(), GURL("data:text/html,<html></html>")));
   base::test::TestFuture<blink::mojom::ManifestRequestResult, const GURL&,
-                         blink::mojom::ManifestPtr>
+                         std::optional<blink::Manifest>>
       manifest_future;
   shell()->web_contents()->GetPrimaryPage().GetManifest(
       manifest_future.GetCallback());
   auto [result, url, manifest] = manifest_future.Take();
   EXPECT_EQ(result, blink::mojom::ManifestRequestResult::kNoManifestAllowed);
-  ASSERT_TRUE(manifest);
-  EXPECT_TRUE(blink::IsEmptyManifest(manifest));
+  EXPECT_FALSE(manifest.has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
@@ -2397,8 +2391,8 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, MaybeOverrideManifest_Applied) {
   ASSERT_TRUE(NavigateToURL(shell(), test_url));
 
   GetManifestAndWait();
-  EXPECT_FALSE(blink::IsEmptyManifest(manifest()));
-  EXPECT_EQ(manifest().name, u"Overridden App Name");
+  EXPECT_TRUE(manifest().has_value());
+  EXPECT_EQ(manifest()->name(), u"Overridden App Name");
 }
 
 IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,

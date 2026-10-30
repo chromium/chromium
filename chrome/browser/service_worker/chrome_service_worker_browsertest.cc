@@ -836,7 +836,7 @@ class ChromeServiceWorkerLinkFetchTest : public ChromeServiceWorkerFetchTest {
   static void ManifestCallbackAndRun(base::OnceClosure continuation,
                                      blink::mojom::ManifestRequestResult,
                                      const GURL&,
-                                     blink::mojom::ManifestPtr) {
+                                     std::optional<blink::Manifest>) {
     std::move(continuation).Run();
   }
 };

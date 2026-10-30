@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_INSTALLABLE_DATA_FETCHER_H_
 #define COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_INSTALLABLE_DATA_FETCHER_H_
 
+#include <optional>
+
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/webapps/browser/installable/installable_icon_fetcher.h"
@@ -13,6 +15,7 @@
 #include "components/webapps/common/web_page_metadata.mojom.h"
 #include "components/webapps/common/web_page_metadata_agent.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "url/gurl.h"
 
@@ -45,7 +48,7 @@ class InstallableDataFetcher {
   void OnDidGetManifest(FetcherCallback finish_callback,
                         blink::mojom::ManifestRequestResult result,
                         const GURL& manifest_url,
-                        blink::mojom::ManifestPtr manifest);
+                        std::optional<blink::Manifest> manifest);
 
   void OnDidGetWebPageMetadata(
       mojo::AssociatedRemote<mojom::WebPageMetadataAgent> metadata_agent,

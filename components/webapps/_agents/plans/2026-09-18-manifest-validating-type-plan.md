@@ -73,7 +73,7 @@ To keep each CL small and independently reviewable:
   Embedder Overrides**
 - [x] **Milestone 6: Migrate `RequestManifestDebugInfo` and DevTools
   `PageHandler`**
-- [ ] **Milestone 7: Migrate `content::Page::GetManifest` and
+- [x] **Milestone 7: Migrate `content::Page::GetManifest` and
   `ContentFaviconDriver`**
 - [ ] **Milestone 8: Migrate `//components/webapps/browser/installable/`**
 - [ ] **Milestone 9: Migrate `//components/webapps/browser/banners/`,
