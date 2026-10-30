@@ -109,12 +109,6 @@ class PLATFORM_EXPORT V8PrivateProperty {
   // |key| are guaranteed to access the same property.
   static Symbol GetSymbol(v8::Isolate* isolate, const SymbolKey& key);
 
-  // This function is always called after NOTREACHED(). The Symbol returned from
-  // this function must not be used.
-  static Symbol GetEmptySymbol() {
-    return Symbol(nullptr, v8::Local<v8::Private>());
-  }
-
  private:
   static v8::Local<v8::Private> CreateV8Private(v8::Isolate*,
                                                 const char* symbol);

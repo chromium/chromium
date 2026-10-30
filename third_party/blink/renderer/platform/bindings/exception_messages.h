@@ -59,7 +59,6 @@ class PLATFORM_EXPORT ExceptionMessages {
                                             const String& expected_type);
   static String ArgumentNotOfType(int argument_index,
                                   const char* expected_type);
-  static String ConstructorNotCallableAsFunction(const char* type);
   static String ConstructorCalledAsFunction();
 
   static String FailedToConvertJSValue(const char* type);
@@ -107,9 +106,6 @@ class PLATFORM_EXPORT ExceptionMessages {
     return FormatFiniteNumber(number);
   }
 
-  static String IncorrectPropertyType(const String& property,
-                                      const String& detail);
-
   template <typename NumberType>
   static String IndexExceedsMaximumBound(const char* name,
                                          NumberType given,
@@ -138,9 +134,6 @@ class PLATFORM_EXPORT ExceptionMessages {
                              FormatNumber(upper_bound), upper_type);
   }
 
-  static String InvalidArity(const char* expected, unsigned provided);
-
-  static String NotASequenceTypeProperty(const String& property_name);
   static String NotAFiniteNumber(double value,
                                  const char* name = "value provided");
   static String NotAFiniteNumber(const Decimal& value,

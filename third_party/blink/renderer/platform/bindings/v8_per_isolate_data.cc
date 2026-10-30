@@ -334,14 +334,6 @@ void V8PerIsolateData::SetThreadDebugger(
   thread_debugger_ = std::move(thread_debugger);
 }
 
-void V8PerIsolateData::SetPasswordRegexp(ScriptRegexp* password_regexp) {
-  password_regexp_ = password_regexp;
-}
-
-ScriptRegexp* V8PerIsolateData::GetPasswordRegexp() {
-  return password_regexp_;
-}
-
 void V8PerIsolateData::SetTaskAttributionTrackerFactory(
     TaskAttributionTrackerFactoryPtr factory) {
   CHECK(!task_attribution_tracker_factory);

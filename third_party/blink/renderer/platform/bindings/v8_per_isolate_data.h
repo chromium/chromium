@@ -192,9 +192,6 @@ class PLATFORM_EXPORT V8PerIsolateData final {
   ThreadDebugger* GetThreadDebugger() const { return thread_debugger_.get(); }
   void SetThreadDebugger(std::unique_ptr<ThreadDebugger> thread_debugger);
 
-  void SetPasswordRegexp(ScriptRegexp*);
-  ScriptRegexp* GetPasswordRegexp();
-
   // Set the factory function used to initialize task attribution for the
   // isolate upon creating main thread `V8PerIsolateData`. This should be set
   // once per process before creating any isolates.
@@ -357,7 +354,6 @@ class PLATFORM_EXPORT V8PerIsolateData final {
 
   bool is_handling_recursion_level_error_ = false;
 
-  Persistent<ScriptRegexp> password_regexp_;
   std::array<Persistent<UserData>,
              static_cast<size_t>(UserData::Key::kNumberOfKeys)>
       user_data_;

@@ -205,27 +205,10 @@ String ExceptionMessages::FailedToDeleteNamed(const String& property,
                  "': ", detail});
 }
 
-String ExceptionMessages::ConstructorNotCallableAsFunction(const char* type) {
-  return FailedToConstruct(type,
-                           "Please use the 'new' operator, this DOM object "
-                           "constructor cannot be called as a function.");
-}
-
 String ExceptionMessages::ConstructorCalledAsFunction() {
   return (
       "Please use the 'new' operator, this DOM object constructor cannot "
       "be called as a function.");
-}
-
-String ExceptionMessages::IncorrectPropertyType(const String& property,
-                                                const String& detail) {
-  return StrCat({"The '", property, "' property ", detail});
-}
-
-String ExceptionMessages::InvalidArity(const char* expected,
-                                       unsigned provided) {
-  return Format("Valid arities are: {}, but {} arguments provided.", expected,
-                provided);
 }
 
 String ExceptionMessages::ArgumentNullOrIncorrectType(
@@ -240,13 +223,6 @@ String ExceptionMessages::ArgumentNotOfType(int argument_index,
                                             const char* expected_type) {
   return Format("parameter {} is not of type '{}'.", argument_index + 1,
                 expected_type);
-}
-
-String ExceptionMessages::NotASequenceTypeProperty(
-    const String& property_name) {
-  return StrCat(
-      {"'", property_name,
-       "' property is neither an array, nor does it have indexed properties."});
 }
 
 String ExceptionMessages::NotEnoughArguments(unsigned expected,
