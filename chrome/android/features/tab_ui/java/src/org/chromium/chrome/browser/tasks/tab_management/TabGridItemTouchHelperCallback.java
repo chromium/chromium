@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
@@ -43,7 +44,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.recyclerview.widget.ItemTouchHelper2;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -703,13 +703,13 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
         List<Tab> selectedTabs = getTabsForCardIndex(tabModel, selectedCardIndex);
         List<Tab> hoveredTabs = getTabsForCardIndex(tabModel, hoveredCardIndex);
         if (selectedTabs.isEmpty() || hoveredTabs.isEmpty()) return false;
-        Tab selectedCard = selectedTabs.get(0);
         Tab hoveredCard = hoveredTabs.get(0);
-        List<Tab> tabsToMerge = new ArrayList<>(selectedTabs.size() + hoveredTabs.size());
-        tabsToMerge.addAll(selectedTabs);
-        tabsToMerge.addAll(hoveredTabs);
-        boolean willMergingCreateNewGroup = tabModel.willMergingCreateNewGroup(tabsToMerge);
-        tabModel.mergeTabsToGroup(selectedCard.getId(), hoveredCard.getId());
+        // In GROUPED layout, every card is either a standalone tab or a full tab group, so a merge
+        // creates a new group if both cards are standalone tabs.
+        boolean willMergingCreateNewGroup =
+                selectedTabs.get(0).getTabGroupId() == null && hoveredCard.getTabGroupId() == null;
+        tabModel.mergeListOfTabsToGroup(
+                selectedTabs, hoveredCard, TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
 
         if (willMergingCreateNewGroup) {
             RecordUserAction.record("TabGroup.Created.DropToMergeV2");

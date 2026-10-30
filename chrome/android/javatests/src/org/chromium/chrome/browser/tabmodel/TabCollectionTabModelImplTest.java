@@ -2252,43 +2252,6 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
-    public void testWillMergingCreateNewGroup() {
-        Tab tab0 = getTabAt(0);
-        Tab tab1 = createTab();
-        Tab tab2 = createTab();
-        Tab tab3 = createTab();
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    // No groups exist.
-                    assertTrue(mCollectionModel.willMergingCreateNewGroup(List.of(tab0, tab1)));
-
-                    // Create a group with tab0 and tab1.
-                    mCollectionModel.mergeListOfTabsToGroup(
-                            List.of(tab0, tab1),
-                            tab0,
-                            /* notify= */ TabGroupMergeNotificationType.DONT_NOTIFY);
-                    Token groupId = tab0.getTabGroupId();
-                    assertNotNull(groupId);
-
-                    // Merging a list that doesn't contain the full group.
-                    assertTrue(mCollectionModel.willMergingCreateNewGroup(List.of(tab0, tab2)));
-
-                    // Merging a list that contains the full group.
-                    assertFalse(
-                            mCollectionModel.willMergingCreateNewGroup(List.of(tab0, tab1, tab2)));
-
-                    // Merging just the group.
-                    assertFalse(mCollectionModel.willMergingCreateNewGroup(List.of(tab0, tab1)));
-
-                    // Merging a list that contains a different full group.
-                    mCollectionModel.createSingleTabGroup(tab2);
-                    assertFalse(mCollectionModel.willMergingCreateNewGroup(List.of(tab2, tab3)));
-                });
-    }
-
-    @Test
-    @MediumTest
     public void testGetLazyAllTabGroupIds() {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();

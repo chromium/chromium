@@ -492,13 +492,6 @@ public interface TabModel extends TabList {
     void moveGroupToIndex(Token tabGroupId, int newIndex);
 
     /**
-     * This method checks if an impending group merge action will result in a new group creation.
-     *
-     * @param tabsToMerge The list of tabs to be merged including all source and destination tabs.
-     */
-    boolean willMergingCreateNewGroup(List<Tab> tabsToMerge);
-
-    /**
      * Creates a tab group containing a single tab.
      *
      * @param tab The tab to create the group for.

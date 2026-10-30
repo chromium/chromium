@@ -455,33 +455,6 @@ public class TabCollectionTabModelImplUnitTest {
     }
 
     @Test
-    public void testWillMergingCreateNewGroup() {
-        MockTab tab1 = createMockTab(123, mProfile);
-        MockTab tab2 = createMockTab(123, mProfile);
-        tab1.setIsInitialized(true);
-        tab2.setIsInitialized(true);
-
-        assertTrue(mTabModel.willMergingCreateNewGroup(List.of(tab1)));
-        assertTrue(mTabModel.willMergingCreateNewGroup(List.of(tab1, tab2)));
-        assertTrue(mTabModel.willMergingCreateNewGroup(List.of(tab2)));
-
-        tab1.setTabGroupId(new Token(1L, 2L));
-        assertFalse(mTabModel.willMergingCreateNewGroup(List.of(tab1)));
-        assertFalse(mTabModel.willMergingCreateNewGroup(List.of(tab1, tab2)));
-        assertTrue(mTabModel.willMergingCreateNewGroup(List.of(tab2)));
-
-        tab2.setTabGroupId(new Token(3L, 4L));
-        assertFalse(mTabModel.willMergingCreateNewGroup(List.of(tab1)));
-        assertFalse(mTabModel.willMergingCreateNewGroup(List.of(tab1, tab2)));
-        assertFalse(mTabModel.willMergingCreateNewGroup(List.of(tab2)));
-
-        tab1.setTabGroupId(null);
-        assertTrue(mTabModel.willMergingCreateNewGroup(List.of(tab1)));
-        assertFalse(mTabModel.willMergingCreateNewGroup(List.of(tab1, tab2)));
-        assertFalse(mTabModel.willMergingCreateNewGroup(List.of(tab2)));
-    }
-
-    @Test
     public void testGetRelatedTabList_Basic() {
         int tabId = 123;
         MockTab tab1 = createMockTab(tabId, mProfile);

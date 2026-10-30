@@ -1314,12 +1314,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public boolean willMergingCreateNewGroup(List<Tab> tabsToMerge) {
-        assertOnUiThread();
-        return getCandidateTabGroupIdsForMerge(tabsToMerge).isEmpty();
-    }
-
-    @Override
     public void createSingleTabGroup(Tab tab) {
         assertOnUiThread();
         assert tab.getTabGroupId() == null;

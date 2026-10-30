@@ -405,11 +405,6 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     public void moveGroupToIndex(Token tabGroupId, int newIndex) {}
 
     @Override
-    public boolean willMergingCreateNewGroup(List<Tab> tabsToMerge) {
-        return false;
-    }
-
-    @Override
     public void createSingleTabGroup(Tab tab) {}
 
     @Override

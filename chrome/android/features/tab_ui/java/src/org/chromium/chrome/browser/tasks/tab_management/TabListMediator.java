@@ -354,6 +354,7 @@ public class TabListMediator implements TabListNotificationHandler {
     }
 
     private static final String TAG = "TabListMediator";
+    private static @Nullable TabGroupCreationDialogManager sTabGroupCreationDialogManagerForTesting;
     private final SparseIntArray mTabClosedFrom = new SparseIntArray();
 
     private final Callback<@Nullable TabModel> mOnTabModelChanged =
@@ -853,8 +854,10 @@ public class TabListMediator implements TabListNotificationHandler {
                 };
 
         var tabGroupCreationDialogManager =
-                new TabGroupCreationDialogManager(
-                        activity, assumeNonNull(modalDialogManager), onTabGroupCreation);
+                sTabGroupCreationDialogManagerForTesting != null
+                        ? sTabGroupCreationDialogManagerForTesting
+                        : new TabGroupCreationDialogManager(
+                                activity, assumeNonNull(modalDialogManager), onTabGroupCreation);
         mTabGridItemTouchHelperCallback =
                 new TabGridItemTouchHelperCallback(
                         activity,
@@ -3317,5 +3320,10 @@ public class TabListMediator implements TabListNotificationHandler {
         var oldValueId = mComponentId;
         mComponentId = componentId;
         ResettersForTesting.register(() -> mComponentId = oldValueId);
+    }
+
+    static void setTabGroupCreationDialogManagerForTesting(TabGroupCreationDialogManager manager) {
+        sTabGroupCreationDialogManagerForTesting = manager;
+        ResettersForTesting.register(() -> sTabGroupCreationDialogManagerForTesting = null);
     }
 }

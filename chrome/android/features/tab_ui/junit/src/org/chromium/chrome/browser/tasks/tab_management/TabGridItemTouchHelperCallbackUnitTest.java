@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -66,6 +67,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupMergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabUngrouper;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.TabListLayoutType;
@@ -439,7 +441,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
         mItemTouchHelperCallback.onSelectedChanged(mViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
 
-        verify(mTabModel, never()).mergeTabsToGroup(anyInt(), anyInt());
+        verify(mTabModel, never()).mergeListOfTabsToGroup(any(), any(), anyInt());
         verify(mGridLayoutManager, never()).removeView(any());
     }
 
@@ -460,7 +462,11 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
         mItemTouchHelperCallback.onSelectedChanged(mViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
 
-        verify(mTabModel).mergeTabsToGroup(TAB1_ID, TAB2_ID);
+        verify(mTabModel)
+                .mergeListOfTabsToGroup(
+                        List.of(mTab1),
+                        mTab2,
+                        TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mGridLayoutManager).removeView(mItemView1);
         verify(mTracker).notifyEvent(eq(EventConstants.TAB_DRAG_AND_DROP_TO_GROUP));
         assertThat(
@@ -487,7 +493,11 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
         mItemTouchHelperCallback.onSelectedChanged(mViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
 
-        verify(mTabModel).mergeTabsToGroup(TAB1_ID, TAB2_ID);
+        verify(mTabModel)
+                .mergeListOfTabsToGroup(
+                        List.of(mTab1),
+                        mTab2,
+                        TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mGridLayoutManager, never()).removeView(mItemView1);
         verify(mTracker).notifyEvent(eq(EventConstants.TAB_DRAG_AND_DROP_TO_GROUP));
         assertThat(
@@ -513,7 +523,11 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         mItemTouchHelperCallback.onSelectedChanged(mViewHolder2, ItemTouchHelper.ACTION_STATE_IDLE);
 
         verify(mGridLayoutManager).removeView(mItemView2);
-        verify(mTabModel).mergeTabsToGroup(TAB2_ID, TAB1_ID);
+        verify(mTabModel)
+                .mergeListOfTabsToGroup(
+                        List.of(mTab2),
+                        mTab1,
+                        TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mTracker).notifyEvent(eq(EventConstants.TAB_DRAG_AND_DROP_TO_GROUP));
         assertThat(
                 mModel.get(0).model.get(CardProperties.CARD_ANIMATION_STATUS),
@@ -535,7 +549,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         mItemTouchHelperCallback.onSelectedChanged(mViewHolder2, ItemTouchHelper.ACTION_STATE_IDLE);
 
         verify(mGridLayoutManager, never()).removeView(mItemView2);
-        verify(mTabModel, never()).mergeTabsToGroup(TAB2_ID, TAB1_ID);
+        verify(mTabModel, never()).mergeListOfTabsToGroup(any(), any(), anyInt());
         verify(mTracker, never()).notifyEvent(eq(EventConstants.TAB_DRAG_AND_DROP_TO_GROUP));
     }
 
@@ -554,7 +568,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                                 mViewHolder2, ItemTouchHelper.ACTION_STATE_IDLE));
 
         verify(mGridLayoutManager, never()).removeView(mItemView2);
-        verify(mTabModel, never()).mergeTabsToGroup(TAB2_ID, TAB1_ID);
+        verify(mTabModel, never()).mergeListOfTabsToGroup(any(), any(), anyInt());
         verify(mTracker, never()).notifyEvent(eq(EventConstants.TAB_DRAG_AND_DROP_TO_GROUP));
     }
 
@@ -1231,7 +1245,14 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
     @Test
     public void onTabMergeToGroup_willMergingCreateNewGroup() {
-        doReturn(true).when(mTabModel).willMergingCreateNewGroup(any());
+        Token groupId = Token.createRandom();
+        doAnswer(
+                        invocation -> {
+                            when(mTab2.getTabGroupId()).thenReturn(groupId);
+                            return null;
+                        })
+                .when(mTabModel)
+                .mergeListOfTabsToGroup(any(), eq(mTab2), anyInt());
 
         // Simulate the selection of card#1 in TabListModel.
         mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
@@ -1241,16 +1262,23 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
         mItemTouchHelperCallback.onSelectedChanged(mViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
 
-        verify(mTabModel).mergeTabsToGroup(TAB1_ID, TAB2_ID);
-        verify(mTabGroupCreationDialogManager)
-                .showDialog(mTabModel.getTabById(TAB2_ID).getTabGroupId(), mTabModel);
+        verify(mTabModel)
+                .mergeListOfTabsToGroup(
+                        List.of(mTab1),
+                        mTab2,
+                        TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+        verify(mTabGroupCreationDialogManager).showDialog(groupId, mTabModel);
         assertEquals(1, mActionTester.getActionCount("TabGroup.Created.DropToMergeV2"));
         assertEquals(0, mActionTester.getActionCount("TabGrid.Drag.DropToMergeV2"));
     }
 
     @Test
     public void onTabMergeToGroup_mergeWithExistingGroup() {
-        doReturn(false).when(mTabModel).willMergingCreateNewGroup(any());
+        Token groupId = Token.createRandom();
+        mModel.get(POSITION2).model.set(CARD_TYPE, ModelType.TAB_GROUP);
+        mModel.get(POSITION2).model.set(TabProperties.TAB_GROUP_HEADER_ID, groupId);
+        when(mTab2.getTabGroupId()).thenReturn(groupId);
+        doReturn(List.of(mTab2)).when(mTabModel).getTabsInGroup(groupId);
 
         // Simulate the selection of card#1 in TabListModel.
         mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
@@ -1260,7 +1288,35 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
         mItemTouchHelperCallback.onSelectedChanged(mViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
 
-        verify(mTabModel).mergeTabsToGroup(TAB1_ID, TAB2_ID);
+        verify(mTabModel)
+                .mergeListOfTabsToGroup(
+                        List.of(mTab1),
+                        mTab2,
+                        TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
+        verify(mTabGroupCreationDialogManager, never()).showDialog(any(), any());
+        assertEquals(0, mActionTester.getActionCount("TabGroup.Created.DropToMergeV2"));
+        assertEquals(1, mActionTester.getActionCount("TabGrid.Drag.DropToMergeV2"));
+    }
+
+    @Test
+    public void onTabMergeToGroup_mergeGroupOntoStandaloneTab() {
+        Token groupId = Token.createRandom();
+        mModel.get(POSITION1).model.set(CARD_TYPE, ModelType.TAB_GROUP);
+        mModel.get(POSITION1).model.set(TabProperties.TAB_GROUP_HEADER_ID, groupId);
+        when(mTab1.getTabGroupId()).thenReturn(groupId);
+        when(mTab3.getTabGroupId()).thenReturn(groupId);
+        doReturn(List.of(mTab1, mTab3)).when(mTabModel).getTabsInGroup(groupId);
+
+        mItemTouchHelperCallback.setSelectedTabIndexForTesting(POSITION1);
+        mItemTouchHelperCallback.setHoveredTabIndexForTesting(POSITION2);
+
+        mItemTouchHelperCallback.onSelectedChanged(mViewHolder1, ItemTouchHelper.ACTION_STATE_IDLE);
+
+        verify(mTabModel)
+                .mergeListOfTabsToGroup(
+                        List.of(mTab1, mTab3),
+                        mTab2,
+                        TabGroupMergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mTabGroupCreationDialogManager, never()).showDialog(any(), any());
         assertEquals(0, mActionTester.getActionCount("TabGroup.Created.DropToMergeV2"));
         assertEquals(1, mActionTester.getActionCount("TabGrid.Drag.DropToMergeV2"));

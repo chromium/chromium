@@ -588,11 +588,6 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public boolean willMergingCreateNewGroup(List<Tab> tabsToMerge) {
-        return mDelegateModel.willMergingCreateNewGroup(tabsToMerge);
-    }
-
-    @Override
     public void createSingleTabGroup(Tab tab) {
         mDelegateModel.createSingleTabGroup(tab);
     }

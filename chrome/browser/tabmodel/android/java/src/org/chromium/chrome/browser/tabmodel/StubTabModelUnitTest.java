@@ -96,7 +96,6 @@ public class StubTabModelUnitTest {
                             "recordPinnedDuration",
                             "getActivityTypeForTesting",
                             "setTabGroupCollapsed",
-                            "willMergingCreateNewGroup",
                             "performUndoGroupOperation",
                             "undoGroupOperationExpired",
                             "setTabGroupTitle",
