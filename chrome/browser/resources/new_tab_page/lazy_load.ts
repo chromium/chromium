@@ -29,7 +29,8 @@ export {SubmitButtonIconType, VoiceSearchAction} from 'chrome://resources/cr_com
 export {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
 export {AimButtonMode} from 'chrome://resources/cr_components/composebox/composebox_aim_button.js';
 export {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
-export {ThreadsRailElement} from 'chrome://resources/cr_components/composebox/threads_rail.js';
+export type {LhsRailConfig, LhsRailItem} from 'chrome://resources/cr_components/composebox/threads_rail.js';
+export {LhsClientAction, ThreadsRailElement} from 'chrome://resources/cr_components/composebox/threads_rail.js';
 export {WindowProxy as ComposeboxWindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 export {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
 export {MojoPluralStringProxy as NTPPluralStringProxyImpl} from 'chrome://resources/cr_components/search/mojo_plural_string_proxy.js';

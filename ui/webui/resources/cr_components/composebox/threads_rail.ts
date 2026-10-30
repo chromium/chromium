@@ -3,32 +3,36 @@
 // found in the LICENSE file.
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_tooltip/cr_tooltip.js';
-import '//resources/cr_elements/icons.html.js';
-import './icons.html.js';
 
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {recordEnumerationValue} from './common.js';
 import {getCss} from './threads_rail.css.js';
 import {getHtml} from './threads_rail.html.js';
 import {WindowProxy} from './window_proxy.js';
 
 /**
- * User actions on the threads rail. This enum must match the numbering for
- * NtpThreadsAction in enums.xml. These values are persisted to logs.
- * Entries should not be renumbered, removed or reused.
+ * Enum matching `omnibox::LhsRailConfig::ClickAction::ClientAction` in
+ * `third_party/omnibox_proto/lhs_rail_config.proto`.
  */
-export enum ThreadsAction {
-  SHOW_HISTORY_CLICKED = 0,
-  MAX_VALUE = SHOW_HISTORY_CLICKED,
+export enum LhsClientAction {
+  UNSPECIFIED = 0,
+  NAVIGATE = 1,
+  EXPAND_RAIL = 2,
+  FOCUS_REALBOX_AIM = 3,
 }
 
-function recordAction(action: ThreadsAction) {
-  recordEnumerationValue(
-      'NewTabPage.ThreadsRail.Action', action, ThreadsAction.MAX_VALUE + 1);
+export interface LhsRailItem {
+  iconSvg: string;
+  name: string;
+  clientAction: LhsClientAction;
+  targetUrl?: string;
+}
+
+export interface LhsRailConfig {
+  items?: LhsRailItem[];
 }
 
 const ThreadsRailElementBase = I18nMixinLit(CrLitElement);
@@ -49,21 +53,32 @@ export class ThreadsRailElement extends ThreadsRailElementBase {
     return getHtml.bind(this)();
   }
 
+  static override get properties() {
+    return {
+      config_: {type: Object},
+    };
+  }
+
+  protected accessor config_: LhsRailConfig =
+      loadTimeData.getValue('lhsRailConfig');
+
+  protected getItems_(): LhsRailItem[] {
+    return this.config_.items ?? [];
+  }
+
+  protected getIconStyle_(item: LhsRailItem): string {
+    if (!item.iconSvg) {
+      return '';
+    }
+    return `--cr-icon-image: url("data:image/svg+xml;charset=utf-8,${
+        encodeURIComponent(item.iconSvg)}");`;
+  }
+
   protected onLogoClick_(e: Event): void {
     e.stopPropagation();
     const googleBaseUrl = loadTimeData.getString('googleBaseUrl');
     assert(googleBaseUrl);
     WindowProxy.getInstance().navigate(googleBaseUrl);
-  }
-
-  protected onShowHistoryClick_(e: Event): void {
-    e.stopPropagation();
-    recordAction(ThreadsAction.SHOW_HISTORY_CLICKED);
-    // Navigate to the AI Mode search page. This will be intercepted
-    // by the co-browse service if the contextual task flag is enabled.
-    const threadsUrl = loadTimeData.getString('threadsUrl');
-    assert(threadsUrl);
-    WindowProxy.getInstance().navigate(threadsUrl);
   }
 }
 

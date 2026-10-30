@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/new_tab_page/prefs/ntp_pref_names.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -264,12 +265,21 @@ TEST_F(NewTabPageUITest, GetLoadTimeData_LhsRailConfig) {
   ON_CALL(*mock_aim_service, IsAimEligible())
       .WillByDefault(testing::Return(true));
 
-  // 1. When GetLhsRailConfig() returns nullptr, lhsRailConfig is not set.
+  // 1. In non-hybrid mode (default), when GetLhsRailConfig() returns nullptr,
+  // lhsRailConfig is not set, while enableThreadsRail remains enabled on
+  // branded builds.
   ON_CALL(*mock_aim_service, GetLhsRailConfig())
       .WillByDefault(testing::Return(nullptr));
   base::DictValue load_time_data_empty = NewTabPageUI::GetLoadTimeData(
       &profile(), /*session_allows_drag_and_drop=*/false);
   EXPECT_EQ(load_time_data_empty.FindDict("lhsRailConfig"), nullptr);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_TRUE(
+      load_time_data_empty.FindBool("enableThreadsRail").value_or(false));
+#else
+  EXPECT_FALSE(
+      load_time_data_empty.FindBool("enableThreadsRail").value_or(true));
+#endif
 
   // 2. When GetLhsRailConfig() returns a populated config, lhsRailConfig is
   // serialized with items (including resolved targetUrl for valid relative
@@ -368,5 +378,62 @@ TEST_F(NewTabPageUITest, GetLoadTimeData_LhsRailConfig) {
       .WillByDefault(testing::Return(false));
   base::DictValue load_time_data_ineligible = NewTabPageUI::GetLoadTimeData(
       &profile(), /*session_allows_drag_and_drop=*/false);
+  EXPECT_EQ(load_time_data_ineligible.FindDict("lhsRailConfig"), nullptr);
+}
+
+TEST_F(NewTabPageUITest,
+       GetLoadTimeData_HybridThreadsRailRequiresLhsRailConfig) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpThreadsRail,
+      {{ntp_features::kNtpThreadsRailHybridParam.name, "true"}});
+  TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+      &profile(),
+      base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
+  auto* mock_aim_service =
+      static_cast<testing::NiceMock<MockAimEligibilityService>*>(
+          AimEligibilityServiceFactory::GetInstance()->SetTestingFactoryAndUse(
+              &profile(),
+              base::BindRepeating(&BuildMockAimEligibilityService)));
+  ON_CALL(*mock_aim_service, IsAimEligible())
+      .WillByDefault(testing::Return(true));
+
+  // 1. In hybrid mode, enableThreadsRail is false when GetLhsRailConfig()
+  // returns nullptr.
+  ON_CALL(*mock_aim_service, GetLhsRailConfig())
+      .WillByDefault(testing::Return(nullptr));
+  base::DictValue load_time_data_null_config = NewTabPageUI::GetLoadTimeData(
+      &profile(), /*session_allows_drag_and_drop=*/false);
+  EXPECT_FALSE(
+      load_time_data_null_config.FindBool("enableThreadsRail").value_or(true));
+  EXPECT_EQ(load_time_data_null_config.FindDict("lhsRailConfig"), nullptr);
+
+  // 2. Once GetLhsRailConfig() returns a non-null config, enableThreadsRail is
+  // enabled on branded builds and lhsRailConfig is serialized.
+  omnibox::LhsRailConfig lhs_config;
+  auto* item = lhs_config.add_lhs_items();
+  item->set_name("AI Mode history");
+  ON_CALL(*mock_aim_service, GetLhsRailConfig())
+      .WillByDefault(testing::Return(&lhs_config));
+  base::DictValue load_time_data_with_config = NewTabPageUI::GetLoadTimeData(
+      &profile(), /*session_allows_drag_and_drop=*/false);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  EXPECT_TRUE(
+      load_time_data_with_config.FindBool("enableThreadsRail").value_or(false));
+  ASSERT_NE(load_time_data_with_config.FindDict("lhsRailConfig"), nullptr);
+#else
+  EXPECT_FALSE(
+      load_time_data_with_config.FindBool("enableThreadsRail").value_or(true));
+  EXPECT_EQ(load_time_data_with_config.FindDict("lhsRailConfig"), nullptr);
+#endif
+
+  // 3. When the user is not AIM eligible, enableThreadsRail is false even if a
+  // non-null config is cached.
+  ON_CALL(*mock_aim_service, IsAimEligible())
+      .WillByDefault(testing::Return(false));
+  base::DictValue load_time_data_ineligible = NewTabPageUI::GetLoadTimeData(
+      &profile(), /*session_allows_drag_and_drop=*/false);
+  EXPECT_FALSE(
+      load_time_data_ineligible.FindBool("enableThreadsRail").value_or(true));
   EXPECT_EQ(load_time_data_ineligible.FindDict("lhsRailConfig"), nullptr);
 }

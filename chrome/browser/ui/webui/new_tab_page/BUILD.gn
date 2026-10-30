@@ -228,6 +228,7 @@ source_set("unit_tests") {
     ":new_tab_page",
     "//base",
     "//base/test:test_support",
+    "//build:branding_buildflags",
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/new_tab_page",
     "//chrome/browser/new_tab_page:impl",

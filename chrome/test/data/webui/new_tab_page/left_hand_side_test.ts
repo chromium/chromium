@@ -48,6 +48,7 @@ suite('NewTabPageLeftHandSideTest', () => {
     loadTimeData.overrideValues({
       enableThreadsRailHybrid: true,
       expandedLhsUrl: EXPANDED_LHS_URL,
+      lhsRailConfig: {items: []},
     });
     windowProxy = installMock(WindowProxy);
     // Prevents the iframe from actually loading the LHS page.
