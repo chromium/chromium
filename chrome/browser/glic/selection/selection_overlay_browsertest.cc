@@ -11,12 +11,14 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_selection_observer.h"
 #include "chrome/browser/glic/glic_warming_checks.h"
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/selection/explain_suggestion.h"
+#include "chrome/browser/glic/selection/explain_suggestion_fre.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/glic/selection/selection_suggestion.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
@@ -29,11 +31,13 @@
 #include "chrome/browser/selection/mojom/action.mojom.h"
 #include "chrome/browser/selection/suggestion_service.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/mojom/echo.test-mojom.h"
 #include "components/optimization_guide/core/feature_registry/feature_keys.h"
 #include "components/optimization_guide/proto/features/quick_answers.pb.h"
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
+#include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -49,7 +53,13 @@
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/base/network_change_notifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/widget/any_widget_observer.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/dialog_delegate.h"
 
 namespace glic {
 
@@ -1367,6 +1377,8 @@ IN_PROC_BROWSER_TEST_F(ExplainSuggestionBrowserTest, GetExplanation) {
           optimization_guide::ModelBasedCapabilityKey::kQuickAnswers,
           optimization_guide::OptimizationGuideModelExecutionResult(
               std::move(any), nullptr));
+  tab->GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicQuickAnswersFreAccepted,
+                                            true);
 
   ExplainSuggestion suggestion(*tab, /*request=*/{});
   mojo::AssociatedRemote<selection::ExplainFulfillment> remote;
@@ -1450,6 +1462,81 @@ IN_PROC_BROWSER_TEST_F(ExplainSuggestionBrowserTest,
   remote.FlushForTesting();
 
   EXPECT_EQ(tabs->GetTabCount(), tab_count);
+}
+
+IN_PROC_BROWSER_TEST_F(ExplainSuggestionBrowserTest,
+                       AcceptingFreRecordsConsentAndUnblocksExplanation) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  ASSERT_TRUE(ShowOverlay(tab));
+  PrefService* prefs = tab->GetProfile()->GetPrefs();
+  ASSERT_FALSE(prefs->GetBoolean(prefs::kGlicQuickAnswersFreAccepted));
+  static constexpr char kExpectedExplanation[] = "An explanation.";
+  optimization_guide::proto::QuickAnswersResponse response_msg;
+  response_msg.set_answer(kExpectedExplanation);
+  optimization_guide::proto::Any any;
+  any.set_value(response_msg.SerializeAsString());
+  any.set_type_url(
+      base::StrCat({"type.googleapis.com/", response_msg.GetTypeName()}));
+  OptimizationGuideKeyedServiceFactory::GetForProfile(tab->GetProfile())
+      ->AddExecutionResultForTesting(
+          optimization_guide::ModelBasedCapabilityKey::kQuickAnswers,
+          optimization_guide::OptimizationGuideModelExecutionResult(
+              std::move(any), nullptr));
+
+  ExplainSuggestion suggestion(*tab, /*request=*/{});
+  mojo::AssociatedRemote<selection::ExplainFulfillment> remote;
+  Connect(suggestion, remote);
+
+  // Until the FRE is accepted, the model isn't asked.
+  base::test::TestFuture<const std::string&> explanation;
+  remote->GetExplanation(explanation.GetCallback());
+  EXPECT_EQ(explanation.Take(),
+            l10n_util::GetStringUTF8(IDS_GLIC_ERROR_NOTICE));
+
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       kQuickAnswersFreDialogName);
+  base::test::TestFuture<bool> consent;
+  remote->RequestConsent(consent.GetCallback());
+  views::Widget* dialog = waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(dialog);
+  EXPECT_EQ(dialog->widget_delegate()->GetModalType(),
+            ui::mojom::ModalType::kWindow);
+  EXPECT_FALSE(consent.IsReady());
+
+  dialog->widget_delegate()->AsDialogDelegate()->AcceptDialog();
+  EXPECT_TRUE(consent.Take());
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kGlicQuickAnswersFreAccepted));
+
+  remote->GetExplanation(explanation.GetCallback());
+  EXPECT_EQ(explanation.Take(), kExpectedExplanation);
+
+  // Once accepted, consent is immediate.
+  remote->RequestConsent(consent.GetCallback());
+  EXPECT_TRUE(consent.Take());
+}
+
+IN_PROC_BROWSER_TEST_F(ExplainSuggestionBrowserTest, DecliningFreKeepsOverlay) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  ASSERT_TRUE(ShowOverlay(tab));
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab->GetContents());
+
+  ExplainSuggestion suggestion(*tab, /*request=*/{});
+  mojo::AssociatedRemote<selection::ExplainFulfillment> remote;
+  Connect(suggestion, remote);
+
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       kQuickAnswersFreDialogName);
+  base::test::TestFuture<bool> consent;
+  remote->RequestConsent(consent.GetCallback());
+  views::Widget* dialog = waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(dialog);
+
+  dialog->widget_delegate()->AsDialogDelegate()->CancelDialog();
+  EXPECT_FALSE(consent.Take());
+  EXPECT_FALSE(tab->GetProfile()->GetPrefs()->GetBoolean(
+      prefs::kGlicQuickAnswersFreAccepted));
+  EXPECT_EQ(controller->state(), SelectionOverlayController::State::kOverlay);
 }
 
 IN_PROC_BROWSER_TEST_F(ExplainSuggestionBrowserTest, AskGeminiOpensGlic) {

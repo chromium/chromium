@@ -12,6 +12,8 @@ source_set("selection") {
   sources = [
     "explain_suggestion.cc",
     "explain_suggestion.h",
+    "explain_suggestion_fre.cc",
+    "explain_suggestion_fre.h",
     "inline_cue_blocklist_utils.cc",
     "inline_cue_blocklist_utils.h",
     "quick_answers_tool.cc",
@@ -60,6 +62,7 @@ source_set("selection") {
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/top_chrome",
     "//components/actor/public/mojom:mojo_bindings",
+    "//components/constrained_window",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
     "//components/input",
@@ -69,7 +72,10 @@ source_set("selection") {
     "//components/search_engines",
     "//mojo/public/mojom/base",
     "//third_party/blink/public/common:headers",
+    "//ui/base",
+    "//ui/base/mojom:ui_base_types",
     "//ui/gfx/geometry",
+    "//ui/views",
   ]
 }
 
@@ -116,11 +122,13 @@ source_set("interactive_ui_tests") {
     "//chrome/test:test_support",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/prefs",
     "//content/test:test_support",
     "//testing/gtest",
     "//ui/base",
     "//ui/base:ozone_buildflags",
     "//ui/base/interaction",
+    "//ui/views",
   ]
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
@@ -148,7 +156,10 @@ source_set("browser_tests") {
     "//components/search_engines",
     "//content/test:test_support",
     "//testing/gtest",
+    "//ui/base",
+    "//ui/base/mojom:ui_base_types",
     "//ui/gfx/geometry",
+    "//ui/views",
   ]
 }
 

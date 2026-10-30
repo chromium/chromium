@@ -11,6 +11,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/selection/explain_fulfillment.mojom.h"
+#include "chrome/browser/glic/selection/explain_suggestion_fre.h"
 #include "chrome/browser/selection/suggestion.h"
 #include "components/optimization_guide/proto/features/quick_answers.pb.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -28,7 +29,8 @@ class TabInterface;
 namespace glic {
 
 // Shows the "Explain" card in the selection overlay, and serves the card's
-// requests.
+// requests. The card asks for consent first; the Quick Answers FRE is shown
+// until the user accepts it.
 class ExplainSuggestion : public ::selection::Suggestion,
                           public selection::ExplainFulfillment {
  public:
@@ -46,6 +48,7 @@ class ExplainSuggestion : public ::selection::Suggestion,
   ::selection::mojom::ActionPtr GetAction() const override;
 
   // selection::ExplainFulfillment:
+  void RequestConsent(RequestConsentCallback callback) override;
   void GetExplanation(GetExplanationCallback callback) override;
   void OpenTabForSearch(const std::string& query) override;
   void AskGemini() override;
@@ -61,6 +64,7 @@ class ExplainSuggestion : public ::selection::Suggestion,
   const optimization_guide::proto::QuickAnswersRequest request_;
   const std::u16string label_ = u"Explain";
   GetExplanationCallback pending_callback_;
+  ExplainSuggestionFre fre_;
   mojo::AssociatedReceiver<selection::ExplainFulfillment> receiver_{this};
   base::WeakPtrFactory<ExplainSuggestion> weak_ptr_factory_{this};
 };

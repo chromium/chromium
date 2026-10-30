@@ -7,11 +7,16 @@ import {create} from 'chrome-untrusted://glic/explain_fulfillment.js';
 import type {ExplainFulfillmentElement} from 'chrome-untrusted://glic/explain_fulfillment.js';
 import {ExplainFulfillment} from 'chrome-untrusted://glic/explain_fulfillment.mojom-webui.js';
 import type {ExplainFulfillmentInterface} from 'chrome-untrusted://glic/explain_fulfillment.mojom-webui.js';
-import {assertDeepEquals, assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 class FakeExplainFulfillment implements ExplainFulfillmentInterface {
+  consent = true;
   askGeminiCount = 0;
   searchQueries: string[] = [];
+
+  requestConsent() {
+    return Promise.resolve({accepted: this.consent});
+  }
 
   getExplanation() {
     return Promise.resolve(
@@ -52,6 +57,14 @@ suite('ExplainFulfillment', () => {
     assertEquals(ExplainFulfillment.$interfaceName, interfaceName);
     assertEquals('glic-explain-fulfillment', element.localName);
     assertEquals(remote, element.fulfillment);
+  });
+
+  test('ConsentAsksTheBrowser', async () => {
+    const {element, consent} = create();
+    element.fulfillment = fulfillment;
+    assertTrue(await consent());
+    fulfillment.consent = false;
+    assertFalse(await consent());
   });
 
   test('ShowsExplanationWhenAdded', () => {

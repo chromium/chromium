@@ -72,5 +72,13 @@ export function create() {
   const remote = new ExplainFulfillmentRemote();
   const element = document.createElement('glic-explain-fulfillment');
   element.fulfillment = remote;
-  return {element, interfaceName: ExplainFulfillment.$interfaceName, remote};
+  // The browser shows the Quick Answers FRE if the user hasn't accepted it.
+  const consent = () =>
+      element.fulfillment!.requestConsent().then(result => result.accepted);
+  return {
+    element,
+    interfaceName: ExplainFulfillment.$interfaceName,
+    remote,
+    consent,
+  };
 }

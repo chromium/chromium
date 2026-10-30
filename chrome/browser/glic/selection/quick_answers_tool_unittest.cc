@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/selection/explain_fulfillment.mojom.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -24,6 +25,7 @@
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/proto/features/quick_answers.pb.h"
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
+#include "components/prefs/pref_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
@@ -59,6 +61,11 @@ class QuickAnswersToolTest : public ChromeRenderViewHostTestHarness {
                 })));
   }
 
+  void AcceptFre() {
+    profile()->GetPrefs()->SetBoolean(prefs::kGlicQuickAnswersFreAccepted,
+                                      true);
+  }
+
   tabs::MockTabInterface mock_tab_;
 };
 
@@ -66,6 +73,7 @@ TEST_F(QuickAnswersToolTest, ExecutesQuickAnswersModelWithExpectedRequest) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://example.com/article"));
   content::WebContentsTester::For(web_contents())->SetTitle(u"Example Article");
+  AcceptFre();
 
   auto* mock_opt_guide = SetupMockOptimizationGuide();
 
@@ -141,6 +149,7 @@ TEST_F(QuickAnswersToolTest, HandlesModelExecutionError) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL("https://example.com/outer"));
   content::WebContentsTester::For(web_contents())->SetTitle(u"Outer Page");
+  AcceptFre();
 
   auto* mock_opt_guide = SetupMockOptimizationGuide();
 
@@ -192,6 +201,35 @@ TEST_F(QuickAnswersToolTest, HandlesModelExecutionError) {
 
   EXPECT_EQ(explanation.Get(), l10n_util::GetStringUTF8(IDS_GLIC_ERROR_NOTICE));
   EXPECT_TRUE(model_executed);
+}
+
+TEST_F(QuickAnswersToolTest, GetExplanationNeedsAcceptedFre) {
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("https://example.com/outer"));
+  auto* mock_opt_guide = SetupMockOptimizationGuide();
+  EXPECT_CALL(*mock_opt_guide, ExecuteModel).Times(0);
+
+  ::selection::AreaOfInterest aoi;
+  aoi.selected_text = u"selected term";
+  aoi.text_surrounding_selection = u"Surrounding context for selected term.";
+  std::unique_ptr<::selection::Suggestion> suggestion =
+      QuickAnswersTool::CreateSuggestion(mock_tab_, aoi);
+  ASSERT_NE(suggestion, nullptr);
+
+  mojo::AssociatedRemote<selection::ExplainFulfillment> fulfillment;
+  suggestion->Execute(mojo::GenericPendingAssociatedReceiver(
+      fulfillment.BindNewEndpointAndPassDedicatedReceiver()));
+
+  // Nothing goes to the model before the FRE is accepted. The mock tab has
+  // no browser window, so the FRE can't show and consent is declined.
+  base::test::TestFuture<const std::string&> explanation;
+  fulfillment->GetExplanation(explanation.GetCallback());
+  EXPECT_EQ(explanation.Get(), l10n_util::GetStringUTF8(IDS_GLIC_ERROR_NOTICE));
+  base::test::TestFuture<bool> consent;
+  fulfillment->RequestConsent(consent.GetCallback());
+  EXPECT_FALSE(consent.Get());
+  EXPECT_FALSE(
+      profile()->GetPrefs()->GetBoolean(prefs::kGlicQuickAnswersFreAccepted));
 }
 
 TEST_F(QuickAnswersToolTest,

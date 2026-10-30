@@ -21,11 +21,14 @@ export interface InlineFulfillmentRemote {
 export interface InlineFulfillmentModule {
   // Returns the card, and an unbound remote the card talks to the browser
   // through. The host binds `remote` to the browser, and closes it when the
-  // card is removed so the browser can stop any work for it.
+  // card is removed so the browser can stop any work for it. If `consent` is
+  // given, the host calls it once `remote` is bound and only shows the card
+  // if it resolves to true.
   create(): {
     element: HTMLElement,
     interfaceName: string,
     remote: InlineFulfillmentRemote,
+    consent?: () => Promise<boolean>,
   };
 }
 
@@ -67,26 +70,27 @@ export class InlineFulfillmentHostElement extends HTMLElement {
   private remote_: InlineFulfillmentRemote|null = null;
 
   // Loads the module for `resourceName`, passes its channel to `send`, then
-  // shows its card in place of the current one. Does nothing if the name is
-  // unknown, the load or the card failed, or a newer show() or clear() ran
-  // while loading.
+  // shows its card in place of the current one. Returns whether the card was
+  // shown: not if the name is unknown, the load or the card failed, the user
+  // didn't consent, or a newer show() or clear() ran in the meantime.
   async show(
       resourceName: string,
-      send: (channel: GenericPendingAssociatedReceiver) => void) {
+      send: (channel: GenericPendingAssociatedReceiver) => void):
+      Promise<boolean> {
     const generation = ++this.generation_;
     const load = this.loaders.get(resourceName);
     if (!load) {
-      return;
+      return false;
     }
     let module: InlineFulfillmentModule;
     try {
       module = await load();
     } catch {
       // Treated the same as an unknown name.
-      return;
+      return false;
     }
     if (generation !== this.generation_) {
-      return;
+      return false;
     }
     let card: ReturnType<InlineFulfillmentModule['create']>|undefined;
     try {
@@ -99,11 +103,24 @@ export class InlineFulfillmentHostElement extends HTMLElement {
       // if create() or send() throw, treated the exception the same as a failed
       // load.
       card?.remote.$.close();
-      return;
+      return false;
+    }
+    if (card.consent) {
+      let accepted = false;
+      try {
+        accepted = await card.consent();
+      } catch {
+        // Treated as declined.
+      }
+      if (!accepted || generation !== this.generation_) {
+        card.remote.$.close();
+        return false;
+      }
     }
     this.removeCard_();
     this.remote_ = card.remote;
     this.appendChild(card.element);
+    return true;
   }
 
   // Removes the card and drops any load in flight.

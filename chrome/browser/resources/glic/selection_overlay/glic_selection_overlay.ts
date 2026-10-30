@@ -628,13 +628,20 @@ export class GlicSelectionOverlayElement extends
     // `show()` sends the channel only if the card loaded and no newer click or
     // selection replaced it. Otherwise nothing is sent, since the browser
     // rejects an inline action without a channel.
-    await host.show(inlineFulfillment.resourceName, channel => {
-      this.replacedChipsRowHeight_ =
-          this.shadowRoot.querySelector<HTMLElement>(
-                             '.action-chips-row')!.offsetHeight;
+    //
+    // The state is updated only once the card shows: if it doesn't, e.g. the
+    // user declined its consent prompt, the chips (or the current card) stay,
+    // and the chip can be clicked again.
+    const chipsRowHeight = this.shownInlineAction_ ?
+        this.replacedChipsRowHeight_ :
+        this.shadowRoot.querySelector<HTMLElement>(
+                           '.action-chips-row')!.offsetHeight;
+    if (await host.show(inlineFulfillment.resourceName, channel => {
+          handler.executeSuggestedAction(action.id, channel);
+        })) {
+      this.replacedChipsRowHeight_ = chipsRowHeight;
       this.shownInlineAction_ = action;
-      handler.executeSuggestedAction(action.id, channel);
-    });
+    }
   }
 
   protected onInlineFulfillmentCloseClick() {

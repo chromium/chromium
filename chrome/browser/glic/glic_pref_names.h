@@ -66,6 +66,10 @@ inline constexpr char kGlicHotkeyGlobalScopeMigratedV2[] =
 // selection hotkey for Glic.
 inline constexpr char kGlicSelectionHotkey[] = "glic.selection_hotkey";
 
+// Boolean pref set once the user accepts the Quick Answers FRE.
+inline constexpr char kGlicQuickAnswersFreAccepted[] =
+    "glic.quick_answers_fre_accepted";
+
 // String pref that keeps track of the non-localized version of the registered
 // hotkey for toggling focus between Glic and the browser window.
 inline constexpr char kGlicFocusToggleHotkey[] = "glic.focus_toggle_hotkey";

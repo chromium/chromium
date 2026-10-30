@@ -8,6 +8,11 @@ module glic.selection;
 // receiver as the channel of
 // `SelectionOverlayPageHandler.ExecuteSuggestedAction()`.
 interface ExplainFulfillment {
+  // Asks the user to accept the Quick Answers first-run experience if they
+  // haven't yet, and replies with whether they have. The card only shows
+  // after `accepted`; `GetExplanation()` fails until then.
+  RequestConsent() => (bool accepted);
+
   // Returns the explanation of the selection.
   GetExplanation() => (string explanation);
 

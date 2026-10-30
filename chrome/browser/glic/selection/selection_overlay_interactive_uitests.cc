@@ -20,10 +20,12 @@
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/glic/browser_ui/glic_selection_widget.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_selection_observer.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
+#include "chrome/browser/glic/selection/explain_suggestion_fre.h"
 #include "chrome/browser/glic/selection/selection_overlay_controller.h"
 #include "chrome/browser/glic/selection/selection_suggestion.h"
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
@@ -55,6 +57,7 @@
 #include "components/optimization_guide/proto/features/quick_answers.pb.h"
 #include "components/optimization_guide/proto/features/smart_selection_suggestions.pb.h"
 #include "components/page_content_annotations/content/page_context_fetcher_options.h"
+#include "components/prefs/pref_service.h"
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -165,6 +168,18 @@ class SelectionOverlayInteractiveTest : public test::InteractiveGlicTest {
         {});
   }
   ~SelectionOverlayInteractiveTest() override = default;
+
+  void SetUpOnMainThread() override {
+    test::InteractiveGlicTest::SetUpOnMainThread();
+    // Tests are about the overlay, not the FRE before the first Explain
+    // answer. The FRE tests opt back in.
+    SetFreAccepted(true);
+  }
+
+  void SetFreAccepted(bool accepted) {
+    browser()->GetProfile()->GetPrefs()->SetBoolean(
+        prefs::kGlicQuickAnswersFreAccepted, accepted);
+  }
 
   auto GetPointWithOffset(int x, int y) {
     return base::BindLambdaForTesting([this, x, y](ui::TrackedElement* el) {
@@ -2526,6 +2541,21 @@ class SelectionOverlayInteractiveTestWithInlineFulfillment
   const DeepQuery kSelectionOverlay = {"selection-overlay-app",
                                        "glic-selection-overlay"};
 
+  // Has the model answer the next Quick Answers request with `answer`.
+  void SetExplanation(std::string_view answer) {
+    optimization_guide::proto::QuickAnswersResponse response_msg;
+    response_msg.set_answer(std::string(answer));
+    optimization_guide::proto::Any any;
+    any.set_value(response_msg.SerializeAsString());
+    any.set_type_url(
+        base::StrCat({"type.googleapis.com/", response_msg.GetTypeName()}));
+    OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
+        ->AddExecutionResultForTesting(
+            optimization_guide::ModelBasedCapabilityKey::kQuickAnswers,
+            optimization_guide::OptimizationGuideModelExecutionResult(
+                std::move(any), nullptr));
+  }
+
   auto OpenOverlayFromSmallChip(ui::ElementIdentifier tab,
                                 ui::ElementIdentifier overlay,
                                 std::string_view paragraph_style = "") {
@@ -2564,7 +2594,13 @@ class SelectionOverlayInteractiveTestWithInlineFulfillment
 
   auto OpenExplainCard(ui::ElementIdentifier tab,
                        ui::ElementIdentifier overlay) {
-    static constexpr char kClickExplainChipJs[] = R"js(
+    return Steps(
+        OpenOverlayFromSmallChip(tab, overlay),
+        WaitForJsResultAt(overlay, kSelectionOverlay, kClickExplainChipJs));
+  }
+
+  // Clicks the Explain chip. Returns whether there was one.
+  static constexpr char kClickExplainChipJs[] = R"js(
       el => {
         const chip = [...el.shadowRoot.querySelectorAll('.action-chip')].find(
             c => c.querySelector('.chip-label')?.textContent === 'Explain');
@@ -2572,11 +2608,6 @@ class SelectionOverlayInteractiveTestWithInlineFulfillment
         return !!chip;
       }
     )js";
-
-    return Steps(
-        OpenOverlayFromSmallChip(tab, overlay),
-        WaitForJsResultAt(overlay, kSelectionOverlay, kClickExplainChipJs));
-  }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -2591,17 +2622,7 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
 
   static constexpr char kExpectedExplanation[] =
       "An explanation of your selection.";
-  optimization_guide::proto::QuickAnswersResponse response_msg;
-  response_msg.set_answer(kExpectedExplanation);
-  optimization_guide::proto::Any any;
-  any.set_value(response_msg.SerializeAsString());
-  any.set_type_url(
-      base::StrCat({"type.googleapis.com/", response_msg.GetTypeName()}));
-  OptimizationGuideKeyedServiceFactory::GetForProfile(browser()->GetProfile())
-      ->AddExecutionResultForTesting(
-          optimization_guide::ModelBasedCapabilityKey::kQuickAnswers,
-          optimization_guide::OptimizationGuideModelExecutionResult(
-              std::move(any), nullptr));
+  SetExplanation(kExpectedExplanation);
 
   static constexpr char kCardTextJs[] = R"js(
     el => el.shadowRoot.querySelector(
@@ -2621,6 +2642,84 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
       CheckJsResultAt(kOverlayWebContentsId, kSelectionOverlay, kChipsHiddenJs),
       // The overlay stays up for inline fulfillment.
       CheckResult(GetOverlayVisibilityAt(0), true));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
+                       FirstExplainShowsFreBeforeCard) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  static constexpr char kExpectedExplanation[] =
+      "An explanation of your selection.";
+  SetFreAccepted(false);
+  SetExplanation(kExpectedExplanation);
+
+  static constexpr char kCardTextJs[] = R"js(
+    el => el.shadowRoot.querySelector(
+        '#inlineFulfillmentHost > glic-explain-fulfillment .explanation')
+        ?.textContent
+  )js";
+  static constexpr char kCardShownJs[] = R"js(
+    el => !!el.shadowRoot.querySelector(
+        '#inlineFulfillmentHost > glic-explain-fulfillment')
+  )js";
+
+  RunTestSequence(
+      OpenExplainCard(kActiveTab, kOverlayWebContentsId),
+      // The FRE dialog is its own widget, outside the browser's context.
+      InAnyContext(WaitForShow(ExplainSuggestionFre::kAllowButtonElementId)),
+      // The chips stay until the user allows.
+      CheckJsResultAt(kOverlayWebContentsId, kSelectionOverlay, kCardShownJs,
+                      false),
+      InAnyContext(PressButton(ExplainSuggestionFre::kAllowButtonElementId)),
+      // Allowing records consent and shows the card.
+      WaitForJsResultAt(kOverlayWebContentsId, kSelectionOverlay, kCardTextJs,
+                        kExpectedExplanation),
+      CheckResult(
+          [this] {
+            return browser()->GetProfile()->GetPrefs()->GetBoolean(
+                prefs::kGlicQuickAnswersFreAccepted);
+          },
+          true),
+      CheckResult(GetOverlayVisibilityAt(0), true));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,
+                       CancellingFreKeepsChips) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  SetFreAccepted(false);
+
+  static constexpr char kCardShownJs[] = R"js(
+    el => !!el.shadowRoot.querySelector(
+        '#inlineFulfillmentHost > glic-explain-fulfillment')
+  )js";
+  static constexpr char kChipsShownJs[] = R"js(
+    el => getComputedStyle(
+        el.shadowRoot.querySelector('.action-chips-row')).display !== 'none'
+  )js";
+
+  RunTestSequence(
+      OpenExplainCard(kActiveTab, kOverlayWebContentsId),
+      InAnyContext(WaitForShow(ExplainSuggestionFre::kCancelButtonElementId),
+                   PressButton(ExplainSuggestionFre::kCancelButtonElementId),
+                   WaitForHide(ExplainSuggestionFre::kCancelButtonElementId)),
+      // No card, and the overlay stays up with its chips.
+      CheckJsResultAt(kOverlayWebContentsId, kSelectionOverlay, kCardShownJs,
+                      false),
+      CheckJsResultAt(kOverlayWebContentsId, kSelectionOverlay, kChipsShownJs),
+      CheckResult(
+          [this] {
+            return browser()->GetProfile()->GetPrefs()->GetBoolean(
+                prefs::kGlicQuickAnswersFreAccepted);
+          },
+          false),
+      CheckResult(GetOverlayVisibilityAt(0), true),
+      // Clicking Explain again asks again.
+      WaitForJsResultAt(kOverlayWebContentsId, kSelectionOverlay,
+                        kClickExplainChipJs),
+      InAnyContext(WaitForShow(ExplainSuggestionFre::kCancelButtonElementId)));
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTestWithInlineFulfillment,

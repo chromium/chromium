@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/selection/explain_suggestion.h"
 
+#include <memory>
 #include <optional>
 #include <utility>
 
@@ -38,10 +39,20 @@
 
 namespace glic {
 
+namespace {
+
+content::RenderFrameHost* GetOverlayMainFrame(tabs::TabInterface& tab) {
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab.GetContents());
+  return controller ? controller->GetOverlayMainFrame() : nullptr;
+}
+
+}  // namespace
+
 ExplainSuggestion::ExplainSuggestion(
     tabs::TabInterface& tab,
     optimization_guide::proto::QuickAnswersRequest request)
-    : tab_(tab), request_(std::move(request)) {
+    : tab_(tab), request_(std::move(request)), fre_(tab) {
   // Unretained is safe: `this` owns the binder.
   SetInterface<selection::ExplainFulfillment>(
       base::BindRepeating(&ExplainSuggestion::Bind, base::Unretained(this)));
@@ -66,6 +77,14 @@ void ExplainSuggestion::OnSuggestionExecuted() {}
       ::selection::mojom::InlineFulfillment::New("explain_fulfillment.js"));
 }
 
+void ExplainSuggestion::RequestConsent(RequestConsentCallback callback) {
+  if (ExplainSuggestionFre::IsAccepted(tab_->GetProfile())) {
+    std::move(callback).Run(true);
+    return;
+  }
+  fre_.Show(std::move(callback));
+}
+
 void ExplainSuggestion::GetExplanation(GetExplanationCallback callback) {
   weak_ptr_factory_.InvalidateWeakPtrs();
   if (pending_callback_) {
@@ -73,8 +92,10 @@ void ExplainSuggestion::GetExplanation(GetExplanationCallback callback) {
         .Run(l10n_util::GetStringUTF8(IDS_GLIC_ERROR_NOTICE));
   }
 
+  // The card asks for consent first; this keeps a misbehaving overlay from
+  // sending the selection to the model without it.
   Profile* profile = tab_->GetProfile();
-  if (!profile) {
+  if (!ExplainSuggestionFre::IsAccepted(profile)) {
     std::move(callback).Run(l10n_util::GetStringUTF8(IDS_GLIC_ERROR_NOTICE));
     return;
   }
@@ -95,10 +116,7 @@ void ExplainSuggestion::GetExplanation(GetExplanationCallback callback) {
 }
 
 void ExplainSuggestion::OpenTabForSearch(const std::string& query) {
-  auto* controller =
-      SelectionOverlayController::FromTabWebContents(tab_->GetContents());
-  content::RenderFrameHost* initiator =
-      controller ? controller->GetOverlayMainFrame() : nullptr;
+  content::RenderFrameHost* initiator = GetOverlayMainFrame(*tab_);
   if (!initiator) {
     return;
   }
@@ -150,6 +168,7 @@ void ExplainSuggestion::Bind(
   weak_ptr_factory_.InvalidateWeakPtrs();
   receiver_.reset();
   pending_callback_.Reset();
+  fre_.Close();
   receiver_.Bind(std::move(receiver));
 }
 
