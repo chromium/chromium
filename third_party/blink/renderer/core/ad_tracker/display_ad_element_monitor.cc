@@ -445,6 +445,7 @@ DisplayAdElementMonitor::CheckOverlayVisibility(
   // looked through.
   HitTestRequest::HitTestRequestType hit_type =
       HitTestRequest::kReadOnly | HitTestRequest::kAllowChildFrameContent |
+      HitTestRequest::kIgnorePointerEventsNone |
       HitTestRequest::kIgnoreZeroOpacityObjects |
       HitTestRequest::kHitTestVisualOverflow | HitTestRequest::kListBased |
       HitTestRequest::kPenetratingList;

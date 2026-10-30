@@ -695,6 +695,31 @@ TEST_F(DisplayAdElementMonitorTest,
   testing::Mock::VerifyAndClearExpectations(&MockClient());
 }
 
+TEST_F(DisplayAdElementMonitorTest, VideoAdIgnoringPointerEventsNotObscured) {
+  // The video ad ignores pointer events on top of the player's background.
+  frame_test_helpers::LoadHTMLString(helper_.LocalMainFrame(), R"(
+    <div style="position:absolute; left:100px; top:50px; width:300px; height:250px; background-color:black;">
+      <video id="ad" style="position:absolute; left:0px; top:0px; width:300px; height:250px; pointer-events:none;"></video>
+    </div>
+  )",
+                                     WebURL(KURL("https://example.com")));
+  MarkFirstContentfulPaint();
+  UpdateLifecycle();
+
+  auto* ad_element = GetDocument().getElementById(AtomicString("ad"));
+
+  // Ignoring pointer events doesn't affect rendering, so the video ad is still
+  // reported, rather than deemed hidden behind the player's background.
+  EXPECT_CALL(MockClient(),
+              OnMainFrameAdRectangleChanged(ad_element->GetDomNodeId(),
+                                            gfx::Rect(100, 50, 300, 250)));
+  ad_element->SetIsAdRelated(NoProvenance{});
+  ad_element->UpdateToVideoAd();
+  UpdateLifecycle();
+  testing::Mock::VerifyAndClearExpectations(&MockClient());
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kVideoAdDetected));
+}
+
 TEST_F(DisplayAdElementMonitorTest,
        ContainerAdNotObscuredByTransparentDescendants) {
   // Unlike in `ContainerAdObscuredByNonAdContent`, the content inside the ad
