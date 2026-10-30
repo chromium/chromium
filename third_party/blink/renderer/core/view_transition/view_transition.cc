@@ -1433,12 +1433,12 @@ void ViewTransition::OnRenderingPausedTimeout() {
 
 bool ViewTransition::UnsupportedCapture() {
   if (scope_) {
-    // We may have disconnected or moved documents, in which case we should
-    // skip.
-    if (!scope_->isConnected() || &scope_->GetDocument() != document_) {
+    // Skip if the scope was disconnected, moved documents, or became the
+    // document element.
+    if (!scope_->isConnected() || &scope_->GetDocument() != document_ ||
+        scope_->IsDocumentElement()) {
       return true;
     }
-    CHECK_NE(scope_, scope_->GetDocument().documentElement());
 
     const LayoutObject* layout_object = scope_->GetLayoutObject();
     if (!layout_object || !layout_object->ShouldApplyLayoutContainment()) {
