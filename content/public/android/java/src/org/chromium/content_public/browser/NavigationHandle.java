@@ -103,15 +103,45 @@ public class NavigationHandle {
             @PageTransition int transition,
             boolean hasUserGesture,
             boolean isReload) {
+        return createForTesting(
+                url,
+                isInPrimaryMainFrame,
+                isSameDocument,
+                isRendererInitiated,
+                transition,
+                hasUserGesture,
+                isReload,
+                /* isHistory= */ false,
+                /* isBack= */ false,
+                /* isForward= */ false,
+                /* navigationId= */ 0);
+    }
+
+    /** Called by NavigationHandleTestBuilder. Tests should use the builder instead. */
+    public static NavigationHandle createForTesting(
+            GURL url,
+            boolean isInPrimaryMainFrame,
+            boolean isSameDocument,
+            boolean isRendererInitiated,
+            @PageTransition int transition,
+            boolean hasUserGesture,
+            boolean isReload,
+            boolean isHistory,
+            boolean isBack,
+            boolean isForward,
+            long navigationId) {
+        assert !(isBack && isForward) : "Navigation cannot be both back and forward";
+        assert (!isBack && !isForward) || isHistory
+                : "Back/forward navigation must be a history navigation";
         NavigationHandle handle =
                 new NavigationHandle(
                         0,
                         url,
                         isRendererInitiated,
                         isReload,
-                        /* isHistory= */ false,
-                        /* isBack= */ false,
-                        /* isForward= */ false,
+                        isHistory,
+                        isBack,
+                        isForward,
                         /* isRestore= */ false);
         handle.didStart(
                 /* referrerUrl= */ GURL.emptyGURL(),
@@ -125,7 +155,7 @@ public class NavigationHandle {
                 hasUserGesture,
                 /* isRedirect= */ false,
                 /* isExternalProtocol= */ false,
-                /* navigationId= */ 0,
+                navigationId,
                 /* isPageActivation= */ false,
                 /* isPdf= */ false,
                 /* mimeType= */ "",
@@ -278,27 +308,43 @@ public class NavigationHandle {
         takeNavigationStateSnapshot();
     }
 
+    public void callDidRedirectForTesting(GURL url) {
+        didRedirect(
+                url,
+                /* isExternalProtocol= */ false,
+                /* referrerUrl= */ GURL.emptyGURL(),
+                /* referrerPolicy= */ ReferrerPolicy.DEFAULT,
+                /* redirectResponseHeaders= */ new HashMap<>(),
+                /* redirectHttpStatusCode= */ 302);
+    }
+
     public void callDidFinishForTesting(GURL url) {
         callDidFinishForTesting(url, true);
     }
 
     public void callDidFinishForTesting(GURL url, boolean hasCommitted) {
+        callDidFinishForTesting(
+                url, hasCommitted, /* isSameOrigin= */ true, /* isErrorPage= */ false);
+    }
+
+    public void callDidFinishForTesting(
+            GURL url, boolean hasCommitted, boolean isSameOrigin, boolean isErrorPage) {
         didFinish(
                 url,
-                /* isErrorPage= */ false,
+                isErrorPage,
                 hasCommitted,
                 /* isPrimaryMainFrameFragmentNavigation= */ false,
                 /* isDownload= */ false,
                 /* isValidSearchFormUrl= */ false,
-                /* transition= */ PageTransition.LINK,
-                /* errorCode= */ NetError.OK,
+                /* transition= */ mPageTransition,
+                /* errorCode= */ isErrorPage ? NetError.ERR_FAILED : NetError.OK,
                 /* errorDescription= */ "",
                 /* httpStatuscode= */ 200,
                 /* isExternalProtocol= */ false,
                 /* isPdf= */ false,
                 /* mimeType= */ "",
                 new PageImpl(/* nativePage= */ 0, /* isPrerendering= */ false),
-                /* isSameOrigin= */ true,
+                isSameOrigin,
                 /* responseHeaders= */ new HashMap<>(),
                 /* ignoredDuplicateNavigationCount= */ 0);
     }

@@ -50,13 +50,12 @@ import org.chromium.components.security_state.SecurityStateModelJni;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.net.NetError;
+import org.chromium.content_public.browser.test.util.NavigationHandleTestBuilder;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link TabStateBrowserControlsVisibilityDelegate}. */
@@ -615,41 +614,47 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
     }
 
     private NavigationHandle startNavigation(GURL targetUrl) {
+        return startNavigation(targetUrl, /* navigationId= */ 0L);
+    }
+
+    private NavigationHandle startNavigation(GURL targetUrl, long navigationId) {
         NavigationHandle navigation =
-                NavigationHandle.createForTesting(
-                        targetUrl,
-                        /* isInPrimaryMainFrame= */ true,
-                        /* isSameDocument= */ false,
-                        /* isRendererInitiated= */ true,
-                        PageTransition.LINK,
-                        /* hasUserGesture= */ true,
-                        /* isReload= */ false);
+                new NavigationHandleTestBuilder(targetUrl)
+                        .setIsRendererInitiated(true)
+                        .setTransition(PageTransition.LINK)
+                        .setHasUserGesture(true)
+                        .setNavigationId(navigationId)
+                        .build();
         mWebContentsObserver.didStartNavigationInPrimaryMainFrame(navigation);
         return navigation;
     }
 
+    private void redirectNavigation(NavigationHandle navigation, GURL redirectUrl) {
+        navigation.callDidRedirectForTesting(redirectUrl);
+        mWebContentsObserver.didRedirectNavigation(navigation);
+    }
+
     private void finishNavigation(
             NavigationHandle navigation, GURL committedUrl, boolean isSameOrigin) {
-        when(mWebContents.getVisibleUrl()).thenReturn(committedUrl);
-        when(mWebContents.getLastCommittedUrl()).thenReturn(committedUrl);
-        navigation.didFinish(
+        finishNavigation(
+                navigation,
                 committedUrl,
-                /* isErrorPage= */ false,
                 /* hasCommitted= */ true,
-                /* isPrimaryMainFrameFragmentNavigation= */ false,
-                /* isDownload= */ false,
-                /* isValidSearchFormUrl= */ false,
-                PageTransition.LINK,
-                NetError.OK,
-                /* errorDescription= */ "",
-                /* httpStatuscode= */ 200,
-                /* isExternalProtocol= */ false,
-                /* isPdf= */ false,
-                /* mimeType= */ "",
-                /* currentPage= */ null,
                 isSameOrigin,
-                /* responseHeaders= */ Collections.emptyMap(),
-                /* ignoredDuplicateNavigationCount= */ 0);
+                /* isErrorPage= */ false);
+    }
+
+    private void finishNavigation(
+            NavigationHandle navigation,
+            GURL committedUrl,
+            boolean hasCommitted,
+            boolean isSameOrigin,
+            boolean isErrorPage) {
+        if (hasCommitted) {
+            when(mWebContents.getVisibleUrl()).thenReturn(committedUrl);
+            when(mWebContents.getLastCommittedUrl()).thenReturn(committedUrl);
+        }
+        navigation.callDidFinishForTesting(committedUrl, hasCommitted, isSameOrigin, isErrorPage);
         mWebContentsObserver.didFinishNavigationInPrimaryMainFrame(navigation);
     }
 
@@ -660,6 +665,23 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
                         eq(BrowserControlsState.SHOWN),
                         eq(BrowserControlsState.BOTH),
                         eq(true),
+                        any());
+    }
+
+    private void verifyControlsShownWithoutAnimation() {
+        verify(mConstraintsHelperJniMock)
+                .updateState(
+                        same(mWebContents),
+                        eq(BrowserControlsState.SHOWN),
+                        eq(BrowserControlsState.SHOWN),
+                        /* animate= */ eq(false),
+                        any());
+        verify(mConstraintsHelperJniMock, never())
+                .updateState(
+                        any(),
+                        eq(BrowserControlsState.SHOWN),
+                        anyInt(),
+                        /* animate= */ eq(true),
                         any());
     }
 
@@ -733,6 +755,175 @@ public class TabStateBrowserControlsVisibilityDelegateTest {
 
         finishNavigation(navigation, crossOrigin, /* isSameOrigin= */ false);
         assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+    }
+
+    @Test
+    @DisabledTest(message = SAME_ORIGIN_MINIMIZATION_NOT_IMPLEMENTED)
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    public void testSameOriginMinimization_CrossOriginRedirectLocksAtCommit() {
+        GURL sameOriginPage = JUnitTestGURLs.BLUE_1;
+        GURL sameOriginLink = JUnitTestGURLs.BLUE_2;
+        GURL crossOriginRedirect = JUnitTestGURLs.RED_1;
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(sameOriginPage);
+
+        NavigationHandle navigation = startNavigation(sameOriginLink);
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+
+        // A redirect displays no content, so the origin is checked only at commit.
+        redirectNavigation(navigation, crossOriginRedirect);
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+        verifyControlsNeverLockedShown();
+
+        finishNavigation(navigation, crossOriginRedirect, /* isSameOrigin= */ false);
+
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+        // The cross-origin page is already on screen, so its URL must not slide in.
+        verifyControlsShownWithoutAnimation();
+
+        ShadowSystemClock.advanceBy(3, TimeUnit.SECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+    }
+
+    @Test
+    @DisabledTest(message = SAME_ORIGIN_MINIMIZATION_NOT_IMPLEMENTED)
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    public void testSameOriginMinimization_RedirectBackToSameOriginStaysHidden() {
+        GURL page1 = JUnitTestGURLs.BLUE_1;
+        GURL page2 = JUnitTestGURLs.BLUE_2;
+        GURL crossOriginRedirect = JUnitTestGURLs.RED_1;
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(page1);
+
+        NavigationHandle navigation = startNavigation(page2);
+
+        // A -> B -> A redirect chain (e.g. an SSO check); B never displays content.
+        redirectNavigation(navigation, crossOriginRedirect);
+        redirectNavigation(navigation, page2);
+
+        finishNavigation(navigation, page2, /* isSameOrigin= */ true);
+
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+        verifyControlsNeverLockedShown();
+    }
+
+    @Test
+    @DisabledTest(message = SAME_ORIGIN_MINIMIZATION_NOT_IMPLEMENTED)
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    public void testSameOriginMinimization_SameOriginCommitsErrorPage() {
+        GURL page1 = JUnitTestGURLs.BLUE_1;
+        GURL page2 = JUnitTestGURLs.BLUE_2;
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(page1);
+
+        NavigationHandle navigation = startNavigation(page2);
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+
+        // Keep isSameOrigin() true to isolate the isErrorPage() check.
+        finishNavigation(
+                navigation,
+                page2,
+                /* hasCommitted= */ true,
+                /* isSameOrigin= */ true,
+                /* isErrorPage= */ true);
+
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+        verifyControlsShownWithoutAnimation();
+
+        // Error pages hold LockReason.TAB_ERROR even after the 3s post-load lock expires.
+        ShadowSystemClock.advanceBy(3, TimeUnit.SECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+    }
+
+    @Test
+    @DisabledTest(message = SAME_ORIGIN_MINIMIZATION_NOT_IMPLEMENTED)
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    public void testSameOriginMinimization_NonCommittedFinishStaysHidden() {
+        GURL page1 = JUnitTestGURLs.BLUE_1;
+        GURL page2 = JUnitTestGURLs.BLUE_2;
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(page1);
+
+        NavigationHandle navigation = startNavigation(page2);
+
+        // Navigation finishes without committing (e.g. download or 204).
+        finishNavigation(
+                navigation,
+                page2,
+                /* hasCommitted= */ false,
+                /* isSameOrigin= */ false,
+                /* isErrorPage= */ false);
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+
+        // The slow-load fallback does not fire for a finished navigation.
+        ShadowSystemClock.advanceBy(1, TimeUnit.SECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+        verifyControlsNeverLockedShown();
+    }
+
+    @Test
+    @DisabledTest(message = SAME_ORIGIN_MINIMIZATION_NOT_IMPLEMENTED)
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    public void testSameOriginMinimization_UserRevealsDuringSlowLoadThenCommits() {
+        GURL page1 = JUnitTestGURLs.BLUE_1;
+        GURL page2 = JUnitTestGURLs.BLUE_2;
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(page1);
+
+        NavigationHandle navigation = startNavigation(page2);
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+
+        // User scrolls up to reveal the omnibox while the load is still in flight.
+        when(mBrowserControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(0.25f);
+        TabBrowserControlsOffsetHelper.get(mTab)
+                .setOffsets(
+                        /* topControlsOffset= */ -14,
+                        /* contentOffset= */ 42,
+                        /* topControlsMinHeightOffset= */ 0,
+                        /* bottomControlsOffset= */ 0,
+                        /* bottomControlsMinHeightOffset= */ 0);
+
+        finishNavigation(navigation, page2, /* isSameOrigin= */ true);
+
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+        verifyControlsShownWithoutAnimation();
+
+        ShadowSystemClock.advanceBy(3, TimeUnit.SECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+    }
+
+    @Test
+    @DisabledTest(message = SAME_ORIGIN_MINIMIZATION_NOT_IMPLEMENTED)
+    @EnableFeatures(ChromeFeatureList.CLANK_OMNIBOX_SAME_ORIGIN_MINIMIZATION)
+    public void testSameOriginMinimization_OverlappingEligibleNavigationsCheckedAtEachCommit() {
+        GURL page1 = JUnitTestGURLs.BLUE_1;
+        GURL page2 = JUnitTestGURLs.BLUE_2;
+        GURL page3 = JUnitTestGURLs.BLUE_3;
+        GURL crossOrigin = JUnitTestGURLs.RED_1;
+        TabStateBrowserControlsVisibilityDelegate delegate =
+                createWiredHiddenControlsDelegate(page1);
+
+        NavigationHandle firstNav = startNavigation(page2, /* navigationId= */ 1L);
+        NavigationHandle secondNav = startNavigation(page3, /* navigationId= */ 2L);
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+
+        finishNavigation(firstNav, page2, /* isSameOrigin= */ true);
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
+
+        // Navigation 2 redirected and commits on another origin after navigation 1 committed.
+        redirectNavigation(secondNav, crossOrigin);
+        finishNavigation(secondNav, crossOrigin, /* isSameOrigin= */ false);
+
+        assertEquals(BrowserControlsState.SHOWN, delegate.calculateVisibilityConstraints());
+        verifyControlsShownWithoutAnimation();
+
+        ShadowSystemClock.advanceBy(3, TimeUnit.SECONDS);
+        ShadowLooper.runUiThreadTasks();
+        assertEquals(BrowserControlsState.BOTH, delegate.calculateVisibilityConstraints());
     }
 
     @Test

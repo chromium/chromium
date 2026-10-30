@@ -65,6 +65,7 @@ android_library("content_java_test_support") {
     "javatests/src/org/chromium/content_public/browser/test/util/JavaScriptUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/NavigationControllerUtil.java",
     "javatests/src/org/chromium/content_public/browser/test/util/NavigationEntrySimple.java",
+    "javatests/src/org/chromium/content_public/browser/test/util/NavigationHandleTestBuilder.java",
     "javatests/src/org/chromium/content_public/browser/test/util/PrefetchTestUtil.java",
     "javatests/src/org/chromium/content_public/browser/test/util/RenderProcessHostUtils.java",
     "javatests/src/org/chromium/content_public/browser/test/util/TestCallbackHelperContainer.java",
