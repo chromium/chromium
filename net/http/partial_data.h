@@ -109,6 +109,11 @@ class PartialData {
                 int data_len,
                 CompletionOnceCallback callback);
 
+  // Returns true if the returned length from network is reasonable.
+  // Expected to be called before deciding to transition towards cache
+  // writing.
+  bool IsNetworkReadOK(int data_len) const;
+
   // Writes |data_len| bytes to cache. This is basically a wrapper around the
   // API of the cache that provides the right arguments for the current range.
   int CacheWrite(disk_cache::Entry* entry,
@@ -137,7 +142,7 @@ class PartialData {
 
   // The portion we're trying to get, either from cache or network.
   int64_t current_range_start_ = 0;
-  int64_t current_range_end_ = 0;
+  int64_t current_range_end_ = 0;  // Inclusive.
 
   // Next portion available in the cache --- this may be what's currently being
   // read, or the next thing that will be read if the current network portion
