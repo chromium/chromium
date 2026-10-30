@@ -8,7 +8,6 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/string_number_conversions.h"
-#import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
@@ -328,11 +327,9 @@ CGFloat const kTitleLogoHeight = 32;
   return [_creditCardData[row] icon];
 }
 
-// Returns an accessible card name at a given row in the table view.
+// Returns an accessible card name at a given `row` in the table view.
 - (NSString*)accessibleCardNameAtRow:(NSInteger)row {
-  return l10n_util::GetNSStringF(
-      IDS_IOS_AUTOFILL_ACCNAME_SUGGESTION,
-      base::SysNSStringToUTF16([_creditCardData[row] accessibleCardName]), u"");
+  return _creditCardData[row].accessibleCardName;
 }
 
 // Returns the accessibility value for the card at a given row in the table
