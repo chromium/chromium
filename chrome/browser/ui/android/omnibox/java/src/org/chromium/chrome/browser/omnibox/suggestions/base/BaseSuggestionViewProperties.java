@@ -11,6 +11,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -87,6 +88,12 @@ public @interface BaseSuggestionViewProperties {
     @VisibleForTesting
     WritableObjectPropertyKey<List<Action>> ACTION_BUTTONS = new WritableObjectPropertyKey<>();
 
+    /**
+     * Action chips to present beneath the suggestion content, as a list of {@link
+     * ActionChipProperties.ViewType} items, or null if the suggestion has none.
+     */
+    WritableObjectPropertyKey<ModelList> ACTION_CHIPS = new WritableObjectPropertyKey<>();
+
     /** {@link BaseSuggestionView#setActionChipLeadInSpacing(int)} */
     WritableIntPropertyKey ACTION_CHIP_LEAD_IN_SPACING = new WritableIntPropertyKey();
 
@@ -129,6 +136,7 @@ public @interface BaseSuggestionViewProperties {
     PropertyKey[] ALL_UNIQUE_KEYS =
             new PropertyKey[] {
                 ACTION_BUTTONS,
+                ACTION_CHIPS,
                 ACTION_CHIP_LEAD_IN_SPACING,
                 ICON,
                 ON_ACTIVATE,
@@ -141,8 +149,5 @@ public @interface BaseSuggestionViewProperties {
             };
 
     PropertyKey[] ALL_KEYS =
-            PropertyModel.concatKeys(
-                    PropertyModel.concatKeys(
-                            ALL_UNIQUE_KEYS, ActionChipsProperties.ALL_UNIQUE_KEYS),
-                    SuggestionCommonProperties.ALL_KEYS);
+            PropertyModel.concatKeys(ALL_UNIQUE_KEYS, SuggestionCommonProperties.ALL_KEYS);
 }

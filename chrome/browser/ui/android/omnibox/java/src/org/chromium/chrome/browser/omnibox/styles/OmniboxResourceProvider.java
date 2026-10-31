@@ -655,6 +655,17 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
     }
 
     /**
+     * Resolves the background tint for Omnibox action chips. This is the only visual property that
+     * differs between the regular and incognito chip presentations, so chips share a single theme
+     * overlay and are themed from this value when bound (including recycled ChipViews bound to a
+     * new chip model).
+     */
+    public ColorStateList getActionChipBackgroundTintList() {
+        return mCache.getColorStateList(
+                isIncognito() ? R.color.default_bg_color_dark : R.color.chip_background_color);
+    }
+
+    /**
      * Resolves the icon tint for Fusebox popup items (primary for bottom sheet, secondary for plus
      * menu).
      *

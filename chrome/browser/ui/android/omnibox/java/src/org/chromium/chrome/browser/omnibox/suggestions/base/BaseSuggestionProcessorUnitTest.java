@@ -617,7 +617,7 @@ public class BaseSuggestionProcessorUnitTest {
                                 /* tabId= */ 0,
                                 ActionPresentationMode.CHIP)));
 
-        var chips = mModel.get(ActionChipsProperties.ACTION_CHIPS);
+        var chips = mModel.get(BaseSuggestionViewProperties.ACTION_CHIPS);
         assertEquals(null, chips);
     }
 
@@ -640,7 +640,7 @@ public class BaseSuggestionProcessorUnitTest {
                                 /* tabId= */ 0,
                                 ActionPresentationMode.CHIP)));
 
-        var chips = mModel.get(ActionChipsProperties.ACTION_CHIPS);
+        var chips = mModel.get(BaseSuggestionViewProperties.ACTION_CHIPS);
         assertEquals(null, chips);
     }
 

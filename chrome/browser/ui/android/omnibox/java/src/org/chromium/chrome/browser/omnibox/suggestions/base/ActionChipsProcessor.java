@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.omnibox.AutocompleteMatch;
@@ -40,7 +41,7 @@ public class ActionChipsProcessor {
      */
     public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int position) {
         if (suggestion.getActions().isEmpty() || suggestion.getTakeoverAction() != null) {
-            model.set(ActionChipsProperties.ACTION_CHIPS, null);
+            model.set(BaseSuggestionViewProperties.ACTION_CHIPS, null);
             return;
         }
 
@@ -54,7 +55,10 @@ public class ActionChipsProcessor {
             }
 
             final var chipModel =
-                    new PropertyModel.Builder(ChipProperties.ALL_KEYS)
+                    new PropertyModel.Builder(ActionChipProperties.ALL_KEYS)
+                            .with(
+                                    ActionChipProperties.RESOURCE_PROVIDER,
+                                    model.get(SuggestionCommonProperties.RESOURCE_PROVIDER))
                             .with(ChipProperties.TEXT, action.hint)
                             .with(ChipProperties.CONTENT_DESCRIPTION, action.accessibilityHint)
                             .with(ChipProperties.ENABLED, true)
@@ -73,13 +77,13 @@ public class ActionChipsProcessor {
                                     action.primaryTextAppearance)
                             .build();
 
-            modelList.add(new ListItem(ActionChipsProperties.ViewType.CHIP, chipModel));
+            modelList.add(new ListItem(ActionChipProperties.ViewType.CHIP, chipModel));
         }
         if (modelList.size() == 0) {
             return;
         }
 
-        model.set(ActionChipsProperties.ACTION_CHIPS, modelList);
+        model.set(BaseSuggestionViewProperties.ACTION_CHIPS, modelList);
     }
 
     /** Invokes the action associated with the ActionChip. */

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 
@@ -21,6 +22,8 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxPedal;
 import org.chromium.chrome.browser.omnibox.suggestions.action.SiteSearchAction;
@@ -51,6 +54,7 @@ public class ActionChipsProcessorUnitTest {
 
     @Mock private SuggestionHost mSuggestionHost;
     @Mock private OmniboxActionDelegate mActionDelegate;
+    @Mock private OmniboxResourceProvider mResourceProvider;
 
     private ActionChipsProcessor mProcessor;
     private PropertyModel mModel;
@@ -59,7 +63,10 @@ public class ActionChipsProcessorUnitTest {
     @Before
     public void setUp() {
         mProcessor = new ActionChipsProcessor(mSuggestionHost, mActionDelegate);
-        mModel = new PropertyModel(ActionChipsProperties.ALL_UNIQUE_KEYS);
+        mModel =
+                new PropertyModel.Builder(BaseSuggestionViewProperties.ALL_KEYS)
+                        .with(SuggestionCommonProperties.RESOURCE_PROVIDER, mResourceProvider)
+                        .build();
     }
 
     private OmniboxAction createAction(
@@ -91,7 +98,7 @@ public class ActionChipsProcessorUnitTest {
                         .setActions(List.of(actions))
                         .build();
         mProcessor.populateModel(match, mModel, MATCH_POS);
-        mActionModel = mModel.get(ActionChipsProperties.ACTION_CHIPS);
+        mActionModel = mModel.get(BaseSuggestionViewProperties.ACTION_CHIPS);
     }
 
     @Test
@@ -122,6 +129,7 @@ public class ActionChipsProcessorUnitTest {
                         2, R.style.TextAppearance_TextMediumThick_Primary_Baseline));
 
         PropertyModel firstChip = mActionModel.get(0).model;
+        assertSame(mResourceProvider, firstChip.get(ActionChipProperties.RESOURCE_PROVIDER));
         assertEquals("hint", firstChip.get(ChipProperties.TEXT));
         assertEquals("accessibility hint", firstChip.get(ChipProperties.CONTENT_DESCRIPTION));
         assertTrue(firstChip.get(ChipProperties.ENABLED));

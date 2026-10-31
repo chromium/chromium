@@ -50,11 +50,15 @@ import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonPropertie
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties.Action;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
+import org.chromium.components.browser_ui.widget.chips.ChipProperties;
 import org.chromium.components.omnibox.OmniboxCapabilities;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
+import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.Arrays;
 import java.util.List;
@@ -569,7 +573,7 @@ public class BaseSuggestionViewBinderUnitTest {
         binder.bind(mModel, mBaseView, SuggestionCommonProperties.RESOURCE_PROVIDER);
         binder.bind(mModel, mBaseView, BaseSuggestionViewProperties.ICON);
         binder.bind(mModel, mBaseView, BaseSuggestionViewProperties.TOP_PADDING);
-        binder.bind(mModel, mBaseView, ActionChipsProperties.ACTION_CHIPS);
+        binder.bind(mModel, mBaseView, BaseSuggestionViewProperties.ACTION_CHIPS);
         binder.bind(mModel, mBaseView, SuggestionCommonProperties.SHOW_DIVIDER);
         assertTrue(boundContentKeys.isEmpty());
 
@@ -602,6 +606,157 @@ public class BaseSuggestionViewBinderUnitTest {
         assertSame(delegate, button.getAccessibilityDelegate());
         assertSame(action2, button.getTag());
         assertEquals("desc2", button.getContentDescription());
+    }
+
+    private ListItem buildChipItem(String text) {
+        PropertyModel chipModel =
+                new PropertyModel.Builder(ActionChipProperties.ALL_KEYS)
+                        .with(ActionChipProperties.RESOURCE_PROVIDER, mResourceProvider)
+                        .with(ChipProperties.TEXT, text)
+                        .with(ChipProperties.CONTENT_DESCRIPTION, text)
+                        .with(ChipProperties.ENABLED, true)
+                        .with(
+                                ChipProperties.PRIMARY_TEXT_APPEARANCE,
+                                R.style.TextAppearance_ChipText)
+                        .build();
+        return new ListItem(ActionChipProperties.ViewType.CHIP, chipModel);
+    }
+
+    private static SimpleRecyclerViewAdapter chipsAdapter(ActionChipsView carousel) {
+        return (SimpleRecyclerViewAdapter) carousel.getAdapter();
+    }
+
+    @Test
+    public void actionChips_lazilyCreatedOnlyWhenNonNull() {
+        assertNull(mBaseView.actionChipsView);
+
+        mModel.set(BaseSuggestionViewProperties.ACTION_CHIP_LEAD_IN_SPACING, 24);
+        mModel.set(
+                SuggestionCommonProperties.DEVICE_FORM_FACTOR,
+                SuggestionCommonProperties.FormFactor.TABLET);
+        mModel.set(BaseSuggestionViewProperties.ACTION_CHIPS, null);
+        assertNull(mBaseView.actionChipsView);
+
+        ModelList chips = new ModelList();
+        chips.add(buildChipItem("Play Dino"));
+        mModel.set(BaseSuggestionViewProperties.ACTION_CHIPS, chips);
+
+        ActionChipsView chipsView = mBaseView.actionChipsView;
+        assertNotNull(chipsView);
+        assertEquals(View.VISIBLE, chipsView.getVisibility());
+        // Settings bound before the carousel existed are applied on creation.
+        assertTrue(chipsView.isHorizontalFadingEdgeEnabled());
+        assertEquals(
+                24,
+                ((SpacingRecyclerViewItemDecoration) chipsView.getItemDecorationAt(0))
+                        .getLeadInSpace());
+        assertEquals(1, chipsView.getAdapter().getItemCount());
+
+        mModel.set(BaseSuggestionViewProperties.ACTION_CHIPS, null);
+        assertSame(chipsView, mBaseView.actionChipsView);
+        assertEquals(View.GONE, chipsView.getVisibility());
+        assertNull(chipsView.getAdapter());
+    }
+
+    @Test
+    public void actionChips_deviceFormFactorUpdatesExistingCarousel() {
+        ModelList chips = new ModelList();
+        chips.add(buildChipItem("Call"));
+        mModel.set(BaseSuggestionViewProperties.ACTION_CHIPS, chips);
+        ActionChipsView chipsView = mBaseView.actionChipsView;
+        assertNotNull(chipsView);
+        assertFalse(chipsView.isHorizontalFadingEdgeEnabled());
+
+        mModel.set(
+                SuggestionCommonProperties.DEVICE_FORM_FACTOR,
+                SuggestionCommonProperties.FormFactor.TABLET);
+        assertTrue(chipsView.isHorizontalFadingEdgeEnabled());
+
+        mModel.set(
+                SuggestionCommonProperties.DEVICE_FORM_FACTOR,
+                SuggestionCommonProperties.FormFactor.PHONE);
+        assertFalse(chipsView.isHorizontalFadingEdgeEnabled());
+    }
+
+    @Test
+    public void actionChips_adapterObservesModelOwnedList() {
+        ModelList chips = new ModelList();
+        chips.add(buildChipItem("Call"));
+        mModel.set(BaseSuggestionViewProperties.ACTION_CHIPS, chips);
+
+        SimpleRecyclerViewAdapter adapter = chipsAdapter(mBaseView.actionChipsView);
+        assertSame(chips, adapter.getModelList());
+
+        // Mutations to the model's list are reflected without re-binding.
+        chips.add(buildChipItem("Directions"));
+        assertEquals(2, adapter.getItemCount());
+    }
+
+    @Test
+    public void actionChips_sameList_reusesAdapter() {
+        ModelList chips = new ModelList();
+        chips.add(buildChipItem("Call"));
+        mModel.set(BaseSuggestionViewProperties.ACTION_CHIPS, chips);
+        var adapter = mBaseView.actionChipsView.getAdapter();
+        assertNotNull(adapter);
+
+        // Re-binding ACTION_CHIPS with the same list instance is a no-op.
+        mBinder.bind(mModel, mBaseView, BaseSuggestionViewProperties.ACTION_CHIPS);
+        assertSame(adapter, mBaseView.actionChipsView.getAdapter());
+    }
+
+    @Test
+    public void actionChips_newList_replacesAdapterAndKeepsPool() {
+        ModelList chips1 = new ModelList();
+        chips1.add(buildChipItem("Call"));
+        mModel.set(BaseSuggestionViewProperties.ACTION_CHIPS, chips1);
+        ActionChipsView chipsView = mBaseView.actionChipsView;
+        var adapter1 = chipsView.getAdapter();
+
+        var holder = adapter1.createViewHolder(chipsView, ActionChipProperties.ViewType.CHIP);
+        chipsView.getRecycledViewPool().putRecycledView(holder);
+
+        ModelList chips2 = new ModelList();
+        chips2.add(buildChipItem("Call"));
+        chips2.add(buildChipItem("Directions"));
+        mModel.set(BaseSuggestionViewProperties.ACTION_CHIPS, chips2);
+
+        assertNotSame(adapter1, chipsView.getAdapter());
+        assertEquals(2, chipsView.getAdapter().getItemCount());
+        // Pooled ChipViews survive the adapter swap.
+        assertEquals(
+                1,
+                chipsView
+                        .getRecycledViewPool()
+                        .getRecycledViewCount(ActionChipProperties.ViewType.CHIP));
+    }
+
+    @Test
+    public void actionChips_nullThenNonNull_keepsPool() {
+        ModelList chips1 = new ModelList();
+        chips1.add(buildChipItem("Call"));
+        mModel.set(BaseSuggestionViewProperties.ACTION_CHIPS, chips1);
+        ActionChipsView chipsView = mBaseView.actionChipsView;
+
+        var holder =
+                chipsView
+                        .getAdapter()
+                        .createViewHolder(chipsView, ActionChipProperties.ViewType.CHIP);
+        chipsView.getRecycledViewPool().putRecycledView(holder);
+
+        // Row gets recycled for a chipless suggestion, then one with chips again.
+        mModel.set(BaseSuggestionViewProperties.ACTION_CHIPS, null);
+        assertNull(chipsView.getAdapter());
+        ModelList chips2 = new ModelList();
+        chips2.add(buildChipItem("Directions"));
+        mModel.set(BaseSuggestionViewProperties.ACTION_CHIPS, chips2);
+
+        assertNotNull(chipsView.getAdapter());
+        assertEquals(
+                1,
+                chipsView
+                        .getRecycledViewPool()
+                        .getRecycledViewCount(ActionChipProperties.ViewType.CHIP));
     }
 
     private void setColorScheme(@BrandedColorScheme int scheme) {

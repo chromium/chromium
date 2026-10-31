@@ -16,6 +16,7 @@ import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 
 import androidx.annotation.LayoutRes;
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -42,13 +43,15 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout
         implements ActivatableSuggestionView {
     public final ImageView decorationIcon;
     public final T contentView;
-    public final ActionChipsView actionChipsView;
+    public @Nullable ActionChipsView actionChipsView;
     public final RoundedCornerOutlineProvider decorationIconOutline;
     private final List<ActionButtonView> mActionButtons;
     private final SimpleSelectionController mActionButtonsHighlighter;
     private final View.OnTouchListener mActionButtonTouchListener;
     private @Nullable Runnable mOnFocusViaSelectionListener;
     private @Nullable Callback<Integer> mOnActivateListener;
+    private @Px int mActionChipLeadInSpacing;
+    private boolean mActionChipsHorizontalFadingEdgeEnabled;
     // Tracks whether the suggestion view is currently hovered during motion. This value diffs
     // from isHovered(), which stays active if the action button is hovered even when the suggestion
     // view itself is not hovered.
@@ -88,10 +91,6 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout
                 decorationIcon,
                 LayoutParams.forViewType(LayoutParams.SuggestionViewType.DECORATION));
 
-        actionChipsView = new ActionChipsView(getContext());
-        actionChipsView.setVisibility(GONE);
-        addView(actionChipsView, LayoutParams.forViewType(LayoutParams.SuggestionViewType.FOOTER));
-
         mActionButtons = new ArrayList<>();
 
         contentView = view;
@@ -120,6 +119,23 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout
                         return false;
                     }
                 };
+    }
+
+    /**
+     * Returns the {@link ActionChipsView} for this suggestion, lazily creating and attaching it if
+     * it does not yet exist.
+     */
+    public ActionChipsView ensureActionChipsView() {
+        if (actionChipsView == null) {
+            actionChipsView = new ActionChipsView(getContext());
+            actionChipsView.setVisibility(GONE);
+            actionChipsView.setLeadInSpacing(mActionChipLeadInSpacing);
+            actionChipsView.setHorizontalFadingEdgeEnabled(mActionChipsHorizontalFadingEdgeEnabled);
+            addView(
+                    actionChipsView,
+                    LayoutParams.forViewType(LayoutParams.SuggestionViewType.FOOTER));
+        }
+        return actionChipsView;
     }
 
     /**
@@ -231,7 +247,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // Pass event to ActionChips first in case this key event is appropriate for ActionChip
         // navigation.
-        if (actionChipsView.onKeyDown(keyCode, event)) return true;
+        if (actionChipsView != null && actionChipsView.onKeyDown(keyCode, event)) return true;
         if (KeyNavigationUtil.isEnter(event)) {
             if (!mActionButtonsHighlighter.isParkedAtSentinel()) {
                 int selection = assumeNonNull(mActionButtonsHighlighter.getPosition());
@@ -288,7 +304,7 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout
             v.onParentViewSelected(selected);
         }
 
-        if (!selected) {
+        if (!selected && actionChipsView != null) {
             actionChipsView.setSelected(false);
         }
 
@@ -373,8 +389,19 @@ public class BaseSuggestionView<T extends View> extends SuggestionLayout
     }
 
     /** Sets the lead-in spacing for the action chip carousel. */
-    public void setActionChipLeadInSpacing(int spacing) {
-        actionChipsView.setLeadInSpacing(spacing);
+    public void setActionChipLeadInSpacing(@Px int spacing) {
+        mActionChipLeadInSpacing = spacing;
+        if (actionChipsView != null) {
+            actionChipsView.setLeadInSpacing(spacing);
+        }
+    }
+
+    /** Sets whether the action chip carousel fades its horizontal edges. */
+    public void setActionChipsHorizontalFadingEdgeEnabled(boolean enabled) {
+        mActionChipsHorizontalFadingEdgeEnabled = enabled;
+        if (actionChipsView != null) {
+            actionChipsView.setHorizontalFadingEdgeEnabled(enabled);
+        }
     }
 
     /**

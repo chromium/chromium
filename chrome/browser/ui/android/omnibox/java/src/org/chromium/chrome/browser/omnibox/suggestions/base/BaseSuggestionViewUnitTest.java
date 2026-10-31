@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.anyInt;
@@ -88,6 +90,25 @@ public class BaseSuggestionViewUnitTest {
     }
 
     @Test
+    public void actionChipsView_lazilyCreatedOnDemand() {
+        assertNull(mView.actionChipsView);
+
+        mView.setActionChipLeadInSpacing(42);
+        assertNull(mView.actionChipsView);
+
+        ActionChipsView chipsView = mView.ensureActionChipsView();
+        assertNotNull(chipsView);
+        assertSame(chipsView, mView.actionChipsView);
+        assertSame(chipsView, mView.ensureActionChipsView());
+        assertEquals(mView, chipsView.getParent());
+        assertEquals(1, chipsView.getItemDecorationCount());
+        assertEquals(
+                42,
+                ((SpacingRecyclerViewItemDecoration) chipsView.getItemDecorationAt(0))
+                        .getLeadInSpace());
+    }
+
+    @Test
     public void onKeyDown_enterKeyActivatesSuggestion() {
         // View internally installs a mechanism to detect enter long-presses.
         // We currently don't pass onKeyUp event, which incorrectly triggers a long-press event.
@@ -131,7 +152,8 @@ public class BaseSuggestionViewUnitTest {
 
     @Test
     public void onKeyDown_actionButtonKeysAreConsumedIfActionsArePresent() {
-        mView.actionChipsView.setSelectionControllerForTesting(mRecyclerViewSelectionController);
+        mView.ensureActionChipsView()
+                .setSelectionControllerForTesting(mRecyclerViewSelectionController);
 
         // Simulate Actions consuming key stroke.
         doReturn(true).when(mRecyclerViewSelectionController).selectNextItem();
@@ -146,7 +168,8 @@ public class BaseSuggestionViewUnitTest {
 
     @Test
     public void onKeyDown_tabAndEnterActivatesSelectedActionChip() {
-        mView.actionChipsView.setSelectionControllerForTesting(mRecyclerViewSelectionController);
+        mView.ensureActionChipsView()
+                .setSelectionControllerForTesting(mRecyclerViewSelectionController);
         View selectedChip = new View(mContext);
         selectedChip.setOnClickListener(mChipClickListener);
 

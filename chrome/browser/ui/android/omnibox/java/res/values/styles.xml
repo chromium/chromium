@@ -87,17 +87,6 @@ found in the LICENSE file.
         <item name="textAlignStart">true</item>
     </style>
 
-    <style name="OmniboxIncognitoActionChipThemeOverlay">
-        <item name="chipStyle">@style/OmniboxIncognitoActionChip</item>
-    </style>
-
-    <style name="OmniboxIncognitoActionChip" parent="OmniboxActionChip">
-        <item name="chipColor">@color/default_bg_color_dark</item>
-        <item name="primaryTextAppearance">
-            @style/TextAppearance.TextSmall.Primary.Baseline.Light
-        </item>
-    </style>
-
     <style name="OmniboxChipSizeOverlay" parent="SizeOverlay.Material3Expressive.Button.Xsmall">
         <item name="containerPaddingStart">@dimen/omnibox_chip_padding_horizontal_expanded_start</item>
         <item name="containerPaddingEnd">@dimen/omnibox_chip_padding_horizontal_expanded_end</item>
