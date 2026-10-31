@@ -61,6 +61,10 @@ class MockAimEligibilityService : public AimEligibilityService {
               GetSearchboxConfig,
               (),
               (const, override));
+  MOCK_METHOD(const omnibox::LhsRailConfig*,
+              GetLhsRailConfig,
+              (),
+              (const, override));
 
   omnibox::SearchboxConfig& config() { return mock_config; }
 

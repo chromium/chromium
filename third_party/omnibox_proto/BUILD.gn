@@ -27,6 +27,7 @@ _proto_files = [
   "input_type.proto",
   "input_type_config.proto",
   "input_type_rule.proto",
+  "lhs_rail_config.proto",
   "model_config.proto",
   "model_mode.proto",
   "model_rule.proto",

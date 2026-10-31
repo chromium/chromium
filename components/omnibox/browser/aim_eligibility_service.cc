@@ -724,6 +724,14 @@ const omnibox::SearchboxConfig* AimEligibilityService::GetSearchboxConfig()
   return &omnibox::SearchboxConfig::default_instance();
 }
 
+const omnibox::LhsRailConfig* AimEligibilityService::GetLhsRailConfig() const {
+  if (most_recent_response_.has_lhs_rail_config()) {
+    return &most_recent_response_.lhs_rail_config();
+  }
+
+  return nullptr;
+}
+
 AimEligibilityService::AuthenticationMethod
 AimEligibilityService::GetMostRecentResponseAuthMethod() const {
   return most_recent_response_auth_method_;
