@@ -2756,7 +2756,7 @@ suite('OmniboxEverywhereAppTest', () => {
     assertTrue(smallApp.hasAttribute('small-loomnibox'));
     const mv = smallApp.shadowRoot.querySelector('cr-most-visited')!;
     assertTrue(!!mv);
-    assertEquals('5', mv.getAttribute('max-tiles'));
+    assertEquals('4', mv.getAttribute('max-tiles'));
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     loadTimeData.overrideValues({
@@ -2771,7 +2771,7 @@ suite('OmniboxEverywhereAppTest', () => {
     assertFalse(normalApp.hasAttribute('small-loomnibox'));
     const normalMv = normalApp.shadowRoot.querySelector('cr-most-visited')!;
     assertTrue(!!normalMv);
-    assertEquals('7', normalMv.getAttribute('max-tiles'));
+    assertEquals('5', normalMv.getAttribute('max-tiles'));
   });
 
   test(
@@ -2794,41 +2794,43 @@ suite('OmniboxEverywhereAppTest', () => {
         // Deactivate window to enter resting state in persistent mode.
         window.dispatchEvent(new Event('blur'));
         await microtasksFinished();
-        assertEquals('5', mv.getAttribute('max-tiles'));
+        assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
+        assertEquals('4', mv.getAttribute('max-tiles'));
 
-        // Focus window (active state) expands to 7 tiles.
+        // Focus window (active state) expands searchbox and MVT to 5 tiles.
         window.dispatchEvent(new Event('focus'));
         await microtasksFinished();
-        assertEquals('7', mv.getAttribute('max-tiles'));
+        assertFalse(dynamicApp.hasAttribute('small-loomnibox'));
+        assertEquals('5', mv.getAttribute('max-tiles'));
 
         // Blur window again.
         window.dispatchEvent(new Event('blur'));
         await microtasksFinished();
-        assertEquals('5', mv.getAttribute('max-tiles'));
+        assertTrue(dynamicApp.hasAttribute('small-loomnibox'));
+        assertEquals('4', mv.getAttribute('max-tiles'));
       });
 
-  test(
-      'dynamicSizing in ephemeral mode always uses expanded max-tiles',
-      async () => {
-        document.body.innerHTML = window.trustedTypes!.emptyHTML;
-        loadTimeData.overrideValues({
-          omniboxEverywhereMostVisitedEnabled: true,
-          dynamicSizing: true,
-          dynamicSizingWidth: 680,
-          isPersistentMode: false,
-          initialFreStage: 0,
-        });
-        const ephemeralApp = document.createElement('omnibox-everywhere-app');
-        document.body.appendChild(ephemeralApp);
-        await microtasksFinished();
+  test('dynamicSizing in ephemeral mode uses 5 max-tiles', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    loadTimeData.overrideValues({
+      omniboxEverywhereMostVisitedEnabled: true,
+      dynamicSizing: true,
+      dynamicSizingWidth: 680,
+      isPersistentMode: false,
+      initialFreStage: 0,
+    });
+    const ephemeralApp = document.createElement('omnibox-everywhere-app');
+    document.body.appendChild(ephemeralApp);
+    await microtasksFinished();
 
-        const mv = ephemeralApp.shadowRoot.querySelector('cr-most-visited')!;
-        assertTrue(!!mv);
-        assertEquals('7', mv.getAttribute('max-tiles'));
-      });
+    const mv = ephemeralApp.shadowRoot.querySelector('cr-most-visited')!;
+    assertTrue(!!mv);
+    assertFalse(ephemeralApp.hasAttribute('small-loomnibox'));
+    assertEquals('5', mv.getAttribute('max-tiles'));
+  });
 
   test(
-      'dynamicSizing with 600px width updates max-tiles between 5 and 6',
+      'dynamicSizing with 600px width updates max-tiles between 4 and 5',
       async () => {
         document.body.innerHTML = window.trustedTypes!.emptyHTML;
         loadTimeData.overrideValues({
@@ -2846,15 +2848,17 @@ suite('OmniboxEverywhereAppTest', () => {
         const mv = dynamicApp600.shadowRoot.querySelector('cr-most-visited')!;
         assertTrue(!!mv);
 
-        // Resting state uses 5 tiles.
+        // Resting state uses 4 tiles.
         window.dispatchEvent(new Event('blur'));
         await microtasksFinished();
-        assertEquals('5', mv.getAttribute('max-tiles'));
+        assertTrue(dynamicApp600.hasAttribute('small-loomnibox'));
+        assertEquals('4', mv.getAttribute('max-tiles'));
 
-        // Active state in 600px variant expands to 6 tiles.
+        // Active state in 600px variant expands to 5 tiles.
         window.dispatchEvent(new Event('focus'));
         await microtasksFinished();
-        assertEquals('6', mv.getAttribute('max-tiles'));
+        assertFalse(dynamicApp600.hasAttribute('small-loomnibox'));
+        assertEquals('5', mv.getAttribute('max-tiles'));
       });
 
   test(
