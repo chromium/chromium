@@ -487,6 +487,17 @@ export class OmniboxEverywhereOmniboxElement extends
     return this.i18n('searchBoxHint');
   }
 
+  protected onSearchboxInputEmptyChanged_(e: CustomEvent<{value: boolean}>) {
+    // `SearchboxMixin` clears `<cr-searchbox-input>` directly via
+    // `getInputElement().setInput({text: '', inline: ''})` on `Escape` and
+    // `focusout` without firing `searchbox-input-text-updated`. Reset
+    // `hasUserInput_` whenever the input becomes empty so the omnibox does not
+    // stay stuck in the 2-line expanded `[has-user-input]` state.
+    if (e.detail.value) {
+      this.hasUserInput_ = false;
+    }
+  }
+
   protected onSearchboxInputTextUpdated_(
       e: CustomEvent<{value: string, isComposing: boolean}>) {
     this.hasUserInput_ = !!e.detail.value.trim();

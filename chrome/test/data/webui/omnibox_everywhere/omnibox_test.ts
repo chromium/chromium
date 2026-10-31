@@ -3397,13 +3397,47 @@ suite('OmniboxEverywhereAppTest', () => {
     const searchbox =
         app.shadowRoot.querySelector('omnibox-everywhere-omnibox')!;
     searchbox.setInputText('searchbox query');
+    await microtasksFinished();
     assertEquals('searchbox query', searchbox.$.input.getInputValue());
+    assertTrue(searchbox.hasAttribute('has-user-input'));
 
     window.dispatchEvent(new KeyboardEvent(
         'keydown', {key: 'Escape', bubbles: true, cancelable: true}));
     await microtasksFinished();
 
     assertEquals('', searchbox.$.input.getInputValue());
+    assertFalse(searchbox.hasAttribute('has-user-input'));
+    assertEquals(0, testProxy.handler.getCallCount('onEscapePressed'));
+
+    // Also verify pressing Escape in the input when autocomplete matches are
+    // visible (`SearchboxMixin.handleKeyNavigation` path) resets
+    // `has-user-input` without dismissing the window.
+    searchbox.setInputText('hello');
+    searchbox.activeQueryId = 0;
+    searchbox.lastQueriedInput = 'hello';
+    testProxy.page.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          queryId: 0,
+          input: 'hello',
+          matches: [
+            createSearchMatchForTesting({
+              allowedToBeDefaultMatch: true,
+              fillIntoEdit: 'hello',
+            }),
+          ],
+        }));
+    await microtasksFinished();
+    assertTrue(searchbox.hasAttribute('has-user-input'));
+    assertTrue(searchbox.hasAttribute('dropdown-is-visible'));
+
+    searchbox.$.input.inputElement.dispatchEvent(new KeyboardEvent(
+        'keydown',
+        {key: 'Escape', bubbles: true, composed: true, cancelable: true}));
+    await microtasksFinished();
+
+    assertEquals('', searchbox.$.input.getInputValue());
+    assertFalse(searchbox.hasAttribute('dropdown-is-visible'));
+    assertFalse(searchbox.hasAttribute('has-user-input'));
     assertEquals(0, testProxy.handler.getCallCount('onEscapePressed'));
   });
 
