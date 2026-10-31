@@ -340,10 +340,10 @@ public class ExtensionsToolbarBridge implements Destroyable {
                 int canvasHeightDp,
                 float scaleFactor);
 
-        @JniType("std::vector<std::string>")
+        @JniType("base::span<const std::string>")
         String[] getAllActionIds(JniPtr<NativeExtensionsToolbarAndroid> self);
 
-        @JniType("std::vector<std::string>")
+        @JniType("base::span<const std::string>")
         String[] getPinnedActionIds(JniPtr<NativeExtensionsToolbarAndroid> self);
 
         boolean isActionDraggable(

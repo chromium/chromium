@@ -7,6 +7,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/android/extensions/extension_keybinding_registry_android.h"
@@ -78,8 +79,8 @@ class ExtensionsToolbarAndroid : public ExtensionsToolbarViewModel::Delegate,
                    int canvas_width_dp,
                    int canvas_height_dp,
                    float scale_factor);
-  std::vector<ToolbarActionsModel::ActionId> GetAllActionIds();
-  std::vector<ToolbarActionsModel::ActionId> GetPinnedActionIds();
+  base::span<const ToolbarActionsModel::ActionId> GetAllActionIds();
+  base::span<const ToolbarActionsModel::ActionId> GetPinnedActionIds();
   jni_zero::ScopedJavaLocalRef<jobject> GetMenuButtonState(
       JNIEnv* env,
       content::WebContents* web_contents,

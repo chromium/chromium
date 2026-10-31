@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_TOOLBAR_VIEW_MODEL_H_
 
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "chrome/browser/ui/extensions/extension_action_delegate.h"
@@ -149,10 +150,10 @@ class ExtensionsToolbarViewModel
   void MovePinnedActionBy(const std::string& action_id, int move_by);
 
   // Returns the sorted list of the IDs of all installed actions.
-  const base::flat_set<ToolbarActionsModel::ActionId>& GetAllActionIds() const;
+  base::span<const ToolbarActionsModel::ActionId> GetAllActionIds() const;
 
   // Returns the ordered list of ids of pinned actions.
-  const std::vector<ToolbarActionsModel::ActionId>& GetPinnedActionIds() const;
+  base::span<const ToolbarActionsModel::ActionId> GetPinnedActionIds() const;
 
   // Returns whether the actions are initialized.
   bool AreActionsInitialized();

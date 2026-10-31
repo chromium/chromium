@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/callback_list.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
@@ -784,7 +785,8 @@ void WebUIToolbarExtensionsContainer::ToggleExtensionsMenuFromWebUI() {
 void WebUIToolbarExtensionsContainer::MoveExtensionAction(
     const std::string& extension_id,
     int32_t target_index) {
-  const auto& pinned_action_ids = toolbar_view_model_.GetPinnedActionIds();
+  base::span<const ToolbarActionsModel::ActionId> pinned_action_ids =
+      toolbar_view_model_.GetPinnedActionIds();
   auto iter = std::ranges::find(pinned_action_ids, extension_id);
   if (iter == pinned_action_ids.end()) {
     return;
@@ -799,7 +801,8 @@ void WebUIToolbarExtensionsContainer::MoveExtensionAction(
 void WebUIToolbarExtensionsContainer::MoveExtensionActionBy(
     const std::string& extension_id,
     int32_t delta) {
-  const auto& pinned_action_ids = toolbar_view_model_.GetPinnedActionIds();
+  base::span<const ToolbarActionsModel::ActionId> pinned_action_ids =
+      toolbar_view_model_.GetPinnedActionIds();
   auto iter = std::ranges::find(pinned_action_ids, extension_id);
   if (iter == pinned_action_ids.end()) {
     return;
@@ -825,13 +828,15 @@ std::vector<std::string> WebUIToolbarExtensionsContainer::GetOrderedActionIds()
     ordered.push_back(id);
     added.insert(id);
   }
-  for (const auto& action_id : toolbar_view_model_.GetAllActionIds()) {
+  base::span<const ToolbarActionsModel::ActionId> all_action_ids =
+      toolbar_view_model_.GetAllActionIds();
+  for (const auto& action_id : all_action_ids) {
     if (IsActionVisibleOnToolbar(action_id) && !added.contains(action_id)) {
       ordered.push_back(action_id);
       added.insert(action_id);
     }
   }
-  for (const auto& action_id : toolbar_view_model_.GetAllActionIds()) {
+  for (const auto& action_id : all_action_ids) {
     if (!added.contains(action_id)) {
       ordered.push_back(action_id);
     }

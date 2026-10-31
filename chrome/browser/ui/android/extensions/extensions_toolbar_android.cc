@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/android/jni_string.h"
+#include "base/containers/span.h"
 #include "base/notimplemented.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/profiles/profile.h"
@@ -260,19 +261,17 @@ SkBitmap ExtensionsToolbarAndroid::GetIcon(
   return rep.GetBitmap();
 }
 
-std::vector<ToolbarActionsModel::ActionId>
+base::span<const ToolbarActionsModel::ActionId>
 ExtensionsToolbarAndroid::GetAllActionIds() {
-  const auto& ids = toolbar_view_model_->GetAllActionIds();
-  return std::vector(ids.begin(), ids.end());
+  return toolbar_view_model_->GetAllActionIds();
 }
 
-std::vector<ToolbarActionsModel::ActionId>
+base::span<const ToolbarActionsModel::ActionId>
 ExtensionsToolbarAndroid::GetPinnedActionIds() {
   if (!ToolbarActionsModel::CanShowActionsInToolbar(*browser_)) {
     return {};
   }
-  const auto& ids = toolbar_view_model_->GetPinnedActionIds();
-  return std::vector(ids.begin(), ids.end());
+  return toolbar_view_model_->GetPinnedActionIds();
 }
 
 namespace {

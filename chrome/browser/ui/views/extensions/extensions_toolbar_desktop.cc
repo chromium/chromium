@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -642,7 +643,8 @@ void ExtensionsToolbarDesktop::PopOutAction(
 
 void ExtensionsToolbarDesktop::ReorderAllChildViews() {
   // Reorder pinned action views left-to-right.
-  const auto& pinned_action_ids = toolbar_view_model_->GetPinnedActionIds();
+  base::span<const ToolbarActionsModel::ActionId> pinned_action_ids =
+      toolbar_view_model_->GetPinnedActionIds();
   for (size_t i = 0; i < pinned_action_ids.size(); ++i) {
     ReorderChildView(GetViewForId(pinned_action_ids[i]), i);
   }
@@ -759,11 +761,12 @@ void ExtensionsToolbarDesktop::WriteDragDataForView(View* sender,
                                                     ui::OSExchangeData* data) {
   CHECK(data, base::NotFatalUntil::M162);
 
+  base::span<const ToolbarActionsModel::ActionId> pinned_action_ids =
+      toolbar_view_model_->GetPinnedActionIds();
   auto it = std::ranges::find(
-      toolbar_view_model_->GetPinnedActionIds(), sender,
+      pinned_action_ids, sender,
       [this](const std::string& action_id) { return GetViewForId(action_id); });
-  CHECK(it != toolbar_view_model_->GetPinnedActionIds().cend(),
-        base::NotFatalUntil::M162);
+  CHECK(it != pinned_action_ids.cend(), base::NotFatalUntil::M162);
   ToolbarActionView* extension_view = GetViewForId(*it);
 
   ui::ImageModel icon = GetExtensionIcon(extension_view);
@@ -771,7 +774,7 @@ void ExtensionsToolbarDesktop::WriteDragDataForView(View* sender,
                                 press_pt.OffsetFromOrigin());
 
   // Fill in the remaining info.
-  size_t index = it - toolbar_view_model_->GetPinnedActionIds().cbegin();
+  size_t index = it - pinned_action_ids.cbegin();
   BrowserActionDragData drag_data(extension_view->view_model()->GetId(), index);
   drag_data.Write(browser_->GetProfile(), data);
 }
@@ -1078,10 +1081,12 @@ ui::ImageModel ExtensionsToolbarDesktop::GetExtensionIcon(
 void ExtensionsToolbarDesktop::SetExtensionIconVisibility(
     ToolbarActionsModel::ActionId id,
     bool visible) {
+  base::span<const ToolbarActionsModel::ActionId> pinned_action_ids =
+      toolbar_view_model_->GetPinnedActionIds();
   auto it = std::ranges::find(
-      toolbar_view_model_->GetPinnedActionIds(), GetViewForId(id),
+      pinned_action_ids, GetViewForId(id),
       [this](const std::string& action_id) { return GetViewForId(action_id); });
-  if (it == toolbar_view_model_->GetPinnedActionIds().cend()) {
+  if (it == pinned_action_ids.cend()) {
     return;
   }
 

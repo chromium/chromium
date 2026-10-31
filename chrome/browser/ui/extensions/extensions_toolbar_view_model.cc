@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/extensions/extensions_toolbar_view_model.h"
 
+#include <algorithm>
+
+#include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -98,13 +101,12 @@ bool ExtensionsToolbarViewModel::IsActionDraggable(
   }
 
   // Only pinned extensions should be draggable.
-  auto it = std::ranges::find(GetPinnedActionIds(), action_id);
-  if (it == GetPinnedActionIds().cend()) {
+  if (!std::ranges::contains(GetPinnedActionIds(), action_id)) {
     return false;
   }
 
   // TODO(crbug.com/40808374): Force-pinned extensions are not draggable.
-  return !actions_model_->IsActionForcePinned(*it);
+  return !actions_model_->IsActionForcePinned(action_id);
 }
 
 void ExtensionsToolbarViewModel::MovePinnedAction(
@@ -140,24 +142,19 @@ void ExtensionsToolbarViewModel::MovePinnedActionBy(
   MovePinnedAction(action_id, new_index);
 }
 
-const base::flat_set<ToolbarActionsModel::ActionId>&
+base::span<const ToolbarActionsModel::ActionId>
 ExtensionsToolbarViewModel::GetAllActionIds() const {
   if (!actions_model_) {
-    static const base::NoDestructor<
-        base::flat_set<ToolbarActionsModel::ActionId>>
-        empty_set;
-    return *empty_set;
+    return {};
   }
 
   return actions_model_->action_ids();
 }
 
-const std::vector<ToolbarActionsModel::ActionId>&
+base::span<const ToolbarActionsModel::ActionId>
 ExtensionsToolbarViewModel::GetPinnedActionIds() const {
   if (!actions_model_) {
-    static const base::NoDestructor<std::vector<ToolbarActionsModel::ActionId>>
-        empty_vec;
-    return *empty_vec;
+    return {};
   }
 
   return actions_model_->pinned_action_ids();
