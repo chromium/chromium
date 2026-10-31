@@ -4021,6 +4021,68 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testResetWithListOfTabs_WarmOpenUpdatesInSinglePassWithMessageCard() {
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = List.of(mTab1, mTab2, tab3);
+        mMediator.resetWithListOfTabs(tabs, null, false);
+
+        when(mPropertyModel.get(CARD_TYPE)).thenReturn(MESSAGE);
+        mMediator.addSpecialItemToModel(1, UiType.PRICE_MESSAGE, mPropertyModel);
+        assertEquals(4, mModelList.size());
+
+        when(mTab1.getTitle()).thenReturn("Updated 1");
+        when(mTab2.getTitle()).thenReturn("Updated 2");
+        when(tab3.getTitle()).thenReturn("Updated 3");
+
+        mMediator.resetWithListOfTabs(tabs, null, false);
+
+        assertEquals(4, mModelList.size());
+        assertEquals("Updated 1", mModelList.get(0).model.get(TabProperties.TITLE));
+        assertEquals(UiType.PRICE_MESSAGE, mModelList.get(1).type);
+        assertEquals(mPropertyModel, mModelList.get(1).model);
+        assertEquals("Updated 2", mModelList.get(2).model.get(TabProperties.TITLE));
+        assertEquals("Updated 3", mModelList.get(3).model.get(TabProperties.TITLE));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    public void testResetWithListOfTabs_SkipsRedundantActorUiUpdateInAddObservers() {
+        GlicEnabling.setEnabledForTesting(true);
+        ActorUiTabController controller1 = Mockito.mock(ActorUiTabController.class);
+        ActorUiTabController controller2 = Mockito.mock(ActorUiTabController.class);
+        mTab1.getUserDataHost().setUserData(ActorUiTabController.class, controller1);
+        mTab2.getUserDataHost().setUserData(ActorUiTabController.class, controller2);
+
+        List<Tab> tabs = List.of(mTab1, mTab2);
+        mMediator.resetWithListOfTabs(tabs, null, false);
+
+        UiTabState state1 =
+                new UiTabState(
+                        TAB1_ID,
+                        mActorOverlayState,
+                        mHandoffButtonState,
+                        TabIndicatorStatus.DYNAMIC,
+                        false);
+        UiTabState state2 =
+                new UiTabState(
+                        TAB2_ID,
+                        mActorOverlayState,
+                        mHandoffButtonState,
+                        TabIndicatorStatus.STATIC,
+                        false);
+        when(controller1.getUiTabState()).thenReturn(state1);
+        when(controller2.getUiTabState()).thenReturn(state2);
+        clearInvocations(controller1, controller2);
+
+        mMediator.resetWithListOfTabs(tabs, null, false);
+
+        verify(controller1, times(1)).getUiTabState();
+        verify(controller2, times(1)).getUiTabState();
+        assertEquals(state1, mModelList.get(0).model.get(TabProperties.ACTOR_UI_STATE));
+        assertEquals(state2, mModelList.get(1).model.get(TabProperties.ACTOR_UI_STATE));
+    }
+
+    @Test
     public void testMaybeShowPriceWelcomeMessage() {
         prepareTestMaybeShowPriceWelcomeMessage();
         ShoppingPersistedTabDataFetcher fetcher =

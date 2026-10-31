@@ -1153,14 +1153,16 @@ public class TabListMediator implements TabListNotificationHandler {
                 return;
             }
 
-            for (int i = 0; i < tabs.size(); i++) {
-                Tab tab = tabs.get(i);
-                int index = mModelList.indexOfNthTabCard(i);
-                if (!mModelList.isValidIndex(index)) continue;
+            int tabsIndex = 0;
+            for (int i = 0; i < mModelList.size() && tabsIndex < tabs.size(); i++) {
+                PropertyModel model = mModelList.get(i).model;
+                if (!TabProperties.isTabOrTabGroup(model)) continue;
+
+                Tab tab = tabs.get(tabsIndex++);
                 // Update the id instead of reset the tab list when the tab group's selected tab id
                 // changed.
-                boolean updateId = mModelList.get(index).model.get(TAB_ID) != tab.getId();
-                updateTab(index, tab, updateId, quickMode);
+                boolean updateId = model.get(TAB_ID) != tab.getId();
+                updateTab(model, i, tab, updateId, quickMode);
             }
             mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
             mInBatchReset = false;
@@ -2570,9 +2572,11 @@ public class TabListMediator implements TabListNotificationHandler {
         if (controller != null) {
             controller.addObserver(mActorObserver);
 
-            PropertyModel model = getModelFromTabId(tab.getId());
-            if (model != null) {
-                updateActorUiState(model, tab);
+            if (!mInBatchReset) {
+                PropertyModel model = getModelFromTabId(tab.getId());
+                if (model != null) {
+                    updateActorUiState(model, tab);
+                }
             }
         }
 
