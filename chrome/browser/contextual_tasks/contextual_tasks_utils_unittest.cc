@@ -25,6 +25,8 @@
 #include "components/contextual_search/mock_contextual_search_context_controller.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_search/pref_names.h"
+#include "components/contextual_tasks/public/contextual_task.h"
+#include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
 #include "components/omnibox/common/composebox_features.h"
@@ -764,6 +766,54 @@ TEST_F(ContextualTasksUtilsTest,
     histogram_tester.ExpectTotalCount(
         "ContextualTasks.Navigation.HttpResponseCode", 0);
   }
+}
+
+TEST_F(ContextualTasksUtilsTest, ToRestoredTabInfos_FromContextualTaskContext) {
+  EXPECT_TRUE(
+      ToRestoredTabInfos(static_cast<const ContextualTaskContext*>(nullptr))
+          .empty());
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+
+  SessionID tab_id = SessionID::NewUnique();
+  UrlResource valid_tab(GURL("https://example.com/1"), ResourceType::kWebpage);
+  valid_tab.title = "Valid Tab";
+  valid_tab.tab_id = tab_id;
+  valid_tab.has_chrome_tab_data = true;
+  task.AddUrlResource(valid_tab);
+
+  UrlResource non_chrome_tab(GURL("https://example.com/2"),
+                             ResourceType::kWebpage);
+  non_chrome_tab.title = "Non Chrome Tab";
+  non_chrome_tab.has_chrome_tab_data = false;
+  task.AddUrlResource(non_chrome_tab);
+
+  UrlResource empty_title_tab(GURL("https://example.com/3"),
+                              ResourceType::kWebpage);
+  empty_title_tab.title = "";
+  empty_title_tab.has_chrome_tab_data = true;
+  task.AddUrlResource(empty_title_tab);
+
+  UrlResource invalid_url_tab(GURL(), ResourceType::kWebpage);
+  invalid_url_tab.title = "Invalid URL Tab";
+  invalid_url_tab.has_chrome_tab_data = true;
+  task.AddUrlResource(invalid_url_tab);
+
+  UrlResource pdf_resource(GURL("https://example.com/4.pdf"),
+                           ResourceType::kPdf);
+  pdf_resource.title = "PDF";
+  pdf_resource.has_chrome_tab_data = true;
+  task.AddUrlResource(pdf_resource);
+
+  ContextualTaskContext context(task);
+  std::vector<contextual_search::TabInfo> restored =
+      ToRestoredTabInfos(&context);
+
+  ASSERT_EQ(restored.size(), 1u);
+  EXPECT_EQ(restored[0].tab_id, tab_id.id());
+  EXPECT_EQ(restored[0].url, GURL("https://example.com/1"));
+  EXPECT_EQ(restored[0].title, "Valid Tab");
+  EXPECT_TRUE(restored[0].submitted);
 }
 
 }  // namespace

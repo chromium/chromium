@@ -52,6 +52,7 @@
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/contextual_task.h"
+#include "components/contextual_tasks/public/contextual_task_context.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/prefs.h"
@@ -80,6 +81,38 @@
 #endif
 
 namespace contextual_tasks {
+
+std::vector<contextual_search::TabInfo> ToRestoredTabInfos(
+    const ContextualTaskContext* context) {
+  if (!context) {
+    return {};
+  }
+  std::vector<contextual_search::TabInfo> restored_tabs;
+  for (const auto& attachment : context->GetUrlAttachments()) {
+    if (attachment.GetResourceType() != ResourceType::kWebpage ||
+        !attachment.HasChromeTabData()) {
+      continue;
+    }
+    // Skip entries with invalid URLs or empty titles.
+    GURL url = attachment.GetURL();
+    if (!url.is_valid()) {
+      continue;
+    }
+    std::string title = base::UTF16ToUTF8(attachment.GetTitle());
+    if (title.empty()) {
+      continue;
+    }
+    contextual_search::TabInfo tab;
+    if (attachment.GetTabSessionId().is_valid()) {
+      tab.tab_id = attachment.GetTabSessionId().id();
+    }
+    tab.url = std::move(url);
+    tab.title = std::move(title);
+    tab.submitted = true;
+    restored_tabs.push_back(std::move(tab));
+  }
+  return restored_tabs;
+}
 
 bool IsContextualTasksUrl(const GURL& url) {
   return url.scheme() == content::kChromeUIScheme &&

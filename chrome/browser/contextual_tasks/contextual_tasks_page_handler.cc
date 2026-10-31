@@ -681,47 +681,72 @@ void ContextualTasksPageHandler::OnReceivedUpdatedThreadContextLibrary(
   contextual_tasks_service_->SetUrlResourcesFromServer(*task_id,
                                                        committed_context);
 
-  // Populate restored tabs in the composebox.
+  // Populate restored tabs in the session handle and composebox. Without tab
+  // state unification, restored tabs are only fetched once on initial history
+  // load (`is_history_loading`) and sent to the composebox via
+  // `OnRestoredTabsFetched()`. With tab state unification enabled, the WebUI
+  // `<webview>` path routes `AimToClientMessage::UpdateThreadContextLibrary`
+  // here (rather than `ContextualTasksWebContentsUserData`), so fetch the
+  // decorated task context on every update to keep the session handle's
+  // `TabContextState::restored` in sync.
   if (contextual_tasks_service_ &&
       base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox) &&
-      is_history_loading) {
+      (is_history_loading ||
+       omnibox::IsTabStateUnificationInComposeboxEnabled())) {
     contextual_tasks_service_->GetContextForTask(
         *task_id, {},
         std::make_unique<contextual_tasks::ContextDecorationParams>(),
-        base::BindOnce(
-            [](base::WeakPtr<ContextualTasksPageHandler> self,
-               std::unique_ptr<contextual_tasks::ContextualTaskContext>
-                   context) {
-              if (self && self->web_ui_controller_) {
-                std::vector<contextual_tasks_toolbar::mojom::ContextInfoPtr>
-                    context_items = PopulateContextualResources(context.get());
-
-                std::vector<searchbox::mojom::TabInfoPtr> tabs;
-                for (const auto& item : context_items) {
-                  if (item->is_tab() && item->get_tab()->has_chrome_tab_data) {
-                    auto tab_info = searchbox::mojom::TabInfo::New();
-                    tab_info->url = item->get_tab()->url;
-                    tab_info->title = item->get_tab()->title;
-                    int32_t handle =
-                        tabs::SessionMappedTabHandleFactory::GetInstance()
-                            .GetHandleForSessionId(item->get_tab()->tab_id);
-                    if (handle != tabs::TabHandle::NullValue) {
-                      tab_info->tab_id = handle;
-                    } else if (SessionID::IsValidValue(
-                                   item->get_tab()->tab_id)) {
-                      tab_info->tab_id = item->get_tab()->tab_id;
-                    } else {
-                      tab_info->tab_id = tabs::TabHandle::NullValue;
-                    }
-                    tabs.push_back(std::move(tab_info));
-                  }
-                }
-                self->web_ui_controller_->OnRestoredTabsFetched(
-                    std::move(tabs));
-              }
-            },
-            weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&ContextualTasksPageHandler::OnContextFetchedForTabs,
+                       weak_ptr_factory_.GetWeakPtr(), is_history_loading));
   }
+}
+
+void ContextualTasksPageHandler::OnContextFetchedForTabs(
+    bool is_history_loading,
+    std::unique_ptr<contextual_tasks::ContextualTaskContext> context) {
+  if (!web_ui_controller_ || !context) {
+    return;
+  }
+
+  std::vector<contextual_search::TabInfo> restored_tabs =
+      contextual_tasks::ToRestoredTabInfos(context.get());
+
+  // Push the task's tab list to the session handle on every
+  // context library update so its `TabContextState::restored` stays in sync
+  // across turns and notifies subscribed handlers. When tab state unification
+  // is disabled, the composebox manages restored tabs on the frontend via
+  // `OnRestoredTabsFetched()` below instead of subscribing to the session
+  // handle.
+  if (omnibox::IsTabStateUnificationInComposeboxEnabled()) {
+    if (auto* handle =
+            web_ui_controller_->GetOrCreateContextualSessionHandle()) {
+      handle->SetRestoredTabs(restored_tabs);
+    }
+  }
+
+  if (!is_history_loading) {
+    return;
+  }
+
+  std::vector<searchbox::mojom::TabInfoPtr> tabs;
+  for (const auto& tab : restored_tabs) {
+    auto tab_info = searchbox::mojom::TabInfo::New();
+    tab_info->url = tab.url;
+    tab_info->title = tab.title;
+    const int32_t session_id =
+        tab.tab_id.value_or(SessionID::InvalidValue().id());
+    const int32_t handle = tabs::SessionMappedTabHandleFactory::GetInstance()
+                               .GetHandleForSessionId(session_id);
+    if (handle != tabs::TabHandle::NullValue) {
+      tab_info->tab_id = handle;
+    } else if (SessionID::IsValidValue(session_id)) {
+      tab_info->tab_id = session_id;
+    } else {
+      tab_info->tab_id = tabs::TabHandle::NullValue;
+    }
+    tabs.push_back(std::move(tab_info));
+  }
+  web_ui_controller_->OnRestoredTabsFetched(std::move(tabs));
 }
 
 void ContextualTasksPageHandler::OnReceivedInjectInput(
