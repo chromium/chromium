@@ -2,18 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <vector>
+
 #include "base/command_line.h"
 #include "base/strings/strcat.h"
+#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/search/instant_service_factory.h"
-#include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/tab_list/constants.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/search/instant_test_base.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
+#include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/platform_browser_test.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/security_principal.h"
@@ -22,19 +26,37 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-class ThirdPartyNTPBrowserTest : public InProcessBrowserTest,
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "components/search/ntp_features.h"
+#endif
+
+class ThirdPartyNTPBrowserTest : public PlatformBrowserTest,
                                  public InstantTestBase,
                                  public ::testing::WithParamInterface<bool> {
  public:
   ThirdPartyNTPBrowserTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kInstantUsesSpareRenderer, InstantUsesSpareRenderer());
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+    if (InstantUsesSpareRenderer()) {
+      enabled_features.push_back(features::kInstantUsesSpareRenderer);
+    } else {
+      disabled_features.push_back(features::kInstantUsesSpareRenderer);
+    }
+    // The following flags are needed to enable the 3P WebUI NTP on Android.
+#if BUILDFLAG(IS_ANDROID)
+    enabled_features.push_back(ntp_features::kNtpEnableInstantApiAndroid);
+    enabled_features.push_back(chrome::android::kUseWebUiNtpAndroid);
+    enabled_features.push_back(chrome::android::kUseWebUiNtp3PDSE);
+#endif
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   ThirdPartyNTPBrowserTest(const ThirdPartyNTPBrowserTest&) = delete;
@@ -46,7 +68,7 @@ class ThirdPartyNTPBrowserTest : public InProcessBrowserTest,
     https_test_server().RegisterRequestHandler(base::BindRepeating(
         &ThirdPartyNTPBrowserTest::HandleRedirectToChromeSearch,
         base::Unretained(this)));
-    InProcessBrowserTest::SetUpOnMainThread();
+    PlatformBrowserTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
     https_test_server().SetCertHostnames({"example.com", "ntp.example.com"});
     ASSERT_TRUE(https_test_server().Start());
@@ -81,15 +103,15 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest, EmbeddedMostVisitedIframe) {
       https_test_server().GetURL("ntp.example.com", "/instant_extended.html");
   GURL ntp_url = https_test_server().GetURL("ntp.example.com",
                                             "/instant_extended_ntp.html");
-  SetupInstant(browser()->GetProfile(), base_url, ntp_url);
+  SetupInstant(GetProfile(), base_url, ntp_url);
 
   // Navigate to the NTP URL and verify that the resulting process is marked as
   // an Instant process.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ntp_url));
   content::WebContents* contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
+      GetTabListInterface()->GetActiveTab()->GetContents();
+  ASSERT_TRUE(content::NavigateToURL(contents, ntp_url));
   InstantService* instant_service =
-      InstantServiceFactory::GetForProfile(browser()->GetProfile());
+      InstantServiceFactory::GetForProfile(GetProfile());
   EXPECT_TRUE(instant_service->IsInstantProcess(
       contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
 
@@ -115,10 +137,11 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest, EmbeddedMostVisitedIframe) {
 // chrome-search scheme.
 IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest,
                        NonInstantProcessCannotEmbedChromeSearch) {
-  GURL non_instant_url = https_test_server().GetURL("example.com", "/");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_instant_url));
+  GURL non_instant_url =
+      https_test_server().GetURL("example.com", "/title1.html");
   content::WebContents* contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
+      GetTabListInterface()->GetActiveTab()->GetContents();
+  ASSERT_TRUE(content::NavigateToURL(contents, non_instant_url));
 
   // Add a chrome-search://most-visited/title.html?rid=1&fs=0 subframe and
   // verify that the resource is not allowed to load.
@@ -166,10 +189,11 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest,
 IN_PROC_BROWSER_TEST_P(
     ThirdPartyNTPBrowserTest,
     NonInstantProcessBlocksRendererInitiatedChromeSearchNavigation) {
-  GURL non_instant_url = https_test_server().GetURL("example.com", "/");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_instant_url));
+  GURL non_instant_url =
+      https_test_server().GetURL("example.com", "/title1.html");
   content::WebContents* contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
+      GetTabListInterface()->GetActiveTab()->GetContents();
+  ASSERT_TRUE(content::NavigateToURL(contents, non_instant_url));
 
   // Start a renderer initiated navigation to the chrome-search://
   // url and verify that the resource is not allowed to load.
@@ -209,20 +233,34 @@ IN_PROC_BROWSER_TEST_P(
 // redirects to a chrome-search scheme cannot commit.
 IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest,
                        ResponseRedirectToChromeSearchBlockedAtCommit) {
-  GURL non_instant_url = https_test_server().GetURL("example.com", "/");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_instant_url));
+  GURL non_instant_url =
+      https_test_server().GetURL("example.com", "/title1.html");
   content::WebContents* contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
+      GetTabListInterface()->GetActiveTab()->GetContents();
+  ASSERT_TRUE(content::NavigateToURL(contents, non_instant_url));
 
   GURL redirect_url =
       https_test_server().GetURL("example.com", "/redirect-to-chrome-search");
 
+  content::TestNavigationObserver nav_observer(contents);
   ASSERT_TRUE(content::ExecJs(
       contents,
       base::StrCat({"window.location = '", redirect_url.spec(), "';"})));
   content::WaitForLoadStopWithoutSuccessCheck(contents);
+
+  // On Android, `HandleExternalProtocol` returns false for main-frame
+  // navigations, so the navigation fails with `ERR_UNKNOWN_URL_SCHEME` and
+  // commits an error page. On Desktop, `HandleExternalProtocol` returns true to
+  // handle external protocols asynchronously, which silently aborts the
+  // navigation (`ERR_ABORTED`) and leaves `non_instant_url` committed.
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_FALSE(nav_observer.last_navigation_succeeded());
+  EXPECT_EQ(net::ERR_UNKNOWN_URL_SCHEME, nav_observer.last_net_error_code());
+  EXPECT_TRUE(contents->GetPrimaryMainFrame()->IsErrorDocument());
+#else
   EXPECT_EQ(non_instant_url,
             contents->GetPrimaryMainFrame()->GetLastCommittedURL());
+#endif
 }
 
 // Verifies that an instant process can fetch chrome-search resources.
@@ -232,15 +270,15 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest,
       https_test_server().GetURL("ntp.example.com", "/instant_extended.html");
   GURL ntp_url = https_test_server().GetURL("ntp.example.com",
                                             "/instant_extended_ntp.html");
-  SetupInstant(browser()->GetProfile(), base_url, ntp_url);
+  SetupInstant(GetProfile(), base_url, ntp_url);
 
   // Navigate to the NTP URL and verify that the resulting process is marked as
   // an Instant process.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ntp_url));
   content::WebContents* contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
+      GetTabListInterface()->GetActiveTab()->GetContents();
+  ASSERT_TRUE(content::NavigateToURL(contents, ntp_url));
   InstantService* instant_service =
-      InstantServiceFactory::GetForProfile(browser()->GetProfile());
+      InstantServiceFactory::GetForProfile(GetProfile());
   EXPECT_TRUE(instant_service->IsInstantProcess(
       contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
 
@@ -266,14 +304,15 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest,
 // Verifies that a non-instant process cannot fetch chrome-search resources.
 IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest,
                        NonInstantProcessCannotFetchChromeSearchResource) {
-  GURL non_instant_url = https_test_server().GetURL("example.com", "/");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), non_instant_url));
+  GURL non_instant_url =
+      https_test_server().GetURL("example.com", "/title1.html");
   content::WebContents* contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
+      GetTabListInterface()->GetActiveTab()->GetContents();
+  ASSERT_TRUE(content::NavigateToURL(contents, non_instant_url));
 
   // Verify that the process is not marked as an Instant process.
   InstantService* instant_service =
-      InstantServiceFactory::GetForProfile(browser()->GetProfile());
+      InstantServiceFactory::GetForProfile(GetProfile());
   EXPECT_FALSE(instant_service->IsInstantProcess(
       contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
 
@@ -310,19 +349,15 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest, ProcessPerSite) {
       https_test_server().GetURL("ntp.example.com", "/instant_extended.html");
   GURL ntp_url = https_test_server().GetURL("ntp.example.com",
                                             "/instant_extended_ntp.html");
-  SetupInstant(browser()->GetProfile(), base_url, ntp_url);
+  SetupInstant(GetProfile(), base_url, ntp_url);
 
   // Open NTP in |tab1|.
   content::WebContents* tab1;
   {
-    content::WebContentsAddedObserver tab1_observer;
-
-    // Try to simulate as closely as possible what would have happened in the
-    // real user interaction.
-    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
-
-    // Wait for the new tab.
-    tab1 = tab1_observer.GetWebContents();
+    tabs::TabInterface* tab = GetTabListInterface()->OpenTab(
+        chrome::ChromeUINewTabURLAsGURL(), tab_list::kNoTabIndex);
+    ASSERT_TRUE(tab);
+    tab1 = tab->GetContents();
     ASSERT_TRUE(WaitForLoadStop(tab1));
 
     // Sanity check: the NTP should be provided by |ntp_url| and not by
@@ -333,9 +368,10 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest, ProcessPerSite) {
   // Open another NTP in |tab2|.
   content::WebContents* tab2;
   {
-    content::WebContentsAddedObserver tab2_observer;
-    chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
-    tab2 = tab2_observer.GetWebContents();
+    tabs::TabInterface* tab = GetTabListInterface()->OpenTab(
+        chrome::ChromeUINewTabURLAsGURL(), tab_list::kNoTabIndex);
+    ASSERT_TRUE(tab);
+    tab2 = tab->GetContents();
     ASSERT_TRUE(WaitForLoadStop(tab2));
     EXPECT_EQ(ntp_url, content::EvalJs(tab2, "window.location.href"));
   }
@@ -352,10 +388,10 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest, VerifySiteInstance) {
       https_test_server().GetURL("ntp.example.com", "/instant_extended.html");
   GURL ntp_url = https_test_server().GetURL("ntp.example.com",
                                             "/instant_extended_ntp.html");
-  SetupInstant(browser()->GetProfile(), base_url, ntp_url);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ntp_url));
+  SetupInstant(GetProfile(), base_url, ntp_url);
   content::WebContents* web_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
+      GetTabListInterface()->GetActiveTab()->GetContents();
+  ASSERT_TRUE(content::NavigateToURL(web_contents, ntp_url));
 
   // Sanity check: the NTP should be provided by |ntp_url| and not by
   // chrome://new-tab-page [1P WebUI NTP] or chrome://newtab [incognito].
@@ -373,16 +409,15 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest, VerifySiteInstance) {
 // the feature kInstantUsesSpareRenderer.
 IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest, VerifyCanUseSpareProcess) {
   // Navigate to a non 3rd party ntp url.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), https_test_server().GetURL("/title1.html")));
   content::WebContents* web_contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
+      GetTabListInterface()->GetActiveTab()->GetContents();
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents, https_test_server().GetURL("/title1.html")));
   content::RenderProcessHost* old_process =
       web_contents->GetPrimaryMainFrame()->GetProcess();
 
   // Navigate to a third-party NTP while a spare process is present.
-  content::SpareRenderProcessHostManager::Get().WarmupSpare(
-      browser()->GetProfile());
+  content::SpareRenderProcessHostManager::Get().WarmupSpare(GetProfile());
   content::RenderProcessHost* spare_process =
       content::SpareRenderProcessHostManager::Get().GetSpares().front();
   ASSERT_TRUE(spare_process);
@@ -392,14 +427,14 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest, VerifyCanUseSpareProcess) {
       https_test_server().GetURL("ntp.example.com", "/instant_extended.html");
   GURL ntp_url = https_test_server().GetURL("ntp.example.com",
                                             "/instant_extended_ntp.html");
-  SetupInstant(browser()->GetProfile(), base_url, ntp_url);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ntp_url));
+  SetupInstant(GetProfile(), base_url, ntp_url);
+  ASSERT_TRUE(content::NavigateToURL(web_contents, ntp_url));
 
   content::RenderProcessHost* new_process =
       web_contents->GetPrimaryMainFrame()->GetProcess();
   // Verify that the resulting process is marked as an Instant process.
   InstantService* instant_service =
-      InstantServiceFactory::GetForProfile(browser()->GetProfile());
+      InstantServiceFactory::GetForProfile(GetProfile());
   EXPECT_TRUE(
       instant_service->IsInstantProcess(new_process->GetDeprecatedID()));
 
@@ -419,10 +454,10 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest,
       https_test_server().GetURL("ntp.example.com", "/instant_extended.html");
   GURL ntp_url = https_test_server().GetURL("ntp.example.com",
                                             "/instant_extended_ntp.html");
-  SetupInstant(browser()->GetProfile(), base_url, ntp_url);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), ntp_url));
+  SetupInstant(GetProfile(), base_url, ntp_url);
   content::WebContents* contents =
-      browser()->GetTabStripModel()->GetActiveWebContents();
+      GetTabListInterface()->GetActiveTab()->GetContents();
+  ASSERT_TRUE(content::NavigateToURL(contents, ntp_url));
 
   const char* kScript = R"(
     (async () => {

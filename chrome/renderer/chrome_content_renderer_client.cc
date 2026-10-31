@@ -569,7 +569,7 @@ void ChromeContentRendererClient::RenderThreadStarted() {
   bool should_restrict_chrome_search_scheme =
       !command_line->HasSwitch(switches::kInstantProcess);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_WEBUI_NTP)
   // If the feature is enabled, the `kInstantProcess` command line switch is
   // replaced by the `is_instant_process` flag, which is set later. As a result,
   // we cannot perform chrome-search scheme registration at this stage. This
@@ -579,7 +579,7 @@ void ChromeContentRendererClient::RenderThreadStarted() {
   if (base::FeatureList::IsEnabled(features::kInstantUsesSpareRenderer)) {
     should_restrict_chrome_search_scheme = false;
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_WEBUI_NTP)
   if (should_restrict_chrome_search_scheme) {
     WebSecurityPolicy::RegisterURLSchemeAsDisplayIsolated(chrome_search_scheme);
   }
