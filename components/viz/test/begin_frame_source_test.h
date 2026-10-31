@@ -90,7 +90,7 @@ class MockBeginFrameObserver : public BeginFrameObserver {
 
   // A value different from the normal default returned by a
   // BeginFrameObserver so it is easiable traced back here.
-  static const BeginFrameArgs kDefaultBeginFrameArgs;
+  static BeginFrameArgs GetDefaultBeginFrameArgs();
 
   MockBeginFrameObserver();
   ~MockBeginFrameObserver() override;

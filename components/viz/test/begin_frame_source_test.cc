@@ -19,8 +19,20 @@ void MockBeginFrameObserver::AsValueInto(
   dict->EndDictionary();
 }
 
+// static
+BeginFrameArgs MockBeginFrameObserver::GetDefaultBeginFrameArgs() {
+  return CreateBeginFrameArgsForTesting(
+#ifdef NDEBUG
+      nullptr,
+#else
+      FROM_HERE,
+#endif  // NDEBUG
+      BeginFrameArgs::kManualSourceId, BeginFrameArgs::kStartingFrameNumber, -1,
+      -1, -1);
+}
+
 MockBeginFrameObserver::MockBeginFrameObserver()
-    : last_begin_frame_args(kDefaultBeginFrameArgs) {
+    : last_begin_frame_args(GetDefaultBeginFrameArgs()) {
   ON_CALL(*this, LastUsedBeginFrameArgs())
       .WillByDefault(::testing::ReturnPointee(&last_begin_frame_args));
   ON_CALL(*this, WantsAnimateOnlyBeginFrames())
@@ -28,19 +40,6 @@ MockBeginFrameObserver::MockBeginFrameObserver()
 }
 
 MockBeginFrameObserver::~MockBeginFrameObserver() = default;
-
-const BeginFrameArgs MockBeginFrameObserver::kDefaultBeginFrameArgs =
-    CreateBeginFrameArgsForTesting(
-#ifdef NDEBUG
-        nullptr,
-#else
-        FROM_HERE,
-#endif
-        BeginFrameArgs::kManualSourceId,
-        BeginFrameArgs::kStartingFrameNumber,
-        -1,
-        -1,
-        -1);
 
 MockInputClient::MockInputClient() = default;
 MockInputClient::~MockInputClient() = default;

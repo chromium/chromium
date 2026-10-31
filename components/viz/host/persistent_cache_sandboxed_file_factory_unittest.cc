@@ -5,6 +5,7 @@
 #include "components/viz/host/persistent_cache_sandboxed_file_factory.h"
 
 #include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
@@ -27,6 +28,10 @@ namespace {
 
 using ::base::test::TestFuture;
 
+constexpr base::FilePath::CharType kCacheId[] = FILE_PATH_LITERAL("123");
+constexpr char kProduct[] = "Chrome/1.0.0.0";
+constexpr char kDiskSizeHistogram[] = "GPU.ShaderCache.DiskSize.Persistent123";
+
 // RAII class to save and restore the current directory.
 class ScopedCurrentDirectory {
  public:
@@ -40,10 +45,6 @@ class ScopedCurrentDirectory {
  private:
   base::FilePath original_cwd_;
 };
-
-const base::FilePath::StringType kCacheId = FILE_PATH_LITERAL("123");
-const std::string kProduct = "Chrome/1.0.0.0";
-constexpr char kDiskSizeHistogram[] = "GPU.ShaderCache.DiskSize.Persistent123";
 
 std::vector<base::FilePath> GetDirsInDir(const base::FilePath& dir) {
   std::vector<base::FilePath> dirs;
@@ -304,7 +305,7 @@ TEST_F(PersistentCacheSandboxedFileFactoryAsyncTest, SuccessOnFirstTry) {
   auto factory = base::MakeRefCounted<MockFactory>(
       cache_root_path(), base::SingleThreadTaskRunner::GetCurrentDefault());
 
-  EXPECT_CALL(*factory, CreateFiles(kCacheId, kProduct))
+  EXPECT_CALL(*factory, CreateFiles(testing::Eq(kCacheId), kProduct))
       .WillOnce([]() {
         return base::expected<persistent_cache::PendingBackend,
                               persistent_cache::TransactionError>(
@@ -325,13 +326,13 @@ TEST_F(PersistentCacheSandboxedFileFactoryAsyncTest, RetryOnTransientError) {
 
   // Expect 1 transient failure, then success.
   testing::InSequence s;
-  EXPECT_CALL(*factory, CreateFiles(kCacheId, kProduct))
+  EXPECT_CALL(*factory, CreateFiles(testing::Eq(kCacheId), kProduct))
       .WillOnce([]() {
         return base::expected<persistent_cache::PendingBackend,
                               persistent_cache::TransactionError>(
             base::unexpected(persistent_cache::TransactionError::kTransient));
       });
-  EXPECT_CALL(*factory, CreateFiles(kCacheId, kProduct))
+  EXPECT_CALL(*factory, CreateFiles(testing::Eq(kCacheId), kProduct))
       .WillOnce([]() {
         return base::expected<persistent_cache::PendingBackend,
                               persistent_cache::TransactionError>(
@@ -352,7 +353,7 @@ TEST_F(PersistentCacheSandboxedFileFactoryAsyncTest,
       cache_root_path(), base::SingleThreadTaskRunner::GetCurrentDefault());
 
   // Expect 4 transient failures (1 initial + 3 retries).
-  EXPECT_CALL(*factory, CreateFiles(kCacheId, kProduct))
+  EXPECT_CALL(*factory, CreateFiles(testing::Eq(kCacheId), kProduct))
       .Times(4)
       .WillRepeatedly([]() {
         return base::expected<persistent_cache::PendingBackend,
@@ -374,7 +375,7 @@ TEST_F(PersistentCacheSandboxedFileFactoryAsyncTest,
       cache_root_path(), base::SingleThreadTaskRunner::GetCurrentDefault());
 
   // Expect 1 permanent failure, no retries.
-  EXPECT_CALL(*factory, CreateFiles(kCacheId, kProduct))
+  EXPECT_CALL(*factory, CreateFiles(testing::Eq(kCacheId), kProduct))
       .WillOnce([]() {
         return base::expected<persistent_cache::PendingBackend,
                               persistent_cache::TransactionError>(

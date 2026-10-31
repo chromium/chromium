@@ -34,7 +34,7 @@ class VizTestSuite : public base::TestSuite {
   void Shutdown() override;
 
  private:
-  static std::unique_ptr<base::test::TaskEnvironment> task_environment_;
+  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   std::unique_ptr<ui::PlatformEventSource> platform_event_source_;
 
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;

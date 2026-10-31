@@ -4,6 +4,9 @@
 
 #include "components/viz/test/viz_test_suite.h"
 
+#include <memory>
+
+#include "base/check.h"
 #include "base/threading/thread_id_name_manager.h"
 #include "components/viz/test/paths.h"
 #include "ui/events/platform/platform_event_source.h"
@@ -11,17 +14,26 @@
 
 namespace viz {
 
-std::unique_ptr<base::test::TaskEnvironment> VizTestSuite::task_environment_;
+namespace {
+VizTestSuite* g_viz_test_suite = nullptr;
+}  // namespace
 
 VizTestSuite::VizTestSuite(int argc, char** argv)
-    : base::TestSuite(argc, argv) {}
+    : base::TestSuite(argc, argv) {
+  CHECK(!g_viz_test_suite);
+  g_viz_test_suite = this;
+}
 
-VizTestSuite::~VizTestSuite() = default;
+VizTestSuite::~VizTestSuite() {
+  CHECK_EQ(g_viz_test_suite, this);
+  g_viz_test_suite = nullptr;
+}
 
 // static
 void VizTestSuite::RunUntilIdle() {
-  CHECK(task_environment_);
-  task_environment_->RunUntilIdle();
+  CHECK(g_viz_test_suite);
+  CHECK(g_viz_test_suite->task_environment_);
+  g_viz_test_suite->task_environment_->RunUntilIdle();
 }
 
 void VizTestSuite::Initialize() {
