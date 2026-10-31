@@ -527,6 +527,70 @@ TEST_P(PrePaintTreeWalkTest, ScrollTranslationNodeForNonZeroScrollPosition) {
   EXPECT_TRUE(object->FirstFragment().PaintProperties()->ScrollTranslation());
 }
 
+TEST_P(PrePaintTreeWalkTest,
+       ForcedSubtreeUpdateReasonsPersistedAcrossDisplayLock) {
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        width: 100px;
+        height: 100px;
+      }
+      #wrapper {
+        contain: paint;
+        border-radius: 1px;
+      }
+      #lock {
+        contain: paint;
+      }
+      #target {
+        opacity: 0.5;
+      }
+    </style>
+    <canvas content="drawable" width="100" height="100">
+      <div id="wrapper">
+        <div id="lock">
+          <div id="target"></div>
+        </div>
+      </div>
+    </canvas>
+  )HTML");
+
+  auto* wrapper = GetDocument().getElementById(AtomicString("wrapper"));
+  auto* lock = GetDocument().getElementById(AtomicString("lock"));
+  const auto* target_properties =
+      GetLayoutObjectByElementId("target")->FirstFragment().PaintProperties();
+  ASSERT_TRUE(target_properties);
+  ASSERT_TRUE(target_properties->Effect());
+  EXPECT_FALSE(target_properties->Effect()->IsInDrawableCanvasSubtree());
+
+  // Lock #lock and make #wrapper drawable in the same lifecycle update. The
+  // drawable change forces an isolation-piercing subtree paint property update,
+  // which is blocked at #lock.
+  lock->setAttribute(html_names::kStyleAttr,
+                     AtomicString("content-visibility: hidden"));
+  wrapper->setAttribute(html_names::kDrawableAttr, g_empty_atom);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(
+      GetLayoutObjectByElementId("lock")->SubtreePaintPropertyUpdateReasons(),
+      static_cast<unsigned>(
+          SubtreePaintPropertyUpdateReason::kPreviouslySkipped));
+  EXPECT_FALSE(target_properties->Effect()->IsInDrawableCanvasSubtree());
+
+  // Dirty #wrapper before unlocking #lock so that unlocking #lock does not
+  // propagate NeedsPaintPropertyUpdate() up to the <canvas>, then unlock #lock.
+  wrapper->setAttribute(html_names::kStyleAttr,
+                        AtomicString("border-radius: 2px"));
+  lock->removeAttribute(html_names::kStyleAttr);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(
+      GetLayoutObjectByElementId("lock")->SubtreePaintPropertyUpdateReasons(),
+      static_cast<unsigned>(SubtreePaintPropertyUpdateReason::kNone));
+  EXPECT_TRUE(target_properties->Effect()->IsInDrawableCanvasSubtree());
+}
+
 class SoftNavigationPrePaintTreeWalkTest : public RenderingTest {
  public:
   SoftNavigationPrePaintTreeWalkTest() = default;

@@ -1528,6 +1528,13 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
     // `subtree_walk_reasons` is empty.
     object.GetDisplayLockContext()->SetNeedsPrePaintSubtreeWalk(
         context.subtree_walk_reasons);
+    // Remember that we need to force subtree paint property update when we
+    // become un-display-locked.
+    if (context.tree_builder_context &&
+        context.tree_builder_context->force_subtree_update_reasons) {
+      object.GetMutableForPainting().AddSubtreePaintPropertyUpdateReason(
+          SubtreePaintPropertyUpdateReason::kPreviouslySkipped);
+    }
   }
 
   if (!child_walk_blocked) {
