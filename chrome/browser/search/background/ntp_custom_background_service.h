@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SEARCH_BACKGROUND_NTP_CUSTOM_BACKGROUND_SERVICE_H_
 #define CHROME_BROWSER_SEARCH_BACKGROUND_NTP_CUSTOM_BACKGROUND_SERVICE_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -97,8 +99,10 @@ class NtpCustomBackgroundService : public NtpCustomBackgroundServiceBase {
       const GURL& fetch_url);
 
  private:
-  // Set bool pref for local background and clear id.
-  void SetBackgroundToLocalResource();
+  // Set bool pref for local background and clear id. `image_data` holds the
+  // bytes of the image that was just copied into the profile directory, or
+  // std::nullopt if the copy failed, in which case nothing changes.
+  void SetBackgroundToLocalResource(std::optional<std::string> image_data);
 
   void ForceRefreshBackground();
 
