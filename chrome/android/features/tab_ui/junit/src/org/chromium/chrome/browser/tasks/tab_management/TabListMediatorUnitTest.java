@@ -143,6 +143,7 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -3938,6 +3939,85 @@ public class TabListMediatorUnitTest {
         // Verify subsequent reset does not trip `assert !mSuppressUpdateLayout`.
         Tab tab = prepareTab(TAB1_ID, TAB1_TITLE, TAB1_URL);
         mMediator.resetWithListOfTabs(List.of(tab), null, false);
+    }
+
+    @Test
+    public void testResetWithListOfTabs_HoistTrackPricesOnTabsCheck() {
+        mTabListConfig =
+                new TabListConfig.Builder(TabListLayoutType.FLAT)
+                        .setSupportsMessageCards(true)
+                        .build();
+        setUpTabListMediator(TabListMediatorType.TAB_GRID_DIALOG, TabListMode.GRID);
+
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = List.of(mTab1, mTab2, tab3);
+        mMediator.resetWithListOfTabs(tabs, null, false);
+
+        setPriceTrackingEnabledForTesting(true);
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
+        UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(true);
+        PersistedTabDataConfiguration.setUseTestConfig(true);
+        when(mTab1.isIncognito()).thenReturn(false);
+        when(mTab2.isIncognito()).thenReturn(false);
+        when(tab3.isIncognito()).thenReturn(false);
+
+        // 1. In-place batch reset (areTabsUnchanged == true):
+        // isTrackPricesOnTabsEnabled() is evaluated once for the batch instead of 3 times.
+        clearInvocations(mIdentityServicesProvider);
+        mMediator.resetWithListOfTabs(tabs, null, false);
+
+        assertThat(mModelList.size(), equalTo(3));
+        for (int i = 0; i < 3; i++) {
+            assertThat(
+                    mModelList.get(i).model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER),
+                    instanceOf(TabListMediator.ShoppingPersistedTabDataFetcher.class));
+        }
+        verify(mIdentityServicesProvider, times(1)).getIdentityManager(mProfile);
+
+        // 2. Full rebuild batch reset (areTabsUnchanged == false):
+        // isTrackPricesOnTabsEnabled() is evaluated once for all 3 tabs (+ 1 call from
+        // isPriceWelcomeMessageCardEnabled in the coalesced updateLayout pass).
+        mModelList.clear();
+        clearInvocations(mIdentityServicesProvider);
+        mMediator.resetWithListOfTabs(tabs, null, false);
+
+        assertThat(mModelList.size(), equalTo(3));
+        for (int i = 0; i < 3; i++) {
+            assertThat(
+                    mModelList.get(i).model.get(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER),
+                    instanceOf(TabListMediator.ShoppingPersistedTabDataFetcher.class));
+        }
+        verify(mIdentityServicesProvider, times(2)).getIdentityManager(mProfile);
+    }
+
+    @Test
+    public void testAddTabInfoToModelForTab_SkipsDefaultFaviconFetcherWhenInitialized() {
+        TabListFaviconProvider.TabFaviconFetcher tabFetcher =
+                Mockito.mock(TabListFaviconProvider.TabFaviconFetcher.class);
+        when(mTabListFaviconProvider.getDefaultFaviconFetcher(anyBoolean()))
+                .thenReturn(mTabFaviconFetcher);
+        when(mTabListFaviconProvider.getFaviconForTabFetcher(any(Tab.class)))
+                .thenReturn(tabFetcher);
+
+        when(mTabListFaviconProvider.isInitialized()).thenReturn(true);
+        mModelList.clear();
+        clearInvocations(mTabListFaviconProvider);
+        mMediator.resetWithListOfTabs(List.of(mTab1, mTab2), null, false);
+
+        assertEquals(tabFetcher, mModelList.get(0).model.get(TabProperties.FAVICON_FETCHER));
+        assertEquals(tabFetcher, mModelList.get(1).model.get(TabProperties.FAVICON_FETCHER));
+        verify(mTabListFaviconProvider, never()).getDefaultFaviconFetcher(anyBoolean());
+
+        when(mTabListFaviconProvider.isInitialized()).thenReturn(false);
+        mModelList.clear();
+        clearInvocations(mTabListFaviconProvider);
+        mMediator.resetWithListOfTabs(List.of(mTab1, mTab2), null, false);
+
+        assertEquals(
+                mTabFaviconFetcher, mModelList.get(0).model.get(TabProperties.FAVICON_FETCHER));
+        assertEquals(
+                mTabFaviconFetcher, mModelList.get(1).model.get(TabProperties.FAVICON_FETCHER));
+        verify(mTabListFaviconProvider, times(2)).getDefaultFaviconFetcher(anyBoolean());
     }
 
     @Test

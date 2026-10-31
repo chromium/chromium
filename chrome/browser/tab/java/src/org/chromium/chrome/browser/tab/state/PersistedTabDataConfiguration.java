@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
@@ -132,6 +133,7 @@ public enum PersistedTabDataConfiguration {
     @VisibleForTesting
     public static void setUseTestConfig(boolean useTestConfig) {
         sUseTestConfig = useTestConfig;
+        ResettersForTesting.register(() -> sUseTestConfig = false);
     }
 
     @VisibleForTesting

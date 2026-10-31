@@ -411,6 +411,8 @@ public class TabListMediator implements TabListNotificationHandler {
     private int mCurrentSpanCount;
     private @Nullable OnLongPressTabItemEventListener mOnLongPressTabItemEventListener;
     private boolean mSuppressUpdateLayout;
+    private boolean mInBatchReset;
+    private @Nullable Boolean mTrackPricesOnTabsEnabledForBatch;
 
     private final ActorUiTabController.Observer mActorObserver =
             new ActorUiTabController.Observer() {
@@ -1130,6 +1132,8 @@ public class TabListMediator implements TabListNotificationHandler {
      */
     public void resetWithListOfTabs(
             @Nullable List<Tab> tabs, @Nullable List<String> tabGroupSyncIds, boolean quickMode) {
+        mInBatchReset = true;
+        mTrackPricesOnTabsEnabledForBatch = null;
         mTrackingTabs = tabs != null;
         TabModel tabModel = mCurrentTabModelSupplier.get();
         if (tabs != null) {
@@ -1143,7 +1147,11 @@ public class TabListMediator implements TabListNotificationHandler {
         }
         // Only update tabs in place if there are no saved tab groups to be shown.
         if (tabGroupSyncIds == null && areTabsUnchanged(tabs)) {
-            if (tabs == null) return;
+            if (tabs == null) {
+                mInBatchReset = false;
+                mTrackPricesOnTabsEnabledForBatch = null;
+                return;
+            }
 
             for (int i = 0; i < tabs.size(); i++) {
                 Tab tab = tabs.get(i);
@@ -1155,6 +1163,8 @@ public class TabListMediator implements TabListNotificationHandler {
                 updateTab(index, tab, updateId, quickMode);
             }
             mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
+            mInBatchReset = false;
+            mTrackPricesOnTabsEnabledForBatch = null;
             return;
         }
 
@@ -1167,6 +1177,8 @@ public class TabListMediator implements TabListNotificationHandler {
 
         if (tabs == null && tabGroupSyncIds == null) {
             mSuppressUpdateLayout = false;
+            mInBatchReset = false;
+            mTrackPricesOnTabsEnabledForBatch = null;
             return;
         }
 
@@ -1201,6 +1213,8 @@ public class TabListMediator implements TabListNotificationHandler {
             }
         }
 
+        mInBatchReset = false;
+        mTrackPricesOnTabsEnabledForBatch = null;
         mSuppressUpdateLayout = false;
         updateLayout();
     }
@@ -1843,9 +1857,11 @@ public class TabListMediator implements TabListNotificationHandler {
         tabInfo.set(
                 TabProperties.QUICK_DELETE_ANIMATION_STATUS,
                 QuickDeleteAnimationStatus.TAB_RESTORE);
-        tabInfo.set(
-                TabProperties.FAVICON_FETCHER,
-                mTabListFaviconProvider.getDefaultFaviconFetcher(tab.isIncognito()));
+        if (!mTabListFaviconProvider.isInitialized()) {
+            tabInfo.set(
+                    TabProperties.FAVICON_FETCHER,
+                    mTabListFaviconProvider.getDefaultFaviconFetcher(tab.isIncognito()));
+        }
         tabInfo.set(TabProperties.IS_LOADING, false);
 
         setupPersistedTabDataFetcherForTab(tab, tabInfo);
@@ -2225,9 +2241,7 @@ public class TabListMediator implements TabListNotificationHandler {
 
     private void setupPersistedTabDataFetcherForTab(Tab tab, PropertyModel model) {
         if (mTabListConfig.supportsMessageCards && !tab.isIncognito()) {
-            assert mOriginalProfile != null;
-            if (PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mOriginalProfile)
-                    && !isTabInTabGroup(tab)) {
+            if (isTrackPricesOnTabsEnabled() && !isTabInTabGroup(tab)) {
                 model.set(
                         TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER,
                         new ShoppingPersistedTabDataFetcher(
@@ -2238,6 +2252,18 @@ public class TabListMediator implements TabListNotificationHandler {
         } else {
             model.set(TabProperties.SHOPPING_PERSISTED_TAB_DATA_FETCHER, null);
         }
+    }
+
+    private boolean isTrackPricesOnTabsEnabled() {
+        assert mOriginalProfile != null;
+        if (mTrackPricesOnTabsEnabledForBatch != null) {
+            return mTrackPricesOnTabsEnabledForBatch;
+        }
+        boolean enabled = PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mOriginalProfile);
+        if (mInBatchReset) {
+            mTrackPricesOnTabsEnabledForBatch = enabled;
+        }
+        return enabled;
     }
 
     void updateFaviconForTab(
@@ -2445,8 +2471,7 @@ public class TabListMediator implements TabListNotificationHandler {
                                 -1)
                 >= PriceTrackingFeatures.getAnnotationsEnabledMetricsWindowDurationMilliSeconds()) {
             RecordHistogram.recordBooleanHistogram(
-                    "Commerce.PriceDrop.AnnotationsEnabled",
-                    PriceTrackingUtilities.isTrackPricesOnTabsEnabled(mOriginalProfile));
+                    "Commerce.PriceDrop.AnnotationsEnabled", isTrackPricesOnTabsEnabled());
             preferencesManager.writeLong(
                     ChromePreferenceKeys.PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
                     System.currentTimeMillis());
