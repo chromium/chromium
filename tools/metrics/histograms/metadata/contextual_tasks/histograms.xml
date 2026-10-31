@@ -327,18 +327,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContextualTasks.EphemeralToolbarButton.Shown" enum="Boolean"
-    expires_after="2027-03-07">
-  <owner>dianaou@chromium.org</owner>
-  <owner>chrome-contextual-tasks-eng@google.com</owner>
-  <summary>
-    Recorded every time the ephemeral (unpinned) contextual tasks toolbar button
-    becomes visible in the browser toolbar. This occurs when an eligible
-    contextual task is active or suggested and the toolbar button transitions
-    from hidden to shown. Always recorded as true.
-  </summary>
-</histogram>
-
 <histogram
     name="ContextualTasks.EphemeralToolbarButton.ShownDuration{EndReason}"
     units="ms" expires_after="2027-04-15">
@@ -364,6 +352,27 @@ chromium-metrics-reviews@google.com.
     <variant name=".TaskDisassociated"
         summary="Recorded when the active tab is disassociated from its task
                  or the task is removed."/>
+  </token>
+</histogram>
+
+<histogram name="ContextualTasks.EphemeralToolbarButton.Shown{PanelState}"
+    enum="Boolean" expires_after="2027-03-07">
+  <owner>dianaou@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded every time the ephemeral (unpinned) contextual tasks toolbar button
+    becomes visible in the browser toolbar or transitions between its active
+    panel-open and collapsed panel-closed states. {PanelState} Always recorded
+    as true.
+  </summary>
+  <token key="PanelState">
+    <variant name="" summary="Recorded for all states combined."/>
+    <variant name=".ActivePanelCollapsed"
+        summary="Recorded when the button is shown in its collapsed
+                 (ephemeral thread) state while the side panel is closed."/>
+    <variant name=".ActivePanelOpen"
+        summary="Recorded when the button is shown in its active state while
+                 the side panel is open."/>
   </token>
 </histogram>
 

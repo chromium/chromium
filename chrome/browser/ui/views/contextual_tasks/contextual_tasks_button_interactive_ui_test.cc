@@ -1265,6 +1265,12 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
                          "ContextualTasks.EphemeralToolbarButton.Shown"));
         histogram_tester.ExpectUniqueSample(
             "ContextualTasks.EphemeralToolbarButton.Shown", true, 1);
+        EXPECT_EQ(1, user_action_tester.GetActionCount(
+                         "ContextualTasks.EphemeralToolbarButton.Shown."
+                         "ActivePanelCollapsed"));
+        histogram_tester.ExpectUniqueSample(
+            "ContextualTasks.EphemeralToolbarButton.Shown.ActivePanelCollapsed",
+            true, 1);
       }));
 }
 
@@ -1425,7 +1431,20 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPinningV2InteractiveTest,
       CreateTaskForTab(0),
       EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
       SimulateOpeningContextualTaskSidePanel(),
-      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId), Do([&]() {
+        EXPECT_EQ(1, user_action_tester.GetActionCount(
+                         "ContextualTasks.EphemeralToolbarButton.Shown."
+                         "ActivePanelOpen"));
+        histogram_tester.ExpectUniqueSample(
+            "ContextualTasks.EphemeralToolbarButton.Shown.ActivePanelOpen",
+            true, 1);
+        EXPECT_EQ(0, user_action_tester.GetActionCount(
+                         "ContextualTasks.EphemeralToolbarButton.Shown."
+                         "ActivePanelCollapsed"));
+        histogram_tester.ExpectTotalCount(
+            "ContextualTasks.EphemeralToolbarButton.Shown.ActivePanelCollapsed",
+            0);
+      }),
       CheckViewProperty(kContextualTasksEphemeralToolbarButtonElementId,
                         &ContextualTasksButton::IsHighlighted, true),
       CheckViewProperty(kContextualTasksEphemeralToolbarButtonElementId,
@@ -1434,7 +1453,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPinningV2InteractiveTest,
       CheckViewProperty(kContextualTasksEphemeralToolbarButtonElementId,
                         &views::View::GetTooltipText, expected_open_tooltip),
       SimulateClosingContextualTaskSidePanel(),
-      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId), Do([&]() {
+        EXPECT_EQ(1, user_action_tester.GetActionCount(
+                         "ContextualTasks.EphemeralToolbarButton.Shown."
+                         "ActivePanelCollapsed"));
+        histogram_tester.ExpectUniqueSample(
+            "ContextualTasks.EphemeralToolbarButton.Shown.ActivePanelCollapsed",
+            true, 1);
+      }),
       CheckViewProperty(kContextualTasksEphemeralToolbarButtonElementId,
                         &ContextualTasksButton::IsHighlighted, false),
       CheckViewProperty(kContextualTasksEphemeralToolbarButtonElementId,
@@ -1449,6 +1475,16 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPinningV2InteractiveTest,
         histogram_tester.ExpectUniqueSample(
             "ContextualTasks.EphemeralToolbarButton.UserAction.OpenSidePanel",
             true, 1);
+        EXPECT_EQ(2, user_action_tester.GetActionCount(
+                         "ContextualTasks.EphemeralToolbarButton.Shown."
+                         "ActivePanelOpen"));
+        histogram_tester.ExpectUniqueSample(
+            "ContextualTasks.EphemeralToolbarButton.Shown.ActivePanelOpen",
+            true, 2);
+        histogram_tester.ExpectTotalCount(
+            "ContextualTasks.EphemeralToolbarButton.ShownDuration", 1);
+        histogram_tester.ExpectTotalCount(
+            "ContextualTasks.EphemeralToolbarButton.ShownDuration.Clicked", 1);
         EXPECT_EQ(0, user_action_tester.GetActionCount(
                          "ContextualTasks.PermanentToolbarButton.UserAction."
                          "OpenSidePanel"));
@@ -1465,6 +1501,12 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonPinningV2InteractiveTest,
         histogram_tester.ExpectUniqueSample(
             "ContextualTasks.EphemeralToolbarButton.UserAction.CloseSidePanel",
             true, 1);
+        EXPECT_EQ(2, user_action_tester.GetActionCount(
+                         "ContextualTasks.EphemeralToolbarButton.Shown."
+                         "ActivePanelCollapsed"));
+        histogram_tester.ExpectUniqueSample(
+            "ContextualTasks.EphemeralToolbarButton.Shown.ActivePanelCollapsed",
+            true, 2);
         EXPECT_EQ(0, user_action_tester.GetActionCount(
                          "ContextualTasks.PermanentToolbarButton.UserAction."
                          "CloseSidePanel"));
@@ -2731,8 +2773,7 @@ IN_PROC_BROWSER_TEST_F(
     ContextualTasksEphemeralButtonPinningV2InteractiveTest,
     CloseSidePanelOptionOnlyShownWhenSidePanelClosedAndNotPinned) {
   RunTestSequence(
-      SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
-      Do([&]() {
+      SignIntoEligibleAccount(), InstrumentTab(kFirstTab), Do([&]() {
         PinnedToolbarActionsModel::Get(browser()->GetProfile())
             ->UpdatePinnedState(kActionSidePanelShowContextualTasks, false);
       }),

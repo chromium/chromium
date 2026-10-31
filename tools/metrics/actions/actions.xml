@@ -10358,13 +10358,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="ContextualTasks.EphemeralToolbarButton.Shown">
+<action name="ContextualTasks.EphemeralToolbarButton.Shown{PanelState}">
   <owner>dianaou@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
   <description>
     Recorded when the ephemeral contextual tasks toolbar button becomes visible
-    in the browser toolbar.
+    in the browser toolbar. {PanelState}
   </description>
+  <token key="PanelState">
+    <variant name="" summary="Recorded for all states combined."/>
+    <variant name=".ActivePanelCollapsed"
+        summary="Recorded when the button is shown in its collapsed
+                 (ephemeral thread) state while the side panel is closed."/>
+    <variant name=".ActivePanelOpen"
+        summary="Recorded when the button is shown in its active state while
+                 the side panel is open."/>
+  </token>
 </action>
 
 <action
