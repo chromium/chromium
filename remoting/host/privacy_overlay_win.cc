@@ -76,8 +76,8 @@ bool RegisterPrivacyOverlayClass(WNDPROC wnd_proc) {
 //    obstruction.
 // 2. Floating Disconnect Button Dialog (`hwnd_`):
 //    A single topmost dialog created from the localized `IDD_DISCONNECT`
-//    resource with only the "Stop Sharing" button (`IDC_DISCONNECT`) visible.
-//    In its idle state, `hwnd_` is hidden and click-through
+//    resource and resized to wrap only the "Stop Sharing" button
+//    (`IDC_DISCONNECT`). In its idle state, `hwnd_` is hidden and click-through
 //    (`WS_EX_TRANSPARENT`, alpha = 0) so remote clicks at the button's screen
 //    coordinates cannot accidentally disconnect the session. As
 //    defense-in-depth, any `WM_COMMAND(IDC_DISCONNECT)` message tagged with
@@ -131,9 +131,21 @@ class PrivacyOverlayWin : public DisconnectWindowBase {
   // hotkey, and releases cached GDI resources.
   void EndOverlay();
 
+  // Returns `control`'s bounding rectangle in `hwnd_`'s client coordinates.
+  bool GetControlRect(HWND control, RECT* rect);
+
+  // Resizes the Disconnect button dialog (`hwnd_`), its child button control
+  // (`IDC_DISCONNECT`), its DPI-scaled button font, and its rounded window
+  // region to match `dpi`.
+  void UpdateButtonLayoutForDpi(UINT dpi);
+
   // Returns the cached backdrop fonts and icon for `dpi`, creating and
   // inserting them into `backdrop_dpi_cache_` if not yet present.
   const BackdropDpiResources& GetBackdropResourcesForDpi(UINT dpi);
+
+  // Draws the background and contrasting rounded border of the Disconnect
+  // button dialog into `hdc`.
+  void PaintButtonDialog(HWND hwnd, HDC hdc);
 
   // Recreates or resizes per-monitor privacy overlay backdrop windows across
   // all active physical displays.
@@ -168,6 +180,20 @@ class PrivacyOverlayWin : public DisconnectWindowBase {
   // The floating Disconnect button dialog created from `IDD_DISCONNECT`.
   HWND hwnd_ = nullptr;
 
+  // The DPI for which `hwnd_`'s current size, font, border pen, and rounded
+  // region were computed.
+  UINT active_button_dpi_ = 0;
+
+  // Cached DPI-scaled font for `IDC_DISCONNECT` and border pen for `hwnd_`.
+  base::win::ScopedGDIObject<HFONT> button_font_;
+  base::win::ScopedGDIObject<HPEN> button_border_pen_;
+  bool cached_button_high_contrast_ = false;
+
+  // Base 96-DPI dimensions of the Disconnect button and its dialog margin,
+  // captured during `BeginOverlay()` before DPI scaling is applied.
+  int base_button_margin_ = kDefaultControlMarginPx;
+  int base_button_height_ = kDefaultButtonHeightPx;
+
   // Topmost click-through backdrop popup windows, one per active display.
   std::vector<HWND> backdrop_hwnds_;
 
@@ -185,6 +211,7 @@ class PrivacyOverlayWin : public DisconnectWindowBase {
   // `IDD_DISCONNECT` dialog template.
   std::wstring product_name_text_;
   std::wstring sharing_with_text_;
+  std::wstring button_text_;
 };
 
 PrivacyOverlayWin::BackdropDpiResources::BackdropDpiResources() = default;
@@ -289,6 +316,36 @@ BOOL PrivacyOverlayWin::OnDialogMessage(HWND hwnd,
         return TRUE;
       }
       return FALSE;
+
+    // Return the dialog background brush for child controls so the standard
+    // Win32 pushbutton does not paint a rectangular gray frame around its
+    // rounded parent dialog.
+    case WM_CTLCOLORBTN:
+    case WM_CTLCOLORSTATIC: {
+      if (IsHighContrastEnabled()) {
+        return reinterpret_cast<INT_PTR>(GetSysColorBrush(COLOR_WINDOW));
+      }
+      return reinterpret_cast<INT_PTR>(google_blue_brush_.get());
+    }
+
+    case WM_ERASEBKGND:
+      return TRUE;
+
+    case WM_PAINT: {
+      PAINTSTRUCT ps;
+      HDC hdc = BeginPaint(hwnd_, &ps);
+      PaintButtonDialog(hwnd_, hdc);
+      EndPaint(hwnd_, &ps);
+      return TRUE;
+    }
+
+    case WM_PRINTCLIENT: {
+      HDC hdc = reinterpret_cast<HDC>(wparam);
+      if (hdc) {
+        PaintButtonDialog(hwnd_, hdc);
+      }
+      return TRUE;
+    }
   }
   return FALSE;
 }
@@ -335,7 +392,8 @@ bool PrivacyOverlayWin::BeginOverlay() {
   }
 
   std::wstring message_text;
-  if (!GetWindowTextString(hwnd_message, &message_text)) {
+  if (!GetWindowTextString(hwnd_message, &message_text) ||
+      !GetWindowTextString(hwnd_button, &button_text_)) {
     return false;
   }
 
@@ -348,7 +406,8 @@ bool PrivacyOverlayWin::BeginOverlay() {
                 base::AsStringPiece16(message_text));
 
   // Configure extended styles for the Disconnect button window:
-  // - Strip `WS_EX_LAYOUTRTL` so GDI coordinates are not mirrored.
+  // - Strip `WS_EX_LAYOUTRTL` so GDI coordinates in `PaintButtonDialog()` are
+  //   not mirrored relative to the unmirrored `CreateRoundRectRgn()` region.
   // - `WS_EX_TOPMOST | WS_EX_TOOLWINDOW | WS_EX_NOACTIVATE`: stays above
   //   desktop windows without stealing focus and is never cloaked across
   //   virtual desktops (Win+Ctrl+D).
@@ -397,6 +456,33 @@ bool PrivacyOverlayWin::BeginOverlay() {
   }
   ShowWindow(hwnd_message, SW_HIDE);
 
+  // Measure the base control dimensions and normalize them to 96-DPI logical
+  // units so `UpdateButtonLayoutForDpi()` can scale them cleanly to any
+  // monitor.
+  UINT initial_dpi = GetMonitorDpi(nullptr, hwnd_);
+  RECT margin_rect = {0, 0, kWindowTextMargin, 0};
+  int margin_px = kDefaultControlMarginPx;
+  if (MapDialogRect(hwnd_, &margin_rect) && margin_rect.right > 0) {
+    margin_px = margin_rect.right;
+  }
+
+  RECT button_rect;
+  if (!GetControlRect(hwnd_button, &button_rect)) {
+    return false;
+  }
+
+  int button_height_px = button_rect.bottom - button_rect.top;
+  if (button_height_px <= 0) {
+    button_height_px = ScaleForDpi(kDefaultButtonHeightPx, initial_dpi);
+  }
+
+  base_button_margin_ =
+      std::max(1, MulDiv(margin_px, USER_DEFAULT_SCREEN_DPI, initial_dpi));
+  base_button_height_ = std::max(
+      1, MulDiv(button_height_px, USER_DEFAULT_SCREEN_DPI, initial_dpi));
+
+  UpdateButtonLayoutForDpi(initial_dpi);
+
   if (!UpdateBackdrops()) {
     return false;
   }
@@ -425,13 +511,86 @@ void PrivacyOverlayWin::EndOverlay() {
       DestroyWindow(backdrop_hwnd);
     }
   }
+  active_button_dpi_ = 0;
 
   backdrop_dpi_cache_.clear();
+  button_font_.reset();
+  button_border_pen_.reset();
 
   if (hwnd_) {
     HWND hwnd = std::exchange(hwnd_, nullptr);
     SetWindowLongPtr(hwnd, DWLP_USER, 0);
     DestroyWindow(hwnd);
+  }
+}
+
+bool PrivacyOverlayWin::GetControlRect(HWND control, RECT* rect) {
+  if (!GetWindowRect(control, rect)) {
+    return false;
+  }
+  SetLastError(ERROR_SUCCESS);
+  int result =
+      MapWindowPoints(HWND_DESKTOP, hwnd_, reinterpret_cast<LPPOINT>(rect), 2);
+  if (!result && GetLastError() != ERROR_SUCCESS) {
+    return false;
+  }
+
+  return true;
+}
+
+void PrivacyOverlayWin::UpdateButtonLayoutForDpi(UINT dpi) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!hwnd_ || dpi == 0 || dpi == active_button_dpi_) {
+    return;
+  }
+
+  HWND hwnd_button = GetDlgItem(hwnd_, IDC_DISCONNECT);
+  if (!hwnd_button) {
+    return;
+  }
+
+  active_button_dpi_ = dpi;
+  button_border_pen_.reset();
+
+  // Scale and assign the system UI font for the Disconnect button at `dpi`, and
+  // re-measure the localized button text width at the target DPI so the label
+  // is never clipped when moving across mixed-DPI monitors.
+  int button_font_height = ScaleForDpi(kBaseButtonFontSize, dpi);
+  button_font_ = CreateOverlayFont(button_font_height, FW_NORMAL);
+  if (button_font_.is_valid()) {
+    SendMessage(hwnd_button, WM_SETFONT,
+                reinterpret_cast<WPARAM>(button_font_.get()), TRUE);
+  }
+
+  LONG button_text_width = 0;
+  if (!GetControlTextWidth(hwnd_button, button_text_, is_rtl_,
+                           &button_text_width) ||
+      button_text_width <= 0) {
+    button_text_width = ScaleForDpi(kDefaultButtonTextWidthPx, dpi);
+  }
+
+  int margin = ScaleForDpi(base_button_margin_, dpi);
+  int button_width = button_text_width + margin * 2;
+  int button_height = ScaleForDpi(base_button_height_, dpi);
+  int dialog_width = button_width + margin * 2;
+  int dialog_height = button_height + margin * 2;
+  int border_radius = ScaleForDpi(kBaseWindowBorderRadius, dpi);
+
+  SetWindowPos(hwnd_button, nullptr, margin, margin, button_width,
+               button_height, SWP_NOZORDER | SWP_NOACTIVATE);
+  SetWindowPos(hwnd_, HWND_TOPMOST, 0, 0, dialog_width, dialog_height,
+               SWP_NOMOVE | SWP_NOACTIVATE);
+
+  // `CreateRoundRectRgn` excludes the bottom and right edges from the region,
+  // so add 1 pixel to width and height to keep the rounded corners symmetric.
+  // Use `ScopedGDIObject<HRGN>` and release ownership only after `SetWindowRgn`
+  // succeeds.
+  base::win::ScopedGDIObject<HRGN> rgn(CreateRoundRectRgn(
+      0, 0, dialog_width + 1, dialog_height + 1, border_radius, border_radius));
+  if (rgn.is_valid()) {
+    if (SetWindowRgn(hwnd_, rgn.get(), TRUE)) {
+      std::ignore = rgn.release();
+    }
   }
 }
 
@@ -461,6 +620,42 @@ PrivacyOverlayWin::GetBackdropResourcesForDpi(UINT dpi) {
   auto [inserted_it, _] =
       backdrop_dpi_cache_.emplace(dpi, std::move(resources));
   return inserted_it->second;
+}
+
+void PrivacyOverlayWin::PaintButtonDialog(HWND hwnd, HDC hdc) {
+  RECT rect;
+  if (!GetClientRect(hwnd, &rect)) {
+    return;
+  }
+
+  const bool high_contrast = IsHighContrastEnabled();
+  HBRUSH bg_brush =
+      high_contrast ? GetSysColorBrush(COLOR_WINDOW) : google_blue_brush_.get();
+  COLORREF border_color =
+      high_contrast ? GetSysColor(COLOR_WINDOWTEXT) : kWhiteColor;
+
+  FillRect(hdc, &rect, bg_brush);
+
+  UINT dpi = active_button_dpi_ > 0 ? active_button_dpi_
+                                    : GetMonitorDpi(nullptr, hwnd);
+  int border_width = std::max(1, ScaleForDpi(kBaseButtonBorderWidth, dpi));
+  int border_radius = ScaleForDpi(kBaseWindowBorderRadius, dpi);
+
+  if (!button_border_pen_.is_valid() ||
+      cached_button_high_contrast_ != high_contrast) {
+    cached_button_high_contrast_ = high_contrast;
+    button_border_pen_.reset(
+        CreatePen(PS_INSIDEFRAME, border_width, border_color));
+  }
+
+  // Inset the border rectangle by `border_width / 2` and use `PS_INSIDEFRAME`
+  // so the full stroke thickness remains inside `CreateRoundRectRgn` without
+  // clipping along the top/left edges or rounded corners.
+  int inset = border_width / 2;
+  base::win::ScopedSelectObject select_pen(hdc, button_border_pen_.get());
+  base::win::ScopedSelectObject select_brush(hdc, GetStockObject(NULL_BRUSH));
+  RoundRect(hdc, rect.left + inset, rect.top + inset, rect.right - inset,
+            rect.bottom - inset, border_radius, border_radius);
 }
 
 bool PrivacyOverlayWin::UpdateBackdrops() {

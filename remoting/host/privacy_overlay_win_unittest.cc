@@ -319,12 +319,15 @@ TEST_F(PrivacyOverlayWinTest,
   }
 }
 
-TEST_F(PrivacyOverlayWinTest, PaintsBackdropBackgroundAndDestroysCleanly) {
+TEST_F(PrivacyOverlayWinTest, PaintsBackdropAndButtonDialogBackgrounds) {
   StartOverlay();
 
   OverlayThreadWindows windows = FindOverlayThreadWindows();
   ASSERT_NE(windows.button_hwnd, nullptr);
   ASSERT_FALSE(windows.backdrop_hwnds.empty());
+
+  EXPECT_NE(SendMessage(windows.button_hwnd, WM_CTLCOLORBTN, 0, 0), 0);
+  EXPECT_NE(SendMessage(windows.button_hwnd, WM_CTLCOLORSTATIC, 0, 0), 0);
 
   HWND backdrop_hwnd = windows.backdrop_hwnds.front();
   RECT client_rect = {};
@@ -354,6 +357,10 @@ TEST_F(PrivacyOverlayWinTest, PaintsBackdropBackgroundAndDestroysCleanly) {
       mem_dc.get(), std::max(0, center_x - 160), std::max(0, center_y - 160),
       std::min(client_width, center_x + 160),
       std::min(client_height, center_y + 120), expected_bg_color));
+
+  SendMessage(windows.button_hwnd, WM_PRINTCLIENT,
+              reinterpret_cast<WPARAM>(mem_dc.get()), PRF_CLIENT);
+  EXPECT_EQ(GetPixel(mem_dc.get(), 10, 10), expected_bg_color);
 
   EXPECT_CALL(client_session_control_, DisconnectSession(_, _, _)).Times(0);
   overlay_.reset();
