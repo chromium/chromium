@@ -41,15 +41,12 @@
 #include "media/media_buildflags.h"
 
 #if defined(CLEAR_KEY_CDM_USE_FFMPEG_DECODER)
-#include "base/at_exit.h"
-#include "base/files/file_path.h"
-#include "base/path_service.h"
 #include "media/cdm/library_cdm/clear_key_cdm/ffmpeg_cdm_audio_decoder.h"
-
-#if !defined COMPONENT_BUILD
-static base::AtExitManager g_at_exit_manager;
-#endif
-#endif  // CLEAR_KEY_CDM_USE_FFMPEG_DECODER
+#if !defined(COMPONENT_BUILD)
+#include "base/at_exit.h"
+#include "base/no_destructor.h"
+#endif  // !defined(COMPONENT_BUILD)
+#endif  // defined(CLEAR_KEY_CDM_USE_FFMPEG_DECODER)
 
 constexpr char kClearKeyCdmVersion[] = "0.1.0.1";
 
@@ -145,6 +142,12 @@ void ConvertCdmKeysInfo(const media::CdmKeysInfo& keys_info,
 
 void INITIALIZE_CDM_MODULE() {
   DVLOG(1) << __func__;
+#if defined(CLEAR_KEY_CDM_USE_FFMPEG_DECODER) && !defined(COMPONENT_BUILD)
+  // Non-component builds link a private copy of //base into this loadable
+  // module, requiring a module-lifetime AtExitManager for base singletons.
+  static base::NoDestructor<base::AtExitManager> exit_manager;
+#endif  // defined(CLEAR_KEY_CDM_USE_FFMPEG_DECODER) &&
+        // !defined(COMPONENT_BUILD)
   media::InitializeMediaLibrary();
   g_is_cdm_module_initialized = true;
 }

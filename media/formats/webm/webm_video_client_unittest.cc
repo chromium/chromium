@@ -4,6 +4,9 @@
 
 #include "media/formats/webm/webm_video_client.h"
 
+#include <cstdint>
+#include <vector>
+
 #include "media/base/media_util.h"
 #include "media/base/mock_media_log.h"
 #include "media/base/video_decoder_config.h"
@@ -23,23 +26,10 @@ MATCHER(UnexpectedMultipleValues, "") {
 }
 }
 
-static const struct CodecTestParams {
+struct CodecTestParams {
   VideoCodecProfile profile;
   const std::vector<uint8_t> codec_private;
-} kCodecTestParams[] = {
-    {VP9PROFILE_PROFILE0, {}},
-    {VP9PROFILE_PROFILE2,
-     // Valid VP9 Profile 2 example, extracted out of a sample file at
-     // https://www.webmproject.org/vp9/levels/#test-bitstreams
-     {0x01, 0x01, 0x02, 0x02, 0x01, 0x0a, 0x3, 0x1, 0xa, 0x4, 0x1, 0x1}},
-    // Invalid VP9 CodecPrivate: too short.
-    {VP9PROFILE_PROFILE0, {0x01, 0x01}},
-    // Invalid VP9 CodecPrivate: wrong field id.
-    {VP9PROFILE_PROFILE0, {0x77, 0x01, 0x02}},
-    // Invalid VP9 CodecPrivate: wrong field length.
-    {VP9PROFILE_PROFILE0, {0x01, 0x75, 0x02}},
-    // Invalid VP9 CodecPrivate: wrong Profile (can't be > 3).
-    {VP9PROFILE_PROFILE0, {0x01, 0x01, 0x34}}};
+};
 
 class WebMVideoClientTest : public testing::TestWithParam<CodecTestParams> {
  public:
@@ -280,8 +270,23 @@ TEST_F(WebMVideoClientTest, VerifyTransformationFromProjection) {
   verify_yaw(-180.0 + kYawMirrorThreshold, !kMirrored);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         WebMVideoClientTest,
-                         ::testing::ValuesIn(kCodecTestParams));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    WebMVideoClientTest,
+    ::testing::Values(
+        CodecTestParams{VP9PROFILE_PROFILE0, {}},
+        CodecTestParams{
+            VP9PROFILE_PROFILE2,
+            // Valid VP9 Profile 2 example, extracted out of a sample file at
+            // https://www.webmproject.org/vp9/levels/#test-bitstreams
+            {0x01, 0x01, 0x02, 0x02, 0x01, 0x0a, 0x3, 0x1, 0xa, 0x4, 0x1, 0x1}},
+        // Invalid VP9 CodecPrivate: too short.
+        CodecTestParams{VP9PROFILE_PROFILE0, {0x01, 0x01}},
+        // Invalid VP9 CodecPrivate: wrong field id.
+        CodecTestParams{VP9PROFILE_PROFILE0, {0x77, 0x01, 0x02}},
+        // Invalid VP9 CodecPrivate: wrong field length.
+        CodecTestParams{VP9PROFILE_PROFILE0, {0x01, 0x75, 0x02}},
+        // Invalid VP9 CodecPrivate: wrong Profile (can't be > 3).
+        CodecTestParams{VP9PROFILE_PROFILE0, {0x01, 0x01, 0x34}}));
 
 }  // namespace media

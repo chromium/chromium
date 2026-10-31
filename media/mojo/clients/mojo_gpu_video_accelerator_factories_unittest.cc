@@ -31,6 +31,7 @@
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_decoder_config.h"
+#include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/clients/mojo_codec_factory.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
@@ -76,49 +77,6 @@ constexpr gfx::Size kMaxDecoderTestSize(8192, 8192);
 constexpr auto kGpuStreamPriorityDefault = gpu::SchedulingPriority::kNormal;
 constexpr int kGpuStreamIdDefault = 0;
 
-const media::SupportedVideoDecoderConfig kH264MaxSupportedVideoDecoderConfig =
-    media::SupportedVideoDecoderConfig(
-        media::VideoCodecProfile::H264PROFILE_MIN,
-        media::VideoCodecProfile::H264PROFILE_MAX,
-        kMinDecoderTestSize,
-        kMaxDecoderTestSize,
-        true,
-        false);
-
-const media::VideoDecoderConfig kH264BaseConfig(
-    media::VideoCodec::kH264,
-    media::H264PROFILE_MIN,
-    media::VideoDecoderConfig::AlphaMode::kIsOpaque,
-    media::VideoColorSpace(),
-    media::kNoTransformation,
-    kCodedSize,
-    kVisibleRect,
-    kNaturalSize,
-    media::EmptyExtraData(),
-    media::EncryptionScheme::kUnencrypted);
-
-const media::VideoDecoderConfig kVP9BaseConfig(
-    media::VideoCodec::kVP9,
-    media::VP9PROFILE_MIN,
-    media::VideoDecoderConfig::AlphaMode::kIsOpaque,
-    media::VideoColorSpace(),
-    media::kNoTransformation,
-    kCodedSize,
-    kVisibleRect,
-    kNaturalSize,
-    media::EmptyExtraData(),
-    media::EncryptionScheme::kUnencrypted);
-
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
-const media::SupportedVideoDecoderConfig kH265MaxSupportedVideoDecoderConfig =
-    media::SupportedVideoDecoderConfig(
-        media::VideoCodecProfile::HEVCPROFILE_MIN,
-        media::VideoCodecProfile::HEVCPROFILE_MAX,
-        kMinDecoderTestSize,
-        kMaxDecoderTestSize,
-        true,
-        false);
-#endif
 }  // namespace
 
 class TestGpuChannelHost : public gpu::GpuChannelHost {
@@ -497,6 +455,47 @@ class MojoGpuVideoAcceleratorFactoriesTest : public testing::Test {
   }
 
  protected:
+  const media::SupportedVideoDecoderConfig
+      h264_max_supported_video_decoder_config_{
+          media::VideoCodecProfile::H264PROFILE_MIN,
+          media::VideoCodecProfile::H264PROFILE_MAX,
+          kMinDecoderTestSize,
+          kMaxDecoderTestSize,
+          true,
+          false};
+  const media::VideoDecoderConfig h264_base_config_{
+      media::VideoCodec::kH264,
+      media::H264PROFILE_MIN,
+      media::VideoDecoderConfig::AlphaMode::kIsOpaque,
+      media::VideoColorSpace(),
+      media::kNoTransformation,
+      kCodedSize,
+      kVisibleRect,
+      kNaturalSize,
+      media::EmptyExtraData(),
+      media::EncryptionScheme::kUnencrypted};
+  const media::VideoDecoderConfig vp9_base_config_{
+      media::VideoCodec::kVP9,
+      media::VP9PROFILE_MIN,
+      media::VideoDecoderConfig::AlphaMode::kIsOpaque,
+      media::VideoColorSpace(),
+      media::kNoTransformation,
+      kCodedSize,
+      kVisibleRect,
+      kNaturalSize,
+      media::EmptyExtraData(),
+      media::EncryptionScheme::kUnencrypted};
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  const media::SupportedVideoDecoderConfig
+      h265_max_supported_video_decoder_config_{
+          media::VideoCodecProfile::HEVCPROFILE_MIN,
+          media::VideoCodecProfile::HEVCPROFILE_MAX,
+          kMinDecoderTestSize,
+          kMaxDecoderTestSize,
+          true,
+          false};
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME,
@@ -524,7 +523,7 @@ TEST_F(MojoGpuVideoAcceleratorFactoriesTest, VideoDecoderAcceleratorDisabled) {
   EXPECT_FALSE(
       gpu_video_accelerator_factories->IsGpuVideoDecodeAcceleratorEnabled());
   EXPECT_EQ(gpu_video_accelerator_factories->IsDecoderConfigSupported(
-                kH264BaseConfig),
+                h264_base_config_),
             media::GpuVideoAcceleratorFactories::Supported::kFalse);
   EXPECT_EQ(gpu_video_accelerator_factories->GetDecoderType(),
             media::VideoDecoderType::kUnknown);
@@ -621,7 +620,7 @@ TEST_F(MojoGpuVideoAcceleratorFactoriesDeathTest, CreateVideoDecoderFailed) {
 #if BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER) || BUILDFLAG(IS_FUCHSIA)
 TEST_F(MojoGpuVideoAcceleratorFactoriesTest, DecoderConfigIsSupported) {
   fake_media_codec_provider_.SetSupportedVideoDecoderConfigs(
-      {kH264MaxSupportedVideoDecoderConfig});
+      {h264_max_supported_video_decoder_config_});
 
   auto gpu_video_accelerator_factories =
       CreateGpuVideoAcceleratorFactories(true, false);
@@ -633,7 +632,7 @@ TEST_F(MojoGpuVideoAcceleratorFactoriesTest, DecoderConfigIsSupported) {
       future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(gpu_video_accelerator_factories->IsDecoderConfigSupported(
-                kH264BaseConfig),
+                h264_base_config_),
             media::GpuVideoAcceleratorFactories::Supported::kTrue);
   EXPECT_NE(gpu_video_accelerator_factories->GetDecoderType(),
             media::VideoDecoderType::kUnknown);
@@ -641,7 +640,7 @@ TEST_F(MojoGpuVideoAcceleratorFactoriesTest, DecoderConfigIsSupported) {
 
 TEST_F(MojoGpuVideoAcceleratorFactoriesTest, DecoderConfigIsNotSupported) {
   fake_media_codec_provider_.SetSupportedVideoDecoderConfigs(
-      {kH264MaxSupportedVideoDecoderConfig});
+      {h264_max_supported_video_decoder_config_});
 
   auto gpu_video_accelerator_factories =
       CreateGpuVideoAcceleratorFactories(true, false);
@@ -652,17 +651,17 @@ TEST_F(MojoGpuVideoAcceleratorFactoriesTest, DecoderConfigIsNotSupported) {
   gpu_video_accelerator_factories->NotifyDecoderSupportKnown(
       future.GetCallback());
   EXPECT_TRUE(future.Wait());
-  EXPECT_EQ(
-      gpu_video_accelerator_factories->IsDecoderConfigSupported(kVP9BaseConfig),
-      media::GpuVideoAcceleratorFactories::Supported::kFalse);
+  EXPECT_EQ(gpu_video_accelerator_factories->IsDecoderConfigSupported(
+                vp9_base_config_),
+            media::GpuVideoAcceleratorFactories::Supported::kFalse);
 }
 
 TEST_F(MojoGpuVideoAcceleratorFactoriesTest, GetSupportedVideoDecoderConfigs) {
   fake_media_codec_provider_.SetSupportedVideoDecoderConfigs(
-      {kH264MaxSupportedVideoDecoderConfig
+      {h264_max_supported_video_decoder_config_
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
        ,
-       kH265MaxSupportedVideoDecoderConfig
+       h265_max_supported_video_decoder_config_
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
       });
 
@@ -682,12 +681,12 @@ TEST_F(MojoGpuVideoAcceleratorFactoriesTest, GetSupportedVideoDecoderConfigs) {
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)
   EXPECT_EQ(supported_profiles->size(), static_cast<size_t>(2));
   EXPECT_THAT(*supported_profiles,
-              UnorderedElementsAre(kH264MaxSupportedVideoDecoderConfig,
-                                   kH265MaxSupportedVideoDecoderConfig));
+              UnorderedElementsAre(h264_max_supported_video_decoder_config_,
+                                   h265_max_supported_video_decoder_config_));
 #else
   EXPECT_EQ(supported_profiles->size(), static_cast<size_t>(1));
   EXPECT_THAT(*supported_profiles,
-              UnorderedElementsAre(kH264MaxSupportedVideoDecoderConfig));
+              UnorderedElementsAre(h264_max_supported_video_decoder_config_));
 #endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 }
 
@@ -714,7 +713,7 @@ TEST_F(MojoGpuVideoAcceleratorFactoriesTest, DefaultMojoCodecFactory) {
       future.GetCallback());
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(gpu_video_accelerator_factories->IsDecoderConfigSupported(
-                kH264BaseConfig),
+                h264_base_config_),
             media::GpuVideoAcceleratorFactories::Supported::kFalse);
 }
 #endif  // BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER) || BUILDFLAG(IS_FUCHSIA)
