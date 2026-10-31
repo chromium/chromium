@@ -25,6 +25,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_LISTED_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_LISTED_ELEMENT_H_
 
+#include <stdint.h>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -231,7 +233,7 @@ class CORE_EXPORT ListedElement : public GarbageCollectedMixin {
   //       FIELDSET ancestors.
   mutable bool may_have_fieldset_ancestor_ = true;
 
-  enum class AncestorDisabledState { kUnknown, kEnabled, kDisabled };
+  enum class AncestorDisabledState : uint8_t { kUnknown, kEnabled, kDisabled };
   mutable AncestorDisabledState ancestor_disabled_state_ =
       AncestorDisabledState::kUnknown;
 
@@ -251,10 +253,8 @@ class CORE_EXPORT ListedElement : public GarbageCollectedMixin {
 
   ValidationMessageClient* GetValidationMessageClient() const;
 
-  Member<FormAttributeTargetObserver> form_attribute_target_observer_;
-  Member<HTMLFormElement> form_;
-  Member<ValidityState> validity_state_;
-  String custom_validation_message_;
+  // Keep the one-byte fields ahead of the Member and String fields to avoid
+  // padding. See SameSizeAsListedElement.
   bool has_validation_message_ : 1;
   // If form_was_set_by_parser_ is true, form_ is always non-null.
   bool form_was_set_by_parser_ : 1;
@@ -271,13 +271,18 @@ class CORE_EXPORT ListedElement : public GarbageCollectedMixin {
   bool is_element_disabled_ : 1;
   bool is_readonly_ : 1;
 
-  enum class DataListAncestorState {
+  enum class DataListAncestorState : uint8_t {
     kUnknown,
     kInsideDataList,
     kNotInsideDataList
   };
   mutable enum DataListAncestorState data_list_ancestor_state_ =
       DataListAncestorState::kUnknown;
+
+  Member<FormAttributeTargetObserver> form_attribute_target_observer_;
+  Member<HTMLFormElement> form_;
+  Member<ValidityState> validity_state_;
+  String custom_validation_message_;
 };
 
 }  // namespace blink

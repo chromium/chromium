@@ -55,9 +55,18 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/line_ending.h"
 
 namespace blink {
+
+struct SameSizeAsListedElement : GarbageCollectedMixin {
+  uint8_t small_fields[4];
+  Member<void*> members[3];
+  String string_member;
+};
+
+ASSERT_SIZE(ListedElement, SameSizeAsListedElement);
 
 namespace {
 
