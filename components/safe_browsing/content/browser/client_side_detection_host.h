@@ -365,6 +365,14 @@ class ClientSideDetectionHost
 
   // ClientSideDetectionHostBase overrides:
   void CancelPendingRequests() override;
+  // Browser-side capture is not implemented for content platforms yet; runs
+  // `callback` with an empty image.
+  void CaptureScreenshot(ScreenshotCallback callback) override;
+  // Determines visual features extraction capabilities.
+  // `can_extract_visual_features_result` will be used to handle visual features
+  // in ClientPhishingRequest after.
+  visual_utils::CanExtractVisualFeaturesResult
+  DetermineVisualFeaturesExtraction() override;
   void ShowBlockingPage(
       GURL phishing_url,
       ClientSideDetectionType request_type,
@@ -440,12 +448,6 @@ class ClientSideDetectionHost
       base::TimeTicks start_time,
       mojom::PhishingDetectorResult result,
       std::optional<mojo_base::ProtoWrapper> verdict);
-
-  // Determines visual features extraction capabilities.
-  // `can_extract_visual_features_result` will be used to handle visual features
-  // in ClientPhishingRequest after.
-  visual_utils::CanExtractVisualFeaturesResult
-  DetermineVisualFeaturesExtraction();
 
   // |verdict| is an encoded ClientPhishingRequest protocol message, |result| is
   // the outcome of the renderer image embedding. The verdict is passed into

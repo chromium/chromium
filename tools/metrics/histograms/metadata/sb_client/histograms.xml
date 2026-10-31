@@ -1628,6 +1628,19 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="RequestType" variants="ClientSideDetectionRequestType"/>
 </histogram>
 
+<histogram name="SBClientPhishing.VisualClassificationEarlyReturnReason"
+    enum="SBClientPhishingVisualClassificationEarlyReturnReason"
+    expires_after="2027-04-15">
+  <owner>richche@google.com</owner>
+  <owner>nwokedi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the reason why browser-side visual phishing classification stopped
+    before the classifier ran, such as a missing scorer or snapshot generation
+    failure.
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.VisualExtractionFrameState"
     enum="SBClientPhishingVisualExtractionFrameState"
     expires_after="2027-04-04">

@@ -8,9 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/callback_list.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/safe_browsing/core/browser/client_side_detection_service_base.h"
 
@@ -44,22 +42,6 @@ class ClientSideDetectionService : public ClientSideDetectionServiceBase {
 
   ~ClientSideDetectionService() override;
 
-  // `Observer` interface to listen to `Scorer` updates. This is a thin adapter
-  // over `ClientSideDetectionServiceBase::RegisterCallbackForScorerUpdates()`.
-  class Observer : public base::CheckedObserver {
-   public:
-    ~Observer() override = default;
-    virtual void OnScorerChanged() = 0;
-  };
-
-  // Adds an observer to listen for changes to the `Scorer` (e.g. when a new
-  // model is loaded or the service is disabled).
-  void AddObserver(Observer* observer);
-
-  // Removes a previously added observer that was listening for changes to the
-  // `Scorer`.
-  void RemoveObserver(Observer* observer);
-
   // Sets the `SharedURLLoaderFactory` for testing.
   void SetSharedURLLoaderFactoryForTesting(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
@@ -74,12 +56,6 @@ class ClientSideDetectionService : public ClientSideDetectionServiceBase {
   void DidReceiveClientPhishingResponse(
       const ClientPhishingResponse& response) override;
   bool ShouldCreateBrowserScorer() const override;
-
-  // Forwards base-class scorer updates to `observers_`.
-  void NotifyScorerChanged();
-
-  base::ObserverList<Observer> observers_;
-  base::CallbackListSubscription scorer_update_subscription_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

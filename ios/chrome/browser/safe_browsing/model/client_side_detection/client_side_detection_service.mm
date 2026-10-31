@@ -24,30 +24,15 @@ ClientSideDetectionService::ClientSideDetectionService(
     : ClientSideDetectionServiceBase(prefs, opt_guide) {
   CHECK(prefs);
   url_loader_factory_ = std::move(url_loader_factory);
-  // Subscribe before `OnPrefsUpdated()`, which may already build a `Scorer`.
-  scorer_update_subscription_ = RegisterCallbackForScorerUpdates(
-      base::BindRepeating(&ClientSideDetectionService::NotifyScorerChanged,
-                          base::Unretained(this)));
   OnPrefsUpdated();
 }
 
 ClientSideDetectionService::~ClientSideDetectionService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Unsubscribe before the base class clears the `Scorer` in its destructor so
-  // that `observers_` is not notified while this object is partially
-  // destroyed.
-  scorer_update_subscription_ = base::CallbackListSubscription();
 }
 
 bool ClientSideDetectionService::ShouldCreateBrowserScorer() const {
   return true;
-}
-
-void ClientSideDetectionService::NotifyScorerChanged() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (auto& observer : observers_) {
-    observer.OnScorerChanged();
-  }
 }
 
 void ClientSideDetectionService::
@@ -55,16 +40,6 @@ void ClientSideDetectionService::
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   url_loader_factory_ = std::move(url_loader_factory);
-}
-
-void ClientSideDetectionService::AddObserver(Observer* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  observers_.AddObserver(observer);
-}
-
-void ClientSideDetectionService::RemoveObserver(Observer* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  observers_.RemoveObserver(observer);
 }
 
 void ClientSideDetectionService::DidSendClientReportPhishingRequest(

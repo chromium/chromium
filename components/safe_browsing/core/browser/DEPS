@@ -20,5 +20,7 @@ include_rules = [
   "+components/optimization_guide/proto",
   "+crypto/hash.h",
   "+tensorflow_lite_support/cc/port/statusor.h",
+  "+third_party/skia/include/core/SkBitmap.h",
   "+third_party/zlib/google/compression_utils.h",
+  "+ui/gfx/image/image.h",
 ]

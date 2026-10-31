@@ -757,7 +757,15 @@ ClientSideDetectionHost::~ClientSideDetectionHost() {
 void ClientSideDetectionHost::CancelPendingRequests() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   weak_factory_.InvalidateWeakPtrs();
+  CancelBrowserSideClassification();
   ClientSideDetectionHostBase::CancelPendingRequests();
+}
+
+void ClientSideDetectionHost::CaptureScreenshot(ScreenshotCallback callback) {
+  // TODO(crbug.com/454896977): Capture the composited surface via
+  // `RenderWidgetHostView::CopyFromSurface()` behind
+  // `kClientSideDetectionCopyFromSurface`.
+  std::move(callback).Run(gfx::Image());
 }
 
 void ClientSideDetectionHost::GetInnerText(HostInnerTextCallback callback) {

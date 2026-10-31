@@ -480,7 +480,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Scorer is missing after snapshot"/>
 </enum>
 
-<!-- LINT.ThenChange(//ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_host_ios.h:VisualClassificationEarlyReturnReason) -->
+<!-- LINT.ThenChange(//components/safe_browsing/core/browser/client_side_detection_host_base.h:VisualClassificationEarlyReturnReason) -->
 
 <!-- LINT.IfChange(SBClientPhishingVisualExtractionFrameState) -->
 

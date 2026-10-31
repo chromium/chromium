@@ -17,7 +17,6 @@
 #import "components/safe_browsing/core/browser/client_side_detection_host_base.h"
 #import "components/safe_browsing/core/browser/db/database_manager.h"
 #import "components/safe_browsing/core/common/phishing_classifier/phishing_classifier.h"
-#import "components/safe_browsing/core/common/phishing_classifier/phishing_image_embedder.h"
 #import "components/safe_browsing/core/common/visual_utils.h"
 #import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_service.h"
 #import "ios/chrome/browser/web/model/web_performance_metrics/web_performance_metrics_tab_helper.h"
@@ -49,27 +48,12 @@ class ClientSideDetectionHostIOSTest;
 class IntelligentScanDelegate;
 class VerdictCacheManager;
 
-// Reasons why visual classification returned early on iOS.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(VisualClassificationEarlyReturnReason)
-enum class VisualClassificationEarlyReturnReason {
-  kScorerMissingBeforeSnapshot = 0,
-  kSnapshotHelperMissing = 1,
-  kSnapshotFailed = 2,
-  kScorerMissingAfterSnapshot = 3,
-  kMaxValue = kScorerMissingAfterSnapshot,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/sb_client/enums.xml:SBClientPhishingVisualClassificationEarlyReturnReason)
-
 // Host that manages client-side phishing detection for a WebState.
 class ClientSideDetectionHostIOS
     : public ClientSideDetectionHostBase,
       public web::WebStateObserver,
       public SafeBrowsingQueryManager::Observer,
-      public WebPerformanceMetricsTabHelper::Observer,
-      public ClientSideDetectionService::Observer {
+      public WebPerformanceMetricsTabHelper::Observer {
  public:
   // Constructs a host instance managing client-side detection for `web_state`.
   // `service`, `cache_manager`, `pref_service`, `identity_manager`, and
@@ -136,6 +120,11 @@ class ClientSideDetectionHostIOS
   // This provides a minimal fallback containing only the current event URL and
   // its immediate HTTP referrer.
   void AddReferrerChain(ClientPhishingRequest* verdict) override;
+  void CaptureScreenshot(ScreenshotCallback callback) override;
+  visual_utils::CanExtractVisualFeaturesResult
+  DetermineVisualFeaturesExtraction() override;
+  void OnVisualClassificationEarlyReturn(
+      VisualClassificationEarlyReturnReason reason) override;
 
   // web::WebStateObserver implementation:
   void DidFinishNavigation(web::WebState* web_state,
@@ -167,9 +156,6 @@ class ClientSideDetectionHostIOS
 
  private:
   friend class ClientSideDetectionHostIOSTest;
-
-  // ClientSideDetectionService::Observer implementation:
-  void OnScorerChanged() override;
 
   // WebPerformanceMetricsTabHelper::Observer implementation:
   void OnFirstContentfulPaint(WebPerformanceMetricsTabHelper* tab_helper,
@@ -235,27 +221,15 @@ class ClientSideDetectionHostIOS
   // Callback invoked when `SnapshotTabHelper` produces a snapshot of the page.
   void OnSnapshotReceived(const GURL& url, UIImage* ui_image);
 
-  // Callback invoked when `PhishingClassifier` completes visual phishing
-  // classification.
+  // Forwards a completed visual classification to the base class together
+  // with the pre-classification state (`send_sample_ping_`,
+  // `did_match_high_confidence_allowlist_`) held by this host.
   void OnClassificationDone(const GURL& url,
                             const gfx::Image& image,
                             ClientSideDetectionType request_type,
                             base::TimeTicks classification_start_time,
                             const ClientPhishingRequest& verdict,
                             PhishingClassifier::Result result);
-
-  // Returns whether visual features can be extracted from the current page.
-  visual_utils::CanExtractVisualFeaturesResult
-  DetermineVisualFeaturesExtraction();
-
-  // Callback invoked when `PhishingImageEmbedder` completes image embedding.
-  void OnImageEmbeddingDone(
-      std::unique_ptr<safe_browsing::ClientPhishingRequest> verdict,
-      std::optional<bool> did_match_high_confidence_allowlist,
-      bool is_invalid_ip,
-      safe_browsing::PhishingImageEmbedder::Result result,
-      const safe_browsing::ImageFeatureEmbedding& image_embedding,
-      const safe_browsing::VisualFeatures& visual_features);
 
   // Callback invoked when `PageContextWrapper` completes inner text (and
   // optional tab screenshot) extraction.
@@ -281,13 +255,6 @@ class ClientSideDetectionHostIOS
   // `PageContextWrapper` for inner text extraction.
   __strong PageContextWrapper* page_context_wrapper_ = nil;
 
-  std::unique_ptr<PhishingClassifier> classifier_;
-  std::unique_ptr<PhishingImageEmbedder> image_embedder_;
-
-  // Cached page snapshot image associated with active visual classification.
-  // Retained on classification success for downstream visual image embedding.
-  gfx::Image classification_image_;
-
   bool is_preclassifying_ = false;
   bool is_page_loaded_ = false;
   bool is_fcp_received_ = false;
@@ -303,10 +270,6 @@ class ClientSideDetectionHostIOS
   base::ScopedObservation<SafeBrowsingQueryManager,
                           SafeBrowsingQueryManager::Observer>
       query_manager_observation_{this};
-
-  base::ScopedObservation<ClientSideDetectionService,
-                          ClientSideDetectionService::Observer>
-      scorer_observation_{this};
 
   // Invalidation factory dedicated to inner text extraction callbacks.
   base::WeakPtrFactory<ClientSideDetectionHostIOS> inner_text_weak_factory_{
