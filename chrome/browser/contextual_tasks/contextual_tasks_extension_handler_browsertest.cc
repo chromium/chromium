@@ -5798,7 +5798,7 @@ IN_PROC_BROWSER_TEST_F(
         share_tab_loop.Quit();
       });
   AllowSessionTokenCreation();
-  panel_controller->ShareTabsWithActiveOrNewThread({active_tab_handle});
+  panel_controller->ShareTabsWithNewThread({active_tab_handle});
   share_tab_loop.Run();
   ASSERT_EQ(user_data->GetSelectedTabs().size(), 1u);
   EXPECT_EQ(user_data->GetSelectedTabs()[0].url, url2);
@@ -5846,7 +5846,7 @@ IN_PROC_BROWSER_TEST_F(
   auto* panel_controller = ContextualTasksPanelController::From(browser());
   const tabs::TabHandle tab1_handle =
       TabListInterface::From(browser())->GetActiveTab()->GetHandle();
-  panel_controller->ShareTabsWithActiveOrNewThread({tab1_handle});
+  panel_controller->ShareTabsWithNewThread({tab1_handle});
   content::WebContents* panel_contents =
       panel_controller->GetActiveWebContents();
   ASSERT_NE(panel_contents, nullptr);
@@ -5914,7 +5914,7 @@ IN_PROC_BROWSER_TEST_F(
         tab1_upload_loop.Quit();
       });
   AllowSessionTokenCreation();
-  panel_controller->ShareTabsWithActiveOrNewThread({tab1_handle});
+  panel_controller->ShareTabsWithNewThread({tab1_handle});
   tab1_upload_loop.Run();
   EXPECT_EQ(user_data->GetSelectedTabs().size(), 2u);
 

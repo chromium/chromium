@@ -104,7 +104,7 @@ void ContextualTasksTabSubMenuModel::ExecuteCommand(int command_id,
   }
 
   if (command_id == TabStripModel::CommandAiModeCreateNewThread) {
-    panel_controller->ShareTabsWithActiveOrNewThread(tab_handles);
+    panel_controller->ShareTabsWithNewThread(tab_handles);
   } else if (command_id >= kMinRecentThreadCommandId &&
              command_id <= kMaxRecentThreadCommandId) {
     const size_t thread_index =

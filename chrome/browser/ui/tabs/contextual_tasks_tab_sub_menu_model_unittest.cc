@@ -90,7 +90,7 @@ TEST_F(ContextualTasksTabSubMenuModelTest,
   EXPECT_FALSE(submenu.IsItemCheckedAt(0));
 
   EXPECT_CALL(*mock_panel_controller_,
-              ShareTabsWithActiveOrNewThread(ElementsAre(tab->GetHandle())))
+              ShareTabsWithNewThread(ElementsAre(tab->GetHandle())))
       .Times(1);
   submenu.ExecuteCommand(TabStripModel::CommandAiModeCreateNewThread, 0);
 }
@@ -111,7 +111,7 @@ TEST_F(ContextualTasksTabSubMenuModelTest,
 
   ContextualTasksTabSubMenuModel submenu(&tab_strip_model_, 0);
   EXPECT_CALL(*mock_panel_controller_,
-              ShareTabsWithActiveOrNewThread(UnorderedElementsAre(
+              ShareTabsWithNewThread(UnorderedElementsAre(
                   valid_tab_1->GetHandle(), valid_tab_2->GetHandle())))
       .Times(1);
   submenu.ExecuteCommand(TabStripModel::CommandAiModeCreateNewThread, 0);
@@ -126,9 +126,8 @@ TEST_F(ContextualTasksTabSubMenuModelTest,
   ASSERT_TRUE(tab_strip_model_.IsTabSelected(1));
 
   ContextualTasksTabSubMenuModel submenu(&tab_strip_model_, 0);
-  EXPECT_CALL(
-      *mock_panel_controller_,
-      ShareTabsWithActiveOrNewThread(ElementsAre(unselected_tab->GetHandle())))
+  EXPECT_CALL(*mock_panel_controller_,
+              ShareTabsWithNewThread(ElementsAre(unselected_tab->GetHandle())))
       .Times(1);
   submenu.ExecuteCommand(TabStripModel::CommandAiModeCreateNewThread, 0);
 }
@@ -139,8 +138,7 @@ TEST_F(ContextualTasksTabSubMenuModelTest,
   ContextualTasksTabSubMenuModel submenu(&tab_strip_model_, 0);
   tab_strip_model_.CloseAllTabs();
 
-  EXPECT_CALL(*mock_panel_controller_,
-              ShareTabsWithActiveOrNewThread(testing::_))
+  EXPECT_CALL(*mock_panel_controller_, ShareTabsWithNewThread(testing::_))
       .Times(0);
   submenu.ExecuteCommand(TabStripModel::CommandAiModeCreateNewThread, 0);
 }

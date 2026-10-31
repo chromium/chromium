@@ -489,7 +489,7 @@ TEST_F(TabMenuModelTest, AiModeShareSubMenuEnabledForValidUrl) {
   EXPECT_TRUE(submenu->IsEnabledAt(0));
 
   EXPECT_CALL(mock_panel_controller,
-              ShareTabsWithActiveOrNewThread(testing::ElementsAre(
+              ShareTabsWithNewThread(testing::ElementsAre(
                   tab_strip_model.GetTabAtIndex(0)->GetHandle())))
       .Times(1);
   submenu->ActivatedAt(0);
