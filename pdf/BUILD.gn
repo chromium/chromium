@@ -89,11 +89,6 @@ if (enable_pdf) {
     ]
   }
 
-  source_set("pdf_skia_font_manager") {
-    sources = [ "pdf_skia_font_manager.cc" ]
-    deps = [ "//skia" ]
-  }
-
   source_set("structs") {
     configs += [ ":strict" ]
 
