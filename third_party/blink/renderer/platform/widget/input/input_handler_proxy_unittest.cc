@@ -4318,7 +4318,8 @@ class InputHandlerProxyEventMetricsTest : public testing::Test {
  public:
   InputHandlerProxyEventMetricsTest()
       : input_handler_proxy_(mock_input_handler_, &mock_client_) {
-    tick_clock_.SetNowTicks(base::TimeTicks::Now());
+    tick_clock_.SetNowTicks(WebInputEvent::GetStaticTimeStampForTests() +
+                            base::Seconds(1));
     input_handler_proxy_.SetTickClockForTesting(&tick_clock_);
   }
 
@@ -4406,7 +4407,7 @@ TEST_P(InputHandlerProxyScrollEventMetricsTest, SavesScrollEndMetrics) {
 
   cc::EventMetrics::List saved_metrics =
       mock_input_handler_.events_metrics_manager.TakeSavedEventsMetrics();
-  EXPECT_THAT(saved_metrics, SizeIs(1u));
+  ASSERT_THAT(saved_metrics, SizeIs(1u));
   EXPECT_EQ(saved_metrics[0]->type(), param.expected_event_type);
   EXPECT_EQ(
       saved_metrics[0]->AsScroll()->begin_frame_args().frame_id.sequence_number,
@@ -4513,7 +4514,7 @@ TEST_P(InputHandlerProxyScrollUpdateEventMetricsTest,
 
   cc::EventMetrics::List saved_metrics =
       mock_input_handler_.events_metrics_manager.TakeSavedEventsMetrics();
-  EXPECT_THAT(saved_metrics, SizeIs(1u));
+  ASSERT_THAT(saved_metrics, SizeIs(1u));
   EXPECT_EQ(saved_metrics[0]->type(), param.expected_event_type);
   EXPECT_EQ(
       saved_metrics[0]->AsScroll()->begin_frame_args().frame_id.sequence_number,
@@ -4608,7 +4609,7 @@ TEST_F(InputHandlerProxyEventMetricsTest, ScrollEndRequiresMainThreadRepaint) {
 
   cc::EventMetrics::List saved_metrics =
       mock_input_handler_.events_metrics_manager.TakeSavedEventsMetrics();
-  EXPECT_THAT(saved_metrics, SizeIs(1u));
+  ASSERT_THAT(saved_metrics, SizeIs(1u));
   EXPECT_EQ(saved_metrics[0]->type(),
             cc::EventMetrics::EventType::kGestureScrollEnd);
   EXPECT_TRUE(saved_metrics[0]->requires_main_thread_update());
