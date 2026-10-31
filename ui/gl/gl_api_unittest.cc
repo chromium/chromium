@@ -6,8 +6,11 @@
 
 #include <array>
 #include <memory>
+#include <string>
 #include <string_view>
+#include <vector>
 
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/strings/string_split.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,6 +25,9 @@ namespace gl {
 
 class GLApiTest : public testing::Test {
  public:
+  GLApiTest() { current_instance_ = this; }
+  ~GLApiTest() override { current_instance_ = nullptr; }
+
   static GLFunctionPointerType GL_BINDING_CALL
   FakeGLGetProcAddress(const char* proc) {
     return reinterpret_cast<GLFunctionPointerType>(0x1);
@@ -108,18 +114,16 @@ class GLApiTest : public testing::Test {
 
   static const GLubyte* GL_BINDING_CALL FakeGetStringi(GLenum name,
                                                        GLuint index) {
-    // |extensions| needs to be static so we can return c_str() from
-    // its elements.
-    static std::vector<std::string> extensions;
+    CHECK(current_instance_);
     const char* ext_str = (name == GL_REQUESTABLE_EXTENSIONS_ANGLE)
                               ? fake_requestable_extension_string_
                               : fake_extension_string_;
-    extensions = base::SplitString(ext_str, " ", base::TRIM_WHITESPACE,
-                                   base::SPLIT_WANT_NONEMPTY);
-    GLuint count = static_cast<GLuint>(extensions.size());
-    return (index < count)
-               ? reinterpret_cast<const GLubyte*>(extensions[index].c_str())
-               : nullptr;
+    current_instance_->extensions_ = base::SplitString(
+        ext_str, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    GLuint count = static_cast<GLuint>(current_instance_->extensions_.size());
+    return (index < count) ? reinterpret_cast<const GLubyte*>(
+                                 current_instance_->extensions_[index].c_str())
+                           : nullptr;
   }
 
   const char* GetExtensions() {
@@ -154,14 +158,17 @@ class GLApiTest : public testing::Test {
   }
 
  protected:
+  static GLApiTest* current_instance_;
   static const char* fake_extension_string_;
   static const char* fake_requestable_extension_string_;
   static const char* fake_version_string_;
 
+  std::vector<std::string> extensions_;
   std::unique_ptr<DriverGL> driver_;
   std::unique_ptr<RealGLApi> api_;
 };
 
+GLApiTest* GLApiTest::current_instance_ = nullptr;
 const char* GLApiTest::fake_extension_string_ = "";
 const char* GLApiTest::fake_requestable_extension_string_ = "";
 const char* GLApiTest::fake_version_string_ = "";

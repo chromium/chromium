@@ -4,6 +4,9 @@
 
 #include "cc/test/cc_test_suite.h"
 
+#include <memory>
+
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_id_name_manager.h"
@@ -14,17 +17,25 @@
 
 namespace cc {
 
-std::unique_ptr<base::test::TaskEnvironment> CCTestSuite::task_environment_;
+namespace {
+CCTestSuite* g_cc_test_suite = nullptr;
+}  // namespace
 
-CCTestSuite::CCTestSuite(int argc, char** argv)
-    : base::TestSuite(argc, argv) {}
+CCTestSuite::CCTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {
+  CHECK(!g_cc_test_suite);
+  g_cc_test_suite = this;
+}
 
-CCTestSuite::~CCTestSuite() = default;
+CCTestSuite::~CCTestSuite() {
+  CHECK_EQ(g_cc_test_suite, this);
+  g_cc_test_suite = nullptr;
+}
 
 // static
 void CCTestSuite::RunUntilIdle() {
-  CHECK(task_environment_);
-  task_environment_->RunUntilIdle();
+  CHECK(g_cc_test_suite);
+  CHECK(g_cc_test_suite->task_environment_);
+  g_cc_test_suite->task_environment_->RunUntilIdle();
 }
 
 void CCTestSuite::Initialize() {
@@ -46,7 +57,7 @@ void CCTestSuite::Initialize() {
 
 void CCTestSuite::Shutdown() {
   CHECK(task_environment_);
-  task_environment_ = nullptr;
+  task_environment_.reset();
 
   base::TestSuite::Shutdown();
 }

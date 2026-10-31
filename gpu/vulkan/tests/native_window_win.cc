@@ -7,15 +7,19 @@
 #include <windows.h>
 
 #include <memory>
+#include <utility>
 
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "ui/gfx/win/window_impl.h"
 
 namespace gpu {
+namespace {
 
 class Window;
-
-base::flat_map<gfx::AcceleratedWidget, std::unique_ptr<Window>> g_windows_;
+using WindowMap =
+    base::flat_map<gfx::AcceleratedWidget, std::unique_ptr<Window>>;
+WindowMap* g_windows = nullptr;
 
 class Window : public gfx::WindowImpl {
  public:
@@ -34,20 +38,30 @@ class Window : public gfx::WindowImpl {
   }
 };
 
+}  // namespace
+
 gfx::AcceleratedWidget CreateNativeWindow(const gfx::Rect& bounds) {
   auto window = std::make_unique<Window>();
   window->Init(/*parent=*/nullptr, bounds);
   gfx::AcceleratedWidget widget = window->hwnd();
-  g_windows_[widget] = std::move(window);
+  if (!g_windows) {
+    g_windows = new WindowMap();
+  }
+  (*g_windows)[widget] = std::move(window);
   return widget;
 }
 
 void DestroyNativeWindow(gfx::AcceleratedWidget window) {
-  auto it = g_windows_.find(window);
-  CHECK(it != g_windows_.end());
+  CHECK(g_windows);
+  auto it = g_windows->find(window);
+  CHECK(it != g_windows->end());
 
   it->second.reset();
-  g_windows_.erase(it);
+  g_windows->erase(it);
+  if (g_windows->empty()) {
+    delete g_windows;
+    g_windows = nullptr;
+  }
 }
 
 }  // namespace gpu

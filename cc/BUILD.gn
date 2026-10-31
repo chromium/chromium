@@ -1070,6 +1070,10 @@ cc_test("cc_unittests") {
       "//components/test:viz_test_bundle_data",
     ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs = [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 cc_test("cc_perftests") {

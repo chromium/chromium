@@ -34,7 +34,7 @@ class CCTestSuite : public base::TestSuite {
   void Shutdown() override;
 
  private:
-  static std::unique_ptr<base::test::TaskEnvironment> task_environment_;
+  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
 
   base::TestDiscardableMemoryAllocator discardable_memory_allocator_;
 };

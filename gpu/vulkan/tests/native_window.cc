@@ -4,6 +4,10 @@
 
 #include "gpu/vulkan/tests/native_window.h"
 
+#include <memory>
+#include <utility>
+
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/notimplemented.h"
 #include "build/build_config.h"
@@ -12,10 +16,15 @@
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
-#endif
+#endif  // BUILDFLAG(IS_OZONE)
 
 namespace gpu {
 namespace {
+
+class Window;
+using WindowMap =
+    base::flat_map<gfx::AcceleratedWidget, std::unique_ptr<Window>>;
+WindowMap* g_windows = nullptr;
 
 class Window : public ui::PlatformWindowDelegate {
  public:
@@ -32,7 +41,7 @@ class Window : public ui::PlatformWindowDelegate {
 #else
     NOTIMPLEMENTED();
     return;
-#endif
+#endif  // BUILDFLAG(IS_OZONE)
     platform_window_->Show();
   }
 
@@ -60,23 +69,30 @@ class Window : public ui::PlatformWindowDelegate {
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
 };
 
-base::flat_map<gfx::AcceleratedWidget, std::unique_ptr<Window>> g_windows_;
-
 }  // namespace
 
 gfx::AcceleratedWidget CreateNativeWindow(const gfx::Rect& bounds) {
   auto window = std::make_unique<Window>();
   window->Initialize(bounds);
   gfx::AcceleratedWidget widget = window->widget();
-  if (widget != gfx::kNullAcceleratedWidget)
-    g_windows_[widget] = std::move(window);
+  if (widget != gfx::kNullAcceleratedWidget) {
+    if (!g_windows) {
+      g_windows = new WindowMap();
+    }
+    (*g_windows)[widget] = std::move(window);
+  }
   return widget;
 }
 
 void DestroyNativeWindow(gfx::AcceleratedWidget window) {
-  auto it = g_windows_.find(window);
-  CHECK(it != g_windows_.end());
-  g_windows_.erase(it);
+  CHECK(g_windows);
+  auto it = g_windows->find(window);
+  CHECK(it != g_windows->end());
+  g_windows->erase(it);
+  if (g_windows->empty()) {
+    delete g_windows;
+    g_windows = nullptr;
+  }
 }
 
 }  // namespace gpu
