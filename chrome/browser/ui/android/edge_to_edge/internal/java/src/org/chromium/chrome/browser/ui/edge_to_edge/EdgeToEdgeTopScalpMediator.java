@@ -78,7 +78,7 @@ class EdgeToEdgeTopScalpMediator
         mTopControlsStacker.addControl(this);
 
         // Observe EdgeToEdgeController via ChangeObserver. EdgeToEdgeControllerImpl
-        // notifies mBottomEdgeChangeObservers whenever top edge-to-edge state or window insets
+        // notifies mEdgeChangeObservers whenever top edge-to-edge state or window insets
         // change.
         mEdgeToEdgeController.registerObserver(this);
         mLayoutManager.addObserver(this);

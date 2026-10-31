@@ -2571,37 +2571,43 @@ public class EdgeToEdgeControllerTest {
                 createMockTab(
                         JUnitTestGURLs.NTP_URL,
                         /* isNativePage= */ true,
-                        /* supportsTopEdgeToEdge= */ true);
+                        /* supportsTopEdgeToEdge= */ false);
         mTabProvider.set(tab);
-        clearInvocations(mInsetObserver);
+        clearInvocations(mInsetObserver, mChangeObserver);
 
-        // Verifies that retriggerOnApplyWindowInsets() is called when a customized background is
-        // selected.
+        // Verifies that retriggerOnApplyWindowInsets() and ChangeObserver are notified when a
+        // customized background is selected.
+        when(tab.getNativePage().supportsEdgeToEdgeOnTop()).thenReturn(true);
         mEdgeToEdgeControllerImpl.onNtpBackgroundChanged(
                 /* fromInitialization= */ false,
                 /* oldType= */ NtpBackgroundType.DEFAULT,
                 /* newType= */ NtpBackgroundType.CHROME_COLOR);
         verify(mInsetObserver).retriggerOnApplyWindowInsets();
+        verify(mChangeObserver).onToEdgeChange(eq(BOTTOM_INSET), eq(false), eq(false));
 
-        // Verifies that retriggerOnApplyWindowInsets() isn't called again when switching between
-        // customized backgrounds.
-        clearInvocations(mInsetObserver);
+        // Verifies that retriggerOnApplyWindowInsets() and ChangeObserver aren't called again when
+        // switching between customized backgrounds.
+        clearInvocations(mInsetObserver, mChangeObserver);
         mEdgeToEdgeControllerImpl.onNtpBackgroundChanged(
                 /* fromInitialization= */ false,
                 /* oldType= */ NtpBackgroundType.CHROME_COLOR,
                 /* newType= */ NtpBackgroundType.THEME_COLLECTION);
         verify(mInsetObserver, never()).retriggerOnApplyWindowInsets();
+        verify(mChangeObserver, never()).onToEdgeChange(anyInt(), anyBoolean(), anyBoolean());
 
-        // Verifies that retriggerOnApplyWindowInsets() is called when customized background is
-        // reset.
+        // Verifies that retriggerOnApplyWindowInsets() and ChangeObserver are notified when
+        // customized background is reset.
+        when(tab.getNativePage().supportsEdgeToEdgeOnTop()).thenReturn(false);
         mEdgeToEdgeControllerImpl.onNtpBackgroundReset(
                 /* oldType= */ NtpBackgroundType.THEME_COLLECTION);
         verify(mInsetObserver).retriggerOnApplyWindowInsets();
+        verify(mChangeObserver).onToEdgeChange(eq(BOTTOM_INSET), eq(false), eq(false));
 
         // Verifies no-op when background type was already default.
-        clearInvocations(mInsetObserver);
+        clearInvocations(mInsetObserver, mChangeObserver);
         mEdgeToEdgeControllerImpl.onNtpBackgroundReset(/* oldType= */ NtpBackgroundType.DEFAULT);
         verify(mInsetObserver, never()).retriggerOnApplyWindowInsets();
+        verify(mChangeObserver, never()).onToEdgeChange(anyInt(), anyBoolean(), anyBoolean());
     }
 
     @Test
@@ -2688,22 +2694,78 @@ public class EdgeToEdgeControllerTest {
         assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
 
         // Verify setting the same value (false) is a no-op.
-        clearInvocations(mInsetObserver);
+        clearInvocations(mInsetObserver, mChangeObserver);
         mEdgeToEdgeControllerImpl.setStatusIndicatorVisible(false);
         verify(mInsetObserver, never()).retriggerOnApplyWindowInsets();
+        verify(mChangeObserver, never()).onToEdgeChange(anyInt(), anyBoolean(), anyBoolean());
 
         // Set status indicator visible — top inset should NOT be consumed on NTP.
         mEdgeToEdgeControllerImpl.setStatusIndicatorVisible(true);
         verify(mInsetObserver).retriggerOnApplyWindowInsets();
+        verify(mChangeObserver).onToEdgeChange(eq(BOTTOM_INSET), eq(false), eq(false));
         mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
 
         // Hide status indicator — top inset should be consumed again on NTP.
-        clearInvocations(mInsetObserver);
+        clearInvocations(mInsetObserver, mChangeObserver);
         mEdgeToEdgeControllerImpl.setStatusIndicatorVisible(false);
         verify(mInsetObserver).retriggerOnApplyWindowInsets();
+        verify(mChangeObserver).onToEdgeChange(eq(BOTTOM_INSET), eq(false), eq(false));
         mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
         assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
+    public void testTopEdgeChangeOnly_NotifiesEdgeChangeObservers() {
+        EdgeToEdgeUtils.setHas3ButtonNavBarForTesting(true);
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
+        Tab customNtpTab =
+                createMockTab(
+                        JUnitTestGURLs.NTP_URL,
+                        /* isNativePage= */ true,
+                        /* supportsTopEdgeToEdge= */ true);
+        clearInvocations(mInsetObserver, mChangeObserver);
+
+        // Switching to a custom NTP on 3-button nav changes top edge-to-edge only.
+        mEdgeToEdgeControllerImpl.onTabSwitched(customNtpTab);
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToEdge());
+        verify(mChangeObserver).onToEdgeChange(eq(BOTTOM_INSET), eq(false), eq(false));
+
+        // Content change on the tab that disables top edge-to-edge notifies ChangeObserver once.
+        clearInvocations(mInsetObserver, mChangeObserver);
+        when(customNtpTab.getNativePage().supportsEdgeToEdgeOnTop()).thenReturn(false);
+        mEdgeToEdgeControllerImpl.getTabObserverForTesting().onContentChanged(customNtpTab);
+        assertFalse(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        verify(mChangeObserver).onToEdgeChange(eq(BOTTOM_INSET), eq(false), eq(false));
+    }
+
+    @Test
+    @EnableFeatures(EDGE_TO_EDGE_TOP_INSET_REFACTOR_ONLY)
+    public void testTopAndBottomEdgeChange_NotifiesObserversAndUpdatesPaddingOnce() {
+        mEdgeToEdgeControllerImpl.handleWindowInsets(mView, SYSTEM_BARS_WINDOW_INSETS);
+        assertEquals(
+                Insets.of(0, TOP_INSET, 0, BOTTOM_INSET),
+                mEdgeToEdgeControllerImpl.getAppliedContentViewPaddingForTesting());
+        Tab customNtpTab =
+                createMockTab(
+                        JUnitTestGURLs.NTP_URL,
+                        /* isNativePage= */ true,
+                        /* supportsTopEdgeToEdge= */ true);
+        when(customNtpTab.getNativePage().supportsEdgeToEdgeOnBottom()).thenReturn(true);
+        clearInvocations(mInsetObserver, mChangeObserver);
+
+        // Switching to a custom NTP where both top and bottom edge-to-edge are supported on
+        // gesture nav should update padding and notify observers only once.
+        mEdgeToEdgeControllerImpl.onTabSwitched(customNtpTab);
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToTopEdge());
+        assertTrue(mEdgeToEdgeControllerImpl.isDrawingToEdge());
+        assertEquals(
+                Insets.of(0, 0, 0, 0),
+                mEdgeToEdgeControllerImpl.getAppliedContentViewPaddingForTesting());
+        verify(mChangeObserver, times(1)).onToEdgeChange(eq(BOTTOM_INSET), eq(true), eq(true));
+        verify(mInsetObserver, times(1)).updateBottomInsetForEdgeToEdge(eq(BOTTOM_INSET));
     }
 
     @Test
