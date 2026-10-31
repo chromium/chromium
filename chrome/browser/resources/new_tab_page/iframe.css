@@ -12,8 +12,10 @@
 }
 
 #iframe {
+  background-color: transparent;
   border: none;
   border-radius: inherit;
+  color-scheme: inherit;
   display: block;
   frame-sizing: inherit;
   height: inherit;

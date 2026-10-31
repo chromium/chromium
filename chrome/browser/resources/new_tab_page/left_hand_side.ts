@@ -60,7 +60,10 @@ export class LeftHandSideElement extends CrLitElement {
       enableThreadsRailHybrid_: {type: Boolean},
       expandedLhsUrl_: {type: String},
       expandedWidth_: {type: Number},
-      isDark: {type: Boolean},
+      isDark: {
+        type: Boolean,
+        reflect: true,
+      },
       isExpanded_: {type: Boolean},
       isExpandedReady_: {type: Boolean},
     };
