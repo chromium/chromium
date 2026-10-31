@@ -71,6 +71,7 @@ class WebGLConformanceIntegrationTestBase(
   gpu_integration_test.GpuIntegrationTest
 ):
   _webgl_version: int | None = None
+  _webgl_on_webgpu = False
   _crash_count = 0
   _original_environ: Mapping | None = None
   page_loaded = False
@@ -152,6 +153,7 @@ class WebGLConformanceIntegrationTestBase(
   def _SetClassVariablesFromOptions(cls, options: ct.ParsedCmdArgs) -> None:
     super()._SetClassVariablesFromOptions(options)
     cls._webgl_version = int(options.webgl_conformance_version.split('.')[0])
+    cls._webgl_on_webgpu = _IsWebGLOnWebGPUEnabled(options.browser_options)
     if not cls._conformance_harness_script:
       with open(
         os.path.join(
@@ -657,3 +659,11 @@ class WebGLConformanceIntegrationTestBase(
   @classmethod
   def ExpectationsFiles(cls) -> list[str]:
     raise NotImplementedError()
+
+
+def _IsWebGLOnWebGPUEnabled(browser_options: Any) -> bool:
+  for arg in getattr(browser_options, 'extra_browser_args', None) or []:
+    if arg.startswith('--enable-features='):
+      if 'WebGLOnWebGPU' in arg.removeprefix('--enable-features=').split(','):
+        return True
+  return False

@@ -90,11 +90,16 @@ class WebGL2ConformanceIntegrationTest(
 
   @classmethod
   def ExpectationsFiles(cls) -> list[str]:
+    filename = (
+      'webgl2_conformance_webgl_on_webgpu_expectations.txt'
+      if cls._webgl_on_webgpu
+      else 'webgl2_conformance_expectations.txt'
+    )
     return [
       os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
         'test_expectations',
-        'webgl2_conformance_expectations.txt',
+        filename,
       )
     ]
 
