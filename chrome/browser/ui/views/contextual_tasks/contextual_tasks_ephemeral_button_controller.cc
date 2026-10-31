@@ -872,12 +872,21 @@ void ContextualTasksEphemeralButtonController::
       browser_window_interface_->GetProfile());
   const bool should_show = ShouldShowPinnedButtonActiveIndicator();
   if (close_side_panel_action_item_) {
-    const bool should_show_close_side_panel =
+    // The ephemeral (unpinned) button offers "Close/Hide side panel" whenever
+    // it is shown for an ongoing task. The permanently pinned button offers it
+    // only when the active indicator is showing and the corresponding
+    // `ContextualTasksPinnedButtonContextMenuCloseSidePanel` param is on.
+    const bool ephemeral_button_eligible =
+        !is_pinned &&
         (should_show ||
          (contextual_tasks::
               IsContextualTasksEphemeralPinButtonRefactorEnabled() &&
-          ShouldShowEphemeralButton())) &&
-        !is_pinned && !IsPanelOpen();
+          ShouldShowEphemeralButton()));
+    const bool pinned_button_eligible =
+        is_pinned && should_show &&
+        contextual_tasks::ShouldShowCloseSidePanelInPinnedButtonContextMenu();
+    const bool should_show_close_side_panel =
+        (ephemeral_button_eligible || pinned_button_eligible) && !IsPanelOpen();
     close_side_panel_action_item_->SetVisible(should_show_close_side_panel);
     close_side_panel_action_item_->SetEnabled(should_show_close_side_panel);
   }
