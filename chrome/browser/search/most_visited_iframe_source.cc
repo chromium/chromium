@@ -4,7 +4,9 @@
 
 #include "chrome/browser/search/most_visited_iframe_source.h"
 
+#include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_util.h"
@@ -22,9 +24,9 @@
 namespace {
 
 // Multi-iframe version, used by third party remote NTPs.
-const char kTitleHTMLPath[] = "/title.html";
-const char kTitleCSSPath[] = "/title.css";
-const char kTitleJSPath[] = "/title.js";
+constexpr std::string_view kTitleHTMLPath = "/title.html";
+constexpr std::string_view kTitleCSSPath = "/title.css";
+constexpr std::string_view kTitleJSPath = "/title.js";
 
 }  // namespace
 
@@ -42,7 +44,7 @@ void MostVisitedIframeSource::StartDataRequest(
     content::URLDataSource::GotDataCallback callback) {
   // TODO(crbug.com/40050262): Simplify usages of |path| since |url| is
   // available.
-  const std::string path(url.GetPath());
+  std::string_view path = url.path();
 
   if (path == kTitleHTMLPath) {
     SendResource(IDR_NEW_TAB_PAGE_INSTANT_MOST_VISITED_TITLE_HTML,
@@ -84,14 +86,14 @@ bool MostVisitedIframeSource::ShouldServiceRequest(
   return InstantService::ShouldServiceRequest(url, browser_context,
                                               render_process_id) &&
          url.SchemeIs(chrome::kChromeSearchScheme) &&
-         url.host() == GetSource() && ServesPath(url.GetPath());
+         url.host() == GetSource() && ServesPath(url.path());
 }
 
 bool MostVisitedIframeSource::ShouldDenyXFrameOptions() {
   return false;
 }
 
-bool MostVisitedIframeSource::ServesPath(const std::string& path) const {
+bool MostVisitedIframeSource::ServesPath(std::string_view path) const {
   return path == kTitleHTMLPath || path == kTitleCSSPath ||
          path == kTitleJSPath;
 }
@@ -134,8 +136,8 @@ bool MostVisitedIframeSource::GetOrigin(
   if (!entry)
     return false;
 
-  *origin = entry->GetURL().DeprecatedGetOriginAsURL().spec();
   // Origin should not include a trailing slash. That is part of the path.
-  base::TrimString(*origin, "/", origin);
+  *origin = base::TrimString(entry->GetURL().DeprecatedGetOriginAsURL().spec(),
+                             "/", base::TRIM_ALL);
   return true;
 }

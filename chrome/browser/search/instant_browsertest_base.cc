@@ -5,8 +5,10 @@
 #include "chrome/browser/search/instant_browsertest_base.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -55,13 +57,14 @@ ntp_tiles::MostVisitedSites* InstantBrowserTestBase::most_visited_sites() {
 }
 
 void InstantBrowserTestBase::SetUserSelectedDefaultSearchProvider(
-    const std::string& base_url) {
+    std::string_view base_url) {
   TemplateURLData data;
   data.SetShortName(base::UTF8ToUTF16(base_url));
   data.SetKeyword(base::UTF8ToUTF16(base_url));
-  data.SetURL(base_url + "url?bar={searchTerms}");
-  data.new_tab_url = base_url + "newtab";
-  data.alternate_urls.push_back(base_url + "alt#quux={searchTerms}");
+  data.SetURL(base::StrCat({base_url, "url?bar={searchTerms}"}));
+  data.new_tab_url = base::StrCat({base_url, "newtab"});
+  data.alternate_urls.push_back(
+      base::StrCat({base_url, "alt#quux={searchTerms}"}));
 
   TemplateURL* template_url =
       template_url_service_->Add(std::make_unique<TemplateURL>(data));

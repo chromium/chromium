@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -13,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_view_util.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/elapsed_timer.h"
@@ -31,15 +33,15 @@
 
 namespace {
 
-const char kWallpaperSearchHistoryId[] = "id";
-const char kWallpaperSearchHistoryMood[] = "mood";
-const char kWallpaperSearchHistoryStyle[] = "style";
-const char kWallpaperSearchHistorySubject[] = "subject";
+constexpr std::string_view kWallpaperSearchHistoryId = "id";
+constexpr std::string_view kWallpaperSearchHistoryMood = "mood";
+constexpr std::string_view kWallpaperSearchHistoryStyle = "style";
+constexpr std::string_view kWallpaperSearchHistorySubject = "subject";
 
-void DeleteWallpaperSearchImage(const std::string& id,
+void DeleteWallpaperSearchImage(std::string_view id,
                                 const base::FilePath& profile_path) {
-  base::FilePath path = profile_path.AppendASCII(
-      id + chrome::kChromeUIUntrustedNewTabPageBackgroundFilename);
+  base::FilePath path = profile_path.AppendASCII(base::StrCat(
+      {id, chrome::kChromeUIUntrustedNewTabPageBackgroundFilename}));
   base::ThreadPool::PostTask(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::GetDeleteFileCallback(path));
@@ -111,13 +113,14 @@ void WallpaperSearchBackgroundManager::RemoveWallpaperSearchBackground(
   if (!local_background_id.empty()) {
     const auto& history =
         pref_service->GetList(prefs::kNtpWallpaperSearchHistory);
+    std::optional<base::Token> local_background_token =
+        base::Token::FromString(local_background_id);
     // If it is not in history, we delete its file. Otherwise, we leave
     // the file there for history to use.
     bool found = false;
     for (const base::Value& entry : history) {
       const auto entry_obj = GetHistoryEntryFromPrefValue(entry);
-      if (entry_obj.has_value() &&
-          entry_obj->id.ToString() == local_background_id) {
+      if (entry_obj.has_value() && entry_obj->id == local_background_token) {
         found = true;
         break;
       }
@@ -176,7 +179,7 @@ bool WallpaperSearchBackgroundManager::IsCurrentBackground(
       ntp_custom_background_service_->GetCustomBackground();
   return current_theme.has_value() &&
          current_theme->local_background_id.has_value() &&
-         current_theme->local_background_id->ToString() == id.ToString();
+         *current_theme->local_background_id == id;
 }
 
 void WallpaperSearchBackgroundManager::SelectHistoryImage(
@@ -227,9 +230,9 @@ void WallpaperSearchBackgroundManager::SelectLocalBackgroundImage(
                 base::ImportantFileWriter::WriteFileAtomically(
                     filename, base::as_string_view(data));
               },
-              profile_->GetPath().AppendASCII(
-                  id.ToString() +
-                  chrome::kChromeUIUntrustedNewTabPageBackgroundFilename),
+              profile_->GetPath().AppendASCII(base::StrCat(
+                  {id.ToString(),
+                   chrome::kChromeUIUntrustedNewTabPageBackgroundFilename})),
               encoded.value()),
           base::BindOnce(&WallpaperSearchBackgroundManager::
                              SetBackgroundToLocalResourceWithId,
@@ -249,8 +252,7 @@ WallpaperSearchBackgroundManager::SaveCurrentBackgroundToHistory(
       ntp_custom_background_service_->GetCustomBackground();
   if (current_theme.has_value() &&
       current_theme->local_background_id.has_value() &&
-      current_theme->local_background_id->ToString() ==
-          history_entry.id.ToString()) {
+      *current_theme->local_background_id == history_entry.id) {
     const base::ListValue& current_history =
         pref_service_->GetList(prefs::kNtpWallpaperSearchHistory);
     base::ListValue new_history =
