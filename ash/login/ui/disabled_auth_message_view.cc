@@ -69,11 +69,11 @@ LockScreenMessage GetWindowLimitMessage(const base::Time& unlock_time,
         unlock_time, base::k12HourClock, base::kKeepAmPm);
   }
 
-  if (unlock_time < local_midnight + base::Days(1)) {
+  if (unlock_time < local_midnight.NextLocalMidnight()) {
     // Unlock time is today.
     message.content = l10n_util::GetStringFUTF16(
         IDS_ASH_LOGIN_COME_BACK_MESSAGE, time_to_display);
-  } else if (unlock_time < local_midnight + base::Days(2)) {
+  } else if (unlock_time < local_midnight.LocalMidnightWithOffset(2)) {
     // Unlock time is tomorrow.
     message.content = l10n_util::GetStringFUTF16(
         IDS_ASH_LOGIN_COME_BACK_TOMORROW_MESSAGE, time_to_display);

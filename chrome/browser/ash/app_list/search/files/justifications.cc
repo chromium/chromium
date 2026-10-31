@@ -29,7 +29,7 @@ std::u16string GetTimeString(const base::Time& timestamp) {
         IDS_FILE_SUGGESTION_JUSTIFICATION_TIME_NOW);
   }
 
-  if (timestamp >= midnight && timestamp < midnight + base::Days(1)) {
+  if (timestamp >= midnight && timestamp < midnight.NextLocalMidnight()) {
     return base::TimeFormatTimeOfDay(timestamp);
   }
 
