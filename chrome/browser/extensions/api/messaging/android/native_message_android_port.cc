@@ -17,6 +17,7 @@
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/extension.h"
 #include "third_party/jni_zero/default_conversions.h"
+#include "third_party/jni_zero/jni_zero.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/extensions/api/messaging/android/jni_headers/NativeMessageAndroidPort_jni.h"
@@ -71,8 +72,8 @@ NativeMessageAndroidPort::NativeMessageAndroidPort(
     const PortId& port_id)
     : MessagePort(std::move(channel_delegate), port_id) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  java_peer_.Reset(Java_NativeMessageAndroidPort_create(
-      env, reinterpret_cast<intptr_t>(this)));
+  java_peer_.Reset(
+      Java_NativeMessageAndroidPort_create(env, jni_zero::MakeRaw(this)));
 }
 
 std::optional<std::string> NativeMessageAndroidPort::ConnectToApp(

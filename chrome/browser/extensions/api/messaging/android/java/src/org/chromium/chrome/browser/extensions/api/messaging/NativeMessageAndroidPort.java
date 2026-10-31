@@ -12,7 +12,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniPtr;
+import org.jni_zero.JniRawPtr;
 import org.jni_zero.JniType;
+import org.jni_zero.JniTypeToken;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
@@ -35,6 +38,9 @@ import java.util.List;
 @JNINamespace("extensions")
 @NullMarked
 public class NativeMessageAndroidPort {
+    @JniType("::extensions::NativeMessageAndroidPort")
+    interface NativeNativeMessageAndroidPort extends JniTypeToken {}
+
     private static final int MAX_SUCCESS_MESSAGE_SIZE_BYTES = 1024 * 1024; // 1 MB
     private static final int MAX_TOO_LARGE_MESSAGE_SIZE_BYTES = 64 * 1024 * 1024; // 64 MB
 
@@ -55,7 +61,7 @@ public class NativeMessageAndroidPort {
     }
 
     private static final String TAG = "NMAndroidPort";
-    private long mNativePtr;
+    private @Nullable JniRawPtr<NativeNativeMessageAndroidPort> mNativePtr;
     private @Nullable Observer mObserver;
     private @Nullable TestObserver mTestObserver;
 
@@ -71,16 +77,17 @@ public class NativeMessageAndroidPort {
     private final List<String> mPendingMessages = new ArrayList<>();
 
     @CalledByNative
-    private static NativeMessageAndroidPort create(long nativePtr) {
+    static NativeMessageAndroidPort create(JniRawPtr<NativeNativeMessageAndroidPort> nativePtr) {
         return new NativeMessageAndroidPort(nativePtr);
     }
 
     @VisibleForTesting
     public NativeMessageAndroidPort() {
-        this(0);
+        this(null);
     }
 
-    private NativeMessageAndroidPort(long nativePtr) {
+    private NativeMessageAndroidPort(
+            @Nullable JniRawPtr<NativeNativeMessageAndroidPort> nativePtr) {
         mNativePtr = nativePtr;
     }
 
@@ -143,7 +150,10 @@ public class NativeMessageAndroidPort {
     // Called when the port is being destroyed.
     @CalledByNative
     public void destroy() {
-        mNativePtr = 0;
+        if (mNativePtr != null) {
+            mNativePtr.release();
+            mNativePtr = null;
+        }
         if (mObserver != null) {
             mObserver.onPortDestroying(this);
             mObserver = null;
@@ -172,7 +182,7 @@ public class NativeMessageAndroidPort {
             mTestObserver.onMessageFromApp(message);
         }
 
-        if (mNativePtr != 0) {
+        if (mNativePtr != null) {
             NativeMessageAndroidPortJni.get().postMessageFromApp(mNativePtr, message);
         }
     }
@@ -185,7 +195,7 @@ public class NativeMessageAndroidPort {
         }
 
         mPendingMessages.clear();
-        if (mNativePtr != 0) {
+        if (mNativePtr != null) {
             // This will destroy the C++ NativeMessageAndroidPort which will
             // call destroy().
             NativeMessageAndroidPortJni.get().closeChannel(mNativePtr, errorMessage);
@@ -229,13 +239,14 @@ public class NativeMessageAndroidPort {
         // Forwards a message received from the external Android app to the C++
         // NativeMessageAndroidPort, which delivers it to the extension.
         void postMessageFromApp(
-                long nativeNativeMessageAndroidPort, @JniType("std::string") String message);
+                JniPtr<NativeNativeMessageAndroidPort> self, @JniType("std::string") String message);
 
         // Notifies the C++ NativeMessageAndroidPort that the channel has been closed
         // (e.g. by the app, due to an error, or during teardown), closing the port
         // and dispatching any error message to the extension.
         void closeChannel(
-                long nativeNativeMessageAndroidPort, @JniType("std::string") String errorMessage);
+                JniPtr<NativeNativeMessageAndroidPort> self,
+                @JniType("std::string") String errorMessage);
     }
 
     // A helper that receives calls from the external app back to the browser
