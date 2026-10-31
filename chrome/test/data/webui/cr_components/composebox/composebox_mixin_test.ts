@@ -1907,6 +1907,38 @@ suite('ComposeboxMixinTest', () => {
     assertFalse((await whenCloseComposebox).detail.afterSubmit);
   });
 
+  // <if expr="not is_android">
+  test('STS reset on dismiss', async () => {
+    // Enable STS.
+    element.smartTabSharingVisible = true;
+    element.smartTabSharingActive = true;
+    await element.updateComplete;
+
+    // Dismissing without submit should reset.
+    searchboxHandler.resetResolver('resetSmartTabSharing');
+    searchboxHandler.setResultFor(
+        'resetSmartTabSharing', Promise.resolve({active: false}));
+    element.closeComposebox(/*afterSubmit=*/ false);
+    // Cleared synchronously to prevent flashing.
+    assertFalse(element.smartTabSharingActive);
+
+    await searchboxHandler.whenCalled('resetSmartTabSharing');
+    await microtasksFinished();
+    assertFalse(element.smartTabSharingActive);
+
+    // Set it active again.
+    element.smartTabSharingActive = true;
+    await element.updateComplete;
+
+    // Submitting should NOT reset.
+    searchboxHandler.resetResolver('resetSmartTabSharing');
+    element.closeComposebox(/*afterSubmit=*/ true);
+    await microtasksFinished();
+    assertEquals(0, searchboxHandler.getCallCount('resetSmartTabSharing'));
+    assertTrue(element.smartTabSharingActive);
+  });
+  // </if>
+
   test(
       'esc clears input instead of closing when closeOnEscape is false and has content',
       async () => {

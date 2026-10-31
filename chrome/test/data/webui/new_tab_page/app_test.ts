@@ -144,6 +144,8 @@ suite('NewTabPageAppTest', () => {
     // <if expr="not is_android">
     searchboxHandler.setResultFor(
         'getSmartTabSharingActive', Promise.resolve({active: false}));
+    searchboxHandler.setResultFor(
+        'resetSmartTabSharing', Promise.resolve({active: false}));
     // </if>
     app = document.createElement('ntp-app');
     document.body.appendChild(app);
@@ -1641,6 +1643,39 @@ suite('NewTabPageAppTest', () => {
           !!app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox'));
       assertEquals(1, setInputTextCallCount);
       assertEquals('kept', setInputTextCalledWith);
+    });
+
+    test('closing composebox resets STS unless afterSubmit', async () => {
+      const searchbox = $$(app, '#searchbox') as NtpSearchboxElement;
+      assertTrue(!!searchbox);
+      let resetStsCallCount = 0;
+      searchbox.resetSmartTabSharing = () => {
+        resetStsCallCount++;
+      };
+
+      searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+        detail: {text: '', files: []},
+      }));
+      await microtasksFinished();
+      const composebox =
+          app.shadowRoot.querySelector<NtpComposeboxElement>('#composebox');
+      assertTrue(!!composebox);
+
+      // Dismissing without submit should reset STS.
+      composebox.fire('close-composebox', {composeboxText: '', afterSubmit: false});
+      await microtasksFinished();
+      assertEquals(1, resetStsCallCount);
+
+      // Open again.
+      searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+        detail: {text: '', files: []},
+      }));
+      await microtasksFinished();
+
+      // Submitting should NOT reset STS here (handled elsewhere).
+      composebox.fire('close-composebox', {composeboxText: '', afterSubmit: true});
+      await microtasksFinished();
+      assertEquals(1, resetStsCallCount);
     });
 
     test(
@@ -6148,6 +6183,8 @@ suite('NewTabPageAppReducedMotionTest', () => {
     // <if expr="not is_android">
     searchboxHandler.setResultFor(
         'getSmartTabSharingActive', Promise.resolve({active: false}));
+    searchboxHandler.setResultFor(
+        'resetSmartTabSharing', Promise.resolve({active: false}));
     // </if>
     installMock(
         ActionChipsHandlerRemote, mock => ActionChipsApiProxyImpl.setInstance({
@@ -6328,6 +6365,8 @@ suite('NewTabPageAppContextMenuAnimationTest', () => {
     // <if expr="not is_android">
     searchboxHandler.setResultFor(
         'getSmartTabSharingActive', Promise.resolve({active: false}));
+    searchboxHandler.setResultFor(
+        'resetSmartTabSharing', Promise.resolve({active: false}));
     // </if>
     installMock(
         ActionChipsHandlerRemote, mock => ActionChipsApiProxyImpl.setInstance({
