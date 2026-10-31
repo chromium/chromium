@@ -564,3 +564,7 @@ ntp-lens-upload-dialog {
   position: relative;
   z-index: 1;
 }
+
+:host(:not([show-background-image_])) #rhsContent {
+  background-color: var(--color-new-tab-page-background);
+}
