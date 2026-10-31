@@ -242,7 +242,9 @@ void WebAppShimManagerDelegate::LaunchApp(
     const GURL& override_url,
     chrome::mojom::AppShimLoginItemRestoreState login_item_restore_state,
     base::OnceClosure launch_finished_callback) {
-  CHECK(AppIsInstalled(profile, app_id), base::NotFatalUntil::M161);
+  // TODO(crbug.com/578137790): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(AppIsInstalled(profile, app_id));
   if (UseFallback(profile, app_id)) {
     fallback_delegate_->LaunchApp(profile, app_id, files, urls, override_url,
                                   login_item_restore_state,
