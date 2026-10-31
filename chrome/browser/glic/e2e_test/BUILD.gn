@@ -41,13 +41,12 @@ source_set("e2e_test_support") {
   ]
   if (checkout_glic_e2e_tests) {
     public_deps += [ "//chrome/browser/glic/e2e_test/internal:constants" ]
+
+    # internal/constants.h still defines a std::vector<std::string> global.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   } else {
     public_deps += [ ":internal_test_placeholder_constants" ]
   }
-
-  # TODO(crbug.com/432285114): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 test("glic_internal_e2e_interactive_ui_tests") {

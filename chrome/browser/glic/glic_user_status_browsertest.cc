@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/command_line.h"
@@ -58,14 +60,14 @@ const char kGlicUserStatusRelativeTestUrl[] = "/userstatus";
 
 // Simple wrapper to serves as a POD for the test accounts.
 struct TestAccount {
-  const std::string email;
-  const std::string host_domain;
+  std::string_view email;
+  std::string_view host_domain;
 };
 
-TestAccount nonEnterpriseAccount = {"foo@testbar.com", ""};
-TestAccount enterpriseAccount = {"foo@testenterprise.com",
-                                 "testenterprise.com"};
-TestAccount googleDotComAccount = {"foo@google.com", "google.com"};
+constexpr TestAccount kNonEnterpriseAccount = {"foo@testbar.com", ""};
+constexpr TestAccount kEnterpriseAccount = {"foo@testenterprise.com",
+                                            "testenterprise.com"};
+constexpr TestAccount kGoogleDotComAccount = {"foo@google.com", "google.com"};
 
 class GlicUserStatusBrowserTest : public InProcessBrowserTest {
  protected:
@@ -152,7 +154,7 @@ class GlicUserStatusBrowserTest : public InProcessBrowserTest {
         }));
   }
   // Simulates user signing in and getting a refresh token.
-  void SimulatePrimaryAccountChangedSignIn(TestAccount* account,
+  void SimulatePrimaryAccountChangedSignIn(const TestAccount* account,
                                            bool fetch_account_info = true) {
     identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
 
@@ -259,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, EnterpriseSignInEnabled) {
 
   SetGlicUserStatusUrlForTest();
 
-  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
+  SimulatePrimaryAccountChangedSignIn(&kEnterpriseAccount);
 
   // Verify Prefs
   ASSERT_TRUE(base::test::RunUntil(
@@ -316,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
 
   SetGlicUserStatusUrlForTest();
 
-  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
+  SimulatePrimaryAccountChangedSignIn(&kEnterpriseAccount);
 
   // Verify request is sent by the existence of the Prefs and request handler is
   // inovked.
@@ -338,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
           optimization_guide::prefs::GeminiSettingsPolicyState::kDisabled));
 
   // Sign in again and wait for a while.
-  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
+  SimulatePrimaryAccountChangedSignIn(&kEnterpriseAccount);
 
   // Verifying the absence of a request by verifying the absence for a time
   // period longer than the polling interval.
@@ -361,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
           optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled));
 
   // Sign in again.
-  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
+  SimulatePrimaryAccountChangedSignIn(&kEnterpriseAccount);
 
   // Verify request is sent again by the existence of the Prefs and request
   // handler is inovked.
@@ -403,7 +405,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
 
   SetGlicUserStatusUrlForTest();
 
-  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
+  SimulatePrimaryAccountChangedSignIn(&kEnterpriseAccount);
 
   // Verify request is sent by the existence of the Prefs and request handler is
   // inovked.
@@ -453,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
 
   SetGlicUserStatusUrlForTest();
 
-  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
+  SimulatePrimaryAccountChangedSignIn(&kEnterpriseAccount);
 
   // Verify Prefs
   ASSERT_TRUE(base::test::RunUntil(
@@ -483,7 +485,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
 
   SetGlicUserStatusUrlForTest();
 
-  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
+  SimulatePrimaryAccountChangedSignIn(&kEnterpriseAccount);
 
   // Verify Prefs
   ASSERT_TRUE(base::test::RunUntil(
@@ -512,7 +514,7 @@ IN_PROC_BROWSER_TEST_F(
 
   identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
   AccountInfo account_info = identity_test_env_->MakePrimaryAccountAvailable(
-      enterpriseAccount.email, signin::ConsentLevel::kSignin);
+      kEnterpriseAccount.email, signin::ConsentLevel::kSignin);
   enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
   AccountCapabilitiesTestMutator mutator(&account_info);
   SetGlicCapability(mutator, true);
@@ -523,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(
   // Only now, after the fetch would have happened, does the information about
   // the account's managed status become available. This should cause an RPC
   // to be sent.
-  SimulateSuccessfulFetchOfAccountInfo(&enterpriseAccount, &account_info);
+  SimulateSuccessfulFetchOfAccountInfo(&kEnterpriseAccount, &account_info);
   policy::ScopedManagementServiceOverrideForTesting platform_management(
       policy::ManagementServiceFactory::GetForProfile(profile()),
       policy::EnterpriseManagementAuthority::CLOUD);
@@ -558,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(
   // account managed status as pending.
   identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
   AccountInfo account_info = identity_test_env_->MakePrimaryAccountAvailable(
-      enterpriseAccount.email, signin::ConsentLevel::kSignin);
+      kEnterpriseAccount.email, signin::ConsentLevel::kSignin);
   enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
   AccountCapabilitiesTestMutator mutator(&account_info);
   SetGlicCapability(mutator, true);
@@ -589,7 +591,7 @@ IN_PROC_BROWSER_TEST_F(
   SetGlicCapability(refreshed_mutator, true);
   identity_test_env_->UpdateAccountInfoForAccount(account_info);
 
-  SimulateSuccessfulFetchOfAccountInfo(&enterpriseAccount, &account_info);
+  SimulateSuccessfulFetchOfAccountInfo(&kEnterpriseAccount, &account_info);
   policy::ScopedManagementServiceOverrideForTesting platform_management(
       policy::ManagementServiceFactory::GetForProfile(profile()),
       policy::EnterpriseManagementAuthority::CLOUD);
@@ -623,7 +625,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
 
   SetGlicUserStatusUrlForTest();
 
-  SimulatePrimaryAccountChangedSignIn(&googleDotComAccount);
+  SimulatePrimaryAccountChangedSignIn(&kGoogleDotComAccount);
 
   // Verify Prefs
   ASSERT_TRUE(base::test::RunUntil(
@@ -668,7 +670,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTestWithPolicyManagementService,
 
   SetGlicUserStatusUrlForTest();
 
-  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
+  SimulatePrimaryAccountChangedSignIn(&kEnterpriseAccount);
 
   // Verify Prefs
   ASSERT_TRUE(base::test::RunUntil(
@@ -698,7 +700,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
 
   SetGlicUserStatusUrlForTest();
 
-  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
+  SimulatePrimaryAccountChangedSignIn(&kEnterpriseAccount);
 
   // Verify that when the user status code is SERVER_UNAVAILABLE, the glic user
   // status result is not stored.
@@ -723,7 +725,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
 
   SetGlicUserStatusUrlForTest();
 
-  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
+  SimulatePrimaryAccountChangedSignIn(&kEnterpriseAccount);
 
   auto user_status_code = UserStatusCode::DISABLED_BY_ADMIN;
   SetGlicUserStatus(user_status_code);
@@ -760,7 +762,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, MAYBE_EnterpriseSignOut) {
 
   SetGlicUserStatusUrlForTest();
 
-  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
+  SimulatePrimaryAccountChangedSignIn(&kEnterpriseAccount);
 
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return GetCachedStatusDict().has_value(); }));
@@ -804,7 +806,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, NonEnterpriseSignIn) {
 
   SetGlicUserStatusUrlForTest();
 
-  SimulatePrimaryAccountChangedSignIn(&nonEnterpriseAccount);
+  SimulatePrimaryAccountChangedSignIn(&kNonEnterpriseAccount);
 
   // wait for a while.
   base::RunLoop run_loop;
@@ -833,7 +835,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, EnterpriseDataProtection) {
 
   SetGlicUserStatusUrlForTest();
 
-  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
+  SimulatePrimaryAccountChangedSignIn(&kEnterpriseAccount);
 
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return GetCachedStatusDict().has_value(); }));
@@ -861,7 +863,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest,
 
   SetGlicUserStatusUrlForTest();
 
-  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
+  SimulatePrimaryAccountChangedSignIn(&kEnterpriseAccount);
 
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return GetCachedStatusDict().has_value(); }));
@@ -888,7 +890,7 @@ IN_PROC_BROWSER_TEST_F(GlicUserStatusBrowserTest, ClientDataHeaderExists) {
 
   SetGlicUserStatusUrlForTest();
 
-  SimulatePrimaryAccountChangedSignIn(&enterpriseAccount);
+  SimulatePrimaryAccountChangedSignIn(&kEnterpriseAccount);
 
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return GetCachedStatusDict().has_value(); }));
@@ -916,7 +918,7 @@ IN_PROC_BROWSER_TEST_F(GlicShareImageEnablementBrowserTest, LiveEligibility) {
   auto* const identity_manager =
       IdentityManagerFactory::GetForProfile(profile());
 
-  SimulatePrimaryAccountChangedSignIn(&nonEnterpriseAccount);
+  SimulatePrimaryAccountChangedSignIn(&kNonEnterpriseAccount);
   AccountInfo primary_account =
       identity_manager->FindExtendedAccountInfoByAccountId(
           identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));

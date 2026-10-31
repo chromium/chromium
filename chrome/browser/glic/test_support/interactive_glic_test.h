@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <map>
+#include <ostream>
 #include <sstream>
 #include <string_view>
 
@@ -76,9 +77,6 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace glic::test {
-
-extern const InteractiveBrowserTestApi::DeepQuery kPathToMockGlicCloseButton;
-extern const InteractiveBrowserTestApi::DeepQuery kPathToGuestPanel;
 
 enum class TargetWebContents {
   kGlicWebUi,
@@ -351,8 +349,7 @@ class InteractiveGlicTestMixin : public T {
                   Api::WaitForWebContentsReady(kGlicContentsElementId))),
               Api::WaitForState(internal::kGlicInstanceCoordinatorState,
                                 GlicPanelState::kOpen),
-              Api::StopObservingState(internal::kGlicInstanceCoordinatorState)
-              /*, WaitForElementVisible(kPathToGuestPanel)*/);
+              Api::StopObservingState(internal::kGlicInstanceCoordinatorState));
         } else {
           // In Webview mode, GlicView hosts the WebUI (kGlicHostElementId)
           // and the guest WebContents (kGlicContentsElementId) is embedded
@@ -371,8 +368,7 @@ class InteractiveGlicTestMixin : public T {
                   Api::WaitForWebContentsReady(kGlicContentsElementId))),
               Api::WaitForState(internal::kGlicInstanceCoordinatorState,
                                 GlicPanelState::kOpen),
-              Api::StopObservingState(internal::kGlicInstanceCoordinatorState)
-              /*, WaitForElementVisible(kPathToGuestPanel)*/);
+              Api::StopObservingState(internal::kGlicInstanceCoordinatorState));
         }
         break;
       case GlicInstrumentMode::kHostOnly:

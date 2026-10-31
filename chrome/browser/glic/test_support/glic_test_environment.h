@@ -8,8 +8,11 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -131,6 +134,8 @@ class GlicTestEnvironment : public ProfileObserver {
       net::test_server::EmbeddedTestServer* server,
       net::test_server::EmbeddedTestServerHandle& handle);
 
+  GlicTestEnvironmentConfig config_;
+  base::AutoReset<GlicTestEnvironmentConfig*> current_config_resetter_;
   base::CallbackListSubscription create_services_subscription_;
 
   base::test::ScopedFeatureList scoped_feature_list_;

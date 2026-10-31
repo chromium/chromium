@@ -1297,10 +1297,6 @@ source_set("browser_tests") {
   }
 
   data_deps = [ "//chrome/test/data/webui/glic:generate_test_files" ]
-
-  # TODO(crbug.com/432285114): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (!is_android) {
@@ -1397,10 +1393,6 @@ if (!is_android) {
       deps += [ "//ui/ozone" ]
     }
     data_deps = [ "//chrome/test/data/webui/glic:generate_test_files" ]
-
-    # TODO(crbug.com/432285114): Fix code that adds exit-time destructors and
-    # enable the diagnostic by removing this line.
-    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 
   # To make the targets e2e_test/ discoverable in gn.

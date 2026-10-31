@@ -142,10 +142,7 @@ void ServeGlicFiles(net::test_server::EmbeddedTestServer* server,
 namespace glic {
 
 namespace internal {
-GlicTestEnvironmentConfig& GetConfig() {
-  static GlicTestEnvironmentConfig config;
-  return config;
-}
+GlicTestEnvironmentConfig* g_current_config = nullptr;
 
 // A fake GlicCookieSynchronizer.
 class TestCookieSynchronizer : public glic::GlicCookieSynchronizer {
@@ -243,9 +240,9 @@ GlicTestEnvironment::GlicTestEnvironment(
     const GlicTestEnvironmentConfig& config,
     std::vector<base::test::FeatureRef> enabled_features,
     std::vector<base::test::FeatureRef> disabled_features)
-    : shared_(enabled_features, disabled_features) {
-  internal::GetConfig() = config;
-
+    : config_(config),
+      current_config_resetter_(&internal::g_current_config, &config_),
+      shared_(enabled_features, disabled_features) {
   // The service factory needs to be created before any services are created.
   internal::GlicTestEnvironmentServiceFactory::GetInstance();
   create_services_subscription_ =
@@ -267,12 +264,12 @@ GlicTestEnvironment::~GlicTestEnvironment() = default;
 
 void GlicTestEnvironment::SetForceSigninAndModelExecutionCapability(
     bool force) {
-  internal::GetConfig().force_signin_and_glic_capability = force;
+  config_.force_signin_and_glic_capability = force;
 }
 
 void GlicTestEnvironment::SetFreStatusForNewProfiles(
     std::optional<prefs::FreStatus> fre_status) {
-  internal::GetConfig().fre_status = fre_status;
+  config_.fre_status = fre_status;
 }
 
 GlicTestEnvironmentService* GlicTestEnvironment::GetService(Profile* profile,
@@ -293,7 +290,7 @@ void GlicTestEnvironment::OnWillCreateBrowserContextKeyedServices(
                     "ineligible profile.";
     return;
   }
-  if (internal::GetConfig().force_signin_and_glic_capability) {
+  if (config_.force_signin_and_glic_capability) {
     IdentityTestEnvironmentProfileAdaptor::
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
 
@@ -412,7 +409,9 @@ GlicTestEnvironmentService::GlicTestEnvironmentService(Profile* profile)
   if (cookie_synchronizer) {
     cookie_synchronizer_ = cookie_synchronizer->GetWeakPtr();
   }
-  const GlicTestEnvironmentConfig& config = internal::GetConfig();
+  const GlicTestEnvironmentConfig default_config;
+  const GlicTestEnvironmentConfig& config =
+      internal::g_current_config ? *internal::g_current_config : default_config;
   if (config.fre_status) {
     SetFRECompletion(*config.fre_status);
   }

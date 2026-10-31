@@ -4,14 +4,9 @@
 
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 
-#include "chrome/test/interaction/interactive_browser_test.h"
+#include <ostream>
 
 namespace glic::test {
-
-const InteractiveBrowserTestApi::DeepQuery kPathToMockGlicCloseButton = {
-    "#closebn"};
-const InteractiveBrowserTestApi::DeepQuery kPathToGuestPanel = {
-    ".panel#guestPanel"};
 
 std::ostream& operator<<(std::ostream& os, const TargetWebContents& value) {
   switch (value) {

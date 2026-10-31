@@ -74,9 +74,6 @@ namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-const InteractiveBrowserTestApi::DeepQuery kMockGlicClientHangButton = {
-    "#hang"};
-
 }  // anonymous namespace
 
 class GlicInstanceCoordinatorUiTest : public test::InteractiveGlicTest {
@@ -260,6 +257,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
 // TODO(b/453696965): Broken in multi-instance.
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
                        DISABLED_ClientUnresponsiveThenError) {
+  const DeepQuery kMockGlicClientHangButton = {"#hang"};
   GlicHistogramTester histogram_tester;
   RunTestSequence(
       OpenGlicFloatingWindow(),
@@ -307,6 +305,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
   // (this is subtle and platform-specific, unfortunately).
   auto other_widget = std::make_unique<views::Widget>();
 
+  const DeepQuery kMockGlicClientHangButton = {"#hang"};
   GlicHistogramTester histogram_tester;
   RunTestSequence(
       ObserveState(test::internal::kGlicAppState, GetHost()),

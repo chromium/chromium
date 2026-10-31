@@ -8,15 +8,15 @@
 // Fake placeholder file in place of the internal test constants file, when
 // internal test is not enabled.
 
+#include <initializer_list>
 #include <string>
-#include <vector>
 
 namespace glic::test {
 
 inline constexpr char kAllowedHostAndPathForWpr[] = "";
 inline constexpr char kTestAccountLabel[] = "";
 inline constexpr char kTestActorAccountLabel[] = "";
-auto kWprArguments = std::vector<std::string>{};
+inline constexpr std::initializer_list<std::string> kWprArguments = {};
 
 }  // namespace glic::test
 
