@@ -629,8 +629,9 @@ TEST_F(ContextualTasksUtilsTest,
   EXPECT_FALSE(AreContextualTasksUpdatedEntryPointsEnabled(profile_.get()));
 }
 
-TEST_F(ContextualTasksUtilsTest,
-       AreContextualTasksUpdatedEntryPointsEnabled_SidePanelAndAimEligibility) {
+TEST_F(
+    ContextualTasksUtilsTest,
+    AreContextualTasksUpdatedEntryPointsEnabled_SidePanelAndTabSharingEligibility) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kContextualTasksUpdatedEntryPoints);
 
@@ -661,11 +662,36 @@ TEST_F(ContextualTasksUtilsTest,
       .WillByDefault(testing::Return(true));
   EXPECT_FALSE(AreContextualTasksUpdatedEntryPointsEnabled(profile_.get()));
 
-  // Both eligible -> true.
+  // Side panel available and Aim eligible, but Fusebox ineligible -> false.
   ON_CALL(mock_eligibility_manager, IsSidePanelAvailable())
       .WillByDefault(testing::Return(true));
   ON_CALL(*mock_aim_service, IsAimEligible())
       .WillByDefault(testing::Return(true));
+  ON_CALL(*mock_aim_service, IsFuseboxEligible())
+      .WillByDefault(testing::Return(false));
+  EXPECT_FALSE(AreContextualTasksUpdatedEntryPointsEnabled(profile_.get()));
+
+  // Both eligible (side panel available and tab sharing eligible) -> true.
+  ON_CALL(mock_eligibility_manager, IsSidePanelAvailable())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*mock_aim_service, IsAimEligible())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*mock_aim_service, IsFuseboxEligible())
+      .WillByDefault(testing::Return(true));
+  EXPECT_TRUE(AreContextualTasksUpdatedEntryPointsEnabled(profile_.get()));
+
+  // Context sharing disabled in prefs -> false.
+  profile_->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kDisabled));
+  EXPECT_FALSE(AreContextualTasksUpdatedEntryPointsEnabled(profile_.get()));
+
+  // Reset pref to enabled -> true.
+  profile_->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kEnabled));
   EXPECT_TRUE(AreContextualTasksUpdatedEntryPointsEnabled(profile_.get()));
 }
 
@@ -683,24 +709,46 @@ TEST_F(ContextualTasksUtilsTest,
   SetUpServices(otr_profile, &mock_eligibility_manager, &mock_aim_service);
   ASSERT_TRUE(mock_aim_service);
 
-  // When both side panel and AIM are eligible in incognito, returns true.
+  // Incognito profiles are not eligible for tab sharing, so updated entry
+  // points are disabled even when side panel and AIM are eligible.
   ON_CALL(mock_eligibility_manager, IsSidePanelAvailable())
       .WillByDefault(testing::Return(true));
   ON_CALL(*mock_aim_service, IsAimEligible())
       .WillByDefault(testing::Return(true));
-  EXPECT_TRUE(AreContextualTasksUpdatedEntryPointsEnabled(otr_profile));
-
-  // When AIM is ineligible in incognito, returns false.
-  ON_CALL(*mock_aim_service, IsAimEligible())
-      .WillByDefault(testing::Return(false));
-  EXPECT_FALSE(AreContextualTasksUpdatedEntryPointsEnabled(otr_profile));
-
-  // When side panel is unavailable in incognito, returns false.
-  ON_CALL(mock_eligibility_manager, IsSidePanelAvailable())
-      .WillByDefault(testing::Return(false));
-  ON_CALL(*mock_aim_service, IsAimEligible())
+  ON_CALL(*mock_aim_service, IsFuseboxEligible())
       .WillByDefault(testing::Return(true));
   EXPECT_FALSE(AreContextualTasksUpdatedEntryPointsEnabled(otr_profile));
+}
+
+TEST_F(ContextualTasksUtilsTest,
+       AreContextualTasksUpdatedEntryPointsEnabled_ForceEntryPointEligibility) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{kContextualTasksUpdatedEntryPoints,
+                            kContextualTasksForceEntryPointEligibility},
+      /*disabled_features=*/{});
+
+  testing::NiceMock<MockContextualTasksEligibilityManager>
+      mock_eligibility_manager;
+  testing::NiceMock<MockAimEligibilityService>* mock_aim_service = nullptr;
+  SetUpServices(profile_.get(), &mock_eligibility_manager, &mock_aim_service);
+  ASSERT_TRUE(mock_aim_service);
+
+  // When forced, tab sharing eligibility checks are bypassed.
+  ON_CALL(mock_eligibility_manager, IsSidePanelAvailable())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*mock_aim_service, IsAimEligible())
+      .WillByDefault(testing::Return(false));
+  ON_CALL(*mock_aim_service, IsFuseboxEligible())
+      .WillByDefault(testing::Return(false));
+  EXPECT_TRUE(AreContextualTasksUpdatedEntryPointsEnabled(profile_.get()));
+
+  // But context sharing preference is still respected.
+  profile_->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kDisabled));
+  EXPECT_FALSE(AreContextualTasksUpdatedEntryPointsEnabled(profile_.get()));
 }
 
 TEST_F(ContextualTasksUtilsTest,
@@ -738,10 +786,22 @@ TEST_F(ContextualTasksUtilsTest,
   EXPECT_FALSE(ShouldUseContextualTasksContextMenuSubmenu(profile_.get()));
   EXPECT_FALSE(ShouldRouteAskGoogleToOmnibox(profile_.get()));
 
+  ON_CALL(mock_eligibility_manager, IsSidePanelAvailable())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*mock_aim_service, IsAimEligible())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*mock_aim_service, IsFuseboxEligible())
+      .WillByDefault(testing::Return(false));
+  EXPECT_FALSE(ShouldShowAskGoogleContextMenu(profile_.get()));
+  EXPECT_FALSE(ShouldUseContextualTasksContextMenuSubmenu(profile_.get()));
+  EXPECT_FALSE(ShouldRouteAskGoogleToOmnibox(profile_.get()));
+
   // When both are available, param helpers return true.
   ON_CALL(mock_eligibility_manager, IsSidePanelAvailable())
       .WillByDefault(testing::Return(true));
   ON_CALL(*mock_aim_service, IsAimEligible())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*mock_aim_service, IsFuseboxEligible())
       .WillByDefault(testing::Return(true));
   EXPECT_TRUE(ShouldShowAskGoogleContextMenu(profile_.get()));
   EXPECT_TRUE(ShouldUseContextualTasksContextMenuSubmenu(profile_.get()));

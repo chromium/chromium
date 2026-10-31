@@ -104,7 +104,7 @@ bool IsTabSharingEligible(Profile* profile);
 
 // Returns true if contextual tasks updated entry points are enabled for the
 // given profile. Checks the feature flag, whether the contextual tasks side
-// panel is available, and AIM eligibility.
+// panel is available, and whether tab context can be shared.
 bool AreContextualTasksUpdatedEntryPointsEnabled(Profile* profile);
 
 // Returns true if the "Ask Google..." context menu item should be shown.

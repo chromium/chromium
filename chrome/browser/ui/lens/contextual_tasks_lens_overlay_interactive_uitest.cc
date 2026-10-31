@@ -1206,6 +1206,8 @@ class ContextualTasksContextMenuAskGoogleInteractiveUiTest
 #endif
 IN_PROC_BROWSER_TEST_P(ContextualTasksContextMenuAskGoogleInteractiveUiTest,
                        MAYBE_AskGoogleContextMenuClickOpensSidePanel) {
+  SkipIfIncognito(
+      "Ask Google entry points are not supported in Incognito mode.");
   WaitForTemplateURLServiceToLoad();
   SidePanelUI::From(browser())->DisableAnimationsForTesting();
 
@@ -1290,6 +1292,8 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksContextMenuAskGoogleInteractiveUiTest,
 //      invocation source.
 IN_PROC_BROWSER_TEST_P(ContextualTasksContextMenuAskGoogleInteractiveUiTest,
                        AskGoogleAppMenuClickOpensSidePanel) {
+  SkipIfIncognito(
+      "Ask Google entry points are not supported in Incognito mode.");
   WaitForTemplateURLServiceToLoad();
   SidePanelUI::From(browser())->DisableAnimationsForTesting();
 
@@ -1486,6 +1490,8 @@ class ContextualTasksContextMenuSubmenuInteractiveUiTest
 #endif
 IN_PROC_BROWSER_TEST_P(ContextualTasksContextMenuSubmenuInteractiveUiTest,
                        MAYBE_AskGoogleSubmenuItemClickOpensSidePanel) {
+  SkipIfIncognito(
+      "Ask Google entry points are not supported in Incognito mode.");
   WaitForTemplateURLServiceToLoad();
   SidePanelUI::From(browser())->DisableAnimationsForTesting();
 
@@ -1571,6 +1577,8 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksContextMenuSubmenuInteractiveUiTest,
 //      invocation source.
 IN_PROC_BROWSER_TEST_P(ContextualTasksContextMenuSubmenuInteractiveUiTest,
                        AskGoogleAppMenuSubmenuItemClickOpensSidePanel) {
+  SkipIfIncognito(
+      "Ask Google entry points are not supported in Incognito mode.");
   WaitForTemplateURLServiceToLoad();
   SidePanelUI::From(browser())->DisableAnimationsForTesting();
 
@@ -1701,6 +1709,8 @@ class ContextualTasksContextMenuRouteOmniboxInteractiveUiTest
 #endif
 IN_PROC_BROWSER_TEST_P(ContextualTasksContextMenuRouteOmniboxInteractiveUiTest,
                        MAYBE_AskGoogleContextMenuClickOpensOmnibox) {
+  SkipIfIncognito(
+      "Ask Google entry points are not supported in Incognito mode.");
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
 
   const GURL page_url =
@@ -1741,6 +1751,8 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksContextMenuRouteOmniboxInteractiveUiTest,
 //  (3) The Omnibox popup opens in AIM mode (OmniboxPopupState::kAim).
 IN_PROC_BROWSER_TEST_P(ContextualTasksContextMenuRouteOmniboxInteractiveUiTest,
                        AskGoogleAppMenuClickOpensOmnibox) {
+  SkipIfIncognito(
+      "Ask Google entry points are not supported in Incognito mode.");
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
 
   const GURL page_url =

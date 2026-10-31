@@ -269,14 +269,12 @@ bool AreContextualTasksUpdatedEntryPointsEnabled(Profile* profile) {
   if (!base::FeatureList::IsEnabled(kContextualTasksUpdatedEntryPoints)) {
     return false;
   }
-  if (!profile) {
+  if (!CanShareTabContext(profile)) {
     return false;
   }
   auto* eligibility_manager =
       ContextualTasksEligibilityManager::GetForProfile(profile);
-  auto* aim_service = AimEligibilityServiceFactory::GetForProfile(profile);
-  return eligibility_manager && eligibility_manager->IsSidePanelAvailable() &&
-         aim_service && aim_service->IsAimEligible();
+  return eligibility_manager && eligibility_manager->IsSidePanelAvailable();
 }
 
 bool ShouldShowAskGoogleContextMenu(Profile* profile) {
