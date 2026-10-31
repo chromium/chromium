@@ -179,6 +179,33 @@ void ContextualTasksEphemeralButtonMenuModel::ExecuteCommand(int command_id,
   }
 }
 
+void ContextualTasksEphemeralButtonMenuModel::OnMenuWillShow(
+    ui::SimpleMenuModel* source) {
+  base::RecordAction(base::UserMetricsAction(
+      "ContextualTasks.EphemeralToolbarButton.UserAction.OpenContextMenu"));
+  base::UmaHistogramBoolean(
+      "ContextualTasks.EphemeralToolbarButton.UserAction.OpenContextMenu",
+      true);
+
+  if (ShouldShowCloseSidePanel()) {
+    base::RecordAction(base::UserMetricsAction(
+        "ContextualTasks.EphemeralToolbarButton.UserAction."
+        "OpenContextMenu.CloseSidePanelOptionVisible"));
+    base::UmaHistogramBoolean(
+        "ContextualTasks.EphemeralToolbarButton.UserAction."
+        "OpenContextMenu.CloseSidePanelOptionVisible",
+        true);
+  } else {
+    base::RecordAction(base::UserMetricsAction(
+        "ContextualTasks.EphemeralToolbarButton.UserAction."
+        "OpenContextMenu.CloseSidePanelOptionHidden"));
+    base::UmaHistogramBoolean(
+        "ContextualTasks.EphemeralToolbarButton.UserAction."
+        "OpenContextMenu.CloseSidePanelOptionHidden",
+        true);
+  }
+}
+
 bool ContextualTasksEphemeralButtonMenuModel::ShouldShowCloseSidePanel() const {
   if (!browser_window_interface_ || !browser_window_interface_->GetProfile()) {
     return false;

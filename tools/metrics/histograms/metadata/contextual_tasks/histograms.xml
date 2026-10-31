@@ -377,6 +377,27 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ContextualTasks.EphemeralToolbarButton.UserAction.OpenContextMenu{CloseSidePanelOptionState}"
+    enum="Boolean" expires_after="2027-04-15">
+  <owner>dianaou@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when the user opens the context menu on the ephemeral (unpinned)
+    contextual tasks toolbar button. {CloseSidePanelOptionState} Always recorded
+    as true.
+  </summary>
+  <token key="CloseSidePanelOptionState">
+    <variant name="" summary="Recorded for all context menu opens combined."/>
+    <variant name=".CloseSidePanelOptionHidden"
+        summary="Recorded when the Close/Hide side panel (or Remove) option
+                 is not visible in the context menu."/>
+    <variant name=".CloseSidePanelOptionVisible"
+        summary="Recorded when the Close/Hide side panel (or Remove) option
+                 is visible in the context menu."/>
+  </token>
+</histogram>
+
+<histogram
     name="ContextualTasks.EphemeralToolbarButton.UserAction.PinByContextMenu"
     enum="Boolean" expires_after="2027-04-15">
   <owner>dianaou@chromium.org</owner>
