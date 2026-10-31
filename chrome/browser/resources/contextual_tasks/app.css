@@ -167,7 +167,12 @@
   grid-template-columns: 100%;
   grid-template-rows: auto 1fr;
   height: 100%;
-  overflow: hidden;
+  /* Use clip rather than hidden so the app is not a scroll container.
+   * The composebox glow (search-animated-glow) overflows below the panel,
+   * and with hidden a programmatic scroll (e.g. focusing the composebox
+   * input) could scroll the toolbar out of view with no way to scroll back.
+   */
+  overflow: clip;
 }
 
 :host([is-ai-page_]) {
@@ -396,7 +401,7 @@
 
 /* Disable scroll for zero state. */
 :host([is-zero-state_]) {
-  overflow: hidden;
+  overflow: clip;
 }
 
 error-page {
