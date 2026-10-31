@@ -275,7 +275,8 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
         </div>
       ` : html`
         <div id="documentChip" class="chip">
-          <div id="documentThumbnail" class="thumbnail" part="thumbnail">
+          <div id="documentThumbnail" class="thumbnail" part="thumbnail"
+              ?has-pdf-icon="${this.shouldUsePdfIcon_()}">
             ${this.isUploading_ ? html`
               <svg role="image" class="spinner" viewBox="0 0 100 100">
                 <circle class="spinner-circle" cx="50" cy="50" r="40" />

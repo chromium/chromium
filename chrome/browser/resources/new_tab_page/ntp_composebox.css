@@ -208,6 +208,13 @@ cr-composebox-submit::part(submit) {
   margin-block-end: var(--ntp-composebox-carousel-inner-margin-block-end);
 }
 
+/* Override so NTP keeps the tile behind document icons, which image/video
+ * thumbnails do not show by default.
+ */
+cr-composebox-file-carousel::part(thumbnail) {
+  background-color: var(--color-composebox-file-chip-favicon-background);
+}
+
 #toolChipsContainer,
 #voiceToolChipsContainer {
   padding-block-end: var(--ntp-composebox-tool-chip-padding-block-end);

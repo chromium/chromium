@@ -137,8 +137,17 @@
   width: var(--pdf-icon-size, 100%);
 }
 
+/* No colored tile behind generic document file icons by default.
+ * However, PDF icons has colored tile. Embedders that want one can add
+ * it via ::part(thumbnail) and
+ * '--color-composebox-file-chip-favicon-background'.
+ */
+#documentThumbnail:not([has-pdf-icon]) {
+  background-color: transparent;
+}
+
 .document-icon {
-  background-color: var(--color-composebox-background);
+  background-color: transparent;
   box-sizing: border-box;
   color: var(--color-composebox-document-chip-icon);
   height: var(--document-icon-size, 100%);
@@ -456,11 +465,6 @@ cr-spinner {
   height: 24px;
   justify-content: center;
   width: 24px;
-}
-
-/* No dedicated icon background on Clank. */
-:host([is-android]) .document-icon {
-  background-color: transparent;
 }
 
 @media (forced-colors: active) {
