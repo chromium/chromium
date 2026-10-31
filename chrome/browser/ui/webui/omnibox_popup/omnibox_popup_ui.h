@@ -40,6 +40,7 @@ class HelpBubbleHandler;
 
 class ComposeboxHandler;
 class ContextualSearchboxHandler;
+class OmniboxController;
 class OmniboxPopupAimHandler;
 class OmniboxPopupHandler;
 class OmniboxPopupPresenterBase;
@@ -173,6 +174,20 @@ class OmniboxPopupUI : public TopChromeWebUIController,
   }
 
   void SetPresenterDelegate(OmniboxPopupPresenterBase* delegate);
+
+  // Moving the popup's WebContents to another browser window of the same
+  // profile is done in two steps. `DetachFromWindow()` runs while the old
+  // window still embeds the popup: the handlers stop observing that window's
+  // omnibox and tabs, the AI Mode popup's own autocomplete stops, and the
+  // contextual session, which holds context from the old window, is dropped.
+  // Afterwards the WebUI keeps no pointer into the old window, so it may close
+  // before `AttachToWindow()` runs. The caller then points the WebContents at
+  // the new window and calls `AttachToWindow()` with its omnibox controller,
+  // which rebinds the handlers and sends the new window's results and
+  // selection to the page if it has any. Not supported for the full WebUI
+  // omnibox popup.
+  void DetachFromWindow();
+  void AttachToWindow(OmniboxController* omnibox_controller);
 
  private:
   // Called when the Lens icon anchor is shown in any WebUI; triggers the AskG

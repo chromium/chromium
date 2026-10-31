@@ -54,6 +54,7 @@
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/contextual_search_provider.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
@@ -430,6 +431,49 @@ void WebuiOmniboxHandler::OpenCurrentSelection(
 
 void WebuiOmniboxHandler::SetAimButtonVisible(bool visible) {
   page_->SetAimButtonVisible(visible);
+}
+
+void WebuiOmniboxHandler::DetachFromOmniboxController() {
+  edit_model_observation_.Reset();
+  autocomplete_controller_observation_.Reset();
+  controller_ = nullptr;
+  web_contents_observer_.ScopedObserve(nullptr);
+  // The snapshots hold matches from the old window's results.
+  autocomplete_result_snapshots_.clear();
+  DetachFromBrowserWindow();
+}
+
+void WebuiOmniboxHandler::AttachToOmniboxController(
+    OmniboxController* omnibox_controller) {
+  CHECK(omnibox_controller);
+  controller_ = omnibox_controller;
+  autocomplete_controller_observation_.Observe(autocomplete_controller());
+  edit_model_observation_.Observe(omnibox_controller->edit_model());
+  AttachToBrowserWindow();
+
+  content::WebContents* active_contents = nullptr;
+  if (auto* browser_window_interface =
+          webui::GetBrowserWindowInterface(web_contents_)) {
+    if (auto* tab_list = TabListInterface::From(browser_window_interface)) {
+      if (auto* active_tab = tab_list->GetActiveTab()) {
+        active_contents = active_tab->GetContents();
+      }
+    }
+  }
+  web_contents_observer_.ScopedObserve(active_contents);
+
+  // Only hidden popups move, and hiding cleared the page's results. The new
+  // window has results only when the move happens while its popup opens, e.g.
+  // from `Show()` after synchronous matches arrived; send them then. The page
+  // keeps its selected line across result updates, so also send the new
+  // window's selection rather than let the page apply the old one to it.
+  if (autocomplete_controller()->result().empty()) {
+    return;
+  }
+  OnStart(autocomplete_controller(), autocomplete_controller()->input());
+  OnResultChanged(autocomplete_controller(), /*default_match_changed=*/false);
+  OnSelectionChanged(OmniboxPopupSelection(OmniboxPopupSelection::kNoMatch),
+                     edit_model()->GetPopupSelection());
 }
 
 ui::mojom::WindowOpenDisposition

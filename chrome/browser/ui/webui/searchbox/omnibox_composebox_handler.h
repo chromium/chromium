@@ -38,6 +38,15 @@ class OmniboxComposeboxHandler : public ComposeboxHandler {
 
   ~OmniboxComposeboxHandler() override;
 
+  // Stops observing the popup state of the browser window that embeds the
+  // popup and drops the state tied to that window. Called before the popup's
+  // WebContents moves to another browser window.
+  void DetachFromOmniboxController();
+
+  // Observes the popup state of `main_omnibox_controller`, the omnibox of the
+  // browser window that now embeds the popup.
+  void AttachToOmniboxController(OmniboxController* main_omnibox_controller);
+
   // composebox::mojom::PageHandler:
   void HandleFileUpload(bool is_image) override;
 
@@ -52,6 +61,9 @@ class OmniboxComposeboxHandler : public ComposeboxHandler {
 
  private:
   void OnContentSharingPolicyChanged();
+  // Subscribes to the popup state of `main_omnibox_controller`, if any, and
+  // syncs with its current state.
+  void ObservePopupState(OmniboxController* main_omnibox_controller);
   void OnPopupStateChanged(OmniboxPopupState old_state,
                            OmniboxPopupState new_state);
   void UpdateLensSearchEligibility(const AutocompleteInput& input,

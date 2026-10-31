@@ -140,23 +140,28 @@ OmniboxComposeboxHandler::OmniboxComposeboxHandler(
           base::Unretained(this)));
   OnContentSharingPolicyChanged();
 
-  auto* main_omnibox_controller =
+  ObservePopupState(
       OmniboxPopupWebContentsHelper::GetOrCreateForWebContents(web_contents_)
-          ->get_omnibox_controller();
-  if (main_omnibox_controller) {
-    popup_state_subscription_ =
-        main_omnibox_controller->popup_state_manager()
-            ->AddPopupStateChangedCallback(base::BindRepeating(
-                &OmniboxComposeboxHandler::OnPopupStateChanged,
-                base::Unretained(this)));
-    // Perform initial check.
-    OnPopupStateChanged(
-        OmniboxPopupState::kNone,
-        main_omnibox_controller->popup_state_manager()->popup_state());
-  }
+          ->get_omnibox_controller());
 }
 
 OmniboxComposeboxHandler::~OmniboxComposeboxHandler() = default;
+
+void OmniboxComposeboxHandler::DetachFromOmniboxController() {
+  popup_state_subscription_ = {};
+  // This handler runs its own autocomplete, with the old window's page as
+  // input. Stop it so late results don't reach the page in the new window.
+  StopAutocomplete(/*clear_result=*/true);
+  autocomplete_result_snapshots_.clear();
+  DetachFromBrowserWindow();
+}
+
+void OmniboxComposeboxHandler::AttachToOmniboxController(
+    OmniboxController* main_omnibox_controller) {
+  CHECK(main_omnibox_controller);
+  ObservePopupState(main_omnibox_controller);
+  AttachToBrowserWindow();
+}
 
 void OmniboxComposeboxHandler::HandleFileUpload(bool is_image) {}
 
@@ -173,6 +178,22 @@ void OmniboxComposeboxHandler::OnContentSharingPolicyChanged() {
   page()->UpdateContentSharingPolicy(
       contextual_search::ContextualSearchService::IsContextSharingEnabled(
           profile_->GetPrefs()));
+}
+
+void OmniboxComposeboxHandler::ObservePopupState(
+    OmniboxController* main_omnibox_controller) {
+  if (!main_omnibox_controller) {
+    return;
+  }
+  popup_state_subscription_ =
+      main_omnibox_controller->popup_state_manager()
+          ->AddPopupStateChangedCallback(base::BindRepeating(
+              &OmniboxComposeboxHandler::OnPopupStateChanged,
+              base::Unretained(this)));
+  // Perform initial check.
+  OnPopupStateChanged(
+      OmniboxPopupState::kNone,
+      main_omnibox_controller->popup_state_manager()->popup_state());
 }
 
 // TODO(crbug.com/469098088): If this OnPopupStateChanged approach proves

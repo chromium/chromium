@@ -58,6 +58,22 @@ OmniboxPopupHandler::OmniboxPopupHandler(
 
 OmniboxPopupHandler::~OmniboxPopupHandler() = default;
 
+void OmniboxPopupHandler::DetachFromOmniboxController() {
+  controller_ = nullptr;
+  // These describe the text in the old window's omnibox. The page reports new
+  // values on its next edit in the new window.
+  latest_selection_ = gfx::Range();
+  show_full_url_ = false;
+  can_undo_ = false;
+  can_redo_ = false;
+}
+
+void OmniboxPopupHandler::AttachToOmniboxController(
+    OmniboxController* controller) {
+  CHECK(controller);
+  controller_ = controller;
+}
+
 void OmniboxPopupHandler::ShowContextMenu(const gfx::Point& point) {
   if (embedder_) {
     embedder_->ShowContextMenu(point, nullptr);

@@ -347,6 +347,19 @@ class ContextualSearchboxHandler
 
   // Resets `input_state_model_`.
   void ResetInputStateModel();
+
+  // Drops the state tied to the browser window that embeds the WebUI: its tab
+  // observations, tab underlines and pending tab context, the Drive picker,
+  // and the input state model of its active tab. Called before the WebUI's
+  // WebContents moves to another browser window, while the old window still
+  // embeds it.
+  void DetachFromBrowserWindow();
+
+  // Observes the tabs of the browser window that now embeds the WebUI and
+  // creates the input state model for its active tab. Called after the WebUI's
+  // WebContents moved to that window.
+  void AttachToBrowserWindow();
+
   void OnAimEligibilityChanged();
   void SetActiveToolMode(omnibox::ToolMode tool, bool is_set_by_aim) override;
   void RecordToolSelectionAction(omnibox::ToolMode tool) override;
@@ -532,6 +545,9 @@ class ContextualSearchboxHandler
 
   class AllTabNavigationObserver;
   std::vector<std::unique_ptr<AllTabNavigationObserver>> all_tab_nav_observers_;
+  // Observes the tab list and the active tab of the browser window that
+  // embeds the WebUI, if any.
+  void ObserveEmbeddingWindowTabs();
   void UpdateAllTabNavigationObservers();
   void OnAnyTabNavigated(content::WebContents* web_contents);
 

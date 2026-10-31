@@ -631,22 +631,7 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
   active_tab_nav_observer_ = std::make_unique<ActiveTabNavigationObserver>(
       base::BindRepeating(&ContextualSearchboxHandler::OnActiveTabNavigated,
                           base::Unretained(this)));
-
-  auto* browser_window_interface =
-      webui::GetBrowserWindowInterface(web_contents_);
-  if (browser_window_interface) {
-    if (auto* tab_list = TabListInterface::From(browser_window_interface)) {
-      // TODO(crbug.com/449196853): We should be using the `tab_strip_api` on
-      // the typescript side, but it's not visible to `cr_components`, so we're
-      // using `TabListInterfaceObserver` for now until `tab_strip_api` gets
-      // moved out of
-      // //chrome. The current implementation is likely brittle, as it's not a
-      // supported API for external users.
-      tab_list_observation_.Observe(tab_list);
-      active_tab_nav_observer_->ObserveTab(tab_list->GetActiveTab());
-      UpdateAllTabNavigationObservers();
-    }
-  }
+  ObserveEmbeddingWindowTabs();
 
   contextual_tasks_context_service_ =
       contextual_tasks::ContextualTasksContextServiceFactory::GetForProfile(
@@ -800,6 +785,25 @@ void ContextualSearchboxHandler::set_screenshare_delegate_for_testing(
   }
 }
 
+void ContextualSearchboxHandler::ObserveEmbeddingWindowTabs() {
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(web_contents_);
+  if (!browser_window_interface) {
+    return;
+  }
+  if (auto* tab_list = TabListInterface::From(browser_window_interface)) {
+    // TODO(crbug.com/449196853): We should be using the `tab_strip_api` on
+    // the typescript side, but it's not visible to `cr_components`, so we're
+    // using `TabListInterfaceObserver` for now until `tab_strip_api` gets
+    // moved out of
+    // //chrome. The current implementation is likely brittle, as it's not a
+    // supported API for external users.
+    tab_list_observation_.Observe(tab_list);
+    active_tab_nav_observer_->ObserveTab(tab_list->GetActiveTab());
+    UpdateAllTabNavigationObservers();
+  }
+}
+
 void ContextualSearchboxHandler::UpdateAllTabNavigationObservers() {
   all_tab_nav_observers_.clear();
   if (!omnibox::IsTabDeselectionInComposeboxEnabled()) {
@@ -861,6 +865,40 @@ void ContextualSearchboxHandler::ResetInputStateModel() {
   input_state_model_.reset();
   smart_tab_sharing_active_for_thread_.reset();
   last_sent_smart_tab_sharing_active_.reset();
+}
+
+void ContextualSearchboxHandler::DetachFromBrowserWindow() {
+  CancelAllTabContextFetches();
+  tab_context_snapshot_.reset();
+  context_input_data_ = std::nullopt;
+  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+    if (auto* active_task_context_provider = GetActiveTaskContextProvider()) {
+      for (const auto& [token, handle] : selected_tabs) {
+        active_task_context_provider->RemoveLocalTabUnderline(
+            tabs::TabHandle(handle));
+      }
+    }
+  }
+  selected_tabs.clear();
+
+  tab_list_observation_.Reset();
+  active_tab_nav_observer_->ObserveTab(nullptr);
+  all_tab_nav_observers_.clear();
+  tab_load_stop_observers_.clear();
+#if !BUILDFLAG(IS_ANDROID)
+  // The Drive picker and sign-in promo are tied to the old window.
+  OnCancel();
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  // The model belongs to the active tab of the window being left.
+  ResetInputStateModel();
+  input_state_subscription_ = {};
+}
+
+void ContextualSearchboxHandler::AttachToBrowserWindow() {
+  ObserveEmbeddingWindowTabs();
+  InitializeInputStateModel();
+  page_->OnTabStripChanged();
 }
 
 void ContextualSearchboxHandler::OnAimEligibilityChanged() {

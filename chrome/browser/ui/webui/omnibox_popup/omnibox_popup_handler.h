@@ -48,6 +48,15 @@ class OmniboxPopupHandler : public omnibox_popup::mojom::PageHandler,
     embedder_ = embedder;
   }
 
+  // Stops using the omnibox of the browser window that embeds the popup and
+  // drops the text state the page reported there. Called before the popup's
+  // WebContents moves to another browser window.
+  void DetachFromOmniboxController();
+
+  // Uses `controller`, the omnibox of the browser window that now embeds the
+  // popup.
+  void AttachToOmniboxController(OmniboxController* controller);
+
   // omnibox_popup::mojom::PageHandler:
   void ShowContextMenu(const gfx::Point& point) override;
   void CloseUI() override;

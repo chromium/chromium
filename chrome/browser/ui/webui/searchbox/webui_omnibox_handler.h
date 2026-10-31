@@ -85,6 +85,15 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
   void OpenCurrentSelection(ui::mojom::WindowOpenDisposition disposition);
   void SetAimButtonVisible(bool visible) override;
 
+  // Stops observing the omnibox of the browser window that embeds the popup
+  // and drops the state tied to that window. Called before the popup's
+  // WebContents moves to another browser window.
+  void DetachFromOmniboxController();
+
+  // Observes `omnibox_controller`, the omnibox of the browser window that now
+  // embeds the popup, and sends its current results to the page.
+  void AttachToOmniboxController(OmniboxController* omnibox_controller);
+
   // SearchboxHandler:
   ui::mojom::WindowOpenDisposition ComputeWindowOpenDisposition(
       uint8_t mouse_button,
