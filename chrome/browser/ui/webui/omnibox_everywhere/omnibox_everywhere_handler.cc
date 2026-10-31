@@ -42,9 +42,9 @@
 #include "ui/base/accelerators/command.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -108,7 +108,7 @@ class OmniboxEverywhereClient : public ContextualOmniboxClient {
   void OnAutocompleteAccept(
       const GURL& destination_url,
       TemplateURLRef::PostContent* post_content,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       ui::PageTransition transition,
       omnibox::AutocompleteMatchType match_type,
       base::TimeTicks match_selection_timestamp,
@@ -122,7 +122,8 @@ class OmniboxEverywhereClient : public ContextualOmniboxClient {
     }
   }
 
-  void OpenUrl(GURL gurl, WindowOpenDisposition disposition) override {
+  void OpenUrl(GURL gurl,
+               ui::mojom::WindowOpenDisposition disposition) override {
     if (service_) {
       service_->OpenUrl(gurl, disposition, ui::PAGE_TRANSITION_GENERATED);
     }
@@ -305,7 +306,7 @@ void OmniboxEverywhereHandler::SubmitQuery(const std::string& query_text,
         {kVoiceSearchQueryParameterKey, "=", kVoiceSearchQueryParameterValue});
   }
 
-  const WindowOpenDisposition disposition = ui::DispositionFromClick(
+  const ui::mojom::WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
   GURL search_url = GURL(default_provider->url_ref().ReplaceSearchTerms(
@@ -340,7 +341,7 @@ void OmniboxEverywhereHandler::OnAiModeEligibilityOrPrefChanged() {
 
 void OmniboxEverywhereHandler::OpenUrl(
     GURL url,
-    const WindowOpenDisposition disposition,
+    const ui::mojom::WindowOpenDisposition disposition,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
   if (service_) {

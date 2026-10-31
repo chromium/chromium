@@ -26,8 +26,8 @@
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "extensions/buildflags/buildflags.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS) && BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -146,7 +146,7 @@ void SearchboxOmniboxClient::OnURLOpenedFromOmnibox(OmniboxLog* log) {
 void SearchboxOmniboxClient::OnAutocompleteAccept(
     const GURL& destination_url,
     TemplateURLRef::PostContent* post_content,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     ui::PageTransition transition,
     omnibox::AutocompleteMatchType match_type,
     base::TimeTicks match_selection_timestamp,
@@ -169,8 +169,9 @@ void SearchboxOmniboxClient::OnAutocompleteAccept(
                          /*navigation_handle_callback=*/{});
 }
 
-void SearchboxOmniboxClient::OpenUrl(GURL gurl,
-                                     WindowOpenDisposition disposition) {
+void SearchboxOmniboxClient::OpenUrl(
+    GURL gurl,
+    ui::mojom::WindowOpenDisposition disposition) {
   web_contents_->OpenURL(content::OpenURLParams::CreateBrowserInitiated(
                              gurl, disposition, ui::PAGE_TRANSITION_GENERATED),
                          /*navigation_handle_callback=*/{});

@@ -15,6 +15,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class MetricsReporter;
 class OmniboxEverywhereService;
@@ -82,7 +83,7 @@ class OmniboxEverywhereHandler : public ContextualSearchboxHandler,
       const base::UnguessableToken& token,
       searchbox::mojom::SelectedFileInfoPtr file_info) override;
   void OpenUrl(GURL url,
-               const WindowOpenDisposition disposition,
+               const ui::mojom::WindowOpenDisposition disposition,
                base::OnceCallback<void(content::NavigationHandle&)>
                    navigation_handle_callback) override;
 

@@ -55,9 +55,9 @@
 #include "components/user_education/common/tutorial/tutorial_service.h"
 #include "net/base/url_util.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 
 using browser_command::mojom::ClickInfoPtr;
@@ -178,7 +178,7 @@ void BrowserCommandHandler::ExecuteCommand(Command command_id,
 
 void BrowserCommandHandler::HandleCommandWithDisposition(
     int id,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     base::TimeTicks time_stamp) {
   const auto command = static_cast<Command>(id);
 
@@ -387,7 +387,7 @@ void BrowserCommandHandler::OpenGlicSettings() {
     }
 
     NavigateToURL(glic::GetHelpCenterUrl(url),
-                  WindowOpenDisposition::kSingletonTab);
+                  ui::mojom::WindowOpenDisposition::kSingletonTab);
   }
 }
 
@@ -435,8 +435,9 @@ CommandUpdater* BrowserCommandHandler::GetCommandUpdater() {
   return command_updater_.get();
 }
 
-void BrowserCommandHandler::NavigateToURL(const GURL& url,
-                                          WindowOpenDisposition disposition) {
+void BrowserCommandHandler::NavigateToURL(
+    const GURL& url,
+    ui::mojom::WindowOpenDisposition disposition) {
   NavigateParams params(profile_, url, ui::PAGE_TRANSITION_LINK);
   params.disposition = disposition;
   Navigate(&params);

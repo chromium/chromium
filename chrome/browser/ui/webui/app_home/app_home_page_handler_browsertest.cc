@@ -50,7 +50,7 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
@@ -673,7 +673,7 @@ IN_PROC_BROWSER_TEST_F(AppHomePageHandlerUpdateTest, MigrationCalls) {
   views::NamedWidgetShownWaiter update_dialog_waiter(
       views::test::AnyWidgetTestPasskey{}, "WebAppUpdateReviewDialog");
   {
-    chrome::Reload(app_browser, WindowOpenDisposition::kCurrentTab);
+    chrome::Reload(app_browser, ui::mojom::WindowOpenDisposition::kCurrentTab);
     WebAppMenuModel model(/*provider=*/nullptr, app_browser);
     model.Init();
     model.ExecuteCommand(IDC_WEB_APP_UPGRADE_DIALOG, /*event_flags=*/0);

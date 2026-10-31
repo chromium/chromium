@@ -30,7 +30,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/time_format.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace {
@@ -101,7 +101,7 @@ void ForeignTabsPageHandler::OpenTab(const std::string& session_tag,
   }
   SessionRestore::RestoreForeignSessionTab(
       source_web_contents, *session_tab,
-      WindowOpenDisposition::kNewForegroundTab);
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab);
 }
 
 void ForeignTabsPageHandler::GetForeignTabs(GetForeignTabsCallback callback) {

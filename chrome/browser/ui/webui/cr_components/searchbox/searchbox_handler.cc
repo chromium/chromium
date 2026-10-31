@@ -72,7 +72,7 @@
 #include "components/omnibox/browser/suggest_template_info_mojo_utils.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "extensions/buildflags/buildflags.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/extension_features.h"
 #endif
@@ -1262,7 +1262,7 @@ searchbox::mojom::UrlEmphasisPtr SearchboxHandler::ComputeUrlEmphasis(
   return emphasis;
 }
 
-WindowOpenDisposition SearchboxHandler::ComputeWindowOpenDisposition(
+ui::mojom::WindowOpenDisposition SearchboxHandler::ComputeWindowOpenDisposition(
     uint8_t mouse_button,
     bool alt_key,
     bool ctrl_key,
@@ -1624,7 +1624,7 @@ void SearchboxHandler::StopAutocomplete(bool clear_result) {
 void SearchboxHandler::OpenMatch(
     OmniboxPopupSelection selection,
     AutocompleteMatch match,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     base::TimeTicks match_selection_timestamp,
     const searchbox::AutocompleteSnapshot& snapshot) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -1659,9 +1659,10 @@ void SearchboxHandler::OpenAutocompleteMatch(
   TRACE_EVENT("omnibox", "SearchboxHandler::OpenAutocompleteMatch", "line",
               line);
   const base::TimeTicks timestamp = base::TimeTicks::Now();
-  const WindowOpenDisposition disposition = ComputeWindowOpenDisposition(
-      mouse_button, modifiers->alt_key, modifiers->ctrl_key,
-      modifiers->meta_key, modifiers->shift_key, via_keyboard);
+  const ui::mojom::WindowOpenDisposition disposition =
+      ComputeWindowOpenDisposition(mouse_button, modifiers->alt_key,
+                                   modifiers->ctrl_key, modifiers->meta_key,
+                                   modifiers->shift_key, via_keyboard);
 
   if (line == static_cast<uint8_t>(OmniboxPopupSelection::kNoMatch)) {
     const OmniboxPopupSelection selection(OmniboxPopupSelection::kNoMatch);
@@ -1793,7 +1794,7 @@ void SearchboxHandler::SetPopupSelection(
 void SearchboxHandler::OpenPopupSelection(
     uint32_t result_sequence_id,
     searchbox::mojom::OmniboxPopupSelectionPtr selection,
-    WindowOpenDisposition disposition) {
+    ui::mojom::WindowOpenDisposition disposition) {
   const OmniboxPopupSelection popup_selection =
       ConvertSelection(std::move(selection));
   const bool sequence_id_matched =
@@ -1956,7 +1957,7 @@ void SearchboxHandler::ExecuteAction(uint8_t line,
   if (action_index >= match->actions.size()) {
     return;
   }
-  const WindowOpenDisposition disposition = ui::DispositionFromClick(
+  const ui::mojom::WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
   if (base::FeatureList::IsEnabled(
@@ -2279,7 +2280,7 @@ void SearchboxHandler::GetPageClassification(
 void SearchboxHandler::OnDefaultSearchExtensionDialogDone(
     OmniboxPopupSelection selection,
     AutocompleteMatch match,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     base::TimeTicks match_selection_timestamp,
     OmniboxClient::ExtensionControlledDialogResult dialog_result) {
   if (dialog_result ==

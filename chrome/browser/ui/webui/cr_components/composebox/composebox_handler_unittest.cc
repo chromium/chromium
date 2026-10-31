@@ -45,7 +45,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/menu_model.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
 namespace {
@@ -549,7 +549,7 @@ TEST_F(ComposeboxHandlerTest, ProcessContextAndOpenUrl_DestructionSafe) {
 
     void ProcessContextAndOpenUrl(
         GURL url,
-        const WindowOpenDisposition disposition) override {
+        const ui::mojom::WindowOpenDisposition disposition) override {
       auto weak_this = weak_ptr_factory_.GetWeakPtr();
       ContextualSearchboxHandler::ProcessContextAndOpenUrl(url, disposition);
       if (!weak_this) {
@@ -586,8 +586,9 @@ TEST_F(ComposeboxHandlerTest, ProcessContextAndOpenUrl_DestructionSafe) {
   // runner. Running pending tasks will trigger
   // WebContentsDelegate::OpenURLFromTab, which synchronously destroys the
   // handler, and it should complete safely without any use-after-free crashes.
-  test_handler->ProcessContextAndOpenUrl(GURL("https://google.com"),
-                                         WindowOpenDisposition::kCurrentTab);
+  test_handler->ProcessContextAndOpenUrl(
+      GURL("https://google.com"),
+      ui::mojom::WindowOpenDisposition::kCurrentTab);
 
   base::RunLoop().RunUntilIdle();
 
@@ -604,7 +605,7 @@ TEST_F(ComposeboxHandlerTest, SubmitQuery_DestructionSafe) {
 
     void ProcessContextAndOpenUrl(
         GURL url,
-        const WindowOpenDisposition disposition) override {
+        const ui::mojom::WindowOpenDisposition disposition) override {
       auto weak_this = weak_ptr_factory_.GetWeakPtr();
       ContextualSearchboxHandler::ProcessContextAndOpenUrl(url, disposition);
       if (!weak_this) {

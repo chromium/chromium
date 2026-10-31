@@ -94,9 +94,9 @@
 #include "third_party/omnibox_proto/searchbox_config.pb.h"
 #include "ui/base/base_window.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/webui/web_ui_util.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -2157,7 +2157,7 @@ void ContextualSearchboxHandler::SubmitQuery(const std::string& query_text,
                                              bool meta_key,
                                              bool shift_key,
                                              bool is_voice_search) {
-  const WindowOpenDisposition disposition = ui::DispositionFromClick(
+  const ui::mojom::WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
   // TODO(crbug.com/465427521): This implementation may be able to be removed
@@ -2172,7 +2172,7 @@ void ContextualSearchboxHandler::SubmitQuery(const std::string& query_text,
 
 void ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl(
     const std::string& query_text,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     omnibox::ChromeAimEntryPoint aim_entry_point,
     std::map<std::string, std::string> additional_params,
     bool is_voice_search) {
@@ -2193,7 +2193,7 @@ void ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl(
     params.on_processed_callback = base::DoNothing();
     auto on_contextualized_callback = base::BindOnce(
         [](base::WeakPtr<ContextualSearchboxHandler> self,
-           const std::string& query, WindowOpenDisposition disp,
+           const std::string& query, ui::mojom::WindowOpenDisposition disp,
            omnibox::ChromeAimEntryPoint entry_point,
            std::map<std::string, std::string> params, bool voice,
            base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
@@ -2231,7 +2231,7 @@ void ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl(
 
 void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
     const std::string& query_text,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     omnibox::ChromeAimEntryPoint aim_entry_point,
     std::map<std::string, std::string> additional_params,
     bool is_voice_search) {
@@ -2267,7 +2267,7 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
         std::move(search_url_request_info),
         base::BindOnce(
             [](base::WeakPtr<ContextualSearchboxHandler> self,
-               WindowOpenDisposition disposition, GURL url) {
+               ui::mojom::WindowOpenDisposition disposition, GURL url) {
               if (self) {
                 self->ProcessContextAndOpenUrl(url, disposition);
               }
@@ -2439,7 +2439,7 @@ void ContextualSearchboxHandler::UploadTabContext(
 
 void ContextualSearchboxHandler::ProcessContextAndOpenUrl(
     GURL url,
-    const WindowOpenDisposition disposition) {
+    const ui::mojom::WindowOpenDisposition disposition) {
   if (!url.is_valid()) {
     return;
   }
@@ -2472,7 +2472,7 @@ void ContextualSearchboxHandler::ProcessContextAndOpenUrl(
 
 #if !BUILDFLAG(IS_ANDROID)
   if (OmniboxPopupWebContentsHelper::FromWebContents(web_contents_.get()) &&
-      disposition == WindowOpenDisposition::kCurrentTab) {
+      disposition == ui::mojom::WindowOpenDisposition::kCurrentTab) {
     auto* browser_window_interface =
         webui::GetBrowserWindowInterface(web_contents_);
     auto* tab_list = TabListInterface::From(browser_window_interface);
@@ -2527,7 +2527,7 @@ void ContextualSearchboxHandler::ProcessContextAndOpenUrl(
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (disposition == WindowOpenDisposition::kCurrentTab) {
+  if (disposition == ui::mojom::WindowOpenDisposition::kCurrentTab) {
     content::WebContents* target_web_contents = web_contents_.get();
     if (OmniboxPopupWebContentsHelper::FromWebContents(web_contents_.get())) {
       if (auto* browser_window_interface =
@@ -2579,7 +2579,7 @@ void ContextualSearchboxHandler::ProcessContextAndOpenUrl(
 
 void ContextualSearchboxHandler::OpenUrl(
     GURL url,
-    const WindowOpenDisposition disposition,
+    const ui::mojom::WindowOpenDisposition disposition,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
   // TODO(crbug.com/469137247): Consider moving this logic to the specific
@@ -2625,7 +2625,7 @@ void ContextualSearchboxHandler::OpenUrl(
     // the focus is re-captured by the Omnibox after query submission (see:
     // http://crbug.com/469458346).
     if (target_web_contents &&
-        disposition != WindowOpenDisposition::kNewBackgroundTab) {
+        disposition != ui::mojom::WindowOpenDisposition::kNewBackgroundTab) {
       target_web_contents->Focus();
     }
   }

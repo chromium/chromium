@@ -18,8 +18,8 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -192,7 +192,7 @@ void NtpMicrosoftAuthResponseCaptureNavigationThrottle::
       navigation_handle()->IsRendererInitiated()
           ? content::OpenURLParams::CreateRendererInitiated(
                 GURL("about:blank").ReplaceComponents(addRef),
-                WindowOpenDisposition::kCurrentTab,
+                ui::mojom::WindowOpenDisposition::kCurrentTab,
                 navigation_handle()->GetPageTransition(),
                 content::Referrer(navigation_handle()->GetReferrer()),
                 navigation_handle()->GetInitiatorNavigationState(),
@@ -200,7 +200,7 @@ void NtpMicrosoftAuthResponseCaptureNavigationThrottle::
                 navigation_handle()->GetFrameTreeNodeId())
           : content::OpenURLParams::CreateBrowserInitiated(
                 GURL("about:blank").ReplaceComponents(addRef),
-                WindowOpenDisposition::kCurrentTab,
+                ui::mojom::WindowOpenDisposition::kCurrentTab,
                 navigation_handle()->GetPageTransition(),
                 content::Referrer(navigation_handle()->GetReferrer()),
                 /*started_from_context_menu=*/false,

@@ -17,8 +17,8 @@
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -99,10 +99,10 @@ SkillsNavigationThrottle::WillStartRequest() {
               const bool is_initial_navigation =
                   web_contents->GetController().IsInitialNavigation();
 
-              const WindowOpenDisposition disposition =
+              const ui::mojom::WindowOpenDisposition disposition =
                   is_initial_navigation
-                      ? WindowOpenDisposition::kCurrentTab
-                      : WindowOpenDisposition::kNewForegroundTab;
+                      ? ui::mojom::WindowOpenDisposition::kCurrentTab
+                      : ui::mojom::WindowOpenDisposition::kNewForegroundTab;
 
               content::OpenURLParams params =
                   content::OpenURLParams::CreateBrowserInitiated(

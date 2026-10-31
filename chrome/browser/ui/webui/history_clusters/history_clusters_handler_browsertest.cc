@@ -27,8 +27,8 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
-#include "ui/base/window_open_disposition.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom.h"
 
@@ -276,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
   const GURL url = embedded_test_server()->GetURL("/simple.html");
   // Open in a new tab to keep the history clusters UI open.
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   history::QueryResults history_query_results;

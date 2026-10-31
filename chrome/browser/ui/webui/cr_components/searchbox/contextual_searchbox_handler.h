@@ -47,6 +47,7 @@
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -379,10 +380,10 @@ class ContextualSearchboxHandler
 
   virtual void ProcessContextAndOpenUrl(
       GURL url,
-      const WindowOpenDisposition disposition);
+      const ui::mojom::WindowOpenDisposition disposition);
 
   virtual void OpenUrl(GURL url,
-                       const WindowOpenDisposition disposition,
+                       const ui::mojom::WindowOpenDisposition disposition,
                        base::OnceCallback<void(content::NavigationHandle&)>
                            navigation_handle_callback);
 
@@ -391,14 +392,14 @@ class ContextualSearchboxHandler
 
   void ContextualizeQueryAndOpenUrl(
       const std::string& query_text,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       omnibox::ChromeAimEntryPoint aim_entry_point,
       std::map<std::string, std::string> additional_params,
       bool is_voice_search);
 
   void ComputeAndOpenQueryUrl(
       const std::string& query_text,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       omnibox::ChromeAimEntryPoint aim_entry_point,
       std::map<std::string, std::string> additional_params,
       bool is_voice_search);
@@ -509,7 +510,7 @@ class ContextualSearchboxHandler
 
   void ContextualizeQueryWithRelevantTabsAndOpenUrl(
       const std::string& query_text,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       omnibox::ChromeAimEntryPoint aim_entry_point,
       std::map<std::string, std::string> additional_params,
       std::vector<base::WeakPtr<content::WebContents>> relevant_tabs);

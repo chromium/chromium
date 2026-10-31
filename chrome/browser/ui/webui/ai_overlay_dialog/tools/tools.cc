@@ -43,8 +43,8 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
 
@@ -128,9 +128,9 @@ void AiOverlayTools::OpenUrl(const std::string& url_string,
     return;
   }
 
-  WindowOpenDisposition disposition =
-      new_tab ? WindowOpenDisposition::kNewForegroundTab
-              : WindowOpenDisposition::kCurrentTab;
+  ui::mojom::WindowOpenDisposition disposition =
+      new_tab ? ui::mojom::WindowOpenDisposition::kNewForegroundTab
+              : ui::mojom::WindowOpenDisposition::kCurrentTab;
   // TODO(crbug.com/534887116): Report the navigation outcome instead of
   // succeeding immediately. On Android, OpenURL() may start the navigation
   // asynchronously.

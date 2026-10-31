@@ -16,7 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/interaction/element_tracker.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 #include "url/gurl.h"
 
@@ -62,9 +62,10 @@ class BrowserCommandHandler : public CommandUpdaterDelegate,
                       ExecuteCommandCallback callback) override;
 
   // CommandUpdaterDelegate:
-  void HandleCommandWithDisposition(int command_id,
-                                    WindowOpenDisposition disposition,
-                                    base::TimeTicks time_stamp) override;
+  void HandleCommandWithDisposition(
+      int command_id,
+      ui::mojom::WindowOpenDisposition disposition,
+      base::TimeTicks time_stamp) override;
 
   void ConfigureFeedbackCommand(FeedbackCommandSettings settings);
 
@@ -84,7 +85,7 @@ class BrowserCommandHandler : public CommandUpdaterDelegate,
                            StartSavedTabGroupTutorialCommand);
 
   virtual void NavigateToURL(const GURL& url,
-                             WindowOpenDisposition disposition);
+                             ui::mojom::WindowOpenDisposition disposition);
   virtual void OpenFeedbackForm();
   virtual void OnTutorialStarted(
       user_education::TutorialIdentifier tutorial_id,

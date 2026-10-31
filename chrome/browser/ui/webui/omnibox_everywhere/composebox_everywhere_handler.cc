@@ -20,8 +20,8 @@
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 namespace {
 
@@ -144,17 +144,18 @@ void ComposeboxEverywhereHandler::ClearScreenshotContextTokens() {
 
 void ComposeboxEverywhereHandler::ProcessContextAndOpenUrl(
     GURL url,
-    const WindowOpenDisposition disposition) {
-  const WindowOpenDisposition effective_disposition =
-      ShouldOpenWithInPlaceWindow() ? WindowOpenDisposition::kNewWindow
-                                    : disposition;
+    const ui::mojom::WindowOpenDisposition disposition) {
+  const ui::mojom::WindowOpenDisposition effective_disposition =
+      ShouldOpenWithInPlaceWindow()
+          ? ui::mojom::WindowOpenDisposition::kNewWindow
+          : disposition;
   ComposeboxHandler::ProcessContextAndOpenUrl(std::move(url),
                                               effective_disposition);
 }
 
 void ComposeboxEverywhereHandler::OpenUrl(
     GURL url,
-    const WindowOpenDisposition disposition,
+    const ui::mojom::WindowOpenDisposition disposition,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
   if (!service_) {

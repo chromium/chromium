@@ -26,8 +26,8 @@
 #include "history_embeddings_handler.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 namespace {
@@ -259,6 +259,7 @@ void HistoryEmbeddingsHandler::OpenSettingsPage() {
                                  GURL(chrome::kHistorySearchSettingURL),
                                  ui::PAGE_TRANSITION_LINK);
   navigate_params.window_action = NavigateParams::WindowAction::kShowWindow;
-  navigate_params.disposition = WindowOpenDisposition::kNewForegroundTab;
+  navigate_params.disposition =
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab;
   Navigate(&navigate_params);
 }

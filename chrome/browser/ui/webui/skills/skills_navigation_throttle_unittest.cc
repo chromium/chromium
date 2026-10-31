@@ -19,8 +19,8 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -75,7 +75,7 @@ class SkillsNavigationThrottleTest : public ChromeRenderViewHostTestHarness {
 struct RedirectionTestCase {
   const char* test_name;
   bool is_initial_navigation;
-  WindowOpenDisposition expected_disposition;
+  ui::mojom::WindowOpenDisposition expected_disposition;
 };
 
 class SkillsNavigationThrottleRedirectionTest
@@ -134,12 +134,14 @@ INSTANTIATE_TEST_SUITE_P(
         RedirectionTestCase{
             .test_name = "NewTabWhenPageCommitted",
             .is_initial_navigation = false,
-            .expected_disposition = WindowOpenDisposition::kNewForegroundTab,
+            .expected_disposition =
+                ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         },
         RedirectionTestCase{
             .test_name = "CurrentTabOnInitialNavigation",
             .is_initial_navigation = true,
-            .expected_disposition = WindowOpenDisposition::kCurrentTab,
+            .expected_disposition =
+                ui::mojom::WindowOpenDisposition::kCurrentTab,
         }),
     [](const ::testing::TestParamInfo<RedirectionTestCase>& info) {
       return info.param.test_name;

@@ -20,8 +20,8 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
 using content::OpenURLParams;
@@ -84,21 +84,21 @@ IN_PROC_BROWSER_TEST_F(NewTabUIProcessPerTabTest, NavBeforeNTPCommits) {
   // Navigate to chrome://hang/ to stall the process.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(blink::kChromeUIHangURL),
-      WindowOpenDisposition::kCurrentTab, 0);
+      ui::mojom::WindowOpenDisposition::kCurrentTab, 0);
 
   // Visit a normal URL in another NTP that hasn't committed.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), chrome::ChromeUINewTabURLAsGURL(),
-      WindowOpenDisposition::kNewForegroundTab, 0);
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab, 0);
 
   // We don't use ui_test_utils::NavigateToURLWithDisposition because that waits
   // for current loading to stop.
   content::TestNavigationObserver observer(
       browser()->GetTabStripModel()->GetActiveWebContents());
-  browser()->OpenURL(
-      OpenURLParams::CreateBrowserInitiated(GURL("data:text/html,hello world"),
-                                            WindowOpenDisposition::kCurrentTab,
-                                            ui::PAGE_TRANSITION_TYPED),
-      /*navigation_handle_callback=*/{});
+  browser()->OpenURL(OpenURLParams::CreateBrowserInitiated(
+                         GURL("data:text/html,hello world"),
+                         ui::mojom::WindowOpenDisposition::kCurrentTab,
+                         ui::PAGE_TRANSITION_TYPED),
+                     /*navigation_handle_callback=*/{});
   observer.Wait();
 }

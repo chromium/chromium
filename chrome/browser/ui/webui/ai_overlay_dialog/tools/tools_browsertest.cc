@@ -47,7 +47,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "ui/base/base_window.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 
 namespace ttc {
 namespace {
@@ -188,7 +188,7 @@ class AiOverlayToolsBrowserTest : public InProcessBrowserTest {
 
   void AddTabWithTitle(const GURL& url, const std::string& title) {
     ui_test_utils::NavigateToURLWithDisposition(
-        browser(), url, WindowOpenDisposition::kNewForegroundTab,
+        browser(), url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     content::WebContents* contents =
         browser()->GetTabStripModel()->GetActiveWebContents();
@@ -239,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest,
   AddTabWithTitle(embedded_test_server()->GetURL("/empty.html?1"), "First Tab");
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("chrome://version"),
-      WindowOpenDisposition::kNewForegroundTab,
+      ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   AddTabWithTitle(embedded_test_server()->GetURL("/empty.html?3"), "Third Tab");
 
@@ -667,7 +667,7 @@ IN_PROC_BROWSER_TEST_F(AiOverlayToolsBrowserTest, OpenPageSingleMatchAutoNavigat
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), tab1_url));
   ui_test_utils::NavigateToURLWithDisposition(
-      browser(), tab2_url, WindowOpenDisposition::kNewForegroundTab,
+      browser(), tab2_url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   TabStripModel* tab_strip = browser()->GetTabStripModel();

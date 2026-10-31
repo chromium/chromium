@@ -24,8 +24,8 @@
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 // Android uses a different implementation of tab features.
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_features.h"
@@ -268,13 +268,13 @@ void MostVisitedHandler::OnMostVisitedTileNavigation(
   DisableShortcutsAutoRemoval(profile_);
   logger_->LogMostVisitedNavigation(MakeNTPTileImpression(*tile, index));
 
-  WindowOpenDisposition disposition = ui::DispositionFromClick(
+  ui::mojom::WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
 
   if (tile->url.is_valid() &&
-      disposition != WindowOpenDisposition::kSaveToDisk &&
-      disposition != WindowOpenDisposition::kIgnoreAction) {
+      disposition != ui::mojom::WindowOpenDisposition::kSaveToDisk &&
+      disposition != ui::mojom::WindowOpenDisposition::kIgnoreAction) {
     if (PrefService* prefs = profile_->GetPrefs()) {
       prefs->SetInt64(
           ntp_prefs::kNtpMostVisitedTileNavigationCount,

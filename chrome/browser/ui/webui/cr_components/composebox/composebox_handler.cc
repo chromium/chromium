@@ -35,8 +35,8 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
-#include "ui/base/window_open_disposition.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
@@ -68,7 +68,7 @@ ComposeboxOmniboxClient::GetContextualInputData() const {
 void ComposeboxOmniboxClient::OnAutocompleteAccept(
     const GURL& destination_url,
     TemplateURLRef::PostContent* post_content,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     ui::PageTransition transition,
     omnibox::AutocompleteMatchType match_type,
     base::TimeTicks match_selection_timestamp,
@@ -213,7 +213,7 @@ void ComposeboxHandler::NavigateUrl(const GURL& url) {
   }
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
-          url, WindowOpenDisposition::kNewForegroundTab,
+          url, ui::mojom::WindowOpenDisposition::kNewForegroundTab,
           ui::PAGE_TRANSITION_LINK);
   browser_window_interface->OpenURL(std::move(params),
                                     /*navigation_handle_callback=*/{});
@@ -277,7 +277,7 @@ void ComposeboxHandler::SubmitQuery(const std::string& query_text,
                                     bool meta_key,
                                     bool shift_key,
                                     bool is_voice_search) {
-  const WindowOpenDisposition disposition = ui::DispositionFromClick(
+  const ui::mojom::WindowOpenDisposition disposition = ui::DispositionFromClick(
       /*middle_button=*/mouse_button == 1, alt_key, ctrl_key, meta_key,
       shift_key);
   auto* session_handle = GetContextualSessionHandle();
@@ -299,7 +299,7 @@ void ComposeboxHandler::SubmitQuery(const std::string& query_text,
 
 void ComposeboxHandler::SubmitQuery(
     const std::string& query_text,
-    WindowOpenDisposition disposition,
+    ui::mojom::WindowOpenDisposition disposition,
     omnibox::ChromeAimEntryPoint aim_entrypoint,
     std::map<std::string, std::string> additional_params,
     bool is_voice_search) {
@@ -324,7 +324,7 @@ void ComposeboxHandler::SubmitQuery(
 
 void ComposeboxHandler::ProcessContextAndOpenUrl(
     GURL url,
-    const WindowOpenDisposition disposition) {
+    const ui::mojom::WindowOpenDisposition disposition) {
   ContextualSearchboxHandler::ProcessContextAndOpenUrl(url, disposition);
   // To keep the current composebox in a valid state after passing along its
   // session handle and input state model, clear both of these values. This

@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_screenshare_controller.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 
 class OmniboxEverywhereService;
 class Profile;
@@ -54,9 +55,9 @@ class ComposeboxEverywhereHandler : public ComposeboxHandler {
       searchbox::mojom::SelectedFileInfoPtr file_info) override;
   void ProcessContextAndOpenUrl(
       GURL url,
-      const WindowOpenDisposition disposition) override;
+      const ui::mojom::WindowOpenDisposition disposition) override;
   void OpenUrl(GURL url,
-               const WindowOpenDisposition disposition,
+               const ui::mojom::WindowOpenDisposition disposition,
                base::OnceCallback<void(content::NavigationHandle&)>
                    navigation_handle_callback) override;
   void CleanupDrivePicker() override;

@@ -33,6 +33,7 @@
 #include "third_party/omnibox_proto/chrome_searchbox_stats.pb.h"
 #include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
+#include "ui/base/mojom/window_open_disposition.mojom-forward.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
@@ -208,9 +209,10 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
       searchbox::mojom::SmartComposeStatsPtr smart_compose_stats) override {}
   void SetPopupSelection(
       searchbox::mojom::OmniboxPopupSelectionPtr selection) override;
-  void OpenPopupSelection(uint32_t result_sequence_id,
-                          searchbox::mojom::OmniboxPopupSelectionPtr selection,
-                          WindowOpenDisposition disposition) override;
+  void OpenPopupSelection(
+      uint32_t result_sequence_id,
+      searchbox::mojom::OmniboxPopupSelectionPtr selection,
+      ui::mojom::WindowOpenDisposition disposition) override;
   void OnNavigationLikely(
       uint8_t line,
       const GURL& url,
@@ -369,14 +371,14 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
 
   void OpenMatch(OmniboxPopupSelection selection,
                  AutocompleteMatch match,
-                 WindowOpenDisposition disposition,
+                 ui::mojom::WindowOpenDisposition disposition,
                  base::TimeTicks match_selection_timestamp,
                  const searchbox::AutocompleteSnapshot& snapshot);
 
   void OnDefaultSearchExtensionDialogDone(
       OmniboxPopupSelection selection,
       AutocompleteMatch match,
-      WindowOpenDisposition disposition,
+      ui::mojom::WindowOpenDisposition disposition,
       base::TimeTicks match_selection_timestamp,
       OmniboxClient::ExtensionControlledDialogResult dialog_result);
 
@@ -415,7 +417,7 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
       size_t line,
       const TemplateURLService* turl_service,
       searchbox::mojom::AutocompleteMatch* mojom_match) const;
-  virtual WindowOpenDisposition ComputeWindowOpenDisposition(
+  virtual ui::mojom::WindowOpenDisposition ComputeWindowOpenDisposition(
       uint8_t mouse_button,
       bool alt_key,
       bool ctrl_key,

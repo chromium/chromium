@@ -30,7 +30,7 @@
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
-#include "ui/base/window_open_disposition.h"
+#include "ui/base/mojom/window_open_disposition.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace skills {
@@ -275,7 +275,7 @@ void SkillsPageHandlerV2::CloseDialog(
         ->StoreData(std::move(data));
     if (BrowserWindowInterface* browser = GetBrowserWindow()) {
       browser->OpenGURL(GURL("chrome://skills/editor"),
-                        WindowOpenDisposition::kNewForegroundTab);
+                        ui::mojom::WindowOpenDisposition::kNewForegroundTab);
     }
   }
   if (delegate_) {
