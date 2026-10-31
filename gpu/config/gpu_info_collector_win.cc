@@ -17,6 +17,7 @@
 #include <array>
 
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/file_version_info_win.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -31,6 +32,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/win/scoped_com_initializer.h"
 #include "build/branding_buildflags.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_util.h"
 #include "third_party/microsoft_dxheaders/src/include/directx/d3d12.h"
 #include "third_party/microsoft_dxheaders/src/include/directx/dxcore.h"
@@ -132,6 +134,131 @@ OverlaySupport FlagsToOverlaySupport(bool overlays_supported, UINT flags) {
     return OverlaySupport::kSoftware;
 
   return OverlaySupport::kNone;
+}
+
+std::string DriverVendorStringFromVendorId(uint32_t vendor_id) {
+  switch (vendor_id) {
+    case 0x1002:
+      return "AMD";
+    case 0x106b:
+      return "Apple";
+    case 0x13b5:
+      return "ARM";
+    case 0x14e4:
+      return "Broadcom";
+    case 0x1ae0:
+      return "Google";
+    case 0x8086:
+      return "Intel";
+    case 0x1414:
+      return "Microsoft";
+    case 0x10de:
+      return "NVIDIA";
+    case 0x5143:
+    case 0x4d4f4351:
+      return "Qualcomm";
+    case 0x144d:
+      return "Samsung Electronics Co., Ltd.";
+    case 0x15ad:
+      return "VMware";
+    case 0x1af4:
+      return "VirtIO";
+    default:
+      // Matches ANGLE's GetVendorString(), which uses gl::FmtHex().
+      return base::StringPrintf("0x%08X", vendor_id);
+  }
+}
+
+// Marks the primary GPU as active and all secondary GPUs as inactive.
+void MarkPrimaryGpuActive(GPUInfo* gpu_info) {
+  gpu_info->gpu.active = true;
+  for (auto& secondary_gpu : gpu_info->secondary_gpus) {
+    secondary_gpu.active = false;
+  }
+}
+
+// Shader models reported to the GPU.D3DShaderModel histogram.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum ShaderModel {
+  SHADER_MODEL_UNKNOWN,
+  SHADER_MODEL_2_0,  // Obsolete: D3D9 only.
+  SHADER_MODEL_3_0,  // Obsolete: D3D9 only.
+  SHADER_MODEL_4_0,
+  SHADER_MODEL_4_1,
+  SHADER_MODEL_5_0,
+  NUM_SHADER_MODELS
+};
+
+// Returns the HLSL shader model supported at the given D3D11 feature level.
+// This mirrors ANGLE's Renderer11::getMajorShaderModel()/getMinorShaderModel(),
+// which derive the "vs_x_x ps_x_x" part of GL_RENDERER solely from the
+// device's feature level. In D3D11 the vertex and pixel shader models are
+// always the same.
+ShaderModel GetShaderModelFromD3D11FeatureLevel(uint32_t d3d11_feature_level) {
+  switch (d3d11_feature_level) {
+    case D3D_FEATURE_LEVEL_12_2:
+    case D3D_FEATURE_LEVEL_12_1:
+    case D3D_FEATURE_LEVEL_12_0:
+    case D3D_FEATURE_LEVEL_11_1:
+    case D3D_FEATURE_LEVEL_11_0:
+      return SHADER_MODEL_5_0;
+    case D3D_FEATURE_LEVEL_10_1:
+      return SHADER_MODEL_4_1;
+    case D3D_FEATURE_LEVEL_10_0:
+      return SHADER_MODEL_4_0;
+    default:
+      // ANGLE requires feature level 10_0 or above.
+      return SHADER_MODEL_UNKNOWN;
+  }
+}
+
+// Returns the "major.minor" version string for `shader_model`, or an empty
+// string if it is unknown.
+std::string ShaderModelToString(ShaderModel shader_model) {
+  switch (shader_model) {
+    case SHADER_MODEL_2_0:
+      return "2.0";
+    case SHADER_MODEL_3_0:
+      return "3.0";
+    case SHADER_MODEL_4_0:
+      return "4.0";
+    case SHADER_MODEL_4_1:
+      return "4.1";
+    case SHADER_MODEL_5_0:
+      return "5.0";
+    case SHADER_MODEL_UNKNOWN:
+    case NUM_SHADER_MODELS:
+      return std::string();
+  }
+}
+
+// Collects context graphics info directly from ANGLE's D3D11 device, without
+// going through GL. Every GPU's driver_vendor and driver_version are already
+// set by CollectDriverInfoD3D().
+void CollectD3D11GraphicsInfo(GPUInfo* gpu_info,
+                              ID3D11Device* d3d11_device,
+                              gl::GLDisplay* display) {
+  DCHECK(gpu_info);
+  DCHECK(d3d11_device);
+
+  CollectGraphicsInfoFromANGLEDisplay(gpu_info, display);
+
+  gpu_info->d3d11_feature_level = d3d11_device->GetFeatureLevel();
+  // Derive the shader model from the device's feature level rather than
+  // parsing ANGLE's GL_RENDERER string. VS and PS versions are identical in
+  // D3D11.
+  ShaderModel shader_model =
+      GetShaderModelFromD3D11FeatureLevel(gpu_info->d3d11_feature_level);
+  gpu_info->vertex_shader_version = ShaderModelToString(shader_model);
+  gpu_info->pixel_shader_version = gpu_info->vertex_shader_version;
+  UMA_HISTOGRAM_ENUMERATION("GPU.D3DShaderModel", shader_model,
+                            NUM_SHADER_MODELS);
+
+  if (gpu_info->gpu.vendor_id != 0xffff &&
+      !IdentifyActiveGPUWithLuid(gpu_info)) {
+    MarkPrimaryGpuActive(gpu_info);
+  }
 }
 
 }  // namespace
@@ -359,6 +486,8 @@ bool CollectDriverInfoD3D(GPUInfo* gpu_info) {
     device.device_string = base::WideToUTF8(std::wstring_view(
         desc.Description,
         UNSAFE_TODO(wcsnlen_s(desc.Description, std::size(desc.Description)))));
+    // Same vendor name ANGLE reports in its GL_RENDERER string.
+    device.driver_vendor = DriverVendorStringFromVendorId(device.vendor_id);
 
     LARGE_INTEGER umd_version;
     hr = dxgi_adapter->CheckInterfaceSupport(__uuidof(IDXGIDevice),
@@ -643,6 +772,19 @@ bool CollectContextGraphicsInfo(GPUInfo* gpu_info) {
 
   DCHECK(gpu_info);
 
+  if (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kD3D11 &&
+      base::FeatureList::IsEnabled(features::kGpuInitOptimization)) {
+    Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+        gl::QueryD3D11DeviceObjectFromANGLE();
+    if (d3d11_device) {
+      // Everything we need is available from the D3D11 device; skip the
+      // GL-based collection below.
+      CollectD3D11GraphicsInfo(gpu_info, d3d11_device.Get(),
+                               gl::GetDefaultDisplayEGL());
+      return true;
+    }
+  }
+
   if (!CollectGraphicsInfoGL(gpu_info, gl::GetDefaultDisplayEGL())) {
     return false;
   }
@@ -675,28 +817,8 @@ bool CollectContextGraphicsInfo(GPUInfo* gpu_info) {
     }
 
     DCHECK(!gpu_info->vertex_shader_version.empty());
-    // Note: do not reorder, used by UMA_HISTOGRAM below
-    enum ShaderModel {
-      SHADER_MODEL_UNKNOWN,
-      SHADER_MODEL_2_0,
-      SHADER_MODEL_3_0,
-      SHADER_MODEL_4_0,
-      SHADER_MODEL_4_1,
-      SHADER_MODEL_5_0,
-      NUM_SHADER_MODELS
-    };
-    ShaderModel shader_model = SHADER_MODEL_UNKNOWN;
-    if (gpu_info->vertex_shader_version == "5.0") {
-      shader_model = SHADER_MODEL_5_0;
-    } else if (gpu_info->vertex_shader_version == "4.1") {
-      shader_model = SHADER_MODEL_4_1;
-    } else if (gpu_info->vertex_shader_version == "4.0") {
-      shader_model = SHADER_MODEL_4_0;
-    } else if (gpu_info->vertex_shader_version == "3.0") {
-      shader_model = SHADER_MODEL_3_0;
-    } else if (gpu_info->vertex_shader_version == "2.0") {
-      shader_model = SHADER_MODEL_2_0;
-    }
+    ShaderModel shader_model =
+        GetShaderModelFromD3D11FeatureLevel(gpu_info->d3d11_feature_level);
     UMA_HISTOGRAM_ENUMERATION("GPU.D3DShaderModel", shader_model,
                               NUM_SHADER_MODELS);
 

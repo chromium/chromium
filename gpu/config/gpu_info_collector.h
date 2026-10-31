@@ -76,6 +76,14 @@ GPU_CONFIG_EXPORT bool GetActiveAdapterLuid(LUID* luid);
 bool IdentifyActiveGPUWithLuid(GPUInfo* gpu_info);
 #endif  // BUILDFLAG(IS_WIN)
 
+// Collect the GPUInfo fields that ANGLE derives from its EGL display rather
+// than from a current GL context: display_type, gl_vendor, gl_ws_vendor,
+// gl_ws_version, gl_ws_extensions and gl_reset_notification_strategy, plus
+// gl_renderer and gl_version if EGL_ANGLE_query_renderer_strings is supported.
+// Returns false if ANGLE isn't in use or |display| isn't an EGL display.
+bool CollectGraphicsInfoFromANGLEDisplay(GPUInfo* gpu_info,
+                                         gl::GLDisplay* display);
+
 // Create a GL context and collect GL strings and versions.
 GPU_CONFIG_EXPORT bool CollectGraphicsInfoGL(GPUInfo* gpu_info,
                                              gl::GLDisplay* display);

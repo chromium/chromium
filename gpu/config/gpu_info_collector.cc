@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -584,6 +585,74 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
   }
 
   return CollectBasicGraphicsInfo(gpu_info);
+}
+
+bool CollectGraphicsInfoFromANGLEDisplay(GPUInfo* gpu_info,
+                                         gl::GLDisplay* display) {
+  TRACE_EVENT("gpu,startup",
+              "gpu_info_collector::CollectGraphicsInfoFromANGLEDisplay");
+  // gl_vendor below relies on ANGLE's GL_VENDOR matching its EGL_VENDOR,
+  // which doesn't hold for native EGL drivers.
+  if (gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE) {
+    return false;
+  }
+  gl::GLDisplayEGL* egl_display =
+      display ? display->GetAs<gl::GLDisplayEGL>() : nullptr;
+  if (!egl_display) {
+    return false;
+  }
+
+  gpu_info->display_type = GetDisplayTypeString(egl_display->GetDisplayType());
+
+  // Same queries as GetGLWindowSystemBindingInfoEGL(), but on the display
+  // directly so that no context needs to be current.
+  EGLDisplay egl_display_handle = egl_display->GetDisplay();
+  const char* vendor = eglQueryString(egl_display_handle, EGL_VENDOR);
+  const char* version = eglQueryString(egl_display_handle, EGL_VERSION);
+  const char* extensions = eglQueryString(egl_display_handle, EGL_EXTENSIONS);
+  if (vendor) {
+    // ANGLE's GL_VENDOR is the same string as its EGL_VENDOR.
+    gpu_info->gl_vendor = vendor;
+    gpu_info->gl_ws_vendor = vendor;
+  }
+  if (version) {
+    gpu_info->gl_ws_version = version;
+  }
+  if (extensions) {
+    gpu_info->gl_ws_extensions = extensions;
+  }
+
+  // EGL_ANGLE_query_renderer_strings returns GL_RENDERER and the ANGLE version
+  // embedded in GL_VERSION without a context.
+  if (egl_display->ext->b_EGL_ANGLE_query_renderer_strings) {
+    const char* renderer =
+        eglQueryString(egl_display_handle, EGL_RENDERER_STRING_ANGLE);
+    if (renderer) {
+      gpu_info->gl_renderer = renderer;
+    }
+    const char* angle_version =
+        eglQueryString(egl_display_handle, EGL_ANGLE_VERSION_STRING_ANGLE);
+    if (angle_version) {
+      // ANGLE's GL_VERSION is "OpenGL ES <major>.<minor> (ANGLE <version>)",
+      // with the client version of the context. Use the same default
+      // GLContextAttribs as the context created in CollectGraphicsInfoGL().
+      gl::GLContextAttribs attribs;
+      gpu_info->gl_version = base::StrCat(
+          {"OpenGL ES ", base::NumberToString(attribs.client_major_es_version),
+           ".", base::NumberToString(attribs.client_minor_es_version),
+           " (ANGLE ", angle_version, ")"});
+    }
+  }
+
+  // The reset notification strategy is a context creation attribute.
+  // GLContextEGL requests EGL_LOSE_CONTEXT_ON_RESET_EXT for contexts created
+  // with default GLContextAttribs (lose_context_on_reset = true), as the one
+  // in CollectGraphicsInfoGL() is, whenever the display supports
+  // EGL_EXT_create_context_robustness.
+  if (egl_display->ext->b_EGL_EXT_create_context_robustness) {
+    gpu_info->gl_reset_notification_strategy = GL_LOSE_CONTEXT_ON_RESET_KHR;
+  }
+  return true;
 }
 
 bool CollectGraphicsInfoGL(GPUInfo* gpu_info, gl::GLDisplay* display) {
