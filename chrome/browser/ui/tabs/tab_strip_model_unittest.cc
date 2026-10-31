@@ -7191,16 +7191,17 @@ TEST_F(TabStripModelTest, DiscontinuousNewTabIndexTooLow) {
 }
 
 TEST_F(TabStripModelTest, CreateGroupSetsVisualData) {
-  tab_groups::ColorLabelMap all_colors = tab_groups::GetTabGroupColorLabelMap();
+  std::vector<tab_groups::TabGroupColorId> all_colors =
+      TabGroupModel::GetColorOrdering();
   PrepareTabs(tabstrip(), all_colors.size() + 1);
 
   // Expect groups to cycle through the available color set.
   int index = 0;
-  for (const auto& color_pair : all_colors) {
+  for (tab_groups::TabGroupColorId color : all_colors) {
     const tab_groups::TabGroupId group = tabstrip()->AddToNewGroup({index});
     EXPECT_EQ(
         tabstrip()->group_model()->GetTabGroup(group)->visual_data()->color(),
-        color_pair.first);
+        color);
     ++index;
   }
 
@@ -7208,7 +7209,7 @@ TEST_F(TabStripModelTest, CreateGroupSetsVisualData) {
   const tab_groups::TabGroupId group = tabstrip()->AddToNewGroup({index});
   EXPECT_EQ(
       tabstrip()->group_model()->GetTabGroup(group)->visual_data()->color(),
-      all_colors.begin()->first);
+      all_colors.front());
 
   tabstrip()->CloseAllTabs();
 }

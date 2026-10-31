@@ -17364,24 +17364,6 @@
             ]
         }
     ],
-    "TabGroupColorRefresh": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "TabGroupColorRefresh"
-                    ]
-                }
-            ]
-        }
-    ],
     "TabGroupSuggestions": [
         {
             "platforms": [
