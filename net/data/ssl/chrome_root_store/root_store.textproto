@@ -8,7 +8,7 @@
 
 # Version # should always be incremented up whenever this (or any pem file that
 # it references) is changed.
-version_major: 43
+version_major: 44
 
 # When allocating new crs_root_id values, always start from the value in
 # NEXT_UNUSED_CRS_ROOT_ID.txt (which may not exist in the Chromium repository),
@@ -27,12 +27,10 @@ trust_anchors {
 }
 
 # CN=Amazon Root CA 3, O=Amazon, C=US
-# https://good.sca3a.amazontrust.com/
 # Constraint date: Mon, Sept 14, 2027, 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "18ce6cfe7bf14e60b2e347b8dfe868cb31d02ebb3ada271569f50343b46db3a4"
   crs_root_id: 4
-  ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1820966399
     min_version: "153.0.8010.0"
@@ -43,12 +41,10 @@ trust_anchors {
 }
 
 # CN=Amazon Root CA 2, O=Amazon, C=US
-# https://good.sca2a.amazontrust.com/
 # Constraint date: Mon, Sept 14, 2027, 23:59:59 GMT+0000
 trust_anchors {
   sha256_hex: "1ba5b2aa8c65401a82960118f80bec4f62304d83cec4713a19c39c011ea46db4"
   crs_root_id: 5
-  ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1820966399
     min_version: "153.0.8010.0"
@@ -59,19 +55,15 @@ trust_anchors {
 }
 
 # CN=Amazon Root CA 1, O=Amazon, C=US
-# https://good.sca1a.amazontrust.com/
 trust_anchors {
   sha256_hex: "8ecde6884f3d87b1125ba31ac3fcb13d7016de7f57cc904fe1cb97c6ae98196e"
   crs_root_id: 6
-  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=Amazon Root CA 4, O=Amazon, C=US
-# https://good.sca4a.amazontrust.com/
 trust_anchors {
   sha256_hex: "e35d28419ed02025cfa69038cd623962458da5c695fbdea3c22b0bfb25897092"
   crs_root_id: 7
-  ev_policy_oids: "2.23.140.1.1"
 }
 
 # CN=Certum Trusted Network CA, OU=Certum Certification Authority, O=Unizeto Technologies S.A., C=PL
@@ -99,36 +91,6 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1785999664
-    min_version: "153.0.8010.0"
-  }
-  constraints: {
-    max_version_exclusive: "153.0.8010.0"
-  }
-}
-
-# CN=Buypass Class 2 Root CA, O=Buypass AS-983163327, C=NO
-# Constraint date and time (GMT): Friday, October 31, 2025 11:59:59 PM
-trust_anchors {
-  sha256_hex: "9a114025197c5bb95d94e63d55cd43790847b646b23cdf11ada4a00eff15fb48"
-  crs_root_id: 11
-  constraints: {
-    sct_not_after_sec: 1761955199
-    min_version: "153.0.8010.0"
-  }
-  constraints: {
-    max_version_exclusive: "153.0.8010.0"
-  }
-}
-
-# CN=Buypass Class 3 Root CA, O=Buypass AS-983163327, C=NO
-# https://valid.evident.ca23.ssl.buypass.no/
-# Constraint date and time (GMT): Friday, October 31, 2025 11:59:59 PM
-trust_anchors {
-  sha256_hex: "edf7ebbca27a2a384d387b7d4010c666e2edb4843e4c29b4ae1d5b9332e6b24d"
-  crs_root_id: 12
-  ev_policy_oids: "2.23.140.1.1"
-  constraints: {
-    sct_not_after_sec: 1761955199
     min_version: "153.0.8010.0"
   }
   constraints: {
@@ -207,20 +169,6 @@ trust_anchors {
   ev_policy_oids: "2.23.140.1.1"
   constraints: {
     sct_not_after_sec: 1780012799
-    min_version: "153.0.8010.0"
-  }
-  constraints: {
-    max_version_exclusive: "153.0.8010.0"
-  }
-}
-
-# CN=Certigna Root CA, OU=0002 48146308100036, O=Dhimyotis, C=FR
-# Constraint date: Sun, Jun 14, 2026 23:59:59 GMT+0000
-trust_anchors {
-  sha256_hex: "d48d3d23eedb50a459e55197601c27774b9d7b18c94d5a059511a10250b93168"
-  crs_root_id: 20
-  constraints: {
-    sct_not_after_sec: 1781481599
     min_version: "153.0.8010.0"
   }
   constraints: {
@@ -777,20 +725,6 @@ trust_anchors {
   sha256_hex: "d95d0e8eda79525bf9beb11b14d2100d3294985f0c62d9fabd9cd999eccb7b1d"
   crs_root_id: 77
   ev_policy_oids: "2.23.140.1.1"
-}
-
-# CN=HiPKI Root CA - G1, O=Chunghwa Telecom Co., Ltd., C=TW
-# Constraint date: Thu, Jul 31, 2025 23:59:59 GMT+0000
-trust_anchors {
-  sha256_hex: "f015ce3cc239bfef064be9f1d2c417e1a0264a0a94be1f0c8d121864eb6949cc"
-  crs_root_id: 78
-  constraints: {
-    sct_not_after_sec: 1754006399
-    min_version: "139"
-  }
-  constraints: {
-    max_version_exclusive: "139"
-  }
 }
 
 # CN=ISRG Root X2, O=Internet Security Research Group, C=US
