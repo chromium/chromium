@@ -62,32 +62,8 @@ std::u16string SimplifyDocumentTitleWithLength(const std::u16string& title,
   return result;
 }
 
-std::u16string FormatDocumentTitleWithOwnerAndLength(
-    const std::u16string& owner,
-    const std::u16string& title,
-    size_t length) {
-  const std::u16string separator = u": ";
-  DCHECK_LT(separator.size(), length);
-
-  std::u16string short_title =
-      SimplifyDocumentTitleWithLength(owner, length - separator.size());
-  short_title += separator;
-  if (short_title.size() < length) {
-    short_title +=
-        SimplifyDocumentTitleWithLength(title, length - short_title.size());
-  }
-
-  return short_title;
-}
-
 std::u16string SimplifyDocumentTitle(const std::u16string& title) {
   return SimplifyDocumentTitleWithLength(title, kMaxDocumentTitleLength);
-}
-
-std::u16string FormatDocumentTitleWithOwner(const std::u16string& owner,
-                                            const std::u16string& title) {
-  return FormatDocumentTitleWithOwnerAndLength(owner, title,
-                                               kMaxDocumentTitleLength);
 }
 
 #if BUILDFLAG(USE_CUPS)

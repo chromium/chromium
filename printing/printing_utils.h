@@ -35,16 +35,6 @@ COMPONENT_EXPORT(PRINTING_BASE)
 std::u16string SimplifyDocumentTitleWithLength(const std::u16string& title,
                                                size_t length);
 
-COMPONENT_EXPORT(PRINTING_BASE)
-std::u16string FormatDocumentTitleWithOwner(const std::u16string& owner,
-                                            const std::u16string& title);
-
-COMPONENT_EXPORT(PRINTING_BASE)
-std::u16string FormatDocumentTitleWithOwnerAndLength(
-    const std::u16string& owner,
-    const std::u16string& title,
-    size_t length);
-
 #if BUILDFLAG(USE_CUPS)
 // Returns the paper size (microns) most common in the locale to the nearest
 // millimeter. Defaults to ISO A4 for an empty or invalid locale.

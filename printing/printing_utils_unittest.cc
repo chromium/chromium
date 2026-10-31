@@ -39,11 +39,6 @@ std::string Simplify(const std::string& title) {
       SimplifyDocumentTitleWithLength(base::UTF8ToUTF16(title), kTestLength));
 }
 
-std::string Format(const std::string& owner, const std::string& title) {
-  return base::UTF16ToUTF8(FormatDocumentTitleWithOwnerAndLength(
-      base::UTF8ToUTF16(owner), base::UTF8ToUTF16(title), kTestLength));
-}
-
 #if BUILDFLAG(IS_WIN)
 // This test is automatically disabled if no printer is available.
 class PrintingUtilsWinTest : public PrintingTest<testing::Test> {};
@@ -61,17 +56,6 @@ TEST(PrintingUtilsTest, SimplifyDocumentTitle) {
   EXPECT_EQ("a_b_c", Simplify("a<b\"c"));
   EXPECT_EQ("d_e_f_", Simplify("d*e?f~"));
   EXPECT_EQ("", Simplify("\n\r\n\r\t\r"));
-}
-
-TEST(PrintingUtilsTest, FormatDocumentTitleWithOwner) {
-  EXPECT_EQ(": ", Format("", ""));
-  EXPECT_EQ("abc: ", Format("abc", ""));
-  EXPECT_EQ(": 123", Format("", "123"));
-  EXPECT_EQ("abc: 123", Format("abc", "123"));
-  EXPECT_EQ("abc: 0.9", Format("abc", "0123456789"));
-  EXPECT_EQ("ab...j: ", Format("abcdefghij", "123"));
-  EXPECT_EQ("xyz: _.o", Format("xyz", "\\f\\oo"));
-  EXPECT_EQ("ab...j: ", Format("abcdefghij", "0123456789"));
 }
 
 #if BUILDFLAG(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS)
