@@ -859,15 +859,17 @@ void ContextualTasksSidePanelCoordinator::OpenInZeroState() {
       contextual_tasks::GetEffectivePinState(browser_window_->GetProfile());
 
   base::AutoReset<bool> opening_in_zero_state(&is_opening_in_zero_state_, true);
+  // Pass the entry source explicitly, since `Show()` can't infer it for a new
+  // thread
   Show(/*transition_from_tab=*/false,
        is_pinned ? omnibox::ChromeAimEntryPoint::
                        DESKTOP_CHROME_COBROWSE_PINNED_TOOLBAR_BUTTON
                  : omnibox::ChromeAimEntryPoint::UNKNOWN_AIM_ENTRY_POINT,
        /*use_no_animation=*/false, /*open_time_ticks=*/std::nullopt,
-       is_pinned ? std::nullopt
-                 : std::make_optional(
-                       ContextualTasksPanelController::EntrySource::
-                           kEphemeralToolbarButton));
+       is_pinned ? ContextualTasksPanelController::EntrySource::
+                       kPermanentToolbarButton
+                 : ContextualTasksPanelController::EntrySource::
+                       kEphemeralToolbarButton);
 }
 
 void ContextualTasksSidePanelCoordinator::OpenUrlInNewTab(const GURL& url) {

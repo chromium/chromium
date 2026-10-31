@@ -1802,6 +1802,32 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest,
   coordinator_->OpenInZeroState();
 }
 
+// Regression test for b/580017132: a pinned-button new-thread open must be
+// attributed to kPermanentToolbarButton (not kOther), so that it lands in the
+// PermanentToolbarButton close and session-duration metrics alongside
+// continue-thread opens.
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       OpenInZeroState_PinnedToolbarButton_SetsPermanentToolbarButtonSource) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kEnableContextualTasksPinButtonInToolbar, kContextualTasksPinningV2},
+      {});
+
+  auto* model = PinnedToolbarActionsModel::Get(profile_.get());
+  ASSERT_TRUE(model);
+  model->UpdatePinnedState(kActionSidePanelShowContextualTasks,
+                           /*should_pin=*/true);
+
+  ContextualTask task(base::Uuid::GenerateRandomV4());
+  ON_CALL(*mock_controller_, GetContextualTaskForTab(_))
+      .WillByDefault(Return(task));
+
+  coordinator_->OpenInZeroState();
+
+  EXPECT_EQ(ContextualTasksPanelController::EntrySource::kPermanentToolbarButton,
+            coordinator_->GetActiveEntrySource());
+}
+
 TEST_F(ContextualTasksSidePanelCoordinatorTest,
        CloseLensSessionWhenShowingPanel) {
   tabs::TabInterface* active_tab = tab_list_->GetActiveTab();
