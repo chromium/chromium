@@ -231,6 +231,13 @@ class MetricsPreferenceCheckbox extends PreferenceCheckbox {
 }
 
 /**
+ * Maximum time in milliseconds to wait for the Terms of Service webview to
+ * finish loading before aborting and showing the error page.
+ * @const {number}
+ */
+const TERMS_LOAD_TIMEOUT_MS = 30000;
+
+/**
  * Represents the page loading state.
  * @enum {number}
  */
@@ -275,6 +282,10 @@ class TermsOfServicePage {
 
     this.tosContent_ = '';
     this.tosShown_ = false;
+    /** @private {?number} */
+    this.loadTimeoutId_ = null;
+    /** @private {number} */
+    this.loadTimeoutMs_ = TERMS_LOAD_TIMEOUT_MS;
 
     // Set event listener for webview loading.
     this.termsView_ = container.querySelector('#terms-view');
@@ -430,20 +441,46 @@ class TermsOfServicePage {
       return;
     }
 
-    const defaultLocation = 'https://play.google/play-terms/';
-    if (this.termsView_.src) {
-      // This is reloading the page, typically clicked RETRY on error page.
-      this.fastLocation_ = undefined;
-      if (this.termsView_.src === defaultLocation) {
-        this.termsView_.reload();
-      } else {
-        this.termsView_.src = defaultLocation;
-      }
-    } else {
-      // startTermsViewLoading used to have load time optimization logic
-      // (b/62540008), but this logic was removed because ToS webpage
-      // load time had improved.
-      this.termsView_.src = defaultLocation;
+    // Mark LOADING immediately so a retry from LoadState.ABORTED does not stay
+    // in ABORTED (which would cause onTermsViewLoadTimeout_() and
+    // onTermsViewLoadAborted_() to return early if the retry stalls or aborts
+    // before `loadstart` fires).
+    this.state_ = LoadState.LOADING;
+    this.startTermsViewLoadTimeout_();
+
+    // Always assign `src` instead of calling `reload()`: when an initial load
+    // times out before committing, `termsView_.stop()` discards the pending
+    // entry without committing an error page while `termsView_.src` remains
+    // set, making `reload()` a no-op in NavigationControllerImpl.
+    // `<webview>`'s `src` MutationObserver handles same-URL assignment by
+    // forcing a new navigation (`force_navigation = true`).
+    this.termsView_.src = 'https://play.google/play-terms/';
+  }
+
+  /** Starts or resets the watchdog timer for loading terms-view content. */
+  startTermsViewLoadTimeout_() {
+    this.clearTermsViewLoadTimeout_();
+    this.loadTimeoutId_ =
+        setTimeout(() => this.onTermsViewLoadTimeout_(), this.loadTimeoutMs_);
+  }
+
+  /** Clears any pending watchdog timer for loading terms-view content. */
+  clearTermsViewLoadTimeout_() {
+    if (this.loadTimeoutId_ !== null) {
+      clearTimeout(this.loadTimeoutId_);
+      this.loadTimeoutId_ = null;
+    }
+  }
+
+  /** Called when loading the terms-view exceeds the timeout. */
+  onTermsViewLoadTimeout_() {
+    this.loadTimeoutId_ = null;
+    if (this.state_ === LoadState.LOADED || this.state_ === LoadState.ABORTED) {
+      return;
+    }
+    this.onTermsViewLoadAborted_('timed out loading ToS content');
+    if (this.termsView_ && this.termsView_.stop) {
+      this.termsView_.stop();
     }
   }
 
@@ -467,6 +504,7 @@ class TermsOfServicePage {
     // content.
     this.state_ = LoadState.LOADING;
     this.tosContent_ = '';
+    this.startTermsViewLoadTimeout_();
     // Show loading page.
     this.loadingContainer_.hidden = false;
     this.contentContainer_.hidden = true;
@@ -492,6 +530,7 @@ class TermsOfServicePage {
         this.onTermsViewLoadAborted_('unable to get ToS content');
         return;
       }
+      this.clearTermsViewLoadTimeout_();
       onTosLoadResult(true /*success*/);
       this.state_ = LoadState.LOADED;
       this.tosContent_ = results[0];
@@ -511,6 +550,10 @@ class TermsOfServicePage {
 
   /** Called when the terms-view loading is aborted. */
   onTermsViewLoadAborted_(reason) {
+    this.clearTermsViewLoadTimeout_();
+    if (!appWindow || !port || this.state_ === LoadState.ABORTED) {
+      return;
+    }
     console.error('TermsView loading is aborted: ' + reason);
     // Mark ABORTED so that onTermsViewLoaded_() won't show the content view.
     this.fastLocation_ = undefined;
@@ -531,6 +574,7 @@ class TermsOfServicePage {
     // In case we failed with fast location let retry default scheme.
     if (this.fastLocation_) {
       this.fastLocation_ = undefined;
+      this.startTermsViewLoadTimeout_();
       this.termsView_.src = 'https://play.google/play-terms/';
       return;
     }
@@ -540,11 +584,13 @@ class TermsOfServicePage {
 
   /** Called when "AGREE" button is clicked. */
   onAgree() {
+    this.clearTermsViewLoadTimeout_();
     sendNativeMessage('onAgreed', this.getPageResults_());
   }
 
   /** Called when "CANCEL" button is clicked. */
   onCancel_() {
+    this.clearTermsViewLoadTimeout_();
     sendNativeMessage('onCanceled', this.getPageResults_());
     closeWindow();
   }
@@ -580,6 +626,11 @@ function initialize(data, deviceId) {
   loadTimeData.data = data;
   appWindow.contentWindow.i18nTemplate.process(doc, loadTimeData);
   locale = loadTimeData.getString('locale');
+
+  // Clear any pending load timeout on a previous instance before replacing it.
+  if (termsPage) {
+    termsPage.clearTermsViewLoadTimeout_();
+  }
 
   // Initialize preference connected checkboxes in terms of service page.
   termsPage = new TermsOfServicePage(
@@ -726,6 +777,16 @@ function showErrorPage(
     errorMessage, opt_shouldShowSendFeedback, opt_shouldShowNetworkTests) {
   if (!appWindow) {
     return;
+  }
+
+  if (termsPage) {
+    termsPage.clearTermsViewLoadTimeout_();
+    if (termsPage.state_ === LoadState.LOADING) {
+      termsPage.state_ = LoadState.ABORTED;
+      if (termsPage.termsView_ && termsPage.termsView_.stop) {
+        termsPage.termsView_.stop();
+      }
+    }
   }
 
   const doc = appWindow.contentWindow.document;
@@ -897,6 +958,9 @@ chrome.app.runtime.onLaunched.addListener(function() {
   };
 
   const onWindowClosed = function() {
+    if (termsPage) {
+      termsPage.clearTermsViewLoadTimeout_();
+    }
     appWindow = null;
 
     // Notify to Chrome.

@@ -1926,7 +1926,9 @@ if (!is_android) {
     if (is_chromeos) {
       data += [
         "//ash/webui/common/resources/cr.js",
+        "//chrome/browser/resources/chromeos/arc_support/background.js",
         "//chrome/browser/resources/chromeos/arc_support/i18n_template_no_process.js",
+        "//chrome/test/data/webui/chromeos/ash_common/arc_support_test_setup.js",
 
         # TODO(GYP): figure out which of these things are
         # actually needed and also which should be pulled in via
