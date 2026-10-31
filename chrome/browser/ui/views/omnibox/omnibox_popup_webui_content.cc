@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
 
+#include <memory>
 #include <string_view>
+#include <utility>
 
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
@@ -27,12 +29,31 @@ OmniboxPopupWebUIContent::OmniboxPopupWebUIContent(
     bool include_location_bar_cutout,
     bool wants_focus,
     bool set_content_url)
+    : OmniboxPopupWebUIContent(presenter,
+                               location_bar,
+                               controller,
+                               include_location_bar_cutout,
+                               wants_focus,
+                               set_content_url,
+                               /*contents=*/nullptr) {}
+
+OmniboxPopupWebUIContent::OmniboxPopupWebUIContent(
+    OmniboxPopupPresenterBase* presenter,
+    LocationBar* location_bar,
+    OmniboxController* controller,
+    bool include_location_bar_cutout,
+    bool wants_focus,
+    bool set_content_url,
+    std::unique_ptr<ContentsWrapper> contents)
     : OmniboxPopupWebUIBaseContent(
           presenter,
           location_bar,
           controller,
-          /*top_rounded_corners=*/!include_location_bar_cutout),
+          /*top_rounded_corners=*/!include_location_bar_cutout,
+          std::move(contents)),
       wants_focus_(wants_focus) {
+  // `SetContentURL()` adopts `contents`.
+  CHECK(set_content_url || !contents_wrapper());
   if (set_content_url) {
     SetContentURL(chrome::kChromeUIOmniboxPopupURL);
   }

@@ -14,6 +14,9 @@
 
 class LocationBar;
 class OmniboxController;
+class OmniboxPopupUI;
+template <typename T>
+class WebUIContentsWrapperT;
 
 // Implements subclass of OmniboxPopupPresenterBase to present a single WebUI
 // into the Omnibox popup.
@@ -43,7 +46,8 @@ class OmniboxPopupPresenter : public OmniboxPopupPresenterBase {
   bool ShouldEvictOnHide() const override;
   bool ShouldDestroyWidgetOnHide() const override;
   bool ShouldSizeWebViewToPreferredHeight() const override;
-  std::unique_ptr<OmniboxPopupWebUIBaseContent> CreateWebUIContent() override;
+  std::unique_ptr<OmniboxPopupWebUIBaseContent> CreateWebUIContent(
+      std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents) override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_PRESENTER_H_

@@ -25,10 +25,13 @@
 #include "ui/views/widget/widget.h"
 
 class LocationBar;
+class OmniboxPopupUI;
 class OmniboxPopupWebUIBaseContent;
 class OmniboxPopupPresenterDelegate;
 class RoundedOmniboxResultsFrame;
 class OmniboxController;
+template <typename T>
+class WebUIContentsWrapperT;
 
 namespace base {
 struct Feature;
@@ -138,6 +141,19 @@ class OmniboxPopupPresenterBase
   // WebUI content.
   OmniboxPopupWebUIBaseContent* GetOrCreateWebUIContent(CreationReason reason);
 
+  // Releases the loaded WebContents of the popup, which must be hidden, so
+  // that the presenter of the same popup kind in another browser window of the
+  // profile can adopt it with `AdoptWebUIContents()`. Destroys this
+  // presenter's content; the next `GetOrCreateWebUIContent()` creates a new
+  // one.
+  std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> ReleaseWebUIContents();
+
+  // Creates this presenter's content around `contents`, which another browser
+  // window's presenter released, instead of loading a new WebContents. The
+  // presenter must not have content.
+  OmniboxPopupWebUIBaseContent* AdoptWebUIContents(
+      std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents);
+
   // Called when the browser window that hosts this popup presents a frame
   // after `CreateWebUIContentAfterWindowPresentation()`. If the WebUI content
   // does not exist yet, posts a task that creates it. Later calls do nothing.
@@ -239,9 +255,11 @@ class OmniboxPopupPresenterBase
       std::unique_ptr<OmniboxPopupWebUIBaseContent> webui_content);
 
   // Presenters that create their WebUI content lazily override this and call
-  // `ApplyWebUIContentCreationStrategy()` from their constructor. Returns null
-  // by default.
-  virtual std::unique_ptr<OmniboxPopupWebUIBaseContent> CreateWebUIContent();
+  // `ApplyWebUIContentCreationStrategy()` from their constructor. The content
+  // adopts `contents` if set, and loads a new WebContents otherwise. Returns
+  // null by default.
+  virtual std::unique_ptr<OmniboxPopupWebUIBaseContent> CreateWebUIContent(
+      std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents);
 
   // Returns the strategy for a presenter whose deferred creation is controlled
   // by `defer_creation_feature`, taking

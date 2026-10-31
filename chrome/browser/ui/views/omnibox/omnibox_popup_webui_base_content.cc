@@ -124,17 +124,51 @@ OmniboxPopupWebUIBaseContent::OmniboxPopupWebUIBaseContent(
     LocationBar* location_bar,
     OmniboxController* controller,
     bool top_rounded_corners)
+    : OmniboxPopupWebUIBaseContent(presenter,
+                                   location_bar,
+                                   controller,
+                                   top_rounded_corners,
+                                   /*contents=*/nullptr) {}
+
+OmniboxPopupWebUIBaseContent::OmniboxPopupWebUIBaseContent(
+    OmniboxPopupPresenterBase* presenter,
+    LocationBar* location_bar,
+    OmniboxController* controller,
+    bool top_rounded_corners,
+    std::unique_ptr<ContentsWrapper> contents)
     : views::WebView(location_bar->GetProfile()),
       popup_presenter_(presenter),
       location_bar_(location_bar),
       controller_(controller),
       top_rounded_corners_(top_rounded_corners),
+      contents_wrapper_(std::move(contents)),
       last_location_bar_width_(location_bar->BoundsInScreen().width()) {
   location_bar_->AddLocationBarObserver(this);
 }
 
 OmniboxPopupWebUIBaseContent::~OmniboxPopupWebUIBaseContent() {
   location_bar_->RemoveLocationBarObserver(this);
+}
+
+std::unique_ptr<OmniboxPopupWebUIBaseContent::ContentsWrapper>
+OmniboxPopupWebUIBaseContent::ReleaseContentsWrapper() {
+  CHECK(contents_wrapper_);
+  TRACE_EVENT1("omnibox",
+               "OmniboxPopupWebUIBaseContent::ReleaseContentsWrapper", "prefix",
+               GetMetricPrefix());
+  if (auto* webui_controller = contents_wrapper_->GetWebUIController()) {
+    // Runs while this window still embeds the popup, so that the handlers can
+    // clean up state they added to this window.
+    webui_controller->DetachFromWindow();
+    webui_controller->SetPresenterDelegate(nullptr);
+  }
+  contents_wrapper_->SetHost(nullptr);
+  SetWebContents(nullptr);
+  tab_selection_listener_.reset();
+  context_menu_.reset();
+  file_chooser_deactivation_blocker_.reset();
+  debounce_resize_timer_.Stop();
+  return std::move(contents_wrapper_);
 }
 
 void OmniboxPopupWebUIBaseContent::AddedToWidget() {
@@ -458,6 +492,10 @@ void OmniboxPopupWebUIBaseContent::RequestMediaAccessPermission(
 
 void OmniboxPopupWebUIBaseContent::SetContentURL(std::string_view url) {
   content_url_ = GURL(url);
+  if (contents_wrapper_) {
+    AdoptContents();
+    return;
+  }
   LoadContent();
 }
 
@@ -471,6 +509,27 @@ void OmniboxPopupWebUIBaseContent::LoadContent() {
   contents_wrapper_ = std::make_unique<WebUIContentsWrapperT<OmniboxPopupUI>>(
       content_url_, location_bar_->GetProfile(), IDS_TASK_MANAGER_OMNIBOX,
       EscClosesUI());
+  BindContentsToWindow();
+}
+
+void OmniboxPopupWebUIBaseContent::AdoptContents() {
+  TRACE_EVENT1("omnibox", "OmniboxPopupWebUIBaseContent::AdoptContents",
+               "prefix", GetMetricPrefix());
+  // Only browser windows exchange popups.
+  CHECK(location_bar_->GetBrowser());
+  BindContentsToWindow();
+  // The released WebContents still takes its colors from the old window.
+  if (views::Widget* location_bar_widget =
+          popup_presenter_->delegate().GetLocationBarWidget()) {
+    GetWebContents()->SetColorProviderSource(location_bar_widget);
+  }
+  if (auto* webui_controller = contents_wrapper_->GetWebUIController()) {
+    webui_controller->SetPresenterDelegate(popup_presenter_);
+    webui_controller->AttachToWindow(controller_);
+  }
+}
+
+void OmniboxPopupWebUIBaseContent::BindContentsToWindow() {
   contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
   SetWebContents(contents_wrapper_->web_contents());
   if (popup_presenter_->ShouldEvictOnHide()) {

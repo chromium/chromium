@@ -229,6 +229,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/omnibox",
     "//chrome/browser/ui/views:bubble_anchor_util_views",
     "//chrome/browser/ui/views:layout_provider",
+    "//chrome/browser/ui/webui/omnibox_popup",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//chrome/test/views",
@@ -300,6 +301,7 @@ source_set("browser_tests") {
   sources = [
     "omnibox_aim_popup_browsertest.cc",
     "omnibox_full_popup_webui_content_browsertest.cc",
+    "omnibox_popup_presenter_move_browsertest.cc",
     "omnibox_popup_resource_budget_browsertest.cc",
     "omnibox_popup_ui_move_browsertest.cc",
     "omnibox_popup_view_browser_view_browsertest.cc",

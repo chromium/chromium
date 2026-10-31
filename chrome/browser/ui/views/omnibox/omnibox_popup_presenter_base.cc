@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 
+#include <memory>
 #include <optional>
+#include <utility>
 
 #include "base/auto_reset.h"
 #include "base/check_is_test.h"
@@ -23,11 +25,13 @@
 #include "chrome/browser/ui/omnibox/omnibox_popup_webui_creation.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/common/omnibox_metrics_utils.h"
 #include "content/public/browser/render_frame_host.h"
@@ -453,7 +457,8 @@ OmniboxPopupPresenterBase::GetOrCreateWebUIContent(CreationReason reason) {
   TRACE_EVENT("omnibox", "OmniboxPopupPresenterBase::GetOrCreateWebUIContent",
               "prefix", GetPopupMetricPrefix(), "reason",
               CreationReasonToString(reason));
-  std::unique_ptr<OmniboxPopupWebUIBaseContent> content = CreateWebUIContent();
+  std::unique_ptr<OmniboxPopupWebUIBaseContent> content =
+      CreateWebUIContent(/*contents=*/nullptr);
   if (!content) {
     // Every production presenter either sets its content in its constructor
     // or overrides `CreateWebUIContent()`. Only unit-test presenters without
@@ -461,6 +466,35 @@ OmniboxPopupPresenterBase::GetOrCreateWebUIContent(CreationReason reason) {
     CHECK_IS_TEST();
     return nullptr;
   }
+  SetWebUIContent(std::move(content));
+  return GetWebUIContent();
+}
+
+std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>>
+OmniboxPopupPresenterBase::ReleaseWebUIContents() {
+  OmniboxPopupWebUIBaseContent* content = GetWebUIContent();
+  CHECK(content);
+  CHECK(!IsShown());
+  TRACE_EVENT("omnibox", "OmniboxPopupPresenterBase::ReleaseWebUIContents",
+              "prefix", GetPopupMetricPrefix());
+  Observe(nullptr);
+  permission_observation_.Reset();
+  std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents =
+      content->ReleaseContentsWrapper();
+  omnibox_popup_webui_content_ = nullptr;
+  content->parent()->RemoveChildViewT(content);
+  return contents;
+}
+
+OmniboxPopupWebUIBaseContent* OmniboxPopupPresenterBase::AdoptWebUIContents(
+    std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents) {
+  CHECK(contents);
+  CHECK(!GetWebUIContent());
+  TRACE_EVENT("omnibox", "OmniboxPopupPresenterBase::AdoptWebUIContents",
+              "prefix", GetPopupMetricPrefix());
+  std::unique_ptr<OmniboxPopupWebUIBaseContent> content =
+      CreateWebUIContent(std::move(contents));
+  CHECK(content);
   SetWebUIContent(std::move(content));
   return GetWebUIContent();
 }
@@ -493,7 +527,8 @@ void OmniboxPopupPresenterBase::ApplyWebUIContentCreationStrategy(
 }
 
 std::unique_ptr<OmniboxPopupWebUIBaseContent>
-OmniboxPopupPresenterBase::CreateWebUIContent() {
+OmniboxPopupPresenterBase::CreateWebUIContent(
+    std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents) {
   return nullptr;
 }
 

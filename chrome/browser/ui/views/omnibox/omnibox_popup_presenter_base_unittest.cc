@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "components/omnibox/browser/test_omnibox_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
@@ -67,7 +68,9 @@ class TestCountingDeferredPresenter : public TestOmniboxPopupPresenter {
   int create_count() const { return create_count_; }
 
  protected:
-  std::unique_ptr<OmniboxPopupWebUIBaseContent> CreateWebUIContent() override {
+  std::unique_ptr<OmniboxPopupWebUIBaseContent> CreateWebUIContent(
+      std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents)
+      override {
     ++create_count_;
     return nullptr;
   }

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_AIM_PRESENTER_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_AIM_PRESENTER_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
@@ -16,6 +18,9 @@
 class LocationBar;
 class OmniboxController;
 class OmniboxPopupPresenterDelegate;
+class OmniboxPopupUI;
+template <typename T>
+class WebUIContentsWrapperT;
 
 // Implements subclass of OmniboxPopupPresenterBase to present the AI-Mode
 // compose-plate into an Omnibox popup.
@@ -58,7 +63,8 @@ class OmniboxPopupAimPresenter
   void LogResultToContentReadyMetric(base::TimeTicks result_ready_time,
                                      bool is_first_show) override;
   void WidgetDestroyed() override;
-  std::unique_ptr<OmniboxPopupWebUIBaseContent> CreateWebUIContent() override;
+  std::unique_ptr<OmniboxPopupWebUIBaseContent> CreateWebUIContent(
+      std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents) override;
 
  private:
   // views::WidgetObserver:

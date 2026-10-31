@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_WEBUI_BASE_CONTENT_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_WEBUI_BASE_CONTENT_H_
 
+#include <memory>
 #include <string_view>
 #include <utility>
 
@@ -44,11 +45,21 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   METADATA_HEADER(OmniboxPopupWebUIBaseContent, views::WebView)
 
  public:
+  using ContentsWrapper = WebUIContentsWrapperT<OmniboxPopupUI>;
+
   OmniboxPopupWebUIBaseContent() = delete;
   OmniboxPopupWebUIBaseContent(OmniboxPopupPresenterBase* presenter,
                                LocationBar* location_bar,
                                OmniboxController* controller,
                                bool top_rounded_corners);
+  // `contents` is a loaded popup WebContents that another window's content
+  // released with `ReleaseContentsWrapper()`, or null. The content adopts it
+  // instead of loading a new one.
+  OmniboxPopupWebUIBaseContent(OmniboxPopupPresenterBase* presenter,
+                               LocationBar* location_bar,
+                               OmniboxController* controller,
+                               bool top_rounded_corners,
+                               std::unique_ptr<ContentsWrapper> contents);
   OmniboxPopupWebUIBaseContent(const OmniboxPopupWebUIBaseContent&) = delete;
   OmniboxPopupWebUIBaseContent& operator=(const OmniboxPopupWebUIBaseContent&) =
       delete;
@@ -61,6 +72,11 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   const WebUIContentsWrapperT<OmniboxPopupUI>* contents_wrapper() const {
     return contents_wrapper_.get();
   }
+
+  // Detaches the popup's WebContents from this window and returns it, so that
+  // a content in another browser window of the same profile can adopt it.
+  // Leaves this content without a WebContents; the caller destroys it.
+  std::unique_ptr<ContentsWrapper> ReleaseContentsWrapper();
 
   // views::View:
   void AddedToWidget() override;
@@ -128,7 +144,8 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
 
   virtual void OnContextMenuClosed() = 0;
 
-  // Set up the WebUI content page and hook up the Omnibox handlers.
+  // Set up the WebUI content page and hook up the Omnibox handlers. Adopts the
+  // WebContents passed to the constructor, if any, instead of loading `url`.
   void SetContentURL(std::string_view url);
 
   virtual std::string_view GetMetricPrefix() const = 0;
@@ -160,6 +177,14 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   // content wrapper (also destroying previous one if it exists) and initializes
   // the renderer.
   void LoadContent();
+
+  // Points the WebContents released by another window's content at this
+  // window, and rebinds its WebUI handlers to this window's omnibox.
+  void AdoptContents();
+
+  // Connects the WebContents in `contents_wrapper_` to this content and to this
+  // browser window.
+  void BindContentsToWindow();
 
 #if BUILDFLAG(IS_MAC)
   void UpdateAutoFill();

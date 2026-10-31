@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_aim_popup_webui_content.h"
 
+#include <memory>
 #include <string_view>
+#include <utility>
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -36,10 +38,21 @@ OmniboxAimPopupWebUIContent::OmniboxAimPopupWebUIContent(
     OmniboxPopupPresenterBase* presenter,
     LocationBar* location_bar,
     OmniboxController* controller)
+    : OmniboxAimPopupWebUIContent(presenter,
+                                  location_bar,
+                                  controller,
+                                  /*contents=*/nullptr) {}
+
+OmniboxAimPopupWebUIContent::OmniboxAimPopupWebUIContent(
+    OmniboxPopupPresenterBase* presenter,
+    LocationBar* location_bar,
+    OmniboxController* controller,
+    std::unique_ptr<ContentsWrapper> contents)
     : OmniboxPopupWebUIBaseContent(presenter,
                                    location_bar,
                                    controller,
-                                   /*top_rounded_corners=*/true) {
+                                   /*top_rounded_corners=*/true,
+                                   std::move(contents)) {
   SetContentURL(chrome::kChromeUIOmniboxPopupAimURL);
 }
 

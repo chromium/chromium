@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 
+#include <memory>
 #include <optional>
 #include <string_view>
+#include <utility>
 
 #include "base/feature_list.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -13,6 +15,8 @@
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "components/omnibox/common/omnibox_features.h"
 
 OmniboxPopupPresenter::OmniboxPopupPresenter(
@@ -43,11 +47,12 @@ OmniboxPopupPresenter::OmniboxPopupPresenter(
 OmniboxPopupPresenter::~OmniboxPopupPresenter() = default;
 
 std::unique_ptr<OmniboxPopupWebUIBaseContent>
-OmniboxPopupPresenter::CreateWebUIContent() {
+OmniboxPopupPresenter::CreateWebUIContent(
+    std::unique_ptr<WebUIContentsWrapperT<OmniboxPopupUI>> contents) {
   return std::make_unique<OmniboxPopupWebUIContent>(
       this, location_bar(), controller(),
       /*include_location_bar_cutout=*/true,
-      /*wants_focus=*/false, /*set_content_url=*/true);
+      /*wants_focus=*/false, /*set_content_url=*/true, std::move(contents));
 }
 
 bool OmniboxPopupPresenter::ShouldHideForInitialLayout() const {

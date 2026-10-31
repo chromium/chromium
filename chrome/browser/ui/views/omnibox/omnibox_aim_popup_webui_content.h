@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_AIM_POPUP_WEBUI_CONTENT_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_AIM_POPUP_WEBUI_CONTENT_H_
 
+#include <memory>
+
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
@@ -27,6 +29,12 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
   OmniboxAimPopupWebUIContent(OmniboxPopupPresenterBase* presenter,
                               LocationBar* location_bar,
                               OmniboxController* controller);
+  // `contents` is a WebContents to adopt, or null; see
+  // `OmniboxPopupWebUIBaseContent`.
+  OmniboxAimPopupWebUIContent(OmniboxPopupPresenterBase* presenter,
+                              LocationBar* location_bar,
+                              OmniboxController* controller,
+                              std::unique_ptr<ContentsWrapper> contents);
   OmniboxAimPopupWebUIContent(const OmniboxAimPopupWebUIContent&) = delete;
   OmniboxAimPopupWebUIContent& operator=(const OmniboxAimPopupWebUIContent&) =
       delete;
