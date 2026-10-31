@@ -255,6 +255,33 @@ suite('LineFocusMoveMode', () => {
     });
 
     test(
+        'onWordBoundary scrolls using shifted bounds if scroller scrollTop ' +
+            'changed',
+        () => {
+          const {scroller, container} = createScrolledContainer();
+          mode.onTextLocationsChange(container, defaultHeight);
+          model.setTextBounds([new DOMRect(0, 50, 200, 20)]);
+          model.setFocalPoint(100);
+
+          // Simulate a scroll occurred prior to onWordBoundary.
+          scroller.scrollTop = 150;
+
+          nodeStore.setDomNode(container, 1);
+          const segments = [{
+            node: ReadAloudNode.create(container)!,
+            start: 0,
+            length: 5,
+          }];
+
+          mode.onWordBoundary(segments);
+
+          assertDeepEquals([50 - 150], getTextBoundsTops());
+          assertEquals(
+              styleMode.getFocalPointForRect(model.getTextBounds()[0]!) - 100,
+              scrollDiffReceived);
+        });
+
+    test(
         'onWordBoundary aligns with line when word starts with superscript',
         () => {
           const container = createSuperscriptContainer();
@@ -930,17 +957,8 @@ suite('LineFocusMoveMode', () => {
     });
 
     test(
-        'onWordBoundary refreshes bounds if scroller scrollTop changed', () => {
-          const scroller = document.createElement('div');
-          scroller.className = 'sp-scroller';
-          Object.defineProperty(scroller, 'scrollTop', {
-            value: 0,
-            writable: true,
-          });
-          const container = createShortContainer();
-          scroller.appendChild(container);
-          document.body.appendChild(scroller);
-
+        'onWordBoundary shifts bounds if scroller scrollTop changed', () => {
+          const {scroller, container} = createScrolledContainer();
           mode.onActivated(container, defaultHeight);
           const customBounds = [new DOMRect(0, 50, 200, 20)];
           model.setTextBounds(customBounds);
@@ -958,9 +976,40 @@ suite('LineFocusMoveMode', () => {
 
           mode.onWordBoundary(segments);
 
-          // Bounds are re-measured, and lastScrollTop is left for scrollend.
-          assertNotEquals(50, model.getTextBounds()[0]!.top);
+          // Cached bounds are shifted rather than recomputed, and lastScrollTop
+          // is left for scrollend.
+          assertDeepEquals([50 - 150], getTextBoundsTops());
           assertEquals(0, model.getLastScrollTop());
+        });
+
+    test(
+        'onWordBoundary shifts focalPoint when instant recentering scrolls',
+        () => {
+          const {scroller, container} = createScrolledContainer();
+          mode.onActivated(container, defaultHeight);
+          model.setMaxY(10);
+          speechController.isSpeechActive = () => true;
+          delegate.notifyScroll = (diff, instant) => {
+            scrollDiffReceived = diff;
+            instantScrollReceived = instant;
+            if (instant) {
+              scroller.scrollTop += diff;
+            }
+          };
+
+          const preScrollLineBottom = model.getTextBounds()[0]!.bottom;
+          nodeStore.setDomNode(container, 1);
+          const segments = [{
+            node: ReadAloudNode.create(container)!,
+            start: 0,
+            length: 5,
+          }];
+
+          mode.onWordBoundary(segments);
+
+          assertGT(scrollDiffReceived, 0);
+          assertEquals(
+              preScrollLineBottom - scrollDiffReceived, model.getFocalPoint());
         });
 
     test('onMouseMove adds mouse distance', () => {

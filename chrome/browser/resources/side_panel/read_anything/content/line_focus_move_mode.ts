@@ -115,6 +115,12 @@ export abstract class LineFocusMoveMode {
     if (rects.length === 0) {
       return;
     }
+    if (this.model_.getTextBounds().length === 0) {
+      this.remeasurePositions();
+    } else {
+      // Speech may have scrolled since the last scroll event.
+      this.syncBoundsWithScroll();
+    }
     const rect = rects[0]!;
     const targetRect =
         getLineForRect(rect, this.model_.getTextBounds()) ?? rect;
@@ -562,18 +568,6 @@ export class LineFocusCursorMoveMode extends LineFocusMoveMode {
     const oldTop = this.model_.getTop();
     const oldFocalPoint = this.model_.getFocalPoint();
 
-    // Ensure text bounds are initialized or updated if the scroll offset
-    // changed before applying the new focal point. When scroll position is
-    // unchanged between words, skip recomputing positions to avoid redundant
-    // layout reflows on each word boundary.
-    const currentScrollTop = this.scroller_ ? this.scroller_.scrollTop : null;
-    const scrolledSinceLastUpdate = this.model_.getTextBounds().length === 0 ||
-        (currentScrollTop !== null &&
-         currentScrollTop !== this.boundsScrollTop_);
-    if (scrolledSinceLastUpdate) {
-      this.remeasurePositions();
-    }
-
     // Set the focal point quietly as the threshold calculation below will
     // determine whether or not to notify of movement.
     const newFocalPoint = this.styleMode_.getFocalPointForRect(rect);
@@ -584,7 +578,11 @@ export class LineFocusCursorMoveMode extends LineFocusMoveMode {
     const scrolledAfterRecentering = this.recenterCurrentTextLineIfNeeded(
         /*instant=*/ this.speechController_.isSpeechActive());
     if (scrolledAfterRecentering) {
-      this.remeasurePositions();
+      const scrollDiff = this.syncBoundsWithScroll();
+      if (scrollDiff !== 0) {
+        this.setFocalPoint(
+            newFocalPoint - scrollDiff, LineFocusNotificationType.NONE);
+      }
     }
 
     const heightDiff = Math.abs(oldHeight - this.model_.getWindowHeight());
