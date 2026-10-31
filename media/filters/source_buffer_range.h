@@ -209,6 +209,9 @@ class MEDIA_EXPORT SourceBufferRange {
   // range.
   base::TimeDelta GetEndTimestamp() const;
 
+  // Returns the keyframe presentation timestamp of the last GOP in the range.
+  base::TimeDelta GetLastGOPKeyframeTimestamp() const;
+
   // Returns the timestamp for the end of the buffered region in this range.
   // This is an approximation if the duration for the buffer with highest PTS in
   // the last GOP in the range is unset.

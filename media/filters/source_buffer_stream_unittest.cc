@@ -5828,4 +5828,40 @@ TEST_F(SourceBufferStreamTest, GarbageCollectionDoesNotLeaveKeyframeLessRange) {
   EXPECT_FALSE(GarbageCollect(base::Milliseconds(0), 0));
 }
 
+TEST_F(SourceBufferStreamTest,
+       GarbageCollectionMergedRangeDoesNotLeaveKeyframeLessRange) {
+  // 1. Append a coded frame group starting at 20ms whose sole keyframe is at
+  // 400ms and whose last buffer in decode order has (PTS=10ms, DTS=20ms).
+  NewCodedFrameGroupAppend(base::Milliseconds(20), "400|10D10K 10|20D10");
+  CheckExpectedRangesByTimestamp("{ [20,410) }");
+
+  // 2. Append a new coded frame group at [0ms, 20ms) whose last buffer also has
+  // (PTS=10ms, DTS=20ms). Append() records the [0ms, 20ms) append-sequence
+  // state and then merges [20ms, 410ms) into range_for_next_append_.
+  NewCodedFrameGroupAppend("0|0D10K 10|20D10");
+  CheckExpectedRangesByTimestamp("{ [0,410) }");
+
+  // 3. Trigger GC from the back. FreeBuffers deletes the merged [400ms, 410ms)
+  // GOP, which shares (PTS=10ms, DTS=20ms) on its back buffer. It must not
+  // mistake that merged GOP for the last appended [0ms, 20ms) GOP.
+  SetMemoryLimit(2);
+  EXPECT_TRUE(GarbageCollect(base::Milliseconds(0), 0));
+  CheckExpectedRangesByTimestamp("{ [0,20) }");
+
+  // 4. Trigger GC with media_time at 20ms requiring space for another buffer.
+  // Since [0ms, 20ms) is still tracked as the last appended GOP, GC preserves
+  // it rather than evicting it without resetting append-sequence state.
+  EXPECT_FALSE(
+      GarbageCollect(base::Milliseconds(20), GetMemoryUsagePerBuffer()));
+  CheckExpectedRangesByTimestamp("{ [0,20) }");
+
+  // 5. Append a non-keyframe with PTS < highest_timestamp_in_append_sequence_
+  // (5ms < 10ms) continuing the [0ms, 20ms) coded frame group, followed by
+  // another GC pass.
+  AppendBuffers("5|25D5");
+  CheckExpectedRangesByTimestamp("{ [0,20) }");
+  SetMemoryLimit(1);
+  EXPECT_FALSE(GarbageCollect(base::Milliseconds(0), 0));
+}
+
 }  // namespace media
