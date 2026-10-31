@@ -638,6 +638,41 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
   EXPECT_TRUE(ContextualSearchboxHandler::GetRecentTabInfos(nullptr).empty());
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
+                       GetRecentTabs_FiltersAiModeTabs) {
+  const GURL regular_search_url("https://www.google.com/search?q=regular");
+  const GURL aim_zero_state_url("https://www.google.com/?udm=50");
+  const GURL aim_search_url("https://www.google.com/search?q=test&udm=50");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), regular_search_url, WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), aim_zero_state_url, WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), aim_search_url, WindowOpenDisposition::kNewForegroundTab,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  base::RunLoop run_loop;
+  static_cast<searchbox::mojom::PageHandler*>(handler_)->GetRecentTabs(
+      base::BindLambdaForTesting(
+          [&](std::vector<searchbox::mojom::TabInfoPtr> tabs) {
+            ASSERT_FALSE(tabs.empty());
+            EXPECT_EQ(tabs[0]->url, regular_search_url);
+            EXPECT_TRUE(std::ranges::none_of(
+                tabs, [&](const searchbox::mojom::TabInfoPtr& tab) {
+                  return tab->url == aim_search_url ||
+                         tab->url == aim_zero_state_url;
+                }));
+            run_loop.Quit();
+          }));
+
+  run_loop.Run();
+}
+
 class ContextualTasksExtensionHandlerNoTabsBrowserTest
     : public ContextualTasksExtensionHandlerBrowserTest {
  public:

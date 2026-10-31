@@ -79,6 +79,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/composebox/contextual_search_mojom_traits.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/util.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
@@ -315,7 +316,8 @@ ContextualSearchboxHandler::GetRecentTabInfos(
       continue;
     }
     const GURL& url = tab->GetURL();
-    if (!url.is_valid() || url.IsAboutBlank()) {
+    if (!url.is_valid() || url.IsAboutBlank() || IsAimURL(url) ||
+        IsAimZeroStateURL(url)) {
       continue;
     }
     bool is_internal_page = url.SchemeIs(content::kChromeUIScheme) ||
