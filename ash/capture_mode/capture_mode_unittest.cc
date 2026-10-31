@@ -7533,6 +7533,21 @@ TEST_P(CaptureModeSettingsTest, FolderSetByPolicy) {
   EXPECT_FALSE(save_to_menu_group->IsOptionChecked(kDownloadsFolder));
 
   EXPECT_FALSE(test_api->GetSelectFolderMenuItem()->GetEnabled());
+
+  // Disabled options and menu items should not be highlightable.
+  CaptureModeSettingsView* settings_menu = GetCaptureModeSettingsView();
+  ASSERT_TRUE(settings_menu);
+  std::vector<CaptureModeSessionFocusCycler::HighlightableView*>
+      highlightable_items = settings_menu->GetHighlightableItems();
+  EXPECT_TRUE(std::ranges::contains(
+      highlightable_items, test_api->GetCustomFolderOptionIfAny(),
+      &CaptureModeSessionFocusCycler::HighlightableView::GetView));
+  EXPECT_FALSE(std::ranges::contains(
+      highlightable_items, test_api->GetDefaultDownloadsOption(),
+      &CaptureModeSessionFocusCycler::HighlightableView::GetView));
+  EXPECT_FALSE(std::ranges::contains(
+      highlightable_items, test_api->GetSelectFolderMenuItem(),
+      &CaptureModeSessionFocusCycler::HighlightableView::GetView));
 }
 
 // -----------------------------------------------------------------------------

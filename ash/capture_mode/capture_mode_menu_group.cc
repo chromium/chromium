@@ -452,7 +452,9 @@ void CaptureModeMenuGroup::AppendHighlightableItems(
       highlightable_items.push_back(option);
   }
   for (ash::CaptureModeMenuItem* menu_item : menu_items_) {
-    highlightable_items.push_back(menu_item);
+    if (menu_item->GetEnabled()) {
+      highlightable_items.push_back(menu_item);
+    }
   }
 }
 
