@@ -5,8 +5,6 @@
 #ifndef CONTENT_COMMON_MEMORY_COORDINATOR_MEMORY_PRESSURE_LISTENER_POLICY_H_
 #define CONTENT_COMMON_MEMORY_COORDINATOR_MEMORY_PRESSURE_LISTENER_POLICY_H_
 
-#include <string_view>
-
 #include "base/memory/memory_pressure_listener.h"
 #include "content/common/content_export.h"
 #include "content/public/common/memory_coordinator/predicate_memory_coordinator_policy.h"
@@ -17,7 +15,11 @@ namespace content {
 //
 // This policy listens for memory pressure notifications and, when they occur,
 // updates the memory limit of all consumers in the current process and
-// requests them to release memory.
+// requests them to release memory. While the memory limit is below
+// base::MemoryLimit::ModeratePressureThreshold(), consumers that release memory
+// by writing it to disk get the lowered limit but are not asked to release
+// memory (see
+// base::MemoryConsumerTraits::ReleaseMemoryDataAccess::kReadsAndWritesToDisk).
 class CONTENT_EXPORT MemoryPressureListenerPolicy
     : public PredicateMemoryCoordinatorPolicy,
       public base::MemoryPressureListener {

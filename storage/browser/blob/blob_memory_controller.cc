@@ -1104,15 +1104,6 @@ void BlobMemoryController::OnReleaseMemory() {
     return;
   }
 
-  // Under critical memory pressure the system is probably already swapping out
-  // memory and making heavy use of IO. Adding to that is not desirable.
-  // Furthermore, scheduling a task to write files to disk risks paging-in
-  // memory that was already committed to disk which compounds the problem. Do
-  // not take any action on critical memory pressure.
-  if (memory_limit() <= base::MemoryLimit::CriticalPressureThreshold()) {
-    return;
-  }
-
   auto time_from_last_eviction = base::TimeTicks::Now() - last_eviction_time_;
   if (last_eviction_time_ != base::TimeTicks() &&
       time_from_last_eviction.InSeconds() < kMinSecondsForPressureEvictions) {
