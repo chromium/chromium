@@ -31,7 +31,6 @@
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/toolbar/avatar_toolbar_button_interface.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
-#include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager.h"
@@ -196,9 +195,9 @@ void AddURLDataSources(Profile* profile) {
 }  // namespace
 
 WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
-    // Sets `enable_chrome_send` to true to allow chrome.send() to be called in
-    // TypeScript to record non-timestamp histograms, which can't be done by
-    // MetricsReporter.
+    // Sets `enable_chrome_send` to true to enable
+    // `BindingsPolicyValue::kWebUi`, which is required for `SetWebUIProperty` /
+    // `chrome.getVariableValue('initialState')`.
     : TopChromeWebUIController(web_ui,
                                /*enable_chrome_send=*/true,
                                /*enable_chrome_histograms=*/true),
@@ -323,9 +322,6 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
   // Referenced by `chrome/browser/resources/webui_toolbar/glic_button.html.ts`.
   source->AddResourcePath("images/glic_button_alt_icon.png",
                           IDR_GLIC_BUTTON_ALT_ICON);
-
-  // Handles chrome.send() calls that records non-timestamp histograms.
-  web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(WebUIToolbarUI)

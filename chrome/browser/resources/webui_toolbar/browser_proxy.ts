@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/js/cr.js';
-
 import {BrowserControlsService} from '/shared/browser_controls_api.mojom-webui.js';
 import type {BrowserControlsServiceInterface} from '/shared/browser_controls_api.mojom-webui.js';
 import type {IconUpdate} from '/shared/icon_handle.mojom-webui.js';
@@ -226,8 +224,7 @@ export class BrowserProxyImpl implements BrowserProxy {
    * @param maxValue The maximum value of the histogram.
    */
   recordInHistogram(histogramName: string, value: number, maxValue: number) {
-    chrome.send(
-        'metricsHandler:recordInHistogram', [histogramName, value, maxValue]);
+    chrome.histograms.recordEnumerationValue(histogramName, value, maxValue);
   }
 
   addToolbarStateListener(listener: ToolbarStateListener) {
