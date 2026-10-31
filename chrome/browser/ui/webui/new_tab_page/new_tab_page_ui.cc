@@ -374,8 +374,6 @@ base::DictValue NewTabPageUI::GetLoadTimeData(
   dict.Set("doodleMuralsEnabled",
            base::FeatureList::IsEnabled(ntp_features::kNtpDoodleMurals));
   dict.Set("useGoogleLogo26", UseGoogleLogo26());
-  dict.Set("modulesLoadEnabled",
-           base::FeatureList::IsEnabled(ntp_features::kNtpModulesLoad));
   dict.Set(
       "modulesLoadTimeout",
       static_cast<int>(ntp_features::GetModulesLoadTimeout().InMilliseconds()));

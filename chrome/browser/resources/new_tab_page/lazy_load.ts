@@ -63,7 +63,6 @@ export {InfoDialogElement} from './modules/info_dialog.js';
 export {ParentTrustedDocumentProxy} from './modules/microsoft_auth_frame_connector.js';
 export {ModuleDescriptor} from './modules/module_descriptor.js';
 export type {InitializeModuleCallback, Module} from './modules/module_descriptor.js';
-export {counterfactualLoad} from './modules/module_descriptors.js';
 export {ModuleHeaderElement as ModuleHeaderElementV2} from './modules/module_header.js';
 export {ModuleRegistry} from './modules/module_registry.js';
 export {ModuleWrapperElement} from './modules/module_wrapper.js';
