@@ -72,7 +72,7 @@ BASE_FEATURE(kWebUsbHardenEndpointAliasing, base::FEATURE_ENABLED_BY_DEFAULT);
 // 0 (unconfigured) and clears claimed interfaces, endpoints, and detached
 // interface state.
 BASE_FEATURE(kWebUsbResetInvalidatesConfiguration,
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, accessing the navigator.hid attribute does not prevent the
 // frame from entering the back forward cache.
