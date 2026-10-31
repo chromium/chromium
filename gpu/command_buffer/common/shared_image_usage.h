@@ -42,8 +42,7 @@ enum SharedImageUsage : uint32_t {
   // CVPixelBuffer's IOSurface. Because of this backing, IOSurfaceIsInUse will
   // always return true.
   SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX = 1 << 9,
-  // Image will be used with mipmap enabled.
-  SHARED_IMAGE_USAGE_MIPMAP = 1 << 10,
+  // 1 << 10 is unused and available.
   // Image will be used for CPU Writes by client. Normally write usage also
   // implies read. Hence adding ONLY tag to clarify that its write only in this
   // case.
@@ -121,7 +120,11 @@ enum SharedImageUsage : uint32_t {
   // image.
   SHARED_IMAGE_USAGE_CPU_UPLOAD = 1u << 29,
 
-  LAST_SHARED_IMAGE_USAGE = SHARED_IMAGE_USAGE_CPU_UPLOAD
+  // Image will be used with mipmap enabled. Currently only used by Viz for
+  // render passes.
+  SHARED_IMAGE_USAGE_MIPMAP = 1u << 30,
+
+  LAST_SHARED_IMAGE_USAGE = SHARED_IMAGE_USAGE_MIPMAP
 };
 
 class GPU_COMMAND_BUFFER_COMMON_EXPORT SharedImageUsageSet {

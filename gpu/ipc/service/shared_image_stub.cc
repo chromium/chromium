@@ -61,6 +61,20 @@ bool IsSupportedFormat(viz::SharedImageFormat format) {
   return true;
 }
 
+bool ValidateClientInfo(const gpu::SharedImageMetadata& info) {
+  if (!IsSupportedFormat(info.format)) {
+    return false;
+  }
+
+  if (!gpu::IsValidClientUsage(info.usage)) {
+    LOG(ERROR) << "SharedImageStub: Invalid client usage: "
+               << static_cast<uint32_t>(info.usage);
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 namespace gpu {
@@ -227,7 +241,7 @@ void SharedImageStub::OnCreateSharedImage(
   TRACE_EVENT2("gpu", "SharedImageStub::OnCreateSharedImage", "width",
                params->si_info->meta.size.width(), "height",
                params->si_info->meta.size.height());
-  if (!IsSupportedFormat(params->si_info->meta.format)) {
+  if (!ValidateClientInfo(params->si_info->meta)) {
     OnError();
     return;
   }
@@ -256,7 +270,7 @@ void SharedImageStub::OnCreateSharedImageWithData(
                params->si_info->meta.size.height());
 
   auto& metadata = params->si_info->meta;
-  if (!IsSupportedFormat(metadata.format)) {
+  if (!ValidateClientInfo(metadata)) {
     OnError();
     return;
   }
@@ -348,7 +362,7 @@ bool SharedImageStub::CreateSharedImage(
     std::optional<SharedImagePoolId> pool_id) {
   TRACE_EVENT2("gpu", "SharedImageStub::CreateSharedImage", "width",
                info.size.width(), "height", info.size.height());
-  if (!IsSupportedFormat(info.format)) {
+  if (!ValidateClientInfo(info)) {
     OnError();
     return false;
   }

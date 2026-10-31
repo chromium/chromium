@@ -9,10 +9,13 @@
 #include "base/run_loop.h"
 #include "base/test/test_simple_task_runner.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/common/command_buffer_id.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
 #include "gpu/ipc/service/gpu_channel_test_common.h"
+#include "gpu/ipc/service/shared_image_stub.h"
 #include "ipc/constants.mojom.h"
 
 namespace gpu {
@@ -46,6 +49,33 @@ TEST_F(GpuChannelTest, CreateOffscreenCommandBuffer) {
 
   CommandBufferStub* stub = channel->LookupCommandBuffer(kRouteId);
   EXPECT_TRUE(stub);
+}
+
+TEST_F(GpuChannelTest, CreateSharedImageWithMipmapRejected) {
+  int32_t kClientId = 1;
+  GpuChannel* channel = CreateChannel(kClientId, false);
+  ASSERT_TRUE(channel);
+  ASSERT_TRUE(channel->shared_image_stub());
+
+  auto params = mojom::CreateSharedImageParams::New();
+  params->mailbox = Mailbox::Generate();
+  params->si_info = mojom::SharedImageInfo::New();
+  params->si_info->meta.format = viz::SinglePlaneFormat::kRGBA_8888;
+  params->si_info->meta.size = gfx::Size(64, 64);
+  params->si_info->meta.color_space = gfx::ColorSpace::CreateSRGB();
+  params->si_info->meta.surface_origin = kTopLeft_GrSurfaceOrigin;
+  params->si_info->meta.alpha_type = kPremul_SkAlphaType;
+  params->si_info->meta.usage = SHARED_IMAGE_USAGE_RASTER_READ |
+                                SHARED_IMAGE_USAGE_RASTER_WRITE |
+                                SHARED_IMAGE_USAGE_MIPMAP;
+
+  channel->shared_image_stub()->ExecuteDeferredRequest(
+      mojom::DeferredSharedImageRequest::NewCreateSharedImage(
+          std::move(params)));
+
+  // Rejecting SHARED_IMAGE_USAGE_MIPMAP from a client triggers OnError(),
+  // which stops and removes the channel.
+  EXPECT_FALSE(channel_manager()->LookupChannel(kClientId));
 }
 
 class GpuChannelExitForContextLostTest : public GpuChannelTestCommon {
