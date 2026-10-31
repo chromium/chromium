@@ -206,11 +206,15 @@ class AutocompleteMediator
             };
     private @Nullable PropertyModel mDeleteDialogModel;
 
-    // When set, specifies the system time of the most recent suggestion list request.
+    // When set, specifies the uptime (from TimeUtils.uptimeMillis()) of the most recent suggestion
+    // list request.
     private @Nullable Long mLastSuggestionRequestTime;
-    // When set, specifies the time when the suggestion list was shown the first time.
+    // When set, specifies the uptime when the suggestion list was shown the first time.
     // Suggestions are refreshed several times per keystroke.
     private @Nullable Long mFirstSuggestionListModelCreatedTime;
+    // When set, specifies the uptime (from TimeUtils.uptimeMillis()) of the keystroke that
+    // triggered the most recent typed suggestion list request. Null for zero-prefix requests.
+    private @Nullable Long mLastKeystrokeTime;
 
     private @Nullable Boolean mOmniboxInZeroPrefixState;
 
@@ -1233,9 +1237,12 @@ class AutocompleteMediator
                             ? mUrlBarEditingTextProvider.getSelectionStart()
                             : -1;
 
+            // Captured synchronously so the KeystrokeToUiModel metrics include the deferral below.
+            long keystrokeTimeMs = TimeUtils.uptimeMillis();
+
             postAutocompleteRequest(
                     () -> {
-                        startMeasuringSuggestionRequestToUiModelTime();
+                        startMeasuringSuggestionRequestToUiModelTime(keystrokeTimeMs);
                         if (isInInputSession()) {
                             mAutocomplete.start(
                                     mSessionState.getContextualTasksWebContents(),
@@ -1956,7 +1963,7 @@ class AutocompleteMediator
         // Reset "edited" state in the omnibox if zero suggest is triggered -- new edits
         // now count as a new session.
         mNewOmniboxEditSessionTimestamp = -1;
-        startMeasuringSuggestionRequestToUiModelTime();
+        startMeasuringSuggestionRequestToUiModelTime(/* keystrokeTimeMs= */ null);
 
         if (!isInInputSession()) return;
         mAutocomplete.startZeroSuggest(
@@ -2262,20 +2269,29 @@ class AutocompleteMediator
     /**
      * Start measuring time between - the request for suggestions and - the suggestions UI model
      * being built. This should be invoked right before we issue a request for suggestions.
+     *
+     * @param keystrokeTimeMs {@link TimeUtils#uptimeMillis()} at the time of the keystroke that
+     *     triggered this request, or null if the request was not triggered by a keystroke (e.g.
+     *     zero-prefix suggestions). When present, the KeystrokeToUiModel histograms are recorded in
+     *     addition to RequestToUiModel.
      */
-    private void startMeasuringSuggestionRequestToUiModelTime() {
-        mLastSuggestionRequestTime = SystemClock.uptimeMillis();
+    private void startMeasuringSuggestionRequestToUiModelTime(@Nullable Long keystrokeTimeMs) {
+        mLastSuggestionRequestTime = TimeUtils.uptimeMillis();
+        mLastKeystrokeTime = keystrokeTimeMs;
         mFirstSuggestionListModelCreatedTime = null;
     }
 
     /**
      * Measure the time it took to build Suggestions UI model. The time is measured since the moment
-     * suggestions were requested. Two histograms are recorded by this method:
+     * suggestions were requested and, for typed-text requests, since the triggering keystroke. Up
+     * to four histograms are recorded by this method:
      *
      * <ul>
-     *   <li>Omnibox.SuggestionList.RequestToUiModel.First for the first reply associated with the
+     *   <li>Omnibox.SuggestionList.RequestToUiModel.First and
+     *       Omnibox.SuggestionList.KeystrokeToUiModel.First for the first reply associated with the
      *       request and
-     *   <li>Omnibox.SuggestionList.RequestToUiModel.Last for the final reply associated with the
+     *   <li>Omnibox.SuggestionList.RequestToUiModel.Last and
+     *       Omnibox.SuggestionList.KeystrokeToUiModel.Last for the final reply associated with the
      *       request.
      * </ul>
      *
@@ -2288,15 +2304,25 @@ class AutocompleteMediator
         if (mLastSuggestionRequestTime == null) return;
 
         if (mFirstSuggestionListModelCreatedTime == null) {
-            mFirstSuggestionListModelCreatedTime = SystemClock.uptimeMillis();
+            mFirstSuggestionListModelCreatedTime = TimeUtils.uptimeMillis();
             OmniboxMetrics.recordSuggestionRequestToModelTime(
                     /* isFirst= */ true,
                     mFirstSuggestionListModelCreatedTime - mLastSuggestionRequestTime);
+            if (mLastKeystrokeTime != null) {
+                OmniboxMetrics.recordKeystrokeToModelTime(
+                        /* isFirst= */ true,
+                        mFirstSuggestionListModelCreatedTime - mLastKeystrokeTime);
+            }
         }
 
         if (isFinal) {
+            long now = TimeUtils.uptimeMillis();
             OmniboxMetrics.recordSuggestionRequestToModelTime(
-                    /* isFirst= */ false, SystemClock.uptimeMillis() - mLastSuggestionRequestTime);
+                    /* isFirst= */ false, now - mLastSuggestionRequestTime);
+            if (mLastKeystrokeTime != null) {
+                OmniboxMetrics.recordKeystrokeToModelTime(
+                        /* isFirst= */ false, now - mLastKeystrokeTime);
+            }
             stopMeasuringSuggestionRequestToUiModelTime();
         }
     }
@@ -2304,6 +2330,7 @@ class AutocompleteMediator
     /** Cancel any measurements related to the time it takes to build Suggestions UI model. */
     private void stopMeasuringSuggestionRequestToUiModelTime() {
         mLastSuggestionRequestTime = null;
+        mLastKeystrokeTime = null;
         mFirstSuggestionListModelCreatedTime = null;
     }
 

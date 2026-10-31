@@ -48,6 +48,26 @@ public class OmniboxMetrics {
     public static final String HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_LAST =
             "Android.Omnibox.SuggestionList.RequestToUiModel.Last";
 
+    /**
+     * Duration between the keystroke that triggered a typed-text suggestions request and the time
+     * the first (synchronous) reply is converted to the UI model. Unlike {@link
+     * #HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_FIRST}, this includes the deferral between the
+     * keystroke and the start of the autocomplete request.
+     */
+    @VisibleForTesting
+    public static final String HISTOGRAM_SUGGESTIONS_KEYSTROKE_TO_UI_MODEL_FIRST =
+            "Android.Omnibox.SuggestionList.KeystrokeToUiModel.First";
+
+    /**
+     * Duration between the keystroke that triggered a typed-text suggestions request and the time
+     * the last (asynchronous) reply is converted to the UI model. Unlike {@link
+     * #HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_LAST}, this includes the deferral between the
+     * keystroke and the start of the autocomplete request.
+     */
+    @VisibleForTesting
+    public static final String HISTOGRAM_SUGGESTIONS_KEYSTROKE_TO_UI_MODEL_LAST =
+            "Android.Omnibox.SuggestionList.KeystrokeToUiModel.Last";
+
     /** Android.Omnibox.OmniboxAction.* histograms */
     @VisibleForTesting
     public static final String HISTOGRAM_OMNIBOX_ACTION_USED = "Android.Omnibox.OmniboxAction.Used";
@@ -424,14 +444,44 @@ public class OmniboxMetrics {
      * @param elapsedTimeMs specifies how much time has elapsed between the two events
      */
     public static void recordSuggestionRequestToModelTime(boolean isFirst, long elapsedTimeMs) {
-        RecordHistogram.recordCustomTimesHistogram(
+        recordToUiModelTime(
                 isFirst
                         ? HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_FIRST
                         : HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_LAST,
-                elapsedTimeMs,
-                1,
-                1000,
-                50);
+                elapsedTimeMs);
+    }
+
+    /**
+     * Records the time elapsed between the two events:
+     *
+     * <ul>
+     *   <li>the keystroke that triggered a typed-text suggestions request, and
+     *   <li>the suggestions response was transformed to a UI model.
+     * </ul>
+     *
+     * <p>Unlike {@link #recordSuggestionRequestToModelTime}, the measured interval includes any
+     * deferral between the keystroke and the start of the autocomplete request, and therefore
+     * reflects the latency perceived by the user. Not recorded for zero-prefix requests.
+     *
+     * @param isFirst specifies whether this is the first (synchronous), or the last (final)
+     *     asynchronous, suggestions response received from the AutocompleteController
+     * @param elapsedTimeMs specifies how much time has elapsed between the two events
+     */
+    public static void recordKeystrokeToModelTime(boolean isFirst, long elapsedTimeMs) {
+        recordToUiModelTime(
+                isFirst
+                        ? HISTOGRAM_SUGGESTIONS_KEYSTROKE_TO_UI_MODEL_FIRST
+                        : HISTOGRAM_SUGGESTIONS_KEYSTROKE_TO_UI_MODEL_LAST,
+                elapsedTimeMs);
+    }
+
+    /**
+     * Records a suggestions-to-UI-model latency sample. Shared so that the RequestToUiModel and
+     * KeystrokeToUiModel histograms always use identical bucketing.
+     */
+    private static void recordToUiModelTime(String histogramName, long elapsedTimeMs) {
+        RecordHistogram.recordCustomTimesHistogram(
+                histogramName, elapsedTimeMs, /* min= */ 1, /* max= */ 1000, /* numBuckets= */ 50);
     }
 
     /**

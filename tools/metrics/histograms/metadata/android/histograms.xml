@@ -4424,6 +4424,55 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.Omnibox.SuggestionList.KeystrokeToUiModel.First"
+    units="ms" expires_after="2027-10-01">
+  <owner>pnoland@chromium.org</owner>
+  <owner>ender@google.com</owner>
+  <summary>
+    Records time elapsed between the keystroke that triggered a typed-text
+    suggestions request and converting the first (synchronous) set of received
+    suggestions to the UI model.
+
+    Unlike Android.Omnibox.SuggestionList.RequestToUiModel.First, whose clock
+    starts when the autocomplete request is issued, this metric includes the
+    deferral between the keystroke and the start of the request, and therefore
+    reflects the latency perceived by the user.
+
+    For the complete, asynchronous iteration see the
+    Android.Omnibox.SuggestionList.KeystrokeToUiModel.Last metric.
+
+    This metric is recorded at most once per typed-text autocomplete request,
+    timed from the most recent edit before the request started: edits arriving
+    while a request is still deferred are coalesced into that request, so the
+    sample count depends on the deferral duration. It is not recorded for
+    zero-prefix suggestions requests.
+  </summary>
+</histogram>
+
+<histogram name="Android.Omnibox.SuggestionList.KeystrokeToUiModel.Last"
+    units="ms" expires_after="2027-10-01">
+  <owner>pnoland@chromium.org</owner>
+  <owner>ender@google.com</owner>
+  <summary>
+    Records time elapsed between the keystroke that triggered a typed-text
+    suggestions request and converting the final (asynchronous) set of received
+    suggestions to the UI model.
+
+    Unlike Android.Omnibox.SuggestionList.RequestToUiModel.Last, whose clock
+    starts when the autocomplete request is issued, this metric includes the
+    deferral between the keystroke and the start of the request, and therefore
+    reflects the latency perceived by the user.
+
+    For the short, synchronous iteration see the
+    Android.Omnibox.SuggestionList.KeystrokeToUiModel.First metric.
+
+    This metric is recorded at most once per typed-text request (on the first
+    reply if that reply is already final). It is not recorded for zero-prefix
+    suggestions requests, and is dropped if the request is canceled before its
+    final reply, e.g. by further input or by ending the Omnibox interaction.
+  </summary>
+</histogram>
+
 <histogram name="Android.Omnibox.SuggestionList.LayoutTime2" units="ms"
     expires_after="2027-10-01">
   <owner>ender@google.com</owner>

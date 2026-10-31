@@ -10,6 +10,7 @@ import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.content.Context;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.R;
@@ -165,5 +166,6 @@ public class UnsyncedSuggestionsListAnimation
 
     static void setAnimationsDisabledForTesting(boolean disabledForTesting) {
         sAnimationsDisabledForTesting = disabledForTesting;
+        ResettersForTesting.register(() -> sAnimationsDisabledForTesting = false);
     }
 }

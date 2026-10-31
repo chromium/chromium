@@ -1988,6 +1988,142 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
+    public void keystrokeToUiModelTime_notRecordedForZps() {
+        GURL url = JUnitTestGURLs.BLUE_1;
+        var session = createSession(url, "Title", PageClassification.BLANK);
+        mMediator.beginInput(session);
+        verifyAutocompleteStartZeroSuggest("", url, PageClassification.BLANK, "Title");
+
+        var watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                OmniboxMetrics.HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_FIRST, 100)
+                        .expectIntRecord(
+                                OmniboxMetrics.HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_LAST, 200)
+                        .expectNoRecords(
+                                OmniboxMetrics.HISTOGRAM_SUGGESTIONS_KEYSTROKE_TO_UI_MODEL_FIRST)
+                        .expectNoRecords(
+                                OmniboxMetrics.HISTOGRAM_SUGGESTIONS_KEYSTROKE_TO_UI_MODEL_LAST)
+                        .build();
+        ShadowPausedSystemClock.advanceBy(Duration.ofMillis(100));
+        mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ false);
+        ShadowPausedSystemClock.advanceBy(Duration.ofMillis(100));
+        mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
+        // RequestToUiModel is recorded for ZPS, KeystrokeToUiModel is not.
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void keystrokeToUiModelTime_includesDeferralBeforeRequest() {
+        UnsyncedSuggestionsListAnimation.setAnimationsDisabledForTesting(
+                /* disabledForTesting= */ true);
+        GURL url = JUnitTestGURLs.BLUE_1;
+        var session = createSession(url, "Title", PageClassification.BLANK);
+        mMediator.beginInput(session);
+        clearInvocations(mAutocompleteController);
+
+        // Keystroke at T0. Advance the clock past the scheduling delay before running the deferred
+        // request, so the request is issued at T0 + 50ms.
+        var noRecords =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                OmniboxMetrics.HISTOGRAM_SUGGESTIONS_KEYSTROKE_TO_UI_MODEL_FIRST)
+                        .expectNoRecords(
+                                OmniboxMetrics.HISTOGRAM_SUGGESTIONS_KEYSTROKE_TO_UI_MODEL_LAST)
+                        .build();
+        session.getAutocompleteInput().setUserText("a");
+        ShadowPausedSystemClock.advanceBy(Duration.ofMillis(50));
+        RobolectricUtil.runAllBackgroundAndUi();
+        verify(mAutocompleteController).start(any(), any(), anyInt(), anyBoolean());
+        noRecords.assertExpected();
+
+        // First reply at T0 + 150ms: RequestToUiModel sees 100ms, KeystrokeToUiModel sees 150ms.
+        var firstReply =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                OmniboxMetrics.HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_FIRST, 100)
+                        .expectIntRecord(
+                                OmniboxMetrics.HISTOGRAM_SUGGESTIONS_KEYSTROKE_TO_UI_MODEL_FIRST,
+                                150)
+                        .expectNoRecords(
+                                OmniboxMetrics.HISTOGRAM_SUGGESTIONS_KEYSTROKE_TO_UI_MODEL_LAST)
+                        .build();
+        ShadowPausedSystemClock.advanceBy(Duration.ofMillis(100));
+        mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ false);
+        firstReply.assertExpected();
+
+        // Final reply at T0 + 350ms: RequestToUiModel sees 300ms, KeystrokeToUiModel sees 350ms.
+        var finalReply =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                OmniboxMetrics.HISTOGRAM_SUGGESTIONS_REQUEST_TO_UI_MODEL_LAST, 300)
+                        .expectNoRecords(
+                                OmniboxMetrics.HISTOGRAM_SUGGESTIONS_KEYSTROKE_TO_UI_MODEL_FIRST)
+                        .expectIntRecord(
+                                OmniboxMetrics.HISTOGRAM_SUGGESTIONS_KEYSTROKE_TO_UI_MODEL_LAST,
+                                350)
+                        .build();
+        ShadowPausedSystemClock.advanceBy(Duration.ofMillis(200));
+        mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
+        finalReply.assertExpected();
+    }
+
+    @Test
+    public void keystrokeToUiModelTime_refiningKeystrokeCancelsLastAndRestartsClock() {
+        UnsyncedSuggestionsListAnimation.setAnimationsDisabledForTesting(
+                /* disabledForTesting= */ true);
+        GURL url = JUnitTestGURLs.BLUE_1;
+        var session = createSession(url, "Title", PageClassification.BLANK);
+        mMediator.beginInput(session);
+
+        // First keystroke; request issued 50ms later; first reply 100ms after that.
+        var firstKeystroke =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                OmniboxMetrics.HISTOGRAM_SUGGESTIONS_KEYSTROKE_TO_UI_MODEL_FIRST,
+                                150)
+                        .expectNoRecords(
+                                OmniboxMetrics.HISTOGRAM_SUGGESTIONS_KEYSTROKE_TO_UI_MODEL_LAST)
+                        .build();
+        session.getAutocompleteInput().setUserText("a");
+        ShadowPausedSystemClock.advanceBy(Duration.ofMillis(50));
+        RobolectricUtil.runAllBackgroundAndUi();
+        ShadowPausedSystemClock.advanceBy(Duration.ofMillis(100));
+        mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ false);
+        firstKeystroke.assertExpected();
+
+        // Second keystroke before the final reply: the pending .Last is dropped and the clock
+        // restarts from this keystroke. First reply for it arrives after a 40ms deferral + 10ms.
+        var secondKeystroke =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                OmniboxMetrics.HISTOGRAM_SUGGESTIONS_KEYSTROKE_TO_UI_MODEL_FIRST,
+                                50)
+                        .expectNoRecords(
+                                OmniboxMetrics.HISTOGRAM_SUGGESTIONS_KEYSTROKE_TO_UI_MODEL_LAST)
+                        .build();
+        session.getAutocompleteInput().setUserText("ab");
+        ShadowPausedSystemClock.advanceBy(Duration.ofMillis(40));
+        RobolectricUtil.runAllBackgroundAndUi();
+        ShadowPausedSystemClock.advanceBy(Duration.ofMillis(10));
+        mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ false);
+        secondKeystroke.assertExpected();
+
+        // Final reply for the second keystroke: 40 + 10 + 60 = 110ms since that keystroke.
+        var finalReply =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(
+                                OmniboxMetrics.HISTOGRAM_SUGGESTIONS_KEYSTROKE_TO_UI_MODEL_FIRST)
+                        .expectIntRecord(
+                                OmniboxMetrics.HISTOGRAM_SUGGESTIONS_KEYSTROKE_TO_UI_MODEL_LAST,
+                                110)
+                        .build();
+        ShadowPausedSystemClock.advanceBy(Duration.ofMillis(60));
+        mMediator.onSuggestionsReceived(mAutocompleteResult, /* isFinal= */ true);
+        finalReply.assertExpected();
+    }
+
+    @Test
     public void touchDownForPrefetch_TouchDownDelayRecorded() {
         int delay = 100;
         long eventTime = TimeUtils.uptimeMillis() - delay;
