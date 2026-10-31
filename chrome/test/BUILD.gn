@@ -2624,6 +2624,7 @@ test("unit_tests") {
     "//chrome/browser/translate:unit_tests",
     "//chrome/browser/trusted_vault:unit_tests",
     "//chrome/browser/ttc/core:unit_tests",
+    "//chrome/browser/ttc/debug:unit_tests",
     "//chrome/browser/ui:unit_tests",
     "//chrome/browser/ui/autofill:unit_tests",
     "//chrome/browser/ui/autofill/payments:unit_tests",

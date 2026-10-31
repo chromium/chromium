@@ -1,0 +1,23 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Browser-side support for the TTC debug tools.
+source_set("debug") {
+  sources = [
+    "ttc_session_audio_recorder.cc",
+    "ttc_session_audio_recorder.h",
+  ]
+  public_deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "ttc_session_audio_recorder_unittest.cc" ]
+  deps = [
+    ":debug",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
