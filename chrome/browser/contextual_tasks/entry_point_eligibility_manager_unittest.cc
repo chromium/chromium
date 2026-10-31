@@ -22,6 +22,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/contextual_search/pref_names.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
@@ -589,6 +590,54 @@ TEST_F(EntryPointEligibilityManagerTest,
   aim_callback.Run();
 
   EXPECT_TRUE(notified_eligibility.has_value());
+}
+
+TEST_F(EntryPointEligibilityManagerTest,
+       IsPinningEligible_False_ContextSharingDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      contextual_tasks::kEnableContextualTasksPinButtonInToolbar);
+
+  EXPECT_CALL(*mock_aim_service_, IsFuseboxEligible())
+      .WillRepeatedly(testing::Return(true));
+
+  profile_->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kDisabled));
+
+  InitializeManager();
+
+  EXPECT_FALSE(EntryPointEligibilityManager::IsPinningEligible(profile_.get()));
+}
+
+TEST_F(EntryPointEligibilityManagerTest,
+       NotifyEntryPointEligibilityChanged_ContextSharingSettingsChange) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      contextual_tasks::kEnableContextualTasksPinButtonInToolbar);
+
+  EXPECT_CALL(*mock_ui_service_, IsSignedInToBrowserWithValidCredentials())
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*mock_aim_service_, IsFuseboxEligible())
+      .WillRepeatedly(testing::Return(true));
+
+  InitializeManager();
+  ASSERT_FALSE(EntryPointEligibilityManager::IsEligible(profile_.get()));
+  ASSERT_TRUE(EntryPointEligibilityManager::IsPinningEligible(profile_.get()));
+
+  std::optional<bool> notified_eligibility;
+  auto subscription = manager_->RegisterOnEntryPointEligibilityChanged(
+      base::BindLambdaForTesting(
+          [&](bool eligible) { notified_eligibility = eligible; }));
+
+  profile_->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kDisabled));
+
+  EXPECT_TRUE(notified_eligibility.has_value());
+  EXPECT_FALSE(EntryPointEligibilityManager::IsPinningEligible(profile_.get()));
 }
 
 }  // namespace contextual_tasks

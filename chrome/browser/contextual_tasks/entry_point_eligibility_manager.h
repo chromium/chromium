@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/scoped_observation.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_member.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
@@ -54,6 +55,7 @@ class EntryPointEligibilityManager {
   bool entry_points_are_eligible_ = false;
   bool is_pinning_eligible_ = false;
   raw_ptr<Profile> profile_ = nullptr;
+  PrefChangeRegistrar pref_change_registrar_;
   ui::ScopedUnownedUserData<EntryPointEligibilityManager>
       scoped_unowned_user_data_;
   base::CallbackListSubscription eligibility_subscription_;

@@ -366,6 +366,40 @@ TEST_F(ContextualTasksUtilsTest,
   EXPECT_TRUE(IsTabSharingEligible(profile_.get()));
 }
 
+TEST_F(ContextualTasksUtilsTest, IsTabSharingEligible_ContextSharingDisabled) {
+  testing::NiceMock<MockAimEligibilityService>* mock_aim_service = nullptr;
+  AimEligibilityServiceFactory::GetInstance()->SetTestingFactory(
+      profile_.get(),
+      base::BindRepeating(
+          [](testing::NiceMock<MockAimEligibilityService>** mock_out,
+             content::BrowserContext* context)
+              -> std::unique_ptr<KeyedService> {
+            auto mock =
+                std::make_unique<testing::NiceMock<MockAimEligibilityService>>(
+                    *Profile::FromBrowserContext(context)->GetPrefs(), nullptr,
+                    nullptr, nullptr);
+            *mock_out = mock.get();
+            return mock;
+          },
+          &mock_aim_service));
+
+  AimEligibilityServiceFactory::GetForProfile(profile_.get());
+  ASSERT_TRUE(mock_aim_service);
+
+  ON_CALL(*mock_aim_service, IsAimEligible())
+      .WillByDefault(testing::Return(true));
+  ON_CALL(*mock_aim_service, IsFuseboxEligible())
+      .WillByDefault(testing::Return(true));
+
+  EXPECT_TRUE(IsTabSharingEligible(profile_.get()));
+
+  profile_->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kDisabled));
+  EXPECT_FALSE(IsTabSharingEligible(profile_.get()));
+}
+
 TEST_F(ContextualTasksUtilsTest,
        IsTabSharingEligible_ForceEntryPointEligibility) {
   base::test::ScopedFeatureList feature_list;
