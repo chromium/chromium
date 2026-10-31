@@ -631,6 +631,7 @@
     'fail_if_unused': False,
     'swarming': {
       'dimensions': {
+        'display_attached': '1',
         'display_server': 'wayland',
         'gpu': '10de:2783-595.91.07',
         'os': 'Ubuntu-26.04',

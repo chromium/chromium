@@ -1450,6 +1450,7 @@ targets.mixin(
     name = "linux_nvidia_rtx_4070_super_wayland_stable",
     swarming = targets.swarming(
         dimensions = {
+            "display_attached": "1",
             "display_server": "wayland",
             "gpu": "10de:2783-595.91.07",
             "os": "Ubuntu-26.04",
