@@ -27,17 +27,16 @@ const LINE_BREAKING_DISPLAY_TYPES = new Set([
   'table-footer-group',
 ]);
 
-// Wrapper class to represent a node used by read aloud. The type of node
-// could be either a DOM node or an AXNode depending on what type of text
-// segmentation method is used.
+// Wrapper class to represent a node used by read aloud.
+// TODO(b/444029483): Remove the wrapper class since DomReadAloudNode is
+// the only child.
 export abstract class ReadAloudNode {
   abstract equals(other: ReadAloudNode|undefined|null): boolean;
 
   abstract domNode(): Node|undefined;
 
-  // TODO: crbug.com/440400392: This method is a convenience method for working
-  // with AxReadAloudNodes during the refactor and should be deleted once
-  // the Phrase Highlighting flag is fully enabled.
+  // Creates a ReadAloudNode for the DOM node associated with the given
+  // AXNodeID, if there is one.
   static createFromAxNode(
       axNodeId: number, nodeStore = NodeStore.getInstance()): ReadAloudNode
       |undefined {
@@ -53,28 +52,7 @@ export abstract class ReadAloudNode {
   }
 }
 
-// TODO: crbug.com/440400392- Delete AxReadAloudNode now that it's unused.
-export class AxReadAloudNode extends ReadAloudNode {
-  protected constructor(
-      public readonly axNodeId: number,
-      private readonly nodeStore_ = NodeStore.getInstance()) {
-    super();
-  }
-
-  equals(other: ReadAloudNode|undefined|null): boolean {
-    if (!(other instanceof AxReadAloudNode)) {
-      return false;
-    }
-
-    return this.axNodeId === other.axNodeId;
-  }
-
-  domNode(): Node|undefined {
-    return this.nodeStore_.getDomNode(this.axNodeId);
-  }
-}
-
-// TODO: crbug.com/440400392: The Impl class is a tool for working
+// TODO(b/444029483): The Impl class is a tool for working
 // with ReadAloudNodes during the refactor in order to enforce more strict
 // ReadAloudNode creation. This class should be deleted once
 // the Phrase Highlighting flag is fully enabled and sooner, if possible.

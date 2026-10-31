@@ -320,7 +320,7 @@ export class ContentController {
     // When a node is deleted, the read aloud model can get out of sync with the
     // DOM. To be safe, delete the node from the model.
     if (deletedNode) {
-      getReadAloudModel().onNodeWillBeDeleted?.(deletedNode);
+      getReadAloudModel().onNodeWillBeDeleted(deletedNode);
     }
 
     if (deletedNode) {
@@ -1063,7 +1063,7 @@ export class ContentController {
       const container = shadowRoot.getElementById('container') || shadowRoot;
       this.updateReadAloudState(container as Node);
     } else {
-      getReadAloudModel().resetModel?.();
+      getReadAloudModel().resetModel();
     }
   }
 

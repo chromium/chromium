@@ -24,6 +24,7 @@ export class TestReadAloudModelBrowserProxy extends TestBrowserProxy implements
       'isInitialized',
       'init',
       'resetModel',
+      'onNodeWillBeDeleted',
       'prefetchPhraseBoundaries',
     ]);
   }
@@ -82,6 +83,10 @@ export class TestReadAloudModelBrowserProxy extends TestBrowserProxy implements
 
   resetModel(): void {
     this.methodCalled('resetModel');
+  }
+
+  onNodeWillBeDeleted(node: Node): void {
+    this.methodCalled('onNodeWillBeDeleted', node);
   }
 
   prefetchPhraseBoundaries(): void {

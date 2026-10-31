@@ -88,7 +88,6 @@ build_webui("build") {
     "read_aloud/tts_client.ts",
     "read_aloud/webspeech_tts_client.ts",
     "read_aloud/ts_model_impl.ts",
-    "read_aloud/v8_model_impl.ts",
     "read_aloud/voice_language_controller.ts",
     "read_aloud/voice_language_conversions.ts",
     "read_aloud/voice_language_model.ts",

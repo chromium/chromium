@@ -452,7 +452,7 @@ suite('ReadAloudModel', () => {
 
     // Delete the first child of paragraph1 to coincide with deleting the
     // child text node.
-    getReadAloudModel().onNodeWillBeDeleted?.(paragraph1.firstChild!);
+    getReadAloudModel().onNodeWillBeDeleted(paragraph1.firstChild!);
 
 
     // The deleted node isn't returned by getCurrentTextContent.
@@ -594,7 +594,7 @@ suite('ReadAloudModel', () => {
     document.body.appendChild(newParagraph3);
 
     await microtasksFinished();
-    getReadAloudModel().resetModel?.();
+    getReadAloudModel().resetModel();
     getReadAloudModel().init(ReadAloudNode.create(document.body)!);
 
     // After re-initialization, the new returned text is correct.
@@ -648,7 +648,7 @@ suite('ReadAloudModel', () => {
     document.body.appendChild(newParagraph3);
 
     await microtasksFinished();
-    getReadAloudModel().resetModel?.();
+    getReadAloudModel().resetModel();
     getReadAloudModel().init(ReadAloudNode.create(document.body)!);
 
     // The nodes from the new tree are used.
@@ -875,7 +875,7 @@ suite('ReadAloudModel', () => {
         getReadAloudModel().getCurrentTextContent().trim());
 
     // After a restart, current text is empty.
-    getReadAloudModel().resetModel?.();
+    getReadAloudModel().resetModel();
     assertTextEmpty();
 
     // After init, we should get the first sentence again.
@@ -2309,7 +2309,7 @@ suite('ReadAloudModel', () => {
     assertEquals(
         'Hello world.', getReadAloudModel().getCurrentTextContent().trim());
 
-    getReadAloudModel().resetModel?.();
+    getReadAloudModel().resetModel();
 
     assertFalse(getReadAloudModel().isInitialized());
     assertEquals('', getReadAloudModel().getCurrentTextContent());
@@ -2380,7 +2380,7 @@ suite('ReadAloudModel', () => {
       await microtasksFinished();
       getReadAloudModel().init(ReadAloudNode.create(document.body)!);
 
-      getReadAloudModel().prefetchPhraseBoundaries?.();
+      getReadAloudModel().prefetchPhraseBoundaries();
       assertEquals(
           1, audioBrowserProxy.getCallCount('requestPhraseBoundaries'));
       assertDeepEquals(
@@ -2388,7 +2388,7 @@ suite('ReadAloudModel', () => {
           audioBrowserProxy.getArgs('requestPhraseBoundaries')[0][1]);
 
       // Sentences with a pending request aren't requested again.
-      getReadAloudModel().prefetchPhraseBoundaries?.();
+      getReadAloudModel().prefetchPhraseBoundaries();
       assertEquals(
           1, audioBrowserProxy.getCallCount('requestPhraseBoundaries'));
 
@@ -2411,16 +2411,16 @@ suite('ReadAloudModel', () => {
       document.body.appendChild(paragraph);
       await microtasksFinished();
       getReadAloudModel().init(ReadAloudNode.create(document.body)!);
-      getReadAloudModel().prefetchPhraseBoundaries?.();
+      getReadAloudModel().prefetchPhraseBoundaries();
       const oldRequestId = lastPhraseRequestId();
 
       // Switch to new content before the first response arrives.
-      getReadAloudModel().resetModel?.();
+      getReadAloudModel().resetModel();
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       const {node1, node2} = createPhraseSentence();
       await microtasksFinished();
       getReadAloudModel().init(ReadAloudNode.create(document.body)!);
-      getReadAloudModel().prefetchPhraseBoundaries?.();
+      getReadAloudModel().prefetchPhraseBoundaries();
       assertEquals(
           2, audioBrowserProxy.getCallCount('requestPhraseBoundaries'));
       const newRequestId = lastPhraseRequestId();

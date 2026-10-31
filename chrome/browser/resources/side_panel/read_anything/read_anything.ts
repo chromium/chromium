@@ -65,7 +65,7 @@ export type {ReadAloudModelBrowserProxy} from './read_aloud/read_aloud_model_bro
 export {getReadAloudModel, setInstance} from './read_aloud/read_aloud_model_browser_proxy.js';
 export {ReadAloudNodeStore} from './read_aloud/read_aloud_node_store.js';
 export type {AncestorNode, Segment} from './read_aloud/read_aloud_types.js';
-export {AxReadAloudNode, DomReadAloudNode, ReadAloudNode} from './read_aloud/read_aloud_types.js';
+export {DomReadAloudNode, ReadAloudNode} from './read_aloud/read_aloud_types.js';
 export type {SpeechBrowserProxy} from './read_aloud/speech_browser_proxy.js';
 export {SpeechBrowserProxyImpl} from './read_aloud/speech_browser_proxy.js';
 export type {SpeechListener} from './read_aloud/speech_controller.js';
@@ -76,7 +76,6 @@ export {TextSegmenter} from './read_aloud/text_segmenter.js';
 export {TsReadModelImpl} from './read_aloud/ts_model_impl.js';
 export type {TtsClient, TtsUtterance} from './read_aloud/tts_client.js';
 export {getFilteredVoiceList} from './read_aloud/tts_voice_filtering.js';
-export {V8ModelImpl} from './read_aloud/v8_model_impl.js';
 export type {VoiceLanguageListener} from './read_aloud/voice_language_controller.js';
 export {VoiceLanguageController} from './read_aloud/voice_language_controller.js';
 export {AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, EXTENSION_RESPONSE_TIMEOUT_MS, getNotification, getNotificationFor, getVoicePackConvertedLangIfExists, mojoVoicePackStatusToVoicePackStatusEnum, NotificationType, PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './read_aloud/voice_language_conversions.js';

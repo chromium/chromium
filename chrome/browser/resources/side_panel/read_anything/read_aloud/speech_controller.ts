@@ -93,7 +93,7 @@ export class SpeechController {
     }
 
     // Reset the read aloud model because there's new content.
-    this.readAloudModel_.resetModel?.();
+    this.readAloudModel_.resetModel();
 
     this.clearReadAloudState();
   }
@@ -565,7 +565,7 @@ export class SpeechController {
   // the time they're highlighted.
   private maybePrefetchPhraseBoundaries_() {
     if (this.highlighter_.willHighlightPhrases()) {
-      this.readAloudModel_.prefetchPhraseBoundaries?.();
+      this.readAloudModel_.prefetchPhraseBoundaries();
     }
   }
 
