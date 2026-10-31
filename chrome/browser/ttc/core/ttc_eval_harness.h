@@ -59,6 +59,7 @@ class TtcEvalHarness : public SessionController::Observer {
   void OnModelInterrupted() override;
   void OnError(ErrorCode error) override;
   void OnToolExecutionCompleted(const std::string& tool_name,
+                                const base::DictValue& arguments,
                                 bool success) override;
   void OnInputTranscription(const std::string& text) override;
   void OnOutputTranscription(const std::string& text) override;

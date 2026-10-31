@@ -34,6 +34,7 @@ class SessionController {
     virtual void OnModelInterrupted() {}
     virtual void OnError(ErrorCode error) {}
     virtual void OnToolExecutionCompleted(const std::string& tool_name,
+                                          const base::DictValue& arguments,
                                           bool success) {}
     virtual void OnInputTranscription(const std::string& text) {}
     virtual void OnOutputTranscription(const std::string& text) {}

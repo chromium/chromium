@@ -40,6 +40,7 @@ class SessionInactivityDetector : public SessionController::Observer {
   void OnInputTranscription(const std::string& text) override;
   void OnUserAudioLevelUpdate(float audio_level) override;
   void OnToolExecutionCompleted(const std::string& tool_name,
+                                const base::DictValue& arguments,
                                 bool success) override;
 
   void ResetTimer();

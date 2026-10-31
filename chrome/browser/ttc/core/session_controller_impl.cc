@@ -154,20 +154,22 @@ void SessionControllerImpl::ProcessToolCall(
   // externally.
   actor_task_holder_.EnsureTaskCreated();
   std::string tool_name = tool_request.name;
+  base::DictValue tool_arguments = tool_request.arguments.Clone();
   tool_controller_.ProcessToolCall(
       tool_request,
       base::BindOnce(
           [](base::WeakPtr<SessionControllerImpl> self, std::string name,
-             ToolResponseCallback cb, ToolResponse response) {
+             base::DictValue args, ToolResponseCallback cb,
+             ToolResponse response) {
             if (self) {
               for (SessionController::Observer& observer : self->observers_) {
-                observer.OnToolExecutionCompleted(name, response.Ok());
+                observer.OnToolExecutionCompleted(name, args, response.Ok());
               }
             }
             std::move(cb).Run(std::move(response));
           },
           weak_ptr_factory_.GetWeakPtr(), std::move(tool_name),
-          std::move(tool_response_callback)));
+          std::move(tool_arguments), std::move(tool_response_callback)));
 }
 
 std::vector<ToolDefinition> SessionControllerImpl::GetToolDefinitions() {

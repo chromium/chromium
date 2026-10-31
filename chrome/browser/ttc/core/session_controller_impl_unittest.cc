@@ -56,7 +56,7 @@ class MockSessionControllerObserver : public SessionController::Observer {
   MOCK_METHOD(void, OnError, (ErrorCode), (override));
   MOCK_METHOD(void,
               OnToolExecutionCompleted,
-              (const std::string&, bool),
+              (const std::string&, const base::DictValue&, bool),
               (override));
   MOCK_METHOD(void, OnInputTranscription, (const std::string&), (override));
   MOCK_METHOD(void, OnOutputTranscription, (const std::string&), (override));
@@ -149,7 +149,8 @@ TEST_F(TtcSessionControllerImplTest,
   EXPECT_CALL(observer, OnOutputTranscription("world")).Times(1);
   controller.OnOutputTranscription("world");
 
-  EXPECT_CALL(observer, OnToolExecutionCompleted("unknown_tool", false))
+  EXPECT_CALL(observer,
+              OnToolExecutionCompleted("unknown_tool", testing::_, false))
       .Times(1);
   EXPECT_CALL(observer, OnError(ErrorCode::kInternalBackendError)).Times(1);
   EXPECT_CALL(observer, OnSessionLifecycleChanged(SessionLifecycle::kFinished))
@@ -387,7 +388,7 @@ TEST_F(TtcSessionControllerImplTest, TtcEvalHarnessStartSessionAndExecuteTurn) {
   service_->session_controller()->OnInputTranscription("voice");
   service_->session_controller()->OnOutputTranscription("model ");
   service_->session_controller()->OnOutputTranscription("voice");
-  harness.OnToolExecutionCompleted("navigate", true);
+  harness.OnToolExecutionCompleted("navigate", base::DictValue(), true);
   service_->session_controller()->OnModelTurnComplete();
 
   mojom::TurnResultPtr result = turn_future.Take();

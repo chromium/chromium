@@ -199,11 +199,12 @@ void TtcEvalHarness::OnOutputTranscription(const std::string& text) {
 }
 
 void TtcEvalHarness::OnToolExecutionCompleted(const std::string& tool_name,
+                                              const base::DictValue& arguments,
                                               bool success) {
   if (current_turn_result_) {
     auto tool_call = mojom::TurnToolCall::New();
     tool_call->name = tool_name;
-    base::DictValue dict;
+    base::DictValue dict = arguments.Clone();
     if (!success) {
       dict.Set("error", true);
     }

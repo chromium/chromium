@@ -74,6 +74,7 @@ void SessionInactivityDetector::OnUserAudioLevelUpdate(float audio_level) {
 
 void SessionInactivityDetector::OnToolExecutionCompleted(
     const std::string& tool_name,
+    const base::DictValue& arguments,
     bool success) {
   if (!is_model_turn_in_progress_) {
     ResetTimer();
