@@ -4,7 +4,8 @@
 
 import {$, getRequiredElement} from 'chrome://resources/js/util.js';
 
-import {HistoryClustersInternalsBrowserProxy} from './history_clusters_internals_browser_proxy.js';
+import {browserProxyFactory} from './history_clusters_internals.mojom-webui.js';
+import type {BrowserProxy} from './history_clusters_internals.mojom-webui.js';
 
 // Contains all the log events received when the internals page is open.
 const logMessages: string[] = [];
@@ -34,8 +35,7 @@ function onLogMessagesDump() {
  * clusters to a file.
  */
 function onContextClustersDumpRequest() {
-  getProxy().getHandler().getContextClustersJson().then(
-      onContextClustersJsonReady);
+  getProxy().handler.getContextClustersJson().then(onContextClustersJsonReady);
 }
 
 /**
@@ -48,15 +48,15 @@ function onContextClustersJsonReady(resp: {contextClustersJson: string}) {
   dumpFileWithJsonContents(data, filename);
 }
 
-function getProxy(): HistoryClustersInternalsBrowserProxy {
-  return HistoryClustersInternalsBrowserProxy.getInstance();
+function getProxy(): BrowserProxy {
+  return browserProxyFactory.getInstance();
 }
 
 /**
  * The callback to button#print-keyword-bag-state that prints the keyword bag.
  */
 function onPrintKeywordBagState() {
-  getProxy().getHandler().printKeywordBagStateToLogMessages();
+  getProxy().handler.printKeywordBagStateToLogMessages();
 }
 
 function initialize() {
@@ -69,7 +69,7 @@ function initialize() {
   getRequiredElement('print-keyword-bag-state')
       .addEventListener('click', onPrintKeywordBagState);
 
-  getProxy().getCallbackRouter().onLogMessageAdded.addListener(message => {
+  getProxy().callbackRouter.onLogMessageAdded.addListener(message => {
     logMessages.push(message);
     if (logMessageContainer) {
       const logmessage = logMessageContainer.insertRow();

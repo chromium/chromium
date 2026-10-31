@@ -49,7 +49,6 @@ build_webui("build") {
     "icons.html.ts",
     "internals/app.html.ts",
     "internals/app.ts",
-    "internals/browser_proxy.ts",
     "overflow_menu.html.ts",
     "overflow_menu.ts",
     "post_message_handler.ts",
