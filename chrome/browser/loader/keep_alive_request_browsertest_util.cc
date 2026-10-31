@@ -12,6 +12,7 @@
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/keep_alive_url_loader_utils.h"
+#include "content/public/test/render_frame_host_test_support.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_request_headers.h"
@@ -79,6 +80,10 @@ void ChromeKeepAliveRequestBrowserTestBase::
   // Ensure the keepalive request is sent before leaving the current page.
   keepalive_request_handler->WaitForRequest();
 
+  // Disable the 500ms unload timer so that the browser does not delete `rfh_1`
+  // on a slow bot before the renderer has finished unloading and disconnecting
+  // the KeepAliveURLLoader forwarding pipe.
+  content::DisableUnloadTimerForTesting(rfh_1.get());
   // Navigate to cross-origin page to ensure the 1st page can be unloaded.
   ASSERT_TRUE(content::NavigateToURL(web_contents(), GetCrossOriginPageURL()));
   // Ensure the 1st page has been unloaded.
