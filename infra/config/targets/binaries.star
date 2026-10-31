@@ -1068,6 +1068,13 @@ targets.binaries.generated_script(
 )
 
 targets.binaries.generated_script(
+    name = "devtools_e2e_tests",
+    label = "//third_party/devtools-frontend/src/test/e2e:devtools_e2e_tests",
+    skip_usage_check = True,
+    module_scheme = "mocha",
+)
+
+targets.binaries.generated_script(
     name = "devtools_node_unit_tests",
     label = "//third_party/devtools-frontend/src/test/unit:devtools_node_unit_tests",
     skip_usage_check = True,

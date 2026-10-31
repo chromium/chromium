@@ -2693,6 +2693,7 @@ ci.builder(
     targets = targets.bundle(
         targets = [
             "devtools_api_tests",
+            "devtools_e2e_tests",
             "devtools_node_unit_tests",
             "devtools_unit_tests",
         ],
@@ -2700,6 +2701,11 @@ ci.builder(
             "linux-jammy",
         ],
         per_test_modifications = {
+            "devtools_e2e_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 8,
+                ),
+            ),
             "devtools_unit_tests": targets.mixin(
                 swarming = targets.swarming(
                     shards = 4,
@@ -2708,6 +2714,7 @@ ci.builder(
         },
     ),
     os = os.LINUX_DEFAULT,
+    ssd = None,
     # TODO(crbug.com/563186272): Enable when verified.
     gardener_rotations = args.ignore_default(None),
     tree_closing = False,
@@ -2732,6 +2739,7 @@ ci.builder(
     targets = targets.bundle(
         targets = [
             "devtools_api_tests",
+            "devtools_e2e_tests",
             "devtools_node_unit_tests",
             "devtools_unit_tests",
         ],
@@ -2739,6 +2747,11 @@ ci.builder(
             "mac_default_arm64",
         ],
         per_test_modifications = {
+            "devtools_e2e_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 8,
+                ),
+            ),
             "devtools_unit_tests": targets.mixin(
                 swarming = targets.swarming(
                     shards = 4,
@@ -2746,6 +2759,7 @@ ci.builder(
             ),
         },
     ),
+    builderless = True,
     cores = None,
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
@@ -2773,6 +2787,7 @@ ci.builder(
     targets = targets.bundle(
         targets = [
             "devtools_api_tests",
+            "devtools_e2e_tests",
             "devtools_node_unit_tests",
             "devtools_unit_tests",
         ],
@@ -2781,6 +2796,11 @@ ci.builder(
             "win10",
         ],
         per_test_modifications = {
+            "devtools_e2e_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 8,
+                ),
+            ),
             "devtools_unit_tests": targets.mixin(
                 swarming = targets.swarming(
                     shards = 4,

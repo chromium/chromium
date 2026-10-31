@@ -1024,6 +1024,12 @@
     "module_scheme": "mocha",
     "skip_usage_check": True,
   },
+  "devtools_e2e_tests": {
+    "label": "//third_party/devtools-frontend/src/test/e2e:devtools_e2e_tests",
+    "type": "generated_script",
+    "module_scheme": "mocha",
+    "skip_usage_check": True,
+  },
   "devtools_node_unit_tests": {
     "label": "//third_party/devtools-frontend/src/test/unit:devtools_node_unit_tests",
     "type": "generated_script",

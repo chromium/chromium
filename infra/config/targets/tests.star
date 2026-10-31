@@ -1051,6 +1051,13 @@ targets.tests.gtest_test(
 )
 
 targets.tests.isolated_script_test(
+    name = "devtools_e2e_tests",
+    mixins = [
+        "has_native_resultdb_integration",
+    ],
+)
+
+targets.tests.isolated_script_test(
     name = "devtools_node_unit_tests",
     mixins = [
         "has_native_resultdb_integration",
