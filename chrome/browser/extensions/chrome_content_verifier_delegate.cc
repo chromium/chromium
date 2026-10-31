@@ -326,6 +326,15 @@ ChromeContentVerifierDelegate::GetVerifyInfo(const Extension& extension) const {
     return g_verify_info_test_callback->Run(extension);
   }
 
+  // Built-in component extensions don't ship content verification
+  // hashes and aren't managed by ExternalProviderManager, so content
+  // verification and corruption repair don't apply to them. This
+  // intentionally excludes kExternalComponent, which are CWS CRXs
+  // installed into the profile and can be repaired.
+  if (extension.location() == mojom::ManifestLocation::kComponent) {
+    return VerifyInfo(VerifyInfo::Mode::NONE, false, false);
+  }
+
   ManagementPolicy* management_policy =
       ExtensionSystem::Get(context_)->management_policy();
 

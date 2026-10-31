@@ -17,7 +17,10 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "extensions/browser/content_verifier/test_utils.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/management_policy.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/extension_builder.h"
+#include "extensions/common/extension_urls.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/switches.h"
 
@@ -223,6 +226,34 @@ TEST_F(ChromeContentVerifierTest, VerifyFailedOnLoad) {
 
   // Expect a hash mismatch for tampered d.js file.
   EXPECT_TRUE(verifier_observer.did_hash_mismatch());
+}
+
+// Built-in component extensions should not undergo content verification even
+// though ManagementPolicy::ShouldRepairIfCorrupted() returns true for them and
+// even if their manifest specifies the webstore update URL.
+TEST_F(ChromeContentVerifierTest, ComponentExtensionsAreNotVerified) {
+  // Initialize the extension service on `profile()` so that
+  // StandardManagementPolicyProvider is registered on ManagementPolicy.
+  InitializeEmptyExtensionService();
+  ChromeContentVerifierDelegate delegate(profile());
+
+  scoped_refptr<const Extension> component_ext =
+      ExtensionBuilder("Component Extension")
+          .SetLocation(mojom::ManifestLocation::kComponent)
+          .SetManifestKey("update_url",
+                          extension_urls::GetWebstoreUpdateUrl().spec())
+          .Build();
+
+  // Component extensions cannot be disabled by users, so MustRemainEnabled()
+  // (and therefore ShouldRepairIfCorrupted()) returns true for them.
+  ASSERT_TRUE(
+      ExtensionSystem::Get(profile())->management_policy()->MustRemainEnabled(
+          component_ext.get(), nullptr));
+
+  // Despite MustRemainEnabled() being true, GetVerifierSourceType() should
+  // return NONE because built-in component extensions do not need verification.
+  EXPECT_EQ(ContentVerifierDelegate::VerifierSourceType::NONE,
+            delegate.GetVerifierSourceType(*component_ext));
 }
 
 #if BUILDFLAG(PLATFORM_CFM)
