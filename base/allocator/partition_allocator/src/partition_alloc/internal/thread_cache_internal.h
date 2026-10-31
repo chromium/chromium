@@ -206,7 +206,8 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
 
   // Tries to put a slot at |slot_start| into the cache.
   // The slot comes from the bucket at index |bucket_index| from the partition
-  // this cache is for.
+  // this cache is for. `poison` determines whether the slot will be poisoned,
+  // which is not necessary if it has already been poisoned.
   //
   // When `allow_clear_bucket` is false, refuses insertion once the bucket
   // reaches its post-clearing target (`(limit + 1) / 2`) so bulk callers that
@@ -218,7 +219,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   // Returns the slot size if the insertion succeeds, `nullopt` otherwise.
   // Insertion can fail either because the cache is full or the
   // allocation was too large.
-  template <bool allow_clear_bucket = true>
+  template <bool allow_clear_bucket = true, bool poison = true>
   PA_ALWAYS_INLINE std::optional<size_t> MaybePutInCache(
       UntaggedSlotStart slot_start,
       size_t bucket_index);
@@ -381,6 +382,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   void FillBucket(size_t bucket_index);
   // Empties the |bucket| until there are at most |limit| objects in it.
   void ClearBucket(Bucket& bucket, size_t limit);
+  // `poison` determines whether the slot will be poisoned, which is not
+  // necessary if it has already been poisoned.
+  template <bool poison = true>
   PA_ALWAYS_INLINE void PutInBucket(Bucket& bucket,
                                     UntaggedSlotStart slot_start);
   void ResetForTesting();
@@ -439,7 +443,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   friend class tools::ThreadCacheInspector;
 };
 
-template <bool allow_clear_bucket>
+template <bool allow_clear_bucket, bool poison>
 PA_ALWAYS_INLINE std::optional<size_t> ThreadCache::MaybePutInCache(
     UntaggedSlotStart slot_start,
     size_t bucket_index) {
@@ -472,7 +476,7 @@ PA_ALWAYS_INLINE std::optional<size_t> ThreadCache::MaybePutInCache(
     }
   }
 
-  PutInBucket(bucket, slot_start);
+  PutInBucket<poison>(bucket, slot_start);
   cached_memory_ += bucket.slot_size;
   PA_INCREMENT_COUNTER(GetEnclosingTls()->thread_cache_stats.cache_fill_hits);
 
@@ -568,57 +572,61 @@ PA_ALWAYS_INLINE std::optional<SlotAddressAndSize> ThreadCache::GetFromCache(
   };
 }
 
+template <bool poison>
 PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
                                                UntaggedSlotStart slot_start) {
 #if PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY) && \
     PA_BUILDFLAG(PA_ARCH_CPU_X86_64) && PA_BUILDFLAG(HAS_64_BIT_POINTERS)
-  // We see freelist corruption crashes happening in the wild.  These are likely
-  // due to out-of-bounds accesses in the previous slot, or to a Use-After-Free
-  // somewhere in the code.
-  //
-  // The issue is that we detect the UaF far away from the place where it
-  // happens. As a consequence, we should try to make incorrect code crash as
-  // early as possible. Poisoning memory at free() time works for UaF, but it
-  // was seen in the past to incur a high performance cost.
-  //
-  // Here, only poison the current cacheline, which we are touching anyway.
-  // TODO(lizeb): Make sure this does not hurt performance.
+  if constexpr (poison) {
+    // We see freelist corruption crashes happening in the wild.  These are
+    // likely due to out-of-bounds accesses in the previous slot, or to a
+    // Use-After-Free somewhere in the code.
+    //
+    // The issue is that we detect the UaF far away from the place where it
+    // happens. As a consequence, we should try to make incorrect code crash as
+    // early as possible. Poisoning memory at free() time works for UaF, but it
+    // was seen in the past to incur a high performance cost.
+    //
+    // Here, only poison the current cacheline, which we are touching anyway.
+    // TODO(lizeb): Make sure this does not hurt performance.
 
-  // Everything below requires this alignment.
-  static_assert(internal::kAlignment == 16, "");
+    // Everything below requires this alignment.
+    static_assert(internal::kAlignment == 16, "");
 
-  // The pointer is always 16 bytes aligned, so its start address is always == 0
-  // % 16. Its distance to the next cacheline is
-  //   `64 - ((slot_start & 63) / 16) * 16`
-  static_assert(
-      internal::kPartitionCachelineSize == 64,
-      "The computation below assumes that cache lines are 64 bytes long.");
-  int distance_to_next_cacheline_in_16_bytes =
-      4 - ((slot_start.value() >> 4) & 3);
-  int slot_size_remaining_in_16_bytes = bucket.slot_size / 16;
-  slot_size_remaining_in_16_bytes = std::min(
-      slot_size_remaining_in_16_bytes, distance_to_next_cacheline_in_16_bytes);
+    // The pointer is always 16 bytes aligned, so its start address is always ==
+    // 0 % 16. Its distance to the next cacheline is
+    //   `64 - ((slot_start & 63) / 16) * 16`
+    static_assert(
+        internal::kPartitionCachelineSize == 64,
+        "The computation below assumes that cache lines are 64 bytes long.");
+    int distance_to_next_cacheline_in_16_bytes =
+        4 - ((slot_start.value() >> 4) & 3);
+    int slot_size_remaining_in_16_bytes = bucket.slot_size / 16;
+    slot_size_remaining_in_16_bytes =
+        std::min(slot_size_remaining_in_16_bytes,
+                 distance_to_next_cacheline_in_16_bytes);
 
-  static const uint32_t poison_16_bytes[4] = {0xbadbad00, 0xbadbad00,
-                                              0xbadbad00, 0xbadbad00};
+    static const uint32_t poison_16_bytes[4] = {0xbadbad00, 0xbadbad00,
+                                                0xbadbad00, 0xbadbad00};
 
 #if !(PA_BUILDFLAG(IS_WIN) && PA_BUILDFLAG(IS_COMPONENT_BUILD)) && \
     PA_HAS_BUILTIN(__builtin_assume_aligned)
-  void* slot_start_tagged = __builtin_assume_aligned(
-      slot_start.Tag().ToObject(), internal::kAlignment);
+    void* slot_start_tagged = __builtin_assume_aligned(
+        slot_start.Tag().ToObject(), internal::kAlignment);
 #else
-  // TODO(crbug.com/40262684): std::assume_aligned introduce an additional
-  // dependency: _libcpp_verbose_abort(const char*, ...).  It will cause
-  // "undefined symbol" error when linking allocator_shim.dll.
-  void* slot_start_tagged = slot_start.Tag().ToObject();
+    // TODO(crbug.com/40262684): std::assume_aligned introduce an additional
+    // dependency: _libcpp_verbose_abort(const char*, ...).  It will cause
+    // "undefined symbol" error when linking allocator_shim.dll.
+    void* slot_start_tagged = slot_start.Tag().ToObject();
 #endif
 
-  uint32_t* address_aligned = static_cast<uint32_t*>(slot_start_tagged);
-  for (int i = 0; i < slot_size_remaining_in_16_bytes; i++) {
-    // Clang will expand the memcpy to a 16-byte write (movups on x86).
-    PA_UNSAFE_TODO(
-        memcpy(address_aligned, poison_16_bytes, sizeof(poison_16_bytes)));
-    PA_UNSAFE_TODO(address_aligned += 4);
+    uint32_t* address_aligned = static_cast<uint32_t*>(slot_start_tagged);
+    for (int i = 0; i < slot_size_remaining_in_16_bytes; i++) {
+      // Clang will expand the memcpy to a 16-byte write (movups on x86).
+      PA_UNSAFE_TODO(
+          memcpy(address_aligned, poison_16_bytes, sizeof(poison_16_bytes)));
+      PA_UNSAFE_TODO(address_aligned += 4);
+    }
   }
 #endif  // PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY) &&
         // PA_BUILDFLAG(PA_ARCH_CPU_X86_64) && PA_BUILDFLAG(HAS_64_BIT_POINTERS)

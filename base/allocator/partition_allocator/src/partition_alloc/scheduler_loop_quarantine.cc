@@ -173,6 +173,7 @@ PA_ALWAYS_INLINE void ReleaseDequarantinedSlot(
     UntaggedSlotStart slot_start,
     size_t bucket_index,
     size_t slot_size,
+    bool enable_zapping,
     std::optional<BatchFreeQueue<quarantine_target>>& queue,
     ThreadCache* tcache) {
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
@@ -187,8 +188,28 @@ PA_ALWAYS_INLINE void ReleaseDequarantinedSlot(
     queue->Queue(slot_start);
     return;
   } else {
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
+    // When `enable_zapping` is true, we assume below that the slot was zapped
+    // when entering the quarantine. Check that assumption.
+    if (enable_zapping) {
+      unsigned char* object = slot_start.Tag().ToObject();
+      auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start, root);
+      const size_t usable_size = root->GetSlotUsableSize(slot_span);
+      for (size_t i = 0; i < usable_size; ++i) {
+        PA_UNSAFE_TODO(PA_DCHECK(object[i] == internal::kFreedByte));
+      }
+    }
+#endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
+    // When `enable_zapping` is true, `Quarantine()` already zapped the entire
+    // usable slot with `kFreedByte` (`0xcd`), so poisoning the first cacheline
+    // again with `0xbadbad00` when inserting into the `ThreadCache` freelist is
+    // redundant.
     std::optional<size_t> slot_size_opt =
-        tcache->MaybePutInCache<allow_clear_bucket>(slot_start, bucket_index);
+        enable_zapping
+            ? tcache->MaybePutInCache<allow_clear_bucket, /*poison=*/false>(
+                  slot_start, bucket_index)
+            : tcache->MaybePutInCache<allow_clear_bucket, /*poison=*/true>(
+                  slot_start, bucket_index);
 
     if (slot_size_opt.has_value()) [[likely]] {
       PA_DCHECK(slot_size_opt.value() == slot_size);
@@ -529,13 +550,13 @@ SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::PurgeInternal(
     if (avoid_tcache_overflow) {
       ReleaseDequarantinedSlot<kThreadBound, quarantine_target,
                                /*allow_clear_bucket=*/false>(
-          allocator_root_, slot_start.Untag(), bucket_index, slot_size, queue,
-          tcache_);
+          allocator_root_, slot_start.Untag(), bucket_index, slot_size,
+          enable_zapping_, queue, tcache_);
     } else {
       ReleaseDequarantinedSlot<kThreadBound, quarantine_target,
                                /*allow_clear_bucket=*/true>(
-          allocator_root_, slot_start.Untag(), bucket_index, slot_size, queue,
-          tcache_);
+          allocator_root_, slot_start.Untag(), bucket_index, slot_size,
+          enable_zapping_, queue, tcache_);
     }
   }
 
