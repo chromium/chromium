@@ -166,6 +166,15 @@ std::vector<OpenTabInfo> GetOpenTabs(BrowserWindowInterface* browser_window) {
   return open_tabs;
 }
 
+// Returns whether tabs can be deselected after they were submitted. Matches
+// `ContextualSearchSessionHandle`, which only reports deselected submitted tabs
+// to the server in `removed_contexts` under these flags.
+bool IsTabDeselectionEnabled() {
+  return omnibox::IsTabDeselectionInComposeboxEnabled() ||
+         IsContextualTasksRearchitectureEnabled() ||
+         IsContextualTasksSidePanelRearchitectureEnabled();
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void RemoveAttachedTabUnderline(
     std::optional<int32_t> session_tab_id,
@@ -1003,9 +1012,7 @@ ContextualTasksWebContentsUserData::GetTabsToRecontextualize(
   if (!tracked_in_session) {
     return {};
   }
-  if ((omnibox::IsTabDeselectionInComposeboxEnabled() ||
-       IsContextualTasksRearchitectureEnabled() ||
-       IsContextualTasksSidePanelRearchitectureEnabled()) &&
+  if (IsTabDeselectionEnabled() &&
       session_handle.IsTabDeselected(
           active_tab_session_id,
           active_tab->GetContents()->GetLastCommittedURL(),
@@ -1156,10 +1163,13 @@ void ContextualTasksWebContentsUserData::
   // each one to an open tab in this window and drop the ones that were closed.
   const std::vector<OpenTabInfo> open_tabs =
       GetOpenTabs(GetBrowserWindowInterface());
-  const auto is_open = [&open_tabs](int32_t session_id) {
-    return std::ranges::any_of(open_tabs, [session_id](const OpenTabInfo& tab) {
-      return tab.session_id == session_id;
-    });
+  const auto find_open_tab =
+      [&open_tabs](int32_t session_id) -> const OpenTabInfo* {
+    auto it =
+        std::ranges::find_if(open_tabs, [session_id](const OpenTabInfo& tab) {
+          return tab.session_id == session_id;
+        });
+    return it != open_tabs.end() ? &*it : nullptr;
   };
   size_t tab_context_count = 0;
   std::vector<contextual_search::TabInfo> restored_tabs;
@@ -1171,7 +1181,7 @@ void ContextualTasksWebContentsUserData::
     const std::string title = resource.title.value_or("");
     std::optional<int32_t> tab_id;
     // The tab matched to this session's submitted context.
-    if (resource.tab_id.has_value() && is_open(resource.tab_id->id())) {
+    if (resource.tab_id.has_value() && find_open_tab(resource.tab_id->id())) {
       tab_id = resource.tab_id->id();
     }
     // Any open tab showing the same page. This covers reopened threads and
@@ -1189,6 +1199,15 @@ void ContextualTasksWebContentsUserData::
     }
     // The tab was closed, so it is no longer part of the context library.
     if (!tab_id.has_value()) {
+      continue;
+    }
+    // Deselections are only tracked locally until sent to the server on the
+    // next query submission, so deselected tabs are skipped if in AIM thread
+    // updates.
+    if (const OpenTabInfo* open_tab = find_open_tab(*tab_id);
+        open_tab &&
+        session_handle->IsTabDeselected(SessionID::FromSerializedValue(*tab_id),
+                                        open_tab->url, open_tab->title)) {
       continue;
     }
     contextual_search::TabInfo tab;
@@ -1643,17 +1662,9 @@ void ContextualTasksWebContentsUserData::DeleteContext(
 }
 
 void ContextualTasksWebContentsUserData::DeleteTabContext(int32_t tab_id) {
-  auto* session_handle = GetOrCreateContextualSessionHandle();
-  if (!session_handle) {
-    return;
-  }
-  GURL tab_url;
-  std::string tab_title;
   std::optional<int32_t> session_tab_id;
-  if (tabs::TabInterface* const tab = tabs::TabHandle(tab_id).Get();
-      tab && tab->GetContents()) {
-    tab_url = tab->GetContents()->GetLastCommittedURL();
-    tab_title = base::UTF16ToUTF8(tab->GetTitle());
+  tabs::TabInterface* const tab = tabs::TabHandle(tab_id).Get();
+  if (tab && tab->GetContents()) {
     SessionID session_id =
         sessions::SessionTabHelper::IdForTab(tab->GetContents());
     if (session_id.is_valid()) {
@@ -1663,29 +1674,62 @@ void ContextualTasksWebContentsUserData::DeleteTabContext(int32_t tab_id) {
   if (!session_tab_id.has_value()) {
     session_tab_id = GetSessionTabIdForTabHandle(tab_id);
   }
-  if (!session_tab_id.has_value()) {
+  auto* session_handle = GetOrCreateContextualSessionHandle();
+  if (!session_tab_id.has_value() || !session_handle) {
     return;
   }
 
-  std::optional<std::vector<base::UnguessableToken>> removed_tokens =
-      session_handle->DeleteTabContext(
-          SessionID::FromSerializedValue(*session_tab_id), tab_url, tab_title);
-  if (!removed_tokens.has_value()) {
+  const auto matches_tab = [&](const contextual_search::TabInfo& tab_info) {
+    return tab_info.tab_id == *session_tab_id;
+  };
+
+  // Search every attached and restored tab, not just unsubmitted ones, so that
+  // tabs from earlier turns can be deselected too.
+  const contextual_search::TabContextState& tab_context =
+      session_handle->GetTabContextState();
+  // Compare all attached tabs to see if any match `session_tab_id`.
+  auto attached_tab = std::ranges::find_if(tab_context.attached, matches_tab);
+
+  // Cannot use 'is_restored_from_aim' to check if it is a restored tab
+  // since `session_tab_id`, the tab that is being looked for, is a tab id,
+  // not `TabInfo`.
+  auto restored_tab = std::ranges::find_if(tab_context.restored, matches_tab);
+  const bool is_attached = attached_tab != tab_context.attached.end();
+  const bool is_restored = restored_tab != tab_context.restored.end();
+  if (!is_attached && !is_restored) {
+    return;
+  }
+  const bool is_submitted =
+      is_attached ? attached_tab->submitted : restored_tab->submitted;
+  // The server only drops a submitted tab when tab deselection is enabled, so
+  // otherwise keep showing it rather than hiding context the server still uses.
+  if (is_submitted && !IsTabDeselectionEnabled()) {
     return;
   }
 #if !BUILDFLAG(IS_ANDROID)
   contextual_tasks::RemoveTabUnderline(tab_id, GetBrowserWindowInterface());
 #endif
-  if (tab_url.is_valid()) {
-    dismissed_implicit_urls_.insert(tab_url);
+  // Remove attached and restored tabs.
+  GURL current_url;
+  std::string current_title;
+  if (tab && tab->GetContents()) {
+    current_url = tab->GetContents()->GetLastCommittedURL();
+    current_title = base::UTF16ToUTF8(tab->GetContents()->GetTitle());
   }
-  for (const auto& token : *removed_tokens) {
-    OnTabContextRemoved(token);
-    if (implicit_tab_ && implicit_tab_->token == token) {
-      implicit_tab_.reset();
+  if (current_url.is_valid()) {
+    dismissed_implicit_urls_.insert(current_url);
+  }
+  if (std::optional<std::vector<base::UnguessableToken>> removed_tokens =
+          session_handle->DeleteTabContext(
+              SessionID::FromSerializedValue(*session_tab_id), current_url,
+              current_title)) {
+    for (const auto& token : *removed_tokens) {
+      OnTabContextRemoved(token);
+      if (implicit_tab_ && implicit_tab_->token == token) {
+        implicit_tab_.reset();
+      }
     }
   }
-
   if (auto model = GetOrCreateInputStateModel()) {
     model->OnContextChanged();
   }
