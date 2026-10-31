@@ -1946,7 +1946,10 @@ public class AwContents implements SmartClipProvider {
     // called on the popup window's content.
     // See //android_webview/docs/how-does-on-create-window-work.md for more details.
     private void receivePopupContents(long popupNativeAwContents) {
-        if (isDestroyed(WARN)) return;
+        if (isDestroyed(WARN)) {
+            AwContentsJni.get().destroy(popupNativeAwContents);
+            return;
+        }
         // Capture as reset the view state for mNativeAwContents.
         StateSnapshot prePopupState = captureStateAndResetView();
 

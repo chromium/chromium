@@ -116,6 +116,50 @@ public class PopupWindowTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    public void testSupplyDestroyedContentsForPopupDeletesPendingNative() throws Throwable {
+        final String popupPath = "/popup.html";
+        final String parentPageHtml =
+                CommonResources.makeHtmlPageFrom(
+                        "",
+                        "<script>"
+                                + "function tryOpenWindow() {"
+                                + "  var newWindow = window.open('"
+                                + popupPath
+                                + "');"
+                                + "}</script>");
+        final String popupPageHtml =
+                CommonResources.makeHtmlPageFrom(
+                        "<title>" + POPUP_TITLE + "</title>", "This is a popup window");
+
+        mActivityTestRule.triggerPopup(
+                mParentContents,
+                mParentContentsClient,
+                mWebServer,
+                parentPageHtml,
+                popupPageHtml,
+                popupPath,
+                "tryOpenWindow()");
+        AwContents popupContents =
+                mActivityTestRule.createPopupContents(mParentContents).popupContents;
+        int instanceCount = ThreadUtils.runOnUiThreadBlocking(AwContents::getNativeInstanceCount);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    popupContents.destroy();
+                    mParentContents.supplyContentsForPopup(popupContents);
+                });
+
+        // Both popupContents' own native and the pending popup native must be deleted.
+        CriteriaHelper.pollUiThread(
+                () ->
+                        Criteria.checkThat(
+                                AwContents.getNativeInstanceCount(),
+                                Matchers.is(instanceCount - 2)));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
     public void testJavascriptInterfaceForPopupWindow() throws Throwable {
         // android.webkit.cts.WebViewTest#testJavascriptInterfaceForClientPopup
         final String popupPath = "/popup.html";
