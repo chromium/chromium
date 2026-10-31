@@ -178,9 +178,6 @@ declare namespace chrome {
     // If distillations have been queued up.
     let requiresDistillation: boolean;
 
-    // If the speech tree has been initialized in the renderer.
-    let isSpeechTreeInitialized: boolean;
-
     // Max number of characters to display in one line of Reading mode.
     let maxLineWidth: number;
 
@@ -494,18 +491,6 @@ declare namespace chrome {
     // preferences and can be used to set up the page.
     function restoreSettingsFromPrefs(): void;
 
-    // Inits the AXPosition instance in ReadAnythingAppController with the
-    // starting node. Currently needed to orient the AXPosition to the correct
-    // position, but we should be able to remove this in the future.
-    function initAxPositionWithNode(startingNodeId: number): void;
-
-    // Gets the text content of the next text that should be spoken and
-    // highlighted.
-    function getCurrentTextContent(): string;
-
-    // Resets the granularity index.
-    function resetGranularityIndex(): void;
-
     // Called after the ReadAnythingAppController maps the readability text
     // blocks to the AXTree.
     function onRenderedTextMappingReady(): void;
@@ -518,22 +503,8 @@ declare namespace chrome {
     function onPhraseBoundariesReady(requestId: number, boundaries: number[][]):
         void;
 
-    // Increments the processed_granularity_index_ in ReadAnythingAppModel,
-    // effectively updating ReadAloud's state of the current granularity to
-    // refer to the next granularity.
-    function movePositionToNextGranularity(): void;
-
-    // Decrements the processed_granularity_index_ in ReadAnythingAppModel,
-    // effectively updating ReadAloud's state of the current granularity to
-    // refer to the previous granularity.
-    function movePositionToPreviousGranularity(): void;
-
     // Signal that the page language has changed.
     function languageChanged(): void;
-
-    // Gets the accessible text boundary for the given string
-    function getAccessibleBoundary(text: string, maxSpeechLength: number):
-        number;
 
     // Requests the image in the form of bitmap. onImageDownloaded will be
     // called when the image has been downloaded.
@@ -601,30 +572,6 @@ declare namespace chrome {
     // Increment the cumulative speech line count for the current line focus
     // session.
     function incrementLineFocusSpeechLines(): void;
-
-    // Returns a list of node ids and ranges (start and length) associated with
-    // the index within the given text segment. The intended use is for
-    // highlighting the ranges. Note that a highlight can span over multiple
-    // nodes in certain cases. If the `phrases` argument is `true`, the text
-    // ranges for the containing phrase are returned, otherwise the text ranges
-    // for the word are returned.
-    //
-    // For example, for a segment of text composed of two nodes:
-    // Node 1: "Hello, this is a "
-    // Node 2: "segment of text."
-    // An index of "20" will return the node id associated with node 2, a start
-    // index of 0, and a length of 8 (covering the word "segment ").
-    function getHighlightForCurrentSegmentIndex(
-        index: number, phrases: boolean):
-        Array<{nodeId: number, start: number, length: number}>;
-
-    // Returns a list of node ids and ranges (start and length) associated with
-    // the full next text segment to speak and highlight. Note that a highlight
-    // can span over multiple nodes in certain cases. This is different from
-    // getHighlightForCurrentSegmentIndex in that this returns the full sentence
-    // whereas the other returns a segment (word or phrase) within the sentence.
-    function getCurrentTextSegments():
-        Array<{nodeId: number, start: number, length: number}>;
 
     // Called when the main frame undergoes a same document navigation (such as
     // a fragment navigation).

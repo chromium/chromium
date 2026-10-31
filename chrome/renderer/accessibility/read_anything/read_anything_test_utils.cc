@@ -119,15 +119,6 @@ std::vector<ui::AXTreeUpdate> CreateSimpleUpdateList(
   return updates;
 }
 
-testing::Matcher<ReadAloudTextSegment> TextSegmentMatcher(TextRange range) {
-  return testing::AllOf(
-      ::testing::Field(&ReadAloudTextSegment::id, ::testing::Eq(range.id)),
-      ::testing::Field(&ReadAloudTextSegment::text_start,
-                       ::testing::Eq(range.start)),
-      ::testing::Field(&ReadAloudTextSegment::text_end,
-                       ::testing::Eq(range.end)));
-}
-
 base::File GetValidModelFile() {
   base::FilePath source_root_dir;
   base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &source_root_dir);

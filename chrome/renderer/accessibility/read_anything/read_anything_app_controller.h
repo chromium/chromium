@@ -301,7 +301,6 @@ class ReadAnythingAppController
   void SendInstallVoicePackRequest(const std::string& language) const;
   void SendUninstallVoiceRequest(const std::string& language) const;
 
-  bool IsSpeechTreeInitialized();
   bool ShouldBold(ui::AXNodeID ax_node_id) const;
   bool IsOverline(ui::AXNodeID ax_node_id) const;
   bool IsSuperscript(ui::AXNodeID ax_node_id) const;
@@ -332,7 +331,6 @@ class ReadAnythingAppController
   bool IsReadAnythingSendFeedbackEnabled() const;
   bool IsTranslatePdfEnabled() const;
   bool IsReadAnythingReadAloudExperimentalPlaybackUiEnabled() const;
-  bool IsTsTextSegmentationEnabled() const;
   bool IsReadabilityEnabled() const;
   bool IsLineFocusEnabled() const;
   bool IsReadabilityWithLinksEnabled() const;
@@ -381,21 +379,6 @@ class ReadAnythingAppController
       const std::string& locale,
       const std::string& display_locale) const;
 
-  // Returns a list of nodes and ranges representing the next nodes that should
-  // be spoken and highlighted with Read Aloud. The ranges are represented as a
-  // start offset and a length. Multiple nodes are returned if the segment spans
-  // over more than one node. This defaults to returning the first granularity
-  // until MovePositionTo<Next,Previous>Granularity() moves the position. If the
-  // the current processed_granularity_index_ has not been calculated yet,
-  // GetNextNodes() is called which updates the AXPosition.
-  v8::Local<v8::Value> GetCurrentTextSegments();
-
-  // Returns the actual text content representing by the nodes returned by
-  // GetCurrentTextSegments().
-  std::u16string GetCurrentTextContent();
-
-  int GetAccessibleBoundary(const std::u16string& text, int max_text_length);
-
   // Called when a new dependency parser model file has been loaded and is
   // available.
   void UpdateDependencyParserModel(base::File model_file);
@@ -424,26 +407,6 @@ class ReadAnythingAppController
 
   // Called when distillation completes from the active ReadAnythingDistiller.
   void OnDistillationComplete(const DistillationResult& result);
-
-  // Inits the AXPosition with a starting node.
-  // TODO(crbug.com/40927698): We should be able to use AXPosition in a way
-  // where this isn't needed.
-  void InitAXPositionWithNode(const ui::AXNodeID& starting_node_id);
-
-  // Increments the processed_granularity_index_, updating ReadAloud's state of
-  // the current granularity to refer to the next granularity. The current
-  // behavior allows the client to increment past the end of the page's content.
-  void MovePositionToNextGranularity();
-
-  // Decrements the processed_granularity_index_,updating ReadAloud's state of
-  // the current granularity to refer to the previous granularity
-  void MovePositionToPreviousGranularity();
-
-  void ResetGranularityIndex();
-
-  // Preprocess the text on the current page for speech to be used by
-  // Read Aloud.
-  void PreprocessTextForSpeech();
 
   void Draw(bool recompute_display_nodes);
 
@@ -561,23 +524,6 @@ class ReadAnythingAppController
   void RecordScreen2xDistillationStatus(bool just_hidden);
   void RecordDistillationStatus(
       read_anything::mojom::DistillationStatus status);
-
-  // Given a boundary position within the current granularity, identifies the
-  // nodes that needs to be highlighted (e.g. until the word boundary), and
-  // returns a list containing nodes and the ranges within those nodes. The
-  // ranges are represented as a start offset and a length. Multiple nodes are
-  // returned if the highlight spans over more than one node. This allows us to
-  // correctly position the highlight within the current text segment. The
-  // return value is thus a list containing node id, start, and length.
-  //
-  //  If the `phrases` argument is `true`, the text ranges for the containing
-  //  phrase are returned, otherwise the text ranges for the word are returned.
-  //
-  // Note that this is only needed for custom granularity highlighting. Sentence
-  // highlighting is able to be handled directly in WebUI because the entire
-  // speech segment is highlighted at once.
-  v8::Local<v8::Value> GetHighlightForCurrentSegmentIndex(int index,
-                                                          bool phrases);
 
   // Helpers for logging UmaHistograms based on times recorded in WebUI.
   void IncrementMetricCount(const std::string& metric);

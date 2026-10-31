@@ -34,7 +34,6 @@
 #include "chrome/common/read_anything/read_anything_util.h"
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
-#include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_app_model.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_distiller.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_distiller_factory.h"
@@ -62,7 +61,6 @@
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_serializable_tree.h"
-#include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_serializer.h"
@@ -945,7 +943,6 @@ void ReadAnythingAppController::OnAXTreeDistilled(
   // Reset state, including the current side panel selection so we can update
   // it based on the new main panel selection in PostProcessSelection below.
   model_.Reset(content_node_ids);
-  read_aloud_model_.ResetReadAloudState();
 
   if (!model_.content_node_ids().empty()) {
     // If there are content_node_ids, this means the AXTree was successfully
@@ -1101,10 +1098,6 @@ bool ReadAnythingAppController::PostProcessSelection() {
     if (model_.is_empty()) {
       DrawEmptyState();
     } else if (model_.is_readability_next_distillation_method()) {
-      // Reset Read Aloud when switching between the readability distillation
-      // and selection mode or when changing the selected content in selection
-      // mode, since the displayed content is changing.
-      read_aloud_model_.ResetReadAloudState();
       if (IsInSelectionMode()) {
         Draw(/*recompute_display_nodes=*/false);
       } else {
@@ -1153,11 +1146,6 @@ void ReadAnythingAppController::Draw(bool recompute_display_nodes) {
 
   if (recompute_display_nodes && !model_.content_node_ids().empty()) {
     model_.ComputeDisplayNodeIdsForDistilledTree();
-
-    // If we need to recompute which nodes are displayed, reset read aloud as
-    // we previously preprocessed the previous nodes and should re-process the
-    // new ones.
-    read_aloud_model_.ResetReadAloudState();
   } else {
     VLOG(1) << "Not recomputing display nodes, content node size: "
             << model_.content_node_ids().size();
@@ -1174,14 +1162,6 @@ void ReadAnythingAppController::Draw(bool recompute_display_nodes) {
 }
 
 void ReadAnythingAppController::DrawSelection() {
-  // Reset read aloud state if a selection has been made in case the selected
-  // nodes weren't previously distilled. Resetting isn't necessary if the
-  // selection nodes were included in the distilled content.
-  if (!model_.selection_node_ids().empty() &&
-      !model_.SelectionNodesContainedInDistilledContent()) {
-    read_aloud_model_.ResetReadAloudState();
-  }
-
   // This call should check that the active tree isn't in an undistilled state
   // -- that is, it is awaiting distillation or never requested distillation.
   ExecuteJavaScript("chrome.readingMode.updateSelection();");
@@ -1337,8 +1317,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
           "engineErrorStopSource")
       .SetProperty<&ReadAnythingAppController::ContentFinishedStopSource>(
           "contentFinishedStopSource")
-      .SetProperty<&ReadAnythingAppController::IsSpeechTreeInitialized>(
-          "isSpeechTreeInitialized")
       .SetProperty<
           &ReadAnythingAppController::UnexpectedUpdateContentStopSource>(
           "unexpectedUpdateContentStopSource")
@@ -1483,12 +1461,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty<&ReadAnythingAppController::GetSupportedFonts>(
           "supportedFonts")
       .SetProperty<&ReadAnythingAppController::GetAllFonts>("allFonts")
-      .SetMethod<&ReadAnythingAppController::InitAXPositionWithNode>(
-          "initAxPositionWithNode")
-      .SetMethod<&ReadAnythingAppController::ResetGranularityIndex>(
-          "resetGranularityIndex")
-      .SetMethod<&ReadAnythingAppController::GetCurrentTextContent>(
-          "getCurrentTextContent")
       .SetMethod<&ReadAnythingAppController::ShouldShowUI>("shouldShowUi")
       .SetMethod<&ReadAnythingAppController::GetOriginalPageMetrics>(
           "getOriginalPageMetrics")
@@ -1500,12 +1472,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
           "onIsAudioCurrentlyPlayingChanged")
       .SetMethod<&ReadAnythingAppController::OnAiPlaybackStateChanged>(
           "onAiPlaybackStateChanged")
-      .SetMethod<&ReadAnythingAppController::GetAccessibleBoundary>(
-          "getAccessibleBoundary")
-      .SetMethod<&ReadAnythingAppController::MovePositionToNextGranularity>(
-          "movePositionToNextGranularity")
-      .SetMethod<&ReadAnythingAppController::MovePositionToPreviousGranularity>(
-          "movePositionToPreviousGranularity")
       .SetMethod<&ReadAnythingAppController::RequestImageData>(
           "requestImageData")
       .SetMethod<&ReadAnythingAppController::GetImageBitmap>("getImageBitmap")
@@ -1532,11 +1498,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
           "sendInstallVoicePackRequest")
       .SetMethod<&ReadAnythingAppController::SendUninstallVoiceRequest>(
           "sendUninstallVoiceRequest")
-      .SetMethod<&ReadAnythingAppController::GetCurrentTextSegments>(
-          "getCurrentTextSegments")
-      .SetMethod<
-          &ReadAnythingAppController::GetHighlightForCurrentSegmentIndex>(
-          "getHighlightForCurrentSegmentIndex")
       .SetMethod<&ReadAnythingAppController::RequestPhraseBoundaries>(
           "requestPhraseBoundaries")
       .SetMethod<&ReadAnythingAppController::GetValidatedFontName>(
@@ -2713,42 +2674,6 @@ void ReadAnythingAppController::OnSelectionRequestHandled(bool applied) {
   }
 }
 
-void ReadAnythingAppController::ResetGranularityIndex() {
-  read_aloud_model_.ResetGranularityIndex();
-}
-void ReadAnythingAppController::InitAXPositionWithNode(
-    const ui::AXNodeID& starting_node_id) {
-  ui::AXNode* ax_node = model_.GetAXNode(starting_node_id);
-  read_aloud_model_.InitAXPositionWithNode(ax_node, model_.active_tree_id());
-  // TODO: crbug.com/411198154: This should only be called if the ax position
-  // is not already initialized.
-  PreprocessTextForSpeech();
-}
-
-bool ReadAnythingAppController::IsSpeechTreeInitialized() {
-  return read_aloud_model_.speech_tree_initialized();
-}
-
-std::u16string ReadAnythingAppController::GetCurrentTextContent() {
-  return read_aloud_model_
-      .GetCurrentText(IsPdf(), model_.IsDocs(),
-                      model_.GetCurrentlyVisibleNodes())
-      .text;
-}
-
-void ReadAnythingAppController::PreprocessTextForSpeech() {
-  read_aloud_model_.PreprocessTextForSpeech(IsPdf(), model_.IsDocs(),
-                                            model_.GetCurrentlyVisibleNodes());
-}
-
-void ReadAnythingAppController::MovePositionToNextGranularity() {
-  read_aloud_model_.MovePositionToNextGranularity();
-}
-
-void ReadAnythingAppController::MovePositionToPreviousGranularity() {
-  read_aloud_model_.MovePositionToPreviousGranularity();
-}
-
 void ReadAnythingAppController::SetLanguageForTesting(
     const std::string& language_code) {
   SetLanguageCode(language_code);
@@ -2963,89 +2888,6 @@ void ReadAnythingAppController::OnIsAudioCurrentlyPlayingChanged(
 
 void ReadAnythingAppController::OnAiPlaybackStateChanged(bool enabled) {
   page_handler_->OnAiPlaybackStateChanged(enabled);
-}
-
-int ReadAnythingAppController::GetAccessibleBoundary(const std::u16string& text,
-                                                     int max_text_length) {
-  std::vector<int> offsets;
-  const std::u16string shorter_string = text.substr(0, max_text_length);
-  size_t sentence_ends_short = ui::FindAccessibleTextBoundary(
-      shorter_string, offsets, ax::mojom::TextBoundary::kSentenceStart, 0,
-      ax::mojom::MoveDirection::kForward,
-      ax::mojom::TextAffinity::kDefaultValue);
-  size_t sentence_ends_long = ui::FindAccessibleTextBoundary(
-      text, offsets, ax::mojom::TextBoundary::kSentenceStart, 0,
-      ax::mojom::MoveDirection::kForward,
-      ax::mojom::TextAffinity::kDefaultValue);
-
-  // Compare the index result for the sentence of maximum text length and of
-  // the longer text string. If the two values are the same, the index is
-  // correct. If they are different, the maximum text length may have
-  // incorrectly spliced a word (e.g. returned "this is a sen" instead of
-  // "this is a" or "this is a sentence"), so if this is the case, we'll want
-  // to use the last word boundary instead.
-  if (sentence_ends_short == sentence_ends_long) {
-    return sentence_ends_short;
-  }
-
-  size_t word_ends = ui::FindAccessibleTextBoundary(
-      shorter_string, offsets, ax::mojom::TextBoundary::kWordStart,
-      shorter_string.length() - 1, ax::mojom::MoveDirection::kBackward,
-      ax::mojom::TextAffinity::kDefaultValue);
-  return word_ends;
-}
-
-v8::Local<v8::Value> ReadAnythingAppController::GetCurrentTextSegments() {
-  v8::Isolate* isolate =
-      render_frame()->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
-  auto context = isolate->GetCurrentContext();
-
-  std::vector<ReadAloudTextSegment> nodes =
-      read_aloud_model_.GetCurrentTextSegments(
-          IsPdf(), model_.IsDocs(), model_.GetCurrentlyVisibleNodes());
-
-  v8::Local<v8::Array> highlight_array = v8::Array::New(isolate, nodes.size());
-  for (int i = 0; i < (int)nodes.size(); i++) {
-    v8::Local<v8::Object> obj = v8::Object::New(isolate);
-    auto checked = obj->DefineOwnProperty(
-        context, v8::String::NewFromUtf8(isolate, "nodeId").ToLocalChecked(),
-        v8::Number::New(isolate, nodes[i].id));
-    checked = obj->DefineOwnProperty(
-        context, v8::String::NewFromUtf8(isolate, "start").ToLocalChecked(),
-        v8::Number::New(isolate, nodes[i].text_start));
-    checked = obj->DefineOwnProperty(
-        context, v8::String::NewFromUtf8(isolate, "length").ToLocalChecked(),
-        v8::Number::New(isolate, (nodes[i].text_end - nodes[i].text_start)));
-    checked = highlight_array->Set(isolate->GetCurrentContext(), i, obj);
-  }
-  return highlight_array;
-}
-
-v8::Local<v8::Value>
-ReadAnythingAppController::GetHighlightForCurrentSegmentIndex(int index,
-                                                              bool phrases) {
-  v8::Isolate* isolate =
-      render_frame()->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
-  auto context = isolate->GetCurrentContext();
-
-  std::vector<ReadAloudTextSegment> nodes =
-      read_aloud_model_.GetHighlightForCurrentSegmentIndex(index, phrases);
-
-  v8::Local<v8::Array> highlight_array = v8::Array::New(isolate, nodes.size());
-  for (int i = 0; i < (int)nodes.size(); i++) {
-    v8::Local<v8::Object> obj = v8::Object::New(isolate);
-    auto checked = obj->DefineOwnProperty(
-        context, v8::String::NewFromUtf8(isolate, "nodeId").ToLocalChecked(),
-        v8::Number::New(isolate, nodes[i].id));
-    checked = obj->DefineOwnProperty(
-        context, v8::String::NewFromUtf8(isolate, "start").ToLocalChecked(),
-        v8::Number::New(isolate, nodes[i].text_start));
-    checked = obj->DefineOwnProperty(
-        context, v8::String::NewFromUtf8(isolate, "length").ToLocalChecked(),
-        v8::Number::New(isolate, (nodes[i].text_end - nodes[i].text_start)));
-    checked = highlight_array->Set(isolate->GetCurrentContext(), i, obj);
-  }
-  return highlight_array;
 }
 
 void ReadAnythingAppController::IncrementMetricCount(

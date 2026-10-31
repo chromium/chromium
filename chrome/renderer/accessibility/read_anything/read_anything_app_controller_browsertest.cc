@@ -22,7 +22,6 @@
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
 #include "chrome/renderer/accessibility/phrase_segmentation/dependency_parser_model.h"
 #include "chrome/renderer/accessibility/read_anything/read_aloud_app_model.h"
-#include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
 #include "chrome/renderer/accessibility/read_anything/read_anything_test_utils.h"
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "components/translate/core/common/translate_features.h"
@@ -363,55 +362,11 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
                                             updates, events);
   }
 
-  std::u16string MoveToNextGranularityAndGetText() {
-    controller().MovePositionToNextGranularity();
-    return controller().GetCurrentTextContent();
-  }
-
-  std::vector<ReadAloudTextSegment> MoveToNextGranularityAndGetSegments() {
-    controller().MovePositionToNextGranularity();
-    return GetCurrentTextSegments(model().GetCurrentlyVisibleNodes());
-  }
-
-  std::vector<ReadAloudTextSegment> MoveToPreviousGranularityAndGetSegments() {
-    controller().MovePositionToPreviousGranularity();
-    return GetCurrentTextSegments(model().GetCurrentlyVisibleNodes());
-  }
-
-  void ProcessDisplayNodes(const std::vector<ui::AXNodeID>& content_node_ids) {
-    model().Reset(content_node_ids);
-    model().ComputeDisplayNodeIdsForDistilledTree();
-  }
-
   void SendUpdateWithNodes(std::vector<ui::AXNodeData> nodes) {
     ui::AXTreeUpdate update;
     test::SetUpdateTreeID(&update, tree_id_);
     update.nodes = nodes;
     AccessibilityEventReceived({std::move(update)});
-  }
-
-  void SendUpdateAndDistillNodes(std::vector<ui::AXNodeData> nodes) {
-    SendUpdateWithNodes(nodes);
-
-    std::vector<int> node_ids;
-    for (const ui::AXNodeData& node : nodes) {
-      node_ids.push_back(node.id);
-    }
-
-    OnAXTreeDistilled(tree_id_, node_ids);
-    controller().InitAXPositionWithNode(nodes[0].id);
-  }
-
-  void InitializeWithAndProcessNodes(std::vector<ui::AXNodeData> nodes) {
-    SendUpdateWithNodes(nodes);
-
-    std::vector<int> node_ids;
-    for (const ui::AXNodeData& node : nodes) {
-      node_ids.push_back(node.id);
-    }
-
-    ProcessDisplayNodes(node_ids);
-    controller().InitAXPositionWithNode(nodes[0].id);
   }
 
   void EnableReadAnythingTranslateEntryPoint() {
@@ -449,41 +404,6 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   void IncrementLineFocusSpeechLines() {
     controller_->IncrementLineFocusSpeechLines();
-  }
-
-  void ExpectNodesMapToEntireText(std::vector<ReadAloudTextSegment> segments,
-                                  std::vector<ui::AXNodeID> node_ids,
-                                  std::vector<std::u16string> texts) {
-    EXPECT_EQ(segments.size(), node_ids.size());
-    EXPECT_EQ(segments.size(), texts.size());
-    for (size_t i = 0; i < segments.size(); i++) {
-      EXPECT_EQ(segments.at(i).id, node_ids.at(i));
-      EXPECT_EQ(segments.at(i).text_start, 0);
-      EXPECT_EQ(static_cast<size_t>(segments.at(i).text_end),
-                texts.at(i).length());
-    }
-  }
-
-  void ExpectCurrentSegments(
-      std::vector<ReadAloudTextSegment> expected_segments) {
-    std::vector<ReadAloudTextSegment> segments = GetCurrentTextSegments();
-    EXPECT_EQ(segments.size(), expected_segments.size());
-    for (size_t i = 0; i < segments.size(); i++) {
-      EXPECT_EQ(segments.at(i).id, expected_segments.at(i).id);
-      EXPECT_EQ(segments.at(i).text_start, expected_segments.at(i).text_start);
-      EXPECT_EQ(segments.at(i).text_end, expected_segments.at(i).text_end);
-    }
-  }
-
-  void MoveToNextAndAssertEmpty() {
-    EXPECT_EQ(MoveToNextGranularityAndGetText(), u"");
-  }
-
-  std::vector<ReadAloudTextSegment> GetCurrentTextSegments(
-      bool is_pdf = false,
-      bool is_docs = false) {
-    return read_aloud_model().GetCurrentTextSegments(
-        is_pdf, is_docs, model().GetCurrentlyVisibleNodes());
   }
 
   struct V8Environment {

@@ -12,20 +12,11 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
-#include "chrome/renderer/accessibility/read_anything/read_aloud_traversal_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_position.h"
 
 namespace test {
-
-struct TextRange {
-  ui::AXNodeID id;
-  int start;
-  int end;
-};
-
-testing::Matcher<ReadAloudTextSegment> TextSegmentMatcher(TextRange range);
 
 void SetUpdateTreeID(ui::AXTreeUpdate* update, ui::AXTreeID tree_id);
 std::unique_ptr<ui::AXTreeUpdate> CreateInitialUpdate();
