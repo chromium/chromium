@@ -25,6 +25,7 @@
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -396,6 +397,28 @@ void AutocompleteResult::Sort(
         });
     if (preserved_default_match != matches_.end())
       top_match = preserved_default_match;
+  }
+
+  // URL paths may be case sensitive, so let the URL-what-you-typed match be
+  // default rather than a match for the same URL with different casing.
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxPreserveVerbatimUrlCase) &&
+      top_match != matches_.end()) {
+    const auto verbatim_match =
+        std::ranges::find(matches_, AutocompleteMatchType::kUrlWhatYouTyped,
+                          &AutocompleteMatch::type);
+    // Stripping ignores differences like 'www.', but only keeps an explicitly
+    // typed https scheme for URLs that match the input case sensitively, so
+    // compare the unstripped URLs too.
+    if (verbatim_match != matches_.end() &&
+        verbatim_match->allowed_to_be_default_match &&
+        (base::EqualsCaseInsensitiveASCII(
+             top_match->stripped_destination_url.spec(),
+             verbatim_match->stripped_destination_url.spec()) ||
+         base::EqualsCaseInsensitiveASCII(
+             top_match->destination_url.spec(),
+             verbatim_match->destination_url.spec()))) {
+      top_match = verbatim_match;
+    }
   }
 
   RotateMatchToFront(top_match, &matches_);

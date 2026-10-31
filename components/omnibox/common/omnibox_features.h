@@ -309,6 +309,11 @@ BASE_DECLARE_FEATURE(kOmniboxVoicePlateIntent);
 // platforms.
 BASE_DECLARE_FEATURE(kPlatformAgnosticXGeo);
 
+// If enabled, URL-what-you-typed matches are made the default match instead of
+// matches for the same URL with different casing, so verbatim input casing is
+// preserved for URL paths, which may be case sensitive.
+BASE_DECLARE_FEATURE(kOmniboxPreserveVerbatimUrlCase);
+
 // If enabled, Inline Location Signaling is enabled gating all development
 // and experimentation for the feature.
 BASE_DECLARE_FEATURE(kInlineLocationSignaling);

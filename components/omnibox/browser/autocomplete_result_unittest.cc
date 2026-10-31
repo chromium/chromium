@@ -1231,6 +1231,66 @@ TEST_F(AutocompleteResultTest, SortAndCullWithMatchDups) {
             result.match_at(1)->duplicate_matches.at(0).destination_url);
 }
 
+TEST_F(AutocompleteResultTest, SortAndCullDefaultsToVerbatimOverCaseVariant) {
+  // Returns the default match's type, given a URL-what-you-typed match from the
+  // HistoryURL provider (provider 1) and a higher scoring history match.
+  const auto get_default_type = [&](const std::u16string& input_text,
+                                    const std::string& verbatim_url,
+                                    const std::string& history_url,
+                                    bool verbatim_default = true) {
+    TestData data[] = {
+        {0, 1, 1203, true, {}, AutocompleteMatchType::kUrlWhatYouTyped},
+        {1, 0, 1414, true, {}, AutocompleteMatchType::kHistoryUrl},
+    };
+    ACMatches matches;
+    PopulateAutocompleteMatches(data, &matches);
+    matches[0].destination_url = GURL(verbatim_url);
+    matches[0].allowed_to_be_default_match = verbatim_default;
+    matches[1].destination_url = GURL(history_url);
+
+    AutocompleteInput input(input_text, metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+    AutocompleteResult result;
+    result.AppendMatches(matches);
+    result.SortAndCull(input, &template_url_service(),
+                       triggered_feature_service(), /*is_lens_active=*/false,
+                       /*can_show_contextual_suggestions=*/false,
+                       /*mia_enabled=*/false, /*is_incognito=*/false);
+    // Both matches are kept.
+    EXPECT_EQ(result.size(), 2u);
+    return result.match_at(0)->type;
+  };
+
+  // The verbatim match is default instead of a match differing only by case.
+  EXPECT_EQ(
+      get_default_type(u"https://example.com/Path", "https://example.com/Path",
+                       "https://example.com/path"),
+      AutocompleteMatchType::kUrlWhatYouTyped);
+  EXPECT_EQ(get_default_type(u"example.com/Path", "http://example.com/Path",
+                             "https://example.com/path"),
+            AutocompleteMatchType::kUrlWhatYouTyped);
+
+  // Otherwise, the higher scoring match is default.
+  EXPECT_EQ(
+      get_default_type(u"https://example.com/Path", "https://example.com/Path",
+                       "https://example.com/other"),
+      AutocompleteMatchType::kHistoryUrl);
+  EXPECT_EQ(
+      get_default_type(u"https://example.com/Path", "https://example.com/Path",
+                       "https://example.com/path",
+                       /*verbatim_default=*/false),
+      AutocompleteMatchType::kHistoryUrl);
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        omnibox::kOmniboxPreserveVerbatimUrlCase);
+    EXPECT_EQ(get_default_type(u"https://example.com/Path",
+                               "https://example.com/Path",
+                               "https://example.com/path"),
+              AutocompleteMatchType::kHistoryUrl);
+  }
+}
+
 TEST_F(AutocompleteResultTest, SortAndCullWithPreserveDefaultMatch) {
   auto test = [&](const std::vector<TestData>& last,
                   const std::vector<TestData>& current,

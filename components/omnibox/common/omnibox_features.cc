@@ -769,6 +769,11 @@ static int64_t JNI_OmniboxFeatureMap_GetNativeMap(JNIEnv* env) {
 // implementation.
 BASE_FEATURE(kPlatformAgnosticXGeo, DISABLED);
 
+// If enabled, URL-what-you-typed matches are made the default match instead of
+// matches for the same URL with different casing, so verbatim input casing is
+// preserved for URL paths, which may be case sensitive.
+BASE_FEATURE(kOmniboxPreserveVerbatimUrlCase, ENABLED);
+
 // If enabled, Inline Location Signaling is enabled gating all development
 // and experimentation for the feature.
 BASE_FEATURE(kInlineLocationSignaling, DISABLED);
