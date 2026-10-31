@@ -244,6 +244,14 @@ class FakeContextualTasksPermissionController
     last_clicked_is_mouse_interaction = is_mouse_interaction;
     last_clicked_state_token = state_token;
   }
+  void OnChipPointerEntered(
+      toolbar_ui_api::mojom::LhsChipIdentifier identifier) override {
+    last_pointer_entered_ = identifier;
+  }
+  void OnChipPointerExited(
+      toolbar_ui_api::mojom::LhsChipIdentifier identifier) override {
+    last_pointer_exited_ = identifier;
+  }
   void OnChipExpandAnimationEnded(
       toolbar_ui_api::mojom::LhsChipIdentifier identifier) override {}
   void OnChipCollapseAnimationEnded(
@@ -255,6 +263,19 @@ class FakeContextualTasksPermissionController
       toolbar_ui_api::mojom::LhsChipIdentifier::kLocationIcon;
   bool last_clicked_is_mouse_interaction = false;
   uint32_t last_clicked_state_token = 0;
+
+  std::optional<toolbar_ui_api::mojom::LhsChipIdentifier>
+  last_pointer_entered() const {
+    return last_pointer_entered_;
+  }
+  std::optional<toolbar_ui_api::mojom::LhsChipIdentifier>
+  last_pointer_exited() const {
+    return last_pointer_exited_;
+  }
+
+ private:
+  std::optional<toolbar_ui_api::mojom::LhsChipIdentifier> last_pointer_entered_;
+  std::optional<toolbar_ui_api::mojom::LhsChipIdentifier> last_pointer_exited_;
 };
 
 class MockToolbarPage : public contextual_tasks_toolbar::mojom::Page {
@@ -2058,6 +2079,16 @@ TEST_F(ContextualTasksUiTest, ContextualTasksToolbarUIServiceBindTest) {
             toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator);
   EXPECT_TRUE(fake_controller.last_clicked_is_mouse_interaction);
   EXPECT_EQ(fake_controller.last_clicked_state_token, 42u);
+
+  remote->OnChipPointerEntered(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest);
+  remote->OnChipPointerExited(
+      toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator);
+  remote.FlushForTesting();
+  EXPECT_EQ(fake_controller.last_pointer_entered(),
+            toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionRequest);
+  EXPECT_EQ(fake_controller.last_pointer_exited(),
+            toolbar_ui_api::mojom::LhsChipIdentifier::kPermissionIndicator);
 }
 
 TEST_F(ContextualTasksUiTest, SetThreadTitle_DispatchesToToolbarPage) {
