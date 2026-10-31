@@ -396,11 +396,27 @@ void OnDeviceExecution::Cleanup() {
   std::move(cleanup_callback_).Run();
 }
 
+OnDeviceExecution::ResultLogger::ResultLogger(mojom::OnDeviceFeature feature,
+                                              OnDeviceBaseModel base_model)
+    : feature_(feature), base_model_(base_model) {}
+
 OnDeviceExecution::ResultLogger::~ResultLogger() {
+  if (result_ == Result::kUsedOnDevice) {
+    base::UmaHistogramEnumeration(
+        "OptimizationGuide.ModelExecution.OnDeviceModelCompleted", base_model_);
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {"OptimizationGuide.ModelExecution.OnDeviceModelCompleted.",
+             GetVariantName(feature_)}),
+        base_model_);
+  }
+  std::string feature_histogram = base::StrCat(
+      {"OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.",
+       GetVariantName(feature_)});
+  base::UmaHistogramEnumeration(feature_histogram, result_);
   base::UmaHistogramEnumeration(
-      base::StrCat(
-          {"OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.",
-           GetVariantName(feature_)}),
+      base::StrCat({feature_histogram, ".",
+                    ConvertBaseModelToUmaModelName(base_model_)}),
       result_);
 }
 

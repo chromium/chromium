@@ -65,10 +65,9 @@ ScenarioBuilder& ScenarioBuilder::AddBaseModel(
     base_model_asset->set_version(version);
     return base_model_asset;
   }());
-  builder.Add(name + "_asset", OnDemandComponent(name + "_key", version));
-  builder.Add(
-      name + "_recipe",
-      BaseModelRecipe(FileReference(name + "_asset", "weights.bin"), args));
+  builder.Add(name, OnDemandComponent(name + "_key", version));
+  builder.Add(name + "_recipe",
+              BaseModelRecipe(FileReference(name, "weights.bin"), args));
   return *this;
 }
 

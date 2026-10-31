@@ -71,7 +71,8 @@ SessionImpl::SessionImpl(mojom::OnDeviceFeature feature,
     : feature_(feature),
       // TODO(crbug.com/403383823): Get these from on_device_context_.
       sampling_params_(*on_device_opts.session_params.sampling_params),
-      capabilities_(on_device_opts.session_params.capabilities) {
+      capabilities_(on_device_opts.session_params.capabilities),
+      base_model_(on_device_opts.base_model) {
   if (on_device_opts.ShouldUse()) {
     TRACE_EVENT("optimization_guide", "SessionImpl::Warmup", "target",
                 base::ToString(feature_));
@@ -84,8 +85,11 @@ SessionImpl::SessionImpl(mojom::OnDeviceFeature feature,
 }
 
 SessionImpl::SessionImpl(mojom::OnDeviceFeature feature,
-                         const SamplingParams& sampling_params)
-    : feature_(feature), sampling_params_(sampling_params) {}
+                         const SamplingParams& sampling_params,
+                         OnDeviceBaseModel base_model)
+    : feature_(feature),
+      sampling_params_(sampling_params),
+      base_model_(base_model) {}
 
 SessionImpl::~SessionImpl() {
   DestroyOnDeviceState("Session destroyed");
@@ -171,7 +175,8 @@ void SessionImpl::ExecuteModelWithResponseConstraint(
     on_device_model::mojom::ResponseConstraintPtr constraint,
     optimization_guide::OptimizationGuideModelExecutionResultStreamingCallback
         callback) {
-  auto logger = std::make_unique<OnDeviceExecution::ResultLogger>(feature_);
+  auto logger =
+      std::make_unique<OnDeviceExecution::ResultLogger>(feature_, base_model_);
 
   // Compute the amount of time context would have for processing assuming
   // on-device execution.
@@ -272,7 +277,8 @@ on_device_model::Capabilities SessionImpl::GetCapabilities() const {
 }
 
 std::unique_ptr<OnDeviceSession> SessionImpl::Clone() {
-  auto session = std::make_unique<SessionImpl>(feature_, sampling_params_);
+  auto session =
+      std::make_unique<SessionImpl>(feature_, sampling_params_, base_model_);
   session->context_ = context_.Clone();
   session->context_start_time_ = context_start_time_;
   if (on_device_context_ && on_device_context_->CanUse()) {

@@ -308,7 +308,7 @@ TEST_F(ManifestBrokerStateTest, UninstallCapabilityBeforeManifestLoaded) {
 
   // Call UninstallCapability immediately on startup before the manifest has
   // finished loading and creating ManifestAssetManager.
-  fake_.state().UninstallCapability("model_A_asset");
+  fake_.state().UninstallCapability("model_A");
 
   EXPECT_TRUE(fake_.component_state().WaitForUninstall("model_A_key"));
   EXPECT_TRUE(base::test::RunUntil([&]() {
@@ -388,7 +388,7 @@ TEST_F(ManifestBrokerStateTest,
 
   // Uninstalling model_A should uninstall model_A and its adaptation adapt_A,
   // while keeping model_B and the shared polisher model.
-  model_control->UninstallCapability("model_A_asset");
+  model_control->UninstallCapability("model_A");
 
   EXPECT_TRUE(fake_.component_state().WaitForUninstall("model_A_key"));
   EXPECT_TRUE(fake_.component_state().WaitForUninstall("adapt_A_key"));
@@ -405,7 +405,7 @@ TEST_F(ManifestBrokerStateTest,
   // Uninstalling the remaining used model_B should now also uninstall the
   // shared polisher model even though unused model_C also references polisher
   // in the manifest.
-  model_control->UninstallCapability("model_B_asset");
+  model_control->UninstallCapability("model_B");
 
   EXPECT_TRUE(fake_.component_state().WaitForUninstall("model_B_key"));
   EXPECT_TRUE(fake_.component_state().WaitForUninstall("polisher_key"));

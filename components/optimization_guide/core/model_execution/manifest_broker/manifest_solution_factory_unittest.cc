@@ -19,6 +19,7 @@
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/scenario_builder.h"
 #include "components/optimization_guide/core/model_execution/manifest_broker/test/test_manifest_asset_manager_component_state.h"
 #include "components/optimization_guide/core/model_execution/model_broker_client.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_names.h"
 #include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
@@ -426,6 +427,81 @@ TEST_F(ManifestSolutionFactoryTest, ExecuteModelWithPostprocessor) {
             "Postprocessor model: 2"
             "hello max:1024"
             "TopK: 64, Temp: 1");
+}
+
+TEST_F(ManifestSolutionFactoryTest, ResolvesBaseModelForBaseModel) {
+  ScenarioBuilder(fake_.component_state())
+      .AddBaseModel("gemma4_component")
+      .AddUnsafeSolution("test", "gemma4_component")
+      .Finish();
+  fake_.Startup();
+
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> session_future;
+  fake_.client().CreateSession(mojom::OnDeviceFeature::kTest,
+                               SessionConfigParams{},
+                               session_future.GetCallback());
+  auto session = session_future.Take();
+  ASSERT_TRUE(session);
+  ASSERT_TRUE(
+      fake_.client().GetSubscriber(mojom::OnDeviceFeature::kTest).client());
+  EXPECT_EQ(fake_.client()
+                .GetSubscriber(mojom::OnDeviceFeature::kTest)
+                .client()
+                ->base_model(),
+            OnDeviceBaseModel::kGemma4);
+}
+
+TEST_F(ManifestSolutionFactoryTest, ResolvesBaseModelUnwrapsAdaptation) {
+  ScenarioBuilder(fake_.component_state())
+      .AddBaseModel("nano_v3_gpu_component")
+      .AddAdaptation("test_adaptation", "nano_v3_gpu_component")
+      .AddUnsafeSolution("test", "test_adaptation")
+      .Finish();
+  fake_.Startup();
+
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> session_future;
+  fake_.client().CreateSession(mojom::OnDeviceFeature::kTest,
+                               SessionConfigParams{},
+                               session_future.GetCallback());
+  auto session = session_future.Take();
+  ASSERT_TRUE(session);
+  ASSERT_TRUE(
+      fake_.client().GetSubscriber(mojom::OnDeviceFeature::kTest).client());
+  EXPECT_EQ(fake_.client()
+                .GetSubscriber(mojom::OnDeviceFeature::kTest)
+                .client()
+                ->base_model(),
+            OnDeviceBaseModel::kV3NanoGpu);
+}
+
+TEST_F(ManifestSolutionFactoryTest,
+       ResolvesBaseModelUnwrapsPostprocessedModel) {
+  base::test::ScopedFeatureList feature_list{kOnDeviceWebSpeechPolisherModel};
+
+  ScenarioBuilder(fake_.component_state())
+      .AddBaseModel("speech_recognition_small_expert_model_component",
+                    FakeBaseModelAsset::Content{.weight = 1})
+      .AddBaseModel("polisher", FakeBaseModelAsset::Content{.weight = 2})
+      .AddPostprocessedModel("postprocessed_speech",
+                             "speech_recognition_small_expert_model_component",
+                             "polisher")
+      .AddUnsafeSolution("test", "postprocessed_speech")
+      .Finish();
+  fake_.Startup();
+
+  base::test::TestFuture<ModelBrokerClient::CreateSessionResult> session_future;
+  fake_.client().CreateSession(mojom::OnDeviceFeature::kTest,
+                               SessionConfigParams{},
+                               session_future.GetCallback());
+  auto session = session_future.Take();
+  ASSERT_TRUE(session);
+  ASSERT_TRUE(
+      fake_.client().GetSubscriber(mojom::OnDeviceFeature::kTest).client());
+  EXPECT_EQ(fake_.client()
+                .GetSubscriber(mojom::OnDeviceFeature::kTest)
+                .client()
+                ->base_model(),
+            OnDeviceBaseModel::kSpeechRecognitionSmallExpert);
 }
 
 }  // namespace optimization_guide

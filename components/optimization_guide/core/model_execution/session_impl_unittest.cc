@@ -40,6 +40,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_access_controller.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_value_utils.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_names.h"
 #include "components/optimization_guide/core/model_execution/on_device_prefs.h"
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
@@ -1388,6 +1389,65 @@ TEST_F(SessionImplTest, ResponseConstraintConfigRegex) {
             "Hint: constrained_decoding "
             "Constraint: regex [A-Z]*"
             "execute:input max:1024");
+}
+
+TEST_F(SessionImplTest, BaseModelCompletionAndExecuteResultHistograms) {
+  Initialize([]() {
+    proto::SolutionConfig config;
+    *config.mutable_feature() = SimpleComposeConfigForTesting();
+    config.mutable_model_versions()
+        ->mutable_on_device_model_service_version()
+        ->mutable_on_device_base_model_metadata()
+        ->set_base_model_name("gemma4_component");
+    return config;
+  }());
+
+  base::HistogramTester histogram_tester;
+  auto session = CreateSession(SessionConfigParams{});
+  ASSERT_TRUE(session);
+
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelCompleted",
+      OnDeviceBaseModel::kGemma4, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelCompleted.Test",
+      OnDeviceBaseModel::kGemma4, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Test",
+      ExecuteModelResult::kUsedOnDevice, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Test.Gemma4",
+      ExecuteModelResult::kUsedOnDevice, 1);
+}
+
+TEST_F(SessionImplTest, UnknownBaseModelEmitsUnknownSuffixedExecuteResult) {
+  Initialize();
+
+  base::HistogramTester histogram_tester;
+  auto session = CreateSession(SessionConfigParams{});
+  ASSERT_TRUE(session);
+
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelCompleted",
+      OnDeviceBaseModel::kUnknown, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelCompleted.Test",
+      OnDeviceBaseModel::kUnknown, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Test",
+      ExecuteModelResult::kUsedOnDevice, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult.Test."
+      "Unknown",
+      ExecuteModelResult::kUsedOnDevice, 1);
 }
 
 }  // namespace optimization_guide
