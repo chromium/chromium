@@ -516,7 +516,6 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
     was previously named Commerce.PriceTracking.IOS.ProductStatus.
   </summary>
   <token key="Source">
-    <variant name="PriceInsights"/>
     <variant name="PriceTracking"/>
   </token>
 </histogram>

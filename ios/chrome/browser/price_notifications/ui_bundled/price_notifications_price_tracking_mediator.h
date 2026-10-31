@@ -10,14 +10,12 @@
 #import <memory>
 
 #import "base/memory/weak_ptr.h"
-#import "ios/chrome/browser/price_insights/ui/price_insights_mutator.h"
 #import "ios/chrome/browser/price_notifications/ui_bundled/price_notifications_mutator.h"
 
 @protocol BookmarksCommands;
 @protocol PriceNotificationsAlertPresenter;
 @protocol PriceTrackedItemsCommands;
 @protocol PriceNotificationsConsumer;
-@protocol PriceInsightsConsumer;
 class PushNotificationService;
 
 namespace bookmarks {
@@ -39,7 +37,7 @@ class WebState;
 }  // namespace web
 
 @interface PriceNotificationsPriceTrackingMediator
-    : NSObject <PriceInsightsMutator, PriceNotificationsMutator>
+    : NSObject <PriceNotificationsMutator>
 
 // `WebState`, and `PushNotificationService` must not be nil.
 // The designated initializer. `ShoppingService`, `BookmarkModel`,
@@ -59,8 +57,6 @@ class WebState;
 @property(nonatomic, weak) id<BookmarksCommands> bookmarksHandler;
 
 @property(nonatomic, weak) id<PriceNotificationsConsumer> consumer;
-
-@property(nonatomic, weak) id<PriceInsightsConsumer> priceInsightsConsumer;
 
 @property(nonatomic, weak) id<PriceTrackedItemsCommands> handler;
 
