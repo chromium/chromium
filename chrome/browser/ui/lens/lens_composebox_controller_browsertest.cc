@@ -189,9 +189,12 @@ class LensComposeboxControllerBrowserTest : public InProcessBrowserTest {
          {lens::features::kLensAimSuggestions,
           {{"lens-aim-suggestions-type", "Contextual"}}},
          {lens::features::kLensSearchReinvocationAffordance, {}}},
-        /*disabled_features=*/{contextual_tasks::kContextualTasks,
-                               contextual_tasks::kContextualTasksSidePanel,
-                               omnibox::kAimServerEligibilityEnabled});
+        /*disabled_features=*/{
+            contextual_tasks::kContextualTasks,
+            contextual_tasks::kContextualTasksSidePanel,
+            omnibox::kAimServerEligibilityEnabled,
+            lens::features::
+                kLensOverlayNonBlockingPrivacyNoticeForImageSearch});
 
     InProcessBrowserTest::SetUp();
   }

@@ -4272,6 +4272,24 @@
             ]
         }
     ],
+    "ChromnientNonBlockingPrivacyNoticeForImageSearch": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "LensOverlayNonBlockingPrivacyNoticeForImageSearch"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromnientReinvocationAffordance": [
         {
             "platforms": [
