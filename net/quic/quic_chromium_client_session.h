@@ -683,6 +683,12 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // including cases where the stream creation failed.
   bool was_ever_used_to_create_streams() const;
 
+  // Returns true if this side closed the connection with
+  // QUIC_CONNECTION_CANCELLED, e.g. because the session attempt that owned it
+  // was cancelled. Unlike error(), this is already set while the pool is
+  // notified that the session is going away.
+  bool WasClosedByLocalCancellation() const;
+
   const QuicConnectionReuseDetails& quic_connection_reuse_details() const {
     return quic_connection_reuse_details_;
   }
@@ -1269,6 +1275,9 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   bool going_away_ = false;
   // Connection close source
   quic::ConnectionCloseSource source_ = quic::ConnectionCloseSource::FROM_SELF;
+  // Connection close error. Set together with `source_`, before the pool is
+  // notified, whereas quic::QuicSession::error() is set only afterwards.
+  quic::QuicErrorCode connection_close_error_ = quic::QUIC_NO_ERROR;
   // True when the session receives a go away from server due to port migration.
   bool port_migration_detected_ = false;
   bool quic_connection_migration_attempted_ = false;

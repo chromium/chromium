@@ -3980,8 +3980,76 @@ TEST_P(QuicSessionPoolAsyncDnsJobTest, DiscardedSessionClosedOnSettle) {
   EXPECT_TRUE(stream.get());
 }
 
-// After DNS resolution completes, connectors may cross over to attempt the
-// other family's remaining candidates if their preferred family is exhausted.
+// Cancelling the losing attempt closes its session before the handshake
+// completes. The cancellation says nothing about the path, so the server's
+// network stats recorded by an earlier session must be kept.
+TEST_P(QuicSessionPoolAsyncDnsJobTest,
+       DiscardedSessionKeepsServerNetworkStats) {
+  const url::SchemeHostPort server(url::kHttpsScheme, kDefaultServerHostName,
+                                   443);
+  ServerNetworkStats stats;
+  stats.srtt = base::Milliseconds(50);
+  http_server_properties_->SetServerNetworkStats(
+      server, NetworkAnonymizationKey(), stats);
+
+  base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
+      fake_resolver_.AddFakeRequest();
+  InitializeWithFakeResolver();
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::COLD_START_WITH_CHLO_SENT);
+
+  MockQuicData ipv6_data(version_);
+  ipv6_data.AddReadPauseForever();
+  ipv6_data.AddWrite(SYNCHRONOUS, ERR_IO_PENDING);
+  ipv6_data.AddSocketDataToFactory(socket_factory_.get());
+
+  MockQuicData ipv4_data(version_);
+  ipv4_data.AddReadPauseForever();
+  ipv4_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  ipv4_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_THAT(builder.CallRequest(), IsError(ERR_IO_PENDING));
+
+  TestCompletionCallback creation_callback;
+  if (async_quic_session()) {
+    EXPECT_TRUE(builder.request.WaitForQuicSessionCreation(
+        creation_callback.callback()));
+  }
+
+  endpoint_request->add_endpoint(MakeUsableV6Endpoint(kIpv6Addr1));
+  endpoint_request->add_endpoint(MakeUsableEndpoint(kIpv4Addr1));
+  endpoint_request->set_crypto_ready(true);
+  endpoint_request->CallOnServiceEndpointsUpdated();
+
+  if (async_quic_session()) {
+    EXPECT_THAT(creation_callback.WaitForResult(), IsError(ERR_IO_PENDING));
+  }
+  QuicChromiumClientSession* ipv6_session =
+      GetPendingSession(kDefaultDestination);
+
+  // The IPv4 attempt confirms its handshake right away and wins the race. The
+  // IPv6 attempt is cancelled while its session is mid handshake.
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::CONFIRM_HANDSHAKE);
+  FastForwardBy(SlowTimerDelay());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+  EXPECT_FALSE(QuicSessionPoolPeer::IsLiveSession(pool_.get(), ipv6_session));
+
+  const ServerNetworkStats* kept_stats =
+      http_server_properties_->GetServerNetworkStats(server,
+                                                     NetworkAnonymizationKey());
+  ASSERT_TRUE(kept_stats);
+  EXPECT_EQ(kept_stats->srtt, stats.srtt);
+
+  std::unique_ptr<HttpStream> stream = CreateStream(&builder.request);
+  EXPECT_TRUE(stream.get());
+}
+
 // Here the primary connector exhausts IPv6 candidates after DNS finishes and
 // attempts the remaining untried IPv4 candidate, succeeding.
 TEST_P(QuicSessionPoolAsyncDnsJobTest,

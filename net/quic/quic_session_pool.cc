@@ -2858,7 +2858,10 @@ void QuicSessionPool::ProcessGoingAwaySession(
     return;
   }
 
-  if (record_network_stats) {
+  // A session closed by a local cancellation, such as the loser of a
+  // connection race, says nothing about the path. Keep the stats recorded by
+  // earlier sessions.
+  if (record_network_stats && !session->WasClosedByLocalCancellation()) {
     http_server_properties_->ClearServerNetworkStats(
         server, session->quic_session_key().network_anonymization_key());
   }

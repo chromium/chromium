@@ -1498,6 +1498,11 @@ bool QuicChromiumClientSession::was_ever_used_to_create_streams() const {
   return num_total_streams_ > 0;
 }
 
+bool QuicChromiumClientSession::WasClosedByLocalCancellation() const {
+  return source_ == quic::ConnectionCloseSource::FROM_SELF &&
+         connection_close_error_ == quic::QUIC_CONNECTION_CANCELLED;
+}
+
 QuicChromiumClientStream*
 QuicChromiumClientSession::CreateOutgoingBidirectionalStream() {
   NOTREACHED() << "CreateOutgoingReliableStreamImpl should be called directly";
@@ -2011,6 +2016,7 @@ void QuicChromiumClientSession::OnConnectionClosed(
   DCHECK(!connection()->connected());
   logger_->OnConnectionClosed(frame, source);
   source_ = source;
+  connection_close_error_ = frame.quic_error_code;
 
   UMA_HISTOGRAM_COUNTS_1000("Net.QuicSession.NumDefaultPathDegrading",
                             connection()->GetStats().num_path_degrading);
